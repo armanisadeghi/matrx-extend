@@ -12,34 +12,71 @@
  *      — set from the Settings UI, skips probing entirely.
  *   2. Cached port (`matrxLocalEnginePort` = `{port, expiresAt}`) if not
  *      expired. TTL is 30 minutes.
- *   3. Parallel `health` probe across ports 22140-22159. First success wins,
- *      gets cached, and is returned.
- *   4. The signed-in user's freshest active `app_instances.tunnel_url` row
+ *   3. The last port that ever answered (`matrxLocalEngineLastGoodPort`),
+ *      re-probed on its own — one request, no rate limit.
+ *   4. Parallel `health` probe across ports 22140-22159. First success wins,
+ *      gets cached, and is returned. Rate-limited; see COST OF A MISS.
+ *   5. The signed-in user's freshest active `app_instances.tunnel_url` row
  *      from Supabase. This is the cross-machine path; the tunnel URL is
  *      refreshed by matrx-local and protected by owner-only RLS.
- *   5. Build-time `ENV.DESKTOP_LOCAL_URL` as a last-resort fallback. This
- *      mirrors how the bridge behaved before discovery shipped, so callers
- *      that depended on the old hardcoded port still work in environments
- *      where the engine doesn't respond to probes (e.g. native messaging
- *      transport).
+ * If every rung fails the engine is offline and this returns `null`, which
+ * every caller already handles: `probeHttp` reports transport 'none',
+ * `rpcHttp` returns the "start matrx-local" remedy, `connectWs` reports
+ * stage 'discover'.
  *
- * If every probe fails (engine offline) and no override / valid cache /
- * useful default exists, returns `null` so callers can degrade gracefully.
+ * There is deliberately NO build-time fallback address. `ENV.DESKTOP_LOCAL_URL`
+ * used to be the last rung, and because it is always set (22180 — a port
+ * outside the scan range that the engine never binds) this function could
+ * never return null: an offline engine was handed back as a real address.
+ * Every graceful-degradation path above was therefore dead code, the bridge
+ * reported itself reachable when it was not, and the WS runtime was handed a
+ * ws:// URL for a port nothing was listening on — which is how it ended up
+ * retrying a phantom endpoint forever. A stand-in that lies is worse than a
+ * null.
+ *
+ * COST OF A MISS. The 30s desktop-probe alarm calls this forever, and a
+ * failed sweep used to drop the cache and re-sweep on the very next tick:
+ * 20 refused connections plus one Supabase round-trip every 30 seconds, for
+ * the whole life of the browser, for everyone who does not run matrx-local.
+ * Chrome prints every refused connection to the console whether or not the
+ * fetch is caught, so that is a wall of red for a condition that is not an
+ * error at all. Resolution is therefore two-tiered:
+ *
+ *   Tier A — re-probe the LAST PORT that ever worked. One request, never
+ *            rate-limited, so "user just launched the desktop app" is still
+ *            noticed within one alarm tick. Skipped entirely when no port
+ *            has ever worked, which is the no-desktop user: they pay zero.
+ *   Tier B — the 20-port sweep and the Supabase tunnel lookup. Rate-limited
+ *            by SWEEP_BACKOFF_MS after consecutive misses (30s, 1min, 5min,
+ *            15min). An explicit human "Reconnect" calls
+ *            `resetEngineDiscoveryBackoff()` first, so a person asking for
+ *            a scan always gets one immediately.
  */
 
-import { ENV } from '@/config/env';
 import { log } from '@/lib/debug/log';
 import { DesktopHealthSchema } from '@/lib/desktop/types';
 import { getSupabase } from '@/lib/supabase/client';
 
 const STORAGE_KEY_CACHE = 'matrxLocalEnginePort';
 const STORAGE_KEY_OVERRIDE = 'matrxLocalEnginePortOverride';
+/**
+ * Last port that ever answered, with no expiry. Distinct from the TTL cache:
+ * that one says "this port is good right now", this one says "this is where
+ * the engine lives when it is running" and survives every invalidation.
+ */
+const STORAGE_KEY_LAST_GOOD = 'matrxLocalEngineLastGoodPort';
 
 const PROBE_PORT_RANGE_START = 22140;
 const PROBE_PORT_RANGE_END = 22159;
 const PROBE_TIMEOUT_MS = 250;
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const REMOTE_CACHE_TTL_MS = 30 * 1000;
+/**
+ * Wait after the Nth consecutive empty sweep before sweeping again; the last
+ * entry is the ceiling. The first rung matches the desktop-probe alarm
+ * period, so the normal cadence is unchanged for one tick and then opens up.
+ */
+const SWEEP_BACKOFF_MS = [30_000, 60_000, 300_000, 900_000] as const;
 
 interface CachedEntry {
   port: number;
@@ -54,6 +91,20 @@ const isCachedEntry = (v: unknown): v is CachedEntry =>
 
 let inFlight: Promise<string | null> | null = null;
 let remoteCache: { baseUrl: string; expiresAt: number } | null = null;
+let consecutiveEmptySweeps = 0;
+let nextSweepAllowedAt = 0;
+
+/**
+ * Clear the full-sweep rate limit so the next resolve scans immediately.
+ *
+ * For explicit human actions ONLY (Settings → Desktop Bridge, Debug →
+ * Bridges → Re-discover). A background poll must never call this, or the
+ * rate limit means nothing and the console noise comes straight back.
+ */
+export function resetEngineDiscoveryBackoff(): void {
+  consecutiveEmptySweeps = 0;
+  nextSweepAllowedAt = 0;
+}
 
 export async function getEngineBaseUrl(): Promise<string | null> {
   const override = await getEnginePortOverride();
@@ -72,26 +123,69 @@ export async function getEngineBaseUrl(): Promise<string | null> {
   if (inFlight) return inFlight;
   inFlight = (async () => {
     try {
-      const port = await probePortRange();
-      if (port !== null) {
-        await writeCachedEntry({ port, expiresAt: Date.now() + CACHE_TTL_MS });
-        return `http://127.0.0.1:${port}`;
+      // Tier A — the port that worked last time. One request, always
+      // allowed, so the engine coming back on its usual port is noticed on
+      // the next alarm tick rather than after a backoff.
+      const lastGood = await readLastGoodPort();
+      if (lastGood !== null) {
+        const hit = await probeOne(lastGood).catch(() => null);
+        if (hit !== null) return await acceptPort(hit);
       }
-      // Probe failed: invalidate the cache so the next call re-probes
-      // immediately rather than waiting for TTL.
+
+      // Tier B — the full sweep and the tunnel lookup, rate-limited.
+      if (Date.now() < nextSweepAllowedAt) return null;
+
+      const port = await probePortRange();
+      if (port !== null) return await acceptPort(port);
+      // Probe failed: invalidate the cache so a later call re-probes rather
+      // than serving a dead port out of TTL.
       await invalidateEnginePortCache();
       const remote = await discoverRemoteEngineBaseUrl();
-      if (remote) return remote;
-      const fallback = parsePortFromUrl(ENV.DESKTOP_LOCAL_URL);
-      if (fallback !== null) {
-        return `http://127.0.0.1:${fallback}`;
+      if (remote) {
+        consecutiveEmptySweeps = 0;
+        nextSweepAllowedAt = 0;
+        return remote;
       }
+      backOffSweep();
       return null;
     } finally {
       inFlight = null;
     }
   })();
   return inFlight;
+}
+
+async function acceptPort(port: number): Promise<string> {
+  consecutiveEmptySweeps = 0;
+  nextSweepAllowedAt = 0;
+  await writeCachedEntry({ port, expiresAt: Date.now() + CACHE_TTL_MS });
+  await writeLastGoodPort(port);
+  return `http://127.0.0.1:${port}`;
+}
+
+function backOffSweep(): void {
+  const idx = Math.min(consecutiveEmptySweeps, SWEEP_BACKOFF_MS.length - 1);
+  const wait = SWEEP_BACKOFF_MS[idx] ?? SWEEP_BACKOFF_MS[SWEEP_BACKOFF_MS.length - 1] ?? 900_000;
+  consecutiveEmptySweeps += 1;
+  nextSweepAllowedAt = Date.now() + wait;
+  if (wait > 0 && consecutiveEmptySweeps <= SWEEP_BACKOFF_MS.length) {
+    // Say it once per rung, not once per tick: a missing desktop app is a
+    // normal state, and this line exists so a REAL outage is still visible.
+    log.info(
+      'desktop',
+      `engine not found on 127.0.0.1:${PROBE_PORT_RANGE_START}-${PROBE_PORT_RANGE_END} — next full scan in ${Math.round(wait / 1000)}s`,
+    );
+  }
+}
+
+async function readLastGoodPort(): Promise<number | null> {
+  const r = await chrome.storage.local.get([STORAGE_KEY_LAST_GOOD]);
+  const v = r[STORAGE_KEY_LAST_GOOD];
+  return typeof v === 'number' && Number.isInteger(v) && v >= 1 && v <= 65535 ? v : null;
+}
+
+async function writeLastGoodPort(port: number): Promise<void> {
+  await chrome.storage.local.set({ [STORAGE_KEY_LAST_GOOD]: port });
 }
 
 export async function invalidateEnginePortCache(): Promise<void> {
@@ -232,13 +326,3 @@ function probeOne(port: number): Promise<number> {
   });
 }
 
-function parsePortFromUrl(url: string): number | null {
-  try {
-    const u = new URL(url);
-    if (!u.port) return null;
-    const n = Number(u.port);
-    return Number.isInteger(n) && n >= 1 && n <= 65535 ? n : null;
-  } catch {
-    return null;
-  }
-}

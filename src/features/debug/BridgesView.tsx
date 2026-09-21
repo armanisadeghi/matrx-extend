@@ -27,6 +27,7 @@ import {
   getEngineBaseUrl,
   getEnginePortOverride,
   invalidateEnginePortCache,
+  resetEngineDiscoveryBackoff,
   setEnginePortOverride,
 } from '@/lib/desktop/discovery';
 import { autoPair, clearPairToken, getPairToken, rpcHttp } from '@/lib/desktop/http';
@@ -303,6 +304,9 @@ function DiscoverySection() {
     setWorking(true);
     setResolved(null);
     setHealthDetail(null);
+    // A person pressed the button: the background full-scan rate limit
+    // must not make them wait out a backoff rung.
+    resetEngineDiscoveryBackoff();
     await invalidateEnginePortCache();
     const r = await probeDesktop();
     if (r.transport !== 'none') {
@@ -357,6 +361,7 @@ function DiscoverySection() {
       run: async () => {
         setPairWorking(true);
         await clearPairToken();
+        resetEngineDiscoveryBackoff();
         const baseUrl = await getEngineBaseUrl();
         if (!baseUrl) {
           log.warn('desktop', 'bridges: re-pair failed — engine base URL unresolved');

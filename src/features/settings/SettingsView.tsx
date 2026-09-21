@@ -17,6 +17,7 @@ import { useDesktopBridge } from '@/hooks/use-desktop';
 import {
   getEnginePortOverride,
   invalidateEnginePortCache,
+  resetEngineDiscoveryBackoff,
   setEnginePortOverride,
 } from '@/lib/desktop/discovery';
 import { clearPairToken, setPairToken } from '@/lib/desktop/http';
@@ -78,6 +79,7 @@ export function SettingsView() {
     const trimmed = enginePortInput.trim();
     if (trimmed === '') {
       await setEnginePortOverride(null);
+      resetEngineDiscoveryBackoff();
       await invalidateEnginePortCache();
       setEnginePortSaved(null);
       return;
@@ -90,6 +92,7 @@ export function SettingsView() {
     }
     setEnginePortError(null);
     await setEnginePortOverride(n);
+    resetEngineDiscoveryBackoff();
     await invalidateEnginePortCache();
     setEnginePortSaved(n);
   };
