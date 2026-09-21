@@ -11,6 +11,7 @@ const { execFile, spawn } = require('node:child_process');
 const { promisify } = require('node:util');
 const { acquireVaultAcceptanceLease } = require('./vault-acceptance-lease.cjs');
 const { FAILED_PROOF_PATH: reconciledChromeProofPath, verifyHistoricalChromeReconciliation } = require('./vault-historical-reconciliation.cjs');
+const { FAILED_PROOF_PATH: recovered7356ProofPath, verify7356RecoveryAdmission } = require('./vault-7356-reconciliation.cjs');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
 const { hasObservedReadOnlyCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
 const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
@@ -101,7 +102,7 @@ const localCanonicalCleanupArmed = process.env.MATRX_VAULT_CANARY_LOCAL_CANONICA
 // making a Vault mutation; it is not a Save/Update acceptance result.
 const readOnlyAdmissionMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
 const receiptBackedSaveUpdateMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_RECEIPT_BACKED_SAVE_UPDATE';
-const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = '635389a41668ca8c7d31c056d2e1be292d29ba35';
+const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = '94e0b1c9e3116c2142beecbdf3a0446630e72cd5';
 const RECEIPT_BACKED_ROUTER_SHA256 = '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
 const RECEIPT_BACKED_SERVICE_SHA256 = 'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
 const generatorTransportMode = process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
@@ -412,9 +413,15 @@ async function refuseUnreconciledPriorRun() {
       reviewedChromeReconciliation = reconciliation.authResourceAndLeaseCleanupComplete === true;
       proof.priorChromeCleanupReconciliation = reconciliation;
     }
+    let reviewed7356Recovery = false;
+    if (priorProofPath === recovered7356ProofPath) {
+      const recovery = await verify7356RecoveryAdmission();
+      reviewed7356Recovery = recovery.admitNewSerializedRun === true;
+      proof.prior7356CleanupRecovery = recovery;
+    }
     const receiptMode = prior?.mode === 'receipt_backed_save_update';
     assert(receiptMode
-      ? completedMutationCleanup || receiptModeZeroWriteCleanup || reviewedChromeReconciliation
+      ? completedMutationCleanup || receiptModeZeroWriteCleanup || reviewedChromeReconciliation || reviewed7356Recovery
       : completedAcceptance || completedMutationCleanup || vaultMutationFreeCleanup || authFailureBeforeWrites || reviewedHistoricalException || reviewedLaunchFailure || reviewedRecovery || reviewedGeneratorCleanup || hasObservedReadOnlyCleanup(prior) || hasPreBaselineAuthenticatedCleanup(prior),
     'previous_run_unreconciled');
   }
@@ -1461,6 +1468,7 @@ async function materializedPassword(id) {
       setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
       acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
       historicalReconciliation: await sha256(path.join(__dirname, 'vault-historical-reconciliation.cjs')),
+      recovery7356: await sha256(path.join(__dirname, 'vault-7356-reconciliation.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
     };
@@ -1495,6 +1503,7 @@ async function materializedPassword(id) {
       setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
       acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
       historicalReconciliation: await sha256(path.join(__dirname, 'vault-historical-reconciliation.cjs')),
+      recovery7356: await sha256(path.join(__dirname, 'vault-7356-reconciliation.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
     };
@@ -1600,6 +1609,7 @@ async function materializedPassword(id) {
       setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
       acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
       historicalReconciliation: await sha256(path.join(__dirname, 'vault-historical-reconciliation.cjs')),
+      recovery7356: await sha256(path.join(__dirname, 'vault-7356-reconciliation.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
         };
