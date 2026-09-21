@@ -184,6 +184,12 @@ component, so all four must show identical rows in identical order.
 - **Expected:** The panel says “Could not start filling. Focus the login field, then try Fill again.” and sends no fill request.
 - **Covered by:** `src/features/vault/VaultView.focused-frame.test.tsx`.
 
+### Vault manual recovery on inaccessible fields
+
+- **Steps:** Open Vault on a page with a closed shadow-root login, then on a restricted browser page. Return to a supported login and focus its password field.
+- **Expected:** Inaccessible fields show manual-entry guidance without Fill or automatic Sign in. The supported page recovers its current Fill offer; a top-level ready offer retains Sign in. These checks never submit or save a login.
+- **Covered by:** `VaultView.focused-frame.test.tsx` and `vault-setup-recovery-acceptance.cjs`; browser acceptance is recorded separately.
+
 ### Panel-opening remedies from explicit clicks
 - **What it does:** Every explicit request to open Matrx reports the actual browser result. A toolbar-popup refusal stays visible in the popup; a context-menu refusal appears in a browser notification; a clicked Agenda notification remains visible with its toolbar remedy; and a clicked login-capture recovery card shows its remedy inside that same card.
 - **Where to test:** A current unpacked Chrome artifact and a Firefox 153+ artifact, each in an isolated profile. This recipe does not establish Firefox support by itself.

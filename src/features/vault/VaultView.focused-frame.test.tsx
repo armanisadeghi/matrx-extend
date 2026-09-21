@@ -68,6 +68,10 @@ const readyChildStatus = {
   pageUrl: 'https://accounts.child.example/login',
   frameId: 4,
 };
+const readyTopStatus = {
+  ...readyChildStatus,
+  frameId: 0,
+};
 
 const event = () => ({ addListener: vi.fn(), removeListener: vi.fn() });
 const port = () => ({
@@ -165,6 +169,30 @@ describe('VaultView focused child-frame projection', () => {
     ).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Fill' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Sign in' })).toBeNull();
+    expect(mocks.automaticLogin).not.toHaveBeenCalled();
+  });
+
+  it('gives manual focus guidance and withholds Sign in when no supported-page offer exists', async () => {
+    mocks.panelStatus = { status: 'none', itemIds: [] };
+    render(<VaultView />);
+
+    expect(
+      await screen.findByText(
+        'No login field is ready to fill. Enter the login manually, or focus the username or password field on a supported sign-in page and try Fill again.',
+      ),
+    ).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Fill' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Sign in' })).toBeNull();
+    expect(mocks.automaticLogin).not.toHaveBeenCalled();
+  });
+
+  it('preserves Fill and Sign in for a current top-level ready offer', async () => {
+    mocks.panelStatus = readyTopStatus;
+    render(<VaultView />);
+
+    expect(await screen.findByText('Child personal')).toBeTruthy();
+    expect(screen.getAllByRole('button', { name: 'Fill' })).toHaveLength(2);
+    expect(screen.getAllByRole('button', { name: 'Sign in' })).toHaveLength(2);
     expect(mocks.automaticLogin).not.toHaveBeenCalled();
   });
 

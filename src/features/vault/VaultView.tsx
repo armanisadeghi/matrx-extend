@@ -89,6 +89,8 @@ const RESTRICTED_PAGE_REMEDY =
   "This browser page can't be filled. Open a sign-in page on a regular website, or enter the login manually.";
 const UNAVAILABLE_PAGE_REMEDY =
   'Saved logins are unavailable right now. Enter the login manually, or focus the username or password field on a supported sign-in page and try Fill again.';
+const NO_FOCUSED_LOGIN_REMEDY =
+  'No login field is ready to fill. Enter the login manually, or focus the username or password field on a supported sign-in page and try Fill again.';
 
 type Scope = 'mine' | 'shared';
 
@@ -199,7 +201,9 @@ function VaultSession({
         <SiteSection
           key={tab.id ?? 'no-tab'}
           host={panel.status === 'ready' ? (safeParseUrl(panel.pageUrl)?.host ?? null) : host}
-          allowAutomaticLogin={fillable && !panelUnavailable && !childOffer && login.supported}
+          allowAutomaticLogin={
+            fillable && panel.status === 'ready' && !childOffer && login.supported
+          }
           blockedReason={
             !fillable
               ? RESTRICTED_PAGE_REMEDY
@@ -207,6 +211,8 @@ function VaultSession({
                 ? panel.status === 'loading'
                   ? 'Checking saved logins…'
                   : UNAVAILABLE_PAGE_REMEDY
+              : panel.status === 'none'
+                ? NO_FOCUSED_LOGIN_REMEDY
               : !login.supported && panel.status !== 'ready'
                 ? 'Browser login is not available in this browser yet.'
                 : null
