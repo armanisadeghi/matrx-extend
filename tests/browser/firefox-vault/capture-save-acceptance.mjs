@@ -50,10 +50,33 @@ async function saveButton(adapter) {
   });
 }
 
-export async function runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, proof }) {
-  assert.ok(adapter && typeof adapter.trustedClick === 'function' && typeof adapter.startVaultCreateReceiptObserver === 'function', 'capture_save_adapter_contract_invalid');
+function observedReceiptKeys(receipt) {
+  assert.ok(receipt && Array.isArray(receipt.requests) && Array.isArray(receipt.responses) && Array.isArray(receipt.keys), 'capture_save_receipt_invalid');
+  assert.ok(receipt.keys.every(key => typeof key === 'string'), 'capture_save_receipt_key_invalid');
+  return [...new Set(receipt.keys)];
+}
+
+async function persistObservedReceipt({ adapter, persistOwnedCreateMutationKeys, proof }) {
+  const receipt = await adapter.readVaultCreateReceiptObserver();
+  const keys = observedReceiptKeys(receipt);
+  const prior = Array.isArray(proof.ownedCreateMutationKeys) ? proof.ownedCreateMutationKeys : [];
+  proof.ownedCreateMutationKeys = [...new Set([...prior, ...keys])];
+  if (proof.ownedCreateMutationKeys.length > prior.length) {
+    try {
+      await persistOwnedCreateMutationKeys([...proof.ownedCreateMutationKeys]);
+    } catch {
+      throw new Error('capture_save_receipt_persist_failed');
+    }
+  }
+  if (proof.ownedCreateMutationKeys.length > 0) proof.captureSave.receiptKeysPersisted = true;
+  return receipt;
+}
+
+export async function runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, persistOwnedCreateMutationKeys, proof }) {
+  assert.ok(adapter && typeof adapter.trustedClick === 'function' && typeof adapter.startVaultCreateReceiptObserver === 'function' && typeof adapter.readVaultCreateReceiptObserver === 'function' && typeof adapter.disposeVaultCreateReceiptObserver === 'function', 'capture_save_adapter_contract_invalid');
+  assert.equal(typeof persistOwnedCreateMutationKeys, 'function', 'capture_save_receipt_persist_contract_invalid');
   const server = await fixture(); let original = null; let tab = null; let primary; let cleanup; let observerStarted = false;
-  proof.captureSave = { ok: false, nativeFixtureSubmittedOnce: false, pendingPromptObserved: false, trustedSaveClicked: false, pendingRemoved: false, fixtureTabClosed: false, originalWindowRestored: false, fixtureServerClosed: false, receiptObserverDisposed: false };
+  proof.captureSave = { ok: false, nativeFixtureSubmittedOnce: false, pendingPromptObserved: false, trustedSaveClicked: false, pendingRemoved: false, receiptKeysPersisted: false, fixtureTabClosed: false, originalWindowRestored: false, fixtureServerClosed: false, receiptObserverDisposed: false };
   try {
     await getContext('content'); original = await wdGet(base, `/session/${sessionId}/window`);
     tab = (await wdPost(base, `/session/${sessionId}/window/new`, { type: 'tab' }))?.handle;
@@ -68,18 +91,25 @@ export async function runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdP
     await adapter.startVaultCreateReceiptObserver({ origin: 'https://server.app.matrxserver.com' }); observerStarted = true;
     await adapter.trustedClick(selector, { outcome: document => ![...document.querySelectorAll('p')].some(node => node.textContent?.trim() === 'Save this login to your Vault?' && node.getBoundingClientRect().height > 0), timeoutMs: 15_000 });
     proof.captureSave.trustedSaveClicked = true; proof.captureSave.pendingRemoved = true; assert.equal(server.state.submissions, 1, 'capture_save_choice_submitted_fixture');
-    const receipt = await adapter.readVaultCreateReceiptObserver();
-    proof.ownedCreateMutationKeys = [...receipt.keys];
-    const response = receipt.responses.find(entry => entry.requestId === receipt.requests[0].requestId && entry.status >= 200 && entry.status < 300);
+    const receipt = await persistObservedReceipt({ adapter, persistOwnedCreateMutationKeys, proof });
+    const [request] = receipt.requests;
+    const response = typeof request?.requestId === 'string'
+      ? receipt.responses.find(entry => entry.requestId === request.requestId && entry.status >= 200 && entry.status < 300)
+      : null;
     proof.captureSave.receipt = { requestCount: receipt.requests.length, keyCount: receipt.keys.length, responseStatus: response?.status ?? null };
     assert.equal(receipt.requests.length, 1, 'capture_save_create_request_count'); assert.equal(receipt.keys.length, 1, 'capture_save_idempotency_key_count'); assert.ok(response, 'capture_save_create_response_missing');
   } catch (error) { primary = error; } finally {
+    if (observerStarted) try {
+      await persistObservedReceipt({ adapter, persistOwnedCreateMutationKeys, proof });
+      if (proof.ownedCreateMutationKeys.length !== 1)
+        cleanup ||= new Error('capture_save_idempotency_key_count');
+    } catch (error) { cleanup ||= error; }
     if (observerStarted) try { const disposed = await adapter.disposeVaultCreateReceiptObserver(); proof.captureSave.receiptObserverDisposed = disposed.disposed === true; } catch (error) { cleanup ||= error; }
     if (tab) try { await getContext('content'); await wdPost(base, `/session/${sessionId}/window`, { handle: tab }); await wdDelete(base, `/session/${sessionId}/window`); assert.equal((await wdGet(base, `/session/${sessionId}/window/handles`)).includes(tab), false, 'capture_save_fixture_tab_still_open'); proof.captureSave.fixtureTabClosed = true; } catch (error) { cleanup ||= error; }
     if (original) try { await getContext('content'); await wdPost(base, `/session/${sessionId}/window`, { handle: original }); proof.captureSave.originalWindowRestored = true; } catch (error) { cleanup ||= error; }
     try { await server.close(); proof.captureSave.fixtureServerClosed = true; } catch (error) { cleanup ||= error; }
   }
   if (primary) throw primary; if (cleanup) throw cleanup;
-  proof.captureSave.ok = proof.captureSave.nativeFixtureSubmittedOnce && proof.captureSave.pendingPromptObserved && proof.captureSave.trustedSaveClicked && proof.captureSave.pendingRemoved && proof.captureSave.fixtureTabClosed && proof.captureSave.originalWindowRestored && proof.captureSave.fixtureServerClosed && proof.captureSave.receiptObserverDisposed;
+  proof.captureSave.ok = proof.captureSave.nativeFixtureSubmittedOnce && proof.captureSave.pendingPromptObserved && proof.captureSave.trustedSaveClicked && proof.captureSave.pendingRemoved && proof.captureSave.receiptKeysPersisted && proof.captureSave.fixtureTabClosed && proof.captureSave.originalWindowRestored && proof.captureSave.fixtureServerClosed && proof.captureSave.receiptObserverDisposed;
   assert.equal(proof.captureSave.ok, true, 'capture_save_evidence_incomplete'); return proof.captureSave;
 }
