@@ -18,6 +18,7 @@ import {
   verifyLocalCommandTransport,
 } from '@/lib/api/routes/local-browser-commands';
 import { type LoginFormProbe, credentialDomSource } from '@/lib/credentials/fill-primitive';
+import { log } from '@/lib/debug/log';
 import {
   localBrowserApprovalGeneration,
   onLocalBrowserApprovalGenerationChange,
@@ -567,6 +568,22 @@ export class LocalBrowserController {
       entry.tabId !== null &&
       entry.leaseExpiresAtMs !== null &&
       Date.now() < entry.leaseExpiresAtMs;
+    const currentnessPredicates = (): string[] => {
+      const predicates: string[] = [];
+      if (abort.signal.aborted) predicates.push('permission_abort');
+      if (context !== this.contextGeneration) predicates.push('context');
+      if (registration.socketEpoch !== this.deps.getSocketEpoch()) predicates.push('socket');
+      if (!sameRegistration(this.activeRegistration, registration)) predicates.push('registration');
+      if (this.entries.get(entry.key) !== entry) predicates.push('entry');
+      if (entry.tabId === null) predicates.push('tab');
+      if (entry.leaseExpiresAtMs === null) predicates.push('lease');
+      if (entry.leaseExpiresAtMs !== null && Date.now() >= entry.leaseExpiresAtMs)
+        predicates.push('lease_expired');
+      if (Date.now() >= deadlineMs) predicates.push('deadline_expired');
+      return predicates;
+    };
+    const verificationDiagnostic = (label: string) =>
+      `local_browser_approve_verify_failed:${[label, ...currentnessPredicates()].join(',')}`;
     try {
       // A signed grant is routing data only. Reconstruct every immutable field
       // through the server before showing policy UI or touching the tab.
@@ -580,8 +597,14 @@ export class LocalBrowserController {
         isCurrent,
         signal: abort.signal,
       });
-      if (!verified.ok || verified.data.status !== 'accepted')
-        return { reason: verified.ok ? 'authority_refused' : mapPrivateFailure(verified.error) };
+      if (!verified.ok) {
+        log.warn('desktop', verificationDiagnostic(`verify_${verified.error}`));
+        return { reason: mapPrivateFailure(verified.error) };
+      }
+      if (verified.data.status !== 'accepted') {
+        log.warn('desktop', verificationDiagnostic('verify_not_accepted'));
+        return { reason: 'authority_refused' };
+      }
       const projection = verified.data as unknown as {
         operation: 'approve';
         actor_id: string;
@@ -602,26 +625,40 @@ export class LocalBrowserController {
         jti: string;
       };
       if (projection.operation !== 'approve') return { reason: 'authority_refused' };
-      if (
-        projection.actor_id !== actor.userId ||
-        projection.organization_id !== actor.organizationId ||
-        projection.profile_id !== claims.profile_id ||
-        projection.admission_id !== entry.admissionId ||
-        projection.command_id !== claims.command_id ||
-        projection.sequence !== claims.sequence ||
-        projection.command_digest !== claims.command_digest ||
-        projection.approval_id !== claims.jti ||
-        projection.run_id !== claims.run_id ||
-        projection.app_instance_id !== claims.app_instance_id ||
-        projection.controller_revision !== claims.controller_revision ||
-        projection.jti !== claims.jti ||
-        canonicalGrantDeadlineMs(projection.deadline_ms) !== deadlineMs ||
-        canonicalGrantDeadlineMs(projection.expires_at_ms) !== deadlineMs ||
-        projection.extension_generation !== registration.extensionGeneration ||
-        projection.connection_id !== registration.connectionId ||
-        !isCurrent()
-      )
+      const rejectedPredicates: string[] = [];
+      const rejectWhen = (failed: boolean, predicate: string) => {
+        if (failed) rejectedPredicates.push(predicate);
+      };
+      rejectWhen(projection.actor_id !== actor.userId, 'actor');
+      rejectWhen(projection.organization_id !== actor.organizationId, 'organization');
+      rejectWhen(projection.profile_id !== claims.profile_id, 'profile');
+      rejectWhen(projection.admission_id !== entry.admissionId, 'admission');
+      rejectWhen(projection.command_id !== claims.command_id, 'command');
+      rejectWhen(projection.sequence !== claims.sequence, 'sequence');
+      rejectWhen(projection.command_digest !== claims.command_digest, 'command_digest');
+      rejectWhen(projection.approval_id !== claims.jti, 'approval');
+      rejectWhen(projection.run_id !== claims.run_id, 'run');
+      rejectWhen(projection.app_instance_id !== claims.app_instance_id, 'device');
+      rejectWhen(
+        projection.controller_revision !== claims.controller_revision,
+        'controller_revision',
+      );
+      rejectWhen(projection.jti !== claims.jti, 'jti');
+      rejectWhen(canonicalGrantDeadlineMs(projection.deadline_ms) !== deadlineMs, 'deadline');
+      rejectWhen(canonicalGrantDeadlineMs(projection.expires_at_ms) !== deadlineMs, 'expiry');
+      rejectWhen(
+        projection.extension_generation !== registration.extensionGeneration,
+        'generation',
+      );
+      rejectWhen(projection.connection_id !== registration.connectionId, 'connection');
+      rejectedPredicates.push(...currentnessPredicates());
+      if (rejectedPredicates.length) {
+        log.warn(
+          'desktop',
+          `local_browser_approve_projection_fence_failed:${rejectedPredicates.join(',')}`,
+        );
         return { reason: 'binding_changed' };
+      }
       const decision = await requestLocalBrowserApproval({
         binding: {
           actorId: actor.userId,

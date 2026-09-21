@@ -22,12 +22,14 @@ vi.mock('@/lib/desktop/ws-client', () => ({
 }));
 vi.mock('@/lib/messaging/native', () => ({ on: vi.fn() }));
 vi.mock('@/lib/org/active-org', () => ({ onActiveOrganizationChange: vi.fn() }));
+vi.mock('@/lib/debug/log', () => ({ log: { warn: vi.fn() } }));
 vi.mock('./approvals', () => ({
   localBrowserApprovalGeneration: () => 0,
   onLocalBrowserApprovalGenerationChange: () => () => undefined,
   requestLocalBrowserApproval: vi.fn(async () => ({ decision: 'allow', policy: {} })),
 }));
 
+import { log } from '@/lib/debug/log';
 import { requestLocalBrowserApproval } from './approvals';
 import {
   LocalBrowserController,
@@ -485,6 +487,7 @@ describe('owned local-browser tab controller', () => {
 
   it('refuses approval when the desktop registration changes during verification', async () => {
     const expiresAtSecond = Math.floor(Date.now() / 1000) + 30;
+    vi.mocked(log.warn).mockClear();
     const h = harness();
     const registration = await register(h, 7);
     await h.emit({
@@ -551,11 +554,15 @@ describe('owned local-browser tab controller', () => {
       status: 'refused',
       reason: 'binding_changed',
     });
+    expect(vi.mocked(log.warn).mock.calls).toEqual([
+      ['desktop', 'local_browser_approve_projection_fence_failed:context,registration,entry'],
+    ]);
     h.controller.stop();
   });
 
   it('refuses approval when the verified run revision differs from its signed grant', async () => {
     const expiresAtSecond = Math.floor(Date.now() / 1000) + 30;
+    vi.mocked(log.warn).mockClear();
     const h = harness();
     const registration = await register(h, 7);
     await h.emit({
@@ -607,6 +614,47 @@ describe('owned local-browser tab controller', () => {
       command_json: JSON.stringify({ operation: 'inspect_login' }),
     });
     expect(approve).not.toHaveBeenCalled();
+    expect(h.sent.at(-1)).toMatchObject({
+      operation: 'approve',
+      status: 'refused',
+      reason: 'binding_changed',
+    });
+    expect(vi.mocked(log.warn).mock.calls).toEqual([
+      ['desktop', 'local_browser_approve_projection_fence_failed:controller_revision'],
+    ]);
+    h.controller.stop();
+  });
+
+  it('logs only the closed verification-error label before the projection fence', async () => {
+    const expiresAtSecond = Math.floor(Date.now() / 1000) + 30;
+    vi.mocked(log.warn).mockClear();
+    const h = harness();
+    const registration = await register(h, 7);
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant: opaqueAdmitGrant(registration.generation, registration.connection),
+    });
+    h.deps.command = {
+      verify: vi.fn(async () => ({ ok: false as const, error: 'identity_changed' as const })),
+      approve: vi.fn(),
+      claim: vi.fn(),
+      complete: vi.fn(),
+      currentDocument: vi.fn(),
+    } satisfies NonNullable<LocalBrowserControllerDeps['command']>;
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'approve',
+      grant: opaqueApproveGrant(registration.generation, registration.connection, expiresAtSecond),
+      command_json: JSON.stringify({ operation: 'inspect_login' }),
+    });
+    expect(vi.mocked(log.warn).mock.calls).toEqual([
+      ['desktop', 'local_browser_approve_verify_failed:verify_identity_changed'],
+    ]);
     expect(h.sent.at(-1)).toMatchObject({
       operation: 'approve',
       status: 'refused',
