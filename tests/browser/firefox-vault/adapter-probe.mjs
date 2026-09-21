@@ -37,6 +37,7 @@ const proof = {
   trustedChatRestore: false,
   trustedPortalComboboxPress: false,
   trustedKeyboardComboboxSelection: false,
+  unicodeTransportVerified: false,
   knownLocalhostRequestObserved: false,
   metadataOnlyObserver: false,
   observerDisposed: false,
@@ -229,6 +230,30 @@ try {
     ready();`, [addonId]);
   assert.ok(typeof extensionBase === 'string' && extensionBase.startsWith('moz-extension://'), 'native_sidebar_open_failed');
   proof.nativeSidebarControllerRoute = true;
+
+  proof.phase = 'unicode_remote_transport';
+  const unicodeArgument = '· é 😀';
+  const unicodeOracle = [183, 32, 233, 32, 128512];
+  const unicode = await adapter.evaluate((document, value) => ({
+    literalCharCode: '·'.charCodeAt(0),
+    literalCodePoint: '·'.codePointAt(0),
+    argument: value,
+    argumentCodePoints: [...value].map(character => character.codePointAt(0)),
+    result: '· é 😀',
+  }), [unicodeArgument]);
+  proof.unicodeTransport = {
+    literalCharCode: unicode?.literalCharCode ?? null,
+    literalCodePoint: unicode?.literalCodePoint ?? null,
+    argumentRoundTrip: unicode?.argument === unicodeArgument,
+    argumentCodePointsMatch: JSON.stringify(unicode?.argumentCodePoints) === JSON.stringify(unicodeOracle),
+    resultRoundTrip: unicode?.result === unicodeArgument,
+  };
+  assert.equal(unicode?.literalCharCode, 183, 'remote_unicode_literal_charcode_mismatch');
+  assert.equal(unicode?.literalCodePoint, 183, 'remote_unicode_literal_codepoint_mismatch');
+  assert.equal(unicode?.argument, unicodeArgument, 'remote_unicode_argument_roundtrip_mismatch');
+  assert.deepEqual(unicode?.argumentCodePoints, unicodeOracle, 'remote_unicode_argument_codepoints_mismatch');
+  assert.equal(unicode?.result, unicodeArgument, 'remote_unicode_result_roundtrip_mismatch');
+  proof.unicodeTransportVerified = true;
 
   proof.phase = 'fresh_profile_auth_storage';
   assert.equal(await post(base, `/session/${sessionId}/moz/context`, { context: 'content' }), null);
@@ -440,7 +465,7 @@ try {
   proof.allOwnedPidsGone = await waitForPidsGone(ownedPids);
   proof.firefoxExited = !profile || (await pidsContaining(profile)).length === 0;
   const required = [
-    'runtimeAttested', 'freshProfileAuthStorageEmpty', 'nativeSidebarControllerRoute',
+    'runtimeAttested', 'freshProfileAuthStorageEmpty', 'nativeSidebarControllerRoute', 'unicodeTransportVerified',
     'transientOverlayWaitedWithoutClickThrough', 'permanentOverlayRefusedWithoutClick',
     'trustedSettingsTransition', 'trustedChatRestore', 'trustedPortalComboboxPress', 'trustedKeyboardComboboxSelection', 'knownLocalhostRequestObserved',
     'metadataOnlyObserver', 'observerDisposed', 'addonUninstalled', 'sessionDeleted',

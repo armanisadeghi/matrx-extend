@@ -231,7 +231,7 @@ try {
     finish(message.data);
   };
   panel.messageManager.addMessageListener(name, listener);
-  panel.messageManager.loadFrameScript('data:application/javascript,' + encodeURIComponent(frameScript), false);
+  panel.messageManager.loadFrameScript('data:application/javascript;charset=utf-8,' + encodeURIComponent(frameScript), false);
   panel.messageManager.sendAsyncMessage(name, {});
   timeoutId = win.setTimeout(() => {
     panel.messageManager.removeMessageListener(name, listener);
