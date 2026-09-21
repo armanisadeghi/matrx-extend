@@ -207,6 +207,13 @@ export const CHANNELS = {
   // handed at WS_START, which is dead the moment the engine restarts on a
   // different port in the 22140-22159 scan range.
   WS_RESOLVE_URL: 'ws:resolve-url',
+  // extension page → SW: a PERSON pressed a desktop-bridge button. Discovery
+  // rate limits, the transport state and the socket all live in the service
+  // worker; a side panel resetting its own module copies changed nothing the
+  // background poll or the socket would ever read. Every human "reconnect"
+  // goes through here so it acts on the process that owns the state.
+  DESKTOP_REDISCOVER: 'desktop:rediscover',
+  WS_RECONNECT: 'ws:reconnect', // extension page → SW: stop / start / restart the socket
   // Private local-browser lifecycle fencing. These never cross the desktop
   // socket unchanged: socket_epoch exists only between the SW and offscreen.
   WS_EPOCH_HANDSHAKE: 'ws:epoch-handshake', // offscreen → SW: invalidate then acknowledge epoch

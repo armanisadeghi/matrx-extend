@@ -47,11 +47,19 @@
  *            rate-limited, so "user just launched the desktop app" is still
  *            noticed within one alarm tick. Skipped entirely when no port
  *            has ever worked, which is the no-desktop user: they pay zero.
- *   Tier B — the 20-port sweep and the Supabase tunnel lookup. Rate-limited
- *            by SWEEP_BACKOFF_MS after consecutive misses (30s, 1min, 5min,
- *            15min). An explicit human "Reconnect" calls
- *            `resetEngineDiscoveryBackoff()` first, so a person asking for
- *            a scan always gets one immediately.
+ *   Tier B — the 20-port sweep, rate-limited by SWEEP_BACKOFF_MS after
+ *            consecutive misses (30s, 1min, then 2min forever). The ceiling
+ *            is small on purpose: while the gate is shut this function says
+ *            "no engine", so the ceiling is the longest a RUNNING engine can
+ *            be reported offline.
+ *   Tier C — the Supabase tunnel lookup, on its own gate. It must not share
+ *            Tier B's, or a remote user — who never has a local engine —
+ *            resets the loopback ladder on every hit and pays the full sweep
+ *            forever.
+ *
+ * A human pressing Re-discover goes through the service worker, which owns
+ * these counters, and calls `resetEngineDiscoveryBackoff()` there. A reset
+ * called in the side panel would only clear that context's own copy.
  */
 
 import { log } from '@/lib/debug/log';
@@ -72,12 +80,20 @@ const PROBE_PORT_RANGE_END = 22159;
 const PROBE_TIMEOUT_MS = 250;
 const CACHE_TTL_MS = 30 * 60 * 1000;
 const REMOTE_CACHE_TTL_MS = 30 * 1000;
+/** How long to wait before asking Supabase for a tunnel URL again. */
+const REMOTE_LOOKUP_RETRY_MS = 60 * 1000;
 /**
  * Wait after the Nth consecutive empty sweep before sweeping again; the last
- * entry is the ceiling. The first rung matches the desktop-probe alarm
- * period, so the normal cadence is unchanged for one tick and then opens up.
+ * entry is the CEILING, and the ceiling is deliberately small.
+ *
+ * A long ladder trades console noise for a lie: while the sweep is gated,
+ * `getEngineBaseUrl()` answers "no engine" — and a running engine reported
+ * offline is what `desktop_run_command` shows the user as "matrx-local is
+ * not running" while the app is open on their dock. Two minutes is the most
+ * this may ever be wrong by; Tier A covers the common restart instantly, and
+ * `resetEngineDiscoveryBackoff()` makes a human's Re-discover immediate.
  */
-const SWEEP_BACKOFF_MS = [30_000, 60_000, 300_000, 900_000] as const;
+const SWEEP_BACKOFF_MS = [30_000, 60_000, 120_000] as const;
 
 interface CachedEntry {
   port: number;
@@ -94,6 +110,14 @@ let inFlight: Promise<string | null> | null = null;
 let remoteCache: { baseUrl: string; expiresAt: number } | null = null;
 let consecutiveEmptySweeps = 0;
 let nextSweepAllowedAt = 0;
+/**
+ * The tunnel lookup has its OWN gate. Sharing the local one made the rate
+ * limit a no-op for exactly the people who can never satisfy it: a remote
+ * engine resolves, which reset the local counters, so the next tick re-swept
+ * all twenty loopback ports — forever, for a user who has no local engine at
+ * all and never will.
+ */
+let nextRemoteLookupAllowedAt = 0;
 
 /**
  * Clear the full-sweep rate limit so the next resolve scans immediately.
@@ -105,6 +129,7 @@ let nextSweepAllowedAt = 0;
 export function resetEngineDiscoveryBackoff(): void {
   consecutiveEmptySweeps = 0;
   nextSweepAllowedAt = 0;
+  nextRemoteLookupAllowedAt = 0;
 }
 
 export async function getEngineBaseUrl(): Promise<string | null> {
@@ -133,21 +158,28 @@ export async function getEngineBaseUrl(): Promise<string | null> {
         if (hit !== null) return await acceptPort(hit);
       }
 
-      // Tier B — the full sweep and the tunnel lookup, rate-limited.
-      if (Date.now() < nextSweepAllowedAt) return null;
-
-      const port = await probePortRange();
-      if (port !== null) return await acceptPort(port);
-      // Probe failed: invalidate the cache so a later call re-probes rather
-      // than serving a dead port out of TTL.
-      await invalidateEnginePortCache();
-      const remote = await discoverRemoteEngineBaseUrl();
-      if (remote) {
-        consecutiveEmptySweeps = 0;
-        nextSweepAllowedAt = 0;
-        return remote;
+      // Tier B — the full loopback sweep, rate-limited on its own gate.
+      const sweepAllowed = Date.now() >= nextSweepAllowedAt;
+      if (sweepAllowed) {
+        const port = await probePortRange();
+        if (port !== null) return await acceptPort(port);
+        // The sweep found nothing: drop the TTL cache so a later call
+        // re-probes rather than serving a dead port, and back off.
+        await invalidateEnginePortCache();
+        backOffSweep();
       }
-      backOffSweep();
+
+      // Tier C — the tunnel. Gated separately, and a hit here NEVER resets
+      // the loopback ladder: a remote user's local sweep is still failing
+      // and must stay backed off.
+      if (Date.now() >= nextRemoteLookupAllowedAt) {
+        const remote = await discoverRemoteEngineBaseUrl();
+        if (remote) {
+          nextRemoteLookupAllowedAt = 0;
+          return remote;
+        }
+        nextRemoteLookupAllowedAt = Date.now() + REMOTE_LOOKUP_RETRY_MS;
+      }
       return null;
     } finally {
       inFlight = null;
@@ -159,6 +191,7 @@ export async function getEngineBaseUrl(): Promise<string | null> {
 async function acceptPort(port: number): Promise<string> {
   consecutiveEmptySweeps = 0;
   nextSweepAllowedAt = 0;
+  nextRemoteLookupAllowedAt = 0;
   await writeCachedEntry({ port, expiresAt: Date.now() + CACHE_TTL_MS });
   await writeLastGoodPort(port);
   return `http://127.0.0.1:${port}`;

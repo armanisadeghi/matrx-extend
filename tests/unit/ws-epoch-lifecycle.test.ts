@@ -21,6 +21,12 @@ let chromeMessageListener: ((message: unknown) => boolean) | undefined;
 
 function installChrome(): void {
   chromeMessageListener = undefined;
+  // The epoch handshake is answered ONLY by the service worker — a side
+  // panel that also registered it raced the worker and, holding a different
+  // backgroundBootId, answered { ok: false } and cost the offscreen its
+  // socket. Present this suite as the worker it is testing.
+  vi.stubGlobal('window', undefined);
+  vi.stubGlobal('document', undefined);
   vi.stubGlobal('crypto', { randomUUID: () => 'current-background-boot' });
   vi.stubGlobal('chrome', {
     runtime: {

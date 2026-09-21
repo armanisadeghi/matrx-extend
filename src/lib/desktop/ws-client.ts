@@ -46,6 +46,8 @@ export type WsState = 'open' | 'closed' | 'unknown';
 interface WsStateMessage {
   state: WsState;
   socketEpoch?: string;
+  /** The offscreen closed on purpose (idle, or an explicit stop). */
+  intentional?: boolean;
 }
 
 interface LocalBrowserForward {
@@ -69,6 +71,12 @@ function redactToken(url: string): string {
 
 let lastKnownState: WsState = 'unknown';
 let lastStateChangeAt: number | null = null;
+/**
+ * The last close was the offscreen's own decision (the 5-minute idle
+ * watchdog, or an explicit stop) rather than a failure. The desktop probe
+ * alarm must not undo it, or the idle policy becomes a churn loop.
+ */
+let lastCloseWasIntentional = false;
 const messageHandlers = new Set<(payload: unknown) => void>();
 const localBrowserLifecycleHandlers = new Set<(payload: unknown, socketEpoch: string) => void>();
 const localBrowserEpochInvalidators = new Set<(nextSocketEpoch: string | null) => void>();
@@ -324,6 +332,19 @@ export function getWsStateChangedAt(): number | null {
   return lastStateChangeAt;
 }
 
+/**
+ * Should a background poll reopen the socket?
+ *
+ * No when it is already open, and no when the offscreen closed it on
+ * purpose — an idle socket is a decision, not a fault, and reopening it
+ * 30 seconds later turns the idle policy into a permanent churn cycle. An
+ * outbound send still reopens it on demand.
+ */
+export function shouldBackgroundReopenWs(): boolean {
+  if (lastKnownState === 'open') return false;
+  return !lastCloseWasIntentional;
+}
+
 // ─── Internal — SW message router ───────────────────────────────────────────
 
 /**
@@ -340,9 +361,111 @@ export function installWsRouter(): void {
   installRouterIfNeeded();
 }
 
+/**
+ * True only in the service worker: no DOM, no window.
+ *
+ * The request/response handlers below answer the OFFSCREEN document, and
+ * only the worker may answer them. Chrome delivers a message to every
+ * context that registered the kind and keeps the FIRST sendResponse, so a
+ * side panel that also registered them raced the worker — and lost the
+ * offscreen its socket when it won: the side panel holds its own
+ * module-scope `backgroundBootId`, so its epoch handshake answers
+ * `{ ok: false }` and the offscreen tears the connection down as rejected.
+ * A side panel answering WS_RESOLVE_URL would additionally run a second,
+ * ungated port sweep from a context that does not own the rate limit.
+ */
+function isServiceWorkerContext(): boolean {
+  return typeof window === 'undefined' && typeof document === 'undefined';
+}
+
 function installRouterIfNeeded(): void {
   if (listenerInstalled) return;
   listenerInstalled = true;
+
+  if (isServiceWorkerContext()) installWorkerOnlyHandlers();
+
+  // chrome.runtime.onMessage delivers the broadcasts from the offscreen
+  // document. We use the underlying chrome.runtime.* API rather than the
+  // higher-level on() helper because we want to OBSERVE these events
+  // without sendResponse-ing them (broadcast pattern), and on() insists on
+  // a return value.
+  chrome.runtime.onMessage.addListener((msg, _sender, _sendResponse) => {
+    if (!msg || typeof msg !== 'object') return false;
+    const m = msg as { __matrx?: boolean; kind?: string; payload?: unknown };
+    if (m.__matrx !== true) return false;
+
+    if (m.kind === CHANNELS.WS_STATE) {
+      const next = (m.payload as WsStateMessage)?.state;
+      if (next === 'open' || next === 'closed') {
+        if (next !== lastKnownState) {
+          log.info('desktop', `ws state: ${lastKnownState} → ${next}`);
+          lastStateChangeAt = Date.now();
+        }
+        lastKnownState = next;
+        lastCloseWasIntentional =
+          next === 'closed' && (m.payload as WsStateMessage)?.intentional === true;
+        if (next === 'closed' && typeof (m.payload as WsStateMessage)?.socketEpoch === 'string') {
+          retireLocalBrowserEpoch((m.payload as WsStateMessage).socketEpoch ?? null);
+        }
+      }
+      return false;
+    }
+    if (m.kind === CHANNELS.WS_MESSAGE) {
+      const local = m.payload as Partial<LocalBrowserForward> | null;
+      if (local?.__matrxLocalBrowserLifecycle === true) {
+        if (
+          typeof local.socketEpoch !== 'string' ||
+          local.socketEpoch !== activeLocalBrowserSocketEpoch
+        ) {
+          return false;
+        }
+        for (const h of localBrowserLifecycleHandlers) {
+          try {
+            h(local.payload, local.socketEpoch);
+          } catch {
+            // Lifecycle frames can carry private grant material. Do not let a
+            // consumer's error text turn that material into a debug payload.
+            log.error('desktop', 'local-browser lifecycle handler threw');
+          }
+        }
+        return false;
+      }
+      for (const h of messageHandlers) {
+        try {
+          h(m.payload);
+        } catch (err) {
+          log.error('desktop', 'ws onMessage handler threw', err);
+        }
+      }
+      return false;
+    }
+    return false;
+  });
+}
+
+
+/**
+ * Handlers the OFFSCREEN document calls and only the service worker may
+ * answer. See isServiceWorkerContext() for why this is not registered
+ * everywhere.
+ */
+function installWorkerOnlyHandlers(): void {
+  // A PERSON pressed a socket button in Debug → Bridges. It has to run
+  // here: WS_START carries this worker's `backgroundBootId`, and a side
+  // panel sending its own would make the offscreen treat the next
+  // worker-driven START as a background restart and tear the socket down.
+  on<{ action?: 'connect' | 'disconnect' | 'reconnect' }, WsControlResult>(
+    CHANNELS.WS_RECONNECT,
+    async (payload) => {
+      const action = payload?.action ?? 'reconnect';
+      if (action === 'disconnect') return disconnectWs();
+      if (action === 'reconnect') {
+        await disconnectWs();
+        await new Promise((r) => setTimeout(r, 100));
+      }
+      return connectWs();
+    },
+  );
 
   // offscreen → SW: the offscreen is about to retry and needs a FRESH URL.
   // Without this the offscreen could only replay the URL it was handed at
@@ -387,62 +510,6 @@ function installRouterIfNeeded(): void {
       return { ok: true, socketEpoch: handshake.socketEpoch };
     },
   );
-
-  // chrome.runtime.onMessage delivers the broadcasts from the offscreen
-  // document. We use the underlying chrome.runtime.* API rather than the
-  // higher-level on() helper because we want to OBSERVE these events
-  // without sendResponse-ing them (broadcast pattern), and on() insists on
-  // a return value.
-  chrome.runtime.onMessage.addListener((msg, _sender, _sendResponse) => {
-    if (!msg || typeof msg !== 'object') return false;
-    const m = msg as { __matrx?: boolean; kind?: string; payload?: unknown };
-    if (m.__matrx !== true) return false;
-
-    if (m.kind === CHANNELS.WS_STATE) {
-      const next = (m.payload as WsStateMessage)?.state;
-      if (next === 'open' || next === 'closed') {
-        if (next !== lastKnownState) {
-          log.info('desktop', `ws state: ${lastKnownState} → ${next}`);
-          lastStateChangeAt = Date.now();
-        }
-        lastKnownState = next;
-        if (next === 'closed' && typeof (m.payload as WsStateMessage)?.socketEpoch === 'string') {
-          retireLocalBrowserEpoch((m.payload as WsStateMessage).socketEpoch ?? null);
-        }
-      }
-      return false;
-    }
-    if (m.kind === CHANNELS.WS_MESSAGE) {
-      const local = m.payload as Partial<LocalBrowserForward> | null;
-      if (local?.__matrxLocalBrowserLifecycle === true) {
-        if (
-          typeof local.socketEpoch !== 'string' ||
-          local.socketEpoch !== activeLocalBrowserSocketEpoch
-        ) {
-          return false;
-        }
-        for (const h of localBrowserLifecycleHandlers) {
-          try {
-            h(local.payload, local.socketEpoch);
-          } catch {
-            // Lifecycle frames can carry private grant material. Do not let a
-            // consumer's error text turn that material into a debug payload.
-            log.error('desktop', 'local-browser lifecycle handler threw');
-          }
-        }
-        return false;
-      }
-      for (const h of messageHandlers) {
-        try {
-          h(m.payload);
-        } catch (err) {
-          log.error('desktop', 'ws onMessage handler threw', err);
-        }
-      }
-      return false;
-    }
-    return false;
-  });
 }
 
 // ─── Helper — fire-and-forget broadcast (used by some callers) ──────────────

@@ -387,6 +387,11 @@ function closeWebSocket(reason: string): void {
   stopHeartbeat();
   stopIdleWatchdog();
   cancelReconnect();
+  // The SW must be able to tell an INTENTIONAL close from a failure: it
+  // reopens a dead socket on its 30s alarm, and without this it reopened
+  // the one the idle watchdog had just retired — a permanent close/open
+  // cycle every five and a half minutes for anyone running matrx-local.
+  const intentional = reason === 'idle' || reason === 'stopped by request';
   if (state.ws) {
     const ws = state.ws;
     const socketEpoch = state.acknowledgedEpoch;
@@ -399,16 +404,23 @@ function closeWebSocket(reason: string): void {
       /* ignore */
     }
     state.acknowledgedEpoch = null;
-    broadcast<{ state: 'closed'; socketEpoch?: string }>(CHANNELS.WS_STATE, {
-      state: 'closed',
-      ...(socketEpoch !== null && { socketEpoch }),
-    });
+    broadcast<{ state: 'closed'; socketEpoch?: string; intentional?: boolean }>(
+      CHANNELS.WS_STATE,
+      {
+        state: 'closed',
+        ...(socketEpoch !== null && { socketEpoch }),
+        ...(intentional && { intentional: true }),
+      },
+    );
     abandonConnectingAttempt();
     return;
   }
   state.acknowledgedEpoch = null;
   abandonConnectingAttempt();
-  broadcast<{ state: 'closed' }>(CHANNELS.WS_STATE, { state: 'closed' });
+  broadcast<{ state: 'closed'; intentional?: boolean }>(CHANNELS.WS_STATE, {
+    state: 'closed',
+    ...(intentional && { intentional: true }),
+  });
 }
 
 function handleClose(code: number, reason: string): void {
@@ -676,8 +688,9 @@ function startIdleWatchdog(): void {
         'desktop-ws-offscreen',
         `idle for ${formatDurationMs(idleFor, { style: 'long' })} — disconnecting`,
       );
-      // Mark as stopped so we don't auto-reconnect; the SW will reopen
-      // on next outbound send.
+      // Mark as stopped so we don't auto-reconnect. The next outbound send
+      // reopens it (WS_SEND clears `stopped`); the SW's probe alarm does
+      // NOT, because closeWebSocket reports this close as intentional.
       state.stopped = true;
       closeWebSocket('idle');
     }

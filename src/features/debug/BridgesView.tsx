@@ -22,26 +22,27 @@ import {
   useBridgeTrafficStore,
 } from '@/lib/debug/bridge-traffic';
 import { type DebugEvent, log, useDebugStore } from '@/lib/debug/log';
-import { getDesktopState, probeDesktop } from '@/lib/desktop/bridge';
+import { type Transport, getDesktopState, probeDesktop } from '@/lib/desktop/bridge';
 import {
   getEngineBaseUrl,
   getEnginePortOverride,
-  invalidateEnginePortCache,
-  resetEngineDiscoveryBackoff,
   setEnginePortOverride,
 } from '@/lib/desktop/discovery';
 import { autoPair, clearPairToken, getPairToken, rpcHttp } from '@/lib/desktop/http';
-import { resetNativeProbeBackoff } from '@/lib/desktop/native';
-import { engineHealthState, formatDesktopConnectionLabel } from '@/lib/desktop/types';
+import {
+  type DesktopHealth,
+  engineHealthState,
+  formatDesktopConnectionLabel,
+} from '@/lib/desktop/types';
 import {
   type WsControlResult,
-  connectWs,
-  disconnectWs,
   getWsState,
   getWsStateChangedAt,
   onWsMessage,
 } from '@/lib/desktop/ws-client';
 import { confirmDestructive } from '@/lib/destructive/confirm';
+import { send } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import {
   connectBroadcast,
   disconnectBroadcast,
@@ -305,12 +306,14 @@ function DiscoverySection() {
     setWorking(true);
     setResolved(null);
     setHealthDetail(null);
-    // A person pressed the button: the background full-scan rate limit
-    // must not make them wait out a backoff rung.
-    resetEngineDiscoveryBackoff();
-    resetNativeProbeBackoff();
-    await invalidateEnginePortCache();
-    const r = await probeDesktop();
+    // Through the SERVICE WORKER. The rate limits, the transport state and
+    // the socket all live there; resetting this context's own copies left
+    // the background poll still backed off and every tool still offline
+    // while this panel said "connected".
+    const r = await send<unknown, { transport: Transport; health: DesktopHealth | null }>(
+      CHANNELS.DESKTOP_REDISCOVER,
+      {},
+    ).catch(() => probeDesktop());
     if (r.transport !== 'none') {
       setResolved(formatDesktopConnectionLabel(r.transport, r.health));
       const state = engineHealthState(r.health);
@@ -363,7 +366,9 @@ function DiscoverySection() {
       run: async () => {
         setPairWorking(true);
         await clearPairToken();
-        resetEngineDiscoveryBackoff();
+        // Ask the worker to re-discover first: it owns the rate limit, and
+        // getEngineBaseUrl() below reads the port cache the worker refreshes.
+        await send(CHANNELS.DESKTOP_REDISCOVER, {}).catch(() => undefined);
         const baseUrl = await getEngineBaseUrl();
         if (!baseUrl) {
           log.warn('desktop', 'bridges: re-pair failed — engine base URL unresolved');
@@ -597,35 +602,45 @@ function WsSection() {
     };
   }, []);
 
+  /**
+   * Socket control runs in the SERVICE WORKER. WS_START carries that
+   * worker's backgroundBootId; a side panel sending its own makes the
+   * offscreen read the next worker-driven START as a background restart and
+   * tear the connection down — a flip-flop on every alarm tick.
+   */
+  const wsControl = useCallback(
+    (action: 'connect' | 'disconnect' | 'reconnect') =>
+      send<{ action: typeof action }, WsControlResult>(CHANNELS.WS_RECONNECT, { action }),
+    [],
+  );
+
   const onConnect = useCallback(async () => {
     setBusy('connect');
     try {
-      const r = await connectWs();
+      const r = await wsControl('connect');
       setLastResult({ kind: 'connect', ts: Date.now(), result: r });
     } finally {
       setBusy(null);
     }
-  }, []);
+  }, [wsControl]);
   const onDisconnect = useCallback(async () => {
     setBusy('disconnect');
     try {
-      const r = await disconnectWs();
+      const r = await wsControl('disconnect');
       setLastResult({ kind: 'disconnect', ts: Date.now(), result: r });
     } finally {
       setBusy(null);
     }
-  }, []);
+  }, [wsControl]);
   const onForceReconnect = useCallback(async () => {
     setBusy('reconnect');
     try {
-      await disconnectWs();
-      await new Promise((r) => setTimeout(r, 100));
-      const r = await connectWs();
+      const r = await wsControl('reconnect');
       setLastResult({ kind: 'reconnect', ts: Date.now(), result: r });
     } finally {
       setBusy(null);
     }
-  }, []);
+  }, [wsControl]);
 
   const state = getWsState();
   const stateColor =

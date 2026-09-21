@@ -28,10 +28,14 @@ import { hydrateBridgeTrafficEnabled, recordBridgeTraffic } from '@/lib/debug/br
 import { log, startDebugRelay } from '@/lib/debug/log';
 import type { CapturedEvent } from '@/lib/demos/event-capture';
 import { onCapturedEvent } from '@/lib/demos/recorder';
+import type { Transport } from '@/lib/desktop/bridge';
 import { desktopRpc, probeDesktop, startDesktopProbeAlarm } from '@/lib/desktop/bridge';
+import { invalidateEnginePortCache, resetEngineDiscoveryBackoff } from '@/lib/desktop/discovery';
+import { resetNativeProbeBackoff } from '@/lib/desktop/native';
 import { startLocalBrowserController } from '@/lib/desktop/local-browser/controller';
+import type { DesktopHealth } from '@/lib/desktop/types';
 import { desktopHealthSnapshotKey } from '@/lib/desktop/types';
-import { connectWs, getWsState, installWsRouter } from '@/lib/desktop/ws-client';
+import { connectWs, installWsRouter, shouldBackgroundReopenWs } from '@/lib/desktop/ws-client';
 import { registerWsReverseInvocationHandler } from '@/lib/desktop/ws-invoke';
 import { connectBroadcast, disconnectBroadcast } from '@/lib/frontend-bridge/broadcast';
 import {
@@ -111,6 +115,7 @@ export function bootstrapBackground(): void {
   // retained offscreen document can wake this worker with an epoch
   // handshake or a URL re-resolve before any async boot step has run.
   installWsRouter();
+  registerDesktopRediscoverHandler();
 
   // ── 1a. Token broker — the SW owns the canonical in-memory credential
   //        cache; sidepanel/offscreen mint + consume through these channels
@@ -296,8 +301,10 @@ function setupAlarms(): void {
       // the block above only fires on a TRANSPORT CHANGE, and the offscreen
       // stops retrying once its backoff ceiling is reached. This probe is
       // the recovery path — it re-resolves the URL and reopens whenever the
-      // engine is reachable but the socket is not up.
-      if (state.transport === 'http' && getWsState() !== 'open') {
+      // engine is reachable but the socket FAILED. It deliberately does not
+      // reopen a socket the offscreen idled out on purpose; that one comes
+      // back on the next outbound send.
+      if (state.transport === 'http' && shouldBackgroundReopenWs()) {
         void connectWs();
       }
     } else if (alarm.name === ALARMS.AGENDA_SCAN) {
@@ -888,6 +895,37 @@ async function startSchedulerHostIfSignedIn(): Promise<void> {
  * resulting storage write. Use that as the signal to (re)start the host.
  * Sign-out clears the key; we tear down on that same edge.
  */
+/**
+ * A person pressed "Re-discover" (Debug → Bridges) or saved a port override
+ * (Settings → Desktop Bridge).
+ *
+ * This MUST run in the service worker. The discovery rate limits, the
+ * bridge transport state and the socket are all worker state; a side panel
+ * calling resetEngineDiscoveryBackoff() only cleared its own module copy,
+ * so the button appeared to work while the background poll went on waiting
+ * out its backoff and every tool stayed offline.
+ */
+function registerDesktopRediscoverHandler(): void {
+  on<unknown, { transport: Transport; health: DesktopHealth | null; lastChecked: number }>(
+    CHANNELS.DESKTOP_REDISCOVER,
+    async () => {
+      resetEngineDiscoveryBackoff();
+      resetNativeProbeBackoff();
+      await invalidateEnginePortCache();
+      const state = await probeDesktop();
+      lastDesktopTransport = state.transport;
+      lastDesktopHealthKey = desktopHealthSnapshotKey(state.health);
+      broadcast(CHANNELS.DESKTOP_AVAILABILITY, {
+        transport: state.transport,
+        health: state.health,
+        lastChecked: state.lastChecked,
+      });
+      if (state.transport === 'http') void connectWs();
+      return state;
+    },
+  );
+}
+
 function registerSchedulerHostUserWatcher(): void {
   if (!chrome.storage?.onChanged) return;
   chrome.storage.onChanged.addListener((changes, area) => {

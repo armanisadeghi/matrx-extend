@@ -14,13 +14,10 @@ import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapa
 import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useAuth } from '@/hooks/use-auth';
 import { useDesktopBridge } from '@/hooks/use-desktop';
-import {
-  getEnginePortOverride,
-  invalidateEnginePortCache,
-  resetEngineDiscoveryBackoff,
-  setEnginePortOverride,
-} from '@/lib/desktop/discovery';
+import { getEnginePortOverride, setEnginePortOverride } from '@/lib/desktop/discovery';
 import { clearPairToken, setPairToken } from '@/lib/desktop/http';
+import { send } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import {
   desktopStatusTextClass,
   engineHealthState,
@@ -79,8 +76,9 @@ export function SettingsView() {
     const trimmed = enginePortInput.trim();
     if (trimmed === '') {
       await setEnginePortOverride(null);
-      resetEngineDiscoveryBackoff();
-      await invalidateEnginePortCache();
+      // Through the worker: it owns the discovery rate limit, the transport
+      // state and the socket. Clearing this context's copies changed nothing.
+      await send(CHANNELS.DESKTOP_REDISCOVER, {}).catch(() => undefined);
       setEnginePortSaved(null);
       return;
     }
@@ -92,8 +90,7 @@ export function SettingsView() {
     }
     setEnginePortError(null);
     await setEnginePortOverride(n);
-    resetEngineDiscoveryBackoff();
-    await invalidateEnginePortCache();
+    await send(CHANNELS.DESKTOP_REDISCOVER, {}).catch(() => undefined);
     setEnginePortSaved(n);
   };
 
