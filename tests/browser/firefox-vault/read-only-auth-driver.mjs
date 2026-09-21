@@ -772,17 +772,28 @@ try {
   proof.oauthCredentialFieldsPopulated = true;
   await checkpoint('oauth_credentials_entered_before_submission');
   await clickExactButton('Sign in');
-  await waitUntil(async () => {
-    try { const url = new URL(await wdGet(base, `/session/${sessionId}/url`)); return url.origin === AUTH_ORIGIN && url.pathname.startsWith('/oauth/consent'); }
-    catch { return false; }
-  }, 'oauth_consent_timeout', 30_000);
-  await checkpoint('oauth_consent_ready');
-  try {
-    await clickExactButton('Authorize');
-    proof.oauthConsentDisposition = 'authorize_clicked';
-  } catch (error) {
-    if (error.message !== 'webdriver_no_such_window') throw error;
-    proof.oauthConsentDisposition = 'consent_window_closed_before_authorize_click';
+  const consentDisposition = await waitUntil(async () => {
+    try {
+      await getContext('content');
+      await wdPost(base, `/session/${sessionId}/window`, { handle: authHandle });
+      const url = new URL(await wdGet(base, `/session/${sessionId}/url`));
+      if (url.origin === AUTH_ORIGIN && url.pathname.startsWith('/oauth/consent')) return 'consent_page';
+    } catch { /* The provider may close its window after an already-granted callback. */ }
+    const stored = await getStorage(['matrx.user.profile', 'matrx.auth.accessToken']);
+    return stored?.['matrx.user.profile']?.email === adminEmail && typeof stored?.['matrx.auth.accessToken'] === 'string' && stored['matrx.auth.accessToken'].length > 20
+      ? 'completed_callback' : null;
+  }, 'oauth_consent_or_callback_timeout', 30_000);
+  if (consentDisposition === 'consent_page') {
+    await checkpoint('oauth_consent_ready');
+    try {
+      await clickExactButton('Authorize');
+      proof.oauthConsentDisposition = 'authorize_clicked';
+    } catch (error) {
+      if (error.message !== 'webdriver_no_such_window') throw error;
+      proof.oauthConsentDisposition = 'consent_window_closed_before_authorize_click';
+    }
+  } else {
+    proof.oauthConsentDisposition = 'completed_callback_without_consent_page';
   }
   await persist();
   await wdPost(base, `/session/${sessionId}/window`, { handle: popupHandle });
