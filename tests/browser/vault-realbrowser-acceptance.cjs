@@ -16,6 +16,11 @@ const { hasObservedReadOnlyCleanup, hasPreBaselineAuthenticatedCleanup } = requi
 const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
 const { runSavedFormMatrix, renderSavedFormMatrixHTML } = require('./vault-saved-form-matrix.cjs');
 const { runVaultPreferencesChecks } = require('./vault-preferences-acceptance.cjs');
+const {
+  runVaultSetupRecoveryChecks,
+  renderVaultSetupRecoveryFixtureHTML,
+  vaultSetupRecoveryFixturePath,
+} = require('./vault-setup-recovery-acceptance.cjs');
 const { runPasswordChangeCaptureChecks, renderPasswordChangeFixtureHTML } = require('./vault-password-change-acceptance.cjs');
 const { classifyVaultRequest, createVaultNetworkJournal } = require('./vault-network-journal.cjs');
 const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs');
@@ -513,6 +518,11 @@ function startLocalSite() {
       return;
     }
     const requestPath = new URL(request.url, 'http://127.0.0.1').pathname;
+    if (requestPath === vaultSetupRecoveryFixturePath) {
+      response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+      response.end(renderVaultSetupRecoveryFixtureHTML());
+      return;
+    }
     if (requestPath === '/signup' || requestPath === '/change-password') {
       response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
       response.end(renderPasswordChangeFixtureHTML(requestPath === '/signup' ? 'signup' : 'change_password'));
@@ -676,7 +686,13 @@ async function localCanonicalCleanup(proven) {
     child.once('close', (code) => {
       let parsed;
       try { parsed = JSON.parse(stdout); } catch { return reject(new Error('local_cleanup_output_refused')); }
-      if (code !== 0 || parsed?.ok !== true) return reject(new Error('local_cleanup_refused'));
+      if (code !== 0 || parsed?.ok !== true) {
+        proof.cleanup.canonicalAdapterFailure = {
+          code: /^[a-z0-9_]{1,100}$/.test(parsed?.code || '') ? parsed.code : 'unclassified',
+          errorType: /^[A-Za-z]{1,80}$/.test(parsed?.errorType || '') ? parsed.errorType : undefined,
+        };
+        return reject(new Error('local_cleanup_refused'));
+      }
       resolve(parsed);
     });
     child.stdin.once('error', () => reject(new Error('local_cleanup_stdin_refused')));
@@ -1442,6 +1458,7 @@ async function materializedPassword(id) {
       responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+      setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
       acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
       historicalReconciliation: await sha256(path.join(__dirname, 'vault-historical-reconciliation.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
@@ -1475,6 +1492,7 @@ async function materializedPassword(id) {
       responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+      setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
       acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
       historicalReconciliation: await sha256(path.join(__dirname, 'vault-historical-reconciliation.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
@@ -1579,6 +1597,7 @@ async function materializedPassword(id) {
       responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+      setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
       acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
       historicalReconciliation: await sha256(path.join(__dirname, 'vault-historical-reconciliation.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
@@ -1738,6 +1757,23 @@ async function materializedPassword(id) {
           ownedFixtureIds: [...createdIds],
         }),
       });
+      await runVaultSetupRecoveryChecks({
+        context, worker, realPanel, targetName, parentLoginUrl: localUrl,
+        getSubmitCount: () => local.state.submits,
+        getVaultWriteCount: () => proof.vaultMutationRequests,
+        snapshotOwnedReceiptState: () => ({
+          vaultItemPosts: { ...proof.vaultItemPosts },
+          ownedCreateMutationKeys: [...createKeys].sort(),
+          ownedFixtureIds: [...createdIds].sort(),
+        }),
+        assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
+      });
+      assert(proof.setupRecovery?.closedRootManualRecovery === true
+        && proof.setupRecovery?.restrictedPageManualRecovery === true
+        && proof.setupRecovery?.inaccessiblePagesNoWritesOrSubmit === true
+        && proof.setupRecovery?.normalPagePanelReadinessRecovered === true
+        && proof.setupRecovery?.wholeHelperNoWritesOrSubmit === true
+        && proof.setupRecovery?.fixturePagesClosed === true, 'setup_recovery_helper_unverified');
       const changedPassword = `changed-${crypto.randomUUID()}`;
       await runPasswordChangeCaptureChecks({
         context, worker, realPanel, parentOrigin, targetName, username,
@@ -1891,11 +1927,13 @@ async function materializedPassword(id) {
         proof.cleanup.localWebsiteSignedOut = true;
       }
       if (token && organizationId && createKeys.size) {
+        proof.cleanup.stage = 'receipt_reconciliation';
         const proven = await reconcile();
         for (const id of proven) {
           assert(createdIds.has(id) && !baselineIds.has(id), 'cleanup_ownership_refused');
         }
         if (localCanonicalCleanupArmed) {
+          proof.cleanup.stage = 'canonical_adapter';
           const localCleanup = await localCanonicalCleanup(proven);
           proof.cleanup.localCanonical = {
             route: localCleanup.route,
@@ -1921,8 +1959,9 @@ async function materializedPassword(id) {
           proof.cleanup.finalItemIdsMatchBaseline = remaining.size === baselineIds.size && [...baselineIds].every((id) => remaining.has(id));
         }
       }
-    } catch {
+    } catch (error) {
       proof.cleanup.failure = 'cleanup_refused';
+      proof.cleanup.failureCode = /^[a-z0-9_]{1,100}$/.test(error?.message || '') ? error.message : 'cleanup_exception';
     }
     // A receipt-mode run that observed a baseline must prove its own cleanup
     // left that exact baseline intact, even when it failed before any create.
@@ -1966,13 +2005,23 @@ async function materializedPassword(id) {
     // Revocation is safe for the exact bearer recovered from this disposable
     // profile and requires no broader account/session lookup.
     if (token) {
-      try {
-        const logout = await fetch(`${DB}/auth/v1/logout?scope=local`, {
-          method: 'POST', headers: { apikey: process.env.SUPABASE_MATRIX_PUBLISHABLE_KEY, Authorization: `Bearer ${token}` },
-        });
-        proof.cleanup.localAuthLogoutStatus = logout.status;
-        proof.cleanup.remoteAuthRevocationStatus = logout.status;
-      } catch {
+      proof.cleanup.localAuthLogoutAttempts = [];
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        try {
+          const logout = await fetch(`${DB}/auth/v1/logout?scope=local`, {
+            method: 'POST', signal: AbortSignal.timeout(15000),
+            headers: { apikey: process.env.SUPABASE_MATRIX_PUBLISHABLE_KEY, Authorization: `Bearer ${token}` },
+          });
+          proof.cleanup.localAuthLogoutAttempts.push(logout.status);
+          proof.cleanup.localAuthLogoutStatus = logout.status;
+          proof.cleanup.remoteAuthRevocationStatus = logout.status;
+          if (logout.status === 204) break;
+        } catch {
+          proof.cleanup.localAuthLogoutAttempts.push('transport_error');
+        }
+        if (attempt < 2) await wait(1000);
+      }
+      if (proof.cleanup.remoteAuthRevocationStatus !== 204) {
         proof.cleanup.localAuthLogoutFailure = true;
         proof.cleanup.remoteAuthRevocation = 'failed';
       }
