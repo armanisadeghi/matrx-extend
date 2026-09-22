@@ -271,24 +271,39 @@ describe('local browser command wire validation', () => {
     const response = (deadline_ms: number) =>
       new Response(
         JSON.stringify({
-          status: 'claimed', command_id: id, deadline_ms, completion_grant: 'completion',
+          status: 'claimed',
+          command_id: id,
+          deadline_ms,
+          completion_grant: 'completion',
         }),
         noStore,
       );
-    vi.stubGlobal('fetch', vi.fn(async () => response(executionDeadlineMs - 1_000)));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => response(executionDeadlineMs - 1_000)),
+    );
     await expect(
       claimLocalCommand({
-        ...base, grant: 'claim', deadlineMs: executionDeadlineMs,
-        authorizationDeadlineMs, executionDeadlineMs,
+        ...base,
+        grant: 'claim',
+        deadlineMs: executionDeadlineMs,
+        authorizationDeadlineMs,
+        executionDeadlineMs,
         command_json: '{"operation":"navigate","url":"https://example.com/"}',
         document: { url: 'https://example.com/login', document_id: id },
       }),
     ).resolves.toMatchObject({ ok: true });
-    vi.stubGlobal('fetch', vi.fn(async () => response(executionDeadlineMs + 1)));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => response(executionDeadlineMs + 1)),
+    );
     await expect(
       claimLocalCommand({
-        ...base, grant: 'claim', deadlineMs: executionDeadlineMs,
-        authorizationDeadlineMs: Date.now() + 1_000, executionDeadlineMs,
+        ...base,
+        grant: 'claim',
+        deadlineMs: executionDeadlineMs,
+        authorizationDeadlineMs: Date.now() + 1_000,
+        executionDeadlineMs,
         command_json: '{"operation":"navigate","url":"https://example.com/"}',
         document: { url: 'https://example.com/login', document_id: id },
       }),

@@ -419,7 +419,10 @@ function claimResponseSchema(
           if (value.deadline_ms > executionDeadlineMs || value.deadline_ms <= Date.now())
             context.addIssue({ code: z.ZodIssueCode.custom, message: 'unbound claim deadline' });
           if (value.injection.expires_at_ms > value.deadline_ms)
-            context.addIssue({ code: z.ZodIssueCode.custom, message: 'authenticator expiry mismatch' });
+            context.addIssue({
+              code: z.ZodIssueCode.custom,
+              message: 'authenticator expiry mismatch',
+            });
         }),
       alreadyClaimed,
       refusal,
@@ -452,7 +455,10 @@ export async function claimLocalCommand(
     request.executionDeadlineMs > request.deadlineMs
   )
     return { ok: false, error: 'deadline_exceeded' };
-  const blocked = preflight<LocalClaimResponse>({ ...request, deadlineMs: request.authorizationDeadlineMs });
+  const blocked = preflight<LocalClaimResponse>({
+    ...request,
+    deadlineMs: request.authorizationDeadlineMs,
+  });
   if (blocked) return await blocked;
   const body = {
     grant: request.grant,
@@ -481,7 +487,11 @@ export async function claimLocalCommand(
     request.signal.aborted ||
     !request.isCurrent()
   )
-    return { ok: false, error: request.signal.aborted || !request.isCurrent() ? 'identity_changed' : 'deadline_exceeded' };
+    return {
+      ok: false,
+      error:
+        request.signal.aborted || !request.isCurrent() ? 'identity_changed' : 'deadline_exceeded',
+    };
   return privateRequest(
     { ...request, deadlineMs: request.executionDeadlineMs },
     '/browser-manager/local/commands/claim',

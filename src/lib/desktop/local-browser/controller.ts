@@ -807,10 +807,7 @@ export class LocalBrowserController {
       // Claim authorization is deliberately short.  Once the server accepts
       // it, execution may use the owned lease (never a fresh grant).
       const requestStartMs = Date.now();
-      const executionDeadlineMs = Math.min(
-        requestStartMs + 60_000,
-        entry.leaseExpiresAtMs ?? 0,
-      );
+      const executionDeadlineMs = Math.min(requestStartMs + 60_000, entry.leaseExpiresAtMs ?? 0);
       const claimed = await port.claim({
         grant: allowed.data.claim_grant,
         command_json: frame.command_json,
