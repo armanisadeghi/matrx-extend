@@ -1283,6 +1283,90 @@ describe('admitted post-submit document binding', () => {
       ).not.toContain('submit_explicit');
     },
   );
+  it.each(['authenticator'])(
+    'settles the first post-submit replacement after an original-document poll for %s',
+    async (kind) => {
+      const helpers = await import('@/lib/tools/handlers/credential-login');
+      if (kind === 'authenticator') renderAuthenticatorPage();
+      let submitted = false;
+      let postSubmitObservations = 0;
+      const binding = {
+        commandId: 'command-fixture',
+        documentId: 'document-fixture',
+        deadlineMs: Date.now() + 10_000,
+        assertCurrent: async () => {},
+        isCurrent: () => true,
+        onProgress: (event: 'filled' | 'submitted') => {
+          if (event === 'submitted') submitted = true;
+        },
+        observePostSubmitDocument: async () => {
+          if (!submitted) return { documentId: 'document-fixture', url: PAGE_URL };
+          postSubmitObservations += 1;
+          // Each read-only injected probe fences the same identity both
+          // before and after executeScript. The replacement appears only on
+          // the next settling poll, after that original-document probe.
+          const originalProbeObservations = kind === 'password' ? 4 : 3;
+          return postSubmitObservations <= originalProbeObservations
+            ? { documentId: 'document-fixture', url: PAGE_URL }
+            : { documentId: 'replacement-fixture', url: `${PAGE_ORIGIN}/home` };
+        },
+        report: vi.fn(async () => {}),
+      };
+      const result =
+        kind === 'password'
+          ? await helpers.runAdmittedCredentialAttempt(
+              {
+                action: 'attempt',
+                credential_item_id: ITEM_ID,
+                fields: [
+                  { selector: '#username', field_key: 'username' },
+                  { selector: '#password', field_key: 'password' },
+                ],
+                submit: { kind: 'click', selector: '#submit' },
+                expect: { success_selector: 'a[href="/logout"]', timeout_ms: 1000 },
+              },
+              TAB_ID,
+              PAGE_URL,
+              {
+                ...binding,
+                materialize: async () => ({
+                  ok: true as const,
+                  data: {
+                    item_id: ITEM_ID,
+                    origin: PAGE_ORIGIN,
+                    fields: { username: SENTINEL_USER, password: SENTINEL_PASSWORD },
+                  },
+                }),
+              },
+            )
+          : await helpers.runAdmittedAuthenticatorAttempt(
+              {
+                action: 'authenticator',
+                credential_item_id: ITEM_ID,
+                code_selector: '#otp',
+                submit: { kind: 'click', selector: '#verify' },
+                expect: { success_selector: 'a[href="/logout"]', timeout_ms: 1000 },
+              },
+              TAB_ID,
+              PAGE_URL,
+              {
+                ...binding,
+                materialize: async () => ({
+                  ok: true as const,
+                  data: {
+                    injection_id: 'fixture',
+                    origin: PAGE_ORIGIN,
+                    code: SENTINEL_TOTP,
+                    expires_at: new Date(Date.now() + 20_000).toISOString(),
+                  },
+                }),
+              },
+            );
+      expect(result.status).toBe('authenticated');
+      expect(postSubmitObservations).toBeGreaterThan(1);
+      expect(binding.report).toHaveBeenCalledTimes(1);
+    },
+  );
   it.each(['password', 'authenticator'])(
     'refuses replacement-document evidence for %s',
     async (kind) => {

@@ -675,35 +675,49 @@ async function classifyExplicitAttempt(
 > {
   const deadline = Date.now() + expect.timeout_ms;
   const observingPostSubmit = observePostSubmit && execution !== undefined;
-  const observedDocument = observingPostSubmit
-    ? await execution.observePostSubmitDocument?.()
-    : null;
-  if (observingPostSubmit && !observedDocument) throw new Error('admitted_document_lost');
+  let settlingDocument: { documentId: string; url: string } | null = null;
+  let observedDocument: { documentId: string; url: string } | null = null;
   let after: PageStateProbe | null = null;
   while (Date.now() < deadline) {
     await sleep(POLL_INTERVAL_MS);
-    after = await (observePostSubmit && execution
+    const candidateDocument = observingPostSubmit
+      ? ((await execution.observePostSubmitDocument?.()) ?? null)
+      : null;
+    if (observingPostSubmit && !candidateDocument) throw new Error('admitted_document_lost');
+    const identityTransition =
+      candidateDocument !== null &&
+      settlingDocument !== null &&
+      (candidateDocument.documentId !== settlingDocument.documentId ||
+        candidateDocument.url !== settlingDocument.url);
+    if (identityTransition) after = null;
+    const candidateAfter = await (observePostSubmit && execution
       ? injectPostSubmitObservation<PageStateProbe>(
           tabId,
           pageStateSource,
           [],
           execution,
-          observedDocument ?? undefined,
+          candidateDocument ?? undefined,
         )
       : injectTopFrame<PageStateProbe>(tabId, pageStateSource, [], execution)
     ).catch(() => null);
+    if (candidateDocument) settlingDocument = candidateDocument;
+    after = candidateAfter;
     if (execution && !after) throw new Error('admitted_document_lost');
     if (!after) continue;
     if (
+      identityTransition ||
       after.href !== before.href ||
       after.has_password_field !== before.has_password_field ||
       after.mfa ||
       after.captcha ||
       after.error_kind !== null
     ) {
+      observedDocument = candidateDocument;
       break;
     }
   }
+  if (observingPostSubmit && !observedDocument) observedDocument = settlingDocument;
+  if (observingPostSubmit && !observedDocument) throw new Error('admitted_document_lost');
   after ??= before;
   const signals: LoginSignal[] = [];
   if (after.captcha) signals.push(signal('captcha_marker_present', 'challenged', 1));
