@@ -4,6 +4,7 @@ import { StrictMode, act } from 'react';
 import { type Root, createRoot } from 'react-dom/client';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
+import { vaultRefreshControl } from '../browser/vault-setup-recovery-acceptance.cjs';
 
 const deps = vi.hoisted(() => ({
   tab: { id: 7, url: 'https://example.com/login' },
@@ -359,4 +360,23 @@ it('clears and restores Shared-scope metadata through the rendered Vault control
   await act(async () => refresh?.click());
   expect(node.textContent).toContain('Recovered shared login');
   expect(node.textContent).not.toContain('You may not have access to this item.');
+});
+
+it('selects Vault Refresh from the active Vault panel when another mounted view also refreshes', async () => {
+  await act(async () => {
+    root.render(
+      <>
+        <button id="vault-trigger" title="Vault" data-state="active" />
+        <div role="tabpanel" data-state="active" aria-labelledby="vault-trigger">
+          <VaultView />
+        </div>
+        <div role="tabpanel" data-state="inactive" aria-labelledby="screenshots-trigger">
+          <button title="Refresh">Other view refresh</button>
+        </div>
+      </>,
+    );
+  });
+  const selected = new Function('document', `return ${vaultRefreshControl}`)(document) as HTMLButtonElement | null;
+  expect(selected).toBeTruthy();
+  expect(selected?.closest('[role="tabpanel"]')?.getAttribute('aria-labelledby')).toBe('vault-trigger');
 });

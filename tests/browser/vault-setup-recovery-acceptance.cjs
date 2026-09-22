@@ -119,8 +119,18 @@ const ownListRows = 'document.querySelectorAll(\'ul.space-y-1.px-2.pb-3 > li.rou
 const mineScopeActive = `Array.from(document.querySelectorAll('button')).some((button) =>
   button.textContent?.trim().startsWith('Mine (') && button.getAttribute('data-state') === 'active')`;
 
-const refreshControl = `(() => {
-  const controls = Array.from(document.querySelectorAll('button')).filter((button) =>
+// Other mounted side-panel views also use a Refresh icon. Select only the
+// visible Vault tabpanel whose labelled active trigger is the Vault control.
+// The exact-one checks fail closed if the Radix tab relationship changes.
+const vaultRefreshControl = `(() => {
+  const triggers = Array.from(document.querySelectorAll('button')).filter((button) =>
+    button.getAttribute('title') === 'Vault' && button.getAttribute('data-state') === 'active'
+      && typeof button.id === 'string' && button.id.length > 0);
+  if (triggers.length !== 1) return null;
+  const panels = Array.from(document.querySelectorAll('[role="tabpanel"][data-state="active"]')).filter((panel) =>
+    panel.getAttribute('aria-labelledby') === triggers[0].id);
+  if (panels.length !== 1) return null;
+  const controls = Array.from(panels[0].querySelectorAll('button')).filter((button) =>
     button.getAttribute('title') === 'Refresh');
   return controls.length === 1 ? controls[0] : null;
 })()`;
@@ -216,7 +226,7 @@ exports.runVaultListTransportRecoveryChecks = async ({
     try {
       await fault.install();
       checkpoint(`vault_setup_transport_${mode}_refusal`);
-      await realPanel.click(refreshControl);
+      await realPanel.click(vaultRefreshControl);
       await realPanel.waitFor(`document.body.textContent?.includes(${JSON.stringify(remedy)}) === true`, true, 15000);
       await realPanel.waitFor(rowAbsent, true, 15000);
       const snapshot = fault.snapshot();
@@ -227,7 +237,7 @@ exports.runVaultListTransportRecoveryChecks = async ({
       evidence.interceptorsRemoved = evidence.interceptorsRemoved || fault.snapshot().disposed === true;
     }
     checkpoint(`vault_setup_transport_${mode}_recovery`);
-    await realPanel.click(refreshControl);
+    await realPanel.click(vaultRefreshControl);
     await realPanel.waitFor(rowPresent, true, 15000);
     await realPanel.waitFor(`document.body.textContent?.includes(${JSON.stringify(remedy)}) === false`, true, 15000);
     evidence[recoveredKey] = true;
@@ -347,3 +357,4 @@ exports.runVaultSetupRecoveryChecks = async ({
 exports.renderVaultSetupRecoveryFixtureHTML = renderVaultSetupRecoveryFixtureHTML;
 exports.vaultSetupRecoveryFixturePath = CLOSED_ROOT_PATH;
 exports.createVaultListTransportFailure = createVaultListTransportFailure;
+exports.vaultRefreshControl = vaultRefreshControl;
