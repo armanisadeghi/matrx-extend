@@ -189,6 +189,26 @@ export function supabaseForActor(actor: WriteActor): SupabaseClient {
  * and Functions read the canonical token from chrome.storage.local on every
  * request through the accessToken hook above.
  */
+/**
+ * Does this device hold a Matrx access token right now?
+ *
+ * 🚨 ASK THIS BEFORE A READ WHOSE ONLY POSSIBLE ROWS BELONG TO AN ORGANIZATION (DD-249, lane
+ * DEAD-KEYS, 2026-09-22). Without a token `getSupabase()` sends the publishable key alone, so
+ * PostgREST answers as `anon` — and on an organization-scoped table `anon` reaches no rows, so the
+ * request spends a round trip to be told nothing, forever. It is not free and it is not harmless:
+ * `extend.wbx_capture` carried an `anon` column grant for exactly this read, which made the table
+ * look world-readable to everyone auditing it while no policy reached `anon` at all, and the
+ * generator has now withdrawn that key (the same read would start answering 42501).
+ *
+ * This reads the one place the token actually lives — the same `chrome.storage.local` key the
+ * `accessToken` hook above reads — so it cannot disagree with what the next request will send.
+ */
+export async function hasSupabaseAccessToken(): Promise<boolean> {
+  const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
+  const token = stored[STORAGE_KEYS.ACCESS_TOKEN];
+  return typeof token === 'string' && token.length > 0;
+}
+
 export async function setSupabaseSession(
   accessToken: string,
   _refreshToken: string,

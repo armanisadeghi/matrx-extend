@@ -35,6 +35,7 @@ import {
   type WriteActor,
   getMachineryAuthoredSupabase,
   getSupabase,
+  hasSupabaseAccessToken,
   supabaseForActor,
 } from '@/lib/supabase/client';
 import { type DbCallSite, failDbCall } from '@/lib/supabase/db-failure';
@@ -556,6 +557,14 @@ export const CapturedPageSchema = z.object({
 export type CapturedPage = z.infer<typeof CapturedPageSchema>;
 
 export async function lookupCapturedByUrl(url: string): Promise<CapturedPage | null> {
+  // A capture belongs to an organization, so a device with no session can have no capture: the
+  // honest answer is "no record", not a round trip. Until 2026-09-22 this ran anyway and the
+  // database answered `200 []` on an `anon` column grant that no policy reached — a key with no
+  // door, which is why `extend.wbx_capture` read as world-readable in every access audit. The
+  // generator has withdrawn that key (lane DEAD-KEYS, DD-249), so the same call would now answer
+  // 42501 and log a warning on every page the side panel sees. Measured 2026-09-22: 14 such
+  // signed-out lookups in 24 h, every one of them returning nothing.
+  if (!(await hasSupabaseAccessToken())) return null;
   const c = getSupabase();
   const { data, error } = await c
     .schema(EXTEND_SCHEMA)
