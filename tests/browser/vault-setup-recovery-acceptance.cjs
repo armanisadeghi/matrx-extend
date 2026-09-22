@@ -172,6 +172,7 @@ exports.runVaultListTransportRecoveryChecks = async ({
     noVaultWritesOrReceiptChanges: false,
     interceptorsRemoved: false,
   };
+  const diagnostics = proof.setupTransportDiagnostics = {};
   const rowPresent = namedTarget
     ? listRowFor(targetName)
     : `${ownListRows}.length >= ${rowFloor}`;
@@ -184,6 +185,7 @@ exports.runVaultListTransportRecoveryChecks = async ({
     await realPanel.waitFor(rowPresent, true, 15000);
     evidence.initialPanelListReady = true;
     const fault = createNativePanelFetchFailure({ panel: realPanel, apiOrigin, mode });
+    const diagnostic = diagnostics[mode] = {};
     try {
       await fault.install();
       checkpoint(`vault_setup_transport_${mode}_refusal`);
@@ -191,19 +193,21 @@ exports.runVaultListTransportRecoveryChecks = async ({
       await realPanel.waitFor(`document.body.textContent?.includes(${JSON.stringify(remedy)}) === true`, true, 15000);
       await realPanel.waitFor(rowAbsent, true, 15000);
       const snapshot = fault.snapshot();
-      proof.setupTransportRecovery[`${mode}BeforeDispose`] = snapshot;
-      checkpoint(`vault_setup_transport_${mode}_before_dispose`);
       // useVault reloads on mount and the Refresh control starts another
       // server-authoritative read. Every observed own-list GET must be refused;
       // request multiplicity itself is not a product failure.
       assert(allMatchingVaultListReadsRefused(snapshot), `vault_setup_transport_${mode}_not_intercepted`);
       evidence[lostKey] = true;
     } finally {
+      // Record the latest value-free state even when a UI wait or assertion
+      // fails before the normal interception assertion can run.
+      diagnostic.beforeDispose = fault.snapshot();
+      checkpoint(`vault_setup_transport_${mode}_before_dispose`);
       try {
         await fault.dispose();
       } finally {
         const disposed = fault.snapshot();
-        proof.setupTransportRecovery[`${mode}AfterDispose`] = disposed;
+        diagnostic.afterDispose = disposed;
         checkpoint(`vault_setup_transport_${mode}_after_dispose`);
         assert(disposed.pendingTasks === 0 && disposed.observerErrors === 0, `vault_setup_transport_${mode}_disposal_unclean`);
         evidence.interceptorsRemoved = evidence.interceptorsRemoved || disposed.disposed === true;
