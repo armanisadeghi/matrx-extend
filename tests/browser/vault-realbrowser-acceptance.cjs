@@ -73,7 +73,12 @@ async function awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowL
           if (emailVisible && passwordVisible) return 'password_form';
         }
         const current = new URL(authPage.url());
-        if (current.origin === 'https://www.aimatrx.com' && current.pathname.startsWith('/oauth/consent')) return 'consent_page';
+        if (current.origin === 'https://www.aimatrx.com' && current.pathname.startsWith('/oauth/consent')) {
+          // A consent URL is not consent readiness. Retain only fixed state,
+          // never provider-rendered identity/error text.
+          if (await authPage.getByRole('alert').isVisible().catch(() => false)) return 'consent_error';
+          if (await authPage.getByRole('button', { name: 'Authorize', exact: true }).isVisible().catch(() => false)) return 'consent_ready';
+        }
       }
     } catch { /* a completed callback closes the managed auth page */ }
     const session = await storage(['matrx.user.profile', 'matrx.auth.accessToken']);
@@ -83,6 +88,19 @@ async function awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowL
     await wait(500);
   }
   throw new Error('oauth_consent_or_callback_timeout');
+}
+
+async function awaitOAuthCallbackStorage({ authPage, storage, adminEmail }) {
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    const session = await storage(['matrx.user.profile', 'matrx.auth.accessToken']);
+    if (session?.['matrx.user.profile']?.email === adminEmail
+      && typeof session?.['matrx.auth.accessToken'] === 'string'
+      && session['matrx.auth.accessToken'].length > 20) {
+      return { callbackStorageObserved: true, authPageClosed: authPage.isClosed() === true };
+    }
+    await wait(500);
+  }
+  throw new Error('oauth_callback_storage_timeout');
 }
 
 let cdpWorkerMessageId = 0;
@@ -1249,6 +1267,8 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
     loginDisposition: 'not_observed',
     consentDisposition: 'not_observed',
     callbackStorageObserved: false,
+    consentApproveDisposition: 'not_attempted',
+    callbackAfterApprove: 'not_observed',
   };
   const oauthUiStep = async (phase, failureCategory, operation) => {
     checkpoint(phase);
@@ -1332,10 +1352,25 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
       awaitOAuthRouteOrCallback({ authPage, storage, adminEmail }))
     : initialOAuthDisposition;
   proof.oauthUi.consentDisposition = consentDisposition;
-  if (consentDisposition === 'consent_page') {
-    await authPage.getByRole('button', { name: 'Authorize', exact: true }).click().catch((error) => {
-      if (!authPage.isClosed()) throw error;
+  if (consentDisposition === 'consent_error') {
+    await oauthUiStep('oauth_consent_error', 'oauth_consent_identity_error', async () => {
+      throw new Error('oauth_consent_identity_error');
     });
+  }
+  if (consentDisposition === 'consent_ready') {
+    await oauthUiStep('oauth_consent_approve_ready', 'oauth_consent_authorize_unavailable', () =>
+      authPage.getByRole('button', { name: 'Authorize', exact: true }).waitFor({ state: 'visible', timeout: 30000 }));
+    checkpoint('oauth_consent_approve');
+    await oauthUiStep('oauth_consent_approve', 'oauth_consent_authorize_click_failed', () =>
+      authPage.getByRole('button', { name: 'Authorize', exact: true }).click());
+    proof.oauthUi.consentApproveDisposition = 'authorize_clicked';
+    persist();
+    const callback = await oauthUiStep('oauth_callback_storage', 'oauth_callback_storage_timeout', () =>
+      awaitOAuthCallbackStorage({ authPage, storage, adminEmail }));
+    proof.oauthUi.callbackAfterApprove = callback.authPageClosed
+      ? 'storage_after_window_closed' : 'storage_after_managed_callback';
+    proof.oauthUi.callbackStorageObserved = callback.callbackStorageObserved;
+    persist();
   }
   let session;
   for (let attempt = 0; attempt < 60; attempt += 1) {
