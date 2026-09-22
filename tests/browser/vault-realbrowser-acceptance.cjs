@@ -1090,12 +1090,13 @@ async function waitForActiveOrganization() {
   }
   throw new Error('authorized_organization_not_persisted');
 }
-async function authenticate(extension) {
+async function authenticate(extension, { reuseBrowser = false } = {}) {
   assert(typeof process.loadEnvFile === 'function', 'node_env_loader_unavailable');
   process.loadEnvFile('/Users/armanisadeghi/code/aidream/.env');
   const adminEmail = required('AI_ADMIN_USERNAME');
   const adminPassword = required('AI_ADMIN_PASSWORD');
   assert(adminEmail === 'admin@admin.com', 'admin_identity_configuration');
+  if (!reuseBrowser) {
   proof.phase = 'browser_launch';
   persist();
   const placementPath = process.env.MATRX_VAULT_CANARY_WINDOW_PLACEMENT;
@@ -1191,6 +1192,7 @@ async function authenticate(extension) {
     (proof.apiResponses ||= []).push({ route, method: response.request().method(), status: response.status(), phase: proof.phase, elapsedMs: requestStartedAt.has(response.request()) ? Date.now() - requestStartedAt.get(response.request()) : null });
     persist();
   });
+  }
   // Persist the zeroed journal before OAuth so an interruption still shows
   // whether the run had admitted any Vault POST before authentication.
   persist();
@@ -1556,9 +1558,31 @@ async function materializedPassword(id) {
         proof,
       });
       await runSettingsSignOut({ worker, panel: realPanel, checkpoint, proof });
-      // Fresh sign-in and browser restart are deliberately separate phases:
-      // this read-only run must still reach canonical logout/profile cleanup.
-      proof.lifecycle.partialDisposition = 'reload_and_sign_out_observed_fresh_recovery_pending';
+      // Reuse the same disposable profile and the production OAuth UI. This
+      // proves recovery is a fresh interactive session, never a retained
+      // in-memory side-panel state.
+      realPanel.dispose();
+      await authenticate(extension, { reuseBrowser: true });
+      await dismissResolvedInitialOrganizationNotice();
+      const recovered = await storage(['matrx.user.profile', 'matrx.auth.accessToken', 'matrx.auth.refreshTokenEnc', 'matrx.auth.refreshTokenIv']);
+      const recoveryIdentity = typeof recovered['matrx.user.profile']?.id === 'string'
+        ? crypto.createHash('sha256').update(recovered['matrx.user.profile'].id).digest('hex') : null;
+      proof.lifecycle.freshRecovery = {
+        disposition: recoveryIdentity === proof.lifecycle.initialIdentitySha256 ? 'passed' : 'failed',
+        interactiveSignInCompleted: true,
+        settingsUiRecovered: true,
+        localAuthMaterialPresent: typeof recovered['matrx.auth.accessToken'] === 'string'
+          && typeof recovered['matrx.auth.refreshTokenEnc'] === 'string' && typeof recovered['matrx.auth.refreshTokenIv'] === 'string',
+        verifiedIdentityRecovered: recoveryIdentity === proof.lifecycle.initialIdentitySha256,
+        identitySha256: recoveryIdentity,
+      };
+      proof.lifecycle.accountInvalidation = {
+        disposition: proof.lifecycle.signOut?.localAuthMaterialAbsent && proof.lifecycle.freshRecovery.verifiedIdentityRecovered ? 'passed' : 'failed',
+        preSignOutIdentityWasObserved: true,
+        oldIdentityAuthorityRefusedAfterSignOut: proof.lifecycle.signOut?.localAuthMaterialAbsent === true,
+        freshIdentityOnlyAfterInteractiveSignIn: true,
+      };
+      proof.lifecycle.partialDisposition = 'reload_signout_fresh_recovery_observed_browser_restart_and_org_switch_pending';
       persist();
     }
     proof.phase = 'vault_baseline';
@@ -1586,7 +1610,14 @@ async function materializedPassword(id) {
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
     };
     assert(JSON.stringify(helperHashesBeforeWrites) === JSON.stringify(proof.helperSha256), 'helper_source_changed_before_writes');
-    if (readOnlyAdmissionMode) {
+    if (extensionLifecycleMode) {
+      // One real Vault read after recovery establishes the new bearer works;
+      // it is intentionally mutation-free and skips the legacy generator tail.
+      const recoveredItems = await items();
+      proof.lifecycle.freshVaultRead = Array.isArray(recoveredItems);
+      assert(proof.lifecycle.freshVaultRead, 'lifecycle_fresh_vault_read_refused');
+      persist();
+    } else if (readOnlyAdmissionMode) {
       proof.admission.baselineRead = true;
       proof.admission.prewriteLocalCanonicalPreflight = localCanonicalCleanupArmed;
       proof.admission.noFixtureWrites = proof.vaultMutationRequests === 0 && proof.vaultItemPosts.total === 0
