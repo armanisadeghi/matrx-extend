@@ -107,7 +107,14 @@ export type VerificationFields = z.infer<typeof verificationFields>;
 export function parseVerificationFields(
   value: unknown,
 ): (VerificationFields & { spec: FrozenVerificationSpec }) | null {
-  const fields = verificationFields.safeParse(value);
+  const pair =
+    value !== null && typeof value === 'object'
+      ? {
+          verification_spec_json: (value as Record<string, unknown>).verification_spec_json,
+          verification_digest: (value as Record<string, unknown>).verification_digest,
+        }
+      : value;
+  const fields = verificationFields.safeParse(pair);
   if (!fields.success) return null;
   try {
     const spec = frozenVerificationSpec.parse(JSON.parse(fields.data.verification_spec_json));

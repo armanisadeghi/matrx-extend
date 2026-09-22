@@ -1062,6 +1062,55 @@ describe('admitted credential execution', () => {
       'admitted result',
     );
   });
+  it('collects declared and recipe facts from the settled admitted document', async () => {
+    const { run, ports } = await setup();
+    const recordObservation = vi.fn();
+    ports.recordObservation = recordObservation;
+    ports.verificationSpec = {
+      version: 1,
+      expect: { success_selector: 'a[href="/logout"]', timeout_ms: 1000 },
+      url_vocabulary: { version: 1, challenge: ['challenge'], sign_in: ['login'] },
+      recipe_id: '00000000-0000-4000-8000-000000000099',
+      recipe_version: 1,
+      descriptors: [
+        {
+          kind: 'selector_present',
+          value: 'a[href="/logout"]',
+          label: null,
+          direction: 'authenticated',
+          weight: 1,
+        },
+        {
+          kind: 'selector_absent',
+          value: '#missing',
+          label: null,
+          direction: 'authenticated',
+          weight: 1,
+        },
+        {
+          kind: 'url_prefix',
+          value: PAGE_ORIGIN,
+          label: null,
+          direction: 'authenticated',
+          weight: 1,
+        },
+        {
+          kind: 'cookie_present',
+          value: 'session',
+          label: null,
+          direction: 'authenticated',
+          weight: 1,
+        },
+      ],
+    };
+    await run();
+    expect(recordObservation).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success_selector: true,
+        recipe_matches: [true, true, true, null],
+      }),
+    );
+  });
   it('revocation during private materialization prevents all typing and clears values', async () => {
     const { run, ports, data } = await setup();
     ports.materialize.mockImplementation(async () => {

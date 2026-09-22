@@ -408,10 +408,14 @@ interface PageStateProbe {
   error_kind: 'credentials' | 'generic' | null;
   mfa: boolean;
   captcha: boolean;
+  selector_matches: Record<string, boolean | null>;
+  text_matches: Record<string, boolean | null>;
 }
 
 /** Post-submit page state. Returns categories and booleans — never page text. */
-function pageStateSource(): PageStateProbe {
+function pageStateSource(
+  probes: { selectors: string[]; texts: string[] } = { selectors: [], texts: [] },
+): PageStateProbe {
   function visible(el: Element): boolean {
     if (!(el instanceof HTMLElement)) return false;
     const rect = el.getBoundingClientRect();
@@ -468,6 +472,17 @@ function pageStateSource(): PageStateProbe {
     : GENERIC_ERROR.test(alertText)
       ? 'generic'
       : null;
+  const selectorMatches: Record<string, boolean | null> = {};
+  for (const selector of probes.selectors) {
+    try {
+      selectorMatches[selector] = document.querySelector(selector) !== null;
+    } catch {
+      selectorMatches[selector] = null;
+    }
+  }
+  const textMatches: Record<string, boolean | null> = {};
+  for (const text of probes.texts)
+    textMatches[text] = document.body ? bodyText.includes(text) : null;
 
   return {
     href: location.href,
@@ -476,6 +491,8 @@ function pageStateSource(): PageStateProbe {
     error_kind: errorKind,
     mfa,
     captcha,
+    selector_matches: selectorMatches,
+    text_matches: textMatches,
   };
 }
 
@@ -669,6 +686,35 @@ async function waitForSelector(
   return false;
 }
 
+function verificationProbeRequest(execution?: AdmittedExecutionBinding): {
+  selectors: string[];
+  texts: string[];
+} {
+  const spec = execution?.verificationSpec;
+  if (!spec) return { selectors: [], texts: [] };
+  const selectors = [
+    spec.expect.success_selector,
+    spec.expect.failure_selector,
+    spec.expect.challenge_selector,
+    ...spec.descriptors
+      .filter(
+        (descriptor) =>
+          descriptor.kind === 'selector_present' || descriptor.kind === 'selector_absent',
+      )
+      .map((descriptor) => descriptor.value),
+  ].filter((value): value is string => value !== null && value !== undefined);
+  return {
+    selectors: [...new Set(selectors)],
+    texts: [
+      ...new Set(
+        spec.descriptors
+          .filter((descriptor) => descriptor.kind === 'text_present')
+          .map((descriptor) => descriptor.value),
+      ),
+    ],
+  };
+}
+
 async function classifyExplicitAttempt(
   tabId: number,
   pageUrl: URL,
@@ -684,6 +730,7 @@ async function classifyExplicitAttempt(
     afterProbe: PageStateProbe | null;
   }
 > {
+  const verificationProbes = verificationProbeRequest(execution);
   const deadline = Date.now() + expect.timeout_ms;
   const observingPostSubmit = observePostSubmit && execution !== undefined;
   let settlingDocument: { documentId: string; url: string } | null = null;
@@ -705,11 +752,11 @@ async function classifyExplicitAttempt(
       ? injectPostSubmitObservation<PageStateProbe>(
           tabId,
           pageStateSource,
-          [],
+          [verificationProbes],
           execution,
           candidateDocument ?? undefined,
         )
-      : injectTopFrame<PageStateProbe>(tabId, pageStateSource, [], execution)
+      : injectTopFrame<PageStateProbe>(tabId, pageStateSource, [verificationProbes], execution)
     ).catch(() => null);
     if (candidateDocument) settlingDocument = candidateDocument;
     after = candidateAfter;
@@ -860,19 +907,43 @@ function recordAdmittedObservation(
   const verificationSpec = execution.verificationSpec;
   const classifyUrl = (href: string | null): 'challenge' | 'sign_in' | 'other' | 'unknown' => {
     if (!href) return 'unknown';
-    try {
-      const path = new URL(href).pathname.toLowerCase();
-      if (verificationSpec.url_vocabulary.challenge.some((part) => path.includes(part)))
-        return 'challenge';
-      if (verificationSpec.url_vocabulary.sign_in.some((part) => path.includes(part)))
-        return 'sign_in';
-      return 'other';
-    } catch {
-      return 'unknown';
-    }
+    const segments = new Set(
+      href
+        .toLowerCase()
+        .split(/[^\p{L}\p{N}]+/u)
+        .filter(Boolean),
+    );
+    if (verificationSpec.url_vocabulary.challenge.some((part) => segments.has(part)))
+      return 'challenge';
+    if (verificationSpec.url_vocabulary.sign_in.some((part) => segments.has(part)))
+      return 'sign_in';
+    return 'other';
   };
   const expected = verificationSpec.expect;
   const afterHref = after?.href ?? null;
+  const selectorMatch = (selector: string | null | undefined): boolean | null =>
+    selector === null || selector === undefined
+      ? null
+      : (after?.selector_matches[selector] ?? null);
+  const descriptorMatch = (
+    descriptor: FrozenVerificationSpec['descriptors'][number],
+  ): boolean | null => {
+    if (!after) return null;
+    switch (descriptor.kind) {
+      case 'selector_present':
+        return after.selector_matches[descriptor.value] ?? null;
+      case 'selector_absent': {
+        const present = after.selector_matches[descriptor.value];
+        return present === null || present === undefined ? null : !present;
+      }
+      case 'url_prefix':
+        return afterHref === null ? null : afterHref.startsWith(descriptor.value);
+      case 'text_present':
+        return after.text_matches[descriptor.value] ?? null;
+      case 'cookie_present':
+        return null;
+    }
+  };
   execution.recordObservation({
     password_field_present_before: before.has_password_field,
     password_field_present_after: after?.has_password_field ?? null,
@@ -890,10 +961,10 @@ function recordAdmittedObservation(
         ? null
         : afterHref.startsWith(expected.success_url_prefix)
       : null,
-    success_selector: null,
-    failure_selector: null,
-    challenge_selector: null,
-    recipe_matches: verificationSpec.descriptors.map(() => null),
+    success_selector: selectorMatch(expected.success_selector),
+    failure_selector: selectorMatch(expected.failure_selector),
+    challenge_selector: selectorMatch(expected.challenge_selector),
+    recipe_matches: verificationSpec.descriptors.map(descriptorMatch),
   });
 }
 
@@ -1204,7 +1275,7 @@ async function runCompleteAttempt(
     const before = await injectTopFrame<PageStateProbe>(
       tabId,
       pageStateSource,
-      [],
+      [verificationProbeRequest(execution)],
       execution,
     ).catch(() => null);
     if (!before) return safeResult('unknown', { reason: 'before_evidence_failed' });
@@ -1444,9 +1515,12 @@ async function runAuthenticatorAttempt(
     return safeResult('unsafe_destination', { reason: 'unsafe_get_form' });
   }
 
-  const before = await injectTopFrame<PageStateProbe>(tabId, pageStateSource, [], execution).catch(
-    () => null,
-  );
+  const before = await injectTopFrame<PageStateProbe>(
+    tabId,
+    pageStateSource,
+    [verificationProbeRequest(execution)],
+    execution,
+  ).catch(() => null);
   if (!before) return safeResult('unknown', { reason: 'before_evidence_failed' });
   const startedAt = Date.now();
 
