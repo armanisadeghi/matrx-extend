@@ -39,6 +39,13 @@ export type PrivateCommandRequest = {
   signal: AbortSignal;
 };
 
+type ClaimCommandRequest = PrivateCommandRequest & {
+  /** The original short-lived claim grant window. */
+  authorizationDeadlineMs: number;
+  /** The owned execution window, independently capped by the current lease. */
+  executionDeadlineMs: number;
+};
+
 function preflight<T>(request: PrivateCommandRequest): Promise<PrivateApiResult<T>> | null {
   if (!Number.isSafeInteger(request.deadlineMs) || request.deadlineMs <= Date.now())
     return Promise.resolve({ ok: false, error: 'deadline_exceeded' });
@@ -369,14 +376,14 @@ export function parseLocalCommand(source: string): CommandShape | null {
 function claimResponseSchema(
   command: CommandShape,
   origin: string,
-  deadlineMs: number,
+  executionDeadlineMs: number,
 ): z.ZodType<LocalClaimResponse> {
   if (command.operation === 'vault_login') {
     const expectedKeys = new Set<string>(command.fields.map((field) => field.field_key));
     const injection = passwordInjection.superRefine((value, context) => {
       if (
         value.origin !== origin ||
-        value.expires_at_ms > deadlineMs ||
+        value.expires_at_ms > executionDeadlineMs ||
         value.expires_at_ms <= Date.now()
       )
         context.addIssue({ code: z.ZodIssueCode.custom, message: 'unbound injection' });
@@ -386,8 +393,10 @@ function claimResponseSchema(
     });
     return z.union([
       claimedBase.extend({ injection }).superRefine((value, context) => {
-        if (value.deadline_ms > deadlineMs || value.deadline_ms <= Date.now())
+        if (value.deadline_ms > executionDeadlineMs || value.deadline_ms <= Date.now())
           context.addIssue({ code: z.ZodIssueCode.custom, message: 'unbound claim deadline' });
+        if (value.injection.expires_at_ms !== value.deadline_ms)
+          context.addIssue({ code: z.ZodIssueCode.custom, message: 'password expiry mismatch' });
       }),
       alreadyClaimed,
       refusal,
@@ -400,22 +409,24 @@ function claimResponseSchema(
           injection: authenticatorInjection.superRefine((value, context) => {
             if (
               value.origin !== origin ||
-              value.expires_at_ms > deadlineMs ||
+              value.expires_at_ms > executionDeadlineMs ||
               value.expires_at_ms <= Date.now()
             )
               context.addIssue({ code: z.ZodIssueCode.custom, message: 'unbound injection' });
           }),
         })
         .superRefine((value, context) => {
-          if (value.deadline_ms > deadlineMs || value.deadline_ms <= Date.now())
+          if (value.deadline_ms > executionDeadlineMs || value.deadline_ms <= Date.now())
             context.addIssue({ code: z.ZodIssueCode.custom, message: 'unbound claim deadline' });
+          if (value.injection.expires_at_ms > value.deadline_ms)
+            context.addIssue({ code: z.ZodIssueCode.custom, message: 'authenticator expiry mismatch' });
         }),
       alreadyClaimed,
       refusal,
     ]);
   return z.union([
     claimedBase.superRefine((value, context) => {
-      if (value.deadline_ms > deadlineMs || value.deadline_ms <= Date.now())
+      if (value.deadline_ms > executionDeadlineMs || value.deadline_ms <= Date.now())
         context.addIssue({ code: z.ZodIssueCode.custom, message: 'unbound claim deadline' });
     }),
     alreadyClaimed,
@@ -431,9 +442,17 @@ export type LocalClaimResponse =
   | z.infer<typeof refusal>;
 
 export async function claimLocalCommand(
-  request: PrivateCommandRequest & z.infer<typeof claimRequest> & { commandId: string },
+  request: ClaimCommandRequest & z.infer<typeof claimRequest> & { commandId: string },
 ): Promise<PrivateApiResult<LocalClaimResponse>> {
-  const blocked = preflight<LocalClaimResponse>(request);
+  if (
+    !Number.isSafeInteger(request.authorizationDeadlineMs) ||
+    request.authorizationDeadlineMs <= Date.now() ||
+    !Number.isSafeInteger(request.executionDeadlineMs) ||
+    request.executionDeadlineMs <= Date.now() ||
+    request.executionDeadlineMs > request.deadlineMs
+  )
+    return { ok: false, error: 'deadline_exceeded' };
+  const blocked = preflight<LocalClaimResponse>({ ...request, deadlineMs: request.authorizationDeadlineMs });
   if (blocked) return await blocked;
   const body = {
     grant: request.grant,
@@ -454,14 +473,23 @@ export async function claimLocalCommand(
     (!verification || !(await verificationDigestMatches(verification)))
   )
     return Promise.resolve({ ok: false, error: 'invalid_response' });
+  // Digest verification is asynchronous.  It cannot keep a consumed claim
+  // authority alive after the original authorization window.
+  if (
+    request.authorizationDeadlineMs <= Date.now() ||
+    request.executionDeadlineMs <= Date.now() ||
+    request.signal.aborted ||
+    !request.isCurrent()
+  )
+    return { ok: false, error: request.signal.aborted || !request.isCurrent() ? 'identity_changed' : 'deadline_exceeded' };
   return privateRequest(
-    request,
+    { ...request, deadlineMs: request.executionDeadlineMs },
     '/browser-manager/local/commands/claim',
     body,
     claimResponseSchema(
       command,
       new URL(request.document.url).origin,
-      request.deadlineMs,
+      request.executionDeadlineMs,
     ).superRefine((value, context) => {
       if (value.status !== 'refused' && value.command_id !== request.commandId)
         context.addIssue({ code: z.ZodIssueCode.custom, message: 'unbound command' });

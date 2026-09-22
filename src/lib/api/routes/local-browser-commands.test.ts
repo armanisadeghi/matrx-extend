@@ -33,10 +33,13 @@ import {
 const id = '00000000-0000-4000-8000-000000000001';
 const secondId = '00000000-0000-4000-8000-000000000002';
 const actor = { userId: id, organizationId: secondId, sessionId: 'session-a' };
+const baseDeadlineMs = Date.now() + 10_000;
 const base = {
   commandId: id,
   expectedActor: actor,
-  deadlineMs: Date.now() + 10_000,
+  deadlineMs: baseDeadlineMs,
+  authorizationDeadlineMs: baseDeadlineMs,
+  executionDeadlineMs: baseDeadlineMs,
   isCurrent: () => true,
   signal: new AbortController().signal,
 };
@@ -260,6 +263,36 @@ describe('local browser command wire validation', () => {
       }),
     ).resolves.toEqual({ ok: false, error: 'identity_changed' });
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('accepts an execution deadline after authorization but rejects any response past execution', async () => {
+    const authorizationDeadlineMs = Date.now() + 1_000;
+    const executionDeadlineMs = Date.now() + 8_000;
+    const response = (deadline_ms: number) =>
+      new Response(
+        JSON.stringify({
+          status: 'claimed', command_id: id, deadline_ms, completion_grant: 'completion',
+        }),
+        noStore,
+      );
+    vi.stubGlobal('fetch', vi.fn(async () => response(executionDeadlineMs - 1_000)));
+    await expect(
+      claimLocalCommand({
+        ...base, grant: 'claim', deadlineMs: executionDeadlineMs,
+        authorizationDeadlineMs, executionDeadlineMs,
+        command_json: '{"operation":"navigate","url":"https://example.com/"}',
+        document: { url: 'https://example.com/login', document_id: id },
+      }),
+    ).resolves.toMatchObject({ ok: true });
+    vi.stubGlobal('fetch', vi.fn(async () => response(executionDeadlineMs + 1)));
+    await expect(
+      claimLocalCommand({
+        ...base, grant: 'claim', deadlineMs: executionDeadlineMs,
+        authorizationDeadlineMs: Date.now() + 1_000, executionDeadlineMs,
+        command_json: '{"operation":"navigate","url":"https://example.com/"}',
+        document: { url: 'https://example.com/login', document_id: id },
+      }),
+    ).resolves.toEqual({ ok: false, error: 'invalid_response' });
   });
 });
 

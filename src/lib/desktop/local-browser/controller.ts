@@ -808,12 +808,21 @@ export class LocalBrowserController {
         return { reason: allowed.ok ? 'authority_refused' : mapPrivateFailure(allowed.error) };
       const doc = await port.currentDocument(entry.tabId);
       if (!doc || !isCurrent()) return { reason: 'binding_changed' };
+      // Claim authorization is deliberately short.  Once the server accepts
+      // it, execution may use the owned lease (never a fresh grant).
+      const requestStartMs = Date.now();
+      const executionDeadlineMs = Math.min(
+        requestStartMs + 60_000,
+        entry.leaseExpiresAtMs ?? 0,
+      );
       const claimed = await port.claim({
         grant: allowed.data.claim_grant,
         command_json: frame.command_json,
         document: { url: doc.url, document_id: doc.documentId },
         expectedActor: actor,
-        deadlineMs: allowed.data.deadline_ms,
+        deadlineMs: executionDeadlineMs,
+        authorizationDeadlineMs: allowed.data.deadline_ms,
+        executionDeadlineMs,
         commandId: claims.command_id,
         isCurrent,
         signal: abort.signal,
