@@ -122,6 +122,7 @@ const panelCloseLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_PANEL_C
 const workerRestartLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART === 'RUN_WORKER_RESTART_LIFECYCLE';
 const windowSwitchLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH === 'RUN_WINDOW_SWITCH_LIFECYCLE';
 const extensionLifecycleMode = process.env.MATRX_VAULT_CANARY_EXTENSION_LIFECYCLE === 'RUN_EXTENSION_LIFECYCLE';
+const setupIdentityOnlyMode = process.env.MATRX_VAULT_CANARY_SETUP_IDENTITY_ONLY === 'RUN_SETUP_IDENTITY_ONLY';
 assert(typeof displayMode === 'string' && displayMode.length > 0, 'canary_display_mode_required');
 assert(headlessNoClipboardMode || headedMode, 'canary_display_mode_invalid');
 assert(!headedMode || process.env.MATRX_VAULT_CANARY_FOREGROUND === 'ALLOW_FOREGROUND_TEST', 'headed_canary_requires_foreground_allow');
@@ -144,6 +145,8 @@ assert(!process.env.MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH || windowSwitchLi
 assert(!workerRestartLifecycleMode || headlessNoClipboardMode, 'worker_restart_lifecycle_requires_headless_no_clipboard');
 assert(!windowSwitchLifecycleMode || headlessNoClipboardMode, 'window_switch_lifecycle_requires_headless_no_clipboard');
 assert(!extensionLifecycleMode || (headlessNoClipboardMode && readOnlyAdmissionMode), 'extension_lifecycle_requires_headless_readonly_admission');
+assert(!setupIdentityOnlyMode || (headlessNoClipboardMode && readOnlyAdmissionMode), 'setup_identity_only_requires_headless_readonly_admission');
+assert(!(extensionLifecycleMode && setupIdentityOnlyMode), 'lifecycle_modes_are_exclusive');
 if (lifecycleDryRun) {
   const digest = (name) => crypto.createHash('sha256').update(syncFs.readFileSync(path.join(__dirname, name))).digest('hex');
   process.stdout.write(`${JSON.stringify({
@@ -1572,6 +1575,12 @@ async function materializedPassword(id) {
       });
       proof.lifecycle.partialDisposition = 'reload_observed_setup_recovery_and_fresh_signin_pending';
       persist();
+    } else if (setupIdentityOnlyMode) {
+      proof.lifecycle = {
+        extensionReload: { disposition: 'not_run', reason: 'setup_identity_only_mode' },
+        partialDisposition: 'setup_transport_signout_fresh_recovery_pending_reload',
+      };
+      persist();
     }
     proof.phase = 'vault_baseline';
     persist();
@@ -1598,7 +1607,7 @@ async function materializedPassword(id) {
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
     };
     assert(JSON.stringify(helperHashesBeforeWrites) === JSON.stringify(proof.helperSha256), 'helper_source_changed_before_writes');
-    if (extensionLifecycleMode) {
+    if (extensionLifecycleMode || setupIdentityOnlyMode) {
       await runVaultListTransportRecoveryChecks({
         context,
         realPanel,
@@ -1663,7 +1672,9 @@ async function materializedPassword(id) {
         oldIdentityAuthorityRefusedAfterSignOut: proof.lifecycle.signOut?.vaultRequestRefusedWithoutBearer === true,
         freshIdentityOnlyAfterInteractiveSignIn: true,
       };
-      proof.lifecycle.partialDisposition = 'reload_setup_recovery_signout_fresh_recovery_observed_browser_restart_and_org_switch_pending';
+      proof.lifecycle.partialDisposition = setupIdentityOnlyMode
+        ? 'setup_transport_signout_fresh_recovery_observed_reload_browser_restart_and_org_switch_pending'
+        : 'reload_setup_recovery_signout_fresh_recovery_observed_browser_restart_and_org_switch_pending';
       // One real Vault read after recovery establishes the new bearer works;
       // it is intentionally mutation-free and skips the legacy generator tail.
       const recoveredItems = await items();
