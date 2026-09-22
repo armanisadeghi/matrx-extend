@@ -7,6 +7,7 @@ const {
   runSettingsSignOut,
   visibleSettingsControl,
   visibleVaultControl,
+  signedOutSidePanelPredicate,
 } = require('./vault-extension-lifecycle-acceptance.cjs');
 
 (async () => {
@@ -28,6 +29,9 @@ const {
   assert.doesNotMatch(visibleSettingsControl, /textContent/);
   assert.match(visibleVaultControl, /button\[title="Vault"\]/);
   assert.doesNotMatch(visibleVaultControl, /textContent/);
+  assert.match(signedOutSidePanelPredicate, /=== 1/);
+  assert.match(signedOutSidePanelPredicate, /=== 0/);
+  assert.doesNotMatch(signedOutSidePanelPredicate, /includes\('Settings'\)/);
 
   const reloadProof = {};
   const replacement = { ...worker };
@@ -41,7 +45,12 @@ const {
     worker: { evaluate: async () => true },
     panel: {
       click: async () => { order.push('click'); },
-      waitFor: async (expression) => { order.push(expression.includes("'Sign in'") ? 'signedout-ui-wait' : 'settings-wait'); },
+      waitFor: async (expression) => {
+        if (expression.includes("'Sign in'")) {
+          assert.doesNotMatch(expression, /includes\('Settings'\)/, 'guest panel predicate must not require a Settings heading');
+          order.push('signedout-ui-wait');
+        } else order.push('settings-wait');
+      },
       evaluate: async () => true,
     },
     checkpoint: () => {},

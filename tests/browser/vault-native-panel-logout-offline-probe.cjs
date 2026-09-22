@@ -57,7 +57,7 @@ async function attachPanelSession(cdp, targetId) {
   await fs.mkdir(profile, { mode: 0o700 });
   let server; let context; let cdp; let panel; let stop;
   let succeeded = false;
-  const proof = { kind: 'native_panel_logout_offline_probe', authenticationAttempted: false, vaultMutationRequests: 0, localPost204: false, rawRequestObserved: false, rawResponseObserved: false, cleanup: {} };
+  const proof = { kind: 'native_panel_logout_offline_probe', authenticationAttempted: false, vaultMutationRequests: 0, localPost204: false, rawRequestObserved: false, rawResponseObserved: false, signedOutSidePanelControls: false, signedOutVaultNavigationHidden: false, cleanup: {} };
   try {
     let extensionId = null;
     server = http.createServer((request, response) => {
@@ -88,6 +88,15 @@ async function attachPanelSession(cdp, targetId) {
     if (!target) throw new Error('native_panel_offline_probe_target_missing');
     panel = await attachPanelSession(cdp, target.targetId);
     await panel.send('Network.enable');
+    const signedOutControlsExpression = `(() => { const visibleButtons = Array.from(document.querySelectorAll('button')).filter((button) => { const rect = button.getBoundingClientRect(); const style = getComputedStyle(button); return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden' && button.getAttribute('aria-hidden') !== 'true'; }); const visibleVault = visibleButtons.filter((button) => button.title === 'Vault').length; return { controls: visibleButtons.filter((button) => button.textContent.trim() === 'Sign in').length === 1 && visibleButtons.filter((button) => button.textContent.trim() === 'Sign out').length === 0, vaultHidden: visibleVault === 0 }; })()`;
+    for (let attempt = 0; attempt < 60; attempt += 1) {
+      const signedOutControls = await panel.send('Runtime.evaluate', { expression: signedOutControlsExpression, returnByValue: true });
+      proof.signedOutSidePanelControls = signedOutControls.result?.value?.controls === true;
+      proof.signedOutVaultNavigationHidden = signedOutControls.result?.value?.vaultHidden === true;
+      if (proof.signedOutSidePanelControls && proof.signedOutVaultNavigationHidden) break;
+      await wait(100);
+    }
+    if (!proof.signedOutSidePanelControls || !proof.signedOutVaultNavigationHidden) throw new Error('native_panel_offline_probe_signed_out_controls_failed');
     const endpoint = `http://127.0.0.1:${port}/probe`;
     stop = observePanelResponse({
       panel,

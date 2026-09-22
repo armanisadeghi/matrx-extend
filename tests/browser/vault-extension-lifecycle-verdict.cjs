@@ -41,7 +41,7 @@ function assertVaultExtensionLifecycleVerdict({ lifecycle, requireOrganizationSw
   requireDisposition(signOut, 'vault_lifecycle_sign_out');
   requireTrue(signOut, [
     'settingsSignOutClicked',
-    'settingsUiShowsSignedOut',
+    'sidePanelShowsSignedOut',
     'localAuthMaterialAbsent',
     'activeOrganizationAbsent',
     'signedOutVaultHidden',

@@ -22,6 +22,15 @@ const visibleVaultControl = `(() => {
   });
   return controls.length === 1 ? controls[0] : null;
 })()`;
+const signedOutSidePanelPredicate = `(() => {
+  const visibleButtons = Array.from(document.querySelectorAll('button')).filter((button) => {
+    const rect = button.getBoundingClientRect();
+    const style = getComputedStyle(button);
+    return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden' && button.getAttribute('aria-hidden') !== 'true';
+  });
+  return visibleButtons.filter((button) => button.textContent.trim() === 'Sign in').length === 1
+    && visibleButtons.filter((button) => button.textContent.trim() === 'Sign out').length === 0;
+})()`;
 
 async function inspectIdentity(worker) {
   const session = await worker.evaluate(async () => {
@@ -75,19 +84,19 @@ async function runSettingsSignOut({ worker, panel, checkpoint, proof, waitForLog
     const value = await chrome.storage.local.get(keys);
     return keys.every((key) => value[key] === undefined);
   });
-  await panel.waitFor(`document.body.innerText.includes('Settings') && Array.from(document.querySelectorAll('button')).some((element) => element.textContent.trim() === 'Sign in') && !Array.from(document.querySelectorAll('button')).some((element) => element.textContent.trim() === 'Sign out')`);
-  const settingsUiShowsSignedOut = await panel.evaluate(`document.body.innerText.includes('Settings') && Array.from(document.querySelectorAll('button')).some((element) => element.textContent.trim() === 'Sign in') && !Array.from(document.querySelectorAll('button')).some((element) => element.textContent.trim() === 'Sign out')`);
+  await panel.waitFor(signedOutSidePanelPredicate);
+  const sidePanelShowsSignedOut = await panel.evaluate(signedOutSidePanelPredicate);
   const signedOutVaultHidden = await verifySignedOutVaultHidden();
   const bearerlessVaultApiRefusal = await verifyBearerlessVaultApiRefusal();
   proof.lifecycle ||= {};
   proof.lifecycle.signOut = {
-    disposition: cleared && remoteLogout204 && settingsUiShowsSignedOut && signedOutVaultHidden && bearerlessVaultApiRefusal?.refused ? 'passed' : 'failed', settingsSignOutClicked: true,
-    settingsUiShowsSignedOut, signedOutVaultHidden, localAuthMaterialAbsent: cleared,
+    disposition: cleared && remoteLogout204 && sidePanelShowsSignedOut && signedOutVaultHidden && bearerlessVaultApiRefusal?.refused ? 'passed' : 'failed', settingsSignOutClicked: true,
+    sidePanelShowsSignedOut, signedOutVaultHidden, localAuthMaterialAbsent: cleared,
     activeOrganizationAbsent: cleared,
     remoteLogout204,
     bearerlessVaultApiRefusal,
   };
-  assert(cleared && remoteLogout204 && settingsUiShowsSignedOut && signedOutVaultHidden && bearerlessVaultApiRefusal?.refused, 'lifecycle_sign_out_evidence_incomplete');
+  assert(cleared && remoteLogout204 && sidePanelShowsSignedOut && signedOutVaultHidden && bearerlessVaultApiRefusal?.refused, 'lifecycle_sign_out_evidence_incomplete');
 }
 
-module.exports = { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsSignOut, visibleSettingsControl, visibleVaultControl };
+module.exports = { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsSignOut, visibleSettingsControl, visibleVaultControl, signedOutSidePanelPredicate };
