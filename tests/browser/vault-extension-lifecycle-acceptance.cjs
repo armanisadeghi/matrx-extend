@@ -39,7 +39,7 @@ async function runExtensionReload({ worker, refreshWorker, verifySettingsIdentit
   return replacement;
 }
 
-async function runSettingsSignOut({ worker, panel, checkpoint, proof }) {
+async function runSettingsSignOut({ worker, panel, checkpoint, proof, waitForLogout204, verifyBearerlessVaultRefusal }) {
   checkpoint('lifecycle_settings_sign_out');
   // Settings is the product navigation item; use the real CDP click helper.
   await panel.click(`Array.from(document.querySelectorAll('button')).find((element) => element.textContent.trim() === 'Settings')`);
@@ -51,13 +51,17 @@ async function runSettingsSignOut({ worker, panel, checkpoint, proof }) {
     const value = await chrome.storage.local.get(keys);
     return keys.every((key) => value[key] === undefined);
   });
+  const remoteLogout204 = await waitForLogout204();
+  const vaultRequestRefusedWithoutBearer = await verifyBearerlessVaultRefusal();
   proof.lifecycle ||= {};
   proof.lifecycle.signOut = {
     disposition: cleared ? 'passed' : 'failed', settingsSignOutClicked: true,
     settingsUiShowsSignedOut: true, localAuthMaterialAbsent: cleared,
     activeOrganizationAbsent: cleared,
+    remoteLogout204,
+    vaultRequestRefusedWithoutBearer,
   };
-  assert(cleared, 'lifecycle_sign_out_storage_not_cleared');
+  assert(cleared && remoteLogout204 && vaultRequestRefusedWithoutBearer, 'lifecycle_sign_out_evidence_incomplete');
 }
 
 module.exports = { inspectIdentity, runExtensionReload, runSettingsSignOut };

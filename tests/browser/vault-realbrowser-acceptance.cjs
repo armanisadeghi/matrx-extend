@@ -150,6 +150,7 @@ if (lifecycleDryRun) {
     runnerSha256: digest('vault-realbrowser-acceptance.cjs'),
     lifecycleHelperSha256: digest('vault-extension-lifecycle-acceptance.cjs'),
     lifecycleVerdictSha256: digest('vault-extension-lifecycle-verdict.cjs'),
+    setupRecoveryHelperSha256: digest('vault-setup-recovery-acceptance.cjs'),
     custody: 'no_browser_no_profile_no_credentials_no_network',
   })}\n`);
   process.exit(0);
@@ -1180,8 +1181,9 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
   context.on('response', (response) => {
     if (!response.request().serviceWorker()) return;
     const url = new URL(response.url());
-    if (url.origin === DB && ['/auth/v1/oauth/token', '/auth/v1/user'].includes(url.pathname)) {
-      (proof.authTransport ||= []).push({ route: url.pathname.endsWith('/token') ? 'oauth_token' : 'user', status: response.status(), phase: proof.phase });
+    if (url.origin === DB && ['/auth/v1/oauth/token', '/auth/v1/user', '/auth/v1/logout'].includes(url.pathname)) {
+      const route = url.pathname.endsWith('/token') ? 'oauth_token' : url.pathname.endsWith('/logout') ? 'logout' : 'user';
+      (proof.authTransport ||= []).push({ route, status: response.status(), phase: proof.phase });
       persist();
     }
     if (url.origin !== API || !url.pathname.startsWith('/api/vault/')) return;
@@ -1600,7 +1602,24 @@ async function materializedPassword(id) {
         proof,
         verifyRealVaultPanel,
       });
-      await runSettingsSignOut({ worker, panel: realPanel, checkpoint, proof });
+      await runSettingsSignOut({
+        worker,
+        panel: realPanel,
+        checkpoint,
+        proof,
+        waitForLogout204: async () => {
+          for (let attempt = 0; attempt < 60; attempt += 1) {
+            if (proof.authTransport?.some((entry) => entry.route === 'logout' && entry.status === 204)) return true;
+            await wait(250);
+          }
+          return false;
+        },
+        verifyBearerlessVaultRefusal: async () => {
+          await realPanel.click('document.querySelector(`[title="Vault"]`)');
+          await realPanel.waitFor(`document.body.innerText.includes('Sign in to start using the extension')`);
+          return await realPanel.evaluate(`document.body.innerText.includes('Sign in to start using the extension') && !document.querySelector('[role="tabpanel"] li')`);
+        },
+      });
       // Reuse the same disposable profile and the production OAuth UI. This
       // proves recovery is a fresh interactive session, never retained panel state.
       realPanel.dispose();
@@ -1611,15 +1630,19 @@ async function materializedPassword(id) {
         ? crypto.createHash('sha256').update(recovered['matrx.user.profile'].id).digest('hex') : null;
       proof.lifecycle.freshRecovery = {
         disposition: recoveryIdentity === proof.lifecycle.initialIdentitySha256 ? 'passed' : 'failed',
-        interactiveSignInCompleted: true, settingsUiRecovered: true,
+        interactiveSignInCompleted: true,
+        settingsUiRecovered: false,
         localAuthMaterialPresent: typeof recovered['matrx.auth.accessToken'] === 'string' && typeof recovered['matrx.auth.refreshTokenEnc'] === 'string' && typeof recovered['matrx.auth.refreshTokenIv'] === 'string',
         verifiedIdentityRecovered: recoveryIdentity === proof.lifecycle.initialIdentitySha256,
         identitySha256: recoveryIdentity,
       };
+      await realPanel.click(`Array.from(document.querySelectorAll('button')).find((element) => element.textContent.trim() === 'Settings')`);
+      await realPanel.waitFor(`document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`);
+      proof.lifecycle.freshRecovery.settingsUiRecovered = await realPanel.evaluate(`document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`);
       proof.lifecycle.accountInvalidation = {
         disposition: proof.lifecycle.signOut?.localAuthMaterialAbsent && proof.lifecycle.freshRecovery.verifiedIdentityRecovered ? 'passed' : 'failed',
         preSignOutIdentityWasObserved: true,
-        oldIdentityAuthorityRefusedAfterSignOut: proof.lifecycle.signOut?.localAuthMaterialAbsent === true,
+        oldIdentityAuthorityRefusedAfterSignOut: proof.lifecycle.signOut?.vaultRequestRefusedWithoutBearer === true,
         freshIdentityOnlyAfterInteractiveSignIn: true,
       };
       proof.lifecycle.partialDisposition = 'reload_setup_recovery_signout_fresh_recovery_observed_browser_restart_and_org_switch_pending';
