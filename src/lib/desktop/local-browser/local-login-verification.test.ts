@@ -51,6 +51,16 @@ describe('frozen local-login verification receipt', () => {
     expect(await verificationDigestMatches({ ...fields, verification_spec_json: `${spec} ` })).toBe(
       false,
     );
+    // Controller and claim hand the verifier the entire already-strict command;
+    // only the two frozen fields are intentionally extracted here.
+    expect(
+      parseVerificationFields({
+        operation: 'vault_login',
+        credential_item_id: '00000000-0000-4000-8000-000000000001',
+        fields: [],
+        ...fields,
+      }),
+    ).not.toBeNull();
   });
 
   it('refuses unknown receipt keys, descriptor overflow, and raw page material', () => {
