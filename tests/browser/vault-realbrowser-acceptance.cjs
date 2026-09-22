@@ -14,6 +14,7 @@ const { FAILED_PROOF_PATH: reconciledChromeProofPath, verifyHistoricalChromeReco
 const { FAILED_PROOF_PATH: recovered7356ProofPath, verify7356RecoveryAdmission, NO_COMMIT_PROOF_PATH, verifyNoCommitRecovery } = require('./vault-7356-reconciliation.cjs');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
 const { runExtensionReload, runSettingsSignOut } = require('./vault-extension-lifecycle-acceptance.cjs');
+const { isOwnedPanelLogoutResponse } = require('./vault-lifecycle-network-observation.cjs');
 const { hasObservedReadOnlyCleanup, hasPreAuthNoWriteCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
 const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
 const { runSavedFormMatrix, renderSavedFormMatrixHTML } = require('./vault-saved-form-matrix.cjs');
@@ -149,6 +150,7 @@ if (lifecycleDryRun) {
     kind: 'vault_extension_lifecycle_dry_run',
     runnerSha256: digest('vault-realbrowser-acceptance.cjs'),
     lifecycleHelperSha256: digest('vault-extension-lifecycle-acceptance.cjs'),
+    lifecycleNetworkObservationSha256: digest('vault-lifecycle-network-observation.cjs'),
     lifecycleVerdictSha256: digest('vault-extension-lifecycle-verdict.cjs'),
     setupRecoveryHelperSha256: digest('vault-setup-recovery-acceptance.cjs'),
     custody: 'no_browser_no_profile_no_credentials_no_network',
@@ -1179,8 +1181,16 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
     }
   });
   context.on('response', (response) => {
-    if (!response.request().serviceWorker()) return;
+    const request = response.request();
     const url = new URL(response.url());
+    let frameUrl;
+    try { frameUrl = request.frame()?.url(); } catch { frameUrl = undefined; }
+    if (isOwnedPanelLogoutResponse({ url: url.href, method: request.method(), frameUrl, extensionId })) {
+      const observed = proof.lifecycleSettingsLogoutResponses ||= [];
+      observed.push({ status: response.status(), phase: proof.phase });
+      persist();
+    }
+    if (!request.serviceWorker()) return;
     if (url.origin === DB && ['/auth/v1/oauth/token', '/auth/v1/user', '/auth/v1/logout'].includes(url.pathname)) {
       const route = url.pathname.endsWith('/token') ? 'oauth_token' : url.pathname.endsWith('/logout') ? 'logout' : 'user';
       (proof.authTransport ||= []).push({ route, status: response.status(), phase: proof.phase });
@@ -1609,7 +1619,9 @@ async function materializedPassword(id) {
         proof,
         waitForLogout204: async () => {
           for (let attempt = 0; attempt < 60; attempt += 1) {
-            if (proof.authTransport?.some((entry) => entry.route === 'logout' && entry.status === 204)) return true;
+            const observed = proof.lifecycleSettingsLogoutResponses;
+            if (Array.isArray(observed) && observed.length === 1 && observed[0].status === 204) return true;
+            if (Array.isArray(observed) && observed.length > 1) return false;
             await wait(250);
           }
           return false;
@@ -1629,7 +1641,7 @@ async function materializedPassword(id) {
       const recoveryIdentity = typeof recovered['matrx.user.profile']?.id === 'string'
         ? crypto.createHash('sha256').update(recovered['matrx.user.profile'].id).digest('hex') : null;
       proof.lifecycle.freshRecovery = {
-        disposition: recoveryIdentity === proof.lifecycle.initialIdentitySha256 ? 'passed' : 'failed',
+        disposition: 'in_progress',
         interactiveSignInCompleted: true,
         settingsUiRecovered: false,
         localAuthMaterialPresent: typeof recovered['matrx.auth.accessToken'] === 'string' && typeof recovered['matrx.auth.refreshTokenEnc'] === 'string' && typeof recovered['matrx.auth.refreshTokenIv'] === 'string',
@@ -1639,8 +1651,14 @@ async function materializedPassword(id) {
       await realPanel.click(`Array.from(document.querySelectorAll('button')).find((element) => element.textContent.trim() === 'Settings')`);
       await realPanel.waitFor(`document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`);
       proof.lifecycle.freshRecovery.settingsUiRecovered = await realPanel.evaluate(`document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`);
+      proof.lifecycle.freshRecovery.disposition = proof.lifecycle.freshRecovery.interactiveSignInCompleted
+        && proof.lifecycle.freshRecovery.localAuthMaterialPresent
+        && proof.lifecycle.freshRecovery.verifiedIdentityRecovered
+        && proof.lifecycle.freshRecovery.settingsUiRecovered ? 'passed' : 'failed';
       proof.lifecycle.accountInvalidation = {
-        disposition: proof.lifecycle.signOut?.localAuthMaterialAbsent && proof.lifecycle.freshRecovery.verifiedIdentityRecovered ? 'passed' : 'failed',
+        disposition: proof.lifecycle.signOut?.settingsSignOutClicked && proof.lifecycle.signOut?.localAuthMaterialAbsent
+          && proof.lifecycle.signOut?.vaultRequestRefusedWithoutBearer && proof.lifecycle.signOut?.remoteLogout204
+          && proof.lifecycle.freshRecovery.verifiedIdentityRecovered ? 'passed' : 'failed',
         preSignOutIdentityWasObserved: true,
         oldIdentityAuthorityRefusedAfterSignOut: proof.lifecycle.signOut?.vaultRequestRefusedWithoutBearer === true,
         freshIdentityOnlyAfterInteractiveSignIn: true,
@@ -1651,6 +1669,11 @@ async function materializedPassword(id) {
       const recoveredItems = await items();
       proof.lifecycle.freshVaultRead = Array.isArray(recoveredItems);
       assert(proof.lifecycle.freshVaultRead, 'lifecycle_fresh_vault_read_refused');
+      proof.lifecycle.freshRecovery.disposition = proof.lifecycle.freshRecovery.interactiveSignInCompleted
+        && proof.lifecycle.freshRecovery.localAuthMaterialPresent
+        && proof.lifecycle.freshRecovery.verifiedIdentityRecovered
+        && proof.lifecycle.freshRecovery.settingsUiRecovered
+        && proof.lifecycle.freshVaultRead ? 'passed' : 'failed';
       persist();
     } else if (readOnlyAdmissionMode) {
       proof.admission.baselineRead = true;

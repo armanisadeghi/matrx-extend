@@ -55,7 +55,7 @@ async function runSettingsSignOut({ worker, panel, checkpoint, proof, waitForLog
   const vaultRequestRefusedWithoutBearer = await verifyBearerlessVaultRefusal();
   proof.lifecycle ||= {};
   proof.lifecycle.signOut = {
-    disposition: cleared ? 'passed' : 'failed', settingsSignOutClicked: true,
+    disposition: cleared && remoteLogout204 && vaultRequestRefusedWithoutBearer ? 'passed' : 'failed', settingsSignOutClicked: true,
     settingsUiShowsSignedOut: true, localAuthMaterialAbsent: cleared,
     activeOrganizationAbsent: cleared,
     remoteLogout204,
