@@ -9,6 +9,7 @@ const deps = vi.hoisted(() => ({
   user: { id: 'user-a' },
   org: { id: 'org-a' },
   mine: vi.fn(),
+  shared: vi.fn(),
   matches: vi.fn(),
   status: vi.fn(),
   fill: vi.fn(),
@@ -26,8 +27,12 @@ vi.mock('@/lib/tools/handlers/credential-login', () => ({ credential_login: { ru
 vi.mock('@/lib/api/routes/vault', () => ({
   WEBSITE_LOGIN_DEFINITION_KEY: 'website_login',
   hasRealUserToken: async () => true,
+  describeVaultFailure: (failure: { kind: string; status?: number }) =>
+    failure.kind === 'forbidden'
+      ? 'The Vault refused this request. You may not have access to this item.'
+      : `The Vault is unavailable right now (${failure.status ?? 0}).`,
   fetchMyVaultItems: deps.mine,
-  fetchVaultItemsSharedWithMe: async () => ({ ok: true, data: [] }),
+  fetchVaultItemsSharedWithMe: deps.shared,
   fetchBrowserLoginMatches: deps.matches,
 }));
 vi.mock('@/lib/destructive/confirm', () => ({ confirmDestructive: vi.fn() }));
@@ -101,6 +106,7 @@ beforeEach(async () => {
   activations.clear();
   storageListeners.clear();
   deps.mine.mockResolvedValue({ ok: true, data: [] });
+  deps.shared.mockResolvedValue({ ok: true, data: [] });
   deps.matches.mockResolvedValue(match);
   deps.status.mockResolvedValue(readyPanelStatus);
   deps.fill.mockResolvedValue({ status: 'filled' });
@@ -285,4 +291,31 @@ it('fences list and match publication at invalidation even before React remount'
     matches.resolve({ ok: true, data: { matches: [{ display_name: 'Old actor match' }] } });
   });
   expect(node.textContent).not.toContain('Old actor');
+});
+
+it('clears revoked Vault metadata and restores it only after a successful reload', async () => {
+  let data!: VaultData;
+  const admission = { current: () => true, run: async <T,>(work: () => Promise<T>) => work() };
+  const actor = { userId: 'user-a', organizationId: 'org-a' };
+  const original = { id: 'original', display_name: 'Previously visible login' };
+  const recovered = { id: 'recovered', display_name: 'Recovered login' };
+  deps.mine
+    .mockResolvedValueOnce({ ok: true, data: [original] })
+    .mockResolvedValueOnce({ ok: false, failure: { kind: 'forbidden' } })
+    .mockResolvedValueOnce({ ok: true, data: [recovered] });
+  function Probe() {
+    data = useVault(deps.tab.url, deps.tab.id, actor, admission);
+    return <div>{data.mine.map((item) => item.display_name).join(',')}|{data.error}</div>;
+  }
+
+  await act(async () => root.render(<Probe />));
+  expect(node.textContent).toContain('Previously visible login');
+
+  await act(async () => void (await data.reload()));
+  expect(node.textContent).not.toContain('Previously visible login');
+  expect(node.textContent).toContain('You may not have access to this item.');
+
+  await act(async () => void (await data.reload()));
+  expect(node.textContent).toContain('Recovered login');
+  expect(node.textContent).not.toContain('You may not have access to this item.');
 });

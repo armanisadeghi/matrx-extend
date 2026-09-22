@@ -112,7 +112,12 @@ export function useVault(
         : 'ready',
     );
     if (mineResult.ok) setMine(mineResult.data);
+    // A revoked session or access grant must never leave masked Vault metadata
+    // visible while the panel explains that the current actor cannot read it.
+    // A later successful reload repopulates only the server-authoritative list.
+    else setMine([]);
     if (sharedResult.ok) setShared(sharedResult.data);
+    else setShared([]);
     // One list failing must not blank the other — report the first failure and
     // keep whatever did load.
     const failure = !mineResult.ok
