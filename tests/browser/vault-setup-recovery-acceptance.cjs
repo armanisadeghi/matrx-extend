@@ -113,6 +113,12 @@ const restrictedManualRecoveryVisible = `(() => {
 const listRowFor = (targetName) => `Array.from(document.querySelectorAll('li')).some((row) =>
   row.querySelector('span')?.textContent?.trim() === ${JSON.stringify(targetName)})`;
 
+// The direct children are only the selected Mine/Shared list's ItemRow nodes;
+// matching-login cards and field rows are outside this selector.
+const ownListRows = 'document.querySelectorAll(\'ul.space-y-1.px-2.pb-3 > li.rounded-md.border.bg-card\')';
+const mineScopeActive = `Array.from(document.querySelectorAll('button')).some((button) =>
+  button.textContent?.trim().startsWith('Mine (') && button.getAttribute('data-state') === 'active')`;
+
 const refreshControl = `(() => {
   const controls = Array.from(document.querySelectorAll('button')).filter((button) =>
     button.getAttribute('title') === 'Refresh');
@@ -172,11 +178,15 @@ function createVaultListTransportFailure({ context, apiOrigin, exactPanelDocumen
  * never creates a Vault item or changes settings.
  */
 exports.runVaultListTransportRecoveryChecks = async ({
-  context, realPanel, targetName, apiOrigin, exactPanelDocumentUrl, getVaultWriteCount,
+  context, realPanel, targetName, minimumOwnListRows, apiOrigin, exactPanelDocumentUrl, getVaultWriteCount,
   snapshotOwnedReceiptState, assert, checkpoint = () => {}, proof, verifyRealVaultPanel,
 }) => {
   assert(context && realPanel && proof, 'vault_setup_transport_controls_missing');
-  assert(typeof targetName === 'string' && targetName.length > 0, 'vault_setup_transport_target_missing');
+  const namedTarget = typeof targetName === 'string' && targetName.length > 0;
+  const rowFloor = Number.isSafeInteger(minimumOwnListRows) && minimumOwnListRows > 0
+    ? minimumOwnListRows
+    : null;
+  assert(namedTarget || rowFloor !== null, 'vault_setup_transport_target_missing');
   assert(typeof getVaultWriteCount === 'function' && typeof snapshotOwnedReceiptState === 'function'
     && typeof verifyRealVaultPanel === 'function', 'vault_setup_transport_state_missing');
   const writesBefore = getVaultWriteCount();
@@ -191,9 +201,16 @@ exports.runVaultListTransportRecoveryChecks = async ({
     noVaultWritesOrReceiptChanges: false,
     interceptorsRemoved: false,
   };
+  const rowPresent = namedTarget
+    ? listRowFor(targetName)
+    : `${ownListRows}.length >= ${rowFloor}`;
+  const rowAbsent = namedTarget
+    ? `!(${listRowFor(targetName)})`
+    : `${ownListRows}.length === 0`;
   const run = async (mode, remedy, lostKey, recoveredKey) => {
     await verifyRealVaultPanel();
-    await realPanel.waitFor(listRowFor(targetName), true, 15000);
+    await realPanel.waitFor(mineScopeActive, true, 15000);
+    await realPanel.waitFor(rowPresent, true, 15000);
     evidence.initialPanelListReady = true;
     const fault = createVaultListTransportFailure({ context, apiOrigin, exactPanelDocumentUrl, mode });
     try {
@@ -201,7 +218,7 @@ exports.runVaultListTransportRecoveryChecks = async ({
       checkpoint(`vault_setup_transport_${mode}_refusal`);
       await realPanel.click(refreshControl);
       await realPanel.waitFor(`document.body.textContent?.includes(${JSON.stringify(remedy)}) === true`, true, 15000);
-      await realPanel.waitFor(`!(${listRowFor(targetName)})`, true, 15000);
+      await realPanel.waitFor(rowAbsent, true, 15000);
       const snapshot = fault.snapshot();
       assert(snapshot.matchingRequests === 1 && snapshot.refusedRequests === 1, `vault_setup_transport_${mode}_not_intercepted`);
       evidence[lostKey] = true;
@@ -211,7 +228,7 @@ exports.runVaultListTransportRecoveryChecks = async ({
     }
     checkpoint(`vault_setup_transport_${mode}_recovery`);
     await realPanel.click(refreshControl);
-    await realPanel.waitFor(listRowFor(targetName), true, 15000);
+    await realPanel.waitFor(rowPresent, true, 15000);
     await realPanel.waitFor(`document.body.textContent?.includes(${JSON.stringify(remedy)}) === false`, true, 15000);
     evidence[recoveredKey] = true;
   };
