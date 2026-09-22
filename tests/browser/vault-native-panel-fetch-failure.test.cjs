@@ -39,6 +39,19 @@ test('native panel Fetch offline fault fails only its own-list GET', async () =>
   await fault.dispose();
 });
 
+test('every one of multiple matching reads is refused', async () => {
+  const panel = new Panel();
+  const fault = createNativePanelFetchFailure({ panel, apiOrigin: API, mode: 'forbidden' });
+  await fault.install();
+  panel.emitFireAndForget('Fetch.requestPaused', request(OWN, 'GET', 'one'));
+  panel.emitFireAndForget('Fetch.requestPaused', request(OWN, 'GET', 'two'));
+  await fault.dispose();
+  const snapshot = fault.snapshot();
+  assert.equal(snapshot.matchingRequests, 2);
+  assert.equal(snapshot.refusedRequests, snapshot.matchingRequests);
+  assert.equal(snapshot.observerErrors, 0);
+});
+
 test('disposal fails closed when a fire-and-forget continuation rejects', async () => {
   const panel = new Panel();
   const original = panel.send.bind(panel);

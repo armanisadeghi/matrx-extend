@@ -136,50 +136,10 @@ const vaultRefreshControl = `(() => {
   return controls.length === 1 ? controls[0] : null;
 })()`;
 
-/**
- * Scoped fault injection for the authenticated panel's own-list GET. It has
- * no request-body access and refuses every non-panel request to keep a test
- * outage from leaking into another extension surface.
- */
-function createVaultListTransportFailure({ context, apiOrigin, exactPanelDocumentUrl, mode }) {
-  if (!context?.route || !context?.unroute) throw new Error('vault_setup_transport_context_missing');
-  if (typeof apiOrigin !== 'string' || typeof exactPanelDocumentUrl !== 'string')
-    throw new Error('vault_setup_transport_identity_missing');
-  if (!['forbidden', 'offline'].includes(mode)) throw new Error('vault_setup_transport_mode_invalid');
-  const endpoint = new URL('/api/vault/items', apiOrigin).href;
-  let installed = false, disposed = false, matchingRequests = 0, refusedRequests = 0, continuedRequests = 0;
-  const handler = async (route, request) => {
-    const url = request.url();
-    const panelOwned = request.frame()?.url?.() === exactPanelDocumentUrl;
-    const ownList = request.method() === 'GET' && url === `${endpoint}?principal_type=user`;
-    if (!panelOwned || !ownList) {
-      continuedRequests += 1;
-      await route.continue();
-      return;
-    }
-    matchingRequests += 1;
-    refusedRequests += 1;
-    if (mode === 'forbidden') {
-      await route.fulfill({ status: 403, contentType: 'application/json', body: '{}' });
-      return;
-    }
-    await route.abort('failed');
-  };
-  return {
-    async install() {
-      if (installed || disposed) throw new Error('vault_setup_transport_install_invalid');
-      await context.route(`${endpoint}?principal_type=user`, handler);
-      installed = true;
-    },
-    snapshot() {
-      return Object.freeze({ installed, disposed, mode, matchingRequests, refusedRequests, continuedRequests });
-    },
-    async dispose() {
-      if (disposed) return;
-      if (installed) await context.unroute(`${endpoint}?principal_type=user`, handler);
-      disposed = true;
-    },
-  };
+function allMatchingVaultListReadsRefused(snapshot) {
+  return snapshot?.matchingRequests > 0
+    && snapshot.refusedRequests === snapshot.matchingRequests
+    && snapshot.observerErrors === 0;
 }
 
 /**
@@ -231,11 +191,23 @@ exports.runVaultListTransportRecoveryChecks = async ({
       await realPanel.waitFor(`document.body.textContent?.includes(${JSON.stringify(remedy)}) === true`, true, 15000);
       await realPanel.waitFor(rowAbsent, true, 15000);
       const snapshot = fault.snapshot();
-      assert(snapshot.matchingRequests === 1 && snapshot.refusedRequests === 1, `vault_setup_transport_${mode}_not_intercepted`);
+      proof.setupTransportRecovery[`${mode}BeforeDispose`] = snapshot;
+      checkpoint(`vault_setup_transport_${mode}_before_dispose`);
+      // useVault reloads on mount and the Refresh control starts another
+      // server-authoritative read. Every observed own-list GET must be refused;
+      // request multiplicity itself is not a product failure.
+      assert(allMatchingVaultListReadsRefused(snapshot), `vault_setup_transport_${mode}_not_intercepted`);
       evidence[lostKey] = true;
     } finally {
-      await fault.dispose();
-      evidence.interceptorsRemoved = evidence.interceptorsRemoved || fault.snapshot().disposed === true;
+      try {
+        await fault.dispose();
+      } finally {
+        const disposed = fault.snapshot();
+        proof.setupTransportRecovery[`${mode}AfterDispose`] = disposed;
+        checkpoint(`vault_setup_transport_${mode}_after_dispose`);
+        assert(disposed.pendingTasks === 0 && disposed.observerErrors === 0, `vault_setup_transport_${mode}_disposal_unclean`);
+        evidence.interceptorsRemoved = evidence.interceptorsRemoved || disposed.disposed === true;
+      }
     }
     checkpoint(`vault_setup_transport_${mode}_recovery`);
     await realPanel.click(vaultRefreshControl);
@@ -357,5 +329,5 @@ exports.runVaultSetupRecoveryChecks = async ({
 
 exports.renderVaultSetupRecoveryFixtureHTML = renderVaultSetupRecoveryFixtureHTML;
 exports.vaultSetupRecoveryFixturePath = CLOSED_ROOT_PATH;
-exports.createVaultListTransportFailure = createVaultListTransportFailure;
+exports.allMatchingVaultListReadsRefused = allMatchingVaultListReadsRefused;
 exports.vaultRefreshControl = vaultRefreshControl;
