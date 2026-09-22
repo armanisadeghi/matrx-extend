@@ -1705,8 +1705,8 @@ async function materializedPassword(id) {
           && proof.lifecycle.signOut?.bearerlessVaultApiRefusal?.refused === true && proof.lifecycle.signOut?.remoteLogout204
           && proof.lifecycle.freshRecovery.verifiedIdentityRecovered ? 'passed' : 'failed',
         preSignOutIdentityWasObserved: true,
-        oldIdentityAuthorityRefusedAfterSignOut: proof.lifecycle.signOut?.bearerlessVaultApiRefusal?.refused === true,
-        freshIdentityOnlyAfterInteractiveSignIn: true,
+        signedOutBearerlessVaultRefused: proof.lifecycle.signOut?.bearerlessVaultApiRefusal?.refused === true,
+        freshSameIdentityRecoveredAfterInteractiveSignIn: true,
       };
       proof.lifecycle.partialDisposition = setupIdentityOnlyMode
         ? 'setup_transport_signout_fresh_recovery_observed_reload_browser_restart_and_org_switch_pending'

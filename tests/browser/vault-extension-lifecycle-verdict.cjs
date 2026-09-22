@@ -67,8 +67,8 @@ function assertVaultExtensionLifecycleVerdict({ lifecycle, requireOrganizationSw
   requireDisposition(account, 'vault_lifecycle_account_invalidation');
   requireTrue(account, [
     'preSignOutIdentityWasObserved',
-    'oldIdentityAuthorityRefusedAfterSignOut',
-    'freshIdentityOnlyAfterInteractiveSignIn',
+    'signedOutBearerlessVaultRefused',
+    'freshSameIdentityRecoveredAfterInteractiveSignIn',
   ], 'vault_lifecycle_account_invalidation');
 
   if (!requireOrganizationSwitch) return;

@@ -14,7 +14,7 @@ const passed = {
   browserRestart: { disposition: 'passed', previousBrowserExited: true, newBrowserProcessObserved: true, settingsUiRecovered: true, sameIdentityRecovered: true, identitySha256: initialIdentitySha256 },
   signOut: { disposition: 'passed', settingsSignOutClicked: true, settingsUiShowsSignedOut: true, signedOutVaultHidden: true, localAuthMaterialAbsent: true, activeOrganizationAbsent: true, bearerlessVaultApiRefusal: { status: 401, authorizationHeaderAbsent: true, refused: true }, remoteLogout204: true },
   freshRecovery: { disposition: 'passed', interactiveSignInCompleted: true, settingsUiRecovered: true, localAuthMaterialPresent: true, verifiedIdentityRecovered: true, identitySha256: initialIdentitySha256 },
-  accountInvalidation: { disposition: 'passed', preSignOutIdentityWasObserved: true, oldIdentityAuthorityRefusedAfterSignOut: true, freshIdentityOnlyAfterInteractiveSignIn: true },
+  accountInvalidation: { disposition: 'passed', preSignOutIdentityWasObserved: true, signedOutBearerlessVaultRefused: true, freshSameIdentityRecoveredAfterInteractiveSignIn: true },
   organizationInvalidation: { disposition: 'passed', twoAdminMembershipsObserved: true, oldOrganizationAuthorityRefusedAfterSwitch: true, newOrganizationResolvedAfterSwitch: true, disposableRecordScopePreserved: true, oldOrganizationSha256: fingerprint('first admin organization'), newOrganizationSha256: fingerprint('second admin organization') },
 };
 
@@ -26,7 +26,7 @@ for (const [section, prefix, field] of [
   ['browserRestart', 'browserRestart', 'newBrowserProcessObserved'],
   ['signOut', 'sign_out', 'signedOutVaultHidden'],
   ['freshRecovery', 'fresh_recovery', 'interactiveSignInCompleted'],
-  ['accountInvalidation', 'account_invalidation', 'oldIdentityAuthorityRefusedAfterSignOut'],
+  ['accountInvalidation', 'account_invalidation', 'signedOutBearerlessVaultRefused'],
   ['organizationInvalidation', 'organization_invalidation', 'oldOrganizationAuthorityRefusedAfterSwitch'],
 ]) {
   assert.throws(
