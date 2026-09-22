@@ -3,6 +3,7 @@
 import { StrictMode, act } from 'react';
 import { type Root, createRoot } from 'react-dom/client';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import userEvent from '@testing-library/user-event';
 
 const deps = vi.hoisted(() => ({
   tab: { id: 7, url: 'https://example.com/login' },
@@ -317,5 +318,45 @@ it('clears revoked Vault metadata and restores it only after a successful reload
 
   await act(async () => void (await data.reload()));
   expect(node.textContent).toContain('Recovered login');
+  expect(node.textContent).not.toContain('You may not have access to this item.');
+});
+
+it('clears and restores Shared-scope metadata through the rendered Vault controls', async () => {
+  const sharedItem = (id: string, display_name: string) => ({
+    id,
+    display_name,
+    definition_key: 'website_login',
+    description: null,
+    status: 'active',
+    login_urls: ['https://shared.example/login'],
+    uri_match_mode: 'host',
+    notes: null,
+    browser_fill_enabled: false,
+    fields: [],
+    capabilities: { can_use: false, can_edit: false, can_reveal: false, can_manage: false },
+  });
+  const original = sharedItem('shared-original', 'Previously shared login');
+  const recovered = sharedItem('shared-recovered', 'Recovered shared login');
+  await act(async () => root.render(null));
+  deps.shared.mockResolvedValueOnce({ ok: true, data: [original] });
+  await act(async () => root.render(<VaultView />));
+  const shared = [...node.querySelectorAll('button')].find((item) =>
+    item.textContent?.startsWith('Shared ('),
+  );
+  expect(shared).toBeTruthy();
+  await act(async () => void (await userEvent.click(shared!)));
+  expect(node.textContent).toContain('Previously shared login');
+
+  deps.shared.mockResolvedValueOnce({ ok: false, failure: { kind: 'forbidden' } });
+  const refresh = node.querySelector<HTMLButtonElement>('button[title="Refresh"]');
+  expect(refresh).toBeTruthy();
+  await act(async () => refresh?.click());
+  expect(node.textContent).not.toContain('Previously shared login');
+  expect(node.textContent).toContain('Nobody has shared a login with you.');
+  expect(node.textContent).toContain('You may not have access to this item.');
+
+  deps.shared.mockResolvedValueOnce({ ok: true, data: [recovered] });
+  await act(async () => refresh?.click());
+  expect(node.textContent).toContain('Recovered shared login');
   expect(node.textContent).not.toContain('You may not have access to this item.');
 });

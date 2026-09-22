@@ -16,7 +16,10 @@ function validateRealSiteUrls(realLoginUrl, wrongSiteUrl) {
   const wrong = new URL(wrongSiteUrl);
   if (login.origin !== LOGIN_ORIGIN || login.pathname !== LOGIN_PATH || login.search || login.hash)
     throw new Error('real_site_login_url_refused');
-  if (wrong.protocol !== 'https:' || wrong.origin !== LOGIN_ORIGIN || wrong.href === login.href)
+  // The wrong-origin control is an existing owned localhost login form. This
+  // verifies the old offer is refused without sending the real credential pair
+  // to another HTTPS site or relying on a same-origin navigation difference.
+  if (wrong.protocol !== 'http:' || wrong.hostname !== '127.0.0.1' || wrong.origin === LOGIN_ORIGIN)
     throw new Error('real_site_wrong_url_refused');
   return { login: login.href, wrong: wrong.href };
 }
@@ -130,12 +133,19 @@ exports.runRealSiteFillChecks = async ({
     await focusOwnedBrowser(wrongTabId);
     await verifyRealVaultPanel();
     await realPanel.waitFor(`!(${fill})`, true, 15000);
-    const wrongResult = await page.evaluate(() => ({
-      submitCount: window.__matrxRealSiteSubmitCount ?? 0,
-      noPasswordValue: !(document.querySelector('#password') instanceof HTMLInputElement)
-        || document.querySelector('#password').value === '',
-    }));
-    assert(wrongResult.submitCount === 0 && wrongResult.noPasswordValue, 'real_site_wrong_site_changed');
+    const wrongResult = await page.evaluate(() => {
+      const email = document.querySelector('#email');
+      const password = document.querySelector('#password');
+      return {
+        submitCount: window.__matrxRealSiteSubmitCount ?? 0,
+        emailEmpty: !(email instanceof HTMLInputElement) || email.value === '',
+        passwordEmpty: !(password instanceof HTMLInputElement) || password.value === '',
+      };
+    });
+    assert(
+      wrongResult.submitCount === 0 && wrongResult.emailEmpty && wrongResult.passwordEmpty,
+      'real_site_wrong_site_changed',
+    );
     evidence.wrongSiteRefused = true;
   } catch (error) {
     primaryFailure = error;
