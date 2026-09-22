@@ -14,7 +14,7 @@ const { FAILED_PROOF_PATH: reconciledChromeProofPath, verifyHistoricalChromeReco
 const { FAILED_PROOF_PATH: recovered7356ProofPath, verify7356RecoveryAdmission, NO_COMMIT_PROOF_PATH, verifyNoCommitRecovery } = require('./vault-7356-reconciliation.cjs');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
 const { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsSignOut } = require('./vault-extension-lifecycle-acceptance.cjs');
-const { isOwnedPanelLogoutResponse } = require('./vault-lifecycle-network-observation.cjs');
+const { observeOwnedPanelLogout } = require('./vault-lifecycle-network-observation.cjs');
 const { hasObservedReadOnlyCleanup, hasPreAuthNoWriteCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
 const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
 const { runSavedFormMatrix, renderSavedFormMatrixHTML } = require('./vault-saved-form-matrix.cjs');
@@ -233,6 +233,7 @@ let networkJournal;
 let authenticator;
 let authenticatorHandle;
 let responseLoss;
+let lifecycleLogoutObserver;
 let responseLossInstalled = false;
 let responseLossKey;
 let responseLossPostsBefore;
@@ -1186,13 +1187,6 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
   context.on('response', (response) => {
     const request = response.request();
     const url = new URL(response.url());
-    let frameUrl;
-    try { frameUrl = request.frame()?.url(); } catch { frameUrl = undefined; }
-    if (isOwnedPanelLogoutResponse({ url: url.href, method: request.method(), frameUrl, extensionId })) {
-      const observed = proof.lifecycleSettingsLogoutResponses ||= [];
-      observed.push({ status: response.status(), phase: proof.phase });
-      persist();
-    }
     if (!request.serviceWorker()) return;
     if (url.origin === DB && ['/auth/v1/oauth/token', '/auth/v1/user', '/auth/v1/logout'].includes(url.pathname)) {
       const route = url.pathname.endsWith('/token') ? 'oauth_token' : url.pathname.endsWith('/logout') ? 'logout' : 'user';
@@ -1324,6 +1318,18 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
   persist();
   realPanel = await openGenuineSidePanel(extensionId, popup);
   await networkJournal.bindPanelTarget(realPanel.targetId);
+  if ((extensionLifecycleMode || setupIdentityOnlyMode) && !lifecycleLogoutObserver) {
+    lifecycleLogoutObserver = observeOwnedPanelLogout({
+      panel: realPanel,
+      extensionId,
+      onResponse: ({ status }) => {
+        const observed = proof.lifecycleSettingsLogoutResponses ||= [];
+        observed.push({ status, phase: proof.phase, observer: 'raw_cdp_owned_sidepanel' });
+        persist();
+      },
+    });
+    proof.lifecycleSettingsLogoutObserver = 'raw_cdp_owned_sidepanel';
+  }
   // The initial auth popup was an ordinary setup tab. It must not remain as a
   // same-URL target when a lifecycle probe later opens the declared action popup.
   await popup.close();
@@ -1643,6 +1649,10 @@ async function materializedPassword(id) {
           return await realPanel.evaluate(`document.body.innerText.includes('Sign in to start using the extension') && !document.querySelector('[role="tabpanel"] li')`);
         },
       });
+      // Only the Settings sign-out response belongs to this observation.
+      // Final teardown uses a separate client and must never satisfy it.
+      lifecycleLogoutObserver?.();
+      lifecycleLogoutObserver = undefined;
       // Reuse the same disposable profile and the production OAuth UI. This
       // proves recovery is a fresh interactive session, never retained panel state.
       realPanel.dispose();
@@ -2247,6 +2257,8 @@ async function materializedPassword(id) {
         proof.failureCode ||= 'vault_network_cleanup_failed';
       }
     }
+    lifecycleLogoutObserver?.();
+    lifecycleLogoutObserver = undefined;
     realPanel?.dispose();
     try { if (context) await context.close(); proof.cleanup.browserClosed = true; } catch { proof.cleanup.browserClosed = false; }
     try {
