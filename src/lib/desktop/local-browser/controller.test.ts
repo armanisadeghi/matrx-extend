@@ -504,7 +504,7 @@ describe('owned local-browser tab controller', () => {
     Object.assign(globalThis, { chrome: originalChrome });
     HTMLElement.prototype.getBoundingClientRect = originalRect;
   });
-  it('allows one same-origin post-submit replacement and refuses pre-submit, URL races, cross-origin, and a second document', async () => {
+  it('freezes one same-origin post-submit transition for readonly observation and rejects further transitions', async () => {
     let submitted = false;
     let current = { documentId: 'original', url: 'https://example.test/login' };
     const observe = postSubmitDocumentObserver({
@@ -517,15 +517,11 @@ describe('owned local-browser tab controller', () => {
     expect(await observe()).toBeNull();
     submitted = true;
     current = { documentId: 'original', url: 'https://example.test/home' };
-    expect(await observe()).toBeNull();
+    expect(await observe()).toEqual(current);
     current = { documentId: 'original', url: 'https://example.test/login' };
-    expect(await observe()).toEqual(current);
-    current = { documentId: 'replacement', url: 'https://example.test/mfa' };
-    expect(await observe()).toEqual(current);
-    current = { documentId: 'replacement', url: 'https://example.test/home' };
     expect(await observe()).toBeNull();
     current = { documentId: 'replacement', url: 'https://example.test/mfa' };
-    expect(await observe()).toEqual(current);
+    expect(await observe()).toBeNull();
     current = { documentId: 'cross-origin', url: 'https://other.test/mfa' };
     expect(await observe()).toBeNull();
     current = { documentId: 'second-replacement', url: 'https://example.test/home' };

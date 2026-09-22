@@ -170,20 +170,16 @@ export function postSubmitDocumentObserver({
     } catch {
       return null;
     }
-    // A same-document history update is still a new page identity for this
-    // read-only observation. Never let an already-collected success signal
-    // follow it: the first same-origin replacement is frozen by both Chrome
-    // document id and URL, and every later read must match that exact pair.
-    if (current.documentId === original.documentId) {
-      if (current.url !== original.url) return null;
-      return current;
-    }
-    if (
-      replacement &&
-      (current.documentId !== replacement.documentId || current.url !== replacement.url)
-    )
-      return null;
-    replacement ??= current;
+    // The first same-origin transition is read-only evidence only. A SPA may
+    // retain Chrome's document id while changing its URL; freeze that pair for
+    // observation exactly as we freeze a cross-document replacement. Mutation
+    // still uses `original`, which was captured before this observer existed.
+    if (replacement)
+      return current.documentId === replacement.documentId && current.url === replacement.url
+        ? current
+        : null;
+    if (current.documentId === original.documentId && current.url === original.url) return current;
+    replacement = current;
     return current;
   };
 }
