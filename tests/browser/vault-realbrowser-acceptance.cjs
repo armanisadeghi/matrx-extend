@@ -57,8 +57,87 @@ const assert = (condition, code) => {
 };
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+async function visibleExactCount(locator) {
+  const count = await locator.count();
+  let visible = 0;
+  for (let index = 0; index < count; index += 1) {
+    if (await locator.nth(index).isVisible().catch(() => false)) visible += 1;
+  }
+  return { count, visible };
+}
+
+async function classifyOAuthConsent(authPage) {
+  const authorize = authPage.getByRole('button', { name: 'Authorize', exact: true });
+  const retry = authPage.getByRole('button', { name: 'Try again', exact: true });
+  const redirecting = authPage.getByText('Redirecting', { exact: true });
+  const [authorizeState, retryState, redirectingState, headings] = await Promise.all([
+    visibleExactCount(authorize),
+    visibleExactCount(retry),
+    visibleExactCount(redirecting),
+    visibleExactCount(authPage.locator('h2')),
+  ]);
+  const oneEnabledAuthorize = authorizeState.count === 1 && authorizeState.visible === 1
+    && await authorize.isEnabled().catch(() => false);
+  const exactOneRetry = retryState.count === 1 && retryState.visible === 1;
+  const exactOneRedirecting = redirectingState.count === 1 && redirectingState.visible === 1;
+  const terminalHeading = headings.visible === 1 && headings.count === 1;
+  // Any competing rendered state or duplicate exact control is ambiguous.
+  if (authorizeState.count > 1 || retryState.count > 1 || redirectingState.count > 1 || headings.count > 1)
+    return 'consent_ambiguous';
+  if (exactOneRedirecting) return oneEnabledAuthorize || exactOneRetry ? 'consent_ambiguous' : 'redirecting';
+  if (oneEnabledAuthorize) return exactOneRetry || terminalHeading ? 'consent_ambiguous' : 'consent_ready';
+  if (exactOneRetry || (terminalHeading && authorizeState.visible === 0)) return 'consent_error';
+  return 'consent_ambiguous';
+}
+
+function observeOAuthConsentApproval(authPage, dbOrigin, timeoutMs = 30000) {
+  const observations = [];
+  let settled = false;
+  let resolveFirst;
+  let rejectFirst;
+  const firstResponse = new Promise((resolve, reject) => { resolveFirst = resolve; rejectFirst = reject; });
+  const onResponse = (response) => {
+    try {
+      const url = new URL(response.url());
+      const method = response.request().method();
+      if (url.origin !== dbOrigin || method !== 'POST'
+        || !/^\/auth\/v1\/oauth\/authorizations\/[^/]+\/consent$/.test(url.pathname)) return;
+      const observation = { route: 'oauth_authorization_consent', method: 'POST', status: response.status(), phase: 'after_authorize_click' };
+      observations.push(observation);
+      if (!settled && observation.status >= 200 && observation.status < 300) {
+        settled = true;
+        resolveFirst(observation);
+      } else if (!settled) {
+        settled = true;
+        rejectFirst(new Error('oauth_consent_approval_non_2xx'));
+      }
+    } catch {
+      // Unparseable unrelated response metadata is not OAuth consent evidence.
+    }
+  };
+  authPage.on('response', onResponse);
+  return {
+    async requireFirst2xx() {
+      const timeout = setTimeout(() => {
+        if (!settled) {
+          settled = true;
+          rejectFirst(new Error('oauth_consent_approval_missing'));
+        }
+      }, timeoutMs);
+      try { return await firstResponse; } finally { clearTimeout(timeout); }
+    },
+    finish() {
+      authPage.off('response', onResponse);
+      assert(observations.length === 1, 'oauth_consent_approval_count_invalid');
+      const [observation] = observations;
+      assert(observation.status >= 200 && observation.status < 300, 'oauth_consent_approval_non_2xx');
+      return { ...observation, count: observations.length };
+    },
+  };
+}
+
 // A web SSO session can take the normal OAuth request directly to consent or
-// complete the callback.  Both remain bound to the extension's PKCE/state
+// complete the callback. Both remain bound to the extension's PKCE/state
 // validation in auth/flow.ts and are accepted only after fresh extension
 // storage and the independent /auth/v1/user check below agree on admin.
 async function awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowLoginForm = false }) {
@@ -74,10 +153,8 @@ async function awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowL
         }
         const current = new URL(authPage.url());
         if (current.origin === 'https://www.aimatrx.com' && current.pathname.startsWith('/oauth/consent')) {
-          // A consent URL is not consent readiness. Retain only fixed state,
-          // never provider-rendered identity/error text.
-          if (await authPage.getByRole('alert').isVisible().catch(() => false)) return 'consent_error';
-          if (await authPage.getByRole('button', { name: 'Authorize', exact: true }).isVisible().catch(() => false)) return 'consent_ready';
+          const consent = await classifyOAuthConsent(authPage);
+          if (consent !== 'consent_ambiguous') return consent;
         }
       }
     } catch { /* a completed callback closes the managed auth page */ }
@@ -207,6 +284,7 @@ if (lifecycleDryRun) {
     nativePanelFetchFailureSha256: digest('vault-native-panel-fetch-failure.cjs'),
     lifecycleVerdictSha256: digest('vault-extension-lifecycle-verdict.cjs'),
     setupRecoveryHelperSha256: digest('vault-setup-recovery-acceptance.cjs'),
+    realSiteFillAcceptanceSha256: digest('vault-real-site-fill-acceptance.cjs'),
     custody: 'no_browser_no_profile_no_credentials_no_network',
   })}\n`);
   process.exit(0);
@@ -1266,8 +1344,10 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
     authPageOpenOutcome: 'not_attempted',
     loginDisposition: 'not_observed',
     consentDisposition: 'not_observed',
+    consentAuthorizeRenderedEnabled: false,
     callbackStorageObserved: false,
     consentApproveDisposition: 'not_attempted',
+    consentApproval: null,
     callbackAfterApprove: 'not_observed',
   };
   const oauthUiStep = async (phase, failureCategory, operation) => {
@@ -1360,12 +1440,27 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
   if (consentDisposition === 'consent_ready') {
     await oauthUiStep('oauth_consent_approve_ready', 'oauth_consent_authorize_unavailable', () =>
       authPage.getByRole('button', { name: 'Authorize', exact: true }).waitFor({ state: 'visible', timeout: 30000 }));
+    assert(await authPage.getByRole('button', { name: 'Authorize', exact: true }).isEnabled(), 'oauth_consent_authorize_disabled');
+    proof.oauthUi.consentAuthorizeRenderedEnabled = true;
+    persist();
+    const consentApproval = observeOAuthConsentApproval(authPage, DB);
     checkpoint('oauth_consent_approve');
     await oauthUiStep('oauth_consent_approve', 'oauth_consent_authorize_click_failed', () =>
       authPage.getByRole('button', { name: 'Authorize', exact: true }).click());
     proof.oauthUi.consentApproveDisposition = 'authorize_clicked';
     persist();
+    await oauthUiStep('oauth_consent_approval_response', 'oauth_consent_approval_response_invalid', () =>
+      consentApproval.requireFirst2xx());
     const callback = await oauthUiStep('oauth_callback_storage', 'oauth_callback_storage_timeout', () =>
+      awaitOAuthCallbackStorage({ authPage, storage, adminEmail }));
+    proof.oauthUi.consentApproval = await oauthUiStep('oauth_consent_approval_count', 'oauth_consent_approval_count_invalid', () =>
+      consentApproval.finish());
+    proof.oauthUi.callbackAfterApprove = callback.authPageClosed
+      ? 'storage_after_window_closed' : 'storage_after_managed_callback';
+    proof.oauthUi.callbackStorageObserved = callback.callbackStorageObserved;
+    persist();
+  } else if (consentDisposition === 'redirecting') {
+    const callback = await oauthUiStep('oauth_redirecting_callback_storage', 'oauth_callback_storage_timeout', () =>
       awaitOAuthCallbackStorage({ authPage, storage, adminEmail }));
     proof.oauthUi.callbackAfterApprove = callback.authPageClosed
       ? 'storage_after_window_closed' : 'storage_after_managed_callback';
