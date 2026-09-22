@@ -111,5 +111,13 @@ async function attachPanelSession(cdp, targetId) {
     proof.cleanup.profileRemoved = !(await fs.lstat(profile).then(() => true, () => false));
     if (cdp) await cdp.detach().catch(() => {});
   }
-  if (succeeded) process.stdout.write(`${JSON.stringify(proof)}\n`);
+  if (succeeded) {
+    const receiptPath = process.env.MATRX_VAULT_NATIVE_PANEL_OFFLINE_PROOF;
+    if (receiptPath !== undefined) {
+      if (!path.isAbsolute(receiptPath)) throw new Error('native_panel_offline_probe_receipt_path_invalid');
+      await fs.mkdir(path.dirname(receiptPath), { recursive: true, mode: 0o700 });
+      await fs.writeFile(receiptPath, `${JSON.stringify(proof, null, 2)}\n`, { mode: 0o600 });
+    }
+    process.stdout.write(`${JSON.stringify(proof)}\n`);
+  }
 })().catch((error) => { process.stderr.write(`${error.message}\n`); process.exitCode = 1; });
