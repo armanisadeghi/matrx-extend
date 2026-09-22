@@ -89,6 +89,31 @@ describe('agenda panel remedy', () => {
     expect(cleared).toEqual([]);
   });
 
+  it('keeps a synchronously refused Chromium Agenda notification visible with a recovery action', async () => {
+    (globalThis.chrome as unknown as { sidebarAction?: unknown }).sidebarAction = undefined;
+    (
+      globalThis.chrome as unknown as { windows: { getCurrent: () => Promise<{ id: number }> } }
+    ).windows = {
+      getCurrent: async () => ({ id: 4 }),
+    };
+    (globalThis.chrome as unknown as { sidePanel: { open: () => never } }).sidePanel = {
+      open: () => {
+        throw new Error('Native Chrome synchronous refusal');
+      },
+    };
+    const { registerAgendaNotificationClicks } = await import('@/lib/agenda/scanner');
+    registerAgendaNotificationClicks();
+    if (!clicked) throw new Error('Agenda notification listener was not registered');
+
+    await clicked('matrx-agenda:task-synchronous-refusal');
+
+    expect(updates[0]?.options.message).toContain('Native Chrome synchronous refusal');
+    expect(updates[0]?.options.message).toContain(
+      'Open Matrx from the browser toolbar and try again.',
+    );
+    expect(cleared).toEqual([]);
+  });
+
   it('clears an Agenda notification only after Chromium opens the panel', async () => {
     (globalThis.chrome as unknown as { sidebarAction?: unknown }).sidebarAction = undefined;
     (

@@ -239,7 +239,7 @@ export function registerAgendaNotificationClicks(): void {
       }
       const attempt = openPanel({ windowId: win.id });
       if (!attempt.promise) {
-        await showAgendaPanelRemedy(notificationId, attempt.reason);
+        await showAgendaPanelRemedy(notificationId, panelOpenRemedy(attempt.reason));
         return;
       }
       await attempt.promise;
