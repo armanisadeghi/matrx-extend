@@ -447,7 +447,8 @@ function pageStateSource(
       i.getAttribute('autocomplete') === 'one-time-code' ||
       MFA_HINT.test(`${i.getAttribute('name') ?? ''} ${i.getAttribute('id') ?? ''}`),
   );
-  const bodyText = (document.body?.innerText ?? '').slice(0, 4000);
+  const fullBodyText = document.body?.innerText ?? null;
+  const bodyText = (fullBodyText ?? '').slice(0, 4000);
   const mfaCopy =
     /two[- ]factor|2-step|verification code|authenticator app|enter the code we sent/i.test(
       bodyText,
@@ -482,7 +483,7 @@ function pageStateSource(
   }
   const textMatches: Record<string, boolean | null> = {};
   for (const text of probes.texts)
-    textMatches[text] = document.body ? bodyText.includes(text) : null;
+    textMatches[text] = fullBodyText === null ? null : fullBodyText.includes(text);
 
   return {
     href: location.href,
@@ -850,6 +851,20 @@ async function classifyExplicitAttempt(
   if (auth?.signed_in === 'yes') signals.push(signal('auth_state_yes', 'authenticated', 0.8));
   if (auth?.signed_in === 'likely') {
     signals.push(signal('auth_state_likely', 'authenticated', 0.55));
+  }
+  // Receipt facts come from one fresh, settled read of the exact identity that
+  // survived the post-submit fence; earlier transition probes only drive UI
+  // compatibility classification and never become frozen verification facts.
+  if (observingPostSubmit && execution && observedDocument) {
+    const settled = await injectPostSubmitObservation<PageStateProbe>(
+      tabId,
+      pageStateSource,
+      [verificationProbes],
+      execution,
+      observedDocument,
+    ).catch(() => null);
+    if (!settled) throw new Error('admitted_document_lost');
+    after = settled;
   }
 
   const strongest = (direction: LoginSignal['direction']): number =>
