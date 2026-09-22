@@ -23,6 +23,9 @@ vi.mock('@/lib/desktop/ws-client', () => ({
 vi.mock('@/lib/messaging/native', () => ({ on: vi.fn() }));
 vi.mock('@/lib/org/active-org', () => ({ onActiveOrganizationChange: vi.fn() }));
 vi.mock('@/lib/debug/log', () => ({ log: { warn: vi.fn() } }));
+vi.mock('@/lib/chat/context/check-auth-state', () => ({
+  checkAuthState: vi.fn(async () => ({ signed_in: 'no' })),
+}));
 vi.mock('./approvals', () => ({
   localBrowserApprovalGeneration: () => 0,
   onLocalBrowserApprovalGenerationChange: () => () => undefined,
@@ -302,7 +305,183 @@ async function register(
   };
 }
 
+async function frozenDigest(spec: string): Promise<string> {
+  const bytes = new Uint8Array(
+    await crypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(`matrx.local-login-verification.v1\0${spec}`),
+    ),
+  );
+  return Array.from(bytes, (value) => value.toString(16).padStart(2, '0')).join('');
+}
+
 describe('owned local-browser tab controller', () => {
+  it('claims and completes a full frozen vault command with only settled value-free facts', async () => {
+    window.happyDOM.setURL('https://example.test/login');
+    document.body.innerHTML =
+      '<form method="post" action="/login"><input id="username"><input id="password" type="password"><button id="submit">go</button></form>';
+    document.getElementById('submit')?.addEventListener('click', () => {
+      document.body.insertAdjacentHTML('beforeend', '<a href="/logout">out</a>');
+    });
+    const originalChrome = globalThis.chrome;
+    const originalRect = HTMLElement.prototype.getBoundingClientRect;
+    HTMLElement.prototype.getBoundingClientRect = () => ({ width: 10, height: 10 }) as DOMRect;
+    const scriptStages: string[] = [];
+    Object.assign(globalThis.chrome as object, {
+      tabs: { get: async () => ({ id: 42, url: window.location.href }) },
+      scripting: {
+        executeScript: async (request: {
+          func: (...args: never[]) => unknown;
+          args?: never[];
+        }) => {
+          const stage = (request.args?.[0] as { operation?: string } | undefined)?.operation;
+          if (stage) scriptStages.push(stage);
+          return [{ result: await request.func(...(request.args ?? [])) }];
+        },
+      },
+    });
+    const spec = JSON.stringify({
+      version: 1,
+      expect: { success_selector: 'a[href="/logout"]', timeout_ms: 1000 },
+      url_vocabulary: { version: 1, challenge: ['challenge'], sign_in: ['login'] },
+      recipe_id: '00000000-0000-4000-8000-000000000099',
+      recipe_version: 1,
+      descriptors: [
+        {
+          kind: 'selector_present',
+          value: 'a[href="/logout"]',
+          label: null,
+          direction: 'authenticated',
+          weight: 1,
+        },
+        {
+          kind: 'selector_absent',
+          value: '#missing',
+          label: null,
+          direction: 'authenticated',
+          weight: 1,
+        },
+      ],
+    });
+    const commandJson = JSON.stringify({
+      operation: 'vault_login',
+      credential_item_id: ids.call,
+      fields: [
+        { selector: '#username', field_key: 'username', clear_first: true },
+        { selector: '#password', field_key: 'password', clear_first: true },
+      ],
+      submit: { kind: 'click', selector: '#submit' },
+      expect: { success_selector: 'a[href="/logout"]', timeout_ms: 1000 },
+      verification_spec_json: spec,
+      verification_digest: await frozenDigest(spec),
+    });
+    const h = harness();
+    const registration = await register(h);
+    const expiresAtSecond = Math.floor(Date.now() / 1000) + 30;
+    const deadlineMs = expiresAtSecond * 1000;
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant: opaqueAdmitGrant(registration.generation, registration.connection),
+    });
+    const currentDocument = { documentId: ids.challenge, url: 'https://example.test/login' };
+    const claim = vi.fn(async () => ({
+      ok: true as const,
+      data: {
+        status: 'claimed' as const,
+        command_id: ids.call,
+        deadline_ms: deadlineMs,
+        completion_grant: 'complete',
+        injection: {
+          origin: 'https://example.test',
+          expires_at_ms: deadlineMs - 1000,
+          fields: { username: 'user', password: 'secret' },
+        },
+      },
+    }));
+    const complete = vi.fn(async (request: { result: unknown }) => ({
+      ok: true as const,
+      data: { status: 'completed' as const, result: request.result },
+    }));
+    h.deps.command = {
+      verify: vi.fn(
+        async () =>
+          ({
+            ok: true,
+            data: {
+              status: 'accepted',
+              operation: 'approve',
+              actor_id: ids.user,
+              organization_id: ids.org,
+              profile_id: ids.profile,
+              admission_id: ids.admission,
+              command_id: ids.call,
+              sequence: 1,
+              command_digest: 'a'.repeat(64),
+              approval_id: ids.jti,
+              deadline_ms: deadlineMs,
+              expires_at_ms: deadlineMs,
+              extension_generation: registration.generation,
+              connection_id: registration.connection,
+              run_id: ids.run,
+              app_instance_id: ids.app,
+              controller_revision: 0,
+              jti: ids.jti,
+            },
+          }) as never,
+      ),
+      approve: vi.fn(async () => ({
+        ok: true as const,
+        data: {
+          status: 'allowed' as const,
+          approval_id: ids.jti,
+          command_id: ids.call,
+          claim_grant: 'claim',
+          deadline_ms: deadlineMs,
+        },
+      })),
+      claim,
+      complete,
+      currentDocument: vi.fn(async () => currentDocument),
+    } satisfies NonNullable<LocalBrowserControllerDeps['command']>;
+    await h.emit(
+      {
+        type: 'local_browser.execute',
+        version: 1,
+        call_id: ids.call,
+        operation: 'approve',
+        grant: opaqueApproveGrant(
+          registration.generation,
+          registration.connection,
+          expiresAtSecond,
+        ),
+        command_json: commandJson,
+      },
+      false,
+    );
+    await vi.waitFor(() => expect(complete).toHaveBeenCalledOnce(), { timeout: 5000 });
+    expect(claim).toHaveBeenCalledWith(expect.objectContaining({ command_json: commandJson }));
+    expect(scriptStages).toEqual(expect.arrayContaining(['fill', 'submit_explicit']));
+    expect(complete.mock.calls[0]?.[0]).toMatchObject({
+      result: { outcome: 'completed', reason: 'none' },
+    });
+    const receipt = (complete.mock.calls[0]?.[0] as { result: { data: Record<string, unknown> } })
+      .result.data;
+    expect(receipt).toMatchObject({ verification_digest: await frozenDigest(spec) });
+    expect(receipt.observation).toMatchObject({
+      success_selector: true,
+      recipe_matches: [true, true],
+    });
+    expect(JSON.stringify(receipt)).not.toContain('secret');
+    expect(JSON.stringify(receipt)).not.toContain('https://example.test/login');
+    expect(scriptStages).toContain('fill');
+    expect(scriptStages).toContain('submit_explicit');
+    h.controller.stop();
+    Object.assign(globalThis, { chrome: originalChrome });
+    HTMLElement.prototype.getBoundingClientRect = originalRect;
+  });
   it('allows one same-origin post-submit replacement and refuses pre-submit, URL races, cross-origin, and a second document', async () => {
     let submitted = false;
     let current = { documentId: 'original', url: 'https://example.test/login' };
