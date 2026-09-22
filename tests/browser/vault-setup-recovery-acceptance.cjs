@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('node:crypto');
+const { createNativePanelFetchFailure } = require('./vault-native-panel-fetch-failure.cjs');
 
 /*
  * Real-CDP setup/recovery acceptance for the existing Vault side panel.
@@ -222,7 +223,7 @@ exports.runVaultListTransportRecoveryChecks = async ({
     await realPanel.waitFor(mineScopeActive, true, 15000);
     await realPanel.waitFor(rowPresent, true, 15000);
     evidence.initialPanelListReady = true;
-    const fault = createVaultListTransportFailure({ context, apiOrigin, exactPanelDocumentUrl, mode });
+    const fault = createNativePanelFetchFailure({ panel: realPanel, apiOrigin, mode });
     try {
       await fault.install();
       checkpoint(`vault_setup_transport_${mode}_refusal`);
