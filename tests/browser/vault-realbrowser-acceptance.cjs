@@ -17,6 +17,7 @@ const { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsS
 const { observeOwnedPanelLogout } = require('./vault-lifecycle-network-observation.cjs');
 const { hasObservedReadOnlyCleanup, hasPreAuthNoWriteCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
 const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
+const { runRealSiteFillChecks } = require('./vault-real-site-fill-acceptance.cjs');
 const { runSavedFormMatrix, renderSavedFormMatrixHTML } = require('./vault-saved-form-matrix.cjs');
 const { runVaultPreferencesChecks } = require('./vault-preferences-acceptance.cjs');
 const {
@@ -1593,6 +1594,7 @@ async function materializedPassword(id) {
       authenticator: await sha256(path.join(__dirname, 'vault-authenticator-preservation.cjs')),
       responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
+      realSiteFill: await sha256(path.join(__dirname, 'vault-real-site-fill-acceptance.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
       setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
       nativePanelFetchFailure: await sha256(path.join(__dirname, 'vault-native-panel-fetch-failure.cjs')),
@@ -1670,6 +1672,7 @@ async function materializedPassword(id) {
       authenticator: await sha256(path.join(__dirname, 'vault-authenticator-preservation.cjs')),
       responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
+      realSiteFill: await sha256(path.join(__dirname, 'vault-real-site-fill-acceptance.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
       setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
       nativePanelFetchFailure: await sha256(path.join(__dirname, 'vault-native-panel-fetch-failure.cjs')),
@@ -1873,6 +1876,7 @@ async function materializedPassword(id) {
           authenticator: await sha256(path.join(__dirname, 'vault-authenticator-preservation.cjs')),
       responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
       savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
+      realSiteFill: await sha256(path.join(__dirname, 'vault-real-site-fill-acceptance.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
       setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
       nativePanelFetchFailure: await sha256(path.join(__dirname, 'vault-native-panel-fetch-failure.cjs')),
@@ -2075,6 +2079,33 @@ async function materializedPassword(id) {
           return true;
         },
       });
+      // This is the only real HTTPS destination in the receipt-backed journey.
+      // The helper selects this exact receipt-owned account, fills without
+      // submission, and proves that the same account is absent on the owned
+      // cross-origin control before closing both pages.
+      proof.realSiteFillHarnessSha256 = await sha256(path.join(__dirname, 'vault-real-site-fill-acceptance.cjs'));
+      checkpoint('real_site_fill');
+      await runRealSiteFillChecks({
+        context,
+        worker,
+        realPanel,
+        targetName,
+        username,
+        password: newPassword,
+        realLoginUrl: 'https://www.aimatrx.com/login',
+        wrongSiteUrl: localUrl,
+        assert,
+        wait,
+        checkpoint,
+        proof,
+        focusOwnedBrowser,
+        verifyRealVaultPanel,
+      });
+      assert(proof.realSiteFill?.realHttpsLoginFormReady === true
+        && proof.realSiteFill?.exactSavedAccountFilled === true
+        && proof.realSiteFill?.noWebsiteSubmission === true
+        && proof.realSiteFill?.wrongSiteRefused === true
+        && proof.realSiteFill?.pageClosed === true, 'real_site_fill_evidence_unverified');
       assert(createdIds.size === fixtureIdsBeforeSavedLogin.size
         && [...fixtureIdsBeforeSavedLogin].every((id) => createdIds.has(id)), 'saved_login_helper_created_fixture');
       assert(createKeys.size === fixtureKeysBeforeSavedLogin.size
