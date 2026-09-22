@@ -9,6 +9,7 @@ class Panel {
   async send(method, params = {}) { this.calls.push({ method, params }); }
   onEvent(listener) { this.listeners.add(listener); return () => this.listeners.delete(listener); }
   async emit(method, params) { for (const listener of this.listeners) await listener(method, params); }
+  emitFireAndForget(method, params) { for (const listener of this.listeners) listener(method, params); }
 }
 const request = (url, method = 'GET', requestId = 'request') => ({ requestId, request: { url, method } });
 const API = 'https://server.example.test';
@@ -36,4 +37,33 @@ test('native panel Fetch offline fault fails only its own-list GET', async () =>
   await panel.emit('Fetch.requestPaused', request(OWN));
   assert.equal(panel.calls.find((call) => call.method === 'Fetch.failRequest')?.params.errorReason, 'Failed');
   await fault.dispose();
+});
+
+test('disposal fails closed when a fire-and-forget continuation rejects', async () => {
+  const panel = new Panel();
+  const original = panel.send.bind(panel);
+  panel.send = async (method, params) => {
+    if (method === 'Fetch.continueRequest') throw new Error('forced_continue_failure');
+    return original(method, params);
+  };
+  const fault = createNativePanelFetchFailure({ panel, apiOrigin: API, mode: 'forbidden' });
+  await fault.install();
+  panel.emitFireAndForget('Fetch.requestPaused', request(`${API}/other`, 'GET', 'reject'));
+  await assert.rejects(fault.dispose(), /vault_native_fetch_disposal_unclean/);
+  assert.equal(fault.snapshot().observerErrors, 1);
+});
+
+test('late paused work during Fetch.disable is continued and drained before unsubscribe', async () => {
+  const panel = new Panel();
+  const original = panel.send.bind(panel);
+  panel.send = async (method, params) => {
+    if (method === 'Fetch.disable') panel.emitFireAndForget('Fetch.requestPaused', request(OWN, 'GET', 'late'));
+    return original(method, params);
+  };
+  const fault = createNativePanelFetchFailure({ panel, apiOrigin: API, mode: 'forbidden' });
+  await fault.install();
+  await fault.dispose();
+  assert.equal(panel.calls.find((call) => call.method === 'Fetch.continueRequest' && call.params.requestId === 'late')?.params.requestId, 'late');
+  assert.equal(fault.snapshot().pendingTasks, 0);
+  assert.equal(panel.listeners.size, 0);
 });
