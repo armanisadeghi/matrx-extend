@@ -6,12 +6,12 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const runner = fs.readFileSync(path.join(__dirname, 'vault-realbrowser-acceptance.cjs'), 'utf8');
-const match = runner.match(/async function classifyOAuthConsent[\s\S]*?\n}\n\nlet cdpWorkerMessageId/);
+const match = runner.match(/async function readOAuthPageSnapshot[\s\S]*?\n}\n\nlet cdpWorkerMessageId/);
 assert.ok(match, 'oauth_route_observer_missing');
 const functionSource = match[0].replace(/\nlet cdpWorkerMessageId$/, '');
 const sandbox = { URL, wait: async () => {}, setTimeout, clearTimeout, assert: (value, code) => { if (!value) throw new Error(code); } };
 vm.createContext(sandbox);
-new vm.Script(`${functionSource}; globalThis.classifyConsent = classifyOAuthConsent; globalThis.observe = awaitOAuthRouteOrCallback; globalThis.observeCallback = awaitOAuthCallbackStorage; globalThis.observeApproval = observeOAuthConsentApproval;`).runInContext(sandbox);
+new vm.Script(`${functionSource}; globalThis.readSnapshot = readOAuthPageSnapshot; globalThis.classifyConsent = classifyOAuthConsentSnapshot; globalThis.observe = awaitOAuthRouteOrCallback; globalThis.observeCallback = awaitOAuthCallbackStorage; globalThis.observeApproval = observeOAuthConsentApproval;`).runInContext(sandbox);
 
 const exactLocator = (entries) => ({
   count: async () => entries.length,
@@ -30,6 +30,8 @@ const page = ({ url = 'https://www.aimatrx.com/auth', email = false, password = 
     isClosed: () => closed,
     url: () => url,
     evaluate: async () => snapshotHangs ? new Promise(() => {}) : ({
+      emailVisible: email,
+      passwordVisible: password,
       authorizeCount: authorize.filter((entry) => entry.visible).length,
       enabledAuthorizeCount: authorize.filter((entry) => entry.visible && entry.enabled).length,
       retryCount: retry.filter((entry) => entry.visible).length,
@@ -56,7 +58,8 @@ const storage = async () => ({});
   assert.equal(await sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', headings: [{ visible: true, text: 'Redirecting' }] }), storage, adminEmail: 'admin@admin.com' }), 'redirecting');
   await assert.rejects(() => sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', authorize: [{ visible: true, enabled: false }] }), storage, adminEmail: 'admin@admin.com' }), /oauth_consent_or_callback_timeout/, 'URL-only or disabled consent must never be accepted as rendered readiness');
   await assert.rejects(() => sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', authorize: [{ visible: true, enabled: true }, { visible: true, enabled: true }] }), storage, adminEmail: 'admin@admin.com' }), /oauth_consent_or_callback_timeout/, 'multiple exact approval controls must fail closed');
-  await assert.rejects(() => sandbox.classifyConsent(page({ url: 'https://www.aimatrx.com/oauth/consent', snapshotHangs: true }), 1), /oauth_consent_dom_snapshot_timeout/, 'a stalled DOM read must fail on its own bounded timer');
+  await assert.rejects(() => sandbox.readSnapshot(page({ url: 'https://www.aimatrx.com/oauth/consent', snapshotHangs: true }), 1), /oauth_consent_dom_snapshot_timeout/, 'a stalled DOM read must fail on its own bounded timer');
+  await assert.rejects(() => sandbox.observe({ authPage: page({ closed: true }), storage: async () => new Promise(() => {}), adminEmail: 'admin@admin.com', deadlineMs: 2 }), /oauth_route_observation_deadline/, 'the complete OAuth observation must have an independent hard deadline');
 
   const single = page(); const singleObserver = sandbox.observeApproval(single, 'https://db.matrxserver.com', 20); const singleWait = singleObserver.requireFirst2xx(); single.emitApproval(204); await singleWait;
   assert.equal(JSON.stringify(singleObserver.finish()), JSON.stringify({ route: 'oauth_authorization_consent', method: 'POST', status: 204, phase: 'after_authorize_click', count: 1 }));

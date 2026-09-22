@@ -57,12 +57,11 @@ const assert = (condition, code) => {
 };
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function classifyOAuthConsent(authPage, timeoutMs = 1000) {
-  // Read one atomic DOM snapshot. Locator-by-locator reads can auto-wait after
-  // navigation and turn a bounded OAuth observation into an unbounded hang.
-  const snapshot = await Promise.race([
+async function readOAuthPageSnapshot(authPage, timeoutMs = 1000) {
+  return Promise.race([
     authPage.evaluate(() => {
       const visible = (element) => {
+        if (!element) return false;
         const rect = element.getBoundingClientRect();
         const style = getComputedStyle(element);
         return rect.width > 0 && rect.height > 0 && style.display !== 'none'
@@ -74,6 +73,8 @@ async function classifyOAuthConsent(authPage, timeoutMs = 1000) {
       const headings = Array.from(document.querySelectorAll('h2')).filter(visible)
         .map((heading) => heading.textContent?.trim() || '');
       return {
+        emailVisible: visible(document.querySelector('#email')),
+        passwordVisible: visible(document.querySelector('#password')),
         authorizeCount: authorize.length,
         enabledAuthorizeCount: authorize.filter((button) => !button.disabled).length,
         retryCount: retry.length,
@@ -82,6 +83,9 @@ async function classifyOAuthConsent(authPage, timeoutMs = 1000) {
     }),
     new Promise((_, reject) => setTimeout(() => reject(new Error('oauth_consent_dom_snapshot_timeout')), timeoutMs)),
   ]);
+}
+
+function classifyOAuthConsentSnapshot(snapshot) {
   const oneEnabledAuthorize = snapshot.authorizeCount === 1 && snapshot.enabledAuthorizeCount === 1;
   const exactOneRetry = snapshot.retryCount === 1;
   const visibleHeadings = snapshot.visibleHeadings;
@@ -155,36 +159,42 @@ function observeOAuthConsentApproval(authPage, dbOrigin, timeoutMs = 30000) {
 // complete the callback. Both remain bound to the extension's PKCE/state
 // validation in auth/flow.ts and are accepted only after fresh extension
 // storage and the independent /auth/v1/user check below agree on admin.
-async function awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowLoginForm = false }) {
-  for (let attempt = 0; attempt < 60; attempt += 1) {
-    try {
-      if (!authPage.isClosed()) {
-        if (allowLoginForm) {
-          const [emailVisible, passwordVisible] = await Promise.all([
-            authPage.locator('#email').isVisible().catch(() => false),
-            authPage.locator('#password').isVisible().catch(() => false),
-          ]);
-          if (emailVisible && passwordVisible) return 'password_form';
+async function awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowLoginForm = false, deadlineMs = 35000 }) {
+  let timeout;
+  const observation = (async () => {
+    for (let attempt = 0; attempt < 60; attempt += 1) {
+      try {
+        if (!authPage.isClosed()) {
+          const snapshot = await readOAuthPageSnapshot(authPage);
+          if (allowLoginForm && snapshot.emailVisible && snapshot.passwordVisible) return 'password_form';
+          const current = new URL(authPage.url());
+          if (current.origin === 'https://www.aimatrx.com' && current.pathname.startsWith('/oauth/consent')) {
+            const consent = classifyOAuthConsentSnapshot(snapshot);
+            if (consent !== 'consent_ambiguous') return consent;
+          }
         }
-        const current = new URL(authPage.url());
-        if (current.origin === 'https://www.aimatrx.com' && current.pathname.startsWith('/oauth/consent')) {
-          const consent = await classifyOAuthConsent(authPage);
-          if (consent !== 'consent_ambiguous') return consent;
-        }
+      } catch (error) {
+        // A closed managed page may mean the callback is already progressing.
+        // Every other observer failure is real and must not be swallowed into
+        // another loop iteration.
+        if (!authPage.isClosed()) throw error;
       }
-    } catch (error) {
-      // A closed managed page may mean the callback is already progressing.
-      // Every other observer failure is real and must not be swallowed into
-      // another loop iteration.
-      if (!authPage.isClosed()) throw error;
+      const session = await storage(['matrx.user.profile', 'matrx.auth.accessToken']);
+      if (session?.['matrx.user.profile']?.email === adminEmail
+        && typeof session?.['matrx.auth.accessToken'] === 'string'
+        && session['matrx.auth.accessToken'].length > 20) return 'completed_callback';
+      await wait(500);
     }
-    const session = await storage(['matrx.user.profile', 'matrx.auth.accessToken']);
-    if (session?.['matrx.user.profile']?.email === adminEmail
-      && typeof session?.['matrx.auth.accessToken'] === 'string'
-      && session['matrx.auth.accessToken'].length > 20) return 'completed_callback';
-    await wait(500);
+    throw new Error('oauth_consent_or_callback_timeout');
+  })();
+  try {
+    return await Promise.race([
+      observation,
+      new Promise((_, reject) => { timeout = setTimeout(() => reject(new Error('oauth_route_observation_deadline')), deadlineMs); }),
+    ]);
+  } finally {
+    clearTimeout(timeout);
   }
-  throw new Error('oauth_consent_or_callback_timeout');
 }
 
 async function awaitOAuthCallbackStorage({ authPage, storage, adminEmail }) {
