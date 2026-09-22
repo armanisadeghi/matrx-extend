@@ -10,6 +10,7 @@
 
 const LOGIN_ORIGIN = 'https://www.aimatrx.com';
 const LOGIN_PATH = '/login';
+const POST_FILL_SETTLE_MS = 2_000;
 
 function validateRealSiteUrls(realLoginUrl, wrongSiteUrl) {
   const login = new URL(realLoginUrl);
@@ -59,6 +60,59 @@ async function waitForBridge(worker, tabId, wait) {
   throw new Error('real_site_fill_bridge_not_ready');
 }
 
+async function waitForFocusedWrongOriginNoMatch({ page, realPanel, tabId, wrongUrl, wait, verifyRealVaultPanel }) {
+  const deadline = Date.now() + 15_000;
+  do {
+    const pageReady = await page.evaluate((expectedUrl) => ({
+      exactUrl: location.href === expectedUrl,
+      focusedPassword: document.hasFocus() && document.activeElement?.id === 'password',
+    }), wrongUrl);
+    await verifyRealVaultPanel();
+    const panelStatus = await realPanel.evaluate(async (id) => {
+      try {
+        const value = await chrome.runtime.sendMessage({
+          __matrx: true,
+          kind: 'credential-suggestions:panel-status',
+          payload: { tabId: id },
+        });
+        const record = !!value && typeof value === 'object' && !Array.isArray(value);
+        const keys = record ? Object.keys(value).sort() : [];
+        return {
+          status: record && typeof value.status === 'string' ? value.status : null,
+          exactNoMatchShape: keys.length === 2 && keys[0] === 'itemIds' && keys[1] === 'status'
+            && Array.isArray(value.itemIds) && value.itemIds.length === 0,
+        };
+      } catch {
+        return { status: null, exactNoMatchShape: false };
+      }
+    }, tabId);
+    if (pageReady.exactUrl && pageReady.focusedPassword
+      && panelStatus.status === 'none' && panelStatus.exactNoMatchShape) return;
+    await wait(100);
+  } while (Date.now() < deadline);
+  throw new Error('real_site_wrong_site_not_settled');
+}
+
+function observePostFillSubmission(page) {
+  const observed = { navigationRequest: false, nonReadRequest: false, mainFrameNavigation: false };
+  const onRequest = (request) => {
+    if (request.isNavigationRequest() && request.frame() === page.mainFrame()) observed.navigationRequest = true;
+    if (!['GET', 'HEAD'].includes(request.method())) observed.nonReadRequest = true;
+  };
+  const onFrameNavigated = (frame) => {
+    if (frame === page.mainFrame()) observed.mainFrameNavigation = true;
+  };
+  page.on('request', onRequest);
+  page.on('framenavigated', onFrameNavigated);
+  return {
+    observed,
+    stop: () => {
+      page.off('request', onRequest);
+      page.off('framenavigated', onFrameNavigated);
+    },
+  };
+}
+
 exports.runRealSiteFillChecks = async ({
   context, worker, realPanel, targetName, username, password, realLoginUrl, wrongSiteUrl,
   assert, wait, checkpoint = () => {}, proof, focusOwnedBrowser, verifyRealVaultPanel,
@@ -79,6 +133,7 @@ exports.runRealSiteFillChecks = async ({
   };
   let page;
   let primaryFailure;
+  let stopPostFillObservation = () => {};
   try {
     checkpoint('real_site_fill_login_open');
     page = await context.newPage();
@@ -105,6 +160,8 @@ exports.runRealSiteFillChecks = async ({
     const fill = exactFillButton(targetName);
     await realPanel.waitFor(`!!(${fill})`, true, 15000);
     checkpoint('real_site_fill_panel_fill');
+    const postFill = observePostFillSubmission(page);
+    stopPostFillObservation = postFill.stop;
     await realPanel.click(fill);
     const deadline = Date.now() + 15000;
     let filled = false;
@@ -121,7 +178,24 @@ exports.runRealSiteFillChecks = async ({
       }
       await wait(Math.min(100, Math.max(1, deadline - Date.now())));
     } while (Date.now() < deadline);
-    assert(filled, 'real_site_fill_not_completed');
+    assert(filled && !postFill.observed.navigationRequest && !postFill.observed.nonReadRequest
+      && !postFill.observed.mainFrameNavigation, 'real_site_fill_not_completed');
+    const settleDeadline = Date.now() + POST_FILL_SETTLE_MS;
+    do {
+      await verifyRealVaultPanel();
+      const settled = await page.evaluate(({ expectedUsername, expectedPassword, loginUrl }) => ({
+        usernameMatches: document.querySelector('#email')?.value === expectedUsername,
+        passwordMatches: document.querySelector('#password')?.value === expectedPassword,
+        unchangedUrl: location.href === loginUrl,
+        submitCount: window.__matrxRealSiteSubmitCount,
+      }), { expectedUsername: username, expectedPassword: password, loginUrl: urls.login });
+      assert(settled.usernameMatches && settled.passwordMatches && settled.unchangedUrl && settled.submitCount === 0
+        && !postFill.observed.navigationRequest && !postFill.observed.nonReadRequest
+        && !postFill.observed.mainFrameNavigation, 'real_site_fill_submitted_after_match');
+      await wait(Math.min(100, Math.max(1, settleDeadline - Date.now())));
+    } while (Date.now() < settleDeadline);
+    stopPostFillObservation();
+    stopPostFillObservation = () => {};
     evidence.exactSavedAccountFilled = true;
     evidence.noWebsiteSubmission = true;
 
@@ -131,7 +205,10 @@ exports.runRealSiteFillChecks = async ({
     await waitForBridge(worker, wrongTabId, wait);
     await page.bringToFront();
     await focusOwnedBrowser(wrongTabId);
-    await verifyRealVaultPanel();
+    await page.locator('#password').focus();
+    await waitForFocusedWrongOriginNoMatch({
+      page, realPanel, tabId: wrongTabId, wrongUrl: urls.wrong, wait, verifyRealVaultPanel,
+    });
     await realPanel.waitFor(`!(${fill})`, true, 15000);
     const wrongResult = await page.evaluate(() => {
       const email = document.querySelector('#email');
@@ -150,6 +227,7 @@ exports.runRealSiteFillChecks = async ({
   } catch (error) {
     primaryFailure = error;
   } finally {
+    stopPostFillObservation();
     if (page && !page.isClosed()) await page.close().catch(() => {});
     evidence.pageClosed = !page || page.isClosed() === true;
     if (proof) proof.realSiteFill = evidence;
@@ -160,3 +238,4 @@ exports.runRealSiteFillChecks = async ({
 };
 
 exports.validateRealSiteUrls = validateRealSiteUrls;
+exports.observePostFillSubmission = observePostFillSubmission;
