@@ -13,7 +13,7 @@ const { acquireVaultAcceptanceLease } = require('./vault-acceptance-lease.cjs');
 const { FAILED_PROOF_PATH: reconciledChromeProofPath, verifyHistoricalChromeReconciliation } = require('./vault-historical-reconciliation.cjs');
 const { FAILED_PROOF_PATH: recovered7356ProofPath, verify7356RecoveryAdmission, NO_COMMIT_PROOF_PATH, verifyNoCommitRecovery } = require('./vault-7356-reconciliation.cjs');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
-const { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsSignOut, visibleSettingsControl } = require('./vault-extension-lifecycle-acceptance.cjs');
+const { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsSignOut, visibleSettingsControl, visibleVaultControl } = require('./vault-extension-lifecycle-acceptance.cjs');
 const { observeOwnedPanelLogout } = require('./vault-lifecycle-network-observation.cjs');
 const { hasObservedReadOnlyCleanup, hasPreAuthNoWriteCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
 const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
@@ -1658,9 +1658,9 @@ async function materializedPassword(id) {
           return false;
         },
         verifyBearerlessVaultRefusal: async () => {
-          await realPanel.click('document.querySelector(`[title="Vault"]`)');
-          await realPanel.waitFor(`document.body.innerText.includes('Sign in to start using the extension')`);
-          return await realPanel.evaluate(`document.body.innerText.includes('Sign in to start using the extension') && !document.querySelector('[role="tabpanel"] li')`);
+          await realPanel.click(visibleVaultControl);
+          await realPanel.waitFor(`document.body.innerText.includes('Sign in to open your Vault')`);
+          return await realPanel.evaluate(`document.body.innerText.includes('Sign in to open your Vault') && !document.querySelector('[role="tabpanel"] li')`);
         },
       });
       // Only the Settings sign-out response belongs to this observation.

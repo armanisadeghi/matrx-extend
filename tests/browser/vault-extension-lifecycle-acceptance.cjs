@@ -14,6 +14,14 @@ const visibleSettingsControl = `(() => {
   });
   return controls.length === 1 ? controls[0] : null;
 })()`;
+const visibleVaultControl = `(() => {
+  const controls = Array.from(document.querySelectorAll('button[title="Vault"]')).filter((button) => {
+    const rect = button.getBoundingClientRect();
+    const style = getComputedStyle(button);
+    return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden' && button.getAttribute('aria-hidden') !== 'true';
+  });
+  return controls.length === 1 ? controls[0] : null;
+})()`;
 
 async function inspectIdentity(worker) {
   const session = await worker.evaluate(async () => {
@@ -61,13 +69,13 @@ async function runSettingsSignOut({ worker, panel, checkpoint, proof, waitForLog
   await panel.click(visibleSettingsControl);
   await panel.waitFor(`document.body.innerText.includes('Settings')`);
   await panel.click(`Array.from(document.querySelectorAll('button')).find((element) => element.textContent.trim() === 'Sign out')`);
-  await panel.waitFor(`document.body.innerText.includes('Sign in to start using the extension')`);
+  const remoteLogout204 = await waitForLogout204();
   const cleared = await worker.evaluate(async () => {
     const keys = ['matrx.user.profile', 'matrx.auth.accessToken', 'matrx.auth.refreshTokenEnc', 'matrx.auth.refreshTokenIv', 'matrx.org.active'];
     const value = await chrome.storage.local.get(keys);
     return keys.every((key) => value[key] === undefined);
   });
-  const remoteLogout204 = await waitForLogout204();
+  await panel.waitFor(`document.body.innerText.includes('Settings') && Array.from(document.querySelectorAll('button')).some((element) => element.textContent.trim() === 'Sign in') && !Array.from(document.querySelectorAll('button')).some((element) => element.textContent.trim() === 'Sign out')`);
   const vaultRequestRefusedWithoutBearer = await verifyBearerlessVaultRefusal();
   proof.lifecycle ||= {};
   proof.lifecycle.signOut = {
@@ -80,4 +88,4 @@ async function runSettingsSignOut({ worker, panel, checkpoint, proof, waitForLog
   assert(cleared && remoteLogout204 && vaultRequestRefusedWithoutBearer, 'lifecycle_sign_out_evidence_incomplete');
 }
 
-module.exports = { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsSignOut, visibleSettingsControl };
+module.exports = { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsSignOut, visibleSettingsControl, visibleVaultControl };
