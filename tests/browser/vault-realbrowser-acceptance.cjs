@@ -69,24 +69,39 @@ async function visibleExactCount(locator) {
 async function classifyOAuthConsent(authPage) {
   const authorize = authPage.getByRole('button', { name: 'Authorize', exact: true });
   const retry = authPage.getByRole('button', { name: 'Try again', exact: true });
-  const redirecting = authPage.getByText('Redirecting', { exact: true });
-  const [authorizeState, retryState, redirectingState, headings] = await Promise.all([
+  const headingLocator = authPage.locator('h2');
+  const [authorizeState, retryState, headingCount] = await Promise.all([
     visibleExactCount(authorize),
     visibleExactCount(retry),
-    visibleExactCount(redirecting),
-    visibleExactCount(authPage.locator('h2')),
+    headingLocator.count(),
   ]);
+  const visibleHeadings = [];
+  for (let index = 0; index < headingCount; index += 1) {
+    const heading = headingLocator.nth(index);
+    if (await heading.isVisible().catch(() => false)) {
+      visibleHeadings.push((await heading.textContent().catch(() => ''))?.trim() || '');
+    }
+  }
   const oneEnabledAuthorize = authorizeState.count === 1 && authorizeState.visible === 1
     && await authorize.isEnabled().catch(() => false);
   const exactOneRetry = retryState.count === 1 && retryState.visible === 1;
-  const exactOneRedirecting = redirectingState.count === 1 && redirectingState.visible === 1;
-  const terminalHeading = headings.visible === 1 && headings.count === 1;
+  const exactOneRedirecting = visibleHeadings.length === 1 && visibleHeadings[0] === 'Redirecting';
+  const exactErrorTitles = new Set([
+    'Invalid request',
+    'We could not verify your sign-in',
+    'Origin not authorized',
+    'Request expired',
+    'Too many requests',
+    'Network error',
+  ]);
+  const exactOneErrorHeading = visibleHeadings.length === 1
+    && (exactErrorTitles.has(visibleHeadings[0]) || /^Authorization error \((?:unknown|\d{3})\)$/.test(visibleHeadings[0]));
   // Any competing rendered state or duplicate exact control is ambiguous.
-  if (authorizeState.count > 1 || retryState.count > 1 || redirectingState.count > 1 || headings.count > 1)
+  if (authorizeState.count > 1 || retryState.count > 1)
     return 'consent_ambiguous';
   if (exactOneRedirecting) return oneEnabledAuthorize || exactOneRetry ? 'consent_ambiguous' : 'redirecting';
-  if (oneEnabledAuthorize) return exactOneRetry || terminalHeading ? 'consent_ambiguous' : 'consent_ready';
-  if (exactOneRetry || (terminalHeading && authorizeState.visible === 0)) return 'consent_error';
+  if (oneEnabledAuthorize) return exactOneRetry || exactOneErrorHeading ? 'consent_ambiguous' : 'consent_ready';
+  if (exactOneRetry || exactOneErrorHeading) return 'consent_error';
   return 'consent_ambiguous';
 }
 

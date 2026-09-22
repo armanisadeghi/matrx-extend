@@ -15,7 +15,10 @@ new vm.Script(`${functionSource}; globalThis.observe = awaitOAuthRouteOrCallback
 
 const exactLocator = (entries) => ({
   count: async () => entries.length,
-  nth: (index) => ({ isVisible: async () => entries[index]?.visible === true }),
+  nth: (index) => ({
+    isVisible: async () => entries[index]?.visible === true,
+    textContent: async () => entries[index]?.text ?? '',
+  }),
   isVisible: async () => entries[0]?.visible === true,
   isEnabled: async () => entries[0]?.enabled === true,
   waitFor: async () => {},
@@ -40,10 +43,11 @@ const storage = async () => ({});
 
 (async () => {
   assert.equal(await sandbox.observe({ authPage: page({ email: true, password: true }), storage, adminEmail: 'admin@admin.com', allowLoginForm: true }), 'password_form');
-  assert.equal(await sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', authorize: [{ visible: true, enabled: true }] }), storage, adminEmail: 'admin@admin.com' }), 'consent_ready');
+  assert.equal(await sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', authorize: [{ visible: true, enabled: true }], headings: [{ visible: true, text: 'This will allow AI Matrx to:' }] }), storage, adminEmail: 'admin@admin.com' }), 'consent_ready');
   assert.equal(await sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', retry: [{ visible: true }] }), storage, adminEmail: 'admin@admin.com' }), 'consent_error');
-  assert.equal(await sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', headings: [{ visible: true }] }), storage, adminEmail: 'admin@admin.com' }), 'consent_error');
-  assert.equal(await sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', redirecting: [{ visible: true }] }), storage, adminEmail: 'admin@admin.com' }), 'redirecting');
+  assert.equal(await sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', headings: [{ visible: true, text: 'Request expired' }] }), storage, adminEmail: 'admin@admin.com' }), 'consent_error');
+  assert.equal(await sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', headings: [{ visible: true, text: 'Authorization error (500)' }] }), storage, adminEmail: 'admin@admin.com' }), 'consent_error');
+  assert.equal(await sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', headings: [{ visible: true, text: 'Redirecting' }] }), storage, adminEmail: 'admin@admin.com' }), 'redirecting');
   await assert.rejects(() => sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', authorize: [{ visible: true, enabled: false }] }), storage, adminEmail: 'admin@admin.com' }), /oauth_consent_or_callback_timeout/, 'URL-only or disabled consent must never be accepted as rendered readiness');
   await assert.rejects(() => sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', authorize: [{ visible: true, enabled: true }, { visible: true, enabled: true }] }), storage, adminEmail: 'admin@admin.com' }), /oauth_consent_or_callback_timeout/, 'multiple exact approval controls must fail closed');
 
