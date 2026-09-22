@@ -13,7 +13,7 @@ const { acquireVaultAcceptanceLease } = require('./vault-acceptance-lease.cjs');
 const { FAILED_PROOF_PATH: reconciledChromeProofPath, verifyHistoricalChromeReconciliation } = require('./vault-historical-reconciliation.cjs');
 const { FAILED_PROOF_PATH: recovered7356ProofPath, verify7356RecoveryAdmission, NO_COMMIT_PROOF_PATH, verifyNoCommitRecovery } = require('./vault-7356-reconciliation.cjs');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
-const { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsSignOut } = require('./vault-extension-lifecycle-acceptance.cjs');
+const { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsSignOut, visibleSettingsControl } = require('./vault-extension-lifecycle-acceptance.cjs');
 const { observeOwnedPanelLogout } = require('./vault-lifecycle-network-observation.cjs');
 const { hasObservedReadOnlyCleanup, hasPreAuthNoWriteCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
 const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
@@ -123,6 +123,7 @@ const workerRestartLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WORK
 const windowSwitchLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH === 'RUN_WINDOW_SWITCH_LIFECYCLE';
 const extensionLifecycleMode = process.env.MATRX_VAULT_CANARY_EXTENSION_LIFECYCLE === 'RUN_EXTENSION_LIFECYCLE';
 const setupIdentityOnlyMode = process.env.MATRX_VAULT_CANARY_SETUP_IDENTITY_ONLY === 'RUN_SETUP_IDENTITY_ONLY';
+const identityOnlyMode = process.env.MATRX_VAULT_CANARY_IDENTITY_ONLY === 'RUN_IDENTITY_ONLY';
 assert(typeof displayMode === 'string' && displayMode.length > 0, 'canary_display_mode_required');
 assert(headlessNoClipboardMode || headedMode, 'canary_display_mode_invalid');
 assert(!headedMode || process.env.MATRX_VAULT_CANARY_FOREGROUND === 'ALLOW_FOREGROUND_TEST', 'headed_canary_requires_foreground_allow');
@@ -146,7 +147,8 @@ assert(!workerRestartLifecycleMode || headlessNoClipboardMode, 'worker_restart_l
 assert(!windowSwitchLifecycleMode || headlessNoClipboardMode, 'window_switch_lifecycle_requires_headless_no_clipboard');
 assert(!extensionLifecycleMode || (headlessNoClipboardMode && readOnlyAdmissionMode), 'extension_lifecycle_requires_headless_readonly_admission');
 assert(!setupIdentityOnlyMode || (headlessNoClipboardMode && readOnlyAdmissionMode), 'setup_identity_only_requires_headless_readonly_admission');
-assert(!(extensionLifecycleMode && setupIdentityOnlyMode), 'lifecycle_modes_are_exclusive');
+assert(!identityOnlyMode || (headlessNoClipboardMode && readOnlyAdmissionMode), 'identity_only_requires_headless_readonly_admission');
+assert([extensionLifecycleMode, setupIdentityOnlyMode, identityOnlyMode].filter(Boolean).length <= 1, 'lifecycle_modes_are_exclusive');
 if (lifecycleDryRun) {
   const digest = (name) => crypto.createHash('sha256').update(syncFs.readFileSync(path.join(__dirname, name))).digest('hex');
   process.stdout.write(`${JSON.stringify({
@@ -1319,7 +1321,7 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
   persist();
   realPanel = await openGenuineSidePanel(extensionId, popup);
   await networkJournal.bindPanelTarget(realPanel.targetId);
-  if ((extensionLifecycleMode || setupIdentityOnlyMode) && !lifecycleLogoutObserver) {
+  if ((extensionLifecycleMode || setupIdentityOnlyMode || identityOnlyMode) && !lifecycleLogoutObserver) {
     lifecycleLogoutObserver = observeOwnedPanelLogout({
       panel: realPanel,
       extensionId,
@@ -1574,7 +1576,7 @@ async function materializedPassword(id) {
           throw new Error('lifecycle_replacement_worker_timeout');
         },
         verifySettingsIdentity: async () => {
-          await realPanel.click(`Array.from(document.querySelectorAll('button')).find((element) => element.textContent.trim() === 'Settings')`);
+          await realPanel.click(visibleSettingsControl);
           await realPanel.waitFor(`document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`);
           return true;
         },
@@ -1590,6 +1592,15 @@ async function materializedPassword(id) {
         extensionReload: { disposition: 'not_run', reason: 'setup_identity_only_mode' },
         partialDisposition: 'setup_transport_signout_fresh_recovery_pending_reload',
       };
+      persist();
+    } else if (identityOnlyMode) {
+      const initial = await inspectIdentity(worker);
+      proof.lifecycle = {
+        initialIdentitySha256: initial.identitySha256,
+        extensionReload: { disposition: 'not_run', reason: 'identity_only_mode' },
+        partialDisposition: 'signout_fresh_recovery_pending_reload_browser_restart_and_org_switch',
+      };
+      proof.setupTransportRecovery = { disposition: 'not_run', reason: 'already_accepted_in_prior_setup_run' };
       persist();
     }
     proof.phase = 'vault_baseline';
@@ -1618,8 +1629,8 @@ async function materializedPassword(id) {
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
     };
     assert(JSON.stringify(helperHashesBeforeWrites) === JSON.stringify(proof.helperSha256), 'helper_source_changed_before_writes');
-    if (extensionLifecycleMode || setupIdentityOnlyMode) {
-      await runVaultListTransportRecoveryChecks({
+    if (extensionLifecycleMode || setupIdentityOnlyMode || identityOnlyMode) {
+      if (extensionLifecycleMode || setupIdentityOnlyMode) await runVaultListTransportRecoveryChecks({
         context,
         realPanel,
         minimumOwnListRows: baseline.length,
@@ -1672,7 +1683,7 @@ async function materializedPassword(id) {
         verifiedIdentityRecovered: sameLifecycleIdentity(proof.lifecycle.initialIdentitySha256, recoveryIdentity),
         identitySha256: recoveryIdentity,
       };
-      await realPanel.click(`Array.from(document.querySelectorAll('button')).find((element) => element.textContent.trim() === 'Settings')`);
+      await realPanel.click(visibleSettingsControl);
       await realPanel.waitFor(`document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`);
       proof.lifecycle.freshRecovery.settingsUiRecovered = await realPanel.evaluate(`document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`);
       proof.lifecycle.freshRecovery.disposition = proof.lifecycle.freshRecovery.interactiveSignInCompleted
@@ -1689,6 +1700,8 @@ async function materializedPassword(id) {
       };
       proof.lifecycle.partialDisposition = setupIdentityOnlyMode
         ? 'setup_transport_signout_fresh_recovery_observed_reload_browser_restart_and_org_switch_pending'
+        : identityOnlyMode
+          ? 'signout_fresh_recovery_observed_reload_browser_restart_and_org_switch_pending'
         : 'reload_setup_recovery_signout_fresh_recovery_observed_browser_restart_and_org_switch_pending';
       // One real Vault read after recovery establishes the new bearer works;
       // it is intentionally mutation-free and skips the legacy generator tail.
@@ -1701,7 +1714,7 @@ async function materializedPassword(id) {
         && proof.lifecycle.freshRecovery.settingsUiRecovered
         && proof.lifecycle.freshVaultRead ? 'passed' : 'failed';
       persist();
-    } else if (readOnlyAdmissionMode) {
+    } else if (readOnlyAdmissionMode && !identityOnlyMode) {
       proof.admission.baselineRead = true;
       proof.admission.prewriteLocalCanonicalPreflight = localCanonicalCleanupArmed;
       proof.admission.noFixtureWrites = proof.vaultMutationRequests === 0 && proof.vaultItemPosts.total === 0

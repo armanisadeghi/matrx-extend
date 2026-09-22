@@ -4,6 +4,16 @@ const crypto = require('node:crypto');
 
 const assert = (value, code) => { if (!value) throw new Error(code); };
 const hash = (value) => crypto.createHash('sha256').update(value).digest('hex');
+// Settings is an icon-only navigation control. Scope it by its stable title
+// and rendered geometry; a hidden duplicate remains an ambiguity, never a click.
+const visibleSettingsControl = `(() => {
+  const controls = Array.from(document.querySelectorAll('button[title="Settings"]')).filter((button) => {
+    const rect = button.getBoundingClientRect();
+    const style = getComputedStyle(button);
+    return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden' && button.getAttribute('aria-hidden') !== 'true';
+  });
+  return controls.length === 1 ? controls[0] : null;
+})()`;
 
 async function inspectIdentity(worker) {
   const session = await worker.evaluate(async () => {
@@ -48,7 +58,7 @@ async function runExtensionReload({ worker, refreshWorker, verifySettingsIdentit
 async function runSettingsSignOut({ worker, panel, checkpoint, proof, waitForLogout204, verifyBearerlessVaultRefusal }) {
   checkpoint('lifecycle_settings_sign_out');
   // Settings is the product navigation item; use the real CDP click helper.
-  await panel.click(`Array.from(document.querySelectorAll('button')).find((element) => element.textContent.trim() === 'Settings')`);
+  await panel.click(visibleSettingsControl);
   await panel.waitFor(`document.body.innerText.includes('Settings')`);
   await panel.click(`Array.from(document.querySelectorAll('button')).find((element) => element.textContent.trim() === 'Sign out')`);
   await panel.waitFor(`document.body.innerText.includes('Sign in to start using the extension')`);
@@ -70,4 +80,4 @@ async function runSettingsSignOut({ worker, panel, checkpoint, proof, waitForLog
   assert(cleared && remoteLogout204 && vaultRequestRefusedWithoutBearer, 'lifecycle_sign_out_evidence_incomplete');
 }
 
-module.exports = { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsSignOut };
+module.exports = { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsSignOut, visibleSettingsControl };
