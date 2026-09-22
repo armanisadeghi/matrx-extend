@@ -35,6 +35,7 @@ import {
   LocalBrowserController,
   type LocalBrowserControllerDeps,
   canonicalGrantDeadlineMs,
+  postSubmitDocumentObserver,
 } from './controller';
 
 const ids = {
@@ -302,6 +303,65 @@ async function register(
 }
 
 describe('owned local-browser tab controller', () => {
+  it('allows one same-origin post-submit replacement and refuses pre-submit, URL races, cross-origin, and a second document', async () => {
+    let submitted = false;
+    let current = { documentId: 'original', url: 'https://example.test/login' };
+    const observe = postSubmitDocumentObserver({
+      original: current,
+      deadlineMs: Date.now() + 10_000,
+      isCurrent: () => true,
+      isSubmitted: () => submitted,
+      currentDocument: async () => current,
+    });
+    expect(await observe()).toBeNull();
+    submitted = true;
+    current = { documentId: 'original', url: 'https://example.test/home' };
+    expect(await observe()).toBeNull();
+    current = { documentId: 'original', url: 'https://example.test/login' };
+    expect(await observe()).toEqual(current);
+    current = { documentId: 'replacement', url: 'https://example.test/mfa' };
+    expect(await observe()).toEqual(current);
+    current = { documentId: 'replacement', url: 'https://example.test/home' };
+    expect(await observe()).toBeNull();
+    current = { documentId: 'replacement', url: 'https://example.test/mfa' };
+    expect(await observe()).toEqual(current);
+    current = { documentId: 'cross-origin', url: 'https://other.test/mfa' };
+    expect(await observe()).toBeNull();
+    current = { documentId: 'second-replacement', url: 'https://example.test/home' };
+    expect(await observe()).toBeNull();
+  });
+
+  it('refuses observation when binding or deadline changes during current-document read', async () => {
+    let current = true;
+    let release!: (value: { documentId: string; url: string }) => void;
+    const observe = postSubmitDocumentObserver({
+      original: { documentId: 'original', url: 'https://example.test/login' },
+      deadlineMs: Date.now() + 10_000,
+      isCurrent: () => current,
+      isSubmitted: () => true,
+      currentDocument: () =>
+        new Promise((resolve) => {
+          release = resolve;
+        }),
+    });
+    const pending = observe();
+    current = false;
+    release({ documentId: 'replacement', url: 'https://example.test/home' });
+    expect(await pending).toBeNull();
+
+    const expired = postSubmitDocumentObserver({
+      original: { documentId: 'original', url: 'https://example.test/login' },
+      deadlineMs: Date.now() - 1,
+      isCurrent: () => true,
+      isSubmitted: () => true,
+      currentDocument: async () => ({
+        documentId: 'replacement',
+        url: 'https://example.test/home',
+      }),
+    });
+    expect(await expired()).toBeNull();
+  });
+
   it('canonicalizes server millisecond projections to the grant expiry second', () => {
     // The server's projection is millisecond precision; the signed `exp` claim is seconds.
     expect(canonicalGrantDeadlineMs(1_700_000_000_999)).toBe(1_700_000_000_000);

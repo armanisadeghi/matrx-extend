@@ -132,6 +132,56 @@ export interface LocalBrowserControllerDeps {
   };
 }
 
+type BrowserDocument = { documentId: string; url: string };
+
+export function postSubmitDocumentObserver({
+  original,
+  deadlineMs,
+  isCurrent,
+  isSubmitted,
+  currentDocument,
+}: {
+  original: BrowserDocument;
+  deadlineMs: number;
+  isCurrent: () => boolean;
+  isSubmitted: () => boolean;
+  currentDocument: () => Promise<BrowserDocument | null>;
+}): () => Promise<BrowserDocument | null> {
+  let replacement: BrowserDocument | null = null;
+  return async () => {
+    if (!isSubmitted() || !isCurrent() || Date.now() >= deadlineMs) return null;
+    const current = await currentDocument();
+    if (!current || !isCurrent() || Date.now() >= deadlineMs) return null;
+    try {
+      const originalUrl = new URL(original.url);
+      const currentUrl = new URL(current.url);
+      if (
+        originalUrl.protocol !== 'https:' ||
+        currentUrl.protocol !== 'https:' ||
+        currentUrl.origin !== originalUrl.origin
+      )
+        return null;
+    } catch {
+      return null;
+    }
+    // A same-document history update is still a new page identity for this
+    // read-only observation. Never let an already-collected success signal
+    // follow it: the first same-origin replacement is frozen by both Chrome
+    // document id and URL, and every later read must match that exact pair.
+    if (current.documentId === original.documentId) {
+      if (current.url !== original.url) return null;
+      return current;
+    }
+    if (
+      replacement &&
+      (current.documentId !== replacement.documentId || current.url !== replacement.url)
+    )
+      return null;
+    replacement ??= current;
+    return current;
+  };
+}
+
 function productionDeps(): LocalBrowserControllerDeps {
   return {
     getExpectedActor: getPrivateExpectedActor,
@@ -907,32 +957,13 @@ export class LocalBrowserController {
     }
     let filled = false;
     let submitted = false;
-    let replacementDocument: { documentId: string; url: string } | null = null;
-    const observePostSubmitDocument = async (): Promise<{
-      documentId: string;
-      url: string;
-    } | null> => {
-      // Observation begins only after the already-bound original document has
-      // submitted. It never grants mutation authority to a replacement page.
-      if (!submitted || !isCurrent() || Date.now() >= claimed.deadline_ms) return null;
-      const current = await this.deps.command?.currentDocument(tabId);
-      if (!current || !isCurrent() || Date.now() >= claimed.deadline_ms) return null;
-      try {
-        const original = new URL(document.url);
-        const observed = new URL(current.url);
-        if (
-          original.protocol !== 'https:' ||
-          observed.protocol !== 'https:' ||
-          observed.origin !== original.origin
-        )
-          return null;
-      } catch {
-        return null;
-      }
-      if (replacementDocument && current.documentId !== replacementDocument.documentId) return null;
-      if (current.documentId !== document.documentId) replacementDocument ??= current;
-      return current;
-    };
+    const observePostSubmitDocument = postSubmitDocumentObserver({
+      original: document,
+      deadlineMs: claimed.deadline_ms,
+      isCurrent,
+      isSubmitted: () => submitted,
+      currentDocument: async () => (await this.deps.command?.currentDocument(tabId)) ?? null,
+    });
     const mapped = mapLocalCommandToHandler(command, tabId);
     if (!mapped || mapped.toolName !== 'credential_login') return terminal('configuration_error');
     const result =

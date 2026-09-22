@@ -1194,13 +1194,15 @@ describe('admitted post-submit document binding', () => {
           documentId: request.target.documentIds?.[0],
           operation: ('args' in request
             ? (request.args?.[0] as { operation?: string } | undefined)
-            : undefined)?.operation,
+            : undefined
+          )?.operation,
         });
         const answer = await execute(request);
         if (
           ('args' in request
             ? (request.args?.[0] as { operation?: string } | undefined)
-            : undefined)?.operation === 'submit_explicit'
+            : undefined
+          )?.operation === 'submit_explicit'
         )
           submitted = true;
         return answer;
@@ -1270,10 +1272,14 @@ describe('admitted post-submit document binding', () => {
       expect(result.status).toBe('authenticated');
       expect(calls.some((call) => call.documentId === 'replacement-fixture')).toBe(true);
       expect(
-        calls.filter((call) => call.documentId === 'replacement-fixture').map((call) => call.operation),
+        calls
+          .filter((call) => call.documentId === 'replacement-fixture')
+          .map((call) => call.operation),
       ).not.toContain('fill');
       expect(
-        calls.filter((call) => call.documentId === 'replacement-fixture').map((call) => call.operation),
+        calls
+          .filter((call) => call.documentId === 'replacement-fixture')
+          .map((call) => call.operation),
       ).not.toContain('submit_explicit');
     },
   );
@@ -1283,11 +1289,14 @@ describe('admitted post-submit document binding', () => {
       const helpers = await import('@/lib/tools/handlers/credential-login');
       if (kind === 'authenticator') renderAuthenticatorPage();
       let submitted = false;
+      let replacementUrlChangedDuringProbe = false;
       const execute = chrome.scripting.executeScript;
       vi.spyOn(chrome.scripting, 'executeScript').mockImplementation(async (request) => {
         if (submitted && request.target.documentIds?.[0] === 'document-fixture')
           throw new Error('the authorized document no longer exists');
         const answer = await execute(request);
+        if (submitted && request.target.documentIds?.[0] === 'replacement-fixture')
+          replacementUrlChangedDuringProbe = true;
         if (
           ('args' in request
             ? (request.args?.[0] as { operation?: string } | undefined)
@@ -1303,6 +1312,18 @@ describe('admitted post-submit document binding', () => {
         deadlineMs: Date.now() + 10_000,
         assertCurrent: async () => {},
         isCurrent: () => true,
+        onProgress: (event: 'filled' | 'submitted') => {
+          if (event === 'submitted') submitted = true;
+        },
+        observePostSubmitDocument: async () => {
+          if (!submitted) return { documentId: 'document-fixture', url: PAGE_URL };
+          return {
+            documentId: 'replacement-fixture',
+            // The injected read sees the old route, then SPA history changes
+            // the replacement URL before its final observation returns.
+            url: replacementUrlChangedDuringProbe ? PAGE_URL : `${PAGE_ORIGIN}/home`,
+          };
+        },
         report: vi.fn(async () => {}),
       };
       const result =
