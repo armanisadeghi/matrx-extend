@@ -20,12 +20,13 @@ test('native panel Fetch fault fulfills only its own-list GET and removes Fetch 
   await fault.install();
   await panel.emit('Fetch.requestPaused', request(OWN, 'GET', 'own'));
   await panel.emit('Fetch.requestPaused', request(`${API}/api/vault/shared-with-me`, 'GET', 'other'));
-  assert.deepEqual(fault.snapshot(), { installed: true, disposed: false, mode: 'forbidden', matchingRequests: 1, refusedRequests: 1, continuedRequests: 1 });
+  assert.deepEqual(fault.snapshot(), { installed: true, disposed: false, mode: 'forbidden', matchingRequests: 1, refusedRequests: 1, continuedRequests: 1, observerErrors: 0, pendingTasks: 1 });
   assert.equal(panel.calls.find((call) => call.method === 'Fetch.fulfillRequest')?.params.responseCode, 403);
   assert.equal(panel.calls.find((call) => call.method === 'Fetch.continueRequest')?.params.requestId, 'other');
   await fault.dispose();
   assert.equal(panel.calls.at(-1).method, 'Fetch.disable');
   assert.equal(panel.listeners.size, 0);
+  assert.equal(fault.snapshot().pendingTasks, 0);
 });
 
 test('native panel Fetch offline fault fails only its own-list GET', async () => {

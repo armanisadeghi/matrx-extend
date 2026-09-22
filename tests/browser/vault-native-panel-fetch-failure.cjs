@@ -9,8 +9,14 @@ function createNativePanelFetchFailure({ panel, apiOrigin, mode }) {
   let matchingRequests = 0;
   let refusedRequests = 0;
   let continuedRequests = 0;
-  const paused = async (method, params) => {
+  let observerErrors = 0;
+  let accepting = true;
+  const pending = new Set();
+  const track = (work) => { const task = Promise.resolve(work).catch(() => { observerErrors += 1; }).finally(() => pending.delete(task)); pending.add(task); };
+  const paused = (method, params) => {
     if (method !== 'Fetch.requestPaused') return;
+    if (!accepting) return;
+    track((async () => {
     const request = params?.request;
     const matches = request?.method === 'GET' && request?.url === endpoint;
     if (!matches) {
@@ -30,20 +36,24 @@ function createNativePanelFetchFailure({ panel, apiOrigin, mode }) {
       return;
     }
     await panel.send('Fetch.failRequest', { requestId: params.requestId, errorReason: 'Failed' });
+    })());
   };
   let unsubscribe = null;
   return {
     async install() {
       if (installed || disposed) throw new Error('vault_native_fetch_install_invalid');
-      await panel.send('Fetch.enable', { patterns: [{ urlPattern: '*', requestStage: 'Request' }] });
       unsubscribe = panel.onEvent(paused);
+      try { await panel.send('Fetch.enable', { patterns: [{ urlPattern: '*', requestStage: 'Request' }] }); }
+      catch (error) { unsubscribe(); unsubscribe = null; throw error; }
       installed = true;
     },
-    snapshot() { return Object.freeze({ installed, disposed, mode, matchingRequests, refusedRequests, continuedRequests }); },
+    snapshot() { return Object.freeze({ installed, disposed, mode, matchingRequests, refusedRequests, continuedRequests, observerErrors, pendingTasks: pending.size }); },
     async dispose() {
       if (disposed) return;
-      try { if (typeof unsubscribe === 'function') unsubscribe(); }
-      finally { await panel.send('Fetch.disable'); disposed = true; }
+      accepting = false;
+      await Promise.allSettled([...pending]);
+      try { await panel.send('Fetch.disable'); }
+      finally { if (typeof unsubscribe === 'function') unsubscribe(); disposed = true; }
     },
   };
 }
