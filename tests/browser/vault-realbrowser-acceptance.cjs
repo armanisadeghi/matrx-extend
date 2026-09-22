@@ -57,34 +57,34 @@ const assert = (condition, code) => {
 };
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function visibleExactCount(locator) {
-  const count = await locator.count();
-  let visible = 0;
-  for (let index = 0; index < count; index += 1) {
-    if (await locator.nth(index).isVisible().catch(() => false)) visible += 1;
-  }
-  return { count, visible };
-}
-
-async function classifyOAuthConsent(authPage) {
-  const authorize = authPage.getByRole('button', { name: 'Authorize', exact: true });
-  const retry = authPage.getByRole('button', { name: 'Try again', exact: true });
-  const headingLocator = authPage.locator('h2');
-  const [authorizeState, retryState, headingCount] = await Promise.all([
-    visibleExactCount(authorize),
-    visibleExactCount(retry),
-    headingLocator.count(),
+async function classifyOAuthConsent(authPage, timeoutMs = 1000) {
+  // Read one atomic DOM snapshot. Locator-by-locator reads can auto-wait after
+  // navigation and turn a bounded OAuth observation into an unbounded hang.
+  const snapshot = await Promise.race([
+    authPage.evaluate(() => {
+      const visible = (element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return rect.width > 0 && rect.height > 0 && style.display !== 'none'
+          && style.visibility !== 'hidden' && element.getAttribute('aria-hidden') !== 'true';
+      };
+      const buttons = Array.from(document.querySelectorAll('button')).filter(visible);
+      const authorize = buttons.filter((button) => button.textContent?.trim() === 'Authorize');
+      const retry = buttons.filter((button) => button.textContent?.trim() === 'Try again');
+      const headings = Array.from(document.querySelectorAll('h2')).filter(visible)
+        .map((heading) => heading.textContent?.trim() || '');
+      return {
+        authorizeCount: authorize.length,
+        enabledAuthorizeCount: authorize.filter((button) => !button.disabled).length,
+        retryCount: retry.length,
+        visibleHeadings: headings,
+      };
+    }),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('oauth_consent_dom_snapshot_timeout')), timeoutMs)),
   ]);
-  const visibleHeadings = [];
-  for (let index = 0; index < headingCount; index += 1) {
-    const heading = headingLocator.nth(index);
-    if (await heading.isVisible().catch(() => false)) {
-      visibleHeadings.push((await heading.textContent().catch(() => ''))?.trim() || '');
-    }
-  }
-  const oneEnabledAuthorize = authorizeState.count === 1 && authorizeState.visible === 1
-    && await authorize.isEnabled().catch(() => false);
-  const exactOneRetry = retryState.count === 1 && retryState.visible === 1;
+  const oneEnabledAuthorize = snapshot.authorizeCount === 1 && snapshot.enabledAuthorizeCount === 1;
+  const exactOneRetry = snapshot.retryCount === 1;
+  const visibleHeadings = snapshot.visibleHeadings;
   const exactOneRedirecting = visibleHeadings.length === 1 && visibleHeadings[0] === 'Redirecting';
   const exactErrorTitles = new Set([
     'Invalid request',
@@ -97,7 +97,7 @@ async function classifyOAuthConsent(authPage) {
   const exactOneErrorHeading = visibleHeadings.length === 1
     && (exactErrorTitles.has(visibleHeadings[0]) || /^Authorization error \((?:unknown|\d{3})\)$/.test(visibleHeadings[0]));
   // Any competing rendered state or duplicate exact control is ambiguous.
-  if (authorizeState.count > 1 || retryState.count > 1)
+  if (snapshot.authorizeCount > 1 || snapshot.retryCount > 1)
     return 'consent_ambiguous';
   if (exactOneRedirecting) return oneEnabledAuthorize || exactOneRetry ? 'consent_ambiguous' : 'redirecting';
   if (oneEnabledAuthorize) return exactOneRetry || exactOneErrorHeading ? 'consent_ambiguous' : 'consent_ready';
@@ -172,7 +172,12 @@ async function awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowL
           if (consent !== 'consent_ambiguous') return consent;
         }
       }
-    } catch { /* a completed callback closes the managed auth page */ }
+    } catch (error) {
+      // A closed managed page may mean the callback is already progressing.
+      // Every other observer failure is real and must not be swallowed into
+      // another loop iteration.
+      if (!authPage.isClosed()) throw error;
+    }
     const session = await storage(['matrx.user.profile', 'matrx.auth.accessToken']);
     if (session?.['matrx.user.profile']?.email === adminEmail
       && typeof session?.['matrx.auth.accessToken'] === 'string'
