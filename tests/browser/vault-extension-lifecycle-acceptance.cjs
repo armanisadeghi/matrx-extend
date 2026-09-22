@@ -20,6 +20,12 @@ async function inspectIdentity(worker) {
   return { identitySha256: hash(session.userId), activeOrganizationPresent: session.organization === true };
 }
 
+function sameLifecycleIdentity(initialIdentitySha256, recoveredIdentitySha256) {
+  return typeof initialIdentitySha256 === 'string'
+    && /^[a-f0-9]{64}$/.test(initialIdentitySha256)
+    && initialIdentitySha256 === recoveredIdentitySha256;
+}
+
 async function runExtensionReload({ worker, refreshWorker, verifySettingsIdentity, checkpoint, proof }) {
   const before = await inspectIdentity(worker);
   checkpoint('lifecycle_extension_reload');
@@ -30,7 +36,7 @@ async function runExtensionReload({ worker, refreshWorker, verifySettingsIdentit
   proof.lifecycle ||= {};
   proof.lifecycle.initialIdentitySha256 ||= before.identitySha256;
   proof.lifecycle.extensionReload = {
-    disposition: before.identitySha256 === after.identitySha256 && settingsUiRecovered ? 'passed' : 'failed',
+    disposition: sameLifecycleIdentity(before.identitySha256, after.identitySha256) && settingsUiRecovered ? 'passed' : 'failed',
     replacementWorkerObserved: replacement !== worker,
     sameIdentityRecovered: before.identitySha256 === after.identitySha256,
     settingsUiRecovered,
@@ -64,4 +70,4 @@ async function runSettingsSignOut({ worker, panel, checkpoint, proof, waitForLog
   assert(cleared && remoteLogout204 && vaultRequestRefusedWithoutBearer, 'lifecycle_sign_out_evidence_incomplete');
 }
 
-module.exports = { inspectIdentity, runExtensionReload, runSettingsSignOut };
+module.exports = { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsSignOut };

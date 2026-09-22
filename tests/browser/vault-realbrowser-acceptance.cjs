@@ -13,7 +13,7 @@ const { acquireVaultAcceptanceLease } = require('./vault-acceptance-lease.cjs');
 const { FAILED_PROOF_PATH: reconciledChromeProofPath, verifyHistoricalChromeReconciliation } = require('./vault-historical-reconciliation.cjs');
 const { FAILED_PROOF_PATH: recovered7356ProofPath, verify7356RecoveryAdmission, NO_COMMIT_PROOF_PATH, verifyNoCommitRecovery } = require('./vault-7356-reconciliation.cjs');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
-const { runExtensionReload, runSettingsSignOut } = require('./vault-extension-lifecycle-acceptance.cjs');
+const { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsSignOut } = require('./vault-extension-lifecycle-acceptance.cjs');
 const { isOwnedPanelLogoutResponse } = require('./vault-lifecycle-network-observation.cjs');
 const { hasObservedReadOnlyCleanup, hasPreAuthNoWriteCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
 const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
@@ -1576,7 +1576,9 @@ async function materializedPassword(id) {
       proof.lifecycle.partialDisposition = 'reload_observed_setup_recovery_and_fresh_signin_pending';
       persist();
     } else if (setupIdentityOnlyMode) {
+      const initial = await inspectIdentity(worker);
       proof.lifecycle = {
+        initialIdentitySha256: initial.identitySha256,
         extensionReload: { disposition: 'not_run', reason: 'setup_identity_only_mode' },
         partialDisposition: 'setup_transport_signout_fresh_recovery_pending_reload',
       };
@@ -1654,7 +1656,7 @@ async function materializedPassword(id) {
         interactiveSignInCompleted: true,
         settingsUiRecovered: false,
         localAuthMaterialPresent: typeof recovered['matrx.auth.accessToken'] === 'string' && typeof recovered['matrx.auth.refreshTokenEnc'] === 'string' && typeof recovered['matrx.auth.refreshTokenIv'] === 'string',
-        verifiedIdentityRecovered: recoveryIdentity === proof.lifecycle.initialIdentitySha256,
+        verifiedIdentityRecovered: sameLifecycleIdentity(proof.lifecycle.initialIdentitySha256, recoveryIdentity),
         identitySha256: recoveryIdentity,
       };
       await realPanel.click(`Array.from(document.querySelectorAll('button')).find((element) => element.textContent.trim() === 'Settings')`);
