@@ -13,6 +13,7 @@ const { acquireVaultAcceptanceLease } = require('./vault-acceptance-lease.cjs');
 const { FAILED_PROOF_PATH: reconciledChromeProofPath, verifyHistoricalChromeReconciliation } = require('./vault-historical-reconciliation.cjs');
 const { FAILED_PROOF_PATH: recovered7356ProofPath, verify7356RecoveryAdmission, NO_COMMIT_PROOF_PATH, verifyNoCommitRecovery } = require('./vault-7356-reconciliation.cjs');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
+const { runExtensionReload, runSettingsSignOut } = require('./vault-extension-lifecycle-acceptance.cjs');
 const { hasObservedReadOnlyCleanup, hasPreAuthNoWriteCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
 const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
 const { runSavedFormMatrix, renderSavedFormMatrixHTML } = require('./vault-saved-form-matrix.cjs');
@@ -98,16 +99,17 @@ const required = (key) => {
   return value;
 };
 const localCanonicalCleanupArmed = process.env.MATRX_VAULT_CANARY_LOCAL_CANONICAL_CLEANUP === 'RUN_LOCAL_CANONICAL_CLEANUP';
+const lifecycleDryRun = process.argv.includes('--lifecycle-dry-run');
 // This is deliberately a separate, explicitly armed mode.  It proves that a
 // fresh extension can authenticate and establish its tenant context without
 // making a Vault mutation; it is not a Save/Update acceptance result.
-const readOnlyAdmissionMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
+const readOnlyAdmissionMode = lifecycleDryRun || process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
 const receiptBackedSaveUpdateMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_RECEIPT_BACKED_SAVE_UPDATE';
 const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = '94e0b1c9e3116c2142beecbdf3a0446630e72cd5';
 const RECEIPT_BACKED_ROUTER_SHA256 = '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
 const RECEIPT_BACKED_SERVICE_SHA256 = 'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
-const generatorTransportMode = process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
-const displayMode = process.env.MATRX_VAULT_CANARY_DISPLAY;
+const generatorTransportMode = lifecycleDryRun || process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
+const displayMode = process.env.MATRX_VAULT_CANARY_DISPLAY || (lifecycleDryRun ? 'HEADLESS_NO_CLIPBOARD' : undefined);
 const headlessNoClipboardMode = displayMode === 'HEADLESS_NO_CLIPBOARD';
 const headedMode = displayMode === 'HEADED';
 const isolatedHeadlessClipboard = process.env.MATRX_VAULT_CANARY_CLIPBOARD === 'RUN_ISOLATED_HEADLESS_CLIPBOARD';
@@ -117,6 +119,7 @@ assert(!edgeBrowserMode || (headlessNoClipboardMode && !isolatedHeadlessClipboar
 const panelCloseLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_PANEL_CLOSE === 'RUN_PANEL_CLOSE_LIFECYCLE';
 const workerRestartLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART === 'RUN_WORKER_RESTART_LIFECYCLE';
 const windowSwitchLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH === 'RUN_WINDOW_SWITCH_LIFECYCLE';
+const extensionLifecycleMode = process.env.MATRX_VAULT_CANARY_EXTENSION_LIFECYCLE === 'RUN_EXTENSION_LIFECYCLE';
 assert(typeof displayMode === 'string' && displayMode.length > 0, 'canary_display_mode_required');
 assert(headlessNoClipboardMode || headedMode, 'canary_display_mode_invalid');
 assert(!headedMode || process.env.MATRX_VAULT_CANARY_FOREGROUND === 'ALLOW_FOREGROUND_TEST', 'headed_canary_requires_foreground_allow');
@@ -138,6 +141,18 @@ assert(!process.env.MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART || workerRestart
 assert(!process.env.MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH || windowSwitchLifecycleMode, 'window_switch_lifecycle_mode_invalid');
 assert(!workerRestartLifecycleMode || headlessNoClipboardMode, 'worker_restart_lifecycle_requires_headless_no_clipboard');
 assert(!windowSwitchLifecycleMode || headlessNoClipboardMode, 'window_switch_lifecycle_requires_headless_no_clipboard');
+assert(!extensionLifecycleMode || (headlessNoClipboardMode && readOnlyAdmissionMode), 'extension_lifecycle_requires_headless_readonly_admission');
+if (lifecycleDryRun) {
+  const digest = (name) => crypto.createHash('sha256').update(syncFs.readFileSync(path.join(__dirname, name))).digest('hex');
+  process.stdout.write(`${JSON.stringify({
+    kind: 'vault_extension_lifecycle_dry_run',
+    runnerSha256: digest('vault-realbrowser-acceptance.cjs'),
+    lifecycleHelperSha256: digest('vault-extension-lifecycle-acceptance.cjs'),
+    lifecycleVerdictSha256: digest('vault-extension-lifecycle-verdict.cjs'),
+    custody: 'no_browser_no_profile_no_credentials_no_network',
+  })}\n`);
+  process.exit(0);
+}
 if (process.env.MATRX_REALBROWSER_VAULT_CANARY !== 'RUN_UNDER_REVIEW')
   throw new Error('inert_canary_requires_explicit_arm');
 assert(!generatorTransportMode || readOnlyAdmissionMode, 'generator_requires_mutation_free_admission');
@@ -1520,6 +1535,32 @@ async function materializedPassword(id) {
     persist();
     await authenticate(extension);
     await dismissResolvedInitialOrganizationNotice();
+    if (extensionLifecycleMode) {
+      const initialWorker = worker;
+      worker = await runExtensionReload({
+        worker: initialWorker,
+        refreshWorker: async () => {
+          for (let attempt = 0; attempt < 60; attempt += 1) {
+            const candidate = context.serviceWorkers().find((entry) => entry !== initialWorker);
+            if (candidate) return candidate;
+            await wait(250);
+          }
+          throw new Error('lifecycle_replacement_worker_timeout');
+        },
+        verifySettingsIdentity: async () => {
+          await realPanel.click(`Array.from(document.querySelectorAll('button')).find((element) => element.textContent.trim() === 'Settings')`);
+          await realPanel.waitFor(`document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`);
+          return true;
+        },
+        checkpoint,
+        proof,
+      });
+      await runSettingsSignOut({ worker, panel: realPanel, checkpoint, proof });
+      // Fresh sign-in and browser restart are deliberately separate phases:
+      // this read-only run must still reach canonical logout/profile cleanup.
+      proof.lifecycle.partialDisposition = 'reload_and_sign_out_observed_fresh_recovery_pending';
+      persist();
+    }
     proof.phase = 'vault_baseline';
     persist();
     const baseline = await items();
