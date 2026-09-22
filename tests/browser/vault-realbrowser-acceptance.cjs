@@ -55,6 +55,35 @@ const assert = (condition, code) => {
   if (!condition) throw new Error(code);
 };
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// A web SSO session can take the normal OAuth request directly to consent or
+// complete the callback.  Both remain bound to the extension's PKCE/state
+// validation in auth/flow.ts and are accepted only after fresh extension
+// storage and the independent /auth/v1/user check below agree on admin.
+async function awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowLoginForm = false }) {
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    try {
+      if (!authPage.isClosed()) {
+        if (allowLoginForm) {
+          const [emailVisible, passwordVisible] = await Promise.all([
+            authPage.locator('#email').isVisible().catch(() => false),
+            authPage.locator('#password').isVisible().catch(() => false),
+          ]);
+          if (emailVisible && passwordVisible) return 'password_form';
+        }
+        const current = new URL(authPage.url());
+        if (current.origin === 'https://www.aimatrx.com' && current.pathname.startsWith('/oauth/consent')) return 'consent_page';
+      }
+    } catch { /* a completed callback closes the managed auth page */ }
+    const session = await storage(['matrx.user.profile', 'matrx.auth.accessToken']);
+    if (session?.['matrx.user.profile']?.email === adminEmail
+      && typeof session?.['matrx.auth.accessToken'] === 'string'
+      && session['matrx.auth.accessToken'].length > 20) return 'completed_callback';
+    await wait(500);
+  }
+  throw new Error('oauth_consent_or_callback_timeout');
+}
+
 let cdpWorkerMessageId = 0;
 function exactCdpWorkerFacade(cdp, targetId) {
   return {
@@ -1216,6 +1245,9 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
     expectedOrigin: false,
     loginFieldsReady: false,
     authPageOpenOutcome: 'not_attempted',
+    loginDisposition: 'not_observed',
+    consentDisposition: 'not_observed',
+    callbackStorageObserved: false,
   };
   const oauthUiStep = async (phase, failureCategory, operation) => {
     checkpoint(phase);
@@ -1266,25 +1298,44 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
     throw new Error('oauth_auth_expected_origin_mismatch');
   }
   proof.oauthUi.expectedOrigin = true;
+  try {
+    proof.oauthUi.authPageRoute = new URL(authPage.url()).pathname.startsWith('/oauth/consent')
+      ? 'consent' : 'provider_login_or_existing_session';
+  } catch {
+    // A managed auth page can close only after the product callback begins;
+    // awaitOAuthRouteOrCallback still requires fresh extension storage below.
+    proof.oauthUi.authPageRoute = 'closing_after_callback';
+  }
   persist();
-  await oauthUiStep('oauth_login_fields_ready', 'oauth_login_fields_unavailable', () => Promise.all([
-    authPage.locator('#email').waitFor({ state: 'visible', timeout: 30000 }),
-    authPage.locator('#password').waitFor({ state: 'visible', timeout: 30000 }),
-  ]));
-  proof.oauthUi.loginFieldsReady = true;
-  persist();
-  await oauthUiStep('oauth_login_form_fill', 'oauth_login_form_fill_failed', async () => {
-    await authPage.locator('#email').fill(adminEmail);
-    await authPage.locator('#password').fill(adminPassword);
-  });
+  const initialOAuthDisposition = await oauthUiStep('oauth_login_or_existing_session', 'oauth_login_or_existing_session_timeout', () =>
+    awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowLoginForm: true }));
   proof.authenticationAttempted = true;
-  proof.phase = 'oauth_sign_in';
-  persist();
-  await authPage.getByRole('button', { name: 'Sign in', exact: true }).click();
-  await authPage.waitForURL(/\/oauth\/consent/, { timeout: 30000 });
-  await authPage.getByRole('button', { name: 'Authorize', exact: true }).click().catch((error) => {
-    if (!authPage.isClosed()) throw error;
-  });
+  if (initialOAuthDisposition === 'password_form') {
+    proof.oauthUi.loginFieldsReady = true;
+    proof.oauthUi.loginDisposition = 'password_form';
+    persist();
+    await oauthUiStep('oauth_login_form_fill', 'oauth_login_form_fill_failed', async () => {
+      await authPage.locator('#email').fill(adminEmail);
+      await authPage.locator('#password').fill(adminPassword);
+    });
+    proof.phase = 'oauth_sign_in';
+    persist();
+    await authPage.getByRole('button', { name: 'Sign in', exact: true }).click();
+  } else {
+    proof.oauthUi.loginDisposition = 'existing_web_session';
+    proof.phase = 'oauth_existing_web_session';
+    persist();
+  }
+  const consentDisposition = initialOAuthDisposition === 'password_form'
+    ? await oauthUiStep('oauth_consent_or_callback', 'oauth_consent_or_callback_timeout', () =>
+      awaitOAuthRouteOrCallback({ authPage, storage, adminEmail }))
+    : initialOAuthDisposition;
+  proof.oauthUi.consentDisposition = consentDisposition;
+  if (consentDisposition === 'consent_page') {
+    await authPage.getByRole('button', { name: 'Authorize', exact: true }).click().catch((error) => {
+      if (!authPage.isClosed()) throw error;
+    });
+  }
   let session;
   for (let attempt = 0; attempt < 60; attempt += 1) {
     session = await storage(['matrx.user.profile', 'matrx.auth.accessToken', 'matrx.org.active']);
@@ -1296,6 +1347,7 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
     accessTokenPresent: typeof session?.['matrx.auth.accessToken'] === 'string',
     activeOrganizationPresent: !!session?.['matrx.org.active'],
   };
+  proof.oauthUi.callbackStorageObserved = proof.authStorage.profilePresent && proof.authStorage.accessTokenPresent;
   // OAuth/UI text can include provider details. Retain only a fixed category
   // that distinguishes a visible failure from an unfinished callback.
   const popupText = await popup.locator('body').innerText().catch(() => '');
