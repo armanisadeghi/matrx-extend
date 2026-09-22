@@ -18,12 +18,22 @@ export function mapLocalCommandToHandler(
     case 'inspect_login':
       return { toolName: 'credential_login', args: { action: 'discover' } };
     case 'vault_login': {
-      const { operation: _operation, ...args } = command;
+      const {
+        operation: _operation,
+        verification_spec_json: _spec,
+        verification_digest: _digest,
+        ...args
+      } = command;
       if ('action' in args) return null;
       return { toolName: 'credential_login', args: { ...args, action: 'attempt' } };
     }
     case 'authenticator': {
-      const { operation: _operation, ...args } = command;
+      const {
+        operation: _operation,
+        verification_spec_json: _spec,
+        verification_digest: _digest,
+        ...args
+      } = command;
       if ('action' in args) return null;
       return { toolName: 'credential_login', args: { ...args, action: 'authenticator' } };
     }

@@ -4,6 +4,12 @@ import {
   parseStrictPrivateJson,
   privatePost,
 } from '@/lib/api/client';
+import {
+  evaluatedObservation,
+  parseVerificationFields,
+  verificationDigestMatches,
+  verificationFields,
+} from '@/lib/desktop/local-browser/local-login-verification';
 import { z } from 'zod';
 import { localBrowserDocumentId } from './local-browser-document-id';
 
@@ -319,6 +325,8 @@ const commandShape = z.union([
       submit: localSubmit.optional(),
       steps: z.array(localStep).min(1).max(4).optional(),
       expect: localExpect.optional(),
+      verification_spec_json: verificationFields.shape.verification_spec_json,
+      verification_digest: verificationFields.shape.verification_digest,
     })
     .strict()
     .superRefine((value, context) => {
@@ -341,12 +349,14 @@ const commandShape = z.union([
       code_selector: selector,
       submit: localSubmit,
       expect: localExpect.optional(),
+      verification_spec_json: verificationFields.shape.verification_spec_json,
+      verification_digest: verificationFields.shape.verification_digest,
     })
     .strict(),
 ]);
 type CommandShape = z.infer<typeof commandShape>;
 
-function parseCommand(source: string): CommandShape | null {
+export function parseLocalCommand(source: string): CommandShape | null {
   try {
     const value = parseStrictPrivateJson(source);
     const parsed = value === null ? null : commandShape.safeParse(value);
@@ -420,18 +430,29 @@ export type LocalClaimResponse =
   | z.infer<typeof alreadyClaimed>
   | z.infer<typeof refusal>;
 
-export function claimLocalCommand(
+export async function claimLocalCommand(
   request: PrivateCommandRequest & z.infer<typeof claimRequest> & { commandId: string },
 ): Promise<PrivateApiResult<LocalClaimResponse>> {
   const blocked = preflight<LocalClaimResponse>(request);
-  if (blocked) return blocked;
+  if (blocked) return await blocked;
   const body = {
     grant: request.grant,
     command_json: request.command_json,
     document: request.document,
   };
-  const command = claimRequest.safeParse(body).success ? parseCommand(request.command_json) : null;
+  const command = claimRequest.safeParse(body).success
+    ? parseLocalCommand(request.command_json)
+    : null;
   if (!command || !uuid.safeParse(request.commandId).success)
+    return Promise.resolve({ ok: false, error: 'invalid_response' });
+  const verification =
+    command.operation === 'vault_login' || command.operation === 'authenticator'
+      ? parseVerificationFields(command)
+      : null;
+  if (
+    (command.operation === 'vault_login' || command.operation === 'authenticator') &&
+    (!verification || !(await verificationDigestMatches(verification)))
+  )
     return Promise.resolve({ ok: false, error: 'invalid_response' });
   return privateRequest(
     request,
@@ -512,6 +533,8 @@ const completedResults = z.discriminatedUnion('operation', [
             'credentials_rejected',
             'captcha_or_takeover',
           ]),
+          observation: evaluatedObservation,
+          verification_digest: verificationFields.shape.verification_digest,
         })
         .strict(),
     })
@@ -534,6 +557,8 @@ const completedResults = z.discriminatedUnion('operation', [
             'credentials_rejected',
             'captcha_or_takeover',
           ]),
+          observation: evaluatedObservation,
+          verification_digest: verificationFields.shape.verification_digest,
         })
         .strict(),
     })

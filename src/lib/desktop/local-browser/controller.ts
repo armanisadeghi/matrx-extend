@@ -15,6 +15,7 @@ import {
   approveLocalCommand,
   claimLocalCommand,
   completeLocalCommand,
+  parseLocalCommand,
   verifyLocalCommandTransport,
 } from '@/lib/api/routes/local-browser-commands';
 import { type LoginFormProbe, credentialDomSource } from '@/lib/credentials/fill-primitive';
@@ -41,6 +42,11 @@ import {
   runAdmittedAuthenticatorAttempt,
   runAdmittedCredentialAttempt,
 } from '@/lib/tools/handlers/credential-login';
+import {
+  type EvaluatedObservation,
+  parseVerificationFields,
+  verificationDigestMatches,
+} from './local-login-verification';
 import {
   type LocalBrowserExecute,
   type LocalBrowserGrantClaims,
@@ -632,7 +638,18 @@ export class LocalBrowserController {
       const parsed = parseStrictPrivateJson(frame.command_json);
       if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed))
         return { reason: 'invalid_request' };
-      command = parsed as LocalCommand;
+      const checked = parseLocalCommand(frame.command_json);
+      if (!checked) return { reason: 'invalid_request' };
+      const verification =
+        checked.operation === 'vault_login' || checked.operation === 'authenticator'
+          ? parseVerificationFields(checked)
+          : null;
+      if (
+        (checked.operation === 'vault_login' || checked.operation === 'authenticator') &&
+        (!verification || !(await verificationDigestMatches(verification)))
+      )
+        return { reason: 'invalid_request' };
+      command = checked as LocalCommand;
     } catch {
       return { reason: 'invalid_request' };
     }
@@ -957,6 +974,9 @@ export class LocalBrowserController {
     }
     let filled = false;
     let submitted = false;
+    let observation: EvaluatedObservation | null = null;
+    const frozenVerification = parseVerificationFields(command);
+    if (!frozenVerification) return terminal('configuration_error');
     const observePostSubmitDocument = postSubmitDocumentObserver({
       original: document,
       deadlineMs: claimed.deadline_ms,
@@ -994,6 +1014,10 @@ export class LocalBrowserController {
                   }
                 : { ok: false, failure: { kind: 'forbidden' } },
             report: async () => undefined,
+            verificationSpec: frozenVerification.spec,
+            recordObservation: (value) => {
+              observation = value;
+            },
           })
         : await runAdmittedAuthenticatorAttempt(mapped.args, tabId, document.url, {
             commandId: claimed.command_id,
@@ -1022,6 +1046,10 @@ export class LocalBrowserController {
                   }
                 : { ok: false, failure: { kind: 'forbidden' } },
             report: async () => undefined,
+            verificationSpec: frozenVerification.spec,
+            recordObservation: (value) => {
+              observation = value;
+            },
           });
     const verification =
       result.status === 'authenticated'
@@ -1033,13 +1061,20 @@ export class LocalBrowserController {
             : result.status === 'captcha_or_takeover'
               ? 'captcha_or_takeover'
               : 'unverified';
+    if (!observation) return terminal('configuration_error');
     return command.operation === 'vault_login'
       ? {
           command_id: claimed.command_id,
           operation: 'vault_login',
           outcome: 'completed',
           reason: 'none',
-          data: { filled, submitted, verification },
+          data: {
+            filled,
+            submitted,
+            verification,
+            observation,
+            verification_digest: frozenVerification.verification_digest,
+          },
         }
       : {
           command_id: claimed.command_id,
@@ -1051,6 +1086,8 @@ export class LocalBrowserController {
             submitted,
             challenge_detected: result.status === 'needs_mfa',
             verification,
+            observation,
+            verification_digest: frozenVerification.verification_digest,
           },
         };
   }

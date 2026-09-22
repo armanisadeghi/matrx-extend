@@ -389,6 +389,24 @@ it('requires an observed authenticator verification before accepting completion'
       submitted: true,
       challenge_detected: false,
       verification: 'unverified' as const,
+      verification_digest: 'a'.repeat(64),
+      observation: {
+        password_field_present_before: true,
+        password_field_present_after: null,
+        otp_field_present_before: true,
+        otp_field_present_after: null,
+        captcha_present_before: false,
+        captcha_present_after: null,
+        login_form_present_before: true,
+        login_form_present_after: null,
+        url_relation: 'unknown' as const,
+        url_flow: 'unknown' as const,
+        success_url_prefix: null,
+        success_selector: null,
+        failure_selector: null,
+        challenge_selector: null,
+        recipe_matches: [],
+      },
     },
   };
   const fetchMock = vi.fn(
@@ -400,7 +418,9 @@ it('requires an observed authenticator verification before accepting completion'
     completeLocalCommand({ ...base, grant: 'g', result: { ...result, data: incomplete } as never }),
   ).resolves.toEqual({ ok: false, error: 'invalid_response' });
   expect(fetchMock).not.toHaveBeenCalled();
-  await expect(completeLocalCommand({ ...base, grant: 'g', result })).resolves.toMatchObject({
+  await expect(
+    completeLocalCommand({ ...base, grant: 'g', result: result as never }),
+  ).resolves.toMatchObject({
     ok: true,
   });
 });

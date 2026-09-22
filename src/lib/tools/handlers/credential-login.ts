@@ -57,6 +57,10 @@ import {
   rememberSensitiveFields,
 } from '@/lib/credentials/sensitive-fields';
 import { log } from '@/lib/debug/log';
+import type {
+  EvaluatedObservation,
+  FrozenVerificationSpec,
+} from '@/lib/desktop/local-browser/local-login-verification';
 import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import {
   CaptureArgs,
@@ -399,6 +403,7 @@ const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms
 interface PageStateProbe {
   href: string;
   has_password_field: boolean;
+  has_otp_field: boolean;
   /** Category only — never the raw text, which can echo back the username. */
   error_kind: 'credentials' | 'generic' | null;
   mfa: boolean;
@@ -418,6 +423,9 @@ function pageStateSource(): PageStateProbe {
   const hasPassword = Array.from(
     document.querySelectorAll<HTMLInputElement>('input[type="password"]'),
   ).some(visible);
+  const hasOtp = Array.from(document.querySelectorAll<HTMLInputElement>('input')).some(
+    (input) => input.autocomplete === 'one-time-code',
+  );
 
   // CAPTCHA / bot-challenge markers.
   const captcha =
@@ -464,6 +472,7 @@ function pageStateSource(): PageStateProbe {
   return {
     href: location.href,
     has_password_field: hasPassword,
+    has_otp_field: hasOtp,
     error_kind: errorKind,
     mfa,
     captcha,
@@ -671,6 +680,8 @@ async function classifyExplicitAttempt(
 ): Promise<
   Pick<CredentialLoginResult, 'status' | 'confidence' | 'signals' | 'evidence'> & {
     observedDocument?: { documentId: string; url: string };
+    beforeProbe: PageStateProbe;
+    afterProbe: PageStateProbe | null;
   }
 > {
   const deadline = Date.now() + expect.timeout_ms;
@@ -832,7 +843,58 @@ async function classifyExplicitAttempt(
       elapsed_ms: Date.now() - startedAt,
     },
   };
-  return observedDocument ? { ...classification, observedDocument } : classification;
+  return {
+    ...classification,
+    beforeProbe: before,
+    afterProbe: after,
+    ...(observedDocument ? { observedDocument } : {}),
+  };
+}
+
+function recordAdmittedObservation(
+  execution: AdmittedExecutionBinding | undefined,
+  before: PageStateProbe,
+  after: PageStateProbe | null,
+): void {
+  if (!execution?.recordObservation || !execution.verificationSpec) return;
+  const verificationSpec = execution.verificationSpec;
+  const classifyUrl = (href: string | null): 'challenge' | 'sign_in' | 'other' | 'unknown' => {
+    if (!href) return 'unknown';
+    try {
+      const path = new URL(href).pathname.toLowerCase();
+      if (verificationSpec.url_vocabulary.challenge.some((part) => path.includes(part)))
+        return 'challenge';
+      if (verificationSpec.url_vocabulary.sign_in.some((part) => path.includes(part)))
+        return 'sign_in';
+      return 'other';
+    } catch {
+      return 'unknown';
+    }
+  };
+  const expected = verificationSpec.expect;
+  const afterHref = after?.href ?? null;
+  execution.recordObservation({
+    password_field_present_before: before.has_password_field,
+    password_field_present_after: after?.has_password_field ?? null,
+    otp_field_present_before: before.has_otp_field,
+    otp_field_present_after: after?.has_otp_field ?? null,
+    captcha_present_before: before.captcha,
+    captcha_present_after: after?.captcha ?? null,
+    login_form_present_before: before.has_password_field,
+    login_form_present_after: after?.has_password_field ?? null,
+    url_relation:
+      afterHref === null ? 'unknown' : afterHref === before.href ? 'unchanged' : 'changed',
+    url_flow: classifyUrl(afterHref),
+    success_url_prefix: expected.success_url_prefix
+      ? afterHref === null
+        ? null
+        : afterHref.startsWith(expected.success_url_prefix)
+      : null,
+    success_selector: null,
+    failure_selector: null,
+    challenge_selector: null,
+    recipe_matches: verificationSpec.descriptors.map(() => null),
+  });
 }
 
 function snapshot(state: PageStateProbe): EvidenceSnapshot {
@@ -886,6 +948,9 @@ export interface AdmittedExecutionBinding {
    * materialization or DOM-mutation target.
    */
   observePostSubmitDocument?: () => Promise<{ documentId: string; url: string } | null>;
+  /** Closed, value-free receipt emitted only by admitted local commands. */
+  recordObservation?: (observation: EvaluatedObservation) => void;
+  verificationSpec?: FrozenVerificationSpec;
 }
 
 export interface AdmittedCredentialExecution extends AdmittedExecutionBinding {
@@ -1323,6 +1388,7 @@ async function runCompleteAttempt(
       execution,
       submittedForObservation,
     );
+    recordAdmittedObservation(execution, classified.beforeProbe, classified.afterProbe);
     return await finish(
       safeResult(classified.status, {
         ...(classified.confidence !== undefined ? { confidence: classified.confidence } : {}),
@@ -1461,6 +1527,7 @@ async function runAuthenticatorAttempt(
       execution,
       submittedForObservation,
     );
+    recordAdmittedObservation(execution, classified.beforeProbe, classified.afterProbe);
     clear = classified.status !== 'authenticated';
     const result = safeResult(classified.status, {
       ...(classified.confidence !== undefined ? { confidence: classified.confidence } : {}),
