@@ -11,20 +11,15 @@ function isOwnedPanelLogoutResponse({ url, method, frameUrl, extensionId }) {
     && frameUrl === `chrome-extension://${extensionId}/sidepanel.html`;
 }
 
-function observeOwnedPanelLogout({ panel, extensionId, onResponse }) {
-  if (!panel?.onEvent || typeof extensionId !== 'string' || typeof onResponse !== 'function')
+function observePanelResponse({ panel, matchesRequest, onResponse }) {
+  if (!panel?.onEvent || typeof matchesRequest !== 'function' || typeof onResponse !== 'function')
     throw new Error('owned_panel_logout_observer_missing');
   const pending = new Set();
   let stopped = false;
   const stop = panel.onEvent((method, params) => {
     if (stopped) return;
     if (method === 'Network.requestWillBeSent') {
-      if (isOwnedPanelLogoutResponse({
-        url: params?.request?.url,
-        method: params?.request?.method,
-        frameUrl: params?.documentURL,
-        extensionId,
-      }) && typeof params.requestId === 'string') pending.add(params.requestId);
+      if (matchesRequest(params) && typeof params.requestId === 'string') pending.add(params.requestId);
       return;
     }
     if (method !== 'Network.responseReceived' || !pending.delete(params?.requestId)) return;
@@ -37,4 +32,18 @@ function observeOwnedPanelLogout({ panel, extensionId, onResponse }) {
   };
 }
 
-module.exports = { isOwnedPanelLogoutResponse, observeOwnedPanelLogout };
+function observeOwnedPanelLogout({ panel, extensionId, onResponse }) {
+  if (typeof extensionId !== 'string') throw new Error('owned_panel_logout_observer_missing');
+  return observePanelResponse({
+    panel,
+    matchesRequest: (params) => isOwnedPanelLogoutResponse({
+      url: params?.request?.url,
+      method: params?.request?.method,
+      frameUrl: params?.documentURL,
+      extensionId,
+    }),
+    onResponse,
+  });
+}
+
+module.exports = { isOwnedPanelLogoutResponse, observePanelResponse, observeOwnedPanelLogout };
