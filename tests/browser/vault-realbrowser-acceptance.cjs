@@ -920,7 +920,7 @@ async function openGenuineSidePanel(extensionId, popup) {
     assert(typeof captured.data === 'string', 'panel_screenshot_refused');
     await fs.writeFile(destination, Buffer.from(captured.data, 'base64'), { mode: 0o600 });
   };
-  return { targetId: target.targetId, send: (method, params) => panel.send(method, params), evaluate, click, waitFor, fill, key, startKnobResolveProbe, screenshot, dispose: panel.dispose };
+  return { targetId: target.targetId, send: (method, params) => panel.send(method, params), onEvent: panel.onEvent, evaluate, click, waitFor, fill, key, startKnobResolveProbe, screenshot, dispose: panel.dispose };
 }
 async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWindowId) {
   // This is intentionally not a normal popup.html tab. The action popup is
