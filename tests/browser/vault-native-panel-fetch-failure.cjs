@@ -10,15 +10,15 @@ function createNativePanelFetchFailure({ panel, apiOrigin, mode }) {
   let refusedRequests = 0;
   let continuedRequests = 0;
   let observerErrors = 0;
-  let accepting = true;
+  let state = 'active';
   const pending = new Set();
   const track = (work) => { const task = Promise.resolve(work).catch(() => { observerErrors += 1; }).finally(() => pending.delete(task)); pending.add(task); };
   const paused = (method, params) => {
     if (method !== 'Fetch.requestPaused') return;
-    if (!accepting) return;
+    if (state === 'disposed') return;
     track((async () => {
     const request = params?.request;
-    const matches = request?.method === 'GET' && request?.url === endpoint;
+    const matches = state === 'active' && request?.method === 'GET' && request?.url === endpoint;
     if (!matches) {
       continuedRequests += 1;
       await panel.send('Fetch.continueRequest', { requestId: params.requestId });
@@ -50,10 +50,15 @@ function createNativePanelFetchFailure({ panel, apiOrigin, mode }) {
     snapshot() { return Object.freeze({ installed, disposed, mode, matchingRequests, refusedRequests, continuedRequests, observerErrors, pendingTasks: pending.size }); },
     async dispose() {
       if (disposed) return;
-      accepting = false;
+      state = 'disposing';
       await Promise.allSettled([...pending]);
-      try { await panel.send('Fetch.disable'); }
-      finally { if (typeof unsubscribe === 'function') unsubscribe(); disposed = true; }
+      let disableError;
+      try { await panel.send('Fetch.disable'); } catch (error) { disableError = error; }
+      await Promise.allSettled([...pending]);
+      if (typeof unsubscribe === 'function') unsubscribe();
+      state = 'disposed'; disposed = true;
+      if (disableError) throw disableError;
+      if (observerErrors || pending.size) throw new Error('vault_native_fetch_disposal_unclean');
     },
   };
 }
