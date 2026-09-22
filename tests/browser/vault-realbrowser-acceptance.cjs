@@ -20,6 +20,7 @@ const { runSavedFormMatrix, renderSavedFormMatrixHTML } = require('./vault-saved
 const { runVaultPreferencesChecks } = require('./vault-preferences-acceptance.cjs');
 const {
   runVaultSetupRecoveryChecks,
+  runVaultListTransportRecoveryChecks,
   renderVaultSetupRecoveryFixtureHTML,
   vaultSetupRecoveryFixturePath,
 } = require('./vault-setup-recovery-acceptance.cjs');
@@ -1557,32 +1558,7 @@ async function materializedPassword(id) {
         checkpoint,
         proof,
       });
-      await runSettingsSignOut({ worker, panel: realPanel, checkpoint, proof });
-      // Reuse the same disposable profile and the production OAuth UI. This
-      // proves recovery is a fresh interactive session, never a retained
-      // in-memory side-panel state.
-      realPanel.dispose();
-      await authenticate(extension, { reuseBrowser: true });
-      await dismissResolvedInitialOrganizationNotice();
-      const recovered = await storage(['matrx.user.profile', 'matrx.auth.accessToken', 'matrx.auth.refreshTokenEnc', 'matrx.auth.refreshTokenIv']);
-      const recoveryIdentity = typeof recovered['matrx.user.profile']?.id === 'string'
-        ? crypto.createHash('sha256').update(recovered['matrx.user.profile'].id).digest('hex') : null;
-      proof.lifecycle.freshRecovery = {
-        disposition: recoveryIdentity === proof.lifecycle.initialIdentitySha256 ? 'passed' : 'failed',
-        interactiveSignInCompleted: true,
-        settingsUiRecovered: true,
-        localAuthMaterialPresent: typeof recovered['matrx.auth.accessToken'] === 'string'
-          && typeof recovered['matrx.auth.refreshTokenEnc'] === 'string' && typeof recovered['matrx.auth.refreshTokenIv'] === 'string',
-        verifiedIdentityRecovered: recoveryIdentity === proof.lifecycle.initialIdentitySha256,
-        identitySha256: recoveryIdentity,
-      };
-      proof.lifecycle.accountInvalidation = {
-        disposition: proof.lifecycle.signOut?.localAuthMaterialAbsent && proof.lifecycle.freshRecovery.verifiedIdentityRecovered ? 'passed' : 'failed',
-        preSignOutIdentityWasObserved: true,
-        oldIdentityAuthorityRefusedAfterSignOut: proof.lifecycle.signOut?.localAuthMaterialAbsent === true,
-        freshIdentityOnlyAfterInteractiveSignIn: true,
-      };
-      proof.lifecycle.partialDisposition = 'reload_signout_fresh_recovery_observed_browser_restart_and_org_switch_pending';
+      proof.lifecycle.partialDisposition = 'reload_observed_setup_recovery_and_fresh_signin_pending';
       persist();
     }
     proof.phase = 'vault_baseline';
@@ -1611,6 +1587,42 @@ async function materializedPassword(id) {
     };
     assert(JSON.stringify(helperHashesBeforeWrites) === JSON.stringify(proof.helperSha256), 'helper_source_changed_before_writes');
     if (extensionLifecycleMode) {
+      await runVaultListTransportRecoveryChecks({
+        context,
+        realPanel,
+        minimumOwnListRows: baseline.length,
+        apiOrigin: API,
+        exactPanelDocumentUrl: `chrome-extension://${extensionId}/sidepanel.html`,
+        getVaultWriteCount: () => proof.vaultMutationRequests,
+        snapshotOwnedReceiptState: () => ({ createKeys: [...createKeys], createdIds: [...createdIds] }),
+        assert,
+        checkpoint,
+        proof,
+        verifyRealVaultPanel,
+      });
+      await runSettingsSignOut({ worker, panel: realPanel, checkpoint, proof });
+      // Reuse the same disposable profile and the production OAuth UI. This
+      // proves recovery is a fresh interactive session, never retained panel state.
+      realPanel.dispose();
+      await authenticate(extension, { reuseBrowser: true });
+      await dismissResolvedInitialOrganizationNotice();
+      const recovered = await storage(['matrx.user.profile', 'matrx.auth.accessToken', 'matrx.auth.refreshTokenEnc', 'matrx.auth.refreshTokenIv']);
+      const recoveryIdentity = typeof recovered['matrx.user.profile']?.id === 'string'
+        ? crypto.createHash('sha256').update(recovered['matrx.user.profile'].id).digest('hex') : null;
+      proof.lifecycle.freshRecovery = {
+        disposition: recoveryIdentity === proof.lifecycle.initialIdentitySha256 ? 'passed' : 'failed',
+        interactiveSignInCompleted: true, settingsUiRecovered: true,
+        localAuthMaterialPresent: typeof recovered['matrx.auth.accessToken'] === 'string' && typeof recovered['matrx.auth.refreshTokenEnc'] === 'string' && typeof recovered['matrx.auth.refreshTokenIv'] === 'string',
+        verifiedIdentityRecovered: recoveryIdentity === proof.lifecycle.initialIdentitySha256,
+        identitySha256: recoveryIdentity,
+      };
+      proof.lifecycle.accountInvalidation = {
+        disposition: proof.lifecycle.signOut?.localAuthMaterialAbsent && proof.lifecycle.freshRecovery.verifiedIdentityRecovered ? 'passed' : 'failed',
+        preSignOutIdentityWasObserved: true,
+        oldIdentityAuthorityRefusedAfterSignOut: proof.lifecycle.signOut?.localAuthMaterialAbsent === true,
+        freshIdentityOnlyAfterInteractiveSignIn: true,
+      };
+      proof.lifecycle.partialDisposition = 'reload_setup_recovery_signout_fresh_recovery_observed_browser_restart_and_org_switch_pending';
       // One real Vault read after recovery establishes the new bearer works;
       // it is intentionally mutation-free and skips the legacy generator tail.
       const recoveredItems = await items();
