@@ -12,7 +12,7 @@ const passed = {
   extensionReload: { disposition: 'passed', settingsUiRecovered: true, replacementWorkerObserved: true, sameIdentityRecovered: true, identitySha256: initialIdentitySha256 },
   disableEnable: { disposition: 'passed', disabledInExtensionsUi: true, enabledInExtensionsUi: true, replacementWorkerObserved: true, settingsUiRecovered: true, sameIdentityRecovered: true, identitySha256: initialIdentitySha256 },
   browserRestart: { disposition: 'passed', previousBrowserExited: true, newBrowserProcessObserved: true, settingsUiRecovered: true, sameIdentityRecovered: true, identitySha256: initialIdentitySha256 },
-  signOut: { disposition: 'passed', settingsSignOutClicked: true, settingsUiShowsSignedOut: true, localAuthMaterialAbsent: true, activeOrganizationAbsent: true, vaultRequestRefusedWithoutBearer: true, remoteLogout204: true },
+  signOut: { disposition: 'passed', settingsSignOutClicked: true, settingsUiShowsSignedOut: true, signedOutVaultHidden: true, localAuthMaterialAbsent: true, activeOrganizationAbsent: true, bearerlessVaultApiRefusal: { status: 401, authorizationHeaderAbsent: true, refused: true }, remoteLogout204: true },
   freshRecovery: { disposition: 'passed', interactiveSignInCompleted: true, settingsUiRecovered: true, localAuthMaterialPresent: true, verifiedIdentityRecovered: true, identitySha256: initialIdentitySha256 },
   accountInvalidation: { disposition: 'passed', preSignOutIdentityWasObserved: true, oldIdentityAuthorityRefusedAfterSignOut: true, freshIdentityOnlyAfterInteractiveSignIn: true },
   organizationInvalidation: { disposition: 'passed', twoAdminMembershipsObserved: true, oldOrganizationAuthorityRefusedAfterSwitch: true, newOrganizationResolvedAfterSwitch: true, disposableRecordScopePreserved: true, oldOrganizationSha256: fingerprint('first admin organization'), newOrganizationSha256: fingerprint('second admin organization') },
@@ -24,7 +24,7 @@ for (const [section, prefix, field] of [
   ['extensionReload', 'extensionReload', 'replacementWorkerObserved'],
   ['disableEnable', 'disableEnable', 'disabledInExtensionsUi'],
   ['browserRestart', 'browserRestart', 'newBrowserProcessObserved'],
-  ['signOut', 'sign_out', 'vaultRequestRefusedWithoutBearer'],
+  ['signOut', 'sign_out', 'signedOutVaultHidden'],
   ['freshRecovery', 'fresh_recovery', 'interactiveSignInCompleted'],
   ['accountInvalidation', 'account_invalidation', 'oldIdentityAuthorityRefusedAfterSignOut'],
   ['organizationInvalidation', 'organization_invalidation', 'oldOrganizationAuthorityRefusedAfterSwitch'],
@@ -53,7 +53,7 @@ try {
   const weakenedPath = path.join(temporaryRoot, 'vault-extension-lifecycle-verdict.cjs');
   fs.writeFileSync(weakenedPath, weakened);
   const { assertVaultExtensionLifecycleVerdict: weakenedGate } = require(weakenedPath);
-  assert.doesNotThrow(() => weakenedGate({ lifecycle: { ...passed, signOut: { ...passed.signOut, vaultRequestRefusedWithoutBearer: 'fabricated-truthy-value' } } }));
+  assert.doesNotThrow(() => weakenedGate({ lifecycle: { ...passed, signOut: { ...passed.signOut, signedOutVaultHidden: 'fabricated-truthy-value' } } }));
 } finally {
   fs.rmSync(temporaryRoot, { recursive: true, force: true });
 }

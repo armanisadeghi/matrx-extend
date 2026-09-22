@@ -5,8 +5,8 @@
  * settings UI; they deliberately cannot be satisfied by a storage fixture or
  * a synthetic auth-state broadcast.  In particular, a restarted worker is
  * insufficient unless the side panel has re-hydrated the same signed-in
- * identity, and a signed-out panel is insufficient unless a Vault request
- * refused because no bearer was available.
+ * identity, and a signed-out panel is insufficient unless the real Vault API
+ * refuses a request that deliberately omits Authorization.
  */
 
 function requireTrue(record, fields, prefix) {
@@ -44,9 +44,13 @@ function assertVaultExtensionLifecycleVerdict({ lifecycle, requireOrganizationSw
     'settingsUiShowsSignedOut',
     'localAuthMaterialAbsent',
     'activeOrganizationAbsent',
-    'vaultRequestRefusedWithoutBearer',
+    'signedOutVaultHidden',
+    'bearerlessVaultApiRefusal.refused',
+    'bearerlessVaultApiRefusal.authorizationHeaderAbsent',
     'remoteLogout204',
   ], 'vault_lifecycle_sign_out');
+  if (![401, 403].includes(signOut?.bearerlessVaultApiRefusal?.status))
+    throw new Error('vault_lifecycle_sign_out_bearerless_api_status_invalid');
 
   const recovery = lifecycle.freshRecovery;
   requireDisposition(recovery, 'vault_lifecycle_fresh_recovery');

@@ -63,7 +63,7 @@ async function runExtensionReload({ worker, refreshWorker, verifySettingsIdentit
   return replacement;
 }
 
-async function runSettingsSignOut({ worker, panel, checkpoint, proof, waitForLogout204, verifyBearerlessVaultRefusal }) {
+async function runSettingsSignOut({ worker, panel, checkpoint, proof, waitForLogout204, verifyBearerlessVaultApiRefusal, verifySignedOutVaultHidden }) {
   checkpoint('lifecycle_settings_sign_out');
   // Settings is the product navigation item; use the real CDP click helper.
   await panel.click(visibleSettingsControl);
@@ -76,16 +76,18 @@ async function runSettingsSignOut({ worker, panel, checkpoint, proof, waitForLog
     return keys.every((key) => value[key] === undefined);
   });
   await panel.waitFor(`document.body.innerText.includes('Settings') && Array.from(document.querySelectorAll('button')).some((element) => element.textContent.trim() === 'Sign in') && !Array.from(document.querySelectorAll('button')).some((element) => element.textContent.trim() === 'Sign out')`);
-  const vaultRequestRefusedWithoutBearer = await verifyBearerlessVaultRefusal();
+  const settingsUiShowsSignedOut = await panel.evaluate(`document.body.innerText.includes('Settings') && Array.from(document.querySelectorAll('button')).some((element) => element.textContent.trim() === 'Sign in') && !Array.from(document.querySelectorAll('button')).some((element) => element.textContent.trim() === 'Sign out')`);
+  const signedOutVaultHidden = await verifySignedOutVaultHidden();
+  const bearerlessVaultApiRefusal = await verifyBearerlessVaultApiRefusal();
   proof.lifecycle ||= {};
   proof.lifecycle.signOut = {
-    disposition: cleared && remoteLogout204 && vaultRequestRefusedWithoutBearer ? 'passed' : 'failed', settingsSignOutClicked: true,
-    settingsUiShowsSignedOut: true, localAuthMaterialAbsent: cleared,
+    disposition: cleared && remoteLogout204 && settingsUiShowsSignedOut && signedOutVaultHidden && bearerlessVaultApiRefusal?.refused ? 'passed' : 'failed', settingsSignOutClicked: true,
+    settingsUiShowsSignedOut, signedOutVaultHidden, localAuthMaterialAbsent: cleared,
     activeOrganizationAbsent: cleared,
     remoteLogout204,
-    vaultRequestRefusedWithoutBearer,
+    bearerlessVaultApiRefusal,
   };
-  assert(cleared && remoteLogout204 && vaultRequestRefusedWithoutBearer, 'lifecycle_sign_out_evidence_incomplete');
+  assert(cleared && remoteLogout204 && settingsUiShowsSignedOut && signedOutVaultHidden && bearerlessVaultApiRefusal?.refused, 'lifecycle_sign_out_evidence_incomplete');
 }
 
 module.exports = { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsSignOut, visibleSettingsControl, visibleVaultControl };

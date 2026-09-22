@@ -1657,10 +1657,20 @@ async function materializedPassword(id) {
           }
           return false;
         },
-        verifyBearerlessVaultRefusal: async () => {
-          await realPanel.click(visibleVaultControl);
-          await realPanel.waitFor(`document.body.innerText.includes('Sign in to open your Vault')`);
-          return await realPanel.evaluate(`document.body.innerText.includes('Sign in to open your Vault') && !document.querySelector('[role="tabpanel"] li')`);
+        verifySignedOutVaultHidden: async () => {
+          return (await realPanel.evaluate(`(${visibleVaultControl}) === null`)) === true;
+        },
+        verifyBearerlessVaultApiRefusal: async () => {
+          const endpoint = `${API}/api/vault/items?principal_type=user`;
+          const request = `fetch(${JSON.stringify(endpoint)}, { method: 'GET', headers: { 'X-Organization-Id': ${JSON.stringify(organizationId)} } }).then((response) => ({ status: response.status, authorizationHeaderAbsent: true }))`;
+          const result = await realPanel.evaluate(request);
+          const authorizationHeaderAbsent = result?.authorizationHeaderAbsent === true;
+          const status = result?.status;
+          return {
+            status,
+            authorizationHeaderAbsent,
+            refused: authorizationHeaderAbsent && (status === 401 || status === 403),
+          };
         },
       });
       // Only the Settings sign-out response belongs to this observation.
@@ -1692,10 +1702,10 @@ async function materializedPassword(id) {
         && proof.lifecycle.freshRecovery.settingsUiRecovered ? 'passed' : 'failed';
       proof.lifecycle.accountInvalidation = {
         disposition: proof.lifecycle.signOut?.settingsSignOutClicked && proof.lifecycle.signOut?.localAuthMaterialAbsent
-          && proof.lifecycle.signOut?.vaultRequestRefusedWithoutBearer && proof.lifecycle.signOut?.remoteLogout204
+          && proof.lifecycle.signOut?.bearerlessVaultApiRefusal?.refused === true && proof.lifecycle.signOut?.remoteLogout204
           && proof.lifecycle.freshRecovery.verifiedIdentityRecovered ? 'passed' : 'failed',
         preSignOutIdentityWasObserved: true,
-        oldIdentityAuthorityRefusedAfterSignOut: proof.lifecycle.signOut?.vaultRequestRefusedWithoutBearer === true,
+        oldIdentityAuthorityRefusedAfterSignOut: proof.lifecycle.signOut?.bearerlessVaultApiRefusal?.refused === true,
         freshIdentityOnlyAfterInteractiveSignIn: true,
       };
       proof.lifecycle.partialDisposition = setupIdentityOnlyMode
