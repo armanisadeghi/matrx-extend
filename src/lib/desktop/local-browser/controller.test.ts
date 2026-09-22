@@ -1,3 +1,4 @@
+import type { DetachedWindowAPI } from 'happy-dom';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/lib/api/client', () => ({
@@ -317,11 +318,18 @@ async function frozenDigest(spec: string): Promise<string> {
 
 describe('owned local-browser tab controller', () => {
   it('claims and completes a full frozen vault command with only settled value-free facts', async () => {
-    window.happyDOM.setURL('https://example.test/login');
-    document.body.innerHTML =
-      '<form method="post" action="/login"><input id="username"><input id="password" type="password"><button id="submit">go</button></form>';
+    const happyWindow = window as typeof window & { happyDOM: DetachedWindowAPI };
+    happyWindow.happyDOM.setURL('https://example.test/login');
+    const lateTextMarker = 'Harbor Dental patient portal is ready for your next appointment.';
+    let settled = false;
+    let selectorProbedBeforeSettlement = false;
+    document.body.innerHTML = `<form method="post" action="/login"><input id="username"><input id="password" type="password"><button id="submit">go</button></form><p>${'x'.repeat(4001)}${lateTextMarker}</p>`;
     document.getElementById('submit')?.addEventListener('click', () => {
-      document.body.insertAdjacentHTML('beforeend', '<a href="/logout">out</a>');
+      document.querySelector('form')?.remove();
+      setTimeout(() => {
+        document.body.insertAdjacentHTML('beforeend', '<a href="/logout">out</a>');
+        settled = true;
+      }, 500);
     });
     const originalChrome = globalThis.chrome;
     const originalRect = HTMLElement.prototype.getBoundingClientRect;
@@ -334,8 +342,11 @@ describe('owned local-browser tab controller', () => {
           func: (...args: never[]) => unknown;
           args?: never[];
         }) => {
-          const stage = (request.args?.[0] as { operation?: string } | undefined)?.operation;
+          const firstArgument = request.args?.[0];
+          const stage = (firstArgument as { operation?: string } | undefined)?.operation;
           if (stage) scriptStages.push(stage);
+          if (firstArgument === 'a[href="/logout"]' && !settled)
+            selectorProbedBeforeSettlement = true;
           return [{ result: await request.func(...(request.args ?? [])) }];
         },
       },
@@ -357,6 +368,13 @@ describe('owned local-browser tab controller', () => {
         {
           kind: 'selector_absent',
           value: '#missing',
+          label: null,
+          direction: 'authenticated',
+          weight: 1,
+        },
+        {
+          kind: 'text_present',
+          value: lateTextMarker,
           label: null,
           direction: 'authenticated',
           weight: 1,
@@ -401,10 +419,12 @@ describe('owned local-browser tab controller', () => {
         },
       },
     }));
-    const complete = vi.fn(async (request: { result: unknown }) => ({
-      ok: true as const,
-      data: { status: 'completed' as const, result: request.result },
-    }));
+    const complete = vi.fn<NonNullable<LocalBrowserControllerDeps['command']>['complete']>(
+      async (request) => ({
+        ok: true as const,
+        data: { status: 'completed' as const, result: request.result },
+      }),
+    );
     h.deps.command = {
       verify: vi.fn(
         async () =>
@@ -470,10 +490,12 @@ describe('owned local-browser tab controller', () => {
     const receipt = (complete.mock.calls[0]?.[0] as { result: { data: Record<string, unknown> } })
       .result.data;
     expect(receipt).toMatchObject({ verification_digest: await frozenDigest(spec) });
+    expect(receipt.verification).toBe('verified');
     expect(receipt.observation).toMatchObject({
       success_selector: true,
-      recipe_matches: [true, true],
+      recipe_matches: [true, true, true],
     });
+    expect(selectorProbedBeforeSettlement).toBe(true);
     expect(JSON.stringify(receipt)).not.toContain('secret');
     expect(JSON.stringify(receipt)).not.toContain('https://example.test/login');
     expect(scriptStages).toContain('fill');

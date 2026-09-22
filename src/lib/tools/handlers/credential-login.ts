@@ -668,6 +668,7 @@ async function waitForSelector(
   observedDocument?: { documentId: string; url: string },
 ): Promise<boolean> {
   const deadline = Date.now() + timeoutMs;
+  const settlementPollMs = Math.min(POLL_INTERVAL_MS, Math.max(1, Math.floor(timeoutMs / 2)));
   while (Date.now() < deadline) {
     const probe = ((sel: string) => {
       try {
@@ -682,7 +683,9 @@ async function waitForSelector(
     ).catch(() => (execution ? null : false));
     if (execution && found === null) throw new Error('admitted_document_lost');
     if (found) return true;
-    await sleep(POLL_INTERVAL_MS);
+    // A short explicit selector-settlement window must not be swallowed by
+    // the default poll cadence; otherwise a 250ms probe only samples once.
+    await sleep(Math.min(settlementPollMs, Math.max(0, deadline - Date.now())));
   }
   return false;
 }
