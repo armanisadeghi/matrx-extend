@@ -167,6 +167,8 @@ exports.runVaultPreferencesChecks = async ({
           partialManualCheck: paragraphs.includes('Matrx could not fully restore the login fields. Review them before signing in.'),
           disabledRemedy: paragraphs.includes('Turn on saved-login matching in extension settings to use Fill.'),
           filledFeedback: paragraphs.includes('Filled. Review the form, then sign in.'),
+          nativeFillClickCount: Number.isInteger(window.__vaultQuietFillClickCount)
+            ? window.__vaultQuietFillClickCount : null,
         };
         let panelStatus;
         try {
@@ -224,6 +226,9 @@ exports.runVaultPreferencesChecks = async ({
       documentFocused: document.hasFocus(),
       credentialFocused: document.activeElement?.id === 'password',
     }), { expectedUsername: username, expectedPassword: password }).catch(() => ({ unavailable: true }));
+    diagnostic.panelFillMessageCount = await worker.evaluate(() =>
+      Number.isInteger(globalThis.__vaultQuietFillMessageCount)
+        ? globalThis.__vaultQuietFillMessageCount : null).catch(() => null);
     if (proof) proof.preferencesQuietFillFailure = diagnostic;
     checkpoint('preferences_quiet_fill_diagnostic');
   };
@@ -236,6 +241,26 @@ exports.runVaultPreferencesChecks = async ({
       await recordQuietFillFailure('control_absent_or_disabled');
       throw new Error('preferences_quiet_fill_control_unavailable');
     }
+    await realPanel.evaluate(`(() => {
+      window.__vaultQuietFillClickCount = 0;
+      document.addEventListener('click', (event) => {
+        const button = event.target instanceof Element ? event.target.closest('button') : null;
+        if (button?.textContent?.trim() === 'Fill'
+          && button.closest('li')?.querySelector('span')?.textContent?.trim() === ${JSON.stringify(targetName)})
+          window.__vaultQuietFillClickCount += 1;
+      }, true);
+      return true;
+    })()`);
+    await worker.evaluate(() => {
+      globalThis.__vaultQuietFillMessageCount = 0;
+      if (!globalThis.__vaultQuietFillMessageObserver) {
+        globalThis.__vaultQuietFillMessageObserver = (message) => {
+          if (message?.__matrx === true && message.kind === 'credential-suggestions:panel-fill')
+            globalThis.__vaultQuietFillMessageCount += 1;
+        };
+        chrome.runtime.onMessage.addListener(globalThis.__vaultQuietFillMessageObserver);
+      }
+    });
     await realPanel.click(control);
     try {
       await realPanel.waitFor('Array.from(document.querySelectorAll("p")).some((node) => node.textContent?.trim() === "Filled. Review the form, then sign in.")', true, 15000);

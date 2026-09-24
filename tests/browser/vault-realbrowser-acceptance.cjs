@@ -2408,6 +2408,21 @@ async function materializedPassword(id) {
           return true;
         },
       });
+      const realLoginUrl = 'https://www.aimatrx.com/login';
+      // The preceding form matrix uses the owned localhost destination. Move
+      // only these four disposable fixtures to the real HTTPS destination so
+      // that the localhost control is genuinely a wrong-site refusal check.
+      for (const fixtureId of [targetId, ...otherIds]) {
+        const updated = await api(`${API}/api/vault/items/${encodeURIComponent(fixtureId)}`, {
+          method: 'PATCH',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ login_urls: [realLoginUrl] }),
+          label: 'real_site_fixture_destination',
+        });
+        assert(updated?.id === fixtureId && JSON.stringify(updated.login_urls) === JSON.stringify([realLoginUrl]),
+          'real_site_fixture_destination_mismatch');
+      }
+      proof.checks.realSiteFixtureDestinationsRetargeted = true;
       // This is the only real HTTPS destination in the receipt-backed journey.
       // The helper selects this exact receipt-owned account, fills without
       // submission, and proves that the same account is absent on the owned
@@ -2421,7 +2436,7 @@ async function materializedPassword(id) {
         targetName,
         username,
         password: changedPassword,
-        realLoginUrl: 'https://www.aimatrx.com/login',
+        realLoginUrl,
         wrongSiteUrl: localUrl,
         assert,
         wait,
