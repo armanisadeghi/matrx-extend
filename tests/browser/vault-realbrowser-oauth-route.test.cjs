@@ -24,7 +24,7 @@ const exactLocator = (entries) => ({
   waitFor: async () => {},
   click: async () => {},
 });
-const page = ({ url = 'https://www.aimatrx.com/auth', email = false, password = false, authorize = [], retry = [], signIn = [], headings = [], closed = false, snapshotHangs = false } = {}) => {
+const page = ({ url = 'https://www.aimatrx.com/auth', email = false, password = false, authorize = [], retry = [], loginSubmit = [], headings = [], closed = false, snapshotHangs = false } = {}) => {
   const listeners = new Set();
   return {
     isClosed: () => closed,
@@ -35,9 +35,8 @@ const page = ({ url = 'https://www.aimatrx.com/auth', email = false, password = 
       authorizeCount: authorize.filter((entry) => entry.visible).length,
       enabledAuthorizeCount: authorize.filter((entry) => entry.visible && entry.enabled).length,
       retryCount: retry.filter((entry) => entry.visible).length,
-      signInCount: signIn.filter((entry) => entry.visible).length,
-      enabledSignInCount: signIn.filter((entry) => entry.visible && entry.enabled).length,
-      busySignInCount: signIn.filter((entry) => entry.visible && !entry.enabled).length,
+      loginSubmitCount: loginSubmit.filter((entry) => entry.visible).length,
+      busyLoginSubmitCount: loginSubmit.filter((entry) => entry.visible && entry.busy).length,
       visibleHeadings: headings.filter((entry) => entry.visible).map((entry) => entry.text ?? ''),
     }),
     locator: (selector) => selector === '#email' ? exactLocator([{ visible: email }]) : selector === '#password' ? exactLocator([{ visible: password }]) : exactLocator(headings),
@@ -80,10 +79,12 @@ const storage = async () => ({});
   const callback = await sandbox.observeCallback({ authPage: page({ closed: true }), storage: callbackStorage, adminEmail: 'admin@admin.com' });
   assert.equal(callback.callbackStorageObserved, true); assert.equal(callback.authPageClosed, true);
   await assert.rejects(() => sandbox.observeCallback({ authPage: page(), storage, adminEmail: 'admin@admin.com' }), /oauth_callback_storage_timeout/);
-  const unchangedLogin = page({ url: 'https://www.aimatrx.com/login?error=redacted', email: true, password: true });
-  const unchangedObserver = sandbox.observePostPassword(unchangedLogin); unchangedLogin.emitServerAction(401);
+  const unchangedLogin = page({ url: 'https://www.aimatrx.com/login?error', email: true, password: true });
+  const unchangedObserver = sandbox.observePostPassword(unchangedLogin);
+  assert.equal(JSON.stringify(await unchangedObserver.snapshot()), JSON.stringify({ formState: 'form_unchanged', routeCategory: 'login', errorQueryParameterPresent: true, serverActionResponse: null, serverActionResponseCount: 0 }));
+  unchangedLogin.emitServerAction(401);
   assert.equal(JSON.stringify(await unchangedObserver.snapshot()), JSON.stringify({ formState: 'form_unchanged', routeCategory: 'login', errorQueryParameterPresent: true, serverActionResponse: { route: 'login_server_action', status: 401 }, serverActionResponseCount: 1 })); unchangedObserver.finish();
-  const busyLogin = page({ url: 'https://www.aimatrx.com/login', email: true, password: true, signIn: [{ visible: true, enabled: false }] });
+  const busyLogin = page({ url: 'https://www.aimatrx.com/login', email: true, password: true, loginSubmit: [{ visible: true, busy: true }] });
   const busyObserver = sandbox.observePostPassword(busyLogin); busyLogin.emitServerAction(303, 'https://www.aimatrx.com/oauth/consent');
   assert.equal(JSON.stringify(await busyObserver.snapshot()), JSON.stringify({ formState: 'submit_busy', routeCategory: 'login', errorQueryParameterPresent: false, serverActionResponse: { route: 'oauth_consent_server_action', status: 303 }, serverActionResponseCount: 1 })); busyObserver.finish();
   process.stdout.write('PASS: OAuth consent requires rendered readiness, one approval 2xx, and callback storage\n');

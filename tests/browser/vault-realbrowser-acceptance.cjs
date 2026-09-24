@@ -70,7 +70,11 @@ async function readOAuthPageSnapshot(authPage, timeoutMs = 1000) {
       const buttons = Array.from(document.querySelectorAll('button')).filter(visible);
       const authorize = buttons.filter((button) => button.textContent?.trim() === 'Authorize');
       const retry = buttons.filter((button) => button.textContent?.trim() === 'Try again');
-      const signIn = buttons.filter((button) => button.textContent?.trim() === 'Sign in');
+      const loginForm = document.querySelector('#password')?.form || document.querySelector('#email')?.form;
+      const loginSubmit = Array.from(loginForm?.querySelectorAll('button, input[type="submit"]') || []).filter((control) => {
+        if (!visible(control)) return false;
+        return control.tagName === 'BUTTON' ? control.type === 'submit' : control.type === 'submit';
+      });
       const headings = Array.from(document.querySelectorAll('h2')).filter(visible)
         .map((heading) => heading.textContent?.trim() || '');
       return {
@@ -79,9 +83,8 @@ async function readOAuthPageSnapshot(authPage, timeoutMs = 1000) {
         authorizeCount: authorize.length,
         enabledAuthorizeCount: authorize.filter((button) => !button.disabled).length,
         retryCount: retry.length,
-        signInCount: signIn.length,
-        enabledSignInCount: signIn.filter((button) => !button.disabled).length,
-        busySignInCount: signIn.filter((button) => button.disabled || button.getAttribute('aria-busy') === 'true').length,
+        loginSubmitCount: loginSubmit.length,
+        busyLoginSubmitCount: loginSubmit.filter((control) => control.disabled || control.getAttribute('aria-busy') === 'true').length,
         visibleHeadings: headings,
       };
     }),
@@ -104,7 +107,7 @@ function classifyOAuthRouteCategory(urlValue) {
 
 function classifyOAuthPostPasswordForm(snapshot) {
   if (snapshot?.emailVisible !== true || snapshot?.passwordVisible !== true) return 'form_changed';
-  if (snapshot.signInCount === 1 && (snapshot.busySignInCount === 1 || snapshot.enabledSignInCount === 0)) return 'submit_busy';
+  if (snapshot.loginSubmitCount === 1 && snapshot.busyLoginSubmitCount === 1) return 'submit_busy';
   return 'form_unchanged';
 }
 
@@ -126,8 +129,8 @@ function observeOAuthPostPasswordSubmission(authPage) {
   };
   authPage.on('response', onResponse);
   return {
-    async snapshot() {
-      await wait(750);
+    async snapshot({ settleMs = 0 } = {}) {
+      if (settleMs > 0) await wait(settleMs);
       let formState = 'form_snapshot_unavailable';
       try { formState = classifyOAuthPostPasswordForm(await readOAuthPageSnapshot(authPage)); } catch {}
       let routeCategory = 'route_unavailable';
@@ -1506,6 +1509,7 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
   const initialOAuthDisposition = await oauthUiStep('oauth_login_or_existing_session', 'oauth_login_or_existing_session_timeout', () =>
     awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowLoginForm: true }));
   proof.authenticationAttempted = true;
+  let postPasswordSubmission;
   if (initialOAuthDisposition === 'password_form') {
     proof.oauthUi.loginFieldsReady = true;
     proof.oauthUi.loginDisposition = 'password_form';
@@ -1516,23 +1520,39 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
     });
     proof.phase = 'oauth_sign_in';
     persist();
-    const postPasswordSubmission = observeOAuthPostPasswordSubmission(authPage);
+    postPasswordSubmission = observeOAuthPostPasswordSubmission(authPage);
     try {
       await authPage.getByRole('button', { name: 'Sign in', exact: true }).click();
-      proof.oauthUi.postPasswordSubmission = await postPasswordSubmission.snapshot();
+      proof.oauthUi.postPasswordSubmission = await postPasswordSubmission.snapshot({ settleMs: 750 });
       persist();
-    } finally {
+    } catch (error) {
       postPasswordSubmission.finish();
+      throw error;
     }
   } else {
     proof.oauthUi.loginDisposition = 'existing_web_session';
     proof.phase = 'oauth_existing_web_session';
     persist();
   }
-  const consentDisposition = initialOAuthDisposition === 'password_form'
-    ? await oauthUiStep('oauth_consent_or_callback', 'oauth_consent_or_callback_timeout', () =>
-      awaitOAuthRouteOrCallback({ authPage, storage, adminEmail }))
-    : initialOAuthDisposition;
+  let consentDisposition;
+  try {
+    consentDisposition = initialOAuthDisposition === 'password_form'
+      ? await oauthUiStep('oauth_consent_or_callback', 'oauth_consent_or_callback_timeout', () =>
+        awaitOAuthRouteOrCallback({ authPage, storage, adminEmail }))
+      : initialOAuthDisposition;
+  } catch (error) {
+    if (postPasswordSubmission) {
+      proof.oauthUi.postPasswordSubmissionFinal = await postPasswordSubmission.snapshot();
+      postPasswordSubmission.finish();
+      persist();
+    }
+    throw error;
+  }
+  if (postPasswordSubmission) {
+    proof.oauthUi.postPasswordSubmissionFinal = await postPasswordSubmission.snapshot();
+    postPasswordSubmission.finish();
+    persist();
+  }
   proof.oauthUi.consentDisposition = consentDisposition;
   if (consentDisposition === 'consent_error') {
     await oauthUiStep('oauth_consent_error', 'oauth_consent_identity_error', async () => {
