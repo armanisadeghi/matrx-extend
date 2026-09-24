@@ -1722,6 +1722,23 @@ async function verifyRealVaultPanel() {
   }
   throw new Error('real_side_panel_vault_not_visible');
 }
+async function verifyObservedVaultPanelRead() {
+  // The panel can fetch while its CDP target is being attached. A fresh,
+  // user-visible Refresh gives the bound observer an unambiguous read without
+  // treating an earlier or unrelated request as acceptance evidence.
+  const refresh = `Array.from(document.querySelectorAll('button[title="Refresh"]')).find((button) => button.closest('[role="tabpanel"]'))`;
+  await realPanel.click(refresh);
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    const snapshot = networkJournal.snapshot();
+    if (snapshot.panelItemsReadRequestSeen && snapshot.panelItemsReadResponse2xxSeen) {
+      proof.checks.realSidePanelVaultReadObserved = true;
+      persist();
+      return;
+    }
+    await wait(250);
+  }
+  throw new Error('vault_panel_items_read_sentinel_missing');
+}
 async function prewriteVaultPanelScreenshot() {
   // The Vault navigation control contains no credential value. Verify the
   // actual panel screenshot channel before any fixture write can occur.
@@ -1932,6 +1949,7 @@ async function materializedPassword(id) {
     proof.baselineMetadataSha256 = baselineMetadataSha256(baseline);
     proof.baselineItems = baseline.map(entry => ({ id: entry.id, metadataSha256: baselineMetadataSha256([entry]) })).sort((a, b) => a.id.localeCompare(b.id));
     await verifyRealVaultPanel();
+    await verifyObservedVaultPanelRead();
     await prewriteLocalCanonicalPreflight();
     const helperHashesBeforeWrites = {
       rawAdapter: await sha256(path.join(__dirname, 'vault-owned-cdp.cjs')),
