@@ -153,6 +153,33 @@ function observeOAuthPostPasswordSubmission(authPage) {
   };
 }
 
+async function finalizeOAuthPostPasswordSubmission(observer, oauthUi, persist, failureCategory) {
+  oauthUi.postPasswordSubmissionFinal = await observer.snapshot();
+  if (failureCategory) oauthUi.failureCategory = failureCategory;
+  persist();
+  observer.finish();
+}
+
+async function failOAuthPostPasswordSubmission(observer, oauthUi, persist) {
+  await finalizeOAuthPostPasswordSubmission(
+    observer,
+    oauthUi,
+    persist,
+    'oauth_login_form_submit_failed',
+  );
+  throw new Error('oauth_login_form_submit_failed');
+}
+
+async function submitOAuthPasswordWithDiagnostics(authPage, observer, oauthUi, persist) {
+  try {
+    await authPage.getByRole('button', { name: 'Sign in', exact: true }).click();
+    oauthUi.postPasswordSubmission = await observer.snapshot({ settleMs: 750 });
+    persist();
+  } catch {
+    await failOAuthPostPasswordSubmission(observer, oauthUi, persist);
+  }
+}
+
 function classifyOAuthConsentSnapshot(snapshot) {
   const oneEnabledAuthorize = snapshot.authorizeCount === 1 && snapshot.enabledAuthorizeCount === 1;
   const exactOneRetry = snapshot.retryCount === 1;
@@ -1521,14 +1548,7 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
     proof.phase = 'oauth_sign_in';
     persist();
     postPasswordSubmission = observeOAuthPostPasswordSubmission(authPage);
-    try {
-      await authPage.getByRole('button', { name: 'Sign in', exact: true }).click();
-      proof.oauthUi.postPasswordSubmission = await postPasswordSubmission.snapshot({ settleMs: 750 });
-      persist();
-    } catch (error) {
-      postPasswordSubmission.finish();
-      throw error;
-    }
+    await submitOAuthPasswordWithDiagnostics(authPage, postPasswordSubmission, proof.oauthUi, persist);
   } else {
     proof.oauthUi.loginDisposition = 'existing_web_session';
     proof.phase = 'oauth_existing_web_session';
@@ -1542,16 +1562,12 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
       : initialOAuthDisposition;
   } catch (error) {
     if (postPasswordSubmission) {
-      proof.oauthUi.postPasswordSubmissionFinal = await postPasswordSubmission.snapshot();
-      postPasswordSubmission.finish();
-      persist();
+      await finalizeOAuthPostPasswordSubmission(postPasswordSubmission, proof.oauthUi, persist);
     }
     throw error;
   }
   if (postPasswordSubmission) {
-    proof.oauthUi.postPasswordSubmissionFinal = await postPasswordSubmission.snapshot();
-    postPasswordSubmission.finish();
-    persist();
+    await finalizeOAuthPostPasswordSubmission(postPasswordSubmission, proof.oauthUi, persist);
   }
   proof.oauthUi.consentDisposition = consentDisposition;
   if (consentDisposition === 'consent_error') {

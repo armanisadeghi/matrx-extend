@@ -11,7 +11,7 @@ assert.ok(match, 'oauth_route_observer_missing');
 const functionSource = match[0].replace(/\nlet cdpWorkerMessageId$/, '');
 const sandbox = { URL, wait: async () => {}, setTimeout, clearTimeout, assert: (value, code) => { if (!value) throw new Error(code); } };
 vm.createContext(sandbox);
-new vm.Script(`${functionSource}; globalThis.readSnapshot = readOAuthPageSnapshot; globalThis.classifyConsent = classifyOAuthConsentSnapshot; globalThis.observe = awaitOAuthRouteOrCallback; globalThis.observeCallback = awaitOAuthCallbackStorage; globalThis.observeApproval = observeOAuthConsentApproval; globalThis.observePostPassword = observeOAuthPostPasswordSubmission;`).runInContext(sandbox);
+new vm.Script(`${functionSource}; globalThis.readSnapshot = readOAuthPageSnapshot; globalThis.classifyConsent = classifyOAuthConsentSnapshot; globalThis.observe = awaitOAuthRouteOrCallback; globalThis.observeCallback = awaitOAuthCallbackStorage; globalThis.observeApproval = observeOAuthConsentApproval; globalThis.observePostPassword = observeOAuthPostPasswordSubmission; globalThis.finalizePostPassword = finalizeOAuthPostPasswordSubmission; globalThis.failPostPassword = failOAuthPostPasswordSubmission; globalThis.submitPostPassword = submitOAuthPasswordWithDiagnostics;`).runInContext(sandbox);
 
 const exactLocator = (entries) => ({
   count: async () => entries.length,
@@ -44,6 +44,7 @@ const page = ({ url = 'https://www.aimatrx.com/auth', email = false, password = 
     getByText: (text) => exactLocator(text === 'Redirecting' ? redirecting : []),
     on: (event, listener) => { if (event === 'response') listeners.add(listener); },
     off: (event, listener) => { if (event === 'response') listeners.delete(listener); },
+    responseListenerCount: () => listeners.size,
     emitApproval: (status, pathSuffix = 'authorization/consent') => {
       for (const listener of listeners) listener({ url: () => `https://db.matrxserver.com/auth/v1/oauth/authorizations/${pathSuffix}`, request: () => ({ method: () => 'POST', headers: () => ({}) }), status: () => status });
     },
@@ -87,5 +88,14 @@ const storage = async () => ({});
   const busyLogin = page({ url: 'https://www.aimatrx.com/login', email: true, password: true, loginSubmit: [{ visible: true, busy: true }] });
   const busyObserver = sandbox.observePostPassword(busyLogin); busyLogin.emitServerAction(303, 'https://www.aimatrx.com/oauth/consent');
   assert.equal(JSON.stringify(await busyObserver.snapshot()), JSON.stringify({ formState: 'submit_busy', routeCategory: 'login', errorQueryParameterPresent: false, serverActionResponse: { route: 'oauth_consent_server_action', status: 303 }, serverActionResponseCount: 1 })); busyObserver.finish();
+  const rejectedLogin = page({ url: 'https://www.aimatrx.com/login', email: true, password: true, loginSubmit: [{ visible: true, busy: true }] });
+  const rejectedObserver = sandbox.observePostPassword(rejectedLogin); const rejectedUi = {}; let persisted = 0;
+  rejectedLogin.getByRole = () => ({ click: async () => { throw new Error('click_rejected'); } });
+  await assert.rejects(() => sandbox.submitPostPassword(rejectedLogin, rejectedObserver, rejectedUi, () => { persisted += 1; }), /oauth_login_form_submit_failed/);
+  assert.equal(persisted, 1); assert.equal(rejectedUi.failureCategory, 'oauth_login_form_submit_failed');
+  assert.equal(rejectedLogin.responseListenerCount(), 0);
+  assert.equal(JSON.stringify(rejectedUi.postPasswordSubmissionFinal), JSON.stringify({ formState: 'submit_busy', routeCategory: 'login', errorQueryParameterPresent: false, serverActionResponse: null, serverActionResponseCount: 0 }));
+  rejectedLogin.emitServerAction(503);
+  assert.equal(JSON.stringify(await rejectedObserver.snapshot()), JSON.stringify({ formState: 'submit_busy', routeCategory: 'login', errorQueryParameterPresent: false, serverActionResponse: null, serverActionResponseCount: 0 }));
   process.stdout.write('PASS: OAuth consent requires rendered readiness, one approval 2xx, and callback storage\n');
 })().catch((error) => { console.error(error); process.exitCode = 1; });
