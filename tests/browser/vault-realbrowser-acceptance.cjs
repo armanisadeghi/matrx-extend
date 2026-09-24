@@ -1714,22 +1714,40 @@ async function focusOwnedBrowser(expectedTabId) {
   assert(Number.isSafeInteger(pid) && pid > 1, 'owned_browser_process_missing');
   if (headlessNoClipboardMode) {
     assert(matches[0].includes('--headless=new'), 'owned_headless_browser_process_missing');
-    const chromeFocus = await worker.evaluate(async (tabId) => {
-      const focused = await chrome.windows.getLastFocused({ windowTypes: ['normal'], populate: true });
-      const windows = await chrome.windows.getAll({ windowTypes: ['normal'], populate: true });
-      const targetTab = Number.isInteger(tabId) ? await chrome.tabs.get(tabId) : null;
-      return {
-        normalWindowCount: windows.length,
-        focused: focused.focused === true,
-        focusedType: focused.type,
-        focusedWindowHasActiveTab: Array.isArray(focused.tabs) && focused.tabs.some((tab) => tab.active === true),
-        expectedTabActive: targetTab?.active === true,
-        expectedTabWindowMatchesFocused: targetTab?.windowId === focused.id,
+    let chromeFocus;
+    let focused = false;
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      chromeFocus = await worker.evaluate(async (tabId) => {
+        const current = await chrome.windows.getLastFocused({ windowTypes: ['normal'], populate: true });
+        const windows = await chrome.windows.getAll({ windowTypes: ['normal'], populate: true });
+        const targetTab = Number.isInteger(tabId) ? await chrome.tabs.get(tabId) : null;
+        return {
+          normalWindowCount: windows.length,
+          focused: current.focused === true,
+          focusedType: current.type,
+          focusedWindowHasActiveTab: Array.isArray(current.tabs) && current.tabs.some((tab) => tab.active === true),
+          expectedTabActive: targetTab?.active === true,
+          expectedTabWindowMatchesFocused: targetTab?.windowId === current.id,
+        };
+      }, expectedTabId);
+      focused = chromeFocus.normalWindowCount >= 1 && chromeFocus.focused && chromeFocus.focusedType === 'normal'
+        && chromeFocus.focusedWindowHasActiveTab && chromeFocus.expectedTabActive
+        && chromeFocus.expectedTabWindowMatchesFocused;
+      if (focused) break;
+      await wait(100);
+    }
+    if (!focused) {
+      proof.headlessChromeFocusFailure = {
+        hasNormalWindow: chromeFocus.normalWindowCount >= 1,
+        focused: chromeFocus.focused,
+        focusedTypeIsNormal: chromeFocus.focusedType === 'normal',
+        focusedWindowHasActiveTab: chromeFocus.focusedWindowHasActiveTab,
+        expectedTabActive: chromeFocus.expectedTabActive,
+        expectedTabWindowMatchesFocused: chromeFocus.expectedTabWindowMatchesFocused,
       };
-    }, expectedTabId);
-    assert(chromeFocus.normalWindowCount >= 1 && chromeFocus.focused && chromeFocus.focusedType === 'normal'
-      && chromeFocus.focusedWindowHasActiveTab && chromeFocus.expectedTabActive && chromeFocus.expectedTabWindowMatchesFocused,
-    'headless_chrome_normal_window_not_focused');
+      persist();
+    }
+    assert(focused, 'headless_chrome_normal_window_not_focused');
     proof.headlessChromeFocus = chromeFocus;
     persist();
     return;
