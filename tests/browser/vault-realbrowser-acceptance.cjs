@@ -2420,7 +2420,7 @@ async function materializedPassword(id) {
         realPanel,
         targetName,
         username,
-        password: newPassword,
+        password: changedPassword,
         realLoginUrl: 'https://www.aimatrx.com/login',
         wrongSiteUrl: localUrl,
         assert,
