@@ -70,6 +70,7 @@ async function readOAuthPageSnapshot(authPage, timeoutMs = 1000) {
       const buttons = Array.from(document.querySelectorAll('button')).filter(visible);
       const authorize = buttons.filter((button) => button.textContent?.trim() === 'Authorize');
       const retry = buttons.filter((button) => button.textContent?.trim() === 'Try again');
+      const signIn = buttons.filter((button) => button.textContent?.trim() === 'Sign in');
       const headings = Array.from(document.querySelectorAll('h2')).filter(visible)
         .map((heading) => heading.textContent?.trim() || '');
       return {
@@ -78,11 +79,75 @@ async function readOAuthPageSnapshot(authPage, timeoutMs = 1000) {
         authorizeCount: authorize.length,
         enabledAuthorizeCount: authorize.filter((button) => !button.disabled).length,
         retryCount: retry.length,
+        signInCount: signIn.length,
+        enabledSignInCount: signIn.filter((button) => !button.disabled).length,
+        busySignInCount: signIn.filter((button) => button.disabled || button.getAttribute('aria-busy') === 'true').length,
         visibleHeadings: headings,
       };
     }),
     new Promise((_, reject) => setTimeout(() => reject(new Error('oauth_consent_dom_snapshot_timeout')), timeoutMs)),
   ]);
+}
+
+function classifyOAuthRouteCategory(urlValue) {
+  try {
+    const url = new URL(urlValue);
+    if (url.origin !== 'https://www.aimatrx.com') return 'external';
+    if (url.pathname.startsWith('/oauth/consent')) return 'oauth_consent';
+    if (url.pathname.startsWith('/auth/callback')) return 'auth_callback';
+    if (/^\/(?:auth|login|sign-in)(?:\/|$)/.test(url.pathname)) return 'login';
+    return 'aimatrx_other';
+  } catch {
+    return 'route_unavailable';
+  }
+}
+
+function classifyOAuthPostPasswordForm(snapshot) {
+  if (snapshot?.emailVisible !== true || snapshot?.passwordVisible !== true) return 'form_changed';
+  if (snapshot.signInCount === 1 && (snapshot.busySignInCount === 1 || snapshot.enabledSignInCount === 0)) return 'submit_busy';
+  return 'form_unchanged';
+}
+
+// This observer is deliberately value-free. It records only route classes,
+// HTTP status, and whether an error key exists; it never keeps a URL, query
+// value, request/response body, cookie, or auth material.
+function observeOAuthPostPasswordSubmission(authPage) {
+  const responses = [];
+  const onResponse = (response) => {
+    try {
+      const request = response.request();
+      const headers = request.headers();
+      const isServerAction = Object.keys(headers).some((key) => key.toLowerCase() === 'next-action');
+      if (!isServerAction) return;
+      responses.push({ route: `${classifyOAuthRouteCategory(response.url())}_server_action`, status: response.status() });
+    } catch {
+      // Unavailable response metadata must not leak into evidence or block cleanup.
+    }
+  };
+  authPage.on('response', onResponse);
+  return {
+    async snapshot() {
+      await wait(750);
+      let formState = 'form_snapshot_unavailable';
+      try { formState = classifyOAuthPostPasswordForm(await readOAuthPageSnapshot(authPage)); } catch {}
+      let routeCategory = 'route_unavailable';
+      let errorQueryParameterPresent = false;
+      try {
+        const url = new URL(authPage.url());
+        routeCategory = classifyOAuthRouteCategory(url.href);
+        errorQueryParameterPresent = url.searchParams.has('error');
+      } catch {}
+      const first = responses[0] || null;
+      return {
+        formState,
+        routeCategory,
+        errorQueryParameterPresent,
+        serverActionResponse: first,
+        serverActionResponseCount: responses.length,
+      };
+    },
+    finish() { authPage.off('response', onResponse); },
+  };
 }
 
 function classifyOAuthConsentSnapshot(snapshot) {
@@ -1451,7 +1516,14 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
     });
     proof.phase = 'oauth_sign_in';
     persist();
-    await authPage.getByRole('button', { name: 'Sign in', exact: true }).click();
+    const postPasswordSubmission = observeOAuthPostPasswordSubmission(authPage);
+    try {
+      await authPage.getByRole('button', { name: 'Sign in', exact: true }).click();
+      proof.oauthUi.postPasswordSubmission = await postPasswordSubmission.snapshot();
+      persist();
+    } finally {
+      postPasswordSubmission.finish();
+    }
   } else {
     proof.oauthUi.loginDisposition = 'existing_web_session';
     proof.phase = 'oauth_existing_web_session';
