@@ -532,6 +532,32 @@ export interface ConversationLabeledData {
   keywords?: string[];
 }
 
+export interface DecisionAnswerBlock {
+  __kind?: "decision_answer";
+  type: "noul" | "choice" | "score";
+  answer: boolean | number | string;
+  probability?: number | null;
+  probabilities?: Record<string, number> | null;
+  confidence: number;
+  legend?: Record<string, string> | null;
+}
+
+export interface DecisionUsageBlock {
+  input_tokens: number;
+  output_tokens: number;
+}
+
+export interface DecisionAnswersData {
+  type?: "decision_answers";
+  __kind: "decision_answers";
+  model: string;
+  method: "native" | "verbalized" | "verbalized_calibrated";
+  answers?: Record<string, DecisionAnswerBlock>;
+  unanswerable?: Record<string, string>;
+  usage: DecisionUsageBlock;
+  cost_usd: number;
+}
+
 export interface DictionaryPublishCompleteData {
   type?: "dictionary_publish_complete";
   status: string;
@@ -787,6 +813,13 @@ export interface ImageStudioVariantData {
   total?: number;
 }
 
+export interface MediaSelectionJobProgressData {
+  type?: "job.progress";
+  job_id: string;
+  at: string;
+  totals?: Record<string, number>;
+}
+
 export interface LegalSyncEventData {
   type?: "legal_sync_event";
   phase: string;
@@ -818,6 +851,95 @@ export interface LegalSyncEventData {
   per_resource_rows?: Record<string, number> | null;
   per_resource_errors?: Record<string, string> | null;
   error?: string | null;
+}
+
+export interface LibrarySyncClassifiedData {
+  type?: "library.sync.classified";
+  library_id: string;
+  seq: number;
+  at: string;
+  classifications?: Record<string, JsonValue>[];
+  from_cache: boolean;
+}
+
+export interface LibrarySyncCompletedData {
+  type?: "library.sync.completed";
+  library_id: string;
+  seq: number;
+  at: string;
+  total_listed: number;
+  elapsed_ms: number;
+  listed_ms: number;
+  quota_units_spent: number;
+  metrics?: Record<string, JsonValue>;
+  removed_count?: number;
+  retire_refused?: boolean;
+  skipped_by_reason?: Record<string, number>;
+  skipped_total?: number;
+}
+
+export interface LibrarySyncFailedData {
+  type?: "library.sync.failed";
+  library_id: string;
+  seq: number;
+  at: string;
+  code: string;
+  message: string;
+  partial_total?: number;
+  retryable?: boolean;
+}
+
+export interface LibrarySyncListedData {
+  type?: "library.sync.listed";
+  library_id: string;
+  seq: number;
+  at: string;
+  total_listed: number;
+  elapsed_ms: number;
+  deciding: number;
+  skipped_by_reason?: Record<string, number>;
+  skipped_total?: number;
+}
+
+export interface LibrarySyncPageData {
+  type?: "library.sync.page";
+  library_id: string;
+  seq: number;
+  at: string;
+  page_index: number;
+  page_size: number;
+  cumulative: number;
+  next_page_token_present: boolean;
+  videos?: Record<string, JsonValue>[];
+}
+
+export interface LibrarySyncPersistedData {
+  type?: "library.sync.persisted";
+  library_id: string;
+  seq: number;
+  at: string;
+  ids?: Record<string, string>;
+  count: number;
+}
+
+export interface LibrarySyncStartedData {
+  type?: "library.sync.started";
+  library_id: string;
+  seq: number;
+  at: string;
+  mode: string;
+  expected_total?: number | null;
+}
+
+export interface LibrarySyncUnavailableData {
+  type?: "library.sync.unavailable";
+  library_id: string;
+  seq: number;
+  at: string;
+  code: string;
+  message: string;
+  remedy?: string | null;
+  partial_total?: number;
 }
 
 export interface MasterworkAuditionOutcomeVerdictData {
@@ -1029,11 +1151,13 @@ export interface MasterworkDumpResourceOutcome {
   token?: string | null;
   id?: string | null;
   url?: string | null;
+  source_key?: string | null;
   title?: string | null;
   status: string;
   rules_added?: number;
   duplicates?: number;
   error?: string | null;
+  note?: string | null;
   already_distilled?: MasterworkSourceAlreadyDistilled | null;
   replaced_rules?: number;
 }
@@ -2075,6 +2199,7 @@ export type TypedDataPayload =
   | ContextPersistedData
   | ConversationIdData
   | ConversationLabeledData
+  | DecisionAnswersData
   | DictionaryPublishCompleteData
   | ExtractionIndexCompleteData
   | ExtractionIndexProgressData
@@ -2096,6 +2221,14 @@ export type TypedDataPayload =
   | ImageStudioProcessCompleteData
   | ImageStudioVariantData
   | LegalSyncEventData
+  | LibrarySyncClassifiedData
+  | LibrarySyncCompletedData
+  | LibrarySyncFailedData
+  | LibrarySyncListedData
+  | LibrarySyncPageData
+  | LibrarySyncPersistedData
+  | LibrarySyncStartedData
+  | LibrarySyncUnavailableData
   | MasterworkAuditionOutcomeVerdictData
   | MasterworkAuditionProgressData
   | MasterworkAuditionVerdictData
@@ -2128,6 +2261,7 @@ export type TypedDataPayload =
   | MasterworkTriageProgressData
   | MediaBlockData
   | MediaNoticeData
+  | MediaSelectionJobProgressData
   | MemoryBufferSpawnedData
   | MemoryContextInjectedData
   | MemoryErrorData
@@ -3789,6 +3923,15 @@ export interface CategorizationResultRenderBlock {
   metadata?: Record<string, unknown>;
 }
 
+/** A decision turn's answers — registered kind `decision_answers`. The LIVE arrival of the same part the assistant message persists, so a runner or a battle column shows the decision as it lands instead of only after a reload. `content` is null: the frontend commits the payload as a real `decision_answers` message part (the same part the server persists), never as reconstructed markdown. */
+export interface DecisionAnswersRenderBlock {
+  type: "decision_answers";
+  /** Always null — a non-null content would leak into committed message parts. The payload lives on `data`. */
+  content: null;
+  data: DecisionAnswersData;
+  metadata?: Record<string, unknown>;
+}
+
 /** Questionnaire to display — alias of the registered `questionnaire` kind. */
 export interface DisplayQuestionnaireRenderBlock {
   type: "display_questionnaire";
@@ -3929,10 +4072,11 @@ export type ServerShapeRenderBlock =
   | SearchResultsRenderBlock
   | FetchResultsRenderBlock
   | CategorizationResultRenderBlock
+  | DecisionAnswersRenderBlock
   | DisplayQuestionnaireRenderBlock;
 
 export const SERVER_SHAPE_RENDER_BLOCK_TYPES = new Set<string>([
-  "search_results", "fetch_results", "categorization_result", "display_questionnaire",
+  "search_results", "fetch_results", "categorization_result", "decision_answers", "display_questionnaire",
 ]);
 
 /** Deliberately untyped catch-alls. */
@@ -4017,10 +4161,14 @@ export type ImageMediaPart = {
   url?: string | null;
   mime_type?: string | null;
   size_bytes?: number | null;
+  visibility?: string | null;
+  cdn_url?: string | null;
   type: "media";
   kind: "image";
   width?: number | null;
   height?: number | null;
+  role?: "subject" | "character" | "style" | "mask" | "edit_target" | "composition_control" | "first_frame" | "last_frame" | "asset" | null;
+  name?: string | null;
 } & ({
   url: string;
 } | {
@@ -4034,10 +4182,13 @@ export type AudioMediaPart = {
   url?: string | null;
   mime_type?: string | null;
   size_bytes?: number | null;
+  visibility?: string | null;
+  cdn_url?: string | null;
   type: "media";
   kind: "audio";
   duration_ms?: number | null;
   transcription_result?: string | null;
+  role?: "lip_sync" | null;
 } & ({
   url: string;
 } | {
@@ -4051,11 +4202,15 @@ export type VideoMediaPart = {
   url?: string | null;
   mime_type?: string | null;
   size_bytes?: number | null;
+  visibility?: string | null;
+  cdn_url?: string | null;
   type: "media";
   kind: "video";
   width?: number | null;
   height?: number | null;
   duration_ms?: number | null;
+  role?: "extend" | "restyle" | null;
+  name?: string | null;
 } & ({
   url: string;
 } | {
@@ -4069,6 +4224,8 @@ export type DocumentMediaPart = {
   url?: string | null;
   mime_type?: string | null;
   size_bytes?: number | null;
+  visibility?: string | null;
+  cdn_url?: string | null;
   type: "media";
   kind: "document";
   width?: number | null;
@@ -4407,6 +4564,66 @@ export interface ContextInputPart {
   editable?: boolean | null;
 }
 
+export interface DecisionQuestion {
+  __kind?: string;
+  name: string;
+  type: "noul" | "choice" | "score";
+  instructions: string;
+  criteria?: Record<string, string> | string[] | null;
+  suggested_threshold?: number | null;
+}
+
+export interface DecisionQuestionsPart {
+  metadata?: Record<string, unknown>;
+  type: "decision_questions";
+  __kind: "decision_questions";
+  questions: DecisionQuestion[];
+}
+
+export interface DecisionAnswer {
+  __kind?: "decision_answer";
+  type: "noul" | "choice" | "score";
+  answer: boolean | number | string;
+  probability?: number | null;
+  probabilities?: Record<string, number> | null;
+  confidence: number;
+  legend?: Record<string, string> | null;
+}
+
+export interface DecisionUsage {
+  __kind?: string;
+  input_tokens: number;
+  output_tokens: number;
+}
+
+export interface DecisionAnswersPart {
+  metadata?: Record<string, unknown>;
+  type: "decision_answers";
+  __kind: "decision_answers";
+  model: string;
+  method: "native" | "verbalized" | "verbalized_calibrated";
+  answers?: Record<string, DecisionAnswer>;
+  unanswerable?: Record<string, string>;
+  usage: DecisionUsage;
+  cost_usd: number;
+}
+
+export interface SpeechTurn {
+  __kind?: string;
+  speaker: string;
+  voice?: string | null;
+  text: string;
+  direction?: string | null;
+  pause_after_ms?: number | null;
+}
+
+export interface SpeechScriptPart {
+  metadata?: Record<string, unknown>;
+  type: "speech_script";
+  __kind: "speech_script";
+  turns: SpeechTurn[];
+}
+
 export type MessagePart =
   | TextPart
   | ThinkingPart
@@ -4433,7 +4650,10 @@ export type MessagePart =
   | TableInputPart
   | ListInputPart
   | DataInputPart
-  | ContextInputPart;
+  | ContextInputPart
+  | DecisionQuestionsPart
+  | DecisionAnswersPart
+  | SpeechScriptPart;
 
 interface MessagePartJsonSchema {
   [key: string]: unknown;
@@ -4709,6 +4929,30 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
           "default": null,
           "title": "Size Bytes"
         },
+        "visibility": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Visibility"
+        },
+        "cdn_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cdn Url"
+        },
         "type": {
           "const": "media",
           "default": "media",
@@ -4744,6 +4988,19 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
           ],
           "default": null,
           "title": "Transcription Result"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "const": "lip_sync",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
         }
       },
       "required": [
@@ -5159,6 +5416,304 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
       "title": "DbRecordRef",
       "type": "object"
     },
+    "DecisionAnswer": {
+      "additionalProperties": false,
+      "description": "One answer, with the holder's own uncertainty attached.",
+      "properties": {
+        "__kind": {
+          "const": "decision_answer",
+          "default": "decision_answer",
+          "description": "The registered kind this payload is an instance of.",
+          "title": "Kind",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "noul",
+            "choice",
+            "score"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "answer": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Answer"
+        },
+        "probability": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Probability"
+        },
+        "probabilities": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "number"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Probabilities"
+        },
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "legend": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Legend"
+        }
+      },
+      "required": [
+        "type",
+        "answer",
+        "confidence"
+      ],
+      "title": "DecisionAnswer",
+      "type": "object"
+    },
+    "DecisionAnswersPart": {
+      "additionalProperties": false,
+      "properties": {
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "type": {
+          "const": "decision_answers",
+          "default": "decision_answers",
+          "title": "Type",
+          "type": "string"
+        },
+        "__kind": {
+          "const": "decision_answers",
+          "default": "decision_answers",
+          "title": "Kind",
+          "type": "string"
+        },
+        "model": {
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "method": {
+          "enum": [
+            "native",
+            "verbalized",
+            "verbalized_calibrated"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "answers": {
+          "additionalProperties": {
+            "$ref": "#/$defs/DecisionAnswer"
+          },
+          "title": "Answers",
+          "type": "object"
+        },
+        "unanswerable": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Unanswerable",
+          "type": "object"
+        },
+        "usage": {
+          "$ref": "#/$defs/DecisionUsage"
+        },
+        "cost_usd": {
+          "minimum": 0.0,
+          "title": "Cost Usd",
+          "type": "number"
+        }
+      },
+      "required": [
+        "model",
+        "method",
+        "usage",
+        "cost_usd",
+        "type"
+      ],
+      "title": "DecisionAnswersPart",
+      "type": "object"
+    },
+    "DecisionQuestion": {
+      "additionalProperties": false,
+      "description": "One question. Not a kind: it has no meaning outside its batch.",
+      "properties": {
+        "__kind": {
+          "default": "",
+          "description": "The registered kind this payload is an instance of, when it is one.",
+          "title": "Kind",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "noul",
+            "choice",
+            "score"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "instructions": {
+          "minLength": 1,
+          "title": "Instructions",
+          "type": "string"
+        },
+        "criteria": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Criteria"
+        },
+        "suggested_threshold": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Suggested Threshold"
+        }
+      },
+      "required": [
+        "name",
+        "type",
+        "instructions"
+      ],
+      "title": "DecisionQuestion",
+      "type": "object"
+    },
+    "DecisionQuestionsPart": {
+      "additionalProperties": false,
+      "properties": {
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "type": {
+          "const": "decision_questions",
+          "default": "decision_questions",
+          "title": "Type",
+          "type": "string"
+        },
+        "__kind": {
+          "const": "decision_questions",
+          "default": "decision_questions",
+          "title": "Kind",
+          "type": "string"
+        },
+        "questions": {
+          "items": {
+            "$ref": "#/$defs/DecisionQuestion"
+          },
+          "minItems": 1,
+          "title": "Questions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "questions",
+        "type"
+      ],
+      "title": "DecisionQuestionsPart",
+      "type": "object"
+    },
+    "DecisionUsage": {
+      "additionalProperties": false,
+      "description": "What the decision call consumed. Zero is a real value, never a stand-in.",
+      "properties": {
+        "__kind": {
+          "default": "",
+          "description": "The registered kind this payload is an instance of, when it is one.",
+          "title": "Kind",
+          "type": "string"
+        },
+        "input_tokens": {
+          "minimum": 0,
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "output_tokens": {
+          "minimum": 0,
+          "title": "Output Tokens",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "input_tokens",
+        "output_tokens"
+      ],
+      "title": "DecisionUsage",
+      "type": "object"
+    },
     "DocumentInputPart": {
       "additionalProperties": false,
       "properties": {
@@ -5340,6 +5895,30 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
           ],
           "default": null,
           "title": "Size Bytes"
+        },
+        "visibility": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Visibility"
+        },
+        "cdn_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cdn Url"
         },
         "type": {
           "const": "media",
@@ -5563,6 +6142,30 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
           "default": null,
           "title": "Size Bytes"
         },
+        "visibility": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Visibility"
+        },
+        "cdn_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cdn Url"
+        },
         "type": {
           "const": "media",
           "default": "media",
@@ -5598,6 +6201,41 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
           ],
           "default": null,
           "title": "Height"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "subject",
+                "character",
+                "style",
+                "mask",
+                "edit_target",
+                "composition_control",
+                "first_frame",
+                "last_frame",
+                "asset"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
         }
       },
       "required": [
@@ -6274,6 +6912,114 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
         "value"
       ],
       "title": "SnapshotValueResourceRefInput",
+      "type": "object"
+    },
+    "SpeechScriptPart": {
+      "additionalProperties": false,
+      "properties": {
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "type": {
+          "const": "speech_script",
+          "default": "speech_script",
+          "title": "Type",
+          "type": "string"
+        },
+        "__kind": {
+          "const": "speech_script",
+          "default": "speech_script",
+          "title": "Kind",
+          "type": "string"
+        },
+        "turns": {
+          "items": {
+            "$ref": "#/$defs/SpeechTurn"
+          },
+          "minItems": 1,
+          "title": "Turns",
+          "type": "array"
+        }
+      },
+      "required": [
+        "turns",
+        "type"
+      ],
+      "title": "SpeechScriptPart",
+      "type": "object"
+    },
+    "SpeechTurn": {
+      "additionalProperties": false,
+      "description": "One spoken turn. Not a kind: it has no meaning outside its script.",
+      "properties": {
+        "__kind": {
+          "default": "",
+          "description": "The registered kind this payload is an instance of, when it is one.",
+          "title": "Kind",
+          "type": "string"
+        },
+        "speaker": {
+          "description": "The speaker's name. Turns with the same name are the same speaker. For multi-speaker vendors (Gemini) this is the transcript label.",
+          "maxLength": 40,
+          "minLength": 1,
+          "title": "Speaker",
+          "type": "string"
+        },
+        "voice": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The voice this speaker uses: a literal provider voice id from the model's catalog, or a {{variable}}. Empty = bound to the agent's Voice setting (tts_voice).",
+          "title": "Voice"
+        },
+        "text": {
+          "description": "What is said. Any {{variable}} is filled at run time.",
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "direction": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Free-text performance direction for this turn only (e.g. 'warm, a little amused').",
+          "title": "Direction"
+        },
+        "pause_after_ms": {
+          "anyOf": [
+            {
+              "maximum": 10000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Silence after this turn, in milliseconds.",
+          "title": "Pause After Ms"
+        }
+      },
+      "required": [
+        "speaker",
+        "text"
+      ],
+      "title": "SpeechTurn",
       "type": "object"
     },
     "TableCellBookmark": {
@@ -7052,6 +7798,30 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
           "default": null,
           "title": "Size Bytes"
         },
+        "visibility": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Visibility"
+        },
+        "cdn_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cdn Url"
+        },
         "type": {
           "const": "media",
           "default": "media",
@@ -7099,6 +7869,34 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
           ],
           "default": null,
           "title": "Duration Ms"
+        },
+        "role": {
+          "anyOf": [
+            {
+              "enum": [
+                "extend",
+                "restyle"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Role"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
         }
       },
       "required": [
@@ -7467,6 +8265,15 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
     },
     {
       "$ref": "#/$defs/ContextInputPart"
+    },
+    {
+      "$ref": "#/$defs/DecisionQuestionsPart"
+    },
+    {
+      "$ref": "#/$defs/DecisionAnswersPart"
+    },
+    {
+      "$ref": "#/$defs/SpeechScriptPart"
     }
   ]
 };
