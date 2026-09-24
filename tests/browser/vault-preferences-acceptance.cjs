@@ -159,9 +159,12 @@ exports.runVaultPreferencesChecks = async ({
           targetCardCount: targetCards.length,
           fillControlCount: fillControls.length,
           fillControlDisabled: fillControls.length === 1 ? fillControls[0].disabled === true : null,
-          unavailable: paragraphs.includes('Saved logins are unavailable right now. Focus the login field to try again.'),
+          unavailable: paragraphs.includes('Saved logins are unavailable right now.')
+            || paragraphs.includes('Saved logins are unavailable right now. Focus the login field to try again.'),
           loading: paragraphs.includes('Checking saved logins…'),
           noOffer: paragraphs.includes('Click the username or password box on the website, then choose Fill.'),
+          admissionRefused: paragraphs.includes('Could not start filling. Focus the login field, then try Fill again.'),
+          partialManualCheck: paragraphs.includes('Matrx could not fully restore the login fields. Review them before signing in.'),
           disabledRemedy: paragraphs.includes('Turn on saved-login matching in extension settings to use Fill.'),
           filledFeedback: paragraphs.includes('Filled. Review the form, then sign in.'),
         };
