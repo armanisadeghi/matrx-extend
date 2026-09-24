@@ -1,762 +1,516 @@
 #!/usr/bin/env bash
-# release.sh — Full Chrome Web Store release pipeline for matrx-extend.
+# release.sh — Ship matrx-extend: bump, tag, push; then check and package it.
 #
-# What it does (in order):
-#   1.  Pre-flight checks (correct branch, git available, scripts exist)
-#   2.  Refuse an uncommitted tree (so the release source is explicit)
-#   3.  Sync server API types  (pnpm update-api-types)
-#   4.  TypeScript typecheck   (pnpm compile)
-#   5.  Bump version           (default --patch; --minor / --major supported)
-#   6.  Regen tool catalog     (pnpm catalog:tools:md), DB drift check,
-#         and docs/TOOLS.generated.md from the DB (pnpm docs:tools)
-#   7.  Commit version bump + regenerated catalog
-#   8.  Build STORE zip with MATRX_CWS_BUILD=1 (the manifest omits the dev key)
-#         and block policy-surface drift from the last Google-approved release
-#         → .output/matrx-extend-<ver>-store.zip
-#         (this is the file you upload to the Chrome Web Store dashboard)
-#   9.  Build LOCAL zip with the dev `key` intact
-#         → .output/matrx-extend-<ver>-local.zip
-#         (after a successful push, replaces .output/chrome-mv3-dev/, so
-#          "Load unpacked" → stable ID cihdmkcdjjckfhjpgoedmgfpoljebaml,
-#          OAuth redirect works, dev experience unbroken)
-#   10. Push branch + tag to origin
-#   11. Verify and promote the keyed local bundle, then write the receipt
-#   12. Print final upload instructions
+# Usage (./ship.sh calls it as: bash release.sh --message "<note>" <flags>):
+#   ./release.sh                        # patch bump (default)
+#   ./release.sh --minor | --major
+#   ./release.sh --message "note"       # commit "release: vX.Y.Z - note"
+#   ./release.sh --skip-types           # do not regenerate types/python-generated
+#   ./release.sh --skip-catalog         # do not regenerate the tool catalog / check its drift
+#   ./release.sh --skip-typecheck       # do not run tsc after the push
+#   ./release.sh --dry-run              # say what would ship; change nothing
+#   ./release.sh --no-push              # same as --dry-run (a WARNING says so)
 #
-# Usage:
-#   ./release.sh                         # patch bump (default)
-#   ./release.sh --patch                 # patch bump
-#   ./release.sh --minor                 # minor bump
-#   ./release.sh --major                 # major bump
-#   ./release.sh --message "feat: X"     # custom release commit message
-#   ./release.sh --skip-types            # skip server type sync (offline)
-#   ./release.sh --skip-typecheck        # skip explicit tsc (still runs inside zip)
-#   ./release.sh --skip-catalog          # skip dev/debug tool-catalog regen
-#   ./release.sh --dry-run               # preview without changing anything
-#   ./release.sh --no-push               # build everything but don't push to remote
+# ══ THE RULES (Arman, 2026-09-24) ════════════════════════════════════════════
+# A release script NEVER denies a release. Not a failing test, a typecheck, a
+# dirty tree, a diverged branch, a taken tag or a bad flag. It runs fast,
+# reports WARNINGS and ERRORS only (never INFO), releases, and shuts up.
+# The ONLY hard stops: GitHub unreachable after retries, the current version
+# cannot be read, or the push loses the race five times in a row.
 #
-# Note on the catalog step (#4): even WITHOUT --skip-catalog, this step
-# is non-fatal. The tool catalog is dev/debug-only — aidream loads tool
-# definitions from public.tools in the DB, not from this file. If the
-# regen fails (e.g. a handler imports something that touches
-# import.meta.env outside of WXT's build context), the script warns and
-# proceeds. The release ships either way.
+# ══ BEFORE THE PUSH — only what makes the pushed code better ═════════════════
+#   1. fetch origin/main (3 tries)                         ← hard stop #1
+#   2. assemble the release tree on origin/main with git plumbing (temp index,
+#      no worktree, no stash, no rebase, no reset). This checkout's unpushed
+#      commits are merged in with `git merge-tree`; a conflict ships origin/main
+#      plus an ERROR finding. The working tree is never read or touched, so a
+#      dirty tree is irrelevant.
+#   3. regenerate the committed artifacts in a throwaway export of that tree:
+#      types/python-generated (update-api-types), types/tool-catalog.{json,md}
+#      (catalog:tools:md), docs/TOOLS.generated.md (docs:tools). A failure is a
+#      finding; the release carries whatever did regenerate.
+#   4. bump package.json (a taken tag, local or remote, bumps past it — a tag
+#      is never moved), commit-tree, `git push origin <sha>:refs/heads/main`.
+#      A lost race refetches, rebuilds on the new main and retries (5x) ← #3;
+#      network blips are retried separately.
+#   5. push the tag; fast-forward this checkout (WARNING if it cannot).
+#   6. print ONE line:   vX.Y.Z  pushed  (Ns)
+#
+# ══ AFTER THE PUSH — everything we would complain about ══════════════════════
+# In throwaway exports of the released commit (never this checkout, so the
+# zips are exactly the tagged bytes), in parallel:
+#   checks: typecheck, unit tests, schema routing, @ai-matrx package currency,
+#     package twins, canonical pickers, archived-items law, org-default ban,
+#     swallowed refusals, tool-catalog ↔ DB drift, migration ledger, mandate
+#     references (WARNING only).
+#   build: STORE zip (MATRX_CWS_BUILD=1: no dev key) + store-package and
+#     Chrome Web Store policy-surface checks → .output/matrx-extend-<v>-store.zip;
+#     LOCAL zip (dev key kept, stable ID cihdmkcdjjckfhjpgoedmgfpoljebaml) →
+#     .output/matrx-extend-<v>-local.zip; promote the keyed bundle into
+#     .output/chrome-mv3-dev/ and write .output/release-receipt.json.
+# Each failure is an ERROR finding naming what failed and the command to
+# re-run. Findings print as one opened-and-closed section per category; with
+# no findings nothing prints. The last line is where the store zip is.
+#
+# The full detail of every run: tmp/release-logs/release-<stamp>.log
+# (+ latest.log, + release-vX.Y.Z.log). Gitignored (*.log).
+#
+# Guard: scripts/test-release-ship-path.sh — a dirty tree, a diverged branch,
+# a foreign push mid-release, a taken tag, a bad flag and failing unit tests
+# must still end with the tag on origin, exit 0, and an ERROR in Checks.
+set -uo pipefail
 
-set -euo pipefail
-
-# ── Resolve repo root ───────────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$SCRIPT_DIR"
-cd "$REPO_ROOT"
+cd "$REPO_ROOT" || exit 1
+
+# ── Log capture: the terminal shows only the ship line and findings ─────────
+if [[ -z "${RELEASE_LOG_CAPTURED:-}" ]]; then
+    RELEASE_LOG_DIR="$REPO_ROOT/tmp/release-logs"
+    mkdir -p "$RELEASE_LOG_DIR"
+    RELEASE_LOG_STAMP="$(date +%Y-%m-%d_%H-%M-%S)"
+    RELEASE_LOG_FILE="$RELEASE_LOG_DIR/release-${RELEASE_LOG_STAMP}.log"
+    {
+        echo "=== matrx-extend release.sh ==="
+        echo "started_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        echo "cwd:         $REPO_ROOT"
+        echo "args:        ${*:-<none>}"
+        echo "pid:         $$"
+        echo "==============================="
+    } > "$RELEASE_LOG_FILE"
+    ln -sfn "$(basename "$RELEASE_LOG_FILE")" "$RELEASE_LOG_DIR/latest.log"
+    export RELEASE_LOG_CAPTURED=1 RELEASE_LOG_DIR RELEASE_LOG_FILE
+    bash "${BASH_SOURCE[0]}" "$@" 2>&1 | tee -a "$RELEASE_LOG_FILE"
+    status=${PIPESTATUS[0]}
+    echo "=== end (exit $status, $(date -u +%Y-%m-%dT%H:%M:%SZ)) ===" >> "$RELEASE_LOG_FILE"
+    exit "$status"
+fi
+RELEASE_LOG_FILE="${RELEASE_LOG_FILE:-/dev/null}"
 
 PROJECT_NAME="matrx-extend"
-WXT_CONFIG="wxt.config.ts"
-OUTPUT_DIR=".output"
+VERSION_FILE="package.json"
+OUTPUT_DIR="$REPO_ROOT/.output"
 REMOTE="origin"
 BRANCH="main"
 WEBSTORE_UPLOAD_URL="https://chrome.google.com/webstore/devconsole"
+GENERATED_PATHS=(types/python-generated types/tool-catalog.json types/tool-catalog.md docs/TOOLS.generated.md)
+SHIP_PUSH_ATTEMPTS=5
+SHIP_START=$SECONDS
+GIT_ABS_DIR="$(git rev-parse --absolute-git-dir 2>/dev/null)"
 
-# ── Colors ──────────────────────────────────────────────────────────────────
-RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
-CYAN='\033[0;36m'; BOLD='\033[1m'; DIM='\033[2m'; NC='\033[0m'
+# ── Findings ─────────────────────────────────────────────────────────────────
+FINDINGS=()
+finding() { FINDINGS+=("$1|$2|$3|${4:-}"); log "FINDING $1 [$2] $3${4:+ → $4}"; }   # LEVEL CATEGORY text [remedy]
+log()     { printf '[%4ss] %s\n' "$((SECONDS - SHIP_START))" "$*" >> "$RELEASE_LOG_FILE"; }
+quiet()   { "$@" >> "$RELEASE_LOG_FILE" 2>&1; }
+hard_stop() {
+    echo "RELEASE STOPPED: $* — see tmp/release-logs/latest.log" >&2
+    print_findings
+    exit 1
+}
+# One section per category, opened and closed. Nothing prints when clean.
+print_findings() {
+    [[ ${#FINDINGS[@]} -gt 0 ]] || return 0
+    local row r cat seen="|" bar="===================="
+    local f_level f_cat f_text f_remedy
+    for row in "${FINDINGS[@]}"; do
+        IFS='|' read -r _ cat _ _ <<< "$row"
+        [[ "$seen" == *"|$cat|"* ]] && continue
+        seen+="$cat|"
+        echo ""
+        echo "$bar $cat $bar"
+        printf '%-8s %-12s %s\n' "LEVEL" "CATEGORY" "FINDING"
+        for r in "${FINDINGS[@]}"; do
+            IFS='|' read -r f_level f_cat f_text f_remedy <<< "$r"
+            [[ "$f_cat" == "$cat" ]] || continue
+            printf '%-8s %-12s %s%s\n' "$f_level" "$f_cat" "$f_text" "${f_remedy:+  → $f_remedy}"
+        done
+        echo ""
+        echo "$bar End of $cat $bar"
+    done
+}
+bounded() {  # seconds cmd... — a hung tool becomes a finding, never an endless wait
+    local secs="$1"; shift
+    if command -v timeout >/dev/null 2>&1; then timeout "$secs" "$@"
+    elif command -v gtimeout >/dev/null 2>&1; then gtimeout "$secs" "$@"
+    else "$@"; fi
+}
 
-info()    { echo -e "${CYAN}[INFO]${NC}  $*"; }
-ok()      { echo -e "${GREEN}[OK]${NC}    $*"; }
-warn()    { echo -e "${YELLOW}[WARN]${NC}  $*"; }
-# Return non-zero instead of exiting inside the function so `set -e` invokes
-# the ERR trap. A direct `exit 1` bypassed the trap and left a failed release's
-# version bump in the working tree, causing the next run to skip a version.
-fail()    { echo -e "${RED}[FAIL]${NC}  $*" >&2; return 1; }
-preview() { echo -e "${YELLOW}[DRY]${NC}   $*"; }
-step()    { echo ""; echo -e "${BOLD}── $* ──${NC}"; }
-
-# ── Parse flags ─────────────────────────────────────────────────────────────
-BUMP_TYPE="patch"
-CUSTOM_MESSAGE=""
-DRY_RUN=false
-SKIP_TYPES=false
-SKIP_TYPECHECK=false
-SKIP_CATALOG=false
-NO_PUSH=false
-
+# ── Flags: a bad one is a WARNING, never a refusal ───────────────────────────
+BUMP_TYPE="patch"; CUSTOM_MESSAGE=""; DRY_RUN=false
+SKIP_TYPES=false; SKIP_TYPECHECK=false; SKIP_CATALOG=false
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --patch)          BUMP_TYPE="patch"; shift ;;
-        --minor)          BUMP_TYPE="minor"; shift ;;
-        --major)          BUMP_TYPE="major"; shift ;;
+        --patch) BUMP_TYPE="patch"; shift ;;
+        --minor) BUMP_TYPE="minor"; shift ;;
+        --major) BUMP_TYPE="major"; shift ;;
         --message|-m)
-            [[ -n "${2:-}" ]] || fail "--message requires an argument."
-            CUSTOM_MESSAGE="$2"; shift 2 ;;
-        --skip-types)     SKIP_TYPES=true; shift ;;
+            if [[ -n "${2:-}" && "${2:-}" != --* ]]; then CUSTOM_MESSAGE="$2"; shift 2
+            else finding "WARNING" "Invocation" "--message had no text — released without a note"; shift; fi ;;
+        --skip-types) SKIP_TYPES=true; shift ;;
         --skip-typecheck) SKIP_TYPECHECK=true; shift ;;
-        --skip-catalog)   SKIP_CATALOG=true; shift ;;
-        --dry-run)        DRY_RUN=true; shift ;;
-        --no-push)        NO_PUSH=true; shift ;;
-        -h|--help)
-            grep '^#' "$0" | sed 's/^# \?//'
-            exit 0 ;;
-        *) fail "Unknown flag: $1. Use --help for usage." ;;
+        --skip-catalog) SKIP_CATALOG=true; shift ;;
+        --dry-run) DRY_RUN=true; shift ;;
+        --no-push) DRY_RUN=true
+            finding "WARNING" "Invocation" "--no-push ran as --dry-run: nothing was built, tagged or pushed" "./release.sh"; shift ;;
+        -h|--help) grep '^#' "${BASH_SOURCE[0]}" | head -14 | sed 's/^# \{0,1\}//'; exit 0 ;;
+        *) finding "WARNING" "Invocation" "Unknown flag '$1' was ignored" "--patch --minor --major --message --skip-types --skip-catalog --skip-typecheck --dry-run"
+           shift ;;
     esac
 done
 
-# ── Failure trap ────────────────────────────────────────────────────────────
-_on_error() {
-    local exit_code=$?
-    echo "" >&2
-    echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" >&2
-    echo -e "${RED}  ✗  RELEASE FAILED — step: ${BOLD}${CURRENT_STEP:-pre-flight}${NC}${RED}  (exit ${exit_code})${NC}" >&2
-    echo -e "${RED}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" >&2
-    echo -e "${RED}  Read the actual error above this banner — that's the${NC}" >&2
-    echo -e "${RED}  underlying cause. Common patterns:${NC}" >&2
-    case "$CURRENT_STEP" in
-        "sync-types")
-            echo -e "${RED}    • TS errors → fix code/types and re-run.${NC}" >&2
-            echo -e "${RED}    • Backend unreachable → use --skip-types to release offline.${NC}" >&2
-            ;;
-        "typecheck")
-            echo -e "${RED}    • Fix the reported TS errors and re-run ./ship.sh.${NC}" >&2
-            ;;
-        "version-bump"|"version-commit")
-            echo -e "${RED}    • Working tree may be in an odd state — check git status.${NC}" >&2
-            ;;
-        "catalog")
-            echo -e "${RED}    • Catalog regen is dev/debug only and should be non-fatal.${NC}" >&2
-            echo -e "${RED}      If you see this, the script's tolerance check itself broke.${NC}" >&2
-            ;;
-        "build-local"|"build-store")
-            echo -e "${RED}    • The build failed — read the Vite/WXT error above.${NC}" >&2
-            ;;
-        "git-push")
-            echo -e "${RED}    • Push failed but everything else succeeded.${NC}" >&2
-            echo -e "${RED}      Re-run: git push origin $BRANCH && git push origin v${NEW_VERSION}${NC}" >&2
-            ;;
-        *)
-            echo -e "${RED}    • Unexpected failure point. Inspect output above.${NC}" >&2
-            ;;
+bump_version() {  # current → NEW_VERSION per BUMP_TYPE (patch-skips taken tags)
+    local maj min pat
+    IFS='.' read -r maj min pat <<< "$1"
+    pat="${pat%%[!0-9]*}"
+    case "$BUMP_TYPE" in
+        patch) pat=$((pat + 1)) ;;
+        minor) min=$((min + 1)); pat=0 ;;
+        major) maj=$((maj + 1)); min=0; pat=0 ;;
     esac
-    echo "" >&2
-    if $VERSION_BUMPED && ! $VERSION_COMMITTED; then
-        echo -e "${RED}  ⤷  package.json was bumped to ${NEW_VERSION} but not committed —${NC}" >&2
-        echo -e "${RED}     reverting now (git checkout -- package.json).${NC}" >&2
-        git checkout -- package.json 2>/dev/null || true
-    fi
-    echo "" >&2
+    while tag_taken "v${maj}.${min}.${pat}"; do pat=$((pat + 1)); done
+    NEW_VERSION="${maj}.${min}.${pat}"
+    NEW_TAG="v${NEW_VERSION}"
 }
-trap _on_error ERR
+REMOTE_TAGS=""
+tag_taken() {
+    git rev-parse -q --verify "refs/tags/$1" >/dev/null && return 0
+    grep -q "refs/tags/$1\$" <<< "$REMOTE_TAGS"
+}
+read_version_at() { git cat-file -p "$1:$VERSION_FILE" 2>/dev/null | sed -n 's/^  "version": "\([^"]*\)".*/\1/p' | head -1; }
+commit_message() {
+    local note="${CUSTOM_MESSAGE#release: }"
+    if [[ -n "$note" && "$note" != "$1"* ]]; then echo "release: $1 - ${note}"
+    elif [[ -n "$note" ]]; then echo "release: ${note}"
+    else echo "release: $1"; fi
+}
 
-# ── Store/local build state ──────────────────────────────────────────────────
-#
-# Local dev needs `key:` in the manifest so Chrome assigns the stable ID
-# cihdmkcdjjckfhjpgoedmgfpoljebaml (Supabase OAuth redirect is registered
-# against it). The Chrome Web Store rejects any upload that includes a
-# `key` whose keypair doesn't match what the Store assigned at first
-# publish (Store-assigned ID: hnfolienncfklkgmdjjmhhegglimlamg).
-# Full incident: .research/v0.1.4-auth-incident.md.
-#
-# Store builds set MATRX_CWS_BUILD=1; wxt.config.ts then omits the key without
-# mutating source. Local builds leave the variable unset and retain the key.
-VERSION_BUMPED=false
-VERSION_COMMITTED=false
-NEW_VERSION=""
-CURRENT_STEP=""
-CATALOG_OK=true
-WARNINGS=()
-DRIFT_DETECTED=false
-RELEASE_SHA=""
+# ── Throwaway export of a commit/tree (never this checkout) ─────────────────
+# <root>/matrx-extend holds the files; node_modules and ../aidream are symlinks
+# to the real ones, and the untracked .env files are copied, so every pnpm
+# script behaves as it does here — against exactly the released bytes.
+SNAP_ROOTS=()
+cleanup() {
+    local d
+    for d in ${SNAP_ROOTS[@]+"${SNAP_ROOTS[@]}"}; do [[ -n "$d" && -d "$d" ]] && rm -rf -- "$d"; done
+    release_lock_cleanup
+}
+export_snapshot() {  # treeish head-commit [prepare] → sets SNAP_DIR (never call it in $(…): SNAP_ROOTS must record it)
+    local root dir f
+    SNAP_DIR=""
+    root="$(mktemp -d "${TMPDIR:-/tmp}/matrx-extend-release.XXXXXX")" || return 1
+    SNAP_ROOTS+=("$root")
+    dir="$root/$PROJECT_NAME"
+    mkdir -p "$dir"
+    git archive "$1" | tar -x -C "$dir" || return 1
+    # Its own tiny git repo at the released commit (objects borrowed through
+    # alternates, nothing written back here), so checks that run `git ls-files`
+    # or read HEAD see exactly the release.
+    ( cd "$dir" && git init -q \
+        && echo "$GIT_ABS_DIR/objects" > .git/objects/info/alternates \
+        && printf 'node_modules\n' >> .git/info/exclude \
+        && git update-ref HEAD "$2" && git read-tree "$1" && git update-index -q --refresh ) >> "$RELEASE_LOG_FILE" 2>&1 \
+        || log "snapshot git setup failed for ${1:0:9} (checks that read git may fail)"
+    [[ -d "$REPO_ROOT/node_modules" ]] && ln -s "$REPO_ROOT/node_modules" "$dir/node_modules"
+    [[ -d "$REPO_ROOT/../aidream" ]] && ln -s "$(cd "$REPO_ROOT/../aidream" && pwd)" "$root/aidream"
+    for f in "$REPO_ROOT"/.env*; do
+        [[ -f "$f" && ! -e "$dir/$(basename "$f")" ]] && cp "$f" "$dir/"
+    done
+    # tsconfig extends .wxt/tsconfig.json (the @/ path alias): generate it.
+    [[ "${3:-}" == prepare ]] && ( cd "$dir" && bounded 120 pnpm -s exec wxt prepare ) >> "$RELEASE_LOG_FILE" 2>&1
+    SNAP_DIR="$dir"
+}
 
-# ── Pre-flight checks ───────────────────────────────────────────────────────
-step "Pre-flight checks"
-
-[[ -f package.json ]] || fail "package.json not found at $REPO_ROOT"
-[[ -f "$WXT_CONFIG" ]] || fail "$WXT_CONFIG not found"
-command -v pnpm >/dev/null || fail "pnpm not found in PATH"
-command -v node >/dev/null || fail "node not found in PATH"
-command -v git  >/dev/null || fail "git not found in PATH"
-command -v supabase >/dev/null || fail "supabase CLI not found in PATH"
-
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-[[ "$CURRENT_BRANCH" == "$BRANCH" ]] \
-    || fail "Not on '$BRANCH' (currently on '$CURRENT_BRANCH'). Switch first."
-
-grep -q "isChromeWebStoreBuild" "$WXT_CONFIG" \
-    || fail "$WXT_CONFIG does not declare the MATRX_CWS_BUILD key boundary."
-grep -q "key: devExtensionKey" "$WXT_CONFIG" \
-    || fail "$WXT_CONFIG does not include the dev key through the guarded manifest branch."
-
-ok "On branch $BRANCH, environment-gated key boundary and tooling available"
-
-# ── Refuse uncommitted work ─────────────────────────────────────────────────
-step "Validate working tree"
-if [[ -n "$(git status --porcelain)" ]]; then
-    git status --short | sed 's/^/   /'
-    fail "Release starts only from a clean tree. Commit the exact intended files, then re-run; release.sh will never stage them for you."
-fi
-ok "Working tree clean — proceeding with current HEAD"
-
-# ── Sync with remote (BEFORE the long build, so a diverged branch never ──────
-# leaves an orphaned tag pointing at a commit that cannot be pushed). Runs ────
-# before any version bump/tag, so any abort here changes nothing. ────────────
-step "Sync with $REMOTE/$BRANCH"
-CURRENT_STEP="remote-sync"
-
-if ! git fetch --quiet "$REMOTE" "$BRANCH"; then
-    fail "Could not reach $REMOTE. Check your connection, then re-run. Nothing has been bumped or tagged."
-fi
-
-LOCAL_SHA=$(git rev-parse "$BRANCH")
-REMOTE_SHA=$(git rev-parse "$REMOTE/$BRANCH")
-BASE_SHA=$(git merge-base "$BRANCH" "$REMOTE/$BRANCH")
-
-if [[ "$LOCAL_SHA" == "$REMOTE_SHA" ]]; then
-    ok "Already in sync with $REMOTE/$BRANCH."
-elif [[ "$LOCAL_SHA" == "$BASE_SHA" ]]; then
-    # Local strictly behind — fast-forward is safe and lossless.
-    if $DRY_RUN; then
-        preview "$REMOTE/$BRANCH is ahead — would fast-forward."
-    else
-        info "$REMOTE/$BRANCH is ahead — fast-forwarding..."
-        git merge --ff-only --quiet "$REMOTE/$BRANCH" \
-            || fail "Fast-forward failed. Resolve manually. Nothing has been bumped or tagged."
-        ok "Fast-forwarded to $(git rev-parse --short HEAD)."
+# ── One release at a time (atomic mkdir; a dead or stuck owner is taken over) ─
+RELEASE_LOCK_DIR="$(git rev-parse --git-path matrx-release-ship.lock 2>/dev/null || echo "$REPO_ROOT/.git/matrx-release-ship.lock")"
+RELEASE_LOCK_HELD=false
+release_lock_cleanup() {
+    if $RELEASE_LOCK_HELD && [[ "$(cat "$RELEASE_LOCK_DIR/pid" 2>/dev/null)" == "$$" ]]; then
+        rm -f -- "$RELEASE_LOCK_DIR/pid"; rmdir -- "$RELEASE_LOCK_DIR" 2>/dev/null
     fi
-elif [[ "$REMOTE_SHA" == "$BASE_SHA" ]]; then
-    # Local strictly ahead — a normal push will work.
-    ok "Local is ahead of $REMOTE/$BRANCH by $(git rev-list --count "$REMOTE/$BRANCH..$BRANCH") commit(s) — ready to release."
-else
-    # Diverged — try a clean rebase, abort with guidance if it would conflict.
-    if $DRY_RUN; then
-        warn "Diverged from $REMOTE/$BRANCH — would attempt a clean rebase (abort if it conflicts)."
-    else
-        warn "Diverged from $REMOTE/$BRANCH — attempting a clean rebase..."
-        if git rebase "$REMOTE/$BRANCH" >/dev/null 2>&1; then
-            ok "Clean rebase succeeded — linear history restored."
-        else
-            git rebase --abort >/dev/null 2>&1 || true
-            echo "" >&2
-            echo -e "${RED}  Your commits not on $REMOTE/$BRANCH:${NC}" >&2
-            git log --oneline "$REMOTE/$BRANCH..$BRANCH" | sed 's/^/    /' >&2
-            echo -e "${RED}  $REMOTE/$BRANCH commits not in your branch:${NC}" >&2
-            git log --oneline "$BRANCH..$REMOTE/$BRANCH" | sed 's/^/    /' >&2
-            echo "" >&2
-            fail "Diverged and an automatic rebase would conflict. Resolve with 'git rebase $REMOTE/$BRANCH', then re-run. Nothing has been bumped or tagged."
+    RELEASE_LOCK_HELD=false
+}
+acquire_release_lock() {
+    local owner waited=0
+    while true; do
+        if mkdir "$RELEASE_LOCK_DIR" 2>/dev/null; then
+            echo "$$" > "$RELEASE_LOCK_DIR/pid"; RELEASE_LOCK_HELD=true; return 0
         fi
-    fi
-fi
+        owner="$(cat "$RELEASE_LOCK_DIR/pid" 2>/dev/null)"
+        if [[ "$owner" =~ ^[0-9]+$ ]] && kill -0 "$owner" 2>/dev/null && (( waited < 60 )); then
+            sleep 1; waited=$((waited + 1)); continue
+        fi
+        [[ "$owner" =~ ^[0-9]+$ ]] && kill -0 "$owner" 2>/dev/null \
+            && finding "WARNING" "Git" "Release lock held by PID $owner for 60s — taken over so this release could ship"
+        rm -f -- "$RELEASE_LOCK_DIR/pid"; rmdir -- "$RELEASE_LOCK_DIR" 2>/dev/null
+    done
+}
+trap cleanup EXIT
 
-# ── Read + compute version ──────────────────────────────────────────────────
-step "Compute next version"
+# ── Fetch: the one thing that can stop a release before it starts ───────────
+fetch_main() {
+    local i
+    for i in 1 2 3; do
+        quiet git fetch --quiet "$REMOTE" "$BRANCH" && return 0
+        sleep $((i * 2))
+    done
+    return 1
+}
 
-# Read base version from HEAD (last committed state) — NOT from the working
-# file. If a prior failed run bumped package.json mid-flight without
-# committing, the file might already be ahead; reading from HEAD gives us a
-# stable anchor so we don't double-bump.
-HEAD_VERSION=$(git show HEAD:package.json | node -e "
-let s=''; process.stdin.on('data',d=>s+=d); process.stdin.on('end',()=>{
-  process.stdout.write(JSON.parse(s).version);
-});") || fail "Could not read version from HEAD:package.json"
-
-WORKING_VERSION=$(node -p "require('./package.json').version") \
-    || fail "Could not read version from package.json"
-
-if [[ "$WORKING_VERSION" != "$HEAD_VERSION" ]]; then
-    warn "package.json version diverged from HEAD ($WORKING_VERSION vs $HEAD_VERSION) — resetting to HEAD."
-    git checkout -- package.json
-    WORKING_VERSION="$HEAD_VERSION"
-fi
-
-CURRENT_VERSION="$HEAD_VERSION"
-IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
-case "$BUMP_TYPE" in
-    patch) NEW_VERSION="${MAJOR}.${MINOR}.$((PATCH + 1))" ;;
-    minor) NEW_VERSION="${MAJOR}.$((MINOR + 1)).0" ;;
-    major) NEW_VERSION="$((MAJOR + 1)).0.0" ;;
-esac
-NEW_TAG="v${NEW_VERSION}"
-
-if git rev-parse "$NEW_TAG" &>/dev/null; then
-    fail "Tag $NEW_TAG already exists. Resolve manually or pick a different bump type."
-fi
-
-LOCAL_ZIP="$OUTPUT_DIR/${PROJECT_NAME}-${NEW_VERSION}-local.zip"
-STORE_ZIP="$OUTPUT_DIR/${PROJECT_NAME}-${NEW_VERSION}-store.zip"
-WXT_ZIP_OUT="$OUTPUT_DIR/${PROJECT_NAME}-${NEW_VERSION}-chrome.zip"
-
-echo ""
-echo -e "  ${BOLD}${PROJECT_NAME} release${NC}"
-echo -e "  ─────────────────────────────────────"
-echo -e "  Bump        : ${CYAN}${BUMP_TYPE}${NC}"
-echo -e "  Old version : ${YELLOW}${CURRENT_VERSION}${NC}"
-echo -e "  New version : ${GREEN}${NEW_VERSION}${NC}"
-echo -e "  Tag         : ${GREEN}${NEW_TAG}${NC}"
-echo -e "  Local zip   : ${DIM}${LOCAL_ZIP}${NC}"
-echo -e "  Store zip   : ${DIM}${STORE_ZIP}${NC}"
-$DRY_RUN  && echo -e "  Mode        : ${YELLOW}DRY RUN${NC}"
-$NO_PUSH  && echo -e "  Push        : ${YELLOW}DISABLED (--no-push)${NC}"
-echo -e "  ─────────────────────────────────────"
-echo ""
-
+# ── Dry run ──────────────────────────────────────────────────────────────────
 if $DRY_RUN; then
-    preview "Would sync server types, typecheck, bump to $NEW_VERSION, build local + store zips, tag, push."
+    fetch_main || hard_stop "cannot reach GitHub ($REMOTE/$BRANCH)"
+    REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*' 2>/dev/null)"
+    CUR="$(read_version_at "$REMOTE/$BRANCH")"
+    [[ -n "$CUR" ]] || hard_stop "cannot read the version from $VERSION_FILE on $REMOTE/$BRANCH"
+    bump_version "$CUR"
+    echo "dry run: $REMOTE/$BRANCH is $CUR; would release $NEW_TAG as '$(commit_message "$NEW_TAG")'"
+    AHEAD="$(git rev-list --count "$REMOTE/$BRANCH..HEAD" 2>/dev/null || echo 0)"
+    [[ "$AHEAD" -gt 0 ]] && echo "dry run: would merge $AHEAD local commit(s) not on $REMOTE/$BRANCH"
+    print_findings
     exit 0
 fi
 
-# ── 1. Sync server API types ────────────────────────────────────────────────
-CURRENT_STEP="sync-types"
-step "1/8  Sync server API types"
-if $SKIP_TYPES; then
-    warn "Skipping server type sync (--skip-types)"
-else
-    pnpm update-api-types
-    ok "API types synced"
+# ══ THE SHIP PATH ════════════════════════════════════════════════════════════
+acquire_release_lock
+fetch_main || hard_stop "cannot reach GitHub ($REMOTE/$BRANCH) after 3 tries — nothing was changed"
+log "fetched $REMOTE/$BRANCH"
+
+LOCAL_HEAD="$(git rev-parse HEAD)"
+if [[ "$(git rev-parse --abbrev-ref HEAD)" != "$BRANCH" ]]; then
+    finding "WARNING" "Git" "This checkout is on '$(git rev-parse --abbrev-ref HEAD)', not $BRANCH — its commits were not merged into the release" "git checkout main"
+    LOCAL_HEAD="$(git rev-parse "$REMOTE/$BRANCH")"
 fi
-
-# ── 2. TypeScript typecheck ─────────────────────────────────────────────────
-CURRENT_STEP="typecheck"
-step "2/8  TypeScript typecheck"
-if $SKIP_TYPECHECK; then
-    warn "Skipping explicit tsc (--skip-typecheck)"
-else
-    pnpm compile
-    ok "Typecheck passed"
-fi
-
-# Unit tests are part of the Store boundary. A package that builds but breaks
-# the guest reviewer path or a privileged handler is not releasable.
-CURRENT_STEP="unit-tests"
-pnpm test
-ok "Unit tests passed"
-
-# Supabase table routing — BLOCKING, and deliberately not covered by
-# --skip-typecheck. The DB split `public` into ~48 domain schemas; an
-# unqualified `.from('wbx_pattern')` compiles, builds, and passes every test,
-# then 404s (PGRST205) in the user's browser. Shipping that is how the extension
-# silently loses every DB read. Nothing else in this pipeline can see it.
-CURRENT_STEP="schema-routing"
-if pnpm check:schema-routing:strict; then
-    ok "Supabase schema routing clean"
-else
-    fail "Unqualified Supabase table routing — these 404 at RUNTIME. Run 'pnpm check:schema-routing' for the list."
-fi
-
-# @ai-matrx package currency — BLOCKING. THE LATEST LAW says the specs are
-# "latest"; THE CATCH-UP RULE (C28) says the INSTALLED versions must actually be
-# npm latest before this repo releases. "latest" resolves at install time, so a
-# lockfile happily ships yesterday's package forever. Releasing stale is how one
-# repo silently runs a different version of the shared system than every other.
-# Fix forward — reinstall and adopt the CHANGELOG "Consumer action"s. Never pin.
-CURRENT_STEP="matrx-package-currency"
-if pnpm check:matrx-packages; then
-    ok "@ai-matrx packages are npm latest"
-else
-    fail "@ai-matrx packages are stale or pinned (see above). Run 'pnpm sync:matrx-packages', adopt each new version's CHANGELOG 'Consumer action', commit package.json + pnpm-lock.yaml, then re-run. Catch-up work for this repo is also queued on the Autonomous Work Loop (campaign package-catch-up)."
-fi
-
-# THE OTHER HALF of the same law (Arman: "the logic of the packages is NEVER
-# duplicated outside of the package"). Currency proves this repo INSTALLS the
-# right version; this proves it does not quietly re-implement what that version
-# already ships. Ported from matrx-frontend 2026-09-07 with the fleet's 27-row
-# register. The only way past is a per-file allow entry carrying a reason.
-CURRENT_STEP="package-twins"
-if pnpm check:package-twins; then
-    ok "no @ai-matrx package logic re-grown in this repo"
-else
-    fail "Package logic re-grown outside its package (see above). Import from the package and delete the local definition, or — only if it is PROVABLY a different capability — add the file to scripts/package-twins.json with a written reason."
-fi
-
-# THE ONE AGENT PICKER — BLOCKING. This repo shipped two near-identical
-# hand-rolled agent pickers plus a Settings PillSelect and a showcase <select>,
-# each with its own membership rule, order and filters, which is precisely how
-# one Matrx client's agent list stops matching another's. They were deleted on
-# 2026-09-08 in favour of @ai-matrx/agents/catalog/react. This keeps them gone.
-CURRENT_STEP="canonical-pickers"
-if pnpm check:canonical-pickers; then
-    ok "the one agent picker holds"
-else
-    fail "An alternate agent picker was reintroduced (see above). Render AgentListDropdown / AgentListInlinePicker from @ai-matrx/agents/catalog/react; a behaviour the package lacks is a package change made and released in the same session."
-fi
-
-# THE ARCHIVED-ITEMS LAW — BLOCKING. Every list over an entity that can be
-# archived carries an archive filter, the default hides archived rows, and
-# revealing them is one or two clicks (Arman, 2026-09-09 —
-# ../common-docs/policies/archived-items.md). This repo's only archivable list
-# is the agent picker, whose tri-state chip lives in @ai-matrx/agents/catalog;
-# the guard is what makes the NEXT list obey without anyone remembering.
-CURRENT_STEP="archived-items-law"
-if pnpm check:archived-items-law && pnpm check:archived-items-law:self-test; then
-    ok "the archived-items law holds (and its detector can still fail)"
-else
-    fail "A list hides archived rows with no way to reveal them (see above). Agent lists use @ai-matrx/agents/catalog's archFilter; anything else uses @ai-matrx/design-system <ArchiveFilter> with its value passed to the READER, never a client-side sieve."
-fi
-
-# THE ORGANIZATION IS WHAT THE USER SET — BLOCKING. Nothing that builds a
-# request may read a saved "default organization" preference, and the personal
-# organization is never a fallback (Arman, 2026-09-19). It also rides in
-# `prebuild`/`prezip`, but `pnpm zip:store` above runs FIRST and fires no
-# `prezip` hook, so without this step the store artifact is already built before
-# anything checks. A gate that runs after the thing it guards is not a gate.
-CURRENT_STEP="org-default-ban"
-if pnpm check:org-default-ban:self-test && pnpm check:org-default-ban; then
-    ok "the organization is still what the person set on this device"
-else
-    fail "A default organization is back (see above). Nothing that builds a request may read a saved default-organization preference, and the personal organization is never a fallback. With nothing set on this device, HOLD the request and ask: holdForActiveOrganizationId() in src/lib/org/active-org.ts."
-fi
-
-# MANDATE REFERENCES — LOUD AND DELIBERATELY NON-BLOCKING (ruling D23,
-# common-docs/projects/mandate-declaration-reporting/REGISTER.md law 1).
-#
-# Every Mandate this extension names, and every place intelligence is reached
-# outside a Mandate, is found here and reported to the platform with its exact
-# file, symbol and line — so the fleet board at
-# /administration/mandates/references can say what this release actually
-# consumes instead of guessing. It NEVER blocks: `check` always exits 0, and the
-# `|| true` is belt-and-braces for a crash inside uvx itself.
-#
-# 🚨 THE VERSION IS PINNED EXACTLY, ON PURPOSE. "Always latest" is the law for
-# @ai-matrx NPM packages (check:matrx-packages above enforces it); this is a
-# PYTHON release gate, and a gate that silently changes what it measures between
-# two releases cannot be compared across revisions — reconciliation is keyed on
-# (identity, revision_kind, revision), and the identity hash includes the
-# scanner's own classification. Bump the pin deliberately, in a commit that says
-# what changed.
-#
-# With no SUPABASE_SECRET_KEY in the environment the check still scans and still
-# screams; it says UNMEASURED-for-report loudly rather than pretending it filed.
-CURRENT_STEP="mandate-references"
-if command -v uvx >/dev/null 2>&1; then
-    if pnpm check:mandate-references; then
-        ok "mandate references scanned and reported (findings above, if any, never block)"
-    else
-        warn "The mandate reference check could not complete — release continues (D23)."
-        WARNINGS+=("Mandate reference check failed to run. Every Mandate this build names is UNMEASURED on the fleet board until it does.")
+MERGE_CONFLICT_REPORTED=false
+base_tree() {  # sets BASE, BASE_TREE, PARENTS
+    BASE="$(git rev-parse "$REMOTE/$BRANCH")"
+    PARENTS=(-p "$BASE")
+    if git merge-base --is-ancestor "$LOCAL_HEAD" "$BASE" 2>/dev/null; then
+        BASE_TREE="$(git rev-parse "$BASE^{tree}")"; return 0
     fi
-else
-    warn "uvx not found — the mandate reference check did not run (D23: never a brake)."
-    WARNINGS+=("uvx is missing, so this release reported NO mandate references. Install uv (https://astral.sh/uv) so the fleet board stops calling matrx-extend unmeasured.")
-fi
-
-# ── 3. Bump version ─────────────────────────────────────────────────────────
-CURRENT_STEP="version-bump"
-step "3/8  Bump version → ${NEW_VERSION}"
-node -e "
-const fs = require('fs');
-const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
-pkg.version = '${NEW_VERSION}';
-fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');
-"
-# Keep the machine-written version bump in the repository's canonical format.
-# Without this, a successful release can immediately create a red CI run on
-# package.json even though all release checks and artifacts passed.
-pnpm exec biome format --write package.json
-VERSION_BUMPED=true
-ok "package.json → ${NEW_VERSION}"
-
-# ── 4. Regen tool catalog (NON-FATAL) ───────────────────────────────────────
-#
-# Deliberately tolerant. The tool catalog is dev/debug-only per its own
-# docstring — aidream loads tool definitions from public.tools in the DB,
-# NOT from this catalog. Most common failure mode: a tool handler module
-# transitively imports something that touches `import.meta.env`, which
-# tsx (plain Node) doesn't define. Fixing that is a code change, not a
-# release-blocker. We warn and continue.
-CURRENT_STEP="catalog"
-step "4/8  Regenerate tool catalog (non-fatal)"
-if $SKIP_CATALOG; then
-    warn "Skipping catalog regen (--skip-catalog)"
-    CATALOG_OK=false
-    WARNINGS+=("Tool catalog NOT regenerated (--skip-catalog). Catalog files in types/ may be stale.")
-else
-    if pnpm catalog:tools:md; then
-        ok "types/tool-catalog.{json,md} regenerated"
+    local merged
+    if merged="$(git merge-tree --write-tree "$BASE" "$LOCAL_HEAD" 2>/dev/null)"; then
+        BASE_TREE="$merged"
+        PARENTS=(-p "$BASE" -p "$LOCAL_HEAD")
     else
-        CATALOG_OK=false
-        warn "catalog:tools:md failed — continuing (catalog is dev/debug only)."
-        warn "Most likely cause: a handler module touches import.meta.env at"
-        warn "module load. Inspect with:  pnpm catalog:tools:md  outside this script."
-        WARNINGS+=("Tool catalog regen FAILED (non-blocking). types/tool-catalog.* will be stale until you fix the import-time env issue and run 'pnpm catalog:tools:md' manually.")
+        BASE_TREE="$(git rev-parse "$BASE^{tree}")"
+        $MERGE_CONFLICT_REPORTED || finding "ERROR" "Git" "Local commits conflict with $REMOTE/$BRANCH — shipped $BRANCH without ${LOCAL_HEAD:0:9}" "git pull --no-rebase origin main"
+        MERGE_CONFLICT_REPORTED=true
     fi
-
-    # ── 4b. Diff local catalog against public.tool_def (BLOCKING) ────────────
-    #
-    # The LLM sees tool schemas from public.tool_def (in Supabase). The
-    # extension's dispatcher validates calls against the local Zod schemas
-    # captured in types/tool-catalog.json. When they drift, the model
-    # crafts a call the dispatcher rejects (or vice versa) — see the
-    # 'tabs.action=get_info' incident on 2026-05-19.
-    # Strict mode: drift AND inability-to-verify both block the release.
-    # Override only with an explicit MATRX_ALLOW_DRIFT=1 (leaves an obvious
-    # trail in the shell history) — the audit found releases shipping with
-    # the LLM-visible tool_def schema drifted from the Zod the dispatcher
-    # validates (docs/AUDIT_2026_06_10.md P1-25).
-    if $CATALOG_OK; then
-        if pnpm catalog:tools:drift:strict; then
-            ok "tool-catalog ↔ tool_def in sync (verified)"
-        else
-            DRIFT_DETECTED=true
-            if [[ "${MATRX_ALLOW_DRIFT:-0}" == "1" ]]; then
-                WARNINGS+=("Tool catalog DRIFTED from public.tool_def — RELEASE FORCED via MATRX_ALLOW_DRIFT=1. Reconcile via Supabase MCP / admin API ASAP.")
-            else
-                fail "Tool catalog drifted from public.tool_def (or could not verify). Run 'pnpm catalog:tools:drift' for the diff. Reconcile, or force with MATRX_ALLOW_DRIFT=1."
-            fi
-        fi
-    else
-        fail "Catalog regen failed — cannot verify drift. Fix the regen error (see above) before releasing."
-    fi
-
-    # ── 4c. Regenerate docs/TOOLS.generated.md from the DB (NON-FATAL) ────────
-    #
-    # Rule 4 (common-docs/systems/agents/agent-tools/STATE.md): tool descriptions live ONLY in the
-    # database; the single repo copy allowed is this auto-generated doc. It
-    # reads tl_def directly (not the local catalog), so it runs regardless of
-    # CATALOG_OK. Never blocks — warns on failure and ships either way.
-    if pnpm docs:tools; then
-        ok "docs/TOOLS.generated.md regenerated from tl_def"
-    else
-        WARNINGS+=("docs:tools regen FAILED (non-blocking). docs/TOOLS.generated.md may be stale.")
-    fi
-
-    # ── 4d. Migration ledger check (migrations/*.sql ↔ live DB): LOUD, NON-FATAL ─
-    #
-    # Supabase is the source of truth, NOT the .sql files in migrations/. A file on
-    # disk changed NOTHING until it's applied. This diffs migrations/ against the
-    # shared ledger public._schema_migrations (source='matrx-extend', same DB) and
-    # screams in a red box if any local migration was never recorded. Read-only —
-    # this repo can't apply DDL; apply from aidream:
-    #   python db/apply_migrations.py --source matrx-extend
-    # Strict: unapplied migrations block. The DB is the source of truth and a
-    # release whose code assumes un-applied DDL is broken on arrival. Same
-    # explicit escape hatch as drift.
-    if pnpm check:migrations:strict; then
-        ok "migration ledger in sync (verified)"
-    else
-        if [[ "${MATRX_ALLOW_DRIFT:-0}" == "1" ]]; then
-            WARNINGS+=("UNAPPLIED MIGRATIONS detected — RELEASE FORCED via MATRX_ALLOW_DRIFT=1. Apply from aidream with 'python db/apply_migrations.py --source matrx-extend'.")
-        else
-            fail "Unapplied migrations detected (or ledger unreachable). Run 'pnpm check:migrations' for the list; apply from aidream, or force with MATRX_ALLOW_DRIFT=1."
-        fi
-    fi
-fi
-
-# ── 5. Commit version bump ──────────────────────────────────────────────────
-CURRENT_STEP="version-commit"
-step "5/8  Commit version bump"
-COMMIT_MSG="${CUSTOM_MESSAGE:-release: ${NEW_TAG}}"
-git add package.json 2>/dev/null || true
-# update-api-types runs before this commit and may change any generated bundle.
-# Stage the complete generated API surface so the release tag reproduces the
-# exact types compiled into both artifacts.
-git add types/python-generated 2>/dev/null || true
-# Only stage catalog files if regen succeeded — don't commit a stale one.
-if $CATALOG_OK; then
-    git add types/tool-catalog.json types/tool-catalog.md 2>/dev/null || true
-fi
-# The DB-sourced tools doc (Rule 4) — stage whenever it was regenerated.
-git add docs/TOOLS.generated.md 2>/dev/null || true
-if ! git diff --cached --quiet; then
-    git commit -m "$COMMIT_MSG"
-    VERSION_COMMITTED=true
-    ok "Committed: '$COMMIT_MSG'"
-else
-    warn "Nothing staged — skipping version-bump commit"
-    VERSION_COMMITTED=true  # nothing to roll back either
-fi
-
-# A release is not reproducible when generated API files used by the build are
-# outside the commit that will be tagged. This catches tracked and untracked
-# generated output before either artifact is built.
-if [[ -n "$(git status --porcelain -- types/python-generated)" ]]; then
-    fail "Generated API types remain outside the release commit. Refusing to build or tag a non-reproducible release."
-fi
-
-# The zips must be bytes from exactly the commit that is tagged and pushed.
-# Do not let a concurrent writer or a post-build rebase silently detach them.
-RELEASE_SHA=$(git rev-parse HEAD)
-assert_release_source() {
-    [[ "$(git rev-parse HEAD)" == "$RELEASE_SHA" ]] \
-        || fail "Release source changed after build began. Re-run the normal release; do not rebase or retag built artifacts."
-    [[ -z "$(git status --porcelain)" ]] \
-        || fail "Release source changed after build began. Re-run the normal release; do not stage, amend, or add source files to built artifacts."
-    [[ "$(node -p "require('./package.json').version")" == "$NEW_VERSION" ]] \
-        || fail "package.json version changed after build began. Re-run the normal release."
 }
-assert_release_source
+base_tree
+log "release tree assembled on ${BASE:0:9}"
 
-# ── 6. Build STORE zip (environment-gated key omission) ─────────────────────
-#
-# IMPORTANT: store goes FIRST, local goes SECOND. `pnpm zip` rebuilds
-# .output/chrome-mv3/ in place each time, so whichever build runs last
-# is the one a "Load unpacked" install will pick up. We want that to be
-# the LOCAL build (key intact, stable dev ID) — otherwise the unpacked
-# install gets a random ID and Supabase OAuth dies with "Authorization
-# page could not be loaded."
-CURRENT_STEP="build-store"
-step "6/8  Build STORE zip (key removed)"
-
-# Purge stale zips from previous releases. If we leave them around,
-# the file picker in the Chrome Web Store dashboard shows every prior
-# version's store zip alongside the new one — and "0.1.4" sorts
-# next to "0.1.14" in most file pickers, so it's trivially easy to
-# grab the wrong file. The CWS rejected v0.1.14's upload exactly this
-# way (manifest version 0.1.4, "not larger than published 0.1.4").
-# After this purge, .output/ holds exactly the two zips this run is
-# about to produce — nothing else to mis-click.
-#
-# Safety: the source of truth for any prior release is its git tag;
-# a contributor who actually needs an older zip can always
-# `git checkout vX.Y.Z && pnpm zip`. There's no value in preserving
-# build artifacts here.
-mkdir -p "$OUTPUT_DIR"
-STALE_ZIPS=$(find "$OUTPUT_DIR" -maxdepth 1 -type f \( \
-    -name "${PROJECT_NAME}-*-store.zip" -o \
-    -name "${PROJECT_NAME}-*-local.zip" -o \
-    -name "${PROJECT_NAME}-*-chrome.zip" \
-\) 2>/dev/null | wc -l | tr -d ' ')
-if [[ "$STALE_ZIPS" -gt 0 ]]; then
-    find "$OUTPUT_DIR" -maxdepth 1 -type f \( \
-        -name "${PROJECT_NAME}-*-store.zip" -o \
-        -name "${PROJECT_NAME}-*-local.zip" -o \
-        -name "${PROJECT_NAME}-*-chrome.zip" \
-    \) -delete
-    ok "Purged $STALE_ZIPS stale zip(s) from $OUTPUT_DIR/"
-fi
-
-rm -f "$WXT_ZIP_OUT" "$LOCAL_ZIP" "$STORE_ZIP"
-pnpm zip:store
-[[ -f "$WXT_ZIP_OUT" ]] || fail "Expected $WXT_ZIP_OUT but it was not produced"
-
-# Sanity check: the store manifest must NOT contain a "key" field.
-if unzip -p "$WXT_ZIP_OUT" manifest.json | grep -q '"key"'; then
-    fail "Store zip still contains a key field. Aborting before upload."
-fi
-mv "$WXT_ZIP_OUT" "$STORE_ZIP"
-ok "Store zip → $STORE_ZIP"
-
-# ── 7. Build LOCAL zip (dev key intact) — leaves chrome-mv3/ usable ─────────
-CURRENT_STEP="build-local"
-step "7/8  Build LOCAL zip (dev key intact)"
-rm -f "$WXT_ZIP_OUT"
-pnpm zip
-[[ -f "$WXT_ZIP_OUT" ]] || fail "Expected $WXT_ZIP_OUT but it was not produced"
-mv "$WXT_ZIP_OUT" "$LOCAL_ZIP"
-ok "Local zip → $LOCAL_ZIP"
-
-# Sanity check: the local manifest MUST contain a "key" field.
-if ! unzip -p "$LOCAL_ZIP" manifest.json | grep -q '"key"'; then
-    warn "Local zip is missing the key field — dev OAuth will break for unpacked installs."
-fi
-
-# Sanity check: the unpacked .output/chrome-mv3/ — what "Load unpacked"
-# picks up — MUST also have the key field. If it doesn't, a prior store
-# build clobbered it and we have a regression.
-if [[ -f "$OUTPUT_DIR/chrome-mv3/manifest.json" ]]; then
-    if ! grep -q '"key"' "$OUTPUT_DIR/chrome-mv3/manifest.json"; then
-        fail "$OUTPUT_DIR/chrome-mv3/manifest.json is missing the key field — unpacked dev install would break OAuth."
-    fi
-fi
-
-# ── 8. Tag, push, then refresh the path existing dev installs use ───────────
-CURRENT_STEP="git-push"
-step "8/8  Tag and push"
-assert_release_source
-git tag "$NEW_TAG"
-ok "Tag $NEW_TAG created"
-
-if $NO_PUSH; then
-    warn "--no-push set — this is an unpushed local candidate, not a released build"
-elif git push --atomic "$REMOTE" "$BRANCH" "$NEW_TAG" 2>/dev/null; then
-    ok "Pushed $BRANCH and $NEW_TAG to $REMOTE"
-else
-    git tag -d "$NEW_TAG" >/dev/null 2>&1 || true
-    fail "Push rejected because $REMOTE/$BRANCH moved. No built artifact was rebased or retagged; update the branch and re-run the normal release."
-fi
-
-if ! $NO_PUSH; then
-    CURRENT_STEP="promote-unpacked"
-    step "Promote keyed local bundle to the existing development path"
-    assert_release_source
-    node scripts/sync-unpacked-release.mjs \
-        --root "$REPO_ROOT" \
-        --version "$NEW_VERSION" \
-        --source-sha "$RELEASE_SHA" \
-        --store-zip "$STORE_ZIP" \
-        --local-zip "$LOCAL_ZIP" \
-        --receipt "$OUTPUT_DIR/release-receipt.json" \
-        --publish-state "pushed"
-    assert_release_source
-    ok "Refreshed $OUTPUT_DIR/chrome-mv3-dev/ from the verified keyed local release"
-fi
-CURRENT_STEP="done"
-
-# ── Final instructions ──────────────────────────────────────────────────────
-LOCAL_SIZE=$(du -h "$LOCAL_ZIP" | cut -f1)
-STORE_SIZE=$(du -h "$STORE_ZIP" | cut -f1)
-LOCAL_ABS="$REPO_ROOT/$LOCAL_ZIP"
-STORE_ABS="$REPO_ROOT/$STORE_ZIP"
-
-echo ""
-echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}  ✓  ${PROJECT_NAME} ${NEW_VERSION} packaged${NC}"
-echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo ""
-
-if [[ ${#WARNINGS[@]} -gt 0 ]]; then
-    echo -e "${YELLOW}  ⚠  Non-fatal warnings during release${NC}"
-    for w in "${WARNINGS[@]}"; do
-        echo -e "${YELLOW}     • ${w}${NC}"
+# ── Regenerate the committed artifacts (a failure is a finding) ─────────────
+REGEN_INFO=""   # `git update-index --index-info` lines for the regenerated paths
+regen_artifacts() {
+    local snap jobs=() name rc idx tree paths=() p
+    export_snapshot "$BASE_TREE" "$BASE" prepare && snap="$SNAP_DIR" || { finding "ERROR" "Generate" "Could not export the release tree to regenerate artifacts" ""; return; }
+    local jd; jd="$(dirname "$snap")/jobs"; mkdir -p "$jd"
+    $SKIP_TYPES   || { ( cd "$snap" && bounded 180 pnpm -s update-api-types --skip-typecheck ) > "$jd/api-types.out" 2>&1; echo $? > "$jd/api-types.rc"; } &
+    $SKIP_CATALOG || { ( cd "$snap" && bounded 180 pnpm -s catalog:tools:md ) > "$jd/catalog.out" 2>&1; echo $? > "$jd/catalog.rc"; } &
+    { ( cd "$snap" && bounded 120 pnpm -s docs:tools ) > "$jd/docs.out" 2>&1; echo $? > "$jd/docs.rc"; } &
+    wait
+    for name in api-types catalog docs; do
+        [[ -f "$jd/$name.rc" ]] || continue
+        rc="$(cat "$jd/$name.rc")"
+        { echo "--- regen $name (exit $rc) ---"; cat "$jd/$name.out"; } >> "$RELEASE_LOG_FILE"
+        [[ "$rc" == 0 ]] && continue
+        case "$name" in
+            api-types) finding "ERROR" "Generate" "Server API types did not regenerate (exit $rc) — types/python-generated shipped as it was" "pnpm update-api-types" ;;
+            catalog)   finding "WARNING" "Generate" "Tool catalog did not regenerate (exit $rc) — types/tool-catalog.* shipped as they were" "pnpm catalog:tools:md" ;;
+            docs)      finding "WARNING" "Generate" "docs/TOOLS.generated.md did not regenerate (exit $rc)" "pnpm docs:tools" ;;
+        esac
     done
-    echo ""
+    $SKIP_TYPES && finding "WARNING" "Generate" "--skip-types: types/python-generated was not regenerated" "pnpm update-api-types"
+    $SKIP_CATALOG && finding "WARNING" "Generate" "--skip-catalog: the tool catalog was not regenerated or drift-checked" "pnpm catalog:tools:md && pnpm catalog:tools:drift:strict"
+    for p in "${GENERATED_PATHS[@]}"; do
+        if [[ -e "$snap/$p" ]] || git cat-file -e "$BASE_TREE:$p" 2>/dev/null; then paths+=("$p"); fi
+    done
+    [[ ${#paths[@]} -gt 0 ]] || return
+    idx="$(mktemp)"; rm -f "$idx"
+    if GIT_INDEX_FILE="$idx" git read-tree "$BASE_TREE" \
+        && ( cd "$snap" && GIT_DIR="$GIT_ABS_DIR" GIT_WORK_TREE="$snap" GIT_INDEX_FILE="$idx" git add -A -- "${paths[@]}" ) >> "$RELEASE_LOG_FILE" 2>&1 \
+        && tree="$(GIT_INDEX_FILE="$idx" git write-tree)"; then
+        REGEN_INFO="$(git diff-tree -r --no-renames "$BASE_TREE" "$tree" -- "${paths[@]}" | awk -F'\t' '{
+            split($1, m, " "); if (m[5] == "D") printf "0 0000000000000000000000000000000000000000\t%s\n", $2;
+            else printf "%s %s\t%s\n", m[2], m[4], $2 }')"
+        log "regenerated: $(grep -c . <<< "$REGEN_INFO") path(s) changed"
+    else
+        finding "ERROR" "Generate" "Regenerated artifacts could not be staged into the release commit" ""
+    fi
+    rm -f "$idx"
+}
+regen_artifacts
+
+build_commit() {  # CURRENT_VERSION NEW_VERSION COMMIT_MSG → RELEASE_SHA
+    local idx blob tree
+    idx="$(mktemp)"; rm -f "$idx"
+    GIT_INDEX_FILE="$idx" git read-tree "$BASE_TREE" || return 1
+    if [[ -n "$REGEN_INFO" ]]; then
+        printf '%s\n' "$REGEN_INFO" | GIT_INDEX_FILE="$idx" git update-index --index-info || return 1
+    fi
+    blob="$(git cat-file -p "$BASE_TREE:$VERSION_FILE" \
+        | sed "s/^  \"version\": \"${CURRENT_VERSION}\"/  \"version\": \"${NEW_VERSION}\"/" \
+        | git hash-object -w --stdin)" || return 1
+    [[ "$(git cat-file -p "$blob" | sed -n 's/^  "version": "\([^"]*\)".*/\1/p' | head -1)" == "$NEW_VERSION" ]] || return 1
+    GIT_INDEX_FILE="$idx" git update-index --cacheinfo "100644,$blob,$VERSION_FILE" || return 1
+    tree="$(GIT_INDEX_FILE="$idx" git write-tree)" || return 1
+    rm -f "$idx"
+    RELEASE_SHA="$(git commit-tree "$tree" "${PARENTS[@]}" -m "$COMMIT_MSG")" || return 1
+}
+
+# ── Bump, commit, push (a lost race rebuilds on the new main) ───────────────
+REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*' 2>/dev/null)"
+PUSHED=false; RACES=0; BLIPS=0
+while (( RACES < SHIP_PUSH_ATTEMPTS && BLIPS < 10 )); do
+    CURRENT_VERSION="$(read_version_at "$BASE_TREE")"
+    [[ -n "$CURRENT_VERSION" ]] || hard_stop "cannot read the version from $VERSION_FILE on $REMOTE/$BRANCH — nothing was pushed"
+    bump_version "$CURRENT_VERSION"
+    COMMIT_MSG="$(commit_message "$NEW_TAG")"
+    build_commit || hard_stop "could not assemble the release commit for $NEW_VERSION — nothing was pushed"
+    # Test hook: the ship-path guard lands a foreign push here to prove the race retry.
+    [[ -n "${RELEASE_TEST_BEFORE_PUSH:-}" ]] && bash -c "$RELEASE_TEST_BEFORE_PUSH" >/dev/null 2>&1
+    if quiet git push "$REMOTE" "${RELEASE_SHA}:refs/heads/$BRANCH"; then PUSHED=true; break; fi
+    SEEN="$(git rev-parse "$REMOTE/$BRANCH")"
+    if quiet git fetch --quiet "$REMOTE" "$BRANCH" && [[ "$(git rev-parse "$REMOTE/$BRANCH")" != "$SEEN" ]]; then
+        RACES=$((RACES + 1)); log "lost push race $RACES — rebuilding on the new $BRANCH"
+    else
+        BLIPS=$((BLIPS + 1)); log "push failed without $BRANCH moving (network?) — retry $BLIPS"; sleep $((BLIPS * 3))
+    fi
+    REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*' 2>/dev/null || echo "$REMOTE_TAGS")"
+    base_tree
+done
+if ! $PUSHED; then
+    (( RACES >= SHIP_PUSH_ATTEMPTS )) && hard_stop "lost the push race $SHIP_PUSH_ATTEMPTS times in a row — nothing was released; run it again"
+    hard_stop "cannot push to GitHub ($REMOTE/$BRANCH) — nothing was released"
+fi
+log "pushed ${RELEASE_SHA:0:9} as $COMMIT_MSG"
+
+if ! quiet git tag "$NEW_TAG" "$RELEASE_SHA" || ! quiet git push "$REMOTE" "refs/tags/$NEW_TAG"; then
+    finding "ERROR" "Git" "Tag $NEW_TAG did not reach $REMOTE" "git tag $NEW_TAG ${RELEASE_SHA:0:9} && git push origin $NEW_TAG"
+fi
+[[ -n "${RELEASE_LOG_DIR:-}" ]] && ln -sfn "$(basename "$RELEASE_LOG_FILE")" "$RELEASE_LOG_DIR/release-${NEW_TAG}.log"
+if [[ "$(git rev-parse --abbrev-ref HEAD)" == "$BRANCH" ]]; then
+    quiet git merge --ff-only "$REMOTE/$BRANCH" \
+        || finding "WARNING" "Git" "This checkout could not fast-forward to $NEW_TAG — pull when convenient" "git pull --no-rebase origin main"
+fi
+release_lock_cleanup
+echo "${NEW_TAG}  pushed  ($((SECONDS - SHIP_START))s)"
+
+# ══ AFTER THE PUSH: checks and packaging (findings only, never a stop) ══════
+CHECK_SNAP=""; BUILD_SNAP=""
+export_snapshot "$RELEASE_SHA" "$RELEASE_SHA" prepare && CHECK_SNAP="$SNAP_DIR"
+export_snapshot "$RELEASE_SHA" "$RELEASE_SHA" && BUILD_SNAP="$SNAP_DIR"
+JOBS="$(mktemp -d "${TMPDIR:-/tmp}/matrx-extend-release-jobs.XXXXXX")"; SNAP_ROOTS+=("$JOBS")
+
+# name|seconds|level|what failed|remedy|command
+CHECKS=()
+$SKIP_TYPECHECK || CHECKS+=("typecheck|600|ERROR|typecheck failed|pnpm compile|pnpm -s compile")
+CHECKS+=(
+    "unit-tests|900|ERROR|unit tests failed|pnpm test|pnpm -s test"
+    "schema-routing|300|ERROR|unqualified Supabase table routing (404s at runtime)|pnpm check:schema-routing|pnpm -s check:schema-routing:strict"
+    "matrx-packages|300|ERROR|@ai-matrx packages are stale or pinned|pnpm sync:matrx-packages|pnpm -s check:matrx-packages"
+    "package-twins|300|ERROR|package logic re-grown outside its @ai-matrx package|pnpm check:package-twins|pnpm -s check:package-twins"
+    "canonical-pickers|300|ERROR|an alternate agent picker was reintroduced|pnpm check:canonical-pickers|pnpm -s check:canonical-pickers"
+    "archived-items|300|ERROR|a list hides archived rows with no way to reveal them|pnpm check:archived-items-law|pnpm -s check:archived-items-law"
+    "archived-items-self-test|300|ERROR|the archived-items detector can no longer fail|pnpm check:archived-items-law:self-test|pnpm -s check:archived-items-law:self-test"
+    "org-default-ban|300|ERROR|a default organization is back (never a saved default or the personal org)|pnpm check:org-default-ban|pnpm -s check:org-default-ban"
+    "org-default-ban-self-test|300|ERROR|the org-default-ban detector can no longer fail|pnpm check:org-default-ban:self-test|pnpm -s check:org-default-ban:self-test"
+    "swallowed-refusals|300|ERROR|a server refusal is swallowed silently|pnpm check:swallowed-refusals|pnpm -s check:swallowed-refusals"
+    "migrations|300|ERROR|unapplied migrations (or the ledger was unreachable)|pnpm check:migrations|pnpm -s check:migrations:strict"
+)
+$SKIP_CATALOG || CHECKS+=("tool-drift|300|ERROR|tool catalog drifted from the DB (the LLM and the dispatcher disagree)|pnpm catalog:tools:drift|pnpm -s catalog:tools:drift:strict")
+command -v uvx >/dev/null 2>&1 \
+    && CHECKS+=("mandate-references|300|WARNING|the mandate reference scan did not complete — this build is UNMEASURED on the fleet board|pnpm check:mandate-references|pnpm -s check:mandate-references") \
+    || finding "WARNING" "Checks" "uvx is missing, so no mandate references were reported" "install uv (https://astral.sh/uv)"
+
+run_checks() {
+    local row name secs
+    for row in "${CHECKS[@]}"; do
+        IFS='|' read -r name secs _ _ _ cmd <<< "$row"
+        { ( cd "$CHECK_SNAP" && eval "bounded $secs $cmd" ) > "$JOBS/check-$name.out" 2>&1; echo $? > "$JOBS/check-$name.rc"; } &
+    done
+    wait
+}
+
+# Store FIRST, local SECOND: the last build owns .output/chrome-mv3, and the
+# keyed bundle is the one promoted for "Load unpacked" (stable dev ID; the
+# Supabase OAuth redirect is registered against it). The Store rejects any
+# upload that carries the dev key (incident: .research/v0.1.4-auth-incident.md).
+STORE_ZIP="$OUTPUT_DIR/${PROJECT_NAME}-${NEW_VERSION}-store.zip"
+LOCAL_ZIP="$OUTPUT_DIR/${PROJECT_NAME}-${NEW_VERSION}-local.zip"
+build_zips() {  # writes $JOBS/build.findings (level|text|remedy per line)
+    local out="$JOBS/build.findings" wxt_zip=".output/${PROJECT_NAME}-${NEW_VERSION}-chrome.zip"
+    : > "$out"
+    bf() { printf '%s|%s|%s\n' "$1" "$2" "${3:-}" >> "$out"; }
+    cd "$BUILD_SNAP" || { bf ERROR "could not enter the build export" ""; return; }
+    # Only this version's zips stay in .output/, so the Store upload picker
+    # cannot offer a stale one (v0.1.14 was rejected exactly that way).
+    mkdir -p "$OUTPUT_DIR"
+    find "$OUTPUT_DIR" -maxdepth 1 -type f \( -name "${PROJECT_NAME}-*-store.zip" -o -name "${PROJECT_NAME}-*-local.zip" -o -name "${PROJECT_NAME}-*-chrome.zip" \) -delete
+    if ! MATRX_CWS_BUILD=1 bounded 600 pnpm -s exec wxt zip || [[ ! -f "$wxt_zip" ]]; then
+        bf ERROR "STORE zip was not built for $NEW_TAG" "git checkout $NEW_TAG && pnpm zip:store"
+    else
+        node scripts/check-store-package.mjs \
+            || bf ERROR "STORE package check failed (side panel / permissions / popup / key) — do not upload" "pnpm zip:store"
+        node scripts/check-cws-release-risk.mjs \
+            || bf ERROR "STORE manifest policy surface differs from the Google-approved baseline — expect a new review" "pnpm check:cws-risk"
+        if unzip -p "$wxt_zip" manifest.json 2>/dev/null | grep -q '"key"'; then
+            bf ERROR "STORE zip contains the dev key — the Store will reject it; not copied" "pnpm zip:store"
+        else
+            cp "$wxt_zip" "$STORE_ZIP" || bf ERROR "could not copy the STORE zip to $STORE_ZIP" ""
+        fi
+        rm -f "$wxt_zip"
+    fi
+    if ! bounded 600 pnpm -s exec wxt zip || [[ ! -f "$wxt_zip" ]]; then
+        bf ERROR "LOCAL zip was not built for $NEW_TAG — .output/chrome-mv3-dev/ was not refreshed" "git checkout $NEW_TAG && pnpm zip"
+        return
+    fi
+    cp "$wxt_zip" "$LOCAL_ZIP" || { bf ERROR "could not copy the LOCAL zip to $LOCAL_ZIP" ""; return; }
+    unzip -p "$LOCAL_ZIP" manifest.json 2>/dev/null | grep -q '"key"' \
+        || bf ERROR "LOCAL zip is missing the dev key — unpacked installs lose the stable ID and OAuth" "pnpm zip"
+    if [[ -f "$STORE_ZIP" ]]; then
+        node scripts/sync-unpacked-release.mjs --root "$REPO_ROOT" --version "$NEW_VERSION" \
+            --source-sha "$RELEASE_SHA" --source "$BUILD_SNAP/.output/chrome-mv3" \
+            --destination "$OUTPUT_DIR/chrome-mv3-dev" --store-zip "$STORE_ZIP" --local-zip "$LOCAL_ZIP" \
+            --receipt "$OUTPUT_DIR/release-receipt.json" --publish-state pushed \
+            || bf ERROR "the keyed local bundle was not promoted to .output/chrome-mv3-dev/ (no receipt written)" "node scripts/sync-unpacked-release.mjs --root . --version $NEW_VERSION --source-sha $RELEASE_SHA"
+    else
+        bf ERROR "no STORE zip, so the local bundle was not promoted and no receipt was written" "pnpm zip:store"
+    fi
+}
+
+if [[ -z "$CHECK_SNAP" || -z "$BUILD_SNAP" ]]; then
+    finding "ERROR" "Checks" "Could not export $NEW_TAG to run checks or build the zips — nothing was checked or packaged" "git checkout $NEW_TAG && pnpm test && pnpm zip:store"
+else
+    run_checks &
+    CHECKS_PID=$!
+    ( build_zips ) > "$JOBS/build.out" 2>&1 &
+    BUILD_PID=$!
+    wait "$CHECKS_PID"; wait "$BUILD_PID"
+    for row in "${CHECKS[@]}"; do
+        IFS='|' read -r name _ level what remedy _ <<< "$row"
+        rc="$(cat "$JOBS/check-$name.rc" 2>/dev/null || echo 1)"
+        { echo "--- check $name (exit $rc) ---"; cat "$JOBS/check-$name.out" 2>/dev/null; } >> "$RELEASE_LOG_FILE"
+        [[ "$rc" == 0 ]] && continue
+        detail=""
+        [[ "$rc" == 124 ]] && detail=" (timed out)"
+        if [[ "$name" == unit-tests ]]; then
+            n="$(grep -E '^[[:space:]]*Tests[[:space:]]' "$JOBS/check-$name.out" | grep -oE '[0-9]+ failed' | head -1 | cut -d' ' -f1)"
+            [[ -n "$n" ]] && detail=" ($n failing)"
+        fi
+        finding "$level" "Checks" "${what}${detail} — see the release log" "$remedy"
+    done
+    { echo "--- build (store + local zips) ---"; cat "$JOBS/build.out"; } >> "$RELEASE_LOG_FILE"
+    while IFS='|' read -r level text remedy; do
+        [[ -n "$level" ]] && finding "$level" "Build" "$text" "$remedy"
+    done < <(cat "$JOBS/build.findings" 2>/dev/null)
 fi
 
-echo -e "${BOLD}  Artifacts${NC}"
-echo -e "   Local (dev unpacked) ${DIM}${LOCAL_SIZE}${NC}"
-echo -e "      ${CYAN}${LOCAL_ABS}${NC}"
-echo -e "   Store (Chrome Web Store upload) ${DIM}${STORE_SIZE}${NC}"
-echo -e "      ${CYAN}${STORE_ABS}${NC}"
-echo ""
-echo -e "${BOLD}  Next steps${NC}"
-echo -e "   ${CYAN}1.${NC} Open the Chrome Web Store dashboard:"
-echo -e "      ${CYAN}${WEBSTORE_UPLOAD_URL}${NC}"
-echo -e "   ${CYAN}2.${NC} Pick the Matrx Extend item, click ${BOLD}\"Package\"${NC} → ${BOLD}\"Upload new package\"${NC}"
-echo -e "   ${CYAN}3.${NC} Drop the ${BOLD}store${NC} zip:"
-echo -e ""
-echo -e "      ${BOLD}${GREEN}${STORE_ABS}${NC}"
-echo -e ""
-echo -e "      ${DIM}(.output/ contains ONLY this version's zips —${NC}"
-echo -e "      ${DIM} prior releases were purged so you can't mis-click.)${NC}"
-echo -e "   ${CYAN}4.${NC} Update the change-notes field, then ${BOLD}\"Submit for review\"${NC}"
-echo -e "   ${CYAN}5.${NC} For local dev: install the ${BOLD}local${NC} zip unpacked at chrome://extensions"
-echo -e "      (or just ${DIM}pnpm dev${NC})"
-echo ""
-echo -e "${DIM}  Reminder: never upload the local zip — it carries the dev keypair${NC}"
-echo -e "${DIM}  and the Web Store will reject it. Full incident:${NC}"
-echo -e "${DIM}    .research/v0.1.4-auth-incident.md${NC}"
-echo ""
-
-# Reveal the store zip in Finder on macOS so the upload-file picker
-# opens to a folder that contains exactly the file you want — no
-# scrolling past nine prior-version zips.
-if [[ "$(uname -s)" == "Darwin" ]] && command -v open >/dev/null 2>&1; then
-    open -R "$STORE_ABS" 2>/dev/null || true
+print_findings
+if [[ -f "$STORE_ZIP" ]]; then
+    echo ""
+    echo "Chrome Web Store upload ($WEBSTORE_UPLOAD_URL → Package → Upload new package): $STORE_ZIP"
 fi
-
-# ── FINAL DRIFT SCREAM ──────────────────────────────────────────────────────
-# If the tl_def drift check found anything earlier, repeat the alert as the
-# LAST thing on screen so it can't be missed.
-if $DRIFT_DETECTED; then
-    RED_BG='\033[1;97;41m'
-    RED_FG='\033[1;91m'
-    BLINK='\033[5m'
-    NCC='\033[0m'
-    BAR='████████████████████████████████████████████████████████████████████████████'
-    echo ""
-    echo ""
-    echo -e "${RED_BG}${BAR}${NCC}"
-    echo -e "${RED_BG}██${NCC}                                                                        ${RED_BG}██${NCC}"
-    echo -e "${RED_BG}██${NCC}     ${BLINK}${RED_FG}⚠  TOOL-CATALOG / DB SCHEMA DRIFT DETECTED  ⚠${NCC}                  ${RED_BG}██${NCC}"
-    echo -e "${RED_BG}██${NCC}                                                                        ${RED_BG}██${NCC}"
-    echo -e "${RED_BG}██${NCC}     ${RED_FG}The LLM sees one schema; the dispatcher accepts another.${NCC}           ${RED_BG}██${NCC}"
-    echo -e "${RED_BG}██${NCC}     ${RED_FG}Run:  pnpm catalog:tools:drift  for the full diff.${NCC}                 ${RED_BG}██${NCC}"
-    echo -e "${RED_BG}██${NCC}     ${RED_FG}Reconcile tl_def via Supabase MCP / admin API.${NCC}                     ${RED_BG}██${NCC}"
-    echo -e "${RED_BG}██${NCC}                                                                        ${RED_BG}██${NCC}"
-    echo -e "${RED_BG}${BAR}${NCC}"
-    echo ""
-fi
+exit 0
