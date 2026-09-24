@@ -2057,11 +2057,21 @@ async function materializedPassword(id) {
       const recoveredItems = await items();
       proof.lifecycle.freshVaultRead = Array.isArray(recoveredItems);
       assert(proof.lifecycle.freshVaultRead, 'lifecycle_fresh_vault_read_refused');
+      proof.lifecycle.freshRecovery.disposition = 'in_progress';
+      proof.lifecycle.freshPanelVaultReadObserved = false;
+      persist();
+      // authenticate() rebinds the panel target and starts a fresh journal
+      // epoch. Prove the recovered panel itself can read with the new session;
+      // the direct API read above cannot satisfy that panel boundary.
+      await verifyRealVaultPanel();
+      await verifyObservedVaultPanelRead();
+      proof.lifecycle.freshPanelVaultReadObserved = true;
       proof.lifecycle.freshRecovery.disposition = proof.lifecycle.freshRecovery.interactiveSignInCompleted
         && proof.lifecycle.freshRecovery.localAuthMaterialPresent
         && proof.lifecycle.freshRecovery.verifiedIdentityRecovered
         && proof.lifecycle.freshRecovery.settingsUiRecovered
-        && proof.lifecycle.freshVaultRead ? 'passed' : 'failed';
+        && proof.lifecycle.freshVaultRead
+        && proof.lifecycle.freshPanelVaultReadObserved ? 'passed' : 'failed';
       persist();
     } else if (readOnlyAdmissionMode && !identityOnlyMode) {
       proof.admission.baselineRead = true;
