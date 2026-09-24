@@ -13,6 +13,7 @@ import { ALARMS, ENV, STORAGE_KEYS } from '@/config/env';
 import { decryptString, encryptString } from '@/lib/auth/crypto';
 import { generateCodeChallenge, generateCodeVerifier, generateNonce } from '@/lib/auth/pkce';
 import { type OAuthTokens, OAuthTokensSchema, type UserProfile } from '@/lib/auth/types';
+import { verifyBearerClaims } from '@/lib/auth/verify-claims';
 import { log } from '@/lib/debug/log';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -131,7 +132,7 @@ export async function signIn(): Promise<{ user: UserProfile; tokens: OAuthTokens
     log.info('auth', 'exchanging code for tokens');
     const tokens = await exchangeCode(code, recoveredVerifier, redirectUri);
     log.info('auth', 'fetching user profile');
-    const user = await fetchSupabaseUser(tokens.access_token);
+    const user = await fetchSupabaseUserAtSignIn(tokens.access_token);
     // Validate the exchanged bearer before it displaces a working local
     // session. A failed /user response is an unsuccessful sign-in attempt.
     await commitSignInAttempt(attemptId, tokens, user);
@@ -498,7 +499,21 @@ function scheduleRefresh(tokens: OAuthTokens): void {
   }
 }
 
-export async function fetchSupabaseUser(accessToken: string): Promise<UserProfile> {
+/**
+ * ONE-TIME, SIGN-IN ONLY. Reads the user record from the Auth server.
+ *
+ * 🚨 NEVER call this per request, and never export it. `/auth/v1/user` reads
+ * the platform database: on 2026-09-21 a database lock storm turned it into a
+ * ~10 s stall on EVERY request this extension made. Per-request identity is
+ * answered locally by `verifyBearerClaims()` (src/lib/auth/verify-claims.ts),
+ * which checks the token's ES256 signature against the project JWKS with
+ * WebCrypto and never touches the database.
+ *
+ * This one call survives because the OAuth exchange needs `email_confirmed_at`,
+ * which is NOT a JWT claim, and because it doubles as validation that the
+ * freshly exchanged bearer is real before it displaces a working session.
+ */
+async function fetchSupabaseUserAtSignIn(accessToken: string): Promise<UserProfile> {
   const res = await fetch(`${ENV.SUPABASE_URL}/auth/v1/user`, {
     headers: {
       apikey: ENV.SUPABASE_PUBLISHABLE_KEY,
@@ -528,17 +543,44 @@ export async function getCurrentUser(): Promise<UserProfile | null> {
  * Resolve the subject of the bearer token that will be sent on a sensitive
  * request. The cached profile is useful for rendering, but it is not proof
  * that a refreshed or replaced token belongs to the same person.
+ *
+ * CHANGED 2026-09-21: this used to ask the Auth server (`/auth/v1/user`) on
+ * EVERY expected-actor / private request, which stalled ~10 s per request
+ * during a database lock storm. It now verifies the token's ES256 signature
+ * LOCALLY against the project JWKS (see src/lib/auth/verify-claims.ts) — the
+ * same authority, checked instead of asked, and no database read.
+ *
+ * Contract unchanged: `UserProfile | null`, and `null` fails the caller closed.
+ * What the profile carries changed slightly — `full_name` / `avatar_url` come
+ * from the token's `user_metadata` claims, and `email_verified` (not a JWT
+ * claim) falls back to the profile recorded at sign-in.
+ *
+ * A token we could NOT verify (JWKS unreachable) is not a signed-out person:
+ * it returns null so the request fails closed, and it says so in the log —
+ * it never clears the session.
  */
 export async function getVerifiedCurrentUser(
   accessToken?: string | null,
 ): Promise<UserProfile | null> {
   const token = accessToken ?? (await getAccessToken());
   if (!token) return null;
-  try {
-    return await fetchSupabaseUser(token);
-  } catch {
+  const result = await verifyBearerClaims(token);
+  if (result.status === 'unverifiable') {
+    log.warn(
+      'auth',
+      'could not verify the bearer locally; failing this request closed WITHOUT signing out',
+      result.reason,
+    );
     return null;
   }
+  if (result.status === 'invalid') return null;
+  if (result.user.email_verified !== undefined) return result.user;
+  // `email_verified` is not a JWT claim on every project; keep the value the
+  // sign-in record established rather than reporting an unverified email.
+  const cached = await getCurrentUser();
+  return cached?.id === result.user.id && cached.email_verified !== undefined
+    ? { ...result.user, email_verified: cached.email_verified }
+    : result.user;
 }
 
 export async function isAuthenticated(): Promise<boolean> {

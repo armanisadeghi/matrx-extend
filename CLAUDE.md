@@ -7,7 +7,7 @@
 
 1. **Done means verified engineering, then handoff.** Implement the requested outcome, verify changed types and regressions, exercise UI changes in localhost from the user’s seat with real data, obtain independent verification, and commit/push. Deployment, production verification, and full release belong to dedicated agents; they never make a completed engineering task incomplete. Tests alone are not UI proof. `common-docs/policies/reality-is-the-referee.md` · `common-docs/policies/deployment-is-the-deploy-agents-job.md`.
 2. **Attack before you trust.** Hole-poke plans before commitment; adversarially re-verify "done" before believing it. An attack or verification that inherits the builder's frame — his file list, his path, his summary — is neither; it must be able to return what the builder does not already believe.
-3. **Fix the class, never the instance.** Root cause → census the siblings → a guard proven failing-then-passing.
+3. **Fix the class, never the instance.** Root cause → census the siblings → a guard proven failing-then-passing. **Felt it? Fix it:** a bug you hit while using the product yourself is fixed in that session — never just logged, listed, or reported (Arman, 2026-09-23).
 4. **Nothing fails silently.** Every stand-in announces itself with a remedy; a screen is absent or honest — never dead, disabled-looking, or lying.
 5. **Think in platform primitives.** Never scope a capability to the feature that surfaced it; build it in the shared layer so every module and client app inherits it.
 6. **Opinions become knobs.** Behavioral choices are org-configurable settings; organizations decide — never agents, never hardcoded taste.
@@ -47,6 +47,12 @@ Matter Expert: `/Users/armanisadeghi/code/common-docs/systems/ai-dream-platform/
 Arman plus dozens of agents edit this checkout simultaneously; `origin/main` is the only sync
 point. Commit and push as you go; never run tree-wide destructive git; never request your own
 branch/worktree. Full ruling: workspace root [`../CLAUDE.md`](../CLAUDE.md) § Shared checkout.
+
+**Release: you run it.** This repo is NOT on the twice-hourly release train (only `aidream` and
+`ai-matrx` are). Whoever works here releases their own work: when your change is verified,
+run `./release.sh` from `origin/main` before you finish — do not leave it for "the release
+agent"; there is none for this repo. Expected cadence is about one release a day. A daily
+scheduled sweep only catches what a session forgot; it is a safety net, not the plan.
 
 ## Platform laws (one-liners — the rule bodies live at the links)
 
