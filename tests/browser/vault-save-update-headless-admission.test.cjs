@@ -9,7 +9,7 @@ const { spawnSync } = require('node:child_process');
 
 const runner = path.join(__dirname, 'vault-realbrowser-acceptance.cjs');
 const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vault-save-update-admission-'));
-const frozenCommit = '94e0b1c9e3116c2142beecbdf3a0446630e72cd5';
+const frozenCommit = 'a2b5aa7e1082330ab6658b07477b31ea3705ca72';
 const routerHash = '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
 const serviceHash = 'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
 

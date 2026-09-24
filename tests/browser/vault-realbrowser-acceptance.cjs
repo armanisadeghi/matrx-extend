@@ -357,7 +357,7 @@ const lifecycleDryRun = process.argv.includes('--lifecycle-dry-run');
 // making a Vault mutation; it is not a Save/Update acceptance result.
 const readOnlyAdmissionMode = lifecycleDryRun || process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
 const receiptBackedSaveUpdateMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_RECEIPT_BACKED_SAVE_UPDATE';
-const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = '94e0b1c9e3116c2142beecbdf3a0446630e72cd5';
+const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = 'a2b5aa7e1082330ab6658b07477b31ea3705ca72';
 const RECEIPT_BACKED_ROUTER_SHA256 = '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
 const RECEIPT_BACKED_SERVICE_SHA256 = 'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
 const generatorTransportMode = lifecycleDryRun || process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
