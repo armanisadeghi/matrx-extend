@@ -204,6 +204,38 @@ function classifyOAuthConsentSnapshot(snapshot) {
   return 'consent_ambiguous';
 }
 
+function summarizeOAuthConsentSnapshot(authPage, snapshot) {
+  const heading = snapshot.visibleHeadings.length === 1 ? snapshot.visibleHeadings[0] : null;
+  const knownHeadingCategory = heading === 'Redirecting' ? 'redirecting'
+    : ['Invalid request', 'We could not verify your sign-in', 'Origin not authorized',
+      'Request expired', 'Too many requests', 'Network error'].includes(heading)
+      || /^Authorization error \((?:unknown|\d{3})\)$/.test(heading || '') ? 'known_error'
+      : heading === null ? 'none_or_multiple' : 'other';
+  return {
+    routeCategory: classifyOAuthRouteCategory(authPage.url()),
+    consentState: classifyOAuthConsentSnapshot(snapshot),
+    emailVisible: snapshot.emailVisible,
+    passwordVisible: snapshot.passwordVisible,
+    authorizeCount: snapshot.authorizeCount,
+    enabledAuthorizeCount: snapshot.enabledAuthorizeCount,
+    retryCount: snapshot.retryCount,
+    visibleHeadingCount: snapshot.visibleHeadings.length,
+    knownHeadingCategory,
+  };
+}
+
+async function recordOAuthConsentFailureSnapshot(authPage, oauthUi, persist) {
+  try {
+    oauthUi.consentFailureSnapshot = summarizeOAuthConsentSnapshot(
+      authPage, await readOAuthPageSnapshot(authPage),
+    );
+    persist();
+  } catch {
+    oauthUi.consentFailureSnapshot = { snapshotUnavailable: true };
+    try { persist(); } catch {}
+  }
+}
+
 function observeOAuthConsentApproval(authPage, dbOrigin, timeoutMs = 30000) {
   const observations = [];
   let settled = false;
@@ -1562,7 +1594,9 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
       : initialOAuthDisposition;
   } catch (error) {
     if (postPasswordSubmission) {
-      await finalizeOAuthPostPasswordSubmission(postPasswordSubmission, proof.oauthUi, persist);
+      try { await finalizeOAuthPostPasswordSubmission(postPasswordSubmission, proof.oauthUi, persist); }
+      catch { postPasswordSubmission.finish(); }
+      await recordOAuthConsentFailureSnapshot(authPage, proof.oauthUi, persist);
     }
     throw error;
   }

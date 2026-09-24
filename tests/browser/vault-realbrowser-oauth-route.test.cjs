@@ -11,7 +11,7 @@ assert.ok(match, 'oauth_route_observer_missing');
 const functionSource = match[0].replace(/\nlet cdpWorkerMessageId$/, '');
 const sandbox = { URL, wait: async () => {}, setTimeout, clearTimeout, assert: (value, code) => { if (!value) throw new Error(code); } };
 vm.createContext(sandbox);
-new vm.Script(`${functionSource}; globalThis.readSnapshot = readOAuthPageSnapshot; globalThis.classifyConsent = classifyOAuthConsentSnapshot; globalThis.observe = awaitOAuthRouteOrCallback; globalThis.observeCallback = awaitOAuthCallbackStorage; globalThis.observeApproval = observeOAuthConsentApproval; globalThis.observePostPassword = observeOAuthPostPasswordSubmission; globalThis.finalizePostPassword = finalizeOAuthPostPasswordSubmission; globalThis.failPostPassword = failOAuthPostPasswordSubmission; globalThis.submitPostPassword = submitOAuthPasswordWithDiagnostics;`).runInContext(sandbox);
+new vm.Script(`${functionSource}; globalThis.readSnapshot = readOAuthPageSnapshot; globalThis.classifyConsent = classifyOAuthConsentSnapshot; globalThis.summarizeConsent = summarizeOAuthConsentSnapshot; globalThis.recordConsentFailure = recordOAuthConsentFailureSnapshot; globalThis.observe = awaitOAuthRouteOrCallback; globalThis.observeCallback = awaitOAuthCallbackStorage; globalThis.observeApproval = observeOAuthConsentApproval; globalThis.observePostPassword = observeOAuthPostPasswordSubmission; globalThis.finalizePostPassword = finalizeOAuthPostPasswordSubmission; globalThis.failPostPassword = failOAuthPostPasswordSubmission; globalThis.submitPostPassword = submitOAuthPasswordWithDiagnostics;`).runInContext(sandbox);
 
 const exactLocator = (entries) => ({
   count: async () => entries.length,
@@ -62,6 +62,17 @@ const storage = async () => ({});
   assert.equal(await sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', headings: [{ visible: true, text: 'Request expired' }] }), storage, adminEmail: 'admin@admin.com' }), 'consent_error');
   assert.equal(await sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', headings: [{ visible: true, text: 'Authorization error (500)' }] }), storage, adminEmail: 'admin@admin.com' }), 'consent_error');
   assert.equal(await sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', headings: [{ visible: true, text: 'Redirecting' }] }), storage, adminEmail: 'admin@admin.com' }), 'redirecting');
+  const ambiguousConsent = page({ url: 'https://www.aimatrx.com/oauth/consent?private=value', headings: [{ visible: true, text: 'Private heading' }] });
+  assert.equal(JSON.stringify(sandbox.summarizeConsent(ambiguousConsent, await sandbox.readSnapshot(ambiguousConsent))), JSON.stringify({ routeCategory: 'oauth_consent', consentState: 'consent_ambiguous', emailVisible: false, passwordVisible: false, authorizeCount: 0, enabledAuthorizeCount: 0, retryCount: 0, visibleHeadingCount: 1, knownHeadingCategory: 'other' }));
+  const failedDiagnostic = {};
+  await assert.rejects(async () => {
+    try { throw new Error('original_oauth_failure'); }
+    catch (error) {
+      await sandbox.recordConsentFailure(ambiguousConsent, failedDiagnostic, () => { throw new Error('proof_persist_failure'); });
+      throw error;
+    }
+  }, /original_oauth_failure/);
+  assert.equal(JSON.stringify(failedDiagnostic.consentFailureSnapshot), JSON.stringify({ snapshotUnavailable: true }));
   await assert.rejects(() => sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', authorize: [{ visible: true, enabled: false }] }), storage, adminEmail: 'admin@admin.com' }), /oauth_consent_or_callback_timeout/, 'URL-only or disabled consent must never be accepted as rendered readiness');
   await assert.rejects(() => sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', authorize: [{ visible: true, enabled: true }, { visible: true, enabled: true }] }), storage, adminEmail: 'admin@admin.com' }), /oauth_consent_or_callback_timeout/, 'multiple exact approval controls must fail closed');
   await assert.rejects(() => sandbox.readSnapshot(page({ url: 'https://www.aimatrx.com/oauth/consent', snapshotHangs: true }), 1), /oauth_consent_dom_snapshot_timeout/, 'a stalled DOM read must fail on its own bounded timer');
