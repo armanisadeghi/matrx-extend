@@ -17,8 +17,6 @@
  */
 
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
-import { getAccessToken } from '@/lib/auth/flow';
-import { verifyBearerClaims } from '@/lib/auth/verify-claims';
 import {
   type CreateHighlightInput,
   type Highlight,
@@ -180,19 +178,10 @@ export async function createHighlight(input: CreateHighlightInput): Promise<High
     });
   }
   const c = getSupabase();
-  // Who is saving this is read from the bearer LOCALLY (ES256 signature
-  // checked against the project JWKS). `auth.getUser()` asked the Auth server
-  // on every single highlight save — a database-backed round trip that stalled
-  // ~10 s per save during the 2026-09-21 lock storm.
-  const verified = await verifyBearerClaims(await getAccessToken());
-  if (verified.status !== 'verified') {
-    failDbCall(site, {
-      code: 'PGRST301',
-      message:
-        verified.status === 'unverifiable'
-          ? `could not verify who is signed in: ${verified.reason}`
-          : 'no signed-in user',
-    });
+  const { data: userRes } = await c.auth.getUser();
+  const userId = userRes?.user?.id;
+  if (!userId) {
+    failDbCall(site, { code: 'PGRST301', message: 'no signed-in user' });
   }
   // Owner (`created_by`) is stamped server-side by the platform _stamp_actor
   // trigger from auth.uid(); we no longer send it in the payload.

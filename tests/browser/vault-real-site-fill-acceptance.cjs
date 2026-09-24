@@ -136,6 +136,11 @@ exports.runRealSiteFillChecks = async ({
   let stopPostFillObservation = () => {};
   try {
     checkpoint('real_site_fill_login_open');
+    // OAuth setup may leave this disposable browser signed in to the website.
+    // Its /login route redirects signed-in visitors, so restore a real login
+    // form before testing Fill. Extension auth lives in extension storage.
+    await context.clearCookies();
+    evidence.ownedWebCookiesClearedBeforeLogin = true;
     page = await context.newPage();
     await page.goto(urls.login, { waitUntil: 'domcontentloaded', timeout: 30000 });
     const tabId = await tabFor(worker, urls.login, wait);

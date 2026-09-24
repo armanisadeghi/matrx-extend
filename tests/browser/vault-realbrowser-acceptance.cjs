@@ -70,6 +70,11 @@ async function readOAuthPageSnapshot(authPage, timeoutMs = 1000) {
       const buttons = Array.from(document.querySelectorAll('button')).filter(visible);
       const authorize = buttons.filter((button) => button.textContent?.trim() === 'Authorize');
       const retry = buttons.filter((button) => button.textContent?.trim() === 'Try again');
+      const loginForm = document.querySelector('#password')?.form || document.querySelector('#email')?.form;
+      const loginSubmit = Array.from(loginForm?.querySelectorAll('button, input[type="submit"]') || []).filter((control) => {
+        if (!visible(control)) return false;
+        return control.tagName === 'BUTTON' ? control.type === 'submit' : control.type === 'submit';
+      });
       const headings = Array.from(document.querySelectorAll('h2')).filter(visible)
         .map((heading) => heading.textContent?.trim() || '');
       return {
@@ -78,11 +83,101 @@ async function readOAuthPageSnapshot(authPage, timeoutMs = 1000) {
         authorizeCount: authorize.length,
         enabledAuthorizeCount: authorize.filter((button) => !button.disabled).length,
         retryCount: retry.length,
+        loginSubmitCount: loginSubmit.length,
+        busyLoginSubmitCount: loginSubmit.filter((control) => control.disabled || control.getAttribute('aria-busy') === 'true').length,
         visibleHeadings: headings,
       };
     }),
     new Promise((_, reject) => setTimeout(() => reject(new Error('oauth_consent_dom_snapshot_timeout')), timeoutMs)),
   ]);
+}
+
+function classifyOAuthRouteCategory(urlValue) {
+  try {
+    const url = new URL(urlValue);
+    if (url.origin !== 'https://www.aimatrx.com') return 'external';
+    if (url.pathname.startsWith('/oauth/consent')) return 'oauth_consent';
+    if (url.pathname.startsWith('/auth/callback')) return 'auth_callback';
+    if (/^\/(?:auth|login|sign-in)(?:\/|$)/.test(url.pathname)) return 'login';
+    return 'aimatrx_other';
+  } catch {
+    return 'route_unavailable';
+  }
+}
+
+function classifyOAuthPostPasswordForm(snapshot) {
+  if (snapshot?.emailVisible !== true || snapshot?.passwordVisible !== true) return 'form_changed';
+  if (snapshot.loginSubmitCount === 1 && snapshot.busyLoginSubmitCount === 1) return 'submit_busy';
+  return 'form_unchanged';
+}
+
+// This observer is deliberately value-free. It records only route classes,
+// HTTP status, and whether an error key exists; it never keeps a URL, query
+// value, request/response body, cookie, or auth material.
+function observeOAuthPostPasswordSubmission(authPage) {
+  const responses = [];
+  const onResponse = (response) => {
+    try {
+      const request = response.request();
+      const headers = request.headers();
+      const isServerAction = Object.keys(headers).some((key) => key.toLowerCase() === 'next-action');
+      if (!isServerAction) return;
+      responses.push({ route: `${classifyOAuthRouteCategory(response.url())}_server_action`, status: response.status() });
+    } catch {
+      // Unavailable response metadata must not leak into evidence or block cleanup.
+    }
+  };
+  authPage.on('response', onResponse);
+  return {
+    async snapshot({ settleMs = 0 } = {}) {
+      if (settleMs > 0) await wait(settleMs);
+      let formState = 'form_snapshot_unavailable';
+      try { formState = classifyOAuthPostPasswordForm(await readOAuthPageSnapshot(authPage)); } catch {}
+      let routeCategory = 'route_unavailable';
+      let errorQueryParameterPresent = false;
+      try {
+        const url = new URL(authPage.url());
+        routeCategory = classifyOAuthRouteCategory(url.href);
+        errorQueryParameterPresent = url.searchParams.has('error');
+      } catch {}
+      const first = responses[0] || null;
+      return {
+        formState,
+        routeCategory,
+        errorQueryParameterPresent,
+        serverActionResponse: first,
+        serverActionResponseCount: responses.length,
+      };
+    },
+    finish() { authPage.off('response', onResponse); },
+  };
+}
+
+async function finalizeOAuthPostPasswordSubmission(observer, oauthUi, persist, failureCategory) {
+  oauthUi.postPasswordSubmissionFinal = await observer.snapshot();
+  if (failureCategory) oauthUi.failureCategory = failureCategory;
+  persist();
+  observer.finish();
+}
+
+async function failOAuthPostPasswordSubmission(observer, oauthUi, persist) {
+  await finalizeOAuthPostPasswordSubmission(
+    observer,
+    oauthUi,
+    persist,
+    'oauth_login_form_submit_failed',
+  );
+  throw new Error('oauth_login_form_submit_failed');
+}
+
+async function submitOAuthPasswordWithDiagnostics(authPage, observer, oauthUi, persist) {
+  try {
+    await authPage.getByRole('button', { name: 'Sign in', exact: true }).click();
+    oauthUi.postPasswordSubmission = await observer.snapshot({ settleMs: 750 });
+    persist();
+  } catch {
+    await failOAuthPostPasswordSubmission(observer, oauthUi, persist);
+  }
 }
 
 function classifyOAuthConsentSnapshot(snapshot) {
@@ -107,6 +202,38 @@ function classifyOAuthConsentSnapshot(snapshot) {
   if (oneEnabledAuthorize) return exactOneRetry || exactOneErrorHeading ? 'consent_ambiguous' : 'consent_ready';
   if (exactOneRetry || exactOneErrorHeading) return 'consent_error';
   return 'consent_ambiguous';
+}
+
+function summarizeOAuthConsentSnapshot(authPage, snapshot) {
+  const heading = snapshot.visibleHeadings.length === 1 ? snapshot.visibleHeadings[0] : null;
+  const knownHeadingCategory = heading === 'Redirecting' ? 'redirecting'
+    : ['Invalid request', 'We could not verify your sign-in', 'Origin not authorized',
+      'Request expired', 'Too many requests', 'Network error'].includes(heading)
+      || /^Authorization error \((?:unknown|\d{3})\)$/.test(heading || '') ? 'known_error'
+      : heading === null ? 'none_or_multiple' : 'other';
+  return {
+    routeCategory: classifyOAuthRouteCategory(authPage.url()),
+    consentState: classifyOAuthConsentSnapshot(snapshot),
+    emailVisible: snapshot.emailVisible,
+    passwordVisible: snapshot.passwordVisible,
+    authorizeCount: snapshot.authorizeCount,
+    enabledAuthorizeCount: snapshot.enabledAuthorizeCount,
+    retryCount: snapshot.retryCount,
+    visibleHeadingCount: snapshot.visibleHeadings.length,
+    knownHeadingCategory,
+  };
+}
+
+async function recordOAuthConsentFailureSnapshot(authPage, oauthUi, persist) {
+  try {
+    oauthUi.consentFailureSnapshot = summarizeOAuthConsentSnapshot(
+      authPage, await readOAuthPageSnapshot(authPage),
+    );
+    persist();
+  } catch {
+    oauthUi.consentFailureSnapshot = { snapshotUnavailable: true };
+    try { persist(); } catch {}
+  }
 }
 
 function observeOAuthConsentApproval(authPage, dbOrigin, timeoutMs = 30000) {
@@ -262,7 +389,7 @@ const lifecycleDryRun = process.argv.includes('--lifecycle-dry-run');
 // making a Vault mutation; it is not a Save/Update acceptance result.
 const readOnlyAdmissionMode = lifecycleDryRun || process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
 const receiptBackedSaveUpdateMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_RECEIPT_BACKED_SAVE_UPDATE';
-const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = '94e0b1c9e3116c2142beecbdf3a0446630e72cd5';
+const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = 'a2b5aa7e1082330ab6658b07477b31ea3705ca72';
 const RECEIPT_BACKED_ROUTER_SHA256 = '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
 const RECEIPT_BACKED_SERVICE_SHA256 = 'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
 const generatorTransportMode = lifecycleDryRun || process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
@@ -1441,6 +1568,7 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
   const initialOAuthDisposition = await oauthUiStep('oauth_login_or_existing_session', 'oauth_login_or_existing_session_timeout', () =>
     awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowLoginForm: true }));
   proof.authenticationAttempted = true;
+  let postPasswordSubmission;
   if (initialOAuthDisposition === 'password_form') {
     proof.oauthUi.loginFieldsReady = true;
     proof.oauthUi.loginDisposition = 'password_form';
@@ -1451,16 +1579,30 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
     });
     proof.phase = 'oauth_sign_in';
     persist();
-    await authPage.getByRole('button', { name: 'Sign in', exact: true }).click();
+    postPasswordSubmission = observeOAuthPostPasswordSubmission(authPage);
+    await submitOAuthPasswordWithDiagnostics(authPage, postPasswordSubmission, proof.oauthUi, persist);
   } else {
     proof.oauthUi.loginDisposition = 'existing_web_session';
     proof.phase = 'oauth_existing_web_session';
     persist();
   }
-  const consentDisposition = initialOAuthDisposition === 'password_form'
-    ? await oauthUiStep('oauth_consent_or_callback', 'oauth_consent_or_callback_timeout', () =>
-      awaitOAuthRouteOrCallback({ authPage, storage, adminEmail }))
-    : initialOAuthDisposition;
+  let consentDisposition;
+  try {
+    consentDisposition = initialOAuthDisposition === 'password_form'
+      ? await oauthUiStep('oauth_consent_or_callback', 'oauth_consent_or_callback_timeout', () =>
+        awaitOAuthRouteOrCallback({ authPage, storage, adminEmail }))
+      : initialOAuthDisposition;
+  } catch (error) {
+    if (postPasswordSubmission) {
+      try { await finalizeOAuthPostPasswordSubmission(postPasswordSubmission, proof.oauthUi, persist); }
+      catch { postPasswordSubmission.finish(); }
+      await recordOAuthConsentFailureSnapshot(authPage, proof.oauthUi, persist);
+    }
+    throw error;
+  }
+  if (postPasswordSubmission) {
+    await finalizeOAuthPostPasswordSubmission(postPasswordSubmission, proof.oauthUi, persist);
+  }
   proof.oauthUi.consentDisposition = consentDisposition;
   if (consentDisposition === 'consent_error') {
     await oauthUiStep('oauth_consent_error', 'oauth_consent_identity_error', async () => {
@@ -1572,22 +1714,40 @@ async function focusOwnedBrowser(expectedTabId) {
   assert(Number.isSafeInteger(pid) && pid > 1, 'owned_browser_process_missing');
   if (headlessNoClipboardMode) {
     assert(matches[0].includes('--headless=new'), 'owned_headless_browser_process_missing');
-    const chromeFocus = await worker.evaluate(async (tabId) => {
-      const focused = await chrome.windows.getLastFocused({ windowTypes: ['normal'], populate: true });
-      const windows = await chrome.windows.getAll({ windowTypes: ['normal'], populate: true });
-      const targetTab = Number.isInteger(tabId) ? await chrome.tabs.get(tabId) : null;
-      return {
-        normalWindowCount: windows.length,
-        focused: focused.focused === true,
-        focusedType: focused.type,
-        focusedWindowHasActiveTab: Array.isArray(focused.tabs) && focused.tabs.some((tab) => tab.active === true),
-        expectedTabActive: targetTab?.active === true,
-        expectedTabWindowMatchesFocused: targetTab?.windowId === focused.id,
+    let chromeFocus;
+    let focused = false;
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      chromeFocus = await worker.evaluate(async (tabId) => {
+        const current = await chrome.windows.getLastFocused({ windowTypes: ['normal'], populate: true });
+        const windows = await chrome.windows.getAll({ windowTypes: ['normal'], populate: true });
+        const targetTab = Number.isInteger(tabId) ? await chrome.tabs.get(tabId) : null;
+        return {
+          normalWindowCount: windows.length,
+          focused: current.focused === true,
+          focusedType: current.type,
+          focusedWindowHasActiveTab: Array.isArray(current.tabs) && current.tabs.some((tab) => tab.active === true),
+          expectedTabActive: targetTab?.active === true,
+          expectedTabWindowMatchesFocused: targetTab?.windowId === current.id,
+        };
+      }, expectedTabId);
+      focused = chromeFocus.normalWindowCount >= 1 && chromeFocus.focused && chromeFocus.focusedType === 'normal'
+        && chromeFocus.focusedWindowHasActiveTab && chromeFocus.expectedTabActive
+        && chromeFocus.expectedTabWindowMatchesFocused;
+      if (focused) break;
+      await wait(100);
+    }
+    if (!focused) {
+      proof.headlessChromeFocusFailure = {
+        hasNormalWindow: chromeFocus.normalWindowCount >= 1,
+        focused: chromeFocus.focused,
+        focusedTypeIsNormal: chromeFocus.focusedType === 'normal',
+        focusedWindowHasActiveTab: chromeFocus.focusedWindowHasActiveTab,
+        expectedTabActive: chromeFocus.expectedTabActive,
+        expectedTabWindowMatchesFocused: chromeFocus.expectedTabWindowMatchesFocused,
       };
-    }, expectedTabId);
-    assert(chromeFocus.normalWindowCount >= 1 && chromeFocus.focused && chromeFocus.focusedType === 'normal'
-      && chromeFocus.focusedWindowHasActiveTab && chromeFocus.expectedTabActive && chromeFocus.expectedTabWindowMatchesFocused,
-    'headless_chrome_normal_window_not_focused');
+      persist();
+    }
+    assert(focused, 'headless_chrome_normal_window_not_focused');
     proof.headlessChromeFocus = chromeFocus;
     persist();
     return;
@@ -1613,6 +1773,21 @@ async function verifyRealVaultPanel() {
     await wait(250);
   }
   throw new Error('real_side_panel_vault_not_visible');
+}
+async function verifyObservedVaultPanelRead() {
+  // The Vault tab's own read can settle after the panel becomes visible.
+  // Wait for its paired request and response from the bound observer before
+  // writing fixtures; never count an unrelated or pre-bind request.
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    const snapshot = networkJournal.snapshot();
+    if (snapshot.panelItemsReadRequestSeen && snapshot.panelItemsReadResponse2xxSeen) {
+      proof.checks.realSidePanelVaultReadObserved = true;
+      persist();
+      return;
+    }
+    await wait(250);
+  }
+  throw new Error('vault_panel_items_read_sentinel_missing');
 }
 async function prewriteVaultPanelScreenshot() {
   // The Vault navigation control contains no credential value. Verify the
@@ -1823,7 +1998,9 @@ async function materializedPassword(id) {
     baselineIds = new Set(baseline.map((entry) => entry.id));
     proof.baselineMetadataSha256 = baselineMetadataSha256(baseline);
     proof.baselineItems = baseline.map(entry => ({ id: entry.id, metadataSha256: baselineMetadataSha256([entry]) })).sort((a, b) => a.id.localeCompare(b.id));
+    if (readOnlyAdmissionMode) proof.admission.baselineRead = true;
     await verifyRealVaultPanel();
+    await verifyObservedVaultPanelRead();
     await prewriteLocalCanonicalPreflight();
     const helperHashesBeforeWrites = {
       rawAdapter: await sha256(path.join(__dirname, 'vault-owned-cdp.cjs')),
@@ -1933,11 +2110,21 @@ async function materializedPassword(id) {
       const recoveredItems = await items();
       proof.lifecycle.freshVaultRead = Array.isArray(recoveredItems);
       assert(proof.lifecycle.freshVaultRead, 'lifecycle_fresh_vault_read_refused');
+      proof.lifecycle.freshRecovery.disposition = 'in_progress';
+      proof.lifecycle.freshPanelVaultReadObserved = false;
+      persist();
+      // authenticate() rebinds the panel target and starts a fresh journal
+      // epoch. Prove the recovered panel itself can read with the new session;
+      // the direct API read above cannot satisfy that panel boundary.
+      await verifyRealVaultPanel();
+      await verifyObservedVaultPanelRead();
+      proof.lifecycle.freshPanelVaultReadObserved = true;
       proof.lifecycle.freshRecovery.disposition = proof.lifecycle.freshRecovery.interactiveSignInCompleted
         && proof.lifecycle.freshRecovery.localAuthMaterialPresent
         && proof.lifecycle.freshRecovery.verifiedIdentityRecovered
         && proof.lifecycle.freshRecovery.settingsUiRecovered
-        && proof.lifecycle.freshVaultRead ? 'passed' : 'failed';
+        && proof.lifecycle.freshVaultRead
+        && proof.lifecycle.freshPanelVaultReadObserved ? 'passed' : 'failed';
       persist();
     } else if (readOnlyAdmissionMode && !identityOnlyMode) {
       proof.admission.baselineRead = true;
@@ -2239,6 +2426,21 @@ async function materializedPassword(id) {
           return true;
         },
       });
+      const realLoginUrl = 'https://www.aimatrx.com/login';
+      // The preceding form matrix uses the owned localhost destination. Move
+      // only these four disposable fixtures to the real HTTPS destination so
+      // that the localhost control is genuinely a wrong-site refusal check.
+      for (const fixtureId of [targetId, ...otherIds]) {
+        const updated = await api(`${API}/api/vault/items/${encodeURIComponent(fixtureId)}`, {
+          method: 'PATCH',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ login_urls: [realLoginUrl] }),
+          label: 'real_site_fixture_destination',
+        });
+        assert(updated?.id === fixtureId && JSON.stringify(updated.login_urls) === JSON.stringify([realLoginUrl]),
+          'real_site_fixture_destination_mismatch');
+      }
+      proof.checks.realSiteFixtureDestinationsRetargeted = true;
       // This is the only real HTTPS destination in the receipt-backed journey.
       // The helper selects this exact receipt-owned account, fills without
       // submission, and proves that the same account is absent on the owned
@@ -2251,8 +2453,8 @@ async function materializedPassword(id) {
         realPanel,
         targetName,
         username,
-        password: newPassword,
-        realLoginUrl: 'https://www.aimatrx.com/login',
+        password: changedPassword,
+        realLoginUrl,
         wrongSiteUrl: localUrl,
         assert,
         wait,

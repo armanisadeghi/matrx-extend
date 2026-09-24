@@ -11,7 +11,7 @@ assert.ok(match, 'oauth_route_observer_missing');
 const functionSource = match[0].replace(/\nlet cdpWorkerMessageId$/, '');
 const sandbox = { URL, wait: async () => {}, setTimeout, clearTimeout, assert: (value, code) => { if (!value) throw new Error(code); } };
 vm.createContext(sandbox);
-new vm.Script(`${functionSource}; globalThis.readSnapshot = readOAuthPageSnapshot; globalThis.classifyConsent = classifyOAuthConsentSnapshot; globalThis.observe = awaitOAuthRouteOrCallback; globalThis.observeCallback = awaitOAuthCallbackStorage; globalThis.observeApproval = observeOAuthConsentApproval;`).runInContext(sandbox);
+new vm.Script(`${functionSource}; globalThis.readSnapshot = readOAuthPageSnapshot; globalThis.classifyConsent = classifyOAuthConsentSnapshot; globalThis.summarizeConsent = summarizeOAuthConsentSnapshot; globalThis.recordConsentFailure = recordOAuthConsentFailureSnapshot; globalThis.observe = awaitOAuthRouteOrCallback; globalThis.observeCallback = awaitOAuthCallbackStorage; globalThis.observeApproval = observeOAuthConsentApproval; globalThis.observePostPassword = observeOAuthPostPasswordSubmission; globalThis.finalizePostPassword = finalizeOAuthPostPasswordSubmission; globalThis.failPostPassword = failOAuthPostPasswordSubmission; globalThis.submitPostPassword = submitOAuthPasswordWithDiagnostics;`).runInContext(sandbox);
 
 const exactLocator = (entries) => ({
   count: async () => entries.length,
@@ -24,7 +24,7 @@ const exactLocator = (entries) => ({
   waitFor: async () => {},
   click: async () => {},
 });
-const page = ({ url = 'https://www.aimatrx.com/auth', email = false, password = false, authorize = [], retry = [], headings = [], closed = false, snapshotHangs = false } = {}) => {
+const page = ({ url = 'https://www.aimatrx.com/auth', email = false, password = false, authorize = [], retry = [], loginSubmit = [], headings = [], closed = false, snapshotHangs = false } = {}) => {
   const listeners = new Set();
   return {
     isClosed: () => closed,
@@ -35,6 +35,8 @@ const page = ({ url = 'https://www.aimatrx.com/auth', email = false, password = 
       authorizeCount: authorize.filter((entry) => entry.visible).length,
       enabledAuthorizeCount: authorize.filter((entry) => entry.visible && entry.enabled).length,
       retryCount: retry.filter((entry) => entry.visible).length,
+      loginSubmitCount: loginSubmit.filter((entry) => entry.visible).length,
+      busyLoginSubmitCount: loginSubmit.filter((entry) => entry.visible && entry.busy).length,
       visibleHeadings: headings.filter((entry) => entry.visible).map((entry) => entry.text ?? ''),
     }),
     locator: (selector) => selector === '#email' ? exactLocator([{ visible: email }]) : selector === '#password' ? exactLocator([{ visible: password }]) : exactLocator(headings),
@@ -42,8 +44,12 @@ const page = ({ url = 'https://www.aimatrx.com/auth', email = false, password = 
     getByText: (text) => exactLocator(text === 'Redirecting' ? redirecting : []),
     on: (event, listener) => { if (event === 'response') listeners.add(listener); },
     off: (event, listener) => { if (event === 'response') listeners.delete(listener); },
+    responseListenerCount: () => listeners.size,
     emitApproval: (status, pathSuffix = 'authorization/consent') => {
-      for (const listener of listeners) listener({ url: () => `https://db.matrxserver.com/auth/v1/oauth/authorizations/${pathSuffix}`, request: () => ({ method: () => 'POST' }), status: () => status });
+      for (const listener of listeners) listener({ url: () => `https://db.matrxserver.com/auth/v1/oauth/authorizations/${pathSuffix}`, request: () => ({ method: () => 'POST', headers: () => ({}) }), status: () => status });
+    },
+    emitServerAction: (status, responseUrl = url) => {
+      for (const listener of listeners) listener({ url: () => responseUrl, request: () => ({ headers: () => ({ 'next-action': 'redacted' }) }), status: () => status });
     },
   };
 };
@@ -56,6 +62,17 @@ const storage = async () => ({});
   assert.equal(await sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', headings: [{ visible: true, text: 'Request expired' }] }), storage, adminEmail: 'admin@admin.com' }), 'consent_error');
   assert.equal(await sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', headings: [{ visible: true, text: 'Authorization error (500)' }] }), storage, adminEmail: 'admin@admin.com' }), 'consent_error');
   assert.equal(await sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', headings: [{ visible: true, text: 'Redirecting' }] }), storage, adminEmail: 'admin@admin.com' }), 'redirecting');
+  const ambiguousConsent = page({ url: 'https://www.aimatrx.com/oauth/consent?private=value', headings: [{ visible: true, text: 'Private heading' }] });
+  assert.equal(JSON.stringify(sandbox.summarizeConsent(ambiguousConsent, await sandbox.readSnapshot(ambiguousConsent))), JSON.stringify({ routeCategory: 'oauth_consent', consentState: 'consent_ambiguous', emailVisible: false, passwordVisible: false, authorizeCount: 0, enabledAuthorizeCount: 0, retryCount: 0, visibleHeadingCount: 1, knownHeadingCategory: 'other' }));
+  const failedDiagnostic = {};
+  await assert.rejects(async () => {
+    try { throw new Error('original_oauth_failure'); }
+    catch (error) {
+      await sandbox.recordConsentFailure(ambiguousConsent, failedDiagnostic, () => { throw new Error('proof_persist_failure'); });
+      throw error;
+    }
+  }, /original_oauth_failure/);
+  assert.equal(JSON.stringify(failedDiagnostic.consentFailureSnapshot), JSON.stringify({ snapshotUnavailable: true }));
   await assert.rejects(() => sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', authorize: [{ visible: true, enabled: false }] }), storage, adminEmail: 'admin@admin.com' }), /oauth_consent_or_callback_timeout/, 'URL-only or disabled consent must never be accepted as rendered readiness');
   await assert.rejects(() => sandbox.observe({ authPage: page({ url: 'https://www.aimatrx.com/oauth/consent', authorize: [{ visible: true, enabled: true }, { visible: true, enabled: true }] }), storage, adminEmail: 'admin@admin.com' }), /oauth_consent_or_callback_timeout/, 'multiple exact approval controls must fail closed');
   await assert.rejects(() => sandbox.readSnapshot(page({ url: 'https://www.aimatrx.com/oauth/consent', snapshotHangs: true }), 1), /oauth_consent_dom_snapshot_timeout/, 'a stalled DOM read must fail on its own bounded timer');
@@ -74,5 +91,22 @@ const storage = async () => ({});
   const callback = await sandbox.observeCallback({ authPage: page({ closed: true }), storage: callbackStorage, adminEmail: 'admin@admin.com' });
   assert.equal(callback.callbackStorageObserved, true); assert.equal(callback.authPageClosed, true);
   await assert.rejects(() => sandbox.observeCallback({ authPage: page(), storage, adminEmail: 'admin@admin.com' }), /oauth_callback_storage_timeout/);
+  const unchangedLogin = page({ url: 'https://www.aimatrx.com/login?error', email: true, password: true });
+  const unchangedObserver = sandbox.observePostPassword(unchangedLogin);
+  assert.equal(JSON.stringify(await unchangedObserver.snapshot()), JSON.stringify({ formState: 'form_unchanged', routeCategory: 'login', errorQueryParameterPresent: true, serverActionResponse: null, serverActionResponseCount: 0 }));
+  unchangedLogin.emitServerAction(401);
+  assert.equal(JSON.stringify(await unchangedObserver.snapshot()), JSON.stringify({ formState: 'form_unchanged', routeCategory: 'login', errorQueryParameterPresent: true, serverActionResponse: { route: 'login_server_action', status: 401 }, serverActionResponseCount: 1 })); unchangedObserver.finish();
+  const busyLogin = page({ url: 'https://www.aimatrx.com/login', email: true, password: true, loginSubmit: [{ visible: true, busy: true }] });
+  const busyObserver = sandbox.observePostPassword(busyLogin); busyLogin.emitServerAction(303, 'https://www.aimatrx.com/oauth/consent');
+  assert.equal(JSON.stringify(await busyObserver.snapshot()), JSON.stringify({ formState: 'submit_busy', routeCategory: 'login', errorQueryParameterPresent: false, serverActionResponse: { route: 'oauth_consent_server_action', status: 303 }, serverActionResponseCount: 1 })); busyObserver.finish();
+  const rejectedLogin = page({ url: 'https://www.aimatrx.com/login', email: true, password: true, loginSubmit: [{ visible: true, busy: true }] });
+  const rejectedObserver = sandbox.observePostPassword(rejectedLogin); const rejectedUi = {}; let persisted = 0;
+  rejectedLogin.getByRole = () => ({ click: async () => { throw new Error('click_rejected'); } });
+  await assert.rejects(() => sandbox.submitPostPassword(rejectedLogin, rejectedObserver, rejectedUi, () => { persisted += 1; }), /oauth_login_form_submit_failed/);
+  assert.equal(persisted, 1); assert.equal(rejectedUi.failureCategory, 'oauth_login_form_submit_failed');
+  assert.equal(rejectedLogin.responseListenerCount(), 0);
+  assert.equal(JSON.stringify(rejectedUi.postPasswordSubmissionFinal), JSON.stringify({ formState: 'submit_busy', routeCategory: 'login', errorQueryParameterPresent: false, serverActionResponse: null, serverActionResponseCount: 0 }));
+  rejectedLogin.emitServerAction(503);
+  assert.equal(JSON.stringify(await rejectedObserver.snapshot()), JSON.stringify({ formState: 'submit_busy', routeCategory: 'login', errorQueryParameterPresent: false, serverActionResponse: null, serverActionResponseCount: 0 }));
   process.stdout.write('PASS: OAuth consent requires rendered readiness, one approval 2xx, and callback storage\n');
 })().catch((error) => { console.error(error); process.exitCode = 1; });

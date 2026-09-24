@@ -18,18 +18,6 @@ vi.mock('@/lib/api/routes/auth', () => ({
   requireRequestOrganizationId: mocks.requireRequestOrganizationId,
 }));
 
-// Who is saving is read from the bearer LOCALLY now (2026-09-21); the fake
-// client's `auth.getUser` below is no longer consulted on the highlight path.
-vi.mock('@/lib/auth/flow', () => ({
-  getAccessToken: vi.fn(async () => 'test-bearer'),
-}));
-vi.mock('@/lib/auth/verify-claims', () => ({
-  verifyBearerClaims: vi.fn(async () => ({
-    status: 'verified',
-    claims: { sub: FILE_ID, id: FILE_ID },
-  })),
-}));
-
 vi.mock('@/lib/supabase/client', () => ({
   getSupabase: mocks.getSupabase,
   // DD-131 added a second, agent-authored client. Both channels must still
