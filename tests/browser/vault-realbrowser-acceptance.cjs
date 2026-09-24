@@ -1946,6 +1946,7 @@ async function materializedPassword(id) {
     baselineIds = new Set(baseline.map((entry) => entry.id));
     proof.baselineMetadataSha256 = baselineMetadataSha256(baseline);
     proof.baselineItems = baseline.map(entry => ({ id: entry.id, metadataSha256: baselineMetadataSha256([entry]) })).sort((a, b) => a.id.localeCompare(b.id));
+    if (readOnlyAdmissionMode) proof.admission.baselineRead = true;
     await verifyRealVaultPanel();
     await verifyObservedVaultPanelRead();
     await prewriteLocalCanonicalPreflight();
