@@ -1723,11 +1723,9 @@ async function verifyRealVaultPanel() {
   throw new Error('real_side_panel_vault_not_visible');
 }
 async function verifyObservedVaultPanelRead() {
-  // The panel can fetch while its CDP target is being attached. A fresh,
-  // user-visible Refresh gives the bound observer an unambiguous read without
-  // treating an earlier or unrelated request as acceptance evidence.
-  const refresh = `Array.from(document.querySelectorAll('button[title="Refresh"]')).find((button) => button.closest('[role="tabpanel"]'))`;
-  await realPanel.click(refresh);
+  // The Vault tab's own read can settle after the panel becomes visible.
+  // Wait for its paired request and response from the bound observer before
+  // writing fixtures; never count an unrelated or pre-bind request.
   for (let attempt = 0; attempt < 60; attempt += 1) {
     const snapshot = networkJournal.snapshot();
     if (snapshot.panelItemsReadRequestSeen && snapshot.panelItemsReadResponse2xxSeen) {
