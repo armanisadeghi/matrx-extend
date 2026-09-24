@@ -48,6 +48,12 @@ Arman plus dozens of agents edit this checkout simultaneously; `origin/main` is 
 point. Commit and push as you go; never run tree-wide destructive git; never request your own
 branch/worktree. Full ruling: workspace root [`../CLAUDE.md`](../CLAUDE.md) § Shared checkout.
 
+**Release: you run it.** This repo is NOT on the twice-hourly release train (only `aidream` and
+`ai-matrx` are). Whoever works here releases their own work: when your change is verified,
+run `./release.sh` from `origin/main` before you finish — do not leave it for "the release
+agent"; there is none for this repo. Expected cadence is about one release a day. A daily
+scheduled sweep only catches what a session forgot; it is a safety net, not the plan.
+
 ## Platform laws (one-liners — the rule bodies live at the links)
 
 - **The Platform List is Arman's alone.** At session start read `common-docs/operations/platform-list/LIST.md` if it is on this machine; if any row's Start date is today or past, tell Arman in your first reply (he snoozes by naming a new date). Only Arman adds, kills, or removes a row. Agents suggest in plain English and never write copies, histories, or "deleted" notes anywhere. Skill: `platform-list`.
