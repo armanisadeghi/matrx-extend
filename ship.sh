@@ -1,68 +1,75 @@
 #!/usr/bin/env bash
-# ship.sh — Stage everything, commit with your message, then run ./release.sh.
+# ship.sh — sync this checkout with GitHub, then release. (Arman, 2026-09-24)
 #
-# Thin wrapper. The real work lives in release.sh — versioning, type sync,
-# typecheck, dual-zip build (local + store), key-field swap, tag, push, and
-# the Chrome Web Store upload instructions.
+#   1. scripts/sync-main.py   commits everything uncommitted ("local work not committed by agents
+#                             who made them"), merges origin/main, sorts every conflict into
+#                             _conflicts/ (auto-fixed / both-versions-kept / held), pushes.
+#   2. the release script     scripts/release.sh (or ./release.sh): bumps the version and ships.
+#                             Runs whatever happened in step 1. If this repo has no release
+#                             script, ship.sh says so and stops after the sync.
+#   3. the open items         prints what is open in _conflicts/README.md, if anything, for the
+#                             agent that resolves conflicts.
 #
 # Usage:
-#   ./ship.sh "feat: describe your change"
-#   ./ship.sh "fix: thing"          --minor
-#   ./ship.sh "chore: bump deps"    --major
-#   ./ship.sh "wip: testing"        --dry-run
-#
-# Extra flags after the message are forwarded verbatim to release.sh
-# (--patch | --minor | --major | --dry-run | --skip-types |
-#  --skip-typecheck | --no-push).
-set -euo pipefail
+#   ./ship.sh                                   # sync + release with the default note
+#   ./ship.sh "Added new chat surface"          # sync + release with a note
+#   ./ship.sh "note" --minor                    # release flags pass through
+#   ./ship.sh "note" --dry-run                  # NO sync; release --dry-run only
+set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
+export RELEASE_STAGE_CALLER_PWD="$PWD"
 
-if [[ $# -lt 1 ]]; then
-    echo "Usage: ./ship.sh \"commit message\" [release.sh flags...]" >&2
-    echo "  Example: ./ship.sh \"feat: add new tool\" --minor" >&2
-    exit 1
+NOTE="sync and release"
+if [[ $# -gt 0 && "$1" != --* ]]; then
+    NOTE="$1"
+    shift
 fi
 
-COMMIT_MSG="$1"
-shift
+DRY_RUN=false
+for arg in "$@"; do [[ "$arg" == "--dry-run" ]] && DRY_RUN=true; done
 
-# Portable in-place sed. BSD (macOS) sed wants `-i ''`; GNU (Linux) sed
-# treats that '' as the script argument and silently misbehaves — the
-# original macOS-only form left the key-toggle broken on Linux boxes
-# (docs/AUDIT_2026_06_10.md P0-9). A backup suffix works on both; we
-# delete the backup immediately.
-_sed_inplace() {
-    local script="$1" file="$2"
-    sed -i.matrxbak -E "$script" "$file"
-    rm -f "${file}.matrxbak"
-}
+RELEASE=""
+for candidate in "$ROOT/scripts/release.sh" "$ROOT/release.sh"; do
+    [[ -x "$candidate" || -f "$candidate" ]] && { RELEASE="$candidate"; break; }
+done
 
-# Self-heal wxt.config.ts BEFORE staging. The Chrome Web Store flow requires
-# `key:` to be commented out for the upload zip, but the working tree must
-# always carry it ACTIVE so dev unpacked installs keep the stable extension
-# ID (Supabase OAuth redirect depends on it). If a prior run / manual edit
-# left it commented out, git add -A would silently sweep the bad state into
-# the next commit — and pre-flight in release.sh would then bail. Restore
-# now so neither happens.
-WXT_CONFIG="$ROOT/wxt.config.ts"
-if [[ -f "$WXT_CONFIG" ]] && grep -qE "^[[:space:]]*// key: '" "$WXT_CONFIG"; then
-    echo "[ship] wxt.config.ts has key field commented out — restoring before commit." >&2
-    _sed_inplace "s|^([[:space:]]*)// (key: ')|\1\2|" "$WXT_CONFIG"
-    if ! grep -qE "^[[:space:]]*key: '" "$WXT_CONFIG"; then
-        echo "[ship] FATAL: could not auto-restore key field. Fix wxt.config.ts manually." >&2
-        exit 1
+# ── 1. sync ──────────────────────────────────────────────────────────────────
+if $DRY_RUN; then
+    echo "ship.sh: --dry-run, so the sync was skipped (it commits and pushes for real)."
+    SYNC_RC=0
+else
+    python3 "$ROOT/scripts/sync-main.py"
+    SYNC_RC=$?
+    if [[ $SYNC_RC -ne 0 ]]; then
+        echo ""
+        echo "ship.sh: the sync did not finish (exit $SYNC_RC; its reason is printed above). Releasing anyway."
     fi
 fi
 
-git add -A
-
-if git diff --cached --quiet; then
-    echo "[ship] Nothing new to commit — working tree already matches HEAD." >&2
+# ── 2. release ───────────────────────────────────────────────────────────────
+echo ""
+if [[ -n "$RELEASE" ]]; then
+    bash "$RELEASE" --message "$NOTE" "$@"
+    RELEASE_RC=$?
 else
-    git commit -m "$COMMIT_MSG"
-    echo "[ship] Committed: $COMMIT_MSG"
+    echo "ship.sh: THIS REPO HAS NO RELEASE SCRIPT (looked for scripts/release.sh and ./release.sh)."
+    echo "ship.sh: the sync ran; nothing was released."
+    RELEASE_RC=0
 fi
 
-exec "$ROOT/release.sh" "$@"
+# ── 3. open items ────────────────────────────────────────────────────────────
+echo ""
+if ! $DRY_RUN; then
+    if python3 "$ROOT/scripts/check-conflict-markers.py" >/tmp/ship-conflicts.$$ 2>&1; then
+        echo "ship.sh: nothing open in _conflicts/."
+    else
+        echo "ship.sh: open items in _conflicts/README.md:"
+        sed 's/^/  /' /tmp/ship-conflicts.$$
+    fi
+    rm -f /tmp/ship-conflicts.$$
+fi
+
+echo "ship.sh: sync exit $SYNC_RC, release exit $RELEASE_RC"
+exit $RELEASE_RC
