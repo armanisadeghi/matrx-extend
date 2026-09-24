@@ -114,6 +114,11 @@ describe('inferDataType', () => {
     ['2026-01-02', 'date'],
     ['2026-01-02T10:30:00Z', 'datetime'],
     ['hello world', 'string'],
+    // A SKU is not a date, whatever Date.parse thinks (it reads WAT-0009 as 2001).
+    ['WAT-0009', 'string'],
+    ['NIB-5310', 'string'],
+    ['Sep 22, 2026', 'date'],
+    ['09/22/2026', 'date'],
     [42, 'integer'],
     [4.2, 'number'],
     [true, 'boolean'],

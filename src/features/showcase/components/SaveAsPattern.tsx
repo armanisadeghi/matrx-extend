@@ -6,9 +6,9 @@ import { isDbFailureError } from '@/lib/supabase/db-failure';
 import { type ExtractionPatternField, type PatternKind, savePattern } from '@/lib/supabase/queries';
 import {
   buildFieldNameMap,
-  getUserTable,
-  getUserTableSchema,
   inferSchemaFromRows,
+  tableColumnKeys,
+  tableOrganization,
   unionRowKeys,
 } from '@/lib/supabase/user-tables';
 import { OrganizationContextError, requireOrganizationContext } from '@ai-matrx/agents/matrx';
@@ -66,8 +66,8 @@ export function SaveAsPattern({
   const [savedSummary, setSavedSummary] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
-  const { tables, createTable, appendRows } = useUserTables();
   const { active: activeOrganization } = useActiveOrganization();
+  const { tables, createTable, appendRows } = useUserTables(activeOrganization?.id);
 
   // Union across ALL rows — the preview table shows every column, so the
   // created table must too (single-row inference silently dropped columns
@@ -132,14 +132,15 @@ export function SaveAsPattern({
         targetTableId = target;
         // Load the persisted parent before any linked write. The selected
         // value is only a UI choice; its organization is authoritative here.
-        const existingTable = await getUserTable(targetTableId);
-        if (!existingTable.organization_id) {
+        // From whichever store holds it (lane INTEG-CLIENTS): a moved table is a record-store Table.
+        const existingOrganizationId = await tableOrganization(targetTableId, operationOrganizationId);
+        if (!existingOrganizationId) {
           throw new OrganizationContextError(
             'organization_context_required',
             'This dataset has no organization. Choose a different dataset or create a new one.',
           );
         }
-        if (requireOrganizationContext(existingTable.organization_id) !== operationOrganizationId) {
+        if (requireOrganizationContext(existingOrganizationId) !== operationOrganizationId) {
           throw new OrganizationContextError(
             'organization_context_mismatch',
             'The selected dataset belongs to a different organization. Choose a dataset in your active organization.',
@@ -173,9 +174,9 @@ export function SaveAsPattern({
         // are reported, not invisible.
         let unmatchedNote = '';
         if (target !== NEW_TABLE) {
-          const schema = await getUserTableSchema(targetTableId);
-          if (schema.length > 0) {
-            const declared = new Set(schema.map((f) => f.field_name));
+          const columnKeys = await tableColumnKeys(targetTableId, operationOrganizationId);
+          if (columnKeys.length > 0) {
+            const declared = new Set(columnKeys);
             const mapped = buildFieldNameMap(unionRowKeys(rows));
             const unmatched = [...new Set(mapped.values())].filter((f) => !declared.has(f));
             if (unmatched.length > 0) {

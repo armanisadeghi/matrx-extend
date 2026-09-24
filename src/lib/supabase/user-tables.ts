@@ -26,10 +26,23 @@
  * The four RPCs we do NOT use (batch_update_rows_in_user_table,
  * remove_column_from_user_table, create_new_user_table, create_new_user_table_wrapper)
  * are slated for removal — do not start calling them.
+ *
+ * 🚨 BY WHERE THE TABLE LIVES (lane INTEG-CLIENTS, 2026-09-23, CUTOVER-PLAN E1). Every export
+ * below that makes, finds or writes a table asks FIRST where its organization keeps tables
+ * (`@/lib/records/tables`): a moved organization's new table is declared in the record store,
+ * a record-store table is appended to through `record_write_many`, and only an older table
+ * reaches the two older RPCs — which the flip turns read-only.
  */
 
+import { recordsClientFor } from '@/lib/records/store';
+import {
+  appendStoreRows,
+  declareStoreTable,
+  storeTables,
+  tablesLiveIn,
+} from '@/lib/records/tables';
 import { getSupabase } from '@/lib/supabase/client';
-import { type DbCallSite, failDbCall } from '@/lib/supabase/db-failure';
+import { type DbCallSite, failDbCall, recordDbFailure } from '@/lib/supabase/db-failure';
 import { workbenchDb } from '@/lib/supabase/schemas';
 import { OrganizationContextError, requireOrganizationContext } from '@ai-matrx/agents/matrx';
 import { z } from 'zod';
@@ -138,6 +151,85 @@ export async function listUserTables(): Promise<UserTable[]> {
   return z.array(UserTableSchema).parse(data ?? []);
 }
 
+/**
+ * A record-store refusal keeps the STORE's own sentence ("SKU takes a date, and WAT-0009 is
+ * not one") — the generic `failDbCall` words would hide what to fix — and is still recorded
+ * durably in the platform's client-error store, like every other refused write here.
+ */
+async function recordedStoreCall<T>(site: DbCallSite, call: () => Promise<T>): Promise<T> {
+  try {
+    return await call();
+  } catch (err) {
+    const e = err as { message?: string; hint?: string };
+    await recordDbFailure(site, 'failed', { message: e?.message ?? String(err), hint: e?.hint ?? null });
+    throw err;
+  }
+}
+
+/** One table the Showcase may save into, from whichever store holds it. */
+export interface PickableTable {
+  id: string;
+  table_name: string;
+  organization_id: string | null;
+  store: 'record' | 'older';
+}
+
+/**
+ * Every table the Showcase may offer for this organization: its record-store Tables and the
+ * person's older datasets that have not moved (a moved dataset is archived with the same id,
+ * so the store's copy is the one listed). Throws on a refused read, never an empty list.
+ */
+export async function listPickableTables(organizationId: string): Promise<PickableTable[]> {
+  const org = requireOrganizationContext(organizationId);
+  const client = await recordsClientFor(org, 'user');
+  const store = await storeTables(client);
+  const seen = new Set(store.map((t) => t.id));
+  const older = (await listUserTables()).filter(
+    (t) => !seen.has(t.id) && t.organization_id === org,
+  );
+  return [
+    ...store.map((t) => ({ ...t, store: 'record' as const })),
+    ...older.map((t) => ({
+      id: t.id,
+      table_name: t.table_name,
+      organization_id: t.organization_id,
+      store: 'older' as const,
+    })),
+  ];
+}
+
+/** Where `tableId` lives for this organization — the record store when it holds a Table by that id. */
+async function homeOf(tableId: string, organizationId: string): Promise<'record' | 'older'> {
+  const client = await recordsClientFor(organizationId, 'user');
+  const store = await storeTables(client);
+  return store.some((t) => t.id === tableId) ? 'record' : 'older';
+}
+
+/**
+ * The column keys a table holds, from whichever store holds it — for the Showcase's "N columns
+ * had no match" note before an append.
+ */
+export async function tableColumnKeys(tableId: string, organizationId: string): Promise<string[]> {
+  const org = requireOrganizationContext(organizationId);
+  if ((await homeOf(tableId, org)) === 'record') {
+    const client = await recordsClientFor(org, 'user');
+    const fields = await client.fields({ table_id: tableId });
+    if (!fields.ok) throw new Error(fields.error.message);
+    return fields.data.map((f) => f.key);
+  }
+  return (await getUserTableSchema(tableId)).map((f) => f.field_name);
+}
+
+/**
+ * The organization a table belongs to, from whichever store holds it — the Showcase proves
+ * it matches the operation's organization before any linked write.
+ */
+export async function tableOrganization(tableId: string, organizationId: string): Promise<string | null> {
+  const org = requireOrganizationContext(organizationId);
+  if ((await homeOf(tableId, org)) === 'record') return org;
+  return (await getUserTable(tableId)).organization_id;
+}
+
 export async function getUserTableSchema(tableId: string): Promise<TableField[]> {
   const site: DbCallSite = {
     table: 'workbench.udt_dataset_fields',
@@ -215,6 +307,26 @@ export async function createUserTableFromSchema(
   // The request kernel is the sole UUID parser/normalizer. Keep its canonical
   // OrganizationContextError intact so every direct-write boundary agrees.
   const organizationId = requireOrganizationContext(input.organization_id);
+  if ((await tablesLiveIn(organizationId)) === 'record') {
+    const client = await recordsClientFor(organizationId, 'user');
+    const storeSite: DbCallSite = {
+      table: 'rpc:custom.table_declare',
+      operation: 'rpc',
+      what: 'create this table',
+      title: 'Table not created',
+    };
+    const id = await recordedStoreCall(storeSite, () => declareStoreTable(client, {
+      name: input.table_name,
+      ...(input.description !== undefined && { description: input.description }),
+      fields: input.fields.map((f) => ({
+        field_name: toSnakeCaseFieldName(f.field_name),
+        display_name: f.display_name || f.field_name,
+        ...(f.data_type !== undefined && { data_type: f.data_type }),
+        field_order: f.field_order,
+      })),
+    }));
+    return { id };
+  }
   const c = getSupabase();
   const { data, error } = await c.rpc('create_user_table_with_fields', {
     p_table_name: input.table_name,
@@ -303,6 +415,29 @@ export async function appendRowsToUserTable(
   const organizationId = requireOrganizationContext(operationOrganizationId);
   if (rows.length === 0) return { inserted: 0 };
 
+  // A record-store table (born there, or moved there with the same id) is written through the
+  // store's own door; the older RPC would write the moved table's archived copy.
+  if ((await homeOf(tableId, organizationId)) === 'record') {
+    const keyMap = buildFieldNameMap(unionRowKeys(rows));
+    const mapped = rows.map((r) => {
+      const out: Record<string, unknown> = {};
+      for (const k of Object.keys(r)) {
+        const field = keyMap.get(k);
+        if (field) out[field] = r[k];
+      }
+      return out;
+    });
+    const client = await recordsClientFor(organizationId, 'user');
+    const storeSite: DbCallSite = {
+      table: 'rpc:custom.record_write_many',
+      operation: 'rpc',
+      what: 'add these rows to your table',
+      title: 'Rows not added to the table',
+    };
+    const written = await recordedStoreCall(storeSite, () => appendStoreRows(client, tableId, mapped));
+    return { inserted: written.inserted };
+  }
+
   // This is defense in depth until the append RPC itself accepts and locks the
   // operation organization. The read prevents a stale or direct caller from
   // targeting an already-persisted dataset in another organization. It cannot
@@ -374,8 +509,17 @@ export function inferDataType(value: unknown): UserTableDataType {
       ) {
         return 'datetime';
       }
-      // Date.parse-able short string, no explicit time → date
-      if (!Number.isNaN(Date.parse(value)) && /\d{4}/.test(value)) return 'date';
+      // A written-out date with no time → date. ONLY recognised shapes: V8's Date.parse
+      // reads "WAT-0009" (a SKU) as the year 2001, and a column typed `date` from that is
+      // refused by the record store on every row ("SKU takes a date"), where the older
+      // store's permissive validation had silently kept the text (lane INTEG-CLIENTS).
+      if (
+        /^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(value) ||
+        /^[A-Za-z]{3,9}\.? \d{1,2},? \d{4}$/.test(value) ||
+        /^\d{1,2} [A-Za-z]{3,9}\.? \d{4}$/.test(value)
+      ) {
+        if (!Number.isNaN(Date.parse(value))) return 'date';
+      }
     }
   }
   return 'string';

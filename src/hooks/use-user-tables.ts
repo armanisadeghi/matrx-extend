@@ -1,28 +1,37 @@
 import {
   type CreateUserTableInput,
-  type UserTable,
+  type PickableTable,
   appendRowsToUserTable,
   createUserTableFromSchema,
-  listUserTables,
+  listPickableTables,
 } from '@/lib/supabase/user-tables';
 import { useCallback, useEffect, useState } from 'react';
 
-export function useUserTables() {
-  const [tables, setTables] = useState<UserTable[] | null>(null);
+/**
+ * The tables the Showcase may save into for `organizationId` — record-store Tables and the
+ * person's unmoved older datasets (lane INTEG-CLIENTS). With no organization there is nothing
+ * to list: the org picker is where that is resolved, never a guess here.
+ */
+export function useUserTables(organizationId: string | null | undefined) {
+  const [tables, setTables] = useState<PickableTable[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
+    if (!organizationId) {
+      setTables(null);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
-      setTables(await listUserTables());
+      setTables(await listPickableTables(organizationId));
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [organizationId]);
 
   useEffect(() => {
     void refresh();

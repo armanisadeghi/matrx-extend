@@ -1202,6 +1202,27 @@ Every entry follows this shape:
   "no saved patterns" empty state; a no-match network re-run shows guidance
   and does NOT mark the pattern broken.
 
+### Showcase — Save as pattern into a table (by where the table lives)
+- **What it does:** "Save as pattern" can create a new table from the scraped fields or append
+  the rows to a table you already keep. The table is made and written in the store your
+  organization keeps its tables in: the record store once the organization's tables moved
+  (knob `data_tables/older_tables_moved`), the older datasets otherwise. The table picker lists
+  both, and a moved table appears once.
+- **Where to test:** Side panel → Showcase → any extraction tab with rows → Save as pattern.
+- **Steps:**
+  1. In an organization whose tables moved, pick "+ Create new from these fields…", name it,
+     save. Open aimatrx.com → Data: the table is there (it opens on the record-store page),
+     with one column per scraped field and every row.
+  2. Save again, this time choosing that table (or a moved one) from the picker. The rows are
+     added to it; the count in the success line matches.
+  3. Scrape a page with a product code column like `WAT-0009`: the column is text, not a date.
+  4. A value the store refuses (for example text in a number column) shows the store's own
+     sentence in the popover, and the pattern is still saved.
+- **Expected:** never "0 rows appended" over a refusal; never a table that exists only in the
+  older store for a moved organization.
+- **Covered by:** `tests/unit/scraped-rows-land-where-the-table-lives.live.test.ts` (dev clone),
+  `src/lib/supabase/user-tables.test.ts`, `tests/unit/user-tables-mapping.test.ts`.
+
 ### Showcase — Send to agent / data_patterns tool
 - **What it does:** "Send to agent" on any result stages rows (≤50) into the
   chat composer; the `data_patterns` tool lets the agent list/describe/

@@ -17,7 +17,7 @@ const mocks = vi.hoisted(() => {
     ),
     appendRows: vi.fn(async () => ({ inserted: 1 })),
     savePattern: vi.fn(async () => ({ id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc' })),
-    getUserTable: vi.fn(),
+    tableOrganization: vi.fn(),
     tables: [] as { id: string; table_name: string }[],
     releaseCreate: (value: { id: string }) => releaseCreate?.(value),
     clearRelease: () => {
@@ -44,8 +44,8 @@ vi.mock('@/hooks/use-user-tables', () => ({
 vi.mock('@/lib/supabase/queries', () => ({ savePattern: mocks.savePattern }));
 vi.mock('@/lib/supabase/user-tables', () => ({
   buildFieldNameMap: () => new Map([['title', 'title']]),
-  getUserTable: mocks.getUserTable,
-  getUserTableSchema: vi.fn(),
+  tableOrganization: mocks.tableOrganization,
+  tableColumnKeys: vi.fn(async () => []),
   inferSchemaFromRows: () => [],
   unionRowKeys: () => ['title'],
 }));
@@ -116,7 +116,7 @@ describe('SaveAsPattern organization operation boundary', () => {
 
   it('refuses an existing dataset from another organization before any linked write', async () => {
     mocks.tables = [{ id: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', table_name: 'Other org table' }];
-    mocks.getUserTable.mockResolvedValue({ organization_id: ORG_B });
+    mocks.tableOrganization.mockResolvedValue(ORG_B);
     const user = userEvent.setup();
     render(<SaveAsPattern kind="manual_css" config={{}} rows={[{ title: 'One' }]} />);
 
