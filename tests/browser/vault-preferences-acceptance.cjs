@@ -500,13 +500,16 @@ exports.runVaultPreferencesChecks = async ({
       }, true);
       return true;
     })()`);
+    // Resolve through the same panel document that renders the Fill control.
+    // A worker-to-worker status request can be unanswered while this panel
+    // already holds a live offer, which would falsely block the native click.
     const resolveMessageTarget = () =>
-      worker.evaluate(
-        async ({ tabId, targetName }) => {
+      realPanel.evaluate(
+        `(async () => {
           const value = await chrome.runtime.sendMessage({
             __matrx: true,
             kind: 'credential-suggestions:panel-status',
-            payload: { tabId },
+            payload: { tabId: ${JSON.stringify(tabId)} },
           });
           const record = !!value && typeof value === 'object' && !Array.isArray(value);
           const status =
@@ -520,17 +523,16 @@ exports.runVaultPreferencesChecks = async ({
             (match) =>
               match &&
               typeof match === 'object' &&
-              match.display_name === targetName &&
+              match.display_name === ${JSON.stringify(targetName)} &&
               typeof match.item_id === 'string',
           );
           return matching.length === 1 && typeof value.offerId === 'string'
             ? {
-                target: { tabId, offerId: value.offerId, itemId: matching[0].item_id },
+                target: { tabId: ${JSON.stringify(tabId)}, offerId: value.offerId, itemId: matching[0].item_id },
                 observation: { status, targetMatchCount: matching.length },
               }
             : { target: null, observation: { status, targetMatchCount: matching.length } };
-        },
-        { tabId, targetName },
+        })()`,
       );
     const armMessageObserver = (target) =>
       worker.evaluate((target) => {
