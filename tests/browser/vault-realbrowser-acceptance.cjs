@@ -3940,6 +3940,22 @@ async function materializedPassword(id) {
         assert(proof.savedLoginFill?.pagesClosed === true, 'saved_login_helper_pages_not_closed');
         proof.checks.savedLoginUsesReceiptOwnedFixture = true;
         proof.checks.savedLoginNoAdditionalVaultFixture = true;
+        // Save as New resumes on the owned localhost page. Restore only the
+        // same receipt-owned fixtures after every real-site assertion, so the
+        // prior HTTPS fill proof cannot turn this next capture into an Update.
+        for (const fixtureId of [targetId, ...otherIds]) {
+          const restored = await api(`${API}/api/vault/items/${encodeURIComponent(fixtureId)}`, {
+            method: 'PATCH',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ login_urls: [localUrl] }),
+            label: 'real_site_fixture_destination_restore',
+          });
+          assert(
+            restored?.id === fixtureId && JSON.stringify(restored.login_urls) === JSON.stringify([localUrl]),
+            'real_site_fixture_destination_restore_mismatch',
+          );
+        }
+        proof.checks.realSiteFixtureDestinationsRestored = true;
       }
       checkpoint('save_as_new');
       const beforeSave = new Set((await items()).map((entry) => entry.id));
