@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-25T21:58:30Z",
+  "status": "in-progress",
+  "source_sha": "f70ecd47bd8a864bee377ddb1235219efc8eff23",
+  "remote_sync": {
+    "from": "aac7be5",
+    "to": "bbcbff0",
+    "commits_incorporated": 11,
+    "method": "fetch and fast-forward",
+    "discarded_changes": false
+  },
+  "runtime": {
+    "node": "v25.6.0",
+    "pnpm": "10.30.3",
+    "dev_port": 3025
+  },
+  "chrome": {
+    "observed_installed_channel": "Store",
+    "observed_version": "0.2.23",
+    "observed_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "store_disabled": true,
+    "store_data_preserved": "Installation retained; only enabled toggle changed to Off",
+    "developer_mode": true,
+    "unpacked_installed": false,
+    "current_source_bundle_exists": true,
+    "native_chrome_control": "available",
+    "browser_connector_named_chrome": "unavailable at lookup; native Chrome control succeeds",
+    "unpacked_bundle_version": "0.2.44"
+  },
+  "access": {
+    "admin_web_session": "observed authenticated",
+    "admin_vault_credential": "found; secret not revealed or copied",
+    "ordinary_test_account": "confirmed existing; credential not yet located",
+    "org_boundaries": "existing test identities have overlapping and non-overlapping organization memberships; no memberships changed",
+    "live_inventory_read": "Supabase MCP succeeded against current AI Matrx project",
+    "live_advertised_tools": 82,
+    "existing_review_items": 10,
+    "local_admin_query": "failed Invalid API key; no change made; canonical MCP used instead",
+    "public_key_check": "committed publishable key matches current project's enabled publishable key; correct authenticated-client header pattern reaches canonical API; anon lacks binding SELECT by design",
+    "no_secret_values_in_artifacts": true
+  },
+  "resource_admission": {
+    "status": "guard independently passed; install/build passed after one CPU refusal",
+    "physical_memory_gib": 16,
+    "logical_cpus": 10,
+    "load_1m": 12.64,
+    "cpu_idle_percent_snapshot": 66.53,
+    "memory_pressure_level": 1,
+    "available_disk_gib": 1679.16,
+    "notes": "High load may include indexing/I/O; cannot infer CPU saturation from load alone. Independent guard review found descendant lifetime and watchdog stop-contract gaps. No product build/test admitted."
+  },
+  "product_tests_run": 0,
+  "product_fixes_landed": 0,
+  "remaining": [
+    "Complete and independently reconcile feature/control inventory",
+    "Repair and independently verify resource runner",
+    "Fresh source build and unpacked install",
+    "Actual dev sign-in and explicit test organization selection",
+    "Ordinary-member credential access",
+    "Current release/Store readiness"
+  ],
+  "dependency_install_receipt": "docs/stabilization/runs/baseline-install-002.json",
+  "development_build_receipt": "docs/stabilization/runs/baseline-build-001.json",
+  "current_activity": "Luna installing unpacked and executing first guest batch under root-held guest-local-001 browser lease"
+}

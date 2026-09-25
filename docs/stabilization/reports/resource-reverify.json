@@ -1,0 +1,47 @@
+{
+  "task_id": "resource-reverify",
+  "lane": "fresh independent behavior and code verification",
+  "date": "2026-09-25",
+  "scope": "scripts/stabilization-resource.mjs, docs/stabilization/resource-policy.json, resource-review.json, resource-admission.json, and the resource section of PLAN.md; only private scratch processes were launched",
+  "behavior_verdict": "blocked",
+  "code_quality_verdict": "fail",
+  "blocking_findings": [
+    {
+      "id": "RR-1",
+      "severity": "blocking",
+      "finding": "A descendant that starts a new process session can outlive the owned process group and the freed heavy lease.",
+      "proof": "In a private scratch lease root, the runner launched a Node child that spawned /bin/sleep 60 with detached:true and exited. The runner emitted RESOURCE_ADMITTED and RESOURCE_JOB_EXIT, exited 0, and removed heavy. The recorded grandchild PID 32918 was still alive in ps after lease removal. The verifier then signaled only that scratch PID. This is consistent with the implementation note in resource-admission.json but does not meet the broad owned-grandchildren acceptance criterion.",
+      "needed": "Either prove and enforce that every permitted campaign command cannot daemonize or move descendants to another process group, or retain the lease until all descendants are gone using an ownership mechanism that covers new sessions. Record this restriction in the launch contract before product work."
+    },
+    {
+      "id": "RR-2",
+      "severity": "policy-review",
+      "finding": "The high-load CPU rule uses only the final load sample, although CPU busy is averaged across the admission window.",
+      "proof": "Private one-second preflight received three samples: normalized load .8 with busy .60, load .8 with busy .60, then load .2 with busy .60. It emitted RESOURCE_ADMITTED and exited 0. The current policy wording says high normalized load combined with sustained busy >=.60 refuses; the sample sequence satisfies that condition during most of preflight. The coordinator should rule whether launch-time load alone is intended, then align implementation and wording.",
+      "needed": "Use a documented window rule for load, or explicitly state that only final launch-time load governs and independently verify that choice against the host-risk objective."
+    },
+    {
+      "id": "RR-3",
+      "severity": "documentation",
+      "finding": "PLAN.md section 3 still says one-minute load above 75% of logical CPUs always refuses admission. The repaired policy permits high load when sustained busy is below 60%.",
+      "proof": "PLAN.md:94 conflicts with resource-policy.json thresholds and resource-admission.json's 60-second host receipt.",
+      "needed": "Reconcile the plan's resource rule with the accepted CPU ruling before using it as the campaign acceptance standard."
+    }
+  ],
+  "passing_checks": [
+    "Immediate /usr/bin/true child emitted RESOURCE_JOB_EXIT and wrapper exited 0; no lifecycle hang.",
+    "Ordinary shell grandchild /bin/sleep 60 remained in the child's process group, received group SIGTERM after parent exit, was absent from ps before the lease was removed, and wrapper exited 0.",
+    "A second launch while a browser holder was admitted returned RESOURCE_HEAVY_BUSY, exit 2; the first holder remained alive.",
+    "Two unsafe pressure samples stopped generic /bin/sleep 60 through owned-group SIGTERM, returned exit 3, retained unsafe-hold.json, and left an unrelated /bin/sleep 60 alive.",
+    "An unsafe manual browser holder kept both process and lease alive after RESOURCE_BROWSER_OPERATOR_STOP_REQUIRED; explicit SIGINT then emitted RESOURCE_BROWSER_STOP_CONFIRMED and exited 3.",
+    "Malformed CPU policy returned RESOURCE_POLICY_INVALID exit 2 before a lease; an injected measurement exception returned RESOURCE_MEASUREMENT_INVALID exit 2 and released its lease.",
+    "Boundary samples refused .75 busy at low load and .60 busy at normalized load .8, while admitting .59 busy at high load and .60 busy at low load."
+  ],
+  "method": "Copied the actual runner into private temporary repositories. Changed only its external sample() dependency to accept predetermined measurements, shortened sampling/watch intervals in private policy copies, and used real Node spawn, detached process groups, signals, ps, filesystem leases, and exit codes. No product test, build, browser, or release was run. The real 60-second host preflight in resource-admission.json was reviewed but not repeated.",
+  "limitations": [
+    "The measurement injection exercises the runner's admission and lifecycle control flow, not macOS top/sysctl parsing; the implementation receipt already records one real full-minute host preflight.",
+    "The unsafe browser confirmation relies on operator truth that manual work has stopped; the runner cannot independently prove it.",
+    "New-session descendant escape was deliberately tested as a contract boundary, not an accidental ordinary shell grandchild."
+  ],
+  "next_action": "Repair or explicitly constrain the new-session descendant escape and settle the window-load interpretation, then request a fresh independent recheck before campaign product runs."
+}

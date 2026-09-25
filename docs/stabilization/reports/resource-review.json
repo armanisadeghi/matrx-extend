@@ -1,0 +1,75 @@
+{
+  "task_id": "resource-review",
+  "lane": "independent code and operational verification",
+  "model": "GPT 6 Sol / medium",
+  "status": "review_failed_repair_required",
+  "behavior_verdict": "fail",
+  "quality_verdict": "fail",
+  "scope": "scripts/stabilization-resource.mjs and docs/stabilization/resource-policy.json against docs/stabilization/PLAN.md; no product build, suite, or browser run",
+  "verified": [
+    {
+      "case": "atomic contention",
+      "result": "pass",
+      "evidence": "Isolated scratch policy copy admitted a browser lease; a simultaneous check returned RESOURCE_HEAVY_BUSY, exit 2. SIGINT ended browser holder, exit 0."
+    },
+    {
+      "case": "live CPU refusal",
+      "result": "supported by builder evidence and source review",
+      "evidence": "resource-admission.json records exit 2 at load 12.87 versus 7.5 limit on ten logical CPUs. Independent live rerun omitted to avoid another 60-second gate before inventory."
+    },
+    {
+      "case": "owned descendant cleanup",
+      "result": "fail",
+      "evidence": "Isolated scratch copy admitted /bin/sh with background sleep 60. SIGTERM to wrapper exited code 1 while the sleep grandchild remained alive (kill(pid,0) succeeded); scratch grandchild was terminated afterward."
+    },
+    {
+      "case": "quick child exit",
+      "result": "fail",
+      "evidence": "After releasing the browser holder, an isolated run of /usr/bin/true failed to complete within five seconds despite one-second preflight; source attaches child exit listener only after awaiting processIdentity(child.pid), allowing a fast child to exit before the listener exists. The scratch wrapper was terminated by the harness timeout."
+    }
+  ],
+  "findings": [
+    {
+      "severity": "blocker",
+      "location": "scripts/stabilization-resource.mjs:197-215,236-241",
+      "issue": "Only the direct child receives SIGTERM; descendants can outlive it. release() checks only direct child and can free the heavy lease while descendants keep working, violating the one-heavy-job cap.",
+      "repair_contract": "Own the entire launched process tree/group, signal only that owned group, and retain the lease until all owned members have exited or fail closed for review. Never signal unrelated processes."
+    },
+    {
+      "severity": "blocker",
+      "location": "scripts/stabilization-resource.mjs:200-208",
+      "issue": "The exit listener is attached after awaiting processIdentity(child.pid). A fast child can exit before listener attachment, leaving settled unresolved and the watchdog/lease running indefinitely.",
+      "repair_contract": "Attach error/exit/close listeners immediately on spawn and settle from already-observed state; check close/exitCode before entering watch."
+    },
+    {
+      "severity": "major",
+      "location": "scripts/stabilization-resource.mjs:216-239",
+      "issue": "After two unsafe samples, the watchdog writes a stop file but generic pnpm/WXT commands do not consume it. The job may keep running indefinitely; the browser holder must also poll the file to honor the request.",
+      "repair_contract": "Provide an owned-runner stop protocol that actually reaches the runner and confirms safe-boundary stop; mark resource-invalid and hold the permit until all owned work stops. Browser mode must surface the stop request and require explicit acknowledgement or stop."
+    },
+    {
+      "severity": "moderate",
+      "location": "scripts/stabilization-resource.mjs:209",
+      "issue": "RESOURCE_JOB_EXIT emit spreads child result over the event, replacing the event code with the child exit code (null on signal).",
+      "repair_contract": "Emit distinct event code and childExitCode fields."
+    },
+    {
+      "severity": "moderate",
+      "location": "scripts/stabilization-resource.mjs:129-147",
+      "issue": "If the process dies after mkdir(lock) and before owner.json is written, the owner is permanently unreadable; an orphaned reservation cannot be reclaimed automatically.",
+      "repair_contract": "Keep fail-closed behavior, but add a documented same-host recovery path that verifies no owned runner/group remains before retiring an ownerless lock."
+    },
+    {
+      "severity": "operational",
+      "location": "docs/stabilization/resource-policy.json:8",
+      "issue": "Load-only CPU admission can stall progress indefinitely on the observed host: one-minute load 12.64 on 10 CPUs while top reported 66.53% idle, pressure level 1, stable swap. The current threshold refuses at 7.5 even when CPU headroom appears substantial.",
+      "repair_contract": "Keep the one-heavy-job lease and all memory/swap/disk/pressure gates. Propose a documented CPU policy revision based on sustained measured CPU busy/idle plus load (and optionally scheduler pressure), collected across the same 60-second preflight. Treat high load with sustained high idle as a separate, explicitly admissible state only after independent verification; record all inputs and conservative bounds in receipts. Do not silently lower threshold or make a one-sample exception."
+    }
+  ],
+  "limitations": [
+    "Scratch copy changed only its private lease root and sampling thresholds to exercise lifecycle quickly. It does not prove real-host admission under the current policy.",
+    "No inventory-dependent product operation was run.",
+    "The post-release /usr/bin/true timeout strongly matches the listener race in source; a repaired quick-exit check should explicitly prove it."
+  ],
+  "next_action": "Builder repairs blockers and event schema; independent reviewer reruns atomic contention, quick-exit, descendant cleanup, unsafe-watch/hold recovery, and missing-measurement refusal before campaign product testing."
+}

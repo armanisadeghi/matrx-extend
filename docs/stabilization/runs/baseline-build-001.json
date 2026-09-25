@@ -1,0 +1,24 @@
+{
+  "id": "baseline-build-001",
+  "feature_id": "EXT-F-0001",
+  "at": "2026-09-25T22:27:10.316Z",
+  "status": "pass",
+  "scope": "fresh development build only; runtime identity not verified yet",
+  "source_sha": "f70ecd47bd8a864bee377ddb1235219efc8eff23",
+  "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "lockfile_sha256": "1cd51352654e088d816808ccfc7577df8f5377562ce2e311b586391916cbf796",
+  "bundle_sha256": "7389831515b4b3a1cc829306e5e04114308d02ad0ec7c5c3ce0bba80a58ccf12",
+  "output": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+  "mode": "development",
+  "manifest_version": "0.2.44",
+  "expected_runtime_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "exit_code": 0,
+  "build_duration_seconds": 2.922,
+  "resource": {
+    "admitted": true,
+    "cpu_busy_fraction": 0.4507714285714286,
+    "available_memory_gib": 7.2,
+    "load_1m": 9.7
+  },
+  "secret_values_included": false
+}

@@ -1,0 +1,118 @@
+{
+  "id": "guest-local-001",
+  "feature_id": "EXT-F-1001",
+  "at": "2026-09-25T22:30:39Z",
+  "status": "invalid-resource",
+  "scope": "Guest Settings/Scrape UI batch; extension installation succeeded, panel render failure prevented all feature cases.",
+  "source_sha": "f70ecd47bd8a864bee377ddb1235219efc8eff23",
+  "build_receipt": "docs/stabilization/runs/baseline-build-001.json",
+  "installation": {
+    "status": "pass",
+    "channel": "development",
+    "directory": ".output/chrome-mv3-dev",
+    "version": "0.2.44",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "enabled": true,
+    "store_version": "0.2.23",
+    "store_enabled": false,
+    "evidence": "Chrome chrome://extensions accessibility state showed Matrx Extend 0.2.44, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, toggle On; older Store extension 0.2.23 remained Off. Chrome displayed 'Extension loaded'."
+  },
+  "fixture": {
+    "url": "https://example.com/",
+    "status": "pass",
+    "evidence": "Active tab accessibility tree showed URL example.com/, heading 'Example Domain', and its documentation-use explanatory text."
+  },
+  "guest_state": {
+    "status": "unverifiable",
+    "evidence": "Panel failed before extension account or role controls rendered. Chrome's browser profile showed a signed-in Google account, which does not establish extension auth state. No sign-in was attempted."
+  },
+  "resource": {
+    "lease_id": "guest-local-001",
+    "owner": "coordinator-held browser lease, exec session 36325",
+    "preflight_receipt": "coordinator-held; no separate lease launched",
+    "stop_signal_received": false,
+    "unsafe_at": "2026-09-25T22:31:49.744Z",
+    "stop_confirmed_at": "2026-09-25T22:32:06.293Z",
+    "wrapper_exit_code": 3,
+    "initial_failure_recorded_before_unsafe": true,
+    "accepted_behavior_passes": 0
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-1003-T04",
+      "control_id": "EXT-F-1003-C02",
+      "status": "blocked",
+      "reason": "Side panel render error before Settings UI became available."
+    },
+    {
+      "case_id": "EXT-F-1003-T10",
+      "control_id": "EXT-F-1003-C04",
+      "status": "blocked",
+      "reason": "Side panel render error before Settings UI became available."
+    },
+    {
+      "case_id": "EXT-F-1003-T13",
+      "control_id": "EXT-F-1003-C05",
+      "status": "blocked",
+      "reason": "Side panel render error before Settings UI became available."
+    },
+    {
+      "case_id": "EXT-F-1003-T40",
+      "control_id": "EXT-F-1003-C14",
+      "status": "blocked",
+      "reason": "Side panel render error before Settings UI became available."
+    },
+    {
+      "case_id": "EXT-F-1007-T01",
+      "control_id": "EXT-F-1007-C01",
+      "status": "blocked",
+      "reason": "Side panel render error before Scrape UI became available."
+    },
+    {
+      "case_id": "EXT-F-1007-T02",
+      "control_id": "EXT-F-1007-C02",
+      "status": "blocked",
+      "reason": "Side panel render error before Scrape UI became available."
+    },
+    {
+      "case_id": "EXT-F-1007-T05",
+      "control_id": "EXT-F-1007-C05",
+      "status": "blocked",
+      "reason": "Side panel render error before Scrape UI became available."
+    },
+    {
+      "case_id": "EXT-F-1007-T06",
+      "control_id": "EXT-F-1007-C06",
+      "status": "blocked",
+      "reason": "Side panel render error before Scrape UI became available."
+    }
+  ],
+  "observations": [
+    {
+      "attempt": 1,
+      "action": "Clicked the Matrx toolbar extension on the active example.com fixture.",
+      "result": "Side panel displayed: 'The panel hit a render error The rest of the extension is still running. Reopening the panel usually clears it; the details below are what actually failed. Module \"\" has been externalized for browser compatibility. Cannot access \".custom\" in client code. See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.'",
+      "evidence": "CUA accessibility state, Matrx Extend sidepanel.html, first open."
+    },
+    {
+      "attempt": 2,
+      "action": "Closed and reopened the side panel once, following its own recovery suggestion.",
+      "result": "Identical render error and module externalization message.",
+      "evidence": "CUA accessibility state, Matrx Extend sidepanel.html, reopen."
+    }
+  ],
+  "timing": {
+    "cold_settings_ms": null,
+    "warm_settings_ms": null,
+    "cold_capture_ms": null,
+    "warm_capture_ms": null,
+    "deep_capture_ms": null,
+    "reason": "Unmeasurable: extension panel did not render."
+  },
+  "cleanup": {
+    "preferences_changed": false,
+    "capture_saved": false,
+    "fixture_tab": "left open; coordinator owns active browser and lease"
+  },
+  "next_action": "Investigate and repair the observed sidepanel runtime render failure, then re-run this guest batch after a fresh admitted build. Root cause is not established by this run."
+}

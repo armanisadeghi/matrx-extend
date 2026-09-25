@@ -16,7 +16,7 @@
 import { AUDIO_API_ROUTES } from '@/lib/audio/constants';
 import { getAccessToken } from '@/lib/auth/flow';
 import { useVoicePrefsStore } from '@/state/voice-prefs';
-import { CartesiaClient, WebPlayer } from '@cartesia/cartesia-js';
+import type { CartesiaClient, WebPlayer } from '@cartesia/cartesia-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { parseMarkdownToText } from './parse-markdown-for-speech';
 
@@ -46,6 +46,7 @@ export function useCartesiaSpeaker({
 
   const websocketRef = useRef<ReturnType<CartesiaClient['tts']['websocket']> | null>(null);
   const playerRef = useRef<WebPlayer | null>(null);
+  const playerClassRef = useRef<typeof WebPlayer | null>(null);
   const hasPlayedRef = useRef(false);
   const mountedRef = useRef(true);
   const onErrorRef = useRef(onError);
@@ -104,6 +105,7 @@ export function useCartesiaSpeaker({
     if (mountedRef.current) setPhase('connecting');
 
     try {
+      const { CartesiaClient, WebPlayer } = await import('@cartesia/cartesia-js');
       const client = new CartesiaClient();
       const ws = client.tts.websocket({
         container: 'raw',
@@ -118,6 +120,7 @@ export function useCartesiaSpeaker({
       });
 
       websocketRef.current = ws;
+      playerClassRef.current = WebPlayer;
     } catch (err) {
       console.error('[matrx-audio] Cartesia websocket connect failed', err);
       if (mountedRef.current) setPhase('error');
@@ -150,7 +153,7 @@ export function useCartesiaSpeaker({
         });
 
         if (!playerRef.current) {
-          playerRef.current = new WebPlayer({ bufferDuration: 0.25 });
+          playerRef.current = new playerClassRef.current!({ bufferDuration: 0.25 });
         }
 
         if (mountedRef.current) setPhase('playing');

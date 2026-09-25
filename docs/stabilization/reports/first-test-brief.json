@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "task_id": "first-test-brief",
+  "status": "ready_after_inventory_gate",
+  "mode": "guest",
+  "scope": "First contained localhost browser batch for Settings and Scrape; source-only brief, no product test/build/UI/database/Git work performed.",
+  "inventory_source": "docs/stabilization/reports/inventory-local.json",
+  "cases": [
+    {
+      "case_id": "EXT-F-1003-T04",
+      "feature_id": "EXT-F-1003",
+      "control_id": "EXT-F-1003-C02",
+      "feature": "Review and change extension settings",
+      "control": "Theme",
+      "steps": ["Open Settings > Appearance.", "Select Light, verify the extension appearance changes; select Dark and verify; select System, close/reopen Settings and verify System remains selected."],
+      "expected": "Each selection applies its named appearance and the final choice persists after reopening the view.",
+      "dependencies": "Extension local settings only; no sign-in or organization required."
+    },
+    {
+      "case_id": "EXT-F-1003-T10",
+      "feature_id": "EXT-F-1003",
+      "control_id": "EXT-F-1003-C04",
+      "feature": "Review and change extension settings",
+      "control": "Default mode",
+      "steps": ["Open Settings > Chat.", "Select Act, leave Settings and reopen it; select Ask and reopen again."],
+      "expected": "Ask/Act choice remains selected after navigating away and returning; no backend action is triggered by changing the preference.",
+      "dependencies": "Local preference only."
+    },
+    {
+      "case_id": "EXT-F-1003-T13",
+      "feature_id": "EXT-F-1003",
+      "control_id": "EXT-F-1003-C05",
+      "feature": "Review and change extension settings",
+      "control": "Default speed",
+      "steps": ["Open Settings > Chat.", "Select Thinking, leave/reopen Settings; select Fast and leave/reopen once more."],
+      "expected": "Fast/Thinking choice remains selected after navigating away and returning.",
+      "dependencies": "Local preference only."
+    },
+    {
+      "case_id": "EXT-F-1003-T40",
+      "feature_id": "EXT-F-1003",
+      "control_id": "EXT-F-1003-C14",
+      "feature": "Review and change extension settings",
+      "control": "Auto-scrape on load",
+      "steps": ["Open Settings > Scraping.", "Record initial toggle state, flip it, navigate away and return; reload the extension and check it again; restore the initial state."],
+      "expected": "Toggle state persists through view navigation and extension reload; the selected state is visibly represented.",
+      "dependencies": "Local preference only. Do not infer background capture behavior from this setting-only check."
+    },
+    {
+      "case_id": "EXT-F-1007-T01",
+      "feature_id": "EXT-F-1007",
+      "control_id": "EXT-F-1007-C01",
+      "feature": "Capture and manage current page scrape",
+      "control": "Fast capture",
+      "steps": ["Open https://example.com/ in the active tab and wait for load.", "Open the extension Scrape view and click Capture.", "Observe busy/progress state, then inspect Article and other result tabs."],
+      "expected": "The active example.com page is captured in fast mode; capture control is busy/disabled while running, then result tabs appear with the page title and readable article content. Any capture failure displays recovery actions.",
+      "dependencies": "Browser active-tab/content-script access and public static fixture only; no sign-in, organization, DB write, or site login."
+    },
+    {
+      "case_id": "EXT-F-1007-T02",
+      "feature_id": "EXT-F-1007",
+      "control_id": "EXT-F-1007-C02",
+      "feature": "Capture and manage current page scrape",
+      "control": "Deep capture",
+      "steps": ["With https://example.com/ active, click Scroll & capture.", "Observe capture progress and inspect the resulting Article."],
+      "expected": "Deep capture completes against the active page, yields result tabs and readable content, and the operation is visibly in progress while running. The fixture may have no additional lazy content; do not require a larger result than fast capture.",
+      "dependencies": "Same browser/local dependencies as fast capture; no external account or data write."
+    },
+    {
+      "case_id": "EXT-F-1007-T05",
+      "feature_id": "EXT-F-1007",
+      "control_id": "EXT-F-1007-C05",
+      "feature": "Capture and manage current page scrape",
+      "control": "Article markdown edit/apply",
+      "steps": ["After a successful capture, open Article and enter edit mode.", "Append a unique text marker such as FIRST-TEST-EDIT to the end of the markdown and click Apply.", "Reopen edit mode and inspect the displayed markdown."],
+      "expected": "Applied markdown appears in the article preview and is still present when edit mode is reopened; the UI explains that Apply changes the in-memory capture and Save persists it.",
+      "dependencies": "Existing in-memory capture only; do not click Save, which writes to the database."
+    },
+    {
+      "case_id": "EXT-F-1007-T06",
+      "feature_id": "EXT-F-1007",
+      "control_id": "EXT-F-1007-C06",
+      "feature": "Capture and manage current page scrape",
+      "control": "Article markdown cancel",
+      "steps": ["After a successful capture, note a distinctive existing phrase in Article and enter edit mode.", "Append CANCEL-ME to the draft and click Cancel.", "Reopen edit mode and inspect the markdown."],
+      "expected": "The draft is discarded; CANCEL-ME is absent and the pre-edit markdown remains unchanged.",
+      "dependencies": "Existing in-memory capture only; no database write."
+    }
+  ],
+  "prerequisites": {
+    "gate": "Do not launch until the coordinator declares the complete inventory reconciled and this batch admitted.",
+    "build": "For initial UI installation, build a static development bundle only after gate and through the resource runner: node scripts/stabilization-resource.mjs run --run-id first-test-build --profile-dir <existing-browser-profile-directory> -- pnpm exec wxt build --mode development. Record the full RESOURCE_ADMITTED receipt and build result. Load .output/chrome-mv3-dev as unpacked in Chrome and verify the stable development extension ID is enabled. Do not use the pnpm dev watcher for this initial build because it can race output generation. If source changes after build, repeat the same admitted build before reloading. Final compile and full checks are separate campaign work, not this initial install prerequisite.",
+    "browser_lease": "Keep manual browser work under a lease for the entire UI session: node scripts/stabilization-resource.mjs browser --run-id first-test-ui --profile-dir <existing-browser-profile-directory>. Stop browser work before Ctrl-C; retain the full admission/exit receipt. A resource refusal means do not start UI work.",
+    "fixture": "https://example.com/ is the fixed public, read-only fixture. Verify page title is Example Domain before capture. Do not sign in, submit forms, or save the capture. If unreachable, mark environment-invalid and stop rather than substituting a changing page.",
+    "cleanup": "Restore theme, default mode, default speed, and auto-scrape toggle to their recorded initial values; discard any markdown edit; close the fixture tab."
+  },
+  "timing": {
+    "method": "Record monotonic elapsed milliseconds and UTC timestamps for each action start and visible completion. Record machine state/load and whether cold or warm.",
+    "cold": "First action after extension reload: time opening Settings and each selected preference becoming visibly applied; separately time first fast capture from click to result tabs/article visible.",
+    "warm": "Repeat one Settings theme switch and fast capture without reloading; measure with the same start/end definitions.",
+    "deep": "Measure Scroll & capture click to result visible separately; do not compare it to fast as a pass/fail threshold because behavior intentionally differs.",
+    "reporting": "Report raw durations only; this brief sets no performance threshold. Mark interrupted or resource-stopped actions invalid, not slow/failing."
+  },
+  "limitations": [
+    "The two inventory case records for Scrape are shared across guest/member/admin; execute only the guest cell in this batch.",
+    "Guest means genuinely signed-out extension state; confirm it from the visible account UI without clearing profile data.",
+    "This brief asserts expected behavior from inventory and source; it records no observed product result."
+  ]
+}

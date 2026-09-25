@@ -1,0 +1,24 @@
+{
+  "id": "baseline-install-002",
+  "feature_id": "EXT-F-0001",
+  "at": "2026-09-25T22:25:35.559Z",
+  "status": "pass",
+  "scope": "locked dependency installation only; no product behavior tested",
+  "source_sha": "f70ecd47bd8a864bee377ddb1235219efc8eff23",
+  "lockfile_sha256": "1cd51352654e088d816808ccfc7577df8f5377562ce2e311b586391916cbf796",
+  "command": [
+    "pnpm",
+    "install",
+    "--frozen-lockfile",
+    "--ignore-scripts"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 1.8,
+  "resource": {
+    "admitted": true,
+    "cpu_busy_fraction": 0.5295,
+    "available_memory_gib": 7.36,
+    "load_1m": 9.54,
+    "pressure_level": 1
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "reviewed_at": "2026-09-25",
+  "scope": "Source census only; no runtime tests, builds, browser, database, or Git mutation.",
+  "source_review": "docs/stabilization/reports/inventory-source-review.json",
+  "findings": [
+    {
+      "finding": "Settings Ask again and scrape mode omissions",
+      "verdict": "confirmed",
+      "resolution": "Added C28/C29 and guest/member/admin cases with conditional origin fixture."
+    },
+    {
+      "finding": "Chat guest banner omissions",
+      "verdict": "confirmed",
+      "resolution": "Added guest-only Sign in and Sign up free controls and deferred wave D case."
+    },
+    {
+      "finding": "Popup invented new-tab action and Store build gate",
+      "verdict": "confirmed",
+      "resolution": "Corrected Open chat/Capture page behavior, marked role/build applicability, added Store action-click cases."
+    },
+    {
+      "finding": "Chat/Pilot Sneak Peek impossible",
+      "verdict": "confirmed",
+      "resolution": "Retained stable IDs marked source-nonapplicable; host leaves openPeek unbound."
+    },
+    {
+      "finding": "Chat/Pilot System label wrong",
+      "verdict": "confirmed",
+      "resolution": "Corrected to Public with host/package source evidence."
+    },
+    {
+      "finding": "Recorder Open file omitted",
+      "verdict": "confirmed",
+      "resolution": "Added conditional fileUrl control and signed-in case."
+    },
+    {
+      "finding": "Shell tab roster incomplete",
+      "verdict": "confirmed",
+      "resolution": "Enumerated all 21 direct triggers by mode and Profile via menu; corrected guest Capture/Vault cases."
+    }
+  ],
+  "additional_tools_reconciliation": {
+    "catalog_records": 169,
+    "duplicate_name": "wait_for",
+    "legacy_catalog_id": "EXT-F-4058",
+    "canonical_runtime_id": "EXT-F-4156",
+    "finding": "Legacy catalog row remains as shadowed non-executable source record; canonical handler wins name lookup. Admin-only tool member applicability follows execution-time dispatch gate."
+  },
+  "verification": "JSON parsed, ID/control references and catalog record mapping checked after edit; source-only verdict.",
+  "runtime_status": "unverified",
+  "operations_source_census": {
+    "artifact": "docs/stabilization/reports/inventory-operations.json",
+    "feature_ids": [
+      "EXT-F-0001",
+      "EXT-F-0002",
+      "EXT-F-0003"
+    ],
+    "verdict": "0001 and 0002 have source anchors and control scope; 0003 contains desired pre-push/red-candidate assertions contradicted by release.sh current ship-first behavior. Source completeness cannot be certified for 0003 as written.",
+    "source_evidence": [
+      "release.sh:15-17 says tests/typecheck do not deny release",
+      "release.sh:40-51 says check/package happens after push",
+      "release.sh:364-399 builds commit, pushes, then check/package begins"
+    ],
+    "ownership": "Root owns inventory-operations.json; no edits here."
+  }
+}

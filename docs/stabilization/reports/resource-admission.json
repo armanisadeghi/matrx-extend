@@ -1,0 +1,55 @@
+{
+  "task_id": "resource-admission",
+  "lane": "implementation",
+  "model": "GPT 6 Sol / medium",
+  "status": "repair_round1_ready_for_independent_review",
+  "summary": "Repaired the host-local single-heavy-job runner after independent review: the child lifecycle listener is attached synchronously; commands run in a dedicated process group whose members must be gone before lease release. Operator signals and two unsafe watchdog samples gracefully stop only the owned group, then escalate to bounded SIGKILL if needed. Manual browser leases remain held after unsafe until the operator confirms work stopped with Ctrl-C. CPU admission averages seven measured busy samples over 60 seconds; it refuses sustained busy >=75%, or >=60% when one-minute load per logical CPU >=0.75. Memory, pressure, swap, disk, and missing-measurement refusal remain.",
+  "changed_files": [
+    "scripts/stabilization-resource.mjs",
+    "docs/stabilization/resource-policy.json",
+    "docs/stabilization/reports/resource-admission.json"
+  ],
+  "evidence": [
+    {
+      "kind": "syntax_and_policy",
+      "result": "node --check passed; policy JSON parsed; malformed null CPU threshold returned RESOURCE_POLICY_INVALID, exit 2."
+    },
+    {
+      "kind": "quick_exit_scratch",
+      "result": "Isolated 1-second-policy scratch run of /usr/bin/true admitted and emitted RESOURCE_JOB_EXIT childExitCode 0; wrapper exit 0 in 4.8 seconds."
+    },
+    {
+      "kind": "descendant_scratch",
+      "result": "Isolated scratch child spawned /bin/sleep 60 and exited. Runner signaled owned group 26675; grandchild PID 26677 was confirmed gone; wrapper exit 0."
+    },
+    {
+      "kind": "operator_signal_scratch",
+      "result": "SIGTERM to wrapper running shell with background sleep emitted RESOURCE_GROUP_STOP_REQUESTED for group 26768 and exited 130 after owned group stopped."
+    },
+    {
+      "kind": "watchdog_scratch",
+      "result": "Injected two pressure-unsafe samples after scratch admission: runner emitted RESOURCE_STOP_AT_SAFE_BOUNDARY then SIGTERM to group 27290, exited 3, retained unsafe-hold.json, and ps found no group members."
+    },
+    {
+      "kind": "manual_browser_scratch",
+      "result": "Injected unsafe samples: browser lease was still alive after RESOURCE_BROWSER_OPERATOR_STOP_REQUIRED; explicit SIGINT emitted RESOURCE_BROWSER_STOP_CONFIRMED and exited 3."
+    },
+    {
+      "kind": "ownerless_recovery_scratch",
+      "result": "Empty 35-second-old scratch lease retired by recover-ownerless only with --confirm-no-owned-work yes after same-host runner scan."
+    },
+    {
+      "kind": "real_host_preflight",
+      "result": "2026-09-25T22:06:38Z: RESOURCE_ADMITTED, exit 0 after full 60-second sampling. Normal pressure 1, 10.08 GiB estimated available, stable 232.56 MiB swap, 1686.13 GiB disk free. One-minute load 15.56 on 10 CPUs; seven measured CPU busy samples averaged 59.35%, below the 60% high-load limit. No product command launched."
+    }
+  ],
+  "limitations": [
+    "No product build, suite, or browser UI run was launched; full inventory gate remains closed.",
+    "Existing package scripts and browser harnesses are not globally rewired by this owned-path change. Coordinator must invoke the wrapper for every campaign launch.",
+    "Owned process-group members must be confirmed gone before release. A child that escapes into a new session is outside the group contract; such commands require separate review.",
+    "Manual browser stop confirmation is an operator action: stop UI work before Ctrl-C. A crashed browser holder remains fail-closed for explicit review.",
+    "Scratch tests used a private lease root and one-second policy; independent review should repeat process and contention checks. Real-host evidence proves admission measurement only."
+  ],
+  "questions": [],
+  "next_action": "Fresh independent reviewer checks process-group lifetime, watchdog and browser unsafe holds, ownerless recovery, and real-host CPU receipt. Coordinator then routes every permitted campaign launcher through this wrapper."
+}

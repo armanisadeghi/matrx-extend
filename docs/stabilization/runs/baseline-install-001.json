@@ -1,0 +1,22 @@
+{
+  "id": "baseline-install-001",
+  "feature_id": "EXT-F-0001",
+  "at": "2026-09-25T22:23:56.538Z",
+  "status": "invalid-resource",
+  "command": [
+    "pnpm",
+    "install",
+    "--frozen-lockfile",
+    "--ignore-scripts"
+  ],
+  "command_started": false,
+  "reason": "RESOURCE_CPU_HIGH_LOAD_BUSY",
+  "cpu_busy_fraction": 0.6024571428571429,
+  "cpu_busy_threshold_at_high_load": 0.6,
+  "load_1m": 12.17,
+  "logical_cpus": 10,
+  "memory_available_gib": 7.36,
+  "pressure_level": 1,
+  "swap_mib": 232.75,
+  "product_defect": false
+}
