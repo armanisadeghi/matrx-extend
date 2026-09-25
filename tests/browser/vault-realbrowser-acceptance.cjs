@@ -6,6 +6,7 @@ const syncFs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const { observeDelayedCaptureDecisionSettlement } = require('./vault-capture-decision-settlement.cjs');
 const { createRequire } = require('node:module');
 const { execFile, spawn } = require('node:child_process');
 const { promisify } = require('node:util');
@@ -2713,29 +2714,35 @@ async function waitForCaptureDecision() {
   try {
     await realPanel.waitFor(`!!(${captureHeading})`, false, 10000);
   } catch {
-    proof.decisionDiagnostics = await realPanel.evaluate(`({
-      cardPresent: !!(${captureCard}),
-      busy: Array.from((${captureCard})?.querySelectorAll('button') || []).some((button) => button.disabled),
-      vaultError: document.body.innerText.includes('The Vault could not save that. Try again from the Vault tab.'),
-      noAnswer: document.body.innerText.includes('Matrx did not answer. Try again.')
-    })`);
+    const snapshot = () =>
+      realPanel.evaluate(`({
+        cardPresent: !!(${captureCard}),
+        busy: Array.from((${captureCard})?.querySelectorAll('button') || []).some((button) => button.disabled),
+        headingPresent: !!(${captureHeading}),
+        vaultError: document.body.innerText.includes('The Vault could not save that. Try again from the Vault tab.'),
+        noAnswer: document.body.innerText.includes('Matrx did not answer. Try again.')
+      })`);
+    proof.decisionDiagnostics = await snapshot();
+    // The initial wait is an observation boundary, not a failure verdict. A
+    // delayed success is accepted only after the exact heading is gone, neither
+    // error is present, and the pending capture has cleared. All data retained
+    // here is structural timing/status evidence, never Vault values.
+    const settlement = await observeDelayedCaptureDecisionSettlement({
+      waitForHeadingGone: () => realPanel.waitFor(`!(${captureHeading})`, true, 90000),
+      snapshot,
+      pendingCapture: hasPendingCapture,
+    });
+    Object.assign(proof.decisionDiagnostics, {
+      lateCompletion: settlement.settled,
+      lateCompletionMs: settlement.latencyMs,
+      delayedSettlementWaitTimedOut: settlement.waitTimedOut,
+      headingPresentAfterDelay: settlement.headingPresent,
+      vaultErrorAfterDelay: settlement.vaultError,
+      noAnswerAfterDelay: settlement.noAnswer,
+      pendingAfterObservation: settlement.pendingCapture,
+    });
     persist();
-    // Preserve the original failed verdict while allowing the already-dispatched
-    // mutation to settle before cleanup. Observe only UI booleans, never values.
-    const diagnosticStarted = Date.now();
-    try {
-      await realPanel.waitFor(
-        `!(${captureHeading}) || Array.from((${captureCard})?.querySelectorAll('button') || []).every((button) => !button.disabled)`,
-        true,
-        90000,
-      );
-      proof.decisionDiagnostics.settledAfterFailure = true;
-    } catch {
-      proof.decisionDiagnostics.settledAfterFailure = false;
-    }
-    proof.decisionDiagnostics.additionalObservationMs = Date.now() - diagnosticStarted;
-    proof.decisionDiagnostics.pendingAfterObservation = await hasPendingCapture();
-    persist();
+    if (settlement.settled) return;
     throw new Error('capture_decision_not_completed');
   }
 }
