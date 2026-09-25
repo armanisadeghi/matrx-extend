@@ -172,8 +172,15 @@ describe('release unpacked promotion', () => {
 describe('release.sh ship path', () => {
   it('never refuses a release (scripts/test-release-ship-path.sh passes)', () => {
     const repoRoot = join(__dirname, '..', '..');
+    // A real release runs this test from inside its own captured log. The
+    // nested sandbox release must start a fresh log instead of inheriting it.
+    const env = { ...process.env };
+    delete env.RELEASE_LOG_CAPTURED;
+    delete env.RELEASE_LOG_DIR;
+    delete env.RELEASE_LOG_FILE;
     const guard = spawnSync('bash', ['scripts/test-release-ship-path.sh'], {
       cwd: repoRoot,
+      env,
       encoding: 'utf8',
       timeout: 120_000,
     });
