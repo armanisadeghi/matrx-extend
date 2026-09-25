@@ -31,13 +31,16 @@ pnpm install           # installs deps; postinstall runs `wxt prepare` + husky
 `chrome://extensions` → enable Developer Mode → "Load unpacked" → select `.output/chrome-mv3-dev/`.
 
 `pnpm dev` uses that directory for temporary HMR output. A successful `release.sh`
-replaces its whole tree with the fresh, keyed local release bundle, including removing
-obsolete chunks, then writes `.output/release-receipt.json` with the release commit,
-version, zip hashes, and complete-tree hash. The Store bundle is never promoted: it has
-no dev key. Do not load `.output/chrome-mv3/` directly; it is transient while a release
-build runs and is overwritten by the Store build before the local build restores its key.
+replaces the complete trees in both `.output/chrome-mv3-dev/` and
+`.output/chrome-mv3/` with the same keyed local release bundle, including removing
+obsolete chunks. The receipt lists both installed paths, the release commit,
+version, zip hashes, and complete-tree hash. The second path remains a build
+directory and can diverge again when anyone runs a build, so use `-dev` for new
+unpacked installs. The Store bundle is never promoted: it has no dev key.
 
-The `key` field in `wxt.config.ts` locks the extension ID at `cihdmkcdjjckfhjpgoedmgfpoljebaml` for both dev and prod, so the OAuth redirect URI never has to change.
+The local `key` field in `wxt.config.ts` locks the unpacked extension ID at
+`cihdmkcdjjckfhjpgoedmgfpoljebaml`, so its OAuth redirect stays stable. Store
+builds omit that key and use the Store-assigned extension ID.
 
 If you need to regenerate the keypair (lost the `.secrets/matrx-extend.pem` file), run:
 

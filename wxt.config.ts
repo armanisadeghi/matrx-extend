@@ -181,12 +181,11 @@ export default defineConfig({
       // `https://*.aimatrx.com/*` covers `aimatrx.com`, `www.`, `app.` and
       // anything else the web app is served from.
       //
-      // `http://*.localhost/*` is NOT decoration: matrx-frontend gives every
-      // agent session its own dev server at `<session>.localhost` so the
-      // sessions do not share a cookie jar, and without this line
-      // `chrome.runtime.sendMessage` is undefined on every one of those hosts —
-      // the web app cannot even detect the extension. Found by a cold walk on
-      // 2026-09-19 at `acquisition-frontier.localhost:3001`.
+      // Local unpacked builds include `http://*.localhost/*`: matrx-frontend
+      // gives every agent session its own dev server at `<session>.localhost`.
+      // The public Store package omits that development-only origin, keeping
+      // Google's approved externally-connectable surface unchanged. Local
+      // preview tests use the keyed unpacked extension.
       ...(isFirefox
         ? {
             browser_specific_settings: {
@@ -215,7 +214,7 @@ export default defineConfig({
                 'https://*.aimatrx.com/*',
                 'https://*.mymatrx.com/*',
                 'http://localhost/*',
-                'http://*.localhost/*',
+                ...(!isChromeWebStoreBuild ? ['http://*.localhost/*'] : []),
                 'http://127.0.0.1/*',
               ],
             },

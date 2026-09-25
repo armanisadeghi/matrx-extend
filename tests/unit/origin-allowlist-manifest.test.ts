@@ -34,7 +34,7 @@ import { describe, expect, it } from 'vitest';
 import { ALLOWED_ORIGIN_PATTERNS, matchesAllowedOrigin } from '@/lib/origin-allowlist';
 
 /**
- * The manifest's matches, read out of `wxt.config.ts` as text.
+ * The local unpacked manifest's matches, read out of `wxt.config.ts` as text.
  *
  * Deliberately NOT imported: `wxt.config.ts` pulls in the whole WXT and
  * Tailwind build toolchain, and a guard that can fail because a bundler plugin
@@ -43,7 +43,11 @@ import { ALLOWED_ORIGIN_PATTERNS, matchesAllowedOrigin } from '@/lib/origin-allo
  */
 function manifestExternallyConnectableMatches(): string[] {
   const source = readFileSync(resolve(__dirname, '../../wxt.config.ts'), 'utf8');
-  const block = source.match(/externally_connectable:\s*\{\s*matches:\s*\[([^\]]*)\]/);
+  // The local-only host is conditionally spread from a nested array. Stop at
+  // the matches property's closing bracket, not that nested array's bracket.
+  const block = source.match(
+    /externally_connectable:\s*\{\s*matches:\s*\[([\s\S]*?)\n\s*\],\s*\n\s*\}/,
+  );
   if (!block?.[1]) {
     throw new Error('externally_connectable.matches not found in wxt.config.ts');
   }
