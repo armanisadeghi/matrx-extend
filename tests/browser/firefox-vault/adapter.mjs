@@ -22,67 +22,107 @@ const EXPECTED_RUNTIME = Object.freeze({
 });
 
 const TRUSTED_MOUSE_SOURCE = Object.freeze({
-  webidl: 'https://hg.mozilla.org/releases/mozilla-release/file/a80bd15ddee3b4bf3679aeba340e9d2db933c467/dom/webidl/Window.webidl#l625',
-  options: 'https://hg.mozilla.org/releases/mozilla-release/file/a80bd15ddee3b4bf3679aeba340e9d2db933c467/dom/webidl/Window.webidl#l426',
-  widgetDispatch: 'https://hg.mozilla.org/releases/mozilla-release/file/a80bd15ddee3b4bf3679aeba340e9d2db933c467/dom/base/nsContentUtils.cpp#l10514',
-  distinctNativeOsRoute: 'https://hg.mozilla.org/releases/mozilla-release/file/a80bd15ddee3b4bf3679aeba340e9d2db933c467/dom/base/nsDOMWindowUtils.cpp#l934',
+  webidl:
+    'https://hg.mozilla.org/releases/mozilla-release/file/a80bd15ddee3b4bf3679aeba340e9d2db933c467/dom/webidl/Window.webidl#l625',
+  options:
+    'https://hg.mozilla.org/releases/mozilla-release/file/a80bd15ddee3b4bf3679aeba340e9d2db933c467/dom/webidl/Window.webidl#l426',
+  widgetDispatch:
+    'https://hg.mozilla.org/releases/mozilla-release/file/a80bd15ddee3b4bf3679aeba340e9d2db933c467/dom/base/nsContentUtils.cpp#l10514',
+  distinctNativeOsRoute:
+    'https://hg.mozilla.org/releases/mozilla-release/file/a80bd15ddee3b4bf3679aeba340e9d2db933c467/dom/base/nsDOMWindowUtils.cpp#l934',
 });
 
 function remoteFrameMain(envelope, operation, outcomePredicate) {
-  const reply = value => sendAsyncMessage(envelope.name, value);
+  const reply = (value) => sendAsyncMessage(envelope.name, value);
   const handler = async () => {
     removeMessageListener(envelope.name, handler);
     const request = envelope.request;
     const document = content.document;
-    const fail = (code, diagnostic) => reply({ ok: false, code, ...(diagnostic && { diagnostic }) });
+    const fail = (code, diagnostic) =>
+      reply({ ok: false, code, ...(diagnostic && { diagnostic }) });
     let stage = 'document';
     try {
       if (!document?.documentElement || !document.location.href.endsWith('/sidepanel.html')) {
-        fail('remote_sidebar_document_mismatch'); return;
+        fail('remote_sidebar_document_mismatch');
+        return;
       }
       stage = 'dispatch';
-      if (Date.now() >= request.deadlineAt) { fail('remote_operation_expired'); return; }
+      if (Date.now() >= request.deadlineAt) {
+        fail('remote_operation_expired');
+        return;
+      }
       if (request.kind === 'evaluate') {
         const remaining = Math.max(1, request.deadlineAt - Date.now());
         const value = await Promise.race([
           operation(document, ...(request.args || [])),
-          new Promise((_, reject) => content.setTimeout(() => reject(new Error('remote_evaluate_timeout')), remaining)),
+          new Promise((_, reject) =>
+            content.setTimeout(() => reject(new Error('remote_evaluate_timeout')), remaining),
+          ),
         ]);
-        reply({ ok: true, value }); return;
+        reply({ ok: true, value });
+        return;
       }
       if (request.kind === 'wait') {
         stage = 'wait_compile';
         const predicate = operation;
         while (true) {
-          if (Date.now() >= request.deadlineAt) { fail('remote_wait_timeout'); return; }
+          if (Date.now() >= request.deadlineAt) {
+            fail('remote_wait_timeout');
+            return;
+          }
           let value;
           stage = 'wait_predicate';
           value = predicate(document, ...(request.args || []));
           stage = 'wait_result';
-          if (value && typeof value.then === 'function') { fail('remote_wait_predicate_must_be_sync'); return; }
-          if (value) { reply({ ok: true, value }); return; }
+          if (value && typeof value.then === 'function') {
+            fail('remote_wait_predicate_must_be_sync');
+            return;
+          }
+          if (value) {
+            reply({ ok: true, value });
+            return;
+          }
           stage = 'wait_poll';
-          await new Promise(resolve => content.setTimeout(resolve, Math.min(request.pollMs, Math.max(1, request.deadlineAt - Date.now()))));
+          await new Promise((resolve) =>
+            content.setTimeout(
+              resolve,
+              Math.min(request.pollMs, Math.max(1, request.deadlineAt - Date.now())),
+            ),
+          );
         }
       }
       if (request.kind === 'trusted_click' || request.kind === 'trusted_press') {
         stage = 'trusted_click_target';
         const candidates = [...document.querySelectorAll(request.selector)];
-        if (candidates.length !== 1) { fail('trusted_click_target_not_unique'); return; }
+        if (candidates.length !== 1) {
+          fail('trusted_click_target_not_unique');
+          return;
+        }
         const target = candidates[0];
         const rect = target.getBoundingClientRect();
         const style = content.getComputedStyle(target);
-        if (rect.width <= 0 || rect.height <= 0 || style.visibility === 'hidden' || style.display === 'none') {
-          fail('trusted_click_target_not_visible'); return;
+        if (
+          rect.width <= 0 ||
+          rect.height <= 0 ||
+          style.visibility === 'hidden' ||
+          style.display === 'none'
+        ) {
+          fail('trusted_click_target_not_visible');
+          return;
         }
         if (target.disabled || target.getAttribute('aria-disabled') === 'true') {
-          fail('trusted_click_target_disabled'); return;
+          fail('trusted_click_target_disabled');
+          return;
         }
         if (request.kind === 'trusted_press' && target.getAttribute('role') !== 'combobox') {
-          fail('trusted_press_requires_combobox'); return;
+          fail('trusted_press_requires_combobox');
+          return;
         }
         target.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' });
-        if (Date.now() >= request.deadlineAt) { fail('trusted_click_expired'); return; }
+        if (Date.now() >= request.deadlineAt) {
+          fail('trusted_click_expired');
+          return;
+        }
         stage = 'trusted_click_actionability';
         const settleStartedAt = Date.now();
         let previousRect = null;
@@ -94,102 +134,182 @@ function remoteFrameMain(envelope, operation, outcomePredicate) {
         let actionability;
         while (true) {
           if (Date.now() >= request.deadlineAt) {
-            const code = stableFrames >= 3
-              ? (request.kind === 'trusted_press' ? 'trusted_press_target_occluded' : 'trusted_click_target_occluded')
-              : 'trusted_click_target_not_stable';
-            fail(code, { mode: request.kind, actionability: actionability ?? { samples, stableFrames, settleMs: Date.now() - settleStartedAt } }); return;
+            const code =
+              stableFrames >= 3
+                ? request.kind === 'trusted_press'
+                  ? 'trusted_press_target_occluded'
+                  : 'trusted_click_target_occluded'
+                : 'trusted_click_target_not_stable';
+            fail(code, {
+              mode: request.kind,
+              actionability: actionability ?? {
+                samples,
+                stableFrames,
+                settleMs: Date.now() - settleStartedAt,
+              },
+            });
+            return;
           }
-          await new Promise(resolve => content.requestAnimationFrame(resolve));
+          await new Promise((resolve) => content.requestAnimationFrame(resolve));
           const liveCandidates = [...document.querySelectorAll(request.selector)];
           if (!target.isConnected || liveCandidates.length !== 1 || liveCandidates[0] !== target) {
-            fail('trusted_click_target_changed'); return;
+            fail('trusted_click_target_changed');
+            return;
           }
           const liveStyle = content.getComputedStyle(target);
           if (target.disabled || target.getAttribute('aria-disabled') === 'true') {
-            fail('trusted_click_target_disabled'); return;
+            fail('trusted_click_target_disabled');
+            return;
           }
           current = target.getBoundingClientRect();
           samples += 1;
-          const unchanged = previousRect !== null
-            && ['left', 'top', 'width', 'height'].every(key => Math.abs(current[key] - previousRect[key]) <= 0.25);
+          const unchanged =
+            previousRect !== null &&
+            ['left', 'top', 'width', 'height'].every(
+              (key) => Math.abs(current[key] - previousRect[key]) <= 0.25,
+            );
           const ancestorAnimations = [];
           for (let node = target; node && node !== document; node = node.parentNode)
-            if (typeof node.getAnimations === 'function') ancestorAnimations.push(...node.getAnimations());
-          const moving = ancestorAnimations.some(animation => animation.playState === 'running' || animation.pending === true);
+            if (typeof node.getAnimations === 'function')
+              ancestorAnimations.push(...node.getAnimations());
+          const moving = ancestorAnimations.some(
+            (animation) => animation.playState === 'running' || animation.pending === true,
+          );
           stableFrames = unchanged && !moving ? stableFrames + 1 : 0;
-          previousRect = { left: current.left, top: current.top, width: current.width, height: current.height };
+          previousRect = {
+            left: current.left,
+            top: current.top,
+            width: current.width,
+            height: current.height,
+          };
           x = current.left + current.width / 2;
           y = current.top + current.height / 2;
           const hit = document.elementFromPoint(x, y);
           const hitExact = hit === target;
           const hitInside = hitExact || (hit !== null && target.contains(hit));
           actionability = {
-            samples, stableFrames, settleMs: Date.now() - settleStartedAt,
-            targetTag: target.tagName.toLowerCase(), targetRole: target.getAttribute('role'),
+            samples,
+            stableFrames,
+            settleMs: Date.now() - settleStartedAt,
+            targetTag: target.tagName.toLowerCase(),
+            targetRole: target.getAttribute('role'),
             hitTag: typeof hit?.tagName === 'string' ? hit.tagName.toLowerCase() : null,
             hitRole: hit?.getAttribute?.('role') ?? null,
             hitRelation: hitExact ? 'exact' : hitInside ? 'descendant' : 'outside',
             centerInViewport: x >= 0 && y >= 0 && x < content.innerWidth && y < content.innerHeight,
           };
-          if (stableFrames >= 3 && current.width > 0 && current.height > 0
-            && liveStyle.visibility !== 'hidden' && liveStyle.display !== 'none'
-            && actionability.centerInViewport && hitInside) break;
+          if (
+            stableFrames >= 3 &&
+            current.width > 0 &&
+            current.height > 0 &&
+            liveStyle.visibility !== 'hidden' &&
+            liveStyle.display !== 'none' &&
+            actionability.centerInViewport &&
+            hitInside
+          )
+            break;
         }
         const events = [];
-        const observe = event => {
+        const observe = (event) => {
           const exactTarget = event.target === target;
           const insideTarget = exactTarget || target.contains(event.target);
           events.push({
             type: event.type,
             trusted: event.isTrusted,
             targetRelation: exactTarget ? 'exact' : insideTarget ? 'descendant' : 'outside',
-            targetTag: typeof event.target?.tagName === 'string' ? event.target.tagName.toLowerCase() : null,
+            targetTag:
+              typeof event.target?.tagName === 'string' ? event.target.tagName.toLowerCase() : null,
             targetRole: event.target?.getAttribute?.('role') ?? null,
             originalTargetConnected: target.isConnected,
           });
         };
-        for (const type of ['mousedown', 'mouseup', 'click']) document.addEventListener(type, observe, true);
+        for (const type of ['mousedown', 'mouseup', 'click'])
+          document.addEventListener(type, observe, true);
         const options = { isDOMEventSynthesized: false, isWidgetEventSynthesized: false };
         stage = 'trusted_click_synthesis';
         try {
-          if (Date.now() >= request.deadlineAt) { fail('trusted_click_expired'); return; }
+          if (Date.now() >= request.deadlineAt) {
+            fail('trusted_click_expired');
+            return;
+          }
           content.synthesizeMouseEvent('mousemove', x, y, { button: 0, buttons: 0 }, options);
-          content.synthesizeMouseEvent('mousedown', x, y, { button: 0, buttons: 1, clickCount: 1 }, options);
-          content.synthesizeMouseEvent('mouseup', x, y, { button: 0, buttons: 0, clickCount: 1 }, options);
-          await new Promise(resolve => content.setTimeout(resolve, 0));
+          content.synthesizeMouseEvent(
+            'mousedown',
+            x,
+            y,
+            { button: 0, buttons: 1, clickCount: 1 },
+            options,
+          );
+          content.synthesizeMouseEvent(
+            'mouseup',
+            x,
+            y,
+            { button: 0, buttons: 0, clickCount: 1 },
+            options,
+          );
+          await new Promise((resolve) => content.setTimeout(resolve, 0));
         } finally {
-          for (const type of ['mousedown', 'mouseup', 'click']) document.removeEventListener(type, observe, true);
+          for (const type of ['mousedown', 'mouseup', 'click'])
+            document.removeEventListener(type, observe, true);
         }
         const expected = ['mousedown', 'mouseup', 'click'];
-        const exactSequence = events.length === expected.length
-          && events.every((event, index) => event.type === expected[index] && event.trusted === true);
-        const initialTargeted = events[0]?.targetRelation === 'exact' || events[0]?.targetRelation === 'descendant';
-        const strictTargeting = events.every(event => event.targetRelation === 'exact' || event.targetRelation === 'descendant');
+        const exactSequence =
+          events.length === expected.length &&
+          events.every((event, index) => event.type === expected[index] && event.trusted === true);
+        const initialTargeted =
+          events[0]?.targetRelation === 'exact' || events[0]?.targetRelation === 'descendant';
+        const strictTargeting = events.every(
+          (event) => event.targetRelation === 'exact' || event.targetRelation === 'descendant',
+        );
         const diagnostic = { mode: request.kind, actionability, events };
-        if (!exactSequence || !initialTargeted || (request.kind === 'trusted_click' && !strictTargeting)) {
-          fail(request.kind === 'trusted_press'
-            ? 'trusted_press_event_sequence_invalid'
-            : 'trusted_click_event_sequence_invalid', diagnostic); return;
+        if (
+          !exactSequence ||
+          !initialTargeted ||
+          (request.kind === 'trusted_click' && !strictTargeting)
+        ) {
+          fail(
+            request.kind === 'trusted_press'
+              ? 'trusted_press_event_sequence_invalid'
+              : 'trusted_click_event_sequence_invalid',
+            diagnostic,
+          );
+          return;
         }
         let outcome = true;
         if (request.outcomeSource) {
           stage = 'trusted_click_outcome';
           const predicate = outcomePredicate;
           while (true) {
-            if (Date.now() >= request.deadlineAt) { fail('trusted_click_outcome_timeout'); return; }
+            if (Date.now() >= request.deadlineAt) {
+              fail('trusted_click_outcome_timeout');
+              return;
+            }
             outcome = predicate(document, ...(request.outcomeArgs || []));
-            if (outcome && typeof outcome.then === 'function') { fail('trusted_click_outcome_must_be_sync'); return; }
+            if (outcome && typeof outcome.then === 'function') {
+              fail('trusted_click_outcome_must_be_sync');
+              return;
+            }
             if (outcome) break;
-            await new Promise(resolve => content.setTimeout(resolve, Math.min(request.pollMs, Math.max(1, request.deadlineAt - Date.now()))));
+            await new Promise((resolve) =>
+              content.setTimeout(
+                resolve,
+                Math.min(request.pollMs, Math.max(1, request.deadlineAt - Date.now())),
+              ),
+            );
           }
         }
-        reply({ ok: true, value: { events, outcome, diagnostic } }); return;
+        reply({ ok: true, value: { events, outcome, diagnostic } });
+        return;
       }
       fail('remote_operation_unknown');
     } catch (error) {
-      const errorName = String(error?.name || 'error').replace(/[^a-z0-9]+/gi, '_').toLowerCase().slice(0, 40);
+      const errorName = String(error?.name || 'error')
+        .replace(/[^a-z0-9]+/gi, '_')
+        .toLowerCase()
+        .slice(0, 40);
       const code = /^[a-z0-9_]{1,100}$/.test(String(error?.message || ''))
-        ? String(error.message) : `remote_${request.kind}_${stage}_${errorName}`;
+        ? String(error.message)
+        : `remote_${request.kind}_${stage}_${errorName}`;
       reply({ ok: false, code });
     }
   };
@@ -425,28 +545,52 @@ function sourceOf(fn, label, { readOnly = false } = {}) {
   const source = fn.toString();
   assert.ok(source.length > 0 && source.length <= 20_000, `${label}_source_invalid`);
   if (readOnly) {
-    const mutationOrScheduling = /\b(?:setTimeout|setInterval|requestAnimationFrame|queueMicrotask)\s*\(|\.(?:click|focus|blur|remove|append|appendChild|prepend|replaceChildren|setAttribute|removeAttribute|dispatchEvent)\s*\(|\b(?:innerHTML|outerHTML|textContent|value)\s*=(?!=)/;
+    const mutationOrScheduling =
+      /\b(?:setTimeout|setInterval|requestAnimationFrame|queueMicrotask)\s*\(|\.(?:click|focus|blur|remove|append|appendChild|prepend|replaceChildren|setAttribute|removeAttribute|dispatchEvent)\s*\(|\b(?:innerHTML|outerHTML|textContent|value)\s*=(?!=)/;
     assert.equal(mutationOrScheduling.test(source), false, `${label}_must_be_read_only`);
   }
   return source;
 }
 
 function validateTiming(timeoutMs, pollMs) {
-  assert.ok(Number.isInteger(timeoutMs) && timeoutMs >= 1 && timeoutMs <= 30_000, 'remote_timeout_invalid');
+  assert.ok(
+    Number.isInteger(timeoutMs) && timeoutMs >= 1 && timeoutMs <= 30_000,
+    'remote_timeout_invalid',
+  );
   assert.ok(Number.isInteger(pollMs) && pollMs >= 10 && pollMs <= 1_000, 'remote_poll_invalid');
 }
 
 function validateOrigins(origins) {
-  assert.ok(Array.isArray(origins) && origins.length > 0 && origins.length <= 16, 'network_origins_invalid');
-  return [...new Set(origins.map(value => {
-    const url = new URL(value);
-    assert.equal(url.href, url.origin + '/', 'network_origin_must_not_include_path_query_or_credentials');
-    assert.ok(url.protocol === 'https:' || (url.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(url.hostname)), 'network_origin_not_allowed');
-    return url.origin;
-  }))];
+  assert.ok(
+    Array.isArray(origins) && origins.length > 0 && origins.length <= 16,
+    'network_origins_invalid',
+  );
+  return [
+    ...new Set(
+      origins.map((value) => {
+        const url = new URL(value);
+        assert.equal(
+          url.href,
+          url.origin + '/',
+          'network_origin_must_not_include_path_query_or_credentials',
+        );
+        assert.ok(
+          url.protocol === 'https:' ||
+            (url.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(url.hostname)),
+          'network_origin_not_allowed',
+        );
+        return url.origin;
+      }),
+    ),
+  ];
 }
 
-export function createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAsync, performKeyboardActions, addonId }) {
+export function createFirefoxSidebarAdapter({
+  executeChromeSync,
+  executeChromeAsync,
+  performKeyboardActions,
+  addonId,
+}) {
   assert.equal(typeof executeChromeSync, 'function', 'execute_chrome_sync_missing');
   assert.equal(typeof executeChromeAsync, 'function', 'execute_chrome_async_missing');
   if (performKeyboardActions !== undefined)
@@ -457,7 +601,8 @@ export function createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAs
   let vaultCreateReceiptObserverFrozen = false;
 
   const focusOwnedSidebar = async () => {
-    const route = await executeChromeSync(`
+    const route = await executeChromeSync(
+      `
       const win = Services.wm.getMostRecentWindow('navigator:browser');
       const [id] = [...win.SidebarController.sidebars.entries()].find(([,item]) => item.extensionId === arguments[0]) ?? [];
       const host = win.SidebarController.browser;
@@ -465,14 +610,20 @@ export function createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAs
       if (!id || win.SidebarController.currentID !== id || !panel) return false;
       panel.focus();
       return panel.ownerDocument.activeElement === panel && host.ownerDocument.activeElement === host;
-    `, [addonId]);
+    `,
+      [addonId],
+    );
     if (route !== true) throw new Error('keyboard_sidebar_focus_route_failed');
     return true;
   };
 
-  const remote = async request => {
+  const remote = async (request) => {
     const bounded = { ...request, deadlineAt: Date.now() + request.timeoutMs };
-    const result = await executeChromeAsync(REMOTE_OPERATION_SCRIPT, [addonId, bounded, REMOTE_FRAME_MAIN_SOURCE]);
+    const result = await executeChromeAsync(REMOTE_OPERATION_SCRIPT, [
+      addonId,
+      bounded,
+      REMOTE_FRAME_MAIN_SOURCE,
+    ]);
     if (result?.ok !== true) {
       const error = new Error(result?.code ?? 'remote_operation_invalid_result');
       if (result?.diagnostic) error.diagnostic = result.diagnostic;
@@ -485,89 +636,147 @@ export function createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAs
     expectedRuntime: EXPECTED_RUNTIME,
     trustedMouseSource: TRUSTED_MOUSE_SOURCE,
     async attestRuntime(hostRuntime) {
-      assert.deepEqual(hostRuntime, {
-        sourceRepository: EXPECTED_RUNTIME.sourceRepository,
-        sourceStamp: EXPECTED_RUNTIME.sourceStamp,
-        geckodriverVersion: EXPECTED_RUNTIME.geckodriverVersion,
-      }, 'firefox_host_runtime_not_reviewed');
+      assert.deepEqual(
+        hostRuntime,
+        {
+          sourceRepository: EXPECTED_RUNTIME.sourceRepository,
+          sourceStamp: EXPECTED_RUNTIME.sourceStamp,
+          geckodriverVersion: EXPECTED_RUNTIME.geckodriverVersion,
+        },
+        'firefox_host_runtime_not_reviewed',
+      );
       const runtime = await executeChromeSync(RUNTIME_SCRIPT, []);
-      assert.deepEqual(runtime, {
-        firefoxVersion: EXPECTED_RUNTIME.firefoxVersion,
-        buildId: EXPECTED_RUNTIME.buildId,
-        sidebarWindowType: 'navigator:browser',
-      }, 'firefox_runtime_not_reviewed');
-      return { ...runtime, ...hostRuntime, trustedMouseSource: TRUSTED_MOUSE_SOURCE, nativeOsInputUsed: false };
+      assert.deepEqual(
+        runtime,
+        {
+          firefoxVersion: EXPECTED_RUNTIME.firefoxVersion,
+          buildId: EXPECTED_RUNTIME.buildId,
+          sidebarWindowType: 'navigator:browser',
+        },
+        'firefox_runtime_not_reviewed',
+      );
+      return {
+        ...runtime,
+        ...hostRuntime,
+        trustedMouseSource: TRUSTED_MOUSE_SOURCE,
+        nativeOsInputUsed: false,
+      };
     },
     evaluate(fn, args = [], { timeoutMs = 10_000 } = {}) {
       validateTiming(timeoutMs, 50);
       assert.ok(Array.isArray(args), 'remote_args_invalid');
-      return remote({ kind: 'evaluate', source: sourceOf(fn, 'remote_evaluate'), args, timeoutMs, outerTimeoutMs: timeoutMs + 1_000 });
+      return remote({
+        kind: 'evaluate',
+        source: sourceOf(fn, 'remote_evaluate'),
+        args,
+        timeoutMs,
+        outerTimeoutMs: timeoutMs + 1_000,
+      });
     },
     focusOwnedSidebar,
     waitFor(fn, args = [], { timeoutMs = 15_000, pollMs = 100 } = {}) {
       validateTiming(timeoutMs, pollMs);
       assert.ok(Array.isArray(args), 'remote_args_invalid');
-      return remote({ kind: 'wait', source: sourceOf(fn, 'remote_wait', { readOnly: true }), args, timeoutMs, pollMs, outerTimeoutMs: timeoutMs + 1_000 });
+      return remote({
+        kind: 'wait',
+        source: sourceOf(fn, 'remote_wait', { readOnly: true }),
+        args,
+        timeoutMs,
+        pollMs,
+        outerTimeoutMs: timeoutMs + 1_000,
+      });
     },
-    trustedClick(selector, {
-      outcome,
-      outcomeArgs = [],
-      timeoutMs = 15_000,
-      pollMs = 100,
-    } = {}) {
-      assert.ok(typeof selector === 'string' && selector.length > 0 && selector.length <= 1_000, 'trusted_click_selector_invalid');
+    trustedClick(selector, { outcome, outcomeArgs = [], timeoutMs = 15_000, pollMs = 100 } = {}) {
+      assert.ok(
+        typeof selector === 'string' && selector.length > 0 && selector.length <= 1_000,
+        'trusted_click_selector_invalid',
+      );
       validateTiming(timeoutMs, pollMs);
       assert.ok(Array.isArray(outcomeArgs), 'trusted_click_outcome_args_invalid');
       return remote({
-        kind: 'trusted_click', selector,
-        outcomeSource: outcome ? sourceOf(outcome, 'trusted_click_outcome', { readOnly: true }) : null,
-        outcomeArgs, timeoutMs, pollMs, outerTimeoutMs: timeoutMs + 1_000,
+        kind: 'trusted_click',
+        selector,
+        outcomeSource: outcome
+          ? sourceOf(outcome, 'trusted_click_outcome', { readOnly: true })
+          : null,
+        outcomeArgs,
+        timeoutMs,
+        pollMs,
+        outerTimeoutMs: timeoutMs + 1_000,
       });
     },
-    trustedPress(selector, {
-      outcome,
-      outcomeArgs = [],
-      timeoutMs = 15_000,
-      pollMs = 100,
-    } = {}) {
-      assert.ok(typeof selector === 'string' && selector.length > 0 && selector.length <= 1_000, 'trusted_press_selector_invalid');
+    trustedPress(selector, { outcome, outcomeArgs = [], timeoutMs = 15_000, pollMs = 100 } = {}) {
+      assert.ok(
+        typeof selector === 'string' && selector.length > 0 && selector.length <= 1_000,
+        'trusted_press_selector_invalid',
+      );
       assert.equal(typeof outcome, 'function', 'trusted_press_outcome_required');
       validateTiming(timeoutMs, pollMs);
       assert.ok(Array.isArray(outcomeArgs), 'trusted_press_outcome_args_invalid');
       return remote({
-        kind: 'trusted_press', selector,
+        kind: 'trusted_press',
+        selector,
         outcomeSource: sourceOf(outcome, 'trusted_press_outcome', { readOnly: true }),
-        outcomeArgs, timeoutMs, pollMs, outerTimeoutMs: timeoutMs + 1_000,
+        outcomeArgs,
+        timeoutMs,
+        pollMs,
+        outerTimeoutMs: timeoutMs + 1_000,
       });
     },
-    async trustedKeyboardSelectExact(selector, expectedLabel, { timeoutMs = 15_000, pollMs = 100 } = {}) {
+    async trustedKeyboardSelectExact(
+      selector,
+      expectedLabel,
+      { timeoutMs = 15_000, pollMs = 100 } = {},
+    ) {
       assert.equal(typeof performKeyboardActions, 'function', 'perform_keyboard_actions_missing');
-      assert.ok(typeof expectedLabel === 'string' && expectedLabel.length > 0, 'keyboard_expected_label_missing');
+      assert.ok(
+        typeof expectedLabel === 'string' && expectedLabel.length > 0,
+        'keyboard_expected_label_missing',
+      );
       validateTiming(timeoutMs, pollMs);
       const stateKey = `__matrxTrustedKeyboard_${Date.now()}_${Math.random().toString(16).slice(2)}`;
       let diagnostic;
       try {
-        const initial = await remote({ kind: 'evaluate', source: sourceOf((document, selector, label, key) => {
-          const targets = [...document.querySelectorAll(selector)];
-          if (targets.length !== 1 || targets[0].getAttribute('role') !== 'combobox')
-            return { ok: false, code: 'keyboard_combobox_not_unique' };
-          const target = targets[0];
-          const listbox = document.getElementById(target.getAttribute('aria-controls'));
-          if (!listbox || listbox.getAttribute('role') !== 'listbox')
-            return { ok: false, code: 'keyboard_owned_listbox_missing' };
-          const options = [...listbox.querySelectorAll('[role="option"]')]
-            .filter(node => node.getAttribute('aria-disabled') !== 'true' && !node.hasAttribute('data-disabled'));
-          const matches = options.filter(node => node.textContent?.trim() === label);
-          if (matches.length !== 1) return { ok: false, code: 'keyboard_exact_option_not_unique' };
-          if (!listbox.contains(document.activeElement)) return { ok: false, code: 'keyboard_owned_option_not_focused' };
-          const events = [];
-          const observe = event => events.push({ type: event.type, key: event.key, trusted: event.isTrusted,
-            owned: listbox.contains(event.target) || target === event.target || target.contains(event.target) });
-          document.addEventListener('keydown', observe, true);
-          document.addEventListener('keyup', observe, true);
-          document[key] = { target, listbox, expected: matches[0], observe, events };
-          return { ok: true, index: options.indexOf(matches[0]), optionCount: options.length };
-        }, 'keyboard_exact_setup'), args: [selector, expectedLabel, stateKey], timeoutMs, outerTimeoutMs: timeoutMs + 1000 });
+        const initial = await remote({
+          kind: 'evaluate',
+          source: sourceOf((document, selector, label, key) => {
+            const targets = [...document.querySelectorAll(selector)];
+            if (targets.length !== 1 || targets[0].getAttribute('role') !== 'combobox')
+              return { ok: false, code: 'keyboard_combobox_not_unique' };
+            const target = targets[0];
+            const listbox = document.getElementById(target.getAttribute('aria-controls'));
+            if (!listbox || listbox.getAttribute('role') !== 'listbox')
+              return { ok: false, code: 'keyboard_owned_listbox_missing' };
+            const options = [...listbox.querySelectorAll('[role="option"]')].filter(
+              (node) =>
+                node.getAttribute('aria-disabled') !== 'true' &&
+                !node.hasAttribute('data-disabled'),
+            );
+            const matches = options.filter((node) => node.textContent?.trim() === label);
+            if (matches.length !== 1)
+              return { ok: false, code: 'keyboard_exact_option_not_unique' };
+            if (!listbox.contains(document.activeElement))
+              return { ok: false, code: 'keyboard_owned_option_not_focused' };
+            const events = [];
+            const observe = (event) =>
+              events.push({
+                type: event.type,
+                key: event.key,
+                trusted: event.isTrusted,
+                owned:
+                  listbox.contains(event.target) ||
+                  target === event.target ||
+                  target.contains(event.target),
+              });
+            document.addEventListener('keydown', observe, true);
+            document.addEventListener('keyup', observe, true);
+            document[key] = { target, listbox, expected: matches[0], observe, events };
+            return { ok: true, index: options.indexOf(matches[0]), optionCount: options.length };
+          }, 'keyboard_exact_setup'),
+          args: [selector, expectedLabel, stateKey],
+          timeoutMs,
+          outerTimeoutMs: timeoutMs + 1000,
+        });
         if (initial?.ok !== true) throw new Error(initial?.code ?? 'keyboard_exact_setup_failed');
         await focusOwnedSidebar();
         // Home and ArrowDown operate Radix's real roving focus. Never synthesize selection.
@@ -575,37 +784,95 @@ export function createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAs
         for (const key of keys) {
           await performKeyboardActions([key]);
           // Radix schedules the focus move; one browser frame settles each key.
-          await remote({ kind: 'evaluate', source: sourceOf(async document => {
-            await new Promise(resolve => document.defaultView.requestAnimationFrame(resolve));
-            return true;
-          }, 'keyboard_focus_settle'), args: [], timeoutMs, outerTimeoutMs: timeoutMs + 1000 });
+          await remote({
+            kind: 'evaluate',
+            source: sourceOf(async (document) => {
+              await new Promise((resolve) => document.defaultView.requestAnimationFrame(resolve));
+              return true;
+            }, 'keyboard_focus_settle'),
+            args: [],
+            timeoutMs,
+            outerTimeoutMs: timeoutMs + 1000,
+          });
         }
-        const exact = await remote({ kind: 'evaluate', source: sourceOf((document, key) => {
-          const state = document[key];
-          return !!state && state.expected === document.activeElement && state.expected.isConnected;
-        }, 'keyboard_exact_before_commit', { readOnly: true }), args: [stateKey], timeoutMs, outerTimeoutMs: timeoutMs + 1000 });
+        const exact = await remote({
+          kind: 'evaluate',
+          source: sourceOf(
+            (document, key) => {
+              const state = document[key];
+              return (
+                !!state && state.expected === document.activeElement && state.expected.isConnected
+              );
+            },
+            'keyboard_exact_before_commit',
+            { readOnly: true },
+          ),
+          args: [stateKey],
+          timeoutMs,
+          outerTimeoutMs: timeoutMs + 1000,
+        });
         if (!exact) throw new Error('keyboard_exact_option_not_focused_before_enter');
         await performKeyboardActions(['\uE007']);
-        await remote({ kind: 'wait', source: sourceOf((document, selector, label) => {
-          const target = document.querySelector(selector);
-          return target?.textContent?.trim() === label && target.getAttribute('aria-expanded') === 'false';
-        }, 'keyboard_exact_outcome', { readOnly: true }), args: [selector, expectedLabel], timeoutMs, pollMs, outerTimeoutMs: timeoutMs + 1000 });
-        diagnostic = { exactOptionFocusedBeforeEnter: true, exactLabelSelected: true, navigationKeyCount: keys.length };
+        await remote({
+          kind: 'wait',
+          source: sourceOf(
+            (document, selector, label) => {
+              const target = document.querySelector(selector);
+              return (
+                target?.textContent?.trim() === label &&
+                target.getAttribute('aria-expanded') === 'false'
+              );
+            },
+            'keyboard_exact_outcome',
+            { readOnly: true },
+          ),
+          args: [selector, expectedLabel],
+          timeoutMs,
+          pollMs,
+          outerTimeoutMs: timeoutMs + 1000,
+        });
+        diagnostic = {
+          exactOptionFocusedBeforeEnter: true,
+          exactLabelSelected: true,
+          navigationKeyCount: keys.length,
+        };
       } finally {
-        const result = await remote({ kind: 'evaluate', source: sourceOf((document, key) => {
-          const state = document[key];
-          if (!state) return { removed: true, events: [] };
-          document.removeEventListener('keydown', state.observe, true);
-          document.removeEventListener('keyup', state.observe, true);
-          delete document[key];
-          return { removed: !document[key], events: state.events };
-        }, 'keyboard_exact_teardown'), args: [stateKey], timeoutMs, outerTimeoutMs: timeoutMs + 1000 });
+        const result = await remote({
+          kind: 'evaluate',
+          source: sourceOf((document, key) => {
+            const state = document[key];
+            if (!state) return { removed: true, events: [] };
+            document.removeEventListener('keydown', state.observe, true);
+            document.removeEventListener('keyup', state.observe, true);
+            delete document[key];
+            return { removed: !document[key], events: state.events };
+          }, 'keyboard_exact_teardown'),
+          args: [stateKey],
+          timeoutMs,
+          outerTimeoutMs: timeoutMs + 1000,
+        });
         if (diagnostic) {
-          const expectedKeys = ['Home', ...Array(diagnostic.navigationKeyCount - 1).fill('ArrowDown'), 'Enter'];
-          assert.equal(result.events.length, expectedKeys.length * 2, 'keyboard_event_count_mismatch');
+          const expectedKeys = [
+            'Home',
+            ...Array(diagnostic.navigationKeyCount - 1).fill('ArrowDown'),
+            'Enter',
+          ];
+          assert.equal(
+            result.events.length,
+            expectedKeys.length * 2,
+            'keyboard_event_count_mismatch',
+          );
           result.events.forEach((event, index) => {
-            assert.equal(event.type, index % 2 === 0 ? 'keydown' : 'keyup', 'keyboard_event_order_mismatch');
-            assert.equal(event.key, expectedKeys[Math.floor(index / 2)], 'keyboard_event_key_mismatch');
+            assert.equal(
+              event.type,
+              index % 2 === 0 ? 'keydown' : 'keyup',
+              'keyboard_event_order_mismatch',
+            );
+            assert.equal(
+              event.key,
+              expectedKeys[Math.floor(index / 2)],
+              'keyboard_event_key_mismatch',
+            );
             assert.equal(event.trusted, true, 'keyboard_event_untrusted');
             assert.equal(event.owned, true, 'keyboard_event_outside_owned_select');
           });
@@ -615,12 +882,27 @@ export function createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAs
       }
       return diagnostic;
     },
-    async startNetworkObserver({ origins, maxEvents = 2_000, ownerScope = 'owned_firefox_process' }) {
+    async startNetworkObserver({
+      origins,
+      maxEvents = 2_000,
+      ownerScope = 'owned_firefox_process',
+    }) {
       assert.equal(observerStarted, false, 'network_observer_already_started_locally');
       const normalized = validateOrigins(origins);
-      assert.ok(Number.isInteger(maxEvents) && maxEvents >= 1 && maxEvents <= 10_000, 'network_max_events_invalid');
-      assert.ok(['owned_firefox_process', 'addon_principal'].includes(ownerScope), 'network_owner_scope_invalid');
-      const result = await executeChromeSync(START_OBSERVER_SCRIPT, [addonId, normalized, maxEvents, ownerScope]);
+      assert.ok(
+        Number.isInteger(maxEvents) && maxEvents >= 1 && maxEvents <= 10_000,
+        'network_max_events_invalid',
+      );
+      assert.ok(
+        ['owned_firefox_process', 'addon_principal'].includes(ownerScope),
+        'network_owner_scope_invalid',
+      );
+      const result = await executeChromeSync(START_OBSERVER_SCRIPT, [
+        addonId,
+        normalized,
+        maxEvents,
+        ownerScope,
+      ]);
       assert.equal(result?.ok, true, result?.code ?? 'network_observer_start_failed');
       observerStarted = true;
       return result;
@@ -644,9 +926,16 @@ export function createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAs
       return result;
     },
     async startVaultCreateReceiptObserver({ origin }) {
-      assert.equal(vaultCreateReceiptObserverStarted, false, 'receipt_observer_already_started_locally');
+      assert.equal(
+        vaultCreateReceiptObserverStarted,
+        false,
+        'receipt_observer_already_started_locally',
+      );
       const normalized = validateOrigins([origin]);
-      const result = await executeChromeSync(START_VAULT_CREATE_RECEIPT_OBSERVER_SCRIPT, [addonId, normalized[0]]);
+      const result = await executeChromeSync(START_VAULT_CREATE_RECEIPT_OBSERVER_SCRIPT, [
+        addonId,
+        normalized[0],
+      ]);
       assert.equal(result?.ok, true, result?.code ?? 'receipt_observer_start_failed');
       vaultCreateReceiptObserverStarted = true;
       vaultCreateReceiptObserverFrozen = false;

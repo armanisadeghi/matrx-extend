@@ -69,7 +69,12 @@ function isOneTimeCode(input: HTMLInputElement): boolean {
  * fall back to the document: unrelated password boxes must not join a capture.
  */
 function coherentGroup(anchor: Element | null): HTMLElement | null {
-  const form = anchor instanceof HTMLFormElement ? anchor : anchor instanceof HTMLInputElement || anchor instanceof HTMLButtonElement ? anchor.form : anchor?.closest('form');
+  const form =
+    anchor instanceof HTMLFormElement
+      ? anchor
+      : anchor instanceof HTMLInputElement || anchor instanceof HTMLButtonElement
+        ? anchor.form
+        : anchor?.closest('form');
   if (form) return form;
   for (
     let node = anchor instanceof HTMLElement ? anchor : null, depth = 0;
@@ -84,7 +89,7 @@ function coherentGroup(anchor: Element | null): HTMLElement | null {
 }
 
 function groupInputs(group: HTMLElement): HTMLInputElement[] {
-  return (group instanceof HTMLFormElement
+  return group instanceof HTMLFormElement
     ? Array.from(group.elements).filter(
         (node): node is HTMLInputElement =>
           node instanceof HTMLInputElement &&
@@ -93,8 +98,7 @@ function groupInputs(group: HTMLElement): HTMLInputElement[] {
           node.isConnected &&
           node.getRootNode() === group.getRootNode(),
       )
-    : Array.from(group.querySelectorAll<HTMLInputElement>('input'))
-  );
+    : Array.from(group.querySelectorAll<HTMLInputElement>('input'));
 }
 
 function findUsername(group: HTMLElement): string | null {
@@ -149,7 +153,11 @@ export function snapshotLogin(
   const form = group instanceof HTMLFormElement ? group : null;
   if (!safeAction(form, anchor, doc)) return null;
   const passwords = groupInputs(group).filter(
-    (input) => input.type === 'password' && isVisibleEditable(input) && input.value.length > 0 && !isOneTimeCode(input),
+    (input) =>
+      input.type === 'password' &&
+      isVisibleEditable(input) &&
+      input.value.length > 0 &&
+      !isOneTimeCode(input),
   );
   if (passwords.length === 0) {
     const username = groupInputs(group).find(
@@ -289,7 +297,11 @@ export function mountCaptureDetector(doc: Document = document): () => void {
   const onSubmit = (e: Event) => {
     if (!e.isTrusted) return;
     const submitter = (e as SubmitEvent).submitter;
-    consider(composedInput(e) ?? (submitter instanceof Element ? submitter : e.target instanceof Element ? e.target : null), false);
+    consider(
+      composedInput(e) ??
+        (submitter instanceof Element ? submitter : e.target instanceof Element ? e.target : null),
+      false,
+    );
   };
   // Enter inside a password box — SPA logins often have no <form>.
   const onKeyDown = (e: KeyboardEvent) => {
@@ -303,7 +315,10 @@ export function mountCaptureDetector(doc: Document = document): () => void {
     const target = composedElement(e);
     const control = target?.closest('button, input[type="submit"]') ?? null;
     if (!control) return;
-    const form = control instanceof HTMLButtonElement || control instanceof HTMLInputElement ? control.form : control.closest('form');
+    const form =
+      control instanceof HTMLButtonElement || control instanceof HTMLInputElement
+        ? control.form
+        : control.closest('form');
     if (form) {
       consider(control, true);
       return;

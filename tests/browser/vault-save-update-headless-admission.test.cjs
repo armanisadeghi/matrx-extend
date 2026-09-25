@@ -43,7 +43,12 @@ try {
     schema: 3,
     mode: 'receipt_backed_save_update',
     vaultMutationRequests: 0,
-    vaultItemPosts: { total: 0, withIdempotencyHeader: 0, missingIdempotencyHeader: 0, invalidIdempotencyHeader: 0 },
+    vaultItemPosts: {
+      total: 0,
+      withIdempotencyHeader: 0,
+      missingIdempotencyHeader: 0,
+      invalidIdempotencyHeader: 0,
+    },
     ownedCreateMutationKeys: [],
     ownedFixtureIds: [],
     cleanup: { browserClosed: true, profileRemoved: true, localFixtureServerClosed: 'not_started' },
@@ -62,7 +67,8 @@ try {
         MATRX_VAULT_CANARY_ADMISSION: 'RUN_RECEIPT_BACKED_SAVE_UPDATE',
         ...strictReceiptEnv,
       },
-      encoding: 'utf8', timeout: 10000,
+      encoding: 'utf8',
+      timeout: 10000,
     });
     assert.notEqual(result.status, 0, `${name} unexpectedly ran`);
     assert.match(`${result.stderr}${result.stdout}`, new RegExp(expectedCode));
@@ -77,17 +83,29 @@ try {
     const extensionManifest = JSON.stringify({ manifest_version: 3 });
     fs.writeFileSync(path.join(extension, 'manifest.json'), extensionManifest);
     const manifest = {
-      schema: 2, extensionDirectory: 'extension', kind: 'frozen', sourceCommit: frozenCommit,
-      extensionFiles: [{ path: 'manifest.json', sha256: crypto.createHash('sha256').update(extensionManifest).digest('hex') }],
+      schema: 2,
+      extensionDirectory: 'extension',
+      kind: 'frozen',
+      sourceCommit: frozenCommit,
+      extensionFiles: [
+        {
+          path: 'manifest.json',
+          sha256: crypto.createHash('sha256').update(extensionManifest).digest('hex'),
+        },
+      ],
     };
     const manifestPath = path.join(fixtureRoot, 'artifact', 'manifest.json');
     fs.writeFileSync(manifestPath, JSON.stringify(manifest));
     fs.writeFileSync(path.join(sourceRoot, 'aidream/api/routers/vault.py'), 'drifted router');
-    fs.writeFileSync(path.join(sourceRoot, 'aidream/services/user_secrets/vault.py'), 'drifted service');
+    fs.writeFileSync(
+      path.join(sourceRoot, 'aidream/services/user_secrets/vault.py'),
+      'drifted service',
+    );
     const stateRoot = path.join(fixtureRoot, 'state');
     const result = spawnSync(process.execPath, [runner], {
       env: {
-        PATH: process.env.PATH, HOME: process.env.HOME,
+        PATH: process.env.PATH,
+        HOME: process.env.HOME,
         MATRX_REALBROWSER_VAULT_CANARY: 'RUN_UNDER_REVIEW',
         MATRX_VAULT_CANARY_STATE_ROOT: stateRoot,
         MATRX_VAULT_CANARY_ADMISSION: 'RUN_RECEIPT_BACKED_SAVE_UPDATE',
@@ -96,10 +114,15 @@ try {
         MATRX_VAULT_CANARY_LOCAL_SOURCE_ROOT: sourceRoot,
         ...strictReceiptEnv,
       },
-      encoding: 'utf8', timeout: 10000,
+      encoding: 'utf8',
+      timeout: 10000,
     });
     assert.notEqual(result.status, 0, 'source drift unexpectedly ran');
-    assert.equal(result.error, undefined, `source drift subprocess error: ${result.error?.code || 'unknown'}`);
+    assert.equal(
+      result.error,
+      undefined,
+      `source drift subprocess error: ${result.error?.code || 'unknown'}`,
+    );
     assert.match(`${result.stderr}${result.stdout}`, /local_cleanup_router_hash_mismatch/);
     assert.equal(fs.existsSync(stateRoot), false, 'source drift created durable run state');
   };
@@ -116,19 +139,23 @@ try {
     MATRX_VAULT_CANARY_EXPECTED_COMMIT: 'not-the-frozen-artifact',
   });
   rejectBeforeCustody('router-unpinned', 'receipt_backed_requires_frozen_router', {
-    ...strictReceiptEnv, MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256: 'a'.repeat(64),
+    ...strictReceiptEnv,
+    MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256: 'a'.repeat(64),
   });
   rejectBeforeCustody('service-unpinned', 'receipt_backed_requires_frozen_service', {
-    ...strictReceiptEnv, MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256: 'b'.repeat(64),
+    ...strictReceiptEnv,
+    MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256: 'b'.repeat(64),
   });
   for (const [key, value] of [
     ['MATRX_VAULT_CANARY_GENERATOR', ''],
     ['MATRX_VAULT_CANARY_GENERATOR_PANEL_CLOSE', 'malformed'],
     ['MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART', ''],
     ['MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH', 'malformed'],
-  ]) rejectBeforeCustody(`flag-${key}`, 'receipt_backed_refuses_generator_or_lifecycle_flag', {
-    ...strictReceiptEnv, [key]: value,
-  });
+  ])
+    rejectBeforeCustody(`flag-${key}`, 'receipt_backed_refuses_generator_or_lifecycle_flag', {
+      ...strictReceiptEnv,
+      [key]: value,
+    });
   // With every receipt-mode gate satisfied, admission reaches immutable artifact
   // validation before profile/browser/auth custody. The missing manifest is the
   // forcing boundary for this source-level test.
@@ -136,28 +163,62 @@ try {
     ...strictReceiptEnv,
   });
   rejectSourceDriftBeforeCustody();
-  checkPriorRun('receipt-generic-ok-is-not-a-shortcut', {
-    ...receiptZeroWriteProof,
-    ok: true,
-    authenticationAttempted: true,
-    cleanup: { ...receiptZeroWriteProof.cleanup, receiptReconciled: true, createdItemsGone: true },
-  }, 'previous_run_unreconciled');
-  checkPriorRun('receipt-zero-write-retries', receiptZeroWriteProof, 'missing_matrx_vault_canary_manifest');
-  checkPriorRun('receipt-baseline-id-set-required', {
-    ...receiptZeroWriteProof,
-    baselineMetadataSha256: 'baseline',
-    cleanup: { ...receiptZeroWriteProof.cleanup, finalBaselineIdSetMatches: false, finalBaselineMetadataMatches: true },
-  }, 'previous_run_unreconciled');
-  checkPriorRun('receipt-baseline-digest-required', {
-    ...receiptZeroWriteProof,
-    baselineMetadataSha256: 'baseline',
-    cleanup: { ...receiptZeroWriteProof.cleanup, finalBaselineIdSetMatches: true, finalBaselineMetadataMatches: false },
-  }, 'previous_run_unreconciled');
-  checkPriorRun('receipt-started-server-must-close', {
-    ...receiptZeroWriteProof,
-    cleanup: { ...receiptZeroWriteProof.cleanup, localFixtureServerClosed: false },
-  }, 'previous_run_unreconciled');
-  process.stdout.write('PASS: receipt-backed Save/Update admission refuses unsafe modes before custody\n');
+  checkPriorRun(
+    'receipt-generic-ok-is-not-a-shortcut',
+    {
+      ...receiptZeroWriteProof,
+      ok: true,
+      authenticationAttempted: true,
+      cleanup: {
+        ...receiptZeroWriteProof.cleanup,
+        receiptReconciled: true,
+        createdItemsGone: true,
+      },
+    },
+    'previous_run_unreconciled',
+  );
+  checkPriorRun(
+    'receipt-zero-write-retries',
+    receiptZeroWriteProof,
+    'missing_matrx_vault_canary_manifest',
+  );
+  checkPriorRun(
+    'receipt-baseline-id-set-required',
+    {
+      ...receiptZeroWriteProof,
+      baselineMetadataSha256: 'baseline',
+      cleanup: {
+        ...receiptZeroWriteProof.cleanup,
+        finalBaselineIdSetMatches: false,
+        finalBaselineMetadataMatches: true,
+      },
+    },
+    'previous_run_unreconciled',
+  );
+  checkPriorRun(
+    'receipt-baseline-digest-required',
+    {
+      ...receiptZeroWriteProof,
+      baselineMetadataSha256: 'baseline',
+      cleanup: {
+        ...receiptZeroWriteProof.cleanup,
+        finalBaselineIdSetMatches: true,
+        finalBaselineMetadataMatches: false,
+      },
+    },
+    'previous_run_unreconciled',
+  );
+  checkPriorRun(
+    'receipt-started-server-must-close',
+    {
+      ...receiptZeroWriteProof,
+      cleanup: { ...receiptZeroWriteProof.cleanup, localFixtureServerClosed: false },
+    },
+    'previous_run_unreconciled',
+  );
+  process.stdout.write(
+    'PASS: receipt-backed Save/Update admission refuses unsafe modes before custody\n',
+  );
 } finally {
   fs.rmSync(root, { recursive: true, force: true });
 }

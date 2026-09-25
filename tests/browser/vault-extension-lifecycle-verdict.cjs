@@ -21,14 +21,38 @@ function requireDisposition(record, prefix) {
 }
 
 function assertVaultExtensionLifecycleVerdict({ lifecycle, requireOrganizationSwitch = true }) {
-  if (!lifecycle || typeof lifecycle !== 'object') throw new Error('vault_lifecycle_evidence_missing');
-  if (typeof lifecycle.initialIdentitySha256 !== 'string' || !/^[a-f0-9]{64}$/.test(lifecycle.initialIdentitySha256))
+  if (!lifecycle || typeof lifecycle !== 'object')
+    throw new Error('vault_lifecycle_evidence_missing');
+  if (
+    typeof lifecycle.initialIdentitySha256 !== 'string' ||
+    !/^[a-f0-9]{64}$/.test(lifecycle.initialIdentitySha256)
+  )
     throw new Error('vault_lifecycle_initial_identity_fingerprint_invalid');
 
   for (const [name, required] of [
-    ['extensionReload', ['settingsUiRecovered', 'replacementWorkerObserved', 'sameIdentityRecovered']],
-    ['disableEnable', ['disabledInExtensionsUi', 'enabledInExtensionsUi', 'replacementWorkerObserved', 'settingsUiRecovered', 'sameIdentityRecovered']],
-    ['browserRestart', ['previousBrowserExited', 'newBrowserProcessObserved', 'settingsUiRecovered', 'sameIdentityRecovered']],
+    [
+      'extensionReload',
+      ['settingsUiRecovered', 'replacementWorkerObserved', 'sameIdentityRecovered'],
+    ],
+    [
+      'disableEnable',
+      [
+        'disabledInExtensionsUi',
+        'enabledInExtensionsUi',
+        'replacementWorkerObserved',
+        'settingsUiRecovered',
+        'sameIdentityRecovered',
+      ],
+    ],
+    [
+      'browserRestart',
+      [
+        'previousBrowserExited',
+        'newBrowserProcessObserved',
+        'settingsUiRecovered',
+        'sameIdentityRecovered',
+      ],
+    ],
   ]) {
     const evidence = lifecycle[name];
     requireDisposition(evidence, `vault_lifecycle_${name}`);
@@ -39,47 +63,63 @@ function assertVaultExtensionLifecycleVerdict({ lifecycle, requireOrganizationSw
 
   const signOut = lifecycle.signOut;
   requireDisposition(signOut, 'vault_lifecycle_sign_out');
-  requireTrue(signOut, [
-    'settingsSignOutClicked',
-    'sidePanelShowsSignedOut',
-    'localAuthMaterialAbsent',
-    'activeOrganizationAbsent',
-    'signedOutVaultHidden',
-    'bearerlessVaultApiRefusal.refused',
-    'bearerlessVaultApiRefusal.authorizationHeaderAbsent',
-    'remoteLogout204',
-  ], 'vault_lifecycle_sign_out');
+  requireTrue(
+    signOut,
+    [
+      'settingsSignOutClicked',
+      'sidePanelShowsSignedOut',
+      'localAuthMaterialAbsent',
+      'activeOrganizationAbsent',
+      'signedOutVaultHidden',
+      'bearerlessVaultApiRefusal.refused',
+      'bearerlessVaultApiRefusal.authorizationHeaderAbsent',
+      'remoteLogout204',
+    ],
+    'vault_lifecycle_sign_out',
+  );
   if (![401, 403].includes(signOut?.bearerlessVaultApiRefusal?.status))
     throw new Error('vault_lifecycle_sign_out_bearerless_api_status_invalid');
 
   const recovery = lifecycle.freshRecovery;
   requireDisposition(recovery, 'vault_lifecycle_fresh_recovery');
-  requireTrue(recovery, [
-    'interactiveSignInCompleted',
-    'settingsUiRecovered',
-    'localAuthMaterialPresent',
-    'verifiedIdentityRecovered',
-  ], 'vault_lifecycle_fresh_recovery');
+  requireTrue(
+    recovery,
+    [
+      'interactiveSignInCompleted',
+      'settingsUiRecovered',
+      'localAuthMaterialPresent',
+      'verifiedIdentityRecovered',
+    ],
+    'vault_lifecycle_fresh_recovery',
+  );
   if (recovery.identitySha256 !== lifecycle.initialIdentitySha256)
     throw new Error('vault_lifecycle_fresh_recovery_identity_changed');
 
   const account = lifecycle.accountInvalidation;
   requireDisposition(account, 'vault_lifecycle_account_invalidation');
-  requireTrue(account, [
-    'preSignOutIdentityWasObserved',
-    'signedOutBearerlessVaultRefused',
-    'freshSameIdentityRecoveredAfterInteractiveSignIn',
-  ], 'vault_lifecycle_account_invalidation');
+  requireTrue(
+    account,
+    [
+      'preSignOutIdentityWasObserved',
+      'signedOutBearerlessVaultRefused',
+      'freshSameIdentityRecoveredAfterInteractiveSignIn',
+    ],
+    'vault_lifecycle_account_invalidation',
+  );
 
   if (!requireOrganizationSwitch) return;
   const organization = lifecycle.organizationInvalidation;
   requireDisposition(organization, 'vault_lifecycle_organization_invalidation');
-  requireTrue(organization, [
-    'twoAdminMembershipsObserved',
-    'oldOrganizationAuthorityRefusedAfterSwitch',
-    'newOrganizationResolvedAfterSwitch',
-    'disposableRecordScopePreserved',
-  ], 'vault_lifecycle_organization_invalidation');
+  requireTrue(
+    organization,
+    [
+      'twoAdminMembershipsObserved',
+      'oldOrganizationAuthorityRefusedAfterSwitch',
+      'newOrganizationResolvedAfterSwitch',
+      'disposableRecordScopePreserved',
+    ],
+    'vault_lifecycle_organization_invalidation',
+  );
   if (organization.oldOrganizationSha256 === organization.newOrganizationSha256)
     throw new Error('vault_lifecycle_organization_invalidation_identity_unchanged');
 }

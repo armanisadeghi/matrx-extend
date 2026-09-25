@@ -79,7 +79,8 @@ export async function probeNative(): Promise<DesktopHealth | null> {
     const idx = Math.min(consecutiveMisses, PROBE_BACKOFF_MS.length - 1);
     consecutiveMisses += 1;
     nextProbeAllowedAt =
-      Date.now() + (PROBE_BACKOFF_MS[idx] ?? PROBE_BACKOFF_MS[PROBE_BACKOFF_MS.length - 1] ?? 900_000);
+      Date.now() +
+      (PROBE_BACKOFF_MS[idx] ?? PROBE_BACKOFF_MS[PROBE_BACKOFF_MS.length - 1] ?? 900_000);
     return null;
   }
   resetNativeProbeBackoff();

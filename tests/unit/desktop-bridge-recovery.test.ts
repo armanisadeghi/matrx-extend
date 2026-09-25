@@ -234,9 +234,9 @@ describe('the bridge cannot go silently dead', () => {
     const states = broadcasts.filter((b) => b.kind === 'ws:state');
     expect(states.length).toBeGreaterThan(0);
     // And crucially it must NOT be flagged intentional.
-    expect(
-      states.every((b) => (b.payload as { intentional?: boolean }).intentional !== true),
-    ).toBe(true);
+    expect(states.every((b) => (b.payload as { intentional?: boolean }).intentional !== true)).toBe(
+      true,
+    );
   });
 
   it('clears the intentional flag the moment a connection is attempted', async () => {

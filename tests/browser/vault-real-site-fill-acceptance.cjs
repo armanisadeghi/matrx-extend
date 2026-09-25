@@ -36,9 +36,11 @@ const exactFillButton = (targetName) => `(() => {
 
 async function tabFor(worker, url, wait) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
-    const tabId = await worker.evaluate(async (expectedUrl) =>
-      (await chrome.tabs.query({})).find((tab) => tab.url === expectedUrl)?.id,
-    url);
+    const tabId = await worker.evaluate(
+      async (expectedUrl) =>
+        (await chrome.tabs.query({})).find((tab) => tab.url === expectedUrl)?.id,
+      url,
+    );
     if (Number.isInteger(tabId)) return tabId;
     await wait(100);
   }
@@ -60,13 +62,23 @@ async function waitForBridge(worker, tabId, wait) {
   throw new Error('real_site_fill_bridge_not_ready');
 }
 
-async function waitForFocusedWrongOriginNoMatch({ page, realPanel, tabId, wrongUrl, wait, verifyRealVaultPanel }) {
+async function waitForFocusedWrongOriginNoMatch({
+  page,
+  realPanel,
+  tabId,
+  wrongUrl,
+  wait,
+  verifyRealVaultPanel,
+}) {
   const deadline = Date.now() + 15_000;
   do {
-    const pageReady = await page.evaluate((expectedUrl) => ({
-      exactUrl: location.href === expectedUrl,
-      focusedPassword: document.hasFocus() && document.activeElement?.id === 'password',
-    }), wrongUrl);
+    const pageReady = await page.evaluate(
+      (expectedUrl) => ({
+        exactUrl: location.href === expectedUrl,
+        focusedPassword: document.hasFocus() && document.activeElement?.id === 'password',
+      }),
+      wrongUrl,
+    );
     await verifyRealVaultPanel();
     const panelStatus = await realPanel.evaluate(async (id) => {
       try {
@@ -79,15 +91,24 @@ async function waitForFocusedWrongOriginNoMatch({ page, realPanel, tabId, wrongU
         const keys = record ? Object.keys(value).sort() : [];
         return {
           status: record && typeof value.status === 'string' ? value.status : null,
-          exactNoMatchShape: keys.length === 2 && keys[0] === 'itemIds' && keys[1] === 'status'
-            && Array.isArray(value.itemIds) && value.itemIds.length === 0,
+          exactNoMatchShape:
+            keys.length === 2 &&
+            keys[0] === 'itemIds' &&
+            keys[1] === 'status' &&
+            Array.isArray(value.itemIds) &&
+            value.itemIds.length === 0,
         };
       } catch {
         return { status: null, exactNoMatchShape: false };
       }
     }, tabId);
-    if (pageReady.exactUrl && pageReady.focusedPassword
-      && panelStatus.status === 'none' && panelStatus.exactNoMatchShape) return;
+    if (
+      pageReady.exactUrl &&
+      pageReady.focusedPassword &&
+      panelStatus.status === 'none' &&
+      panelStatus.exactNoMatchShape
+    )
+      return;
     await wait(100);
   } while (Date.now() < deadline);
   throw new Error('real_site_wrong_site_not_settled');
@@ -96,7 +117,8 @@ async function waitForFocusedWrongOriginNoMatch({ page, realPanel, tabId, wrongU
 function observePostFillSubmission(page) {
   const observed = { navigationRequest: false, nonReadRequest: false, mainFrameNavigation: false };
   const onRequest = (request) => {
-    if (request.isNavigationRequest() && request.frame() === page.mainFrame()) observed.navigationRequest = true;
+    if (request.isNavigationRequest() && request.frame() === page.mainFrame())
+      observed.navigationRequest = true;
     if (!['GET', 'HEAD'].includes(request.method())) observed.nonReadRequest = true;
   };
   const onFrameNavigated = (frame) => {
@@ -114,23 +136,45 @@ function observePostFillSubmission(page) {
 }
 
 exports.runRealSiteFillChecks = async ({
-  context, worker, realPanel, targetName, username, password, realLoginUrl, wrongSiteUrl,
-  assert, wait, checkpoint = () => {}, proof, focusOwnedBrowser, verifyRealVaultPanel,
+  context,
+  worker,
+  realPanel,
+  targetName,
+  username,
+  password,
+  realLoginUrl,
+  wrongSiteUrl,
+  assert,
+  wait,
+  checkpoint = () => {},
+  proof,
+  focusOwnedBrowser,
+  verifyRealVaultPanel,
 }) => {
   assert(context && worker && realPanel, 'real_site_fill_context_missing');
   assert(typeof targetName === 'string' && targetName.length > 0, 'real_site_fill_target_missing');
-  assert(typeof username === 'string' && username.length > 0 && typeof password === 'string' && password.length > 0,
-    'real_site_fill_credentials_missing');
-  assert(typeof assert === 'function' && typeof wait === 'function' && typeof focusOwnedBrowser === 'function'
-    && typeof verifyRealVaultPanel === 'function', 'real_site_fill_controls_missing');
+  assert(
+    typeof username === 'string' &&
+      username.length > 0 &&
+      typeof password === 'string' &&
+      password.length > 0,
+    'real_site_fill_credentials_missing',
+  );
+  assert(
+    typeof assert === 'function' &&
+      typeof wait === 'function' &&
+      typeof focusOwnedBrowser === 'function' &&
+      typeof verifyRealVaultPanel === 'function',
+    'real_site_fill_controls_missing',
+  );
   const urls = validateRealSiteUrls(realLoginUrl, wrongSiteUrl);
-  const evidence = proof.realSiteFill = {
+  const evidence = (proof.realSiteFill = {
     realHttpsLoginFormReady: false,
     exactSavedAccountFilled: false,
     noWebsiteSubmission: false,
     wrongSiteRefused: false,
     pageClosed: false,
-  };
+  });
   let page;
   let primaryFailure;
   let stopPostFillObservation = () => {};
@@ -150,16 +194,27 @@ exports.runRealSiteFillChecks = async ({
     await page.locator('#password').focus();
     await page.evaluate(() => {
       window.__matrxRealSiteSubmitCount = 0;
-      document.addEventListener('submit', () => { window.__matrxRealSiteSubmitCount += 1; }, true);
+      document.addEventListener(
+        'submit',
+        () => {
+          window.__matrxRealSiteSubmitCount += 1;
+        },
+        true,
+      );
     });
     const initial = await page.evaluate(() => ({
-      formReady: document.querySelector('#email') instanceof HTMLInputElement
-        && document.querySelector('#password') instanceof HTMLInputElement,
+      formReady:
+        document.querySelector('#email') instanceof HTMLInputElement &&
+        document.querySelector('#password') instanceof HTMLInputElement,
       focusedPassword: document.activeElement?.id === 'password',
-      empty: (document.querySelector('#email')?.value ?? '') === ''
-        && (document.querySelector('#password')?.value ?? '') === '',
+      empty:
+        (document.querySelector('#email')?.value ?? '') === '' &&
+        (document.querySelector('#password')?.value ?? '') === '',
     }));
-    assert(initial.formReady && initial.focusedPassword && initial.empty, 'real_site_fill_form_not_ready');
+    assert(
+      initial.formReady && initial.focusedPassword && initial.empty,
+      'real_site_fill_form_not_ready',
+    );
     evidence.realHttpsLoginFormReady = true;
     await verifyRealVaultPanel();
     const fill = exactFillButton(targetName);
@@ -171,32 +226,55 @@ exports.runRealSiteFillChecks = async ({
     const deadline = Date.now() + 15000;
     let filled = false;
     do {
-      const values = await page.evaluate(({ expectedUsername, expectedPassword, loginUrl }) => ({
-        usernameMatches: document.querySelector('#email')?.value === expectedUsername,
-        passwordMatches: document.querySelector('#password')?.value === expectedPassword,
-        submitCount: window.__matrxRealSiteSubmitCount,
-        unchangedUrl: location.href === loginUrl,
-      }), { expectedUsername: username, expectedPassword: password, loginUrl: urls.login });
-      if (values.usernameMatches && values.passwordMatches && values.submitCount === 0 && values.unchangedUrl) {
+      const values = await page.evaluate(
+        ({ expectedUsername, expectedPassword, loginUrl }) => ({
+          usernameMatches: document.querySelector('#email')?.value === expectedUsername,
+          passwordMatches: document.querySelector('#password')?.value === expectedPassword,
+          submitCount: window.__matrxRealSiteSubmitCount,
+          unchangedUrl: location.href === loginUrl,
+        }),
+        { expectedUsername: username, expectedPassword: password, loginUrl: urls.login },
+      );
+      if (
+        values.usernameMatches &&
+        values.passwordMatches &&
+        values.submitCount === 0 &&
+        values.unchangedUrl
+      ) {
         filled = true;
         break;
       }
       await wait(Math.min(100, Math.max(1, deadline - Date.now())));
     } while (Date.now() < deadline);
-    assert(filled && !postFill.observed.navigationRequest && !postFill.observed.nonReadRequest
-      && !postFill.observed.mainFrameNavigation, 'real_site_fill_not_completed');
+    assert(
+      filled &&
+        !postFill.observed.navigationRequest &&
+        !postFill.observed.nonReadRequest &&
+        !postFill.observed.mainFrameNavigation,
+      'real_site_fill_not_completed',
+    );
     const settleDeadline = Date.now() + POST_FILL_SETTLE_MS;
     do {
       await verifyRealVaultPanel();
-      const settled = await page.evaluate(({ expectedUsername, expectedPassword, loginUrl }) => ({
-        usernameMatches: document.querySelector('#email')?.value === expectedUsername,
-        passwordMatches: document.querySelector('#password')?.value === expectedPassword,
-        unchangedUrl: location.href === loginUrl,
-        submitCount: window.__matrxRealSiteSubmitCount,
-      }), { expectedUsername: username, expectedPassword: password, loginUrl: urls.login });
-      assert(settled.usernameMatches && settled.passwordMatches && settled.unchangedUrl && settled.submitCount === 0
-        && !postFill.observed.navigationRequest && !postFill.observed.nonReadRequest
-        && !postFill.observed.mainFrameNavigation, 'real_site_fill_submitted_after_match');
+      const settled = await page.evaluate(
+        ({ expectedUsername, expectedPassword, loginUrl }) => ({
+          usernameMatches: document.querySelector('#email')?.value === expectedUsername,
+          passwordMatches: document.querySelector('#password')?.value === expectedPassword,
+          unchangedUrl: location.href === loginUrl,
+          submitCount: window.__matrxRealSiteSubmitCount,
+        }),
+        { expectedUsername: username, expectedPassword: password, loginUrl: urls.login },
+      );
+      assert(
+        settled.usernameMatches &&
+          settled.passwordMatches &&
+          settled.unchangedUrl &&
+          settled.submitCount === 0 &&
+          !postFill.observed.navigationRequest &&
+          !postFill.observed.nonReadRequest &&
+          !postFill.observed.mainFrameNavigation,
+        'real_site_fill_submitted_after_match',
+      );
       await wait(Math.min(100, Math.max(1, settleDeadline - Date.now())));
     } while (Date.now() < settleDeadline);
     stopPostFillObservation();
@@ -212,7 +290,12 @@ exports.runRealSiteFillChecks = async ({
     await focusOwnedBrowser(wrongTabId);
     await page.locator('#password').focus();
     await waitForFocusedWrongOriginNoMatch({
-      page, realPanel, tabId: wrongTabId, wrongUrl: urls.wrong, wait, verifyRealVaultPanel,
+      page,
+      realPanel,
+      tabId: wrongTabId,
+      wrongUrl: urls.wrong,
+      wait,
+      verifyRealVaultPanel,
     });
     await realPanel.waitFor(`!(${fill})`, true, 15000);
     const wrongResult = await page.evaluate(() => {
@@ -238,7 +321,10 @@ exports.runRealSiteFillChecks = async ({
     if (proof) proof.realSiteFill = evidence;
   }
   if (primaryFailure) throw primaryFailure;
-  assert(Object.values(evidence).every((value) => value === true), 'real_site_fill_evidence_incomplete');
+  assert(
+    Object.values(evidence).every((value) => value === true),
+    'real_site_fill_evidence_incomplete',
+  );
   return evidence;
 };
 

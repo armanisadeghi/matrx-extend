@@ -1,6 +1,82 @@
 'use strict';
-const assert=require('node:assert/strict');
-const {prepareOwnedProfile,connectOwnedCdp}=require('./vault-owned-cdp.cjs');
-const files=new Map(); const fs={async lstat(p){if(p==='/p')return {isSymbolicLink:()=>false,isDirectory:()=>true}; const e=new Error();e.code='ENOENT';throw e},async readFile(p){if(!files.has(p)){const e=new Error();e.code='ENOENT';throw e}return files.get(p)},async readlink(){return 'host-123'}};
-class WS { constructor(){setImmediate(()=>this.onopen())} send(raw){const m=JSON.parse(raw);setImmediate(()=>this.onmessage({data:JSON.stringify({id:m.id,result:{},...(m.sessionId?{sessionId:m.sessionId}:{})})}))} close(){setImmediate(()=>this.onclose())} }
-(async()=>{const p=await prepareOwnedProfile('/p',fs); files.set('/p/DevToolsActivePort','9222\n/devtools/browser/a-b'); const c=await connectOwnedCdp({preparedProfile:p,chromeExecutable:'/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',fileSystem:fs,WebSocketCtor:WS,processInspector:async()=>({executable:'/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',args:'\0--user-data-dir=/p\0--headless'})}); await c.send('Browser.getVersion'); await c.detach(); assert.equal(c.ownerVerified,true); await assert.rejects(()=>connectOwnedCdp({preparedProfile:p,chromeExecutable:'/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',fileSystem:fs,WebSocketCtor:WS,processInspector:async()=>({executable:'/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',args:'\0--user-data-dir=/prefix/p'})}),/owner/); process.stdout.write('PASS: owned flat CDP validates profile and correlates responses\n')})().catch(e=>{console.error(e);process.exitCode=1});
+const assert = require('node:assert/strict');
+const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs');
+const files = new Map();
+const fs = {
+  async lstat(p) {
+    if (p === '/p') return { isSymbolicLink: () => false, isDirectory: () => true };
+    const e = new Error();
+    e.code = 'ENOENT';
+    throw e;
+  },
+  async readFile(p) {
+    if (!files.has(p)) {
+      const e = new Error();
+      e.code = 'ENOENT';
+      throw e;
+    }
+    return files.get(p);
+  },
+  async readlink() {
+    return 'host-123';
+  },
+};
+class WS {
+  constructor() {
+    setImmediate(() => this.onopen());
+  }
+  send(raw) {
+    const m = JSON.parse(raw);
+    setImmediate(() =>
+      this.onmessage({
+        data: JSON.stringify({
+          id: m.id,
+          result: {},
+          ...(m.sessionId ? { sessionId: m.sessionId } : {}),
+        }),
+      }),
+    );
+  }
+  close() {
+    setImmediate(() => this.onclose());
+  }
+}
+(async () => {
+  const p = await prepareOwnedProfile('/p', fs);
+  files.set('/p/DevToolsActivePort', '9222\n/devtools/browser/a-b');
+  const c = await connectOwnedCdp({
+    preparedProfile: p,
+    chromeExecutable:
+      '/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+    fileSystem: fs,
+    WebSocketCtor: WS,
+    processInspector: async () => ({
+      executable:
+        '/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+      args: '\0--user-data-dir=/p\0--headless',
+    }),
+  });
+  await c.send('Browser.getVersion');
+  await c.detach();
+  assert.equal(c.ownerVerified, true);
+  await assert.rejects(
+    () =>
+      connectOwnedCdp({
+        preparedProfile: p,
+        chromeExecutable:
+          '/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+        fileSystem: fs,
+        WebSocketCtor: WS,
+        processInspector: async () => ({
+          executable:
+            '/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+          args: '\0--user-data-dir=/prefix/p',
+        }),
+      }),
+    /owner/,
+  );
+  process.stdout.write('PASS: owned flat CDP validates profile and correlates responses\n');
+})().catch((e) => {
+  console.error(e);
+  process.exitCode = 1;
+});

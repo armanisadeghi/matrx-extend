@@ -1,9 +1,9 @@
+import userEvent from '@testing-library/user-event';
 // Mounted production panel: replacing its keyed session with an unkeyed child
 // must fail the away/back tests; removing admission must send two actions.
 import { StrictMode, act } from 'react';
 import { type Root, createRoot } from 'react-dom/client';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import userEvent from '@testing-library/user-event';
 import { vaultRefreshControl } from '../browser/vault-setup-recovery-acceptance.cjs';
 
 const deps = vi.hoisted(() => ({
@@ -307,7 +307,11 @@ it('clears revoked Vault metadata and restores it only after a successful reload
     .mockResolvedValueOnce({ ok: true, data: [recovered] });
   function Probe() {
     data = useVault(deps.tab.url, deps.tab.id, actor, admission);
-    return <div>{data.mine.map((item) => item.display_name).join(',')}|{data.error}</div>;
+    return (
+      <div>
+        {data.mine.map((item) => item.display_name).join(',')}|{data.error}
+      </div>
+    );
   }
 
   await act(async () => root.render(<Probe />));
@@ -376,7 +380,11 @@ it('selects Vault Refresh from the active Vault panel when another mounted view 
       </>,
     );
   });
-  const selected = new Function('document', `return ${vaultRefreshControl}`)(document) as HTMLButtonElement | null;
+  const selected = new Function('document', `return ${vaultRefreshControl}`)(
+    document,
+  ) as HTMLButtonElement | null;
   expect(selected).toBeTruthy();
-  expect(selected?.closest('[role="tabpanel"]')?.getAttribute('aria-labelledby')).toBe('vault-trigger');
+  expect(selected?.closest('[role="tabpanel"]')?.getAttribute('aria-labelledby')).toBe(
+    'vault-trigger',
+  );
 });

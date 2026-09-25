@@ -18,12 +18,19 @@ function axName(node) {
 }
 
 function hasAXName(nodes, role, name) {
-  return nodes.some((node) => node?.ignored !== true && axRole(node) === role && axName(node) === name);
+  return nodes.some(
+    (node) => node?.ignored !== true && axRole(node) === role && axName(node) === name,
+  );
 }
 
 function axFocused(node) {
-  return node?.ignored !== true && Array.isArray(node?.properties)
-    && node.properties.some((property) => property?.name === 'focused' && property?.value?.value === true);
+  return (
+    node?.ignored !== true &&
+    Array.isArray(node?.properties) &&
+    node.properties.some(
+      (property) => property?.name === 'focused' && property?.value?.value === true,
+    )
+  );
 }
 
 async function dispatchNativeKey(cdp, { key, code, windowsVirtualKeyCode, text }) {
@@ -53,10 +60,14 @@ async function waitForFixtureAX(fixtureCdp, wait, predicate) {
 }
 
 function chooserButtons(nodes) {
-  const dialogs = nodes.filter(node => node?.ignored !== true && axRole(node) === 'dialog'
-    && axName(node) === 'Saved logins from Matrx Vault');
+  const dialogs = nodes.filter(
+    (node) =>
+      node?.ignored !== true &&
+      axRole(node) === 'dialog' &&
+      axName(node) === 'Saved logins from Matrx Vault',
+  );
   if (dialogs.length !== 1) return [];
-  const byId = new Map(nodes.map(node => [node.nodeId, node]));
+  const byId = new Map(nodes.map((node) => [node.nodeId, node]));
   const pending = [...(dialogs[0].childIds || [])];
   const visited = new Set();
   const buttons = [];
@@ -82,42 +93,92 @@ async function ensureGeneratorOpen(realPanel) {
   }
 }
 
-async function runInlineChooserEscape({ context, fixturePage, targetName, getSubmitCount, assert, wait, focusCredential, focusUnrelated }) {
-  assert(fixturePage && typeof fixturePage.locator === 'function', 'vault_accessibility_fixture_page_missing');
+async function runInlineChooserEscape({
+  context,
+  fixturePage,
+  targetName,
+  getSubmitCount,
+  assert,
+  wait,
+  focusCredential,
+  focusUnrelated,
+}) {
+  assert(
+    fixturePage && typeof fixturePage.locator === 'function',
+    'vault_accessibility_fixture_page_missing',
+  );
   assert(typeof getSubmitCount === 'function', 'vault_accessibility_submit_counter_missing');
-  assert(typeof focusCredential === 'function' && typeof focusUnrelated === 'function', 'vault_accessibility_focus_credential_missing');
+  assert(
+    typeof focusCredential === 'function' && typeof focusUnrelated === 'function',
+    'vault_accessibility_focus_credential_missing',
+  );
   const baselineSubmits = getSubmitCount();
-  assert(Number.isInteger(baselineSubmits) && baselineSubmits >= 0, 'vault_accessibility_submit_counter_invalid');
+  assert(
+    Number.isInteger(baselineSubmits) && baselineSubmits >= 0,
+    'vault_accessibility_submit_counter_invalid',
+  );
   const fixtureCdp = await context.newCDPSession(fixturePage);
   try {
     await focusUnrelated();
     await focusCredential();
-    await fixturePage.waitForFunction(() => document.hasFocus() && document.activeElement?.id === 'password');
-    await fixturePage.locator('#matrx-inline-login-suggestion').waitFor({ state: 'attached', timeout: 15000 });
-    await dispatchNativeKey(fixtureCdp, { key: 'ArrowDown', code: 'ArrowDown', windowsVirtualKeyCode: 40 });
-    let chooserNodes = await waitForFixtureAX(fixtureCdp, wait, nodes => {
+    await fixturePage.waitForFunction(
+      () => document.hasFocus() && document.activeElement?.id === 'password',
+    );
+    await fixturePage
+      .locator('#matrx-inline-login-suggestion')
+      .waitFor({ state: 'attached', timeout: 15000 });
+    await dispatchNativeKey(fixtureCdp, {
+      key: 'ArrowDown',
+      code: 'ArrowDown',
+      windowsVirtualKeyCode: 40,
+    });
+    let chooserNodes = await waitForFixtureAX(fixtureCdp, wait, (nodes) => {
       const buttons = chooserButtons(nodes);
-      return buttons.filter(node => axName(node) === targetName).length === 1
-        && buttons.filter(axFocused).length === 1;
+      return (
+        buttons.filter((node) => axName(node) === targetName).length === 1 &&
+        buttons.filter(axFocused).length === 1
+      );
     });
     // Arrow Down opens the list at its first account, not necessarily the
     // requested fixture. Navigate real keyboard choices to the exact target.
     const choiceBound = chooserButtons(chooserNodes).length;
-    for (let step = 0; step < choiceBound
-      && !chooserButtons(chooserNodes).some(node => axName(node) === targetName && axFocused(node)); step += 1) {
+    for (
+      let step = 0;
+      step < choiceBound &&
+      !chooserButtons(chooserNodes).some((node) => axName(node) === targetName && axFocused(node));
+      step += 1
+    ) {
       const previousFocus = chooserButtons(chooserNodes).find(axFocused)?.nodeId;
-      await dispatchNativeKey(fixtureCdp, { key: 'ArrowDown', code: 'ArrowDown', windowsVirtualKeyCode: 40 });
-      chooserNodes = await waitForFixtureAX(fixtureCdp, wait, nodes =>
-        chooserButtons(nodes).filter(axFocused).length === 1
-        && chooserButtons(nodes).some(node => axFocused(node) && node.nodeId !== previousFocus));
+      await dispatchNativeKey(fixtureCdp, {
+        key: 'ArrowDown',
+        code: 'ArrowDown',
+        windowsVirtualKeyCode: 40,
+      });
+      chooserNodes = await waitForFixtureAX(
+        fixtureCdp,
+        wait,
+        (nodes) =>
+          chooserButtons(nodes).filter(axFocused).length === 1 &&
+          chooserButtons(nodes).some((node) => axFocused(node) && node.nodeId !== previousFocus),
+      );
     }
-    assert(chooserButtons(chooserNodes).filter(node => axName(node) === targetName).length === 1
-      && chooserButtons(chooserNodes).filter(axFocused).length === 1
-      && chooserButtons(chooserNodes).some(node => axName(node) === targetName && axFocused(node)),
-    'vault_accessibility_chooser_target_ax_name_or_focus_missing');
-    await dispatchNativeKey(fixtureCdp, { key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
-    await fixturePage.waitForFunction(() => !document.querySelector('#matrx-inline-login-suggestion')
-      && document.hasFocus() && document.activeElement?.id === 'password');
+    assert(
+      chooserButtons(chooserNodes).filter((node) => axName(node) === targetName).length === 1 &&
+        chooserButtons(chooserNodes).filter(axFocused).length === 1 &&
+        chooserButtons(chooserNodes).some((node) => axName(node) === targetName && axFocused(node)),
+      'vault_accessibility_chooser_target_ax_name_or_focus_missing',
+    );
+    await dispatchNativeKey(fixtureCdp, {
+      key: 'Escape',
+      code: 'Escape',
+      windowsVirtualKeyCode: 27,
+    });
+    await fixturePage.waitForFunction(
+      () =>
+        !document.querySelector('#matrx-inline-login-suggestion') &&
+        document.hasFocus() &&
+        document.activeElement?.id === 'password',
+    );
     assert(getSubmitCount() === baselineSubmits, 'vault_accessibility_escape_submitted_fixture');
     return { exactTargetActionableAX: true, escapeReturnedFocusWithoutSubmit: true };
   } finally {
@@ -126,17 +187,45 @@ async function runInlineChooserEscape({ context, fixturePage, targetName, getSub
 }
 
 exports.runVaultAccessibilityChecks = async ({
-  realPanel, context, worker, fixturePage, targetName, assert, wait, checkpoint = () => {}, proof,
-  verifyRealVaultPanel, getSubmitCount, focusCredential, focusUnrelated,
+  realPanel,
+  context,
+  worker,
+  fixturePage,
+  targetName,
+  assert,
+  wait,
+  checkpoint = () => {},
+  proof,
+  verifyRealVaultPanel,
+  getSubmitCount,
+  focusCredential,
+  focusUnrelated,
 }) => {
-  assert(realPanel && typeof realPanel.send === 'function' && typeof realPanel.evaluate === 'function'
-    && typeof realPanel.waitFor === 'function' && typeof realPanel.click === 'function', 'vault_accessibility_panel_contract_missing');
-  assert(context && typeof context.newCDPSession === 'function', 'vault_accessibility_context_missing');
-  assert(typeof targetName === 'string' && targetName.length > 0, 'vault_accessibility_target_name_missing');
-  assert(typeof assert === 'function' && typeof wait === 'function' && typeof verifyRealVaultPanel === 'function', 'vault_accessibility_controls_missing');
+  assert(
+    realPanel &&
+      typeof realPanel.send === 'function' &&
+      typeof realPanel.evaluate === 'function' &&
+      typeof realPanel.waitFor === 'function' &&
+      typeof realPanel.click === 'function',
+    'vault_accessibility_panel_contract_missing',
+  );
+  assert(
+    context && typeof context.newCDPSession === 'function',
+    'vault_accessibility_context_missing',
+  );
+  assert(
+    typeof targetName === 'string' && targetName.length > 0,
+    'vault_accessibility_target_name_missing',
+  );
+  assert(
+    typeof assert === 'function' &&
+      typeof wait === 'function' &&
+      typeof verifyRealVaultPanel === 'function',
+    'vault_accessibility_controls_missing',
+  );
   assert(proof && typeof proof === 'object', 'vault_accessibility_proof_missing');
 
-  const evidence = proof.accessibility = {
+  const evidence = (proof.accessibility = {
     vaultTabAXName: false,
     vaultTabpanelAXName: false,
     generatorAXRegionAndButtons: false,
@@ -148,7 +237,7 @@ exports.runVaultAccessibilityChecks = async ({
     actualBrowserZoom200: false,
     zoomedChooserKeyboardAndEscape: false,
     browserZoomRestored: false,
-  };
+  });
   let primaryFailure = null;
   let emulationSet = false;
   let viewportBefore = null;
@@ -160,19 +249,34 @@ exports.runVaultAccessibilityChecks = async ({
     const semanticTree = await axTree(realPanel);
     assert(hasAXName(semanticTree, 'tab', 'Vault'), 'vault_accessibility_vault_tab_name_missing');
     evidence.vaultTabAXName = true;
-    assert(hasAXName(semanticTree, 'tabpanel', 'Vault'), 'vault_accessibility_vault_tabpanel_name_missing');
+    assert(
+      hasAXName(semanticTree, 'tabpanel', 'Vault'),
+      'vault_accessibility_vault_tabpanel_name_missing',
+    );
     evidence.vaultTabpanelAXName = true;
     const generatorNames = ['Password generator', 'Password', 'Passphrase', 'Generate'];
-    assert(hasAXName(semanticTree, 'region', 'Password generator')
-      && generatorNames.every((name) => hasAXName(semanticTree, 'button', name)), 'vault_accessibility_generator_ax_name_missing');
+    assert(
+      hasAXName(semanticTree, 'region', 'Password generator') &&
+        generatorNames.every((name) => hasAXName(semanticTree, 'button', name)),
+      'vault_accessibility_generator_ax_name_missing',
+    );
     evidence.generatorAXRegionAndButtons = true;
 
     checkpoint('vault_accessibility_compact_viewport');
-    viewportBefore = await realPanel.evaluate('({ width: innerWidth, height: innerHeight, dpr: devicePixelRatio })');
-    assert(Number.isInteger(viewportBefore?.width) && Number.isInteger(viewportBefore?.height)
-      && typeof viewportBefore?.dpr === 'number', 'vault_accessibility_original_viewport_missing');
+    viewportBefore = await realPanel.evaluate(
+      '({ width: innerWidth, height: innerHeight, dpr: devicePixelRatio })',
+    );
+    assert(
+      Number.isInteger(viewportBefore?.width) &&
+        Number.isInteger(viewportBefore?.height) &&
+        typeof viewportBefore?.dpr === 'number',
+      'vault_accessibility_original_viewport_missing',
+    );
     await realPanel.send('Emulation.setDeviceMetricsOverride', {
-      width: 320, height: 800, deviceScaleFactor: 1, mobile: false,
+      width: 320,
+      height: 800,
+      deviceScaleFactor: 1,
+      mobile: false,
     });
     emulationSet = true;
     await realPanel.waitFor('innerWidth === 320', true, 10000);
@@ -192,55 +296,88 @@ exports.runVaultAccessibilityChecks = async ({
         actionsVisible: visible,
       };
     })()`);
-    assert(compact?.noHorizontalOverflow === true, 'vault_accessibility_compact_horizontal_overflow');
+    assert(
+      compact?.noHorizontalOverflow === true,
+      'vault_accessibility_compact_horizontal_overflow',
+    );
     evidence.compactViewportNoHorizontalOverflow = true;
     assert(compact?.actionsVisible === true, 'vault_accessibility_compact_actions_clipped');
     evidence.compactViewportActionsVisible = true;
 
     checkpoint('vault_accessibility_inline_chooser_escape');
     const chooser = await runInlineChooserEscape({
-      context, fixturePage, targetName, getSubmitCount, assert, wait, focusCredential, focusUnrelated,
+      context,
+      fixturePage,
+      targetName,
+      getSubmitCount,
+      assert,
+      wait,
+      focusCredential,
+      focusUnrelated,
     });
     evidence.inlineChooserDialogAndTargetAX = chooser.exactTargetActionableAX;
-    evidence.inlineChooserEscapeReturnsFocusWithoutSubmit = chooser.escapeReturnedFocusWithoutSubmit;
+    evidence.inlineChooserEscapeReturnsFocusWithoutSubmit =
+      chooser.escapeReturnedFocusWithoutSubmit;
 
     checkpoint('vault_accessibility_actual_browser_zoom');
-    assert(worker && typeof worker.evaluate === 'function', 'vault_accessibility_zoom_worker_missing');
+    assert(
+      worker && typeof worker.evaluate === 'function',
+      'vault_accessibility_zoom_worker_missing',
+    );
     zoomBefore = await worker.evaluate(async (url) => {
-      const tabs = (await chrome.tabs.query({})).filter(tab => tab.url === url);
-      if (tabs.length !== 1 || !Number.isInteger(tabs[0].id)) throw new Error('zoom_fixture_not_unique');
+      const tabs = (await chrome.tabs.query({})).filter((tab) => tab.url === url);
+      if (tabs.length !== 1 || !Number.isInteger(tabs[0].id))
+        throw new Error('zoom_fixture_not_unique');
       const id = tabs[0].id;
-      return { id, url, factor: await chrome.tabs.getZoom(id), settings: await chrome.tabs.getZoomSettings(id) };
+      return {
+        id,
+        url,
+        factor: await chrome.tabs.getZoom(id),
+        settings: await chrome.tabs.getZoomSettings(id),
+      };
     }, fixturePage.url());
     await worker.evaluate(async ({ id, url }) => {
       if ((await chrome.tabs.get(id)).url !== url) throw new Error('zoom_fixture_changed');
       await chrome.tabs.setZoomSettings(id, { mode: 'automatic', scope: 'per-tab' });
       await chrome.tabs.setZoom(id, 2);
     }, zoomBefore);
-    const actualZoom = await worker.evaluate(id => chrome.tabs.getZoom(id), zoomBefore.id);
+    const actualZoom = await worker.evaluate((id) => chrome.tabs.getZoom(id), zoomBefore.id);
     assert(actualZoom === 2, 'vault_accessibility_actual_zoom_not_200');
     evidence.actualBrowserZoom200 = true;
     const zoomedChooser = await runInlineChooserEscape({
-      context, fixturePage, targetName, getSubmitCount, assert, wait, focusCredential, focusUnrelated,
+      context,
+      fixturePage,
+      targetName,
+      getSubmitCount,
+      assert,
+      wait,
+      focusCredential,
+      focusUnrelated,
     });
-    evidence.zoomedChooserKeyboardAndEscape = zoomedChooser.exactTargetActionableAX
-      && zoomedChooser.escapeReturnedFocusWithoutSubmit;
-
+    evidence.zoomedChooserKeyboardAndEscape =
+      zoomedChooser.exactTargetActionableAX && zoomedChooser.escapeReturnedFocusWithoutSubmit;
   } catch (error) {
     primaryFailure = error;
   } finally {
     if (zoomBefore) {
       try {
         const restored = await worker.evaluate(async ({ id, url, factor, settings }) => {
-          if ((await chrome.tabs.get(id)).url !== url) throw new Error('zoom_restore_fixture_changed');
+          if ((await chrome.tabs.get(id)).url !== url)
+            throw new Error('zoom_restore_fixture_changed');
           await chrome.tabs.setZoom(id, factor);
           await chrome.tabs.setZoomSettings(id, { mode: settings.mode, scope: settings.scope });
           const after = await chrome.tabs.getZoomSettings(id);
-          return (await chrome.tabs.getZoom(id)) === factor && after.mode === settings.mode && after.scope === settings.scope;
+          return (
+            (await chrome.tabs.getZoom(id)) === factor &&
+            after.mode === settings.mode &&
+            after.scope === settings.scope
+          );
         }, zoomBefore);
         assert(restored === true, 'vault_accessibility_browser_zoom_not_restored');
         evidence.browserZoomRestored = true;
-      } catch (error) { if (!primaryFailure) primaryFailure = error; }
+      } catch (error) {
+        if (!primaryFailure) primaryFailure = error;
+      }
     }
     if (emulationSet) {
       try {
@@ -256,6 +393,9 @@ exports.runVaultAccessibilityChecks = async ({
     }
   }
   if (primaryFailure) throw primaryFailure;
-  assert(Object.values(evidence).every((value) => value === true), 'vault_accessibility_evidence_incomplete');
+  assert(
+    Object.values(evidence).every((value) => value === true),
+    'vault_accessibility_evidence_incomplete',
+  );
   return evidence;
 };

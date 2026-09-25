@@ -142,20 +142,34 @@ describe('user-table organization boundary', () => {
     });
   });
 
-  it('a moved organization\'s new table is declared in the record store, never the older RPC', async () => {
+  it("a moved organization's new table is declared in the record store, never the older RPC", async () => {
     home.livesIn = 'record';
     await expect(
       createUserTableFromSchema({
         table_name: 'Ventura Supply — valve prices',
         organization_id: ORGANIZATION_ID,
-        fields: [{ field_name: 'Price (USD)', display_name: 'Price (USD)', data_type: 'number', field_order: 0 }],
+        fields: [
+          {
+            field_name: 'Price (USD)',
+            display_name: 'Price (USD)',
+            data_type: 'number',
+            field_order: 0,
+          },
+        ],
       }),
     ).resolves.toEqual({ id: '44444444-4444-4444-8444-444444444444' });
     expect(home.declareStoreTable).toHaveBeenCalledWith(
       {},
       expect.objectContaining({
         name: 'Ventura Supply — valve prices',
-        fields: [{ field_name: 'price_usd', display_name: 'Price (USD)', data_type: 'number', field_order: 0 }],
+        fields: [
+          {
+            field_name: 'price_usd',
+            display_name: 'Price (USD)',
+            data_type: 'number',
+            field_order: 0,
+          },
+        ],
       }),
     );
     expect(mocks.rpc).not.toHaveBeenCalled();
@@ -163,10 +177,16 @@ describe('user-table organization boundary', () => {
 
   it('an append to a record-store table goes through the store with the same column mapping', async () => {
     home.storeTables = [
-      { id: '33333333-3333-4333-8333-333333333333', table_name: 'Parts on order', organization_id: ORGANIZATION_ID },
+      {
+        id: '33333333-3333-4333-8333-333333333333',
+        table_name: 'Parts on order',
+        organization_id: ORGANIZATION_ID,
+      },
     ];
     await expect(
-      appendRowsToUserTable('33333333-3333-4333-8333-333333333333', ORGANIZATION_ID, [{ 'First Name': 'Ada' }]),
+      appendRowsToUserTable('33333333-3333-4333-8333-333333333333', ORGANIZATION_ID, [
+        { 'First Name': 'Ada' },
+      ]),
     ).resolves.toEqual({ inserted: 1 });
     expect(home.appendStoreRows).toHaveBeenCalledWith({}, '33333333-3333-4333-8333-333333333333', [
       { first_name: 'Ada' },

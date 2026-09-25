@@ -79,7 +79,10 @@ export type HandoffStatus = (typeof HANDOFF_STATUSES)[number];
  * The statuses that mean "a person's browser is the only thing that can move
  * this". Exactly what the sidepanel tray lists and what the badge counts.
  */
-export const NEEDS_YOU_STATUSES = ['waiting', 'needs_drive'] as const satisfies readonly HandoffStatus[];
+export const NEEDS_YOU_STATUSES = [
+  'waiting',
+  'needs_drive',
+] as const satisfies readonly HandoffStatus[];
 
 /**
  * §2. The machine classes a person's own browser can beat — the reasons that
@@ -213,7 +216,10 @@ export function isLadderViolation(err: unknown): err is LadderViolation {
  *
  * Throws `LadderViolation`; returns nothing on success.
  */
-export function assertRungMatches(handoff: Pick<Handoff, 'id' | 'rung'>, capturedByRung: string): void {
+export function assertRungMatches(
+  handoff: Pick<Handoff, 'id' | 'rung'>,
+  capturedByRung: string,
+): void {
   if (capturedByRung === handoff.rung) return;
   throw new LadderViolation({
     kind: 'rung_mismatch',

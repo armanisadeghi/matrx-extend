@@ -39,8 +39,8 @@
  * and passed straight to the token endpoint.
  */
 
+import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { readFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -202,7 +202,7 @@ async function main() {
   const email = aidreamEnv.AI_ADMIN_USERNAME;
   const password = aidreamEnv.AI_ADMIN_PASSWORD;
   if (!supabaseUrl || !publishableKey) {
-    fail('WXT_SUPABASE_URL / WXT_SUPABASE_PUBLISHABLE_KEY are missing from this repo\'s .env.');
+    fail("WXT_SUPABASE_URL / WXT_SUPABASE_PUBLISHABLE_KEY are missing from this repo's .env.");
   }
   if (!email || !password) {
     fail('AI_ADMIN_USERNAME / AI_ADMIN_PASSWORD are missing from aidream/.env.');
@@ -244,8 +244,7 @@ async function main() {
   });
   if (queue.error) {
     fail(
-      'the live media.capture_handoff queue could not be read with this real token: ' +
-        queue.error,
+      'the live media.capture_handoff queue could not be read with this real token: ' + queue.error,
     );
   }
   console.log(`  queue       ${queue.rows.length} row(s) waiting for a browser`);

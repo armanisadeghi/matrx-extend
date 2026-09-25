@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { EXPECTED_EXTENSION_IDS, FIREFOX_GECKO_ID, expectedRedirectUris, isExpectedExtensionId } from '@/config/identity';
+import {
+  EXPECTED_EXTENSION_IDS,
+  FIREFOX_GECKO_ID,
+  expectedRedirectUris,
+  isExpectedExtensionId,
+} from '@/config/identity';
 
 const mocks = vi.hoisted(() => ({
   info: vi.fn(),
@@ -22,8 +27,10 @@ const CHROME_DEV_REDIRECT_URI = 'https://cihdmkcdjjckfhjpgoedmgfpoljebaml.chromi
 const CHROME_STORE_ID = 'hnfolienncfklkgmdjjmhhegglimlamg';
 const CHROME_STORE_REDIRECT_URI = 'https://hnfolienncfklkgmdjjmhhegglimlamg.chromiumapp.org/';
 const OBSERVED_FIREFOX_ID = 'matrx-extend@aimatrx.com';
-const FIREFOX_REDIRECT_URI = 'https://73e3f15e331d0e9b5e3e05495f4d29e37690cbad.extensions.allizom.org/';
-const UNKNOWN_FIREFOX_REDIRECT_URI = 'https://0f0e0d0c0b0a09080706050403020100ffeeddcc.extensions.allizom.org/';
+const FIREFOX_REDIRECT_URI =
+  'https://73e3f15e331d0e9b5e3e05495f4d29e37690cbad.extensions.allizom.org/';
+const UNKNOWN_FIREFOX_REDIRECT_URI =
+  'https://0f0e0d0c0b0a09080706050403020100ffeeddcc.extensions.allizom.org/';
 
 function setExtensionRuntime(runtimeId: string, redirectUri: string) {
   vi.stubGlobal('chrome', {
@@ -44,18 +51,21 @@ describe('extension identity diagnostics', () => {
   it.each([
     [CHROME_DEV_ID, CHROME_DEV_REDIRECT_URI],
     [CHROME_STORE_ID, CHROME_STORE_REDIRECT_URI],
-  ])('accepts the exact independently observed Chromium callback for %s', async (runtimeId, redirectUri) => {
-    setExtensionRuntime(runtimeId, redirectUri);
-    const { readExtensionIdentity } = await import('@/lib/auth/identity');
+  ])(
+    'accepts the exact independently observed Chromium callback for %s',
+    async (runtimeId, redirectUri) => {
+      setExtensionRuntime(runtimeId, redirectUri);
+      const { readExtensionIdentity } = await import('@/lib/auth/identity');
 
-    expect(readExtensionIdentity()).toMatchObject({
-      runtime_id: runtimeId,
-      known_id: true,
-      expected_redirect_uri: redirectUri,
-      redirect_matches_expected: true,
-      matches_expected: true,
-    });
-  });
+      expect(readExtensionIdentity()).toMatchObject({
+        runtime_id: runtimeId,
+        known_id: true,
+        expected_redirect_uri: redirectUri,
+        redirect_matches_expected: true,
+        matches_expected: true,
+      });
+    },
+  );
 
   it('accepts Firefox only with its observed hashed callback URI', async () => {
     expect(FIREFOX_GECKO_ID).toBe(OBSERVED_FIREFOX_ID);
@@ -86,13 +96,20 @@ describe('extension identity diagnostics', () => {
     });
   });
 
-  it.each(['constructor', 'toString', '__proto__'])('refuses inherited object property runtime ID %s', async (runtimeId) => {
-    setExtensionRuntime(runtimeId, UNKNOWN_FIREFOX_REDIRECT_URI);
-    const { readExtensionIdentity } = await import('@/lib/auth/identity');
+  it.each(['constructor', 'toString', '__proto__'])(
+    'refuses inherited object property runtime ID %s',
+    async (runtimeId) => {
+      setExtensionRuntime(runtimeId, UNKNOWN_FIREFOX_REDIRECT_URI);
+      const { readExtensionIdentity } = await import('@/lib/auth/identity');
 
-    expect(isExpectedExtensionId(runtimeId)).toBe(false);
-    expect(readExtensionIdentity()).toMatchObject({ known_id: false, expected_redirect_uri: '', matches_expected: false });
-  });
+      expect(isExpectedExtensionId(runtimeId)).toBe(false);
+      expect(readExtensionIdentity()).toMatchObject({
+        known_id: false,
+        expected_redirect_uri: '',
+        matches_expected: false,
+      });
+    },
+  );
 
   it('rejects a known runtime ID paired with a different actual callback', async () => {
     setExtensionRuntime(CHROME_DEV_ID, UNKNOWN_FIREFOX_REDIRECT_URI);

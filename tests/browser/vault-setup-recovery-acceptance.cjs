@@ -18,7 +18,8 @@ const NO_FOCUSED_LOGIN_REMEDY =
   'No login field is ready to fill. Enter the login manually, or focus the username or password field on a supported sign-in page and try Fill again.';
 const RESTRICTED_PAGE_REMEDY =
   "This browser page can't be filled. Open a sign-in page on a regular website, or enter the login manually.";
-const FORBIDDEN_LIST_REMEDY = 'The Vault refused this request. You may not have access to this item.';
+const FORBIDDEN_LIST_REMEDY =
+  'The Vault refused this request. You may not have access to this item.';
 const OFFLINE_LIST_REMEDY = 'The Vault is unavailable right now (0).';
 
 function renderVaultSetupRecoveryFixtureHTML() {
@@ -50,9 +51,11 @@ function renderVaultSetupRecoveryFixtureHTML() {
 
 async function tabFor(worker, url, wait) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
-    const tabId = await worker.evaluate(async (expectedUrl) =>
-      (await chrome.tabs.query({})).find((tab) => tab.url === expectedUrl)?.id,
-    url);
+    const tabId = await worker.evaluate(
+      async (expectedUrl) =>
+        (await chrome.tabs.query({})).find((tab) => tab.url === expectedUrl)?.id,
+      url,
+    );
     if (Number.isInteger(tabId)) return tabId;
     await wait(100);
   }
@@ -61,10 +64,14 @@ async function tabFor(worker, url, wait) {
 
 async function uniqueTabFor(worker, url, wait) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
-    const ids = await worker.evaluate(async (expectedUrl) =>
-      (await chrome.tabs.query({})).filter((tab) => tab.url === expectedUrl)
-        .map((tab) => tab.id).filter(Number.isInteger),
-    url);
+    const ids = await worker.evaluate(
+      async (expectedUrl) =>
+        (await chrome.tabs.query({}))
+          .filter((tab) => tab.url === expectedUrl)
+          .map((tab) => tab.id)
+          .filter(Number.isInteger),
+      url,
+    );
     if (Array.isArray(ids) && ids.length === 1) return ids[0];
     await wait(100);
   }
@@ -116,7 +123,8 @@ const listRowFor = (targetName) => `Array.from(document.querySelectorAll('li')).
 
 // The direct children are only the selected Mine/Shared list's ItemRow nodes;
 // matching-login cards and field rows are outside this selector.
-const ownListRows = 'document.querySelectorAll(\'ul.space-y-1.px-2.pb-3 > li.rounded-md.border.bg-card\')';
+const ownListRows =
+  "document.querySelectorAll('ul.space-y-1.px-2.pb-3 > li.rounded-md.border.bg-card')";
 const mineScopeActive = `Array.from(document.querySelectorAll('button')).some((button) =>
   button.textContent?.trim().startsWith('Mine (') && button.getAttribute('data-state') === 'active')`;
 
@@ -137,9 +145,11 @@ const vaultRefreshControl = `(() => {
 })()`;
 
 function allMatchingVaultListReadsRefused(snapshot) {
-  return snapshot?.matchingRequests > 0
-    && snapshot.refusedRequests === snapshot.matchingRequests
-    && snapshot.observerErrors === 0;
+  return (
+    snapshot?.matchingRequests > 0 &&
+    snapshot.refusedRequests === snapshot.matchingRequests &&
+    snapshot.observerErrors === 0
+  );
 }
 
 /**
@@ -149,21 +159,37 @@ function allMatchingVaultListReadsRefused(snapshot) {
  * never creates a Vault item or changes settings.
  */
 exports.runVaultListTransportRecoveryChecks = async ({
-  context, realPanel, targetName, minimumOwnListRows, apiOrigin, exactPanelDocumentUrl, getVaultWriteCount,
-  snapshotOwnedReceiptState, assert, checkpoint = () => {}, proof, verifyRealVaultPanel,
+  context,
+  realPanel,
+  targetName,
+  minimumOwnListRows,
+  apiOrigin,
+  exactPanelDocumentUrl,
+  getVaultWriteCount,
+  snapshotOwnedReceiptState,
+  assert,
+  checkpoint = () => {},
+  proof,
+  verifyRealVaultPanel,
 }) => {
   assert(context && realPanel && proof, 'vault_setup_transport_controls_missing');
   const namedTarget = typeof targetName === 'string' && targetName.length > 0;
-  const rowFloor = Number.isSafeInteger(minimumOwnListRows) && minimumOwnListRows > 0
-    ? minimumOwnListRows
-    : null;
+  const rowFloor =
+    Number.isSafeInteger(minimumOwnListRows) && minimumOwnListRows > 0 ? minimumOwnListRows : null;
   assert(namedTarget || rowFloor !== null, 'vault_setup_transport_target_missing');
-  assert(typeof getVaultWriteCount === 'function' && typeof snapshotOwnedReceiptState === 'function'
-    && typeof verifyRealVaultPanel === 'function', 'vault_setup_transport_state_missing');
+  assert(
+    typeof getVaultWriteCount === 'function' &&
+      typeof snapshotOwnedReceiptState === 'function' &&
+      typeof verifyRealVaultPanel === 'function',
+    'vault_setup_transport_state_missing',
+  );
   const writesBefore = getVaultWriteCount();
   const receiptBefore = JSON.stringify(snapshotOwnedReceiptState());
-  assert(Number.isInteger(writesBefore) && writesBefore >= 0 && typeof receiptBefore === 'string', 'vault_setup_transport_baseline_invalid');
-  const evidence = proof.setupTransportRecovery = {
+  assert(
+    Number.isInteger(writesBefore) && writesBefore >= 0 && typeof receiptBefore === 'string',
+    'vault_setup_transport_baseline_invalid',
+  );
+  const evidence = (proof.setupTransportRecovery = {
     initialPanelListReady: false,
     permissionLossClearsStaleList: false,
     permissionRecoveryRestoresServerList: false,
@@ -171,32 +197,35 @@ exports.runVaultListTransportRecoveryChecks = async ({
     offlineRecoveryRestoresServerList: false,
     noVaultWritesOrReceiptChanges: false,
     interceptorsRemoved: false,
-  };
-  const diagnostics = proof.setupTransportDiagnostics = {};
-  const rowPresent = namedTarget
-    ? listRowFor(targetName)
-    : `${ownListRows}.length >= ${rowFloor}`;
-  const rowAbsent = namedTarget
-    ? `!(${listRowFor(targetName)})`
-    : `${ownListRows}.length === 0`;
+  });
+  const diagnostics = (proof.setupTransportDiagnostics = {});
+  const rowPresent = namedTarget ? listRowFor(targetName) : `${ownListRows}.length >= ${rowFloor}`;
+  const rowAbsent = namedTarget ? `!(${listRowFor(targetName)})` : `${ownListRows}.length === 0`;
   const run = async (mode, remedy, lostKey, recoveredKey) => {
     await verifyRealVaultPanel();
     await realPanel.waitFor(mineScopeActive, true, 15000);
     await realPanel.waitFor(rowPresent, true, 15000);
     evidence.initialPanelListReady = true;
     const fault = createNativePanelFetchFailure({ panel: realPanel, apiOrigin, mode });
-    const diagnostic = diagnostics[mode] = {};
+    const diagnostic = (diagnostics[mode] = {});
     try {
       await fault.install();
       checkpoint(`vault_setup_transport_${mode}_refusal`);
       await realPanel.click(vaultRefreshControl);
-      await realPanel.waitFor(`document.body.textContent?.includes(${JSON.stringify(remedy)}) === true`, true, 15000);
+      await realPanel.waitFor(
+        `document.body.textContent?.includes(${JSON.stringify(remedy)}) === true`,
+        true,
+        15000,
+      );
       await realPanel.waitFor(rowAbsent, true, 15000);
       const snapshot = fault.snapshot();
       // useVault reloads on mount and the Refresh control starts another
       // server-authoritative read. Every observed own-list GET must be refused;
       // request multiplicity itself is not a product failure.
-      assert(allMatchingVaultListReadsRefused(snapshot), `vault_setup_transport_${mode}_not_intercepted`);
+      assert(
+        allMatchingVaultListReadsRefused(snapshot),
+        `vault_setup_transport_${mode}_not_intercepted`,
+      );
       evidence[lostKey] = true;
     } finally {
       // Record the latest value-free state even when a UI wait or assertion
@@ -209,22 +238,45 @@ exports.runVaultListTransportRecoveryChecks = async ({
         const disposed = fault.snapshot();
         diagnostic.afterDispose = disposed;
         checkpoint(`vault_setup_transport_${mode}_after_dispose`);
-        assert(disposed.pendingTasks === 0 && disposed.observerErrors === 0, `vault_setup_transport_${mode}_disposal_unclean`);
+        assert(
+          disposed.pendingTasks === 0 && disposed.observerErrors === 0,
+          `vault_setup_transport_${mode}_disposal_unclean`,
+        );
         evidence.interceptorsRemoved = evidence.interceptorsRemoved || disposed.disposed === true;
       }
     }
     checkpoint(`vault_setup_transport_${mode}_recovery`);
     await realPanel.click(vaultRefreshControl);
     await realPanel.waitFor(rowPresent, true, 15000);
-    await realPanel.waitFor(`document.body.textContent?.includes(${JSON.stringify(remedy)}) === false`, true, 15000);
+    await realPanel.waitFor(
+      `document.body.textContent?.includes(${JSON.stringify(remedy)}) === false`,
+      true,
+      15000,
+    );
     evidence[recoveredKey] = true;
   };
-  await run('forbidden', FORBIDDEN_LIST_REMEDY, 'permissionLossClearsStaleList', 'permissionRecoveryRestoresServerList');
-  await run('offline', OFFLINE_LIST_REMEDY, 'offlineClearsStaleList', 'offlineRecoveryRestoresServerList');
+  await run(
+    'forbidden',
+    FORBIDDEN_LIST_REMEDY,
+    'permissionLossClearsStaleList',
+    'permissionRecoveryRestoresServerList',
+  );
+  await run(
+    'offline',
+    OFFLINE_LIST_REMEDY,
+    'offlineClearsStaleList',
+    'offlineRecoveryRestoresServerList',
+  );
   assert(getVaultWriteCount() === writesBefore, 'vault_setup_transport_vault_write');
-  assert(JSON.stringify(snapshotOwnedReceiptState()) === receiptBefore, 'vault_setup_transport_receipt_changed');
+  assert(
+    JSON.stringify(snapshotOwnedReceiptState()) === receiptBefore,
+    'vault_setup_transport_receipt_changed',
+  );
   evidence.noVaultWritesOrReceiptChanges = true;
-  assert(Object.values(evidence).every((value) => value === true), 'vault_setup_transport_evidence_incomplete');
+  assert(
+    Object.values(evidence).every((value) => value === true),
+    'vault_setup_transport_evidence_incomplete',
+  );
   return evidence;
 };
 
@@ -234,34 +286,66 @@ exports.runVaultListTransportRecoveryChecks = async ({
  * caller restores an ordinary, extension-reachable localhost login form.
  */
 exports.runVaultSetupRecoveryChecks = async ({
-  context, worker, realPanel, targetName, parentLoginUrl, getSubmitCount,
-  getVaultWriteCount, snapshotOwnedReceiptState, assert, wait, checkpoint = () => {}, proof,
-  focusOwnedBrowser, verifyRealVaultPanel,
+  context,
+  worker,
+  realPanel,
+  targetName,
+  parentLoginUrl,
+  getSubmitCount,
+  getVaultWriteCount,
+  snapshotOwnedReceiptState,
+  assert,
+  wait,
+  checkpoint = () => {},
+  proof,
+  focusOwnedBrowser,
+  verifyRealVaultPanel,
 }) => {
   assert(context && worker && realPanel, 'vault_setup_recovery_context_missing');
-  assert(typeof targetName === 'string' && targetName.length > 0, 'vault_setup_recovery_target_missing');
-  assert(typeof parentLoginUrl === 'string' && typeof getSubmitCount === 'function'
-    && typeof getVaultWriteCount === 'function' && typeof snapshotOwnedReceiptState === 'function',
-  'vault_setup_recovery_fixture_missing');
-  assert(typeof assert === 'function' && typeof wait === 'function' && typeof focusOwnedBrowser === 'function'
-    && typeof verifyRealVaultPanel === 'function', 'vault_setup_recovery_controls_missing');
+  assert(
+    typeof targetName === 'string' && targetName.length > 0,
+    'vault_setup_recovery_target_missing',
+  );
+  assert(
+    typeof parentLoginUrl === 'string' &&
+      typeof getSubmitCount === 'function' &&
+      typeof getVaultWriteCount === 'function' &&
+      typeof snapshotOwnedReceiptState === 'function',
+    'vault_setup_recovery_fixture_missing',
+  );
+  assert(
+    typeof assert === 'function' &&
+      typeof wait === 'function' &&
+      typeof focusOwnedBrowser === 'function' &&
+      typeof verifyRealVaultPanel === 'function',
+    'vault_setup_recovery_controls_missing',
+  );
   const parent = new URL(parentLoginUrl);
-  assert(parent.protocol === 'http:' && parent.hostname === '127.0.0.1', 'vault_setup_recovery_parent_origin_invalid');
+  assert(
+    parent.protocol === 'http:' && parent.hostname === '127.0.0.1',
+    'vault_setup_recovery_parent_origin_invalid',
+  );
   const closedRootUrl = new URL(CLOSED_ROOT_PATH, parent.origin).href;
   const baselineSubmits = getSubmitCount();
-  assert(Number.isInteger(baselineSubmits) && baselineSubmits >= 0, 'vault_setup_recovery_submit_counter_invalid');
-  const evidence = proof.setupRecovery = {
+  assert(
+    Number.isInteger(baselineSubmits) && baselineSubmits >= 0,
+    'vault_setup_recovery_submit_counter_invalid',
+  );
+  const evidence = (proof.setupRecovery = {
     closedRootManualRecovery: false,
     restrictedPageManualRecovery: false,
     inaccessiblePagesNoWritesOrSubmit: false,
     normalPagePanelReadinessRecovered: false,
     wholeHelperNoWritesOrSubmit: false,
     fixturePagesClosed: false,
-  };
+  });
   const ownedPages = new Set();
   const vaultWritesBefore = getVaultWriteCount();
   const receiptBefore = JSON.stringify(snapshotOwnedReceiptState());
-  assert(Number.isInteger(vaultWritesBefore) && vaultWritesBefore >= 0, 'vault_setup_recovery_write_counter_invalid');
+  assert(
+    Number.isInteger(vaultWritesBefore) && vaultWritesBefore >= 0,
+    'vault_setup_recovery_write_counter_invalid',
+  );
   assert(typeof receiptBefore === 'string', 'vault_setup_recovery_receipt_snapshot_invalid');
   let page;
   let primaryFailure;
@@ -273,7 +357,8 @@ exports.runVaultSetupRecoveryChecks = async ({
   };
   try {
     checkpoint('vault_setup_recovery_closed_root');
-    page = await context.newPage(); ownedPages.add(page);
+    page = await context.newPage();
+    ownedPages.add(page);
     await page.goto(closedRootUrl, { waitUntil: 'domcontentloaded' });
     const closedTabId = await tabFor(worker, closedRootUrl, wait);
     await waitForBridge(worker, closedTabId, wait);
@@ -281,11 +366,18 @@ exports.runVaultSetupRecoveryChecks = async ({
     await focusOwnedBrowser(closedTabId);
     await page.evaluate(() => window.__vaultSetupRecoveryFixture?.focusPassword());
     const closedState = await page.evaluate(() => window.__vaultSetupRecoveryFixture?.state());
-    assert(closedState?.focusedPassword === true && closedState.usernameEmpty === true && closedState.passwordEmpty === true,
-      'vault_setup_recovery_closed_root_fixture_invalid');
+    assert(
+      closedState?.focusedPassword === true &&
+        closedState.usernameEmpty === true &&
+        closedState.passwordEmpty === true,
+      'vault_setup_recovery_closed_root_fixture_invalid',
+    );
     await verifyRealVaultPanel();
     await realPanel.waitFor(noFocusedLoginManualRecoveryVisible, true, 15000);
-    assert((await page.locator('#matrx-inline-login-suggestion').count()) === 0, 'vault_setup_recovery_closed_root_overlay_present');
+    assert(
+      (await page.locator('#matrx-inline-login-suggestion').count()) === 0,
+      'vault_setup_recovery_closed_root_overlay_present',
+    );
     evidence.closedRootManualRecovery = true;
 
     checkpoint('vault_setup_recovery_restricted_page');
@@ -297,9 +389,18 @@ exports.runVaultSetupRecoveryChecks = async ({
     await realPanel.waitFor(restrictedManualRecoveryVisible, true, 15000);
     evidence.restrictedPageManualRecovery = true;
 
-    assert(getSubmitCount() === baselineSubmits, 'vault_setup_recovery_inaccessible_page_submitted');
-    assert(getVaultWriteCount() === vaultWritesBefore, 'vault_setup_recovery_inaccessible_page_vault_write');
-    assert(JSON.stringify(snapshotOwnedReceiptState()) === receiptBefore, 'vault_setup_recovery_inaccessible_page_receipt_changed');
+    assert(
+      getSubmitCount() === baselineSubmits,
+      'vault_setup_recovery_inaccessible_page_submitted',
+    );
+    assert(
+      getVaultWriteCount() === vaultWritesBefore,
+      'vault_setup_recovery_inaccessible_page_vault_write',
+    );
+    assert(
+      JSON.stringify(snapshotOwnedReceiptState()) === receiptBefore,
+      'vault_setup_recovery_inaccessible_page_receipt_changed',
+    );
     evidence.inaccessiblePagesNoWritesOrSubmit = true;
 
     checkpoint('vault_setup_recovery_accessible_page');
@@ -310,15 +411,26 @@ exports.runVaultSetupRecoveryChecks = async ({
     await waitForBridge(worker, parentTabId, wait);
     await page.bringToFront();
     await focusOwnedTab(recoveryUrl.href, () => page.locator('#password').focus());
-    await page.waitForFunction(() => document.hasFocus() && document.activeElement?.id === 'password');
+    await page.waitForFunction(
+      () => document.hasFocus() && document.activeElement?.id === 'password',
+    );
     await verifyRealVaultPanel();
     const fill = fillFor(targetName);
     await realPanel.waitFor(`!!(${fill}) && !(${fill}).disabled`, true, 15000);
-    assert((await page.locator('#matrx-inline-login-suggestion').count()) === 0, 'vault_setup_recovery_accessible_overlay_present');
+    assert(
+      (await page.locator('#matrx-inline-login-suggestion').count()) === 0,
+      'vault_setup_recovery_accessible_overlay_present',
+    );
     assert(getSubmitCount() === baselineSubmits, 'vault_setup_recovery_accessible_page_submitted');
     evidence.normalPagePanelReadinessRecovered = true;
-    assert(getVaultWriteCount() === vaultWritesBefore, 'vault_setup_recovery_whole_helper_vault_write');
-    assert(JSON.stringify(snapshotOwnedReceiptState()) === receiptBefore, 'vault_setup_recovery_whole_helper_receipt_changed');
+    assert(
+      getVaultWriteCount() === vaultWritesBefore,
+      'vault_setup_recovery_whole_helper_vault_write',
+    );
+    assert(
+      JSON.stringify(snapshotOwnedReceiptState()) === receiptBefore,
+      'vault_setup_recovery_whole_helper_receipt_changed',
+    );
     evidence.wholeHelperNoWritesOrSubmit = true;
   } catch (error) {
     primaryFailure = error;
@@ -327,7 +439,10 @@ exports.runVaultSetupRecoveryChecks = async ({
     evidence.fixturePagesClosed = [...ownedPages].every((owned) => owned.isClosed());
   }
   if (primaryFailure) throw primaryFailure;
-  assert(Object.values(evidence).every((value) => value === true), 'vault_setup_recovery_evidence_incomplete');
+  assert(
+    Object.values(evidence).every((value) => value === true),
+    'vault_setup_recovery_evidence_incomplete',
+  );
   return evidence;
 };
 

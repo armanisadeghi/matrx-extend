@@ -6,7 +6,11 @@ import type {
   GenerationOffer,
   GenerationUseResponse,
 } from '@/lib/credentials/generation-protocol';
-import { GENERATION_INVALIDATED, GENERATION_PANEL_PORT, type GenerationPanelConnectedMessage } from '@/lib/credentials/generation-protocol';
+import {
+  GENERATION_INVALIDATED,
+  GENERATION_PANEL_PORT,
+  type GenerationPanelConnectedMessage,
+} from '@/lib/credentials/generation-protocol';
 import { GENERATED_SECRET_TTL_MS } from '@/lib/credentials/generation-targets';
 import { useTransientSecret } from '@/lib/credentials/transient-secret';
 import { cn } from '@/lib/utils';
@@ -150,7 +154,8 @@ export function PasswordGenerator({
       connectionId.current = null;
       connectionWaiter.current?.settle(null);
       generationEpoch.current += 1;
-      if (!disposed) clearGenerated('The generator connection changed. Generate a new value to continue.');
+      if (!disposed)
+        clearGenerated('The generator connection changed. Generate a new value to continue.');
     };
     port.onMessage.addListener(connected);
     port.onDisconnect.addListener(disconnected);
@@ -165,7 +170,8 @@ export function PasswordGenerator({
   }, [clearGenerated, reconnectEpoch]);
 
   const waitForConnection = useCallback((): Promise<string | null> => {
-    if (connectionId.current && connectionPort.current) return Promise.resolve(connectionId.current);
+    if (connectionId.current && connectionPort.current)
+      return Promise.resolve(connectionId.current);
     if (connectionWaiter.current) return connectionWaiter.current.promise;
     let resolve!: (connection: string | null) => void;
     const promise = new Promise<string | null>((next) => {
@@ -232,7 +238,11 @@ export function PasswordGenerator({
       return;
     }
     const currentConnectionId = await waitForConnection();
-    if (!currentConnectionId || connectionId.current !== currentConnectionId || !connectionPort.current) {
+    if (
+      !currentConnectionId ||
+      connectionId.current !== currentConnectionId ||
+      !connectionPort.current
+    ) {
       clearGenerated('Password generation is unavailable. Check your sign-in and try again.');
       return;
     }
@@ -302,7 +312,18 @@ export function PasswordGenerator({
         if (admission.current()) setBusy(false);
       }
     }
-  }, [actor, admission, clearGenerated, hold, kind, passphrase, password, replaceOffers, tabId, waitForConnection]);
+  }, [
+    actor,
+    admission,
+    clearGenerated,
+    hold,
+    kind,
+    passphrase,
+    password,
+    replaceOffers,
+    tabId,
+    waitForConnection,
+  ]);
 
   const copy = useCallback(async () => {
     if (busyRef.current || !generatedValue) return;

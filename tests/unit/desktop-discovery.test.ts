@@ -132,16 +132,11 @@ describe('desktop engine discovery', () => {
     // Re-discover could dislodge it, so the bridge reported "not running"
     // forever with the engine alive on another port.
     await expect(getEngineBaseUrl()).resolves.toBeNull();
-    expect(fetchMock).toHaveBeenCalledWith(
-      'http://127.0.0.1:22141/health',
-      expect.anything(),
-    );
+    expect(fetchMock).toHaveBeenCalledWith('http://127.0.0.1:22141/health', expect.anything());
 
     // It must NOT silently fall through to whatever else answers the scan:
     // an override names one specific engine on purpose.
-    expect(
-      fetchMock.mock.calls.some((c) => String(c[0]).includes('22147')),
-    ).toBe(false);
+    expect(fetchMock.mock.calls.some((c) => String(c[0]).includes('22147'))).toBe(false);
   });
 
   it('uses a port override that is actually answering', async () => {
@@ -211,9 +206,7 @@ describe('desktop engine discovery', () => {
     });
     vi.stubGlobal('fetch', fetchMock);
 
-    const { getEngineBaseUrl, invalidateEnginePortCache } = await import(
-      '@/lib/desktop/discovery'
-    );
+    const { getEngineBaseUrl, invalidateEnginePortCache } = await import('@/lib/desktop/discovery');
     await expect(getEngineBaseUrl()).resolves.toBe('http://127.0.0.1:22147');
 
     // Engine restarts on the same port. The TTL cache was dropped (that is
@@ -222,8 +215,6 @@ describe('desktop engine discovery', () => {
     await invalidateEnginePortCache();
     fetchMock.mockClear();
     await expect(getEngineBaseUrl()).resolves.toBe('http://127.0.0.1:22147');
-    expect(fetchMock.mock.calls).toEqual([
-      ['http://127.0.0.1:22147/health', expect.anything()],
-    ]);
+    expect(fetchMock.mock.calls).toEqual([['http://127.0.0.1:22147/health', expect.anything()]]);
   });
 });

@@ -46,9 +46,12 @@ function fixtureUrlsForParent(parentLoginUrl, parentOrigin) {
   const login = new URL(parentLoginUrl);
   if (typeof parentOrigin !== 'string' || login.origin !== parentOrigin)
     throw new Error('saved_login_parent_origin_mismatch');
-  const urls = Object.fromEntries(Object.entries(SAVED_LOGIN_FIXTURE_PATHS).map(([kind, pathname]) =>
-    [kind, new URL(pathname, login.origin).href],
-  ));
+  const urls = Object.fromEntries(
+    Object.entries(SAVED_LOGIN_FIXTURE_PATHS).map(([kind, pathname]) => [
+      kind,
+      new URL(pathname, login.origin).href,
+    ]),
+  );
   if (Object.values(urls).some((url) => new URL(url).origin !== login.origin))
     throw new Error('saved_login_fixture_origin_mismatch');
   return urls;
@@ -113,9 +116,11 @@ async function waitForBridge(worker, tabId, wait) {
 
 async function tabFor(worker, url, wait) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
-    const tabId = await worker.evaluate(async (expectedUrl) =>
-      (await chrome.tabs.query({})).find((tab) => tab.url === expectedUrl)?.id,
-    url);
+    const tabId = await worker.evaluate(
+      async (expectedUrl) =>
+        (await chrome.tabs.query({})).find((tab) => tab.url === expectedUrl)?.id,
+      url,
+    );
     if (Number.isInteger(tabId)) return tabId;
     await wait(100);
   }
@@ -149,20 +154,36 @@ exports.runSavedLoginChecks = async ({
   verifyRealVaultPanel,
 }) => {
   assert(context && worker && realPanel, 'saved_login_helper_context_missing');
-  assert(typeof targetName === 'string' && targetName.length > 0, 'saved_login_helper_target_missing');
-  assert(typeof username === 'string' && username.length > 0, 'saved_login_helper_username_missing');
-  assert(typeof password === 'string' && password.length > 0, 'saved_login_helper_password_missing');
-  assert(typeof wait === 'function' && typeof assert === 'function', 'saved_login_helper_controls_missing');
+  assert(
+    typeof targetName === 'string' && targetName.length > 0,
+    'saved_login_helper_target_missing',
+  );
+  assert(
+    typeof username === 'string' && username.length > 0,
+    'saved_login_helper_username_missing',
+  );
+  assert(
+    typeof password === 'string' && password.length > 0,
+    'saved_login_helper_password_missing',
+  );
+  assert(
+    typeof wait === 'function' && typeof assert === 'function',
+    'saved_login_helper_controls_missing',
+  );
   assert(typeof verifyRealVaultPanel === 'function', 'saved_login_helper_panel_verifier_missing');
   assert(typeof getSubmitCount === 'function', 'saved_login_helper_submit_counter_missing');
 
   // Resolve and reject an origin mismatch before creating any browser page.
   const fixtureUrls = fixtureUrlsForParent(parentLoginUrl, parentOrigin);
   const submitCountBaseline = getSubmitCount();
-  assert(Number.isInteger(submitCountBaseline) && submitCountBaseline >= 0, 'saved_login_submit_counter_invalid');
+  assert(
+    Number.isInteger(submitCountBaseline) && submitCountBaseline >= 0,
+    'saved_login_submit_counter_invalid',
+  );
 
   const evidence = {
-    scope: 'quiet real side-panel Fill against disposable nested open-root and native external-form controls',
+    scope:
+      'quiet real side-panel Fill against disposable nested open-root and native external-form controls',
     nestedOpenRootFilled: false,
     sameRootExternalFormFilled: false,
     quietNoInlineLoginSuggestion: false,
@@ -191,11 +212,14 @@ exports.runSavedLoginChecks = async ({
       try {
         await realPanel.waitFor(`!!(${fill})`, true, 15000);
       } catch {
-        evidence.readinessDiagnostics = await realPanel.evaluate(panelReadinessDiagnostics(targetName))
+        evidence.readinessDiagnostics = await realPanel
+          .evaluate(panelReadinessDiagnostics(targetName))
           .catch(() => ({ unavailable: true }));
         throw new Error(`saved_login_${kind}_panel_fill_not_ready`);
       }
-      const quiet = await page.evaluate(() => !document.querySelector('#matrx-inline-login-suggestion'));
+      const quiet = await page.evaluate(
+        () => !document.querySelector('#matrx-inline-login-suggestion'),
+      );
       assert(quiet, `saved_login_${kind}_inline_suggestion_present`);
       checkpoint(`saved_login_${kind}_panel_fill`);
       await realPanel.click(fill);
@@ -205,19 +229,29 @@ exports.runSavedLoginChecks = async ({
       } catch {
         throw new Error(`saved_login_${kind}_panel_fill_not_completed`);
       }
-      const values = await page.evaluate(({ usernameId, passwordId, unrelatedId, expectedUsername, expectedPassword }) => {
-        const root = document.querySelector('x-saved-login-outer')?.shadowRoot
-          ?.querySelector('x-saved-login-inner')?.shadowRoot;
-        return {
-          usernameMatches: root?.querySelector(usernameId)?.value === expectedUsername,
-          passwordMatches: root?.querySelector(passwordId)?.value === expectedPassword,
-          unrelatedUnchanged: root?.querySelector(unrelatedId)?.value === 'owned-unrelated',
-        };
-      }, {
-        usernameId: `#${kind}-username`, passwordId, unrelatedId: `#${kind}-unrelated`,
-        expectedUsername: username, expectedPassword: password,
-      });
-      assert(values.usernameMatches && values.passwordMatches && values.unrelatedUnchanged, `saved_login_${kind}_values_mismatch`);
+      const values = await page.evaluate(
+        ({ usernameId, passwordId, unrelatedId, expectedUsername, expectedPassword }) => {
+          const root = document
+            .querySelector('x-saved-login-outer')
+            ?.shadowRoot?.querySelector('x-saved-login-inner')?.shadowRoot;
+          return {
+            usernameMatches: root?.querySelector(usernameId)?.value === expectedUsername,
+            passwordMatches: root?.querySelector(passwordId)?.value === expectedPassword,
+            unrelatedUnchanged: root?.querySelector(unrelatedId)?.value === 'owned-unrelated',
+          };
+        },
+        {
+          usernameId: `#${kind}-username`,
+          passwordId,
+          unrelatedId: `#${kind}-unrelated`,
+          expectedUsername: username,
+          expectedPassword: password,
+        },
+      );
+      assert(
+        values.usernameMatches && values.passwordMatches && values.unrelatedUnchanged,
+        `saved_login_${kind}_values_mismatch`,
+      );
       assert(getSubmitCount() === submitCountBaseline, `saved_login_${kind}_submitted_website`);
       await page.close();
       page = null;
@@ -239,12 +273,21 @@ exports.runSavedLoginChecks = async ({
     const cleanupFailures = [];
     for (const ownedPage of ownedPages) {
       let closed = false;
-      try { closed = ownedPage.isClosed() === true; } catch (error) { cleanupFailures.push(error); }
+      try {
+        closed = ownedPage.isClosed() === true;
+      } catch (error) {
+        cleanupFailures.push(error);
+      }
       if (!closed) {
-        try { await ownedPage.close(); } catch (error) { cleanupFailures.push(error); }
+        try {
+          await ownedPage.close();
+        } catch (error) {
+          cleanupFailures.push(error);
+        }
       }
       try {
-        if (ownedPage.isClosed() !== true) cleanupFailures.push(new Error('saved_login_owned_page_not_closed'));
+        if (ownedPage.isClosed() !== true)
+          cleanupFailures.push(new Error('saved_login_owned_page_not_closed'));
       } catch (error) {
         cleanupFailures.push(error);
       }
@@ -254,7 +297,8 @@ exports.runSavedLoginChecks = async ({
     if (proof) proof.savedLoginFill = evidence;
     // A cleanup failure is itself the result when the interaction passed, but
     // it remains evidence only when a prior interaction error already exists.
-    if (!evidence.pagesClosed && !primaryFailure) throw new Error('saved_login_helper_page_cleanup_failed');
+    if (!evidence.pagesClosed && !primaryFailure)
+      throw new Error('saved_login_helper_page_cleanup_failed');
   }
 };
 

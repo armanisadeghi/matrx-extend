@@ -8,8 +8,8 @@
  * `client-unmapped` is caught here first.
  */
 
-import { describe, expect, it } from 'vitest';
 import { sourceFeatureForTable } from '@/lib/supabase/db-failure';
+import { describe, expect, it } from 'vitest';
 
 describe('sourceFeatureForTable', () => {
   it('maps web-capture tables', () => {

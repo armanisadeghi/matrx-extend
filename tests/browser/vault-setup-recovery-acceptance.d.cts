@@ -5,5 +5,9 @@ export declare const vaultRefreshControl: string;
 export declare const vaultSetupRecoveryFixturePath: string;
 export declare function renderVaultSetupRecoveryFixtureHTML(...args: unknown[]): string;
 export declare function allMatchingVaultListReadsRefused(...args: unknown[]): boolean;
-export declare function runVaultListTransportRecoveryChecks(args: Record<string, unknown>): Promise<unknown>;
-export declare function runVaultSetupRecoveryChecks(args: Record<string, unknown>): Promise<unknown>;
+export declare function runVaultListTransportRecoveryChecks(
+  args: Record<string, unknown>,
+): Promise<unknown>;
+export declare function runVaultSetupRecoveryChecks(
+  args: Record<string, unknown>,
+): Promise<unknown>;

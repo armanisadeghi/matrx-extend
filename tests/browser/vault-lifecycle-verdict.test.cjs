@@ -86,7 +86,10 @@ for (const field of [
 
 rejects(
   'generator_worker_restart_lifecycle_old_offer_not_stale',
-  { ...passed, workerRestartLifecycle: { ...passed.workerRestartLifecycle, oldOfferStatus: 'accepted' } },
+  {
+    ...passed,
+    workerRestartLifecycle: { ...passed.workerRestartLifecycle, oldOfferStatus: 'accepted' },
+  },
   { workerRestartRequested: true },
 );
 
@@ -186,7 +189,13 @@ for (const field of [
 
 rejects(
   'generator_window_switch_lifecycle_transition_kind_invalid',
-  { ...passed, windowSwitchLifecycle: { ...passed.windowSwitchLifecycle, transitionKind: 'two_open_window_return_focus' } },
+  {
+    ...passed,
+    windowSwitchLifecycle: {
+      ...passed.windowSwitchLifecycle,
+      transitionKind: 'two_open_window_return_focus',
+    },
+  },
   { windowSwitchRequested: true },
 );
 
@@ -200,7 +209,10 @@ rejects(
 
 rejects(
   'generator_window_switch_lifecycle_old_offer_not_stale',
-  { ...passed, windowSwitchLifecycle: { ...passed.windowSwitchLifecycle, oldOfferStatus: 'accepted' } },
+  {
+    ...passed,
+    windowSwitchLifecycle: { ...passed.windowSwitchLifecycle, oldOfferStatus: 'accepted' },
+  },
   { windowSwitchRequested: true },
 );
 
@@ -233,7 +245,12 @@ try {
   assert.doesNotThrow(() =>
     weakenedGate({
       workerRestartRequested: true,
-      generator: { workerRestartLifecycle: { ...passed.workerRestartLifecycle, workerRealmReset: 'truthy-not-boolean' } },
+      generator: {
+        workerRestartLifecycle: {
+          ...passed.workerRestartLifecycle,
+          workerRealmReset: 'truthy-not-boolean',
+        },
+      },
     }),
   );
 } finally {

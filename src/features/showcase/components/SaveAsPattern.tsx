@@ -133,7 +133,10 @@ export function SaveAsPattern({
         // Load the persisted parent before any linked write. The selected
         // value is only a UI choice; its organization is authoritative here.
         // From whichever store holds it (lane INTEG-CLIENTS): a moved table is a record-store Table.
-        const existingOrganizationId = await tableOrganization(targetTableId, operationOrganizationId);
+        const existingOrganizationId = await tableOrganization(
+          targetTableId,
+          operationOrganizationId,
+        );
         if (!existingOrganizationId) {
           throw new OrganizationContextError(
             'organization_context_required',

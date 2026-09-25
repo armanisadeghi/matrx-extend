@@ -29,8 +29,8 @@
  *   MATRX_LADDER_API=http://127.0.0.1:8077 node tests/browser/capture-ladder-capture.mjs
  */
 
+import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { readFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -105,9 +105,7 @@ async function memberOrganizations(accessToken) {
   });
   if (!rpc.ok) fail(`membership lookup refused: ${rpc.status}`);
   const ids = [
-    ...new Set(
-      (await rpc.json()).map((r) => r.container_id ?? r.containerId).filter(Boolean),
-    ),
+    ...new Set((await rpc.json()).map((r) => r.container_id ?? r.containerId).filter(Boolean)),
   ];
   const orgs = await fetch(
     `${SUPABASE}/rest/v1/organizations?select=id,name,is_personal&id=in.(${ids.join(',')})`,
@@ -194,7 +192,10 @@ async function main() {
     await app.fill('input[name="password"]', PASSWORD);
     await Promise.all([
       app.waitForURL((url) => !url.pathname.startsWith('/login'), { timeout: 90_000 }),
-      app.getByRole('button', { name: /sign in/i }).first().click(),
+      app
+        .getByRole('button', { name: /sign in/i })
+        .first()
+        .click(),
     ]).catch(async () => {
       await app.screenshot({ path: join(SHOTS, '10-login-stuck.png'), fullPage: true });
       fail('the app login did not leave /login. Screenshot: 10-login-stuck.png');
@@ -268,7 +269,9 @@ async function main() {
     }
     await panel.screenshot({ path: join(SHOTS, '13-after-run.png'), fullPage: true });
 
-    console.log(`\n  outcome     ${final === 'left-the-queue' ? 'row left the waiting queue' : final ? final.status : 'still waiting after 3 minutes'}`);
+    console.log(
+      `\n  outcome     ${final === 'left-the-queue' ? 'row left the waiting queue' : final ? final.status : 'still waiting after 3 minutes'}`,
+    );
     console.log(`\n  screenshots ${SHOTS}`);
     console.log(
       '\n  Now check the row and its Library item in the database — this harness ' +

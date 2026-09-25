@@ -79,13 +79,16 @@ export async function claimTask(
   // `metadata.claim_protocol = 2` itself, and lets the unique-violation race propagate so the
   // classifier below still sees its 23505. A trigger on `scheduler.sch_run` refuses any client
   // INSERT that carries a token at all.
-  const { data, error } = await supabase.schema('scheduler').rpc('sch_run_claim', {
-    p_task_id: opts.task.id,
-    p_surface: opts.surface,
-    p_trigger_id: opts.triggerId ?? null,
-    p_queue: opts.queue ?? null,
-    p_lease_seconds: opts.leaseSeconds ?? DEFAULT_LEASE_SECONDS,
-  }).single();
+  const { data, error } = await supabase
+    .schema('scheduler')
+    .rpc('sch_run_claim', {
+      p_task_id: opts.task.id,
+      p_surface: opts.surface,
+      p_trigger_id: opts.triggerId ?? null,
+      p_queue: opts.queue ?? null,
+      p_lease_seconds: opts.leaseSeconds ?? DEFAULT_LEASE_SECONDS,
+    })
+    .single();
 
   if (error) {
     if (isClaimRaceLoss(error)) {

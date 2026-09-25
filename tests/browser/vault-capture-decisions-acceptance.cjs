@@ -7,7 +7,8 @@ const http = require('node:http');
 const crypto = require('node:crypto');
 
 const SETTLED_CAPTURE_BOUND_MS = 6_200; // 1.5s fallback + 4.6s retry budget.
-const captureHeading = 'Array.from(document.querySelectorAll("p")).find((node) => node.textContent?.trim() === "Save this login to your Vault?")';
+const captureHeading =
+  'Array.from(document.querySelectorAll("p")).find((node) => node.textContent?.trim() === "Save this login to your Vault?")';
 const captureCard = `(${captureHeading})?.parentElement?.parentElement?.parentElement`;
 
 function startFixture() {
@@ -18,7 +19,10 @@ function startFixture() {
       response.writeHead(204).end();
       return;
     }
-    response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+    response.writeHead(200, {
+      'content-type': 'text/html; charset=utf-8',
+      'cache-control': 'no-store',
+    });
     response.end(`<!doctype html><html><body>
       <main><h1>Disposable capture form</h1>
         <form id="capture-form" method="post" action="/submitted">
@@ -43,7 +47,8 @@ function startFixture() {
       resolve({
         state,
         url: `http://127.0.0.1:${address.port}/login`,
-        close: () => new Promise((done, fail) => server.close((error) => error ? fail(error) : done())),
+        close: () =>
+          new Promise((done, fail) => server.close((error) => (error ? fail(error) : done()))),
       });
     });
   });
@@ -51,9 +56,11 @@ function startFixture() {
 
 async function tabFor(worker, url, wait) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
-    const tabId = await worker.evaluate(async (expectedUrl) =>
-      (await chrome.tabs.query({})).find((tab) => tab.url === expectedUrl)?.id,
-    url);
+    const tabId = await worker.evaluate(
+      async (expectedUrl) =>
+        (await chrome.tabs.query({})).find((tab) => tab.url === expectedUrl)?.id,
+      url,
+    );
     if (Number.isInteger(tabId)) return tabId;
     await wait(100);
   }
@@ -96,10 +103,19 @@ exports.runCaptureDecisionChecks = async ({
   pendingCapturePresent,
 }) => {
   assert(context && worker && realPanel, 'capture_decision_helper_context_missing');
-  assert(typeof assert === 'function' && typeof wait === 'function', 'capture_decision_helper_controls_missing');
-  assert(typeof verifyRealVaultPanel === 'function', 'capture_decision_helper_panel_verifier_missing');
+  assert(
+    typeof assert === 'function' && typeof wait === 'function',
+    'capture_decision_helper_controls_missing',
+  );
+  assert(
+    typeof verifyRealVaultPanel === 'function',
+    'capture_decision_helper_panel_verifier_missing',
+  );
   assert(typeof vaultWriteCount === 'function', 'capture_decision_helper_write_counter_missing');
-  assert(typeof pendingCapturePresent === 'function', 'capture_decision_pending_capture_callback_missing');
+  assert(
+    typeof pendingCapturePresent === 'function',
+    'capture_decision_pending_capture_callback_missing',
+  );
 
   const evidence = {
     scope: 'real localhost capture decisions through genuine side panel without Vault writes',
@@ -121,11 +137,18 @@ exports.runCaptureDecisionChecks = async ({
   const pages = new Set();
   let initialVaultWriteCount;
 
-  const cardVisible = () => realPanel.evaluate(`!!(${captureHeading}) && (${captureHeading}).getBoundingClientRect().height > 0`);
+  const cardVisible = () =>
+    realPanel.evaluate(
+      `!!(${captureHeading}) && (${captureHeading}).getBoundingClientRect().height > 0`,
+    );
   const waitForCard = async (code) => {
     await verifyRealVaultPanel();
     try {
-      await realPanel.waitFor(`!!(${captureHeading}) && (${captureHeading}).getBoundingClientRect().height > 0`, true, 15_000);
+      await realPanel.waitFor(
+        `!!(${captureHeading}) && (${captureHeading}).getBoundingClientRect().height > 0`,
+        true,
+        15_000,
+      );
     } catch {
       throw new Error(code);
     }
@@ -162,7 +185,8 @@ exports.runCaptureDecisionChecks = async ({
     await page.locator('#email').fill(`${label}-${crypto.randomUUID()}@example.invalid`);
     await page.locator('#password').fill(`capture-${crypto.randomUUID()}`);
     await page.getByRole('button', { name: 'Sign in', exact: true }).click();
-    for (let attempt = 0; attempt < 40 && fixture.state.submits === beforeSubmits; attempt += 1) await wait(50);
+    for (let attempt = 0; attempt < 40 && fixture.state.submits === beforeSubmits; attempt += 1)
+      await wait(50);
     assert(fixture.state.submits === beforeSubmits + 1, 'capture_fixture_submit_not_observed');
     return { page, tabId };
   };
@@ -231,7 +255,10 @@ exports.runCaptureDecisionChecks = async ({
     fixtureA = await startFixture();
     fixtureB = await startFixture();
     initialVaultWriteCount = await vaultWriteCount();
-    assert(Number.isInteger(initialVaultWriteCount) && initialVaultWriteCount >= 0, 'capture_decision_write_count_invalid');
+    assert(
+      Number.isInteger(initialVaultWriteCount) && initialVaultWriteCount >= 0,
+      'capture_decision_write_count_invalid',
+    );
     checkpoint('capture_not_now_submit');
     const firstA = await submit(fixtureA, 'not-now');
     await waitForCard('capture_not_now_card_missing');
@@ -270,10 +297,15 @@ exports.runCaptureDecisionChecks = async ({
     await clickNotNow('capture_final_pending_draft_remaining');
     evidence.finalPendingDismissed = true;
 
-    assert(fixtureA.state.submits === 4 && fixtureB.state.submits === 1, 'capture_fixture_submit_count_unexpected');
+    assert(
+      fixtureA.state.submits === 4 && fixtureB.state.submits === 1,
+      'capture_fixture_submit_count_unexpected',
+    );
     await assertMutationFree('capture_decisions_vault_write');
     evidence.noVaultWriteRequests = true;
-    void firstA; void replacementA; void firstB; // Keep case ownership explicit without persisting handles.
+    void firstA;
+    void replacementA;
+    void firstB; // Keep case ownership explicit without persisting handles.
   } catch (error) {
     primaryFailure = error;
   } finally {
@@ -284,7 +316,9 @@ exports.runCaptureDecisionChecks = async ({
           return page.isClosed() === true;
         }),
       );
-      evidence.pagesClosed = closedPages.every((result) => result.status === 'fulfilled' && result.value === true);
+      evidence.pagesClosed = closedPages.every(
+        (result) => result.status === 'fulfilled' && result.value === true,
+      );
     } finally {
       const fixtures = [fixtureA, fixtureB].filter(Boolean);
       const closed = await Promise.allSettled(fixtures.map((fixture) => fixture.close()));
@@ -302,6 +336,9 @@ exports.runCaptureDecisionChecks = async ({
     }
     throw primaryFailure;
   }
-  assert(evidence.pagesClosed && evidence.fixtureServersClosed, 'capture_decision_cleanup_unverified');
+  assert(
+    evidence.pagesClosed && evidence.fixtureServersClosed,
+    'capture_decision_cleanup_unverified',
+  );
   return evidence;
 };

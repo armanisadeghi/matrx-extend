@@ -161,7 +161,10 @@ async function recordedStoreCall<T>(site: DbCallSite, call: () => Promise<T>): P
     return await call();
   } catch (err) {
     const e = err as { message?: string; hint?: string };
-    await recordDbFailure(site, 'failed', { message: e?.message ?? String(err), hint: e?.hint ?? null });
+    await recordDbFailure(site, 'failed', {
+      message: e?.message ?? String(err),
+      hint: e?.hint ?? null,
+    });
     throw err;
   }
 }
@@ -224,7 +227,10 @@ export async function tableColumnKeys(tableId: string, organizationId: string): 
  * The organization a table belongs to, from whichever store holds it — the Showcase proves
  * it matches the operation's organization before any linked write.
  */
-export async function tableOrganization(tableId: string, organizationId: string): Promise<string | null> {
+export async function tableOrganization(
+  tableId: string,
+  organizationId: string,
+): Promise<string | null> {
   const org = requireOrganizationContext(organizationId);
   if ((await homeOf(tableId, org)) === 'record') return org;
   return (await getUserTable(tableId)).organization_id;
@@ -315,16 +321,18 @@ export async function createUserTableFromSchema(
       what: 'create this table',
       title: 'Table not created',
     };
-    const id = await recordedStoreCall(storeSite, () => declareStoreTable(client, {
-      name: input.table_name,
-      ...(input.description !== undefined && { description: input.description }),
-      fields: input.fields.map((f) => ({
-        field_name: toSnakeCaseFieldName(f.field_name),
-        display_name: f.display_name || f.field_name,
-        ...(f.data_type !== undefined && { data_type: f.data_type }),
-        field_order: f.field_order,
-      })),
-    }));
+    const id = await recordedStoreCall(storeSite, () =>
+      declareStoreTable(client, {
+        name: input.table_name,
+        ...(input.description !== undefined && { description: input.description }),
+        fields: input.fields.map((f) => ({
+          field_name: toSnakeCaseFieldName(f.field_name),
+          display_name: f.display_name || f.field_name,
+          ...(f.data_type !== undefined && { data_type: f.data_type }),
+          field_order: f.field_order,
+        })),
+      }),
+    );
     return { id };
   }
   const c = getSupabase();
@@ -434,7 +442,9 @@ export async function appendRowsToUserTable(
       what: 'add these rows to your table',
       title: 'Rows not added to the table',
     };
-    const written = await recordedStoreCall(storeSite, () => appendStoreRows(client, tableId, mapped));
+    const written = await recordedStoreCall(storeSite, () =>
+      appendStoreRows(client, tableId, mapped),
+    );
     return { inserted: written.inserted };
   }
 

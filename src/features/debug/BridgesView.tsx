@@ -14,6 +14,7 @@
  */
 
 import { JsonTree } from '@/components/ui/json-tree';
+import { useDesktopBridge } from '@/hooks/use-desktop';
 import { pingHealth } from '@/lib/api/routes/health';
 import {
   type BridgeTrafficEntry,
@@ -22,7 +23,6 @@ import {
   useBridgeTrafficStore,
 } from '@/lib/debug/bridge-traffic';
 import { type DebugEvent, log, useDebugStore } from '@/lib/debug/log';
-import { useDesktopBridge } from '@/hooks/use-desktop';
 import type { Transport } from '@/lib/desktop/bridge';
 import {
   getEngineBaseUrl,
@@ -42,13 +42,13 @@ import {
   onWsMessage,
 } from '@/lib/desktop/ws-client';
 import { confirmDestructive } from '@/lib/destructive/confirm';
-import { send } from '@/lib/messaging/native';
-import { CHANNELS } from '@/lib/messaging/schemas';
 import {
   connectBroadcast,
   disconnectBroadcast,
   publishToFrontend,
 } from '@/lib/frontend-bridge/broadcast';
+import { send } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import { ALLOWED_ORIGIN_PATTERNS } from '@/lib/origin-allowlist';
 import {
   webmcp_call_page_tool,

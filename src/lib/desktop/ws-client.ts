@@ -450,7 +450,6 @@ function installRouterIfNeeded(): void {
   });
 }
 
-
 /**
  * Handlers the OFFSCREEN document calls and only the service worker may
  * answer. See isServiceWorkerContext() for why this is not registered

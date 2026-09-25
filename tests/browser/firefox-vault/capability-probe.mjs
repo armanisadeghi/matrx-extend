@@ -1,18 +1,23 @@
 import assert from 'node:assert/strict';
 import { execFile, spawn } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
+import { lstat, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
-import { lstat, mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
 
 const execFileAsync = promisify(execFile);
-const firefox = '/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/Firefox.app/Contents/MacOS/firefox';
-const geckodriver = '/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/geckodriver';
+const firefox =
+  '/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/Firefox.app/Contents/MacOS/firefox';
+const geckodriver =
+  '/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/geckodriver';
 const addonId = `matrx-capability-${randomUUID()}@aimatrx.test`;
 const runId = randomUUID();
-const outputRoot = new URL(`../../../.matrx/task1-active/firefox-sidebar-probe/capability-runs/${runId}/`, import.meta.url).pathname;
+const outputRoot = new URL(
+  `../../../.matrx/task1-active/firefox-sidebar-probe/capability-runs/${runId}/`,
+  import.meta.url,
+).pathname;
 const proofPath = join(outputRoot, 'proof.json');
 const proof = {
   schema: 1,
@@ -25,10 +30,13 @@ const proof = {
   userBrowserUsed: false,
   ok: false,
 };
-const sha256 = value => createHash('sha256').update(value).digest('hex');
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-const safeError = error => {
-  const name = String(error?.name || 'Error').replace(/[^a-z0-9]+/gi, '_').toLowerCase().slice(0, 40);
+const sha256 = (value) => createHash('sha256').update(value).digest('hex');
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const safeError = (error) => {
+  const name = String(error?.name || 'Error')
+    .replace(/[^a-z0-9]+/gi, '_')
+    .toLowerCase()
+    .slice(0, 40);
   const message = String(error?.message || 'unknown').toLowerCase();
   const category = /documentids|unexpected|unknown.*propert|invalid.*target/.test(message)
     ? 'document_ids_rejected'
@@ -41,31 +49,49 @@ const safeError = error => {
 };
 async function openPort() {
   const server = createServer();
-  await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
+  await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', resolve);
+  });
   const address = server.address();
   assert.ok(address && typeof address !== 'string');
-  await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
+  await new Promise((resolve, reject) =>
+    server.close((error) => (error ? reject(error) : resolve())),
+  );
   return address.port;
 }
 async function startFixture() {
   const server = createServer((request, response) => {
     response.writeHead(200, { 'content-type': 'text/html', 'cache-control': 'no-store' });
-    if (request.url === '/child') response.end('<!doctype html><title>Child</title><main>child</main>');
-    else response.end('<!doctype html><title>Top</title><main>top</main><iframe src="/child"></iframe>');
+    if (request.url === '/child')
+      response.end('<!doctype html><title>Child</title><main>child</main>');
+    else
+      response.end(
+        '<!doctype html><title>Top</title><main>top</main><iframe src="/child"></iframe>',
+      );
   });
-  await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
+  await new Promise((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', resolve);
+  });
   const address = server.address();
   assert.ok(address && typeof address !== 'string');
   return {
     url: `http://127.0.0.1:${address.port}/top`,
     originPattern: 'http://127.0.0.1/*',
-    close: () => new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve())),
+    close: () =>
+      new Promise((resolve, reject) =>
+        server.close((error) => (error ? reject(error) : resolve())),
+      ),
   };
 }
 async function request(base, method, path, body) {
   const response = await fetch(`${base}${path}`, {
     method,
-    ...(body !== undefined && { headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }),
+    ...(body !== undefined && {
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok || data.value?.error) throw new Error('webdriver_request_failed');
@@ -85,18 +111,28 @@ async function waitUntil(operation, code, timeoutMs = 15_000) {
 }
 async function pidsContaining(fragment) {
   const { stdout } = await execFileAsync('ps', ['-axo', 'pid=,command=']);
-  return stdout.split('\n').flatMap(line => {
+  return stdout.split('\n').flatMap((line) => {
     const match = line.trim().match(/^(\d+)\s+(.+)$/);
     return match && match[2].includes(fragment) ? [Number(match[1])] : [];
   });
 }
 async function pidGone(pid) {
-  try { process.kill(pid, 0); return false; }
-  catch (error) { if (error?.code === 'ESRCH') return true; throw error; }
+  try {
+    process.kill(pid, 0);
+    return false;
+  } catch (error) {
+    if (error?.code === 'ESRCH') return true;
+    throw error;
+  }
 }
 async function exists(path) {
-  try { await lstat(path); return true; }
-  catch (error) { if (error?.code === 'ENOENT') return false; throw error; }
+  try {
+    await lstat(path);
+    return true;
+  } catch (error) {
+    if (error?.code === 'ENOENT') return false;
+    throw error;
+  }
 }
 
 await mkdir(outputRoot, { recursive: true, mode: 0o700 });
@@ -112,7 +148,14 @@ const manifest = {
   permissions: ['storage', 'tabs', 'scripting', 'webNavigation'],
   host_permissions: [fixture.originPattern],
   background: { scripts: ['background.js'] },
-  content_scripts: [{ matches: [fixture.originPattern], js: ['content.js'], all_frames: true, run_at: 'document_idle' }],
+  content_scripts: [
+    {
+      matches: [fixture.originPattern],
+      js: ['content.js'],
+      all_frames: true,
+      run_at: 'document_idle',
+    },
+  ],
   sidebar_action: { default_panel: 'sidebar.html', default_title: 'Capability probe' },
   browser_specific_settings: { gecko: { id: addonId, strict_min_version: '156.0' } },
 };
@@ -145,7 +188,8 @@ browser.runtime.sendMessage({ kind: 'sender-probe' }).catch(() => undefined);
 browser.runtime.onMessage.addListener(message => message?.kind === 'sidebar-ping'
   ? Promise.resolve({ ok: true, hrefMatches: location.protocol === 'http:' })
   : undefined);`;
-const sidebar = '<!doctype html><meta charset="utf-8"><title>Probe sidebar</title><script type="module" src="sidebar.js"></script><main>probe</main>';
+const sidebar =
+  '<!doctype html><meta charset="utf-8"><title>Probe sidebar</title><script type="module" src="sidebar.js"></script><main>probe</main>';
 const sidebarScript = `
 const result = { queryActive: false, getTab: false, sendMessage: false, error: null };
 try {
@@ -159,7 +203,8 @@ try {
   }
 } catch (error) { result.error = { name: error?.name || 'Error' }; }
 await browser.storage.local.set({ sidebarResult: result });`;
-const probePage = '<!doctype html><meta charset="utf-8"><title>Probe controller</title><main>controller</main>';
+const probePage =
+  '<!doctype html><meta charset="utf-8"><title>Probe controller</title><main>controller</main>';
 await Promise.all([
   writeFile(join(extensionRoot, 'manifest.json'), JSON.stringify(manifest)),
   writeFile(join(extensionRoot, 'background.js'), background),
@@ -176,7 +221,9 @@ proof.hashes = {
 
 const driverPort = await openPort();
 const base = `http://127.0.0.1:${driverPort}`;
-const driver = spawn(geckodriver, ['--allow-system-access', '--port', String(driverPort)], { stdio: 'ignore' });
+const driver = spawn(geckodriver, ['--allow-system-access', '--port', String(driverPort)], {
+  stdio: 'ignore',
+});
 const ownedPids = new Set([driver.pid]);
 let sessionId;
 let profile;
@@ -185,24 +232,43 @@ let failure;
 try {
   await waitUntil(async () => {
     if (driver.exitCode !== null) throw new Error('geckodriver_exited');
-    try { return (await fetch(`${base}/status`)).ok; } catch { return false; }
+    try {
+      return (await fetch(`${base}/status`)).ok;
+    } catch {
+      return false;
+    }
   }, 'geckodriver_timeout');
-  const created = await post(base, '/session', { capabilities: { alwaysMatch: {
-    browserName: 'firefox',
-    'moz:firefoxOptions': { binary: firefox, args: ['-headless'] },
-  } } });
+  const created = await post(base, '/session', {
+    capabilities: {
+      alwaysMatch: {
+        browserName: 'firefox',
+        'moz:firefoxOptions': { binary: firefox, args: ['-headless'] },
+      },
+    },
+  });
   sessionId = created.sessionId;
   profile = created.capabilities?.['moz:profile'];
   assert.equal(created.capabilities?.browserVersion, '156.0');
   assert.ok(typeof profile === 'string' && profile.length > 10);
   for (const pid of await pidsContaining(profile)) ownedPids.add(pid);
   await post(base, `/session/${sessionId}/moz/context`, { context: 'chrome' });
-  assert.equal(await post(base, `/session/${sessionId}/moz/addon/install`, { path: xpi, temporary: true }), addonId);
+  assert.equal(
+    await post(base, `/session/${sessionId}/moz/addon/install`, { path: xpi, temporary: true }),
+    addonId,
+  );
   addonInstalled = true;
-  const executeChrome = (script, args = []) => post(base, `/session/${sessionId}/execute/sync`, { script, args });
-  const extensionBase = await waitUntil(async () => executeChrome(`
+  const executeChrome = (script, args = []) =>
+    post(base, `/session/${sessionId}/execute/sync`, { script, args });
+  const extensionBase = await waitUntil(
+    async () =>
+      executeChrome(
+        `
     const policy = WebExtensionPolicy.getByID(arguments[0]);
-    return policy ? policy.getURL('') : null;`, [addonId]), 'extension_policy_timeout');
+    return policy ? policy.getURL('') : null;`,
+        [addonId],
+      ),
+    'extension_policy_timeout',
+  );
   await post(base, `/session/${sessionId}/moz/context`, { context: 'content' });
   await post(base, `/session/${sessionId}/url`, { url: fixture.url });
   await waitUntil(async () => {
@@ -211,7 +277,8 @@ try {
   }, 'fixture_window_timeout');
   await delay(500);
   await post(base, `/session/${sessionId}/moz/context`, { context: 'chrome' });
-  const sidebarReady = await post(base, `/session/${sessionId}/execute/async`, { script: `
+  const sidebarReady = await post(base, `/session/${sessionId}/execute/async`, {
+    script: `
     const done = arguments[arguments.length - 1];
     const win = Services.wm.getMostRecentWindow('navigator:browser');
     const found = [...win.SidebarController.sidebars.entries()].find(([, item]) => item.extensionId === arguments[0]);
@@ -225,13 +292,17 @@ try {
         done(false);
       };
       inspect();
-    }, () => done(false));`, args: [addonId] });
+    }, () => done(false));`,
+    args: [addonId],
+  });
   assert.equal(sidebarReady, true);
   await post(base, `/session/${sessionId}/moz/context`, { context: 'content' });
-  const controllerHandle = (await post(base, `/session/${sessionId}/window/new`, { type: 'tab' })).handle;
+  const controllerHandle = (await post(base, `/session/${sessionId}/window/new`, { type: 'tab' }))
+    .handle;
   await post(base, `/session/${sessionId}/window`, { handle: controllerHandle });
   await post(base, `/session/${sessionId}/url`, { url: `${extensionBase}probe.html` });
-  const result = await post(base, `/session/${sessionId}/execute/async`, { script: `
+  const result = await post(base, `/session/${sessionId}/execute/async`, {
+    script: `
     const done = arguments[arguments.length - 1];
     (async () => {
       const tabs = await browser.tabs.query({});
@@ -297,7 +368,9 @@ try {
           contentReadable: senderState.sessionProbe?.contentReadable === true,
         },
       };
-    })().then(done, error => done({ fatal: { name: error?.name || 'Error' } }));`, args: [fixture.url] });
+    })().then(done, error => done({ fatal: { name: error?.name || 'Error' } }));`,
+    args: [fixture.url],
+  });
   assert.equal(result.fatal, undefined);
   proof.runtime = { firefoxVersion: created.capabilities.browserVersion };
   proof.sender = result.sender;
@@ -305,24 +378,41 @@ try {
   proof.scripting = result.scripting;
   proof.sidebarTabs = result.sidebarTabs;
   proof.storageSession = result.storageSession;
-  proof.ok = result.sender.topDocumentIdPresent && result.sender.childDocumentIdPresent
-    && result.webNavigation.getFrameDocumentIdPresent && result.webNavigation.getAllFramesEveryDocumentId
-    && result.webNavigation.senderMatchesTopFrame && result.webNavigation.senderIdsFoundInAllFrames
-    && result.scripting.accepted && result.scripting.exactDocumentMatched
-    && result.sidebarTabs?.queryActive && result.sidebarTabs?.getTab && result.sidebarTabs?.sendMessage
-    && result.storageSession?.sessionPresent === true;
+  proof.ok =
+    result.sender.topDocumentIdPresent &&
+    result.sender.childDocumentIdPresent &&
+    result.webNavigation.getFrameDocumentIdPresent &&
+    result.webNavigation.getAllFramesEveryDocumentId &&
+    result.webNavigation.senderMatchesTopFrame &&
+    result.webNavigation.senderIdsFoundInAllFrames &&
+    result.scripting.accepted &&
+    result.scripting.exactDocumentMatched &&
+    result.sidebarTabs?.queryActive &&
+    result.sidebarTabs?.getTab &&
+    result.sidebarTabs?.sendMessage &&
+    result.storageSession?.sessionPresent === true;
 } catch (error) {
   failure = error;
   proof.error = safeError(error);
 } finally {
   if (profile) for (const pid of await pidsContaining(profile).catch(() => [])) ownedPids.add(pid);
   if (addonInstalled && sessionId) {
-    try { await post(base, `/session/${sessionId}/moz/context`, { context: 'chrome' }); await post(base, `/session/${sessionId}/moz/addon/uninstall`, { id: addonId }); proof.addonUninstalled = true; }
-    catch { proof.addonUninstalled = false; }
+    try {
+      await post(base, `/session/${sessionId}/moz/context`, { context: 'chrome' });
+      await post(base, `/session/${sessionId}/moz/addon/uninstall`, { id: addonId });
+      proof.addonUninstalled = true;
+    } catch {
+      proof.addonUninstalled = false;
+    }
   }
   if (sessionId) {
-    try { await del(base, `/session/${sessionId}`); proof.sessionDeleted = true; sessionId = undefined; }
-    catch { proof.sessionDeleted = false; }
+    try {
+      await del(base, `/session/${sessionId}`);
+      proof.sessionDeleted = true;
+      sessionId = undefined;
+    } catch {
+      proof.sessionDeleted = false;
+    }
   }
   if (driver.exitCode === null) {
     driver.kill('SIGTERM');
@@ -332,20 +422,39 @@ try {
     while (driver.exitCode === null && Date.now() < deadline + 5_000) await delay(100);
   }
   proof.driverExited = driver.exitCode !== null;
-  try { await fixture.close(); proof.fixtureServerClosed = true; } catch { proof.fixtureServerClosed = false; }
+  try {
+    await fixture.close();
+    proof.fixtureServerClosed = true;
+  } catch {
+    proof.fixtureServerClosed = false;
+  }
   if (profile) {
     const remaining = await pidsContaining(profile).catch(() => []);
     for (const pid of remaining) ownedPids.add(pid);
-    for (const pid of remaining) { try { process.kill(pid, 'SIGKILL'); } catch {} }
-    await waitUntil(async () => (await Promise.all(remaining.map(pidGone))).every(Boolean), 'owned_firefox_cleanup_timeout').catch(() => false);
+    for (const pid of remaining) {
+      try {
+        process.kill(pid, 'SIGKILL');
+      } catch {}
+    }
+    await waitUntil(
+      async () => (await Promise.all(remaining.map(pidGone))).every(Boolean),
+      'owned_firefox_cleanup_timeout',
+    ).catch(() => false);
     await rm(profile, { recursive: true, force: true });
   }
   await rm(workRoot, { recursive: true, force: true });
   proof.profileRemoved = !profile || !(await exists(profile));
   proof.allOwnedPidsGone = (await Promise.all([...ownedPids].map(pidGone))).every(Boolean);
   proof.temporaryFilesRemoved = true;
-  proof.ok = proof.ok && !failure && proof.addonUninstalled && proof.sessionDeleted && proof.driverExited
-    && proof.fixtureServerClosed && proof.profileRemoved && proof.allOwnedPidsGone;
+  proof.ok =
+    proof.ok &&
+    !failure &&
+    proof.addonUninstalled &&
+    proof.sessionDeleted &&
+    proof.driverExited &&
+    proof.fixtureServerClosed &&
+    proof.profileRemoved &&
+    proof.allOwnedPidsGone;
   await writeFile(proofPath, `${JSON.stringify(proof, null, 2)}\n`, { mode: 0o600 });
 }
 

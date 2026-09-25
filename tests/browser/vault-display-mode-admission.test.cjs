@@ -29,7 +29,9 @@ try {
     assert.equal(fs.existsSync(stateRoot), false, `${name} created durable run state`);
   };
 
-  rejectBeforeCustody('browser-invalid', 'browser_mode_invalid', { MATRX_VAULT_CANARY_BROWSER: 'PERSONAL_EDGE' });
+  rejectBeforeCustody('browser-invalid', 'browser_mode_invalid', {
+    MATRX_VAULT_CANARY_BROWSER: 'PERSONAL_EDGE',
+  });
   rejectBeforeCustody('edge-clipboard', 'edge_requires_owned_headless_without_clipboard', {
     MATRX_VAULT_CANARY_BROWSER: 'EDGE_153_OWNED_HEADLESS',
     MATRX_VAULT_CANARY_DISPLAY: 'HEADLESS_NO_CLIPBOARD',
@@ -43,18 +45,24 @@ try {
     MATRX_VAULT_CANARY_FOREGROUND: 'ALLOW_FOREGROUND_TEST',
   });
   rejectBeforeCustody('missing', 'canary_display_mode_required', {});
-  rejectBeforeCustody('unknown', 'canary_display_mode_invalid', { MATRX_VAULT_CANARY_DISPLAY: 'BACKGROUND' });
+  rejectBeforeCustody('unknown', 'canary_display_mode_invalid', {
+    MATRX_VAULT_CANARY_DISPLAY: 'BACKGROUND',
+  });
   rejectBeforeCustody('clipboard-invalid', 'clipboard_mode_invalid', {
     MATRX_VAULT_CANARY_DISPLAY: 'HEADLESS_NO_CLIPBOARD',
     MATRX_VAULT_CANARY_GENERATOR: 'RUN_GENERATOR_TRANSPORT',
     MATRX_VAULT_CANARY_ADMISSION: 'RUN_READ_ONLY_ADMISSION',
     MATRX_VAULT_CANARY_CLIPBOARD: 'USE_CLIPBOARD',
   });
-  rejectBeforeCustody('clipboard-without-generator', 'clipboard_requires_headless_generator_admission', {
-    MATRX_VAULT_CANARY_DISPLAY: 'HEADLESS_NO_CLIPBOARD',
-    MATRX_VAULT_CANARY_ADMISSION: 'RUN_READ_ONLY_ADMISSION',
-    MATRX_VAULT_CANARY_CLIPBOARD: 'RUN_ISOLATED_HEADLESS_CLIPBOARD',
-  });
+  rejectBeforeCustody(
+    'clipboard-without-generator',
+    'clipboard_requires_headless_generator_admission',
+    {
+      MATRX_VAULT_CANARY_DISPLAY: 'HEADLESS_NO_CLIPBOARD',
+      MATRX_VAULT_CANARY_ADMISSION: 'RUN_READ_ONLY_ADMISSION',
+      MATRX_VAULT_CANARY_CLIPBOARD: 'RUN_ISOLATED_HEADLESS_CLIPBOARD',
+    },
+  );
   rejectBeforeCustody('clipboard-headed', 'clipboard_requires_headless_generator_admission', {
     MATRX_VAULT_CANARY_DISPLAY: 'HEADED',
     MATRX_VAULT_CANARY_FOREGROUND: 'ALLOW_FOREGROUND_TEST',
@@ -85,16 +93,24 @@ try {
   rejectBeforeCustody('headed-foreground', 'headed_canary_requires_foreground_allow', {
     MATRX_VAULT_CANARY_DISPLAY: 'HEADED',
   });
-  rejectBeforeCustody('worker-restart-headed', 'worker_restart_lifecycle_requires_headless_no_clipboard', {
-    MATRX_VAULT_CANARY_DISPLAY: 'HEADED',
-    MATRX_VAULT_CANARY_FOREGROUND: 'ALLOW_FOREGROUND_TEST',
-    MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART: 'RUN_WORKER_RESTART_LIFECYCLE',
-  });
-  rejectBeforeCustody('window-switch-headed', 'window_switch_lifecycle_requires_headless_no_clipboard', {
-    MATRX_VAULT_CANARY_DISPLAY: 'HEADED',
-    MATRX_VAULT_CANARY_FOREGROUND: 'ALLOW_FOREGROUND_TEST',
-    MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH: 'RUN_WINDOW_SWITCH_LIFECYCLE',
-  });
+  rejectBeforeCustody(
+    'worker-restart-headed',
+    'worker_restart_lifecycle_requires_headless_no_clipboard',
+    {
+      MATRX_VAULT_CANARY_DISPLAY: 'HEADED',
+      MATRX_VAULT_CANARY_FOREGROUND: 'ALLOW_FOREGROUND_TEST',
+      MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART: 'RUN_WORKER_RESTART_LIFECYCLE',
+    },
+  );
+  rejectBeforeCustody(
+    'window-switch-headed',
+    'window_switch_lifecycle_requires_headless_no_clipboard',
+    {
+      MATRX_VAULT_CANARY_DISPLAY: 'HEADED',
+      MATRX_VAULT_CANARY_FOREGROUND: 'ALLOW_FOREGROUND_TEST',
+      MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH: 'RUN_WINDOW_SWITCH_LIFECYCLE',
+    },
+  );
   rejectBeforeCustody('worker-restart-invalid', 'worker_restart_lifecycle_mode_invalid', {
     MATRX_VAULT_CANARY_DISPLAY: 'HEADLESS_NO_CLIPBOARD',
     MATRX_VAULT_CANARY_GENERATOR: 'RUN_GENERATOR_TRANSPORT',

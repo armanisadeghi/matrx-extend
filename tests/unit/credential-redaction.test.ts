@@ -47,7 +47,9 @@ const SECRET = 'ZZREDACTIONSENTINELZZ';
 const PUBLIC_VALUE = 'ordinary-search-term';
 const TAB_ID = 99;
 const documentId = 'credential-redaction-test';
-const dispatcher = new Function(`return (${credentialDomSource.toString()});`)() as typeof credentialDomSource;
+const dispatcher = new Function(
+  `return (${credentialDomSource.toString()});`,
+)() as typeof credentialDomSource;
 
 const ctx: ToolContext = {
   conversationId: null,
@@ -192,10 +194,19 @@ describe('page-read redaction — each signal defends on its own', () => {
     input.autocomplete = 'new-password';
     const registry = mountGenerationTargetRegistry();
     const expiresAt = Date.now() + GENERATED_SECRET_TTL_MS;
-    const targets = dispatcher({ operation: 'discover_new_password_groups', documentId, expiresAt }).groups[0]?.targets ?? [];
+    const targets =
+      dispatcher({ operation: 'discover_new_password_groups', documentId, expiresAt }).groups[0]
+        ?.targets ?? [];
     expect(targets).toHaveLength(1);
-    expect(dispatcher({ operation: 'fill_new_password_group', documentId, expiresAt, targets, value: SECRET }))
-      .toEqual({ status: 'filled' });
+    expect(
+      dispatcher({
+        operation: 'fill_new_password_group',
+        documentId,
+        expiresAt,
+        targets,
+        value: SECRET,
+      }),
+    ).toEqual({ status: 'filled' });
 
     input.type = 'text';
     input.removeAttribute(SENSITIVE_ATTR);

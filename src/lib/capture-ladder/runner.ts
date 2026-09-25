@@ -40,7 +40,7 @@ import { log } from '@/lib/debug/log';
 import { getOuterHtml } from '@/lib/scrape/capture-html';
 import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import { settlePage } from '@/lib/scrape/page-ready';
-import { formatCount } from "@ai-matrx/kit/format";
+import { formatCount } from '@ai-matrx/kit/format';
 
 /** Human-like pacing band. Never a constant interval. */
 const SCROLL_MIN_MS = 400;
@@ -189,7 +189,11 @@ export async function runOne(
 
     if (options.claimFirst) {
       report('claiming');
-      const claimed = await claimHandoff(handoff.id, { client: 'chrome-extension' }, options.signal);
+      const claimed = await claimHandoff(
+        handoff.id,
+        { client: 'chrome-extension' },
+        options.signal,
+      );
       if (!claimed.ok) {
         outcome.posted = 'none';
         outcome.claimed = false;

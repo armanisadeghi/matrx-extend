@@ -675,13 +675,15 @@ export async function claimRun(
   // when it has one, which is what the Python scanner has always done and what the run history
   // is read against.
   const c = schedulerDb();
-  const { data, error } = await c.rpc('sch_run_claim', {
-    p_task_id: task.id,
-    p_surface: surface,
-    p_trigger_id: null,
-    p_queue: 'default',
-    p_lease_seconds: opts.lease_seconds ?? 600,
-  }).single();
+  const { data, error } = await c
+    .rpc('sch_run_claim', {
+      p_task_id: task.id,
+      p_surface: surface,
+      p_trigger_id: null,
+      p_queue: 'default',
+      p_lease_seconds: opts.lease_seconds ?? 600,
+    })
+    .single();
   if (error) {
     console.warn('[matrx-extend] claimRun error', error.message);
     return null;

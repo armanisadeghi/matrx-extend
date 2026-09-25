@@ -16,8 +16,6 @@ import { useAuth } from '@/hooks/use-auth';
 import { useDesktopBridge } from '@/hooks/use-desktop';
 import { getEnginePortOverride, setEnginePortOverride } from '@/lib/desktop/discovery';
 import { clearPairToken, setPairToken } from '@/lib/desktop/http';
-import { send } from '@/lib/messaging/native';
-import { CHANNELS } from '@/lib/messaging/schemas';
 import {
   desktopStatusTextClass,
   engineHealthState,
@@ -25,6 +23,8 @@ import {
 } from '@/lib/desktop/types';
 import { confirmDestructive } from '@/lib/destructive/confirm';
 import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
+import { send } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import { cn } from '@/lib/utils';
 import { useSettingsStore } from '@/state/settings';
 import { AgentListDropdown } from '@ai-matrx/agents/catalog/react';

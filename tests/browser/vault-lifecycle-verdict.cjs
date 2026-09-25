@@ -14,8 +14,7 @@ function assertRequestedLifecycleVerdicts({
   const requireEvidence = (lifecycle, fields, prefix) => {
     for (const field of fields) {
       const value = field.split('.').reduce((current, key) => current?.[key], lifecycle);
-      if (value !== true)
-        throw new Error(`${prefix}_missing_${field.replace('.', '_')}`);
+      if (value !== true) throw new Error(`${prefix}_missing_${field.replace('.', '_')}`);
     }
   };
 
@@ -23,15 +22,19 @@ function assertRequestedLifecycleVerdicts({
     throw new Error('generator_worker_restart_lifecycle_not_passed');
   if (workerRestartRequested) {
     const lifecycle = generator.workerRestartLifecycle;
-    requireEvidence(lifecycle, [
-      'workerRealmReset',
-      'oldWorkerTargetGone',
-      'samePanelTargetAndDocument',
-      'uiCandidateClearedOnDisconnect',
-      'oldOfferCompletedBeforeExpiry',
-      'oldOfferFieldsUnchanged',
-      'freshUiGenerateUse',
-    ], 'generator_worker_restart_lifecycle');
+    requireEvidence(
+      lifecycle,
+      [
+        'workerRealmReset',
+        'oldWorkerTargetGone',
+        'samePanelTargetAndDocument',
+        'uiCandidateClearedOnDisconnect',
+        'oldOfferCompletedBeforeExpiry',
+        'oldOfferFieldsUnchanged',
+        'freshUiGenerateUse',
+      ],
+      'generator_worker_restart_lifecycle',
+    );
     if (lifecycle.oldOfferStatus !== 'stale')
       throw new Error('generator_worker_restart_lifecycle_old_offer_not_stale');
   }
@@ -43,16 +46,20 @@ function assertRequestedLifecycleVerdicts({
     const lifecycle = generator.windowSwitchLifecycle;
     if (lifecycle.transitionKind !== 'switch_away_then_close_other_window')
       throw new Error('generator_window_switch_lifecycle_transition_kind_invalid');
-    requireEvidence(lifecycle, [
-      'otherWindowFocusedBeforeOldUse',
-      'otherWindowFocusedThroughOldUse',
-      'uiCandidateClearedOnWindowSwitch',
-      'samePanelTargetAndDocument',
-      'oldOfferCompletedBeforeExpiry',
-      'oldOfferFieldsUnchanged',
-      'originalFocusedAfterClose',
-      'freshUiGenerateUse',
-    ], 'generator_window_switch_lifecycle');
+    requireEvidence(
+      lifecycle,
+      [
+        'otherWindowFocusedBeforeOldUse',
+        'otherWindowFocusedThroughOldUse',
+        'uiCandidateClearedOnWindowSwitch',
+        'samePanelTargetAndDocument',
+        'oldOfferCompletedBeforeExpiry',
+        'oldOfferFieldsUnchanged',
+        'originalFocusedAfterClose',
+        'freshUiGenerateUse',
+      ],
+      'generator_window_switch_lifecycle',
+    );
     if (lifecycle.oldOfferStatus !== 'stale')
       throw new Error('generator_window_switch_lifecycle_old_offer_not_stale');
   }

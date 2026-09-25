@@ -28,8 +28,8 @@ import {
 } from '@/lib/org/active-org';
 import { failDbCall } from '@/lib/supabase/db-failure';
 import { mediaDb } from '@/lib/supabase/schemas';
-import type { ChannelHandle } from '@ai-matrx/realtime';
 import { formatDurationMs } from '@ai-matrx/kit/format';
+import type { ChannelHandle } from '@ai-matrx/realtime';
 import {
   type RealtimeManager,
   defineChannelNamespace,

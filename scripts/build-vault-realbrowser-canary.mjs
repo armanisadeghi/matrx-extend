@@ -15,17 +15,26 @@ const publicKeys = new Set([
   'WXT_FRONTEND_URL',
   'WXT_DESKTOP_NATIVE_HOST',
 ]);
-const fail = (message) => { throw new Error(`Vault real-browser build refused: ${message}`); };
+const fail = (message) => {
+  throw new Error(`Vault real-browser build refused: ${message}`);
+};
 function run(command, args, options = {}) {
   return new Promise((resolveRun, reject) => {
     const child = spawn(command, args, { ...options, stdio: ['ignore', 'pipe', 'pipe'] });
-    let stdout = ''; let stderr = '';
+    let stdout = '';
+    let stderr = '';
     child.stdout.on('data', (chunk) => (stdout += chunk));
     child.stderr.on('data', (chunk) => (stderr += chunk));
     child.on('error', reject);
-    child.on('close', (code) => code === 0
-      ? resolveRun({ stdout, stderr })
-      : reject(new Error(`${command} failed (${code}): ${[stderr.trim(), stdout.trim()].filter(Boolean).join("\n")}`)));
+    child.on('close', (code) =>
+      code === 0
+        ? resolveRun({ stdout, stderr })
+        : reject(
+            new Error(
+              `${command} failed (${code}): ${[stderr.trim(), stdout.trim()].filter(Boolean).join('\n')}`,
+            ),
+          ),
+    );
   });
 }
 async function filesWithHashes(root) {
@@ -34,10 +43,13 @@ async function filesWithHashes(root) {
     for (const entry of await readdir(directory, { withFileTypes: true })) {
       const file = join(directory, entry.name);
       if (entry.isDirectory()) await visit(file);
-      else if (entry.isFile()) results.push({
-        path: relative(root, file),
-        sha256: createHash('sha256').update(await readFile(file)).digest('hex'),
-      });
+      else if (entry.isFile())
+        results.push({
+          path: relative(root, file),
+          sha256: createHash('sha256')
+            .update(await readFile(file))
+            .digest('hex'),
+        });
       else fail(`unsupported artifact entry ${relative(root, file)}`);
     }
   }
@@ -46,9 +58,9 @@ async function filesWithHashes(root) {
 }
 async function publicBuildEnv() {
   const configured = process.env.MATRX_CANARY_PUBLIC_ENV_FILE;
-  const candidates = configured ? [resolve(configured)] : [
-    join(repo, '.env.development.local'), join(repo, '.env.development'), join(repo, '.env'),
-  ];
+  const candidates = configured
+    ? [resolve(configured)]
+    : [join(repo, '.env.development.local'), join(repo, '.env.development'), join(repo, '.env')];
   const values = {};
   for (const file of candidates) {
     const text = await readFile(file, 'utf8').catch(() => '');
@@ -62,7 +74,11 @@ async function publicBuildEnv() {
     break;
   }
   for (const key of publicKeys) if (process.env[key]) values[key] = process.env[key];
-  for (const key of ['WXT_SUPABASE_URL', 'WXT_SUPABASE_PUBLISHABLE_KEY', 'WXT_EXTENSION_OAUTH_CLIENT_ID'])
+  for (const key of [
+    'WXT_SUPABASE_URL',
+    'WXT_SUPABASE_PUBLISHABLE_KEY',
+    'WXT_EXTENSION_OAUTH_CLIENT_ID',
+  ])
     if (!values[key]) fail(`missing required public build input ${key}`);
   return values;
 }
@@ -70,11 +86,16 @@ async function publicBuildEnv() {
 if (process.env.MATRX_REALBROWSER_VAULT_BUILD !== 'BUILD_UNDER_REVIEW')
   fail('set MATRX_REALBROWSER_VAULT_BUILD=BUILD_UNDER_REVIEW; this script never builds implicitly');
 const revision = process.env.MATRX_CANARY_COMMIT ?? 'HEAD';
-const sourceCommit = (await run('git', ['-C', repo, 'rev-parse', '--verify', `${revision}^{commit}`])).stdout.trim();
+const sourceCommit = (
+  await run('git', ['-C', repo, 'rev-parse', '--verify', `${revision}^{commit}`])
+).stdout.trim();
 const aidreamRepo = resolve(repo, '../aidream');
 const aidreamRevision = process.env.MATRX_CANARY_AIDREAM_COMMIT;
-if (!aidreamRevision) fail('set MATRX_CANARY_AIDREAM_COMMIT to the committed records-source revision');
-const aidreamCommit = (await run('git', ['-C', aidreamRepo, 'rev-parse', '--verify', `${aidreamRevision}^{commit}`])).stdout.trim();
+if (!aidreamRevision)
+  fail('set MATRX_CANARY_AIDREAM_COMMIT to the committed records-source revision');
+const aidreamCommit = (
+  await run('git', ['-C', aidreamRepo, 'rev-parse', '--verify', `${aidreamRevision}^{commit}`])
+).stdout.trim();
 const runId = `${new Date().toISOString().replace(/[:.]/g, '-')}-${randomUUID()}`;
 const artifactRoot = join(repo, '.matrx', 'realbrowser-vault', runId);
 const scratch = await mkdtemp(join(tmpdir(), 'matrx-vault-realbrowser-'));
@@ -94,20 +115,38 @@ try {
   // tsconfig deliberately resolves this unpublished workspace source through
   // ../aidream. Archive only its committed records package, never live WIP.
   await run('git', [
-    '-C', aidreamRepo, 'archive', '--format=tar', `--output=${recordsArchive}`,
-    aidreamCommit, 'apps/shared/records',
+    '-C',
+    aidreamRepo,
+    'archive',
+    '--format=tar',
+    `--output=${recordsArchive}`,
+    aidreamCommit,
+    'apps/shared/records',
   ]);
   await run('tar', ['-x', '-f', recordsArchive, '-C', aidreamSource]);
   const recordsRoot = join(aidreamSource, 'apps', 'shared', 'records');
-  const recordsFiles = await filesWithHashes(recordsRoot).catch(() => fail('committed records source missing'));
+  const recordsFiles = await filesWithHashes(recordsRoot).catch(() =>
+    fail('committed records source missing'),
+  );
   if (!recordsFiles.length) fail('committed records source empty');
-  const locked = await readFile(join(source, 'pnpm-lock.yaml'), 'utf8').catch(() => fail('revision has no lockfile'));
+  const locked = await readFile(join(source, 'pnpm-lock.yaml'), 'utf8').catch(() =>
+    fail('revision has no lockfile'),
+  );
   if (!locked.includes('lockfileVersion:')) fail('lockfile is malformed');
-  const env = { PATH: process.env.PATH ?? '', HOME: process.env.HOME ?? '', TMPDIR: tmpdir(), CI: '1', ...(await publicBuildEnv()) };
+  const env = {
+    PATH: process.env.PATH ?? '',
+    HOME: process.env.HOME ?? '',
+    TMPDIR: tmpdir(),
+    CI: '1',
+    ...(await publicBuildEnv()),
+  };
   // Use the records package's own committed lockfile to materialize only its
   // declared dependencies for TypeScript's source alias; no package metadata
   // or extension dependency contract is changed.
-  await run('pnpm', ['install', '--frozen-lockfile', '--ignore-scripts'], { cwd: recordsRoot, env });
+  await run('pnpm', ['install', '--frozen-lockfile', '--ignore-scripts'], {
+    cwd: recordsRoot,
+    env,
+  });
   await run('pnpm', ['install', '--frozen-lockfile', '--ignore-scripts'], { cwd: source, env });
   await run('pnpm', ['exec', 'wxt', 'prepare'], { cwd: source, env });
   await run('pnpm', ['build'], { cwd: source, env });
@@ -119,11 +158,22 @@ try {
   await mkdir(artifactRoot, { recursive: true, mode: 0o700 });
   await cp(extension, join(artifactRoot, 'extension'), { recursive: true });
   const receipt = {
-    schema: 2, kind: 'local-multi-repo-source-artifact', runId, sourceCommit,
+    schema: 2,
+    kind: 'local-multi-repo-source-artifact',
+    runId,
+    sourceCommit,
     lockfileSha256: createHash('sha256').update(locked).digest('hex'),
-    extensionDirectory: 'extension', extensionFiles, manifestVersion: manifest.version ?? null,
-    aidream: { sourceCommit: aidreamCommit, sourcePath: 'apps/shared/records', files: recordsFiles },
-    publicEnvKeys: Object.keys(env).filter((key) => publicKeys.has(key)).sort(),
+    extensionDirectory: 'extension',
+    extensionFiles,
+    manifestVersion: manifest.version ?? null,
+    aidream: {
+      sourceCommit: aidreamCommit,
+      sourcePath: 'apps/shared/records',
+      files: recordsFiles,
+    },
+    publicEnvKeys: Object.keys(env)
+      .filter((key) => publicKeys.has(key))
+      .sort(),
     distributionProvenance: 'local-multi-repo-source-artifact; not a Store/release claim',
   };
   const manifestPath = join(artifactRoot, 'artifact-manifest.json');

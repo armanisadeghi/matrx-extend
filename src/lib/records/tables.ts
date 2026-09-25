@@ -33,7 +33,10 @@ import { platformDb } from '@/lib/supabase/schemas';
 import type { RecordsClient } from '@ai-matrx/records/core';
 
 /** The knob the mover writes when an organization's tables move (aidream movers/move.py). */
-export const OLDER_TABLES_MOVED_KNOB = { feature: 'data_tables', key: 'older_tables_moved' } as const;
+export const OLDER_TABLES_MOVED_KNOB = {
+  feature: 'data_tables',
+  key: 'older_tables_moved',
+} as const;
 
 /** A store refusal, carried as an Error so the UI's existing catch paths print it. */
 export class RecordStoreTableError extends Error {
@@ -118,7 +121,10 @@ export interface NewStoreTable {
 }
 
 /** Make a Table and every one of its columns in one declaration. Returns the Table's id. */
-export async function declareStoreTable(client: RecordsClient, input: NewStoreTable): Promise<string> {
+export async function declareStoreTable(
+  client: RecordsClient,
+  input: NewStoreTable,
+): Promise<string> {
   const fields = [...input.fields].sort((a, b) => a.field_order - b.field_order);
   const personKernel = await client.personKernelId();
   if (!personKernel.ok) throw refusal(personKernel.error);
@@ -156,7 +162,16 @@ export async function declareStoreTable(client: RecordsClient, input: NewStoreTa
               required: false,
               ...storeTypeFor(f.data_type),
             }))
-          : [{ name: 'title', key: 'title', label: 'Title', type: 'text', sort: 100, required: false }],
+          : [
+              {
+                name: 'title',
+                key: 'title',
+                label: 'Title',
+                type: 'text',
+                sort: 100,
+                required: false,
+              },
+            ],
     },
   });
   if (!declared.ok) {

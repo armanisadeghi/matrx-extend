@@ -412,14 +412,11 @@ function closeWebSocket(reason: string): void {
       /* ignore */
     }
     state.acknowledgedEpoch = null;
-    broadcast<{ state: 'closed'; socketEpoch?: string; intentional?: boolean }>(
-      CHANNELS.WS_STATE,
-      {
-        state: 'closed',
-        ...(socketEpoch !== null && { socketEpoch }),
-        ...(intentional && { intentional: true }),
-      },
-    );
+    broadcast<{ state: 'closed'; socketEpoch?: string; intentional?: boolean }>(CHANNELS.WS_STATE, {
+      state: 'closed',
+      ...(socketEpoch !== null && { socketEpoch }),
+      ...(intentional && { intentional: true }),
+    });
     abandonConnectingAttempt();
     return;
   }

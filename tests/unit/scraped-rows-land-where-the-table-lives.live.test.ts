@@ -78,7 +78,9 @@ async function olderRowCount(tableId: string): Promise<number> {
   return count ?? 0;
 }
 
-async function storeRecords(tableId: string): Promise<Array<{ id: string; document: Record<string, unknown> }>> {
+async function storeRecords(
+  tableId: string,
+): Promise<Array<{ id: string; document: Record<string, unknown> }>> {
   const { data, error } = await holder.client.schema('custom').rpc('read_records', {
     p_organization_id: ORG,
     p_table_id: tableId,
@@ -95,22 +97,38 @@ describeLive('scraped rows land in the store their table lives in', () => {
   beforeAll(async () => {
     if (!URL_.includes(CLONE_REF)) throw new Error(`refusing to run: ${URL_} is not the dev clone`);
     holder.client = createClient(URL_, KEY, { auth: { persistSession: false } });
-    const signed = await holder.client.auth.signInWithPassword({ email: EMAIL, password: PASSWORD });
-    if (signed.error || !signed.data.user) throw new Error(`sign-in failed: ${signed.error?.message}`);
+    const signed = await holder.client.auth.signInWithPassword({
+      email: EMAIL,
+      password: PASSWORD,
+    });
+    if (signed.error || !signed.data.user)
+      throw new Error(`sign-in failed: ${signed.error?.message}`);
     expect(signed.data.user.email).toBe('admin@admin.com');
     await chrome.storage.local.set({ 'matrx.user.profile': { id: signed.data.user.id } });
   });
 
   afterAll(async () => {
     for (const id of [...made].reverse()) {
-      await holder.client.schema('custom').rpc('record_delete', { p_organization_id: ORG, p_record_id: id });
+      await holder.client
+        .schema('custom')
+        .rpc('record_delete', { p_organization_id: ORG, p_record_id: id });
     }
   });
 
   it('a new table from scraped rows is born in the record store with its columns', async () => {
     const scraped = [
-      { Item: 'Watts LF25AUB-Z3 1/2 in PRV', 'Price (USD)': 89.5, 'In stock': true, SKU: 'WAT-0009' },
-      { Item: 'Nibco 3/4 in ball valve, lead free', 'Price (USD)': 18.25, 'In stock': false, SKU: 'NIB-5310' },
+      {
+        Item: 'Watts LF25AUB-Z3 1/2 in PRV',
+        'Price (USD)': 89.5,
+        'In stock': true,
+        SKU: 'WAT-0009',
+      },
+      {
+        Item: 'Nibco 3/4 in ball valve, lead free',
+        'Price (USD)': 18.25,
+        'In stock': false,
+        SKU: 'NIB-5310',
+      },
     ];
     const fields = inferSchemaFromRows(scraped);
     const created = await createUserTableFromSchema({
@@ -122,7 +140,11 @@ describeLive('scraped rows land in the store their table lives in', () => {
     made.push(created.id);
 
     // RED before the repoint: this id was a workbench.udt_datasets row.
-    const older = await holder.client.schema('workbench').from('udt_datasets').select('id').eq('id', created.id);
+    const older = await holder.client
+      .schema('workbench')
+      .from('udt_datasets')
+      .select('id')
+      .eq('id', created.id);
     expect(older.data ?? []).toHaveLength(0);
     const picked = await listPickableTables(ORG);
     expect(picked.find((t) => t.id === created.id)).toMatchObject({ store: 'record' });

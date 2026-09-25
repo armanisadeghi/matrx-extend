@@ -32,9 +32,9 @@
  * — plus deleting those three alias entries. Nothing else in this repo changes.
  */
 
-import { getAgentAuthoredSupabase, getSupabase } from '@/lib/supabase/client';
 import { STORAGE_KEYS } from '@/config/env';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
+import { getAgentAuthoredSupabase, getSupabase } from '@/lib/supabase/client';
 import {
   type RecordsClient,
   type RecordsDataSource,

@@ -41,8 +41,8 @@
  * Nothing here prints a credential.
  */
 
-import { createRequire } from 'node:module';
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -173,9 +173,12 @@ async function main() {
   const email = aidreamEnv.AI_ADMIN_USERNAME;
   const password = aidreamEnv.AI_ADMIN_PASSWORD;
   if (!supabaseUrl || !publishableKey) fail("WXT_SUPABASE_* are missing from this repo's .env.");
-  if (!email || !password) fail('AI_ADMIN_USERNAME / AI_ADMIN_PASSWORD are missing from aidream/.env.');
+  if (!email || !password)
+    fail('AI_ADMIN_USERNAME / AI_ADMIN_PASSWORD are missing from aidream/.env.');
 
-  console.log('\n  the record store, through the extension, in a real browser\n  ' + '─'.repeat(58));
+  console.log(
+    '\n  the record store, through the extension, in a real browser\n  ' + '─'.repeat(58),
+  );
   console.log(`  extension   ${EXTENSION_DIR.replace(WORKSPACE + '/', '')}`);
   console.log(`  signing in  ${email}`);
 
@@ -297,7 +300,7 @@ async function main() {
     // 1 — the Tables of this organization, through the read door.
     const listed = await runRecordsTool({ action: 'table_list', limit: 50 }, '01-table-list');
     check(
-      'records / table_list returned this organization\'s Tables through the store',
+      "records / table_list returned this organization's Tables through the store",
       listed?.ok === true && Array.isArray(listed.tables) && listed.tables.length > 0,
       JSON.stringify(listed).slice(0, 400),
     );

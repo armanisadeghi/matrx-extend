@@ -132,9 +132,7 @@ describe('desktop socket reconnect', () => {
     await vi.advanceTimersByTimeAsync(1_100);
     await flush();
 
-    expect(resolveCalls).toEqual([
-      { failedUrl: 'ws://127.0.0.1:22140/extension/ws?token=old' },
-    ]);
+    expect(resolveCalls).toEqual([{ failedUrl: 'ws://127.0.0.1:22140/extension/ws?token=old' }]);
     const retry = FakeWebSocket.instances[FakeWebSocket.instances.length - 1];
     expect(retry?.url).toBe('ws://127.0.0.1:22141/extension/ws?token=new');
   });
@@ -159,9 +157,7 @@ describe('desktop socket reconnect', () => {
     // Not one connect attempt: discovery said the engine is unreachable.
     expect(FakeWebSocket.instances.length).toBe(socketsBefore);
     expect(
-      debugLog.info.mock.calls.some((call) =>
-        String(call[1]).includes('pausing retries'),
-      ),
+      debugLog.info.mock.calls.some((call) => String(call[1]).includes('pausing retries')),
     ).toBe(true);
     // And it is actually quiet afterwards — no endless warning stream.
     debugLog.info.mockReset();

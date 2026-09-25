@@ -66,7 +66,11 @@ function installTabs(): void {
         created.push(opts);
         return { id: 77, url: opts.url, status: 'complete' };
       }),
-      get: vi.fn(async (_id: number) => ({ id: 77, url: 'https://example.com/article', status: 'complete' })),
+      get: vi.fn(async (_id: number) => ({
+        id: 77,
+        url: 'https://example.com/article',
+        status: 'complete',
+      })),
       remove: vi.fn(async (id: number) => {
         removed.push(id);
       }),
@@ -120,7 +124,10 @@ describe('rung 3 — the unattended run', () => {
     expect(created[0]?.active).toBe(false);
     expect(removed).toContain(77);
     expect(postCaptureResult).toHaveBeenCalledTimes(1);
-    const body = postCaptureResult.mock.calls[0]?.[1] as { captured_by_rung: string; chars: number };
+    const body = postCaptureResult.mock.calls[0]?.[1] as {
+      captured_by_rung: string;
+      chars: number;
+    };
     expect(body.captured_by_rung).toBe('own_browser');
     expect(body.chars).toBe(5_000);
     expect(outcome).toMatchObject({ posted: 'result', ok: true, claimed: true });

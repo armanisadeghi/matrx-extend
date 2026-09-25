@@ -10,13 +10,35 @@ const { createRequire } = require('node:module');
 const { execFile, spawn } = require('node:child_process');
 const { promisify } = require('node:util');
 const { acquireVaultAcceptanceLease } = require('./vault-acceptance-lease.cjs');
-const { FAILED_PROOF_PATH: reconciledChromeProofPath, verifyHistoricalChromeReconciliation } = require('./vault-historical-reconciliation.cjs');
-const { FAILED_PROOF_PATH: recovered7356ProofPath, verify7356RecoveryAdmission, NO_COMMIT_PROOF_PATH, verifyNoCommitRecovery } = require('./vault-7356-reconciliation.cjs');
+const {
+  FAILED_PROOF_PATH: reconciledChromeProofPath,
+  verifyHistoricalChromeReconciliation,
+} = require('./vault-historical-reconciliation.cjs');
+const {
+  FAILED_PROOF_PATH: recovered7356ProofPath,
+  verify7356RecoveryAdmission,
+  NO_COMMIT_PROOF_PATH,
+  verifyNoCommitRecovery,
+} = require('./vault-7356-reconciliation.cjs');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
-const { inspectIdentity, sameLifecycleIdentity, runExtensionReload, runSettingsSignOut, visibleSettingsControl, visibleVaultControl } = require('./vault-extension-lifecycle-acceptance.cjs');
+const {
+  inspectIdentity,
+  sameLifecycleIdentity,
+  runExtensionReload,
+  runSettingsSignOut,
+  visibleSettingsControl,
+  visibleVaultControl,
+} = require('./vault-extension-lifecycle-acceptance.cjs');
 const { observeOwnedPanelLogout } = require('./vault-lifecycle-network-observation.cjs');
-const { hasObservedReadOnlyCleanup, hasPreAuthNoWriteCleanup, hasPreBaselineAuthenticatedCleanup } = require('./vault-readonly-cleanup.cjs');
-const { runSavedLoginChecks, renderSavedLoginFixtureHTML } = require('./vault-saved-login-acceptance.cjs');
+const {
+  hasObservedReadOnlyCleanup,
+  hasPreAuthNoWriteCleanup,
+  hasPreBaselineAuthenticatedCleanup,
+} = require('./vault-readonly-cleanup.cjs');
+const {
+  runSavedLoginChecks,
+  renderSavedLoginFixtureHTML,
+} = require('./vault-saved-login-acceptance.cjs');
 const { runRealSiteFillChecks } = require('./vault-real-site-fill-acceptance.cjs');
 const { runSavedFormMatrix, renderSavedFormMatrixHTML } = require('./vault-saved-form-matrix.cjs');
 const { runVaultPreferencesChecks } = require('./vault-preferences-acceptance.cjs');
@@ -26,7 +48,10 @@ const {
   renderVaultSetupRecoveryFixtureHTML,
   vaultSetupRecoveryFixturePath,
 } = require('./vault-setup-recovery-acceptance.cjs');
-const { runPasswordChangeCaptureChecks, renderPasswordChangeFixtureHTML } = require('./vault-password-change-acceptance.cjs');
+const {
+  runPasswordChangeCaptureChecks,
+  renderPasswordChangeFixtureHTML,
+} = require('./vault-password-change-acceptance.cjs');
 const { classifyVaultRequest, createVaultNetworkJournal } = require('./vault-network-journal.cjs');
 const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs');
 const { runCaptureDecisionChecks } = require('./vault-capture-decisions-acceptance.cjs');
@@ -36,7 +61,8 @@ const { createFixtureSetupWithRetry } = require('./vault-fixture-create-retry.cj
 // The extension deliberately does not ship Playwright.  Use an explicit test
 // runtime override or the documented workspace harness dependency.
 const playwrightRequire = createRequire(
-  process.env.MATRX_VAULT_CANARY_PLAYWRIGHT_PACKAGE || '/Users/armanisadeghi/code/matrx-frontend/package.json',
+  process.env.MATRX_VAULT_CANARY_PLAYWRIGHT_PACKAGE ||
+    '/Users/armanisadeghi/code/matrx-frontend/package.json',
 );
 let chromium;
 try {
@@ -48,7 +74,8 @@ const execFileAsync = promisify(execFile);
 
 const EDGE_BROWSER_MODE = 'EDGE_153_OWNED_HEADLESS';
 const edgeBrowserMode = process.env.MATRX_VAULT_CANARY_BROWSER === EDGE_BROWSER_MODE;
-if (process.env.MATRX_VAULT_CANARY_BROWSER && !edgeBrowserMode) throw new Error('browser_mode_invalid');
+if (process.env.MATRX_VAULT_CANARY_BROWSER && !edgeBrowserMode)
+  throw new Error('browser_mode_invalid');
 const API = 'https://server.app.matrxserver.com';
 const DB = 'https://db.matrxserver.com';
 const REPO = path.resolve(__dirname, '../..');
@@ -64,18 +91,27 @@ async function readOAuthPageSnapshot(authPage, timeoutMs = 1000) {
         if (!element) return false;
         const rect = element.getBoundingClientRect();
         const style = getComputedStyle(element);
-        return rect.width > 0 && rect.height > 0 && style.display !== 'none'
-          && style.visibility !== 'hidden' && element.getAttribute('aria-hidden') !== 'true';
+        return (
+          rect.width > 0 &&
+          rect.height > 0 &&
+          style.display !== 'none' &&
+          style.visibility !== 'hidden' &&
+          element.getAttribute('aria-hidden') !== 'true'
+        );
       };
       const buttons = Array.from(document.querySelectorAll('button')).filter(visible);
       const authorize = buttons.filter((button) => button.textContent?.trim() === 'Authorize');
       const retry = buttons.filter((button) => button.textContent?.trim() === 'Try again');
-      const loginForm = document.querySelector('#password')?.form || document.querySelector('#email')?.form;
-      const loginSubmit = Array.from(loginForm?.querySelectorAll('button, input[type="submit"]') || []).filter((control) => {
+      const loginForm =
+        document.querySelector('#password')?.form || document.querySelector('#email')?.form;
+      const loginSubmit = Array.from(
+        loginForm?.querySelectorAll('button, input[type="submit"]') || [],
+      ).filter((control) => {
         if (!visible(control)) return false;
         return control.tagName === 'BUTTON' ? control.type === 'submit' : control.type === 'submit';
       });
-      const headings = Array.from(document.querySelectorAll('h2')).filter(visible)
+      const headings = Array.from(document.querySelectorAll('h2'))
+        .filter(visible)
         .map((heading) => heading.textContent?.trim() || '');
       return {
         emailVisible: visible(document.querySelector('#email')),
@@ -84,11 +120,15 @@ async function readOAuthPageSnapshot(authPage, timeoutMs = 1000) {
         enabledAuthorizeCount: authorize.filter((button) => !button.disabled).length,
         retryCount: retry.length,
         loginSubmitCount: loginSubmit.length,
-        busyLoginSubmitCount: loginSubmit.filter((control) => control.disabled || control.getAttribute('aria-busy') === 'true').length,
+        busyLoginSubmitCount: loginSubmit.filter(
+          (control) => control.disabled || control.getAttribute('aria-busy') === 'true',
+        ).length,
         visibleHeadings: headings,
       };
     }),
-    new Promise((_, reject) => setTimeout(() => reject(new Error('oauth_consent_dom_snapshot_timeout')), timeoutMs)),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('oauth_consent_dom_snapshot_timeout')), timeoutMs),
+    ),
   ]);
 }
 
@@ -120,9 +160,14 @@ function observeOAuthPostPasswordSubmission(authPage) {
     try {
       const request = response.request();
       const headers = request.headers();
-      const isServerAction = Object.keys(headers).some((key) => key.toLowerCase() === 'next-action');
+      const isServerAction = Object.keys(headers).some(
+        (key) => key.toLowerCase() === 'next-action',
+      );
       if (!isServerAction) return;
-      responses.push({ route: `${classifyOAuthRouteCategory(response.url())}_server_action`, status: response.status() });
+      responses.push({
+        route: `${classifyOAuthRouteCategory(response.url())}_server_action`,
+        status: response.status(),
+      });
     } catch {
       // Unavailable response metadata must not leak into evidence or block cleanup.
     }
@@ -132,7 +177,9 @@ function observeOAuthPostPasswordSubmission(authPage) {
     async snapshot({ settleMs = 0 } = {}) {
       if (settleMs > 0) await wait(settleMs);
       let formState = 'form_snapshot_unavailable';
-      try { formState = classifyOAuthPostPasswordForm(await readOAuthPageSnapshot(authPage)); } catch {}
+      try {
+        formState = classifyOAuthPostPasswordForm(await readOAuthPageSnapshot(authPage));
+      } catch {}
       let routeCategory = 'route_unavailable';
       let errorQueryParameterPresent = false;
       try {
@@ -149,7 +196,9 @@ function observeOAuthPostPasswordSubmission(authPage) {
         serverActionResponseCount: responses.length,
       };
     },
-    finish() { authPage.off('response', onResponse); },
+    finish() {
+      authPage.off('response', onResponse);
+    },
   };
 }
 
@@ -193,24 +242,37 @@ function classifyOAuthConsentSnapshot(snapshot) {
     'Too many requests',
     'Network error',
   ]);
-  const exactOneErrorHeading = visibleHeadings.length === 1
-    && (exactErrorTitles.has(visibleHeadings[0]) || /^Authorization error \((?:unknown|\d{3})\)$/.test(visibleHeadings[0]));
+  const exactOneErrorHeading =
+    visibleHeadings.length === 1 &&
+    (exactErrorTitles.has(visibleHeadings[0]) ||
+      /^Authorization error \((?:unknown|\d{3})\)$/.test(visibleHeadings[0]));
   // Any competing rendered state or duplicate exact control is ambiguous.
-  if (snapshot.authorizeCount > 1 || snapshot.retryCount > 1)
-    return 'consent_ambiguous';
-  if (exactOneRedirecting) return oneEnabledAuthorize || exactOneRetry ? 'consent_ambiguous' : 'redirecting';
-  if (oneEnabledAuthorize) return exactOneRetry || exactOneErrorHeading ? 'consent_ambiguous' : 'consent_ready';
+  if (snapshot.authorizeCount > 1 || snapshot.retryCount > 1) return 'consent_ambiguous';
+  if (exactOneRedirecting)
+    return oneEnabledAuthorize || exactOneRetry ? 'consent_ambiguous' : 'redirecting';
+  if (oneEnabledAuthorize)
+    return exactOneRetry || exactOneErrorHeading ? 'consent_ambiguous' : 'consent_ready';
   if (exactOneRetry || exactOneErrorHeading) return 'consent_error';
   return 'consent_ambiguous';
 }
 
 function summarizeOAuthConsentSnapshot(authPage, snapshot) {
   const heading = snapshot.visibleHeadings.length === 1 ? snapshot.visibleHeadings[0] : null;
-  const knownHeadingCategory = heading === 'Redirecting' ? 'redirecting'
-    : ['Invalid request', 'We could not verify your sign-in', 'Origin not authorized',
-      'Request expired', 'Too many requests', 'Network error'].includes(heading)
-      || /^Authorization error \((?:unknown|\d{3})\)$/.test(heading || '') ? 'known_error'
-      : heading === null ? 'none_or_multiple' : 'other';
+  const knownHeadingCategory =
+    heading === 'Redirecting'
+      ? 'redirecting'
+      : [
+            'Invalid request',
+            'We could not verify your sign-in',
+            'Origin not authorized',
+            'Request expired',
+            'Too many requests',
+            'Network error',
+          ].includes(heading) || /^Authorization error \((?:unknown|\d{3})\)$/.test(heading || '')
+        ? 'known_error'
+        : heading === null
+          ? 'none_or_multiple'
+          : 'other';
   return {
     routeCategory: classifyOAuthRouteCategory(authPage.url()),
     consentState: classifyOAuthConsentSnapshot(snapshot),
@@ -227,12 +289,15 @@ function summarizeOAuthConsentSnapshot(authPage, snapshot) {
 async function recordOAuthConsentFailureSnapshot(authPage, oauthUi, persist) {
   try {
     oauthUi.consentFailureSnapshot = summarizeOAuthConsentSnapshot(
-      authPage, await readOAuthPageSnapshot(authPage),
+      authPage,
+      await readOAuthPageSnapshot(authPage),
     );
     persist();
   } catch {
     oauthUi.consentFailureSnapshot = { snapshotUnavailable: true };
-    try { persist(); } catch {}
+    try {
+      persist();
+    } catch {}
   }
 }
 
@@ -241,14 +306,26 @@ function observeOAuthConsentApproval(authPage, dbOrigin, timeoutMs = 30000) {
   let settled = false;
   let resolveFirst;
   let rejectFirst;
-  const firstResponse = new Promise((resolve, reject) => { resolveFirst = resolve; rejectFirst = reject; });
+  const firstResponse = new Promise((resolve, reject) => {
+    resolveFirst = resolve;
+    rejectFirst = reject;
+  });
   const onResponse = (response) => {
     try {
       const url = new URL(response.url());
       const method = response.request().method();
-      if (url.origin !== dbOrigin || method !== 'POST'
-        || !/^\/auth\/v1\/oauth\/authorizations\/[^/]+\/consent$/.test(url.pathname)) return;
-      const observation = { route: 'oauth_authorization_consent', method: 'POST', status: response.status(), phase: 'after_authorize_click' };
+      if (
+        url.origin !== dbOrigin ||
+        method !== 'POST' ||
+        !/^\/auth\/v1\/oauth\/authorizations\/[^/]+\/consent$/.test(url.pathname)
+      )
+        return;
+      const observation = {
+        route: 'oauth_authorization_consent',
+        method: 'POST',
+        status: response.status(),
+        phase: 'after_authorize_click',
+      };
       observations.push(observation);
       if (!settled && observation.status >= 200 && observation.status < 300) {
         settled = true;
@@ -270,13 +347,20 @@ function observeOAuthConsentApproval(authPage, dbOrigin, timeoutMs = 30000) {
           rejectFirst(new Error('oauth_consent_approval_missing'));
         }
       }, timeoutMs);
-      try { return await firstResponse; } finally { clearTimeout(timeout); }
+      try {
+        return await firstResponse;
+      } finally {
+        clearTimeout(timeout);
+      }
     },
     finish() {
       authPage.off('response', onResponse);
       assert(observations.length === 1, 'oauth_consent_approval_count_invalid');
       const [observation] = observations;
-      assert(observation.status >= 200 && observation.status < 300, 'oauth_consent_approval_non_2xx');
+      assert(
+        observation.status >= 200 && observation.status < 300,
+        'oauth_consent_approval_non_2xx',
+      );
       return { ...observation, count: observations.length };
     },
   };
@@ -286,16 +370,26 @@ function observeOAuthConsentApproval(authPage, dbOrigin, timeoutMs = 30000) {
 // complete the callback. Both remain bound to the extension's PKCE/state
 // validation in auth/flow.ts and are accepted only after fresh extension
 // storage and the independent /auth/v1/user check below agree on admin.
-async function awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowLoginForm = false, deadlineMs = 35000 }) {
+async function awaitOAuthRouteOrCallback({
+  authPage,
+  storage,
+  adminEmail,
+  allowLoginForm = false,
+  deadlineMs = 35000,
+}) {
   let timeout;
   const observation = (async () => {
     for (let attempt = 0; attempt < 60; attempt += 1) {
       try {
         if (!authPage.isClosed()) {
           const snapshot = await readOAuthPageSnapshot(authPage);
-          if (allowLoginForm && snapshot.emailVisible && snapshot.passwordVisible) return 'password_form';
+          if (allowLoginForm && snapshot.emailVisible && snapshot.passwordVisible)
+            return 'password_form';
           const current = new URL(authPage.url());
-          if (current.origin === 'https://www.aimatrx.com' && current.pathname.startsWith('/oauth/consent')) {
+          if (
+            current.origin === 'https://www.aimatrx.com' &&
+            current.pathname.startsWith('/oauth/consent')
+          ) {
             const consent = classifyOAuthConsentSnapshot(snapshot);
             if (consent !== 'consent_ambiguous') return consent;
           }
@@ -307,9 +401,12 @@ async function awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowL
         if (!authPage.isClosed()) throw error;
       }
       const session = await storage(['matrx.user.profile', 'matrx.auth.accessToken']);
-      if (session?.['matrx.user.profile']?.email === adminEmail
-        && typeof session?.['matrx.auth.accessToken'] === 'string'
-        && session['matrx.auth.accessToken'].length > 20) return 'completed_callback';
+      if (
+        session?.['matrx.user.profile']?.email === adminEmail &&
+        typeof session?.['matrx.auth.accessToken'] === 'string' &&
+        session['matrx.auth.accessToken'].length > 20
+      )
+        return 'completed_callback';
       await wait(500);
     }
     throw new Error('oauth_consent_or_callback_timeout');
@@ -317,7 +414,12 @@ async function awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowL
   try {
     return await Promise.race([
       observation,
-      new Promise((_, reject) => { timeout = setTimeout(() => reject(new Error('oauth_route_observation_deadline')), deadlineMs); }),
+      new Promise((_, reject) => {
+        timeout = setTimeout(
+          () => reject(new Error('oauth_route_observation_deadline')),
+          deadlineMs,
+        );
+      }),
     ]);
   } finally {
     clearTimeout(timeout);
@@ -327,9 +429,11 @@ async function awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowL
 async function awaitOAuthCallbackStorage({ authPage, storage, adminEmail }) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
     const session = await storage(['matrx.user.profile', 'matrx.auth.accessToken']);
-    if (session?.['matrx.user.profile']?.email === adminEmail
-      && typeof session?.['matrx.auth.accessToken'] === 'string'
-      && session['matrx.auth.accessToken'].length > 20) {
+    if (
+      session?.['matrx.user.profile']?.email === adminEmail &&
+      typeof session?.['matrx.auth.accessToken'] === 'string' &&
+      session['matrx.auth.accessToken'].length > 20
+    ) {
       return { callbackStorageObserved: true, authPageClosed: authPage.isClosed() === true };
     }
     await wait(500);
@@ -353,26 +457,39 @@ function exactCdpWorkerFacade(cdp, targetId) {
           const received = (event) => {
             if (event.sessionId !== attachment.sessionId) return;
             let message;
-            try { message = JSON.parse(event.message); } catch { return; }
+            try {
+              message = JSON.parse(event.message);
+            } catch {
+              return;
+            }
             if (message.id !== id) return;
             clearTimeout(timeout);
             cdp.off('Target.receivedMessageFromTarget', received);
             resolve(message);
           };
           cdp.on('Target.receivedMessageFromTarget', received);
-          cdp.send('Target.sendMessageToTarget', {
-            sessionId: attachment.sessionId,
-            message: JSON.stringify({ id, method: 'Runtime.evaluate', params: { expression, awaitPromise: true, returnByValue: true } }),
-          }).catch((error) => {
-            clearTimeout(timeout);
-            cdp.off('Target.receivedMessageFromTarget', received);
-            reject(error);
-          });
+          cdp
+            .send('Target.sendMessageToTarget', {
+              sessionId: attachment.sessionId,
+              message: JSON.stringify({
+                id,
+                method: 'Runtime.evaluate',
+                params: { expression, awaitPromise: true, returnByValue: true },
+              }),
+            })
+            .catch((error) => {
+              clearTimeout(timeout);
+              cdp.off('Target.receivedMessageFromTarget', received);
+              reject(error);
+            });
         });
-        if (response.error || response.result?.exceptionDetails) throw new Error('generator_worker_cdp_evaluate_refused');
+        if (response.error || response.result?.exceptionDetails)
+          throw new Error('generator_worker_cdp_evaluate_refused');
         return response.result?.result?.value;
       } finally {
-        await cdp.send('Target.detachFromTarget', { sessionId: attachment.sessionId }).catch(() => {});
+        await cdp
+          .send('Target.detachFromTarget', { sessionId: attachment.sessionId })
+          .catch(() => {});
       }
     },
   };
@@ -382,36 +499,71 @@ const required = (key) => {
   assert(typeof value === 'string' && value.length > 0, `missing_${key.toLowerCase()}`);
   return value;
 };
-const localCanonicalCleanupArmed = process.env.MATRX_VAULT_CANARY_LOCAL_CANONICAL_CLEANUP === 'RUN_LOCAL_CANONICAL_CLEANUP';
+const localCanonicalCleanupArmed =
+  process.env.MATRX_VAULT_CANARY_LOCAL_CANONICAL_CLEANUP === 'RUN_LOCAL_CANONICAL_CLEANUP';
 const lifecycleDryRun = process.argv.includes('--lifecycle-dry-run');
 // This is deliberately a separate, explicitly armed mode.  It proves that a
 // fresh extension can authenticate and establish its tenant context without
 // making a Vault mutation; it is not a Save/Update acceptance result.
-const readOnlyAdmissionMode = lifecycleDryRun || process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
-const receiptBackedSaveUpdateMode = process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_RECEIPT_BACKED_SAVE_UPDATE';
+const readOnlyAdmissionMode =
+  lifecycleDryRun || process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
+const receiptBackedSaveUpdateMode =
+  process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_RECEIPT_BACKED_SAVE_UPDATE';
 const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = 'a2b5aa7e1082330ab6658b07477b31ea3705ca72';
-const RECEIPT_BACKED_ROUTER_SHA256 = '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
-const RECEIPT_BACKED_SERVICE_SHA256 = 'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
-const generatorTransportMode = lifecycleDryRun || process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
-const displayMode = process.env.MATRX_VAULT_CANARY_DISPLAY || (lifecycleDryRun ? 'HEADLESS_NO_CLIPBOARD' : undefined);
+const RECEIPT_BACKED_ROUTER_SHA256 =
+  '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
+const RECEIPT_BACKED_SERVICE_SHA256 =
+  'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
+const generatorTransportMode =
+  lifecycleDryRun || process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
+const displayMode =
+  process.env.MATRX_VAULT_CANARY_DISPLAY || (lifecycleDryRun ? 'HEADLESS_NO_CLIPBOARD' : undefined);
 const headlessNoClipboardMode = displayMode === 'HEADLESS_NO_CLIPBOARD';
 const headedMode = displayMode === 'HEADED';
-const isolatedHeadlessClipboard = process.env.MATRX_VAULT_CANARY_CLIPBOARD === 'RUN_ISOLATED_HEADLESS_CLIPBOARD';
-assert(!process.env.MATRX_VAULT_CANARY_CLIPBOARD || isolatedHeadlessClipboard, 'clipboard_mode_invalid');
-assert(!isolatedHeadlessClipboard || (headlessNoClipboardMode && generatorTransportMode && readOnlyAdmissionMode), 'clipboard_requires_headless_generator_admission');
-assert(!edgeBrowserMode || (headlessNoClipboardMode && !isolatedHeadlessClipboard), 'edge_requires_owned_headless_without_clipboard');
-const panelCloseLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_PANEL_CLOSE === 'RUN_PANEL_CLOSE_LIFECYCLE';
-const workerRestartLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART === 'RUN_WORKER_RESTART_LIFECYCLE';
-const windowSwitchLifecycleMode = process.env.MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH === 'RUN_WINDOW_SWITCH_LIFECYCLE';
-const extensionLifecycleMode = process.env.MATRX_VAULT_CANARY_EXTENSION_LIFECYCLE === 'RUN_EXTENSION_LIFECYCLE';
-const setupIdentityOnlyMode = process.env.MATRX_VAULT_CANARY_SETUP_IDENTITY_ONLY === 'RUN_SETUP_IDENTITY_ONLY';
+const isolatedHeadlessClipboard =
+  process.env.MATRX_VAULT_CANARY_CLIPBOARD === 'RUN_ISOLATED_HEADLESS_CLIPBOARD';
+assert(
+  !process.env.MATRX_VAULT_CANARY_CLIPBOARD || isolatedHeadlessClipboard,
+  'clipboard_mode_invalid',
+);
+assert(
+  !isolatedHeadlessClipboard ||
+    (headlessNoClipboardMode && generatorTransportMode && readOnlyAdmissionMode),
+  'clipboard_requires_headless_generator_admission',
+);
+assert(
+  !edgeBrowserMode || (headlessNoClipboardMode && !isolatedHeadlessClipboard),
+  'edge_requires_owned_headless_without_clipboard',
+);
+const panelCloseLifecycleMode =
+  process.env.MATRX_VAULT_CANARY_GENERATOR_PANEL_CLOSE === 'RUN_PANEL_CLOSE_LIFECYCLE';
+const workerRestartLifecycleMode =
+  process.env.MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART === 'RUN_WORKER_RESTART_LIFECYCLE';
+const windowSwitchLifecycleMode =
+  process.env.MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH === 'RUN_WINDOW_SWITCH_LIFECYCLE';
+const extensionLifecycleMode =
+  process.env.MATRX_VAULT_CANARY_EXTENSION_LIFECYCLE === 'RUN_EXTENSION_LIFECYCLE';
+const setupIdentityOnlyMode =
+  process.env.MATRX_VAULT_CANARY_SETUP_IDENTITY_ONLY === 'RUN_SETUP_IDENTITY_ONLY';
 const identityOnlyMode = process.env.MATRX_VAULT_CANARY_IDENTITY_ONLY === 'RUN_IDENTITY_ONLY';
 assert(typeof displayMode === 'string' && displayMode.length > 0, 'canary_display_mode_required');
 assert(headlessNoClipboardMode || headedMode, 'canary_display_mode_invalid');
-assert(!headedMode || process.env.MATRX_VAULT_CANARY_FOREGROUND === 'ALLOW_FOREGROUND_TEST', 'headed_canary_requires_foreground_allow');
-assert(!headlessNoClipboardMode || generatorTransportMode || receiptBackedSaveUpdateMode, 'headless_requires_generator_transport');
-assert(!headlessNoClipboardMode || readOnlyAdmissionMode || receiptBackedSaveUpdateMode, 'headless_requires_read_only_admission');
-assert(!headlessNoClipboardMode || !process.env.MATRX_VAULT_CANARY_WINDOW_PLACEMENT, 'headless_refuses_window_placement');
+assert(
+  !headedMode || process.env.MATRX_VAULT_CANARY_FOREGROUND === 'ALLOW_FOREGROUND_TEST',
+  'headed_canary_requires_foreground_allow',
+);
+assert(
+  !headlessNoClipboardMode || generatorTransportMode || receiptBackedSaveUpdateMode,
+  'headless_requires_generator_transport',
+);
+assert(
+  !headlessNoClipboardMode || readOnlyAdmissionMode || receiptBackedSaveUpdateMode,
+  'headless_requires_read_only_admission',
+);
+assert(
+  !headlessNoClipboardMode || !process.env.MATRX_VAULT_CANARY_WINDOW_PLACEMENT,
+  'headless_refuses_window_placement',
+);
 if (receiptBackedSaveUpdateMode) {
   // Presence itself is unsafe: malformed lifecycle values must not bypass the
   // displayless Save/Update admission by failing in a later, weaker guard.
@@ -420,41 +572,87 @@ if (receiptBackedSaveUpdateMode) {
     'MATRX_VAULT_CANARY_GENERATOR_PANEL_CLOSE',
     'MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART',
     'MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH',
-  ]) assert(process.env[key] === undefined, 'receipt_backed_refuses_generator_or_lifecycle_flag');
+  ])
+    assert(process.env[key] === undefined, 'receipt_backed_refuses_generator_or_lifecycle_flag');
 }
-assert(!panelCloseLifecycleMode || headlessNoClipboardMode, 'panel_close_lifecycle_requires_headless_no_clipboard');
-assert(!process.env.MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART || workerRestartLifecycleMode, 'worker_restart_lifecycle_mode_invalid');
-assert(!process.env.MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH || windowSwitchLifecycleMode, 'window_switch_lifecycle_mode_invalid');
-assert(!workerRestartLifecycleMode || headlessNoClipboardMode, 'worker_restart_lifecycle_requires_headless_no_clipboard');
-assert(!windowSwitchLifecycleMode || headlessNoClipboardMode, 'window_switch_lifecycle_requires_headless_no_clipboard');
-assert(!extensionLifecycleMode || (headlessNoClipboardMode && readOnlyAdmissionMode), 'extension_lifecycle_requires_headless_readonly_admission');
-assert(!setupIdentityOnlyMode || (headlessNoClipboardMode && readOnlyAdmissionMode), 'setup_identity_only_requires_headless_readonly_admission');
-assert(!identityOnlyMode || (headlessNoClipboardMode && readOnlyAdmissionMode), 'identity_only_requires_headless_readonly_admission');
-assert([extensionLifecycleMode, setupIdentityOnlyMode, identityOnlyMode].filter(Boolean).length <= 1, 'lifecycle_modes_are_exclusive');
+assert(
+  !panelCloseLifecycleMode || headlessNoClipboardMode,
+  'panel_close_lifecycle_requires_headless_no_clipboard',
+);
+assert(
+  !process.env.MATRX_VAULT_CANARY_GENERATOR_WORKER_RESTART || workerRestartLifecycleMode,
+  'worker_restart_lifecycle_mode_invalid',
+);
+assert(
+  !process.env.MATRX_VAULT_CANARY_GENERATOR_WINDOW_SWITCH || windowSwitchLifecycleMode,
+  'window_switch_lifecycle_mode_invalid',
+);
+assert(
+  !workerRestartLifecycleMode || headlessNoClipboardMode,
+  'worker_restart_lifecycle_requires_headless_no_clipboard',
+);
+assert(
+  !windowSwitchLifecycleMode || headlessNoClipboardMode,
+  'window_switch_lifecycle_requires_headless_no_clipboard',
+);
+assert(
+  !extensionLifecycleMode || (headlessNoClipboardMode && readOnlyAdmissionMode),
+  'extension_lifecycle_requires_headless_readonly_admission',
+);
+assert(
+  !setupIdentityOnlyMode || (headlessNoClipboardMode && readOnlyAdmissionMode),
+  'setup_identity_only_requires_headless_readonly_admission',
+);
+assert(
+  !identityOnlyMode || (headlessNoClipboardMode && readOnlyAdmissionMode),
+  'identity_only_requires_headless_readonly_admission',
+);
+assert(
+  [extensionLifecycleMode, setupIdentityOnlyMode, identityOnlyMode].filter(Boolean).length <= 1,
+  'lifecycle_modes_are_exclusive',
+);
 if (lifecycleDryRun) {
-  const digest = (name) => crypto.createHash('sha256').update(syncFs.readFileSync(path.join(__dirname, name))).digest('hex');
-  process.stdout.write(`${JSON.stringify({
-    kind: 'vault_extension_lifecycle_dry_run',
-    runnerSha256: digest('vault-realbrowser-acceptance.cjs'),
-    lifecycleHelperSha256: digest('vault-extension-lifecycle-acceptance.cjs'),
-    lifecycleNetworkObservationSha256: digest('vault-lifecycle-network-observation.cjs'),
-    nativePanelFetchFailureSha256: digest('vault-native-panel-fetch-failure.cjs'),
-    lifecycleVerdictSha256: digest('vault-extension-lifecycle-verdict.cjs'),
-    setupRecoveryHelperSha256: digest('vault-setup-recovery-acceptance.cjs'),
-    realSiteFillAcceptanceSha256: digest('vault-real-site-fill-acceptance.cjs'),
-    custody: 'no_browser_no_profile_no_credentials_no_network',
-  })}\n`);
+  const digest = (name) =>
+    crypto
+      .createHash('sha256')
+      .update(syncFs.readFileSync(path.join(__dirname, name)))
+      .digest('hex');
+  process.stdout.write(
+    `${JSON.stringify({
+      kind: 'vault_extension_lifecycle_dry_run',
+      runnerSha256: digest('vault-realbrowser-acceptance.cjs'),
+      lifecycleHelperSha256: digest('vault-extension-lifecycle-acceptance.cjs'),
+      lifecycleNetworkObservationSha256: digest('vault-lifecycle-network-observation.cjs'),
+      nativePanelFetchFailureSha256: digest('vault-native-panel-fetch-failure.cjs'),
+      lifecycleVerdictSha256: digest('vault-extension-lifecycle-verdict.cjs'),
+      setupRecoveryHelperSha256: digest('vault-setup-recovery-acceptance.cjs'),
+      realSiteFillAcceptanceSha256: digest('vault-real-site-fill-acceptance.cjs'),
+      custody: 'no_browser_no_profile_no_credentials_no_network',
+    })}\n`,
+  );
   process.exit(0);
 }
 if (process.env.MATRX_REALBROWSER_VAULT_CANARY !== 'RUN_UNDER_REVIEW')
   throw new Error('inert_canary_requires_explicit_arm');
-assert(!generatorTransportMode || readOnlyAdmissionMode, 'generator_requires_mutation_free_admission');
+assert(
+  !generatorTransportMode || readOnlyAdmissionMode,
+  'generator_requires_mutation_free_admission',
+);
 if (receiptBackedSaveUpdateMode) {
   assert(headlessNoClipboardMode, 'receipt_backed_requires_headless_no_clipboard');
   assert(localCanonicalCleanupArmed, 'receipt_backed_requires_local_canonical_cleanup');
-  assert(process.env.MATRX_VAULT_CANARY_EXPECTED_COMMIT === RECEIPT_BACKED_SAVE_UPDATE_COMMIT, 'receipt_backed_requires_frozen_artifact');
-  assert(process.env.MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256 === RECEIPT_BACKED_ROUTER_SHA256, 'receipt_backed_requires_frozen_router');
-  assert(process.env.MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256 === RECEIPT_BACKED_SERVICE_SHA256, 'receipt_backed_requires_frozen_service');
+  assert(
+    process.env.MATRX_VAULT_CANARY_EXPECTED_COMMIT === RECEIPT_BACKED_SAVE_UPDATE_COMMIT,
+    'receipt_backed_requires_frozen_artifact',
+  );
+  assert(
+    process.env.MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256 === RECEIPT_BACKED_ROUTER_SHA256,
+    'receipt_backed_requires_frozen_router',
+  );
+  assert(
+    process.env.MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256 === RECEIPT_BACKED_SERVICE_SHA256,
+    'receipt_backed_requires_frozen_service',
+  );
 }
 const LOCAL_CLEANUP_MAX_BASELINE_IDS = 64;
 const LOCAL_CLEANUP_MAX_CREATED_IDS = 5;
@@ -466,14 +664,25 @@ const LOCAL_SERVICE_RELATIVE = 'aidream/services/user_secrets/vault.py';
 if (localCanonicalCleanupArmed) {
   const routerHash = required('MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256');
   const serviceHash = required('MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256');
-  assert(/^[a-f0-9]{64}$/.test(routerHash) && /^[a-f0-9]{64}$/.test(serviceHash), 'local_cleanup_hash_shape');
+  assert(
+    /^[a-f0-9]{64}$/.test(routerHash) && /^[a-f0-9]{64}$/.test(serviceHash),
+    'local_cleanup_hash_shape',
+  );
 }
 
 const runId = crypto.randomUUID();
-const stateRoot = process.env.MATRX_VAULT_CANARY_STATE_ROOT || path.join(REPO, '.matrx', 'realbrowser-vault', 'canary-runs');
-const REVIEWED_HISTORICAL_ADMISSION_ROOT = path.join(REPO, '.matrx', 'realbrowser-vault', 'readonly-admission');
+const stateRoot =
+  process.env.MATRX_VAULT_CANARY_STATE_ROOT ||
+  path.join(REPO, '.matrx', 'realbrowser-vault', 'canary-runs');
+const REVIEWED_HISTORICAL_ADMISSION_ROOT = path.join(
+  REPO,
+  '.matrx',
+  'realbrowser-vault',
+  'readonly-admission',
+);
 const REVIEWED_HISTORICAL_ADMISSION_RUN = '3bef7a5b-c78e-497e-b936-f7f53a2e9ac1';
-const REVIEWED_HISTORICAL_ADMISSION_SHA256 = 'd0c7c4b7b9c1de1b5af600e8678a5f2921e231d6346521f9f7d72e944e47cb42';
+const REVIEWED_HISTORICAL_ADMISSION_SHA256 =
+  'd0c7c4b7b9c1de1b5af600e8678a5f2921e231d6346521f9f7d72e944e47cb42';
 const root = path.join(stateRoot, runId);
 const profile = path.join(root, 'owned-profile');
 const proofPath = path.join(root, 'proof.json');
@@ -481,7 +690,11 @@ const proof = {
   schema: 3,
   runnerSha256: crypto.createHash('sha256').update(syncFs.readFileSync(__filename)).digest('hex'),
   scope: 'owned localhost real-extension Vault Save/Update acceptance',
-  mode: receiptBackedSaveUpdateMode ? 'receipt_backed_save_update' : readOnlyAdmissionMode ? 'read_only_admission' : 'full_acceptance',
+  mode: receiptBackedSaveUpdateMode
+    ? 'receipt_backed_save_update'
+    : readOnlyAdmissionMode
+      ? 'read_only_admission'
+      : 'full_acceptance',
   displayMode,
   phase: 'artifact_admission',
   authenticationAttempted: false,
@@ -549,163 +762,248 @@ async function generatorSessionLocked() {
   const probe = [
     'import json, plistlib, subprocess, sys',
     "p = subprocess.run(['/usr/sbin/ioreg', '-a', '-l', '-d', '1', '-n', 'IOConsoleUsers'], capture_output=True, timeout=5)",
-    "root = plistlib.loads(p.stdout) if p.returncode == 0 else None",
+    'root = plistlib.loads(p.stdout) if p.returncode == 0 else None',
     "sessions = root.get('IOConsoleUsers') if isinstance(root, dict) else None",
     "active = [entry for entry in sessions if isinstance(entry, dict) and entry.get('kCGSSessionOnConsoleKey') is True and entry.get('kCGSessionLoginDoneKey') is True] if isinstance(sessions, list) else []",
     "locked = active[0].get('CGSSessionScreenIsLocked') if len(active) == 1 else None",
-    "valid = len(active) == 1 and (locked is None or type(locked) is bool)",
+    'valid = len(active) == 1 and (locked is None or type(locked) is bool)',
     "print(json.dumps({'screenLocked': bool(locked)}) if valid else 'unavailable')",
   ].join('; ');
   let stdout;
   try {
-    ({ stdout } = await execFileAsync('/usr/bin/python3', ['-c', probe], { timeout: 7000, maxBuffer: 1024 }));
+    ({ stdout } = await execFileAsync('/usr/bin/python3', ['-c', probe], {
+      timeout: 7000,
+      maxBuffer: 1024,
+    }));
   } catch {
     throw new Error('generator_focus_session_state_unavailable');
   }
   let parsed;
-  try { parsed = JSON.parse(stdout); } catch { throw new Error('generator_focus_session_state_unavailable'); }
+  try {
+    parsed = JSON.parse(stdout);
+  } catch {
+    throw new Error('generator_focus_session_state_unavailable');
+  }
   assert(typeof parsed?.screenLocked === 'boolean', 'generator_focus_session_state_unavailable');
   return parsed.screenLocked;
 }
 async function refuseUnreconciledPriorRun() {
   const retryingAuthFailures = [];
-  const entries = await fs.readdir(stateRoot, { withFileTypes: true }).catch((error) =>
-    error.code === 'ENOENT' ? [] : Promise.reject(error),
-  );
+  const entries = await fs
+    .readdir(stateRoot, { withFileTypes: true })
+    .catch((error) => (error.code === 'ENOENT' ? [] : Promise.reject(error)));
   for (const entry of entries) {
     if (!entry.isDirectory() || entry.name === runId) continue;
     const priorProofPath = path.join(stateRoot, entry.name, 'proof.json');
     const priorRaw = await fs.readFile(priorProofPath, 'utf8').catch(() => null);
     const prior = priorRaw ? JSON.parse(priorRaw) : null;
-    const completedAcceptance = prior?.mode !== 'receipt_backed_save_update' && prior?.ok === true
-      && prior.cleanup?.receiptReconciled === true
-      && prior.cleanup?.createdItemsGone === true;
+    const completedAcceptance =
+      prior?.mode !== 'receipt_backed_save_update' &&
+      prior?.ok === true &&
+      prior.cleanup?.receiptReconciled === true &&
+      prior.cleanup?.createdItemsGone === true;
     // A read-only run is retryable when its cleanup records zero observed Vault mutation requests. That stays independent of an admission UI outcome.
-    const vaultMutationFreeCleanup = prior?.schema === 3
-      && prior?.mode === 'read_only_admission'
-      && prior.cleanup?.vaultMutationFree === true
-      && prior.vaultMutationRequests === 0
-      && prior.vaultItemPosts?.total === 0
-      && prior.ownedCreateMutationKeys?.length === 0
-      && prior.ownedFixtureIds?.length === 0
-      && (prior.cleanup?.localAuthLogoutStatus === 204 || prior.authenticationAttempted === false)
-      && prior.cleanup?.browserClosed === true
-      && prior.cleanup?.profileRemoved === true;
+    const vaultMutationFreeCleanup =
+      prior?.schema === 3 &&
+      prior?.mode === 'read_only_admission' &&
+      prior.cleanup?.vaultMutationFree === true &&
+      prior.vaultMutationRequests === 0 &&
+      prior.vaultItemPosts?.total === 0 &&
+      prior.ownedCreateMutationKeys?.length === 0 &&
+      prior.ownedFixtureIds?.length === 0 &&
+      (prior.cleanup?.localAuthLogoutStatus === 204 || prior.authenticationAttempted === false) &&
+      prior.cleanup?.browserClosed === true &&
+      prior.cleanup?.profileRemoved === true;
     // A failed OAuth attempt is retryable only when it never crossed the
     // independent identity boundary, never read a Vault baseline or created
     // fixtures, and its disposable browser/profile were conclusively gone.
     // It does not assert a remote auth revocation: a prior proof without a
     // captured bearer cannot safely revoke an unknown session.
-    const authFailureBeforeWrites = prior?.schema === 3
-      && prior?.mode === 'read_only_admission'
-      && prior.authenticationAttempted === true
-      && ['oauth_ui', 'oauth_sign_in'].includes(prior.failurePhase)
-      && prior.checks?.independentAdminIdentity !== true
-      && prior.identityProof === undefined
-      && prior.baselineMetadataSha256 === undefined
-      && prior.vaultMutationRequests === 0
-      && prior.vaultItemPosts?.total === 0
-      && prior.ownedCreateMutationKeys?.length === 0
-      && prior.ownedFixtureIds?.length === 0
-      && prior.cleanup?.browserClosed === true
-      && prior.cleanup?.profileRemoved === true;
+    const authFailureBeforeWrites =
+      prior?.schema === 3 &&
+      prior?.mode === 'read_only_admission' &&
+      prior.authenticationAttempted === true &&
+      ['oauth_ui', 'oauth_sign_in'].includes(prior.failurePhase) &&
+      prior.checks?.independentAdminIdentity !== true &&
+      prior.identityProof === undefined &&
+      prior.baselineMetadataSha256 === undefined &&
+      prior.vaultMutationRequests === 0 &&
+      prior.vaultItemPosts?.total === 0 &&
+      prior.ownedCreateMutationKeys?.length === 0 &&
+      prior.ownedFixtureIds?.length === 0 &&
+      prior.cleanup?.browserClosed === true &&
+      prior.cleanup?.profileRemoved === true;
     const preAuthNoWriteCleanup = hasPreAuthNoWriteCleanup(prior);
     // Exact reviewed reconciliation only. It neither edits nor promotes the
     // old proof: runner bc9c32dec3ace7d974163fa153d83a6ff51c8dcb differed only
     // by native-env loader c909455b77b16144ff463dc4ca314edfda0c2d50f4f7b2c149bf9610f861a7b2.
     // Independent review confirmed organization_not_selected before baseline
     // or fixtures and no Save/Update request; no other sidecar is accepted.
-    const reviewedHistoricalException = stateRoot === REVIEWED_HISTORICAL_ADMISSION_ROOT
-      && entry.name === REVIEWED_HISTORICAL_ADMISSION_RUN
-      && priorProofPath === path.join(REVIEWED_HISTORICAL_ADMISSION_ROOT, REVIEWED_HISTORICAL_ADMISSION_RUN, 'proof.json')
-      && priorRaw !== null
-      && crypto.createHash('sha256').update(priorRaw).digest('hex') === REVIEWED_HISTORICAL_ADMISSION_SHA256;
+    const reviewedHistoricalException =
+      stateRoot === REVIEWED_HISTORICAL_ADMISSION_ROOT &&
+      entry.name === REVIEWED_HISTORICAL_ADMISSION_RUN &&
+      priorProofPath ===
+        path.join(
+          REVIEWED_HISTORICAL_ADMISSION_ROOT,
+          REVIEWED_HISTORICAL_ADMISSION_RUN,
+          'proof.json',
+        ) &&
+      priorRaw !== null &&
+      crypto.createHash('sha256').update(priorRaw).digest('hex') ===
+        REVIEWED_HISTORICAL_ADMISSION_SHA256;
     // Reproduced launch-only failure: default headless shell never loaded the
     // extension worker; no OAuth interaction was reachable. Preserve failure.
-    const reviewedLaunchFailure = stateRoot === REVIEWED_HISTORICAL_ADMISSION_ROOT
-      && entry.name === '96760964-bf3f-465a-9452-a566c98c8c00'
-      && priorRaw !== null
-      && crypto.createHash('sha256').update(priorRaw).digest('hex') === '9e4c99d7a5041aafcece85f3a6d8d3f176fcaab975ea6633cdd962c8b4a0e46b';
+    const reviewedLaunchFailure =
+      stateRoot === REVIEWED_HISTORICAL_ADMISSION_ROOT &&
+      entry.name === '96760964-bf3f-465a-9452-a566c98c8c00' &&
+      priorRaw !== null &&
+      crypto.createHash('sha256').update(priorRaw).digest('hex') ===
+        '9e4c99d7a5041aafcece85f3a6d8d3f176fcaab975ea6633cdd962c8b4a0e46b';
     // Cleanup is independent of the tested outcome: a failed journey may
     // retry after its receipt-backed cleanup has completed successfully.
-    const completedMutationCleanup = prior?.schema === 3 && ['full_acceptance', 'receipt_backed_save_update'].includes(prior.mode)
-      && prior.cleanup?.receiptReconciled === true && prior.cleanup?.baselineUntouched === true
-      && prior.cleanup?.createdItemsGone === true
-      && prior.cleanup?.localAuthLogoutStatus === 204 && prior.cleanup?.browserClosed === true
-      && prior.cleanup?.profileRemoved === true
-      && (prior.mode !== 'receipt_backed_save_update'
-        || (prior.cleanup?.finalBaselineIdSetMatches === true
-          && prior.cleanup?.finalBaselineMetadataMatches === true
-          && prior.cleanup?.localFixtureServerClosed === true));
+    const completedMutationCleanup =
+      prior?.schema === 3 &&
+      ['full_acceptance', 'receipt_backed_save_update'].includes(prior.mode) &&
+      prior.cleanup?.receiptReconciled === true &&
+      prior.cleanup?.baselineUntouched === true &&
+      prior.cleanup?.createdItemsGone === true &&
+      prior.cleanup?.localAuthLogoutStatus === 204 &&
+      prior.cleanup?.browserClosed === true &&
+      prior.cleanup?.profileRemoved === true &&
+      (prior.mode !== 'receipt_backed_save_update' ||
+        (prior.cleanup?.finalBaselineIdSetMatches === true &&
+          prior.cleanup?.finalBaselineMetadataMatches === true &&
+          prior.cleanup?.localFixtureServerClosed === true));
     // Receipt-mode failures are retryable only when the durable proof says no
     // Vault mutation crossed the runner boundary, all owned state is empty,
     // and every resource it started has closed. If it read a baseline, the
     // same failing run must have freshly re-read its exact IDs and metadata.
-    const receiptModeZeroWriteCleanup = prior?.schema === 3
-      && prior?.mode === 'receipt_backed_save_update'
-      && prior.vaultMutationRequests === 0
-      && prior.vaultItemPosts?.total === 0
-      && prior.vaultItemPosts?.withIdempotencyHeader === 0
-      && prior.vaultItemPosts?.missingIdempotencyHeader === 0
-      && prior.vaultItemPosts?.invalidIdempotencyHeader === 0
-      && prior.ownedCreateMutationKeys?.length === 0
-      && prior.ownedFixtureIds?.length === 0
-      && prior.cleanup?.browserClosed === true
-      && prior.cleanup?.profileRemoved === true
-      && (prior.cleanup?.localFixtureServerClosed === true || prior.cleanup?.localFixtureServerClosed === 'not_started')
-      && (prior.authenticationAttempted !== true || prior.cleanup?.localAuthLogoutStatus === 204)
-      && (prior.baselineMetadataSha256 === undefined
-        || (prior.cleanup?.finalBaselineIdSetMatches === true && prior.cleanup?.finalBaselineMetadataMatches === true));
+    const receiptModeZeroWriteCleanup =
+      prior?.schema === 3 &&
+      prior?.mode === 'receipt_backed_save_update' &&
+      prior.vaultMutationRequests === 0 &&
+      prior.vaultItemPosts?.total === 0 &&
+      prior.vaultItemPosts?.withIdempotencyHeader === 0 &&
+      prior.vaultItemPosts?.missingIdempotencyHeader === 0 &&
+      prior.vaultItemPosts?.invalidIdempotencyHeader === 0 &&
+      prior.ownedCreateMutationKeys?.length === 0 &&
+      prior.ownedFixtureIds?.length === 0 &&
+      prior.cleanup?.browserClosed === true &&
+      prior.cleanup?.profileRemoved === true &&
+      (prior.cleanup?.localFixtureServerClosed === true ||
+        prior.cleanup?.localFixtureServerClosed === 'not_started') &&
+      (prior.authenticationAttempted !== true || prior.cleanup?.localAuthLogoutStatus === 204) &&
+      (prior.baselineMetadataSha256 === undefined ||
+        (prior.cleanup?.finalBaselineIdSetMatches === true &&
+          prior.cleanup?.finalBaselineMetadataMatches === true));
     let reviewedRecovery = false;
-    if (stateRoot === REVIEWED_HISTORICAL_ADMISSION_ROOT
-      && entry.name === 'acd31810-d74b-450a-bf39-d85e830b872a'
-      && priorRaw !== null
-      && crypto.createHash('sha256').update(priorRaw).digest('hex') === '88bce524d50c182db12c1307c306ff99f516714f2ca87bdcd7de5095d9a07678') {
-      const recoveryRaw = await fs.readFile(path.join(stateRoot, entry.name, 'recovery-1789807360922.json'), 'utf8').catch(() => null);
-      if (recoveryRaw !== null && crypto.createHash('sha256').update(recoveryRaw).digest('hex') === '7f10f75e3d5e35214867874d050d53691db23208bf2dce68fd7bbe1ac4b17337') {
+    if (
+      stateRoot === REVIEWED_HISTORICAL_ADMISSION_ROOT &&
+      entry.name === 'acd31810-d74b-450a-bf39-d85e830b872a' &&
+      priorRaw !== null &&
+      crypto.createHash('sha256').update(priorRaw).digest('hex') ===
+        '88bce524d50c182db12c1307c306ff99f516714f2ca87bdcd7de5095d9a07678'
+    ) {
+      const recoveryRaw = await fs
+        .readFile(path.join(stateRoot, entry.name, 'recovery-1789807360922.json'), 'utf8')
+        .catch(() => null);
+      if (
+        recoveryRaw !== null &&
+        crypto.createHash('sha256').update(recoveryRaw).digest('hex') ===
+          '7f10f75e3d5e35214867874d050d53691db23208bf2dce68fd7bbe1ac4b17337'
+      ) {
         const recovery = JSON.parse(recoveryRaw);
         const attempts = recovery.adapter?.attempts || [];
         const recoveredIds = new Set(attempts.map((attempt) => attempt.id));
-        reviewedRecovery = prior.ok === false && recovery.ok === true
-          && recovery.runId === prior.runId
-          && recovery.originalProofSha256 === crypto.createHash('sha256').update(priorRaw).digest('hex')
-          && recovery.adminVerified === true && recovery.baselineUnchangedBefore === true
-          && recovery.baselineUnchangedAfter === true && recovery.createdItemsGone === true
-          && recovery.logoutStatus === 204 && recovery.adapterProcess?.exitCode === 0
-          && recovery.adapterProcess?.strictJson === true && recovery.adapter?.ok === true
-          && recovery.adapter?.route === 'local_canonical_authmiddleware'
-          && recovery.adapter?.receiptCount === 4 && attempts.length === 4 && recoveredIds.size === 4
-          && prior.ownedFixtureIds?.length === 4 && prior.ownedFixtureIds.every((id) => recoveredIds.has(id))
-          && attempts.every((attempt) => attempt.initialGetStatus === 404 && attempt.terminal === 'already_cleaned');
+        reviewedRecovery =
+          prior.ok === false &&
+          recovery.ok === true &&
+          recovery.runId === prior.runId &&
+          recovery.originalProofSha256 ===
+            crypto.createHash('sha256').update(priorRaw).digest('hex') &&
+          recovery.adminVerified === true &&
+          recovery.baselineUnchangedBefore === true &&
+          recovery.baselineUnchangedAfter === true &&
+          recovery.createdItemsGone === true &&
+          recovery.logoutStatus === 204 &&
+          recovery.adapterProcess?.exitCode === 0 &&
+          recovery.adapterProcess?.strictJson === true &&
+          recovery.adapter?.ok === true &&
+          recovery.adapter?.route === 'local_canonical_authmiddleware' &&
+          recovery.adapter?.receiptCount === 4 &&
+          attempts.length === 4 &&
+          recoveredIds.size === 4 &&
+          prior.ownedFixtureIds?.length === 4 &&
+          prior.ownedFixtureIds.every((id) => recoveredIds.has(id)) &&
+          attempts.every(
+            (attempt) => attempt.initialGetStatus === 404 && attempt.terminal === 'already_cleaned',
+          );
       }
     }
     // Independently reviewed cleanup reconciliation only. The original failed
     // panel observation remains failed; this admits a new run, never upgrades it.
     let reviewedGeneratorCleanup = false;
-    const generatorRecoveryRoot = path.join(REPO, '.matrx', 'realbrowser-vault', 'generator-admission');
-    if (stateRoot === generatorRecoveryRoot
-      && entry.name === '773b5e06-70c4-488a-be6e-02f7d4cc10ee'
-      && priorRaw !== null
-      && crypto.createHash('sha256').update(priorRaw).digest('hex') === '113fb4a7cb9f65b3149c2b57b251d657e8182852d6d72cd0b15a90caf1cd8409') {
-      const sidecarRaw = await fs.readFile(path.join(generatorRecoveryRoot, entry.name, 'cleanup-reconciliation.json'), 'utf8').catch(() => null);
-      const freshPath = path.join(REPO, '.matrx', 'realbrowser-vault', 'save-update-headless', '6bb55156-4b9a-4a45-af35-0fa2feb7d171', 'proof.json');
+    const generatorRecoveryRoot = path.join(
+      REPO,
+      '.matrx',
+      'realbrowser-vault',
+      'generator-admission',
+    );
+    if (
+      stateRoot === generatorRecoveryRoot &&
+      entry.name === '773b5e06-70c4-488a-be6e-02f7d4cc10ee' &&
+      priorRaw !== null &&
+      crypto.createHash('sha256').update(priorRaw).digest('hex') ===
+        '113fb4a7cb9f65b3149c2b57b251d657e8182852d6d72cd0b15a90caf1cd8409'
+    ) {
+      const sidecarRaw = await fs
+        .readFile(
+          path.join(generatorRecoveryRoot, entry.name, 'cleanup-reconciliation.json'),
+          'utf8',
+        )
+        .catch(() => null);
+      const freshPath = path.join(
+        REPO,
+        '.matrx',
+        'realbrowser-vault',
+        'save-update-headless',
+        '6bb55156-4b9a-4a45-af35-0fa2feb7d171',
+        'proof.json',
+      );
       const freshRaw = await fs.readFile(freshPath, 'utf8').catch(() => null);
-      if (sidecarRaw && freshRaw
-        && crypto.createHash('sha256').update(sidecarRaw).digest('hex') === '449f3432c09166ce482cdb7b74ea495da03a768c31bee051194c10e737a8a73b'
-        && crypto.createHash('sha256').update(freshRaw).digest('hex') === '511703aef98dd4ce2229740196e792b827a913e3b0a3a65080b78b8d48d9de21') {
-        const sidecar = JSON.parse(sidecarRaw), fresh = JSON.parse(freshRaw);
-        const cleanZeroWrite = (record) => record.vaultMutationRequests === 0 && record.vaultItemPosts?.total === 0
-          && record.ownedCreateMutationKeys?.length === 0 && record.ownedFixtureIds?.length === 0
-          && record.cleanup?.localAuthLogoutStatus === 204 && record.cleanup?.browserClosed === true && record.cleanup?.profileRemoved === true;
-        reviewedGeneratorCleanup = prior.mode === 'read_only_admission' && prior.ok === false
-          && prior.failureCode === 'vault_panel_items_read_sentinel_missing'
-          && typeof prior.baselineMetadataSha256 === 'string' && cleanZeroWrite(prior)
-          && fresh.checks?.independentAdminIdentity === true && cleanZeroWrite(fresh)
-          && fresh.baselineMetadataSha256 === prior.baselineMetadataSha256
-          && fresh.cleanup?.finalBaselineIdSetMatches === true && fresh.cleanup?.finalBaselineMetadataMatches === true
-          && sidecar.freshAdminProofPath === freshPath
-          && sidecar.scope === 'cleanup and retry reconciliation only; original failed coverage verdict unchanged'
-          && sidecar.historicalNetworkAcceptance === false;
+      if (
+        sidecarRaw &&
+        freshRaw &&
+        crypto.createHash('sha256').update(sidecarRaw).digest('hex') ===
+          '449f3432c09166ce482cdb7b74ea495da03a768c31bee051194c10e737a8a73b' &&
+        crypto.createHash('sha256').update(freshRaw).digest('hex') ===
+          '511703aef98dd4ce2229740196e792b827a913e3b0a3a65080b78b8d48d9de21'
+      ) {
+        const sidecar = JSON.parse(sidecarRaw),
+          fresh = JSON.parse(freshRaw);
+        const cleanZeroWrite = (record) =>
+          record.vaultMutationRequests === 0 &&
+          record.vaultItemPosts?.total === 0 &&
+          record.ownedCreateMutationKeys?.length === 0 &&
+          record.ownedFixtureIds?.length === 0 &&
+          record.cleanup?.localAuthLogoutStatus === 204 &&
+          record.cleanup?.browserClosed === true &&
+          record.cleanup?.profileRemoved === true;
+        reviewedGeneratorCleanup =
+          prior.mode === 'read_only_admission' &&
+          prior.ok === false &&
+          prior.failureCode === 'vault_panel_items_read_sentinel_missing' &&
+          typeof prior.baselineMetadataSha256 === 'string' &&
+          cleanZeroWrite(prior) &&
+          fresh.checks?.independentAdminIdentity === true &&
+          cleanZeroWrite(fresh) &&
+          fresh.baselineMetadataSha256 === prior.baselineMetadataSha256 &&
+          fresh.cleanup?.finalBaselineIdSetMatches === true &&
+          fresh.cleanup?.finalBaselineMetadataMatches === true &&
+          sidecar.freshAdminProofPath === freshPath &&
+          sidecar.scope ===
+            'cleanup and retry reconciliation only; original failed coverage verdict unchanged' &&
+          sidecar.historicalNetworkAcceptance === false;
       }
     }
     if (authFailureBeforeWrites) {
@@ -737,20 +1035,43 @@ async function refuseUnreconciledPriorRun() {
       proof.priorUncommittedRequestRecovery = recovery;
     }
     const receiptMode = prior?.mode === 'receipt_backed_save_update';
-    assert(receiptMode
-      ? completedMutationCleanup || receiptModeZeroWriteCleanup || preAuthNoWriteCleanup || reviewedChromeReconciliation || reviewed7356Recovery || reviewedUncommittedRequest
-      : completedAcceptance || completedMutationCleanup || vaultMutationFreeCleanup || authFailureBeforeWrites || preAuthNoWriteCleanup || reviewedHistoricalException || reviewedLaunchFailure || reviewedRecovery || reviewedGeneratorCleanup || hasObservedReadOnlyCleanup(prior) || hasPreBaselineAuthenticatedCleanup(prior),
-    'previous_run_unreconciled');
+    assert(
+      receiptMode
+        ? completedMutationCleanup ||
+            receiptModeZeroWriteCleanup ||
+            preAuthNoWriteCleanup ||
+            reviewedChromeReconciliation ||
+            reviewed7356Recovery ||
+            reviewedUncommittedRequest
+        : completedAcceptance ||
+            completedMutationCleanup ||
+            vaultMutationFreeCleanup ||
+            authFailureBeforeWrites ||
+            preAuthNoWriteCleanup ||
+            reviewedHistoricalException ||
+            reviewedLaunchFailure ||
+            reviewedRecovery ||
+            reviewedGeneratorCleanup ||
+            hasObservedReadOnlyCleanup(prior) ||
+            hasPreBaselineAuthenticatedCleanup(prior),
+      'previous_run_unreconciled',
+    );
   }
   if (retryingAuthFailures.length) proof.priorAuthRetryJournal = retryingAuthFailures;
 }
 async function sha256(file) {
-  return crypto.createHash('sha256').update(await fs.readFile(file)).digest('hex');
+  return crypto
+    .createHash('sha256')
+    .update(await fs.readFile(file))
+    .digest('hex');
 }
 async function resolveLocalSourceRoot() {
   assert(path.isAbsolute(LOCAL_SOURCE_ROOT), 'local_source_root_must_be_absolute');
   const sourceRoot = await fs.realpath(LOCAL_SOURCE_ROOT).catch(() => null);
-  assert(sourceRoot !== null && (await fs.stat(sourceRoot)).isDirectory(), 'local_source_root_refused');
+  assert(
+    sourceRoot !== null && (await fs.stat(sourceRoot)).isDirectory(),
+    'local_source_root_refused',
+  );
   return sourceRoot;
 }
 function baselineMetadataSha256(entries) {
@@ -759,7 +1080,12 @@ function baselineMetadataSha256(entries) {
       id: entry.id,
       updated_at: entry.updated_at,
       fields: (entry.fields || [])
-        .map((field) => ({ id: field.id, field_key: field.field_key, is_active: field.is_active, handling: field.handling }))
+        .map((field) => ({
+          id: field.id,
+          field_key: field.field_key,
+          is_active: field.is_active,
+          handling: field.handling,
+        }))
         .sort((left, right) => left.id.localeCompare(right.id)),
     }))
     .sort((left, right) => left.id.localeCompare(right.id));
@@ -769,14 +1095,25 @@ async function prewriteLocalCanonicalPreflight() {
   if (!localCanonicalCleanupArmed) return;
   assert(baselineIds.size <= LOCAL_CLEANUP_MAX_BASELINE_IDS, 'local_cleanup_baseline_capacity');
   const { sourceRoot, routerHash, serviceHash } = await verifyPinnedLocalCanonicalSource();
-  const placeholderIds = Array.from({ length: LOCAL_CLEANUP_MAX_CREATED_IDS }, (_, index) =>
-    `00000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
+  const placeholderIds = Array.from(
+    { length: LOCAL_CLEANUP_MAX_CREATED_IDS },
+    (_, index) => `00000000-0000-4000-8000-${String(index + 1).padStart(12, '0')}`,
   );
   const payload = JSON.stringify({
-    token, userId, organizationId, createKeys: placeholderIds, baselineIds: [...baselineIds], provenIDs: placeholderIds,
-    expectedRouterSha256: routerHash, expectedServiceSha256: serviceHash, sourceRoot,
+    token,
+    userId,
+    organizationId,
+    createKeys: placeholderIds,
+    baselineIds: [...baselineIds],
+    provenIDs: placeholderIds,
+    expectedRouterSha256: routerHash,
+    expectedServiceSha256: serviceHash,
+    sourceRoot,
   });
-  assert(Buffer.byteLength(payload, 'utf8') < LOCAL_CLEANUP_INPUT_MAX_BYTES, 'local_cleanup_payload_capacity');
+  assert(
+    Buffer.byteLength(payload, 'utf8') < LOCAL_CLEANUP_INPUT_MAX_BYTES,
+    'local_cleanup_payload_capacity',
+  );
   proof.checks.localCanonicalCleanupPreflight = true;
 }
 async function verifyPinnedLocalCanonicalSource() {
@@ -796,12 +1133,21 @@ async function verifyArtifact() {
   const manifestReal = await fs.realpath(manifestPath);
   const artifactRoot = path.dirname(manifestReal);
   const manifest = JSON.parse(await fs.readFile(manifestReal, 'utf8'));
-  assert(manifest.schema === 2 && manifest.extensionDirectory === 'extension', 'artifact_manifest_shape');
+  assert(
+    manifest.schema === 2 && manifest.extensionDirectory === 'extension',
+    'artifact_manifest_shape',
+  );
   assert(manifest.kind === required('MATRX_VAULT_CANARY_ARTIFACT_KIND'), 'artifact_kind_mismatch');
-  assert(manifest.sourceCommit === required('MATRX_VAULT_CANARY_EXPECTED_COMMIT'), 'artifact_commit_mismatch');
-  assert(Array.isArray(manifest.extensionFiles) && manifest.extensionFiles.length > 0, 'artifact_manifest_files');
+  assert(
+    manifest.sourceCommit === required('MATRX_VAULT_CANARY_EXPECTED_COMMIT'),
+    'artifact_commit_mismatch',
+  );
+  assert(
+    Array.isArray(manifest.extensionFiles) && manifest.extensionFiles.length > 0,
+    'artifact_manifest_files',
+  );
   const extension = path.join(artifactRoot, manifest.extensionDirectory);
-  assert(await fs.realpath(extension) === extension, 'artifact_path_refused');
+  assert((await fs.realpath(extension)) === extension, 'artifact_path_refused');
   const expected = new Map(manifest.extensionFiles.map((entry) => [entry.path, entry.sha256]));
   const observed = new Set();
   async function walk(dir, relative = '') {
@@ -819,10 +1165,15 @@ async function verifyArtifact() {
   }
   await walk(extension);
   assert(observed.size === expected.size, 'artifact_missing_file');
-  const extensionManifest = JSON.parse(await fs.readFile(path.join(extension, 'manifest.json'), 'utf8'));
+  const extensionManifest = JSON.parse(
+    await fs.readFile(path.join(extension, 'manifest.json'), 'utf8'),
+  );
   assert(extensionManifest.manifest_version === 3, 'artifact_not_mv3');
   if (receiptBackedSaveUpdateMode)
-    assert(manifest.sourceCommit === RECEIPT_BACKED_SAVE_UPDATE_COMMIT, 'receipt_backed_artifact_commit_mismatch');
+    assert(
+      manifest.sourceCommit === RECEIPT_BACKED_SAVE_UPDATE_COMMIT,
+      'receipt_backed_artifact_commit_mismatch',
+    );
   proof.artifact = {
     manifestSha256: await sha256(manifestReal),
     sourceCommit: manifest.sourceCommit,
@@ -843,29 +1194,62 @@ function startLocalSite() {
     }
     const requestPath = new URL(request.url, 'http://127.0.0.1').pathname;
     if (requestPath === vaultSetupRecoveryFixturePath) {
-      response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+      response.writeHead(200, {
+        'content-type': 'text/html; charset=utf-8',
+        'cache-control': 'no-store',
+      });
       response.end(renderVaultSetupRecoveryFixtureHTML());
       return;
     }
     if (requestPath === '/signup' || requestPath === '/change-password') {
-      response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
-      response.end(renderPasswordChangeFixtureHTML(requestPath === '/signup' ? 'signup' : 'change_password'));
+      response.writeHead(200, {
+        'content-type': 'text/html; charset=utf-8',
+        'cache-control': 'no-store',
+      });
+      response.end(
+        renderPasswordChangeFixtureHTML(requestPath === '/signup' ? 'signup' : 'change_password'),
+      );
       return;
     }
-    const matrixKind = requestPath.startsWith('/saved-matrix/') ? requestPath.slice('/saved-matrix/'.length) : null;
-    if (matrixKind && ['username_first', 'late_spa', 'same_origin_frame', 'two_same_origin_frames', 'cross_origin_parent', 'frame_login'].includes(matrixKind)) {
-      response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+    const matrixKind = requestPath.startsWith('/saved-matrix/')
+      ? requestPath.slice('/saved-matrix/'.length)
+      : null;
+    if (
+      matrixKind &&
+      [
+        'username_first',
+        'late_spa',
+        'same_origin_frame',
+        'two_same_origin_frames',
+        'cross_origin_parent',
+        'frame_login',
+      ].includes(matrixKind)
+    ) {
+      response.writeHead(200, {
+        'content-type': 'text/html; charset=utf-8',
+        'cache-control': 'no-store',
+      });
       response.end(renderSavedFormMatrixHTML(matrixKind));
       return;
     }
-    const savedLoginKind = request.url === '/saved-login-nested' ? 'nested'
-      : request.url === '/saved-login-external' ? 'external' : null;
+    const savedLoginKind =
+      request.url === '/saved-login-nested'
+        ? 'nested'
+        : request.url === '/saved-login-external'
+          ? 'external'
+          : null;
     if (savedLoginKind) {
-      response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+      response.writeHead(200, {
+        'content-type': 'text/html; charset=utf-8',
+        'cache-control': 'no-store',
+      });
       response.end(renderSavedLoginFixtureHTML(savedLoginKind));
       return;
     }
-    response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+    response.writeHead(200, {
+      'content-type': 'text/html; charset=utf-8',
+      'cache-control': 'no-store',
+    });
     response.end(`<!doctype html><html><body>
       <main><h1>Disposable login</h1><form id="login" method="post" action="/submitted">
       <label>Email <input id="email" name="email" autocomplete="username" type="email" required></label>
@@ -877,7 +1261,9 @@ function startLocalSite() {
   });
   return new Promise((resolve, reject) => {
     server.once('error', reject);
-    server.listen(0, '127.0.0.1', () => resolve({ server, state, url: `http://127.0.0.1:${server.address().port}/login` }));
+    server.listen(0, '127.0.0.1', () =>
+      resolve({ server, state, url: `http://127.0.0.1:${server.address().port}/login` }),
+    );
   });
 }
 async function storage(keys) {
@@ -885,7 +1271,9 @@ async function storage(keys) {
 }
 async function hasPendingCapture() {
   return worker.evaluate(async () => {
-    const value = (await chrome.storage.session.get('matrx.credentials.capture.pending.v1'))['matrx.credentials.capture.pending.v1'];
+    const value = (await chrome.storage.session.get('matrx.credentials.capture.pending.v1'))[
+      'matrx.credentials.capture.pending.v1'
+    ];
     return !!value && typeof value === 'object' && Object.keys(value).length > 0;
   });
 }
@@ -927,7 +1315,9 @@ async function items() {
   return response.items;
 }
 async function item(id) {
-  const response = await api(`${API}/api/vault/items/${encodeURIComponent(id)}`, { label: 'item_get' });
+  const response = await api(`${API}/api/vault/items/${encodeURIComponent(id)}`, {
+    label: 'item_get',
+  });
   assert(response && response.id === id && Array.isArray(response.fields), 'item_shape');
   return response;
 }
@@ -940,8 +1330,13 @@ async function createFixture(displayName, fields) {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'Idempotency-Key': key },
     body: JSON.stringify({
-      principal: { type: 'user' }, display_name: displayName, definition_key: 'website_login',
-      fields, login_urls: [localUrl], uri_match_mode: 'host', browser_fill_enabled: true,
+      principal: { type: 'user' },
+      display_name: displayName,
+      definition_key: 'website_login',
+      fields,
+      login_urls: [localUrl],
+      uri_match_mode: 'host',
+      browser_fill_enabled: true,
     }),
     label: 'fixture_create',
   };
@@ -950,8 +1345,12 @@ async function createFixture(displayName, fields) {
   proof.setupRetry ||= { status: null, count: 0 };
   persist();
   const { response: rawResponse } = await createFixtureSetupWithRetry({
-    url: `${API}/api/vault/items`, headers, body: options.body, fetchImpl: fetch,
-    journalRequest: ({ url, method, headers: requestHeaders }) => journalVaultMutationRequest(url, method, requestHeaders),
+    url: `${API}/api/vault/items`,
+    headers,
+    body: options.body,
+    fetchImpl: fetch,
+    journalRequest: ({ url, method, headers: requestHeaders }) =>
+      journalVaultMutationRequest(url, method, requestHeaders),
     recordRetry: ({ status }) => {
       proof.setupRetry = { status, count: proof.setupRetry.count + 1 };
       persist();
@@ -969,7 +1368,10 @@ async function createFixture(displayName, fields) {
 }
 function receiptKeys() {
   for (const key of rejectedBeforeForwardKeys)
-    assert(!responseLossFixtureKeys.has(key) && key !== responseLossKey, 'response_loss_excluded_owned_key');
+    assert(
+      !responseLossFixtureKeys.has(key) && key !== responseLossKey,
+      'response_loss_excluded_owned_key',
+    );
   return [...createKeys].filter((key) => !rejectedBeforeForwardKeys.has(key));
 }
 async function reconcile() {
@@ -1003,17 +1405,31 @@ async function localCanonicalCleanup(proven) {
   const sourceRoot = await resolveLocalSourceRoot();
   const routerHash = required('MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256');
   const serviceHash = required('MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256');
-  assert(/^[a-f0-9]{64}$/.test(routerHash) && /^[a-f0-9]{64}$/.test(serviceHash), 'local_cleanup_hash_shape');
+  assert(
+    /^[a-f0-9]{64}$/.test(routerHash) && /^[a-f0-9]{64}$/.test(serviceHash),
+    'local_cleanup_hash_shape',
+  );
   const python = '/Users/armanisadeghi/code/aidream/.venv/bin/python';
   const adapter = path.join(__dirname, 'cleanup-vault-canary.py');
   const input = JSON.stringify({
-    token, userId, organizationId, createKeys: receiptKeys(), baselineIds: [...baselineIds], provenIDs: [...proven],
-    expectedRouterSha256: routerHash, expectedServiceSha256: serviceHash, sourceRoot,
+    token,
+    userId,
+    organizationId,
+    createKeys: receiptKeys(),
+    baselineIds: [...baselineIds],
+    provenIDs: [...proven],
+    expectedRouterSha256: routerHash,
+    expectedServiceSha256: serviceHash,
+    sourceRoot,
   });
-  assert(Buffer.byteLength(input, 'utf8') < LOCAL_CLEANUP_INPUT_MAX_BYTES, 'local_cleanup_payload_capacity');
+  assert(
+    Buffer.byteLength(input, 'utf8') < LOCAL_CLEANUP_INPUT_MAX_BYTES,
+    'local_cleanup_payload_capacity',
+  );
   const result = await new Promise((resolve, reject) => {
     const child = spawn(python, [adapter], {
-      cwd: sourceRoot, stdio: ['pipe', 'pipe', 'ignore'],
+      cwd: sourceRoot,
+      stdio: ['pipe', 'pipe', 'ignore'],
     });
     let stdout = '';
     child.stdout.setEncoding('utf8');
@@ -1024,11 +1440,17 @@ async function localCanonicalCleanup(proven) {
     child.once('error', () => reject(new Error('local_cleanup_spawn_refused')));
     child.once('close', (code) => {
       let parsed;
-      try { parsed = JSON.parse(stdout); } catch { return reject(new Error('local_cleanup_output_refused')); }
+      try {
+        parsed = JSON.parse(stdout);
+      } catch {
+        return reject(new Error('local_cleanup_output_refused'));
+      }
       if (code !== 0 || parsed?.ok !== true) {
         proof.cleanup.canonicalAdapterFailure = {
           code: /^[a-z0-9_]{1,100}$/.test(parsed?.code || '') ? parsed.code : 'unclassified',
-          errorType: /^[A-Za-z]{1,80}$/.test(parsed?.errorType || '') ? parsed.errorType : undefined,
+          errorType: /^[A-Za-z]{1,80}$/.test(parsed?.errorType || '')
+            ? parsed.errorType
+            : undefined,
         };
         return reject(new Error('local_cleanup_refused'));
       }
@@ -1039,7 +1461,18 @@ async function localCanonicalCleanup(proven) {
   });
   assert(Array.isArray(result.attempts), 'local_cleanup_attempts_refused');
   const attemptedIds = new Set(result.attempts.map((attempt) => attempt.id));
-  assert(result.route === 'local_canonical_authmiddleware' && result.provenance === 'local_router_and_service_hash_pinned' && result.receiptCount === proven.size && result.attempts.length === proven.size && attemptedIds.size === proven.size && [...proven].every((id) => attemptedIds.has(id)) && result.attempts.every((attempt) => ['already_cleaned', 'deleted_and_missing'].includes(attempt.terminal)), 'local_cleanup_proof_refused');
+  assert(
+    result.route === 'local_canonical_authmiddleware' &&
+      result.provenance === 'local_router_and_service_hash_pinned' &&
+      result.receiptCount === proven.size &&
+      result.attempts.length === proven.size &&
+      attemptedIds.size === proven.size &&
+      [...proven].every((id) => attemptedIds.has(id)) &&
+      result.attempts.every((attempt) =>
+        ['already_cleaned', 'deleted_and_missing'].includes(attempt.terminal),
+      ),
+    'local_cleanup_proof_refused',
+  );
   return result;
 }
 async function attachPanelSession(cdp, targetId) {
@@ -1050,35 +1483,57 @@ async function attachPanelSession(cdp, targetId) {
   const onMessage = ({ sessionId: received, message }) => {
     if (received !== sessionId) return;
     let envelope;
-    try { envelope = JSON.parse(message); } catch { return; }
+    try {
+      envelope = JSON.parse(message);
+    } catch {
+      return;
+    }
     const waiter = pending.get(envelope.id);
     if (!waiter) {
       if (typeof envelope.method === 'string') {
         for (const listener of eventListeners) {
-          try { listener(envelope.method, envelope.params ?? {}); } catch { /* diagnostic observers cannot affect the panel */ }
+          try {
+            listener(envelope.method, envelope.params ?? {});
+          } catch {
+            /* diagnostic observers cannot affect the panel */
+          }
         }
       }
       return;
     }
     pending.delete(envelope.id);
     clearTimeout(waiter.timer);
-    envelope.error ? waiter.reject(new Error('panel_protocol_refused')) : waiter.resolve(envelope.result);
+    envelope.error
+      ? waiter.reject(new Error('panel_protocol_refused'))
+      : waiter.resolve(envelope.result);
   };
   cdp.on('Target.receivedMessageFromTarget', onMessage);
   return {
     dispose() {
       cdp.off('Target.receivedMessageFromTarget', onMessage);
-      for (const waiter of pending.values()) { clearTimeout(waiter.timer); waiter.reject(new Error('panel_session_closed')); }
+      for (const waiter of pending.values()) {
+        clearTimeout(waiter.timer);
+        waiter.reject(new Error('panel_session_closed'));
+      }
       pending.clear();
       eventListeners.clear();
     },
     send(method, params = {}) {
       return new Promise((resolve, reject) => {
         const id = ++nextId;
-        const fail = () => { clearTimeout(pending.get(id)?.timer); pending.delete(id); reject(new Error('panel_protocol_refused')); };
+        const fail = () => {
+          clearTimeout(pending.get(id)?.timer);
+          pending.delete(id);
+          reject(new Error('panel_protocol_refused'));
+        };
         const timer = setTimeout(fail, 10000);
         pending.set(id, { resolve, reject, timer });
-        cdp.send('Target.sendMessageToTarget', { sessionId, message: JSON.stringify({ id, method, params }) }).catch(fail);
+        cdp
+          .send('Target.sendMessageToTarget', {
+            sessionId,
+            message: JSON.stringify({ id, method, params }),
+          })
+          .catch(fail);
       });
     },
     onEvent(listener) {
@@ -1092,8 +1547,15 @@ async function openGenuineSidePanel(extensionId, popup) {
   await popup.getByRole('button', { name: 'Open chat', exact: true }).click();
   let contexts = [];
   for (let attempt = 0; attempt < 30; attempt += 1) {
-    contexts = await worker.evaluate(() => chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }));
-    if (contexts.length === 1 && contexts[0].documentUrl === `chrome-extension://${extensionId}/sidepanel.html` && contexts[0].tabId === -1) break;
+    contexts = await worker.evaluate(() =>
+      chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }),
+    );
+    if (
+      contexts.length === 1 &&
+      contexts[0].documentUrl === `chrome-extension://${extensionId}/sidepanel.html` &&
+      contexts[0].tabId === -1
+    )
+      break;
     await wait(250);
   }
   assert(contexts.length === 1 && contexts[0].tabId === -1, 'real_side_panel_missing');
@@ -1101,34 +1563,61 @@ async function openGenuineSidePanel(extensionId, popup) {
   assert(host, 'cdp_host_missing');
   const cdp = await context.newCDPSession(host);
   const targets = await cdp.send('Target.getTargets');
-  const target = targets.targetInfos.find((candidate) => candidate.url === `chrome-extension://${extensionId}/sidepanel.html`);
+  const target = targets.targetInfos.find(
+    (candidate) => candidate.url === `chrome-extension://${extensionId}/sidepanel.html`,
+  );
   assert(target?.type === 'page', 'real_side_panel_target_missing');
   const panel = await attachPanelSession(cdp, target.targetId);
   await panel.send('Network.enable');
   const evaluate = async (expression) => {
-    const result = await panel.send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
-    if (result.exceptionDetails) { proof.panelEvalFailure = { exceptionClass: result.exceptionDetails.exception?.className ?? 'unknown', stackLocations: new Error().stack.split('\n').filter(line => line.includes('vault-') && /:\d+:\d+/.test(line)).map(line => line.replace(/.*(vault-[^/ ]+\.cjs:\d+:\d+).*/, '$1')) }; persist(); throw new Error('real_side_panel_eval_refused'); }
+    const result = await panel.send('Runtime.evaluate', {
+      expression,
+      returnByValue: true,
+      awaitPromise: true,
+    });
+    if (result.exceptionDetails) {
+      proof.panelEvalFailure = {
+        exceptionClass: result.exceptionDetails.exception?.className ?? 'unknown',
+        stackLocations: new Error().stack
+          .split('\n')
+          .filter((line) => line.includes('vault-') && /:\d+:\d+/.test(line))
+          .map((line) => line.replace(/.*(vault-[^/ ]+\.cjs:\d+:\d+).*/, '$1')),
+      };
+      persist();
+      throw new Error('real_side_panel_eval_refused');
+    }
     return result.result.value;
   };
   const click = async (expression) => {
     let box;
     for (let attempt = 0; attempt < 30; attempt += 1) {
-      box = await evaluate(`(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const rect = element.getBoundingClientRect(); const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2; const hit = document.elementFromPoint(x, y); return { x, y, width: rect.width, height: rect.height, viewportWidth: innerWidth, viewportHeight: innerHeight, targetTag: element.tagName, hitTag: hit?.tagName ?? null, hitPath: (() => { const nodes = []; for (let node = hit; node && nodes.length < 4; node = node.parentElement) nodes.push({ tag: node.tagName, role: node.getAttribute('role'), classes: typeof node.className === 'string' ? node.className.slice(0, 240) : '', pointerEvents: getComputedStyle(node).pointerEvents }); return nodes; })(), disabled: element.disabled === true, viewport: x >= 0 && y >= 0 && x <= innerWidth && y <= innerHeight, hit: !!hit && (hit === element || element.contains(hit)) }; })()`);
+      box = await evaluate(
+        `(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const rect = element.getBoundingClientRect(); const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2; const hit = document.elementFromPoint(x, y); return { x, y, width: rect.width, height: rect.height, viewportWidth: innerWidth, viewportHeight: innerHeight, targetTag: element.tagName, hitTag: hit?.tagName ?? null, hitPath: (() => { const nodes = []; for (let node = hit; node && nodes.length < 4; node = node.parentElement) nodes.push({ tag: node.tagName, role: node.getAttribute('role'), classes: typeof node.className === 'string' ? node.className.slice(0, 240) : '', pointerEvents: getComputedStyle(node).pointerEvents }); return nodes; })(), disabled: element.disabled === true, viewport: x >= 0 && y >= 0 && x <= innerWidth && y <= innerHeight, hit: !!hit && (hit === element || element.contains(hit)) }; })()`,
+      );
       if (box?.width > 0 && box?.height > 0 && box.viewport && box.hit) break;
       await wait(250);
     }
     if (!(box?.width > 0 && box?.height > 0 && box.viewport && box.hit)) {
       proof.panelControlFailure = {
         geometry: box,
-        callerLocations: new Error().stack.split('\n').filter(line => line.includes('vault-') && /:\d+:\d+/.test(line)).map(line => line.replace(/.*(vault-[^/ ]+\.cjs:\d+:\d+).*/, '$1')),
+        callerLocations: new Error().stack
+          .split('\n')
+          .filter((line) => line.includes('vault-') && /:\d+:\d+/.test(line))
+          .map((line) => line.replace(/.*(vault-[^/ ]+\.cjs:\d+:\d+).*/, '$1')),
       };
       try {
         // Failure-only diagnostic: mask generated DOM values before any image.
         // This does not alter product state or turn a failed click into a pass.
-        await evaluate(`(() => { const style = document.createElement('style'); style.textContent = '[aria-label="Password generator"] code { visibility: hidden !important; }'; document.head.append(style); return true; })()`);
+        await evaluate(
+          `(() => { const style = document.createElement('style'); style.textContent = '[aria-label="Password generator"] code { visibility: hidden !important; }'; document.head.append(style); return true; })()`,
+        );
         const captured = await panel.send('Page.captureScreenshot', { format: 'png' });
         if (typeof captured.data === 'string') {
-          await fs.writeFile(path.join(root, 'panel-failure-masked.png'), Buffer.from(captured.data, 'base64'), { mode: 0o600 });
+          await fs.writeFile(
+            path.join(root, 'panel-failure-masked.png'),
+            Buffer.from(captured.data, 'base64'),
+            { mode: 0o600 },
+          );
           proof.panelControlFailure.maskedScreenshot = true;
         }
       } catch {
@@ -1138,22 +1627,59 @@ async function openGenuineSidePanel(extensionId, popup) {
       throw new Error('real_side_panel_control_not_actionable');
     }
     await panel.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: box.x, y: box.y });
-    await panel.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: box.x, y: box.y, button: 'left', clickCount: 1 });
-    await panel.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: box.x, y: box.y, button: 'left', clickCount: 1 });
+    await panel.send('Input.dispatchMouseEvent', {
+      type: 'mousePressed',
+      x: box.x,
+      y: box.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    await panel.send('Input.dispatchMouseEvent', {
+      type: 'mouseReleased',
+      x: box.x,
+      y: box.y,
+      button: 'left',
+      clickCount: 1,
+    });
   };
   const waitFor = async (expression, expected = true, timeout = 15000) => {
     const deadline = Date.now() + timeout;
-    do { if ((await evaluate(expression)) === expected) return; await wait(100); } while (Date.now() < deadline);
+    do {
+      if ((await evaluate(expression)) === expected) return;
+      await wait(100);
+    } while (Date.now() < deadline);
     throw new Error('panel_condition_timeout');
   };
   const fill = async (expression, value) => {
     await click(expression);
     assert(await evaluate(`document.activeElement === (${expression})`), 'panel_input_not_focused');
     const modifiers = process.platform === 'darwin' ? 4 : 2;
-    await panel.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'a', code: 'KeyA', modifiers, windowsVirtualKeyCode: 65 });
-    await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'a', code: 'KeyA', modifiers, windowsVirtualKeyCode: 65 });
-    await panel.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Backspace', code: 'Backspace', windowsVirtualKeyCode: 8 });
-    await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Backspace', code: 'Backspace', windowsVirtualKeyCode: 8 });
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: 'a',
+      code: 'KeyA',
+      modifiers,
+      windowsVirtualKeyCode: 65,
+    });
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'a',
+      code: 'KeyA',
+      modifiers,
+      windowsVirtualKeyCode: 65,
+    });
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: 'Backspace',
+      code: 'Backspace',
+      windowsVirtualKeyCode: 8,
+    });
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'Backspace',
+      code: 'Backspace',
+      windowsVirtualKeyCode: 8,
+    });
     await panel.send('Input.insertText', { text: value });
     await waitFor(`(${expression})?.value === ${JSON.stringify(value)}`);
   };
@@ -1163,7 +1689,13 @@ async function openGenuineSidePanel(extensionId, popup) {
     // A focused native button activates on Enter's text-bearing keyDown. This
     // matches Chrome's keyboard path; a key code alone only delivers events.
     const effectiveText = text ?? (key === 'Enter' ? '\r' : undefined);
-    const params = { key, code, windowsVirtualKeyCode, nativeVirtualKeyCode: windowsVirtualKeyCode, modifiers };
+    const params = {
+      key,
+      code,
+      windowsVirtualKeyCode,
+      nativeVirtualKeyCode: windowsVirtualKeyCode,
+      modifiers,
+    };
     if (effectiveText !== undefined) {
       params.text = effectiveText;
       params.unmodifiedText = effectiveText;
@@ -1176,7 +1708,11 @@ async function openGenuineSidePanel(extensionId, popup) {
     const stop = panel.onEvent((method, params) => {
       if (method === 'Network.requestWillBeSent') {
         let pathname;
-        try { pathname = new URL(params.request?.url).pathname; } catch { return; }
+        try {
+          pathname = new URL(params.request?.url).pathname;
+        } catch {
+          return;
+        }
         if (pathname !== '/rest/v1/rpc/knob_resolve') return;
         calls.set(params.requestId, { startedAt: Date.now(), status: null, completedAt: null });
       }
@@ -1201,13 +1737,27 @@ async function openGenuineSidePanel(extensionId, popup) {
     };
   };
   const screenshot = async (expression, destination) => {
-    const clip = await evaluate(`(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest' }); const r = element.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.x >= 0 && r.y >= 0 && r.right <= innerWidth && r.bottom <= innerHeight ? { x: r.x, y: r.y, width: r.width, height: r.height, scale: 1 } : null; })()`);
+    const clip = await evaluate(
+      `(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest' }); const r = element.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.x >= 0 && r.y >= 0 && r.right <= innerWidth && r.bottom <= innerHeight ? { x: r.x, y: r.y, width: r.width, height: r.height, scale: 1 } : null; })()`,
+    );
     assert(clip, 'panel_screenshot_not_visible');
     const captured = await panel.send('Page.captureScreenshot', { format: 'png', clip });
     assert(typeof captured.data === 'string', 'panel_screenshot_refused');
     await fs.writeFile(destination, Buffer.from(captured.data, 'base64'), { mode: 0o600 });
   };
-  return { targetId: target.targetId, send: (method, params) => panel.send(method, params), onEvent: panel.onEvent, evaluate, click, waitFor, fill, key, startKnobResolveProbe, screenshot, dispose: panel.dispose };
+  return {
+    targetId: target.targetId,
+    send: (method, params) => panel.send(method, params),
+    onEvent: panel.onEvent,
+    evaluate,
+    click,
+    waitFor,
+    fill,
+    key,
+    startKnobResolveProbe,
+    screenshot,
+    dispose: panel.dispose,
+  };
 }
 async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWindowId) {
   // This is intentionally not a normal popup.html tab. The action popup is
@@ -1216,7 +1766,11 @@ async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWin
   const cdp = await context.newCDPSession(fixturePage);
   const targetUrl = `chrome-extension://${extensionId}/popup.html`;
   const before = await cdp.send('Target.getTargets');
-  const knownPopupTargets = new Set(before.targetInfos.filter((target) => target.url === targetUrl).map((target) => target.targetId));
+  const knownPopupTargets = new Set(
+    before.targetInfos
+      .filter((target) => target.url === targetUrl)
+      .map((target) => target.targetId),
+  );
   const result = await worker.evaluate(async (windowId) => {
     if (typeof chrome.action?.openPopup !== 'function') return { outcome: 'api_unavailable' };
     try {
@@ -1226,11 +1780,17 @@ async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWin
       return { outcome: 'refused', error: error?.name === 'Error' ? 'error' : 'other' };
     }
   }, fixtureWindowId);
-  if (result?.outcome !== 'requested') return { opened: false, reason: result?.outcome ?? 'action_popup_not_requested' };
+  if (result?.outcome !== 'requested')
+    return { opened: false, reason: result?.outcome ?? 'action_popup_not_requested' };
   let popupTarget;
   for (let attempt = 0; attempt < 30; attempt += 1) {
     const targets = await cdp.send('Target.getTargets');
-    popupTarget = targets.targetInfos.find((target) => target.url === targetUrl && target.type === 'page' && !knownPopupTargets.has(target.targetId));
+    popupTarget = targets.targetInfos.find(
+      (target) =>
+        target.url === targetUrl &&
+        target.type === 'page' &&
+        !knownPopupTargets.has(target.targetId),
+    );
     if (popupTarget) break;
     await wait(100);
   }
@@ -1252,48 +1812,110 @@ async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWin
       return {
         opened: false,
         reason: 'action_popup_open_chat_not_actionable',
-        readiness: { attempts, controlPresent: box?.control === true, positiveSize: box?.width > 0 && box?.height > 0, viewportHit: box?.visible === true && box?.hit === true },
+        readiness: {
+          attempts,
+          controlPresent: box?.control === true,
+          positiveSize: box?.width > 0 && box?.height > 0,
+          viewportHit: box?.visible === true && box?.hit === true,
+        },
       };
     }
     await popup.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: box.x, y: box.y });
-    await popup.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: box.x, y: box.y, button: 'left', clickCount: 1 });
-    await popup.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: box.x, y: box.y, button: 'left', clickCount: 1 });
+    await popup.send('Input.dispatchMouseEvent', {
+      type: 'mousePressed',
+      x: box.x,
+      y: box.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    await popup.send('Input.dispatchMouseEvent', {
+      type: 'mouseReleased',
+      x: box.x,
+      y: box.y,
+      button: 'left',
+      clickCount: 1,
+    });
   } finally {
     popup.dispose();
   }
   let contexts = [];
   for (let attempt = 0; attempt < 30; attempt += 1) {
-    contexts = await worker.evaluate(() => chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }));
-    if (contexts.length === 1 && contexts[0].documentUrl === `chrome-extension://${extensionId}/sidepanel.html` && contexts[0].tabId === -1) break;
+    contexts = await worker.evaluate(() =>
+      chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }),
+    );
+    if (
+      contexts.length === 1 &&
+      contexts[0].documentUrl === `chrome-extension://${extensionId}/sidepanel.html` &&
+      contexts[0].tabId === -1
+    )
+      break;
     await wait(100);
   }
-  if (!(contexts.length === 1 && contexts[0].tabId === -1)) return { opened: false, reason: 'reopened_side_panel_context_missing' };
+  if (!(contexts.length === 1 && contexts[0].tabId === -1))
+    return { opened: false, reason: 'reopened_side_panel_context_missing' };
   const targets = await cdp.send('Target.getTargets');
-  const target = targets.targetInfos.find((candidate) => candidate.url === `chrome-extension://${extensionId}/sidepanel.html` && candidate.type === 'page');
+  const target = targets.targetInfos.find(
+    (candidate) =>
+      candidate.url === `chrome-extension://${extensionId}/sidepanel.html` &&
+      candidate.type === 'page',
+  );
   if (!target) return { opened: false, reason: 'reopened_side_panel_target_missing' };
   const panel = await attachPanelSession(cdp, target.targetId);
   await panel.send('Network.enable');
   const evaluate = async (expression) => {
-    const evaluation = await panel.send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
+    const evaluation = await panel.send('Runtime.evaluate', {
+      expression,
+      returnByValue: true,
+      awaitPromise: true,
+    });
     if (evaluation.exceptionDetails) throw new Error('reopened_side_panel_eval_refused');
     return evaluation.result.value;
   };
   const click = async (expression) => {
-    const box = await evaluate(`(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const rect = element.getBoundingClientRect(); const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2; const hit = document.elementFromPoint(x, y); return { x, y, width: rect.width, height: rect.height, visible: x >= 0 && y >= 0 && x <= innerWidth && y <= innerHeight, hit: !!hit && (hit === element || element.contains(hit)) }; })()`);
-    assert(box?.width > 0 && box?.height > 0 && box.visible && box.hit, 'reopened_side_panel_control_not_actionable');
+    const box = await evaluate(
+      `(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const rect = element.getBoundingClientRect(); const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2; const hit = document.elementFromPoint(x, y); return { x, y, width: rect.width, height: rect.height, visible: x >= 0 && y >= 0 && x <= innerWidth && y <= innerHeight, hit: !!hit && (hit === element || element.contains(hit)) }; })()`,
+    );
+    assert(
+      box?.width > 0 && box?.height > 0 && box.visible && box.hit,
+      'reopened_side_panel_control_not_actionable',
+    );
     await panel.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: box.x, y: box.y });
-    await panel.send('Input.dispatchMouseEvent', { type: 'mousePressed', x: box.x, y: box.y, button: 'left', clickCount: 1 });
-    await panel.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x: box.x, y: box.y, button: 'left', clickCount: 1 });
+    await panel.send('Input.dispatchMouseEvent', {
+      type: 'mousePressed',
+      x: box.x,
+      y: box.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    await panel.send('Input.dispatchMouseEvent', {
+      type: 'mouseReleased',
+      x: box.x,
+      y: box.y,
+      button: 'left',
+      clickCount: 1,
+    });
   };
   const waitFor = async (expression, expected = true, timeout = 15000) => {
     const deadline = Date.now() + timeout;
-    do { if ((await evaluate(expression)) === expected) return; await wait(100); } while (Date.now() < deadline);
+    do {
+      if ((await evaluate(expression)) === expected) return;
+      await wait(100);
+    } while (Date.now() < deadline);
     throw new Error('reopened_panel_condition_timeout');
   };
   const key = async ({ key, code, windowsVirtualKeyCode, modifiers = 0, text }) => {
     const effectiveText = text ?? (key === 'Enter' ? '\r' : undefined);
-    const params = { key, code, windowsVirtualKeyCode, nativeVirtualKeyCode: windowsVirtualKeyCode, modifiers };
-    if (effectiveText !== undefined) { params.text = effectiveText; params.unmodifiedText = effectiveText; }
+    const params = {
+      key,
+      code,
+      windowsVirtualKeyCode,
+      nativeVirtualKeyCode: windowsVirtualKeyCode,
+      modifiers,
+    };
+    if (effectiveText !== undefined) {
+      params.text = effectiveText;
+      params.unmodifiedText = effectiveText;
+    }
     await panel.send('Input.dispatchKeyEvent', { type: 'keyDown', ...params });
     await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', ...params });
   };
@@ -1302,8 +1924,13 @@ async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWin
     const stop = panel.onEvent((method, params) => {
       if (method === 'Network.requestWillBeSent') {
         let pathname;
-        try { pathname = new URL(params.request?.url).pathname; } catch { return; }
-        if (pathname === '/rest/v1/rpc/knob_resolve') calls.set(params.requestId, { startedAt: Date.now(), status: null, completedAt: null });
+        try {
+          pathname = new URL(params.request?.url).pathname;
+        } catch {
+          return;
+        }
+        if (pathname === '/rest/v1/rpc/knob_resolve')
+          calls.set(params.requestId, { startedAt: Date.now(), status: null, completedAt: null });
       }
       if (method === 'Network.responseReceived' && calls.has(params.requestId)) {
         const call = calls.get(params.requestId);
@@ -1311,16 +1938,43 @@ async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWin
         call.completedAt = Date.now();
       }
     });
-    return { snapshot: () => { const entries = [...calls.values()]; return { requestCount: entries.length, responseCount: entries.filter((call) => call.completedAt !== null).length, pendingCount: entries.filter((call) => call.completedAt === null).length, statuses: entries.map((call) => call.status), elapsedMs: entries.map((call) => (call.completedAt ?? Date.now()) - call.startedAt) }; }, stop };
+    return {
+      snapshot: () => {
+        const entries = [...calls.values()];
+        return {
+          requestCount: entries.length,
+          responseCount: entries.filter((call) => call.completedAt !== null).length,
+          pendingCount: entries.filter((call) => call.completedAt === null).length,
+          statuses: entries.map((call) => call.status),
+          elapsedMs: entries.map((call) => (call.completedAt ?? Date.now()) - call.startedAt),
+        };
+      },
+      stop,
+    };
   };
   const screenshot = async (expression, destination) => {
-    const clip = await evaluate(`(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest' }); const r = element.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.x >= 0 && r.y >= 0 && r.right <= innerWidth && r.bottom <= innerHeight ? { x: r.x, y: r.y, width: r.width, height: r.height, scale: 1 } : null; })()`);
+    const clip = await evaluate(
+      `(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest' }); const r = element.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.x >= 0 && r.y >= 0 && r.right <= innerWidth && r.bottom <= innerHeight ? { x: r.x, y: r.y, width: r.width, height: r.height, scale: 1 } : null; })()`,
+    );
     assert(clip, 'reopened_panel_screenshot_not_visible');
     const captured = await panel.send('Page.captureScreenshot', { format: 'png', clip });
     assert(typeof captured.data === 'string', 'reopened_panel_screenshot_refused');
     await fs.writeFile(destination, Buffer.from(captured.data, 'base64'), { mode: 0o600 });
   };
-  return { opened: true, panel: { targetId: target.targetId, send: (method, params) => panel.send(method, params), evaluate, click, waitFor, key, startKnobResolveProbe, screenshot, dispose: panel.dispose } };
+  return {
+    opened: true,
+    panel: {
+      targetId: target.targetId,
+      send: (method, params) => panel.send(method, params),
+      evaluate,
+      click,
+      waitFor,
+      key,
+      startKnobResolveProbe,
+      screenshot,
+      dispose: panel.dispose,
+    },
+  };
 }
 async function chooseAuthorizedOrganization(extensionId) {
   const settingsPage = await context.newPage();
@@ -1338,7 +1992,10 @@ async function chooseAuthorizedOrganization(extensionId) {
     checkpoint('organization_settings_open');
     await settingsPage.getByTitle('Settings', { exact: true }).click();
     const actingAs = settingsPage.getByText('Acting as', { exact: true });
-    const organizationButton = settingsPage.getByRole('button', { name: 'Organization', exact: true });
+    const organizationButton = settingsPage.getByRole('button', {
+      name: 'Organization',
+      exact: true,
+    });
     for (let attempt = 0; attempt < 40; attempt += 1) {
       if (await actingAs.isVisible()) {
         selection.settingsReady = 'acting_as_visible';
@@ -1373,13 +2030,16 @@ async function chooseAuthorizedOrganization(extensionId) {
     selection.outcome = error?.name === 'TimeoutError' ? 'timeout' : 'refused_or_error';
     persist();
     throw error;
-  } finally { await settingsPage.close(); }
+  } finally {
+    await settingsPage.close();
+  }
 }
 async function waitForActiveOrganization() {
   let active;
   for (let attempt = 0; attempt < 60; attempt += 1) {
     active = (await storage(['matrx.org.active']))['matrx.org.active'];
-    if (active?.name === 'AI Matrx' && typeof active.id === 'string' && active.id.length > 10) return active;
+    if (active?.name === 'AI Matrx' && typeof active.id === 'string' && active.id.length > 10)
+      return active;
     await wait(500);
   }
   throw new Error('authorized_organization_not_persisted');
@@ -1391,103 +2051,183 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
   const adminPassword = required('AI_ADMIN_PASSWORD');
   assert(adminEmail === 'admin@admin.com', 'admin_identity_configuration');
   if (!reuseBrowser) {
-  proof.phase = 'browser_launch';
-  persist();
-  const placementPath = process.env.MATRX_VAULT_CANARY_WINDOW_PLACEMENT;
-  const configuredExecutable = process.env.MATRX_VAULT_CANARY_CHROME_EXECUTABLE;
-  const executablePath = configuredExecutable || chromium.executablePath();
-  if (edgeBrowserMode) {
-    assert(headlessNoClipboardMode && !isolatedHeadlessClipboard, 'edge_requires_owned_headless_without_clipboard');
-    assert(configuredExecutable === '/Users/armanisadeghi/Library/Caches/matrx-vault-test/edge-153.0.4234.48/Microsoft Edge.app/Contents/MacOS/Microsoft Edge', 'edge_requires_reviewed_runtime');
-  }
-  if (headlessNoClipboardMode && !edgeBrowserMode) {
-    // `chromium.executablePath()` can identify Playwright's headless shell;
-    // extension/SIDE_PANEL acceptance needs the complete Chrome-for-Testing app.
-    assert(typeof configuredExecutable === 'string' && configuredExecutable.length > 0, 'headless_requires_explicit_chrome_for_testing');
-    assert(/Google Chrome for Testing\.app\/Contents\/MacOS\/Google Chrome for Testing$/.test(configuredExecutable), 'headless_requires_full_chrome_for_testing');
-    const executable = await fs.stat(configuredExecutable).catch(() => null);
-    assert(executable?.isFile(), 'headless_chrome_for_testing_missing');
-  }
-  const placementArgs = placementPath ? (() => {
-    const bounds = JSON.parse(syncFs.readFileSync(placementPath, 'utf8'));
-    const coordinate = (value) => Number.isInteger(value) && value >= -2147483648 && value <= 2147483647;
-    assert(coordinate(bounds.left) && coordinate(bounds.top) && Number.isInteger(bounds.width) && Number.isInteger(bounds.height) && bounds.width > 0 && bounds.width <= 2147483647 && bounds.height > 0 && bounds.height <= 2147483647, 'window_placement_invalid');
-    return [`--window-position=${bounds.left},${bounds.top}`, `--window-size=${bounds.width},${bounds.height}`];
-  })() : [];
-  await fs.mkdir(profile, { recursive: true, mode: 0o700 });
-  const preparedOwnedProfile = await prepareOwnedProfile(profile);
-  context = await chromium.launchPersistentContext(profile, {
-    // This is the disposable, agent-owned Chrome-for-Testing profile only.
-    // Headless mode still uses the full browser, never Playwright's shell.
-    headless: headlessNoClipboardMode,
-    executablePath,
-    ...(edgeBrowserMode ? { ignoreDefaultArgs: ['--disable-extensions'] } : {}),
-    args: [
-      ...(headlessNoClipboardMode ? ['--headless=new'] : []),
-      ...(isolatedHeadlessClipboard || edgeBrowserMode ? ['--enable-automation'] : []),
-      ...(edgeBrowserMode ? ['--enable-extensions'] : []),
-      '--remote-debugging-address=127.0.0.1',
-      '--remote-debugging-port=0',
-      `--disable-extensions-except=${extension}`,
-      `--load-extension=${extension}`,
-      ...placementArgs,
-    ],
-    ...(placementPath && { viewport: null }),
-  });
-  rawCdp = await connectOwnedCdp({ preparedProfile: preparedOwnedProfile, chromeExecutable: executablePath });
-  if (edgeBrowserMode) {
-    const version = await rawCdp.send('Browser.getVersion');
-    const command = await rawCdp.send('Browser.getBrowserCommandLine');
-    assert(version.product === 'Edg/153.0.4234.48', 'edge_runtime_not_reviewed');
-    assert(command.arguments.includes('--headless=new') && command.arguments.includes('--user-data-dir=' + profile) && !command.arguments.includes('--disable-extensions'), 'edge_process_not_owned_headless');
-    proof.browserRuntime = { product: version.product, ownedHeadlessProcess: true, clipboardTested: false };
-  }
-  if (isolatedHeadlessClipboard) {
-    const version = await rawCdp.send('Browser.getVersion');
-    const command = await rawCdp.send('Browser.getBrowserCommandLine');
-    assert(version.product === 'Chrome/153.0.8010.12', 'clipboard_runtime_not_reviewed');
-    assert(command.arguments.includes('--headless=new') && command.arguments.includes('--user-data-dir=' + profile), 'clipboard_process_not_owned_headless');
-    proof.clipboardIsolation = { runtime: version.product, ownedHeadlessProcess: true, sourceAndProbe: 'd37f9103-bbb3-4eb3-9cf2-537eb75c7339' };
-  }
-  networkJournal = createVaultNetworkJournal({
-    cdp: rawCdp,
-    apiOrigin: API,
-    onVaultRequest: ({ method, pathname, headers }) => journalVaultMutationRequest(`${API}${pathname}`, method, headers),
-  });
-  await networkJournal.start();
-  proof.networkJournal = { ownerVerified: rawCdp.ownerVerified === true, journalSemanticVersion: 2 };
-  proof.phase = 'extension_worker';
-  persist();
-  worker = context.serviceWorkers()[0] || await context.waitForEvent('serviceworker', { timeout: 15000 });
-  extensionId = await worker.evaluate(() => chrome.runtime.id);
-  assert(typeof extensionId === 'string' && extensionId.length > 10, 'extension_runtime_identity');
-  // The flattened owned-browser journal accounts for page traffic. Playwright
-  // observes only service-worker traffic, preventing page request duplicates.
-  const requestStartedAt = new WeakMap();
-  context.on('request', (request) => {
-    if (request.serviceWorker()) {
-      requestStartedAt.set(request, Date.now());
-      journalVaultMutationRequest(request.url(), request.method(), request.headers());
-    }
-  });
-  context.on('response', (response) => {
-    const request = response.request();
-    const url = new URL(response.url());
-    if (!request.serviceWorker()) return;
-    if (url.origin === DB && ['/auth/v1/oauth/token', '/auth/v1/user', '/auth/v1/logout'].includes(url.pathname)) {
-      const route = url.pathname.endsWith('/token') ? 'oauth_token' : url.pathname.endsWith('/logout') ? 'logout' : 'user';
-      (proof.authTransport ||= []).push({ route, status: response.status(), phase: proof.phase });
-      persist();
-    }
-    if (url.origin !== API || !url.pathname.startsWith('/api/vault/')) return;
-    // Only fixed route classes/statuses: never response bodies, IDs or values.
-    const route = url.pathname.endsWith('/matches') ? 'matches'
-      : /\/fields\/[^/]+$/.test(url.pathname) ? 'field'
-      : /\/items\/[^/]+$/.test(url.pathname) ? 'item'
-      : url.pathname.endsWith('/items') ? 'items' : 'other';
-    (proof.apiResponses ||= []).push({ route, method: response.request().method(), status: response.status(), phase: proof.phase, elapsedMs: requestStartedAt.has(response.request()) ? Date.now() - requestStartedAt.get(response.request()) : null });
+    proof.phase = 'browser_launch';
     persist();
-  });
+    const placementPath = process.env.MATRX_VAULT_CANARY_WINDOW_PLACEMENT;
+    const configuredExecutable = process.env.MATRX_VAULT_CANARY_CHROME_EXECUTABLE;
+    const executablePath = configuredExecutable || chromium.executablePath();
+    if (edgeBrowserMode) {
+      assert(
+        headlessNoClipboardMode && !isolatedHeadlessClipboard,
+        'edge_requires_owned_headless_without_clipboard',
+      );
+      assert(
+        configuredExecutable ===
+          '/Users/armanisadeghi/Library/Caches/matrx-vault-test/edge-153.0.4234.48/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
+        'edge_requires_reviewed_runtime',
+      );
+    }
+    if (headlessNoClipboardMode && !edgeBrowserMode) {
+      // `chromium.executablePath()` can identify Playwright's headless shell;
+      // extension/SIDE_PANEL acceptance needs the complete Chrome-for-Testing app.
+      assert(
+        typeof configuredExecutable === 'string' && configuredExecutable.length > 0,
+        'headless_requires_explicit_chrome_for_testing',
+      );
+      assert(
+        /Google Chrome for Testing\.app\/Contents\/MacOS\/Google Chrome for Testing$/.test(
+          configuredExecutable,
+        ),
+        'headless_requires_full_chrome_for_testing',
+      );
+      const executable = await fs.stat(configuredExecutable).catch(() => null);
+      assert(executable?.isFile(), 'headless_chrome_for_testing_missing');
+    }
+    const placementArgs = placementPath
+      ? (() => {
+          const bounds = JSON.parse(syncFs.readFileSync(placementPath, 'utf8'));
+          const coordinate = (value) =>
+            Number.isInteger(value) && value >= -2147483648 && value <= 2147483647;
+          assert(
+            coordinate(bounds.left) &&
+              coordinate(bounds.top) &&
+              Number.isInteger(bounds.width) &&
+              Number.isInteger(bounds.height) &&
+              bounds.width > 0 &&
+              bounds.width <= 2147483647 &&
+              bounds.height > 0 &&
+              bounds.height <= 2147483647,
+            'window_placement_invalid',
+          );
+          return [
+            `--window-position=${bounds.left},${bounds.top}`,
+            `--window-size=${bounds.width},${bounds.height}`,
+          ];
+        })()
+      : [];
+    await fs.mkdir(profile, { recursive: true, mode: 0o700 });
+    const preparedOwnedProfile = await prepareOwnedProfile(profile);
+    context = await chromium.launchPersistentContext(profile, {
+      // This is the disposable, agent-owned Chrome-for-Testing profile only.
+      // Headless mode still uses the full browser, never Playwright's shell.
+      headless: headlessNoClipboardMode,
+      executablePath,
+      ...(edgeBrowserMode ? { ignoreDefaultArgs: ['--disable-extensions'] } : {}),
+      args: [
+        ...(headlessNoClipboardMode ? ['--headless=new'] : []),
+        ...(isolatedHeadlessClipboard || edgeBrowserMode ? ['--enable-automation'] : []),
+        ...(edgeBrowserMode ? ['--enable-extensions'] : []),
+        '--remote-debugging-address=127.0.0.1',
+        '--remote-debugging-port=0',
+        `--disable-extensions-except=${extension}`,
+        `--load-extension=${extension}`,
+        ...placementArgs,
+      ],
+      ...(placementPath && { viewport: null }),
+    });
+    rawCdp = await connectOwnedCdp({
+      preparedProfile: preparedOwnedProfile,
+      chromeExecutable: executablePath,
+    });
+    if (edgeBrowserMode) {
+      const version = await rawCdp.send('Browser.getVersion');
+      const command = await rawCdp.send('Browser.getBrowserCommandLine');
+      assert(version.product === 'Edg/153.0.4234.48', 'edge_runtime_not_reviewed');
+      assert(
+        command.arguments.includes('--headless=new') &&
+          command.arguments.includes('--user-data-dir=' + profile) &&
+          !command.arguments.includes('--disable-extensions'),
+        'edge_process_not_owned_headless',
+      );
+      proof.browserRuntime = {
+        product: version.product,
+        ownedHeadlessProcess: true,
+        clipboardTested: false,
+      };
+    }
+    if (isolatedHeadlessClipboard) {
+      const version = await rawCdp.send('Browser.getVersion');
+      const command = await rawCdp.send('Browser.getBrowserCommandLine');
+      assert(version.product === 'Chrome/153.0.8010.12', 'clipboard_runtime_not_reviewed');
+      assert(
+        command.arguments.includes('--headless=new') &&
+          command.arguments.includes('--user-data-dir=' + profile),
+        'clipboard_process_not_owned_headless',
+      );
+      proof.clipboardIsolation = {
+        runtime: version.product,
+        ownedHeadlessProcess: true,
+        sourceAndProbe: 'd37f9103-bbb3-4eb3-9cf2-537eb75c7339',
+      };
+    }
+    networkJournal = createVaultNetworkJournal({
+      cdp: rawCdp,
+      apiOrigin: API,
+      onVaultRequest: ({ method, pathname, headers }) =>
+        journalVaultMutationRequest(`${API}${pathname}`, method, headers),
+    });
+    await networkJournal.start();
+    proof.networkJournal = {
+      ownerVerified: rawCdp.ownerVerified === true,
+      journalSemanticVersion: 2,
+    };
+    proof.phase = 'extension_worker';
+    persist();
+    worker =
+      context.serviceWorkers()[0] ||
+      (await context.waitForEvent('serviceworker', { timeout: 15000 }));
+    extensionId = await worker.evaluate(() => chrome.runtime.id);
+    assert(
+      typeof extensionId === 'string' && extensionId.length > 10,
+      'extension_runtime_identity',
+    );
+    // The flattened owned-browser journal accounts for page traffic. Playwright
+    // observes only service-worker traffic, preventing page request duplicates.
+    const requestStartedAt = new WeakMap();
+    context.on('request', (request) => {
+      if (request.serviceWorker()) {
+        requestStartedAt.set(request, Date.now());
+        journalVaultMutationRequest(request.url(), request.method(), request.headers());
+      }
+    });
+    context.on('response', (response) => {
+      const request = response.request();
+      const url = new URL(response.url());
+      if (!request.serviceWorker()) return;
+      if (
+        url.origin === DB &&
+        ['/auth/v1/oauth/token', '/auth/v1/user', '/auth/v1/logout'].includes(url.pathname)
+      ) {
+        const route = url.pathname.endsWith('/token')
+          ? 'oauth_token'
+          : url.pathname.endsWith('/logout')
+            ? 'logout'
+            : 'user';
+        (proof.authTransport ||= []).push({ route, status: response.status(), phase: proof.phase });
+        persist();
+      }
+      if (url.origin !== API || !url.pathname.startsWith('/api/vault/')) return;
+      // Only fixed route classes/statuses: never response bodies, IDs or values.
+      const route = url.pathname.endsWith('/matches')
+        ? 'matches'
+        : /\/fields\/[^/]+$/.test(url.pathname)
+          ? 'field'
+          : /\/items\/[^/]+$/.test(url.pathname)
+            ? 'item'
+            : url.pathname.endsWith('/items')
+              ? 'items'
+              : 'other';
+      (proof.apiResponses ||= []).push({
+        route,
+        method: response.request().method(),
+        status: response.status(),
+        phase: proof.phase,
+        elapsedMs: requestStartedAt.has(response.request())
+          ? Date.now() - requestStartedAt.get(response.request())
+          : null,
+      });
+      persist();
+    });
   }
   // Persist the zeroed journal before OAuth so an interruption still shows
   // whether the run had admitted any Vault POST before authentication.
@@ -1517,11 +2257,15 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
       throw new Error(failureCategory);
     }
   };
-  const popup = await oauthUiStep('oauth_popup_navigation', 'oauth_popup_navigation_failed', async () => {
-    const page = await context.newPage();
-    await page.goto(`chrome-extension://${extensionId}/popup.html`);
-    return page;
-  });
+  const popup = await oauthUiStep(
+    'oauth_popup_navigation',
+    'oauth_popup_navigation_failed',
+    async () => {
+      const page = await context.newPage();
+      await page.goto(`chrome-extension://${extensionId}/popup.html`);
+      return page;
+    },
+  );
   proof.oauthUi.popupNavigated = true;
   persist();
   const authPagePromise = context.waitForEvent('page', { timeout: 15000 });
@@ -1529,25 +2273,30 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
   // still awaited on the successful-click path below.
   void authPagePromise.catch(() => {});
   await oauthUiStep('oauth_popup_sign_in_click', 'oauth_popup_sign_in_click_failed', () =>
-    popup.getByRole('button', { name: 'Sign in' }).click());
+    popup.getByRole('button', { name: 'Sign in' }).click(),
+  );
   proof.oauthUi.popupSignInClicked = true;
   persist();
-  const authPage = await oauthUiStep('oauth_auth_page_opened', 'oauth_auth_page_open_failed', async () => {
-    try {
-      return await authPagePromise;
-    } catch (error) {
-      proof.oauthUi.authPageOpenOutcome = error?.name === 'TimeoutError'
-        ? 'page_not_observed_timeout'
-        : 'page_wait_refused';
-      persist();
-      throw error;
-    }
-  });
+  const authPage = await oauthUiStep(
+    'oauth_auth_page_opened',
+    'oauth_auth_page_open_failed',
+    async () => {
+      try {
+        return await authPagePromise;
+      } catch (error) {
+        proof.oauthUi.authPageOpenOutcome =
+          error?.name === 'TimeoutError' ? 'page_not_observed_timeout' : 'page_wait_refused';
+        persist();
+        throw error;
+      }
+    },
+  );
   proof.oauthUi.authPageOpened = true;
   proof.oauthUi.authPageOpenOutcome = 'page_observed';
   persist();
   await oauthUiStep('oauth_auth_expected_origin', 'oauth_auth_expected_origin_timeout', () =>
-    authPage.waitForURL((url) => url.origin === 'https://www.aimatrx.com', { timeout: 30000 }));
+    authPage.waitForURL((url) => url.origin === 'https://www.aimatrx.com', { timeout: 30000 }),
+  );
   try {
     assert(new URL(authPage.url()).origin === 'https://www.aimatrx.com', 'oauth_origin');
   } catch {
@@ -1558,15 +2307,19 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
   proof.oauthUi.expectedOrigin = true;
   try {
     proof.oauthUi.authPageRoute = new URL(authPage.url()).pathname.startsWith('/oauth/consent')
-      ? 'consent' : 'provider_login_or_existing_session';
+      ? 'consent'
+      : 'provider_login_or_existing_session';
   } catch {
     // A managed auth page can close only after the product callback begins;
     // awaitOAuthRouteOrCallback still requires fresh extension storage below.
     proof.oauthUi.authPageRoute = 'closing_after_callback';
   }
   persist();
-  const initialOAuthDisposition = await oauthUiStep('oauth_login_or_existing_session', 'oauth_login_or_existing_session_timeout', () =>
-    awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowLoginForm: true }));
+  const initialOAuthDisposition = await oauthUiStep(
+    'oauth_login_or_existing_session',
+    'oauth_login_or_existing_session_timeout',
+    () => awaitOAuthRouteOrCallback({ authPage, storage, adminEmail, allowLoginForm: true }),
+  );
   proof.authenticationAttempted = true;
   let postPasswordSubmission;
   if (initialOAuthDisposition === 'password_form') {
@@ -1580,7 +2333,12 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
     proof.phase = 'oauth_sign_in';
     persist();
     postPasswordSubmission = observeOAuthPostPasswordSubmission(authPage);
-    await submitOAuthPasswordWithDiagnostics(authPage, postPasswordSubmission, proof.oauthUi, persist);
+    await submitOAuthPasswordWithDiagnostics(
+      authPage,
+      postPasswordSubmission,
+      proof.oauthUi,
+      persist,
+    );
   } else {
     proof.oauthUi.loginDisposition = 'existing_web_session';
     proof.phase = 'oauth_existing_web_session';
@@ -1588,14 +2346,19 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
   }
   let consentDisposition;
   try {
-    consentDisposition = initialOAuthDisposition === 'password_form'
-      ? await oauthUiStep('oauth_consent_or_callback', 'oauth_consent_or_callback_timeout', () =>
-        awaitOAuthRouteOrCallback({ authPage, storage, adminEmail }))
-      : initialOAuthDisposition;
+    consentDisposition =
+      initialOAuthDisposition === 'password_form'
+        ? await oauthUiStep('oauth_consent_or_callback', 'oauth_consent_or_callback_timeout', () =>
+            awaitOAuthRouteOrCallback({ authPage, storage, adminEmail }),
+          )
+        : initialOAuthDisposition;
   } catch (error) {
     if (postPasswordSubmission) {
-      try { await finalizeOAuthPostPasswordSubmission(postPasswordSubmission, proof.oauthUi, persist); }
-      catch { postPasswordSubmission.finish(); }
+      try {
+        await finalizeOAuthPostPasswordSubmission(postPasswordSubmission, proof.oauthUi, persist);
+      } catch {
+        postPasswordSubmission.finish();
+      }
       await recordOAuthConsentFailureSnapshot(authPage, proof.oauthUi, persist);
     }
     throw error;
@@ -1611,31 +2374,52 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
   }
   if (consentDisposition === 'consent_ready') {
     await oauthUiStep('oauth_consent_approve_ready', 'oauth_consent_authorize_unavailable', () =>
-      authPage.getByRole('button', { name: 'Authorize', exact: true }).waitFor({ state: 'visible', timeout: 30000 }));
-    assert(await authPage.getByRole('button', { name: 'Authorize', exact: true }).isEnabled(), 'oauth_consent_authorize_disabled');
+      authPage
+        .getByRole('button', { name: 'Authorize', exact: true })
+        .waitFor({ state: 'visible', timeout: 30000 }),
+    );
+    assert(
+      await authPage.getByRole('button', { name: 'Authorize', exact: true }).isEnabled(),
+      'oauth_consent_authorize_disabled',
+    );
     proof.oauthUi.consentAuthorizeRenderedEnabled = true;
     persist();
     const consentApproval = observeOAuthConsentApproval(authPage, DB);
     checkpoint('oauth_consent_approve');
     await oauthUiStep('oauth_consent_approve', 'oauth_consent_authorize_click_failed', () =>
-      authPage.getByRole('button', { name: 'Authorize', exact: true }).click());
+      authPage.getByRole('button', { name: 'Authorize', exact: true }).click(),
+    );
     proof.oauthUi.consentApproveDisposition = 'authorize_clicked';
     persist();
-    await oauthUiStep('oauth_consent_approval_response', 'oauth_consent_approval_response_invalid', () =>
-      consentApproval.requireFirst2xx());
-    const callback = await oauthUiStep('oauth_callback_storage', 'oauth_callback_storage_timeout', () =>
-      awaitOAuthCallbackStorage({ authPage, storage, adminEmail }));
-    proof.oauthUi.consentApproval = await oauthUiStep('oauth_consent_approval_count', 'oauth_consent_approval_count_invalid', () =>
-      consentApproval.finish());
+    await oauthUiStep(
+      'oauth_consent_approval_response',
+      'oauth_consent_approval_response_invalid',
+      () => consentApproval.requireFirst2xx(),
+    );
+    const callback = await oauthUiStep(
+      'oauth_callback_storage',
+      'oauth_callback_storage_timeout',
+      () => awaitOAuthCallbackStorage({ authPage, storage, adminEmail }),
+    );
+    proof.oauthUi.consentApproval = await oauthUiStep(
+      'oauth_consent_approval_count',
+      'oauth_consent_approval_count_invalid',
+      () => consentApproval.finish(),
+    );
     proof.oauthUi.callbackAfterApprove = callback.authPageClosed
-      ? 'storage_after_window_closed' : 'storage_after_managed_callback';
+      ? 'storage_after_window_closed'
+      : 'storage_after_managed_callback';
     proof.oauthUi.callbackStorageObserved = callback.callbackStorageObserved;
     persist();
   } else if (consentDisposition === 'redirecting') {
-    const callback = await oauthUiStep('oauth_redirecting_callback_storage', 'oauth_callback_storage_timeout', () =>
-      awaitOAuthCallbackStorage({ authPage, storage, adminEmail }));
+    const callback = await oauthUiStep(
+      'oauth_redirecting_callback_storage',
+      'oauth_callback_storage_timeout',
+      () => awaitOAuthCallbackStorage({ authPage, storage, adminEmail }),
+    );
     proof.oauthUi.callbackAfterApprove = callback.authPageClosed
-      ? 'storage_after_window_closed' : 'storage_after_managed_callback';
+      ? 'storage_after_window_closed'
+      : 'storage_after_managed_callback';
     proof.oauthUi.callbackStorageObserved = callback.callbackStorageObserved;
     persist();
   }
@@ -1650,10 +2434,14 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
     accessTokenPresent: typeof session?.['matrx.auth.accessToken'] === 'string',
     activeOrganizationPresent: !!session?.['matrx.org.active'],
   };
-  proof.oauthUi.callbackStorageObserved = proof.authStorage.profilePresent && proof.authStorage.accessTokenPresent;
+  proof.oauthUi.callbackStorageObserved =
+    proof.authStorage.profilePresent && proof.authStorage.accessTokenPresent;
   // OAuth/UI text can include provider details. Retain only a fixed category
   // that distinguishes a visible failure from an unfinished callback.
-  const popupText = await popup.locator('body').innerText().catch(() => '');
+  const popupText = await popup
+    .locator('body')
+    .innerText()
+    .catch(() => '');
   proof.authUiOutcome = /authorization page could not be loaded/i.test(popupText)
     ? 'authorization_page_unavailable'
     : /sign in to start using the extension/i.test(popupText)
@@ -1667,21 +2455,30 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
   // This deliberately happens before reading or choosing an organization.
   // /auth/v1/user is independent token evidence and must remain so for a
   // fresh profile that has not selected its tenant yet.
-  const identity = await api(`${DB}/auth/v1/user`, { headers: { apikey: process.env.SUPABASE_MATRIX_PUBLISHABLE_KEY }, label: 'identity' });
+  const identity = await api(`${DB}/auth/v1/user`, {
+    headers: { apikey: process.env.SUPABASE_MATRIX_PUBLISHABLE_KEY },
+    label: 'identity',
+  });
   assert(identity.id === userId && identity.email === adminEmail, 'independent_admin_identity');
   proof.checks.independentAdminIdentity = true;
-  proof.identityProof = { extensionProfileEmail: adminEmail, independentUserIdMatchesProfile: true };
+  proof.identityProof = {
+    extensionProfileEmail: adminEmail,
+    independentUserIdMatchesProfile: true,
+  };
   proof.extensionId = extensionId;
   // Retain independent identity evidence even if organization selection fails.
   persist();
   realPanel = await openGenuineSidePanel(extensionId, popup);
   await networkJournal.bindPanelTarget(realPanel.targetId);
-  if ((extensionLifecycleMode || setupIdentityOnlyMode || identityOnlyMode) && !lifecycleLogoutObserver) {
+  if (
+    (extensionLifecycleMode || setupIdentityOnlyMode || identityOnlyMode) &&
+    !lifecycleLogoutObserver
+  ) {
     lifecycleLogoutObserver = observeOwnedPanelLogout({
       panel: realPanel,
       extensionId,
       onResponse: ({ status }) => {
-        const observed = proof.lifecycleSettingsLogoutResponses ||= [];
+        const observed = (proof.lifecycleSettingsLogoutResponses ||= []);
         observed.push({ status, phase: proof.phase, observer: 'raw_cdp_owned_sidepanel' });
         persist();
       },
@@ -1699,7 +2496,10 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
     active = await waitForActiveOrganization();
   }
   organizationId = active?.id;
-  assert(active?.name === 'AI Matrx' && typeof organizationId === 'string' && organizationId.length > 10, 'organization_not_selected');
+  assert(
+    active?.name === 'AI Matrx' && typeof organizationId === 'string' && organizationId.length > 10,
+    'organization_not_selected',
+  );
   proof.organizationProof = { label: 'AI Matrx', activeStorageObserved: true };
   // Both identity and organization evidence exist before the first fixture.
   persist();
@@ -1707,8 +2507,13 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
 }
 async function focusOwnedBrowser(expectedTabId) {
   if (!headlessNoClipboardMode && process.platform !== 'darwin') return;
-  const { stdout } = await execFileAsync('ps', ['-axo', 'pid=,command='], { timeout: 5000, maxBuffer: 4 * 1024 * 1024 });
-  const matches = stdout.split('\n').filter((line) => line.includes(`--user-data-dir=${profile}`) && !line.includes('--type='));
+  const { stdout } = await execFileAsync('ps', ['-axo', 'pid=,command='], {
+    timeout: 5000,
+    maxBuffer: 4 * 1024 * 1024,
+  });
+  const matches = stdout
+    .split('\n')
+    .filter((line) => line.includes(`--user-data-dir=${profile}`) && !line.includes('--type='));
   assert(matches.length === 1, 'owned_browser_process_not_unique');
   const pid = Number(matches[0].trim().split(/\s+/, 1)[0]);
   assert(Number.isSafeInteger(pid) && pid > 1, 'owned_browser_process_missing');
@@ -1718,21 +2523,29 @@ async function focusOwnedBrowser(expectedTabId) {
     let focused = false;
     for (let attempt = 0; attempt < 20; attempt += 1) {
       chromeFocus = await worker.evaluate(async (tabId) => {
-        const current = await chrome.windows.getLastFocused({ windowTypes: ['normal'], populate: true });
+        const current = await chrome.windows.getLastFocused({
+          windowTypes: ['normal'],
+          populate: true,
+        });
         const windows = await chrome.windows.getAll({ windowTypes: ['normal'], populate: true });
         const targetTab = Number.isInteger(tabId) ? await chrome.tabs.get(tabId) : null;
         return {
           normalWindowCount: windows.length,
           focused: current.focused === true,
           focusedType: current.type,
-          focusedWindowHasActiveTab: Array.isArray(current.tabs) && current.tabs.some((tab) => tab.active === true),
+          focusedWindowHasActiveTab:
+            Array.isArray(current.tabs) && current.tabs.some((tab) => tab.active === true),
           expectedTabActive: targetTab?.active === true,
           expectedTabWindowMatchesFocused: targetTab?.windowId === current.id,
         };
       }, expectedTabId);
-      focused = chromeFocus.normalWindowCount >= 1 && chromeFocus.focused && chromeFocus.focusedType === 'normal'
-        && chromeFocus.focusedWindowHasActiveTab && chromeFocus.expectedTabActive
-        && chromeFocus.expectedTabWindowMatchesFocused;
+      focused =
+        chromeFocus.normalWindowCount >= 1 &&
+        chromeFocus.focused &&
+        chromeFocus.focusedType === 'normal' &&
+        chromeFocus.focusedWindowHasActiveTab &&
+        chromeFocus.expectedTabActive &&
+        chromeFocus.expectedTabWindowMatchesFocused;
       if (focused) break;
       await wait(100);
     }
@@ -1752,9 +2565,25 @@ async function focusOwnedBrowser(expectedTabId) {
     persist();
     return;
   }
-  await execFileAsync('osascript', ['-e', `tell application "System Events" to set frontmost of (first process whose unix id is ${pid}) to true`], { timeout: 5000 });
+  await execFileAsync(
+    'osascript',
+    [
+      '-e',
+      `tell application "System Events" to set frontmost of (first process whose unix id is ${pid}) to true`,
+    ],
+    { timeout: 5000 },
+  );
   for (let attempt = 0; attempt < 20; attempt += 1) {
-    const { stdout } = await execFileAsync('osascript', ['-l', 'JavaScript', '-e', `ObjC.import('AppKit'); Number($.NSWorkspace.sharedWorkspace.frontmostApplication.processIdentifier)`], { timeout: 5000, maxBuffer: 1024 });
+    const { stdout } = await execFileAsync(
+      'osascript',
+      [
+        '-l',
+        'JavaScript',
+        '-e',
+        `ObjC.import('AppKit'); Number($.NSWorkspace.sharedWorkspace.frontmostApplication.processIdentifier)`,
+      ],
+      { timeout: 5000, maxBuffer: 1024 },
+    );
     if (Number(stdout.trim()) === pid) return;
     await wait(100);
   }
@@ -1765,7 +2594,11 @@ async function verifyRealVaultPanel() {
   const vaultControl = 'document.querySelector(`[title="Vault"]`)';
   await realPanel.click(vaultControl);
   for (let attempt = 0; attempt < 30; attempt += 1) {
-    if (await realPanel.evaluate(`(() => { const control = (${vaultControl}); return control?.getAttribute('aria-selected') === 'true' && !!document.querySelector('[role="tabpanel"]'); })()`)) {
+    if (
+      await realPanel.evaluate(
+        `(() => { const control = (${vaultControl}); return control?.getAttribute('aria-selected') === 'true' && !!document.querySelector('[role="tabpanel"]'); })()`,
+      )
+    ) {
       proof.checks.realSidePanelVaultVisible = true;
       persist();
       return;
@@ -1809,10 +2642,17 @@ async function dismissResolvedInitialOrganizationNotice() {
   // Settings selection finishes. Acknowledge only that resolved setup notice
   // through its real Dismiss control; never clear stores or dismiss other errors.
   const active = (await storage(['matrx.org.active']))['matrx.org.active'];
-  assert(proof.checks.independentAdminIdentity && active?.id === organizationId, 'setup_notice_context_not_verified');
+  assert(
+    proof.checks.independentAdminIdentity && active?.id === organizationId,
+    'setup_notice_context_not_verified',
+  );
   const notice = `Array.from(document.querySelectorAll('[role="alert"]')).find(node => node.querySelector('.font-medium')?.textContent?.trim() === 'Capture list unavailable' && node.textContent.includes('NO_ORGANIZATION'))`;
   const observed = await realPanel.evaluate(`!!(${notice})`);
-  proof.initialOrganizationNotice = { observed, dismissed: false, currentOrganizationVerified: true };
+  proof.initialOrganizationNotice = {
+    observed,
+    dismissed: false,
+    currentOrganizationVerified: true,
+  };
   if (observed) {
     await realPanel.click(`(${notice}).querySelector('button[aria-label="Dismiss"]')`);
     await realPanel.waitFor(`!(${notice})`);
@@ -1849,7 +2689,8 @@ async function prompt(page) {
   await host.waitFor({ state: 'visible', timeout: 15000 });
   return host;
 }
-const captureHeading = 'Array.from(document.querySelectorAll("p")).find((element) => element.textContent.trim() === "Save this login to your Vault?")';
+const captureHeading =
+  'Array.from(document.querySelectorAll("p")).find((element) => element.textContent.trim() === "Save this login to your Vault?")';
 const captureCard = `(${captureHeading})?.parentElement?.parentElement?.parentElement`;
 const updateButtons = `Array.from((${captureCard})?.querySelectorAll('button') || []).filter((element) => /^Update/.test(element.textContent.trim()))`;
 function uniqueCaptureButton(name, prefix = false) {
@@ -1857,7 +2698,9 @@ function uniqueCaptureButton(name, prefix = false) {
 }
 async function pendingCard() {
   try {
-    await realPanel.waitFor(`!!(${captureHeading}) && (${captureHeading}).getBoundingClientRect().height > 0`);
+    await realPanel.waitFor(
+      `!!(${captureHeading}) && (${captureHeading}).getBoundingClientRect().height > 0`,
+    );
   } catch {
     proof.captureDiagnostics = { candidatePresent: await hasPendingCapture() };
     persist();
@@ -1879,7 +2722,11 @@ async function waitForCaptureDecision() {
     // mutation to settle before cleanup. Observe only UI booleans, never values.
     const diagnosticStarted = Date.now();
     try {
-      await realPanel.waitFor(`!(${captureHeading}) || Array.from((${captureCard})?.querySelectorAll('button') || []).every((button) => !button.disabled)`, true, 90000);
+      await realPanel.waitFor(
+        `!(${captureHeading}) || Array.from((${captureCard})?.querySelectorAll('button') || []).every((button) => !button.disabled)`,
+        true,
+        90000,
+      );
       proof.decisionDiagnostics.settledAfterFailure = true;
     } catch {
       proof.decisionDiagnostics.settledAfterFailure = false;
@@ -1891,11 +2738,19 @@ async function waitForCaptureDecision() {
   }
 }
 async function materializedPassword(id) {
-  const response = await api(`${API}/api/vault/browser-login/${encodeURIComponent(id)}/materialize`, {
-    method: 'POST', headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ page_url: localUrl, tool_invocation_id: crypto.randomUUID(), client_build: 'vault-realbrowser-canary' }),
-    label: 'materialize',
-  });
+  const response = await api(
+    `${API}/api/vault/browser-login/${encodeURIComponent(id)}/materialize`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        page_url: localUrl,
+        tool_invocation_id: crypto.randomUUID(),
+        client_build: 'vault-realbrowser-canary',
+      }),
+      label: 'materialize',
+    },
+  );
   assert(typeof response?.password === 'string', 'materialize_shape');
   return response.password;
 }
@@ -1932,10 +2787,14 @@ async function materializedPassword(id) {
       realSiteFill: await sha256(path.join(__dirname, 'vault-real-site-fill-acceptance.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
       setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
-      nativePanelFetchFailure: await sha256(path.join(__dirname, 'vault-native-panel-fetch-failure.cjs')),
+      nativePanelFetchFailure: await sha256(
+        path.join(__dirname, 'vault-native-panel-fetch-failure.cjs'),
+      ),
       fixtureSetupRetry: await sha256(path.join(__dirname, 'vault-fixture-create-retry.cjs')),
       acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
-      historicalReconciliation: await sha256(path.join(__dirname, 'vault-historical-reconciliation.cjs')),
+      historicalReconciliation: await sha256(
+        path.join(__dirname, 'vault-historical-reconciliation.cjs'),
+      ),
       recovery7356: await sha256(path.join(__dirname, 'vault-7356-reconciliation.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
@@ -1946,7 +2805,10 @@ async function materializedPassword(id) {
     await verifyPinnedLocalCanonicalSource();
     // An invalid/tampered artifact is rejected before a durable run record,
     // so a safe negative test cannot create a fictional cleanup obligation.
-    acceptanceLease = await acquireVaultAcceptanceLease({ runId, kind: edgeBrowserMode ? 'edge' : 'chrome' });
+    acceptanceLease = await acquireVaultAcceptanceLease({
+      runId,
+      kind: edgeBrowserMode ? 'edge' : 'chrome',
+    });
     proof.acceptanceLeaseAcquired = true;
     artifactAdmitted = true;
     persist();
@@ -1966,13 +2828,16 @@ async function materializedPassword(id) {
         },
         verifySettingsIdentity: async () => {
           await realPanel.click(visibleSettingsControl);
-          await realPanel.waitFor(`document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`);
+          await realPanel.waitFor(
+            `document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`,
+          );
           return true;
         },
         checkpoint,
         proof,
       });
-      proof.lifecycle.partialDisposition = 'reload_observed_setup_recovery_and_fresh_signin_pending';
+      proof.lifecycle.partialDisposition =
+        'reload_observed_setup_recovery_and_fresh_signin_pending';
       persist();
     } else if (setupIdentityOnlyMode) {
       const initial = await inspectIdentity(worker);
@@ -1989,7 +2854,10 @@ async function materializedPassword(id) {
         extensionReload: { disposition: 'not_run', reason: 'identity_only_mode' },
         partialDisposition: 'signout_fresh_recovery_pending_reload_browser_restart_and_org_switch',
       };
-      proof.setupTransportRecovery = { disposition: 'not_run', reason: 'already_accepted_in_prior_setup_run' };
+      proof.setupTransportRecovery = {
+        disposition: 'not_run',
+        reason: 'already_accepted_in_prior_setup_run',
+      };
       persist();
     }
     proof.phase = 'vault_baseline';
@@ -1997,7 +2865,9 @@ async function materializedPassword(id) {
     const baseline = await items();
     baselineIds = new Set(baseline.map((entry) => entry.id));
     proof.baselineMetadataSha256 = baselineMetadataSha256(baseline);
-    proof.baselineItems = baseline.map(entry => ({ id: entry.id, metadataSha256: baselineMetadataSha256([entry]) })).sort((a, b) => a.id.localeCompare(b.id));
+    proof.baselineItems = baseline
+      .map((entry) => ({ id: entry.id, metadataSha256: baselineMetadataSha256([entry]) }))
+      .sort((a, b) => a.id.localeCompare(b.id));
     if (readOnlyAdmissionMode) proof.admission.baselineRead = true;
     await verifyRealVaultPanel();
     await verifyObservedVaultPanelRead();
@@ -2012,29 +2882,40 @@ async function materializedPassword(id) {
       realSiteFill: await sha256(path.join(__dirname, 'vault-real-site-fill-acceptance.cjs')),
       preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
       setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
-      nativePanelFetchFailure: await sha256(path.join(__dirname, 'vault-native-panel-fetch-failure.cjs')),
+      nativePanelFetchFailure: await sha256(
+        path.join(__dirname, 'vault-native-panel-fetch-failure.cjs'),
+      ),
       fixtureSetupRetry: await sha256(path.join(__dirname, 'vault-fixture-create-retry.cjs')),
       acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
-      historicalReconciliation: await sha256(path.join(__dirname, 'vault-historical-reconciliation.cjs')),
+      historicalReconciliation: await sha256(
+        path.join(__dirname, 'vault-historical-reconciliation.cjs'),
+      ),
       recovery7356: await sha256(path.join(__dirname, 'vault-7356-reconciliation.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
     };
-    assert(JSON.stringify(helperHashesBeforeWrites) === JSON.stringify(proof.helperSha256), 'helper_source_changed_before_writes');
+    assert(
+      JSON.stringify(helperHashesBeforeWrites) === JSON.stringify(proof.helperSha256),
+      'helper_source_changed_before_writes',
+    );
     if (extensionLifecycleMode || setupIdentityOnlyMode || identityOnlyMode) {
-      if (extensionLifecycleMode || setupIdentityOnlyMode) await runVaultListTransportRecoveryChecks({
-        context,
-        realPanel,
-        minimumOwnListRows: baseline.length,
-        apiOrigin: API,
-        exactPanelDocumentUrl: `chrome-extension://${extensionId}/sidepanel.html`,
-        getVaultWriteCount: () => proof.vaultMutationRequests,
-        snapshotOwnedReceiptState: () => ({ createKeys: [...createKeys], createdIds: [...createdIds] }),
-        assert,
-        checkpoint,
-        proof,
-        verifyRealVaultPanel,
-      });
+      if (extensionLifecycleMode || setupIdentityOnlyMode)
+        await runVaultListTransportRecoveryChecks({
+          context,
+          realPanel,
+          minimumOwnListRows: baseline.length,
+          apiOrigin: API,
+          exactPanelDocumentUrl: `chrome-extension://${extensionId}/sidepanel.html`,
+          getVaultWriteCount: () => proof.vaultMutationRequests,
+          snapshotOwnedReceiptState: () => ({
+            createKeys: [...createKeys],
+            createdIds: [...createdIds],
+          }),
+          assert,
+          checkpoint,
+          proof,
+          verifyRealVaultPanel,
+        });
       await runSettingsSignOut({
         worker,
         panel: realPanel,
@@ -2043,7 +2924,8 @@ async function materializedPassword(id) {
         waitForLogout204: async () => {
           for (let attempt = 0; attempt < 60; attempt += 1) {
             const observed = proof.lifecycleSettingsLogoutResponses;
-            if (Array.isArray(observed) && observed.length === 1 && observed[0].status === 204) return true;
+            if (Array.isArray(observed) && observed.length === 1 && observed[0].status === 204)
+              return true;
             if (Array.isArray(observed) && observed.length > 1) return false;
             await wait(250);
           }
@@ -2074,37 +2956,64 @@ async function materializedPassword(id) {
       realPanel.dispose();
       await authenticate(extension, { reuseBrowser: true });
       await dismissResolvedInitialOrganizationNotice();
-      const recovered = await storage(['matrx.user.profile', 'matrx.auth.accessToken', 'matrx.auth.refreshTokenEnc', 'matrx.auth.refreshTokenIv']);
-      const recoveryIdentity = typeof recovered['matrx.user.profile']?.id === 'string'
-        ? crypto.createHash('sha256').update(recovered['matrx.user.profile'].id).digest('hex') : null;
+      const recovered = await storage([
+        'matrx.user.profile',
+        'matrx.auth.accessToken',
+        'matrx.auth.refreshTokenEnc',
+        'matrx.auth.refreshTokenIv',
+      ]);
+      const recoveryIdentity =
+        typeof recovered['matrx.user.profile']?.id === 'string'
+          ? crypto.createHash('sha256').update(recovered['matrx.user.profile'].id).digest('hex')
+          : null;
       proof.lifecycle.freshRecovery = {
         disposition: 'in_progress',
         interactiveSignInCompleted: true,
         settingsUiRecovered: false,
-        localAuthMaterialPresent: typeof recovered['matrx.auth.accessToken'] === 'string' && typeof recovered['matrx.auth.refreshTokenEnc'] === 'string' && typeof recovered['matrx.auth.refreshTokenIv'] === 'string',
-        verifiedIdentityRecovered: sameLifecycleIdentity(proof.lifecycle.initialIdentitySha256, recoveryIdentity),
+        localAuthMaterialPresent:
+          typeof recovered['matrx.auth.accessToken'] === 'string' &&
+          typeof recovered['matrx.auth.refreshTokenEnc'] === 'string' &&
+          typeof recovered['matrx.auth.refreshTokenIv'] === 'string',
+        verifiedIdentityRecovered: sameLifecycleIdentity(
+          proof.lifecycle.initialIdentitySha256,
+          recoveryIdentity,
+        ),
         identitySha256: recoveryIdentity,
       };
       await realPanel.click(visibleSettingsControl);
-      await realPanel.waitFor(`document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`);
-      proof.lifecycle.freshRecovery.settingsUiRecovered = await realPanel.evaluate(`document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`);
-      proof.lifecycle.freshRecovery.disposition = proof.lifecycle.freshRecovery.interactiveSignInCompleted
-        && proof.lifecycle.freshRecovery.localAuthMaterialPresent
-        && proof.lifecycle.freshRecovery.verifiedIdentityRecovered
-        && proof.lifecycle.freshRecovery.settingsUiRecovered ? 'passed' : 'failed';
+      await realPanel.waitFor(
+        `document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`,
+      );
+      proof.lifecycle.freshRecovery.settingsUiRecovered = await realPanel.evaluate(
+        `document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`,
+      );
+      proof.lifecycle.freshRecovery.disposition =
+        proof.lifecycle.freshRecovery.interactiveSignInCompleted &&
+        proof.lifecycle.freshRecovery.localAuthMaterialPresent &&
+        proof.lifecycle.freshRecovery.verifiedIdentityRecovered &&
+        proof.lifecycle.freshRecovery.settingsUiRecovered
+          ? 'passed'
+          : 'failed';
       proof.lifecycle.accountInvalidation = {
-        disposition: proof.lifecycle.signOut?.settingsSignOutClicked && proof.lifecycle.signOut?.localAuthMaterialAbsent
-          && proof.lifecycle.signOut?.bearerlessVaultApiRefusal?.refused === true && proof.lifecycle.signOut?.remoteLogout204
-          && proof.lifecycle.freshRecovery.verifiedIdentityRecovered ? 'passed' : 'failed',
+        disposition:
+          proof.lifecycle.signOut?.settingsSignOutClicked &&
+          proof.lifecycle.signOut?.localAuthMaterialAbsent &&
+          proof.lifecycle.signOut?.bearerlessVaultApiRefusal?.refused === true &&
+          proof.lifecycle.signOut?.remoteLogout204 &&
+          proof.lifecycle.freshRecovery.verifiedIdentityRecovered
+            ? 'passed'
+            : 'failed',
         preSignOutIdentityWasObserved: true,
-        signedOutBearerlessVaultRefused: proof.lifecycle.signOut?.bearerlessVaultApiRefusal?.refused === true,
-        freshSameIdentityRecoveredAfterInteractiveSignIn: proof.lifecycle.freshRecovery.verifiedIdentityRecovered === true,
+        signedOutBearerlessVaultRefused:
+          proof.lifecycle.signOut?.bearerlessVaultApiRefusal?.refused === true,
+        freshSameIdentityRecoveredAfterInteractiveSignIn:
+          proof.lifecycle.freshRecovery.verifiedIdentityRecovered === true,
       };
       proof.lifecycle.partialDisposition = setupIdentityOnlyMode
         ? 'setup_transport_signout_fresh_recovery_observed_reload_browser_restart_and_org_switch_pending'
         : identityOnlyMode
           ? 'signout_fresh_recovery_observed_reload_browser_restart_and_org_switch_pending'
-        : 'reload_setup_recovery_signout_fresh_recovery_observed_browser_restart_and_org_switch_pending';
+          : 'reload_setup_recovery_signout_fresh_recovery_observed_browser_restart_and_org_switch_pending';
       // One real Vault read after recovery establishes the new bearer works;
       // it is intentionally mutation-free and skips the legacy generator tail.
       const recoveredItems = await items();
@@ -2119,33 +3028,53 @@ async function materializedPassword(id) {
       await verifyRealVaultPanel();
       await verifyObservedVaultPanelRead();
       proof.lifecycle.freshPanelVaultReadObserved = true;
-      proof.lifecycle.freshRecovery.disposition = proof.lifecycle.freshRecovery.interactiveSignInCompleted
-        && proof.lifecycle.freshRecovery.localAuthMaterialPresent
-        && proof.lifecycle.freshRecovery.verifiedIdentityRecovered
-        && proof.lifecycle.freshRecovery.settingsUiRecovered
-        && proof.lifecycle.freshVaultRead
-        && proof.lifecycle.freshPanelVaultReadObserved ? 'passed' : 'failed';
+      proof.lifecycle.freshRecovery.disposition =
+        proof.lifecycle.freshRecovery.interactiveSignInCompleted &&
+        proof.lifecycle.freshRecovery.localAuthMaterialPresent &&
+        proof.lifecycle.freshRecovery.verifiedIdentityRecovered &&
+        proof.lifecycle.freshRecovery.settingsUiRecovered &&
+        proof.lifecycle.freshVaultRead &&
+        proof.lifecycle.freshPanelVaultReadObserved
+          ? 'passed'
+          : 'failed';
       persist();
     } else if (readOnlyAdmissionMode && !identityOnlyMode) {
       proof.admission.baselineRead = true;
       proof.admission.prewriteLocalCanonicalPreflight = localCanonicalCleanupArmed;
-      proof.admission.noFixtureWrites = proof.vaultMutationRequests === 0 && proof.vaultItemPosts.total === 0
-        && createKeys.size === 0 && createdIds.size === 0;
+      proof.admission.noFixtureWrites =
+        proof.vaultMutationRequests === 0 &&
+        proof.vaultItemPosts.total === 0 &&
+        createKeys.size === 0 &&
+        createdIds.size === 0;
       assert(proof.admission.noFixtureWrites, 'admission_fixture_write_refused');
       persist();
       if (generatorTransportMode) {
-        proof.generatorHarnessSha256 = await sha256(path.join(__dirname, 'vault-generator-acceptance.cjs'));
+        proof.generatorHarnessSha256 = await sha256(
+          path.join(__dirname, 'vault-generator-acceptance.cjs'),
+        );
         const generatorHarness = require('./vault-generator-acceptance.cjs');
         await generatorHarness.runGeneratorChecks({
-          context, worker, panel: realPanel, assert, wait, checkpoint, proof, focusOwnedBrowser,
-          screenshotPath: path.join(root, 'generator-masked.png'), verifyRealVaultPanel, displayMode, panelCloseLifecycleMode,
-          workerRestartLifecycleMode, windowSwitchLifecycleMode, isolatedHeadlessClipboard,
+          context,
+          worker,
+          panel: realPanel,
+          assert,
+          wait,
+          checkpoint,
+          proof,
+          focusOwnedBrowser,
+          screenshotPath: path.join(root, 'generator-masked.png'),
+          verifyRealVaultPanel,
+          displayMode,
+          panelCloseLifecycleMode,
+          workerRestartLifecycleMode,
+          windowSwitchLifecycleMode,
+          isolatedHeadlessClipboard,
           refreshWorker: async (previous, { cdp, workerUrl }) => {
-            const diagnostic = proof.generatorWorkerRefresh = {
+            const diagnostic = (proof.generatorWorkerRefresh = {
               disposition: 'in_progress',
               playwrightFacadeReused: false,
               exactCdpWorkerHandleUsed: false,
-            };
+            });
             checkpoint('generator_worker_restart_refresh_start');
             try {
               const current = await previous.evaluate(() => ({
@@ -2162,7 +3091,9 @@ async function materializedPassword(id) {
             } catch {}
             for (let attempt = 0; attempt < 60; attempt += 1) {
               const targets = await cdp.send('Target.getTargets');
-              const currentTarget = targets.targetInfos.find((target) => target.type === 'service_worker' && target.url === workerUrl);
+              const currentTarget = targets.targetInfos.find(
+                (target) => target.type === 'service_worker' && target.url === workerUrl,
+              );
               if (currentTarget) {
                 diagnostic.exactCdpWorkerHandleUsed = true;
                 diagnostic.disposition = 'exact_cdp_worker_handle_acquired';
@@ -2177,7 +3108,11 @@ async function materializedPassword(id) {
             throw new Error('generator_worker_restart_reacquisition_timeout');
           },
           reopenPanelFromAction: async (fixturePage, fixtureWindowId) => {
-            const reopened = await openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWindowId);
+            const reopened = await openSidePanelFromActionPopup(
+              extensionId,
+              fixturePage,
+              fixtureWindowId,
+            );
             if (reopened.opened) {
               realPanel?.dispose();
               realPanel = reopened.panel;
@@ -2187,7 +3122,10 @@ async function materializedPassword(id) {
           },
         });
         if (isolatedHeadlessClipboard) {
-          assert(generatorHarness.hasIsolatedHeadlessClipboardProof(proof), 'generator_isolated_clipboard_proof_incomplete');
+          assert(
+            generatorHarness.hasIsolatedHeadlessClipboardProof(proof),
+            'generator_isolated_clipboard_proof_incomplete',
+          );
         }
         assertRequestedLifecycleVerdicts({
           panelCloseRequested: panelCloseLifecycleMode,
@@ -2202,360 +3140,572 @@ async function materializedPassword(id) {
       // metadata-safe mutation count, never Vault rows or request payloads.
       if (receiptBackedSaveUpdateMode) {
         assert((await hasPendingCapture()) === false, 'capture_decision_pending_before_fixture');
-        assert(proof.vaultMutationRequests === 0 && proof.vaultItemPosts.total === 0
-          && createKeys.size === 0 && createdIds.size === 0, 'capture_decision_write_before_fixture');
-        proof.captureHarnessSha256 = await sha256(path.join(__dirname, 'vault-capture-decisions-acceptance.cjs'));
+        assert(
+          proof.vaultMutationRequests === 0 &&
+            proof.vaultItemPosts.total === 0 &&
+            createKeys.size === 0 &&
+            createdIds.size === 0,
+          'capture_decision_write_before_fixture',
+        );
+        proof.captureHarnessSha256 = await sha256(
+          path.join(__dirname, 'vault-capture-decisions-acceptance.cjs'),
+        );
         await runCaptureDecisionChecks({
-          context, worker, realPanel, assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
+          context,
+          worker,
+          realPanel,
+          assert,
+          wait,
+          checkpoint,
+          proof,
+          focusOwnedBrowser,
+          verifyRealVaultPanel,
           vaultWriteCount: () => proof.vaultMutationRequests,
           pendingCapturePresent: hasPendingCapture,
         });
-        assert(proof.captureDecisions?.noVaultWriteRequests === true
-          && proof.captureDecisions?.pagesClosed === true
-          && proof.captureDecisions?.fixtureServersClosed === true, 'capture_decision_cleanup_unverified');
+        assert(
+          proof.captureDecisions?.noVaultWriteRequests === true &&
+            proof.captureDecisions?.pagesClosed === true &&
+            proof.captureDecisions?.fixtureServersClosed === true,
+          'capture_decision_cleanup_unverified',
+        );
         assert((await hasPendingCapture()) === false, 'capture_decision_pending_after_fixture');
-        assert(proof.vaultMutationRequests === 0 && proof.vaultItemPosts.total === 0
-          && createKeys.size === 0 && createdIds.size === 0, 'capture_decision_write_after_fixture');
+        assert(
+          proof.vaultMutationRequests === 0 &&
+            proof.vaultItemPosts.total === 0 &&
+            createKeys.size === 0 &&
+            createdIds.size === 0,
+          'capture_decision_write_after_fixture',
+        );
         const helperHashesAfterCapture = {
           rawAdapter: await sha256(path.join(__dirname, 'vault-owned-cdp.cjs')),
           journal: await sha256(path.join(__dirname, 'vault-network-journal.cjs')),
           capture: await sha256(path.join(__dirname, 'vault-capture-decisions-acceptance.cjs')),
           authenticator: await sha256(path.join(__dirname, 'vault-authenticator-preservation.cjs')),
-      responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
-      savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
-      realSiteFill: await sha256(path.join(__dirname, 'vault-real-site-fill-acceptance.cjs')),
-      preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
-      setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
-      nativePanelFetchFailure: await sha256(path.join(__dirname, 'vault-native-panel-fetch-failure.cjs')),
-      fixtureSetupRetry: await sha256(path.join(__dirname, 'vault-fixture-create-retry.cjs')),
-      acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
-      historicalReconciliation: await sha256(path.join(__dirname, 'vault-historical-reconciliation.cjs')),
-      recovery7356: await sha256(path.join(__dirname, 'vault-7356-reconciliation.cjs')),
-      accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
-      passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
+          responseLoss: await sha256(path.join(__dirname, 'vault-save-response-loss.cjs')),
+          savedForms: await sha256(path.join(__dirname, 'vault-saved-form-matrix.cjs')),
+          realSiteFill: await sha256(path.join(__dirname, 'vault-real-site-fill-acceptance.cjs')),
+          preferences: await sha256(path.join(__dirname, 'vault-preferences-acceptance.cjs')),
+          setupRecovery: await sha256(path.join(__dirname, 'vault-setup-recovery-acceptance.cjs')),
+          nativePanelFetchFailure: await sha256(
+            path.join(__dirname, 'vault-native-panel-fetch-failure.cjs'),
+          ),
+          fixtureSetupRetry: await sha256(path.join(__dirname, 'vault-fixture-create-retry.cjs')),
+          acceptanceLease: await sha256(path.join(__dirname, 'vault-acceptance-lease.cjs')),
+          historicalReconciliation: await sha256(
+            path.join(__dirname, 'vault-historical-reconciliation.cjs'),
+          ),
+          recovery7356: await sha256(path.join(__dirname, 'vault-7356-reconciliation.cjs')),
+          accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
+          passwordChange: await sha256(
+            path.join(__dirname, 'vault-password-change-acceptance.cjs'),
+          ),
         };
-        assert(JSON.stringify(helperHashesAfterCapture) === JSON.stringify(proof.helperSha256), 'helper_source_changed_after_capture');
+        assert(
+          JSON.stringify(helperHashesAfterCapture) === JSON.stringify(proof.helperSha256),
+          'helper_source_changed_after_capture',
+        );
       }
       local = await startLocalSite();
       localUrl = local.url;
-    await prewriteVaultPanelScreenshot();
-    const suffix = crypto.randomUUID().slice(0, 8);
-    const username = `canary-${suffix}@example.invalid`;
-    const oldPassword = `old-${crypto.randomUUID()}`;
-    const newPassword = `new-${crypto.randomUUID()}`;
-    const targetName = `Canary target ${suffix}`;
-    checkpoint('fixture_creation');
-    const targetFields = [
-      { field_key: 'username', value: username, handling: 'revealable' },
-      { field_key: 'password', value: oldPassword, handling: 'revealable' },
-      ...(!receiptBackedSaveUpdateMode ? [{ field_key: 'totp_seed', value: `mfa-${crypto.randomUUID()}`, handling: 'sealed' }] : []),
-    ];
-    const targetId = await createFixture(targetName, targetFields);
-    if (receiptBackedSaveUpdateMode) {
-      const authenticatorRequest = async ({ method, path: route, body }) => {
-        const url = `${API}/api/authenticator${route}`;
-        const headers = { Authorization: `Bearer ${token}`, 'X-Organization-Id': organizationId };
-        if (body !== undefined) headers['content-type'] = 'application/json';
-        journalVaultMutationRequest(url, method, headers);
-        try {
-          const response = await fetch(url, {
-            method, headers, signal: AbortSignal.timeout(15_000),
-            ...(body !== undefined && { body: JSON.stringify(body) }),
-          });
-          let responseBody = null;
-          if (response.status !== 204) responseBody = await response.json().catch(() => null);
-          return { status: response.status, body: responseBody };
-        } catch { return { status: 'transport' }; }
-      };
-      authenticator = createAuthenticatorPreservation({
-        request: authenticatorRequest,
-        markCleanupObligation: async (handle) => { authenticatorHandle = handle; proof.authenticator = { cleanupObligationArmed: true }; persist(); },
-        journal: ({ method, route, status }) => { (proof.authenticatorJournal ||= []).push({ method, route, status }); persist(); },
-      });
-      checkpoint('authenticator_enroll_before_update');
-      authenticatorHandle = await authenticator.beforeUpdate({ credentialItemId: targetId });
-      assert(authenticatorHandle?.enrolled === true && authenticatorHandle.acceptanceFailed !== true, 'authenticator_enrollment_failed');
-    }
-    const otherIds = [await createFixture(`Canary duplicate ${suffix}`, [
-      { field_key: 'username', value: username, handling: 'revealable' },
-      { field_key: 'password', value: `other-${crypto.randomUUID()}`, handling: 'revealable' },
-    ]), await createFixture(`Canary no username ${suffix}`, [
-      { field_key: 'password', value: `missing-${crypto.randomUUID()}`, handling: 'revealable' },
-    ]), await createFixture(`Canary alternate ${suffix}`, [
-      { field_key: 'username', value: `alternate-${suffix}@example.invalid`, handling: 'revealable' },
-      { field_key: 'password', value: `alternate-${crypto.randomUUID()}`, handling: 'revealable' },
-    ])];
-    const otherBefore = await Promise.all(otherIds.map(item));
-    const targetBefore = await item(targetId);
-    const sealedFieldBefore = !receiptBackedSaveUpdateMode
-      ? targetBefore.fields.find((field) => field.field_key === 'totp_seed' && field.is_active) : null;
-    if (!receiptBackedSaveUpdateMode) assert(sealedFieldBefore?.id, 'fixture_sealed_field_missing');
-    checkpoint('open_vault');
-    website = await context.newPage();
-    await verifyRealVaultPanel();
-    await website.bringToFront();
-    checkpoint('submit_login');
-    await submitLogin(website, username, newPassword);
-    assert((await website.locator('#matrx-login-capture-host').count()) === 0, 'quiet_default_overlay');
-    checkpoint('await_capture');
-    await pendingCard();
-    // The card can mount before the asynchronous matching response arrives.
-    // Require all four choices after bounded UI settlement, not its first render.
-    try {
-      await realPanel.waitFor(`${updateButtons}.length >= 4`);
-    } catch {
-      proof.captureDiagnostics = {
-        updateButtonCount: await realPanel.evaluate(`${updateButtons}.length`),
-        cardPresent: await realPanel.evaluate(`!!(${captureCard})`),
-      };
-      persist();
-      throw new Error('four_update_targets_not_reachable');
-    }
-    assert((await website.locator('#matrx-login-capture-host').count()) === 0, 'quiet_delayed_overlay');
-    checkpoint('filter_update_target');
-    await realPanel.fill(`document.querySelector('[aria-label="Search saved logins to update"]')`, targetName);
-    const targetButton = uniqueCaptureButton(targetName, true);
-    await realPanel.waitFor(`!!(${targetButton}) && ${updateButtons}.length === 1`);
-    const cardScreenshot = path.join(root, 'synthetic-update-choices.png');
-    checkpoint('capture_screenshot');
-    await realPanel.screenshot(captureCard, cardScreenshot);
-    proof.choiceScreenshot = { path: 'synthetic-update-choices.png', sha256: await sha256(cardScreenshot) };
-
-    const submitsBeforeUpdateChoice = local.state.submits;
-    checkpoint('update_decision');
-    await realPanel.click(targetButton);
-    await waitForCaptureDecision();
-    assert(local.state.submits === submitsBeforeUpdateChoice, 'update_choice_submitted_site');
-    checkpoint('verify_update');
-    const targetAfter = await item(targetId);
-    const sealedFieldAfter = !receiptBackedSaveUpdateMode
-      ? targetAfter.fields.find((field) => field.field_key === 'totp_seed' && field.is_active) : null;
-    if (!receiptBackedSaveUpdateMode) assert(sealedFieldAfter?.id === sealedFieldBefore.id, 'sealed_field_not_preserved');
-    if (receiptBackedSaveUpdateMode) {
-      checkpoint('authenticator_verify_after_update');
-      assert(await authenticator.afterUpdate(authenticatorHandle) === true, 'authenticator_not_preserved');
-      proof.checks.enrolledAuthenticatorPreserved = true;
-    }
-    assert((await materializedPassword(targetId)) === newPassword, 'selected_target_password_not_updated');
-    const otherAfter = await Promise.all(otherIds.map(item));
-    assert(JSON.stringify(otherAfter) === JSON.stringify(otherBefore), 'unselected_fixture_changed');
-    proof.checks.fourUpdateTargetsReachable = true;
-    proof.checks.displayNameSearchSelectedExactTarget = true;
-    proof.checks.selectedTargetOnlyUpdated = true;
-    if (!receiptBackedSaveUpdateMode) proof.checks.unrelatedSealedFieldPreserved = true;
-    proof.checks.updateChoiceDidNotSubmit = true;
-    if (receiptBackedSaveUpdateMode) {
-      // This helper exercises Fill with the updated, receipt-owned target. It
-      // shares the parent's exact origin and never creates another Vault
-      // fixture or a sixth receipt-owned item.
-      const parentLogin = new URL(localUrl);
-      const parentOrigin = parentLogin.origin;
-      assert(parentLogin.hostname === '127.0.0.1', 'saved_login_parent_host_refused');
-      const fixtureIdsBeforeSavedLogin = new Set(createdIds);
-      const fixtureKeysBeforeSavedLogin = new Set(createKeys);
-      const itemPostsBeforeSavedLogin = proof.vaultItemPosts.total;
-      proof.savedLoginHarnessSha256 = await sha256(path.join(__dirname, 'vault-saved-login-acceptance.cjs'));
-      checkpoint('saved_login_fill');
-      await runSavedLoginChecks({
-        context,
-        worker,
-        realPanel,
-        targetName,
-        username,
-        password: newPassword,
-        parentLoginUrl: localUrl,
-        parentOrigin,
-        getSubmitCount: () => local.state.submits,
-        assert,
-        wait,
-        checkpoint,
-        proof,
-        focusOwnedBrowser,
-        verifyRealVaultPanel,
-      });
-      await runSavedFormMatrix({
-        context, worker, realPanel, targetName, username, password: newPassword,
-        parentOrigin, getSubmitCount: () => local.state.submits,
-        assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
-      });
-      await runVaultPreferencesChecks({
-        context, worker, realPanel, targetName, username, password: newPassword,
-        parentLoginUrl: localUrl, getSubmitCount: () => local.state.submits,
-        assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
-        snapshotOwnedReceiptState: () => ({
-          vaultItemPosts: { ...proof.vaultItemPosts },
-          ownedCreateMutationKeys: [...createKeys],
-          ownedFixtureIds: [...createdIds],
-        }),
-      });
-      await runVaultSetupRecoveryChecks({
-        context, worker, realPanel, targetName, parentLoginUrl: localUrl,
-        getSubmitCount: () => local.state.submits,
-        getVaultWriteCount: () => proof.vaultMutationRequests,
-        snapshotOwnedReceiptState: () => ({
-          vaultItemPosts: { ...proof.vaultItemPosts },
-          ownedCreateMutationKeys: [...createKeys].sort(),
-          ownedFixtureIds: [...createdIds].sort(),
-        }),
-        assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
-      });
-      assert(proof.setupRecovery?.closedRootManualRecovery === true
-        && proof.setupRecovery?.restrictedPageManualRecovery === true
-        && proof.setupRecovery?.inaccessiblePagesNoWritesOrSubmit === true
-        && proof.setupRecovery?.normalPagePanelReadinessRecovered === true
-        && proof.setupRecovery?.wholeHelperNoWritesOrSubmit === true
-        && proof.setupRecovery?.fixturePagesClosed === true, 'setup_recovery_helper_unverified');
-      const changedPassword = `changed-${crypto.randomUUID()}`;
-      await runPasswordChangeCaptureChecks({
-        context, worker, realPanel, parentOrigin, targetName, username,
-        currentPassword: newPassword, nextPassword: changedPassword,
-        assert, wait, checkpoint, proof, focusOwnedBrowser, verifyRealVaultPanel,
-        pendingCard, waitForCaptureDecision, captureButton: uniqueCaptureButton,
-        pendingCapturePresent: hasPendingCapture,
-        getSubmitCount: () => local.state.submits,
-        getVaultWriteCount: () => proof.vaultMutationRequests,
-        snapshotOwnedReceiptState: () => ({
-          vaultItemPosts: { ...proof.vaultItemPosts },
-          ownedCreateMutationKeys: [...createKeys].sort(),
-          ownedFixtureIds: [...createdIds].sort(),
-        }),
-        verifySelectedUpdate: async (expectedPassword) => {
-          assert((await materializedPassword(targetId)) === expectedPassword, 'password_change_target_mismatch');
-          assert(JSON.stringify(await Promise.all(otherIds.map(item))) === JSON.stringify(otherBefore), 'password_change_unselected_changed');
-          assert(await authenticator.afterUpdate(authenticatorHandle) === true, 'password_change_authenticator_changed');
-          return true;
-        },
-      });
-      const realLoginUrl = 'https://www.aimatrx.com/login';
-      // The preceding form matrix uses the owned localhost destination. Move
-      // only these four disposable fixtures to the real HTTPS destination so
-      // that the localhost control is genuinely a wrong-site refusal check.
-      for (const fixtureId of [targetId, ...otherIds]) {
-        const updated = await api(`${API}/api/vault/items/${encodeURIComponent(fixtureId)}`, {
-          method: 'PATCH',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ login_urls: [realLoginUrl] }),
-          label: 'real_site_fixture_destination',
+      await prewriteVaultPanelScreenshot();
+      const suffix = crypto.randomUUID().slice(0, 8);
+      const username = `canary-${suffix}@example.invalid`;
+      const oldPassword = `old-${crypto.randomUUID()}`;
+      const newPassword = `new-${crypto.randomUUID()}`;
+      const targetName = `Canary target ${suffix}`;
+      checkpoint('fixture_creation');
+      const targetFields = [
+        { field_key: 'username', value: username, handling: 'revealable' },
+        { field_key: 'password', value: oldPassword, handling: 'revealable' },
+        ...(!receiptBackedSaveUpdateMode
+          ? [{ field_key: 'totp_seed', value: `mfa-${crypto.randomUUID()}`, handling: 'sealed' }]
+          : []),
+      ];
+      const targetId = await createFixture(targetName, targetFields);
+      if (receiptBackedSaveUpdateMode) {
+        const authenticatorRequest = async ({ method, path: route, body }) => {
+          const url = `${API}/api/authenticator${route}`;
+          const headers = { Authorization: `Bearer ${token}`, 'X-Organization-Id': organizationId };
+          if (body !== undefined) headers['content-type'] = 'application/json';
+          journalVaultMutationRequest(url, method, headers);
+          try {
+            const response = await fetch(url, {
+              method,
+              headers,
+              signal: AbortSignal.timeout(15_000),
+              ...(body !== undefined && { body: JSON.stringify(body) }),
+            });
+            let responseBody = null;
+            if (response.status !== 204) responseBody = await response.json().catch(() => null);
+            return { status: response.status, body: responseBody };
+          } catch {
+            return { status: 'transport' };
+          }
+        };
+        authenticator = createAuthenticatorPreservation({
+          request: authenticatorRequest,
+          markCleanupObligation: async (handle) => {
+            authenticatorHandle = handle;
+            proof.authenticator = { cleanupObligationArmed: true };
+            persist();
+          },
+          journal: ({ method, route, status }) => {
+            (proof.authenticatorJournal ||= []).push({ method, route, status });
+            persist();
+          },
         });
-        assert(updated?.id === fixtureId && JSON.stringify(updated.login_urls) === JSON.stringify([realLoginUrl]),
-          'real_site_fixture_destination_mismatch');
+        checkpoint('authenticator_enroll_before_update');
+        authenticatorHandle = await authenticator.beforeUpdate({ credentialItemId: targetId });
+        assert(
+          authenticatorHandle?.enrolled === true && authenticatorHandle.acceptanceFailed !== true,
+          'authenticator_enrollment_failed',
+        );
       }
-      proof.checks.realSiteFixtureDestinationsRetargeted = true;
-      // This is the only real HTTPS destination in the receipt-backed journey.
-      // The helper selects this exact receipt-owned account, fills without
-      // submission, and proves that the same account is absent on the owned
-      // cross-origin control before closing both pages.
-      proof.realSiteFillHarnessSha256 = await sha256(path.join(__dirname, 'vault-real-site-fill-acceptance.cjs'));
-      checkpoint('real_site_fill');
-      await runRealSiteFillChecks({
-        context,
-        worker,
-        realPanel,
+      const otherIds = [
+        await createFixture(`Canary duplicate ${suffix}`, [
+          { field_key: 'username', value: username, handling: 'revealable' },
+          { field_key: 'password', value: `other-${crypto.randomUUID()}`, handling: 'revealable' },
+        ]),
+        await createFixture(`Canary no username ${suffix}`, [
+          {
+            field_key: 'password',
+            value: `missing-${crypto.randomUUID()}`,
+            handling: 'revealable',
+          },
+        ]),
+        await createFixture(`Canary alternate ${suffix}`, [
+          {
+            field_key: 'username',
+            value: `alternate-${suffix}@example.invalid`,
+            handling: 'revealable',
+          },
+          {
+            field_key: 'password',
+            value: `alternate-${crypto.randomUUID()}`,
+            handling: 'revealable',
+          },
+        ]),
+      ];
+      const otherBefore = await Promise.all(otherIds.map(item));
+      const targetBefore = await item(targetId);
+      const sealedFieldBefore = !receiptBackedSaveUpdateMode
+        ? targetBefore.fields.find((field) => field.field_key === 'totp_seed' && field.is_active)
+        : null;
+      if (!receiptBackedSaveUpdateMode)
+        assert(sealedFieldBefore?.id, 'fixture_sealed_field_missing');
+      checkpoint('open_vault');
+      website = await context.newPage();
+      await verifyRealVaultPanel();
+      await website.bringToFront();
+      checkpoint('submit_login');
+      await submitLogin(website, username, newPassword);
+      assert(
+        (await website.locator('#matrx-login-capture-host').count()) === 0,
+        'quiet_default_overlay',
+      );
+      checkpoint('await_capture');
+      await pendingCard();
+      // The card can mount before the asynchronous matching response arrives.
+      // Require all four choices after bounded UI settlement, not its first render.
+      try {
+        await realPanel.waitFor(`${updateButtons}.length >= 4`);
+      } catch {
+        proof.captureDiagnostics = {
+          updateButtonCount: await realPanel.evaluate(`${updateButtons}.length`),
+          cardPresent: await realPanel.evaluate(`!!(${captureCard})`),
+        };
+        persist();
+        throw new Error('four_update_targets_not_reachable');
+      }
+      assert(
+        (await website.locator('#matrx-login-capture-host').count()) === 0,
+        'quiet_delayed_overlay',
+      );
+      checkpoint('filter_update_target');
+      await realPanel.fill(
+        `document.querySelector('[aria-label="Search saved logins to update"]')`,
         targetName,
-        username,
-        password: changedPassword,
-        realLoginUrl,
-        wrongSiteUrl: localUrl,
-        assert,
-        wait,
-        checkpoint,
-        proof,
-        focusOwnedBrowser,
-        verifyRealVaultPanel,
-      });
-      assert(proof.realSiteFill?.realHttpsLoginFormReady === true
-        && proof.realSiteFill?.exactSavedAccountFilled === true
-        && proof.realSiteFill?.noWebsiteSubmission === true
-        && proof.realSiteFill?.wrongSiteRefused === true
-        && proof.realSiteFill?.pageClosed === true, 'real_site_fill_evidence_unverified');
-      assert(createdIds.size === fixtureIdsBeforeSavedLogin.size
-        && [...fixtureIdsBeforeSavedLogin].every((id) => createdIds.has(id)), 'saved_login_helper_created_fixture');
-      assert(createKeys.size === fixtureKeysBeforeSavedLogin.size
-        && [...fixtureKeysBeforeSavedLogin].every((key) => createKeys.has(key)), 'saved_login_helper_created_fixture_key');
-      assert(proof.vaultItemPosts.total === itemPostsBeforeSavedLogin, 'saved_login_helper_item_post');
-      assert(proof.savedLoginFill?.pagesClosed === true, 'saved_login_helper_pages_not_closed');
-      proof.checks.savedLoginUsesReceiptOwnedFixture = true;
-      proof.checks.savedLoginNoAdditionalVaultFixture = true;
-    }
-    checkpoint('save_as_new');
-    const beforeSave = new Set((await items()).map((entry) => entry.id));
-    await submitLogin(website, `save-${suffix}@example.invalid`, `save-${crypto.randomUUID()}`);
-    await pendingCard();
-    const submitsBeforeSaveChoice = local.state.submits;
-    const postsBeforeSave = proof.vaultItemPosts.total;
-    const keysBeforeSave = new Set(createKeys);
-    responseLossPostsBefore = postsBeforeSave;
-    responseLossKeysBefore = keysBeforeSave;
-    if (receiptBackedSaveUpdateMode) {
-      for (const key of keysBeforeSave) responseLossFixtureKeys.add(key);
-      assert(await worker.evaluate(async () => {
-        const rows = Object.values((await chrome.storage.session.get('matrx.credentials.capture.pending.v1'))['matrx.credentials.capture.pending.v1'] || {});
-        if (rows.length !== 1) return false;
-        const c = rows[0];
-        if (typeof c.id !== 'string' || !Number.isInteger(c.tabId) || typeof c.sourceDocumentId !== 'string') return false;
-        globalThis.__vaultCanaryPendingIdentity = JSON.stringify([c.id, c.tabId, c.sourceDocumentId]);
-        return true;
-      }), 'response_loss_candidate_identity_missing');
-      responseLoss = createVaultSaveResponseLoss({
-        context, apiOrigin: API, exactExtensionWorkerUrl: worker.url(), existingFixtureKeys: keysBeforeSave,
-        onRejectedBeforeForwardKey: (key) => {
-          rejectedBeforeForwardKeys.add(key);
-          proof.rejectedBeforeForwardCreateKeys = [...rejectedBeforeForwardKeys];
-          persist();
-        },
-      });
-      await responseLoss.install();
-      responseLossInstalled = true;
-    }
-    await realPanel.click(uniqueCaptureButton('Save as new'));
-    if (responseLoss) {
-      await responseLoss.waitForFirstLoss();
-      await realPanel.waitFor(`Array.from((${captureCard})?.querySelectorAll('p') || []).filter((p) => p.textContent?.trim() === 'The Vault could not save that. Try again from the Vault tab.').length === 1 && !!(${uniqueCaptureButton('Save as new')}) && !(${uniqueCaptureButton('Save as new')}).disabled`, true, 15000);
-      const identityPreserved = await worker.evaluate(async () => {
-        const rows = Object.values((await chrome.storage.session.get('matrx.credentials.capture.pending.v1'))['matrx.credentials.capture.pending.v1'] || {});
-        const c = rows.length === 1 ? rows[0] : null;
-        return !!c && globalThis.__vaultCanaryPendingIdentity === JSON.stringify([c.id, c.tabId, c.sourceDocumentId]);
-      });
-      assert(identityPreserved, 'response_loss_candidate_changed');
-      const newKeys = [...createKeys].filter((key) => !keysBeforeSave.has(key));
-      assert(proof.vaultItemPosts.total === postsBeforeSave + 1 && newKeys.length === 1, 'response_loss_automatic_retry_or_missing_key');
-      responseLossKey = newKeys[0];
-      proof.checks.lostResponsePreservesCandidate = true;
-      responseLoss.allowExplicitRetry();
+      );
+      const targetButton = uniqueCaptureButton(targetName, true);
+      await realPanel.waitFor(`!!(${targetButton}) && ${updateButtons}.length === 1`);
+      const cardScreenshot = path.join(root, 'synthetic-update-choices.png');
+      checkpoint('capture_screenshot');
+      await realPanel.screenshot(captureCard, cardScreenshot);
+      proof.choiceScreenshot = {
+        path: 'synthetic-update-choices.png',
+        sha256: await sha256(cardScreenshot),
+      };
+
+      const submitsBeforeUpdateChoice = local.state.submits;
+      checkpoint('update_decision');
+      await realPanel.click(targetButton);
+      await waitForCaptureDecision();
+      assert(local.state.submits === submitsBeforeUpdateChoice, 'update_choice_submitted_site');
+      checkpoint('verify_update');
+      const targetAfter = await item(targetId);
+      const sealedFieldAfter = !receiptBackedSaveUpdateMode
+        ? targetAfter.fields.find((field) => field.field_key === 'totp_seed' && field.is_active)
+        : null;
+      if (!receiptBackedSaveUpdateMode)
+        assert(sealedFieldAfter?.id === sealedFieldBefore.id, 'sealed_field_not_preserved');
+      if (receiptBackedSaveUpdateMode) {
+        checkpoint('authenticator_verify_after_update');
+        assert(
+          (await authenticator.afterUpdate(authenticatorHandle)) === true,
+          'authenticator_not_preserved',
+        );
+        proof.checks.enrolledAuthenticatorPreserved = true;
+      }
+      assert(
+        (await materializedPassword(targetId)) === newPassword,
+        'selected_target_password_not_updated',
+      );
+      const otherAfter = await Promise.all(otherIds.map(item));
+      assert(
+        JSON.stringify(otherAfter) === JSON.stringify(otherBefore),
+        'unselected_fixture_changed',
+      );
+      proof.checks.fourUpdateTargetsReachable = true;
+      proof.checks.displayNameSearchSelectedExactTarget = true;
+      proof.checks.selectedTargetOnlyUpdated = true;
+      if (!receiptBackedSaveUpdateMode) proof.checks.unrelatedSealedFieldPreserved = true;
+      proof.checks.updateChoiceDidNotSubmit = true;
+      if (receiptBackedSaveUpdateMode) {
+        // This helper exercises Fill with the updated, receipt-owned target. It
+        // shares the parent's exact origin and never creates another Vault
+        // fixture or a sixth receipt-owned item.
+        const parentLogin = new URL(localUrl);
+        const parentOrigin = parentLogin.origin;
+        assert(parentLogin.hostname === '127.0.0.1', 'saved_login_parent_host_refused');
+        const fixtureIdsBeforeSavedLogin = new Set(createdIds);
+        const fixtureKeysBeforeSavedLogin = new Set(createKeys);
+        const itemPostsBeforeSavedLogin = proof.vaultItemPosts.total;
+        proof.savedLoginHarnessSha256 = await sha256(
+          path.join(__dirname, 'vault-saved-login-acceptance.cjs'),
+        );
+        checkpoint('saved_login_fill');
+        await runSavedLoginChecks({
+          context,
+          worker,
+          realPanel,
+          targetName,
+          username,
+          password: newPassword,
+          parentLoginUrl: localUrl,
+          parentOrigin,
+          getSubmitCount: () => local.state.submits,
+          assert,
+          wait,
+          checkpoint,
+          proof,
+          focusOwnedBrowser,
+          verifyRealVaultPanel,
+        });
+        await runSavedFormMatrix({
+          context,
+          worker,
+          realPanel,
+          targetName,
+          username,
+          password: newPassword,
+          parentOrigin,
+          getSubmitCount: () => local.state.submits,
+          assert,
+          wait,
+          checkpoint,
+          proof,
+          focusOwnedBrowser,
+          verifyRealVaultPanel,
+        });
+        await runVaultPreferencesChecks({
+          context,
+          worker,
+          realPanel,
+          targetName,
+          username,
+          password: newPassword,
+          parentLoginUrl: localUrl,
+          getSubmitCount: () => local.state.submits,
+          assert,
+          wait,
+          checkpoint,
+          proof,
+          focusOwnedBrowser,
+          verifyRealVaultPanel,
+          snapshotOwnedReceiptState: () => ({
+            vaultItemPosts: { ...proof.vaultItemPosts },
+            ownedCreateMutationKeys: [...createKeys],
+            ownedFixtureIds: [...createdIds],
+          }),
+        });
+        await runVaultSetupRecoveryChecks({
+          context,
+          worker,
+          realPanel,
+          targetName,
+          parentLoginUrl: localUrl,
+          getSubmitCount: () => local.state.submits,
+          getVaultWriteCount: () => proof.vaultMutationRequests,
+          snapshotOwnedReceiptState: () => ({
+            vaultItemPosts: { ...proof.vaultItemPosts },
+            ownedCreateMutationKeys: [...createKeys].sort(),
+            ownedFixtureIds: [...createdIds].sort(),
+          }),
+          assert,
+          wait,
+          checkpoint,
+          proof,
+          focusOwnedBrowser,
+          verifyRealVaultPanel,
+        });
+        assert(
+          proof.setupRecovery?.closedRootManualRecovery === true &&
+            proof.setupRecovery?.restrictedPageManualRecovery === true &&
+            proof.setupRecovery?.inaccessiblePagesNoWritesOrSubmit === true &&
+            proof.setupRecovery?.normalPagePanelReadinessRecovered === true &&
+            proof.setupRecovery?.wholeHelperNoWritesOrSubmit === true &&
+            proof.setupRecovery?.fixturePagesClosed === true,
+          'setup_recovery_helper_unverified',
+        );
+        const changedPassword = `changed-${crypto.randomUUID()}`;
+        await runPasswordChangeCaptureChecks({
+          context,
+          worker,
+          realPanel,
+          parentOrigin,
+          targetName,
+          username,
+          currentPassword: newPassword,
+          nextPassword: changedPassword,
+          assert,
+          wait,
+          checkpoint,
+          proof,
+          focusOwnedBrowser,
+          verifyRealVaultPanel,
+          pendingCard,
+          waitForCaptureDecision,
+          captureButton: uniqueCaptureButton,
+          pendingCapturePresent: hasPendingCapture,
+          getSubmitCount: () => local.state.submits,
+          getVaultWriteCount: () => proof.vaultMutationRequests,
+          snapshotOwnedReceiptState: () => ({
+            vaultItemPosts: { ...proof.vaultItemPosts },
+            ownedCreateMutationKeys: [...createKeys].sort(),
+            ownedFixtureIds: [...createdIds].sort(),
+          }),
+          verifySelectedUpdate: async (expectedPassword) => {
+            assert(
+              (await materializedPassword(targetId)) === expectedPassword,
+              'password_change_target_mismatch',
+            );
+            assert(
+              JSON.stringify(await Promise.all(otherIds.map(item))) === JSON.stringify(otherBefore),
+              'password_change_unselected_changed',
+            );
+            assert(
+              (await authenticator.afterUpdate(authenticatorHandle)) === true,
+              'password_change_authenticator_changed',
+            );
+            return true;
+          },
+        });
+        const realLoginUrl = 'https://www.aimatrx.com/login';
+        // The preceding form matrix uses the owned localhost destination. Move
+        // only these four disposable fixtures to the real HTTPS destination so
+        // that the localhost control is genuinely a wrong-site refusal check.
+        for (const fixtureId of [targetId, ...otherIds]) {
+          const updated = await api(`${API}/api/vault/items/${encodeURIComponent(fixtureId)}`, {
+            method: 'PATCH',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ login_urls: [realLoginUrl] }),
+            label: 'real_site_fixture_destination',
+          });
+          assert(
+            updated?.id === fixtureId &&
+              JSON.stringify(updated.login_urls) === JSON.stringify([realLoginUrl]),
+            'real_site_fixture_destination_mismatch',
+          );
+        }
+        proof.checks.realSiteFixtureDestinationsRetargeted = true;
+        // This is the only real HTTPS destination in the receipt-backed journey.
+        // The helper selects this exact receipt-owned account, fills without
+        // submission, and proves that the same account is absent on the owned
+        // cross-origin control before closing both pages.
+        proof.realSiteFillHarnessSha256 = await sha256(
+          path.join(__dirname, 'vault-real-site-fill-acceptance.cjs'),
+        );
+        checkpoint('real_site_fill');
+        await runRealSiteFillChecks({
+          context,
+          worker,
+          realPanel,
+          targetName,
+          username,
+          password: changedPassword,
+          realLoginUrl,
+          wrongSiteUrl: localUrl,
+          assert,
+          wait,
+          checkpoint,
+          proof,
+          focusOwnedBrowser,
+          verifyRealVaultPanel,
+        });
+        assert(
+          proof.realSiteFill?.realHttpsLoginFormReady === true &&
+            proof.realSiteFill?.exactSavedAccountFilled === true &&
+            proof.realSiteFill?.noWebsiteSubmission === true &&
+            proof.realSiteFill?.wrongSiteRefused === true &&
+            proof.realSiteFill?.pageClosed === true,
+          'real_site_fill_evidence_unverified',
+        );
+        assert(
+          createdIds.size === fixtureIdsBeforeSavedLogin.size &&
+            [...fixtureIdsBeforeSavedLogin].every((id) => createdIds.has(id)),
+          'saved_login_helper_created_fixture',
+        );
+        assert(
+          createKeys.size === fixtureKeysBeforeSavedLogin.size &&
+            [...fixtureKeysBeforeSavedLogin].every((key) => createKeys.has(key)),
+          'saved_login_helper_created_fixture_key',
+        );
+        assert(
+          proof.vaultItemPosts.total === itemPostsBeforeSavedLogin,
+          'saved_login_helper_item_post',
+        );
+        assert(proof.savedLoginFill?.pagesClosed === true, 'saved_login_helper_pages_not_closed');
+        proof.checks.savedLoginUsesReceiptOwnedFixture = true;
+        proof.checks.savedLoginNoAdditionalVaultFixture = true;
+      }
+      checkpoint('save_as_new');
+      const beforeSave = new Set((await items()).map((entry) => entry.id));
+      await submitLogin(website, `save-${suffix}@example.invalid`, `save-${crypto.randomUUID()}`);
+      await pendingCard();
+      const submitsBeforeSaveChoice = local.state.submits;
+      const postsBeforeSave = proof.vaultItemPosts.total;
+      const keysBeforeSave = new Set(createKeys);
+      responseLossPostsBefore = postsBeforeSave;
+      responseLossKeysBefore = keysBeforeSave;
+      if (receiptBackedSaveUpdateMode) {
+        for (const key of keysBeforeSave) responseLossFixtureKeys.add(key);
+        assert(
+          await worker.evaluate(async () => {
+            const rows = Object.values(
+              (await chrome.storage.session.get('matrx.credentials.capture.pending.v1'))[
+                'matrx.credentials.capture.pending.v1'
+              ] || {},
+            );
+            if (rows.length !== 1) return false;
+            const c = rows[0];
+            if (
+              typeof c.id !== 'string' ||
+              !Number.isInteger(c.tabId) ||
+              typeof c.sourceDocumentId !== 'string'
+            )
+              return false;
+            globalThis.__vaultCanaryPendingIdentity = JSON.stringify([
+              c.id,
+              c.tabId,
+              c.sourceDocumentId,
+            ]);
+            return true;
+          }),
+          'response_loss_candidate_identity_missing',
+        );
+        responseLoss = createVaultSaveResponseLoss({
+          context,
+          apiOrigin: API,
+          exactExtensionWorkerUrl: worker.url(),
+          existingFixtureKeys: keysBeforeSave,
+          onRejectedBeforeForwardKey: (key) => {
+            rejectedBeforeForwardKeys.add(key);
+            proof.rejectedBeforeForwardCreateKeys = [...rejectedBeforeForwardKeys];
+            persist();
+          },
+        });
+        await responseLoss.install();
+        responseLossInstalled = true;
+      }
       await realPanel.click(uniqueCaptureButton('Save as new'));
+      if (responseLoss) {
+        await responseLoss.waitForFirstLoss();
+        await realPanel.waitFor(
+          `Array.from((${captureCard})?.querySelectorAll('p') || []).filter((p) => p.textContent?.trim() === 'The Vault could not save that. Try again from the Vault tab.').length === 1 && !!(${uniqueCaptureButton('Save as new')}) && !(${uniqueCaptureButton('Save as new')}).disabled`,
+          true,
+          15000,
+        );
+        const identityPreserved = await worker.evaluate(async () => {
+          const rows = Object.values(
+            (await chrome.storage.session.get('matrx.credentials.capture.pending.v1'))[
+              'matrx.credentials.capture.pending.v1'
+            ] || {},
+          );
+          const c = rows.length === 1 ? rows[0] : null;
+          return (
+            !!c &&
+            globalThis.__vaultCanaryPendingIdentity ===
+              JSON.stringify([c.id, c.tabId, c.sourceDocumentId])
+          );
+        });
+        assert(identityPreserved, 'response_loss_candidate_changed');
+        const newKeys = [...createKeys].filter((key) => !keysBeforeSave.has(key));
+        assert(
+          proof.vaultItemPosts.total === postsBeforeSave + 1 && newKeys.length === 1,
+          'response_loss_automatic_retry_or_missing_key',
+        );
+        responseLossKey = newKeys[0];
+        proof.checks.lostResponsePreservesCandidate = true;
+        responseLoss.allowExplicitRetry();
+        await realPanel.click(uniqueCaptureButton('Save as new'));
+      }
+      await waitForCaptureDecision();
+      if (responseLoss) {
+        responseLoss.assertCompleted();
+        assert(
+          proof.vaultItemPosts.total === postsBeforeSave + 2 &&
+            createKeys.size === keysBeforeSave.size + 1,
+          'response_loss_retry_key_or_count',
+        );
+        proof.responseLoss = responseLoss.snapshot();
+      }
+      assert(local.state.submits === submitsBeforeSaveChoice, 'save_choice_submitted_site');
+      const afterSave = await items();
+      const delta = afterSave.filter((entry) => !beforeSave.has(entry.id));
+      assert(delta.length === 1, 'save_not_exactly_one_item');
+      createdIds.add(delta[0].id);
+      proof.ownedFixtureIds = [...createdIds];
+      if (artifactAdmitted) persist();
+      if (responseLoss) {
+        await responseLoss.dispose();
+        proof.responseLoss = responseLoss.snapshot();
+        proof.cleanup.responseLossRouteRemoved =
+          proof.responseLoss.unrouteSucceeded && proof.responseLoss.handlerCount === 0;
+        assert(proof.cleanup.responseLossRouteRemoved, 'response_loss_route_cleanup_unproven');
+        persist();
+        await reconcile();
+        assert(
+          receiptKeys().length === 5 && receiptItemByKey.get(responseLossKey) === delta[0].id,
+          'response_loss_receipt_result_mismatch',
+        );
+        proof.checks.lostResponseRetryExactlyOne = true;
+      }
+      proof.checks.saveAsNewExactOne = true;
+      proof.checks.saveChoiceDidNotSubmit = true;
+      proof.openProof = [
+        ...(!responseLoss ? ['lost-response retry is not exercised by this canary'] : []),
+        'browser restart and distributed-release acceptance are separate gates',
+      ];
     }
-    await waitForCaptureDecision();
     if (responseLoss) {
-      responseLoss.assertCompleted();
-      assert(proof.vaultItemPosts.total === postsBeforeSave + 2 && createKeys.size === keysBeforeSave.size + 1, 'response_loss_retry_key_or_count');
-      proof.responseLoss = responseLoss.snapshot();
-    }
-    assert(local.state.submits === submitsBeforeSaveChoice, 'save_choice_submitted_site');
-    const afterSave = await items();
-    const delta = afterSave.filter((entry) => !beforeSave.has(entry.id));
-    assert(delta.length === 1, 'save_not_exactly_one_item');
-    createdIds.add(delta[0].id);
-    proof.ownedFixtureIds = [...createdIds];
-    if (artifactAdmitted) persist();
-    if (responseLoss) {
-      await responseLoss.dispose();
-      proof.responseLoss = responseLoss.snapshot();
-      proof.cleanup.responseLossRouteRemoved = proof.responseLoss.unrouteSucceeded && proof.responseLoss.handlerCount === 0;
-      assert(proof.cleanup.responseLossRouteRemoved, 'response_loss_route_cleanup_unproven');
-      persist();
-      await reconcile();
-      assert(receiptKeys().length === 5 && receiptItemByKey.get(responseLossKey) === delta[0].id, 'response_loss_receipt_result_mismatch');
-      proof.checks.lostResponseRetryExactlyOne = true;
-    }
-    proof.checks.saveAsNewExactOne = true;
-    proof.checks.saveChoiceDidNotSubmit = true;
-    proof.openProof = [...(!responseLoss ? ['lost-response retry is not exercised by this canary'] : []), 'browser restart and distributed-release acceptance are separate gates'];
-    }
-    if (responseLoss) {
-      assert(proof.vaultItemPosts.total === responseLossPostsBefore + 2
-        && createKeys.size === responseLossKeysBefore.size + 1
-        && [...responseLossKeysBefore].every((key) => createKeys.has(key))
-        && createKeys.has(responseLossKey), 'response_loss_terminal_attempt_or_key_count');
+      assert(
+        proof.vaultItemPosts.total === responseLossPostsBefore + 2 &&
+          createKeys.size === responseLossKeysBefore.size + 1 &&
+          [...responseLossKeysBefore].every((key) => createKeys.has(key)) &&
+          createKeys.has(responseLossKey),
+        'response_loss_terminal_attempt_or_key_count',
+      );
     }
     proof.networkJournal.preDisposalSnapshot = networkJournal.snapshot();
     persist();
@@ -2566,16 +3716,24 @@ async function materializedPassword(id) {
     failure = error;
     proof.failurePhase = proof.phase;
     proof.failureType = /^[A-Za-z]+$/.test(error?.name || '') ? error.name : 'Error';
-    proof.failureCode = String(error?.message || 'canary_failure').match(/^[a-z0-9_]{1,100}$/)?.[0] || 'canary_failure';
+    proof.failureCode =
+      String(error?.message || 'canary_failure').match(/^[a-z0-9_]{1,100}$/)?.[0] ||
+      'canary_failure';
     if (artifactAdmitted) persist();
   } finally {
     if (responseLoss && responseLossInstalled) {
-      try { await responseLoss.dispose(); }
-      catch (error) {
-        if (!failure) { failure = error; proof.failurePhase ||= 'response_loss_cleanup'; proof.failureCode ||= 'response_loss_cleanup_failed'; }
+      try {
+        await responseLoss.dispose();
+      } catch (error) {
+        if (!failure) {
+          failure = error;
+          proof.failurePhase ||= 'response_loss_cleanup';
+          proof.failureCode ||= 'response_loss_cleanup_failed';
+        }
       }
       proof.responseLoss = responseLoss.snapshot();
-      proof.cleanup.responseLossRouteRemoved = proof.responseLoss.unrouteSucceeded && proof.responseLoss.handlerCount === 0;
+      proof.cleanup.responseLossRouteRemoved =
+        proof.responseLoss.unrouteSucceeded && proof.responseLoss.handlerCount === 0;
     }
     // The enrolled authenticator is an independent receipt-owned resource. Its
     // cleanup must run before item deletion and must not suppress that deletion.
@@ -2595,8 +3753,15 @@ async function materializedPassword(id) {
     }
     try {
       if (website && !website.isClosed()) {
-        await website.goto(localUrl, { waitUntil: 'domcontentloaded', timeout: 10000 }).catch(() => {});
-        await website.evaluate(() => { localStorage.clear(); sessionStorage.clear(); }).catch(() => {});
+        await website
+          .goto(localUrl, { waitUntil: 'domcontentloaded', timeout: 10000 })
+          .catch(() => {});
+        await website
+          .evaluate(() => {
+            localStorage.clear();
+            sessionStorage.clear();
+          })
+          .catch(() => {});
         proof.cleanup.localWebsiteSignedOut = true;
       }
       if (token && organizationId && createKeys.size) {
@@ -2618,41 +3783,68 @@ async function materializedPassword(id) {
           proof.cleanup.receiptReconciled = proven.size === createdIds.size;
           const baselineAfter = await items();
           const remaining = new Set(baselineAfter.map((entry) => entry.id));
-          proof.cleanup.baselineUntouched = proof.baselineMetadataSha256 === baselineMetadataSha256(baselineAfter.filter((entry) => baselineIds.has(entry.id)));
+          proof.cleanup.baselineUntouched =
+            proof.baselineMetadataSha256 ===
+            baselineMetadataSha256(baselineAfter.filter((entry) => baselineIds.has(entry.id)));
           proof.cleanup.createdItemsGone = [...createdIds].every((id) => !remaining.has(id));
-          proof.cleanup.finalItemIdsMatchBaseline = remaining.size === baselineIds.size && [...baselineIds].every((id) => remaining.has(id));
+          proof.cleanup.finalItemIdsMatchBaseline =
+            remaining.size === baselineIds.size &&
+            [...baselineIds].every((id) => remaining.has(id));
         } else {
           for (const id of proven)
-            await api(`${API}/api/vault/items/${encodeURIComponent(id)}`, { method: 'DELETE', label: 'cleanup_delete' });
+            await api(`${API}/api/vault/items/${encodeURIComponent(id)}`, {
+              method: 'DELETE',
+              label: 'cleanup_delete',
+            });
           const remaining = new Set((await items()).map((entry) => entry.id));
           proof.cleanup.receiptReconciled = proven.size === createdIds.size;
           const baselineAfter = await items();
-          proof.cleanup.baselineUntouched = [...baselineIds].every((id) => remaining.has(id)) && proof.baselineMetadataSha256 === baselineMetadataSha256(baselineAfter.filter((entry) => baselineIds.has(entry.id)));
+          proof.cleanup.baselineUntouched =
+            [...baselineIds].every((id) => remaining.has(id)) &&
+            proof.baselineMetadataSha256 ===
+              baselineMetadataSha256(baselineAfter.filter((entry) => baselineIds.has(entry.id)));
           proof.cleanup.createdItemsGone = [...createdIds].every((id) => !remaining.has(id));
-          proof.cleanup.finalItemIdsMatchBaseline = remaining.size === baselineIds.size && [...baselineIds].every((id) => remaining.has(id));
+          proof.cleanup.finalItemIdsMatchBaseline =
+            remaining.size === baselineIds.size &&
+            [...baselineIds].every((id) => remaining.has(id));
         }
       }
     } catch (error) {
       proof.cleanup.failure = 'cleanup_refused';
-      proof.cleanup.failureCode = /^[a-z0-9_]{1,100}$/.test(error?.message || '') ? error.message : 'cleanup_exception';
+      proof.cleanup.failureCode = /^[a-z0-9_]{1,100}$/.test(error?.message || '')
+        ? error.message
+        : 'cleanup_exception';
     }
     // A receipt-mode run that observed a baseline must prove its own cleanup
     // left that exact baseline intact, even when it failed before any create.
     // Do not invent this evidence when baseline capture never occurred.
-    if ((receiptBackedSaveUpdateMode || readOnlyAdmissionMode) && typeof proof.baselineMetadataSha256 === 'string') {
+    if (
+      (receiptBackedSaveUpdateMode || readOnlyAdmissionMode) &&
+      typeof proof.baselineMetadataSha256 === 'string'
+    ) {
       try {
         const baselineAfterFailure = await items();
         const finalIds = new Set(baselineAfterFailure.map((entry) => entry.id));
-        proof.cleanup.finalItems = baselineAfterFailure.map(entry => ({ id: entry.id, metadataSha256: baselineMetadataSha256([entry]) })).sort((a, b) => a.id.localeCompare(b.id));
+        proof.cleanup.finalItems = baselineAfterFailure
+          .map((entry) => ({ id: entry.id, metadataSha256: baselineMetadataSha256([entry]) }))
+          .sort((a, b) => a.id.localeCompare(b.id));
         proof.cleanup.baselineDifference = {
-          addedIds: [...finalIds].filter(id => !baselineIds.has(id)),
-          removedIds: [...baselineIds].filter(id => !finalIds.has(id)),
-          changedIds: proof.baselineItems.filter(before => finalIds.has(before.id) && proof.cleanup.finalItems.find(after => after.id === before.id)?.metadataSha256 !== before.metadataSha256).map(entry => entry.id),
+          addedIds: [...finalIds].filter((id) => !baselineIds.has(id)),
+          removedIds: [...baselineIds].filter((id) => !finalIds.has(id)),
+          changedIds: proof.baselineItems
+            .filter(
+              (before) =>
+                finalIds.has(before.id) &&
+                proof.cleanup.finalItems.find((after) => after.id === before.id)?.metadataSha256 !==
+                  before.metadataSha256,
+            )
+            .map((entry) => entry.id),
         };
-        proof.cleanup.finalBaselineIdSetMatches = finalIds.size === baselineIds.size
-          && [...baselineIds].every((id) => finalIds.has(id));
-        proof.cleanup.finalBaselineMetadataMatches = proof.baselineMetadataSha256
-          === baselineMetadataSha256(baselineAfterFailure.filter((entry) => baselineIds.has(entry.id)));
+        proof.cleanup.finalBaselineIdSetMatches =
+          finalIds.size === baselineIds.size && [...baselineIds].every((id) => finalIds.has(id));
+        proof.cleanup.finalBaselineMetadataMatches =
+          proof.baselineMetadataSha256 ===
+          baselineMetadataSha256(baselineAfterFailure.filter((entry) => baselineIds.has(entry.id)));
       } catch {
         proof.cleanup.finalBaselineIdSetMatches = false;
         proof.cleanup.finalBaselineMetadataMatches = false;
@@ -2682,8 +3874,12 @@ async function materializedPassword(id) {
       for (let attempt = 0; attempt < 3; attempt += 1) {
         try {
           const logout = await fetch(`${DB}/auth/v1/logout?scope=local`, {
-            method: 'POST', signal: AbortSignal.timeout(15000),
-            headers: { apikey: process.env.SUPABASE_MATRIX_PUBLISHABLE_KEY, Authorization: `Bearer ${token}` },
+            method: 'POST',
+            signal: AbortSignal.timeout(15000),
+            headers: {
+              apikey: process.env.SUPABASE_MATRIX_PUBLISHABLE_KEY,
+              Authorization: `Bearer ${token}`,
+            },
           });
           proof.cleanup.localAuthLogoutAttempts.push(logout.status);
           proof.cleanup.localAuthLogoutStatus = logout.status;
@@ -2712,11 +3908,15 @@ async function materializedPassword(id) {
         proof.networkJournal = {
           ...(proof.networkJournal || {}),
           postDisposalSnapshot: snapshot,
-          disposalSucceeded: snapshot.cleanupPhase === 'complete' && snapshot.observerError === false
-            && snapshot.transportFatal === false && snapshot.remainingOwnedSessionCount === 0
-            && snapshot.pendingSetupCount === 0,
+          disposalSucceeded:
+            snapshot.cleanupPhase === 'complete' &&
+            snapshot.observerError === false &&
+            snapshot.transportFatal === false &&
+            snapshot.remainingOwnedSessionCount === 0 &&
+            snapshot.pendingSetupCount === 0,
         };
-        if (proof.networkJournal.disposalSucceeded !== true) throw new Error('vault_network_disposal_unproven');
+        if (proof.networkJournal.disposalSucceeded !== true)
+          throw new Error('vault_network_disposal_unproven');
       } else if (rawCdp) {
         await rawCdp.detach();
         proof.cleanup.networkJournal = 'adapter_closed_before_journal_start';
@@ -2732,67 +3932,99 @@ async function materializedPassword(id) {
     lifecycleLogoutObserver?.();
     lifecycleLogoutObserver = undefined;
     realPanel?.dispose();
-    try { if (context) await context.close(); proof.cleanup.browserClosed = true; } catch { proof.cleanup.browserClosed = false; }
     try {
-      if (local) await new Promise((resolve, reject) => local.server.close((error) => error ? reject(error) : resolve()));
+      if (context) await context.close();
+      proof.cleanup.browserClosed = true;
+    } catch {
+      proof.cleanup.browserClosed = false;
+    }
+    try {
+      if (local)
+        await new Promise((resolve, reject) =>
+          local.server.close((error) => (error ? reject(error) : resolve())),
+        );
       proof.cleanup.localFixtureServerClosed = local ? true : 'not_started';
     } catch {
       proof.cleanup.localFixtureServerClosed = false;
     }
     await fs.rm(profile, { recursive: true, force: true });
-    proof.cleanup.profileRemoved = !(await fs.stat(profile).then(() => true, () => false));
-    proof.cleanup.localCredentialDisposal = proof.cleanup.profileRemoved ? 'profile_removed' : 'profile_removal_failed';
-    proof.cleanup.vaultMutationFree = proof.vaultMutationRequests === 0
-      && proof.vaultItemPosts.total === 0
-      && createKeys.size === 0
-      && createdIds.size === 0
-      && proof.cleanup.browserClosed === true
-      && proof.networkJournal?.preDisposalCoverage === true
-      && proof.networkJournal?.disposalSucceeded === true
-      && proof.networkJournal?.postDisposalSnapshot?.observerError === false
-      && proof.networkJournal?.postDisposalSnapshot?.transportFatal === false;
+    proof.cleanup.profileRemoved = !(await fs.stat(profile).then(
+      () => true,
+      () => false,
+    ));
+    proof.cleanup.localCredentialDisposal = proof.cleanup.profileRemoved
+      ? 'profile_removed'
+      : 'profile_removal_failed';
+    proof.cleanup.vaultMutationFree =
+      proof.vaultMutationRequests === 0 &&
+      proof.vaultItemPosts.total === 0 &&
+      createKeys.size === 0 &&
+      createdIds.size === 0 &&
+      proof.cleanup.browserClosed === true &&
+      proof.networkJournal?.preDisposalCoverage === true &&
+      proof.networkJournal?.disposalSucceeded === true &&
+      proof.networkJournal?.postDisposalSnapshot?.observerError === false &&
+      proof.networkJournal?.postDisposalSnapshot?.transportFatal === false;
     if (readOnlyAdmissionMode) {
-      proof.admission.noFixtureWrites = proof.vaultMutationRequests === 0 && proof.vaultItemPosts.total === 0
-        && createKeys.size === 0 && createdIds.size === 0;
+      proof.admission.noFixtureWrites =
+        proof.vaultMutationRequests === 0 &&
+        proof.vaultItemPosts.total === 0 &&
+        createKeys.size === 0 &&
+        createdIds.size === 0;
       proof.admission.cleanup = {
         noVaultMutationRequests: proof.cleanup.vaultMutationFree,
         localAuthLogoutStatus: proof.cleanup.localAuthLogoutStatus,
         browserClosed: proof.cleanup.browserClosed,
         profileRemoved: proof.cleanup.profileRemoved,
       };
-      proof.admission.ok = !failure && proof.admission.baselineRead === true
-        && proof.admission.noFixtureWrites === true
-        && proof.cleanup.vaultMutationFree === true
-        && proof.cleanup.localAuthLogoutStatus === 204
-        && proof.cleanup.browserClosed === true
-        && proof.cleanup.profileRemoved === true
-        && proof.networkJournal?.preDisposalCoverage === true
-        && proof.networkJournal?.disposalSucceeded === true;
+      proof.admission.ok =
+        !failure &&
+        proof.admission.baselineRead === true &&
+        proof.admission.noFixtureWrites === true &&
+        proof.cleanup.vaultMutationFree === true &&
+        proof.cleanup.localAuthLogoutStatus === 204 &&
+        proof.cleanup.browserClosed === true &&
+        proof.cleanup.profileRemoved === true &&
+        proof.networkJournal?.preDisposalCoverage === true &&
+        proof.networkJournal?.disposalSucceeded === true;
       // `ok` remains reserved for a full Save/Update acceptance proof.
       proof.ok = false;
     } else {
-      proof.ok = !failure && proof.cleanup.receiptReconciled && proof.cleanup.baselineUntouched
-        && proof.cleanup.createdItemsGone && proof.cleanup.finalItemIdsMatchBaseline === true
-        && proof.cleanup.profileRemoved && proof.cleanup.localAuthLogoutStatus === 204
-        && proof.cleanup.browserClosed === true
-        && proof.networkJournal?.preDisposalCoverage === true
-        && proof.networkJournal?.disposalSucceeded === true
-        && (!receiptBackedSaveUpdateMode || (proof.cleanup.localFixtureServerClosed === true
-          && proof.cleanup.finalBaselineIdSetMatches === true
-          && proof.cleanup.finalBaselineMetadataMatches === true
-          && proof.cleanup.authenticator?.cleanupProven === true
-          && proof.checks.enrolledAuthenticatorPreserved === true));
+      proof.ok =
+        !failure &&
+        proof.cleanup.receiptReconciled &&
+        proof.cleanup.baselineUntouched &&
+        proof.cleanup.createdItemsGone &&
+        proof.cleanup.finalItemIdsMatchBaseline === true &&
+        proof.cleanup.profileRemoved &&
+        proof.cleanup.localAuthLogoutStatus === 204 &&
+        proof.cleanup.browserClosed === true &&
+        proof.networkJournal?.preDisposalCoverage === true &&
+        proof.networkJournal?.disposalSucceeded === true &&
+        (!receiptBackedSaveUpdateMode ||
+          (proof.cleanup.localFixtureServerClosed === true &&
+            proof.cleanup.finalBaselineIdSetMatches === true &&
+            proof.cleanup.finalBaselineMetadataMatches === true &&
+            proof.cleanup.authenticator?.cleanupProven === true &&
+            proof.checks.enrolledAuthenticatorPreserved === true));
     }
     if (acceptanceLease) {
-      const vaultCleanupProven = proof.cleanup.vaultMutationFree === true
-        || hasPreAuthNoWriteCleanup(proof)
-        || (proof.cleanup.receiptReconciled === true && proof.cleanup.createdItemsGone === true
-          && proof.cleanup.finalItemIdsMatchBaseline === true && proof.cleanup.baselineUntouched === true
-          && (!receiptBackedSaveUpdateMode || (proof.cleanup.finalBaselineIdSetMatches === true
-            && proof.cleanup.finalBaselineMetadataMatches === true)));
-      const safeToRelease = vaultCleanupProven && proof.cleanup.browserClosed === true && proof.cleanup.profileRemoved === true
-        && [true, 'not_started'].includes(proof.cleanup.localFixtureServerClosed)
-        && (!proof.authenticationAttempted || proof.cleanup.remoteAuthRevocationStatus === 204);
+      const vaultCleanupProven =
+        proof.cleanup.vaultMutationFree === true ||
+        hasPreAuthNoWriteCleanup(proof) ||
+        (proof.cleanup.receiptReconciled === true &&
+          proof.cleanup.createdItemsGone === true &&
+          proof.cleanup.finalItemIdsMatchBaseline === true &&
+          proof.cleanup.baselineUntouched === true &&
+          (!receiptBackedSaveUpdateMode ||
+            (proof.cleanup.finalBaselineIdSetMatches === true &&
+              proof.cleanup.finalBaselineMetadataMatches === true)));
+      const safeToRelease =
+        vaultCleanupProven &&
+        proof.cleanup.browserClosed === true &&
+        proof.cleanup.profileRemoved === true &&
+        [true, 'not_started'].includes(proof.cleanup.localFixtureServerClosed) &&
+        (!proof.authenticationAttempted || proof.cleanup.remoteAuthRevocationStatus === 204);
       try {
         assert(safeToRelease, 'vault_acceptance_lease_retained_for_cleanup');
         await acceptanceLease.release();
@@ -2810,11 +4042,22 @@ async function materializedPassword(id) {
     // artifact has no browser, auth, or cleanup obligation to journal.
     if (artifactAdmitted && !generatorFocusPreflightRefused) {
       persist();
-      if (process.env.MATRX_VAULT_CANARY_PROOF) await fs.writeFile(process.env.MATRX_VAULT_CANARY_PROOF, `${JSON.stringify(proof, null, 2)}\n`, { mode: 0o600 });
+      if (process.env.MATRX_VAULT_CANARY_PROOF)
+        await fs.writeFile(
+          process.env.MATRX_VAULT_CANARY_PROOF,
+          `${JSON.stringify(proof, null, 2)}\n`,
+          { mode: 0o600 },
+        );
     }
     if (!succeeded) process.stderr.write(`Acceptance refused: ${proof.failureCode || 'cleanup'}\n`);
-    else if (readOnlyAdmissionMode) process.stdout.write('PASS: read-only extension Vault admission and mutation-free Vault cleanup\n');
-    else process.stdout.write('PASS: real extension Vault Save/Update acceptance and receipt-backed cleanup\n');
+    else if (readOnlyAdmissionMode)
+      process.stdout.write(
+        'PASS: read-only extension Vault admission and mutation-free Vault cleanup\n',
+      );
+    else
+      process.stdout.write(
+        'PASS: real extension Vault Save/Update acceptance and receipt-backed cleanup\n',
+      );
   }
   if (!(readOnlyAdmissionMode ? proof.admission?.ok : proof.ok)) process.exitCode = 1;
 })();

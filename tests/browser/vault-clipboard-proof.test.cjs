@@ -26,17 +26,39 @@ const valid = () => ({
 
 assert.equal(hasIsolatedHeadlessClipboardProof(valid()), true);
 const mutations = [
-  (proof) => { proof.clipboardIsolation.runtime = 'Chrome/152.0.0.0'; },
-  (proof) => { proof.clipboardIsolation.ownedHeadlessProcess = false; },
-  (proof) => { proof.clipboardIsolation.sourceAndProbe = 'unreviewed'; },
-  (proof) => { proof.generator.displayMode = 'HEADED'; },
-  (proof) => { proof.generator.positiveGeneratorUi = false; },
-  (proof) => { proof.generator.clipboard.freshProcessClipboardEmpty = false; },
-  (proof) => { proof.generator.clipboard.copyAttempted = false; },
-  (proof) => { proof.generator.clipboard.disposition = 'unknown'; },
-  (proof) => { proof.generator.checks.passwordCopyNativePasteAndOwnedGeneratedClipboardReplacementVerified = false; },
-  (proof) => { proof.generator.checks.passwordCopyControlledFailureCustody = false; },
-  (proof) => { proof.generator.ownedFixtureServersClosed = false; },
+  (proof) => {
+    proof.clipboardIsolation.runtime = 'Chrome/152.0.0.0';
+  },
+  (proof) => {
+    proof.clipboardIsolation.ownedHeadlessProcess = false;
+  },
+  (proof) => {
+    proof.clipboardIsolation.sourceAndProbe = 'unreviewed';
+  },
+  (proof) => {
+    proof.generator.displayMode = 'HEADED';
+  },
+  (proof) => {
+    proof.generator.positiveGeneratorUi = false;
+  },
+  (proof) => {
+    proof.generator.clipboard.freshProcessClipboardEmpty = false;
+  },
+  (proof) => {
+    proof.generator.clipboard.copyAttempted = false;
+  },
+  (proof) => {
+    proof.generator.clipboard.disposition = 'unknown';
+  },
+  (proof) => {
+    proof.generator.checks.passwordCopyNativePasteAndOwnedGeneratedClipboardReplacementVerified = false;
+  },
+  (proof) => {
+    proof.generator.checks.passwordCopyControlledFailureCustody = false;
+  },
+  (proof) => {
+    proof.generator.ownedFixtureServersClosed = false;
+  },
 ];
 for (const mutate of mutations) {
   const proof = valid();
@@ -44,4 +66,6 @@ for (const mutate of mutations) {
   assert.equal(hasIsolatedHeadlessClipboardProof(proof), false);
 }
 assert.equal(hasIsolatedHeadlessClipboardProof({}), false);
-process.stdout.write('PASS: isolated headless clipboard proof requires every runtime, Copy, custody, and cleanup fact\n');
+process.stdout.write(
+  'PASS: isolated headless clipboard proof requires every runtime, Copy, custody, and cleanup fact\n',
+);

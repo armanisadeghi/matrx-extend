@@ -1,16 +1,21 @@
 import assert from 'node:assert/strict';
-import { spawn, execFile } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
 import { lstat, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
-import { createFirefoxSidebarAdapter, EXPECTED_RUNTIME } from './adapter.mjs';
 import { acquireVaultAcceptanceLease } from '../vault-acceptance-lease.cjs';
+import { EXPECTED_RUNTIME, createFirefoxSidebarAdapter } from './adapter.mjs';
 
 const execFileAsync = promisify(execFile);
 const harnessPath = fileURLToPath(import.meta.url);
-const root = fileURLToPath(new URL('../../../.matrx/task1-active/firefox-sidebar-probe/authenticated-harness/', import.meta.url));
+const root = fileURLToPath(
+  new URL(
+    '../../../.matrx/task1-active/firefox-sidebar-probe/authenticated-harness/',
+    import.meta.url,
+  ),
+);
 const adapterSourcePath = fileURLToPath(new URL('./adapter.mjs', import.meta.url));
 const leaseSourcePath = fileURLToPath(new URL('../vault-acceptance-lease.cjs', import.meta.url));
 const generatorMode = process.argv.includes('--generator');
@@ -19,43 +24,108 @@ const captureMode = process.argv.includes('--capture');
 const captureSourcePath = fileURLToPath(new URL('./capture-decisions.mjs', import.meta.url));
 const coreUpdateFillMode = process.argv.includes('--core-update-fill');
 const multiAccountMode = process.argv.includes('--multi-account');
-assert.ok(!((coreUpdateFillMode ? 1 : 0) + (multiAccountMode ? 1 : 0) + (process.argv.includes('--capture-save') ? 1 : 0) > 1), 'one_firefox_journey_per_run');
-if (coreUpdateFillMode) assert.equal(process.env.MATRX_FIREFOX_CORE_UPDATE_FILL_ADMISSION, 'RUN_RECEIPT_BACKED_CORE_UPDATE_FILL', 'core_update_fill_admission_unarmed');
-if (multiAccountMode) assert.equal(process.env.MATRX_FIREFOX_MULTI_ACCOUNT_ADMISSION, 'RUN_RECEIPT_BACKED_MULTI_ACCOUNT', 'multi_account_admission_unarmed');
-const captureSaveMode = process.argv.includes('--capture-save') || coreUpdateFillMode || multiAccountMode;
-const coreUpdateFillSourcePath = fileURLToPath(new URL('./core-update-fill-acceptance.mjs', import.meta.url));
-const multiAccountSourcePath = fileURLToPath(new URL('./multi-account-acceptance.mjs', import.meta.url));
-const authenticatorChecksSourcePath = fileURLToPath(new URL('./authenticator-checks.mjs', import.meta.url));
-const authenticatorSourcePath = fileURLToPath(new URL('../vault-authenticator-preservation.cjs', import.meta.url));
-const captureSaveSourcePath = fileURLToPath(new URL('./capture-save-acceptance.mjs', import.meta.url));
+assert.ok(
+  !(
+    (coreUpdateFillMode ? 1 : 0) +
+      (multiAccountMode ? 1 : 0) +
+      (process.argv.includes('--capture-save') ? 1 : 0) >
+    1
+  ),
+  'one_firefox_journey_per_run',
+);
+if (coreUpdateFillMode)
+  assert.equal(
+    process.env.MATRX_FIREFOX_CORE_UPDATE_FILL_ADMISSION,
+    'RUN_RECEIPT_BACKED_CORE_UPDATE_FILL',
+    'core_update_fill_admission_unarmed',
+  );
+if (multiAccountMode)
+  assert.equal(
+    process.env.MATRX_FIREFOX_MULTI_ACCOUNT_ADMISSION,
+    'RUN_RECEIPT_BACKED_MULTI_ACCOUNT',
+    'multi_account_admission_unarmed',
+  );
+const captureSaveMode =
+  process.argv.includes('--capture-save') || coreUpdateFillMode || multiAccountMode;
+const coreUpdateFillSourcePath = fileURLToPath(
+  new URL('./core-update-fill-acceptance.mjs', import.meta.url),
+);
+const multiAccountSourcePath = fileURLToPath(
+  new URL('./multi-account-acceptance.mjs', import.meta.url),
+);
+const authenticatorChecksSourcePath = fileURLToPath(
+  new URL('./authenticator-checks.mjs', import.meta.url),
+);
+const authenticatorSourcePath = fileURLToPath(
+  new URL('../vault-authenticator-preservation.cjs', import.meta.url),
+);
+const captureSaveSourcePath = fileURLToPath(
+  new URL('./capture-save-acceptance.mjs', import.meta.url),
+);
 const cleanupSourcePath = fileURLToPath(new URL('../cleanup-vault-canary.py', import.meta.url));
 const reconcileSourcePath = fileURLToPath(new URL('../reconcile-vault-canary.py', import.meta.url));
 const CANONICAL_CLEANUP_SOURCE_COMMIT = 'bdb78b410b7436a6e51af0d725987257bc4e72a7';
 const CANONICAL_CLEANUP_SOURCE_ROOT = `/Users/armanisadeghi/code/matrx-extend/.matrx/task1-active/canonical-cleanup-source-${CANONICAL_CLEANUP_SOURCE_COMMIT}`;
-const CANONICAL_CLEANUP_SOURCE_IDENTITY = join(CANONICAL_CLEANUP_SOURCE_ROOT, 'SOURCE_IDENTITY.json');
-const CANONICAL_CLEANUP_SOURCE_IDENTITY_SHA256 = 'a7562526ebe6e29e0e0ab0b4e80bb1cb79e104dc70b000a8a6a9f39218a9a48c';
-const CANONICAL_CLEANUP_ARCHIVE_SHA256 = 'ea47e2262c18d814d3aa6b460163340cdfcb8207cc9b7de53ffacf75fd496b12';
-const CANONICAL_CLEANUP_ROUTER_SHA256 = '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
-const CANONICAL_CLEANUP_SERVICE_SHA256 = 'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
+const CANONICAL_CLEANUP_SOURCE_IDENTITY = join(
+  CANONICAL_CLEANUP_SOURCE_ROOT,
+  'SOURCE_IDENTITY.json',
+);
+const CANONICAL_CLEANUP_SOURCE_IDENTITY_SHA256 =
+  'a7562526ebe6e29e0e0ab0b4e80bb1cb79e104dc70b000a8a6a9f39218a9a48c';
+const CANONICAL_CLEANUP_ARCHIVE_SHA256 =
+  'ea47e2262c18d814d3aa6b460163340cdfcb8207cc9b7de53ffacf75fd496b12';
+const CANONICAL_CLEANUP_ROUTER_SHA256 =
+  '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
+const CANONICAL_CLEANUP_SERVICE_SHA256 =
+  'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
 const CAPTURE_SAVE_CLEANUP_TIMEOUT_MS = 120_000;
 const CAPTURE_SAVE_CLEANUP_KILL_ESCALATION_MS = 2_000;
-const cleanupTimeoutSelfTestMode = process.argv.includes('--capture-save-cleanup-timeout-self-test');
+const cleanupTimeoutSelfTestMode = process.argv.includes(
+  '--capture-save-cleanup-timeout-self-test',
+);
 const reconciliationMode = process.argv.includes('--reconcile-chrome');
-assert.ok([captureMode, captureSaveMode, generatorMode, reconciliationMode].filter(Boolean).length <= 1, 'one_firefox_journey_per_run');
+assert.ok(
+  [captureMode, captureSaveMode, generatorMode, reconciliationMode].filter(Boolean).length <= 1,
+  'one_firefox_journey_per_run',
+);
 const FAILED_CHROME_RUN = 'b208d813-9a59-4d87-b437-772ee05eb3b7';
-const FAILED_CHROME_PROOF_SHA256 = '317bbc4724038577ec023b5ea797b559d9c91fb9cb4e4210f1a0768d1ec90d86';
+const FAILED_CHROME_PROOF_SHA256 =
+  '317bbc4724038577ec023b5ea797b559d9c91fb9cb4e4210f1a0768d1ec90d86';
 const CLEAN_BASELINE_SHA256 = '0b18f97a9727116b746ea4bc4432fcbd6bb1821f5449b0a219062e69b2726bab';
-const failedChromeProofPath = fileURLToPath(new URL('../../../.matrx/realbrowser-vault/save-update-headless/' + FAILED_CHROME_RUN + '/proof.json', import.meta.url));
+const failedChromeProofPath = fileURLToPath(
+  new URL(
+    '../../../.matrx/realbrowser-vault/save-update-headless/' + FAILED_CHROME_RUN + '/proof.json',
+    import.meta.url,
+  ),
+);
 async function verifiedFailedChromeProof() {
   const raw = await readFile(failedChromeProofPath);
   assert.equal(shaText(raw), FAILED_CHROME_PROOF_SHA256, 'historical_chrome_proof_changed');
   const value = JSON.parse(raw);
   assert.equal(value.runId, FAILED_CHROME_RUN, 'historical_chrome_run_mismatch');
   assert.equal(value.ok, false, 'historical_chrome_failure_required');
-  assert.equal(value.failureCode, 'preferences_quiet_fill_feedback_timeout', 'historical_chrome_failure_mismatch');
+  assert.equal(
+    value.failureCode,
+    'preferences_quiet_fill_feedback_timeout',
+    'historical_chrome_failure_mismatch',
+  );
   const ids = value.ownedFixtureIds;
-  assert.ok(Array.isArray(ids) && ids.length === 4 && new Set(ids).size === 4 && ids.every(id => typeof id === 'string' && /^[0-9a-f-]{36}$/.test(id)), 'historical_chrome_fixture_ids_invalid');
-  assert.ok(value.cleanup.receiptReconciled && value.cleanup.createdItemsGone && value.cleanup.profileRemoved && value.cleanup.browserClosed && value.cleanup.localAuthLogoutStatus === 204 && value.cleanup.remoteAuthRevocationStatus === 204, 'historical_chrome_owned_cleanup_missing');
+  assert.ok(
+    Array.isArray(ids) &&
+      ids.length === 4 &&
+      new Set(ids).size === 4 &&
+      ids.every((id) => typeof id === 'string' && /^[0-9a-f-]{36}$/.test(id)),
+    'historical_chrome_fixture_ids_invalid',
+  );
+  assert.ok(
+    value.cleanup.receiptReconciled &&
+      value.cleanup.createdItemsGone &&
+      value.cleanup.profileRemoved &&
+      value.cleanup.browserClosed &&
+      value.cleanup.localAuthLogoutStatus === 204 &&
+      value.cleanup.remoteAuthRevocationStatus === 204,
+    'historical_chrome_owned_cleanup_missing',
+  );
   return ids;
 }
 const SOURCE_COMMIT = '4b4aafbd5e849fc30c87ee5b9207b8749858a317';
@@ -64,9 +134,17 @@ const ADDON_ID = 'matrx-extend@aimatrx.com';
 const API = 'https://server.app.matrxserver.com';
 const DB = 'https://db.matrxserver.com';
 const AUTH_ORIGIN = 'https://www.aimatrx.com';
-const firefox = '/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/Firefox.app/Contents/MacOS/firefox';
-const geckodriver = '/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/geckodriver';
-const artifactDirectory = join(root, '..', '..', 'firefox-current-build', 'artifact-2026-09-21T22-26-05-805Z-4579bce7-05cf-4258-9983-72bc3a1d4dde');
+const firefox =
+  '/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/Firefox.app/Contents/MacOS/firefox';
+const geckodriver =
+  '/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/geckodriver';
+const artifactDirectory = join(
+  root,
+  '..',
+  '..',
+  'firefox-current-build',
+  'artifact-2026-09-21T22-26-05-805Z-4579bce7-05cf-4258-9983-72bc3a1d4dde',
+);
 const artifactRoot = join(artifactDirectory, 'extension');
 const artifactManifestPath = join(artifactDirectory, 'artifact-manifest.json');
 const xpi = join(artifactDirectory, 'matrx-extend-firefox-mv3.xpi');
@@ -75,46 +153,99 @@ const xpi = join(artifactDirectory, 'matrx-extend-firefox-mv3.xpi');
 // Any driver or adapter change invalidates admission before credentials or launch.
 const LAUNCH_ENV = 'MATRX_FIREFOX_READONLY_AUTH_ACCEPTANCE';
 const HASH_ENV = 'MATRX_FIREFOX_REVIEWED_HARNESS_SHA256';
-const captureSaveAdmission = process.env.MATRX_FIREFOX_CAPTURE_SAVE_ADMISSION === 'RUN_RECEIPT_BACKED_CAPTURE_SAVE';
-const localCanonicalCleanupArmed = process.env.MATRX_FIREFOX_LOCAL_CANONICAL_CLEANUP === 'RUN_LOCAL_CANONICAL_CLEANUP';
+const captureSaveAdmission =
+  process.env.MATRX_FIREFOX_CAPTURE_SAVE_ADMISSION === 'RUN_RECEIPT_BACKED_CAPTURE_SAVE';
+const localCanonicalCleanupArmed =
+  process.env.MATRX_FIREFOX_LOCAL_CANONICAL_CLEANUP === 'RUN_LOCAL_CANONICAL_CLEANUP';
 const localSourceRoot = process.env.MATRX_FIREFOX_LOCAL_SOURCE_ROOT;
 const localRouterHash = process.env.MATRX_FIREFOX_LOCAL_ROUTER_SHA256;
 const localServiceHash = process.env.MATRX_FIREFOX_LOCAL_SERVICE_SHA256;
 if (captureSaveMode) {
   assert.equal(captureSaveAdmission, true, 'capture_save_admission_unarmed');
   assert.equal(localCanonicalCleanupArmed, true, 'capture_save_cleanup_unarmed');
-  assert.equal(process.env.MATRX_FIREFOX_CAPTURE_SAVE_EXPECTED_COMMIT, SOURCE_COMMIT, 'capture_save_artifact_unpinned');
+  assert.equal(
+    process.env.MATRX_FIREFOX_CAPTURE_SAVE_EXPECTED_COMMIT,
+    SOURCE_COMMIT,
+    'capture_save_artifact_unpinned',
+  );
   assert.equal(localSourceRoot, CANONICAL_CLEANUP_SOURCE_ROOT, 'capture_save_source_root_mismatch');
-  assert.equal(localRouterHash, CANONICAL_CLEANUP_ROUTER_SHA256, 'capture_save_router_hash_mismatch');
-  assert.equal(localServiceHash, CANONICAL_CLEANUP_SERVICE_SHA256, 'capture_save_service_hash_mismatch');
-  for (const key of ['MATRX_FIREFOX_GENERATOR', 'MATRX_FIREFOX_CAPTURE_RESPONSE_LOSS']) assert.equal(process.env[key], undefined, 'capture_save_incompatible_flag');
+  assert.equal(
+    localRouterHash,
+    CANONICAL_CLEANUP_ROUTER_SHA256,
+    'capture_save_router_hash_mismatch',
+  );
+  assert.equal(
+    localServiceHash,
+    CANONICAL_CLEANUP_SERVICE_SHA256,
+    'capture_save_service_hash_mismatch',
+  );
+  for (const key of ['MATRX_FIREFOX_GENERATOR', 'MATRX_FIREFOX_CAPTURE_RESPONSE_LOSS'])
+    assert.equal(process.env[key], undefined, 'capture_save_incompatible_flag');
 }
 async function reviewedHarnessHash() {
-  return shaText(JSON.stringify(await Promise.all([harnessPath, adapterSourcePath, leaseSourcePath, ...(generatorMode ? [generatorSourcePath] : []), ...(captureMode ? [captureSourcePath] : []), ...(captureSaveMode ? [captureSaveSourcePath, coreUpdateFillSourcePath, multiAccountSourcePath, authenticatorChecksSourcePath, authenticatorSourcePath, cleanupSourcePath, reconcileSourcePath] : [])].map(shaFile))));
+  return shaText(
+    JSON.stringify(
+      await Promise.all(
+        [
+          harnessPath,
+          adapterSourcePath,
+          leaseSourcePath,
+          ...(generatorMode ? [generatorSourcePath] : []),
+          ...(captureMode ? [captureSourcePath] : []),
+          ...(captureSaveMode
+            ? [
+                captureSaveSourcePath,
+                coreUpdateFillSourcePath,
+                multiAccountSourcePath,
+                authenticatorChecksSourcePath,
+                authenticatorSourcePath,
+                cleanupSourcePath,
+                reconcileSourcePath,
+              ]
+            : []),
+        ].map(shaFile),
+      ),
+    ),
+  );
 }
 
-function shaText(value) { return createHash('sha256').update(value).digest('hex'); }
-async function shaFile(path) { return shaText(await readFile(path)); }
-async function exists(path) {
-  try { await lstat(path); return true; }
-  catch (error) { if (error?.code === 'ENOENT') return false; throw error; }
+function shaText(value) {
+  return createHash('sha256').update(value).digest('hex');
 }
-function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+async function shaFile(path) {
+  return shaText(await readFile(path));
+}
+async function exists(path) {
+  try {
+    await lstat(path);
+    return true;
+  } catch (error) {
+    if (error?.code === 'ENOENT') return false;
+    throw error;
+  }
+}
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 function safeErrorCode(error) {
   const value = String(error?.message || 'firefox_readonly_acceptance_failed').split('\n', 1)[0];
   return /^[a-z0-9_]{1,120}$/.test(value) ? value : 'firefox_readonly_acceptance_failed';
 }
 function baselineMetadataSha256(entries) {
-  const metadata = entries.map(entry => ({
-    id: entry.id,
-    updated_at: entry.updated_at,
-    fields: (entry.fields || []).map(field => ({
-      id: field.id,
-      field_key: field.field_key,
-      is_active: field.is_active,
-      handling: field.handling,
-    })).sort((a, b) => a.id.localeCompare(b.id)),
-  })).sort((a, b) => a.id.localeCompare(b.id));
+  const metadata = entries
+    .map((entry) => ({
+      id: entry.id,
+      updated_at: entry.updated_at,
+      fields: (entry.fields || [])
+        .map((field) => ({
+          id: field.id,
+          field_key: field.field_key,
+          is_active: field.is_active,
+          handling: field.handling,
+        }))
+        .sort((a, b) => a.id.localeCompare(b.id)),
+    }))
+    .sort((a, b) => a.id.localeCompare(b.id));
   return shaText(JSON.stringify(metadata));
 }
 async function openPort() {
@@ -126,18 +257,25 @@ async function openPort() {
   });
   const address = server.address();
   assert.ok(address && typeof address !== 'string', 'driver_port_missing');
-  await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
+  await new Promise((resolve, reject) =>
+    server.close((error) => (error ? reject(error) : resolve())),
+  );
   return address.port;
 }
 async function request(base, method, path, body) {
   const response = await fetch(`${base}${path}`, {
     method,
     signal: AbortSignal.timeout(35_000),
-    ...(body !== undefined && { headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }),
+    ...(body !== undefined && {
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
   });
   const data = await response.json().catch(() => ({}));
   if (!response.ok || data.value?.error) {
-    const kind = String(data.value?.error ?? response.status).replace(/[^a-z0-9]+/gi, '_').toLowerCase();
+    const kind = String(data.value?.error ?? response.status)
+      .replace(/[^a-z0-9]+/gi, '_')
+      .toLowerCase();
     throw new Error(`webdriver_${kind}`);
   }
   return data.value;
@@ -148,21 +286,28 @@ const wdDelete = (base, path) => request(base, 'DELETE', path);
 async function waitForDriver(base, driver) {
   for (let attempt = 0; attempt < 100; attempt += 1) {
     if (driver.exitCode !== null) throw new Error('geckodriver_exited_before_ready');
-    try { if ((await fetch(`${base}/status`, { signal: AbortSignal.timeout(500) })).ok) return; } catch {}
+    try {
+      if ((await fetch(`${base}/status`, { signal: AbortSignal.timeout(500) })).ok) return;
+    } catch {}
     await delay(100);
   }
   throw new Error('geckodriver_ready_timeout');
 }
 async function pidsContaining(fragment) {
   const { stdout } = await execFileAsync('ps', ['-axo', 'pid=,command=']);
-  return stdout.split('\n').flatMap(line => {
+  return stdout.split('\n').flatMap((line) => {
     const match = line.trim().match(/^(\d+)\s+(.+)$/);
     return match && match[2].includes(fragment) ? [Number(match[1])] : [];
   });
 }
 async function pidGone(pid) {
-  try { process.kill(pid, 0); return false; }
-  catch (error) { if (error?.code === 'ESRCH') return true; throw error; }
+  try {
+    process.kill(pid, 0);
+    return false;
+  } catch (error) {
+    if (error?.code === 'ESRCH') return true;
+    throw error;
+  }
 }
 async function waitForPidsGone(pids) {
   const deadline = Date.now() + 15_000;
@@ -175,15 +320,22 @@ async function waitForPidsGone(pids) {
 async function terminateCurrentOwnedPids(pids) {
   if (pids.length === 0) return;
   for (const pid of pids) {
-    try { process.kill(pid, 'SIGTERM'); }
-    catch (error) { if (error?.code !== 'ESRCH') throw error; }
+    try {
+      process.kill(pid, 'SIGTERM');
+    } catch (error) {
+      if (error?.code !== 'ESRCH') throw error;
+    }
   }
   const deadline = Date.now() + 5_000;
-  while (Date.now() < deadline && !(await Promise.all(pids.map(pidGone))).every(Boolean)) await delay(100);
+  while (Date.now() < deadline && !(await Promise.all(pids.map(pidGone))).every(Boolean))
+    await delay(100);
   for (const pid of pids) {
     if (await pidGone(pid)) continue;
-    try { process.kill(pid, 'SIGKILL'); }
-    catch (error) { if (error?.code !== 'ESRCH') throw error; }
+    try {
+      process.kill(pid, 'SIGKILL');
+    } catch (error) {
+      if (error?.code !== 'ESRCH') throw error;
+    }
   }
   await waitForPidsGone(pids);
 }
@@ -202,19 +354,37 @@ async function verifyArtifact() {
   assert.equal(manifest.sourceCommit, SOURCE_COMMIT, 'artifact_source_commit_mismatch');
   assert.equal(manifest.schema, 2, 'artifact_schema_mismatch');
   assert.equal(manifest.kind, 'local-multi-repo-source-artifact', 'artifact_kind_mismatch');
-  assert.equal(manifest.aidream.sourceCommit, RECORDS_SOURCE_COMMIT, 'artifact_records_source_mismatch');
-  assert.equal(manifest.aidream.sourcePath, 'apps/shared/records', 'artifact_records_path_mismatch');
+  assert.equal(
+    manifest.aidream.sourceCommit,
+    RECORDS_SOURCE_COMMIT,
+    'artifact_records_source_mismatch',
+  );
+  assert.equal(
+    manifest.aidream.sourcePath,
+    'apps/shared/records',
+    'artifact_records_path_mismatch',
+  );
   assert.equal(manifest.extensionDirectory, 'extension', 'artifact_root_mismatch');
   assert.equal(manifest.manifestVersion, 3, 'artifact_manifest_version_mismatch');
   assert.equal(manifest.addonId, ADDON_ID, 'artifact_addon_id_mismatch');
-  assert.ok(Array.isArray(manifest.extensionFiles) && manifest.extensionFiles.length > 10, 'artifact_manifest_empty');
+  assert.ok(
+    Array.isArray(manifest.extensionFiles) && manifest.extensionFiles.length > 10,
+    'artifact_manifest_empty',
+  );
   const seen = new Set();
   for (const entry of manifest.extensionFiles) {
     assert.equal(typeof entry.path, 'string');
-    assert(!entry.path.startsWith('/') && !entry.path.includes('..'), 'artifact_manifest_path_invalid');
+    assert(
+      !entry.path.startsWith('/') && !entry.path.includes('..'),
+      'artifact_manifest_path_invalid',
+    );
     assert(!seen.has(entry.path), 'artifact_manifest_duplicate');
     seen.add(entry.path);
-    assert.equal(await shaFile(join(artifactRoot, entry.path)), entry.sha256, 'artifact_file_hash_mismatch');
+    assert.equal(
+      await shaFile(join(artifactRoot, entry.path)),
+      entry.sha256,
+      'artifact_file_hash_mismatch',
+    );
   }
   assert.equal(manifest.xpi.path, 'matrx-extend-firefox-mv3.xpi', 'artifact_xpi_path_mismatch');
   assert.equal(await shaFile(xpi), manifest.xpi.sha256, 'artifact_xpi_hash_mismatch');
@@ -226,22 +396,30 @@ if (process.argv.includes('--dry-run')) {
   if (reconciliationMode) await verifiedFailedChromeProof();
   assert.equal(process.env[HASH_ENV], undefined, 'dry_run_refuses_review_hash');
   assert.equal(process.env[LAUNCH_ENV], undefined, 'dry_run_refuses_launch_env');
-  console.log(JSON.stringify({
-    ok: true,
-    mode: 'dry_refusal',
-    sourceCommit: manifest.sourceCommit,
-    artifactVerified: true,
-    harnessSha256: await reviewedHarnessHash(),
-    credentialGateArmed: false,
-    credentialsRead: false,
-    browserLaunched: false,
-  }));
+  console.log(
+    JSON.stringify({
+      ok: true,
+      mode: 'dry_refusal',
+      sourceCommit: manifest.sourceCommit,
+      artifactVerified: true,
+      harnessSha256: await reviewedHarnessHash(),
+      credentialGateArmed: false,
+      credentialsRead: false,
+      browserLaunched: false,
+    }),
+  );
   process.exit(0);
 }
 
 if (cleanupTimeoutSelfTestMode) {
   await assert.rejects(
-    runBoundedCaptureSaveCleanupChild({ command: process.execPath, args: ['-e', 'setInterval(() => {}, 1000)'], cwd: process.cwd(), input: '', timeoutMs: 25 }),
+    runBoundedCaptureSaveCleanupChild({
+      command: process.execPath,
+      args: ['-e', 'setInterval(() => {}, 1000)'],
+      cwd: process.cwd(),
+      input: '',
+      timeoutMs: 25,
+    }),
     /capture_save_cleanup_timeout/,
   );
   process.stdout.write('capture_save_cleanup_timeout_self_test_passed\n');
@@ -262,7 +440,19 @@ await mkdir(runRoot, { recursive: true, mode: 0o700 });
 const proof = {
   schema: 1,
   runId,
-  mode: reconciliationMode ? 'firefox_readonly_chrome_reconciliation' : generatorMode ? 'firefox_generator_auth_vault' : captureMode ? 'firefox_capture_decisions' : multiAccountMode ? 'firefox_multi_account' : coreUpdateFillMode ? 'firefox_core_update_fill' : captureSaveMode ? 'firefox_capture_save' : 'firefox_readonly_auth_vault',
+  mode: reconciliationMode
+    ? 'firefox_readonly_chrome_reconciliation'
+    : generatorMode
+      ? 'firefox_generator_auth_vault'
+      : captureMode
+        ? 'firefox_capture_decisions'
+        : multiAccountMode
+          ? 'firefox_multi_account'
+          : coreUpdateFillMode
+            ? 'firefox_core_update_fill'
+            : captureSaveMode
+              ? 'firefox_capture_save'
+              : 'firefox_readonly_auth_vault',
   sourceCommit: SOURCE_COMMIT,
   credentialsRead: false,
   authenticationAttempted: false,
@@ -293,30 +483,81 @@ const proof = {
   ok: false,
 };
 const persist = () => writeFile(proofPath, `${JSON.stringify(proof, null, 2)}\n`, { mode: 0o600 });
-const checkpoint = async phase => { proof.phase = phase; await persist(); };
-const cleanupCheckpoint = async phase => {
+const checkpoint = async (phase) => {
+  proof.phase = phase;
+  await persist();
+};
+const cleanupCheckpoint = async (phase) => {
   proof.cleanupPhase = phase;
-  try { await persist(); } catch { proof.persistenceFailureDuringCleanup = true; }
+  try {
+    await persist();
+  } catch {
+    proof.persistenceFailureDuringCleanup = true;
+  }
 };
 proof.hashes = {
-  driverSha256: await shaFile(harnessPath), adapterSha256: await shaFile(adapterSourcePath),
+  driverSha256: await shaFile(harnessPath),
+  adapterSha256: await shaFile(adapterSourcePath),
   leaseSha256: await shaFile(leaseSourcePath),
   ...(generatorMode ? { generatorSha256: await shaFile(generatorSourcePath) } : {}),
   ...(captureMode ? { captureSha256: await shaFile(captureSourcePath) } : {}),
-  ...(captureSaveMode ? { captureSaveSha256: await shaFile(captureSaveSourcePath), coreUpdateFillSha256: await shaFile(coreUpdateFillSourcePath), multiAccountSha256: await shaFile(multiAccountSourcePath), authenticatorChecksSha256: await shaFile(authenticatorChecksSourcePath), authenticatorSha256: await shaFile(authenticatorSourcePath), cleanupSha256: await shaFile(cleanupSourcePath), reconcileSha256: await shaFile(reconcileSourcePath) } : {}),
-  artifactManifestSha256: await shaFile(artifactManifestPath), artifactXpiSha256: artifactManifest.xpi.sha256,
+  ...(captureSaveMode
+    ? {
+        captureSaveSha256: await shaFile(captureSaveSourcePath),
+        coreUpdateFillSha256: await shaFile(coreUpdateFillSourcePath),
+        multiAccountSha256: await shaFile(multiAccountSourcePath),
+        authenticatorChecksSha256: await shaFile(authenticatorChecksSourcePath),
+        authenticatorSha256: await shaFile(authenticatorSourcePath),
+        cleanupSha256: await shaFile(cleanupSourcePath),
+        reconcileSha256: await shaFile(reconcileSourcePath),
+      }
+    : {}),
+  artifactManifestSha256: await shaFile(artifactManifestPath),
+  artifactXpiSha256: artifactManifest.xpi.sha256,
 };
 if (captureSaveMode) {
-  assert.equal(await shaFile(CANONICAL_CLEANUP_SOURCE_IDENTITY), CANONICAL_CLEANUP_SOURCE_IDENTITY_SHA256, 'capture_save_source_identity_hash_mismatch');
-  assert.equal(await shaFile(join(CANONICAL_CLEANUP_SOURCE_ROOT, 'source.tar')), CANONICAL_CLEANUP_ARCHIVE_SHA256, 'capture_save_source_archive_hash_mismatch');
+  assert.equal(
+    await shaFile(CANONICAL_CLEANUP_SOURCE_IDENTITY),
+    CANONICAL_CLEANUP_SOURCE_IDENTITY_SHA256,
+    'capture_save_source_identity_hash_mismatch',
+  );
+  assert.equal(
+    await shaFile(join(CANONICAL_CLEANUP_SOURCE_ROOT, 'source.tar')),
+    CANONICAL_CLEANUP_ARCHIVE_SHA256,
+    'capture_save_source_archive_hash_mismatch',
+  );
   const sourceIdentity = JSON.parse(await readFile(CANONICAL_CLEANUP_SOURCE_IDENTITY, 'utf8'));
   assert.equal(sourceIdentity?.schema, 1, 'capture_save_source_identity_schema_mismatch');
-  assert.equal(sourceIdentity?.kind, 'immutable-git-archive-source', 'capture_save_source_identity_kind_mismatch');
-  assert.equal(sourceIdentity?.sourceCommit, CANONICAL_CLEANUP_SOURCE_COMMIT, 'capture_save_source_identity_commit_mismatch');
-  assert.equal(sourceIdentity?.archivePath, 'source.tar', 'capture_save_source_identity_archive_path_mismatch');
-  assert.equal(sourceIdentity?.archiveSha256, CANONICAL_CLEANUP_ARCHIVE_SHA256, 'capture_save_source_identity_archive_mismatch');
-  assert.equal(sourceIdentity?.routerSha256, CANONICAL_CLEANUP_ROUTER_SHA256, 'capture_save_source_identity_router_mismatch');
-  assert.equal(sourceIdentity?.serviceSha256, CANONICAL_CLEANUP_SERVICE_SHA256, 'capture_save_source_identity_service_mismatch');
+  assert.equal(
+    sourceIdentity?.kind,
+    'immutable-git-archive-source',
+    'capture_save_source_identity_kind_mismatch',
+  );
+  assert.equal(
+    sourceIdentity?.sourceCommit,
+    CANONICAL_CLEANUP_SOURCE_COMMIT,
+    'capture_save_source_identity_commit_mismatch',
+  );
+  assert.equal(
+    sourceIdentity?.archivePath,
+    'source.tar',
+    'capture_save_source_identity_archive_path_mismatch',
+  );
+  assert.equal(
+    sourceIdentity?.archiveSha256,
+    CANONICAL_CLEANUP_ARCHIVE_SHA256,
+    'capture_save_source_identity_archive_mismatch',
+  );
+  assert.equal(
+    sourceIdentity?.routerSha256,
+    CANONICAL_CLEANUP_ROUTER_SHA256,
+    'capture_save_source_identity_router_mismatch',
+  );
+  assert.equal(
+    sourceIdentity?.serviceSha256,
+    CANONICAL_CLEANUP_SERVICE_SHA256,
+    'capture_save_source_identity_service_mismatch',
+  );
   proof.captureSaveCleanupSource = {
     sourceCommit: CANONICAL_CLEANUP_SOURCE_COMMIT,
     sourceRoot: CANONICAL_CLEANUP_SOURCE_ROOT,
@@ -349,33 +590,44 @@ let captureSaveCleanupAttempted = false;
 let signOutStartSequence;
 let failure;
 
-const getContext = async context => {
+const getContext = async (context) => {
   assert.equal(await wdPost(base, `/session/${sessionId}/moz/context`, { context }), null);
 };
-const executeContentAsync = (script, args = []) => wdPost(base, `/session/${sessionId}/execute/async`, { script, args });
-const getStorage = async keys => {
+const executeContentAsync = (script, args = []) =>
+  wdPost(base, `/session/${sessionId}/execute/async`, { script, args });
+const getStorage = async (keys) => {
   assert.ok(storageHandle, 'storage_tab_handle_missing');
   await wdPost(base, `/session/${sessionId}/window`, { handle: storageHandle });
   await getContext('content');
-  return executeContentAsync(`
+  return executeContentAsync(
+    `
     const done = arguments[arguments.length - 1];
     const keys = arguments[0];
     const storage = globalThis.browser?.storage ?? globalThis.chrome?.storage;
-    storage.local.get(keys).then(done, () => done(null));`, [keys]);
+    storage.local.get(keys).then(done, () => done(null));`,
+    [keys],
+  );
 };
 // Content-script globals are isolated from WebDriver's page-main realm. Read
 // the mount marker only through the extension's own options-page principal and
 // always return the caller to its original owned content tab.
-const probeFixtureBridge = async fixtureUrl => {
-  assert.ok(typeof fixtureUrl === 'string' && fixtureUrl.startsWith('http://127.0.0.1:'), 'capture_fixture_url_invalid');
+const probeFixtureBridge = async (fixtureUrl) => {
+  assert.ok(
+    typeof fixtureUrl === 'string' && fixtureUrl.startsWith('http://127.0.0.1:'),
+    'capture_fixture_url_invalid',
+  );
   assert.ok(storageHandle, 'storage_tab_handle_missing');
   await getContext('content');
   const originalHandle = await wdGet(base, `/session/${sessionId}/window`);
-  assert.ok(typeof originalHandle === 'string' && originalHandle.length > 0, 'capture_probe_original_window_missing');
+  assert.ok(
+    typeof originalHandle === 'string' && originalHandle.length > 0,
+    'capture_probe_original_window_missing',
+  );
   try {
     await wdPost(base, `/session/${sessionId}/window`, { handle: storageHandle });
     await getContext('content');
-    return await executeContentAsync(`
+    return await executeContentAsync(
+      `
       const done = arguments[arguments.length - 1];
       (async () => {
         const api = globalThis.browser ?? globalThis.chrome;
@@ -386,27 +638,39 @@ const probeFixtureBridge = async fixtureUrl => {
           func: () => window.__matrx_bridge_mounted === true,
         });
         return result.length === 1 && result[0]?.result === true;
-      })().then(done, () => done(false));`, [fixtureUrl]);
+      })().then(done, () => done(false));`,
+      [fixtureUrl],
+    );
   } finally {
     await getContext('content');
     await wdPost(base, `/session/${sessionId}/window`, { handle: originalHandle });
   }
 };
-const diagnoseFixtureCapture = async fixtureUrl => {
-  assert.ok(typeof fixtureUrl === 'string' && fixtureUrl.startsWith('http://127.0.0.1:'), 'capture_diagnostic_fixture_url_invalid');
+const diagnoseFixtureCapture = async (fixtureUrl) => {
+  assert.ok(
+    typeof fixtureUrl === 'string' && fixtureUrl.startsWith('http://127.0.0.1:'),
+    'capture_diagnostic_fixture_url_invalid',
+  );
   assert.ok(storageHandle, 'storage_tab_handle_missing');
   await getContext('content');
   const originalHandle = await wdGet(base, `/session/${sessionId}/window`);
-  assert.ok(typeof originalHandle === 'string' && originalHandle.length > 0, 'capture_diagnostic_original_window_missing');
+  assert.ok(
+    typeof originalHandle === 'string' && originalHandle.length > 0,
+    'capture_diagnostic_original_window_missing',
+  );
   try {
     await getContext('chrome');
-    const fixtureSelectedBeforeDiagnostic = await executeChromeSync(`
+    const fixtureSelectedBeforeDiagnostic = await executeChromeSync(
+      `
       const win = Services.wm.getMostRecentWindow('navigator:browser');
-      return win?.gBrowser?.selectedBrowser?.currentURI?.spec === arguments[0];`, [fixtureUrl]);
+      return win?.gBrowser?.selectedBrowser?.currentURI?.spec === arguments[0];`,
+      [fixtureUrl],
+    );
     await getContext('content');
     await wdPost(base, `/session/${sessionId}/window`, { handle: storageHandle });
     await getContext('content');
-    return await executeContentAsync(`
+    return await executeContentAsync(
+      `
       const done = arguments[arguments.length - 1];
       (async () => {
         const api = globalThis.browser ?? globalThis.chrome;
@@ -433,7 +697,9 @@ const diagnoseFixtureCapture = async fixtureUrl => {
           captureEnabled: enabled, sessionSetAccessLevelAvailable, statusType: response === null ? 'null' : typeof response === 'object' ? 'object' : 'other',
           pendingIdPresent: typeof response?.candidateId === 'string' && response.candidateId.length > 0,
           pendingCount: response && typeof response === 'object' ? 1 : 0 };
-      })().then(done, () => done({ fixtureTabFound: false, documentIdPresent: false, normalizedUrlMatch: false, fixtureSelectedBeforeDiagnostic: false, captureEnabled: true, sessionSetAccessLevelAvailable: false, statusType: 'error', pendingIdPresent: false, pendingCount: 0 }));`, [fixtureUrl, fixtureSelectedBeforeDiagnostic]);
+      })().then(done, () => done({ fixtureTabFound: false, documentIdPresent: false, normalizedUrlMatch: false, fixtureSelectedBeforeDiagnostic: false, captureEnabled: true, sessionSetAccessLevelAvailable: false, statusType: 'error', pendingIdPresent: false, pendingCount: 0 }));`,
+      [fixtureUrl, fixtureSelectedBeforeDiagnostic],
+    );
   } finally {
     await getContext('content');
     await wdPost(base, `/session/${sessionId}/window`, { handle: originalHandle });
@@ -449,54 +715,167 @@ const disposeOwnedNetworkObserver = async () => {
   await getContext('chrome');
   return adapter.disposeNetworkObserver();
 };
-const latestSequence = observed => observed.events.reduce(
-  (maximum, event) => Math.max(maximum, event.sequence || 0),
-  0,
-);
+const latestSequence = (observed) =>
+  observed.events.reduce((maximum, event) => Math.max(maximum, event.sequence || 0), 0);
 const addonLogoutAfter = (observed, startSequence) => {
-  const requests = observed.events.filter(event => event.sequence > startSequence
-    && event.phase === 'request' && event.owner === 'addon_principal'
-    && event.origin === DB && event.pathname === '/auth/v1/logout' && event.method === 'POST');
-  const matched = requests.map(request => ({
-    request,
-    response: observed.events.find(event => event.sequence > request.sequence
-      && event.phase === 'response' && event.owner === 'addon_principal'
-      && event.requestId === request.requestId && event.origin === DB
-      && event.pathname === '/auth/v1/logout' && event.method === 'POST'),
-  })).find(entry => entry.response?.status === 204);
+  const requests = observed.events.filter(
+    (event) =>
+      event.sequence > startSequence &&
+      event.phase === 'request' &&
+      event.owner === 'addon_principal' &&
+      event.origin === DB &&
+      event.pathname === '/auth/v1/logout' &&
+      event.method === 'POST',
+  );
+  const matched = requests
+    .map((request) => ({
+      request,
+      response: observed.events.find(
+        (event) =>
+          event.sequence > request.sequence &&
+          event.phase === 'response' &&
+          event.owner === 'addon_principal' &&
+          event.requestId === request.requestId &&
+          event.origin === DB &&
+          event.pathname === '/auth/v1/logout' &&
+          event.method === 'POST',
+      ),
+    }))
+    .find((entry) => entry.response?.status === 204);
   return {
     requestObserved: requests.length > 0,
     response204Observed: !!matched,
-    ...(matched && { requestSequence: matched.request.sequence, responseSequence: matched.response.sequence }),
+    ...(matched && {
+      requestSequence: matched.request.sequence,
+      responseSequence: matched.response.sequence,
+    }),
   };
 };
-const recordObservedNetwork = observed => {
-  const vaultEvents = observed.events.filter(event => event.origin === API && event.pathname.startsWith('/api/vault/'));
-  const isMaterialize = event => event.method === 'POST' && /^\/api\/vault\/browser-login\/[0-9a-f-]{36}\/materialize$/i.test(event.pathname);
-  const mutationEvents = vaultEvents.filter(event => ['PUT', 'PATCH', 'DELETE'].includes(event.method)
-    || (event.method === 'POST' && !((coreUpdateFillMode || multiAccountMode) && isMaterialize(event)) && !['/api/vault/browser-login/matches', '/api/vault/browser-login/capture-context'].includes(event.pathname)));
-  const mutationRequests = mutationEvents.filter(event => event.phase === 'request');
+const recordObservedNetwork = (observed) => {
+  const vaultEvents = observed.events.filter(
+    (event) => event.origin === API && event.pathname.startsWith('/api/vault/'),
+  );
+  const isMaterialize = (event) =>
+    event.method === 'POST' &&
+    /^\/api\/vault\/browser-login\/[0-9a-f-]{36}\/materialize$/i.test(event.pathname);
+  const mutationEvents = vaultEvents.filter(
+    (event) =>
+      ['PUT', 'PATCH', 'DELETE'].includes(event.method) ||
+      (event.method === 'POST' &&
+        !((coreUpdateFillMode || multiAccountMode) && isMaterialize(event)) &&
+        !['/api/vault/browser-login/matches', '/api/vault/browser-login/capture-context'].includes(
+          event.pathname,
+        )),
+  );
+  const mutationRequests = mutationEvents.filter((event) => event.phase === 'request');
   proof.vaultMutationRequests = mutationRequests.length;
-  const materializeRequests = vaultEvents.filter(event => event.phase === 'request' && isMaterialize(event));
+  const materializeRequests = vaultEvents.filter(
+    (event) => event.phase === 'request' && isMaterialize(event),
+  );
   proof.vaultMaterializeRequests = materializeRequests.length;
   if (coreUpdateFillMode) {
     const ownedId = proof.ownedFixtureIds?.length === 1 ? proof.ownedFixtureIds[0] : null;
-    const created = mutationRequests.filter(event => event.owner === 'addon_principal' && event.method === 'POST' && event.pathname === '/api/vault/items');
-    const updated = mutationRequests.filter(event => ownedId && event.owner === 'addon_principal' && event.method === 'PUT' && event.pathname.split('/').length === 8 && event.pathname.startsWith(`/api/vault/items/${ownedId}/fields/`) && /\/fields\/[0-9a-f-]{36}\/value$/i.test(event.pathname));
-    const materialize = materializeRequests.filter(event => ownedId && event.owner === 'addon_principal' && event.pathname === `/api/vault/browser-login/${ownedId}/materialize`);
-    const successfulMaterialize = materialize.filter(request => vaultEvents.some(event => event.phase === 'response' && event.owner === 'addon_principal' && event.requestId === request.requestId && event.pathname === request.pathname && event.method === request.method && event.status >= 200 && event.status < 300));
-    proof.coreNetwork = { createRequests: created.length, ownedUpdateRequests: updated.length, ownedMaterializeRequests: materialize.length, successfulMaterializeResponses: successfulMaterialize.length, unexpectedWrites: mutationRequests.length - created.length - updated.length, unexpectedMaterializeRequests: materializeRequests.length - materialize.length };
-    proof.coreNetwork.ok = created.length === 1 && updated.length === 1 && materialize.length === 1 && successfulMaterialize.length === 1 && proof.coreNetwork.unexpectedWrites === 0 && proof.coreNetwork.unexpectedMaterializeRequests === 0;
+    const created = mutationRequests.filter(
+      (event) =>
+        event.owner === 'addon_principal' &&
+        event.method === 'POST' &&
+        event.pathname === '/api/vault/items',
+    );
+    const updated = mutationRequests.filter(
+      (event) =>
+        ownedId &&
+        event.owner === 'addon_principal' &&
+        event.method === 'PUT' &&
+        event.pathname.split('/').length === 8 &&
+        event.pathname.startsWith(`/api/vault/items/${ownedId}/fields/`) &&
+        /\/fields\/[0-9a-f-]{36}\/value$/i.test(event.pathname),
+    );
+    const materialize = materializeRequests.filter(
+      (event) =>
+        ownedId &&
+        event.owner === 'addon_principal' &&
+        event.pathname === `/api/vault/browser-login/${ownedId}/materialize`,
+    );
+    const successfulMaterialize = materialize.filter((request) =>
+      vaultEvents.some(
+        (event) =>
+          event.phase === 'response' &&
+          event.owner === 'addon_principal' &&
+          event.requestId === request.requestId &&
+          event.pathname === request.pathname &&
+          event.method === request.method &&
+          event.status >= 200 &&
+          event.status < 300,
+      ),
+    );
+    proof.coreNetwork = {
+      createRequests: created.length,
+      ownedUpdateRequests: updated.length,
+      ownedMaterializeRequests: materialize.length,
+      successfulMaterializeResponses: successfulMaterialize.length,
+      unexpectedWrites: mutationRequests.length - created.length - updated.length,
+      unexpectedMaterializeRequests: materializeRequests.length - materialize.length,
+    };
+    proof.coreNetwork.ok =
+      created.length === 1 &&
+      updated.length === 1 &&
+      materialize.length === 1 &&
+      successfulMaterialize.length === 1 &&
+      proof.coreNetwork.unexpectedWrites === 0 &&
+      proof.coreNetwork.unexpectedMaterializeRequests === 0;
   }
   if (multiAccountMode) {
     const owned = new Set(proof.ownedFixtureIds ?? []);
     const selectedId = proof.authenticator?.credentialItemId;
-    const created = mutationRequests.filter(event => event.owner === 'addon_principal' && event.method === 'POST' && event.pathname === '/api/vault/items');
-    const updated = mutationRequests.filter(event => event.owner === 'addon_principal' && event.method === 'PUT' && /^\/api\/vault\/items\/[0-9a-f-]{36}\/fields\/[0-9a-f-]{36}\/value$/i.test(event.pathname) && owned.has(selectedId) && event.pathname.split('/')[4] === selectedId);
-    const materialize = materializeRequests.filter(event => event.owner === 'addon_principal' && owned.has(selectedId) && event.pathname.split('/')[4] === selectedId);
-    const materialized2xx = materialize.filter(request => vaultEvents.some(event => event.phase === 'response' && event.owner === 'addon_principal' && event.requestId === request.requestId && event.method === request.method && event.pathname === request.pathname && event.status >= 200 && event.status < 300));
-    proof.multiNetwork = { createRequests: created.length, selectedUpdateRequests: updated.length, totalMaterializeRequests: materializeRequests.length, selectedMaterializeRequests: materialize.length, selectedMaterialize2xx: materialized2xx.length, unexpectedWrites: mutationRequests.length - created.length - updated.length };
-    proof.multiNetwork.ok = created.length === 4 && updated.length === 1 && materializeRequests.length === 1 && materialize.length === 1 && materialized2xx.length === 1 && proof.multiNetwork.unexpectedWrites === 0;
+    const created = mutationRequests.filter(
+      (event) =>
+        event.owner === 'addon_principal' &&
+        event.method === 'POST' &&
+        event.pathname === '/api/vault/items',
+    );
+    const updated = mutationRequests.filter(
+      (event) =>
+        event.owner === 'addon_principal' &&
+        event.method === 'PUT' &&
+        /^\/api\/vault\/items\/[0-9a-f-]{36}\/fields\/[0-9a-f-]{36}\/value$/i.test(
+          event.pathname,
+        ) &&
+        owned.has(selectedId) &&
+        event.pathname.split('/')[4] === selectedId,
+    );
+    const materialize = materializeRequests.filter(
+      (event) =>
+        event.owner === 'addon_principal' &&
+        owned.has(selectedId) &&
+        event.pathname.split('/')[4] === selectedId,
+    );
+    const materialized2xx = materialize.filter((request) =>
+      vaultEvents.some(
+        (event) =>
+          event.phase === 'response' &&
+          event.owner === 'addon_principal' &&
+          event.requestId === request.requestId &&
+          event.method === request.method &&
+          event.pathname === request.pathname &&
+          event.status >= 200 &&
+          event.status < 300,
+      ),
+    );
+    proof.multiNetwork = {
+      createRequests: created.length,
+      selectedUpdateRequests: updated.length,
+      totalMaterializeRequests: materializeRequests.length,
+      selectedMaterializeRequests: materialize.length,
+      selectedMaterialize2xx: materialized2xx.length,
+      unexpectedWrites: mutationRequests.length - created.length - updated.length,
+    };
+    proof.multiNetwork.ok =
+      created.length === 4 &&
+      updated.length === 1 &&
+      materializeRequests.length === 1 &&
+      materialize.length === 1 &&
+      materialized2xx.length === 1 &&
+      proof.multiNetwork.unexpectedWrites === 0;
   }
   proof.networkObserver = {
     captureContract: observed.captureContract,
@@ -507,27 +886,39 @@ const recordObservedNetwork = observed => {
     observerErrors: observed.observerErrors,
   };
 };
-const findExactButton = async label => {
-  const elements = await wdPost(base, `/session/${sessionId}/elements`, { using: 'css selector', value: 'button' });
+const findExactButton = async (label) => {
+  const elements = await wdPost(base, `/session/${sessionId}/elements`, {
+    using: 'css selector',
+    value: 'button',
+  });
   const matches = [];
   for (const entry of elements) {
     const id = entry['element-6066-11e4-a52e-4f735466cecf'];
-    const text = await wdGet(base, `/session/${sessionId}/element/${encodeURIComponent(id)}/property/textContent`);
+    const text = await wdGet(
+      base,
+      `/session/${sessionId}/element/${encodeURIComponent(id)}/property/textContent`,
+    );
     if (String(text).trim() === label) matches.push(id);
   }
   assert.ok(matches.length <= 1, 'button_label_ambiguous');
   return matches[0] ?? null;
 };
-const clickExactButton = async label => {
+const clickExactButton = async (label) => {
   const id = await waitUntil(() => findExactButton(label), 'button_label_not_ready', 15000);
   return wdPost(base, `/session/${sessionId}/element/${encodeURIComponent(id)}/click`, {});
 };
 const fillSelector = async (selector, text) => {
-  const entry = await wdPost(base, `/session/${sessionId}/element`, { using: 'css selector', value: selector });
+  const entry = await wdPost(base, `/session/${sessionId}/element`, {
+    using: 'css selector',
+    value: selector,
+  });
   const id = entry['element-6066-11e4-a52e-4f735466cecf'];
   assert.ok(id, 'webdriver_field_missing');
   await wdPost(base, `/session/${sessionId}/element/${encodeURIComponent(id)}/clear`, {});
-  await wdPost(base, `/session/${sessionId}/element/${encodeURIComponent(id)}/value`, { text, value: [...text] });
+  await wdPost(base, `/session/${sessionId}/element/${encodeURIComponent(id)}/value`, {
+    text,
+    value: [...text],
+  });
 };
 const api = async (url, options = {}) => {
   const parsed = new URL(url);
@@ -545,42 +936,94 @@ const items = async () => {
   assert.ok(Array.isArray(response.items), 'item_list_shape');
   return response.items;
 };
-const shaFileHex = async path => createHash('sha256').update(await readFile(path)).digest('hex');
-const persistOwnedCreateMutationKeys = async keys => {
+const shaFileHex = async (path) =>
+  createHash('sha256')
+    .update(await readFile(path))
+    .digest('hex');
+const persistOwnedCreateMutationKeys = async (keys) => {
   const combined = [...new Set([...(proof.ownedCreateMutationKeys ?? []), ...keys])];
-  assert.ok(combined.length <= 16 && combined.every(key => typeof key === 'string'
-    && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(key)), 'capture_save_receipt_keys_invalid');
+  assert.ok(
+    combined.length <= 16 &&
+      combined.every(
+        (key) =>
+          typeof key === 'string' &&
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(key),
+      ),
+    'capture_save_receipt_keys_invalid',
+  );
   proof.ownedCreateMutationKeys = combined;
   await persist();
 };
 async function verifyCaptureSaveCleanupSource() {
-  assert.equal(await shaFileHex(join(localSourceRoot, 'aidream/api/routers/vault.py')), localRouterHash, 'capture_save_router_hash_mismatch');
-  assert.equal(await shaFileHex(join(localSourceRoot, 'aidream/services/user_secrets/vault.py')), localServiceHash, 'capture_save_service_hash_mismatch');
+  assert.equal(
+    await shaFileHex(join(localSourceRoot, 'aidream/api/routers/vault.py')),
+    localRouterHash,
+    'capture_save_router_hash_mismatch',
+  );
+  assert.equal(
+    await shaFileHex(join(localSourceRoot, 'aidream/services/user_secrets/vault.py')),
+    localServiceHash,
+    'capture_save_service_hash_mismatch',
+  );
 }
 async function reconcileCaptureSaveReceipts(keys) {
-  assert.ok(Array.isArray(keys) && keys.length >= 1 && keys.length <= 16 && new Set(keys).size === keys.length, 'capture_save_receipt_keys_invalid');
+  assert.ok(
+    Array.isArray(keys) &&
+      keys.length >= 1 &&
+      keys.length <= 16 &&
+      new Set(keys).size === keys.length,
+    'capture_save_receipt_keys_invalid',
+  );
   const python = '/Users/armanisadeghi/code/aidream/.venv/bin/python';
   const reconciler = fileURLToPath(new URL('../reconcile-vault-canary.py', import.meta.url));
   let result;
   for (let attempt = 0; attempt < 3; attempt += 1) {
     try {
-      result = JSON.parse((await execFileAsync(python, [reconciler, userId, organizationId, ...keys], { cwd: '/Users/armanisadeghi/code/aidream', timeout: 15_000, maxBuffer: 32_768 })).stdout);
+      result = JSON.parse(
+        (
+          await execFileAsync(python, [reconciler, userId, organizationId, ...keys], {
+            cwd: '/Users/armanisadeghi/code/aidream',
+            timeout: 15_000,
+            maxBuffer: 32_768,
+          })
+        ).stdout,
+      );
       break;
     } catch (error) {
       let readError;
-      try { readError = JSON.parse(error?.stdout ?? '{}').error; } catch { /* Non-receipt failures are not retryable. */ }
+      try {
+        readError = JSON.parse(error?.stdout ?? '{}').error;
+      } catch {
+        /* Non-receipt failures are not retryable. */
+      }
       if (readError !== 'LockNotAvailableError' || attempt === 2) throw error;
       proof.receiptReadLockRetries = (proof.receiptReadLockRetries ?? 0) + 1;
       await persist();
       await delay(500 * (attempt + 1));
     }
   }
-  assert.ok(Array.isArray(result.results) && result.results.length === keys.length, 'capture_save_receipt_incomplete');
-  assert.ok(new Set(result.results.map(row => row.mutation_id)).size === keys.length
-    && result.results.every(row => keys.includes(row.mutation_id) && row.user_id === userId
-      && row.organization_id === null && row.retired === false), 'capture_save_receipt_actor_mismatch');
-  const ids = result.results.map(row => row.result_item_id);
-  assert.ok(ids.every(id => typeof id === 'string') && new Set(ids).size === ids.length && ids.every(id => !baselineIds.includes(id)), 'capture_save_receipt_scope_invalid');
+  assert.ok(
+    Array.isArray(result.results) && result.results.length === keys.length,
+    'capture_save_receipt_incomplete',
+  );
+  assert.ok(
+    new Set(result.results.map((row) => row.mutation_id)).size === keys.length &&
+      result.results.every(
+        (row) =>
+          keys.includes(row.mutation_id) &&
+          row.user_id === userId &&
+          row.organization_id === null &&
+          row.retired === false,
+      ),
+    'capture_save_receipt_actor_mismatch',
+  );
+  const ids = result.results.map((row) => row.result_item_id);
+  assert.ok(
+    ids.every((id) => typeof id === 'string') &&
+      new Set(ids).size === ids.length &&
+      ids.every((id) => !baselineIds.includes(id)),
+    'capture_save_receipt_scope_invalid',
+  );
   proof.ownedFixtureIds = [...new Set([...(proof.ownedFixtureIds ?? []), ...ids])];
   assert.ok(proof.ownedFixtureIds.length <= 16, 'capture_save_owned_item_capacity');
   await persist();
@@ -588,24 +1031,71 @@ async function reconcileCaptureSaveReceipts(keys) {
 }
 async function canonicalCleanupCaptureSave(keys, ids) {
   const sourceRoot = localSourceRoot;
-  assert.ok(sourceRoot && localRouterHash && localServiceHash, 'capture_save_cleanup_configuration_missing');
-  assert.equal(await shaFileHex(join(sourceRoot, 'aidream/api/routers/vault.py')), localRouterHash, 'capture_save_router_hash_mismatch');
-  assert.equal(await shaFileHex(join(sourceRoot, 'aidream/services/user_secrets/vault.py')), localServiceHash, 'capture_save_service_hash_mismatch');
-  const input = JSON.stringify({ token, userId, organizationId, createKeys: keys, baselineIds, provenIDs: ids, expectedRouterSha256: localRouterHash, expectedServiceSha256: localServiceHash, sourceRoot });
+  assert.ok(
+    sourceRoot && localRouterHash && localServiceHash,
+    'capture_save_cleanup_configuration_missing',
+  );
+  assert.equal(
+    await shaFileHex(join(sourceRoot, 'aidream/api/routers/vault.py')),
+    localRouterHash,
+    'capture_save_router_hash_mismatch',
+  );
+  assert.equal(
+    await shaFileHex(join(sourceRoot, 'aidream/services/user_secrets/vault.py')),
+    localServiceHash,
+    'capture_save_service_hash_mismatch',
+  );
+  const input = JSON.stringify({
+    token,
+    userId,
+    organizationId,
+    createKeys: keys,
+    baselineIds,
+    provenIDs: ids,
+    expectedRouterSha256: localRouterHash,
+    expectedServiceSha256: localServiceHash,
+    sourceRoot,
+  });
   assert.ok(Buffer.byteLength(input) < 32_768, 'capture_save_cleanup_input_capacity');
   const python = '/Users/armanisadeghi/code/aidream/.venv/bin/python';
   const cleanupPath = fileURLToPath(new URL('../cleanup-vault-canary.py', import.meta.url));
-  const result = await runBoundedCaptureSaveCleanupChild({ command: python, args: [cleanupPath], cwd: sourceRoot, input });
-  assert.ok(Array.isArray(result.attempts) && result.attempts.length === ids.length && result.attempts.every(row => ['already_cleaned', 'deleted_and_missing'].includes(row.terminal)), 'capture_save_cleanup_result_invalid');
-  assert.ok(new Set(result.attempts.map(row => row.id)).size === ids.length
-    && result.attempts.every(row => ids.includes(row.id)), 'capture_save_cleanup_target_mismatch');
+  const result = await runBoundedCaptureSaveCleanupChild({
+    command: python,
+    args: [cleanupPath],
+    cwd: sourceRoot,
+    input,
+  });
+  assert.ok(
+    Array.isArray(result.attempts) &&
+      result.attempts.length === ids.length &&
+      result.attempts.every((row) =>
+        ['already_cleaned', 'deleted_and_missing'].includes(row.terminal),
+      ),
+    'capture_save_cleanup_result_invalid',
+  );
+  assert.ok(
+    new Set(result.attempts.map((row) => row.id)).size === ids.length &&
+      result.attempts.every((row) => ids.includes(row.id)),
+    'capture_save_cleanup_target_mismatch',
+  );
   return result;
 }
-function runBoundedCaptureSaveCleanupChild({ command, args, cwd, input, timeoutMs = CAPTURE_SAVE_CLEANUP_TIMEOUT_MS }) {
+function runBoundedCaptureSaveCleanupChild({
+  command,
+  args,
+  cwd,
+  input,
+  timeoutMs = CAPTURE_SAVE_CLEANUP_TIMEOUT_MS,
+}) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, { cwd, stdio: ['pipe', 'pipe', 'ignore'] });
-    let stdout = ''; let terminalError = null; let closed = false;
-    const cleanupTimers = () => { clearTimeout(timeout); clearTimeout(killEscalation); };
+    let stdout = '';
+    let terminalError = null;
+    let closed = false;
+    const cleanupTimers = () => {
+      clearTimeout(timeout);
+      clearTimeout(killEscalation);
+    };
     const endAfterClose = (error, value) => {
       if (closed) return;
       terminalError ||= error;
@@ -615,10 +1105,11 @@ function runBoundedCaptureSaveCleanupChild({ command, args, cwd, input, timeoutM
       child.kill('SIGTERM');
     }, timeoutMs);
     const killEscalation = setTimeout(() => {
-      if (terminalError?.message === 'capture_save_cleanup_timeout' && !closed) child.kill('SIGKILL');
+      if (terminalError?.message === 'capture_save_cleanup_timeout' && !closed)
+        child.kill('SIGKILL');
     }, timeoutMs + CAPTURE_SAVE_CLEANUP_KILL_ESCALATION_MS);
     child.stdout.setEncoding('utf8');
-    child.stdout.on('data', chunk => {
+    child.stdout.on('data', (chunk) => {
       stdout += chunk;
       if (stdout.length > 32_768) {
         endAfterClose(new Error('capture_save_cleanup_output_refused'));
@@ -626,7 +1117,7 @@ function runBoundedCaptureSaveCleanupChild({ command, args, cwd, input, timeoutM
       }
     });
     child.once('error', () => endAfterClose(new Error('capture_save_cleanup_spawn_refused')));
-    child.once('close', code => {
+    child.once('close', (code) => {
       closed = true;
       cleanupTimers();
       if (terminalError) return reject(terminalError);
@@ -634,64 +1125,119 @@ function runBoundedCaptureSaveCleanupChild({ command, args, cwd, input, timeoutM
         const parsed = JSON.parse(stdout);
         if (code !== 0 || parsed?.ok !== true) reject(new Error('capture_save_cleanup_refused'));
         else resolve(parsed);
-      } catch { reject(new Error('capture_save_cleanup_output_refused')); }
+      } catch {
+        reject(new Error('capture_save_cleanup_output_refused'));
+      }
     });
     child.stdin.once('error', () => endAfterClose(new Error('capture_save_cleanup_stdin_refused')));
     child.stdin.end(input);
   });
 }
-const coreUpdateFillOptions = coreUpdateFillMode ? {
-  verifyOwnedItemValues: async ({ itemId, username, password, pageUrl }) => {
-    const checked = await verifySavedLogin({ itemId, username, password, pageUrl });
-    return checked.itemId === itemId;
-  },
-} : undefined;
-let multiAuthenticator;
-const multiAccountOptions = multiAccountMode ? {
-  selectedIndex: 1,
-  beforeUpdate: async ({ selected }) => {
-    const { createFirefoxAuthenticatorChecks } = await import('./authenticator-checks.mjs');
-    multiAuthenticator ??= createFirefoxAuthenticatorChecks({
-      request: async ({ method, path, body }) => {
-        const response = await fetch(`${API}/api/authenticator${path}`, {
-          method,
-          headers: { Authorization: `Bearer ${token}`, 'X-Organization-Id': organizationId, ...(body !== undefined && { 'content-type': 'application/json' }) },
-          ...(body !== undefined && { body: JSON.stringify(body) }), signal: AbortSignal.timeout(15_000),
-        });
-        return { status: response.status, body: response.status === 204 ? null : await response.json().catch(() => null) };
+const coreUpdateFillOptions = coreUpdateFillMode
+  ? {
+      verifyOwnedItemValues: async ({ itemId, username, password, pageUrl }) => {
+        const checked = await verifySavedLogin({ itemId, username, password, pageUrl });
+        return checked.itemId === itemId;
       },
-      persist,
-      proof,
-      getOwnedItemIds: () => [...(proof.ownedFixtureIds ?? [])],
-    });
-    await multiAuthenticator.beforeUpdate({ selected });
-  },
-  afterUpdate: async () => multiAuthenticator?.afterUpdate(),
-  beforeCleanup: async () => multiAuthenticator?.cleanup(),
-  verifyAccountValues: async ({ selected, accounts, nextPassword, pageUrl }) => {
-    let selectedUpdated = false; let unselectedUnchanged = true;
-    for (const account of accounts) {
-      const checked = await verifySavedLogin({ itemId: account.itemId, username: account.username || null, password: account.itemId === selected.itemId ? nextPassword : account.password, pageUrl });
-      if (account.itemId === selected.itemId) selectedUpdated = checked.itemId === selected.itemId;
-      else unselectedUnchanged &&= checked.itemId === account.itemId;
     }
-    return { selectedUpdated, unselectedUnchanged };
-  },
-} : undefined;
+  : undefined;
+let multiAuthenticator;
+const multiAccountOptions = multiAccountMode
+  ? {
+      selectedIndex: 1,
+      beforeUpdate: async ({ selected }) => {
+        const { createFirefoxAuthenticatorChecks } = await import('./authenticator-checks.mjs');
+        multiAuthenticator ??= createFirefoxAuthenticatorChecks({
+          request: async ({ method, path, body }) => {
+            const response = await fetch(`${API}/api/authenticator${path}`, {
+              method,
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'X-Organization-Id': organizationId,
+                ...(body !== undefined && { 'content-type': 'application/json' }),
+              },
+              ...(body !== undefined && { body: JSON.stringify(body) }),
+              signal: AbortSignal.timeout(15_000),
+            });
+            return {
+              status: response.status,
+              body: response.status === 204 ? null : await response.json().catch(() => null),
+            };
+          },
+          persist,
+          proof,
+          getOwnedItemIds: () => [...(proof.ownedFixtureIds ?? [])],
+        });
+        await multiAuthenticator.beforeUpdate({ selected });
+      },
+      afterUpdate: async () => multiAuthenticator?.afterUpdate(),
+      beforeCleanup: async () => multiAuthenticator?.cleanup(),
+      verifyAccountValues: async ({ selected, accounts, nextPassword, pageUrl }) => {
+        let selectedUpdated = false;
+        let unselectedUnchanged = true;
+        for (const account of accounts) {
+          const checked = await verifySavedLogin({
+            itemId: account.itemId,
+            username: account.username || null,
+            password: account.itemId === selected.itemId ? nextPassword : account.password,
+            pageUrl,
+          });
+          if (account.itemId === selected.itemId)
+            selectedUpdated = checked.itemId === selected.itemId;
+          else unselectedUnchanged &&= checked.itemId === account.itemId;
+        }
+        return { selectedUpdated, unselectedUnchanged };
+      },
+    }
+  : undefined;
 async function verifySavedLogin({ createMutationKey, itemId, username, password, pageUrl }) {
-  assert.ok(captureSaveMode && new URL(pageUrl).origin.startsWith('http://127.0.0.1:'), 'capture_save_readback_scope_invalid');
-  if (itemId) assert.ok(proof.ownedFixtureIds?.includes(itemId), 'capture_save_readback_item_not_owned');
-  else assert.ok(proof.ownedCreateMutationKeys?.includes(createMutationKey), 'capture_save_readback_key_not_owned');
+  assert.ok(
+    captureSaveMode && new URL(pageUrl).origin.startsWith('http://127.0.0.1:'),
+    'capture_save_readback_scope_invalid',
+  );
+  if (itemId)
+    assert.ok(proof.ownedFixtureIds?.includes(itemId), 'capture_save_readback_item_not_owned');
+  else
+    assert.ok(
+      proof.ownedCreateMutationKeys?.includes(createMutationKey),
+      'capture_save_readback_key_not_owned',
+    );
   const ids = itemId ? [itemId] : await reconcileCaptureSaveReceipts([createMutationKey]);
   assert.equal(ids.length, 1, 'capture_save_readback_item_count');
-  const id = ids[0]; assert.equal(typeof id, 'string', 'capture_save_readback_item_invalid');
+  const id = ids[0];
+  assert.equal(typeof id, 'string', 'capture_save_readback_item_invalid');
   proof.ownedFixtureIds = [...new Set([...(proof.ownedFixtureIds ?? []), id])];
   await persist();
-  const response = await fetch(`${API}/api/vault/browser-login/${encodeURIComponent(id)}/materialize`, { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'X-Organization-Id': organizationId, 'content-type': 'application/json' }, body: JSON.stringify({ page_url: pageUrl, tool_invocation_id: randomUUID(), client_build: 'vault-firefox-canary' }), signal: AbortSignal.timeout(30_000) });
+  const response = await fetch(
+    `${API}/api/vault/browser-login/${encodeURIComponent(id)}/materialize`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'X-Organization-Id': organizationId,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        page_url: pageUrl,
+        tool_invocation_id: randomUUID(),
+        client_build: 'vault-firefox-canary',
+      }),
+      signal: AbortSignal.timeout(30_000),
+    },
+  );
   assert.equal(response.status, 200, 'capture_save_readback_failed');
-  const value = await response.json(); assert.ok((value?.username ?? '') === (username ?? '') && value?.password === password, 'capture_save_readback_values_mismatch');
+  const value = await response.json();
+  assert.ok(
+    (value?.username ?? '') === (username ?? '') && value?.password === password,
+    'capture_save_readback_values_mismatch',
+  );
   const metadata = await api(`${API}/api/vault/items/${encodeURIComponent(id)}`);
-  assert.ok(metadata?.id === id && typeof metadata.display_name === 'string' && metadata.display_name.length > 0, 'capture_save_metadata_invalid');
+  assert.ok(
+    metadata?.id === id &&
+      typeof metadata.display_name === 'string' &&
+      metadata.display_name.length > 0,
+    'capture_save_metadata_invalid',
+  );
   return { itemId: id, targetName: metadata.display_name };
 }
 
@@ -705,14 +1251,22 @@ try {
   adminPassword = process.env.AI_ADMIN_PASSWORD;
   publishableKey = process.env.SUPABASE_MATRIX_PUBLISHABLE_KEY;
   assert.equal(adminEmail, 'admin@admin.com', 'admin_identity_configuration');
-  assert.ok(typeof adminPassword === 'string' && adminPassword.length > 0, 'admin_password_missing');
-  assert.ok(typeof publishableKey === 'string' && publishableKey.length > 20, 'publishable_key_missing');
+  assert.ok(
+    typeof adminPassword === 'string' && adminPassword.length > 0,
+    'admin_password_missing',
+  );
+  assert.ok(
+    typeof publishableKey === 'string' && publishableKey.length > 20,
+    'publishable_key_missing',
+  );
   proof.credentialsRead = true;
   await checkpoint('credentials_loaded');
 
   const port = await openPort();
   base = `http://127.0.0.1:${port}`;
-  driver = spawn(geckodriver, ['--allow-system-access', '--port', String(port)], { stdio: 'ignore' });
+  driver = spawn(geckodriver, ['--allow-system-access', '--port', String(port)], {
+    stdio: 'ignore',
+  });
   await new Promise((resolve, reject) => {
     driver.once('spawn', resolve);
     driver.once('error', () => reject(new Error('geckodriver_spawn_failed')));
@@ -722,77 +1276,142 @@ try {
   await checkpoint('driver_spawned');
   await checkpoint('session_create');
   await waitForDriver(base, driver);
-  const created = await wdPost(base, '/session', { capabilities: { alwaysMatch: {
-    browserName: 'firefox',
-    'moz:firefoxOptions': { binary: firefox, args: ['-headless'] },
-  } } });
+  const created = await wdPost(base, '/session', {
+    capabilities: {
+      alwaysMatch: {
+        browserName: 'firefox',
+        'moz:firefoxOptions': { binary: firefox, args: ['-headless'] },
+      },
+    },
+  });
   sessionId = created.sessionId;
   profile = created.capabilities?.['moz:profile'];
   assert.ok(typeof profile === 'string' && profile.length > 10, 'owned_profile_missing');
   proof.ownedProfilePath = profile;
   proof.sessionCreated = true;
   await checkpoint('owned_profile_created');
-  assert.equal(created.capabilities?.browserVersion, EXPECTED_RUNTIME.firefoxVersion, 'webdriver_firefox_version_mismatch');
+  assert.equal(
+    created.capabilities?.browserVersion,
+    EXPECTED_RUNTIME.firefoxVersion,
+    'webdriver_firefox_version_mismatch',
+  );
   for (const pid of await pidsContaining(profile)) ownedPids.add(pid);
   await getContext('chrome');
-  executeChromeSync = (script, args = []) => wdPost(base, `/session/${sessionId}/execute/sync`, { script, args });
-  const executeChromeAsync = (script, args = []) => wdPost(base, `/session/${sessionId}/execute/async`, { script, args });
-  const performKeyboardActions = async keys => {
-    assert.ok(keys.length === 1 && ['\uE011', '\uE015', '\uE007'].includes(keys[0]), 'keyboard_action_sequence_not_reviewed');
+  executeChromeSync = (script, args = []) =>
+    wdPost(base, `/session/${sessionId}/execute/sync`, { script, args });
+  const executeChromeAsync = (script, args = []) =>
+    wdPost(base, `/session/${sessionId}/execute/async`, { script, args });
+  const performKeyboardActions = async (keys) => {
+    assert.ok(
+      keys.length === 1 && ['\uE011', '\uE015', '\uE007'].includes(keys[0]),
+      'keyboard_action_sequence_not_reviewed',
+    );
     try {
-      await wdPost(base, `/session/${sessionId}/actions`, { actions: [{ type: 'key', id: 'matrx-keyboard',
-        actions: keys.flatMap(value => [{ type: 'keyDown', value }, { type: 'keyUp', value }]) }] });
-    } finally { await wdDelete(base, `/session/${sessionId}/actions`); }
+      await wdPost(base, `/session/${sessionId}/actions`, {
+        actions: [
+          {
+            type: 'key',
+            id: 'matrx-keyboard',
+            actions: keys.flatMap((value) => [
+              { type: 'keyDown', value },
+              { type: 'keyUp', value },
+            ]),
+          },
+        ],
+      });
+    } finally {
+      await wdDelete(base, `/session/${sessionId}/actions`);
+    }
   };
-  adapter = createFirefoxSidebarAdapter({ executeChromeSync, executeChromeAsync, performKeyboardActions, addonId: ADDON_ID });
+  adapter = createFirefoxSidebarAdapter({
+    executeChromeSync,
+    executeChromeAsync,
+    performKeyboardActions,
+    addonId: ADDON_ID,
+  });
   const [applicationIni, driverVersion] = await Promise.all([
-    readFile('/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/Firefox.app/Contents/Resources/application.ini', 'utf8'),
-    execFileAsync(geckodriver, ['--version']).then(result => result.stdout),
+    readFile(
+      '/Users/armanisadeghi/Library/Caches/matrx-vault-test/firefox-156.0/Firefox.app/Contents/Resources/application.ini',
+      'utf8',
+    ),
+    execFileAsync(geckodriver, ['--version']).then((result) => result.stdout),
   ]);
   const hostRuntime = {
     sourceRepository: applicationIni.match(/^SourceRepository=(.+)$/m)?.[1] ?? null,
     sourceStamp: applicationIni.match(/^SourceStamp=(.+)$/m)?.[1] ?? null,
     geckodriverVersion: driverVersion.match(/^geckodriver ([^ ]+)/)?.[1] ?? null,
   };
-  assert.equal(applicationIni.match(/^Version=(.+)$/m)?.[1], EXPECTED_RUNTIME.firefoxVersion, 'firefox_application_version_mismatch');
-  assert.equal(applicationIni.match(/^BuildID=(.+)$/m)?.[1], EXPECTED_RUNTIME.buildId, 'firefox_application_build_mismatch');
+  assert.equal(
+    applicationIni.match(/^Version=(.+)$/m)?.[1],
+    EXPECTED_RUNTIME.firefoxVersion,
+    'firefox_application_version_mismatch',
+  );
+  assert.equal(
+    applicationIni.match(/^BuildID=(.+)$/m)?.[1],
+    EXPECTED_RUNTIME.buildId,
+    'firefox_application_build_mismatch',
+  );
   proof.runtime = await adapter.attestRuntime(hostRuntime);
   proof.runtimeAttested = true;
   await persist();
 
   await checkpoint('addon_install');
-  assert.equal(await wdPost(base, `/session/${sessionId}/moz/addon/install`, { path: xpi, temporary: true }), ADDON_ID);
+  assert.equal(
+    await wdPost(base, `/session/${sessionId}/moz/addon/install`, { path: xpi, temporary: true }),
+    ADDON_ID,
+  );
   addonInstalled = true;
   proof.addonInstalledForRun = true;
   await persist();
-  const extensionBase = await waitUntil(async () => {
-    await getContext('chrome');
-    return executeChromeSync(`
+  const extensionBase = await waitUntil(
+    async () => {
+      await getContext('chrome');
+      return executeChromeSync(
+        `
       const policy = WebExtensionPolicy.getByID(arguments[0]);
-      return policy ? policy.getURL('') : null;`, [ADDON_ID]);
-  }, 'extension_policy_unavailable', 10_000);
+      return policy ? policy.getURL('') : null;`,
+        [ADDON_ID],
+      );
+    },
+    'extension_policy_unavailable',
+    10_000,
+  );
   assert.ok(extensionBase.startsWith('moz-extension://'), 'extension_base_invalid');
 
   await checkpoint('fresh_profile');
   await getContext('content');
   storageHandle = await wdGet(base, `/session/${sessionId}/window`);
   await wdPost(base, `/session/${sessionId}/url`, { url: `${extensionBase}options.html` });
-  const emptyStorage = await getStorage(['matrx.user.profile', 'matrx.auth.accessToken', 'matrx.org.active']);
-  assert.ok(emptyStorage && Object.keys(emptyStorage).length === 0, 'fresh_profile_auth_storage_not_empty');
+  const emptyStorage = await getStorage([
+    'matrx.user.profile',
+    'matrx.auth.accessToken',
+    'matrx.org.active',
+  ]);
+  assert.ok(
+    emptyStorage && Object.keys(emptyStorage).length === 0,
+    'fresh_profile_auth_storage_not_empty',
+  );
   proof.freshProfileAuthStorageEmpty = true;
   await persist();
 
   await checkpoint('network_observer_start');
   await getContext('chrome');
-  const observer = await adapter.startNetworkObserver({ origins: [AUTH_ORIGIN, API, DB], maxEvents: 1000 });
-  assert.equal(observer.captureContract, 'method_origin_path_status_owner_only_no_headers_query_body');
+  const observer = await adapter.startNetworkObserver({
+    origins: [AUTH_ORIGIN, API, DB],
+    maxEvents: 1000,
+  });
+  assert.equal(
+    observer.captureContract,
+    'method_origin_path_status_owner_only_no_headers_query_body',
+  );
   observerStarted = true;
   proof.networkObserverStarted = true;
   await persist();
 
   await checkpoint('oauth_popup');
   await getContext('content');
-  const popupHandle = (await wdPost(base, `/session/${sessionId}/window/new`, { type: 'tab' })).handle;
+  const popupHandle = (await wdPost(base, `/session/${sessionId}/window/new`, { type: 'tab' }))
+    .handle;
   await wdPost(base, `/session/${sessionId}/window`, { handle: popupHandle });
   await wdPost(base, `/session/${sessionId}/url`, { url: `${extensionBase}popup.html` });
   const beforeHandles = new Set(await wdGet(base, `/session/${sessionId}/window/handles`));
@@ -801,41 +1420,74 @@ try {
   await clickExactButton('Sign in');
   proof.popupSignInTrusted = true;
   await persist();
-  const authHandle = await waitUntil(async () => {
-    const handles = await wdGet(base, `/session/${sessionId}/window/handles`);
-    return handles.find(handle => !beforeHandles.has(handle));
-  }, 'oauth_window_not_opened', 15_000);
+  const authHandle = await waitUntil(
+    async () => {
+      const handles = await wdGet(base, `/session/${sessionId}/window/handles`);
+      return handles.find((handle) => !beforeHandles.has(handle));
+    },
+    'oauth_window_not_opened',
+    15_000,
+  );
   await wdPost(base, `/session/${sessionId}/window`, { handle: authHandle });
-  await waitUntil(async () => {
-    try { return new URL(await wdGet(base, `/session/${sessionId}/url`)).origin === AUTH_ORIGIN; }
-    catch { return false; }
-  }, 'oauth_expected_origin_timeout', 30_000);
+  await waitUntil(
+    async () => {
+      try {
+        return new URL(await wdGet(base, `/session/${sessionId}/url`)).origin === AUTH_ORIGIN;
+      } catch {
+        return false;
+      }
+    },
+    'oauth_expected_origin_timeout',
+    30_000,
+  );
   proof.oauthExpectedOrigin = true;
   await persist();
-  await waitUntil(async () => {
-    try {
-      await wdPost(base, `/session/${sessionId}/element`, { using: 'css selector', value: '#email' });
-      await wdPost(base, `/session/${sessionId}/element`, { using: 'css selector', value: '#password' });
-      return true;
-    } catch { return false; }
-  }, 'oauth_login_fields_unavailable', 30_000);
+  await waitUntil(
+    async () => {
+      try {
+        await wdPost(base, `/session/${sessionId}/element`, {
+          using: 'css selector',
+          value: '#email',
+        });
+        await wdPost(base, `/session/${sessionId}/element`, {
+          using: 'css selector',
+          value: '#password',
+        });
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    'oauth_login_fields_unavailable',
+    30_000,
+  );
   await checkpoint('oauth_credentials_ready');
   await fillSelector('#email', adminEmail);
   await fillSelector('#password', adminPassword);
   proof.oauthCredentialFieldsPopulated = true;
   await checkpoint('oauth_credentials_entered_before_submission');
   await clickExactButton('Sign in');
-  const consentDisposition = await waitUntil(async () => {
-    try {
-      await getContext('content');
-      await wdPost(base, `/session/${sessionId}/window`, { handle: authHandle });
-      const url = new URL(await wdGet(base, `/session/${sessionId}/url`));
-      if (url.origin === AUTH_ORIGIN && url.pathname.startsWith('/oauth/consent')) return 'consent_page';
-    } catch { /* The provider may close its window after an already-granted callback. */ }
-    const stored = await getStorage(['matrx.user.profile', 'matrx.auth.accessToken']);
-    return stored?.['matrx.user.profile']?.email === adminEmail && typeof stored?.['matrx.auth.accessToken'] === 'string' && stored['matrx.auth.accessToken'].length > 20
-      ? 'completed_callback' : null;
-  }, 'oauth_consent_or_callback_timeout', 30_000);
+  const consentDisposition = await waitUntil(
+    async () => {
+      try {
+        await getContext('content');
+        await wdPost(base, `/session/${sessionId}/window`, { handle: authHandle });
+        const url = new URL(await wdGet(base, `/session/${sessionId}/url`));
+        if (url.origin === AUTH_ORIGIN && url.pathname.startsWith('/oauth/consent'))
+          return 'consent_page';
+      } catch {
+        /* The provider may close its window after an already-granted callback. */
+      }
+      const stored = await getStorage(['matrx.user.profile', 'matrx.auth.accessToken']);
+      return stored?.['matrx.user.profile']?.email === adminEmail &&
+        typeof stored?.['matrx.auth.accessToken'] === 'string' &&
+        stored['matrx.auth.accessToken'].length > 20
+        ? 'completed_callback'
+        : null;
+    },
+    'oauth_consent_or_callback_timeout',
+    30_000,
+  );
   if (consentDisposition === 'consent_page') {
     await checkpoint('oauth_consent_ready');
     try {
@@ -850,36 +1502,67 @@ try {
   }
   await persist();
   await wdPost(base, `/session/${sessionId}/window`, { handle: popupHandle });
-  const session = await waitUntil(async () => {
-    const stored = await getStorage(['matrx.user.profile', 'matrx.auth.accessToken', 'matrx.org.active']);
-    return stored?.['matrx.user.profile']?.email && stored?.['matrx.auth.accessToken'] ? stored : null;
-  }, 'extension_auth_storage_timeout', 30_000, 250);
+  const session = await waitUntil(
+    async () => {
+      const stored = await getStorage([
+        'matrx.user.profile',
+        'matrx.auth.accessToken',
+        'matrx.org.active',
+      ]);
+      return stored?.['matrx.user.profile']?.email && stored?.['matrx.auth.accessToken']
+        ? stored
+        : null;
+    },
+    'extension_auth_storage_timeout',
+    30_000,
+    250,
+  );
   assert.equal(session['matrx.user.profile'].email, adminEmail, 'extension_identity_mismatch');
   const observedToken = session['matrx.auth.accessToken'];
-  assert.ok(typeof observedToken === 'string' && observedToken.length > 20, 'extension_token_missing');
+  assert.ok(
+    typeof observedToken === 'string' && observedToken.length > 20,
+    'extension_token_missing',
+  );
   token = observedToken;
-  proof.authStorage = { profilePresent: true, accessTokenPresent: true, activeOrganizationPresent: !!session['matrx.org.active'] };
+  proof.authStorage = {
+    profilePresent: true,
+    accessTokenPresent: true,
+    activeOrganizationPresent: !!session['matrx.org.active'],
+  };
   await checkpoint('oauth_callback_storage_observed');
-  const identity = await api(`${DB}/auth/v1/user`, { headers: { apikey: publishableKey }, label: 'identity' });
+  const identity = await api(`${DB}/auth/v1/user`, {
+    headers: { apikey: publishableKey },
+    label: 'identity',
+  });
   assert.equal(identity.email, adminEmail, 'independent_admin_email_mismatch');
   assert.equal(identity.id, session['matrx.user.profile'].id, 'independent_admin_id_mismatch');
   userId = identity.id;
   proof.oauthConsentAuthorized = true;
-  proof.oauthConsentEvidence = proof.oauthConsentDisposition === 'authorize_clicked'
-    ? 'trusted_authorize_click_plus_independent_identity'
-    : 'completed_callback_plus_independent_identity';
+  proof.oauthConsentEvidence =
+    proof.oauthConsentDisposition === 'authorize_clicked'
+      ? 'trusted_authorize_click_plus_independent_identity'
+      : 'completed_callback_plus_independent_identity';
   proof.independentAdminIdentity = true;
   await persist();
 
   await checkpoint('native_sidebar_open');
   await wdPost(base, `/session/${sessionId}/window`, { handle: popupHandle });
   await getContext('content');
-  await waitUntil(async () => {
-    try { await findExactButton('Open chat'); return true; } catch { return false; }
-  }, 'popup_open_chat_unavailable', 15_000);
+  await waitUntil(
+    async () => {
+      try {
+        await findExactButton('Open chat');
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    'popup_open_chat_unavailable',
+    15_000,
+  );
   await clickExactButton('Open chat');
   await getContext('chrome');
-  await adapter.waitFor(document => !!document.querySelector('button[title="Chat"]'));
+  await adapter.waitFor((document) => !!document.querySelector('button[title="Chat"]'));
   proof.nativeSidebarOpenedByPopupGesture = true;
   await persist();
 
@@ -888,77 +1571,115 @@ try {
     await checkpoint('organization_selection');
     await getContext('chrome');
     await adapter.trustedClick('button[title="Settings"]', {
-      outcome: document => document.querySelector('button[title="Settings"]')?.getAttribute('data-state') === 'active',
+      outcome: (document) =>
+        document.querySelector('button[title="Settings"]')?.getAttribute('data-state') === 'active',
     });
-    await adapter.waitFor(document => [...document.querySelectorAll('span')].some(node => node.textContent?.trim() === 'Settings'));
-    proof.organizationSelection = { settingsReady: true, sectionOpenedByTrustedClick: false, actingAsVisible: false };
+    await adapter.waitFor((document) =>
+      [...document.querySelectorAll('span')].some(
+        (node) => node.textContent?.trim() === 'Settings',
+      ),
+    );
+    proof.organizationSelection = {
+      settingsReady: true,
+      sectionOpenedByTrustedClick: false,
+      actingAsVisible: false,
+    };
     await persist();
-    let organizationState = await adapter.waitFor((document, label) => {
-      const headings = [...document.querySelectorAll('button[aria-controls]')]
-        .filter(node => node.textContent?.trim() === label);
-      if (headings.length !== 1) return null;
-      const controlled = document.getElementById(headings[0].getAttribute('aria-controls'));
-      const candidates = controlled ? [...controlled.querySelectorAll('[role="combobox"]')] : [];
-      if (candidates.length !== 1) return null;
-      const regionSelector = '#' + document.defaultView.CSS.escape(controlled.id);
-      const rect = candidates[0].getBoundingClientRect();
-      return {
-        headerSelector: 'button[aria-controls=' + JSON.stringify(controlled.id) + ']',
-        comboboxSelector: regionSelector + ' [role=combobox]',
-        actingAsVisible: controlled.getAttribute('aria-hidden') !== 'true' && !controlled.inert
-          && rect.width > 0 && rect.height > 0,
-      };
-    }, ['Organization']);
+    let organizationState = await adapter.waitFor(
+      (document, label) => {
+        const headings = [...document.querySelectorAll('button[aria-controls]')].filter(
+          (node) => node.textContent?.trim() === label,
+        );
+        if (headings.length !== 1) return null;
+        const controlled = document.getElementById(headings[0].getAttribute('aria-controls'));
+        const candidates = controlled ? [...controlled.querySelectorAll('[role="combobox"]')] : [];
+        if (candidates.length !== 1) return null;
+        const regionSelector = '#' + document.defaultView.CSS.escape(controlled.id);
+        const rect = candidates[0].getBoundingClientRect();
+        return {
+          headerSelector: 'button[aria-controls=' + JSON.stringify(controlled.id) + ']',
+          comboboxSelector: regionSelector + ' [role=combobox]',
+          actingAsVisible:
+            controlled.getAttribute('aria-hidden') !== 'true' &&
+            !controlled.inert &&
+            rect.width > 0 &&
+            rect.height > 0,
+        };
+      },
+      ['Organization'],
+    );
     if (!organizationState.actingAsVisible) {
       await adapter.trustedClick(organizationState.headerSelector, {
         outcome: (document, label) => {
-          const headings = [...document.querySelectorAll('button[aria-controls]')]
-            .filter(node => node.textContent?.trim() === label);
+          const headings = [...document.querySelectorAll('button[aria-controls]')].filter(
+            (node) => node.textContent?.trim() === label,
+          );
           if (headings.length !== 1) return false;
           const controlled = document.getElementById(headings[0].getAttribute('aria-controls'));
           const combobox = controlled?.querySelector('[role="combobox"]');
           const rect = combobox?.getBoundingClientRect();
-          return controlled?.getAttribute('aria-hidden') !== 'true' && !controlled?.inert
-            && !!rect && rect.width > 0 && rect.height > 0;
+          return (
+            controlled?.getAttribute('aria-hidden') !== 'true' &&
+            !controlled?.inert &&
+            !!rect &&
+            rect.width > 0 &&
+            rect.height > 0
+          );
         },
         outcomeArgs: ['Organization'],
       });
       proof.organizationSelection.sectionOpenedByTrustedClick = true;
       await persist();
-      organizationState = await adapter.waitFor((document, selector) => {
-        const combobox = document.querySelector(selector);
-        const rect = combobox?.getBoundingClientRect();
-        return !!combobox && !!rect && rect.width > 0 && rect.height > 0;
-      }, [organizationState.comboboxSelector]).then(() => organizationState);
+      organizationState = await adapter
+        .waitFor(
+          (document, selector) => {
+            const combobox = document.querySelector(selector);
+            const rect = combobox?.getBoundingClientRect();
+            return !!combobox && !!rect && rect.width > 0 && rect.height > 0;
+          },
+          [organizationState.comboboxSelector],
+        )
+        .then(() => organizationState);
     }
     proof.organizationSelection.actingAsVisible = true;
     await persist();
     const dismissSetupNotice = async () => {
-    const setupNoticeDismiss = await adapter.evaluate(document => {
-      const notices = [...document.querySelectorAll('[role="alert"]')].filter(node =>
-        node.querySelector('.font-medium')?.textContent?.trim() === 'Capture list unavailable'
-        && (node.textContent.includes('NO_ORGANIZATION') || node.textContent.includes('no workspace is selected')));
-      if (notices.length !== 1) return null;
-      const button = notices[0].querySelector('button[aria-label="Dismiss"]');
-      if (!button) return null;
-      const segments = [];
-      let node = button;
-      while (node && node !== document.body) {
-        const parent = node.parentElement;
-        if (!parent) return null;
-        segments.unshift(`${node.tagName.toLowerCase()}:nth-child(${[...parent.children].indexOf(node) + 1})`);
-        node = parent;
-      }
-      return `body > ${segments.join(' > ')}`;
-    });
-    if (setupNoticeDismiss) {
-      await adapter.trustedClick(setupNoticeDismiss, {
-        outcome: document => ![...document.querySelectorAll('[role="alert"]')].some(node =>
-          node.querySelector('.font-medium')?.textContent?.trim() === 'Capture list unavailable'
-          && (node.textContent.includes('NO_ORGANIZATION') || node.textContent.includes('no workspace is selected'))),
+      const setupNoticeDismiss = await adapter.evaluate((document) => {
+        const notices = [...document.querySelectorAll('[role="alert"]')].filter(
+          (node) =>
+            node.querySelector('.font-medium')?.textContent?.trim() ===
+              'Capture list unavailable' &&
+            (node.textContent.includes('NO_ORGANIZATION') ||
+              node.textContent.includes('no workspace is selected')),
+        );
+        if (notices.length !== 1) return null;
+        const button = notices[0].querySelector('button[aria-label="Dismiss"]');
+        if (!button) return null;
+        const segments = [];
+        let node = button;
+        while (node && node !== document.body) {
+          const parent = node.parentElement;
+          if (!parent) return null;
+          segments.unshift(
+            `${node.tagName.toLowerCase()}:nth-child(${[...parent.children].indexOf(node) + 1})`,
+          );
+          node = parent;
+        }
+        return `body > ${segments.join(' > ')}`;
       });
-    }
-    return !!setupNoticeDismiss;
+      if (setupNoticeDismiss) {
+        await adapter.trustedClick(setupNoticeDismiss, {
+          outcome: (document) =>
+            ![...document.querySelectorAll('[role="alert"]')].some(
+              (node) =>
+                node.querySelector('.font-medium')?.textContent?.trim() ===
+                  'Capture list unavailable' &&
+                (node.textContent.includes('NO_ORGANIZATION') ||
+                  node.textContent.includes('no workspace is selected')),
+            ),
+        });
+      }
+      return !!setupNoticeDismiss;
     };
     const initialNoticeDismissed = await dismissSetupNotice();
     proof.organizationSelection.initialMissingOrganizationNotice = initialNoticeDismissed;
@@ -970,11 +1691,16 @@ try {
       for (let attempt = 0; attempt < 2; attempt += 1) {
         try {
           press = await adapter.trustedPress(organizationComboboxSelector, {
-            outcome: document => document.querySelector('[role="listbox"]') !== null,
+            outcome: (document) => document.querySelector('[role="listbox"]') !== null,
           });
           break;
         } catch (error) {
-          if (attempt !== 0 || error?.message !== 'trusted_press_target_occluded' || !(await dismissSetupNotice())) throw error;
+          if (
+            attempt !== 0 ||
+            error?.message !== 'trusted_press_target_occluded' ||
+            !(await dismissSetupNotice())
+          )
+            throw error;
           proof.organizationSelection.lateSetupNoticeDismissed = true;
           await persist();
         }
@@ -984,30 +1710,56 @@ try {
     } catch (error) {
       if (error?.diagnostic) {
         proof.organizationSelection.comboboxTrustedPress = error.diagnostic;
-        proof.organizationSelection.occlusion = await adapter.evaluate((document, selector) => {
-          const target = document.querySelector(selector);
-          const rect = target?.getBoundingClientRect();
-          const hit = rect ? document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2) : null;
-          const chain = [];
-          for (let node = hit; node && chain.length < 5; node = node.parentElement) {
-            const style = document.defaultView.getComputedStyle(node);
-            chain.push({ tag: node.tagName, role: node.getAttribute('role'), className: node.className,
-              inert: node.inert, pointerEvents: style.pointerEvents, position: style.position, zIndex: style.zIndex });
-          }
-          return { chain, alertCount: document.querySelectorAll('[role="alert"]').length,
-            dialogCount: document.querySelectorAll('[role="dialog"]').length };
-        }, [organizationComboboxSelector]);
+        proof.organizationSelection.occlusion = await adapter.evaluate(
+          (document, selector) => {
+            const target = document.querySelector(selector);
+            const rect = target?.getBoundingClientRect();
+            const hit = rect
+              ? document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)
+              : null;
+            const chain = [];
+            for (let node = hit; node && chain.length < 5; node = node.parentElement) {
+              const style = document.defaultView.getComputedStyle(node);
+              chain.push({
+                tag: node.tagName,
+                role: node.getAttribute('role'),
+                className: node.className,
+                inert: node.inert,
+                pointerEvents: style.pointerEvents,
+                position: style.position,
+                zIndex: style.zIndex,
+              });
+            }
+            return {
+              chain,
+              alertCount: document.querySelectorAll('[role="alert"]').length,
+              dialogCount: document.querySelectorAll('[role="dialog"]').length,
+            };
+          },
+          [organizationComboboxSelector],
+        );
         await persist();
       }
       throw error;
     }
-    await adapter.waitFor(document => document.activeElement?.getAttribute('role') === 'option');
-    proof.organizationSelection.keyboardSelection = await adapter.trustedKeyboardSelectExact(organizationComboboxSelector, 'AI Matrx');
+    await adapter.waitFor((document) => document.activeElement?.getAttribute('role') === 'option');
+    proof.organizationSelection.keyboardSelection = await adapter.trustedKeyboardSelectExact(
+      organizationComboboxSelector,
+      'AI Matrx',
+    );
     for (const key of ['exactLabelSelected', 'trustedOwnedEvents', 'listenerStateRemoved'])
-      assert.equal(proof.organizationSelection.keyboardSelection[key], true, 'organization_keyboard_acceptance_failed');
+      assert.equal(
+        proof.organizationSelection.keyboardSelection[key],
+        true,
+        'organization_keyboard_acceptance_failed',
+      );
     await persist();
     organizationSelectedByTrustedUi = true;
-    active = await waitUntil(async () => (await getStorage(['matrx.org.active']))?.['matrx.org.active'], 'organization_storage_timeout', 15_000);
+    active = await waitUntil(
+      async () => (await getStorage(['matrx.org.active']))?.['matrx.org.active'],
+      'organization_storage_timeout',
+      15_000,
+    );
   }
   assert.equal(active.name, 'AI Matrx', 'organization_name_mismatch');
   assert.ok(typeof active.id === 'string' && active.id.length > 10, 'organization_id_missing');
@@ -1022,17 +1774,33 @@ try {
 
   await checkpoint('baseline');
   const baseline = await items();
-  baselineIds = baseline.map(item => item.id).sort();
+  baselineIds = baseline.map((item) => item.id).sort();
   baselineHash = baselineMetadataSha256(baseline);
   proof.baseline = { itemCount: baselineIds.length, metadataSha256: baselineHash };
-  proof.baselineItems = baseline.map(entry => ({ id: entry.id, metadataSha256: baselineMetadataSha256([entry]) }));
+  proof.baselineItems = baseline.map((entry) => ({
+    id: entry.id,
+    metadataSha256: baselineMetadataSha256([entry]),
+  }));
   if (reconciliationMode) {
     assert.equal(baselineIds.length, 34, 'reconciliation_clean_baseline_count_changed');
-    assert.equal(baselineHash, CLEAN_BASELINE_SHA256, 'reconciliation_clean_baseline_metadata_changed');
-    proof.historicalReconciliation = { failedRunId: FAILED_CHROME_RUN, failedProofSha256: FAILED_CHROME_PROOF_SHA256, ownedFixtureStatuses: [], cleanBaselineBefore: true, cleanBaselineAfter: false };
+    assert.equal(
+      baselineHash,
+      CLEAN_BASELINE_SHA256,
+      'reconciliation_clean_baseline_metadata_changed',
+    );
+    proof.historicalReconciliation = {
+      failedRunId: FAILED_CHROME_RUN,
+      failedProofSha256: FAILED_CHROME_PROOF_SHA256,
+      ownedFixtureStatuses: [],
+      cleanBaselineBefore: true,
+      cleanBaselineAfter: false,
+    };
     for (const id of historicalFixtureIds) {
       assert.ok(!baselineIds.includes(id), 'historical_fixture_in_current_baseline');
-      const response = await fetch(`${API}/api/vault/items/${id}`, { headers: { Authorization: `Bearer ${token}`, 'X-Organization-Id': organizationId }, signal: AbortSignal.timeout(30_000) });
+      const response = await fetch(`${API}/api/vault/items/${id}`, {
+        headers: { Authorization: `Bearer ${token}`, 'X-Organization-Id': organizationId },
+        signal: AbortSignal.timeout(30_000),
+      });
       proof.historicalReconciliation.ownedFixtureStatuses.push({ id, status: response.status });
       await persist();
       assert.equal(response.status, 404, 'historical_fixture_still_present');
@@ -1044,36 +1812,72 @@ try {
   await getContext('chrome');
   const beforeVault = await readOwnedNetworkObserver();
   const beforeVaultSequence = latestSequence(beforeVault);
-  proof.nativeVaultNetwork = { startSequence: beforeVaultSequence, addonItemsRequestObserved: false, addonItems2xxObserved: false };
+  proof.nativeVaultNetwork = {
+    startSequence: beforeVaultSequence,
+    addonItemsRequestObserved: false,
+    addonItems2xxObserved: false,
+  };
   await persist();
   await adapter.trustedClick('button[title="Vault"]', {
-    outcome: document => document.querySelector('button[title="Vault"]')?.getAttribute('data-state') === 'active',
+    outcome: (document) =>
+      document.querySelector('button[title="Vault"]')?.getAttribute('data-state') === 'active',
   });
   const vaultReadyDeadline = Date.now() + 30_000;
   let vaultReady = false;
   do {
     const snapshot = await readOwnedNetworkObserver();
-    const requests = snapshot.events.filter(event => event.sequence > beforeVaultSequence
-      && event.phase === 'request' && event.owner === 'addon_principal'
-      && event.origin === API && event.pathname === '/api/vault/items' && event.method === 'GET');
-    const response = requests.map(request => snapshot.events.find(event => event.sequence > request.sequence
-      && event.phase === 'response' && event.owner === 'addon_principal'
-      && event.requestId === request.requestId && event.method === request.method && event.pathname === request.pathname && event.status >= 200 && event.status < 300)).find(Boolean);
-    const ui = await adapter.evaluate(document => {
+    const requests = snapshot.events.filter(
+      (event) =>
+        event.sequence > beforeVaultSequence &&
+        event.phase === 'request' &&
+        event.owner === 'addon_principal' &&
+        event.origin === API &&
+        event.pathname === '/api/vault/items' &&
+        event.method === 'GET',
+    );
+    const response = requests
+      .map((request) =>
+        snapshot.events.find(
+          (event) =>
+            event.sequence > request.sequence &&
+            event.phase === 'response' &&
+            event.owner === 'addon_principal' &&
+            event.requestId === request.requestId &&
+            event.method === request.method &&
+            event.pathname === request.pathname &&
+            event.status >= 200 &&
+            event.status < 300,
+        ),
+      )
+      .find(Boolean);
+    const ui = await adapter.evaluate((document) => {
       const text = document.body.innerText;
-      const heading = [...document.querySelectorAll('span')].some(node => node.textContent?.trim() === 'Vault');
+      const heading = [...document.querySelectorAll('span')].some(
+        (node) => node.textContent?.trim() === 'Vault',
+      );
       const search = document.querySelector('input[placeholder="Search logins"]') !== null;
       const loading = document.querySelector('svg.animate-spin') !== null;
       const vaultError = document.querySelector('[class*="border-amber-500"]') !== null;
-      return { settled: heading && search && text.includes('Mine (') && text.includes('Shared (') && !loading, vaultError };
+      return {
+        settled:
+          heading && search && text.includes('Mine (') && text.includes('Shared (') && !loading,
+        vaultError,
+      };
     });
     if (requests.length > 0) proof.nativeVaultNetwork.addonItemsRequestObserved = true;
     if (response) {
       proof.nativeVaultNetwork.addonItems2xxObserved = true;
       proof.nativeVaultNetwork.responseStatus = response.status;
     }
-    if (proof.nativeVaultNetwork.addonItemsRequestObserved && proof.nativeVaultNetwork.addonItems2xxObserved
-      && ui.settled && ui.vaultError === false) { vaultReady = true; break; }
+    if (
+      proof.nativeVaultNetwork.addonItemsRequestObserved &&
+      proof.nativeVaultNetwork.addonItems2xxObserved &&
+      ui.settled &&
+      ui.vaultError === false
+    ) {
+      vaultReady = true;
+      break;
+    }
     await delay(Math.min(100, Math.max(1, vaultReadyDeadline - Date.now())));
   } while (Date.now() < vaultReadyDeadline);
   assert.equal(vaultReady, true, 'native_vault_items_not_observed_settled');
@@ -1083,7 +1887,16 @@ try {
   if (generatorMode) {
     await checkpoint('generator_ui');
     const { runFirefoxGeneratorChecks } = await import('./generator-acceptance.mjs');
-    await runFirefoxGeneratorChecks({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, proof });
+    await runFirefoxGeneratorChecks({
+      adapter,
+      base,
+      sessionId,
+      wdPost,
+      wdGet,
+      wdDelete,
+      getContext,
+      proof,
+    });
     assert.equal(proof.generator?.ok, true, 'firefox_generator_incomplete');
     await persist();
   }
@@ -1091,7 +1904,18 @@ try {
   if (captureMode) {
     await checkpoint('capture_decisions');
     const { runFirefoxCaptureDecisionChecks } = await import('./capture-decisions.mjs');
-    await runFirefoxCaptureDecisionChecks({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, diagnoseFixtureCapture, proof });
+    await runFirefoxCaptureDecisionChecks({
+      adapter,
+      base,
+      sessionId,
+      wdPost,
+      wdGet,
+      wdDelete,
+      getContext,
+      probeFixtureBridge,
+      diagnoseFixtureCapture,
+      proof,
+    });
     assert.equal(proof.captureDecisions?.ok, true, 'firefox_capture_decisions_incomplete');
     await persist();
   }
@@ -1101,23 +1925,54 @@ try {
     await verifyCaptureSaveCleanupSource();
     assert.ok(baselineIds.length <= 64, 'capture_save_cleanup_baseline_capacity');
     const placeholders = Array.from({ length: 16 }, () => randomUUID());
-    assert.ok(Buffer.byteLength(JSON.stringify({ token, userId, organizationId, createKeys: placeholders,
-      baselineIds, provenIDs: placeholders, expectedRouterSha256: localRouterHash,
-      expectedServiceSha256: localServiceHash, sourceRoot: localSourceRoot })) < 32768, 'capture_save_cleanup_input_capacity');
+    assert.ok(
+      Buffer.byteLength(
+        JSON.stringify({
+          token,
+          userId,
+          organizationId,
+          createKeys: placeholders,
+          baselineIds,
+          provenIDs: placeholders,
+          expectedRouterSha256: localRouterHash,
+          expectedServiceSha256: localServiceHash,
+          sourceRoot: localSourceRoot,
+        }),
+      ) < 32768,
+      'capture_save_cleanup_input_capacity',
+    );
     const { runFirefoxCaptureSaveCheck } = await import('./capture-save-acceptance.mjs');
-    await runFirefoxCaptureSaveCheck({ adapter, base, sessionId, wdPost, wdGet, wdDelete, getContext, probeFixtureBridge, persistOwnedCreateMutationKeys, verifySavedLogin, coreUpdateFill: coreUpdateFillOptions, multiAccount: multiAccountOptions, proof });
+    await runFirefoxCaptureSaveCheck({
+      adapter,
+      base,
+      sessionId,
+      wdPost,
+      wdGet,
+      wdDelete,
+      getContext,
+      probeFixtureBridge,
+      persistOwnedCreateMutationKeys,
+      verifySavedLogin,
+      coreUpdateFill: coreUpdateFillOptions,
+      multiAccount: multiAccountOptions,
+      proof,
+    });
     const keys = proof.ownedCreateMutationKeys;
     if (multiAccountMode) await multiAccountOptions.beforeCleanup();
     const proven = await reconcileCaptureSaveReceipts(keys);
     const cleanup = await canonicalCleanupCaptureSave(keys, proven);
     captureSaveCleanupAttempted = true;
-    proof.captureSave.cleanup = { receiptCount: proven.length, canonicalRoute: cleanup.route, receiptReconciled: true };
+    proof.captureSave.cleanup = {
+      receiptCount: proven.length,
+      canonicalRoute: cleanup.route,
+      receiptReconciled: true,
+    };
     await persist();
   }
 
   await checkpoint('reconcile');
   const final = await items();
-  assert.deepEqual(final.map(item => item.id).sort(), baselineIds, 'vault_baseline_ids_changed');
+  assert.deepEqual(final.map((item) => item.id).sort(), baselineIds, 'vault_baseline_ids_changed');
   assert.equal(baselineMetadataSha256(final), baselineHash, 'vault_baseline_metadata_changed');
   proof.baselineReconciled = true;
   if (reconciliationMode) proof.historicalReconciliation.cleanBaselineAfter = true;
@@ -1126,21 +1981,29 @@ try {
   await checkpoint('native_sign_out');
   await getContext('chrome');
   await adapter.trustedClick('button[title="Settings"]', {
-    outcome: document => document.querySelector('button[title="Settings"]')?.getAttribute('data-state') === 'active',
+    outcome: (document) =>
+      document.querySelector('button[title="Settings"]')?.getAttribute('data-state') === 'active',
   });
-  const signOutSelector = await adapter.evaluate((document, label) => {
-    const candidates = [...document.querySelectorAll('button')].filter(node => node.textContent?.trim() === label);
-    if (candidates.length !== 1) return null;
-    const segments = [];
-    let node = candidates[0];
-    while (node && node !== document.body) {
-      const parent = node.parentElement;
-      if (!parent) return null;
-      segments.unshift(`${node.tagName.toLowerCase()}:nth-child(${[...parent.children].indexOf(node) + 1})`);
-      node = parent;
-    }
-    return `body > ${segments.join(' > ')}`;
-  }, ['Sign out']);
+  const signOutSelector = await adapter.evaluate(
+    (document, label) => {
+      const candidates = [...document.querySelectorAll('button')].filter(
+        (node) => node.textContent?.trim() === label,
+      );
+      if (candidates.length !== 1) return null;
+      const segments = [];
+      let node = candidates[0];
+      while (node && node !== document.body) {
+        const parent = node.parentElement;
+        if (!parent) return null;
+        segments.unshift(
+          `${node.tagName.toLowerCase()}:nth-child(${[...parent.children].indexOf(node) + 1})`,
+        );
+        node = parent;
+      }
+      return `body > ${segments.join(' > ')}`;
+    },
+    ['Sign out'],
+  );
   assert.ok(typeof signOutSelector === 'string', 'settings_sign_out_not_unique');
   const beforeSignOut = await readOwnedNetworkObserver();
   signOutStartSequence = latestSequence(beforeSignOut);
@@ -1152,14 +2015,24 @@ try {
   };
   await persist();
   await adapter.trustedClick(signOutSelector, {
-    outcome: document => [...document.querySelectorAll('button')]
-      .some(node => node.textContent?.trim() === 'Sign in'),
+    outcome: (document) =>
+      [...document.querySelectorAll('button')].some(
+        (node) => node.textContent?.trim() === 'Sign in',
+      ),
     timeoutMs: 15_000,
   });
-  const cleared = await waitUntil(async () => {
-    const stored = await getStorage(['matrx.user.profile', 'matrx.auth.accessToken', 'matrx.org.active']);
-    return stored && Object.keys(stored).length === 0;
-  }, 'local_auth_storage_not_cleared', 15_000);
+  const cleared = await waitUntil(
+    async () => {
+      const stored = await getStorage([
+        'matrx.user.profile',
+        'matrx.auth.accessToken',
+        'matrx.org.active',
+      ]);
+      return stored && Object.keys(stored).length === 0;
+    },
+    'local_auth_storage_not_cleared',
+    15_000,
+  );
   assert.ok(cleared);
   proof.localExtensionSignedOut = true;
   await persist();
@@ -1187,7 +2060,9 @@ try {
   } else {
     proof.nativeSignOutNetwork.nodeFallbackAttempted = true;
     const logout = await fetch(`${DB}/auth/v1/logout?scope=local`, {
-      method: 'POST', headers: { apikey: publishableKey, Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(15_000),
+      method: 'POST',
+      headers: { apikey: publishableKey, Authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(15_000),
     });
     proof.nativeSignOutNetwork.nodeFallbackStatus = logout.status;
     assert.equal(logout.status, 204, 'remote_session_revoke_failed');
@@ -1200,9 +2075,15 @@ try {
   await checkpoint('network_observer_final');
   const observed = await readOwnedNetworkObserver();
   recordObservedNetwork(observed);
-  if (coreUpdateFillMode) assert.equal(proof.coreNetwork?.ok, true, 'core_update_fill_network_contract_failed');
-  if (multiAccountMode) assert.equal(proof.multiNetwork?.ok, true, 'multi_account_network_contract_failed');
-  assert.equal(proof.vaultMutationRequests, multiAccountMode ? 5 : coreUpdateFillMode ? 2 : captureSaveMode ? 1 : 0, 'vault_mutation_count_unexpected');
+  if (coreUpdateFillMode)
+    assert.equal(proof.coreNetwork?.ok, true, 'core_update_fill_network_contract_failed');
+  if (multiAccountMode)
+    assert.equal(proof.multiNetwork?.ok, true, 'multi_account_network_contract_failed');
+  assert.equal(
+    proof.vaultMutationRequests,
+    multiAccountMode ? 5 : coreUpdateFillMode ? 2 : captureSaveMode ? 1 : 0,
+    'vault_mutation_count_unexpected',
+  );
   assert.equal(observed.dropped, 0, 'network_observer_dropped_events');
   assert.equal(observed.observerErrors, 0, 'network_observer_errors');
   const disposed = await disposeOwnedNetworkObserver();
@@ -1213,7 +2094,11 @@ try {
 } catch (error) {
   failure = error;
   proof.errorCode = safeErrorCode(error);
-  try { await persist(); } catch { proof.persistenceFailureDuringCleanup = true; }
+  try {
+    await persist();
+  } catch {
+    proof.persistenceFailureDuringCleanup = true;
+  }
 } finally {
   proof.phaseBeforeCleanup = proof.phase;
   await cleanupCheckpoint('recover_owned_auth');
@@ -1233,11 +2118,15 @@ try {
       }
     } catch {
       proof.cleanupAuthStorage = { unavailable: true, readFromExactOwnedProfile: false };
-  }
+    }
     await cleanupCheckpoint('owned_auth_recovery_finished');
   }
-  if (captureSaveMode && adapter && proof.captureSave?.receiptObserverStarted
-    && !proof.captureSave.receiptObserverDisposed) {
+  if (
+    captureSaveMode &&
+    adapter &&
+    proof.captureSave?.receiptObserverStarted &&
+    !proof.captureSave.receiptObserverDisposed
+  ) {
     try {
       await getContext('chrome');
       const receipt = await adapter.freezeVaultCreateReceiptObserver();
@@ -1248,17 +2137,31 @@ try {
       const disposed = await adapter.disposeVaultCreateReceiptObserver();
       proof.captureSave.receiptObserverDisposed = disposed.disposed === true;
       proof.captureSave.receiptCustodyRecovered = true;
-    } catch { proof.captureSave.receiptCustodyRecovered = false; }
+    } catch {
+      proof.captureSave.receiptCustodyRecovered = false;
+    }
   }
-  if (captureSaveMode && !captureSaveCleanupAttempted && token && userId && organizationId
-    && Array.isArray(proof.ownedCreateMutationKeys) && proof.ownedCreateMutationKeys.length > 0) {
+  if (
+    captureSaveMode &&
+    !captureSaveCleanupAttempted &&
+    token &&
+    userId &&
+    organizationId &&
+    Array.isArray(proof.ownedCreateMutationKeys) &&
+    proof.ownedCreateMutationKeys.length > 0
+  ) {
     try {
       if (multiAccountMode) await multiAccountOptions?.beforeCleanup();
       const proven = await reconcileCaptureSaveReceipts(proof.ownedCreateMutationKeys);
       const cleanup = await canonicalCleanupCaptureSave(proof.ownedCreateMutationKeys, proven);
       captureSaveCleanupAttempted = true;
       proof.captureSave ||= {};
-      proof.captureSave.cleanup = { receiptCount: proven.length, canonicalRoute: cleanup.route, receiptReconciled: true, recoveredAfterFailure: true };
+      proof.captureSave.cleanup = {
+        receiptCount: proven.length,
+        canonicalRoute: cleanup.route,
+        receiptReconciled: true,
+        recoveredAfterFailure: true,
+      };
     } catch {
       proof.captureSave ||= {};
       proof.captureSave.cleanup = { receiptReconciled: false, recoveredAfterFailure: true };
@@ -1267,11 +2170,19 @@ try {
   if (token && baselineIds && baselineHash && !proof.baselineReconciled) {
     try {
       const final = await items();
-      proof.baselineReconciled = JSON.stringify(final.map(item => item.id).sort()) === JSON.stringify(baselineIds)
-        && baselineMetadataSha256(final) === baselineHash;
-    } catch { proof.baselineReconciled = false; }
+      proof.baselineReconciled =
+        JSON.stringify(final.map((item) => item.id).sort()) === JSON.stringify(baselineIds) &&
+        baselineMetadataSha256(final) === baselineHash;
+    } catch {
+      proof.baselineReconciled = false;
+    }
   }
-  if (token && !proof.remoteSessionRevoked && observerStarted && Number.isInteger(signOutStartSequence)) {
+  if (
+    token &&
+    !proof.remoteSessionRevoked &&
+    observerStarted &&
+    Number.isInteger(signOutStartSequence)
+  ) {
     try {
       const observed = await readOwnedNetworkObserver();
       const addonLogout = addonLogoutAfter(observed, signOutStartSequence);
@@ -1291,11 +2202,15 @@ try {
     try {
       proof.cleanupNodeRevocationFallbackAttempted = true;
       const response = await fetch(`${DB}/auth/v1/logout?scope=local`, {
-        method: 'POST', headers: { apikey: publishableKey, Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(15_000),
+        method: 'POST',
+        headers: { apikey: publishableKey, Authorization: `Bearer ${token}` },
+        signal: AbortSignal.timeout(15_000),
       });
       proof.cleanupRevocationStatus = response.status;
       proof.remoteSessionRevoked = response.status === 204;
-    } catch { proof.remoteSessionRevoked = false; }
+    } catch {
+      proof.remoteSessionRevoked = false;
+    }
   } else if (!token) {
     proof.remoteAuthRevocation = proof.authenticationAttempted
       ? 'not_observed_no_owned_bearer'
@@ -1311,10 +2226,12 @@ try {
         observerErrors: observed.observerErrors,
       };
       const disposed = await disposeOwnedNetworkObserver();
-      proof.networkObserverDisposed = disposed.disposed === true
-        && observed.dropped === 0 && observed.observerErrors === 0;
+      proof.networkObserverDisposed =
+        disposed.disposed === true && observed.dropped === 0 && observed.observerErrors === 0;
       observerStarted = false;
-    } catch { proof.networkObserverDisposed = false; }
+    } catch {
+      proof.networkObserverDisposed = false;
+    }
   }
   await cleanupCheckpoint('network_observer_disposal_finished');
   if (addonInstalled && sessionId) {
@@ -1322,17 +2239,28 @@ try {
       await getContext('chrome');
       await wdPost(base, `/session/${sessionId}/moz/addon/uninstall`, { id: ADDON_ID });
       proof.addonUninstalled = true;
-    } catch { proof.addonUninstalled = false; }
+    } catch {
+      proof.addonUninstalled = false;
+    }
   }
   await cleanupCheckpoint('addon_uninstall_finished');
   if (sessionId) {
-    try { await wdDelete(base, `/session/${sessionId}`); proof.sessionDeleted = true; sessionId = undefined; }
-    catch { proof.sessionDeleted = false; }
+    try {
+      await wdDelete(base, `/session/${sessionId}`);
+      proof.sessionDeleted = true;
+      sessionId = undefined;
+    } catch {
+      proof.sessionDeleted = false;
+    }
   }
   await cleanupCheckpoint('webdriver_session_delete_finished');
   proof.cleanupErrors = [];
   const cleanupStep = async (code, operation) => {
-    try { await operation(); } catch { proof.cleanupErrors.push(code); }
+    try {
+      await operation();
+    } catch {
+      proof.cleanupErrors.push(code);
+    }
   };
   await cleanupStep('driver_termination_failed', async () => {
     const running = () => driver?.pid && driver.exitCode === null && driver.signalCode === null;
@@ -1366,38 +2294,85 @@ try {
   if (acceptanceLease) {
     await cleanupStep('vault_acceptance_lease_cleanup_failed', async () => {
       if (captureSaveMode && proof.captureSave?.receiptObserverStarted) {
-        assert.ok(proof.baselineReconciled && proof.networkObserverDisposed
-          && proof.captureSave.receiptObserverDisposed
-          && (proof.captureSave.cleanup?.receiptReconciled === true
-            || (proof.vaultMutationRequests === 0 && (proof.ownedCreateMutationKeys?.length ?? 0) === 0)),
-        'capture_save_lease_retained_for_cleanup');
+        assert.ok(
+          proof.baselineReconciled &&
+            proof.networkObserverDisposed &&
+            proof.captureSave.receiptObserverDisposed &&
+            (proof.captureSave.cleanup?.receiptReconciled === true ||
+              (proof.vaultMutationRequests === 0 &&
+                (proof.ownedCreateMutationKeys?.length ?? 0) === 0)),
+          'capture_save_lease_retained_for_cleanup',
+        );
       }
-      assert.ok(proof.allOwnedPidsGone && proof.profileRemoved && proof.firefoxExited && proof.driverExited
-        && (!proof.authenticationAttempted || proof.remoteSessionRevoked), 'vault_acceptance_lease_retained_for_cleanup');
+      assert.ok(
+        proof.allOwnedPidsGone &&
+          proof.profileRemoved &&
+          proof.firefoxExited &&
+          proof.driverExited &&
+          (!proof.authenticationAttempted || proof.remoteSessionRevoked),
+        'vault_acceptance_lease_retained_for_cleanup',
+      );
       await acceptanceLease.release();
       proof.acceptanceLeaseReleased = true;
     });
   }
   const required = [
-    'acceptanceLeaseAcquired', 'acceptanceLeaseReleased',
-    'runtimeAttested', 'freshProfileAuthStorageEmpty', 'popupSignInTrusted', 'oauthExpectedOrigin',
-    'oauthConsentAuthorized', 'independentAdminIdentity', 'organizationSelectedByUiOrSingleMembership',
-    'nativeSidebarOpenedByPopupGesture', 'nativeVaultVisible', 'baselineReconciled',
-    'localExtensionSignedOut', 'remoteSessionRevoked', 'networkObserverDisposed',
-    'addonUninstalled', 'sessionDeleted', 'driverExited', 'firefoxExited', 'profileRemoved', 'allOwnedPidsGone',
+    'acceptanceLeaseAcquired',
+    'acceptanceLeaseReleased',
+    'runtimeAttested',
+    'freshProfileAuthStorageEmpty',
+    'popupSignInTrusted',
+    'oauthExpectedOrigin',
+    'oauthConsentAuthorized',
+    'independentAdminIdentity',
+    'organizationSelectedByUiOrSingleMembership',
+    'nativeSidebarOpenedByPopupGesture',
+    'nativeVaultVisible',
+    'baselineReconciled',
+    'localExtensionSignedOut',
+    'remoteSessionRevoked',
+    'networkObserverDisposed',
+    'addonUninstalled',
+    'sessionDeleted',
+    'driverExited',
+    'firefoxExited',
+    'profileRemoved',
+    'allOwnedPidsGone',
   ];
-  proof.ok = !failure && !proof.persistenceFailureDuringCleanup && proof.cleanupErrors.length === 0
-    && (captureSaveMode
-      ? proof.vaultMutationRequests === (multiAccountMode ? 5 : coreUpdateFillMode ? 2 : 1) && (!coreUpdateFillMode || (proof.coreUpdateFill?.ok === true && proof.coreNetwork?.ok === true)) && (!multiAccountMode || (proof.multiAccount?.ok === true && proof.multiNetwork?.ok === true && proof.authenticator?.enrolled === true && proof.authenticator?.preserved === true && proof.authenticator?.cleanupProven === true)) && proof.captureSave?.ok === true && proof.captureSave?.cleanup?.receiptReconciled === true
-      : proof.vaultMutationRequests === 0)
-    && (!generatorMode || proof.generator?.ok === true)
-    && (!captureMode || proof.captureDecisions?.ok === true)
-    && (!reconciliationMode || (proof.historicalReconciliation?.cleanBaselineBefore === true && proof.historicalReconciliation?.cleanBaselineAfter === true && proof.historicalReconciliation.ownedFixtureStatuses.length === 4 && proof.historicalReconciliation.ownedFixtureStatuses.every(item => item.status === 404)))
-    && required.every(key => proof[key] === true);
+  proof.ok =
+    !failure &&
+    !proof.persistenceFailureDuringCleanup &&
+    proof.cleanupErrors.length === 0 &&
+    (captureSaveMode
+      ? proof.vaultMutationRequests === (multiAccountMode ? 5 : coreUpdateFillMode ? 2 : 1) &&
+        (!coreUpdateFillMode ||
+          (proof.coreUpdateFill?.ok === true && proof.coreNetwork?.ok === true)) &&
+        (!multiAccountMode ||
+          (proof.multiAccount?.ok === true &&
+            proof.multiNetwork?.ok === true &&
+            proof.authenticator?.enrolled === true &&
+            proof.authenticator?.preserved === true &&
+            proof.authenticator?.cleanupProven === true)) &&
+        proof.captureSave?.ok === true &&
+        proof.captureSave?.cleanup?.receiptReconciled === true
+      : proof.vaultMutationRequests === 0) &&
+    (!generatorMode || proof.generator?.ok === true) &&
+    (!captureMode || proof.captureDecisions?.ok === true) &&
+    (!reconciliationMode ||
+      (proof.historicalReconciliation?.cleanBaselineBefore === true &&
+        proof.historicalReconciliation?.cleanBaselineAfter === true &&
+        proof.historicalReconciliation.ownedFixtureStatuses.length === 4 &&
+        proof.historicalReconciliation.ownedFixtureStatuses.every(
+          (item) => item.status === 404,
+        ))) &&
+    required.every((key) => proof[key] === true);
   proof.terminalPhase = proof.ok ? 'complete' : proof.phaseBeforeCleanup;
-  if (!proof.ok && !proof.errorCode) proof.errorCode = 'firefox_readonly_acceptance_cleanup_incomplete';
+  if (!proof.ok && !proof.errorCode)
+    proof.errorCode = 'firefox_readonly_acceptance_cleanup_incomplete';
   proof.ownedProcessCount = ownedPids.size;
-  try { await persist(); } catch {
+  try {
+    await persist();
+  } catch {
     proof.ok = false;
     failure ||= new Error('terminal_proof_persistence_failed');
     process.stderr.write('firefox_terminal_proof_persistence_failed\n');

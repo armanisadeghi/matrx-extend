@@ -212,11 +212,11 @@ function VaultSession({
                 ? panel.status === 'loading'
                   ? 'Checking saved logins…'
                   : UNAVAILABLE_PAGE_REMEDY
-              : panel.status === 'none'
-                ? NO_FOCUSED_LOGIN_REMEDY
-              : !login.supported && panel.status !== 'ready'
-                ? 'Browser login is not available in this browser yet.'
-                : null
+                : panel.status === 'none'
+                  ? NO_FOCUSED_LOGIN_REMEDY
+                  : !login.supported && panel.status !== 'ready'
+                    ? 'Browser login is not available in this browser yet.'
+                    : null
           }
           pageUrl={panel.status === 'ready' ? panel.pageUrl : pageUrl}
           matches={panel.status === 'ready' ? panel.matches : vault.matches}
