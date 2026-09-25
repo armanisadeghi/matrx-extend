@@ -414,6 +414,7 @@ async function use(
     if (!isLive(offer)) return useResponse('stale');
     return result ? useResponse(result.status) : useResponse('unavailable');
   } finally {
+    // biome-ignore lint/style/noParameterAssign: erase the caller-supplied secret immediately after injection.
     value = '';
     consume(offer);
   }

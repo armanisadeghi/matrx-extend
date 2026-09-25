@@ -39,13 +39,10 @@
     "rules": {
       "recommended": true,
       "style": {
-        "useConst": "warn",
+        "useConst": "error",
         "useTemplate": "warn",
         "noNonNullAssertion": "warn",
-        "noUnusedTemplateLiteral": "warn",
-        "useSingleVarDeclarator": "warn",
-        "useDefaultParameterLast": "warn",
-        "noParameterAssign": "warn"
+        "noUnusedTemplateLiteral": "warn"
       },
       "suspicious": {
         "noExplicitAny": "warn",
@@ -64,8 +61,7 @@
       "correctness": {
         "noUnusedVariables": "warn",
         "noUnusedImports": "warn",
-        "useExhaustiveDependencies": "warn",
-        "noUnsafeFinally": "warn"
+        "useExhaustiveDependencies": "warn"
       },
       "a11y": {
         "useButtonType": "warn",
@@ -81,6 +77,51 @@
       }
     }
   },
+  "overrides": [
+    {
+      "include": [
+        "tests/browser/vault-authenticator-preservation.test.cjs",
+        "tests/browser/vault-owned-cdp.cjs"
+      ],
+      "linter": { "rules": { "style": { "useConst": "warn" } } }
+    },
+    {
+      "include": [
+        "tests/browser/vault-generator-port.test.cjs",
+        "tests/browser/vault-password-change-acceptance.cjs",
+        "tests/browser/vault-headless-clipboard-runtime-probe.cjs",
+        "tests/browser/vault-save-response-loss.test.cjs",
+        "tests/browser/vault-network-journal.test.cjs",
+        "tests/browser/vault-save-response-loss.cjs",
+        "tests/browser/vault-network-journal.cjs",
+        "tests/browser/vault-readonly-cleanup.test.cjs",
+        "tests/browser/vault-realbrowser-acceptance.cjs",
+        "tests/browser/firefox-vault/read-only-auth-driver.mjs"
+      ],
+      "linter": { "rules": { "style": { "useSingleVarDeclarator": "warn" } } }
+    },
+    {
+      "include": [
+        "tests/browser/vault-owned-cdp.cjs",
+        "tests/browser/vault-network-journal.test.cjs"
+      ],
+      "linter": { "rules": { "style": { "useDefaultParameterLast": "warn" } } }
+    },
+    {
+      "include": [
+        "tests/browser/firefox-vault/generator-acceptance.mjs",
+        "tests/browser/vault-headless-clipboard-runtime-probe.cjs",
+        "tests/browser/vault-saved-login-acceptance.cjs",
+        "tests/browser/vault-generator-acceptance.cjs",
+        "tests/browser/vault-realbrowser-acceptance.cjs"
+      ],
+      "linter": { "rules": { "correctness": { "noUnsafeFinally": "warn" } } }
+    },
+    {
+      "include": ["tests/browser/firefox-vault/read-only-auth-driver.mjs"],
+      "linter": { "rules": { "correctness": { "noUnusedVariables": "warn" } } }
+    }
+  ],
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
