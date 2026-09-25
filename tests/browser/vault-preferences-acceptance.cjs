@@ -101,6 +101,17 @@ const armQuietFillAfterFocus = async ({
   await click();
   return { focus, armed: true, targetResolution };
 };
+// Keep post-accessibility browser actions attributable when a Playwright error
+// would otherwise be reduced to the generic canary_failure receipt code.
+// The wrapper deliberately changes no assertion, wait, or timeout behavior.
+const runNamedPreferenceStep = async ({ checkpoint, step, operation }) => {
+  checkpoint(`preferences_on_page_${step}`);
+  try {
+    return await operation();
+  } catch {
+    throw new Error(`preferences_on_page_${step}_failed`);
+  }
+};
 
 async function tabFor(worker, url, wait) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
@@ -718,15 +729,37 @@ exports.runVaultPreferencesChecks = async ({
       focusCredential,
       focusUnrelated,
     });
-    await focusUnrelated();
-    await focusCredential();
-    await page
-      .locator('#matrx-inline-login-suggestion')
-      .waitFor({ state: 'attached', timeout: 15000 });
-    await focusUnrelated();
-    await page
-      .locator('#matrx-inline-login-suggestion')
-      .waitFor({ state: 'detached', timeout: 15000 });
+    await runNamedPreferenceStep({
+      checkpoint,
+      step: 'focus_unrelated_after_accessibility',
+      operation: focusUnrelated,
+    });
+    await runNamedPreferenceStep({
+      checkpoint,
+      step: 'focus_credential_after_accessibility',
+      operation: focusCredential,
+    });
+    await runNamedPreferenceStep({
+      checkpoint,
+      step: 'inline_chooser_attach_after_credential_focus',
+      operation: () =>
+        page
+          .locator('#matrx-inline-login-suggestion')
+          .waitFor({ state: 'attached', timeout: 15000 }),
+    });
+    await runNamedPreferenceStep({
+      checkpoint,
+      step: 'focus_unrelated_for_chooser_detach',
+      operation: focusUnrelated,
+    });
+    await runNamedPreferenceStep({
+      checkpoint,
+      step: 'inline_chooser_detach_after_unrelated_focus',
+      operation: () =>
+        page
+          .locator('#matrx-inline-login-suggestion')
+          .waitFor({ state: 'detached', timeout: 15000 }),
+    });
     evidence.onPageFocusedCredentialOnly = true;
 
     checkpoint('preferences_disable_on_page');
@@ -782,3 +815,4 @@ exports._classifyQuietFillTerminal = classifyQuietFillTerminal;
 exports._mergeQuietFillDiagnostic = mergeQuietFillDiagnostic;
 exports._waitForQuietFillMessageTarget = waitForQuietFillMessageTarget;
 exports._armQuietFillAfterFocus = armQuietFillAfterFocus;
+exports._runNamedPreferenceStep = runNamedPreferenceStep;

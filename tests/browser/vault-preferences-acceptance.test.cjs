@@ -7,6 +7,7 @@ const {
   _mergeQuietFillDiagnostic: mergeQuietFillDiagnostic,
   _waitForQuietFillMessageTarget: waitForQuietFillMessageTarget,
   _armQuietFillAfterFocus: armQuietFillAfterFocus,
+  _runNamedPreferenceStep: runNamedPreferenceStep,
 } = require('./vault-preferences-acceptance.cjs');
 
 const completeFocus = {
@@ -150,4 +151,19 @@ test('quiet Fill separates CDP click delivery, panel routing, product refusal, a
       classifyQuietFillTerminal({ counters, focus: completeFocus, ui, fixture }),
       expected,
     );
+});
+
+test('post-accessibility on-page steps persist a safe phase and failure code', async () => {
+  const phases = [];
+  await assert.rejects(
+    runNamedPreferenceStep({
+      checkpoint: (phase) => phases.push(phase),
+      step: 'inline_chooser_attach_after_credential_focus',
+      operation: async () => {
+        throw new Error('playwright timeout details must not enter the receipt');
+      },
+    }),
+    { message: 'preferences_on_page_inline_chooser_attach_after_credential_focus_failed' },
+  );
+  assert.deepEqual(phases, ['preferences_on_page_inline_chooser_attach_after_credential_focus']);
 });
