@@ -1919,7 +1919,12 @@ async function openGenuineSidePanel(extensionId, popup, { existing = false } = {
     },
   };
 }
-async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWindowId) {
+async function openSidePanelFromActionPopup(
+  extensionId,
+  fixturePage,
+  fixtureWindowId,
+  workerFacade = worker,
+) {
   // This is intentionally not a normal popup.html tab. The action popup is
   // opened for the already-focused fixture window, then its existing product
   // control receives real target-directed CDP input.
@@ -1934,7 +1939,7 @@ async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWin
         .filter((target) => target.url === targetUrl)
         .map((target) => target.targetId),
     );
-    const result = await worker.evaluate(async (windowId) => {
+    const result = await workerFacade.evaluate(async (windowId) => {
       if (typeof chrome.action?.openPopup !== 'function') return { outcome: 'api_unavailable' };
       try {
         await chrome.action.openPopup({ windowId });
@@ -2003,7 +2008,7 @@ async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWin
     }
     let contexts = [];
     for (let attempt = 0; attempt < 30; attempt += 1) {
-      contexts = await worker.evaluate(() =>
+      contexts = await workerFacade.evaluate(() =>
         chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }),
       );
       if (
@@ -3044,6 +3049,7 @@ async function materializedPassword(id) {
             extensionId,
             fixturePage,
             active.windowId,
+            replacement,
           );
           assert(reopened.opened && reopened.panel, 'lifecycle_reenabled_panel_missing');
           realPanel = reopened.panel;
