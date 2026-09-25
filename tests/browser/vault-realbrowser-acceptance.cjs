@@ -806,6 +806,39 @@ async function generatorSessionLocked() {
   assert(typeof parsed?.screenLocked === 'boolean', 'generator_focus_session_state_unavailable');
   return parsed.screenLocked;
 }
+function hasEarlyReadOnlyNoWriteCleanup(record) {
+  const journal = record?.networkJournal;
+  const terminal = journal?.postDisposalSnapshot;
+  return (
+    record?.schema === 3 &&
+    record?.mode === 'read_only_admission' &&
+    record.admission?.noFixtureWrites === true &&
+    record.vaultMutationRequests === 0 &&
+    record.vaultItemPosts?.total === 0 &&
+    record.ownedCreateMutationKeys?.length === 0 &&
+    record.ownedFixtureIds?.length === 0 &&
+    journal?.ownerVerified === true &&
+    journal?.journalSemanticVersion === 2 &&
+    journal?.beforeCleanupSnapshot?.vaultMutationRequests === 0 &&
+    journal?.beforeCleanupSnapshot?.observerError === false &&
+    journal?.beforeCleanupSnapshot?.transportFatal === false &&
+    journal?.beforeCleanupSnapshot?.sendFailureClass === 'none' &&
+    journal?.beforeCleanupSnapshot?.pendingSetupCount === 0 &&
+    terminal?.vaultMutationRequests === 0 &&
+    terminal?.observerError === false &&
+    terminal?.transportFatal === false &&
+    terminal?.sendFailureClass === 'none' &&
+    terminal?.cleanupPhase === 'complete' &&
+    terminal?.transportCloseStatus === 'closed' &&
+    terminal?.remainingOwnedSessionCount === 0 &&
+    terminal?.pendingSetupCount === 0 &&
+    journal?.disposalSucceeded === true &&
+    record.cleanup?.browserClosed === true &&
+    record.cleanup?.profileRemoved === true &&
+    [true, 'not_started'].includes(record.cleanup?.localFixtureServerClosed) &&
+    (!record.authenticationAttempted || record.cleanup?.remoteAuthRevocationStatus === 204)
+  );
+}
 async function refuseUnreconciledPriorRun() {
   const retryingAuthFailures = [];
   const entries = await fs
@@ -833,6 +866,7 @@ async function refuseUnreconciledPriorRun() {
       (prior.cleanup?.localAuthLogoutStatus === 204 || prior.authenticationAttempted === false) &&
       prior.cleanup?.browserClosed === true &&
       prior.cleanup?.profileRemoved === true;
+    const earlyReadOnlyNoWriteCleanup = hasEarlyReadOnlyNoWriteCleanup(prior);
     // A failed OAuth attempt is retryable only when it never crossed the
     // independent identity boundary, never read a Vault baseline or created
     // fixtures, and its disposable browser/profile were conclusively gone.
@@ -1064,7 +1098,8 @@ async function refuseUnreconciledPriorRun() {
             reviewedUncommittedRequest
         : completedAcceptance ||
             completedMutationCleanup ||
-            vaultMutationFreeCleanup ||
+      vaultMutationFreeCleanup ||
+      earlyReadOnlyNoWriteCleanup ||
             authFailureBeforeWrites ||
             preAuthNoWriteCleanup ||
             reviewedHistoricalException ||
@@ -4230,8 +4265,15 @@ async function materializedPassword(id) {
             proof.checks.enrolledAuthenticatorPreserved === true));
     }
     if (acceptanceLease) {
+      // A read-only lifecycle probe can fail before the first panel list read
+      // (for example, while its worker is restarting). That is a failed
+      // acceptance, but a healthy closed journal with zero writes and no
+      // owned fixture still proves the Vault custody needed to release its
+      // exclusive lease. Do not promote this to vaultMutationFree or ok.
+      const earlyReadOnlyNoWriteCleanup = hasEarlyReadOnlyNoWriteCleanup(proof);
       const vaultCleanupProven =
         proof.cleanup.vaultMutationFree === true ||
+        earlyReadOnlyNoWriteCleanup ||
         hasPreAuthNoWriteCleanup(proof) ||
         (proof.cleanup.receiptReconciled === true &&
           proof.cleanup.createdItemsGone === true &&
