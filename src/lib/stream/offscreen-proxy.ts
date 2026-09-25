@@ -111,6 +111,34 @@ export interface StreamRunPayload {
   permissionMode?: 'ask' | 'act';
 }
 
+function isConversationStartBody(body: unknown): body is Record<string, unknown> {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return false;
+  const candidate = body as Record<string, unknown>;
+  return (
+    typeof candidate.conversation_id === 'string' &&
+    typeof candidate.is_new === 'boolean' &&
+    typeof candidate.store === 'boolean'
+  );
+}
+
+/**
+ * Bind a conversation start's body to the exact actor used for its headers.
+ *
+ * The side panel may assemble its payload before the service worker wakes.
+ * It must never independently infer whether the actor is a bearer or guest:
+ * a token transition between those reads could put a guest-shaped body behind
+ * a bearer header, or a bearer tenant assertion behind a fingerprint header.
+ * The SW reads the actor once and writes both parts of this request envelope.
+ */
+export function bindConversationStartActor(
+  body: unknown,
+  organizationId: string | null,
+): unknown {
+  if (!isConversationStartBody(body)) return body;
+  const { organization_id: _untrustedOrganizationId, ...rest } = body;
+  return organizationId === null ? rest : { ...rest, organization_id: organizationId };
+}
+
 export async function startStream(args: StartStreamArgs): Promise<void> {
   log.info('stream', `start ${args.runId} → ${args.endpoint}`);
   // Resolve the URL + access token in the SW (where storage works reliably)
@@ -135,10 +163,19 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
     // admission gate, which reads to the user as a hang. With nothing set on
     // this device the start HOLDS while the person is asked, then proceeds
     // with what they chose (src/lib/org/active-org.ts).
-    headers['X-Organization-Id'] = await requireActiveOrganizationId();
+    const organizationId = await requireActiveOrganizationId();
+    headers['X-Organization-Id'] = organizationId;
+    args = {
+      ...args,
+      body: bindConversationStartActor(args.body, organizationId),
+    };
   } else {
     // Nobody is signed in on this install (see readSessionBearer).
     headers['X-Fingerprint-ID'] = await getOrCreateGuestSignature();
+    args = {
+      ...args,
+      body: bindConversationStartActor(args.body, null),
+    };
   }
 
   await ensureOffscreen();

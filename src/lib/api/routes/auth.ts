@@ -1,4 +1,3 @@
-import { getAccessToken } from '@/lib/auth/flow';
 import { requireActiveOrganizationId } from '@/lib/org/active-org';
 
 /**
@@ -21,17 +20,4 @@ import { requireActiveOrganizationId } from '@/lib/org/active-org';
  */
 export async function requireRequestOrganizationId(): Promise<string> {
   return requireActiveOrganizationId();
-}
-
-/**
- * Organization assertion for an AI conversation start.
- *
- * A bearer-backed start still names the organization chosen on this device.
- * A fingerprint guest is the one exception: it must omit the field entirely.
- * Aidream's AI funnel then resolves that guest's own personal organization,
- * before any conversation write. Calling the membership RPC for a guest is
- * both unauthorized and wrong — guests have no selectable memberships.
- */
-export async function organizationIdForAgentStart(): Promise<string | undefined> {
-  return (await getAccessToken()) ? requireRequestOrganizationId() : undefined;
 }

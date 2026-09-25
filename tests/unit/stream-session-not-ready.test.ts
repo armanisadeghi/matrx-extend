@@ -70,18 +70,51 @@ describe('startStream never starts a signed-in run as a guest', () => {
   it('sends the bearer and organization when signed in', async () => {
     state.bearer = 'token-a';
     const { startStream } = await import('@/lib/stream/offscreen-proxy');
-    await startStream({ runId: 'r2', endpoint: '/x', parser: 'rich-events' });
+    await startStream({
+      runId: 'r2',
+      endpoint: '/x',
+      parser: 'rich-events',
+      body: {
+        conversation_id: '11111111-1111-4111-8111-111111111111',
+        is_new: true,
+        store: true,
+        // The side panel's stale actor inference is untrusted. The SW must
+        // bind body and headers from the same bearer read.
+        organization_id: 'stale-guest-shape',
+      },
+    });
     const run = state.sent.find((m) => m.channel !== undefined);
-    const headers = (run?.payload as { headers: Record<string, string> }).headers;
+    const payload = run?.payload as {
+      headers: Record<string, string>;
+      body: Record<string, unknown>;
+    };
+    const headers = payload.headers;
     expect(headers.Authorization).toBe('Bearer token-a');
     expect(headers['X-Fingerprint-ID']).toBeUndefined();
+    expect(headers['X-Organization-Id']).toBe('00000000-0000-4000-8000-000000000002');
+    expect(payload.body.organization_id).toBe(headers['X-Organization-Id']);
   });
 
   it('uses the guest fingerprint only when nobody is signed in', async () => {
     const { startStream } = await import('@/lib/stream/offscreen-proxy');
-    await startStream({ runId: 'r3', endpoint: '/x', parser: 'rich-events' });
-    const headers = (state.sent[0]?.payload as { headers: Record<string, string> }).headers;
+    await startStream({
+      runId: 'r3',
+      endpoint: '/x',
+      parser: 'rich-events',
+      body: {
+        conversation_id: '11111111-1111-4111-8111-111111111111',
+        is_new: true,
+        store: true,
+        organization_id: 'guest-must-not-nominate-this',
+      },
+    });
+    const payload = state.sent[0]?.payload as {
+      headers: Record<string, string>;
+      body: Record<string, unknown>;
+    };
+    const headers = payload.headers;
     expect(headers['X-Fingerprint-ID']).toBe('guest');
     expect(headers.Authorization).toBeUndefined();
+    expect(payload.body.organization_id).toBeUndefined();
   });
 });

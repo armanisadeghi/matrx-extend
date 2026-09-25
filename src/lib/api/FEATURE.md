@@ -22,12 +22,10 @@ Every bearer-backed agent start must include an explicit `organization_id`.
 Fingerprint guests omit it: aidream's AI funnel resolves only that guest's
 personal organization before its first write, and a guest can never nominate
 a tenant. The extension does not invent a value or hardcode a system organization.
-`routes/auth.ts#organizationIdForAgentStart` uses the same bearer state as the
-stream header path and calls `requireRequestOrganizationId` only for a bearer.
-using the same bearer/fingerprint identity as the subsequent stream and returns
-the organization already carried by that authenticated request. Aidream rejects
-an authenticated `whoami` request that lacks it; neither side selects or creates
-an organization.
+`stream/offscreen-proxy.ts#startStream` reads the actor once in the service
+worker and binds both headers and every conversation-start body: a bearer gets
+the device-selected organization, while a fingerprint guest has any supplied
+organization removed before transport.
 
 A missing or malformed organization is a loud pre-stream failure. The chat UI
 must end its pending state and show a retryable error; it must never send a
