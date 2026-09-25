@@ -131,10 +131,7 @@ function isConversationStartBody(body: unknown): body is Record<string, unknown>
  * a bearer header, or a bearer tenant assertion behind a fingerprint header.
  * The SW reads the actor once and writes both parts of this request envelope.
  */
-export function bindConversationStartActor(
-  body: unknown,
-  organizationId: string | null,
-): unknown {
+export function bindConversationStartActor(body: unknown, organizationId: string | null): unknown {
   if (!isConversationStartBody(body)) return body;
   const { organization_id: _untrustedOrganizationId, ...rest } = body;
   return organizationId === null ? rest : { ...rest, organization_id: organizationId };
@@ -165,7 +162,9 @@ async function resolveStableStreamActor(): Promise<StreamActor> {
       return { token, organizationId };
     }
   }
-  throw new Error('Your sign-in or workspace changed while this request was preparing. Please try again.');
+  throw new Error(
+    'Your sign-in or workspace changed while this request was preparing. Please try again.',
+  );
 }
 
 async function streamActorStillCurrent(actor: StreamActor): Promise<boolean> {
@@ -201,7 +200,8 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
       // this device the start HOLDS while the person is asked, then proceeds
       // with what they chose (src/lib/org/active-org.ts).
       const organizationId = actor.organizationId;
-      if (organizationId === null) throw new Error('Authenticated stream actor is missing an organization.');
+      if (organizationId === null)
+        throw new Error('Authenticated stream actor is missing an organization.');
       headers['X-Organization-Id'] = organizationId;
       body = bindConversationStartActor(body, organizationId);
     } else {
@@ -232,7 +232,9 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
     // marker all await. Recheck immediately before the only irreversible
     // operation: sending this envelope into the stream transport.
     if (!(await streamActorStillCurrent(actor))) {
-      void markStreamInactive(args.runId);
+      // The retry reuses runId. Finish removing the abandoned attempt before
+      // it can mark the replacement active, or the late removal loses it.
+      await markStreamInactive(args.runId);
       continue;
     }
 
@@ -241,7 +243,9 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
     await send(CHANNELS.STREAM_RUN, payload);
     return;
   }
-  throw new Error('Your sign-in or workspace changed while this request was preparing. Please try again.');
+  throw new Error(
+    'Your sign-in or workspace changed while this request was preparing. Please try again.',
+  );
 }
 
 export async function cancelStream(runId: string): Promise<void> {

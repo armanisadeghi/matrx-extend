@@ -12,6 +12,9 @@ const state = vi.hoisted(() => ({
   refuse: false,
   switchActorDuringOrganizationHold: false,
   switchActorDuringEnsureOffscreen: false,
+  pauseInactive: false,
+  releaseInactive: null as (() => void) | null,
+  inactiveStarted: null as (() => void) | null,
   sent: [] as Array<{ channel: string; payload: unknown }>,
 }));
 
@@ -52,7 +55,14 @@ vi.mock('@/lib/messaging/native', () => ({
 }));
 vi.mock('@/lib/stream/active-runs', () => ({
   markStreamActive: vi.fn(),
-  markStreamInactive: vi.fn(),
+  markStreamInactive: vi.fn(async () => {
+    state.inactiveStarted?.();
+    if (state.pauseInactive) {
+      await new Promise<void>((resolve) => {
+        state.releaseInactive = resolve;
+      });
+    }
+  }),
 }));
 
 describe('startStream never starts a signed-in run as a guest', () => {
@@ -61,6 +71,9 @@ describe('startStream never starts a signed-in run as a guest', () => {
     state.refuse = false;
     state.switchActorDuringOrganizationHold = false;
     state.switchActorDuringEnsureOffscreen = false;
+    state.pauseInactive = false;
+    state.releaseInactive = null;
+    state.inactiveStarted = null;
     state.sent = [];
     vi.stubGlobal('chrome', {
       runtime: {
@@ -180,5 +193,26 @@ describe('startStream never starts a signed-in run as a guest', () => {
     const headers = (state.sent[0]?.payload as { headers: Record<string, string> }).headers;
     expect(headers.Authorization).toBe('Bearer token-b');
     expect(headers['X-Organization-Id']).toBe('00000000-0000-4000-8000-000000000002');
+  });
+
+  it('finishes retiring the abandoned run before registering and dispatching its retry', async () => {
+    state.bearer = 'token-a';
+    state.switchActorDuringEnsureOffscreen = true;
+    state.pauseInactive = true;
+    const inactiveStarted = new Promise<void>((resolve) => {
+      state.inactiveStarted = resolve;
+    });
+    const { startStream } = await import('@/lib/stream/offscreen-proxy');
+
+    const start = startStream({ runId: 'r6', endpoint: '/x', parser: 'rich-events' });
+    await inactiveStarted;
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(state.sent).toHaveLength(0);
+    state.releaseInactive?.();
+    await start;
+    expect(state.sent).toHaveLength(1);
+    expect(
+      (state.sent[0]?.payload as { headers: Record<string, string> }).headers.Authorization,
+    ).toBe('Bearer token-b');
   });
 });
