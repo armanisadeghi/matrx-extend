@@ -26,7 +26,7 @@ import {
   type RequestInitiation,
   agentTargetExecutePath,
 } from '@/lib/api/routes/ai';
-import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
+import { organizationIdForAgentStart } from '@/lib/api/routes/auth';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
@@ -155,13 +155,13 @@ export function useAgentTextRun(): AgentTextRun {
       runIdRef.current = runId;
 
       try {
-        const organizationId = await requireRequestOrganizationId();
+        const organizationId = await organizationIdForAgentStart();
         await send(CHANNELS.STREAM_START, {
           runId,
           endpoint: agentTargetExecutePath(input.agentId),
           body: {
             ...input.body,
-            organization_id: organizationId,
+            ...(organizationId !== undefined ? { organization_id: organizationId } : {}),
             stream: true,
             // Stamped AFTER the caller's body so this hook is the single,
             // authoritative writer of the attestation for every run it opens.

@@ -1,6 +1,6 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { type AgentStartRequest, mandateExecutePath } from '@/lib/api/routes/ai';
-import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
+import { organizationIdForAgentStart } from '@/lib/api/routes/auth';
 import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
@@ -275,9 +275,9 @@ export function usePatternFromData() {
       runIdRef.current = runId;
       watchdogRef.current?.start();
 
-      let organizationId: string;
+      let organizationId: string | undefined;
       try {
-        organizationId = await requireRequestOrganizationId();
+        organizationId = await organizationIdForAgentStart();
       } catch (e) {
         setError(`Could not initialize workspace: ${e instanceof Error ? e.message : String(e)}`);
         setRunning(false);
@@ -287,7 +287,7 @@ export function usePatternFromData() {
       }
 
       const body: AgentStartRequest = {
-        organization_id: organizationId,
+        ...(organizationId !== undefined ? { organization_id: organizationId } : {}),
         user_input: input.userInput,
         // Required on every start request; a one-shot run still mints an id
         // (correlation) and stays ephemeral via store:false.

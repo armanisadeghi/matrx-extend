@@ -228,20 +228,21 @@ Every entry follows this shape:
 ## Store-review guest path
 
 ### Fresh-install guest conversation organization
-- **What it does:** Resolves the fingerprint guest's server-side personal
-  organization before starting a persisted AI conversation.
+- **What it does:** Starts Chat without an account and resolves the fingerprint
+  guest's personal organization only on the server, before the first persisted
+  conversation write.
 - **Where to test:** A fresh Chrome profile with the exact Store build loaded
   and no AI Matrx sign-in.
 - **Steps:**
   1. Open `https://www.aimatrx.com/matrx-extend-demo`.
   2. Open Matrx Extend → Chat.
   3. Ask `What are the three workflow stages on this page?`.
-- **Expected:** `GET /auth/whoami` returns an `organization_id`; the subsequent
-  agent request includes it and answers with Capture, Understand, and Use.
-  There is no 422 `body.organization_id` error and no stuck pending bubble.
-- **Edge cases worth poking:** If bootstrap fails or returns no organization,
-  the pending run ends immediately with a visible retryable error. The client
-  never guesses or hardcodes a fallback organization.
+- **Expected:** The request carries `X-Fingerprint-ID`, omits
+  `organization_id`, and answers with Capture, Understand, and Use. There is
+  no `mbr_for_user` request, 422 body error, or stuck pending bubble.
+- **Edge cases worth poking:** A fingerprint request that supplies
+  `organization_id` is refused. The client never guesses, hardcodes, or reads
+  a fallback organization.
 
 ---
 

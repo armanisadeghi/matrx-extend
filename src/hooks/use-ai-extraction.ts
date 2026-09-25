@@ -1,6 +1,6 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { type AgentStartRequest, agentExecutePath, mandateExecutePath } from '@/lib/api/routes/ai';
-import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
+import { organizationIdForAgentStart } from '@/lib/api/routes/auth';
 import { aiExtractCapturePage } from '@/lib/data-pattern/modes/ai-extract';
 import { parseAgentResponse } from '@/lib/data-pattern/run-interactive';
 import type { ExtractedRow } from '@/lib/data-pattern/types';
@@ -140,9 +140,9 @@ export function useAiExtraction() {
       const runId = newId('extract');
       runIdRef.current = runId;
 
-      let organizationId: string;
+      let organizationId: string | undefined;
       try {
-        organizationId = await requireRequestOrganizationId();
+        organizationId = await organizationIdForAgentStart();
       } catch (e) {
         setError(`Could not initialize workspace: ${e instanceof Error ? e.message : String(e)}`);
         setRunning(false);
@@ -151,7 +151,7 @@ export function useAiExtraction() {
       }
 
       const body: AgentStartRequest = {
-        organization_id: organizationId,
+        ...(organizationId !== undefined ? { organization_id: organizationId } : {}),
         user_input: input.description,
         // Required on every start request; a one-shot run still mints an id
         // (correlation) and stays ephemeral via store:false.

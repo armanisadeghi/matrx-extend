@@ -18,9 +18,12 @@ snapshot without exposing its bearer. These helpers establish no tab ownership.
 
 ## Request organization assertion
 
-Every agent start must include an explicit `organization_id`. The extension
-does not invent that value and does not hardcode a system organization.
-`routes/auth.ts#requireRequestOrganizationId` calls `GET /auth/whoami`
+Every bearer-backed agent start must include an explicit `organization_id`.
+Fingerprint guests omit it: aidream's AI funnel resolves only that guest's
+personal organization before its first write, and a guest can never nominate
+a tenant. The extension does not invent a value or hardcode a system organization.
+`routes/auth.ts#organizationIdForAgentStart` uses the same bearer state as the
+stream header path and calls `requireRequestOrganizationId` only for a bearer.
 using the same bearer/fingerprint identity as the subsequent stream and returns
 the organization already carried by that authenticated request. Aidream rejects
 an authenticated `whoami` request that lacks it; neither side selects or creates

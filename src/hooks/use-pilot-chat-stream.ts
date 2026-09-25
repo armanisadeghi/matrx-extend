@@ -20,7 +20,7 @@ import {
   type RequestInitiation,
   agentExecutePath,
 } from '@/lib/api/routes/ai';
-import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
+import { organizationIdForAgentStart } from '@/lib/api/routes/auth';
 import { conversationResumePath } from '@/lib/api/routes/tool-results';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
@@ -389,9 +389,9 @@ export function usePilotChatStream() {
       requestIdRef.current = null;
       watchdogRef.current?.start();
 
-      let organizationId: string;
+      let organizationId: string | undefined;
       try {
-        organizationId = await requireRequestOrganizationId();
+        organizationId = await organizationIdForAgentStart();
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         log.error('pilot-stream', 'conversation organization bootstrap failed', err);
@@ -487,7 +487,7 @@ export function usePilotChatStream() {
       }
 
       const body: AgentStartRequest = {
-        organization_id: organizationId,
+        ...(organizationId !== undefined ? { organization_id: organizationId } : {}),
         user_input: text,
         conversation_id: conversationId,
         is_new: isNewConversation,

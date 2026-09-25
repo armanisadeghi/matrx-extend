@@ -4,7 +4,7 @@ import {
   agentTargetExecutePath,
   mandateExecutePath,
 } from '@/lib/api/routes/ai';
-import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
+import { organizationIdForAgentStart } from '@/lib/api/routes/auth';
 import { conversationResumePath } from '@/lib/api/routes/tool-results';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
@@ -757,13 +757,12 @@ export function useChatStream() {
       pendingContinueRef.current = null;
       watchdogRef.current?.start();
 
-      // A new conversation must name its organization explicitly. The client
-      // states which organization the user chose (src/lib/org/active-org.ts)
-      // and the server verifies membership — no request reaches the platform
-      // carrying an identity but no organization.
-      let organizationId: string;
+      // Bearer starts carry the organization chosen on this device. Fingerprint
+      // guests omit it: the server's guest funnel resolves only their personal
+      // organization before its first write.
+      let organizationId: string | undefined;
       try {
-        organizationId = await requireRequestOrganizationId();
+        organizationId = await organizationIdForAgentStart();
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
         // A missing organization is fixable in one click, so say the fix
@@ -942,7 +941,7 @@ export function useChatStream() {
       }
 
       const body: AgentStartRequest = {
-        organization_id: organizationId,
+        ...(organizationId !== undefined ? { organization_id: organizationId } : {}),
         user_input: text,
         conversation_id: conversationId,
         is_new: isNewConversation,

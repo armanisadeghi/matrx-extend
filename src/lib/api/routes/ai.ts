@@ -95,8 +95,8 @@ export type RequestInitiation = 'user' | 'auto';
  * `isAdmin === false`.
  */
 export interface AgentStartRequest {
-  /** REQUIRED. Resolved from GET /auth/whoami for this bearer/fingerprint identity. */
-  organization_id: string;
+  /** Required for bearer/API-key starts; fingerprint guests omit it for the server-owned guest funnel. */
+  organization_id?: string;
   user_input?: string;
   variables?: Record<string, unknown> | null;
   /**
