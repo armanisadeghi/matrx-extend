@@ -1087,6 +1087,31 @@ async function refuseUnreconciledPriorRun() {
       reviewedUncommittedRequest = recovery.admitNewSerializedRun === true;
       proof.priorUncommittedRequestRecovery = recovery;
     }
+    // Exact one-off retry custody for the failed read-only enable probe. Its
+    // network observer remains failed. A separately reviewed 37-item admin
+    // inventory comparison and owner-bound retirement grant retry only.
+    let reviewedEnableProbeRetirement = false;
+    if (
+      stateRoot === path.join(__dirname, '../../.matrx/task1-active/lifecycle-detail-toggle-2026-09-25') &&
+      entry.name === '66f9fac6-ca59-4b30-8d99-ee6fa7832a1c' &&
+      priorRaw !== null &&
+      crypto.createHash('sha256').update(priorRaw).digest('hex') ===
+        'a2f71e859d314850730d2e99a87940371c7ee7abe63bc94c469e6b04d42b17df'
+    ) {
+      const evidenceRoot = path.join(__dirname, '../../.matrx/task1-active');
+      const reconciliationPath = path.join(
+        evidenceRoot, 'lifecycle-detail-toggle-inventory-reconciliation-2026-09-25.json',
+      );
+      const retirementPath = path.join(evidenceRoot, 'lease-retirement-66f9fac6-2026-09-25.json');
+      reviewedEnableProbeRetirement =
+        (await sha256(reconciliationPath).catch(() => null)) ===
+          '774a42b60e7f16055f89a5ada448cb36f9ea80327bfa8cb92a7daa6339575257' &&
+        (await sha256(retirementPath).catch(() => null)) ===
+          '1e739377a62eeccb85fa2c79b26d2c83915d3e1c1c0ef840903055bea9a2494e' &&
+        prior.ok === false &&
+        prior.cleanup?.vaultMutationFree === false &&
+        prior.networkJournal?.beforeCleanupSnapshot?.observerError === true;
+    }
     const receiptMode = prior?.mode === 'receipt_backed_save_update';
     assert(
       receiptMode
@@ -1104,6 +1129,7 @@ async function refuseUnreconciledPriorRun() {
             preAuthNoWriteCleanup ||
             reviewedHistoricalException ||
             reviewedLaunchFailure ||
+            reviewedEnableProbeRetirement ||
             reviewedRecovery ||
             reviewedGeneratorCleanup ||
             hasObservedReadOnlyCleanup(prior) ||
