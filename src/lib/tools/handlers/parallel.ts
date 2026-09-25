@@ -38,9 +38,9 @@ import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { ensureOffscreen } from '@/lib/stream/offscreen-proxy';
-import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { recordAssignedTab } from '@/lib/tools/dispatch';
 import { buildParallelStartContract } from '@/lib/tools/handlers/parallel-start-contract';
+import { parallelActorStillCurrent } from '@/lib/tools/handlers/parallel-actor';
 import type { ToolContext, ToolHandler } from '@/lib/tools/types';
 import {
   type ParallelSession,
@@ -137,12 +137,6 @@ interface RunChildArgs {
   baseUrl: string;
   authHeader: string | null;
   organizationId: string;
-}
-
-async function parallelActorStillCurrent(args: Pick<RunChildArgs, 'authHeader' | 'organizationId'>): Promise<boolean> {
-  const expectedToken = args.authHeader?.replace(/^Bearer /, '') ?? null;
-  const [token, organizationId] = await Promise.all([getAccessToken(), getActiveOrganizationId()]);
-  return token === expectedToken && organizationId === args.organizationId;
 }
 
 async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {

@@ -11,6 +11,7 @@ const state = vi.hoisted(() => ({
   bearer: null as string | null,
   refuse: false,
   switchActorDuringOrganizationHold: false,
+  switchActorDuringEnsureOffscreen: false,
   sent: [] as Array<{ channel: string; payload: unknown }>,
 }));
 
@@ -59,9 +60,18 @@ describe('startStream never starts a signed-in run as a guest', () => {
     state.bearer = null;
     state.refuse = false;
     state.switchActorDuringOrganizationHold = false;
+    state.switchActorDuringEnsureOffscreen = false;
     state.sent = [];
     vi.stubGlobal('chrome', {
-      runtime: { getContexts: vi.fn(async () => [{ contextType: 'OFFSCREEN_DOCUMENT' }]) },
+      runtime: {
+        getContexts: vi.fn(async () => {
+          if (state.switchActorDuringEnsureOffscreen) {
+            state.switchActorDuringEnsureOffscreen = false;
+            state.bearer = 'token-b';
+          }
+          return [{ contextType: 'OFFSCREEN_DOCUMENT' }];
+        }),
+      },
       offscreen: { createDocument: vi.fn(async () => {}) },
     });
   });
@@ -137,6 +147,27 @@ describe('startStream never starts a signed-in run as a guest', () => {
 
     await startStream({
       runId: 'r4',
+      endpoint: '/x',
+      parser: 'rich-events',
+      body: {
+        conversation_id: '11111111-1111-4111-8111-111111111111',
+        is_new: true,
+        store: true,
+      },
+    });
+
+    const headers = (state.sent[0]?.payload as { headers: Record<string, string> }).headers;
+    expect(headers.Authorization).toBe('Bearer token-b');
+    expect(headers['X-Organization-Id']).toBe('00000000-0000-4000-8000-000000000002');
+  });
+
+  it('rebuilds the envelope when the actor changes during offscreen setup', async () => {
+    state.bearer = 'token-a';
+    state.switchActorDuringEnsureOffscreen = true;
+    const { startStream } = await import('@/lib/stream/offscreen-proxy');
+
+    await startStream({
+      runId: 'r5',
       endpoint: '/x',
       parser: 'rich-events',
       body: {
