@@ -284,20 +284,71 @@ exports.runVaultAccessibilityChecks = async ({
       const root = document.querySelector(${JSON.stringify(GENERATOR)});
       const exact = (label) => Array.from(root?.querySelectorAll('button') ?? [])
         .filter((button) => button.textContent?.trim() === label);
-      const visible = ['Password', 'Passphrase', 'Generate'].every((label) => {
+      const round = (value) => Number.isFinite(value) ? Math.round(value * 100) / 100 : null;
+      const actionGeometry = Object.fromEntries([
+        ['password', 'Password'],
+        ['passphrase', 'Passphrase'],
+        ['generate', 'Generate'],
+      ].map(([key, label]) => {
         const matches = exact(label);
-        if (matches.length !== 1) return false;
+        const exists = matches.length > 0;
+        const unique = matches.length === 1;
+        if (!unique) return [key, {
+          exists,
+          unique,
+          positiveRect: false,
+          viewport: { left: false, right: false, top: false, bottom: false, contained: false },
+          computed: { visibilityNotHidden: false, displayNotNone: false },
+          rect: null,
+          scroll: null,
+        }];
         const button = matches[0];
         button.scrollIntoView({ block: 'nearest', inline: 'nearest' });
         const rect = button.getBoundingClientRect();
         const style = getComputedStyle(button);
-        return rect.width > 0 && rect.height > 0 && rect.left >= 0 && rect.right <= innerWidth
-          && rect.top >= 0 && rect.bottom <= innerHeight
-          && style.visibility !== 'hidden' && style.display !== 'none';
-      });
+        let scrollContainer = button.parentElement;
+        while (
+          scrollContainer &&
+          scrollContainer.scrollHeight <= scrollContainer.clientHeight &&
+          scrollContainer.scrollWidth <= scrollContainer.clientWidth
+        ) scrollContainer = scrollContainer.parentElement;
+        const scrollable = scrollContainer ?? document.scrollingElement;
+        const viewport = {
+          left: rect.left >= 0,
+          right: rect.right <= innerWidth,
+          top: rect.top >= 0,
+          bottom: rect.bottom <= innerHeight,
+        };
+        return [key, {
+          exists,
+          unique,
+          positiveRect: rect.width > 0 && rect.height > 0,
+          viewport: { ...viewport, contained: Object.values(viewport).every(Boolean) },
+          computed: {
+            visibilityNotHidden: style.visibility !== 'hidden',
+            displayNotNone: style.display !== 'none',
+          },
+          rect: {
+            left: round(rect.left), right: round(rect.right), top: round(rect.top),
+            bottom: round(rect.bottom), width: round(rect.width), height: round(rect.height),
+          },
+          scroll: {
+            windowX: round(scrollX), windowY: round(scrollY),
+            documentTop: round(document.scrollingElement?.scrollTop),
+            containerTop: round(scrollable?.scrollTop),
+            containerClientHeight: round(scrollable?.clientHeight),
+            containerScrollHeight: round(scrollable?.scrollHeight),
+          },
+        }];
+      }));
+      const visible = Object.values(actionGeometry).every((action) =>
+        action.unique && action.positiveRect && action.viewport.contained &&
+          action.computed.visibilityNotHidden && action.computed.displayNotNone,
+      );
       return {
         noHorizontalOverflow: document.documentElement.scrollWidth <= innerWidth && document.body.scrollWidth <= innerWidth,
         actionsVisible: visible,
+        actionGeometry,
       };
     })()`);
     assert(
@@ -305,6 +356,8 @@ exports.runVaultAccessibilityChecks = async ({
       'vault_accessibility_compact_horizontal_overflow',
     );
     evidence.compactViewportNoHorizontalOverflow = true;
+    if (compact?.actionsVisible !== true)
+      proof.accessibilityCompactActionGeometry = compact?.actionGeometry ?? null;
     assert(compact?.actionsVisible === true, 'vault_accessibility_compact_actions_clipped');
     evidence.compactViewportActionsVisible = true;
 
