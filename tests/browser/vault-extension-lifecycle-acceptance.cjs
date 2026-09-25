@@ -137,21 +137,44 @@ async function refreshReadyExtensionWorker({
 
 async function runExtensionReload({
   worker,
+  previousWorkerTargetId,
+  previousPanelTargetId,
+  assertPreviousTargetsGone,
+  reopenPanel,
   refreshWorker,
   verifySettingsIdentity,
   checkpoint,
   proof,
 }) {
+  assert(
+    typeof previousWorkerTargetId === 'string' && previousWorkerTargetId.length > 0,
+    'lifecycle_reload_initial_worker_target_missing',
+  );
+  assert(
+    typeof previousPanelTargetId === 'string' && previousPanelTargetId.length > 0,
+    'lifecycle_reload_initial_panel_target_missing',
+  );
+  assert(typeof assertPreviousTargetsGone === 'function', 'lifecycle_reload_target_retirement_missing');
+  assert(typeof reopenPanel === 'function', 'lifecycle_reload_panel_reopen_missing');
   const before = await inspectIdentity(worker);
   checkpoint('lifecycle_extension_reload');
   await worker.evaluate(() => chrome.runtime.reload());
-  // MV3 workers are demand-started.  After reload, exercise the already-owned
-  // side panel before asking CDP for a replacement target; otherwise a quiet
-  // panel can leave Target.getTargets with no worker to reacquire.  This is a
-  // required post-reload Settings assertion, not a synthetic wake-up: the
-  // replacement target and its storage identity are still checked below.
+  checkpoint('lifecycle_extension_reload_previous_targets_retired');
+  const previousTargetsGone = await assertPreviousTargetsGone();
+  assert(previousTargetsGone?.workerTargetGone === true, 'lifecycle_reload_old_worker_target_observed');
+  assert(previousTargetsGone?.panelTargetGone === true, 'lifecycle_reload_old_panel_target_observed');
+
+  // MV3 workers are demand-started. Rebind a target that was created after
+  // reload before using Settings to wake the worker; a surviving, callable
+  // pre-reload panel is explicitly insufficient lifecycle evidence.
+  checkpoint('lifecycle_extension_reload_panel_reopened');
+  const panel = await reopenPanel();
+  assert(
+    typeof panel?.targetId === 'string' && panel.targetId !== previousPanelTargetId,
+    'lifecycle_reload_panel_target_not_replaced',
+  );
   checkpoint('lifecycle_extension_reload_settings_wake');
-  const settingsUiRecovered = await verifySettingsIdentity();
+  const settingsUiRecovered = await verifySettingsIdentity(panel);
   const refreshed = await refreshWorker(worker);
   const replacement = refreshed?.worker || refreshed;
   const replacementWorkerObserved =
@@ -167,6 +190,9 @@ async function runExtensionReload({
         ? 'passed'
         : 'failed',
     replacementWorkerObserved,
+    previousWorkerTargetRetired: previousTargetsGone.workerTargetGone,
+    previousPanelTargetRetired: previousTargetsGone.panelTargetGone,
+    replacementPanelTargetId: panel.targetId,
     sameIdentityRecovered: before.identitySha256 === after.identitySha256,
     settingsUiRecovered,
     identitySha256: after.identitySha256,

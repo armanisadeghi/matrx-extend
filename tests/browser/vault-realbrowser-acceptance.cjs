@@ -1687,35 +1687,44 @@ async function attachPanelSession(cdp, targetId) {
     },
   };
 }
-async function openGenuineSidePanel(extensionId, popup, { existing = false } = {}) {
+async function openGenuineSidePanel(extensionId, popup, { existing = false, previousTargetId } = {}) {
   if (!existing) {
     await popup.bringToFront();
     await popup.getByRole('button', { name: 'Open chat', exact: true }).click();
   }
   let contexts = [];
-  for (let attempt = 0; attempt < 30; attempt += 1) {
-    contexts = await worker.evaluate(() =>
-      chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }),
-    );
-    if (
-      contexts.length === 1 &&
-      contexts[0].documentUrl === `chrome-extension://${extensionId}/sidepanel.html` &&
-      contexts[0].tabId === -1
-    )
-      break;
-    await wait(250);
+  if (!previousTargetId) {
+    for (let attempt = 0; attempt < 30; attempt += 1) {
+      contexts = await worker.evaluate(() =>
+        chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }),
+      );
+      if (
+        contexts.length === 1 &&
+        contexts[0].documentUrl === `chrome-extension://${extensionId}/sidepanel.html` &&
+        contexts[0].tabId === -1
+      )
+        break;
+      await wait(250);
+    }
+    assert(contexts.length === 1 && contexts[0].tabId === -1, 'real_side_panel_missing');
   }
-  assert(contexts.length === 1 && contexts[0].tabId === -1, 'real_side_panel_missing');
   const host = context.pages()[0];
   assert(host, 'cdp_host_missing');
   const cdp = await context.newCDPSession(host);
   let target;
   let panel;
   try {
-    const targets = await cdp.send('Target.getTargets');
-    target = targets.targetInfos.find(
-      (candidate) => candidate.url === `chrome-extension://${extensionId}/sidepanel.html`,
-    );
+    for (let attempt = 0; attempt < 60; attempt += 1) {
+      const targets = await cdp.send('Target.getTargets');
+      target = targets.targetInfos.find(
+        (candidate) =>
+          candidate.url === `chrome-extension://${extensionId}/sidepanel.html` &&
+          candidate.type === 'page' &&
+          candidate.targetId !== previousTargetId,
+      );
+      if (target) break;
+      await wait(250);
+    }
     assert(target?.type === 'page', 'real_side_panel_target_missing');
     panel = await attachPanelSession(cdp, target.targetId);
     await panel.send('Network.enable');
@@ -3120,8 +3129,40 @@ async function materializedPassword(id) {
         (target) => target.type === 'service_worker' && target.url === workerUrl,
       );
       assert(enabledTarget, 'lifecycle_enabled_worker_target_missing');
+      const enabledPanelTargetId = realPanel.targetId;
       worker = await runExtensionReload({
         worker,
+        previousWorkerTargetId: enabledTarget.targetId,
+        previousPanelTargetId: enabledPanelTargetId,
+        assertPreviousTargetsGone: async () => {
+          for (let attempt = 0; attempt < 60; attempt += 1) {
+            const targets = await rawCdp.send('Target.getTargets');
+            const workerTargetGone = !targets.targetInfos.some(
+              (target) => target.targetId === enabledTarget.targetId,
+            );
+            const panelTargetGone = !targets.targetInfos.some(
+              (target) => target.targetId === enabledPanelTargetId,
+            );
+            if (workerTargetGone && panelTargetGone) return { workerTargetGone, panelTargetGone };
+            await wait(250);
+          }
+          throw new Error('lifecycle_reload_previous_target_retirement_timeout');
+        },
+        reopenPanel: async () => {
+          await realPanel?.dispose();
+          realPanel = undefined;
+          const reopened = await openGenuineSidePanel(extensionId, null, {
+            existing: true,
+            previousTargetId: enabledPanelTargetId,
+          });
+          assert(
+            reopened.targetId !== enabledPanelTargetId,
+            'lifecycle_reload_panel_target_not_replaced',
+          );
+          realPanel = reopened;
+          await networkJournal.bindPanelTarget(realPanel.targetId);
+          return realPanel;
+        },
         refreshWorker: async () => {
           const replacementTarget = await waitForReplacementExtensionWorkerTarget({
             cdp: rawCdp,
@@ -3140,9 +3181,9 @@ async function materializedPassword(id) {
             replacementWorkerTargetObserved: true,
           };
         },
-        verifySettingsIdentity: async () => {
-          await realPanel.click(visibleSettingsControl);
-          await realPanel.waitFor(
+        verifySettingsIdentity: async (panel) => {
+          await panel.click(visibleSettingsControl);
+          await panel.waitFor(
             `document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`,
           );
           return true;
