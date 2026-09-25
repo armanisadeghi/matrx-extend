@@ -81,13 +81,19 @@ const UNSUPPORTED_BROWSER_ACTIONS = new Set<string>([
   'entity_write',
 ]);
 
-// `tool.definition.parameters` deliberately uses scalar JSON-schema types
-// with a `null` default. Zod's `.nullable()` would publish a union type, so
-// these preserve the live schema exactly while supplying the DB's omission
-// default to the handler.
-const nullDefault = <T extends z.ZodTypeAny>(schema: T) => schema.default(null as never);
+// The DB contract has scalar JSON-schema types with a `null` default. The
+// runtime must accept that default too: Zod validates a `.default()` value
+// against its inner schema, so a scalar `.default(null)` rejects every
+// ordinary omitted-field call. The catalog serializer preserves the DB's
+// scalar presentation for these nullable runtime fields.
+const nullDefault = <T extends z.ZodTypeAny>(schema: T) => schema.nullable().default(null);
 const unknownObject = () => z.record(z.unknown());
 const unknownArray = () => z.array(z.unknown());
+const trueDefaultObject = () =>
+  z
+    .preprocess((value) => (value === true || value === undefined ? {} : value), unknownObject())
+    .transform(() => true)
+    .default(true as never);
 
 const RecordsArgs = z.object({
   action: z.enum(RECORD_ACTIONS),
@@ -131,7 +137,7 @@ const RecordsArgs = z.object({
   /** record_aggregate */
   measure: z.string().default('count'),
   name: z.string().optional(),
-  notify: unknownObject().default(true as never),
+  notify: trueDefaultObject(),
   on_duplicate: z.string().default('skip'),
   on_entry: nullDefault(unknownObject()),
   open_to_crew: z.boolean().default(true),
@@ -290,9 +296,7 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
           const result = await client.recordUpdate({
             record_id: args.record_id,
             patch: args.values,
-            ...(args.expected_version !== undefined
-              ? { expectedVersion: args.expected_version }
-              : {}),
+            ...(args.expected_version !== null ? { expectedVersion: args.expected_version } : {}),
           });
           if (!result.ok) return refused('record_write', result.error);
           return {

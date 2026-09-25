@@ -263,15 +263,60 @@ function bundlesForTier(tier: ToolTier): ToolCatalogEntry['surface_bundles'] {
   return ['pilot+privileged'];
 }
 
+/**
+ * `tool.definition` represents DB-nullable optional values as a scalar type
+ * with `default: null`. Zod needs `.nullable()` to validate that default, but
+ * zod-to-json-schema emits a JSON-Schema union. Normalize that representation
+ * at the publishing seam so runtime validation can accept null without
+ * changing the live catalog contract the drift checker enforces.
+ */
+function preserveScalarNullDefaults(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(preserveScalarNullDefaults);
+  if (!value || typeof value !== 'object') return value;
+
+  const normalized = Object.fromEntries(
+    Object.entries(value).map(([key, nested]) => [key, preserveScalarNullDefaults(nested)]),
+  );
+  if (
+    normalized.default === null &&
+    Array.isArray(normalized.type) &&
+    normalized.type.length === 2 &&
+    normalized.type.includes('null')
+  ) {
+    const scalarType = normalized.type.find((type) => type !== 'null');
+    if (typeof scalarType === 'string') normalized.type = scalarType;
+  }
+  if (
+    normalized.default === null &&
+    Array.isArray(normalized.anyOf) &&
+    normalized.anyOf.length === 2
+  ) {
+    const scalarSchema = normalized.anyOf.find(
+      (option) =>
+        option && typeof option === 'object' && (option as Record<string, unknown>).type !== 'null',
+    );
+    const nullSchema = normalized.anyOf.find(
+      (option) =>
+        option && typeof option === 'object' && (option as Record<string, unknown>).type === 'null',
+    );
+    if (scalarSchema && typeof scalarSchema === 'object' && nullSchema) {
+      return { ...(scalarSchema as Record<string, unknown>), default: null };
+    }
+  }
+  return normalized;
+}
+
 export function buildToolCatalog(): ToolCatalogEntry[] {
   return listAllHandlers().map((h) => ({
     name: h.name,
     tier: h.tier,
     category: categoryOf(h.name),
-    input_schema: zodToJsonSchema(h.argsSchema, {
-      $refStrategy: 'none',
-      target: 'jsonSchema7',
-    }),
+    input_schema: preserveScalarNullDefaults(
+      zodToJsonSchema(h.argsSchema, {
+        $refStrategy: 'none',
+        target: 'jsonSchema7',
+      }),
+    ) as ToolCatalogEntry['input_schema'],
     required_permissions: PERMISSIONS_BY_TOOL[h.name] ?? [],
     required_optional_permissions: h.required_optional_permissions ?? [],
     admin_only: h.admin_only ?? false,
