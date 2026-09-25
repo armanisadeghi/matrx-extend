@@ -1098,8 +1098,8 @@ async function refuseUnreconciledPriorRun() {
             reviewedUncommittedRequest
         : completedAcceptance ||
             completedMutationCleanup ||
-      vaultMutationFreeCleanup ||
-      earlyReadOnlyNoWriteCleanup ||
+            vaultMutationFreeCleanup ||
+            earlyReadOnlyNoWriteCleanup ||
             authFailureBeforeWrites ||
             preAuthNoWriteCleanup ||
             reviewedHistoricalException ||
@@ -1553,12 +1553,22 @@ async function attachPanelSession(cdp, targetId) {
   const eventListeners = new Set();
   let detached = false;
   const recordProtocolFailure = (method, category, error) => {
+    const message = typeof error?.message === 'string' ? error.message.toLowerCase() : '';
     proof.panelProtocolFailure = {
       method,
       targetId,
       category,
       detached,
       errorCode: Number.isInteger(error?.code) ? error.code : null,
+      messageClass: /session/.test(message)
+        ? 'session'
+        : /context/.test(message)
+          ? 'context'
+          : /target/.test(message)
+            ? 'target'
+            : /parameter|argument|invalid/.test(message)
+              ? 'parameter'
+              : 'other',
     };
     try {
       persist();
@@ -1677,11 +1687,27 @@ async function openGenuineSidePanel(extensionId, popup, { existing = false } = {
     throw error;
   }
   const evaluate = async (expression) => {
-    const result = await panel.send('Runtime.evaluate', {
-      expression,
-      returnByValue: true,
-      awaitPromise: true,
-    });
+    let result;
+    try {
+      result = await panel.send('Runtime.evaluate', {
+        expression,
+        returnByValue: true,
+        awaitPromise: true,
+      });
+    } catch (error) {
+      if (error.message === 'panel_protocol_refused' && proof.panelProtocolFailure) {
+        proof.panelProtocolFailure.callerLocations = new Error().stack
+          .split('\n')
+          .filter((line) => line.includes('vault-') && /:\d+:\d+/.test(line))
+          .map((line) => line.replace(/.*(vault-[^/ ]+\.cjs:\d+:\d+).*/, '$1'));
+        try {
+          persist();
+        } catch {
+          /* preserve the original protocol failure */
+        }
+      }
+      throw error;
+    }
     if (result.exceptionDetails) {
       proof.panelEvalFailure = {
         exceptionClass: result.exceptionDetails.exception?.className ?? 'unknown',
@@ -2990,7 +3016,11 @@ async function materializedPassword(id) {
             return Number.isInteger(tab?.windowId) ? { windowId: tab.windowId } : null;
           });
           assert(active?.windowId, 'lifecycle_reenabled_window_missing');
-          const reopened = await openSidePanelFromActionPopup(extensionId, fixturePage, active.windowId);
+          const reopened = await openSidePanelFromActionPopup(
+            extensionId,
+            fixturePage,
+            active.windowId,
+          );
           assert(reopened.opened && reopened.panel, 'lifecycle_reenabled_panel_missing');
           realPanel = reopened.panel;
           await networkJournal.bindPanelTarget(realPanel.targetId);
@@ -3772,12 +3802,16 @@ async function materializedPassword(id) {
             let route = 'existing_global_panel';
             try {
               reopened = await openGenuineSidePanel(extensionId, null, { existing: true });
-              assert((await reopened.evaluate('true')) === true, 'real_site_panel_recovery_probe_refused');
+              assert(
+                (await reopened.evaluate('true')) === true,
+                'real_site_panel_recovery_probe_refused',
+              );
             } catch (error) {
               if (
                 !['real_side_panel_missing', 'real_side_panel_target_missing'].includes(
                   error.message,
-                ) && error.message !== 'panel_protocol_refused'
+                ) &&
+                error.message !== 'panel_protocol_refused'
               )
                 throw error;
               await reopened?.dispose();
