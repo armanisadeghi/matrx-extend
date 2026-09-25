@@ -68,6 +68,7 @@
 import { log } from '@/lib/debug/log';
 import { DesktopHealthSchema } from '@/lib/desktop/types';
 import { getSupabase } from '@/lib/supabase/client';
+import { formatDurationMs } from '@ai-matrx/kit/format';
 
 const STORAGE_KEY_CACHE = 'matrxLocalEnginePort';
 const STORAGE_KEY_OVERRIDE = 'matrxLocalEnginePortOverride';
@@ -232,7 +233,7 @@ function backOffSweep(): void {
     // normal state, and this line exists so a REAL outage is still visible.
     log.info(
       'desktop',
-      `engine not found on 127.0.0.1:${PROBE_PORT_RANGE_START}-${PROBE_PORT_RANGE_END} — next full scan in ${Math.round(wait / 1000)}s`,
+      `engine not found on 127.0.0.1:${PROBE_PORT_RANGE_START}-${PROBE_PORT_RANGE_END} — next full scan in ${formatDurationMs(wait, { style: 'compact' })}`,
     );
   }
 }

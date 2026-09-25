@@ -37,15 +37,16 @@ import { CHANNELS } from '@/lib/messaging/schemas';
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
 import { formatDurationMs } from '@ai-matrx/kit/format';
+import { createBackoff, RECONNECT_ALARM_ATTEMPTS } from '@ai-matrx/realtime';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 
 const HEARTBEAT_INTERVAL_MS = 20_000;
 const IDLE_DISCONNECT_MS = 5 * 60_000;
-const RECONNECT_DELAYS_MS = [1_000, 2_000, 4_000, 8_000, 16_000, 30_000] as const;
 const OPEN_TIMEOUT_MS = 5_000;
 /**
- * Retries stop after this many consecutive failures (~1 minute of backoff).
+ * Retries stop after the realtime package's sustained-outage threshold
+ * (~1 minute of backoff).
  *
  * An unbounded loop is not resilience: with matrx-local simply not running —
  * the normal state for most people — it retried a dead address every 30s for
@@ -53,7 +54,7 @@ const OPEN_TIMEOUT_MS = 5_000;
  * probe alarm runs every 30s and reopens the socket the moment the engine is
  * reachable again, so giving up here costs no recovery time.
  */
-const MAX_RECONNECT_ATTEMPTS = RECONNECT_DELAYS_MS.length;
+const reconnectBackoff = createBackoff({ jitter: 0 });
 
 // ─── Module state ───────────────────────────────────────────────────────────
 
@@ -80,8 +81,6 @@ interface RuntimeState {
   heartbeatTimer: ReturnType<typeof setInterval> | null;
   /** Idle-watchdog interval id. */
   idleTimer: ReturnType<typeof setInterval> | null;
-  /** Reconnect attempt index into RECONNECT_DELAYS_MS. */
-  reconnectAttempt: number;
   /** In-flight reconnect timeout id. */
   reconnectTimer: ReturnType<typeof setTimeout> | null;
   /** Most recent tool_catalog_hash seen on a pong. */
@@ -112,7 +111,6 @@ const state: RuntimeState = {
   lastActivityAt: 0,
   heartbeatTimer: null,
   idleTimer: null,
-  reconnectAttempt: 0,
   reconnectTimer: null,
   lastCatalogHash: null,
   initialized: false,
@@ -137,7 +135,7 @@ export function startWsOffscreenRuntime(): void {
     state.stopped = false;
     // A fresh START is a fresh retry budget — otherwise a bridge that came
     // back after a give-up would burn its first failure on a spent counter.
-    state.reconnectAttempt = 0;
+    reconnectBackoff.reset();
     if (payload?.wsUrl) state.wsUrl = payload.wsUrl;
     if (payload?.identity) state.identity = payload.identity;
     const backgroundChanged =
@@ -278,7 +276,7 @@ async function openWebSocket(): Promise<void> {
           }
           settle(
             new Error(
-              `ws open timeout (${OPEN_TIMEOUT_MS / 1_000}s) — ${safeUrl} did not respond (engine restarting or not accepting)`,
+              `ws open timeout (${formatDurationMs(OPEN_TIMEOUT_MS, { style: 'compact' })}) — ${safeUrl} did not respond (engine restarting or not accepting)`,
             ),
           );
         }, OPEN_TIMEOUT_MS);
@@ -301,7 +299,10 @@ async function openWebSocket(): Promise<void> {
           }
           state.ws = ws;
           state.acknowledgedEpoch = null;
-          state.reconnectAttempt = 0;
+          // Keep the package's stability window. A socket that flaps after
+          // opening must continue up the backoff ladder instead of repeatedly
+          // retrying at the one-second floor.
+          reconnectBackoff.markConnected();
           bumpActivity();
           const socketEpoch = crypto.randomUUID();
           void acknowledgeEpoch(
@@ -440,7 +441,7 @@ function handleClose(code: number, reason: string): void {
   });
   if (state.stopped) return;
 
-  scheduleReconnect();
+  queueReconnect();
 }
 
 /**
@@ -450,23 +451,23 @@ function handleClose(code: number, reason: string): void {
  * running; the service worker's 30s desktop probe re-opens the socket as
  * soon as `/health` answers again (bootstrap.ts, DESKTOP_PROBE).
  */
-function scheduleReconnect(): void {
+function queueReconnect(): void {
   if (state.stopped) return;
-  if (state.reconnectAttempt >= MAX_RECONNECT_ATTEMPTS) {
+  if (reconnectBackoff.attempts() >= RECONNECT_ALARM_ATTEMPTS) {
     // Nothing fails silently: say what stopped, and what resumes it.
     log.info(
       'desktop-ws-offscreen',
-      `desktop bridge unreachable after ${state.reconnectAttempt} attempts — pausing retries; the service worker reopens it within 30s of the engine answering /health`,
+      `desktop bridge unreachable after ${reconnectBackoff.attempts()} attempts — pausing retries; the service worker reopens it within 30s of the engine answering /health`,
     );
-    state.reconnectAttempt = 0;
+    reconnectBackoff.reset();
     state.stopped = true;
     return;
   }
-  const delayIdx = Math.min(state.reconnectAttempt, RECONNECT_DELAYS_MS.length - 1);
-  const delay =
-    RECONNECT_DELAYS_MS[delayIdx] ?? RECONNECT_DELAYS_MS[RECONNECT_DELAYS_MS.length - 1] ?? 30_000;
-  state.reconnectAttempt += 1;
-  log.info('desktop-ws-offscreen', `reconnect attempt #${state.reconnectAttempt} in ${delay}ms`);
+  const delay = reconnectBackoff.nextDelayMs();
+  log.info(
+    'desktop-ws-offscreen',
+    `reconnect attempt #${reconnectBackoff.attempts()} in ${delay}ms`,
+  );
   cancelReconnect();
   state.reconnectTimer = setTimeout(() => {
     state.reconnectTimer = null;
@@ -486,7 +487,7 @@ async function reconnectOnce(): Promise<void> {
   if (!refreshed) {
     // Engine genuinely unreachable (discovery found nothing). Count it as an
     // attempt and back off rather than hammering a dead address.
-    scheduleReconnect();
+    queueReconnect();
     return;
   }
   try {
@@ -495,7 +496,7 @@ async function reconnectOnce(): Promise<void> {
     // Expected while the desktop app is closed or restarting — info, not a
     // warning with a stack. The give-up line above is the one that matters.
     log.info('desktop-ws-offscreen', `reconnect failed: ${(err as Error).message}`);
-    if (!state.ws) scheduleReconnect();
+    if (!state.ws) queueReconnect();
   }
 }
 
