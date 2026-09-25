@@ -1,0 +1,11 @@
+# Inventory collection contract
+
+Workers write only their assigned JSON report; coordinator assembles inventory.json. Read PLAN.md. No product behavior tests/builds yet; source reading and non-mutating discovery only. Enumerate individual controls/actions, not one vague row per tab. Include nested dialogs/menus, keyboard controls, error/empty/loading/retry states, conditional role/permission gates, background interactions and persistence/reload expectations.
+
+Report shape: { "schema_version": 1, "task_id": "...", "source_sha": "...", "features": [...], "unresolved": [...], "source_files_reviewed": [...] }.
+
+Feature shape: { "id": "EXT-F-1001", "name": "User action/outcome", "surface": "...", "entry_points": ["..."], "controls": [{"id":"EXT-F-1001-C01","label":"...","action":"..."}], "source_anchors": ["relative/path.tsx:line"], "dependency_class":"local|database|backend|desktop|cross-system", "wave":"A|B|C|D", "applicability": {"guest":{"applicable":true,"reason":"..."},"member":{"applicable":true,"reason":"..."},"admin":{"applicable":true,"reason":"..."}}, "cases": [{"id":"EXT-F-1001-T01","title":"...","modes":["guest","member","admin"],"preconditions":["..."],"steps":["..."],"expected":["..."],"dimensions":["warm","reload"]}], "cells": {"guest":{"test_status":"unverified","defect_ids":[],"run_ids":[],"retest_status":"not-run"},"member":{"test_status":"unverified","defect_ids":[],"run_ids":[],"retest_status":"not-run"},"admin":{"test_status":"unverified","defect_ids":[],"run_ids":[],"retest_status":"not-run"}} }.
+
+Use applicable=false with source-backed reason for unavailable capability, but keep negative access behavior as a case where relevant. Never mark a cell pass from code reading. Cases inherit the full build/reload and resource preflight in PLAN.md; include concrete feature-specific reproduction. Include controlled realistic data prerequisites; never secret values. Build channel, org selection, permissions and role matter. Record unknowns explicitly, do not invent applicability.
+
+Return at most 15 lines: status, feature/control/case counts, evidence path, files touched, uncertainties. Read-only source collection may create only the assigned report. Do not run tests, builds, browsers, Git mutations, other agents or new chats. No raw transcripts.
