@@ -34,6 +34,30 @@ const exactFillButton = (targetName) => `(() => {
   return buttons.length === 1 ? buttons[0] : null;
 })()`;
 
+const panelStatusExpression = (tabId) => {
+  if (!Number.isInteger(tabId)) throw new Error('real_site_fill_wrong_tab_invalid');
+  return `(() => {
+    const tabId = ${JSON.stringify(tabId)};
+    return chrome.runtime.sendMessage({
+      __matrx: true,
+      kind: 'credential-suggestions:panel-status',
+      payload: { tabId },
+    }).then((value) => {
+      const record = !!value && typeof value === 'object' && !Array.isArray(value);
+      const keys = record ? Object.keys(value).sort() : [];
+      return {
+        status: record && typeof value.status === 'string' ? value.status : null,
+        exactNoMatchShape:
+          keys.length === 2 &&
+          keys[0] === 'itemIds' &&
+          keys[1] === 'status' &&
+          Array.isArray(value.itemIds) &&
+          value.itemIds.length === 0,
+      };
+    }).catch(() => ({ status: null, exactNoMatchShape: false }));
+  })()`;
+};
+
 async function tabFor(worker, url, wait) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
     const tabId = await worker.evaluate(
@@ -80,28 +104,7 @@ async function waitForFocusedWrongOriginNoMatch({
       wrongUrl,
     );
     await verifyRealVaultPanel();
-    const panelStatus = await realPanel.evaluate(async (id) => {
-      try {
-        const value = await chrome.runtime.sendMessage({
-          __matrx: true,
-          kind: 'credential-suggestions:panel-status',
-          payload: { tabId: id },
-        });
-        const record = !!value && typeof value === 'object' && !Array.isArray(value);
-        const keys = record ? Object.keys(value).sort() : [];
-        return {
-          status: record && typeof value.status === 'string' ? value.status : null,
-          exactNoMatchShape:
-            keys.length === 2 &&
-            keys[0] === 'itemIds' &&
-            keys[1] === 'status' &&
-            Array.isArray(value.itemIds) &&
-            value.itemIds.length === 0,
-        };
-      } catch {
-        return { status: null, exactNoMatchShape: false };
-      }
-    }, tabId);
+    const panelStatus = await realPanel.evaluate(panelStatusExpression(tabId));
     if (
       pageReady.exactUrl &&
       pageReady.focusedPassword &&
@@ -351,3 +354,4 @@ exports.runRealSiteFillChecks = async ({
 
 exports.validateRealSiteUrls = validateRealSiteUrls;
 exports.observePostFillSubmission = observePostFillSubmission;
+exports.panelStatusExpression = panelStatusExpression;
