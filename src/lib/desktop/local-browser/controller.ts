@@ -1685,12 +1685,14 @@ export class LocalBrowserController {
               status: 'acknowledged',
               receipt: outcome.receipt,
             } as never);
+    let delivered = false;
     try {
-      await this.deps.send(socketEpoch, payload);
+      delivered = await this.deps.send(socketEpoch, payload);
     } catch {
       // Socket epochs are one-shot. Lost result delivery is retried only by a
       // later identical server execution, using the existing private receipt.
     }
+    if (!delivered) log.warn('desktop', 'local_browser_result_delivery_failed');
   }
 }
 

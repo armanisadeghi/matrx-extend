@@ -317,7 +317,7 @@ async function frozenDigest(spec: string): Promise<string> {
 }
 
 describe('owned local-browser tab controller', () => {
-  it('claims and completes a full frozen vault command with only settled value-free facts', async () => {
+  it('reports a fixed delivery diagnostic after a completed command result is not sent', async () => {
     const happyWindow = window as typeof window & { happyDOM: DetachedWindowAPI };
     happyWindow.happyDOM.setURL('https://example.test/login');
     const lateTextMarker = 'Harbor Dental patient portal is ready for your next appointment.';
@@ -395,6 +395,7 @@ describe('owned local-browser tab controller', () => {
     });
     const h = harness();
     const registration = await register(h);
+    vi.mocked(log.warn).mockClear();
     const expiresAtSecond = Math.floor(Date.now() / 1000) + 30;
     const deadlineMs = expiresAtSecond * 1000;
     await h.emit({
@@ -466,6 +467,10 @@ describe('owned local-browser tab controller', () => {
       complete,
       currentDocument: vi.fn(async () => currentDocument),
     } satisfies NonNullable<LocalBrowserControllerDeps['command']>;
+    vi.mocked(h.deps.send).mockImplementation(async (_epoch, payload) => {
+      if ((payload as { type?: string }).type === 'local_browser.result') return false;
+      return true;
+    });
     await h.emit(
       {
         type: 'local_browser.execute',
@@ -500,6 +505,9 @@ describe('owned local-browser tab controller', () => {
     expect(JSON.stringify(receipt)).not.toContain('https://example.test/login');
     expect(scriptStages).toContain('fill');
     expect(scriptStages).toContain('submit_explicit');
+    expect(vi.mocked(log.warn).mock.calls).toEqual([
+      ['desktop', 'local_browser_result_delivery_failed'],
+    ]);
     h.controller.stop();
     Object.assign(globalThis, { chrome: originalChrome });
     HTMLElement.prototype.getBoundingClientRect = originalRect;
