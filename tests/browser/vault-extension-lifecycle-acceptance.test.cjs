@@ -103,7 +103,10 @@ const {
         extensionId: 'abcdefghijklmnopabcdefghijklmnop',
         context: {
           newPage: async () => ({
-            locator: () => toggle,
+            locator: (selector) => {
+              assert.equal(selector, 'extensions-detail-view #enableToggle');
+              return toggle;
+            },
             goto: async () => {},
             close: async () => {
               extensionsPageClosed = true;

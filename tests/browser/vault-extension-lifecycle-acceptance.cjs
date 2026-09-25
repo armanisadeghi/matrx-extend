@@ -166,7 +166,9 @@ async function runExtensionDisableEnable({
   checkpoint('lifecycle_extension_disable');
 
   const extensionsPage = await context.newPage();
-  const toggle = extensionsPage.locator('#enableToggle');
+  // The list card and the details page both expose #enableToggle in Chrome
+  // 153. The id route below opens the details page; bind only its control.
+  const toggle = extensionsPage.locator('extensions-detail-view #enableToggle');
   let disableRequested = false;
   const cleanup = (proof.lifecycle ||= {}).disableEnableCleanup = {
     disableRequested: false,
