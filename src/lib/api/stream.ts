@@ -17,6 +17,8 @@ import { log } from '@/lib/debug/log';
 import { fetchWithMatrxProtocolFallback } from '@ai-matrx/agents/matrx';
 import { type MatrxStreamEnvelope, readMatrxNdjsonStream } from '@ai-matrx/agents/stream/ndjson';
 
+export type StreamErrorCode = 'resume_conflict';
+
 export type StreamEvent =
   | { type: 'text'; content: string }
   | { type: 'reasoning'; content: string }
@@ -34,7 +36,7 @@ export type StreamEvent =
       message: string;
       status?: number;
       /** Protocol-only classification; never render this as user text. */
-      code?: 'resume_conflict';
+      code?: StreamErrorCode;
     }
   | { type: 'done' };
 
@@ -109,12 +111,13 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
 
   if (!res.ok) {
     const errText = await res.text().catch(() => res.statusText);
+    const code = streamErrorCode(res.status, errText);
     log.error('stream', `✗ ${opts.url} ${res.status}`, errText);
     opts.onEvent({
       type: 'error',
       message: streamErrorMessage(res.status),
       status: res.status,
-      ...(errText.includes('resume_conflict') ? { code: 'resume_conflict' as const } : {}),
+      ...(code !== undefined && { code }),
     });
     opts.onEvent({ type: 'done' });
     return;
@@ -220,7 +223,7 @@ function dispatch(event: MatrxStreamEnvelope, onEvent: (e: StreamEvent) => void)
  * HTTP response bodies are diagnostics, not UI copy: validation failures can
  * include the entire rejected request, including page context and secrets.
  */
-function streamErrorMessage(status?: number): string {
+export function streamErrorMessage(status?: number): string {
   switch (status) {
     case 0:
       return "Couldn't connect to the chat service. Check your connection and try again.";
@@ -239,4 +242,8 @@ function streamErrorMessage(status?: number): string {
         ? 'The chat service is temporarily unavailable. Try again.'
         : 'The chat service could not complete this request. Try again.';
   }
+}
+
+function streamErrorCode(status: number, diagnostic: string): StreamErrorCode | undefined {
+  return status === 409 && diagnostic.includes('resume_conflict') ? 'resume_conflict' : undefined;
 }

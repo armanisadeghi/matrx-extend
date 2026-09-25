@@ -5,11 +5,13 @@ import {
   mandateExecutePath,
 } from '@/lib/api/routes/ai';
 import { conversationResumePath } from '@/lib/api/routes/tool-results';
+import { streamErrorMessage } from '@/lib/api/stream';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
 import { buildChatContext } from '@/lib/chat/build-context';
 import type { AttachedHighlight } from '@/lib/chat/context/types';
 import { refreshPageContextBeforeSend } from '@/lib/chat/refresh-page-context';
+import { presentChatStreamError } from '@/lib/chat/stream-error';
 import { progressFromWire } from '@/lib/chat/tool-progress';
 import { readInboundRenderBlock } from '@/lib/content-ir/inbound';
 import { log } from '@/lib/debug/log';
@@ -670,12 +672,11 @@ function ensureStreamListeners(): void {
         // this error handler in streamFetch's error path will finalize it,
         // and the ask cards remain interactive.
       } else {
-        useChatStore.getState().appendAssistantText(target, `\n\n_Error:_ ${message}`);
-        useChatStore.getState().setStreamInterruption({
+        presentChatStreamError({
+          messageId: target,
           runId: chunk.runId,
-          reason: 'error',
+          message,
           lastInput: lastSendRef.current?.input ?? '',
-          at: Date.now(),
         });
       }
     } else if (chunk.type === 'done') {
@@ -1010,7 +1011,7 @@ export function useChatStream() {
         broadcast(CHANNELS.STREAM_CHUNK, {
           runId,
           type: 'error',
-          payload: { message: `stream failed to start: ${(err as Error)?.message ?? err}` },
+          payload: { message: streamErrorMessage() },
         });
         broadcast(CHANNELS.STREAM_CHUNK, { runId, type: 'done', payload: {} });
         opts.onStartFailed?.(err as Error);

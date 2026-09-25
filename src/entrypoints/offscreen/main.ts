@@ -6,7 +6,7 @@
  * touch chrome.storage or the auth flow here.
  */
 
-import { streamFetch } from '@/lib/api/stream';
+import { streamErrorMessage, streamFetch } from '@/lib/api/stream';
 import { handleMicRun, registerMicKeepalive } from '@/lib/audio/mic-recorder-offscreen';
 import type { MicRunPayload } from '@/lib/audio/mic-types';
 import { log, startDebugRelay } from '@/lib/debug/log';
@@ -100,7 +100,7 @@ on<RunArgs, { ok: true }>(CHANNELS.STREAM_RUN, async (args) => {
     broadcast(CHANNELS.STREAM_CHUNK, {
       runId: args.runId,
       type: 'error',
-      payload: { message: (err as Error)?.message ?? String(err) },
+      payload: { message: streamErrorMessage() },
     });
     broadcast(CHANNELS.STREAM_CHUNK, {
       runId: args.runId,

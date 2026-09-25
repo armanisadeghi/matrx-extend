@@ -111,6 +111,34 @@ describe('streamFetch public NDJSON kernel integration', () => {
     ]);
   });
 
+  it('classifies a resume conflict without forwarding its response body', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValue(
+          new Response('{"error":"resume_conflict","detail":"secret"}', { status: 409 }),
+        ),
+    );
+    const events: StreamEvent[] = [];
+
+    await streamFetch({
+      url: 'https://example.test/resume',
+      headers: {},
+      onEvent: (event) => events.push(event),
+    });
+
+    expect(events).toEqual([
+      {
+        type: 'error',
+        message: 'The chat service could not complete this request. Try again.',
+        status: 409,
+        code: 'resume_conflict',
+      },
+      { type: 'done' },
+    ]);
+  });
+
   it.each([
     {
       name: 'the captured validation rejection without echoing its rejected request context',
