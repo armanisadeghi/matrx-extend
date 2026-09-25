@@ -117,6 +117,78 @@ export function promoteUnpackedRelease({ sourceDir, destinationDir, version }) {
   }
 }
 
+/** Keep every already-installed unpacked path on the same release bytes. */
+export function promoteUnpackedReleaseToMany({ sourceDir, destinationDirs, version }) {
+  const source = resolve(sourceDir);
+  const destinations = destinationDirs.map((dir) => resolve(dir));
+  if (destinations.length === 0 || new Set(destinations).size !== destinations.length) {
+    throw new Error('Release destinations must be nonempty and unique');
+  }
+  if (destinations.includes(source)) throw new Error('Source and destinations must differ');
+  assertKeyedManifest(source, version);
+  const sourceHash = hashReleaseTree(source);
+  const fileCount = fileEntries(source).length;
+  const nonce = `${process.pid}-${Date.now()}`;
+  const entries = destinations.map((destination) => {
+    const parent = dirname(destination);
+    mkdirSync(parent, { recursive: true });
+    return {
+      destination,
+      staging: join(parent, `.${basename(destination)}.release-stage-${nonce}`),
+      backup: join(parent, `.${basename(destination)}.release-backup-${nonce}`),
+      movedExisting: false,
+      promoted: false,
+    };
+  });
+  try {
+    // Prepare and verify every replacement before changing any installed path.
+    for (const entry of entries) {
+      cpSync(source, entry.staging, { recursive: true, dereference: false, errorOnExist: true });
+      assertKeyedManifest(entry.staging, version);
+      if (hashReleaseTree(entry.staging) !== sourceHash) {
+        throw new Error(`Staged release tree hash differs from source: ${entry.destination}`);
+      }
+    }
+    if (hashReleaseTree(source) !== sourceHash)
+      throw new Error('Source release tree changed during staging');
+    for (const entry of entries) {
+      if (existsSync(entry.destination)) {
+        renameSync(entry.destination, entry.backup);
+        entry.movedExisting = true;
+      }
+      renameSync(entry.staging, entry.destination);
+      entry.promoted = true;
+      assertKeyedManifest(entry.destination, version);
+      if (hashReleaseTree(entry.destination) !== sourceHash) {
+        throw new Error(`Promoted release tree hash differs from source: ${entry.destination}`);
+      }
+    }
+    if (hashReleaseTree(source) !== sourceHash)
+      throw new Error('Source release tree changed during promotion');
+  } catch (error) {
+    for (const entry of [...entries].reverse()) {
+      rmSync(entry.staging, { recursive: true, force: true });
+      if (entry.promoted) rmSync(entry.destination, { recursive: true, force: true });
+      if (entry.movedExisting && existsSync(entry.backup))
+        renameSync(entry.backup, entry.destination);
+    }
+    throw error;
+  }
+  // Both replacements are committed and verified. Cleanup failure must not
+  // attempt to roll back a destination whose old backup was already removed.
+  for (const entry of entries) {
+    if (entry.movedExisting) rmSync(entry.backup, { recursive: true, force: true });
+  }
+  return {
+    source,
+    destination: entries[0].destination,
+    destinations,
+    sourceHash,
+    destinationHash: sourceHash,
+    fileCount,
+  };
+}
+
 export function writeReleaseReceipt({
   receiptPath,
   sourceSha,
@@ -134,6 +206,7 @@ export function writeReleaseReceipt({
     localZip: { path: localZip, sha256: sha256(readFileSync(localZip)) },
     sourcePath: promotion.source,
     destinationPath: promotion.destination,
+    ...(promotion.destinations ? { destinationPaths: promotion.destinations } : {}),
     treeSha256: promotion.sourceHash,
     fileCount: promotion.fileCount,
   };
@@ -156,11 +229,14 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(new URL(import.meta.
     );
   const source = option('source') ?? join(root, '.output/chrome-mv3');
   const destination = option('destination') ?? join(root, '.output/chrome-mv3-dev');
-  const promotion = promoteUnpackedRelease({
-    sourceDir: source,
-    destinationDir: destination,
-    version,
-  });
+  const alsoDestination = option('also-destination');
+  const promotion = alsoDestination
+    ? promoteUnpackedReleaseToMany({
+        sourceDir: source,
+        destinationDirs: [destination, alsoDestination],
+        version,
+      })
+    : promoteUnpackedRelease({ sourceDir: source, destinationDir: destination, version });
   const receipt = option('receipt');
   if (receipt) {
     const storeZip = option('store-zip');

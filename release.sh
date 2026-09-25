@@ -46,8 +46,9 @@
 #   build: STORE zip (MATRX_CWS_BUILD=1: no dev key) + store-package and
 #     Chrome Web Store policy-surface checks → .output/matrx-extend-<v>-store.zip;
 #     LOCAL zip (dev key kept, stable ID cihdmkcdjjckfhjpgoedmgfpoljebaml) →
-#     .output/matrx-extend-<v>-local.zip; promote the keyed bundle into
-#     .output/chrome-mv3-dev/ and write .output/release-receipt.json.
+#     .output/matrx-extend-<v>-local.zip; promote the keyed bundle into both
+#     installed unpacked paths (.output/chrome-mv3-dev/ and .output/chrome-mv3/)
+#     and write .output/release-receipt.json.
 # Each failure is an ERROR finding naming what failed and the command to
 # re-run. Findings print as one opened-and-closed section per category; with
 # no findings nothing prints. The last line is where the store zip is.
@@ -435,8 +436,9 @@ run_checks() {
 }
 
 # Store FIRST, local SECOND: the last build owns .output/chrome-mv3, and the
-# keyed bundle is the one promoted for "Load unpacked" (stable dev ID; the
-# Supabase OAuth redirect is registered against it). The Store rejects any
+# keyed bundle is promoted into both paths used by existing Chrome profiles
+# (stable dev ID; the Supabase OAuth redirect is registered against it).
+# The Store rejects any
 # upload that carries the dev key (incident: .research/v0.1.4-auth-incident.md).
 STORE_ZIP="$OUTPUT_DIR/${PROJECT_NAME}-${NEW_VERSION}-store.zip"
 LOCAL_ZIP="$OUTPUT_DIR/${PROJECT_NAME}-${NEW_VERSION}-local.zip"
@@ -473,9 +475,10 @@ build_zips() {  # writes $JOBS/build.findings (level|text|remedy per line)
     if [[ -f "$STORE_ZIP" ]]; then
         node scripts/sync-unpacked-release.mjs --root "$REPO_ROOT" --version "$NEW_VERSION" \
             --source-sha "$RELEASE_SHA" --source "$BUILD_SNAP/.output/chrome-mv3" \
-            --destination "$OUTPUT_DIR/chrome-mv3-dev" --store-zip "$STORE_ZIP" --local-zip "$LOCAL_ZIP" \
+            --destination "$OUTPUT_DIR/chrome-mv3-dev" --also-destination "$OUTPUT_DIR/chrome-mv3" \
+            --store-zip "$STORE_ZIP" --local-zip "$LOCAL_ZIP" \
             --receipt "$OUTPUT_DIR/release-receipt.json" --publish-state pushed \
-            || bf ERROR "the keyed local bundle was not promoted to .output/chrome-mv3-dev/ (no receipt written)" "node scripts/sync-unpacked-release.mjs --root . --version $NEW_VERSION --source-sha $RELEASE_SHA"
+            || bf ERROR "the keyed local bundle was not promoted to both installed unpacked paths (no receipt written)" "node scripts/sync-unpacked-release.mjs --root . --version $NEW_VERSION --source-sha $RELEASE_SHA"
     else
         bf ERROR "no STORE zip, so the local bundle was not promoted and no receipt was written" "pnpm zip:store"
     fi

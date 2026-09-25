@@ -3,7 +3,11 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSyn
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { hashReleaseTree, promoteUnpackedRelease } from '../../scripts/sync-unpacked-release.mjs';
+import {
+  hashReleaseTree,
+  promoteUnpackedRelease,
+  promoteUnpackedReleaseToMany,
+} from '../../scripts/sync-unpacked-release.mjs';
 
 const roots: string[] = [];
 const makeRoot = () => {
@@ -24,6 +28,45 @@ afterEach(() => {
 });
 
 describe('release unpacked promotion', () => {
+  it('replaces both installed Chrome paths with the same complete keyed release tree', () => {
+    const root = makeRoot();
+    const source = join(root, 'build', 'chrome-mv3');
+    const destinations = [join(root, 'chrome-mv3-dev'), join(root, 'chrome-mv3')];
+    writeBundle(source, '0.2.39');
+    for (const destination of destinations) {
+      writeBundle(destination, '0.2.38');
+      writeFileSync(join(destination, 'chunks', 'obsolete.js'), 'old code');
+    }
+    const promoted = promoteUnpackedReleaseToMany({
+      sourceDir: source,
+      destinationDirs: destinations,
+      version: '0.2.39',
+    });
+    expect(promoted.destinations).toEqual(destinations);
+    for (const destination of destinations) {
+      expect(hashReleaseTree(destination)).toBe(hashReleaseTree(source));
+      expect(() => readFileSync(join(destination, 'chunks', 'obsolete.js'))).toThrow();
+    }
+  });
+
+  it('keeps both installed paths unchanged when the candidate has no local key', () => {
+    const root = makeRoot();
+    const source = join(root, 'build', 'chrome-mv3');
+    const destinations = [join(root, 'chrome-mv3-dev'), join(root, 'chrome-mv3')];
+    writeBundle(source, '0.2.39', false);
+    writeBundle(destinations[0], '0.2.37');
+    writeBundle(destinations[1], '0.2.38');
+    const before = destinations.map(hashReleaseTree);
+    expect(() =>
+      promoteUnpackedReleaseToMany({
+        sourceDir: source,
+        destinationDirs: destinations,
+        version: '0.2.39',
+      }),
+    ).toThrow('unkeyed Store bundle');
+    expect(destinations.map(hashReleaseTree)).toEqual(before);
+  });
+
   it('replaces a stale 0.2.12 development tree with the complete keyed release tree', () => {
     const root = makeRoot();
     const source = join(root, 'chrome-mv3');
@@ -74,6 +117,7 @@ describe('release unpacked promotion', () => {
     const root = makeRoot();
     const source = join(root, 'chrome-mv3');
     const destination = join(root, 'chrome-mv3-dev');
+    const otherDestination = join(root, 'chrome-mv3-installed');
     const storeZip = join(root, 'store.zip');
     const localZip = join(root, 'local.zip');
     const receipt = join(root, 'release-receipt.json');
@@ -94,6 +138,8 @@ describe('release unpacked promotion', () => {
         source,
         '--destination',
         destination,
+        '--also-destination',
+        otherDestination,
         '--store-zip',
         storeZip,
         '--local-zip',
@@ -112,7 +158,9 @@ describe('release unpacked promotion', () => {
       publishState: 'pushed',
       sourcePath: source,
       destinationPath: destination,
+      destinationPaths: [destination, otherDestination],
     });
+    expect(hashReleaseTree(otherDestination)).toBe(hashReleaseTree(source));
   });
 });
 
