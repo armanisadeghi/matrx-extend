@@ -2922,8 +2922,12 @@ Every entry follows this shape:
   sixteen measurements behind it, are in `src/lib/frontend-bridge/panel-gesture.ts`.
 - **The automated version:** `pnpm build && node tests/browser/side-panel-opens-on-our-click.mjs`
   drives the real built extension from a real click in headless Chrome and asserts the panel
-  opened — and that the same call with no gesture is still refused. The full browser matrix behind
-  the design is `node tests/browser/side-panel-gesture-spike.mjs`.
+  opened — and that the same call with no gesture is still refused. `node
+  tests/browser/native-sidepanel-qa-harness.test.mjs` proves the QA harness refuses a foreign
+  CDP/browser identity; `node tests/browser/native-sidepanel-qa-harness.mjs` launches its own
+  Chrome-for-Testing profile, opens the native panel through that trusted click, and writes
+  browser-local PNGs under `test-results/`. The full browser matrix behind the design is `node
+  tests/browser/side-panel-gesture-spike.mjs`.
 
 ### The extension is reachable from every host the web app runs on
 

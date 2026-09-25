@@ -28,11 +28,11 @@
  *      refused. Without this line the run could pass in a browser that had
  *      stopped enforcing gestures at all, and would be proving nothing.
  *
- * HONEST LIMIT: under `--headless=new` the side panel has no UI host, so the
- * panel document does not load and this cannot assert pixels. It asserts
- * Chrome's verdict on the call, which is the thing that was in doubt and the
- * thing that regressed. The full matrix behind the design, including what
- * headless cannot show, is `tests/browser/side-panel-gesture-spike.mjs`.
+ * Pixel proof now lives in `native-sidepanel-qa-harness.mjs`: current Chrome
+ * for Testing does create a native panel target under `--headless=new` when
+ * launched in an owned disposable profile. This guard remains focused on the
+ * gesture contract; its deliberately simpler Playwright launch is not the
+ * native-panel isolation harness.
  *
  * Run:  pnpm build  &&  node tests/browser/side-panel-opens-on-our-click.mjs
  */
