@@ -39,7 +39,9 @@ import {
   appendStoreRows,
   declareStoreTable,
   storeTables,
+  tableLivesWhere,
   tablesLiveIn,
+  tablesLiveWhere,
 } from '@/lib/records/tables';
 import { getSupabase } from '@/lib/supabase/client';
 import { type DbCallSite, failDbCall, recordDbFailure } from '@/lib/supabase/db-failure';
@@ -178,34 +180,32 @@ export interface PickableTable {
 }
 
 /**
- * Every table the Showcase may offer for this organization: its record-store Tables and the
- * person's older datasets that have not moved (a moved dataset is archived with the same id,
- * so the store's copy is the one listed). Throws on a refused read, never an empty list.
+ * Every table the Showcase may offer for this organization, each ONCE, from the store its
+ * organization's switch says it is written in (`tablesLiveWhere`): while the switch is off an
+ * older table and its same-id copy are one table, offered as the older one; after the switch,
+ * as the store's. Throws on a refused read, never an empty list.
  */
 export async function listPickableTables(organizationId: string): Promise<PickableTable[]> {
   const org = requireOrganizationContext(organizationId);
   const client = await recordsClientFor(org, 'user');
   const store = await storeTables(client);
-  const seen = new Set(store.map((t) => t.id));
-  const older = (await listUserTables()).filter(
-    (t) => !seen.has(t.id) && t.organization_id === org,
-  );
-  return [
-    ...store.map((t) => ({ ...t, store: 'record' as const })),
-    ...older.map((t) => ({
-      id: t.id,
-      table_name: t.table_name,
-      organization_id: t.organization_id,
-      store: 'older' as const,
-    })),
-  ];
-}
-
-/** Where `tableId` lives for this organization — the record store when it holds a Table by that id. */
-async function homeOf(tableId: string, organizationId: string): Promise<'record' | 'older'> {
-  const client = await recordsClientFor(organizationId, 'user');
-  const store = await storeTables(client);
-  return store.some((t) => t.id === tableId) ? 'record' : 'older';
+  const older = (await listUserTables()).filter((t) => t.organization_id === org);
+  const homes = await tablesLiveWhere([...store.map((t) => t.id), ...older.map((t) => t.id)]);
+  const picked = new Map<string, PickableTable>();
+  for (const t of older) {
+    if (homes.get(t.id) === 'older') {
+      picked.set(t.id, {
+        id: t.id,
+        table_name: t.table_name,
+        organization_id: t.organization_id,
+        store: 'older',
+      });
+    }
+  }
+  for (const t of store) {
+    if (!picked.has(t.id) && homes.get(t.id) !== 'older') picked.set(t.id, { ...t, store: 'record' });
+  }
+  return [...picked.values()];
 }
 
 /**
@@ -214,7 +214,7 @@ async function homeOf(tableId: string, organizationId: string): Promise<'record'
  */
 export async function tableColumnKeys(tableId: string, organizationId: string): Promise<string[]> {
   const org = requireOrganizationContext(organizationId);
-  if ((await homeOf(tableId, org)) === 'record') {
+  if ((await tableLivesWhere(tableId)) === 'record') {
     const client = await recordsClientFor(org, 'user');
     const fields = await client.fields({ table_id: tableId });
     if (!fields.ok) throw new Error(fields.error.message);
@@ -232,7 +232,7 @@ export async function tableOrganization(
   organizationId: string,
 ): Promise<string | null> {
   const org = requireOrganizationContext(organizationId);
-  if ((await homeOf(tableId, org)) === 'record') return org;
+  if ((await tableLivesWhere(tableId)) === 'record') return org;
   return (await getUserTable(tableId)).organization_id;
 }
 
@@ -425,7 +425,7 @@ export async function appendRowsToUserTable(
 
   // A record-store table (born there, or moved there with the same id) is written through the
   // store's own door; the older RPC would write the moved table's archived copy.
-  if ((await homeOf(tableId, organizationId)) === 'record') {
+  if ((await tableLivesWhere(tableId)) === 'record') {
     const keyMap = buildFieldNameMap(unionRowKeys(rows));
     const mapped = rows.map((r) => {
       const out: Record<string, unknown> = {};

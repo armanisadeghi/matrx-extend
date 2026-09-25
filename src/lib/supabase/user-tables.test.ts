@@ -13,12 +13,16 @@ vi.mock('@/lib/supabase/client', () => ({
 // so the organization's tables have not moved and the store holds no Table by these ids.
 const home = vi.hoisted(() => ({
   livesIn: 'older' as 'older' | 'record',
+  /** What `custom.where_tables_live` answers per table id (lane WHERE-LIVES-SWITCH); absent = older. */
+  where: new Map<string, 'older' | 'record'>(),
   storeTables: [] as { id: string; table_name: string; organization_id: string }[],
   declareStoreTable: vi.fn(async () => '44444444-4444-4444-8444-444444444444'),
   appendStoreRows: vi.fn(async () => ({ inserted: 1, unmatched: [] as string[] })),
 }));
 vi.mock('@/lib/records/tables', () => ({
   tablesLiveIn: async () => home.livesIn,
+  tableLivesWhere: async (id: string) => home.where.get(id) ?? 'older',
+  tablesLiveWhere: async (ids: string[]) => new Map(ids.map((id) => [id, home.where.get(id) ?? 'older'])),
   storeTables: async () => home.storeTables,
   declareStoreTable: home.declareStoreTable,
   appendStoreRows: home.appendStoreRows,
@@ -47,6 +51,7 @@ describe('user-table organization boundary', () => {
     mocks.rpc.mockReset();
     mocks.maybeSingle.mockReset();
     home.livesIn = 'older';
+    home.where = new Map();
     home.storeTables = [];
     home.declareStoreTable.mockClear();
     home.appendStoreRows.mockClear();
@@ -176,6 +181,7 @@ describe('user-table organization boundary', () => {
   });
 
   it('an append to a record-store table goes through the store with the same column mapping', async () => {
+    home.where.set('33333333-3333-4333-8333-333333333333', 'record');
     home.storeTables = [
       {
         id: '33333333-3333-4333-8333-333333333333',
@@ -193,5 +199,34 @@ describe('user-table organization boundary', () => {
     ]);
     expect(mocks.rpc).not.toHaveBeenCalled();
     expect(mocks.maybeSingle).not.toHaveBeenCalled();
+  });
+
+  // LANE WHERE-LIVES-SWITCH (census row X1). "Heat Pump Field Research" was COPIED into the
+  // record store under its own id, and the owner has not pressed his Data tables switch. The
+  // store's answer is "older": the Showcase's scraped rows must land in the older table the
+  // owner still works in, never in the copy. RED before this lane: the append found the copy
+  // among the store's Tables and wrote it.
+  it('an append to a copied table goes to the older table while the switch is off', async () => {
+    home.storeTables = [
+      {
+        id: '33333333-3333-4333-8333-333333333333',
+        table_name: 'Heat Pump Field Research',
+        organization_id: ORGANIZATION_ID,
+      },
+    ];
+    home.where.set('33333333-3333-4333-8333-333333333333', 'older');
+    mocks.maybeSingle.mockResolvedValue({ data: { organization_id: ORGANIZATION_ID }, error: null });
+    mocks.rpc.mockResolvedValue({ data: 1, error: null });
+
+    await expect(
+      appendRowsToUserTable('33333333-3333-4333-8333-333333333333', ORGANIZATION_ID, [
+        { Topic: 'Mini-split defrost settings for coastal installs' },
+      ]),
+    ).resolves.toEqual({ inserted: 1 });
+    expect(home.appendStoreRows).not.toHaveBeenCalled();
+    expect(mocks.rpc).toHaveBeenCalledWith('append_rows_to_user_table', {
+      p_table_id: '33333333-3333-4333-8333-333333333333',
+      p_rows: [{ topic: 'Mini-split defrost settings for coastal installs' }],
+    });
   });
 });

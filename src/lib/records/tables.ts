@@ -29,7 +29,7 @@
  * `@ai-matrx/records/core`. Until it exists this file composes the same three doors.
  */
 
-import { platformDb } from '@/lib/supabase/schemas';
+import { customDb, platformDb } from '@/lib/supabase/schemas';
 import type { RecordsClient } from '@ai-matrx/records/core';
 
 /** The knob the mover writes when an organization's tables move (aidream movers/move.py). */
@@ -66,6 +66,48 @@ export async function tablesLiveIn(organizationId: string): Promise<'record' | '
     );
   }
   return data === true || data === 'true' ? 'record' : 'older';
+}
+
+/**
+ * WHERE EACH OF THESE TABLES IS READ AND WRITTEN (lane WHERE-LIVES-SWITCH, census row X1).
+ *
+ * The store's one answer, `custom.where_tables_live`, read from the organization's Data tables
+ * switch — never "does the store hold a Table with this id?". COPY mode copied every older table
+ * into the store under the SAME id and left the older table live until the owner presses the
+ * switch, so asking for the copy's existence sent the Showcase's appends into the copy while the
+ * owner kept working in the older table. "older": write the older table (its copy is read-only
+ * and the store refuses a write to it). "record": the store. A refused read THROWS: saving into
+ * the wrong place would hide the rows from the owner's screens.
+ */
+export async function tablesLiveWhere(tableIds: readonly string[]): Promise<Map<string, 'record' | 'older'>> {
+  const ids = [...new Set(tableIds.filter(Boolean))];
+  const homes = new Map<string, 'record' | 'older'>();
+  if (ids.length === 0) return homes;
+  const { data, error } = await customDb().rpc('where_tables_live', { p_table_ids: ids });
+  if (error) {
+    throw new RecordStoreTableError(
+      'Could not read where this table lives, so nothing was saved — saving into the wrong place would hide it from your screens. Try again.',
+      error.message,
+    );
+  }
+  for (const row of (data ?? []) as { table_id?: unknown; lives_in?: unknown }[]) {
+    if (typeof row.table_id === 'string' && (row.lives_in === 'record' || row.lives_in === 'older')) {
+      homes.set(row.table_id, row.lives_in);
+    }
+  }
+  return homes;
+}
+
+/** Where one table is read and written; throws when the store did not say. */
+export async function tableLivesWhere(tableId: string): Promise<'record' | 'older'> {
+  const home = (await tablesLiveWhere([tableId])).get(tableId);
+  if (!home) {
+    throw new RecordStoreTableError(
+      'Could not read where this table lives, so nothing was saved. Try again.',
+      'custom.where_tables_live gave no answer for this table.',
+    );
+  }
+  return home;
 }
 
 export interface StoreTableSummary {

@@ -159,6 +159,9 @@ export const toolDb = () => getSupabase().schema('tool');
 /** `platform` — scoped feature-knob resolution and other platform primitives. */
 export const platformDb = () => getSupabase().schema('platform');
 
+/** `custom` — the record store's client doors (here: `where_tables_live`, where a table is read and written). */
+export const customDb = () => getSupabase().schema('custom');
+
 /** `ai` — model registry. NOTE: `ai.model` was split; use `model_definition`. */
 export const aiDb = () => getSupabase().schema('ai');
 
