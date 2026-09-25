@@ -155,6 +155,8 @@ interface StreamChunk {
      * as a benign signal rather than rendering it as an error message.
      */
     status?: number;
+    /** Protocol classification only; never rendered as chat text. */
+    code?: 'resume_conflict';
   };
 }
 
@@ -641,7 +643,7 @@ function ensureStreamListeners(): void {
         const retryState = resumeRetryRef.current;
         const RESUME_CONFLICT_MAX_RETRIES = 4;
         if (
-          message.includes('resume_conflict') &&
+          chunk.payload.code === 'resume_conflict' &&
           retryState &&
           retryState.runId === chunk.runId &&
           retryState.attempts < RESUME_CONFLICT_MAX_RETRIES
@@ -669,6 +671,12 @@ function ensureStreamListeners(): void {
         // and the ask cards remain interactive.
       } else {
         useChatStore.getState().appendAssistantText(target, `\n\n_Error:_ ${message}`);
+        useChatStore.getState().setStreamInterruption({
+          runId: chunk.runId,
+          reason: 'error',
+          lastInput: lastSendRef.current?.input ?? '',
+          at: Date.now(),
+        });
       }
     } else if (chunk.type === 'done') {
       watchdogRef.current?.stop();

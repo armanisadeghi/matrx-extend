@@ -9,7 +9,8 @@
  *   - Standard events use `{ event: "<name>", data: { ... } }`
  *   - Both are normalized by the public `@ai-matrx/agents` wire kernel
  *
- * Every raw line is logged so the user can see exactly what came back.
+ * Every raw line is logged for Debug while user-facing events receive only
+ * safe recovery copy. Backend errors can echo rejected request context.
  */
 
 import { log } from '@/lib/debug/log';
@@ -27,7 +28,14 @@ export type StreamEvent =
    * this to distinguish benign protocol responses — notably resume's 409
    * "outstanding_delegated_calls" — from real failures.
    */
-  | { type: 'error'; message: string; status?: number }
+  | {
+      type: 'error';
+      /** Safe to show in a chat surface. Never contains the response body. */
+      message: string;
+      status?: number;
+      /** Protocol-only classification; never render this as user text. */
+      code?: 'resume_conflict';
+    }
   | { type: 'done' };
 
 export interface StreamOpenInfo {
@@ -94,7 +102,7 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
     res = response;
   } catch (err) {
     log.error('stream', `✗ ${opts.url} network error`, err);
-    opts.onEvent({ type: 'error', message: (err as Error).message, status: 0 });
+    opts.onEvent({ type: 'error', message: streamErrorMessage(0), status: 0 });
     opts.onEvent({ type: 'done' });
     return;
   }
@@ -102,7 +110,12 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
   if (!res.ok) {
     const errText = await res.text().catch(() => res.statusText);
     log.error('stream', `✗ ${opts.url} ${res.status}`, errText);
-    opts.onEvent({ type: 'error', message: `${res.status}: ${errText}`, status: res.status });
+    opts.onEvent({
+      type: 'error',
+      message: streamErrorMessage(res.status),
+      status: res.status,
+      ...(errText.includes('resume_conflict') ? { code: 'resume_conflict' as const } : {}),
+    });
     opts.onEvent({ type: 'done' });
     return;
   }
@@ -154,7 +167,7 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
       log.info('stream', 'aborted by client');
     } else {
       log.error('stream', 'read failed', err);
-      opts.onEvent({ type: 'error', message: (err as Error).message });
+      opts.onEvent({ type: 'error', message: streamErrorMessage() });
     }
   } finally {
     log.success('stream', `done (${lineCount} lines, ${parsedCount} events)`);
@@ -176,12 +189,14 @@ function dispatch(event: MatrxStreamEnvelope, onEvent: (e: StreamEvent) => void)
     return;
   }
   if (event.event === 'error') {
+    const diagnostic =
+      (typeof data.user_message === 'string' && data.user_message) ||
+      (typeof data.message === 'string' && data.message) ||
+      'unknown error';
+    log.error('stream', 'server emitted an error event', diagnostic);
     onEvent({
       type: 'error',
-      message:
-        (typeof data.user_message === 'string' && data.user_message) ||
-        (typeof data.message === 'string' && data.message) ||
-        'unknown error',
+      message: streamErrorMessage(),
     });
     return;
   }
@@ -199,4 +214,29 @@ function dispatch(event: MatrxStreamEnvelope, onEvent: (e: StreamEvent) => void)
     eventName: event.event,
     data,
   });
+}
+
+/**
+ * HTTP response bodies are diagnostics, not UI copy: validation failures can
+ * include the entire rejected request, including page context and secrets.
+ */
+function streamErrorMessage(status?: number): string {
+  switch (status) {
+    case 0:
+      return "Couldn't connect to the chat service. Check your connection and try again.";
+    case 401:
+      return 'Your session has expired. Sign in and try again.';
+    case 403:
+      return "You don't have access to this chat. Sign in and try again.";
+    case 404:
+      return 'This chat feature is unavailable. Try again.';
+    case 422:
+      return 'The chat service could not start this request. Try again.';
+    case 429:
+      return 'The chat service is busy. Try again shortly.';
+    default:
+      return status !== undefined && status >= 500
+        ? 'The chat service is temporarily unavailable. Try again.'
+        : 'The chat service could not complete this request. Try again.';
+  }
 }

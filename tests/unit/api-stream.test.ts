@@ -102,8 +102,63 @@ describe('streamFetch public NDJSON kernel integration', () => {
     });
 
     expect(events).toEqual([
-      { type: 'error', message: '409: denied', status: 409 },
+      {
+        type: 'error',
+        message: 'The chat service could not complete this request. Try again.',
+        status: 409,
+      },
       { type: 'done' },
     ]);
   });
+
+  it.each([
+    {
+      name: 'the captured validation rejection without echoing its rejected request context',
+      status: 422,
+      body: JSON.stringify({
+        error: 'validation_error',
+        message: 'Request validation failed with 1 issue: `body.organization_id`: Field required',
+        details: [
+          {
+            field: 'body.organization_id',
+            rejected_input: {
+              user_input: 'What is the title of this page?',
+              context: {
+                access_token: 'must-never-reach-chat',
+                page_title: 'Native Harness Target',
+              },
+            },
+          },
+        ],
+      }),
+      userMessage: 'The chat service could not start this request. Try again.',
+    },
+    {
+      name: 'a temporary upstream outage',
+      status: 503,
+      body: 'upstream unavailable while contacting provider',
+      userMessage: 'The chat service is temporarily unavailable. Try again.',
+    },
+  ])(
+    'reports $name with a retryable user message while Debug keeps the response detail',
+    async ({ status, body, userMessage }) => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(body, { status })));
+      const events: StreamEvent[] = [];
+
+      await streamFetch({
+        url: 'https://example.test/stream',
+        headers: {},
+        onEvent: (event) => events.push(event),
+      });
+
+      expect(events).toEqual([{ type: 'error', message: userMessage, status }, { type: 'done' }]);
+      expect(JSON.stringify(events)).not.toContain('access_token');
+      expect(JSON.stringify(events)).not.toContain('organization_id');
+      expect(logMock.error).toHaveBeenCalledWith(
+        'stream',
+        `✗ https://example.test/stream ${status}`,
+        body,
+      );
+    },
+  );
 });

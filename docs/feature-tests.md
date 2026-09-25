@@ -244,6 +244,20 @@ Every entry follows this shape:
   `organization_id` is refused. The client never guesses, hardcodes, or reads
   a fallback organization.
 
+### Chat stream failure recovery
+- **What it does:** Keeps backend diagnostics in the Debug log while Chat shows
+  a short recovery message and a **Retry** action.
+- **Where to test:** Side panel → **Chat**, with the Debug tab available to an
+  administrator.
+- **Steps:** Return a stream-start `422` whose validation body includes a
+  rejected request context, then return a `503` on a separate attempt.
+- **Expected:** The assistant bubble contains only a concise message with
+  **Try again**, and the interruption banner offers **Retry**. It never shows
+  request context, page data, tokens, or raw JSON. Debug retains the complete
+  response detail for diagnosis; `503` says the service is temporarily
+  unavailable.
+- **Covered by:** `tests/unit/api-stream.test.ts`.
+
 ---
 
 ## Agent tools
