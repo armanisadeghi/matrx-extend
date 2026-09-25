@@ -5,18 +5,37 @@ import {
   isSettledGuestPanel,
   requireExpectedExtension,
   requireOwnedCommandLine,
+  resolveExpectedRelease,
   requireSidePanelContext,
   requireSpawnedProfileOwner,
 } from './native-sidepanel-qa-harness.mjs';
 
 const profile = '/private/tmp/owned-profile';
 const extensionId = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
+const receipt = {
+  version: '0.2.44',
+  treeSha256: 'a'.repeat(64),
+  storeZip: { path: '/private/tmp/store.zip', sha256: 'b'.repeat(64) },
+};
 
 assert.throws(
   () => requireOwnedCommandLine({ arguments: ['--user-data-dir=/private/tmp/other', '--remote-debugging-port=0'] }, profile),
   /foreign_browser_refused/,
 );
 assert.throws(() => requireSpawnedProfileOwner('host-7002', 7001), /profile_owner_not_spawned_child/);
+assert.throws(
+  () => resolveExpectedRelease({ receipt, extensionDir: '/private/tmp/other' }),
+  /override_provenance_refused/,
+);
+assert.throws(
+  () =>
+    resolveExpectedRelease({
+      receipt,
+      extensionDir: '/private/tmp/other',
+      expectedRelease: { treeSha256: 'c'.repeat(64), version: receipt.version },
+    }),
+  /override_provenance_refused/,
+);
 assert.throws(
   () =>
     requireSidePanelContext(
@@ -52,6 +71,21 @@ requireExpectedExtension(
   extensionId,
 );
 requireSpawnedProfileOwner('host-7001', 7001);
+assert.deepEqual(resolveExpectedRelease({ receipt }), {
+  extensionDir: '/Users/armanisadeghi/code/matrx-extend/.output/chrome-mv3-dev',
+  treeSha256: receipt.treeSha256,
+  version: receipt.version,
+  storeZipPath: receipt.storeZip.path,
+  storeZipSha256: receipt.storeZip.sha256,
+});
+assert.equal(
+  resolveExpectedRelease({
+    receipt,
+    extensionDir: '/private/tmp/receipt-matched',
+    expectedRelease: { treeSha256: receipt.treeSha256, version: receipt.version },
+  }).extensionDir,
+  '/private/tmp/receipt-matched',
+);
 requireSidePanelContext(
   [{ contextType: 'SIDE_PANEL', documentUrl: `chrome-extension://${extensionId}/sidepanel.html`, tabId: -1 }],
   `chrome-extension://${extensionId}/sidepanel.html`,

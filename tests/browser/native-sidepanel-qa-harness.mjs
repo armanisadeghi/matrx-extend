@@ -13,11 +13,13 @@
  */
 import { createRequire } from 'node:module';
 import { mkdtemp, mkdir, readFile, readlink, rm, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 
 const require = createRequire(import.meta.url);
 const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs');
@@ -25,13 +27,68 @@ const { chromium } = createRequire('/Users/armanisadeghi/code/matrx-frontend/pac
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
-const EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3');
+const RELEASED_EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
+const RELEASE_RECEIPT = join(REPO, '.output', 'release-receipt.json');
 const EXPECTED_EXTENSION_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
 const DEFAULT_CHROME = chromium.executablePath();
 const WAIT_MS = 100;
 const ATTEMPTS = 150;
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function sha256(value) {
+  return createHash('sha256').update(value).digest('hex');
+}
+
+function requireReleaseReceipt(receipt) {
+  if (
+    !receipt ||
+    typeof receipt.version !== 'string' ||
+    !/^[a-f0-9]{64}$/.test(receipt.treeSha256 ?? '') ||
+    typeof receipt.storeZip?.path !== 'string' ||
+    !/^[a-f0-9]{64}$/.test(receipt.storeZip.sha256 ?? '')
+  )
+    throw new Error('native_sidepanel_release_receipt_refused');
+  return receipt;
+}
+
+function resolveExpectedRelease({ receipt, extensionDir, expectedRelease }) {
+  const released = requireReleaseReceipt(receipt);
+  if (extensionDir !== undefined) {
+    if (
+      !expectedRelease ||
+      expectedRelease.treeSha256 !== released.treeSha256 ||
+      expectedRelease.version !== released.version
+    )
+      throw new Error('native_sidepanel_override_provenance_refused');
+  }
+  return Object.freeze({
+    extensionDir: resolve(extensionDir ?? RELEASED_EXTENSION_DIR),
+    treeSha256: released.treeSha256,
+    version: released.version,
+    storeZipPath: released.storeZip.path,
+    storeZipSha256: released.storeZip.sha256,
+  });
+}
+
+async function verifyReleasedArtifact(expected) {
+  let manifest;
+  try {
+    manifest = JSON.parse(await readFile(join(expected.extensionDir, 'manifest.json'), 'utf8'));
+  } catch {
+    throw new Error('native_sidepanel_release_manifest_refused');
+  }
+  if (manifest.version !== expected.version) throw new Error('native_sidepanel_release_version_refused');
+  if (hashReleaseTree(expected.extensionDir) !== expected.treeSha256)
+    throw new Error('native_sidepanel_release_tree_refused');
+  let zip;
+  try {
+    zip = await readFile(expected.storeZipPath);
+  } catch {
+    throw new Error('native_sidepanel_store_zip_missing');
+  }
+  if (sha256(zip) !== expected.storeZipSha256) throw new Error('native_sidepanel_store_zip_refused');
+}
 
 function requireOwnedCommandLine(commandLine, profile) {
   const args = commandLine?.arguments;
@@ -228,13 +285,23 @@ function testPage(extensionId) {
 }
 
 export async function runNativeSidepanelQa({
-  extensionDir = EXTENSION_DIR,
+  extensionDir,
+  expectedRelease,
+  releaseReceiptPath = RELEASE_RECEIPT,
   chromeExecutable = DEFAULT_CHROME,
   expectedExtensionId = EXPECTED_EXTENSION_ID,
   artifactRoot = join(REPO, 'test-results'),
   exercisePanel,
 } = {}) {
-  await readFile(join(extensionDir, 'manifest.json'), 'utf8');
+  let receipt;
+  try {
+    receipt = JSON.parse(await readFile(releaseReceiptPath, 'utf8'));
+  } catch {
+    throw new Error('native_sidepanel_release_receipt_missing');
+  }
+  const expected = resolveExpectedRelease({ receipt, extensionDir, expectedRelease });
+  await verifyReleasedArtifact(expected);
+  const verifiedExtensionDir = expected.extensionDir;
   const root = await mkdtemp(join(tmpdir(), 'matrx-native-sidepanel-qa-'));
   const profile = join(root, 'profile');
   await mkdir(artifactRoot, { recursive: true, mode: 0o700 });
@@ -259,8 +326,8 @@ export async function runNativeSidepanelQa({
         '--remote-debugging-address=127.0.0.1',
         '--remote-debugging-port=0',
         `--user-data-dir=${profile}`,
-        `--disable-extensions-except=${extensionDir}`,
-        `--load-extension=${extensionDir}`,
+        `--disable-extensions-except=${verifiedExtensionDir}`,
+        `--load-extension=${verifiedExtensionDir}`,
       ],
       { stdio: ['ignore', 'ignore', 'pipe'] },
     );
@@ -361,8 +428,11 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 
 export {
   isSettledGuestPanel,
+  requireReleaseReceipt,
   requireExpectedExtension,
   requireOwnedCommandLine,
   requireSidePanelContext,
   requireSpawnedProfileOwner,
+  resolveExpectedRelease,
+  verifyReleasedArtifact,
 };

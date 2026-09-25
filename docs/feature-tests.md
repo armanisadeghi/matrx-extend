@@ -2925,7 +2925,8 @@ Every entry follows this shape:
   opened — and that the same call with no gesture is still refused. `node
   tests/browser/native-sidepanel-qa-harness.test.mjs` proves the QA harness refuses a foreign
   CDP/browser identity; `node tests/browser/native-sidepanel-qa-harness.mjs` launches its own
-  Chrome-for-Testing profile, opens the native panel through that trusted click, and writes
+  released `chrome-mv3-dev` artifact only after its receipt tree, manifest version, and Store ZIP
+  digest all match, opens the native panel through that trusted click, and writes
   browser-local PNGs under `test-results/` only after the extension service worker reports a
   matching `SIDE_PANEL` context and the guest Chat controls have settled. The full browser matrix behind the design is `node
   tests/browser/side-panel-gesture-spike.mjs`.
