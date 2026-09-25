@@ -35,7 +35,7 @@ const exactFillButton = (targetName) => `(() => {
 })()`;
 
 const panelStatusExpression = (tabId) => {
-  if (!Number.isInteger(tabId)) throw new Error('real_site_fill_wrong_tab_invalid');
+  if (!Number.isInteger(tabId) || tabId < 0) throw new Error('real_site_fill_wrong_tab_invalid');
   return `(() => {
     const tabId = ${JSON.stringify(tabId)};
     return chrome.runtime.sendMessage({

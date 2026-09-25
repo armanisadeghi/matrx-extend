@@ -3,6 +3,7 @@
 const assert = require('node:assert/strict');
 const { EventEmitter } = require('node:events');
 const test = require('node:test');
+const vm = require('node:vm');
 const {
   validateRealSiteUrls,
   observePostFillSubmission,
@@ -55,21 +56,44 @@ test('post-fill observer catches delayed native navigation and programmatic netw
 });
 
 test('wrong-site status uses the panel string-expression contract', async () => {
-  const strictPanel = {
-    evaluate: async (expression) => {
-      if (typeof expression !== 'string') throw new Error('panel_expression_must_be_string');
-      assert.match(expression, /const tabId = 731;/);
-      assert.match(expression, /credential-suggestions:panel-status/);
-      return { status: 'none', exactNoMatchShape: true };
-    },
+  const expressionOnly = (expression) => {
+    if (typeof expression !== 'string') throw new Error('panel_expression_must_be_string');
+    return expression;
   };
-  await assert.rejects(
-    () => strictPanel.evaluate(async () => ({ status: 'none', exactNoMatchShape: true }), 731),
+  assert.throws(
+    () => expressionOnly(async () => ({ status: 'none', exactNoMatchShape: true })),
     /panel_expression_must_be_string/,
   );
-  assert.deepEqual(await strictPanel.evaluate(panelStatusExpression(731)), {
+  assert.equal(expressionOnly(panelStatusExpression(731)), panelStatusExpression(731));
+  const execute = async (response) => {
+    const result = await vm.runInNewContext(panelStatusExpression(731), {
+      chrome: {
+        runtime: {
+          sendMessage: async (message) => {
+            assert.deepEqual(JSON.parse(JSON.stringify(message)), {
+              __matrx: true,
+              kind: 'credential-suggestions:panel-status',
+              payload: { tabId: 731 },
+            });
+            return response;
+          },
+        },
+      },
+    });
+    return JSON.parse(JSON.stringify(result));
+  };
+  assert.deepEqual(await execute({ status: 'none', itemIds: [] }), {
     status: 'none',
     exactNoMatchShape: true,
   });
+  assert.deepEqual(await execute({ status: 'none', itemIds: ['unexpected-id'] }), {
+    status: 'none',
+    exactNoMatchShape: false,
+  });
+  assert.deepEqual(await execute({ status: 'none', itemIds: [], extra: true }), {
+    status: 'none',
+    exactNoMatchShape: false,
+  });
   assert.throws(() => panelStatusExpression('731'), /real_site_fill_wrong_tab_invalid/);
+  assert.throws(() => panelStatusExpression(-1), /real_site_fill_wrong_tab_invalid/);
 });
