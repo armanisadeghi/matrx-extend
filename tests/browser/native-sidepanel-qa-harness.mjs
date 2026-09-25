@@ -12,7 +12,7 @@
  *   node tests/browser/native-sidepanel-qa-harness.mjs
  */
 import { createRequire } from 'node:module';
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, readlink, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -50,6 +50,33 @@ function requireExpectedExtension(targetInfos, extensionId) {
   return serviceWorker;
 }
 
+function requireSpawnedProfileOwner(lockTarget, childPid) {
+  const owner = /-(\d+)$/.exec(String(lockTarget ?? ''))?.[1];
+  if (!owner || Number(owner) !== childPid)
+    throw new Error('native_sidepanel_profile_owner_not_spawned_child');
+}
+
+function requireSidePanelContext(contexts, panelUrl) {
+  const context = contexts?.find(
+    (entry) =>
+      entry?.contextType === 'SIDE_PANEL' &&
+      entry?.documentUrl === panelUrl &&
+      entry?.tabId === -1,
+  );
+  if (!context) throw new Error('native_sidepanel_runtime_context_missing');
+  return context;
+}
+
+function isSettledGuestPanel(state) {
+  return (
+    state?.ready === true &&
+    state?.guestBanner === true &&
+    state?.signInControl === true &&
+    state?.composer === true &&
+    state?.visibleControls >= 3
+  );
+}
+
 async function ownedEndpoint(profile) {
   const raw = await readFile(join(profile, 'DevToolsActivePort'), 'utf8');
   const [port, browserPath, ...rest] = raw.trimEnd().split(/\r?\n/);
@@ -84,6 +111,58 @@ async function waitForExpectedExtension(cdp, extensionId) {
     await wait(WAIT_MS);
   }
   throw new Error('native_sidepanel_expected_extension_missing');
+}
+
+async function sidePanelContexts(cdp, serviceWorkerTargetId) {
+  const worker = await attachTargetSession(cdp, serviceWorkerTargetId);
+  try {
+    const result = await worker.send('Runtime.evaluate', {
+      expression: "chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] })",
+      awaitPromise: true,
+      returnByValue: true,
+    });
+    if (result.exceptionDetails || !Array.isArray(result.result?.value))
+      throw new Error('native_sidepanel_runtime_context_query_failed');
+    return result.result.value;
+  } finally {
+    await worker.detach();
+  }
+}
+
+async function waitForSettledGuestPanel(cdp, targetId) {
+  const panel = await attachTargetSession(cdp, targetId);
+  const expression = `(() => {
+    const visible = (element) => {
+      const style = getComputedStyle(element); const rect = element.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none';
+    };
+    const text = document.body?.innerText ?? '';
+    const controls = [...document.querySelectorAll('button, input, textarea, [contenteditable="true"]')]
+      .filter(visible);
+    return {
+      ready: document.readyState === 'complete',
+      guestBanner: /You're using Matrx as a guest\\./.test(text),
+      signInControl: controls.some((element) => /^sign in$/i.test(element.textContent?.trim() ?? '')),
+      composer: /How can I help you today\\?/.test(text),
+      visibleControls: controls.length,
+    };
+  })()`;
+  let previousFingerprint;
+  try {
+    for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
+      const result = await panel.send('Runtime.evaluate', { expression, returnByValue: true });
+      const state = result.result?.value;
+      const fingerprint = JSON.stringify(state);
+      if (isSettledGuestPanel(state) && previousFingerprint === fingerprint) return panel;
+      previousFingerprint = fingerprint;
+      await wait(WAIT_MS * 2);
+    }
+  } catch (error) {
+    await panel.detach();
+    throw error;
+  }
+  await panel.detach();
+  throw new Error('native_sidepanel_render_not_settled');
 }
 
 async function captureTarget(cdp, targetId, output) {
@@ -196,11 +275,13 @@ export async function runNativeSidepanelQa({
     const endpoint = await ownedEndpoint(profile);
     const commandLine = await cdp.send('Browser.getBrowserCommandLine');
     requireOwnedCommandLine(commandLine, profile);
+    let extensionWorker;
     try {
-      await waitForExpectedExtension(cdp, expectedExtensionId);
+      extensionWorker = await waitForExpectedExtension(cdp, expectedExtensionId);
     } catch (error) {
       throw new Error(`${error.message}:${chromeStderr.join('').slice(-1000)}`);
     }
+    requireSpawnedProfileOwner(await readlink(join(profile, 'SingletonLock')), child.pid);
     verified = true;
 
     server = createServer((_request, response) => {
@@ -233,11 +314,14 @@ export async function runNativeSidepanelQa({
     const panelTarget = await waitForPanelTarget(cdp, panelUrl);
     if (panelTarget.targetId === normalTarget.targetId)
       throw new Error('native_sidepanel_target_not_distinct');
+    requireSidePanelContext(await sidePanelContexts(cdp, extensionWorker.targetId), panelUrl);
+    const readyPanel = await waitForSettledGuestPanel(cdp, panelTarget.targetId);
 
     const normalPng = join(artifacts, 'normal-target-after-open.png');
     const panelPng = join(artifacts, 'native-side-panel.png');
     await captureTarget(cdp, normalTarget.targetId, normalPng);
     await captureTarget(cdp, panelTarget.targetId, panelPng);
+    await readyPanel.detach();
     if (exercisePanel) {
       const panel = await attachTargetSession(cdp, panelTarget.targetId);
       try {
@@ -275,4 +359,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     });
 }
 
-export { requireExpectedExtension, requireOwnedCommandLine };
+export {
+  isSettledGuestPanel,
+  requireExpectedExtension,
+  requireOwnedCommandLine,
+  requireSidePanelContext,
+  requireSpawnedProfileOwner,
+};
