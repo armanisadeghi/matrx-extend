@@ -2,6 +2,7 @@ const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const {
   inspectIdentity,
+  refreshReadyExtensionWorker,
   sameLifecycleIdentity,
   runExtensionDisableEnable,
   runExtensionReload,
@@ -39,6 +40,32 @@ const {
     false,
   );
   assert.equal(sameLifecycleIdentity(undefined, initialHash), false);
+  await assert.rejects(
+    () =>
+      refreshReadyExtensionWorker({
+        replacementTarget: { targetId: 'replacement-worker' },
+        refreshWorker: async () => ({
+          evaluate: async () => {
+            throw new Error('Protocol error: target not available');
+          },
+        }),
+        extensionId: 'abcdefghijklmnopabcdefghijklmnop',
+        wait: async () => {},
+        attempts: 1,
+      }),
+    /lifecycle_reenabled_worker_handle_unavailable/,
+  );
+  await assert.rejects(
+    () =>
+      refreshReadyExtensionWorker({
+        replacementTarget: { targetId: 'replacement-worker' },
+        refreshWorker: async () => ({ evaluate: async () => 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' }),
+        extensionId: 'abcdefghijklmnopabcdefghijklmnop',
+        wait: async () => {},
+        attempts: 1,
+      }),
+    /lifecycle_reenabled_extension_identity_mismatch/,
+  );
   assert.match(visibleSettingsControl, /button\[title="Settings"\]/);
   assert.doesNotMatch(visibleSettingsControl, /textContent/);
   assert.match(visibleVaultControl, /button\[title="Vault"\]/);
@@ -135,6 +162,7 @@ const {
 
   let replacementTargetQueries = 0;
   let replacementRuntimeChecks = 0;
+  const readinessPhases = [];
   extensionEnabled = true;
   const readinessProof = {};
   const readyResult = await runExtensionDisableEnable({
@@ -180,13 +208,23 @@ const {
     disposePanel: async () => {},
     reopenPanel: async () => ({ targetId: 'replacement-panel' }),
     verifySettingsIdentity: async () => true,
-    checkpoint: () => {},
+    checkpoint: (phase) => readinessPhases.push(phase),
     proof: readinessProof,
     wait: async () => {},
   });
   assert.equal(replacementRuntimeChecks, 2, 'replacement worker must retry one transient CDP refusal');
   assert.equal(readyResult.panel.targetId, 'replacement-panel');
   assert.equal(readinessProof.lifecycle.disableEnable.disposition, 'passed');
+  assert.deepEqual(readinessPhases, [
+    'lifecycle_extension_disable',
+    'lifecycle_extension_enable',
+    'lifecycle_extension_enable_ui_observed',
+    'lifecycle_extension_enable_replacement_target_observed',
+    'lifecycle_extension_enable_worker_ready',
+    'lifecycle_extension_enable_identity_recovered',
+    'lifecycle_extension_enable_panel_reopened',
+    'lifecycle_extension_enable_settings_identity_recovered',
+  ]);
 
   const order = [];
   const signOutProof = {};

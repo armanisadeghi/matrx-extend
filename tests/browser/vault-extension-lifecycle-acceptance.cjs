@@ -114,15 +114,21 @@ async function refreshReadyExtensionWorker({
   let lastRefusal;
   for (let attempt = 0; attempt < attempts; attempt += 1) {
     const candidate = await refreshWorker(replacementTarget);
+    let runtimeId;
     try {
-      const runtimeId = await candidate.evaluate(() => chrome.runtime.id);
-      assert(runtimeId === extensionId, 'lifecycle_reenabled_extension_identity_mismatch');
-      return candidate;
+      runtimeId = await candidate.evaluate(() => chrome.runtime.id);
     } catch (error) {
-      if (error?.message !== 'generator_worker_cdp_evaluate_refused') throw error;
+      if (error?.message !== 'generator_worker_cdp_evaluate_refused') {
+        if (/^generator_worker_cdp_evaluate_(?:timeout|refused)$/.test(error?.message ?? ''))
+          throw error;
+        throw new Error('lifecycle_reenabled_worker_handle_unavailable');
+      }
       lastRefusal = error;
       await wait(100);
+      continue;
     }
+    assert(runtimeId === extensionId, 'lifecycle_reenabled_extension_identity_mismatch');
+    return candidate;
   }
   throw new Error(
     `lifecycle_reenabled_worker_execution_context_timeout${lastRefusal ? '' : '_unobserved'}`,
@@ -244,25 +250,31 @@ async function runExtensionDisableEnable({
     for (let attempt = 0; attempt < 60 && (await toggleEnabled()) !== true; attempt += 1)
       await wait(100);
     assert((await toggleEnabled()) === true, 'lifecycle_extensions_enable_ui_unobserved');
+    checkpoint('lifecycle_extension_enable_ui_observed');
     const replacementTarget = await waitForReplacementExtensionWorkerTarget({
       cdp,
       workerUrl,
       previousTargetId,
       wait,
     });
+    checkpoint('lifecycle_extension_enable_replacement_target_observed');
     const replacement = await refreshReadyExtensionWorker({
       replacementTarget,
       refreshWorker,
       extensionId,
       wait,
     });
+    checkpoint('lifecycle_extension_enable_worker_ready');
     const after = await inspectIdentity(replacement);
+    checkpoint('lifecycle_extension_enable_identity_recovered');
     const panel = await reopenPanel(extensionsPage, replacement);
     assert(
       typeof panel?.targetId === 'string' && panel.targetId.length > 0 && panel.targetId !== panelTargetId,
       'lifecycle_reenabled_panel_not_replaced',
     );
+    checkpoint('lifecycle_extension_enable_panel_reopened');
     const settingsUiRecovered = await verifySettingsIdentity(replacement, panel);
+    checkpoint('lifecycle_extension_enable_settings_identity_recovered');
     proof.lifecycle ||= {};
     proof.lifecycle.initialIdentitySha256 ||= before.identitySha256;
     proof.lifecycle.disableEnable = {
@@ -373,6 +385,7 @@ module.exports = {
   inspectIdentity,
   sameLifecycleIdentity,
   waitForReplacementExtensionWorkerTarget,
+  refreshReadyExtensionWorker,
   runExtensionReload,
   runExtensionDisableEnable,
   runSettingsSignOut,
