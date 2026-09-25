@@ -2867,7 +2867,7 @@ Every entry follows this shape:
 
 ### The organization's records (the `records` tool)
 
-- **What it does:** Lets the browser agent read and write the organization's own custom records — the Tables a person defined for their work — through the record store's doors. One tool, eight actions: list the Tables, search their metadata, read a record, aggregate over a Table, write or update a record, delete or restore one, propose a Field or a Table. It carries exactly the authority of the person operating it, in their active organization.
+- **What it does:** Lets the browser agent use the organization's custom records through the record store's doors. The shared `records` contract currently declares 24 actions. The Chrome executor performs Table listing, one-record reads, aggregates, create/update (including bulk create), delete/restore, history, and version restore; it returns a clear executor-unavailable result for platform workflows that do not yet have a browser implementation. It carries exactly the authority of the person operating it, in their active organization.
 - **Where to test:** Sidepanel → Tools tab → `records` (signed in). It is the same tool the agent calls mid-turn.
 - **Prereq:** The record store must be switched on for your active organization. It is off at platform scope and turned on per organization; `admin@admin.com`'s Workspace has it on.
 - **Steps:**

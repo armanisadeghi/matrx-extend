@@ -1,6 +1,6 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-09-25T20:32:39.199Z
+Generated: 2026-09-25T20:44:35.649Z
 
 - **Total tools:** 169
 - **Assistant bundle:** 75 tools (read-only)
@@ -3673,9 +3673,155 @@ Generated: 2026-09-25T20:32:39.199Z
         "record_aggregate",
         "record_write",
         "record_delete",
+        "record_history",
+        "record_restore_version",
         "field_propose",
-        "table_propose"
+        "table_propose",
+        "form_propose",
+        "booking_propose",
+        "import_propose",
+        "dashboard_propose",
+        "pipeline_propose",
+        "document_propose",
+        "checklist_propose",
+        "capture_propose",
+        "enrich_propose",
+        "portal_propose",
+        "signature_request",
+        "subscription_propose",
+        "entity_read",
+        "entity_write"
       ]
+    },
+    "availability": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": null
+    },
+    "blocks": {
+      "type": "array",
+      "items": {}
+    },
+    "body": {
+      "type": "string"
+    },
+    "checklist_id": {
+      "type": "string",
+      "default": null
+    },
+    "client_fields": {
+      "type": "array",
+      "items": {},
+      "default": null
+    },
+    "client_table": {
+      "type": "string",
+      "default": null
+    },
+    "client_table_id": {
+      "type": "string",
+      "default": null
+    },
+    "columns": {
+      "type": "array",
+      "items": {}
+    },
+    "config": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": null
+    },
+    "context_policy": {
+      "type": "string",
+      "default": "include"
+    },
+    "csv_text": {
+      "type": "string",
+      "default": null
+    },
+    "dashboard_id": {
+      "type": "string",
+      "default": null
+    },
+    "date_order": {
+      "type": "string",
+      "default": "mdy"
+    },
+    "dedupe_key": {
+      "type": "string",
+      "default": null
+    },
+    "description": {
+      "type": "string",
+      "default": ""
+    },
+    "enable": {
+      "type": "boolean",
+      "default": true
+    },
+    "entity": {
+      "type": "string"
+    },
+    "expected_version": {
+      "type": "integer",
+      "default": null
+    },
+    "expires_days": {
+      "type": "integer",
+      "default": 14
+    },
+    "field": {
+      "type": "string"
+    },
+    "field_key": {
+      "type": "string",
+      "default": null
+    },
+    "field_type": {
+      "type": "string",
+      "default": "text"
+    },
+    "fields": {
+      "type": "array",
+      "items": {},
+      "default": null
+    },
+    "file_hash": {
+      "type": "string",
+      "default": null
+    },
+    "flow": {
+      "type": "string",
+      "default": "one-at-a-time"
+    },
+    "group_by": {
+      "type": "string",
+      "default": null
+    },
+    "home": {
+      "type": "string",
+      "default": null
+    },
+    "id_keyed": {
+      "type": "boolean",
+      "default": false
+    },
+    "intro": {
+      "type": "string",
+      "default": null
+    },
+    "invite": {
+      "type": "array",
+      "items": {},
+      "default": null
+    },
+    "label": {
+      "type": "string",
+      "default": null
+    },
+    "letterhead": {
+      "type": "boolean",
+      "default": true
     },
     "limit": {
       "type": "integer",
@@ -3683,71 +3829,274 @@ Generated: 2026-09-25T20:32:39.199Z
       "maximum": 500,
       "default": 50
     },
-    "query": {
-      "type": "string"
+    "limits": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": null
     },
-    "record_id": {
-      "type": "string",
-      "format": "uuid"
+    "mapping": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": null
     },
-    "id_keyed": {
-      "type": "boolean",
-      "default": false
-    },
-    "table_id": {
-      "type": "string",
-      "format": "uuid"
+    "match": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": null
     },
     "measure": {
       "type": "string",
       "default": "count"
     },
-    "group_by": {
-      "type": "string"
-    },
-    "field_key": {
-      "type": "string"
-    },
-    "values": {
-      "type": "object",
-      "additionalProperties": {}
-    },
-    "expected_version": {
-      "type": "integer"
-    },
-    "undo": {
-      "type": "boolean",
-      "default": false
-    },
     "name": {
       "type": "string"
     },
-    "label": {
+    "notify": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": true
+    },
+    "on_duplicate": {
+      "type": "string",
+      "default": "skip"
+    },
+    "on_entry": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": null
+    },
+    "open_to_crew": {
+      "type": "boolean",
+      "default": true
+    },
+    "options_table_id": {
+      "type": "string",
+      "default": null
+    },
+    "presentation": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": null
+    },
+    "preview_only": {
+      "type": "boolean",
+      "default": false
+    },
+    "publish": {
+      "type": "boolean",
+      "default": true
+    },
+    "query": {
       "type": "string"
     },
-    "description": {
-      "type": "string",
-      "default": ""
+    "questions": {
+      "type": "array",
+      "items": {},
+      "default": null
     },
-    "field_type": {
+    "record_id": {
       "type": "string",
-      "default": "text"
+      "default": null
+    },
+    "records": {
+      "type": "array",
+      "items": {},
+      "default": null
+    },
+    "relation_target": {
+      "type": "string",
+      "default": null
+    },
+    "render_id": {
+      "type": "string",
+      "default": null
+    },
+    "requires": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": null
+    },
+    "roles": {
+      "type": "array",
+      "items": {},
+      "default": null
+    },
+    "rows": {
+      "type": "array",
+      "items": {},
+      "default": null
+    },
+    "run": {
+      "type": "boolean",
+      "default": true
     },
     "sensitivity": {
       "type": "string",
       "default": "internal"
     },
-    "context_policy": {
+    "signer_email": {
+      "type": "string"
+    },
+    "signer_name": {
+      "type": "string"
+    },
+    "source_name": {
       "type": "string",
-      "default": "include"
+      "default": null
     },
     "spec": {
       "type": "object",
+      "additionalProperties": {},
+      "default": null
+    },
+    "stage_field": {
+      "type": "object",
       "additionalProperties": {}
+    },
+    "start_for": {
+      "type": "string",
+      "default": null
+    },
+    "steps": {
+      "type": "array",
+      "items": {}
+    },
+    "submission_cap": {
+      "type": "integer",
+      "default": null
+    },
+    "submit_label": {
+      "type": "string",
+      "default": null
+    },
+    "table": {
+      "type": "string",
+      "default": null
+    },
+    "table_id": {
+      "type": "string",
+      "default": null
+    },
+    "tables": {
+      "type": "array",
+      "items": {}
+    },
+    "tell": {
+      "type": "array",
+      "items": {}
+    },
+    "template_id": {
+      "type": "string",
+      "default": null
+    },
+    "thank_you": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": null
+    },
+    "title": {
+      "type": "string"
+    },
+    "transitions": {
+      "type": "array",
+      "items": {},
+      "default": null
+    },
+    "trigger": {
+      "type": "string",
+      "default": null
+    },
+    "values": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": null
+    },
+    "undo": {
+      "type": "boolean",
+      "default": false
+    },
+    "unit": {
+      "type": "string",
+      "default": null
+    },
+    "unmapped": {
+      "type": "string",
+      "default": "propose"
+    },
+    "version": {
+      "type": "integer"
+    },
+    "view_id": {
+      "type": "string",
+      "default": null
+    },
+    "view_name": {
+      "type": "string",
+      "default": null
+    },
+    "watch": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": null
+    },
+    "who": {
+      "type": "object",
+      "additionalProperties": {},
+      "default": null
     }
   },
   "required": [
-    "action"
+    "action",
+    "availability",
+    "checklist_id",
+    "client_fields",
+    "client_table",
+    "client_table_id",
+    "config",
+    "csv_text",
+    "dashboard_id",
+    "dedupe_key",
+    "expected_version",
+    "field_key",
+    "fields",
+    "file_hash",
+    "group_by",
+    "home",
+    "intro",
+    "invite",
+    "label",
+    "limits",
+    "mapping",
+    "match",
+    "notify",
+    "on_entry",
+    "options_table_id",
+    "presentation",
+    "questions",
+    "record_id",
+    "records",
+    "relation_target",
+    "render_id",
+    "requires",
+    "roles",
+    "rows",
+    "source_name",
+    "spec",
+    "start_for",
+    "submission_cap",
+    "submit_label",
+    "table",
+    "table_id",
+    "template_id",
+    "thank_you",
+    "transitions",
+    "trigger",
+    "values",
+    "unit",
+    "view_id",
+    "view_name",
+    "watch",
+    "who"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"

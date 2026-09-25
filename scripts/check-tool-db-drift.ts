@@ -265,7 +265,16 @@ function compareTool(local: LocalTool, db: DbToolRow): string[] {
   const dbProps = Object.fromEntries(
     Object.entries(db.parameters ?? {}).filter(([k]) => !k.startsWith('$')),
   );
-  const localRequired = new Set(local.input_schema?.required ?? []);
+  // Zod's JSON-schema emitter marks a `.default(null)` property as required,
+  // even though Zod accepts an omitted value and supplies the default. JSON
+  // Schema's `default` also describes an omission, not a required input. Do
+  // not turn that serializer artefact into a false contract mismatch; fields
+  // without a local default still use the generated `required` list verbatim.
+  const localRequired = new Set(
+    (local.input_schema?.required ?? []).filter(
+      (field) => !Object.prototype.hasOwnProperty.call(localProps[field] ?? {}, 'default'),
+    ),
+  );
   const dbRequired = new Set(
     Object.entries(dbProps)
       .filter(([, def]) => def && (def as { required?: boolean }).required === true)
