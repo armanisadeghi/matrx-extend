@@ -4,21 +4,41 @@ const assert = require('node:assert/strict');
 const test = require('node:test');
 const {
   _classifyQuietFillTerminal: classifyQuietFillTerminal,
+  _mergeQuietFillDiagnostic: mergeQuietFillDiagnostic,
 } = require('./vault-preferences-acceptance.cjs');
 
-const completeFocus = { beforeClick: true, afterClick: true };
+const completeFocus = {
+  before: { tabWindowFocused: true, documentFocused: true, credentialFocused: true },
+  after: { tabWindowFocused: true, documentFocused: true, credentialFocused: true },
+};
 const delivered = { nativeClickCount: 1, panelMessageCount: 1 };
 const filledFixture = { usernameMatches: true, passwordMatches: true };
 
-test('quiet Fill classifies focus loss between the website assertion and native click', () => {
+test('quiet Fill preserves pre-click focus evidence when panel diagnostics are collected', () => {
+  const focus = {
+    before: { tabWindowFocused: true, documentFocused: true, credentialFocused: true },
+    after: { tabWindowFocused: true, documentFocused: false, credentialFocused: false },
+  };
+  const diagnostic = mergeQuietFillDiagnostic(
+    { disposition: 'product_stale_or_refusal', focus, collected: false },
+    { collected: true, ui: { noOffer: true }, panelStatus: { status: 'none' } },
+  );
+  assert.equal(diagnostic.focus, focus);
+  assert.equal(diagnostic.collected, true);
+});
+
+test('quiet Fill accepts a legitimate post-click page-document focus transition when product reports success', () => {
   assert.equal(
     classifyQuietFillTerminal({
-      counters: { nativeClickCount: 0, panelMessageCount: 0 },
-      focus: { beforeClick: true, afterClick: false },
-      ui: {},
-      fixture: {},
+      counters: delivered,
+      focus: {
+        before: { tabWindowFocused: true, documentFocused: true, credentialFocused: true },
+        after: { tabWindowFocused: true, documentFocused: false, credentialFocused: false },
+      },
+      ui: { filledFeedback: true },
+      fixture: filledFixture,
     }),
-    'focus_lost_before_quiet_fill_click',
+    'success',
   );
 });
 

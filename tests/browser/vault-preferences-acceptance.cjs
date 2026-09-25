@@ -44,10 +44,9 @@ const canonicalReceipt = (value) =>
 
 // This is harness-only evidence. It deliberately contains no credential values,
 // DOM content, or transport payloads. A terminal result must explain whether
-// CDP input, panel routing, or the product's focus/admission fence ended Fill.
-const classifyQuietFillTerminal = ({ counters, focus, ui, fixture }) => {
-  if (focus?.beforeClick !== true || focus?.afterClick !== true)
-    return 'focus_lost_before_quiet_fill_click';
+// CDP input, panel routing, or the product's own terminal outcome ended Fill.
+// Website focus is recorded as diagnostic evidence, not used to infer that outcome.
+const classifyQuietFillTerminal = ({ counters, ui, fixture }) => {
   if (counters?.nativeClickCount !== 1) return 'click_not_delivered';
   if (!Number.isInteger(counters?.panelMessageCount) || counters.panelMessageCount < 1)
     return 'panel_message_not_sent';
@@ -64,6 +63,11 @@ const classifyQuietFillTerminal = ({ counters, focus, ui, fixture }) => {
     return 'product_stale_or_refusal';
   return 'product_no_terminal_outcome';
 };
+const mergeQuietFillDiagnostic = (diagnostic, observed) => ({
+  ...diagnostic,
+  ...observed,
+  focus: diagnostic.focus,
+});
 
 async function tabFor(worker, url, wait) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
@@ -289,9 +293,9 @@ exports.runVaultPreferencesChecks = async ({
       page.evaluate(() => document.hasFocus() && document.activeElement?.id === 'password'),
     ]);
     return {
-      beforeClick: browserFocused === true && documentFocused === true,
-      browserFocused,
+      tabWindowFocused: browserFocused === true,
       documentFocused,
+      credentialFocused: documentFocused === true,
     };
   };
   const waitForQuietFillMessage = async () => {
@@ -327,7 +331,9 @@ exports.runVaultPreferencesChecks = async ({
       panelStatus: null,
     };
     try {
-      diagnostic = await realPanel.evaluate(`(async () => {
+      diagnostic = mergeQuietFillDiagnostic(
+        diagnostic,
+        await realPanel.evaluate(`(async () => {
         const targetCards = Array.from(document.querySelectorAll('li')).filter((card) =>
           card.querySelector('span')?.textContent?.trim() === ${JSON.stringify(targetName)}
         );
@@ -396,7 +402,8 @@ exports.runVaultPreferencesChecks = async ({
           panelStatus = { requestSucceeded: false };
         }
         return { disposition: ${JSON.stringify(disposition)}, collected: true, ui, panelStatus };
-      })()`);
+      })()`),
+      );
     } catch {
       // The diagnostic must never replace the original acceptance failure.
     }
@@ -418,9 +425,17 @@ exports.runVaultPreferencesChecks = async ({
           : null,
       )
       .catch(() => null);
+    diagnostic.panelFillMessageUnrelatedCount = await worker
+      .evaluate(() =>
+        Number.isInteger(globalThis.__vaultQuietFillMessageUnrelatedCount)
+          ? globalThis.__vaultQuietFillMessageUnrelatedCount
+          : null,
+      )
+      .catch(() => null);
     diagnostic.counters = {
       nativeClickCount: diagnostic.ui?.nativeFillClickCount ?? null,
       panelMessageCount: diagnostic.panelFillMessageCount,
+      panelMessageUnrelatedCount: diagnostic.panelFillMessageUnrelatedCount,
     };
     diagnostic.terminal = classifyQuietFillTerminal({
       counters: diagnostic.counters,
@@ -451,41 +466,72 @@ exports.runVaultPreferencesChecks = async ({
       }, true);
       return true;
     })()`);
-    await worker.evaluate(() => {
+    const messageTarget = await worker.evaluate(
+      async ({ tabId, targetName }) => {
+        const value = await chrome.runtime.sendMessage({
+          __matrx: true,
+          kind: 'credential-suggestions:panel-status',
+          payload: { tabId },
+        });
+        if (!value || typeof value !== 'object' || Array.isArray(value) || value.status !== 'ready')
+          return null;
+        const matches = Array.isArray(value.matches) ? value.matches : [];
+        const matching = matches.filter(
+          (match) =>
+            match &&
+            typeof match === 'object' &&
+            match.display_name === targetName &&
+            typeof match.item_id === 'string',
+        );
+        return matching.length === 1 && typeof value.offerId === 'string'
+          ? { tabId, offerId: value.offerId, itemId: matching[0].item_id }
+          : null;
+      },
+      { tabId, targetName },
+    );
+    assert(messageTarget, 'preferences_quiet_fill_message_target_unavailable');
+    await worker.evaluate((target) => {
       globalThis.__vaultQuietFillMessageCount = 0;
+      globalThis.__vaultQuietFillMessageUnrelatedCount = 0;
+      globalThis.__vaultQuietFillMessageTarget = target;
       if (!globalThis.__vaultQuietFillMessageObserver) {
         globalThis.__vaultQuietFillMessageObserver = (message) => {
-          if (message?.__matrx === true && message.kind === 'credential-suggestions:panel-fill')
+          if (message?.__matrx !== true || message.kind !== 'credential-suggestions:panel-fill')
+            return;
+          const expected = globalThis.__vaultQuietFillMessageTarget;
+          const payload = message.payload;
+          if (
+            payload?.tabId === expected?.tabId &&
+            payload?.offerId === expected?.offerId &&
+            payload?.itemId === expected?.itemId
+          )
             globalThis.__vaultQuietFillMessageCount += 1;
+          else globalThis.__vaultQuietFillMessageUnrelatedCount += 1;
         };
         chrome.runtime.onMessage.addListener(globalThis.__vaultQuietFillMessageObserver);
       }
-    });
+    }, messageTarget);
     // The side panel has changed focus several times while settings settle. Reassert
     // the website focus immediately before the target-directed native click, then
     // verify it again before attributing a refusal to product code.
     await focusCredential();
     const focusBefore = await quietFillFocus();
-    if (!focusBefore.beforeClick) {
-      await recordQuietFillFailure('website_focus_missing_before_click', {
-        beforeClick: focusBefore.beforeClick,
-        afterClick: false,
+    if (!focusBefore.tabWindowFocused) {
+      await recordQuietFillFailure('website_tab_or_window_not_focused_before_click', {
+        before: focusBefore,
+        after: null,
       });
       throw new Error('preferences_quiet_fill_focus_missing_before_click');
     }
     await realPanel.click(control);
     const focusAfter = await quietFillFocus();
     const focusEvidence = {
-      beforeClick: focusBefore.beforeClick,
-      afterClick: focusAfter.beforeClick,
+      before: focusBefore,
+      after: focusAfter,
     };
     const nativeClickCount = await realPanel.evaluate(
       'Number.isInteger(window.__vaultQuietFillClickCount) ? window.__vaultQuietFillClickCount : null',
     );
-    if (!focusEvidence.afterClick) {
-      await recordQuietFillFailure('website_focus_lost_after_click', focusEvidence);
-      throw new Error('preferences_quiet_fill_focus_lost_after_click');
-    }
     if (nativeClickCount !== 1) {
       await recordQuietFillFailure('native_click_not_delivered', focusEvidence);
       throw new Error('preferences_quiet_fill_click_not_delivered');
@@ -518,6 +564,11 @@ exports.runVaultPreferencesChecks = async ({
         panelMessageCount: await worker.evaluate(() =>
           Number.isInteger(globalThis.__vaultQuietFillMessageCount)
             ? globalThis.__vaultQuietFillMessageCount
+            : null,
+        ),
+        panelMessageUnrelatedCount: await worker.evaluate(() =>
+          Number.isInteger(globalThis.__vaultQuietFillMessageUnrelatedCount)
+            ? globalThis.__vaultQuietFillMessageUnrelatedCount
             : null,
         ),
       },
@@ -671,3 +722,4 @@ exports.runVaultPreferencesChecks = async ({
 };
 exports._switchFor = switchFor;
 exports._classifyQuietFillTerminal = classifyQuietFillTerminal;
+exports._mergeQuietFillDiagnostic = mergeQuietFillDiagnostic;
