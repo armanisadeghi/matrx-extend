@@ -1,6 +1,6 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-09-25T20:44:57.315Z
+Generated: 2026-09-25T21:01:58.923Z
 
 - **Total tools:** 169
 - **Assistant bundle:** 75 tools (read-only)
@@ -4046,57 +4046,7 @@ Generated: 2026-09-25T20:44:57.315Z
     }
   },
   "required": [
-    "action",
-    "availability",
-    "checklist_id",
-    "client_fields",
-    "client_table",
-    "client_table_id",
-    "config",
-    "csv_text",
-    "dashboard_id",
-    "dedupe_key",
-    "expected_version",
-    "field_key",
-    "fields",
-    "file_hash",
-    "group_by",
-    "home",
-    "intro",
-    "invite",
-    "label",
-    "limits",
-    "mapping",
-    "match",
-    "notify",
-    "on_entry",
-    "options_table_id",
-    "presentation",
-    "questions",
-    "record_id",
-    "records",
-    "relation_target",
-    "render_id",
-    "requires",
-    "roles",
-    "rows",
-    "source_name",
-    "spec",
-    "start_for",
-    "submission_cap",
-    "submit_label",
-    "table",
-    "table_id",
-    "template_id",
-    "thank_you",
-    "transitions",
-    "trigger",
-    "values",
-    "unit",
-    "view_id",
-    "view_name",
-    "watch",
-    "who"
+    "action"
   ],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
