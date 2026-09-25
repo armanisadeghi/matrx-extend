@@ -326,7 +326,7 @@ function VaultSession({
                   let failure: string | null = null;
                   const confirmed = await confirmDestructive({
                     title: `Delete the login "${item.display_name}"?`,
-                    consequence: `The login and every one of its ${item.fields.length} saved ${item.fields.length === 1 ? 'field' : 'fields'} are deleted from the Vault on the server, for everyone it is shared with. This cannot be undone.`,
+                    consequence: `The login and every one of its ${item.fields.length} saved ${item.fields.length === 1 ? 'field' : 'fields'} are deleted from the Vault on the server, for everyone it is shared with. This cannot be undone from the extension — it can be restored from the AI Matrx Trash.`,
                     alternative:
                       'To stop the browser filling it without losing it, cancel and turn off "Fill in browser" on the login instead.',
                     confirmLabel: 'Delete login',
