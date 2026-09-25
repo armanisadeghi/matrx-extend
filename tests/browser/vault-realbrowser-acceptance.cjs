@@ -2159,6 +2159,33 @@ async function openSidePanelFromActionPopup(
     }
   }
 }
+
+// This failure-only snapshot never persists panel text or identity values.
+// It distinguishes an unopened Settings view from a hydrated view that lacks
+// the already-required test identity, while preserving the original failure.
+async function settingsIdentityFailureState(panel) {
+  const observed = await panel.evaluate(`(() => {
+    const text = document.body.innerText;
+    const visibleButtons = Array.from(document.querySelectorAll('button')).filter((button) => {
+      const rect = button.getBoundingClientRect();
+      const style = getComputedStyle(button);
+      return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+    });
+    return {
+      settingsHeadingVisible: text.includes('Settings'),
+      expectedIdentityVisible: text.includes('admin@admin.com'),
+      signInVisible: visibleButtons.some((button) => button.textContent.trim() === 'Sign in'),
+      signOutVisible: visibleButtons.some((button) => button.textContent.trim() === 'Sign out'),
+    };
+  })()`);
+  return {
+    snapshotUnavailable: false,
+    settingsHeadingVisible: observed?.settingsHeadingVisible === true,
+    expectedIdentityVisible: observed?.expectedIdentityVisible === true,
+    signInVisible: observed?.signInVisible === true,
+    signOutVisible: observed?.signOutVisible === true,
+  };
+}
 async function chooseAuthorizedOrganization(extensionId) {
   const settingsPage = await context.newPage();
   const selection = {
@@ -3058,9 +3085,24 @@ async function materializedPassword(id) {
         },
         verifySettingsIdentity: async (_replacement, panel) => {
           await panel.click(visibleSettingsControl);
-          await panel.waitFor(
-            `document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`,
-          );
+          try {
+            await panel.waitFor(
+              `document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`,
+            );
+          } catch (error) {
+            proof.lifecycle ||= {};
+            try {
+              proof.lifecycle.disableEnableSettingsIdentityFailure = await settingsIdentityFailureState(panel);
+            } catch {
+              proof.lifecycle.disableEnableSettingsIdentityFailure = { snapshotUnavailable: true };
+            }
+            try {
+              persist();
+            } catch {
+              /* preserve the Settings identity failure */
+            }
+            throw error;
+          }
           return true;
         },
         checkpoint,

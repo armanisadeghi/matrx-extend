@@ -72,9 +72,27 @@ const sandbox = {
   worker: staleWorker,
 };
 vm.createContext(sandbox);
-new vm.Script(`${functionSource}; globalThis.openPanel = openSidePanelFromActionPopup;`).runInContext(sandbox);
+new vm.Script(
+  `${functionSource}; globalThis.openPanel = openSidePanelFromActionPopup; globalThis.settingsFailureState = settingsIdentityFailureState;`,
+).runInContext(sandbox);
 
 (async () => {
+  const diagnostic = await sandbox.settingsFailureState({
+    evaluate: async () => ({
+      settingsHeadingVisible: true,
+      expectedIdentityVisible: false,
+      signInVisible: true,
+      signOutVisible: false,
+      ignoredIdentityText: 'must_not_be_persisted',
+    }),
+  });
+  assert.deepEqual(JSON.parse(JSON.stringify(diagnostic)), {
+    snapshotUnavailable: false,
+    settingsHeadingVisible: true,
+    expectedIdentityVisible: false,
+    signInVisible: true,
+    signOutVisible: false,
+  });
   const opened = await sandbox.openPanel(extensionId, {}, 7, replacementWorker);
   assert.equal(opened.opened, true);
   assert.equal(opened.panel.targetId, 'panel');
