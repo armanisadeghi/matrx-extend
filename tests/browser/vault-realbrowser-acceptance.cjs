@@ -512,7 +512,21 @@ const readOnlyAdmissionMode =
   lifecycleDryRun || process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
 const receiptBackedSaveUpdateMode =
   process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_RECEIPT_BACKED_SAVE_UPDATE';
-const RECEIPT_BACKED_SAVE_UPDATE_COMMIT = 'a2b5aa7e1082330ab6658b07477b31ea3705ca72';
+// Receipt-backed Save/Update is deliberately limited to two independently
+// reviewed source artifacts. The release ZIP path is bound to the bytes of
+// its checked manifest as well as its declared identity; it is not evidence
+// of Store publication or installation.
+const RECEIPT_BACKED_FROZEN_SOURCE_COMMIT = 'a2b5aa7e1082330ab6658b07477b31ea3705ca72';
+const RECEIPT_BACKED_LOCAL_RELEASE_ZIP_SOURCE_COMMIT =
+  '3bad3aaea3d8906caff1f05504570145eb813c04';
+const RECEIPT_BACKED_LOCAL_RELEASE_ZIP_MANIFEST_SHA256 =
+  'c395a10b2b8d6dfc42dc045f553a9098781eab3d33634e5a0a1a947f0bec8b9b';
+const RECEIPT_BACKED_LOCAL_RELEASE_ZIP_ARTIFACT_KIND = 'local-release-zip-artifact';
+const RECEIPT_BACKED_LOCAL_RELEASE_ZIP_VERSION = '0.2.38';
+const RECEIPT_BACKED_SAVE_UPDATE_COMMITS = new Set([
+  RECEIPT_BACKED_FROZEN_SOURCE_COMMIT,
+  RECEIPT_BACKED_LOCAL_RELEASE_ZIP_SOURCE_COMMIT,
+]);
 const RECEIPT_BACKED_ROUTER_SHA256 =
   '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
 const RECEIPT_BACKED_SERVICE_SHA256 =
@@ -645,7 +659,7 @@ if (receiptBackedSaveUpdateMode) {
   assert(headlessNoClipboardMode, 'receipt_backed_requires_headless_no_clipboard');
   assert(localCanonicalCleanupArmed, 'receipt_backed_requires_local_canonical_cleanup');
   assert(
-    process.env.MATRX_VAULT_CANARY_EXPECTED_COMMIT === RECEIPT_BACKED_SAVE_UPDATE_COMMIT,
+    RECEIPT_BACKED_SAVE_UPDATE_COMMITS.has(process.env.MATRX_VAULT_CANARY_EXPECTED_COMMIT),
     'receipt_backed_requires_frozen_artifact',
   );
   assert(
@@ -1136,6 +1150,7 @@ async function verifyArtifact() {
   const manifestReal = await fs.realpath(manifestPath);
   const artifactRoot = path.dirname(manifestReal);
   const manifest = JSON.parse(await fs.readFile(manifestReal, 'utf8'));
+  const manifestSha256 = await sha256(manifestReal);
   assert(
     manifest.schema === 2 && manifest.extensionDirectory === 'extension',
     'artifact_manifest_shape',
@@ -1172,13 +1187,29 @@ async function verifyArtifact() {
     await fs.readFile(path.join(extension, 'manifest.json'), 'utf8'),
   );
   assert(extensionManifest.manifest_version === 3, 'artifact_not_mv3');
-  if (receiptBackedSaveUpdateMode)
-    assert(
-      manifest.sourceCommit === RECEIPT_BACKED_SAVE_UPDATE_COMMIT,
-      'receipt_backed_artifact_commit_mismatch',
-    );
+  if (receiptBackedSaveUpdateMode) {
+    if (manifest.sourceCommit === RECEIPT_BACKED_LOCAL_RELEASE_ZIP_SOURCE_COMMIT) {
+      assert(
+        manifestSha256 === RECEIPT_BACKED_LOCAL_RELEASE_ZIP_MANIFEST_SHA256,
+        'receipt_backed_local_release_manifest_mismatch',
+      );
+      assert(
+        manifest.kind === RECEIPT_BACKED_LOCAL_RELEASE_ZIP_ARTIFACT_KIND,
+        'receipt_backed_local_release_kind_mismatch',
+      );
+      assert(
+        manifest.manifestVersion === RECEIPT_BACKED_LOCAL_RELEASE_ZIP_VERSION,
+        'receipt_backed_local_release_version_mismatch',
+      );
+    } else {
+      assert(
+        manifest.sourceCommit === RECEIPT_BACKED_FROZEN_SOURCE_COMMIT,
+        'receipt_backed_artifact_commit_mismatch',
+      );
+    }
+  }
   proof.artifact = {
-    manifestSha256: await sha256(manifestReal),
+    manifestSha256,
     sourceCommit: manifest.sourceCommit,
     manifestVersion: manifest.manifestVersion,
     kind: manifest.kind,
