@@ -205,6 +205,42 @@ const response = (cdp, session, id, status) =>
   duplicateCdp.emit('Target.detachedFromTarget', { sessionId: 'one-event' });
   await duplicate.dispose().catch(() => {});
 
+  const pairedWorkerCdp = new Flat(),
+    pairedWorker = newJournal(pairedWorkerCdp);
+  await pairedWorker.start();
+  pairedWorkerCdp.plan({ sessionId: 'paired-page', targetId: 'paired-panel' });
+  await pairedWorker.bindPanelTarget('paired-panel');
+  // The shared raw CDP transport may attach a short-lived MV3 worker while
+  // the journal observes the page. Only its matching detach is ignored.
+  pairedWorkerCdp.emitAttach({
+    sessionId: 'worker-pair',
+    targetId: 'extension-worker',
+    type: 'service_worker',
+  });
+  request(pairedWorkerCdp, 'paired-page', 'worker-paired-write', API + '/api/vault/items', 'POST');
+  pairedWorkerCdp.emit('Target.detachedFromTarget', { sessionId: 'worker-pair' });
+  assert.equal(pairedWorker.snapshot().observerError, false);
+  assert.equal(pairedWorker.snapshot().remainingIgnoredServiceWorkerSessionCount, 0);
+  assert.equal(pairedWorker.snapshot().vaultMutationRequests, 1);
+  await pairedWorker.dispose();
+
+  const unknownDetachCdp = new Flat(),
+    unknownDetach = newJournal(unknownDetachCdp);
+  await unknownDetach.start();
+  unknownDetachCdp.emit('Target.detachedFromTarget', { sessionId: 'never-attached' });
+  assert.equal(unknownDetach.snapshot().observerError, true, 'unknown detach must remain fatal');
+  await unknownDetach.dispose().catch(() => {});
+
+  const unpairedWorkerCdp = new Flat(),
+    unpairedWorker = newJournal(unpairedWorkerCdp);
+  await unpairedWorker.start();
+  unpairedWorkerCdp.emitAttach({
+    sessionId: 'worker-left-attached',
+    targetId: 'extension-worker-left-attached',
+    type: 'service_worker',
+  });
+  await assert.rejects(() => unpairedWorker.dispose(), /cleanup_failed/);
+
   const cleanupCdp = new Flat(),
     cleanup = newJournal(cleanupCdp);
   await cleanup.start();

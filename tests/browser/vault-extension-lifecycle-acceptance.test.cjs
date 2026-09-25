@@ -133,6 +133,61 @@ const {
     restoredByCleanup: true,
   });
 
+  let replacementTargetQueries = 0;
+  let replacementRuntimeChecks = 0;
+  extensionEnabled = true;
+  const readinessProof = {};
+  const readyResult = await runExtensionDisableEnable({
+    worker: {
+      evaluate: async (fn) =>
+        fn.toString().includes('storage.local') ? snapshot : 'abcdefghijklmnopabcdefghijklmnop',
+    },
+    cdp: {
+      send: async () => {
+        replacementTargetQueries += 1;
+        return {
+          targetInfos:
+            replacementTargetQueries === 1
+              ? []
+              : [
+                  {
+                    targetId: 'replacement-worker',
+                    type: 'service_worker',
+                    url: 'chrome-extension://abcdefghijklmnopabcdefghijklmnop/background.js',
+                  },
+                ],
+        };
+      },
+    },
+    workerUrl: 'chrome-extension://abcdefghijklmnopabcdefghijklmnop/background.js',
+    previousTargetId: 'old-worker',
+    panelTargetId: 'old-panel',
+    extensionId: 'abcdefghijklmnopabcdefghijklmnop',
+    context: {
+      newPage: async () => ({ locator: () => toggle, goto: async () => {}, close: async () => {} }),
+    },
+    refreshWorker: async () => ({
+      evaluate: async (fn) => {
+        if (fn.toString().includes('runtime.id')) {
+          replacementRuntimeChecks += 1;
+          if (replacementRuntimeChecks === 1)
+            throw new Error('generator_worker_cdp_evaluate_refused');
+          return 'abcdefghijklmnopabcdefghijklmnop';
+        }
+        return snapshot;
+      },
+    }),
+    disposePanel: async () => {},
+    reopenPanel: async () => ({ targetId: 'replacement-panel' }),
+    verifySettingsIdentity: async () => true,
+    checkpoint: () => {},
+    proof: readinessProof,
+    wait: async () => {},
+  });
+  assert.equal(replacementRuntimeChecks, 2, 'replacement worker must retry one transient CDP refusal');
+  assert.equal(readyResult.panel.targetId, 'replacement-panel');
+  assert.equal(readinessProof.lifecycle.disableEnable.disposition, 'passed');
+
   const order = [];
   const signOutProof = {};
   await runSettingsSignOut({

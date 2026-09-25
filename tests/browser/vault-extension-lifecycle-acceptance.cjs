@@ -101,6 +101,34 @@ async function waitForReplacementExtensionWorkerTarget({
   throw new Error('lifecycle_replacement_worker_target_timeout');
 }
 
+// Target discovery precedes creation of the service worker's execution
+// context. Retry only the documented transient CDP refusal, and only while
+// proving the replacement's exact extension identity.
+async function refreshReadyExtensionWorker({
+  replacementTarget,
+  refreshWorker,
+  extensionId,
+  wait,
+  attempts = 60,
+}) {
+  let lastRefusal;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const candidate = await refreshWorker(replacementTarget);
+    try {
+      const runtimeId = await candidate.evaluate(() => chrome.runtime.id);
+      assert(runtimeId === extensionId, 'lifecycle_reenabled_extension_identity_mismatch');
+      return candidate;
+    } catch (error) {
+      if (error?.message !== 'generator_worker_cdp_evaluate_refused') throw error;
+      lastRefusal = error;
+      await wait(100);
+    }
+  }
+  throw new Error(
+    `lifecycle_reenabled_worker_execution_context_timeout${lastRefusal ? '' : '_unobserved'}`,
+  );
+}
+
 async function runExtensionReload({
   worker,
   refreshWorker,
@@ -222,10 +250,13 @@ async function runExtensionDisableEnable({
       previousTargetId,
       wait,
     });
-    const replacement = await refreshWorker(replacementTarget);
+    const replacement = await refreshReadyExtensionWorker({
+      replacementTarget,
+      refreshWorker,
+      extensionId,
+      wait,
+    });
     const after = await inspectIdentity(replacement);
-    const replacementRuntimeId = await replacement.evaluate(() => chrome.runtime.id);
-    assert(replacementRuntimeId === extensionId, 'lifecycle_reenabled_extension_identity_mismatch');
     const panel = await reopenPanel(extensionsPage, replacement);
     assert(
       typeof panel?.targetId === 'string' && panel.targetId.length > 0 && panel.targetId !== panelTargetId,

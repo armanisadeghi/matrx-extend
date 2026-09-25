@@ -57,7 +57,8 @@ function createVaultNetworkJournal({
     tasks = new Set(),
     binds = new Map(),
     attachedWaiters = new Map(),
-    detachWaiters = new Map();
+    detachWaiters = new Map(),
+    ignoredServiceWorkerSessions = new Set();
   const fail = () => {
     if (!disposed) observerError = true;
   };
@@ -249,11 +250,34 @@ function createVaultNetworkJournal({
   };
   const onAttached = (params) => {
     if (disposed) return;
+    const sessionId = params?.sessionId,
+      info = params?.targetInfo;
+    // The raw CDP worker facade shares this transport with the page-only
+    // journal. Preserve only a well-formed worker attach/detach pair; every
+    // page, other-target, malformed, or duplicate event remains an error.
+    if (info?.type === 'service_worker') {
+      if (
+        typeof sessionId !== 'string' ||
+        !sessionId ||
+        typeof info.targetId !== 'string' ||
+        !info.targetId ||
+        ignoredServiceWorkerSessions.has(sessionId)
+      ) {
+        fail();
+        return;
+      }
+      ignoredServiceWorkerSessions.add(sessionId);
+      return;
+    }
     addTask(setup(params, attachedWaiters.has(params?.sessionId)));
   };
   const onDetached = (params) => {
-    const sessionId = params?.sessionId,
-      waiter = attachedWaiters.get(sessionId);
+    const sessionId = params?.sessionId;
+    if (ignoredServiceWorkerSessions.has(sessionId)) {
+      ignoredServiceWorkerSessions.delete(sessionId);
+      return;
+    }
+    const waiter = attachedWaiters.get(sessionId);
     if (waiter) {
       attachedWaiters.delete(sessionId);
       clearTimeout(waiter.timer);
@@ -446,6 +470,7 @@ function createVaultNetworkJournal({
         cleanupPhase,
         remainingOwnedSessionCount: targets.size,
         pendingSetupCount: tasks.size + binds.size,
+        remainingIgnoredServiceWorkerSessionCount: ignoredServiceWorkerSessions.size,
         transportFatal: cdp.fatal === true,
         transportFailureClass: typeof cdp.failureClass === 'string' ? cdp.failureClass : 'unknown',
         sendFailureClass: lastSendFailureClass,
@@ -486,6 +511,7 @@ function createVaultNetworkJournal({
             });
         cleanupPhase = 'waiting_detach';
         if (!(await drainDetached())) cleanup = true;
+        if (ignoredServiceWorkerSessions.size !== 0) cleanup = true;
         cdp.off('Target.attachedToTarget', onAttached);
         cdp.off('Target.detachedFromTarget', onDetached);
         cdp.off('Network.requestWillBeSent', onRequest);
