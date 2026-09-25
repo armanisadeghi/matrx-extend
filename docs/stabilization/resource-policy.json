@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "watchIntervalSeconds": 15,
+  "swapWindowSeconds": 60,
+  "unsafeSamplesToStop": 2,
+  "healthySamplesToResume": 3,
+  "minimumAvailableMemoryGiB": 4,
+  "minimumAvailableMemoryFraction": 0.2,
+  "maximumOneMinuteLoadPerLogicalCpu": 0.75,
+  "maximumSustainedCpuBusyFraction": 0.75,
+  "maximumBusyFractionAtHighLoad": 0.6,
+  "cpuSampleIntervalSeconds": 10,
+  "ownedGroupGraceSeconds": 10,
+  "ownedGroupKillWaitSeconds": 5,
+  "minimumFreeDiskGiB": 20,
+  "maximumSwapGrowthMiB": 256,
+  "normalMacPressureLevel": 1,
+  "cpuAdmissionRationale": "Admission samples a full 60-second window: refuse average CPU busy >=75%, or average busy >=60% if ANY sample has normalized one-minute load >=0.75. Missing samples refuse. The reported admission load is the window maximum normalized to the final CPU count.",
+  "allowedCommands": [
+    [
+      "pnpm",
+      "install",
+      "--frozen-lockfile",
+      "--ignore-scripts"
+    ],
+    [
+      "pnpm",
+      "exec",
+      "wxt",
+      "prepare"
+    ],
+    [
+      "pnpm",
+      "exec",
+      "wxt",
+      "build",
+      "--mode",
+      "development"
+    ],
+    [
+      "pnpm",
+      "exec",
+      "wxt",
+      "build"
+    ],
+    [
+      "pnpm",
+      "exec",
+      "wxt"
+    ],
+    [
+      "pnpm",
+      "compile"
+    ],
+    [
+      "pnpm",
+      "exec",
+      "tsc",
+      "--noEmit"
+    ],
+    [
+      "pnpm",
+      "exec",
+      "vitest",
+      "run",
+      "--maxWorkers=1",
+      "--minWorkers=1"
+    ]
+  ],
+  "launchContract": "Only the listed trusted foreground tool invocations are admitted (plus positional test-file filters for the single-worker vitest invocation). Every descendant must inherit MATRX_RESOURCE_OWNER unchanged. New sessions/detached children are discovered and stopped by token census. Environment scrubbing, remote process brokers, external daemon handoff and arbitrary shell/script launchers are outside this contract and forbidden. Install skips lifecycle scripts; run required preparation separately through its listed command. WXT server occupies the sole permit until stopped, including while idle; stop it before manual browser testing, using a completed unpacked build. This is cooperative process ownership, not an OS security sandbox. Daemonizing commands are prohibited. macOS can hide protected system-binary environments: such binaries must remain in the owned foreground process group; detached protected system binaries are explicitly unsupported. This guard does not claim to contain arbitrary hostile descendants.",
+  "processSnapshotMaxBytes": 33554432
+}

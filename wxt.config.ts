@@ -225,7 +225,25 @@ export default defineConfig({
     };
   },
   vite: () => ({
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+      {
+        name: 'object-inspect-browser-util',
+        enforce: 'pre',
+        resolveId(source, importer) {
+          // object-inspect marks this optional Node helper as `false` for browsers.
+          // Vite's false-module proxy throws when object-inspect reads `.custom`.
+          if (
+            /^\.\/util\.inspect(?:\.js)?$/.test(source) &&
+            importer &&
+            /[/\\]object-inspect[/\\]index\.js$/.test(importer)
+          ) {
+            return path.resolve(__dirname, './src/lib/browser/object-inspect-util.cjs');
+          }
+          return null;
+        },
+      },
+    ],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),

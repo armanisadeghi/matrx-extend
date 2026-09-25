@@ -1,0 +1,40 @@
+{
+  "task_id": "resource-scope-review",
+  "lane": "independent Sol/medium verification",
+  "reviewed_at": "2026-09-25T22:22:00Z",
+  "scope": [
+    "scripts/stabilization-resource.mjs",
+    "docs/stabilization/resource-policy.json",
+    "docs/stabilization/PLAN.md resource contract"
+  ],
+  "A_behavior": {
+    "verdict": "PASS_SUPPORTED_SCOPE",
+    "evidence": [
+      "Scratch copied-policy fixture: /usr/bin/true exited immediately with RESOURCE_JOB_EXIT and exit 0; ownership released.",
+      "Scratch copied-policy fixture: concurrent second runner returned RESOURCE_HEAVY_BUSY while first held permit; SIGINT stopped first runner's process group.",
+      "Scratch copied-policy fixture: deliberately unsafe CPU threshold refused admission with RESOURCE_PREFLIGHT_REFUSED and exit 2.",
+      "Production-policy read-only check completed full 60-second preflight with RESOURCE_ADMITTED; pressure 1, available memory 7.68 GiB, average CPU busy 0.5595, no swap growth, repo/profile free 1685 GiB. This admission is point-in-time only."
+    ],
+    "limitations": [
+      "No product install, build, test, or UI work was run.",
+      "Manual browser unsafe hold and watchdog stop were reviewed from code, not exercised with an actual browser or product job."
+    ]
+  },
+  "B_code": {
+    "verdict": "PASS_WITH_ADVISORY",
+    "findings": [
+      {
+        "severity": "advisory",
+        "location": "scripts/stabilization-resource.mjs validateCommand",
+        "detail": "The positional Vitest filter regex accepts ../outside.test.ts and absolute paths; a dry invocation reached profile validation rather than RESOURCE_COMMAND_NOT_ALLOWED. The stated contract permits positional test-file filters without expressly requiring in-repo paths, and no external test execution was demonstrated. Restrict paths if campaign policy intends repo-local tests only."
+      },
+      {
+        "severity": "documented_limit",
+        "location": "docs/stabilization/PLAN.md and resource-policy.json launchContract",
+        "detail": "Detached macOS protected system binaries can hide inherited environment tokens. The contract prohibits detached protected binaries and daemonizing commands; no arbitrary-process sandbox claim is made. This is not a supported-command blocker."
+      }
+    ],
+    "assessment": "Exact allowlist admits the intended pnpm install --ignore-scripts, WXT prepare/build/dev, compile and single-worker Vitest commands. Foreground group stop, inherited-token census, retained lease on failed cleanup, and browser operator hold are coherent for the trusted command contract."
+  },
+  "readiness": "READY_FOR_FIRST_GUARDED_PNPM_INSTALL_AND_FRESH_WXT_BUILD; each must obtain its own current admission and keep the single permit through group/token cleanup."
+}

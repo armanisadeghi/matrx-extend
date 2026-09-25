@@ -1,0 +1,745 @@
+{
+  "observed_at": "2026-09-25T21:54:00Z",
+  "project": "AI Matrx",
+  "source": "Supabase MCP read-only query; current project brsgrqvjdzwihsvnfqkf",
+  "bindings": [
+    {
+      "name": "ai",
+      "tier": "read",
+      "category": "ai",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "capture_prospect",
+      "tier": "action",
+      "category": "crm",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "capture_study_set",
+      "tier": "action",
+      "category": "education",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "cdp_a11y_tree",
+      "tier": "privileged",
+      "category": "devtools",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "cdp_emulate",
+      "tier": "privileged",
+      "category": "devtools",
+      "executor": "chrome-extension",
+      "admin_only": true,
+      "definition_active": true
+    },
+    {
+      "name": "cdp_full_page_screenshot",
+      "tier": "privileged",
+      "category": "devtools",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "cdp_input_click_xy",
+      "tier": "privileged",
+      "category": "devtools",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "cdp_input_type",
+      "tier": "privileged",
+      "category": "devtools",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "cdp_network_capture_drain",
+      "tier": "privileged",
+      "category": "devtools",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "cdp_network_capture_start",
+      "tier": "privileged",
+      "category": "devtools",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "cdp_network_capture_stop",
+      "tier": "privileged",
+      "category": "devtools",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "cdp_network_get_body",
+      "tier": "privileged",
+      "category": "devtools",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "cdp_perf_metrics",
+      "tier": "read",
+      "category": "devtools",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "cdp_print_pdf",
+      "tier": "privileged",
+      "category": "devtools",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "cdp_session",
+      "tier": "privileged",
+      "category": "devtools",
+      "executor": "chrome-extension",
+      "admin_only": true,
+      "definition_active": true
+    },
+    {
+      "name": "chrome_batch",
+      "tier": "read",
+      "category": "core",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "chrome_bookmarks",
+      "tier": "read",
+      "category": "chrome",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "chrome_cookies",
+      "tier": "privileged",
+      "category": "chrome",
+      "executor": "chrome-extension",
+      "admin_only": true,
+      "definition_active": true
+    },
+    {
+      "name": "chrome_history",
+      "tier": "read",
+      "category": "chrome",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "chrome_recently_closed",
+      "tier": "action",
+      "category": "chrome",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "chrome_record_gif",
+      "tier": "action",
+      "category": "capture",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "chrome_record_tab_video",
+      "tier": "action",
+      "category": "capture",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "chrome_save_page_as_mhtml",
+      "tier": "action",
+      "category": "capture",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "chrome_tab_audio_inspect",
+      "tier": "read",
+      "category": "tabs",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "chrome_webmcp",
+      "tier": "action",
+      "category": "webmcp",
+      "executor": "chrome-extension",
+      "admin_only": true,
+      "definition_active": true
+    },
+    {
+      "name": "clipboard",
+      "tier": "action",
+      "category": "interaction",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "computer",
+      "tier": "action",
+      "category": "interaction",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "credential_login",
+      "tier": "action",
+      "category": "credentials",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "data_patterns",
+      "tier": "action",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "delete_demo",
+      "tier": "action",
+      "category": "demos",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "delete_guidance_item",
+      "tier": "action",
+      "category": "guidance",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "describe_demo",
+      "tier": "read",
+      "category": "demos",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "desktop_run_command",
+      "tier": "privileged",
+      "category": "desktop",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "downloads",
+      "tier": "action",
+      "category": "capture",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "drop_file",
+      "tier": "action",
+      "category": "interaction",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "extract_microdata",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "extract_table",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "fetch_url_as_markdown",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "find",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "find_text_on_page",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "form_input",
+      "tier": "action",
+      "category": "interaction",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "get_computed_style",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "get_element_at_point",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "get_element_details",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "get_form_fields",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "get_guidance_item",
+      "tier": "read",
+      "category": "guidance",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "get_page_links",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "get_page_selection",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "get_page_text",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "get_request_body",
+      "tier": "privileged",
+      "category": "devtools",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "google_email_send",
+      "tier": "ask-user",
+      "category": "productivity",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "inspect_element",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "list_chrome_categories",
+      "tier": "read",
+      "category": "core",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "list_demos",
+      "tier": "read",
+      "category": "demos",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "list_guidance",
+      "tier": "read",
+      "category": "guidance",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "list_highlights",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "mutation_watch",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "navigate",
+      "tier": "action",
+      "category": "interaction",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "query_elements",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "read_active_page",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "read_console_messages",
+      "tier": "privileged",
+      "category": "devtools",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "read_network_requests",
+      "tier": "privileged",
+      "category": "devtools",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "read_page",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "read_pdf",
+      "tier": "read",
+      "category": "reading",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "record_demo",
+      "tier": "action",
+      "category": "demos",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "records",
+      "tier": "action",
+      "category": "records",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "remember_for_domain",
+      "tier": "action",
+      "category": "memory",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "replay_demo",
+      "tier": "privileged",
+      "category": "demos",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "request_user_takeover",
+      "tier": "ask-user",
+      "category": "human",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "resize_window",
+      "tier": "action",
+      "category": "tabs",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "save_guidance_note",
+      "tier": "action",
+      "category": "guidance",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "screenshot_region",
+      "tier": "read",
+      "category": "capture",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "sleep",
+      "tier": "action",
+      "category": "interaction",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "stylesheet",
+      "tier": "privileged",
+      "category": "interaction",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "submit_form",
+      "tier": "action",
+      "category": "interaction",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "tab_groups",
+      "tier": "action",
+      "category": "tabs",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "tabs",
+      "tier": "action",
+      "category": "tabs",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "update_plan",
+      "tier": "ask-user",
+      "category": "human",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "upload_file",
+      "tier": "action",
+      "category": "interaction",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "user",
+      "tier": "ask-user",
+      "category": "human",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "user_todos",
+      "tier": "action",
+      "category": "human",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    },
+    {
+      "name": "wait_for",
+      "tier": "read",
+      "category": "interaction",
+      "executor": "chrome-extension",
+      "admin_only": false,
+      "definition_active": true
+    }
+  ],
+  "review_items": [
+    {
+      "id": "16db333a-9981-4c22-83cc-4cdc3198ba03",
+      "url": "/extension/files",
+      "lane": "npm-package-extraction",
+      "title": "Extension: file sizes on the Files, Doctor and Network panels now read from the shared package",
+      "status": "submitted",
+      "feedback": null
+    },
+    {
+      "id": "db670bbc-5fea-4eeb-b3f2-95236e74bde2",
+      "url": "chrome-extension://sidepanel#vault",
+      "lane": "matrx-extend TASK-011",
+      "title": "Matrx Extend: manage logins in the Vault tab (edit, change password, add/remove field, delete)",
+      "status": "submitted",
+      "feedback": null
+    },
+    {
+      "id": "20d492fa-30fc-4a56-92f8-1ec5a1602d54",
+      "url": "https://www.aimatrx.com/vault",
+      "lane": "credential-sharing-browser-login",
+      "title": "Vault: quiet saved-login assistance and Fill without submitting",
+      "status": "ready_for_human",
+      "feedback": null
+    },
+    {
+      "id": "be01e5e6-9227-46b9-bcd7-067105c30300",
+      "url": "https://aimatrx.com/user-settings/integrations/google-workspace",
+      "lane": "take-google-integrations",
+      "title": "Google file attach in the Chrome extension chat",
+      "status": "submitted",
+      "feedback": null
+    },
+    {
+      "id": "5f86e71d-b282-4132-b3cf-8179ed9854c0",
+      "url": "chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html",
+      "lane": "extension-console-hygiene",
+      "title": "Matrx Extend opens without console errors",
+      "status": "ready_for_human",
+      "feedback": null
+    },
+    {
+      "id": "7d1257b4-ea40-4091-9222-a1aefe4248a4",
+      "url": "chrome-extension://hnfolienncfklkgmdjjmhhegglimlamg/sidepanel.html",
+      "lane": "extension-auth-repair",
+      "title": "Matrx Extend 0.2.23: reload and verify sign-in recovery",
+      "status": "submitted",
+      "feedback": null
+    },
+    {
+      "id": "ccefd8f2-e46d-4e71-8a20-a6860694977e",
+      "url": "chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html",
+      "lane": "agent-picker-unification",
+      "title": "Chrome extension: all four agent pickers are now THE ONE package picker",
+      "status": "ready_for_human",
+      "feedback": null
+    },
+    {
+      "id": "2a037935-e525-4052-bd8b-ef48b23ad8de",
+      "url": "https://mathspace.co/textbooks/syllabuses/Syllabus-1171/topics/Topic-22118/subtopics/Subtopic-280956/?activeTab=theory&activeLessonTab=content",
+      "lane": "scrape-inline-svg",
+      "title": "Mathspace SVG graphs in extension scrape",
+      "status": "ready_for_human",
+      "feedback": "The extracted Mathspace graphs show graph paper but omit the plotted function lines. Partial mathematical graphics are misleading; preserve the complete graph or explicitly report that exact capture is unavailable."
+    },
+    {
+      "id": "f4efb60b-1557-45ea-afbf-a4447e633ae0",
+      "url": "https://github.com/armanisadeghi/matrx-extend/blob/main/docs/feature-tests.md",
+      "lane": "archived-items-law",
+      "title": "Chrome extension: reveal archived agents from the picker (v0.2.11)",
+      "status": "ready_for_human",
+      "feedback": null
+    },
+    {
+      "id": "dbee0503-786b-4b61-87ed-ce6d6d7cb3cb",
+      "url": "https://the-internet.herokuapp.com/login",
+      "lane": "matrx-extend TASK-012",
+      "title": "Matrx Extend: \"Save this login?\" prompt — page-driven Vault capture",
+      "status": "ready_for_human",
+      "feedback": "Repair ddd0064 is pushed and the full automated battery passes. Independent live retest still required: use Vault-side Not now and confirm both the Vault candidate and matching page card disappear without leaving a stale disabled card."
+    }
+  ]
+}

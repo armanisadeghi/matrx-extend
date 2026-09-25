@@ -1,0 +1,51 @@
+{
+  "task_id": "resource-final-repair",
+  "lane": "Astra medium escalation",
+  "status": "implemented; independent review pending",
+  "changed_files": [
+    "scripts/stabilization-resource.mjs",
+    "docs/stabilization/resource-policy.json",
+    "docs/stabilization/PLAN.md"
+  ],
+  "root_cause": "Process-group ownership did not cover descendants that create a new session. CPU busy was window-averaged but load used only final sample.",
+  "changes": [
+    "Exact trusted command allowlist; pnpm install disables lifecycle scripts; Vitest uses one worker and accepts positional test-file filters.",
+    "Inherited nonce census discovers ordinary Node/tool descendants across sessions; termination checks PID/start identity, retries census, retains lease on measurement/cleanup error.",
+    "Stale run acquisition automatically retries nonce cleanup; stale manual browser recovery requires explicit stopped-work assertion and dead-holder proof.",
+    "CPU admission now averages busy across entire window and pairs it with ANY high-load occurrence; PLAN and policy aligned.",
+    "Process environments are filtered in memory; never emitted to logs or reports."
+  ],
+  "verification": [
+    {
+      "case": "detached Node descendant",
+      "result": "pass",
+      "evidence": "Scratch fake pnpm launches detached Node sleeper and exits; actual runner code stops sleeper before releasing lease, exits zero. Real macOS ps/spawn/signals/filesystem, only external resource measurements injected and timers shortened."
+    },
+    {
+      "case": "high load early then low final",
+      "result": "pass",
+      "evidence": "Three .60 busy samples with load .8,.8,.2 normalized: refuses RESOURCE_CPU_HIGH_LOAD_BUSY, exit2."
+    },
+    {
+      "case": "arbitrary command launch",
+      "result": "pass",
+      "evidence": "/bin/sleep direct run refused RESOURCE_COMMAND_NOT_ALLOWED before acquisition."
+    },
+    {
+      "case": "syntax",
+      "result": "pass",
+      "evidence": "node --check scripts/stabilization-resource.mjs"
+    }
+  ],
+  "scratch_harness": "/tmp/verify-resource-final.mjs",
+  "successful_scratch_root": "/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/resource-final-proof-U0BdUe",
+  "limitations": [
+    "Cooperative trusted-tool launch contract, NOT an OS security sandbox. Explicit coordinator ruling narrowed requirement to trusted campaign command resource/concurrency safety.",
+    "macOS ps hides environment of protected system binaries. A detached /bin/sleep proof escapes nonce census. Daemonizing commands and detached protected system-binary children are explicitly forbidden, as are environment scrubbing and external process brokers. Such binaries must remain in the foreground owned group.",
+    "A conservative all-new-process baseline was tested and removed per coordinator ruling: unrelated new same-user processes must not indefinitely block ordinary product work.",
+    "Manual browser stop remains an operator/agent assertion; guard cannot prove UI inactivity.",
+    "No product builds/tests/UI and no Git mutation. Full-minute real resource sampling not repeated; previous receipt remains source for measurement parsing."
+  ],
+  "open_questions": [],
+  "next_action": "Fresh reviewer verifies supported command scope and explicit limits, then coordinator runs first guarded development build."
+}

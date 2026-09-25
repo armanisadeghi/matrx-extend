@@ -1,0 +1,274 @@
+{
+  "schema_version": 1,
+  "task_id": "inventory-operations",
+  "source_sha": "f70ecd47bd8a864bee377ddb1235219efc8eff23",
+  "features": [
+    {
+      "id": "EXT-F-0001",
+      "name": "Development build, reload and runtime identity",
+      "surface": "Development installation",
+      "entry_points": [
+        "docs/DEVELOPMENT.md",
+        "wxt.config.ts",
+        "src/config/identity.ts"
+      ],
+      "controls": [
+        {
+          "id": "EXT-F-0001-C01",
+          "label": "Fresh source build and unpacked install",
+          "action": "Fresh source build and unpacked install"
+        },
+        {
+          "id": "EXT-F-0001-C02",
+          "label": "Sidepanel reload",
+          "action": "Sidepanel reload"
+        },
+        {
+          "id": "EXT-F-0001-C03",
+          "label": "Content-script page reload",
+          "action": "Content-script page reload"
+        },
+        {
+          "id": "EXT-F-0001-C04",
+          "label": "Service-worker restart and offscreen lifecycle",
+          "action": "Service-worker restart and offscreen lifecycle"
+        },
+        {
+          "id": "EXT-F-0001-C05",
+          "label": "Dev identity auth redirect and origin compatibility",
+          "action": "Dev identity auth redirect and origin compatibility"
+        }
+      ],
+      "source_anchors": [
+        "docs/DEVELOPMENT.md",
+        "wxt.config.ts",
+        "src/config/identity.ts"
+      ],
+      "dependency_class": "local",
+      "wave": "A",
+      "inventory_status": "source-complete",
+      "applicability": {
+        "guest": {
+          "applicable": true,
+          "reason": "Infrastructure supports all authentication modes; shared job evidence can apply to each mode with runtime identity verified."
+        },
+        "member": {
+          "applicable": true,
+          "reason": "Infrastructure supports all authentication modes; shared job evidence can apply to each mode with runtime identity verified."
+        },
+        "admin": {
+          "applicable": true,
+          "reason": "Infrastructure supports all authentication modes; shared job evidence can apply to each mode with runtime identity verified."
+        }
+      },
+      "cases": [],
+      "cells": {
+        "guest": {
+          "test_status": "unverified",
+          "defect_ids": [],
+          "run_ids": [],
+          "retest_status": "not-run"
+        },
+        "member": {
+          "test_status": "unverified",
+          "defect_ids": [],
+          "run_ids": [],
+          "retest_status": "not-run"
+        },
+        "admin": {
+          "test_status": "unverified",
+          "defect_ids": [],
+          "run_ids": [],
+          "retest_status": "not-run"
+        }
+      },
+      "readiness_gaps": [
+        "Concrete procedure and evidence required before executing each control."
+      ]
+    },
+    {
+      "id": "EXT-F-0002",
+      "name": "Resource admission and owned job lifecycle",
+      "surface": "Testing infrastructure",
+      "entry_points": [
+        "scripts/stabilization-resource.mjs",
+        "docs/stabilization/resource-policy.json"
+      ],
+      "controls": [
+        {
+          "id": "EXT-F-0002-C01",
+          "label": "Preflight refuses unsafe machine",
+          "action": "Preflight refuses unsafe machine"
+        },
+        {
+          "id": "EXT-F-0002-C02",
+          "label": "Single-heavy-job contention refusal",
+          "action": "Single-heavy-job contention refusal"
+        },
+        {
+          "id": "EXT-F-0002-C03",
+          "label": "Watchdog stops owned workload",
+          "action": "Watchdog stops owned workload"
+        },
+        {
+          "id": "EXT-F-0002-C04",
+          "label": "Lease retained until all owned work ends",
+          "action": "Lease retained until all owned work ends"
+        },
+        {
+          "id": "EXT-F-0002-C05",
+          "label": "Manual browser stop confirmation",
+          "action": "Manual browser stop confirmation"
+        }
+      ],
+      "source_anchors": [
+        "scripts/stabilization-resource.mjs",
+        "docs/stabilization/resource-policy.json"
+      ],
+      "dependency_class": "local",
+      "wave": "A",
+      "inventory_status": "source-complete",
+      "applicability": {
+        "guest": {
+          "applicable": true,
+          "reason": "Infrastructure supports all authentication modes; shared job evidence can apply to each mode with runtime identity verified."
+        },
+        "member": {
+          "applicable": true,
+          "reason": "Infrastructure supports all authentication modes; shared job evidence can apply to each mode with runtime identity verified."
+        },
+        "admin": {
+          "applicable": true,
+          "reason": "Infrastructure supports all authentication modes; shared job evidence can apply to each mode with runtime identity verified."
+        }
+      },
+      "cases": [],
+      "cells": {
+        "guest": {
+          "test_status": "unverified",
+          "defect_ids": [],
+          "run_ids": [],
+          "retest_status": "not-run"
+        },
+        "member": {
+          "test_status": "unverified",
+          "defect_ids": [],
+          "run_ids": [],
+          "retest_status": "not-run"
+        },
+        "admin": {
+          "test_status": "unverified",
+          "defect_ids": [],
+          "run_ids": [],
+          "retest_status": "not-run"
+        }
+      },
+      "readiness_gaps": [
+        "Concrete procedure and evidence required before executing each control."
+      ]
+    },
+    {
+      "id": "EXT-F-0003",
+      "name": "Validate and publish exact release candidate",
+      "surface": "Release infrastructure",
+      "entry_points": [
+        "release.sh",
+        "scripts/test-release-ship-path.sh"
+      ],
+      "controls": [
+        {
+          "id": "EXT-F-0003-C01",
+          "label": "Fetch and reconcile concurrent main",
+          "action": "Fetch and reconcile concurrent main",
+          "basis": "Campaign acceptance requirement; verify against actual release behavior, not a claim it is implemented."
+        },
+        {
+          "id": "EXT-F-0003-C02",
+          "label": "Validate final generated bumped candidate before push",
+          "action": "Validate final generated bumped candidate before push",
+          "basis": "Campaign acceptance requirement; verify against actual release behavior, not a claim it is implemented."
+        },
+        {
+          "id": "EXT-F-0003-C03",
+          "label": "Refuse red candidate publication",
+          "action": "Refuse red candidate publication",
+          "basis": "Campaign acceptance requirement; verify against actual release behavior, not a claim it is implemented."
+        },
+        {
+          "id": "EXT-F-0003-C04",
+          "label": "Revalidate candidate after remote race",
+          "action": "Revalidate candidate after remote race",
+          "basis": "Campaign acceptance requirement; verify against actual release behavior, not a claim it is implemented."
+        },
+        {
+          "id": "EXT-F-0003-C05",
+          "label": "Serialize build/check and unpacked output promotion",
+          "action": "Serialize build/check and unpacked output promotion",
+          "basis": "Campaign acceptance requirement; verify against actual release behavior, not a claim it is implemented."
+        },
+        {
+          "id": "EXT-F-0003-C06",
+          "label": "Produce matching commit tag and bundle receipt",
+          "action": "Produce matching commit tag and bundle receipt",
+          "basis": "Campaign acceptance requirement; verify against actual release behavior, not a claim it is implemented."
+        }
+      ],
+      "source_anchors": [
+        "release.sh",
+        "scripts/test-release-ship-path.sh"
+      ],
+      "dependency_class": "local",
+      "wave": "A",
+      "inventory_status": "source-complete",
+      "applicability": {
+        "guest": {
+          "applicable": true,
+          "reason": "Infrastructure supports all authentication modes; shared job evidence can apply to each mode with runtime identity verified."
+        },
+        "member": {
+          "applicable": true,
+          "reason": "Infrastructure supports all authentication modes; shared job evidence can apply to each mode with runtime identity verified."
+        },
+        "admin": {
+          "applicable": true,
+          "reason": "Infrastructure supports all authentication modes; shared job evidence can apply to each mode with runtime identity verified."
+        }
+      },
+      "cases": [],
+      "cells": {
+        "guest": {
+          "test_status": "unverified",
+          "defect_ids": [],
+          "run_ids": [],
+          "retest_status": "not-run"
+        },
+        "member": {
+          "test_status": "unverified",
+          "defect_ids": [],
+          "run_ids": [],
+          "retest_status": "not-run"
+        },
+        "admin": {
+          "test_status": "unverified",
+          "defect_ids": [],
+          "run_ids": [],
+          "retest_status": "not-run"
+        }
+      },
+      "readiness_gaps": [
+        "Current release implementation violates pre-push green requirement. Reproduce safely with isolated fixture before repair; never invoke actual release until corrected."
+      ],
+      "current_source_behavior": "release.sh pushes before validation, tolerates failed checks and parallelizes checks/builds. This conflicts with current campaign requirements; no acceptance claim is made."
+    }
+  ],
+  "unresolved": [],
+  "source_files_reviewed": [
+    "docs/DEVELOPMENT.md",
+    "wxt.config.ts",
+    "src/config/identity.ts",
+    "scripts/stabilization-resource.mjs",
+    "docs/stabilization/resource-policy.json",
+    "release.sh",
+    "scripts/test-release-ship-path.sh"
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "id": "EXT-D-0001",
+  "feature_id": "EXT-F-1001",
+  "control_id": "EXT-F-1001-C05",
+  "case_id": "EXT-F-1001-T13",
+  "surface": "Sidepanel initial view load",
+  "auth_mode": "guest-intended; extension auth unverifiable because panel failed before account UI",
+  "role": "guest intended",
+  "organization": "not reached",
+  "permissions": "No permission prompt observed or accepted; Chrome developer mode already enabled.",
+  "preconditions": [
+    "Chrome AI profile open; Store extension Matrx Extend 0.2.23 left disabled.",
+    "Development extension loaded from .output/chrome-mv3-dev, version 0.2.44, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, enabled.",
+    "Active page https://example.com/ loaded and showed heading Example Domain.",
+    "Build receipt docs/stabilization/runs/baseline-build-001.json; source SHA f70ecd47bd8a864bee377ddb1235219efc8eff23."
+  ],
+  "reproduction": [
+    "Open the active example.com tab in Chrome.",
+    "Click the Matrx toolbar extension to open its side panel.",
+    "Observe the panel render error before navigation or Settings/Scrape controls render.",
+    "Close and reopen the side panel once using the panel's suggested recovery, then observe the same error."
+  ],
+  "expected": "The side panel loads an accessible initial view and permits navigation to Settings or Scrape.",
+  "actual": "The panel says it hit a render error and reports: Module \"\" has been externalized for browser compatibility. Cannot access \".custom\" in client code. Reopening the panel reproduces the same message.",
+  "evidence": [
+    "docs/stabilization/runs/guest-local-001.json: installation, fixture, and two CUA accessibility observations.",
+    "First open and reopen both expose the same literal browser compatibility error; no screenshot file or console trace captured."
+  ],
+  "build_receipt": "docs/stabilization/runs/baseline-build-001.json",
+  "reproducibility_count": "2/2 panel opens in one browser session",
+  "severity": "S0: complete sidepanel unavailable",
+  "priority": "P0: blocks all contained-surface UI testing",
+  "state": "in-fix",
+  "owner": "/root/fix_sidepanel_render",
+  "root_cause": "unknown; runtime names an externalized module and .custom property access. Source-level origin and sibling scope have not been investigated.",
+  "sibling_census": "not started",
+  "fix_commits": [],
+  "original_reproduction_retest_run": null,
+  "surrounding_case_runs": [
+    "docs/stabilization/runs/guest-local-001.json"
+  ],
+  "reviewer_identity": null,
+  "transition_history": [
+    {
+      "at": "2026-09-25T22:30:39Z",
+      "from": null,
+      "to": "open",
+      "reason": "First browser execution reproduced sidepanel render failure twice; contained Settings/Scrape batch blocked."
+    },
+    {
+      "at": "2026-09-25T22:32:56.703566+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Two reproducible panel opens; fresh known dev identity/bundle; blocks all sidepanel tests. Auth mode unresolved, do not claim guest confirmation."
+    },
+    {
+      "at": "2026-09-25T22:32:56.703566+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Assigned Sol medium root-cause investigation and class fix; no Chat/Pilot systematic testing."
+    }
+  ],
+  "resource_note": "Failure recorded at22:30:39Z before unsafe samples22:31:33/49. Entire batch ends resource-invalid; no passes accepted. Healthy independent retest required."
+}
