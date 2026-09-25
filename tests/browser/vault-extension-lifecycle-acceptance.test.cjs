@@ -76,8 +76,15 @@ const {
 
   const reloadProof = {};
   const replacement = { ...worker };
+  const reloadBoundary = {
+    previousWorkerTargetId: 'old-worker',
+    previousPanelTargetId: 'old-panel',
+    assertPreviousTargetsGone: async () => ({ workerTargetGone: true, panelTargetGone: true }),
+    reopenPanel: async () => ({ targetId: 'replacement-panel' }),
+  };
   const returned = await runExtensionReload({
     worker,
+    ...reloadBoundary,
     refreshWorker: async () => ({
       worker: replacement,
       replacementWorkerTargetObserved: true,
@@ -88,9 +95,85 @@ const {
   });
   assert.equal(returned, replacement);
   assert.equal(reloadProof.lifecycle.extensionReload.disposition, 'passed');
+
+  // A reloaded MV3 worker can be absent until a replacement panel performs
+  // real work. The old targets must retire and the new panel must bind before
+  // target reacquisition begins.
+  const reloadWakeOrder = [];
+  await runExtensionReload({
+    worker,
+    previousWorkerTargetId: 'old-worker',
+    previousPanelTargetId: 'old-panel',
+    assertPreviousTargetsGone: async () => {
+      reloadWakeOrder.push('previous-targets-gone');
+      return { workerTargetGone: true, panelTargetGone: true };
+    },
+    reopenPanel: async () => {
+      reloadWakeOrder.push('replacement-panel');
+      return { targetId: 'replacement-panel' };
+    },
+    refreshWorker: async () => {
+      assert.deepEqual(
+        reloadWakeOrder,
+        ['previous-targets-gone', 'replacement-panel', 'settings'],
+        'a post-reload replacement panel interaction must precede replacement target polling',
+      );
+      reloadWakeOrder.push('replacement-target');
+      return {
+        worker: replacement,
+        replacementWorkerTargetObserved: true,
+      };
+    },
+    verifySettingsIdentity: async () => {
+      reloadWakeOrder.push('settings');
+      return true;
+    },
+    checkpoint: () => {},
+    proof: {},
+  });
+  assert.deepEqual(reloadWakeOrder, [
+    'previous-targets-gone',
+    'replacement-panel',
+    'settings',
+    'replacement-target',
+  ]);
+
+  // A stale panel can remain callable across a reload, but it cannot be used
+  // as recovery evidence even if its Settings interaction appears successful.
+  let stalePanelSettingsCalls = 0;
+  let stalePanelRefreshCalls = 0;
+  await assert.rejects(
+    () =>
+      runExtensionReload({
+        worker,
+        previousWorkerTargetId: 'old-worker',
+        previousPanelTargetId: 'old-panel',
+        assertPreviousTargetsGone: async () => ({ workerTargetGone: true, panelTargetGone: true }),
+        reopenPanel: async () => ({
+          targetId: 'old-panel',
+          click: async () => {},
+        }),
+        refreshWorker: async () => {
+          stalePanelRefreshCalls += 1;
+          return { worker: replacement, replacementWorkerTargetObserved: true };
+        },
+        verifySettingsIdentity: async (panel) => {
+          stalePanelSettingsCalls += 1;
+          await panel.click();
+          return true;
+        },
+        checkpoint: () => {},
+        proof: {},
+      }),
+    /lifecycle_reload_panel_target_not_replaced/,
+  );
+  assert.equal(stalePanelSettingsCalls, 0);
+  assert.equal(stalePanelRefreshCalls, 0);
+
   const unobservedProof = {};
   await runExtensionReload({
     worker,
+    ...reloadBoundary,
     refreshWorker: async () => replacement,
     verifySettingsIdentity: async () => true,
     checkpoint: () => {},

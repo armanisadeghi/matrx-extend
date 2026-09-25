@@ -110,7 +110,7 @@ export function showCaptureUnavailable(
       ? 'Sign in to Matrx before saving logins.'
       : reason === 'organization_required'
         ? 'Choose an organization in Matrx before saving logins.'
-        : 'Temporary browser memory is unavailable. Reopen the extension, then try again.';
+        : "Matrx couldn't prepare this login for saving. Reopen the extension, then try again.";
   card.appendChild(
     el('div', 'font-weight:600;font-size:13px;margin-bottom:4px;', 'Login was not saved'),
   );

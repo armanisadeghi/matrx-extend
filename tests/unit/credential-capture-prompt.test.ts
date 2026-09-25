@@ -568,6 +568,28 @@ describe('host — hold, status, prompt', () => {
     expect(JSON.stringify(logCalls)).not.toContain(SENTINEL);
   });
 
+  it('withholds a pending capture until its saved-login lookup settles', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    let release!: () => void;
+    let started = false;
+    const lookup = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const held = host.holdCandidate(72, WIRE, {
+      ...DEPS,
+      matches: async () => {
+        started = true;
+        await lookup;
+        return [{ item_id: 'item-1', display_name: 'Example (work)' }];
+      },
+    });
+    await vi.waitFor(() => expect(started).toBe(true));
+    expect(host.pendingCaptureForTab(72)).toBeNull();
+    release();
+    await expect(held).resolves.toBe(true);
+    expect(host.pendingCaptureForTab(72)?.existing).toHaveLength(1);
+  });
+
   it('a second submit on the same tab replaces the first', async () => {
     const host = await import('@/lib/credentials/capture-candidates');
     await host.holdCandidate(3, WIRE, DEPS);

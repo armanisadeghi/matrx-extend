@@ -509,9 +509,11 @@ async function refreshMatches(candidate: Candidate): Promise<void> {
   const [actor, enabled] = await Promise.all([currentActor(), readCaptureLoginsEnabled()]);
   if (!sameEpoch(candidate, baseline, global) || !sameActor(candidate.actor, actor) || !enabled)
     return;
-  const existing = matched.ok
-    ? matched.data.matches.map((m) => ({ item_id: m.item_id, display_name: m.display_name }))
-    : [];
+  if (!matched.ok) {
+    await queued(() => removeCandidate(candidate));
+    return;
+  }
+  const existing = matched.data.matches.map((m) => ({ item_id: m.item_id, display_name: m.display_name }));
   await queued(async () => {
     if (!sameEpoch(candidate, baseline, global)) return;
     candidate.existing = existing;
@@ -746,13 +748,18 @@ export async function holdCandidate(
     deps.matches ??
     (async (loginUrl: string) => {
       const r = await fetchBrowserLoginMatches(loginUrl, undefined, { expectedActor: actor });
-      return r.ok
-        ? r.data.matches.map((m) => ({ item_id: m.item_id, display_name: m.display_name }))
-        : [];
+      if (!r.ok) throw new Error('capture_match_lookup_unavailable');
+      return r.data.matches.map((m) => ({ item_id: m.item_id, display_name: m.display_name }));
     });
   const baseline = epoch(tabId);
   const global = globalEpoch;
-  const resolved = await resolveMatches(normalized);
+  let resolved: CaptureExistingLogin[];
+  try {
+    resolved = await resolveMatches(normalized);
+  } catch {
+    if (PENDING.get(tabId) === candidate) await queued(() => removeCandidate(candidate));
+    return false;
+  }
   if (!sameEpoch(candidate, baseline, global) || !(await stillAuthorized())) return false;
   candidate.existing = resolved;
   if (PENDING.get(tabId) !== candidate) return false; // replaced while resolving
@@ -787,6 +794,9 @@ export function pendingCaptureForTab(tabId: number): CapturePromptMeta | null {
     return null;
   }
   if (c.stage !== 'password') return null;
+  // A panel refresh can arrive while the server-approved lookup is in flight.
+  // Never turn that unknown state into an actionable "Save" choice.
+  if (!c.ready) return null;
   return toMeta(c);
 }
 
