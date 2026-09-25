@@ -2522,6 +2522,20 @@ async function focusOwnedBrowser(expectedTabId) {
   assert(Number.isSafeInteger(pid) && pid > 1, 'owned_browser_process_missing');
   if (headlessNoClipboardMode) {
     assert(matches[0].includes('--headless=new'), 'owned_headless_browser_process_missing');
+    // Headless Chrome can report a normal focused window while retaining a
+    // different active tab. Activate the receipt-owned tab through the
+    // extension API after the PID/profile proof above, so this never reaches
+    // a browser outside this harness's Chrome profile.
+    await worker.evaluate(async (tabId) => {
+      if (!Number.isInteger(tabId)) throw new Error('owned_expected_tab_missing');
+      const expectedTab = await chrome.tabs.get(tabId);
+      const expectedWindow = await chrome.windows.get(expectedTab.windowId, {
+        populate: false,
+      });
+      if (expectedWindow.type !== 'normal') throw new Error('owned_expected_tab_window_invalid');
+      await chrome.windows.update(expectedWindow.id, { focused: true });
+      await chrome.tabs.update(expectedTab.id, { active: true });
+    }, expectedTabId);
     let chromeFocus;
     let focused = false;
     for (let attempt = 0; attempt < 20; attempt += 1) {
