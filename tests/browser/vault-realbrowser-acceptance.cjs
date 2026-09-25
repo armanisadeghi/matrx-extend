@@ -89,6 +89,13 @@ const assert = (condition, code) => {
   if (!condition) throw new Error(code);
 };
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const safeVaultStackLocations = (stack) =>
+  String(stack || '')
+    .split('\n')
+    .flatMap((line) => {
+      const match = line.match(/vault-[A-Za-z0-9._-]+\.cjs:\d+:\d+/);
+      return match ? [match[0]] : [];
+    });
 
 async function readOAuthPageSnapshot(authPage, timeoutMs = 1000) {
   return Promise.race([
@@ -1722,10 +1729,7 @@ async function openGenuineSidePanel(extensionId, popup, { existing = false } = {
       });
     } catch (error) {
       if (error.message === 'panel_protocol_refused' && proof.panelProtocolFailure) {
-        proof.panelProtocolFailure.callerLocations = new Error().stack
-          .split('\n')
-          .filter((line) => line.includes('vault-') && /:\d+:\d+/.test(line))
-          .map((line) => line.replace(/.*(vault-[^/ ]+\.cjs:\d+:\d+).*/, '$1'));
+        proof.panelProtocolFailure.callerLocations = safeVaultStackLocations(new Error().stack);
         try {
           persist();
         } catch {
@@ -1737,10 +1741,7 @@ async function openGenuineSidePanel(extensionId, popup, { existing = false } = {
     if (result.exceptionDetails) {
       proof.panelEvalFailure = {
         exceptionClass: result.exceptionDetails.exception?.className ?? 'unknown',
-        stackLocations: new Error().stack
-          .split('\n')
-          .filter((line) => line.includes('vault-') && /:\d+:\d+/.test(line))
-          .map((line) => line.replace(/.*(vault-[^/ ]+\.cjs:\d+:\d+).*/, '$1')),
+        stackLocations: safeVaultStackLocations(new Error().stack),
       };
       persist();
       throw new Error('real_side_panel_eval_refused');
@@ -1759,10 +1760,7 @@ async function openGenuineSidePanel(extensionId, popup, { existing = false } = {
     if (!(box?.width > 0 && box?.height > 0 && box.viewport && box.hit)) {
       proof.panelControlFailure = {
         geometry: box,
-        callerLocations: new Error().stack
-          .split('\n')
-          .filter((line) => line.includes('vault-') && /:\d+:\d+/.test(line))
-          .map((line) => line.replace(/.*(vault-[^/ ]+\.cjs:\d+:\d+).*/, '$1')),
+        callerLocations: safeVaultStackLocations(new Error().stack),
       };
       try {
         // Failure-only diagnostic: mask generated DOM values before any image.
@@ -4035,6 +4033,9 @@ async function materializedPassword(id) {
     proof.failureCode =
       String(error?.message || 'canary_failure').match(/^[a-z0-9_]{1,100}$/)?.[0] ||
       'canary_failure';
+    if (proof.failureCode === 'canary_failure') {
+      proof.failureLocations = safeVaultStackLocations(error?.stack);
+    }
     if (artifactAdmitted) persist();
   } finally {
     if (responseLoss && responseLossInstalled) {
