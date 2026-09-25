@@ -68,6 +68,22 @@ const mergeQuietFillDiagnostic = (diagnostic, observed) => ({
   ...observed,
   focus: diagnostic.focus,
 });
+const armQuietFillAfterFocus = async ({
+  focusCredential,
+  readFocus,
+  resolveMessageTarget,
+  armMessageObserver,
+  click,
+}) => {
+  await focusCredential();
+  const focus = await readFocus();
+  if (!focus?.tabWindowFocused) return { focus, armed: false };
+  const target = await resolveMessageTarget();
+  if (!target) return { focus, armed: false };
+  await armMessageObserver(target);
+  await click();
+  return { focus, armed: true };
+};
 
 async function tabFor(worker, url, wait) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
@@ -466,64 +482,83 @@ exports.runVaultPreferencesChecks = async ({
       }, true);
       return true;
     })()`);
-    const messageTarget = await worker.evaluate(
-      async ({ tabId, targetName }) => {
-        const value = await chrome.runtime.sendMessage({
-          __matrx: true,
-          kind: 'credential-suggestions:panel-status',
-          payload: { tabId },
-        });
-        if (!value || typeof value !== 'object' || Array.isArray(value) || value.status !== 'ready')
-          return null;
-        const matches = Array.isArray(value.matches) ? value.matches : [];
-        const matching = matches.filter(
-          (match) =>
-            match &&
-            typeof match === 'object' &&
-            match.display_name === targetName &&
-            typeof match.item_id === 'string',
-        );
-        return matching.length === 1 && typeof value.offerId === 'string'
-          ? { tabId, offerId: value.offerId, itemId: matching[0].item_id }
-          : null;
-      },
-      { tabId, targetName },
-    );
-    assert(messageTarget, 'preferences_quiet_fill_message_target_unavailable');
-    await worker.evaluate((target) => {
-      globalThis.__vaultQuietFillMessageCount = 0;
-      globalThis.__vaultQuietFillMessageUnrelatedCount = 0;
-      globalThis.__vaultQuietFillMessageTarget = target;
-      if (!globalThis.__vaultQuietFillMessageObserver) {
-        globalThis.__vaultQuietFillMessageObserver = (message) => {
-          if (message?.__matrx !== true || message.kind !== 'credential-suggestions:panel-fill')
-            return;
-          const expected = globalThis.__vaultQuietFillMessageTarget;
-          const payload = message.payload;
+    const resolveMessageTarget = () =>
+      worker.evaluate(
+        async ({ tabId, targetName }) => {
+          const value = await chrome.runtime.sendMessage({
+            __matrx: true,
+            kind: 'credential-suggestions:panel-status',
+            payload: { tabId },
+          });
           if (
-            payload?.tabId === expected?.tabId &&
-            payload?.offerId === expected?.offerId &&
-            payload?.itemId === expected?.itemId
+            !value ||
+            typeof value !== 'object' ||
+            Array.isArray(value) ||
+            value.status !== 'ready'
           )
-            globalThis.__vaultQuietFillMessageCount += 1;
-          else globalThis.__vaultQuietFillMessageUnrelatedCount += 1;
-        };
-        chrome.runtime.onMessage.addListener(globalThis.__vaultQuietFillMessageObserver);
-      }
-    }, messageTarget);
-    // The side panel has changed focus several times while settings settle. Reassert
-    // the website focus immediately before the target-directed native click, then
-    // verify it again before attributing a refusal to product code.
-    await focusCredential();
-    const focusBefore = await quietFillFocus();
-    if (!focusBefore.tabWindowFocused) {
-      await recordQuietFillFailure('website_tab_or_window_not_focused_before_click', {
-        before: focusBefore,
-        after: null,
-      });
-      throw new Error('preferences_quiet_fill_focus_missing_before_click');
+            return null;
+          const matches = Array.isArray(value.matches) ? value.matches : [];
+          const matching = matches.filter(
+            (match) =>
+              match &&
+              typeof match === 'object' &&
+              match.display_name === targetName &&
+              typeof match.item_id === 'string',
+          );
+          return matching.length === 1 && typeof value.offerId === 'string'
+            ? { tabId, offerId: value.offerId, itemId: matching[0].item_id }
+            : null;
+        },
+        { tabId, targetName },
+      );
+    const armMessageObserver = (target) =>
+      worker.evaluate((target) => {
+        globalThis.__vaultQuietFillMessageCount = 0;
+        globalThis.__vaultQuietFillMessageUnrelatedCount = 0;
+        globalThis.__vaultQuietFillMessageTarget = target;
+        if (!globalThis.__vaultQuietFillMessageObserver) {
+          globalThis.__vaultQuietFillMessageObserver = (message) => {
+            if (message?.__matrx !== true || message.kind !== 'credential-suggestions:panel-fill')
+              return;
+            const expected = globalThis.__vaultQuietFillMessageTarget;
+            const payload = message.payload;
+            if (
+              payload?.tabId === expected?.tabId &&
+              payload?.offerId === expected?.offerId &&
+              payload?.itemId === expected?.itemId
+            )
+              globalThis.__vaultQuietFillMessageCount += 1;
+            else globalThis.__vaultQuietFillMessageUnrelatedCount += 1;
+          };
+          chrome.runtime.onMessage.addListener(globalThis.__vaultQuietFillMessageObserver);
+        }
+      }, target);
+    // Focus can mint a fresh offer. Read and arm its exact identity after that
+    // focus action, then dispatch the native click without an unobserved gap.
+    const armed = await armQuietFillAfterFocus({
+      focusCredential,
+      readFocus: quietFillFocus,
+      resolveMessageTarget,
+      armMessageObserver,
+      click: () => realPanel.click(control),
+    });
+    const focusBefore = armed.focus;
+    if (!armed.armed) {
+      await recordQuietFillFailure(
+        focusBefore?.tabWindowFocused
+          ? 'quiet_fill_message_target_unavailable_after_focus'
+          : 'website_tab_or_window_not_focused_before_click',
+        {
+          before: focusBefore,
+          after: null,
+        },
+      );
+      throw new Error(
+        focusBefore?.tabWindowFocused
+          ? 'preferences_quiet_fill_message_target_unavailable'
+          : 'preferences_quiet_fill_focus_missing_before_click',
+      );
     }
-    await realPanel.click(control);
     const focusAfter = await quietFillFocus();
     const focusEvidence = {
       before: focusBefore,
@@ -723,3 +758,4 @@ exports.runVaultPreferencesChecks = async ({
 exports._switchFor = switchFor;
 exports._classifyQuietFillTerminal = classifyQuietFillTerminal;
 exports._mergeQuietFillDiagnostic = mergeQuietFillDiagnostic;
+exports._armQuietFillAfterFocus = armQuietFillAfterFocus;

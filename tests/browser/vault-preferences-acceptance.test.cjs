@@ -5,6 +5,7 @@ const test = require('node:test');
 const {
   _classifyQuietFillTerminal: classifyQuietFillTerminal,
   _mergeQuietFillDiagnostic: mergeQuietFillDiagnostic,
+  _armQuietFillAfterFocus: armQuietFillAfterFocus,
 } = require('./vault-preferences-acceptance.cjs');
 
 const completeFocus = {
@@ -40,6 +41,30 @@ test('quiet Fill accepts a legitimate post-click page-document focus transition 
     }),
     'success',
   );
+});
+
+test('quiet Fill arms the focus-refreshed offer before dispatching the native click', async () => {
+  let offerId = 'offer-before-focus';
+  const events = [];
+  const result = await armQuietFillAfterFocus({
+    focusCredential: async () => {
+      events.push('focus');
+      offerId = 'offer-after-focus';
+    },
+    readFocus: async () => ({ tabWindowFocused: true }),
+    resolveMessageTarget: async () => {
+      events.push(`target:${offerId}`);
+      return { offerId };
+    },
+    armMessageObserver: async (target) => {
+      events.push(`arm:${target.offerId}`);
+    },
+    click: async () => {
+      events.push('click');
+    },
+  });
+  assert.equal(result.armed, true);
+  assert.deepEqual(events, ['focus', 'target:offer-after-focus', 'arm:offer-after-focus', 'click']);
 });
 
 test('quiet Fill separates CDP click delivery, panel routing, product refusal, and success', () => {
