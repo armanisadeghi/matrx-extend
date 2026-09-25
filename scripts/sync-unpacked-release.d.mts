@@ -4,6 +4,7 @@ export type Promotion = {
   sourceHash: string;
   destinationHash: string;
   fileCount: number;
+  destinations?: string[];
 };
 
 export function hashReleaseTree(dir: string): string;
@@ -12,6 +13,11 @@ export function promoteUnpackedRelease(input: {
   destinationDir: string;
   version: string;
 }): Promotion;
+export function promoteUnpackedReleaseToMany(input: {
+  sourceDir: string;
+  destinationDirs: string[];
+  version: string;
+}): Promotion & { destinations: string[] };
 export function writeReleaseReceipt(input: {
   receiptPath: string;
   sourceSha: string;

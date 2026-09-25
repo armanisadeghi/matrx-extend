@@ -31,7 +31,7 @@ describe('release unpacked promotion', () => {
   it('replaces both installed Chrome paths with the same complete keyed release tree', () => {
     const root = makeRoot();
     const source = join(root, 'build', 'chrome-mv3');
-    const destinations = [join(root, 'chrome-mv3-dev'), join(root, 'chrome-mv3')];
+    const destinations = [join(root, 'chrome-mv3-dev'), join(root, 'chrome-mv3')] as const;
     writeBundle(source, '0.2.39');
     for (const destination of destinations) {
       writeBundle(destination, '0.2.38');
@@ -39,7 +39,7 @@ describe('release unpacked promotion', () => {
     }
     const promoted = promoteUnpackedReleaseToMany({
       sourceDir: source,
-      destinationDirs: destinations,
+      destinationDirs: [...destinations],
       version: '0.2.39',
     });
     expect(promoted.destinations).toEqual(destinations);
@@ -52,7 +52,7 @@ describe('release unpacked promotion', () => {
   it('keeps both installed paths unchanged when the candidate has no local key', () => {
     const root = makeRoot();
     const source = join(root, 'build', 'chrome-mv3');
-    const destinations = [join(root, 'chrome-mv3-dev'), join(root, 'chrome-mv3')];
+    const destinations = [join(root, 'chrome-mv3-dev'), join(root, 'chrome-mv3')] as const;
     writeBundle(source, '0.2.39', false);
     writeBundle(destinations[0], '0.2.37');
     writeBundle(destinations[1], '0.2.38');
@@ -60,7 +60,7 @@ describe('release unpacked promotion', () => {
     expect(() =>
       promoteUnpackedReleaseToMany({
         sourceDir: source,
-        destinationDirs: destinations,
+        destinationDirs: [...destinations],
         version: '0.2.39',
       }),
     ).toThrow('unkeyed Store bundle');
