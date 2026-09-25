@@ -29,7 +29,7 @@
  * `@ai-matrx/records/core`. Until it exists this file composes the same three doors.
  */
 
-import { customDb, platformDb } from '@/lib/supabase/schemas';
+import { platformDb } from '@/lib/supabase/schemas';
 import type { RecordsClient } from '@ai-matrx/records/core';
 
 /** The knob the mover writes when an organization's tables move (aidream movers/move.py). */
@@ -79,28 +79,29 @@ export async function tablesLiveIn(organizationId: string): Promise<'record' | '
  * and the store refuses a write to it). "record": the store. A refused read THROWS: saving into
  * the wrong place would hide the rows from the owner's screens.
  */
-export async function tablesLiveWhere(tableIds: readonly string[]): Promise<Map<string, 'record' | 'older'>> {
+export async function tablesLiveWhere(
+  client: RecordsClient,
+  tableIds: readonly string[],
+): Promise<Map<string, 'record' | 'older'>> {
   const ids = [...new Set(tableIds.filter(Boolean))];
   const homes = new Map<string, 'record' | 'older'>();
   if (ids.length === 0) return homes;
-  const { data, error } = await customDb().rpc('where_tables_live', { p_table_ids: ids });
-  if (error) {
+  const answered = await client.tablesLiveWhere({ table_ids: ids });
+  if (!answered.ok) {
     throw new RecordStoreTableError(
       'Could not read where this table lives, so nothing was saved — saving into the wrong place would hide it from your screens. Try again.',
-      error.message,
+      answered.error.message,
     );
   }
-  for (const row of (data ?? []) as { table_id?: unknown; lives_in?: unknown }[]) {
-    if (typeof row.table_id === 'string' && (row.lives_in === 'record' || row.lives_in === 'older')) {
-      homes.set(row.table_id, row.lives_in);
-    }
+  for (const row of answered.data) {
+    homes.set(row.table_id, row.lives_in);
   }
   return homes;
 }
 
 /** Where one table is read and written; throws when the store did not say. */
-export async function tableLivesWhere(tableId: string): Promise<'record' | 'older'> {
-  const home = (await tablesLiveWhere([tableId])).get(tableId);
+export async function tableLivesWhere(client: RecordsClient, tableId: string): Promise<'record' | 'older'> {
+  const home = (await tablesLiveWhere(client, [tableId])).get(tableId);
   if (!home) {
     throw new RecordStoreTableError(
       'Could not read where this table lives, so nothing was saved. Try again.',

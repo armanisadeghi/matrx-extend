@@ -50,6 +50,12 @@ vi.mock('@/lib/api/routes/auth', () => ({
   requireRequestOrganizationId: mocks.requireRequestOrganizationId,
 }));
 vi.mock('@/lib/supabase/client', () => ({ getSupabase: mocks.getSupabase }));
+// This seam drives the older-store append refusal. The cutover choice itself is
+// covered by user-tables.test and the records client; keep this case on the
+// intended older arm so it reaches the malformed row-count response below.
+vi.mock('@/lib/records/tables', () => ({
+  tableLivesWhere: async () => 'older',
+}));
 vi.mock('@/lib/telemetry/external-reporting', () => ({
   mayReportExternalTelemetry: mocks.mayReportExternalTelemetry,
 }));

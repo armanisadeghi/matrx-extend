@@ -190,7 +190,7 @@ export async function listPickableTables(organizationId: string): Promise<Pickab
   const client = await recordsClientFor(org, 'user');
   const store = await storeTables(client);
   const older = (await listUserTables()).filter((t) => t.organization_id === org);
-  const homes = await tablesLiveWhere([...store.map((t) => t.id), ...older.map((t) => t.id)]);
+  const homes = await tablesLiveWhere(client, [...store.map((t) => t.id), ...older.map((t) => t.id)]);
   const picked = new Map<string, PickableTable>();
   for (const t of older) {
     if (homes.get(t.id) === 'older') {
@@ -214,8 +214,8 @@ export async function listPickableTables(organizationId: string): Promise<Pickab
  */
 export async function tableColumnKeys(tableId: string, organizationId: string): Promise<string[]> {
   const org = requireOrganizationContext(organizationId);
-  if ((await tableLivesWhere(tableId)) === 'record') {
-    const client = await recordsClientFor(org, 'user');
+  const client = await recordsClientFor(org, 'user');
+  if ((await tableLivesWhere(client, tableId)) === 'record') {
     const fields = await client.fields({ table_id: tableId });
     if (!fields.ok) throw new Error(fields.error.message);
     return fields.data.map((f) => f.key);
@@ -232,7 +232,8 @@ export async function tableOrganization(
   organizationId: string,
 ): Promise<string | null> {
   const org = requireOrganizationContext(organizationId);
-  if ((await tableLivesWhere(tableId)) === 'record') return org;
+  const client = await recordsClientFor(org, 'user');
+  if ((await tableLivesWhere(client, tableId)) === 'record') return org;
   return (await getUserTable(tableId)).organization_id;
 }
 
@@ -425,7 +426,8 @@ export async function appendRowsToUserTable(
 
   // A record-store table (born there, or moved there with the same id) is written through the
   // store's own door; the older RPC would write the moved table's archived copy.
-  if ((await tableLivesWhere(tableId)) === 'record') {
+  const client = await recordsClientFor(organizationId, 'user');
+  if ((await tableLivesWhere(client, tableId)) === 'record') {
     const keyMap = buildFieldNameMap(unionRowKeys(rows));
     const mapped = rows.map((r) => {
       const out: Record<string, unknown> = {};
@@ -435,7 +437,6 @@ export async function appendRowsToUserTable(
       }
       return out;
     });
-    const client = await recordsClientFor(organizationId, 'user');
     const storeSite: DbCallSite = {
       table: 'rpc:custom.record_write_many',
       operation: 'rpc',

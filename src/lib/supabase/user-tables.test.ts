@@ -21,8 +21,8 @@ const home = vi.hoisted(() => ({
 }));
 vi.mock('@/lib/records/tables', () => ({
   tablesLiveIn: async () => home.livesIn,
-  tableLivesWhere: async (id: string) => home.where.get(id) ?? 'older',
-  tablesLiveWhere: async (ids: string[]) => new Map(ids.map((id) => [id, home.where.get(id) ?? 'older'])),
+  tableLivesWhere: async (_client: unknown, id: string) => home.where.get(id) ?? 'older',
+  tablesLiveWhere: async (_client: unknown, ids: string[]) => new Map(ids.map((id) => [id, home.where.get(id) ?? 'older'])),
   storeTables: async () => home.storeTables,
   declareStoreTable: home.declareStoreTable,
   appendStoreRows: home.appendStoreRows,
