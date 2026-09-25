@@ -284,13 +284,17 @@ exports.runVaultAccessibilityChecks = async ({
       const root = document.querySelector(${JSON.stringify(GENERATOR)});
       const exact = (label) => Array.from(root?.querySelectorAll('button') ?? [])
         .filter((button) => button.textContent?.trim() === label);
-      const actions = ['Password', 'Passphrase', 'Generate'].map((label) => exact(label));
-      const visible = actions.every((matches) => matches.length === 1 && (() => {
-        const rect = matches[0].getBoundingClientRect();
-        const style = getComputedStyle(matches[0]);
+      const visible = ['Password', 'Passphrase', 'Generate'].every((label) => {
+        const matches = exact(label);
+        if (matches.length !== 1) return false;
+        const button = matches[0];
+        button.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        const rect = button.getBoundingClientRect();
+        const style = getComputedStyle(button);
         return rect.width > 0 && rect.height > 0 && rect.left >= 0 && rect.right <= innerWidth
-          && rect.top >= 0 && rect.bottom <= innerHeight && style.visibility !== 'hidden' && style.display !== 'none';
-      })());
+          && rect.top >= 0 && rect.bottom <= innerHeight
+          && style.visibility !== 'hidden' && style.display !== 'none';
+      });
       return {
         noHorizontalOverflow: document.documentElement.scrollWidth <= innerWidth && document.body.scrollWidth <= innerWidth,
         actionsVisible: visible,
