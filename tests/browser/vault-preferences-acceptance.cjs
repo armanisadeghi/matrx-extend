@@ -42,6 +42,29 @@ const canonicalReceipt = (value) =>
     ownedFixtureIds: [...value.ownedFixtureIds].sort(),
   });
 
+// This is harness-only evidence. It deliberately contains no credential values,
+// DOM content, or transport payloads. A terminal result must explain whether
+// CDP input, panel routing, or the product's focus/admission fence ended Fill.
+const classifyQuietFillTerminal = ({ counters, focus, ui, fixture }) => {
+  if (focus?.beforeClick !== true || focus?.afterClick !== true)
+    return 'focus_lost_before_quiet_fill_click';
+  if (counters?.nativeClickCount !== 1) return 'click_not_delivered';
+  if (!Number.isInteger(counters?.panelMessageCount) || counters.panelMessageCount < 1)
+    return 'panel_message_not_sent';
+  if (ui?.filledFeedback === true)
+    return fixture?.usernameMatches === true && fixture?.passwordMatches === true
+      ? 'success'
+      : 'success_feedback_values_mismatch';
+  if (
+    ui?.admissionRefused === true ||
+    ui?.noOffer === true ||
+    ui?.unavailable === true ||
+    ui?.partialManualCheck === true
+  )
+    return 'product_stale_or_refusal';
+  return 'product_no_terminal_outcome';
+};
+
 async function tabFor(worker, url, wait) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
     const id = await worker.evaluate(
@@ -115,6 +138,7 @@ exports.runVaultPreferencesChecks = async ({
     matchingDisabledNoActionableFill: false,
     matchingDisabledNoOverlay: false,
     matchingEnabledQuietFill: false,
+    quietFillTerminalSuccess: false,
     onPageFocusedCredentialOnly: false,
     onPageDisabledQuiet: false,
     privacyAccessibleNames: false,
@@ -255,6 +279,34 @@ exports.runVaultPreferencesChecks = async ({
   };
   const focusCredential = async () => focus('#password');
   const focusUnrelated = async () => focus('#sign-in');
+  const quietFillFocus = async () => {
+    const [browserFocused, documentFocused] = await Promise.all([
+      worker.evaluate(async (id) => {
+        const tab = await chrome.tabs.get(id);
+        const focused = await chrome.windows.getLastFocused({ windowTypes: ['normal'] });
+        return tab.active === true && tab.windowId === focused.id && focused.focused === true;
+      }, tabId),
+      page.evaluate(() => document.hasFocus() && document.activeElement?.id === 'password'),
+    ]);
+    return {
+      beforeClick: browserFocused === true && documentFocused === true,
+      browserFocused,
+      documentFocused,
+    };
+  };
+  const waitForQuietFillMessage = async () => {
+    const deadline = Date.now() + 2000;
+    while (Date.now() < deadline) {
+      const count = await worker.evaluate(() =>
+        Number.isInteger(globalThis.__vaultQuietFillMessageCount)
+          ? globalThis.__vaultQuietFillMessageCount
+          : 0,
+      );
+      if (count >= 1) return;
+      await wait(100);
+    }
+    throw new Error('preferences_quiet_fill_message_not_observed');
+  };
   const stableAbsence = async (check, code) => {
     const deadline = Date.now() + STABLE_ABSENCE_MS;
     while (true) {
@@ -264,10 +316,13 @@ exports.runVaultPreferencesChecks = async ({
       await wait(Math.min(200, remaining));
     }
   };
-  const recordQuietFillFailure = async (disposition) => {
+  const recordQuietFillFailure = async (disposition, focus = null) => {
     let diagnostic = {
       disposition,
       collected: false,
+      terminal: null,
+      focus,
+      counters: null,
       ui: null,
       panelStatus: null,
     };
@@ -363,8 +418,19 @@ exports.runVaultPreferencesChecks = async ({
           : null,
       )
       .catch(() => null);
+    diagnostic.counters = {
+      nativeClickCount: diagnostic.ui?.nativeFillClickCount ?? null,
+      panelMessageCount: diagnostic.panelFillMessageCount,
+    };
+    diagnostic.terminal = classifyQuietFillTerminal({
+      counters: diagnostic.counters,
+      focus: diagnostic.focus,
+      ui: diagnostic.ui,
+      fixture: diagnostic.fixture,
+    });
     if (proof) proof.preferencesQuietFillFailure = diagnostic;
     checkpoint('preferences_quiet_fill_diagnostic');
+    return diagnostic;
   };
   const fill = async () => {
     await verifyRealVaultPanel();
@@ -395,17 +461,67 @@ exports.runVaultPreferencesChecks = async ({
         chrome.runtime.onMessage.addListener(globalThis.__vaultQuietFillMessageObserver);
       }
     });
-    await realPanel.click(control);
-    try {
-      await realPanel.waitFor(
-        'Array.from(document.querySelectorAll("p")).some((node) => node.textContent?.trim() === "Filled. Review the form, then sign in.")',
-        true,
-        15000,
-      );
-    } catch {
-      await recordQuietFillFailure('feedback_timeout_after_click');
-      throw new Error('preferences_quiet_fill_feedback_timeout');
+    // The side panel has changed focus several times while settings settle. Reassert
+    // the website focus immediately before the target-directed native click, then
+    // verify it again before attributing a refusal to product code.
+    await focusCredential();
+    const focusBefore = await quietFillFocus();
+    if (!focusBefore.beforeClick) {
+      await recordQuietFillFailure('website_focus_missing_before_click', {
+        beforeClick: focusBefore.beforeClick,
+        afterClick: false,
+      });
+      throw new Error('preferences_quiet_fill_focus_missing_before_click');
     }
+    await realPanel.click(control);
+    const focusAfter = await quietFillFocus();
+    const focusEvidence = {
+      beforeClick: focusBefore.beforeClick,
+      afterClick: focusAfter.beforeClick,
+    };
+    const nativeClickCount = await realPanel.evaluate(
+      'Number.isInteger(window.__vaultQuietFillClickCount) ? window.__vaultQuietFillClickCount : null',
+    );
+    if (!focusEvidence.afterClick) {
+      await recordQuietFillFailure('website_focus_lost_after_click', focusEvidence);
+      throw new Error('preferences_quiet_fill_focus_lost_after_click');
+    }
+    if (nativeClickCount !== 1) {
+      await recordQuietFillFailure('native_click_not_delivered', focusEvidence);
+      throw new Error('preferences_quiet_fill_click_not_delivered');
+    }
+    try {
+      await waitForQuietFillMessage();
+    } catch {
+      await recordQuietFillFailure('panel_message_not_observed', focusEvidence);
+      throw new Error('preferences_quiet_fill_message_not_sent');
+    }
+    const terminalOutcome =
+      '(() => { const paragraphs = Array.from(document.querySelectorAll("p")).map((node) => node.textContent?.trim()); return paragraphs.includes("Filled. Review the form, then sign in.") || paragraphs.includes("Could not start filling. Focus the login field, then try Fill again.") || paragraphs.includes("Click the username or password box on the website, then choose Fill.") || paragraphs.includes("Saved logins are unavailable right now.") || paragraphs.includes("Matrx could not fully restore the login fields. Review them before signing in."); })()';
+    try {
+      await realPanel.waitFor(terminalOutcome, true, 15000);
+    } catch {
+      await recordQuietFillFailure('product_terminal_outcome_missing', focusEvidence);
+      throw new Error('preferences_quiet_fill_product_terminal_outcome_missing');
+    }
+    const filledFeedback = await realPanel.evaluate(
+      'Array.from(document.querySelectorAll("p")).some((node) => node.textContent?.trim() === "Filled. Review the form, then sign in.")',
+    );
+    if (filledFeedback !== true) {
+      await recordQuietFillFailure('product_stale_or_refusal', focusEvidence);
+      throw new Error('preferences_quiet_fill_product_stale_or_refusal');
+    }
+    return {
+      focus: focusEvidence,
+      counters: {
+        nativeClickCount,
+        panelMessageCount: await worker.evaluate(() =>
+          Number.isInteger(globalThis.__vaultQuietFillMessageCount)
+            ? globalThis.__vaultQuietFillMessageCount
+            : null,
+        ),
+      },
+    };
   };
   try {
     receiptBefore = await snapshotOwnedReceiptState();
@@ -449,7 +565,7 @@ exports.runVaultPreferencesChecks = async ({
     await ensure(ON_PAGE, false);
     await focusCredential();
     await stableAbsence(noOverlay, 'preferences_quiet_overlay_present');
-    await fill();
+    const quietFill = await fill();
     const filled = await page.evaluate(
       ({ expectedUsername, expectedPassword }) => ({
         username: document.querySelector('#email')?.value === expectedUsername,
@@ -457,7 +573,20 @@ exports.runVaultPreferencesChecks = async ({
       }),
       { expectedUsername: username, expectedPassword: password },
     );
-    assert(filled.username && filled.password, 'preferences_quiet_fill_values_mismatch');
+    const quietFillTerminal = classifyQuietFillTerminal({
+      counters: quietFill.counters,
+      focus: quietFill.focus,
+      ui: { filledFeedback: true },
+      fixture: { usernameMatches: filled.username, passwordMatches: filled.password },
+    });
+    if (proof)
+      proof.preferencesQuietFill = {
+        terminal: quietFillTerminal,
+        focus: quietFill.focus,
+        counters: quietFill.counters,
+      };
+    assert(quietFillTerminal === 'success', 'preferences_quiet_fill_values_mismatch');
+    evidence.quietFillTerminalSuccess = true;
     evidence.matchingEnabledQuietFill = true;
 
     checkpoint('preferences_enable_on_page');
@@ -541,3 +670,4 @@ exports.runVaultPreferencesChecks = async ({
   return evidence;
 };
 exports._switchFor = switchFor;
+exports._classifyQuietFillTerminal = classifyQuietFillTerminal;
