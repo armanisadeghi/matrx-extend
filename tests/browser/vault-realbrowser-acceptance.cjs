@@ -1381,6 +1381,11 @@ async function hasPendingCapture() {
     return !!value && typeof value === 'object' && Object.keys(value).length > 0;
   });
 }
+async function inspectPendingCaptureDiagnostic(tabId) {
+  return realPanel.evaluate(
+    `(async () => { const expectedTabId = ${JSON.stringify(tabId)}; const [meta, activeTabs] = await Promise.all([chrome.runtime.sendMessage({ __matrx: true, kind: 'credential-capture:status', payload: { tabId: expectedTabId } }), chrome.tabs.query({ active: true, lastFocusedWindow: true })]); const card = (${captureCard}); const updateButtonCount = card ? Array.from(card.querySelectorAll('button')).filter((button) => !button.disabled && button.getClientRects().length > 0 && getComputedStyle(button).visibility !== 'hidden' && getComputedStyle(button).pointerEvents !== 'none' && button.textContent.trim().startsWith('Update')).length : null; return { candidatePresent: !!meta, candidateTabMatchesActive: meta?.tabId === expectedTabId && activeTabs.length === 1 && activeTabs[0]?.id === expectedTabId, existingCount: Array.isArray(meta?.existing) ? meta.existing.length : null, searchControlPresent: !!card?.querySelector('[aria-label="Search saved logins to update"]'), updateButtonCount }; })()`,
+  );
+}
 function journalVaultMutationRequest(url, method, headers) {
   const classified = classifyVaultRequest({ url, method, apiOrigin: API });
   if (!classified.inVault) return;
@@ -3811,6 +3816,7 @@ async function materializedPassword(id) {
             ownedCreateMutationKeys: [...createKeys].sort(),
             ownedFixtureIds: [...createdIds].sort(),
           }),
+          inspectCaptureDiagnostic: inspectPendingCaptureDiagnostic,
           verifySelectedUpdate: async (expectedPassword) => {
             assert(
               (await materializedPassword(targetId)) === expectedPassword,

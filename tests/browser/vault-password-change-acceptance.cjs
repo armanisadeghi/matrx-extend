@@ -1,6 +1,28 @@
 'use strict';
 const crypto = require('node:crypto');
 
+/** Keep failure receipts structural: no candidate IDs, login names, or values. */
+function captureDiagnostic(value) {
+  const count = (candidate) =>
+    Number.isSafeInteger(candidate) && candidate >= 0 ? candidate : null;
+  return {
+    snapshotUnavailable: value?.snapshotUnavailable === true,
+    candidatePresent: value?.candidatePresent === true,
+    candidateTabMatchesActive: value?.candidateTabMatchesActive === true,
+    existingCount: count(value?.existingCount),
+    searchControlPresent: value?.searchControlPresent === true,
+    updateButtonCount: count(value?.updateButtonCount),
+  };
+}
+
+async function recordCaptureDiagnostic(proof, inspectCaptureDiagnostic, tabId) {
+  try {
+    proof.passwordChangeDiagnostic = captureDiagnostic(await inspectCaptureDiagnostic(tabId));
+  } catch {
+    proof.passwordChangeDiagnostic = captureDiagnostic({ snapshotUnavailable: true });
+  }
+}
+
 function renderPasswordChangeFixtureHTML(kind) {
   if (!['signup', 'change_password'].includes(kind))
     throw new Error('password_change_fixture_kind');
@@ -34,6 +56,7 @@ async function runPasswordChangeCaptureChecks({
   getVaultWriteCount,
   snapshotOwnedReceiptState,
   verifySelectedUpdate,
+  inspectCaptureDiagnostic,
 }) {
   assert(
     new URL(parentOrigin).origin === parentOrigin && new URL(parentOrigin).hostname === '127.0.0.1',
@@ -98,7 +121,7 @@ async function runPasswordChangeCaptureChecks({
       }, tabId),
       'password_change_window_focus',
     );
-    return page;
+    return { page, tabId };
   }
   async function submit(page, kind, password) {
     await page.locator('#email').fill(username);
@@ -119,7 +142,7 @@ async function runPasswordChangeCaptureChecks({
   try {
     checkpoint('signup_capture');
     const signup = await open('signup');
-    await submit(signup, 'signup', `signup-${crypto.randomUUID()}`);
+    await submit(signup.page, 'signup', `signup-${crypto.randomUUID()}`);
     assert(getSubmitCount() === initialSubmits + 1, 'signup_submit_count');
     evidence.signupCaptured = true;
     await realPanel.click(captureButton('Not now'));
@@ -133,9 +156,10 @@ async function runPasswordChangeCaptureChecks({
 
     checkpoint('password_change_capture');
     const change = await open('change_password');
-    await submit(change, 'change_password', nextPassword);
+    await submit(change.page, 'change_password', nextPassword);
     assert(getSubmitCount() === initialSubmits + 2, 'password_change_submit_count');
     evidence.changeCaptured = true;
+    await recordCaptureDiagnostic(proof, inspectCaptureDiagnostic, change.tabId);
     await realPanel.fill(
       'document.querySelector(\'[aria-label="Search saved logins to update"]\')',
       targetName,
@@ -176,3 +200,5 @@ async function runPasswordChangeCaptureChecks({
 }
 exports.renderPasswordChangeFixtureHTML = renderPasswordChangeFixtureHTML;
 exports.runPasswordChangeCaptureChecks = runPasswordChangeCaptureChecks;
+exports._captureDiagnostic = captureDiagnostic;
+exports._recordCaptureDiagnostic = recordCaptureDiagnostic;
