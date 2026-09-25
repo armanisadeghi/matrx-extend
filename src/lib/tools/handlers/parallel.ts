@@ -39,8 +39,8 @@ import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { ensureOffscreen } from '@/lib/stream/offscreen-proxy';
 import { recordAssignedTab } from '@/lib/tools/dispatch';
-import { buildParallelStartContract } from '@/lib/tools/handlers/parallel-start-contract';
 import { parallelActorStillCurrent } from '@/lib/tools/handlers/parallel-actor';
+import { buildParallelStartContract } from '@/lib/tools/handlers/parallel-start-contract';
 import type { ToolContext, ToolHandler } from '@/lib/tools/types';
 import {
   type ParallelSession,
@@ -381,7 +381,10 @@ async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
     };
     void (async () => {
       if (!(await parallelActorStillCurrent(args))) {
-        finalize('error', 'Sign-in or workspace changed before this parallel run could start. Please try again.');
+        finalize(
+          'error',
+          'Sign-in or workspace changed before this parallel run could start. Please try again.',
+        );
         return;
       }
       await send(CHANNELS.STREAM_RUN, runPayload);

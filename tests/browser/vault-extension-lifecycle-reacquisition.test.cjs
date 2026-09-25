@@ -10,10 +10,7 @@ const {
     url: 'chrome-extension://extension/background.js',
   };
   const replacement = { ...oldTarget, targetId: 'replacement-worker' };
-  const snapshots = [
-    { targetInfos: [oldTarget] },
-    { targetInfos: [oldTarget, replacement] },
-  ];
+  const snapshots = [{ targetInfos: [oldTarget] }, { targetInfos: [oldTarget, replacement] }];
   const observed = await waitForReplacementExtensionWorkerTarget({
     cdp: { send: async () => snapshots.shift() },
     workerUrl: oldTarget.url,

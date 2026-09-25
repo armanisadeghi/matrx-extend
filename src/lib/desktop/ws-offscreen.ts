@@ -37,7 +37,7 @@ import { CHANNELS } from '@/lib/messaging/schemas';
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
 import { formatDurationMs } from '@ai-matrx/kit/format';
-import { createBackoff, RECONNECT_ALARM_ATTEMPTS } from '@ai-matrx/realtime';
+import { RECONNECT_ALARM_ATTEMPTS, createBackoff } from '@ai-matrx/realtime';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
 

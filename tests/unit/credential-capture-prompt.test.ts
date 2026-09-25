@@ -121,6 +121,9 @@ Object.assign(chrome, {
       return { ok: true };
     },
   },
+  webNavigation: {
+    getFrame: async () => ({ documentId: 'doc-live', url: 'https://app.example.com/login' }),
+  },
 });
 
 vi.mock('@/lib/api/routes/vault', () => ({
@@ -570,13 +573,14 @@ describe('host — hold, status, prompt', () => {
 
   it('withholds a pending capture until its saved-login lookup settles', async () => {
     const host = await import('@/lib/credentials/capture-candidates');
+    const { prompt: _prompt, ...settlingDeps } = DEPS;
     let release!: () => void;
     let started = false;
     const lookup = new Promise<void>((resolve) => {
       release = resolve;
     });
     const held = host.holdCandidate(72, WIRE, {
-      ...DEPS,
+      ...settlingDeps,
       matches: async () => {
         started = true;
         await lookup;
@@ -588,6 +592,11 @@ describe('host — hold, status, prompt', () => {
     release();
     await expect(held).resolves.toBe(true);
     expect(host.pendingCaptureForTab(72)?.existing).toHaveLength(1);
+    await vi.advanceTimersByTimeAsync(1600);
+    expect(broadcasts).toContainEqual({
+      kind: 'credential-capture:changed',
+      payload: { tabId: 72 },
+    });
   });
 
   it('a second submit on the same tab replaces the first', async () => {

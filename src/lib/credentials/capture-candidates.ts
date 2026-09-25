@@ -513,7 +513,10 @@ async function refreshMatches(candidate: Candidate): Promise<void> {
     await queued(() => removeCandidate(candidate));
     return;
   }
-  const existing = matched.data.matches.map((m) => ({ item_id: m.item_id, display_name: m.display_name }));
+  const existing = matched.data.matches.map((m) => ({
+    item_id: m.item_id,
+    display_name: m.display_name,
+  }));
   await queued(async () => {
     if (!sameEpoch(candidate, baseline, global)) return;
     candidate.existing = existing;

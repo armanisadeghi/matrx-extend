@@ -190,7 +190,10 @@ export async function listPickableTables(organizationId: string): Promise<Pickab
   const client = await recordsClientFor(org, 'user');
   const store = await storeTables(client);
   const older = (await listUserTables()).filter((t) => t.organization_id === org);
-  const homes = await tablesLiveWhere(client, [...store.map((t) => t.id), ...older.map((t) => t.id)]);
+  const homes = await tablesLiveWhere(client, [
+    ...store.map((t) => t.id),
+    ...older.map((t) => t.id),
+  ]);
   const picked = new Map<string, PickableTable>();
   for (const t of older) {
     if (homes.get(t.id) === 'older') {
@@ -203,7 +206,8 @@ export async function listPickableTables(organizationId: string): Promise<Pickab
     }
   }
   for (const t of store) {
-    if (!picked.has(t.id) && homes.get(t.id) !== 'older') picked.set(t.id, { ...t, store: 'record' });
+    if (!picked.has(t.id) && homes.get(t.id) !== 'older')
+      picked.set(t.id, { ...t, store: 'record' });
   }
   return [...picked.values()];
 }

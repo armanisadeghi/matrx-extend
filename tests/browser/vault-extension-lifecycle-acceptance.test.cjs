@@ -170,6 +170,27 @@ const {
   assert.equal(stalePanelSettingsCalls, 0);
   assert.equal(stalePanelRefreshCalls, 0);
 
+  let oldTargetReopenCalls = 0;
+  await assert.rejects(
+    () =>
+      runExtensionReload({
+        worker,
+        previousWorkerTargetId: 'old-worker',
+        previousPanelTargetId: 'old-panel',
+        assertPreviousTargetsGone: async () => ({ workerTargetGone: false, panelTargetGone: true }),
+        reopenPanel: async () => {
+          oldTargetReopenCalls += 1;
+          return { targetId: 'replacement-panel' };
+        },
+        refreshWorker: async () => ({ worker: replacement, replacementWorkerTargetObserved: true }),
+        verifySettingsIdentity: async () => true,
+        checkpoint: () => {},
+        proof: {},
+      }),
+    /lifecycle_reload_old_worker_target_observed/,
+  );
+  assert.equal(oldTargetReopenCalls, 0);
+
   const unobservedProof = {};
   await runExtensionReload({
     worker,
@@ -295,7 +316,11 @@ const {
     proof: readinessProof,
     wait: async () => {},
   });
-  assert.equal(replacementRuntimeChecks, 2, 'replacement worker must retry one transient CDP refusal');
+  assert.equal(
+    replacementRuntimeChecks,
+    2,
+    'replacement worker must retry one transient CDP refusal',
+  );
   assert.equal(readyResult.panel.targetId, 'replacement-panel');
   assert.equal(readinessProof.lifecycle.disableEnable.disposition, 'passed');
   assert.deepEqual(readinessPhases, [

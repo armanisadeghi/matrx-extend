@@ -25,4 +25,6 @@ assert.doesNotMatch(
   'reload must not rely on Playwright worker-object identity',
 );
 
-process.stdout.write('PASS: lifecycle runner fails closed until every required observation exists\n');
+process.stdout.write(
+  'PASS: lifecycle runner fails closed until every required observation exists\n',
+);

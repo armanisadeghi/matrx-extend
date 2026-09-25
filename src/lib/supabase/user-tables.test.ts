@@ -22,7 +22,8 @@ const home = vi.hoisted(() => ({
 vi.mock('@/lib/records/tables', () => ({
   tablesLiveIn: async () => home.livesIn,
   tableLivesWhere: async (_client: unknown, id: string) => home.where.get(id) ?? 'older',
-  tablesLiveWhere: async (_client: unknown, ids: string[]) => new Map(ids.map((id) => [id, home.where.get(id) ?? 'older'])),
+  tablesLiveWhere: async (_client: unknown, ids: string[]) =>
+    new Map(ids.map((id) => [id, home.where.get(id) ?? 'older'])),
   storeTables: async () => home.storeTables,
   declareStoreTable: home.declareStoreTable,
   appendStoreRows: home.appendStoreRows,
@@ -215,7 +216,10 @@ describe('user-table organization boundary', () => {
       },
     ];
     home.where.set('33333333-3333-4333-8333-333333333333', 'older');
-    mocks.maybeSingle.mockResolvedValue({ data: { organization_id: ORGANIZATION_ID }, error: null });
+    mocks.maybeSingle.mockResolvedValue({
+      data: { organization_id: ORGANIZATION_ID },
+      error: null,
+    });
     mocks.rpc.mockResolvedValue({ data: 1, error: null });
 
     await expect(

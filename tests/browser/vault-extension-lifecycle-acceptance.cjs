@@ -154,15 +154,24 @@ async function runExtensionReload({
     typeof previousPanelTargetId === 'string' && previousPanelTargetId.length > 0,
     'lifecycle_reload_initial_panel_target_missing',
   );
-  assert(typeof assertPreviousTargetsGone === 'function', 'lifecycle_reload_target_retirement_missing');
+  assert(
+    typeof assertPreviousTargetsGone === 'function',
+    'lifecycle_reload_target_retirement_missing',
+  );
   assert(typeof reopenPanel === 'function', 'lifecycle_reload_panel_reopen_missing');
   const before = await inspectIdentity(worker);
   checkpoint('lifecycle_extension_reload');
   await worker.evaluate(() => chrome.runtime.reload());
   checkpoint('lifecycle_extension_reload_previous_targets_retired');
   const previousTargetsGone = await assertPreviousTargetsGone();
-  assert(previousTargetsGone?.workerTargetGone === true, 'lifecycle_reload_old_worker_target_observed');
-  assert(previousTargetsGone?.panelTargetGone === true, 'lifecycle_reload_old_panel_target_observed');
+  assert(
+    previousTargetsGone?.workerTargetGone === true,
+    'lifecycle_reload_old_worker_target_observed',
+  );
+  assert(
+    previousTargetsGone?.panelTargetGone === true,
+    'lifecycle_reload_old_panel_target_observed',
+  );
 
   // MV3 workers are demand-started. Rebind a target that was created after
   // reload before using Settings to wake the worker; a surviving, callable
@@ -216,10 +225,16 @@ async function runExtensionDisableEnable({
   proof,
   wait,
 }) {
-  assert(typeof extensionId === 'string' && /^[a-p]{32}$/.test(extensionId), 'lifecycle_extension_id_invalid');
+  assert(
+    typeof extensionId === 'string' && /^[a-p]{32}$/.test(extensionId),
+    'lifecycle_extension_id_invalid',
+  );
   assert(context && typeof context.newPage === 'function', 'lifecycle_extensions_context_missing');
   assert(cdp && typeof cdp.send === 'function', 'lifecycle_extensions_cdp_missing');
-  assert(typeof panelTargetId === 'string' && panelTargetId.length > 0, 'lifecycle_panel_target_missing');
+  assert(
+    typeof panelTargetId === 'string' && panelTargetId.length > 0,
+    'lifecycle_panel_target_missing',
+  );
   assert(typeof refreshWorker === 'function', 'lifecycle_worker_refresh_missing');
   assert(typeof disposePanel === 'function', 'lifecycle_panel_dispose_missing');
   assert(typeof reopenPanel === 'function', 'lifecycle_panel_reopen_missing');
@@ -236,13 +251,13 @@ async function runExtensionDisableEnable({
   // 153. The id route below opens the details page; bind only its control.
   const toggle = extensionsPage.locator('extensions-detail-view #enableToggle');
   let disableRequested = false;
-  const cleanup = (proof.lifecycle ||= {}).disableEnableCleanup = {
+  const cleanup = ((proof.lifecycle ||= {}).disableEnableCleanup = {
     disableRequested: false,
     disabledInExtensionsUi: false,
     reenableAttempted: false,
     enabledAfterCleanup: false,
     restoredByCleanup: false,
-  };
+  });
   const toggleEnabled = async () => {
     const count = await toggle.count();
     if (count !== 1) return null;
@@ -301,7 +316,9 @@ async function runExtensionDisableEnable({
     checkpoint('lifecycle_extension_enable_identity_recovered');
     const panel = await reopenPanel(extensionsPage, replacement);
     assert(
-      typeof panel?.targetId === 'string' && panel.targetId.length > 0 && panel.targetId !== panelTargetId,
+      typeof panel?.targetId === 'string' &&
+        panel.targetId.length > 0 &&
+        panel.targetId !== panelTargetId,
       'lifecycle_reenabled_panel_not_replaced',
     );
     checkpoint('lifecycle_extension_enable_panel_reopened');
@@ -329,7 +346,10 @@ async function runExtensionDisableEnable({
       replacementPanelTargetId: panel.targetId,
       replacementPanelObserved: panel.targetId !== panelTargetId,
     };
-    assert(proof.lifecycle.disableEnable.disposition === 'passed', 'lifecycle_disable_enable_failed');
+    assert(
+      proof.lifecycle.disableEnable.disposition === 'passed',
+      'lifecycle_disable_enable_failed',
+    );
     return { worker: replacement, panel };
   } finally {
     // A failed probe must never leave the only owned extension disabled. This

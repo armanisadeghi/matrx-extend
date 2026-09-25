@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 /**
  * Class guard: deleting a whole Vault login (`removeVaultItem`) is a
@@ -27,9 +27,7 @@ const SOURCE = readFileSync(join(__dirname, '../VaultView.tsx'), 'utf8');
 describe('Vault delete confirm honesty (VaultView.tsx)', () => {
   it('never claims the whole-login delete flatly cannot be undone', () => {
     // The old, false wording ended the sentence right after "shared with."
-    expect(SOURCE).not.toMatch(
-      /for everyone it is shared with\. This cannot be undone\.`/,
-    );
+    expect(SOURCE).not.toMatch(/for everyone it is shared with\. This cannot be undone\.`/);
   });
 
   it('names the extension-only scope and the Trash restore path for the login delete', () => {
@@ -38,8 +36,6 @@ describe('Vault delete confirm honesty (VaultView.tsx)', () => {
   });
 
   it('leaves the single-field delete (no restore path exists) as a real cannot-be-undone', () => {
-    expect(SOURCE).toMatch(
-      /for everyone this login is shared with\. This cannot be undone\./,
-    );
+    expect(SOURCE).toMatch(/for everyone this login is shared with\. This cannot be undone\./);
   });
 });

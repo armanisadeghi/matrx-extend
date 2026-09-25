@@ -183,7 +183,11 @@ try {
       localReleaseZipManifestSha256,
       'near-match fixture unexpectedly matched the reviewed release manifest',
     );
-    assert.equal(fs.existsSync(stateRoot), false, 'near-match local release created durable run state');
+    assert.equal(
+      fs.existsSync(stateRoot),
+      false,
+      'near-match local release created durable run state',
+    );
   };
 
   rejectBeforeCustody('headed', 'receipt_backed_requires_headless_no_clipboard', {

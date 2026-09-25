@@ -41,9 +41,13 @@ test('password-change diagnostic marks malformed counts as unavailable', () => {
 
 test('password-change diagnostic failure is recorded without replacing the acceptance failure', async () => {
   const proof = {};
-  await recordCaptureDiagnostic(proof, async () => {
-    throw new Error('panel transport unavailable');
-  }, 17);
+  await recordCaptureDiagnostic(
+    proof,
+    async () => {
+      throw new Error('panel transport unavailable');
+    },
+    17,
+  );
   assert.deepEqual(proof.passwordChangeDiagnostic, {
     snapshotUnavailable: true,
     candidatePresent: false,

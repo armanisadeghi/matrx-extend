@@ -100,7 +100,10 @@ export async function tablesLiveWhere(
 }
 
 /** Where one table is read and written; throws when the store did not say. */
-export async function tableLivesWhere(client: RecordsClient, tableId: string): Promise<'record' | 'older'> {
+export async function tableLivesWhere(
+  client: RecordsClient,
+  tableId: string,
+): Promise<'record' | 'older'> {
   const home = (await tablesLiveWhere(client, [tableId])).get(tableId);
   if (!home) {
     throw new RecordStoreTableError(

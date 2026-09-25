@@ -15,14 +15,18 @@ const identityHash = async (worker) => {
       'matrx.auth.refreshTokenIv',
     ]);
     return {
-      userId: typeof value['matrx.user.profile']?.id === 'string' ? value['matrx.user.profile'].id : null,
+      userId:
+        typeof value['matrx.user.profile']?.id === 'string' ? value['matrx.user.profile'].id : null,
       access: typeof value['matrx.auth.accessToken'] === 'string',
       refresh:
         typeof value['matrx.auth.refreshTokenEnc'] === 'string' &&
         typeof value['matrx.auth.refreshTokenIv'] === 'string',
     };
   });
-  assert(identity?.userId && identity.access && identity.refresh, 'browser_restart_identity_unavailable');
+  assert(
+    identity?.userId && identity.access && identity.refresh,
+    'browser_restart_identity_unavailable',
+  );
   return crypto.createHash('sha256').update(identity.userId).digest('hex');
 };
 
@@ -53,17 +57,35 @@ async function runOwnedBrowserRestart({
   proof,
 }) {
   assert(typeof profile === 'string' && profile.length > 0, 'browser_restart_profile_missing');
-  assert(typeof extensionId === 'string' && /^[a-p]{32}$/.test(extensionId), 'browser_restart_extension_id_invalid');
-  assert(typeof workerUrl === 'string' && workerUrl.startsWith(`chrome-extension://${extensionId}/`), 'browser_restart_worker_url_invalid');
+  assert(
+    typeof extensionId === 'string' && /^[a-p]{32}$/.test(extensionId),
+    'browser_restart_extension_id_invalid',
+  );
+  assert(
+    typeof workerUrl === 'string' && workerUrl.startsWith(`chrome-extension://${extensionId}/`),
+    'browser_restart_worker_url_invalid',
+  );
   for (const [value, code] of [
     [initialContext?.close, 'browser_restart_initial_context_missing'],
     [initialWorker?.evaluate, 'browser_restart_initial_worker_missing'],
-    [typeof initialWorkerTargetId === 'string' && initialWorkerTargetId, 'browser_restart_initial_worker_target_missing'],
-    [typeof initialPanelTargetId === 'string' && initialPanelTargetId, 'browser_restart_initial_panel_target_missing'],
-    [Number.isSafeInteger(initialBrowserPid) && initialBrowserPid > 1, 'browser_restart_initial_pid_invalid'],
+    [
+      typeof initialWorkerTargetId === 'string' && initialWorkerTargetId,
+      'browser_restart_initial_worker_target_missing',
+    ],
+    [
+      typeof initialPanelTargetId === 'string' && initialPanelTargetId,
+      'browser_restart_initial_panel_target_missing',
+    ],
+    [
+      Number.isSafeInteger(initialBrowserPid) && initialBrowserPid > 1,
+      'browser_restart_initial_pid_invalid',
+    ],
     [typeof initialJournal?.dispose === 'function', 'browser_restart_initial_journal_missing'],
     [typeof assertOwnedProfile === 'function', 'browser_restart_profile_ownership_missing'],
-    [launchOptions && typeof launchOptions === 'object' && !Array.isArray(launchOptions), 'browser_restart_launch_options_missing'],
+    [
+      launchOptions && typeof launchOptions === 'object' && !Array.isArray(launchOptions),
+      'browser_restart_launch_options_missing',
+    ],
     [typeof launchOwnedPersistentContext === 'function', 'browser_restart_launcher_missing'],
     [typeof assertLaunchProvenance === 'function', 'browser_restart_launch_provenance_missing'],
     [typeof verifyProcessExited === 'function', 'browser_restart_exit_verifier_missing'],
@@ -77,16 +99,22 @@ async function runOwnedBrowserRestart({
   ])
     assert(Boolean(value), code);
 
-  assert((await assertOwnedProfile(profile)) === true, 'browser_restart_profile_ownership_unverified');
+  assert(
+    (await assertOwnedProfile(profile)) === true,
+    'browser_restart_profile_ownership_unverified',
+  );
   const beforeIdentitySha256 = await identityHash(initialWorker);
   const writesBefore = vaultWriteCount();
-  assert(Number.isInteger(writesBefore) && writesBefore >= 0, 'browser_restart_write_count_invalid');
+  assert(
+    Number.isInteger(writesBefore) && writesBefore >= 0,
+    'browser_restart_write_count_invalid',
+  );
   let replacementContext;
   let replacementPanel;
   let replacementCdp;
   let replacementJournal;
   let succeeded = false;
-  const lifecycle = (proof.lifecycle ||= {}).browserRestart = {
+  const lifecycle = ((proof.lifecycle ||= {}).browserRestart = {
     disposition: 'in_progress',
     previousBrowserExited: false,
     newBrowserProcessObserved: false,
@@ -102,7 +130,7 @@ async function runOwnedBrowserRestart({
     previousBrowserPid: initialBrowserPid,
     replacementBrowserPid: null,
     launchProvenanceVerified: false,
-  };
+  });
   try {
     await initialPanel?.dispose?.();
     await initialJournal.dispose();
@@ -143,12 +171,30 @@ async function runOwnedBrowserRestart({
       cdp: replacementCdp,
       profile,
     });
-    assert(typeof replacementJournal?.start === 'function', 'browser_restart_replacement_journal_missing');
-    assert(typeof replacementJournal?.bindPanelTarget === 'function', 'browser_restart_replacement_journal_bind_missing');
-    assert(typeof replacementJournal?.settle === 'function', 'browser_restart_replacement_journal_settle_missing');
-    assert(typeof replacementJournal?.assertCoverage === 'function', 'browser_restart_replacement_journal_coverage_missing');
-    assert(typeof replacementJournal?.snapshot === 'function', 'browser_restart_replacement_journal_snapshot_missing');
-    assert(typeof replacementJournal?.dispose === 'function', 'browser_restart_replacement_journal_dispose_missing');
+    assert(
+      typeof replacementJournal?.start === 'function',
+      'browser_restart_replacement_journal_missing',
+    );
+    assert(
+      typeof replacementJournal?.bindPanelTarget === 'function',
+      'browser_restart_replacement_journal_bind_missing',
+    );
+    assert(
+      typeof replacementJournal?.settle === 'function',
+      'browser_restart_replacement_journal_settle_missing',
+    );
+    assert(
+      typeof replacementJournal?.assertCoverage === 'function',
+      'browser_restart_replacement_journal_coverage_missing',
+    );
+    assert(
+      typeof replacementJournal?.snapshot === 'function',
+      'browser_restart_replacement_journal_snapshot_missing',
+    );
+    assert(
+      typeof replacementJournal?.dispose === 'function',
+      'browser_restart_replacement_journal_dispose_missing',
+    );
     await replacementJournal.start();
     const targets = await replacementCdp.send('Target.getTargets');
     const ids = new Set(targets.targetInfos.map((target) => target.targetId));
@@ -174,7 +220,10 @@ async function runOwnedBrowserRestart({
       cdp: replacementCdp,
       worker: replacementWorker,
     });
-    assert(typeof replacementPanel?.targetId === 'string', 'browser_restart_replacement_panel_missing');
+    assert(
+      typeof replacementPanel?.targetId === 'string',
+      'browser_restart_replacement_panel_missing',
+    );
     lifecycle.replacementPanelObserved = replacementPanel.targetId !== initialPanelTargetId;
     assert(lifecycle.replacementPanelObserved, 'browser_restart_panel_target_reused');
     const exactPanelTargets = (await replacementCdp.send('Target.getTargets')).targetInfos.filter(
@@ -186,7 +235,8 @@ async function runOwnedBrowserRestart({
     assert(exactPanelTargets.length === 1, 'browser_restart_panel_target_unverified');
     await replacementJournal.bindPanelTarget(replacementPanel.targetId);
     lifecycle.replacementJournalBound = true;
-    lifecycle.settingsUiRecovered = (await verifySettingsIdentity(replacementWorker, replacementPanel)) === true;
+    lifecycle.settingsUiRecovered =
+      (await verifySettingsIdentity(replacementWorker, replacementPanel)) === true;
     const recoveredIdentitySha256 = await identityHash(replacementWorker);
     lifecycle.identitySha256 = recoveredIdentitySha256;
     lifecycle.sameIdentityRecovered = recoveredIdentitySha256 === beforeIdentitySha256;

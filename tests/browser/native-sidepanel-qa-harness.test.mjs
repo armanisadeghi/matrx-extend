@@ -5,9 +5,9 @@ import {
   isSettledGuestPanel,
   requireExpectedExtension,
   requireOwnedCommandLine,
-  resolveExpectedRelease,
   requireSidePanelContext,
   requireSpawnedProfileOwner,
+  resolveExpectedRelease,
 } from './native-sidepanel-qa-harness.mjs';
 
 const profile = '/private/tmp/owned-profile';
@@ -19,10 +19,17 @@ const receipt = {
 };
 
 assert.throws(
-  () => requireOwnedCommandLine({ arguments: ['--user-data-dir=/private/tmp/other', '--remote-debugging-port=0'] }, profile),
+  () =>
+    requireOwnedCommandLine(
+      { arguments: ['--user-data-dir=/private/tmp/other', '--remote-debugging-port=0'] },
+      profile,
+    ),
   /foreign_browser_refused/,
 );
-assert.throws(() => requireSpawnedProfileOwner('host-7002', 7001), /profile_owner_not_spawned_child/);
+assert.throws(
+  () => requireSpawnedProfileOwner('host-7002', 7001),
+  /profile_owner_not_spawned_child/,
+);
 assert.throws(
   () => resolveExpectedRelease({ receipt, extensionDir: '/private/tmp/other' }),
   /override_provenance_refused/,
@@ -39,7 +46,13 @@ assert.throws(
 assert.throws(
   () =>
     requireSidePanelContext(
-      [{ contextType: 'TAB', documentUrl: `chrome-extension://${extensionId}/sidepanel.html`, tabId: -1 }],
+      [
+        {
+          contextType: 'TAB',
+          documentUrl: `chrome-extension://${extensionId}/sidepanel.html`,
+          tabId: -1,
+        },
+      ],
       `chrome-extension://${extensionId}/sidepanel.html`,
     ),
   /runtime_context_missing/,
@@ -55,11 +68,21 @@ assert.equal(
   true,
 );
 assert.equal(
-  isSettledGuestPanel({ ready: true, guestBanner: true, signInControl: true, composer: false, visibleControls: 4 }),
+  isSettledGuestPanel({
+    ready: true,
+    guestBanner: true,
+    signInControl: true,
+    composer: false,
+    visibleControls: 4,
+  }),
   false,
 );
 assert.throws(
-  () => requireExpectedExtension([{ type: 'service_worker', url: 'chrome-extension://foreign/background.js' }], extensionId),
+  () =>
+    requireExpectedExtension(
+      [{ type: 'service_worker', url: 'chrome-extension://foreign/background.js' }],
+      extensionId,
+    ),
   /expected_extension_missing/,
 );
 requireOwnedCommandLine(
@@ -87,10 +110,19 @@ assert.equal(
   '/private/tmp/receipt-matched',
 );
 requireSidePanelContext(
-  [{ contextType: 'SIDE_PANEL', documentUrl: `chrome-extension://${extensionId}/sidepanel.html`, tabId: -1 }],
+  [
+    {
+      contextType: 'SIDE_PANEL',
+      documentUrl: `chrome-extension://${extensionId}/sidepanel.html`,
+      tabId: -1,
+    },
+  ],
   `chrome-extension://${extensionId}/sidepanel.html`,
 );
-const source = await readFile(new URL('./native-sidepanel-qa-harness.mjs', import.meta.url), 'utf8');
+const source = await readFile(
+  new URL('./native-sidepanel-qa-harness.mjs', import.meta.url),
+  'utf8',
+);
 assert.doesNotMatch(source, /9222/);
 assert.doesNotMatch(source, /Browser\.close\(/);
 console.log('PASS native sidepanel harness refuses foreign CDP/browser identities');

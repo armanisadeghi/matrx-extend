@@ -27,7 +27,11 @@ const cdp = {
       };
     return {
       targetInfos: [
-        { targetId: 'panel', type: 'page', url: `chrome-extension://${extensionId}/sidepanel.html` },
+        {
+          targetId: 'panel',
+          type: 'page',
+          url: `chrome-extension://${extensionId}/sidepanel.html`,
+        },
       ],
     };
   },
@@ -37,14 +41,20 @@ const popup = {
   send: async (method) => {
     if (method === 'Runtime.evaluate')
       return {
-        result: { value: { control: true, x: 1, y: 1, width: 8, height: 8, visible: true, hit: true } },
+        result: {
+          value: { control: true, x: 1, y: 1, width: 8, height: 8, visible: true, hit: true },
+        },
       };
     return {};
   },
   dispose: () => {},
 };
 const panel = { send: async () => ({}), dispose: () => {}, onEvent: () => () => {} };
-const staleWorker = { evaluate: async () => { throw new Error('stale_worker_must_not_be_used'); } };
+const staleWorker = {
+  evaluate: async () => {
+    throw new Error('stale_worker_must_not_be_used');
+  },
+};
 let replacementCalls = 0;
 const replacementWorker = {
   evaluate: async (fn) => {
@@ -97,7 +107,9 @@ new vm.Script(
   assert.equal(opened.opened, true);
   assert.equal(opened.panel.targetId, 'panel');
   assert.equal(replacementCalls, 2, 'the replacement worker must open and observe the panel');
-  process.stdout.write('PASS: action-popup panel reopening uses its explicit replacement worker facade\n');
+  process.stdout.write(
+    'PASS: action-popup panel reopening uses its explicit replacement worker facade\n',
+  );
 })().catch((error) => {
   console.error(error);
   process.exitCode = 1;

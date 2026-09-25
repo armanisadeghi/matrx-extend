@@ -1099,7 +1099,8 @@ async function refuseUnreconciledPriorRun() {
     // inventory comparison and owner-bound retirement grant retry only.
     let reviewedEnableProbeRetirement = false;
     if (
-      stateRoot === path.join(__dirname, '../../.matrx/task1-active/lifecycle-detail-toggle-2026-09-25') &&
+      stateRoot ===
+        path.join(__dirname, '../../.matrx/task1-active/lifecycle-detail-toggle-2026-09-25') &&
       entry.name === '66f9fac6-ca59-4b30-8d99-ee6fa7832a1c' &&
       priorRaw !== null &&
       crypto.createHash('sha256').update(priorRaw).digest('hex') ===
@@ -1107,7 +1108,8 @@ async function refuseUnreconciledPriorRun() {
     ) {
       const evidenceRoot = path.join(__dirname, '../../.matrx/task1-active');
       const reconciliationPath = path.join(
-        evidenceRoot, 'lifecycle-detail-toggle-inventory-reconciliation-2026-09-25.json',
+        evidenceRoot,
+        'lifecycle-detail-toggle-inventory-reconciliation-2026-09-25.json',
       );
       const retirementPath = path.join(evidenceRoot, 'lease-retirement-66f9fac6-2026-09-25.json');
       reviewedEnableProbeRetirement =
@@ -1687,7 +1689,11 @@ async function attachPanelSession(cdp, targetId) {
     },
   };
 }
-async function openGenuineSidePanel(extensionId, popup, { existing = false, previousTargetId } = {}) {
+async function openGenuineSidePanel(
+  extensionId,
+  popup,
+  { existing = false, previousTargetId } = {},
+) {
   if (!existing) {
     await popup.bringToFront();
     await popup.getByRole('button', { name: 'Open chat', exact: true }).click();
@@ -3106,7 +3112,8 @@ async function materializedPassword(id) {
           } catch (error) {
             proof.lifecycle ||= {};
             try {
-              proof.lifecycle.disableEnableSettingsIdentityFailure = await settingsIdentityFailureState(panel);
+              proof.lifecycle.disableEnableSettingsIdentityFailure =
+                await settingsIdentityFailureState(panel);
             } catch {
               proof.lifecycle.disableEnableSettingsIdentityFailure = { snapshotUnavailable: true };
             }
@@ -3998,7 +4005,8 @@ async function materializedPassword(id) {
             label: 'real_site_fixture_destination_restore',
           });
           assert(
-            restored?.id === fixtureId && JSON.stringify(restored.login_urls) === JSON.stringify([localUrl]),
+            restored?.id === fixtureId &&
+              JSON.stringify(restored.login_urls) === JSON.stringify([localUrl]),
             'real_site_fixture_destination_restore_mismatch',
           );
         }

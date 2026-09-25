@@ -1,4 +1,8 @@
 #!/usr/bin/env node
+import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { mkdir, mkdtemp, readFile, readlink, rm, writeFile } from 'node:fs/promises';
+import { createServer } from 'node:http';
 /**
  * Isolated, native-side-panel browser QA harness.
  *
@@ -12,18 +16,16 @@
  *   node tests/browser/native-sidepanel-qa-harness.mjs
  */
 import { createRequire } from 'node:module';
-import { mkdtemp, mkdir, readFile, readlink, rm, writeFile } from 'node:fs/promises';
-import { createHash } from 'node:crypto';
-import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
-import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 
 const require = createRequire(import.meta.url);
 const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs');
-const { chromium } = createRequire('/Users/armanisadeghi/code/matrx-frontend/package.json')('playwright');
+const { chromium } = createRequire('/Users/armanisadeghi/code/matrx-frontend/package.json')(
+  'playwright',
+);
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
@@ -78,7 +80,8 @@ async function verifyReleasedArtifact(expected) {
   } catch {
     throw new Error('native_sidepanel_release_manifest_refused');
   }
-  if (manifest.version !== expected.version) throw new Error('native_sidepanel_release_version_refused');
+  if (manifest.version !== expected.version)
+    throw new Error('native_sidepanel_release_version_refused');
   if (hashReleaseTree(expected.extensionDir) !== expected.treeSha256)
     throw new Error('native_sidepanel_release_tree_refused');
   let zip;
@@ -87,7 +90,8 @@ async function verifyReleasedArtifact(expected) {
   } catch {
     throw new Error('native_sidepanel_store_zip_missing');
   }
-  if (sha256(zip) !== expected.storeZipSha256) throw new Error('native_sidepanel_store_zip_refused');
+  if (sha256(zip) !== expected.storeZipSha256)
+    throw new Error('native_sidepanel_store_zip_refused');
 }
 
 function requireOwnedCommandLine(commandLine, profile) {
@@ -116,9 +120,7 @@ function requireSpawnedProfileOwner(lockTarget, childPid) {
 function requireSidePanelContext(contexts, panelUrl) {
   const context = contexts?.find(
     (entry) =>
-      entry?.contextType === 'SIDE_PANEL' &&
-      entry?.documentUrl === panelUrl &&
-      entry?.tabId === -1,
+      entry?.contextType === 'SIDE_PANEL' && entry?.documentUrl === panelUrl && entry?.tabId === -1,
   );
   if (!context) throw new Error('native_sidepanel_runtime_context_missing');
   return context;
@@ -227,7 +229,8 @@ async function captureTarget(cdp, targetId, output) {
   try {
     await cdp.send('Page.enable', {}, sessionId);
     const { data } = await cdp.send('Page.captureScreenshot', { format: 'png' }, sessionId);
-    if (typeof data !== 'string' || data.length < 100) throw new Error('native_sidepanel_png_missing');
+    if (typeof data !== 'string' || data.length < 100)
+      throw new Error('native_sidepanel_png_missing');
     await writeFile(output, Buffer.from(data, 'base64'), { mode: 0o600 });
   } finally {
     await cdp.send('Target.detachFromTarget', { sessionId }).catch(() => {});
@@ -405,8 +408,6 @@ export async function runNativeSidepanelQa({
       panelTargetId: panelTarget.targetId,
       verified,
     });
-  } catch (error) {
-    throw error;
   } finally {
     // Browser.close is intentionally absent, including for Playwright's CDP
     // connection. Only the exact ChildProcess this harness spawned is ended.
