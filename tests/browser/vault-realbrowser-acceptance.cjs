@@ -6,7 +6,9 @@ const syncFs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
 const crypto = require('node:crypto');
-const { observeDelayedCaptureDecisionSettlement } = require('./vault-capture-decision-settlement.cjs');
+const {
+  observeDelayedCaptureDecisionSettlement,
+} = require('./vault-capture-decision-settlement.cjs');
 const { createRequire } = require('node:module');
 const { execFile, spawn } = require('node:child_process');
 const { promisify } = require('node:util');
@@ -517,8 +519,7 @@ const receiptBackedSaveUpdateMode =
 // its checked manifest as well as its declared identity; it is not evidence
 // of Store publication or installation.
 const RECEIPT_BACKED_FROZEN_SOURCE_COMMIT = 'a2b5aa7e1082330ab6658b07477b31ea3705ca72';
-const RECEIPT_BACKED_LOCAL_RELEASE_ZIP_SOURCE_COMMIT =
-  '3bad3aaea3d8906caff1f05504570145eb813c04';
+const RECEIPT_BACKED_LOCAL_RELEASE_ZIP_SOURCE_COMMIT = '3bad3aaea3d8906caff1f05504570145eb813c04';
 const RECEIPT_BACKED_LOCAL_RELEASE_ZIP_MANIFEST_SHA256 =
   'c395a10b2b8d6dfc42dc045f553a9098781eab3d33634e5a0a1a947f0bec8b9b';
 const RECEIPT_BACKED_LOCAL_RELEASE_ZIP_ARTIFACT_KIND = 'local-release-zip-artifact';
@@ -1602,9 +1603,11 @@ async function attachPanelSession(cdp, targetId) {
     },
   };
 }
-async function openGenuineSidePanel(extensionId, popup) {
-  await popup.bringToFront();
-  await popup.getByRole('button', { name: 'Open chat', exact: true }).click();
+async function openGenuineSidePanel(extensionId, popup, { existing = false } = {}) {
+  if (!existing) {
+    await popup.bringToFront();
+    await popup.getByRole('button', { name: 'Open chat', exact: true }).click();
+  }
   let contexts = [];
   for (let attempt = 0; attempt < 30; attempt += 1) {
     contexts = await worker.evaluate(() =>
@@ -1622,16 +1625,19 @@ async function openGenuineSidePanel(extensionId, popup) {
   const host = context.pages()[0];
   assert(host, 'cdp_host_missing');
   const cdp = await context.newCDPSession(host);
-  const targets = await cdp.send('Target.getTargets');
-  const target = targets.targetInfos.find(
-    (candidate) => candidate.url === `chrome-extension://${extensionId}/sidepanel.html`,
-  );
-  assert(target?.type === 'page', 'real_side_panel_target_missing');
-  const panel = await attachPanelSession(cdp, target.targetId);
+  let target;
+  let panel;
   try {
+    const targets = await cdp.send('Target.getTargets');
+    target = targets.targetInfos.find(
+      (candidate) => candidate.url === `chrome-extension://${extensionId}/sidepanel.html`,
+    );
+    assert(target?.type === 'page', 'real_side_panel_target_missing');
+    panel = await attachPanelSession(cdp, target.targetId);
     await panel.send('Network.enable');
   } catch (error) {
-    panel.dispose();
+    panel?.dispose();
+    await cdp.detach().catch(() => {});
     throw error;
   }
   const evaluate = async (expression) => {
@@ -1821,7 +1827,10 @@ async function openGenuineSidePanel(extensionId, popup) {
     key,
     startKnobResolveProbe,
     screenshot,
-    dispose: panel.dispose,
+    dispose: async () => {
+      panel.dispose();
+      await cdp.detach().catch(() => {});
+    },
   };
 }
 async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWindowId) {
@@ -1829,222 +1838,235 @@ async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWin
   // opened for the already-focused fixture window, then its existing product
   // control receives real target-directed CDP input.
   const cdp = await context.newCDPSession(fixturePage);
-  const targetUrl = `chrome-extension://${extensionId}/popup.html`;
-  const before = await cdp.send('Target.getTargets');
-  const knownPopupTargets = new Set(
-    before.targetInfos
-      .filter((target) => target.url === targetUrl)
-      .map((target) => target.targetId),
-  );
-  const result = await worker.evaluate(async (windowId) => {
-    if (typeof chrome.action?.openPopup !== 'function') return { outcome: 'api_unavailable' };
+  let handedOff = false;
+  let panel;
+  try {
+    const targetUrl = `chrome-extension://${extensionId}/popup.html`;
+    const before = await cdp.send('Target.getTargets');
+    const knownPopupTargets = new Set(
+      before.targetInfos
+        .filter((target) => target.url === targetUrl)
+        .map((target) => target.targetId),
+    );
+    const result = await worker.evaluate(async (windowId) => {
+      if (typeof chrome.action?.openPopup !== 'function') return { outcome: 'api_unavailable' };
+      try {
+        await chrome.action.openPopup({ windowId });
+        return { outcome: 'requested' };
+      } catch (error) {
+        return { outcome: 'refused', error: error?.name === 'Error' ? 'error' : 'other' };
+      }
+    }, fixtureWindowId);
+    if (result?.outcome !== 'requested')
+      return { opened: false, reason: result?.outcome ?? 'action_popup_not_requested' };
+    let popupTarget;
+    for (let attempt = 0; attempt < 30; attempt += 1) {
+      const targets = await cdp.send('Target.getTargets');
+      popupTarget = targets.targetInfos.find(
+        (target) =>
+          target.url === targetUrl &&
+          target.type === 'page' &&
+          !knownPopupTargets.has(target.targetId),
+      );
+      if (popupTarget) break;
+      await wait(100);
+    }
+    if (!popupTarget) return { opened: false, reason: 'action_popup_target_missing' };
+    const popup = await attachPanelSession(cdp, popupTarget.targetId);
     try {
-      await chrome.action.openPopup({ windowId });
-      return { outcome: 'requested' };
-    } catch (error) {
-      return { outcome: 'refused', error: error?.name === 'Error' ? 'error' : 'other' };
-    }
-  }, fixtureWindowId);
-  if (result?.outcome !== 'requested')
-    return { opened: false, reason: result?.outcome ?? 'action_popup_not_requested' };
-  let popupTarget;
-  for (let attempt = 0; attempt < 30; attempt += 1) {
-    const targets = await cdp.send('Target.getTargets');
-    popupTarget = targets.targetInfos.find(
-      (target) =>
-        target.url === targetUrl &&
-        target.type === 'page' &&
-        !knownPopupTargets.has(target.targetId),
-    );
-    if (popupTarget) break;
-    await wait(100);
-  }
-  if (!popupTarget) return { opened: false, reason: 'action_popup_target_missing' };
-  const popup = await attachPanelSession(cdp, popupTarget.targetId);
-  try {
-    let box;
-    let attempts = 0;
-    for (; attempts < 30; attempts += 1) {
-      const response = await popup.send('Runtime.evaluate', {
-        expression: `(() => { const control = Array.from(document.querySelectorAll('button')).find((button) => button.textContent.trim() === 'Open chat'); if (!control) return { control: false }; control.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const rect = control.getBoundingClientRect(); const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2; const hit = document.elementFromPoint(x, y); return { control: true, x, y, width: rect.width, height: rect.height, visible: x >= 0 && y >= 0 && x <= innerWidth && y <= innerHeight, hit: !!hit && (hit === control || control.contains(hit)) }; })()`,
-        returnByValue: true,
-      });
-      box = response.result?.value;
-      if (box?.control && box.width > 0 && box.height > 0 && box.visible && box.hit) break;
-      await wait(100);
-    }
-    if (!(box?.control && box.width > 0 && box.height > 0 && box.visible && box.hit)) {
-      return {
-        opened: false,
-        reason: 'action_popup_open_chat_not_actionable',
-        readiness: {
-          attempts,
-          controlPresent: box?.control === true,
-          positiveSize: box?.width > 0 && box?.height > 0,
-          viewportHit: box?.visible === true && box?.hit === true,
-        },
-      };
-    }
-    await popup.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: box.x, y: box.y });
-    await popup.send('Input.dispatchMouseEvent', {
-      type: 'mousePressed',
-      x: box.x,
-      y: box.y,
-      button: 'left',
-      clickCount: 1,
-    });
-    await popup.send('Input.dispatchMouseEvent', {
-      type: 'mouseReleased',
-      x: box.x,
-      y: box.y,
-      button: 'left',
-      clickCount: 1,
-    });
-  } finally {
-    popup.dispose();
-  }
-  let contexts = [];
-  for (let attempt = 0; attempt < 30; attempt += 1) {
-    contexts = await worker.evaluate(() =>
-      chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }),
-    );
-    if (
-      contexts.length === 1 &&
-      contexts[0].documentUrl === `chrome-extension://${extensionId}/sidepanel.html` &&
-      contexts[0].tabId === -1
-    )
-      break;
-    await wait(100);
-  }
-  if (!(contexts.length === 1 && contexts[0].tabId === -1))
-    return { opened: false, reason: 'reopened_side_panel_context_missing' };
-  const targets = await cdp.send('Target.getTargets');
-  const target = targets.targetInfos.find(
-    (candidate) =>
-      candidate.url === `chrome-extension://${extensionId}/sidepanel.html` &&
-      candidate.type === 'page',
-  );
-  if (!target) return { opened: false, reason: 'reopened_side_panel_target_missing' };
-  const panel = await attachPanelSession(cdp, target.targetId);
-  try {
-    await panel.send('Network.enable');
-  } catch (error) {
-    panel.dispose();
-    throw error;
-  }
-  const evaluate = async (expression) => {
-    const evaluation = await panel.send('Runtime.evaluate', {
-      expression,
-      returnByValue: true,
-      awaitPromise: true,
-    });
-    if (evaluation.exceptionDetails) throw new Error('reopened_side_panel_eval_refused');
-    return evaluation.result.value;
-  };
-  const click = async (expression) => {
-    const box = await evaluate(
-      `(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const rect = element.getBoundingClientRect(); const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2; const hit = document.elementFromPoint(x, y); return { x, y, width: rect.width, height: rect.height, visible: x >= 0 && y >= 0 && x <= innerWidth && y <= innerHeight, hit: !!hit && (hit === element || element.contains(hit)) }; })()`,
-    );
-    assert(
-      box?.width > 0 && box?.height > 0 && box.visible && box.hit,
-      'reopened_side_panel_control_not_actionable',
-    );
-    await panel.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: box.x, y: box.y });
-    await panel.send('Input.dispatchMouseEvent', {
-      type: 'mousePressed',
-      x: box.x,
-      y: box.y,
-      button: 'left',
-      clickCount: 1,
-    });
-    await panel.send('Input.dispatchMouseEvent', {
-      type: 'mouseReleased',
-      x: box.x,
-      y: box.y,
-      button: 'left',
-      clickCount: 1,
-    });
-  };
-  const waitFor = async (expression, expected = true, timeout = 15000) => {
-    const deadline = Date.now() + timeout;
-    do {
-      if ((await evaluate(expression)) === expected) return;
-      await wait(100);
-    } while (Date.now() < deadline);
-    throw new Error('reopened_panel_condition_timeout');
-  };
-  const key = async ({ key, code, windowsVirtualKeyCode, modifiers = 0, text }) => {
-    const effectiveText = text ?? (key === 'Enter' ? '\r' : undefined);
-    const params = {
-      key,
-      code,
-      windowsVirtualKeyCode,
-      nativeVirtualKeyCode: windowsVirtualKeyCode,
-      modifiers,
-    };
-    if (effectiveText !== undefined) {
-      params.text = effectiveText;
-      params.unmodifiedText = effectiveText;
-    }
-    await panel.send('Input.dispatchKeyEvent', { type: 'keyDown', ...params });
-    await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', ...params });
-  };
-  const startKnobResolveProbe = () => {
-    const calls = new Map();
-    const stop = panel.onEvent((method, params) => {
-      if (method === 'Network.requestWillBeSent') {
-        let pathname;
-        try {
-          pathname = new URL(params.request?.url).pathname;
-        } catch {
-          return;
-        }
-        if (pathname === '/rest/v1/rpc/knob_resolve')
-          calls.set(params.requestId, { startedAt: Date.now(), status: null, completedAt: null });
+      let box;
+      let attempts = 0;
+      for (; attempts < 30; attempts += 1) {
+        const response = await popup.send('Runtime.evaluate', {
+          expression: `(() => { const control = Array.from(document.querySelectorAll('button')).find((button) => button.textContent.trim() === 'Open chat'); if (!control) return { control: false }; control.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const rect = control.getBoundingClientRect(); const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2; const hit = document.elementFromPoint(x, y); return { control: true, x, y, width: rect.width, height: rect.height, visible: x >= 0 && y >= 0 && x <= innerWidth && y <= innerHeight, hit: !!hit && (hit === control || control.contains(hit)) }; })()`,
+          returnByValue: true,
+        });
+        box = response.result?.value;
+        if (box?.control && box.width > 0 && box.height > 0 && box.visible && box.hit) break;
+        await wait(100);
       }
-      if (method === 'Network.responseReceived' && calls.has(params.requestId)) {
-        const call = calls.get(params.requestId);
-        call.status = Number.isInteger(params.response?.status) ? params.response.status : null;
-        call.completedAt = Date.now();
-      }
-    });
-    return {
-      snapshot: () => {
-        const entries = [...calls.values()];
+      if (!(box?.control && box.width > 0 && box.height > 0 && box.visible && box.hit)) {
         return {
-          requestCount: entries.length,
-          responseCount: entries.filter((call) => call.completedAt !== null).length,
-          pendingCount: entries.filter((call) => call.completedAt === null).length,
-          statuses: entries.map((call) => call.status),
-          elapsedMs: entries.map((call) => (call.completedAt ?? Date.now()) - call.startedAt),
+          opened: false,
+          reason: 'action_popup_open_chat_not_actionable',
+          readiness: {
+            attempts,
+            controlPresent: box?.control === true,
+            positiveSize: box?.width > 0 && box?.height > 0,
+            viewportHit: box?.visible === true && box?.hit === true,
+          },
         };
-      },
-      stop,
-    };
-  };
-  const screenshot = async (expression, destination) => {
-    const clip = await evaluate(
-      `(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest' }); const r = element.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.x >= 0 && r.y >= 0 && r.right <= innerWidth && r.bottom <= innerHeight ? { x: r.x, y: r.y, width: r.width, height: r.height, scale: 1 } : null; })()`,
+      }
+      await popup.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: box.x, y: box.y });
+      await popup.send('Input.dispatchMouseEvent', {
+        type: 'mousePressed',
+        x: box.x,
+        y: box.y,
+        button: 'left',
+        clickCount: 1,
+      });
+      await popup.send('Input.dispatchMouseEvent', {
+        type: 'mouseReleased',
+        x: box.x,
+        y: box.y,
+        button: 'left',
+        clickCount: 1,
+      });
+    } finally {
+      popup.dispose();
+    }
+    let contexts = [];
+    for (let attempt = 0; attempt < 30; attempt += 1) {
+      contexts = await worker.evaluate(() =>
+        chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }),
+      );
+      if (
+        contexts.length === 1 &&
+        contexts[0].documentUrl === `chrome-extension://${extensionId}/sidepanel.html` &&
+        contexts[0].tabId === -1
+      )
+        break;
+      await wait(100);
+    }
+    if (!(contexts.length === 1 && contexts[0].tabId === -1))
+      return { opened: false, reason: 'reopened_side_panel_context_missing' };
+    const targets = await cdp.send('Target.getTargets');
+    const target = targets.targetInfos.find(
+      (candidate) =>
+        candidate.url === `chrome-extension://${extensionId}/sidepanel.html` &&
+        candidate.type === 'page',
     );
-    assert(clip, 'reopened_panel_screenshot_not_visible');
-    const captured = await panel.send('Page.captureScreenshot', { format: 'png', clip });
-    assert(typeof captured.data === 'string', 'reopened_panel_screenshot_refused');
-    await fs.writeFile(destination, Buffer.from(captured.data, 'base64'), { mode: 0o600 });
-  };
-  return {
-    opened: true,
-    panel: {
-      targetId: target.targetId,
-      send: (method, params) => panel.send(method, params),
-      evaluate,
-      click,
-      waitFor,
-      key,
-      startKnobResolveProbe,
-      screenshot,
-      dispose: panel.dispose,
-    },
-  };
+    if (!target) return { opened: false, reason: 'reopened_side_panel_target_missing' };
+    panel = await attachPanelSession(cdp, target.targetId);
+    try {
+      await panel.send('Network.enable');
+    } catch (error) {
+      panel.dispose();
+      throw error;
+    }
+    const evaluate = async (expression) => {
+      const evaluation = await panel.send('Runtime.evaluate', {
+        expression,
+        returnByValue: true,
+        awaitPromise: true,
+      });
+      if (evaluation.exceptionDetails) throw new Error('reopened_side_panel_eval_refused');
+      return evaluation.result.value;
+    };
+    const click = async (expression) => {
+      const box = await evaluate(
+        `(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const rect = element.getBoundingClientRect(); const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2; const hit = document.elementFromPoint(x, y); return { x, y, width: rect.width, height: rect.height, visible: x >= 0 && y >= 0 && x <= innerWidth && y <= innerHeight, hit: !!hit && (hit === element || element.contains(hit)) }; })()`,
+      );
+      assert(
+        box?.width > 0 && box?.height > 0 && box.visible && box.hit,
+        'reopened_side_panel_control_not_actionable',
+      );
+      await panel.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: box.x, y: box.y });
+      await panel.send('Input.dispatchMouseEvent', {
+        type: 'mousePressed',
+        x: box.x,
+        y: box.y,
+        button: 'left',
+        clickCount: 1,
+      });
+      await panel.send('Input.dispatchMouseEvent', {
+        type: 'mouseReleased',
+        x: box.x,
+        y: box.y,
+        button: 'left',
+        clickCount: 1,
+      });
+    };
+    const waitFor = async (expression, expected = true, timeout = 15000) => {
+      const deadline = Date.now() + timeout;
+      do {
+        if ((await evaluate(expression)) === expected) return;
+        await wait(100);
+      } while (Date.now() < deadline);
+      throw new Error('reopened_panel_condition_timeout');
+    };
+    const key = async ({ key, code, windowsVirtualKeyCode, modifiers = 0, text }) => {
+      const effectiveText = text ?? (key === 'Enter' ? '\r' : undefined);
+      const params = {
+        key,
+        code,
+        windowsVirtualKeyCode,
+        nativeVirtualKeyCode: windowsVirtualKeyCode,
+        modifiers,
+      };
+      if (effectiveText !== undefined) {
+        params.text = effectiveText;
+        params.unmodifiedText = effectiveText;
+      }
+      await panel.send('Input.dispatchKeyEvent', { type: 'keyDown', ...params });
+      await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', ...params });
+    };
+    const startKnobResolveProbe = () => {
+      const calls = new Map();
+      const stop = panel.onEvent((method, params) => {
+        if (method === 'Network.requestWillBeSent') {
+          let pathname;
+          try {
+            pathname = new URL(params.request?.url).pathname;
+          } catch {
+            return;
+          }
+          if (pathname === '/rest/v1/rpc/knob_resolve')
+            calls.set(params.requestId, { startedAt: Date.now(), status: null, completedAt: null });
+        }
+        if (method === 'Network.responseReceived' && calls.has(params.requestId)) {
+          const call = calls.get(params.requestId);
+          call.status = Number.isInteger(params.response?.status) ? params.response.status : null;
+          call.completedAt = Date.now();
+        }
+      });
+      return {
+        snapshot: () => {
+          const entries = [...calls.values()];
+          return {
+            requestCount: entries.length,
+            responseCount: entries.filter((call) => call.completedAt !== null).length,
+            pendingCount: entries.filter((call) => call.completedAt === null).length,
+            statuses: entries.map((call) => call.status),
+            elapsedMs: entries.map((call) => (call.completedAt ?? Date.now()) - call.startedAt),
+          };
+        },
+        stop,
+      };
+    };
+    const screenshot = async (expression, destination) => {
+      const clip = await evaluate(
+        `(() => { const element = (${expression}); if (!element) return null; element.scrollIntoView({ block: 'nearest' }); const r = element.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.x >= 0 && r.y >= 0 && r.right <= innerWidth && r.bottom <= innerHeight ? { x: r.x, y: r.y, width: r.width, height: r.height, scale: 1 } : null; })()`,
+      );
+      assert(clip, 'reopened_panel_screenshot_not_visible');
+      const captured = await panel.send('Page.captureScreenshot', { format: 'png', clip });
+      assert(typeof captured.data === 'string', 'reopened_panel_screenshot_refused');
+      await fs.writeFile(destination, Buffer.from(captured.data, 'base64'), { mode: 0o600 });
+    };
+    handedOff = true;
+    return {
+      opened: true,
+      panel: {
+        targetId: target.targetId,
+        send: (method, params) => panel.send(method, params),
+        evaluate,
+        click,
+        waitFor,
+        key,
+        startKnobResolveProbe,
+        screenshot,
+        dispose: async () => {
+          panel.dispose();
+          await cdp.detach().catch(() => {});
+        },
+      },
+    };
+  } finally {
+    if (!handedOff) {
+      panel?.dispose();
+      await cdp.detach().catch(() => {});
+    }
+  }
 }
 async function chooseAuthorizedOrganization(extensionId) {
   const settingsPage = await context.newPage();
@@ -3059,7 +3081,7 @@ async function materializedPassword(id) {
       lifecycleLogoutObserver = undefined;
       // Reuse the same disposable profile and the production OAuth UI. This
       // proves recovery is a fresh interactive session, never retained panel state.
-      realPanel.dispose();
+      await realPanel.dispose();
       await authenticate(extension, { reuseBrowser: true });
       await dismissResolvedInitialOrganizationNotice();
       const recovered = await storage([
@@ -3227,7 +3249,7 @@ async function materializedPassword(id) {
               fixtureWindowId,
             );
             if (reopened.opened) {
-              realPanel?.dispose();
+              await realPanel?.dispose();
               realPanel = reopened.panel;
               await networkJournal.bindPanelTarget(realPanel.targetId);
             }
@@ -3665,6 +3687,45 @@ async function materializedPassword(id) {
           proof,
           focusOwnedBrowser,
           verifyRealVaultPanel,
+          recoverRealPanel: async (fixturePage, tabId) => {
+            const failedTargetId = realPanel.targetId;
+            let reopened;
+            let route = 'existing_global_panel';
+            try {
+              reopened = await openGenuineSidePanel(extensionId, null, { existing: true });
+            } catch (error) {
+              if (
+                !['real_side_panel_missing', 'real_side_panel_target_missing'].includes(
+                  error.message,
+                )
+              )
+                throw error;
+              route = 'genuine_action_popup';
+              const windowId = await worker.evaluate(
+                async (id) => (await chrome.tabs.get(id)).windowId,
+                tabId,
+              );
+              const result = await openSidePanelFromActionPopup(extensionId, fixturePage, windowId);
+              assert(result.opened === true, 'real_site_panel_recovery_reopen_refused');
+              reopened = result.panel;
+            }
+            assert(reopened?.targetId, 'real_site_panel_recovery_target_missing');
+            try {
+              await networkJournal.bindPanelTarget(reopened.targetId);
+            } catch (error) {
+              await reopened.dispose();
+              throw error;
+            }
+            await realPanel?.dispose();
+            realPanel = reopened;
+            proof.realSiteFill.panelRecovery = {
+              route,
+              failedTargetId,
+              recoveredTargetId: reopened.targetId,
+            };
+            persist();
+            return reopened;
+          },
         });
         assert(
           proof.realSiteFill?.realHttpsLoginFormReady === true &&
@@ -4044,7 +4105,7 @@ async function materializedPassword(id) {
     }
     lifecycleLogoutObserver?.();
     lifecycleLogoutObserver = undefined;
-    realPanel?.dispose();
+    await realPanel?.dispose();
     try {
       if (context) await context.close();
       proof.cleanup.browserClosed = true;

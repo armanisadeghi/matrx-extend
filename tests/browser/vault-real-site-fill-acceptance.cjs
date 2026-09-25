@@ -150,6 +150,7 @@ exports.runRealSiteFillChecks = async ({
   proof,
   focusOwnedBrowser,
   verifyRealVaultPanel,
+  recoverRealPanel,
 }) => {
   assert(context && worker && realPanel, 'real_site_fill_context_missing');
   assert(typeof targetName === 'string' && targetName.length > 0, 'real_site_fill_target_missing');
@@ -164,7 +165,8 @@ exports.runRealSiteFillChecks = async ({
     typeof assert === 'function' &&
       typeof wait === 'function' &&
       typeof focusOwnedBrowser === 'function' &&
-      typeof verifyRealVaultPanel === 'function',
+      typeof verifyRealVaultPanel === 'function' &&
+      typeof recoverRealPanel === 'function',
     'real_site_fill_controls_missing',
   );
   const urls = validateRealSiteUrls(realLoginUrl, wrongSiteUrl);
@@ -289,15 +291,28 @@ exports.runRealSiteFillChecks = async ({
     await page.bringToFront();
     await focusOwnedBrowser(wrongTabId);
     await page.locator('#password').focus();
-    await waitForFocusedWrongOriginNoMatch({
-      page,
-      realPanel,
-      tabId: wrongTabId,
-      wrongUrl: urls.wrong,
-      wait,
-      verifyRealVaultPanel,
-    });
-    await realPanel.waitFor(`!(${fill})`, true, 15000);
+    const confirmWrongSiteNoMatch = async () => {
+      await waitForFocusedWrongOriginNoMatch({
+        page,
+        realPanel,
+        tabId: wrongTabId,
+        wrongUrl: urls.wrong,
+        wait,
+        verifyRealVaultPanel,
+      });
+      await realPanel.waitFor(`!(${fill})`, true, 15000);
+    };
+    try {
+      await confirmWrongSiteNoMatch();
+      evidence.panelRecovery = 'not_needed';
+    } catch (error) {
+      if (error.message !== 'panel_protocol_refused') throw error;
+      realPanel = await recoverRealPanel(page, wrongTabId);
+      await page.bringToFront();
+      await focusOwnedBrowser(wrongTabId);
+      await page.locator('#password').focus();
+      await confirmWrongSiteNoMatch();
+    }
     const wrongResult = await page.evaluate(() => {
       const email = document.querySelector('#email');
       const password = document.querySelector('#password');
@@ -322,7 +337,13 @@ exports.runRealSiteFillChecks = async ({
   }
   if (primaryFailure) throw primaryFailure;
   assert(
-    Object.values(evidence).every((value) => value === true),
+    evidence.realHttpsLoginFormReady === true &&
+      evidence.exactSavedAccountFilled === true &&
+      evidence.noWebsiteSubmission === true &&
+      evidence.wrongSiteRefused === true &&
+      evidence.pageClosed === true &&
+      evidence.ownedWebCookiesClearedBeforeLogin === true &&
+      !!evidence.panelRecovery,
     'real_site_fill_evidence_incomplete',
   );
   return evidence;
