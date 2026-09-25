@@ -1523,7 +1523,11 @@ async function attachPanelSession(cdp, targetId) {
       detached,
       errorCode: Number.isInteger(error?.code) ? error.code : null,
     };
-    persist();
+    try {
+      persist();
+    } catch {
+      // This diagnostic must never replace the original panel failure.
+    }
   };
   const onDetached = ({ sessionId: received, targetId: receivedTarget }) => {
     if (received === sessionId || receivedTarget === targetId) detached = true;
@@ -1624,7 +1628,12 @@ async function openGenuineSidePanel(extensionId, popup) {
   );
   assert(target?.type === 'page', 'real_side_panel_target_missing');
   const panel = await attachPanelSession(cdp, target.targetId);
-  await panel.send('Network.enable');
+  try {
+    await panel.send('Network.enable');
+  } catch (error) {
+    panel.dispose();
+    throw error;
+  }
   const evaluate = async (expression) => {
     const result = await panel.send('Runtime.evaluate', {
       expression,
@@ -1917,7 +1926,12 @@ async function openSidePanelFromActionPopup(extensionId, fixturePage, fixtureWin
   );
   if (!target) return { opened: false, reason: 'reopened_side_panel_target_missing' };
   const panel = await attachPanelSession(cdp, target.targetId);
-  await panel.send('Network.enable');
+  try {
+    await panel.send('Network.enable');
+  } catch (error) {
+    panel.dispose();
+    throw error;
+  }
   const evaluate = async (expression) => {
     const evaluation = await panel.send('Runtime.evaluate', {
       expression,
