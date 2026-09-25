@@ -72,6 +72,35 @@ function sameLifecycleIdentity(initialIdentitySha256, recoveredIdentitySha256) {
   );
 }
 
+// Playwright can retain its original Worker facade after chrome.runtime.reload().
+// The browser-level target is the lifecycle authority: only a different MV3
+// service-worker target proves that reload replaced the executing worker.
+async function waitForReplacementExtensionWorkerTarget({
+  cdp,
+  workerUrl,
+  previousTargetId,
+  wait,
+  attempts = 60,
+}) {
+  assert(typeof workerUrl === 'string' && workerUrl.length > 0, 'lifecycle_worker_url_missing');
+  assert(
+    typeof previousTargetId === 'string' && previousTargetId.length > 0,
+    'lifecycle_initial_worker_target_missing',
+  );
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const targets = await cdp.send('Target.getTargets');
+    const replacement = targets.targetInfos.find(
+      (target) =>
+        target.type === 'service_worker' &&
+        target.url === workerUrl &&
+        target.targetId !== previousTargetId,
+    );
+    if (replacement) return replacement;
+    await wait(250);
+  }
+  throw new Error('lifecycle_replacement_worker_target_timeout');
+}
+
 async function runExtensionReload({
   worker,
   refreshWorker,
@@ -82,17 +111,22 @@ async function runExtensionReload({
   const before = await inspectIdentity(worker);
   checkpoint('lifecycle_extension_reload');
   await worker.evaluate(() => chrome.runtime.reload());
-  const replacement = await refreshWorker(worker);
+  const refreshed = await refreshWorker(worker);
+  const replacement = refreshed?.worker || refreshed;
+  const replacementWorkerObserved =
+    refreshed?.replacementWorkerTargetObserved === true && replacement !== worker;
   const after = await inspectIdentity(replacement);
   const settingsUiRecovered = await verifySettingsIdentity(after.identitySha256);
   proof.lifecycle ||= {};
   proof.lifecycle.initialIdentitySha256 ||= before.identitySha256;
   proof.lifecycle.extensionReload = {
     disposition:
-      sameLifecycleIdentity(before.identitySha256, after.identitySha256) && settingsUiRecovered
+      replacementWorkerObserved &&
+      sameLifecycleIdentity(before.identitySha256, after.identitySha256) &&
+      settingsUiRecovered
         ? 'passed'
         : 'failed',
-    replacementWorkerObserved: replacement !== worker,
+    replacementWorkerObserved,
     sameIdentityRecovered: before.identitySha256 === after.identitySha256,
     settingsUiRecovered,
     identitySha256: after.identitySha256,
@@ -163,6 +197,7 @@ async function runSettingsSignOut({
 module.exports = {
   inspectIdentity,
   sameLifecycleIdentity,
+  waitForReplacementExtensionWorkerTarget,
   runExtensionReload,
   runSettingsSignOut,
   visibleSettingsControl,

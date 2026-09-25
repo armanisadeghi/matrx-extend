@@ -21,10 +21,12 @@ const {
   verifyNoCommitRecovery,
 } = require('./vault-7356-reconciliation.cjs');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
+const { assertVaultExtensionLifecycleVerdict } = require('./vault-extension-lifecycle-verdict.cjs');
 const {
   inspectIdentity,
   sameLifecycleIdentity,
   runExtensionReload,
+  waitForReplacementExtensionWorkerTarget,
   runSettingsSignOut,
   visibleSettingsControl,
   visibleVaultControl,
@@ -2816,15 +2818,31 @@ async function materializedPassword(id) {
     await dismissResolvedInitialOrganizationNotice();
     if (extensionLifecycleMode) {
       const initialWorker = worker;
+      const workerUrl = await initialWorker.evaluate(() => location.href);
+      const initialTargets = await rawCdp.send('Target.getTargets');
+      const initialTarget = initialTargets.targetInfos.find(
+        (target) => target.type === 'service_worker' && target.url === workerUrl,
+      );
+      assert(initialTarget, 'lifecycle_initial_worker_target_missing');
       worker = await runExtensionReload({
         worker: initialWorker,
         refreshWorker: async () => {
-          for (let attempt = 0; attempt < 60; attempt += 1) {
-            const candidate = context.serviceWorkers().find((entry) => entry !== initialWorker);
-            if (candidate) return candidate;
-            await wait(250);
-          }
-          throw new Error('lifecycle_replacement_worker_timeout');
+          const replacementTarget = await waitForReplacementExtensionWorkerTarget({
+            cdp: rawCdp,
+            workerUrl,
+            previousTargetId: initialTarget.targetId,
+            wait,
+          });
+          proof.lifecycle ||= {};
+          proof.lifecycle.extensionReloadCdp = {
+            initialTargetId: initialTarget.targetId,
+            replacementTargetId: replacementTarget.targetId,
+            replacementTargetObserved: true,
+          };
+          return {
+            worker: exactCdpWorkerFacade(rawCdp, replacementTarget.targetId),
+            replacementWorkerTargetObserved: true,
+          };
         },
         verifySettingsIdentity: async () => {
           await realPanel.click(visibleSettingsControl);
@@ -2837,7 +2855,7 @@ async function materializedPassword(id) {
         proof,
       });
       proof.lifecycle.partialDisposition =
-        'reload_observed_setup_recovery_and_fresh_signin_pending';
+        'reload_observed_disable_enable_browser_restart_and_organization_switch_pending';
       persist();
     } else if (setupIdentityOnlyMode) {
       const initial = await inspectIdentity(worker);
@@ -3037,6 +3055,13 @@ async function materializedPassword(id) {
         proof.lifecycle.freshPanelVaultReadObserved
           ? 'passed'
           : 'failed';
+      if (extensionLifecycleMode) {
+        proof.lifecycle.verdict = { disposition: 'in_progress' };
+        persist();
+        assertVaultExtensionLifecycleVerdict({ lifecycle: proof.lifecycle });
+        proof.lifecycle.verdict = { disposition: 'passed' };
+        persist();
+      }
       persist();
     } else if (readOnlyAdmissionMode && !identityOnlyMode) {
       proof.admission.baselineRead = true;

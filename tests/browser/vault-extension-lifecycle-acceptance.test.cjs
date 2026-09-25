@@ -50,13 +50,26 @@ const {
   const replacement = { ...worker };
   const returned = await runExtensionReload({
     worker,
-    refreshWorker: async () => replacement,
+    refreshWorker: async () => ({
+      worker: replacement,
+      replacementWorkerTargetObserved: true,
+    }),
     verifySettingsIdentity: async () => true,
     checkpoint: () => {},
     proof: reloadProof,
   });
   assert.equal(returned, replacement);
   assert.equal(reloadProof.lifecycle.extensionReload.disposition, 'passed');
+  const unobservedProof = {};
+  await runExtensionReload({
+    worker,
+    refreshWorker: async () => replacement,
+    verifySettingsIdentity: async () => true,
+    checkpoint: () => {},
+    proof: unobservedProof,
+  });
+  assert.equal(unobservedProof.lifecycle.extensionReload.disposition, 'failed');
+  assert.equal(unobservedProof.lifecycle.extensionReload.replacementWorkerObserved, false);
 
   const order = [];
   const signOutProof = {};
