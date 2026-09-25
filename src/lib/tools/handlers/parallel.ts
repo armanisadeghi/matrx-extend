@@ -38,6 +38,7 @@ import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { ensureOffscreen } from '@/lib/stream/offscreen-proxy';
+import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { recordAssignedTab } from '@/lib/tools/dispatch';
 import { buildParallelStartContract } from '@/lib/tools/handlers/parallel-start-contract';
 import type { ToolContext, ToolHandler } from '@/lib/tools/types';
@@ -136,6 +137,12 @@ interface RunChildArgs {
   baseUrl: string;
   authHeader: string | null;
   organizationId: string;
+}
+
+async function parallelActorStillCurrent(args: Pick<RunChildArgs, 'authHeader' | 'organizationId'>): Promise<boolean> {
+  const expectedToken = args.authHeader?.replace(/^Bearer /, '') ?? null;
+  const [token, organizationId] = await Promise.all([getAccessToken(), getActiveOrganizationId()]);
+  return token === expectedToken && organizationId === args.organizationId;
 }
 
 async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
@@ -378,7 +385,13 @@ async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
       agentName: 'parallel-sub-run',
       permissionMode: args.parentCtx.permissionMode,
     };
-    void send(CHANNELS.STREAM_RUN, runPayload).catch((err) => {
+    void (async () => {
+      if (!(await parallelActorStillCurrent(args))) {
+        finalize('error', 'Sign-in or workspace changed before this parallel run could start. Please try again.');
+        return;
+      }
+      await send(CHANNELS.STREAM_RUN, runPayload);
+    })().catch((err) => {
       const message = `STREAM_RUN dispatch failed: ${(err as Error)?.message ?? String(err)}`;
       log.error('sw', message);
       finalize('error', message);

@@ -6,11 +6,12 @@
  */
 
 import { getApiBaseUrl, readSessionBearer } from '@/lib/api/client';
+import { getAccessToken } from '@/lib/auth/flow';
 import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
 import { log } from '@/lib/debug/log';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { requireActiveOrganizationId } from '@/lib/org/active-org';
+import { getActiveOrganizationId, requireActiveOrganizationId } from '@/lib/org/active-org';
 import { markStreamActive, markStreamInactive } from '@/lib/stream/active-runs';
 
 const OFFSCREEN_PATH = 'offscreen.html';
@@ -139,6 +140,34 @@ export function bindConversationStartActor(
   return organizationId === null ? rest : { ...rest, organization_id: organizationId };
 }
 
+interface StreamActor {
+  token: string | null;
+  organizationId: string | null;
+}
+
+async function resolveStableStreamActor(): Promise<StreamActor> {
+  // Organization selection can wait for a person. Recheck both authority
+  // halves after that wait, then retry once from a fresh snapshot. Dispatching
+  // an old bearer with a newly chosen organization is a cross-actor request.
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const token = await readSessionBearer();
+    if (!token) {
+      const tokenAtDispatch = await getAccessToken();
+      if (!tokenAtDispatch) return { token: null, organizationId: null };
+      continue;
+    }
+    const organizationId = await requireActiveOrganizationId();
+    const [tokenAtDispatch, organizationAtDispatch] = await Promise.all([
+      getAccessToken(),
+      getActiveOrganizationId(),
+    ]);
+    if (tokenAtDispatch === token && organizationAtDispatch === organizationId) {
+      return { token, organizationId };
+    }
+  }
+  throw new Error('Your sign-in or workspace changed while this request was preparing. Please try again.');
+}
+
 export async function startStream(args: StartStreamArgs): Promise<void> {
   log.info('stream', `start ${args.runId} → ${args.endpoint}`);
   // Resolve the URL + access token in the SW (where storage works reliably)
@@ -151,19 +180,20 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
   // stream error path) — never started as a guest, which is how a run would
   // die on the server's 401 and read to the person as a broken agent
   // (2026-09-19, sibling of the REST guest-downgrade defect).
-  const token = await readSessionBearer();
+  const actor = await resolveStableStreamActor();
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'text/event-stream',
   };
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
+  if (actor.token) {
+    headers.Authorization = `Bearer ${actor.token}`;
     // A stream is a request too. It carries the organization or it does not
     // start — a run that opens without one dies mid-flight on the server's
     // admission gate, which reads to the user as a hang. With nothing set on
     // this device the start HOLDS while the person is asked, then proceeds
     // with what they chose (src/lib/org/active-org.ts).
-    const organizationId = await requireActiveOrganizationId();
+    const organizationId = actor.organizationId;
+    if (organizationId === null) throw new Error('Authenticated stream actor is missing an organization.');
     headers['X-Organization-Id'] = organizationId;
     args = {
       ...args,
