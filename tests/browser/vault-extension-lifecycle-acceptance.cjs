@@ -145,12 +145,18 @@ async function runExtensionReload({
   const before = await inspectIdentity(worker);
   checkpoint('lifecycle_extension_reload');
   await worker.evaluate(() => chrome.runtime.reload());
+  // MV3 workers are demand-started.  After reload, exercise the already-owned
+  // side panel before asking CDP for a replacement target; otherwise a quiet
+  // panel can leave Target.getTargets with no worker to reacquire.  This is a
+  // required post-reload Settings assertion, not a synthetic wake-up: the
+  // replacement target and its storage identity are still checked below.
+  checkpoint('lifecycle_extension_reload_settings_wake');
+  const settingsUiRecovered = await verifySettingsIdentity();
   const refreshed = await refreshWorker(worker);
   const replacement = refreshed?.worker || refreshed;
   const replacementWorkerObserved =
     refreshed?.replacementWorkerTargetObserved === true && replacement !== worker;
   const after = await inspectIdentity(replacement);
-  const settingsUiRecovered = await verifySettingsIdentity(after.identitySha256);
   proof.lifecycle ||= {};
   proof.lifecycle.initialIdentitySha256 ||= before.identitySha256;
   proof.lifecycle.extensionReload = {

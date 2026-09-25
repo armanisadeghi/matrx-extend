@@ -88,6 +88,34 @@ const {
   });
   assert.equal(returned, replacement);
   assert.equal(reloadProof.lifecycle.extensionReload.disposition, 'passed');
+
+  // A reloaded MV3 worker can be absent until the panel performs real work.
+  // The reload helper must make that required panel assertion before its CDP
+  // target reacquisition callback starts polling.
+  const reloadWakeOrder = [];
+  await runExtensionReload({
+    worker,
+    refreshWorker: async () => {
+      assert.deepEqual(
+        reloadWakeOrder,
+        ['settings'],
+        'the post-reload panel interaction must precede replacement target polling',
+      );
+      reloadWakeOrder.push('replacement-target');
+      return {
+        worker: replacement,
+        replacementWorkerTargetObserved: true,
+      };
+    },
+    verifySettingsIdentity: async () => {
+      reloadWakeOrder.push('settings');
+      return true;
+    },
+    checkpoint: () => {},
+    proof: {},
+  });
+  assert.deepEqual(reloadWakeOrder, ['settings', 'replacement-target']);
+
   const unobservedProof = {};
   await runExtensionReload({
     worker,
