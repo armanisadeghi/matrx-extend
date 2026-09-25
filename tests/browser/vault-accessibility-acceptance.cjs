@@ -102,6 +102,7 @@ async function runInlineChooserEscape({
   wait,
   focusCredential,
   focusUnrelated,
+  checkpoint,
 }) {
   assert(
     fixturePage && typeof fixturePage.locator === 'function',
@@ -121,12 +122,15 @@ async function runInlineChooserEscape({
   try {
     await focusUnrelated();
     await focusCredential();
+    checkpoint('vault_accessibility_inline_focus');
     await fixturePage.waitForFunction(
       () => document.hasFocus() && document.activeElement?.id === 'password',
     );
+    checkpoint('vault_accessibility_inline_offer');
     await fixturePage
       .locator('#matrx-inline-login-suggestion')
       .waitFor({ state: 'attached', timeout: 15000 });
+    checkpoint('vault_accessibility_inline_ax');
     await dispatchNativeKey(fixtureCdp, {
       key: 'ArrowDown',
       code: 'ArrowDown',
@@ -173,6 +177,7 @@ async function runInlineChooserEscape({
       code: 'Escape',
       windowsVirtualKeyCode: 27,
     });
+    checkpoint('vault_accessibility_inline_escape_return');
     await fixturePage.waitForFunction(
       () =>
         !document.querySelector('#matrx-inline-login-suggestion') &&
@@ -371,6 +376,7 @@ exports.runVaultAccessibilityChecks = async ({
       wait,
       focusCredential,
       focusUnrelated,
+      checkpoint,
     });
     evidence.inlineChooserDialogAndTargetAX = chooser.exactTargetActionableAX;
     evidence.inlineChooserEscapeReturnsFocusWithoutSubmit =
@@ -410,6 +416,7 @@ exports.runVaultAccessibilityChecks = async ({
       wait,
       focusCredential,
       focusUnrelated,
+      checkpoint,
     });
     evidence.zoomedChooserKeyboardAndEscape =
       zoomedChooser.exactTargetActionableAX && zoomedChooser.escapeReturnedFocusWithoutSubmit;

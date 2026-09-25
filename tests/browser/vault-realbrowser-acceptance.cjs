@@ -2935,45 +2935,11 @@ async function materializedPassword(id) {
         (target) => target.type === 'service_worker' && target.url === workerUrl,
       );
       assert(initialTarget, 'lifecycle_initial_worker_target_missing');
-      worker = await runExtensionReload({
-        worker: initialWorker,
-        refreshWorker: async () => {
-          const replacementTarget = await waitForReplacementExtensionWorkerTarget({
-            cdp: rawCdp,
-            workerUrl,
-            previousTargetId: initialTarget.targetId,
-            wait,
-          });
-          proof.lifecycle ||= {};
-          proof.lifecycle.extensionReloadCdp = {
-            initialTargetId: initialTarget.targetId,
-            replacementTargetId: replacementTarget.targetId,
-            replacementTargetObserved: true,
-          };
-          return {
-            worker: exactCdpWorkerFacade(rawCdp, replacementTarget.targetId),
-            replacementWorkerTargetObserved: true,
-          };
-        },
-        verifySettingsIdentity: async () => {
-          await realPanel.click(visibleSettingsControl);
-          await realPanel.waitFor(
-            `document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`,
-          );
-          return true;
-        },
-        checkpoint,
-        proof,
-      });
-      const reloadedTarget = (await rawCdp.send('Target.getTargets')).targetInfos.find(
-        (target) => target.type === 'service_worker' && target.url === workerUrl,
-      );
-      assert(reloadedTarget, 'lifecycle_reloaded_worker_target_missing');
       const disableEnable = await runExtensionDisableEnable({
-        worker,
+        worker: initialWorker,
         cdp: rawCdp,
         workerUrl,
-        previousTargetId: reloadedTarget.targetId,
+        previousTargetId: initialTarget.targetId,
         panelTargetId: realPanel.targetId,
         extensionId,
         context,
@@ -3008,8 +2974,42 @@ async function materializedPassword(id) {
       });
       worker = disableEnable.worker;
       realPanel = disableEnable.panel;
+      const enabledTarget = (await rawCdp.send('Target.getTargets')).targetInfos.find(
+        (target) => target.type === 'service_worker' && target.url === workerUrl,
+      );
+      assert(enabledTarget, 'lifecycle_enabled_worker_target_missing');
+      worker = await runExtensionReload({
+        worker,
+        refreshWorker: async () => {
+          const replacementTarget = await waitForReplacementExtensionWorkerTarget({
+            cdp: rawCdp,
+            workerUrl,
+            previousTargetId: enabledTarget.targetId,
+            wait,
+          });
+          proof.lifecycle ||= {};
+          proof.lifecycle.extensionReloadCdp = {
+            initialTargetId: enabledTarget.targetId,
+            replacementTargetId: replacementTarget.targetId,
+            replacementTargetObserved: true,
+          };
+          return {
+            worker: exactCdpWorkerFacade(rawCdp, replacementTarget.targetId),
+            replacementWorkerTargetObserved: true,
+          };
+        },
+        verifySettingsIdentity: async () => {
+          await realPanel.click(visibleSettingsControl);
+          await realPanel.waitFor(
+            `document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`,
+          );
+          return true;
+        },
+        checkpoint,
+        proof,
+      });
       proof.lifecycle.partialDisposition =
-        'reload_disable_enable_observed_browser_restart_and_organization_switch_pending';
+        'disable_enable_reload_observed_browser_restart_and_organization_switch_pending';
       persist();
     } else if (setupIdentityOnlyMode) {
       const initial = await inspectIdentity(worker);

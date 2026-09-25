@@ -11,7 +11,12 @@ assert.match(
 );
 assert.match(
   runner,
-  /waitForReplacementExtensionWorkerTarget\(\{[\s\S]*?previousTargetId: initialTarget\.targetId/,
+  /runExtensionDisableEnable\(\{[\s\S]*?previousTargetId: initialTarget\.targetId/,
+  'disable/enable must start from the authenticated initial CDP worker target',
+);
+assert.match(
+  runner,
+  /waitForReplacementExtensionWorkerTarget\(\{[\s\S]*?previousTargetId: enabledTarget\.targetId/,
   'reload must wait for a distinct CDP worker target rather than a Playwright facade',
 );
 assert.doesNotMatch(
