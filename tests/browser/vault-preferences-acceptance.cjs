@@ -602,20 +602,17 @@ exports.runVaultPreferencesChecks = async ({
       await recordQuietFillFailure('panel_message_not_observed', focusEvidence);
       throw new Error('preferences_quiet_fill_message_not_sent');
     }
-    const terminalOutcome =
-      '(() => { const paragraphs = Array.from(document.querySelectorAll("p")).map((node) => node.textContent?.trim()); return paragraphs.includes("Filled. Review the form, then sign in.") || paragraphs.includes("Could not start filling. Focus the login field, then try Fill again.") || paragraphs.includes("Click the username or password box on the website, then choose Fill.") || paragraphs.includes("Saved logins are unavailable right now.") || paragraphs.includes("Matrx could not fully restore the login fields. Review them before signing in."); })()';
+    // The generic empty-state paragraph uses the same copy as an explicit
+    // stale result. After Fill consumes an offer it can appear before the
+    // asynchronous Fill response settles, so only the positive outcome can
+    // close this success check.
+    const filledOutcome =
+      'Array.from(document.querySelectorAll("p")).some((node) => node.textContent?.trim() === "Filled. Review the form, then sign in.")';
     try {
-      await realPanel.waitFor(terminalOutcome, true, 15000);
+      await realPanel.waitFor(filledOutcome, true, 15000);
     } catch {
       await recordQuietFillFailure('product_terminal_outcome_missing', focusEvidence);
       throw new Error('preferences_quiet_fill_product_terminal_outcome_missing');
-    }
-    const filledFeedback = await realPanel.evaluate(
-      'Array.from(document.querySelectorAll("p")).some((node) => node.textContent?.trim() === "Filled. Review the form, then sign in.")',
-    );
-    if (filledFeedback !== true) {
-      await recordQuietFillFailure('product_stale_or_refusal', focusEvidence);
-      throw new Error('preferences_quiet_fill_product_stale_or_refusal');
     }
     return {
       focus: focusEvidence,
