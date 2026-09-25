@@ -134,6 +134,148 @@ async function runExtensionReload({
   return replacement;
 }
 
+async function runExtensionDisableEnable({
+  worker,
+  cdp,
+  workerUrl,
+  previousTargetId,
+  panelTargetId,
+  extensionId,
+  context,
+  refreshWorker,
+  disposePanel,
+  reopenPanel,
+  verifySettingsIdentity,
+  checkpoint,
+  proof,
+  wait,
+}) {
+  assert(typeof extensionId === 'string' && /^[a-p]{32}$/.test(extensionId), 'lifecycle_extension_id_invalid');
+  assert(context && typeof context.newPage === 'function', 'lifecycle_extensions_context_missing');
+  assert(cdp && typeof cdp.send === 'function', 'lifecycle_extensions_cdp_missing');
+  assert(typeof panelTargetId === 'string' && panelTargetId.length > 0, 'lifecycle_panel_target_missing');
+  assert(typeof refreshWorker === 'function', 'lifecycle_worker_refresh_missing');
+  assert(typeof disposePanel === 'function', 'lifecycle_panel_dispose_missing');
+  assert(typeof reopenPanel === 'function', 'lifecycle_panel_reopen_missing');
+  assert(typeof verifySettingsIdentity === 'function', 'lifecycle_settings_verify_missing');
+  assert(typeof wait === 'function', 'lifecycle_wait_missing');
+
+  const before = await inspectIdentity(worker);
+  const initialRuntimeId = await worker.evaluate(() => chrome.runtime.id);
+  assert(initialRuntimeId === extensionId, 'lifecycle_initial_extension_identity_mismatch');
+  checkpoint('lifecycle_extension_disable');
+
+  const extensionsPage = await context.newPage();
+  const toggle = extensionsPage.locator('#enableToggle');
+  let disableRequested = false;
+  const cleanup = (proof.lifecycle ||= {}).disableEnableCleanup = {
+    disableRequested: false,
+    disabledInExtensionsUi: false,
+    reenableAttempted: false,
+    enabledAfterCleanup: false,
+    restoredByCleanup: false,
+  };
+  const toggleEnabled = async () => {
+    const count = await toggle.count();
+    if (count !== 1) return null;
+    return toggle.evaluate((element) => element.checked === true);
+  };
+  try {
+    await extensionsPage.goto(`chrome://extensions/?id=${extensionId}`, {
+      waitUntil: 'domcontentloaded',
+      timeout: 30000,
+    });
+    for (let attempt = 0; attempt < 60 && (await toggleEnabled()) !== true; attempt += 1)
+      await wait(100);
+    assert((await toggleEnabled()) === true, 'lifecycle_extensions_enable_toggle_missing');
+    disableRequested = true;
+    cleanup.disableRequested = true;
+    await toggle.click();
+    for (let attempt = 0; attempt < 60 && (await toggleEnabled()) !== false; attempt += 1)
+      await wait(100);
+    assert((await toggleEnabled()) === false, 'lifecycle_extensions_disable_ui_unobserved');
+    cleanup.disabledInExtensionsUi = true;
+
+    let disabledTargetsGone = false;
+    for (let attempt = 0; attempt < 60; attempt += 1) {
+      const targets = await cdp.send('Target.getTargets');
+      const ids = new Set(targets.targetInfos.map((target) => target.targetId));
+      if (!ids.has(previousTargetId) && !ids.has(panelTargetId)) {
+        disabledTargetsGone = true;
+        break;
+      }
+      await wait(100);
+    }
+    assert(disabledTargetsGone, 'lifecycle_disable_targets_not_destroyed');
+    await disposePanel();
+
+    checkpoint('lifecycle_extension_enable');
+    await toggle.click();
+    for (let attempt = 0; attempt < 60 && (await toggleEnabled()) !== true; attempt += 1)
+      await wait(100);
+    assert((await toggleEnabled()) === true, 'lifecycle_extensions_enable_ui_unobserved');
+    const replacementTarget = await waitForReplacementExtensionWorkerTarget({
+      cdp,
+      workerUrl,
+      previousTargetId,
+      wait,
+    });
+    const replacement = await refreshWorker(replacementTarget);
+    const after = await inspectIdentity(replacement);
+    const replacementRuntimeId = await replacement.evaluate(() => chrome.runtime.id);
+    assert(replacementRuntimeId === extensionId, 'lifecycle_reenabled_extension_identity_mismatch');
+    const panel = await reopenPanel(extensionsPage, replacement);
+    assert(
+      typeof panel?.targetId === 'string' && panel.targetId.length > 0 && panel.targetId !== panelTargetId,
+      'lifecycle_reenabled_panel_not_replaced',
+    );
+    const settingsUiRecovered = await verifySettingsIdentity(replacement, panel);
+    proof.lifecycle ||= {};
+    proof.lifecycle.initialIdentitySha256 ||= before.identitySha256;
+    proof.lifecycle.disableEnable = {
+      disposition:
+        disabledTargetsGone &&
+        replacementTarget.targetId !== previousTargetId &&
+        sameLifecycleIdentity(before.identitySha256, after.identitySha256) &&
+        settingsUiRecovered
+          ? 'passed'
+          : 'failed',
+      disabledInExtensionsUi: true,
+      enabledInExtensionsUi: true,
+      replacementWorkerObserved: replacementTarget.targetId !== previousTargetId,
+      settingsUiRecovered,
+      sameIdentityRecovered: before.identitySha256 === after.identitySha256,
+      identitySha256: after.identitySha256,
+      initialWorkerTargetId: previousTargetId,
+      replacementWorkerTargetId: replacementTarget.targetId,
+      initialPanelTargetDestroyed: disabledTargetsGone,
+      replacementPanelTargetId: panel.targetId,
+      replacementPanelObserved: panel.targetId !== panelTargetId,
+    };
+    assert(proof.lifecycle.disableEnable.disposition === 'passed', 'lifecycle_disable_enable_failed');
+    return { worker: replacement, panel };
+  } finally {
+    // A failed probe must never leave the only owned extension disabled. This
+    // uses the same Chrome-owned toggle as the probe itself and deliberately
+    // suppresses cleanup errors so the preceding failure remains authoritative.
+    if (disableRequested) {
+      cleanup.reenableAttempted = true;
+      try {
+        if ((await toggleEnabled()) === false) {
+          await toggle.click();
+          for (let attempt = 0; attempt < 60 && (await toggleEnabled()) !== true; attempt += 1)
+            await wait(100);
+          cleanup.restoredByCleanup = true;
+        }
+        cleanup.enabledAfterCleanup = (await toggleEnabled()) === true;
+      } catch {
+        cleanup.enabledAfterCleanup = false;
+      }
+    }
+    await extensionsPage.close().catch(() => {});
+  }
+}
+
 async function runSettingsSignOut({
   worker,
   panel,
@@ -199,6 +341,7 @@ module.exports = {
   sameLifecycleIdentity,
   waitForReplacementExtensionWorkerTarget,
   runExtensionReload,
+  runExtensionDisableEnable,
   runSettingsSignOut,
   visibleSettingsControl,
   visibleVaultControl,

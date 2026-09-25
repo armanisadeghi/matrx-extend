@@ -28,6 +28,7 @@ const { assertVaultExtensionLifecycleVerdict } = require('./vault-extension-life
 const {
   inspectIdentity,
   sameLifecycleIdentity,
+  runExtensionDisableEnable,
   runExtensionReload,
   waitForReplacementExtensionWorkerTarget,
   runSettingsSignOut,
@@ -2964,8 +2965,51 @@ async function materializedPassword(id) {
         checkpoint,
         proof,
       });
+      const reloadedTarget = (await rawCdp.send('Target.getTargets')).targetInfos.find(
+        (target) => target.type === 'service_worker' && target.url === workerUrl,
+      );
+      assert(reloadedTarget, 'lifecycle_reloaded_worker_target_missing');
+      const disableEnable = await runExtensionDisableEnable({
+        worker,
+        cdp: rawCdp,
+        workerUrl,
+        previousTargetId: reloadedTarget.targetId,
+        panelTargetId: realPanel.targetId,
+        extensionId,
+        context,
+        refreshWorker: async (replacementTarget) =>
+          exactCdpWorkerFacade(rawCdp, replacementTarget.targetId),
+        disposePanel: async () => {
+          await realPanel?.dispose();
+          realPanel = undefined;
+        },
+        reopenPanel: async (fixturePage, replacement) => {
+          const active = await replacement.evaluate(async () => {
+            const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+            return Number.isInteger(tab?.windowId) ? { windowId: tab.windowId } : null;
+          });
+          assert(active?.windowId, 'lifecycle_reenabled_window_missing');
+          const reopened = await openSidePanelFromActionPopup(extensionId, fixturePage, active.windowId);
+          assert(reopened.opened && reopened.panel, 'lifecycle_reenabled_panel_missing');
+          realPanel = reopened.panel;
+          await networkJournal.bindPanelTarget(realPanel.targetId);
+          return realPanel;
+        },
+        verifySettingsIdentity: async (_replacement, panel) => {
+          await panel.click(visibleSettingsControl);
+          await panel.waitFor(
+            `document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`,
+          );
+          return true;
+        },
+        checkpoint,
+        proof,
+        wait,
+      });
+      worker = disableEnable.worker;
+      realPanel = disableEnable.panel;
       proof.lifecycle.partialDisposition =
-        'reload_observed_disable_enable_browser_restart_and_organization_switch_pending';
+        'reload_disable_enable_observed_browser_restart_and_organization_switch_pending';
       persist();
     } else if (setupIdentityOnlyMode) {
       const initial = await inspectIdentity(worker);
@@ -3693,13 +3737,16 @@ async function materializedPassword(id) {
             let route = 'existing_global_panel';
             try {
               reopened = await openGenuineSidePanel(extensionId, null, { existing: true });
+              assert((await reopened.evaluate('true')) === true, 'real_site_panel_recovery_probe_refused');
             } catch (error) {
               if (
                 !['real_side_panel_missing', 'real_side_panel_target_missing'].includes(
                   error.message,
-                )
+                ) && error.message !== 'panel_protocol_refused'
               )
                 throw error;
+              await reopened?.dispose();
+              reopened = undefined;
               route = 'genuine_action_popup';
               const windowId = await worker.evaluate(
                 async (id) => (await chrome.tabs.get(id)).windowId,

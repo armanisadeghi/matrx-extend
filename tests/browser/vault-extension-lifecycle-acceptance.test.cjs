@@ -3,6 +3,7 @@ const crypto = require('node:crypto');
 const {
   inspectIdentity,
   sameLifecycleIdentity,
+  runExtensionDisableEnable,
   runExtensionReload,
   runSettingsSignOut,
   visibleSettingsControl,
@@ -70,6 +71,64 @@ const {
   });
   assert.equal(unobservedProof.lifecycle.extensionReload.disposition, 'failed');
   assert.equal(unobservedProof.lifecycle.extensionReload.replacementWorkerObserved, false);
+
+  let extensionEnabled = true;
+  let extensionsPageClosed = false;
+  const toggle = {
+    count: async () => 1,
+    evaluate: async () => extensionEnabled,
+    click: async () => {
+      extensionEnabled = !extensionEnabled;
+    },
+  };
+  const disableCleanupProof = {};
+  await assert.rejects(
+    () =>
+      runExtensionDisableEnable({
+        worker: {
+          evaluate: async (fn) =>
+            fn.toString().includes('storage.local') ? snapshot : 'abcdefghijklmnopabcdefghijklmnop',
+        },
+        cdp: {
+          send: async () => ({
+            targetInfos: [
+              { targetId: 'old-worker', type: 'service_worker' },
+              { targetId: 'old-panel', type: 'page' },
+            ],
+          }),
+        },
+        workerUrl: 'chrome-extension://abcdefghijklmnopabcdefghijklmnop/background.js',
+        previousTargetId: 'old-worker',
+        panelTargetId: 'old-panel',
+        extensionId: 'abcdefghijklmnopabcdefghijklmnop',
+        context: {
+          newPage: async () => ({
+            locator: () => toggle,
+            goto: async () => {},
+            close: async () => {
+              extensionsPageClosed = true;
+            },
+          }),
+        },
+        refreshWorker: async () => worker,
+        disposePanel: async () => {},
+        reopenPanel: async () => ({ targetId: 'new-panel' }),
+        verifySettingsIdentity: async () => true,
+        checkpoint: () => {},
+        proof: disableCleanupProof,
+        wait: async () => {},
+      }),
+    /lifecycle_disable_targets_not_destroyed/,
+  );
+  assert.equal(extensionEnabled, true, 'failed probe must restore the Extensions UI toggle');
+  assert.equal(extensionsPageClosed, true, 'failed probe must close the Extensions UI page');
+  assert.deepEqual(disableCleanupProof.lifecycle.disableEnableCleanup, {
+    disableRequested: true,
+    disabledInExtensionsUi: true,
+    reenableAttempted: true,
+    enabledAfterCleanup: true,
+    restoredByCleanup: true,
+  });
 
   const order = [];
   const signOutProof = {};
