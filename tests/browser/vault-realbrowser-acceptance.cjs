@@ -1514,6 +1514,20 @@ async function attachPanelSession(cdp, targetId) {
   let nextId = 0;
   const pending = new Map();
   const eventListeners = new Set();
+  let detached = false;
+  const recordProtocolFailure = (method, category, error) => {
+    proof.panelProtocolFailure = {
+      method,
+      targetId,
+      category,
+      detached,
+      errorCode: Number.isInteger(error?.code) ? error.code : null,
+    };
+    persist();
+  };
+  const onDetached = ({ sessionId: received, targetId: receivedTarget }) => {
+    if (received === sessionId || receivedTarget === targetId) detached = true;
+  };
   const onMessage = ({ sessionId: received, message }) => {
     if (received !== sessionId) return;
     let envelope;
@@ -1537,14 +1551,19 @@ async function attachPanelSession(cdp, targetId) {
     }
     pending.delete(envelope.id);
     clearTimeout(waiter.timer);
-    envelope.error
-      ? waiter.reject(new Error('panel_protocol_refused'))
-      : waiter.resolve(envelope.result);
+    if (envelope.error) {
+      recordProtocolFailure(waiter.method, 'nested_response_error', envelope.error);
+      waiter.reject(new Error('panel_protocol_refused'));
+    } else {
+      waiter.resolve(envelope.result);
+    }
   };
   cdp.on('Target.receivedMessageFromTarget', onMessage);
+  cdp.on('Target.detachedFromTarget', onDetached);
   return {
     dispose() {
       cdp.off('Target.receivedMessageFromTarget', onMessage);
+      cdp.off('Target.detachedFromTarget', onDetached);
       for (const waiter of pending.values()) {
         clearTimeout(waiter.timer);
         waiter.reject(new Error('panel_session_closed'));
@@ -1555,19 +1574,22 @@ async function attachPanelSession(cdp, targetId) {
     send(method, params = {}) {
       return new Promise((resolve, reject) => {
         const id = ++nextId;
-        const fail = () => {
-          clearTimeout(pending.get(id)?.timer);
+        const fail = (category, error) => {
+          const waiter = pending.get(id);
+          if (!waiter) return;
+          clearTimeout(waiter.timer);
           pending.delete(id);
+          recordProtocolFailure(method, category, error);
           reject(new Error('panel_protocol_refused'));
         };
-        const timer = setTimeout(fail, 10000);
-        pending.set(id, { resolve, reject, timer });
+        const timer = setTimeout(() => fail('reply_timeout'), 10000);
+        pending.set(id, { resolve, reject, timer, method });
         cdp
           .send('Target.sendMessageToTarget', {
             sessionId,
             message: JSON.stringify({ id, method, params }),
           })
-          .catch(fail);
+          .catch((error) => fail('transport_rejection', error));
       });
     },
     onEvent(listener) {
