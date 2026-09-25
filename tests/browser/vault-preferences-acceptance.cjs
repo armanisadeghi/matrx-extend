@@ -67,22 +67,39 @@ const mergeQuietFillDiagnostic = (diagnostic, observed) => ({
   ...diagnostic,
   ...observed,
   focus: diagnostic.focus,
+  targetResolution: diagnostic.targetResolution,
 });
+const waitForQuietFillMessageTarget = async ({ resolve, wait, maxAttempts = 20 }) => {
+  let observation = { status: 'unavailable', targetMatchCount: 0 };
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const result = await resolve();
+    observation = result?.observation ?? observation;
+    if (result?.target) return { target: result.target, attempts: attempt, observation };
+    if (attempt < maxAttempts) await wait(100);
+  }
+  return { target: null, attempts: maxAttempts, observation };
+};
 const armQuietFillAfterFocus = async ({
   focusCredential,
   readFocus,
   resolveMessageTarget,
   armMessageObserver,
   click,
+  wait,
+  maxTargetAttempts,
 }) => {
   await focusCredential();
   const focus = await readFocus();
   if (!focus?.tabWindowFocused) return { focus, armed: false };
-  const target = await resolveMessageTarget();
-  if (!target) return { focus, armed: false };
-  await armMessageObserver(target);
+  const targetResolution = await waitForQuietFillMessageTarget({
+    resolve: resolveMessageTarget,
+    wait,
+    maxAttempts: maxTargetAttempts,
+  });
+  if (!targetResolution.target) return { focus, armed: false, targetResolution };
+  await armMessageObserver(targetResolution.target);
   await click();
-  return { focus, armed: true };
+  return { focus, armed: true, targetResolution };
 };
 
 async function tabFor(worker, url, wait) {
@@ -336,12 +353,13 @@ exports.runVaultPreferencesChecks = async ({
       await wait(Math.min(200, remaining));
     }
   };
-  const recordQuietFillFailure = async (disposition, focus = null) => {
+  const recordQuietFillFailure = async (disposition, focus = null, targetResolution = null) => {
     let diagnostic = {
       disposition,
       collected: false,
       terminal: null,
       focus,
+      targetResolution,
       counters: null,
       ui: null,
       panelStatus: null,
@@ -490,13 +508,13 @@ exports.runVaultPreferencesChecks = async ({
             kind: 'credential-suggestions:panel-status',
             payload: { tabId },
           });
-          if (
-            !value ||
-            typeof value !== 'object' ||
-            Array.isArray(value) ||
-            value.status !== 'ready'
-          )
-            return null;
+          const record = !!value && typeof value === 'object' && !Array.isArray(value);
+          const status =
+            record && ['ready', 'none', 'disabled', 'loading', 'unavailable'].includes(value.status)
+              ? value.status
+              : 'other';
+          if (status !== 'ready')
+            return { target: null, observation: { status, targetMatchCount: 0 } };
           const matches = Array.isArray(value.matches) ? value.matches : [];
           const matching = matches.filter(
             (match) =>
@@ -506,8 +524,11 @@ exports.runVaultPreferencesChecks = async ({
               typeof match.item_id === 'string',
           );
           return matching.length === 1 && typeof value.offerId === 'string'
-            ? { tabId, offerId: value.offerId, itemId: matching[0].item_id }
-            : null;
+            ? {
+                target: { tabId, offerId: value.offerId, itemId: matching[0].item_id },
+                observation: { status, targetMatchCount: matching.length },
+              }
+            : { target: null, observation: { status, targetMatchCount: matching.length } };
         },
         { tabId, targetName },
       );
@@ -541,6 +562,7 @@ exports.runVaultPreferencesChecks = async ({
       resolveMessageTarget,
       armMessageObserver,
       click: () => realPanel.click(control),
+      wait,
     });
     const focusBefore = armed.focus;
     if (!armed.armed) {
@@ -552,6 +574,7 @@ exports.runVaultPreferencesChecks = async ({
           before: focusBefore,
           after: null,
         },
+        armed.targetResolution ?? null,
       );
       throw new Error(
         focusBefore?.tabWindowFocused
@@ -758,4 +781,5 @@ exports.runVaultPreferencesChecks = async ({
 exports._switchFor = switchFor;
 exports._classifyQuietFillTerminal = classifyQuietFillTerminal;
 exports._mergeQuietFillDiagnostic = mergeQuietFillDiagnostic;
+exports._waitForQuietFillMessageTarget = waitForQuietFillMessageTarget;
 exports._armQuietFillAfterFocus = armQuietFillAfterFocus;
