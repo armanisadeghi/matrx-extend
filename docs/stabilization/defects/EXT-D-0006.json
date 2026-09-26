@@ -13,7 +13,8 @@
   "expected": "Capability controls honestly reflect Chrome-supported permission management; an unavailable removal action is not offered as a working switch.",
   "actual": "The interactive DevTools Protocol switch remains on after clicks and reload without feedback.",
   "evidence": [
-    "docs/stabilization/runs/admin-permissions-002.json"
+    "docs/stabilization/runs/admin-permissions-002.json",
+    "docs/stabilization/runs/permissions-auth-native-sol.json"
   ],
   "severity": "S2: misleading nonfunctional permission control",
   "priority": "P1: current Settings stabilization",
@@ -49,5 +50,10 @@
     "9c2a3a3",
     "77ce8f0",
     "ba5a9ed"
-  ]
+  ],
+  "partial_retest": {
+    "status": "original-repro-pass-neighbor-denial-unverified",
+    "run_id": "permissions-auth-native-sol",
+    "detail": "Actualsidepanel requireddebugger rowaccurate andno switch. pageCapture/tabCapturegrant/removal/reloadpass, alloptionalrestoredOFF. Chromeoffersno denialdialog, so currentnative denialcriterion unverified; no defectclosure yet."
+  }
 }

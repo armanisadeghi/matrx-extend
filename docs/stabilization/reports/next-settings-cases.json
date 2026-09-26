@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "status": "prepared_source_only",
+  "recommended_feature_id": "EXT-F-1003",
+  "recommended_test_ids": ["EXT-F-1003-T70", "EXT-F-1003-T71", "EXT-F-1003-T72"],
+  "rationale": "About readiness/update status is role-independent, non-Chat, non-Pilot, read-only, and has no completed runtime result; exercise warm/reload identity and only outcomes the current browser can honestly produce.",
+  "evidence_paths": ["docs/stabilization/inventory.json", "docs/stabilization/reports/remote-popup-about-reconciliation.json", "src/features/settings/SettingsView.tsx", "src/features/settings/SettingsView.about.test.tsx"],
+  "acceptance_gaps": ["All T70-T72 remain unverified; browser API unavailable and update available/no-update/throttled/error dimensions need explicit observed evidence or honest applicability limits."],
+  "constraints": ["Use exact fresh build receipt and verify installed extension ID/path/version before UI.", "Do not claim a simulated update is installed; don't force unavailable APIs by changing product state.", "For optional-permission denial, only count denial if Chrome actually presents the prompt from a confirmed absent permission; a silently granted/already-held permission proves grant/current state only. Remove it first and use a clean permission decision context if needed; no prompt means denial remains unverified."],
+  "files_touched": ["docs/stabilization/reports/next-settings-cases.json"],
+  "open_questions": ["Can the current authorized browser session exercise T70-T72 across guest/member/admin without changing authentication, and which update outcomes does Chrome expose?"],
+  "runtime_status": "not_run"
+}
