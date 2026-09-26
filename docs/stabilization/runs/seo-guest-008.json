@@ -1,0 +1,61 @@
+{
+  "id": "seo-guest-008",
+  "feature_id": "EXT-F-1008",
+  "at": "2026-09-26T18:59:59.989Z",
+  "status": "unverified",
+  "mode": "guest",
+  "scope": "Owned native side-panel guest SEO acceptance against public pages, including the newly prepared Wikipedia detail batch.",
+  "runtime_output": "test-results/seo-guest-acceptance.json",
+  "runtime_output_sha256": "4dcc44a0299eed59263fc7c22bc66dddd3f945b5b25fc1632c3e9f9fbd97a377",
+  "resource_log": "/tmp/matrx-seo-guest-008.log",
+  "resource_log_sha256": "c771e7b0629a0dbf260f5be9fe429d938b0fe46097fcec2730152339d819ac1e",
+  "resource": {
+    "run_id": "seo-guest-008",
+    "admission_code": "RESOURCE_ADMITTED",
+    "admitted_at": "2026-09-26T18:59:59.989Z",
+    "child_exit_code": 1,
+    "child_signal": null,
+    "exit_at": "2026-09-26T19:00:07.690Z",
+    "wrapper_stdout": ["UNVERIFIED seo_guest_native_batch"],
+    "wrapper_session": "root confirmed wrapper 85033 exit 1"
+  },
+  "runtime_source": {
+    "acceptance_runner": "tests/browser/seo-guest-acceptance.mjs",
+    "acceptance_runner_commit": "0812da2d6570fd1c598a6d5755ddb4af01849b5b",
+    "driver_commit": "dced501c9f7b37d9c28e8480cb0961b9c5df1d44",
+    "harness_commit": "d9c50f40f3f1a2d615753e63ea76caf8b690ca1c",
+    "runner_diagnostics_fix_after_this_run": "a8d24200e1f6f98425dea956e801ca7ebc353f22"
+  },
+  "release_artifact_inspected_after_run": {
+    "version": "0.2.73",
+    "source_sha": "6acf1801d3ed65c016b96cf3cb194e0a83163e81",
+    "unpacked_tree_sha256": "560f397c2055a01ecdda11321f3b0729cb61aabca956a9ebf5054e98e86523cb",
+    "store_zip_sha256": "884c2c104153780ccc272443a555bd6f4cc8267a68eb9e3b6ee152ec54e8fb68",
+    "receipt_source": "docs/stabilization/runs/release-stabilization-028.json",
+    "attribution_limit": "The run output does not record its own release digest; these values come from the inspected local release receipt and are not independently bound to run 008."
+  },
+  "acceptance_result": {
+    "status": "unverified",
+    "prior_subtargets_passed": 12,
+    "new_detail_subtargets_passed": 0,
+    "failure_stage": "next_seo_details_inspected",
+    "last_safe_stage": "next_seo_details_inspected",
+    "last_safe_observation": {
+      "scope_valid": true,
+      "title": "HTML - Wikipedia",
+      "displayed_links": { "internal": "1,782", "external": "409", "hint": "2191" },
+      "displayed_images": { "total": "28", "missing_alt": "10", "hint": "28" },
+      "displayed_readability": { "words": "10,594", "sentences": "784", "score": "41.53" },
+      "displayed_performance": {
+        "status": "200",
+        "navigation": "navigate",
+        "duration": null,
+        "transfer": "121 KB"
+      },
+      "displayed_hreflang_count": 0,
+      "displayed_schema_chips": ["Article", "Organization", "ImageObject"]
+    }
+  },
+  "interpretation": "The 12 previously covered guest subtargets passed again. The runner failed in its new detail assertions before recording any new subtarget, and its old catch discarded the assertion label and independently read public counts. The failed assertion and whether the product or oracle was wrong are therefore unverified; no new runtime coverage is claimed.",
+  "next_action": "Use the subsequent bounded diagnostic runner commit to identify the exact assertion and safe scalar operands in a separately admitted run."
+}
