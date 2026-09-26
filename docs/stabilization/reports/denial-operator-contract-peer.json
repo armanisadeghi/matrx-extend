@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "task_id": "denial-operator-contract-peer",
+  "reviewed_commit": "95f650c",
+  "lane": "source-only independent peer review",
+  "status": "DONE_RUNTIME_PENDING",
+  "verdict_a_acceptance": {
+    "result": "SOURCE_ACCEPTED_RUNTIME_PENDING",
+    "evidence": [
+      "The runner no longer emits PASS: successful runner completion records postconditions_verified_requires_operator_evidence and prints POSTCONDITIONS_VERIFIED_REQUIRES_OPERATOR_EVIDENCE.",
+      "The acknowledgement is explicitly coordination only; native prompt and Deny evidence must be recorded separately by an independent CUA operator, and root must combine that evidence with runner postconditions.",
+      "Runner postconditions still require the refusal alert, switch off, permissions.contains false, and getAll absence; initial state requires admin identity, declared permission, one row, switch off, and permission absent.",
+      "The harness verifies release receipt and built tree, launches Chrome with a fresh temporary profile and owned debugging endpoint, verifies spawned profile ownership and extension identity, and terminates only its direct child. No primary Chrome profile path is used."
+    ],
+    "runtime_evidence": "Not collected by this source lane. Case remains UNVERIFIED until a separate CUA operator records the native prompt and Deny action on the verified owned Chrome window and root combines that evidence with runner postconditions."
+  },
+  "verdict_b_quality": {
+    "result": "ACCEPTABLE_WITH_RUNTIME_BOUNDARY",
+    "findings": [],
+    "positive_quality": [
+      "The earlier plaintext-acknowledgement false-pass defect is corrected at the terminal status boundary; acknowledgement alone cannot produce an unqualified runner pass.",
+      "No permissions.request mock, permission grant seed, permission override, response interception, or injected auth session appears in the runner.",
+      "Credentials are read only from the authorized aidream environment file, constrained to the expected admin variables, and never copied into evidence; caught failures suppress raw browser/auth errors.",
+      "Only the disposable extension profile's permission/settings state is mutated by the case. The real admin web sign-in is an external account activity but does not alter the user's primary browser profile or persistent permission grants."
+    ],
+    "limitations": [
+      "Runtime prompt visibility and actual Deny interaction remain unverified; no launch was performed in this lane.",
+      "The runner's status JSON does not itself ingest or validate a CUA evidence record. Root must retain and inspect the independent CUA evidence before assigning the case verdict."
+    ]
+  },
+  "checks": {
+    "source_review": "completed",
+    "runtime": "not run; pending owner admission and independent CUA operation",
+    "tests": "not run; source-only review",
+    "commit": "pending"
+  }
+}
