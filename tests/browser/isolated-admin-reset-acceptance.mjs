@@ -183,21 +183,36 @@ function isAdmin(state) {
 
 // Keep a failed native click diagnosable without recording browser exceptions,
 // page text, storage values, auth URLs, or credentials in the durable receipt.
-async function resetOpenClickDiagnostic(panel, error) {
+function browserFailureCategory(error) {
   const message = String(error?.message ?? '');
-  const category = message.startsWith('unique visible button ')
+  return message.startsWith('unique visible ')
     ? 'target_count'
-    : message.startsWith('stable hit target for button ')
+    : message.startsWith('stable hit target for ')
       ? 'unstable_or_blocked_hit'
-      : message.startsWith('pointer_sample_failed for button ')
+      : message.startsWith('pointer_sample_failed for ')
         ? 'pointer_sample_failed'
-        : 'native_input_failed';
+        : message === 'panel_runtime_exception'
+          ? 'panel_runtime_exception'
+          : message.includes('Target closed') || message.includes('Session closed')
+            ? 'cdp_target_or_session_closed'
+            : message.includes('context was destroyed')
+              ? 'execution_context_destroyed'
+              : message.includes('_not_observed:')
+                ? 'condition_not_observed'
+                : 'browser_operation_failed';
+}
+
+async function nativeActionDiagnostic(panel, error, kind, label) {
+  const category = browserFailureCategory(error);
   try {
     const state = await evaluate(
       panel,
       `(() => {
-      const rawTargets = [...document.querySelectorAll('button')]
-        .filter((button) => button.textContent.trim() === 'Clear local data on this device');
+      const kind = ${JSON.stringify(kind)}, label = ${JSON.stringify(label)};
+      const rawTargets = [...document.querySelectorAll(
+        kind === 'title' ? 'button[title]' : kind === 'section' ? 'button[aria-expanded]' : 'button'
+      )].filter((button) => kind === 'title'
+        ? button.title === label : button.textContent.trim() === label);
       const targets = rawTargets.filter((button) => {
         const style = getComputedStyle(button), rect = button.getBoundingClientRect();
         return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' &&
@@ -233,6 +248,51 @@ async function resetOpenClickDiagnostic(panel, error) {
     return { category, ...state };
   } catch {
     return { category, snapshot_available: false };
+  }
+}
+
+async function panelLifecycleDiagnostic(panel) {
+  const state = { target_info_available: false, runtime_read_available: false };
+  try {
+    const result = await panel.send('Target.getTargetInfo');
+    state.target_info_available = true;
+    state.target_type_page = result?.targetInfo?.type === 'page';
+  } catch {
+    /* A detached target is itself diagnostic. */
+  }
+  try {
+    const result = await panel.send('Runtime.evaluate', {
+      expression: 'document.readyState',
+      returnByValue: true,
+    });
+    state.runtime_read_available = !result.exceptionDetails;
+    const ready = result.result?.value;
+    state.document_ready_state = ['loading', 'interactive', 'complete'].includes(ready)
+      ? ready
+      : 'other';
+  } catch {
+    /* The fixed availability flag is enough. */
+  }
+  return state;
+}
+
+async function observedReloadPanelState(panel) {
+  evidence.reset_reload.panel_state_read_attempts += 1;
+  try {
+    const observed = await panelState(panel);
+    evidence.reset_reload.panel_state_read_successes += 1;
+    evidence.reset_reload.last_panel = {
+      settings_visible: observed.settings,
+      sign_in_visible: observed.signIn,
+      sign_out_visible: observed.signOut,
+      advanced_visible: observed.advanced,
+      admin_email_visible: observed.emailIsAdmin,
+      theme_is_system: observed.theme === 'System',
+    };
+    return observed;
+  } catch (error) {
+    evidence.reset_reload.last_read_failure_category = browserFailureCategory(error);
+    throw error;
   }
 }
 
@@ -349,9 +409,11 @@ try {
         try {
           await click(panel, 'button', 'Clear local data on this device');
         } catch (error) {
-          evidence.reset_confirm.open_click_diagnostic = await resetOpenClickDiagnostic(
+          evidence.reset_confirm.open_click_diagnostic = await nativeActionDiagnostic(
             panel,
             error,
+            'button',
+            'Clear local data on this device',
           );
           throw error;
         }
@@ -443,19 +505,66 @@ try {
           'Confirm removed prior extension local/session keys and signed out in Settings',
         );
 
-        stage = 'reset_reload';
-        await panel.send('Page.reload', { ignoreCache: true });
+        evidence.reset_reload = {
+          command_completed: false,
+          panel_state_read_attempts: 0,
+          panel_state_read_successes: 0,
+        };
+        stage = 'reset_reload_command';
+        try {
+          await panel.send('Page.reload', { ignoreCache: true });
+          evidence.reset_reload.command_completed = true;
+        } catch (error) {
+          evidence.reset_reload.failure_category = browserFailureCategory(error);
+          evidence.reset_reload.lifecycle = await panelLifecycleDiagnostic(panel);
+          throw error;
+        }
+        stage = 'reset_reload_guest_wait';
         await waitFor(
           'guest_after_reload',
-          () => panelState(panel),
+          () => observedReloadPanelState(panel),
           (s) => s?.signIn && !s.signOut,
         );
-        await click(panel, 'title', 'Settings');
-        await openSection(panel, 'Account');
-        await openSection(panel, 'Appearance');
+        stage = 'reset_reload_settings_click';
+        try {
+          await click(panel, 'title', 'Settings');
+        } catch (error) {
+          evidence.reset_reload.action_diagnostic = await nativeActionDiagnostic(
+            panel,
+            error,
+            'title',
+            'Settings',
+          );
+          throw error;
+        }
+        stage = 'reset_reload_account_section';
+        try {
+          await openSection(panel, 'Account');
+        } catch (error) {
+          evidence.reset_reload.action_diagnostic = await nativeActionDiagnostic(
+            panel,
+            error,
+            'section',
+            'Account',
+          );
+          throw error;
+        }
+        stage = 'reset_reload_appearance_section';
+        try {
+          await openSection(panel, 'Appearance');
+        } catch (error) {
+          evidence.reset_reload.action_diagnostic = await nativeActionDiagnostic(
+            panel,
+            error,
+            'section',
+            'Appearance',
+          );
+          throw error;
+        }
+        stage = 'reset_reload_defaults_wait';
         await waitFor(
           'guest_defaults_after_reload',
-          () => panelState(panel),
+          () => observedReloadPanelState(panel),
           (s) =>
             s?.settings &&
             s.signIn &&
@@ -464,7 +573,22 @@ try {
             !s.emailIsAdmin &&
             s.theme === 'System',
         );
+        stage = 'reset_reload_storage_read';
         const reloaded = await storageState(panel);
+        evidence.reset_reload.storage_read_completed = true;
+        evidence.reset_reload.storage_snapshot = {
+          auth_present: reloaded.hasAccessToken || reloaded.hasUserProfile || reloaded.hasAdminFlag,
+          settings_present: reloaded.hasSettings,
+          local_fixture_present: reloaded.hasLocalFixture,
+          session_fixture_present: reloaded.hasSessionFixture,
+          prior_local_overlap_count: before.localKeys.filter((key) =>
+            reloaded.localKeys.includes(key),
+          ).length,
+          prior_session_overlap_count: before.sessionKeys.filter((key) =>
+            reloaded.sessionKeys.includes(key),
+          ).length,
+        };
+        stage = 'reset_reload_storage_assert';
         assert.equal(
           reloaded.hasAccessToken ||
             reloaded.hasUserProfile ||
@@ -491,6 +615,12 @@ try {
         evidence.steps.push(
           'Panel reload remained guest and showed System theme; prior non-regenerated keys stayed absent',
         );
+      } catch (error) {
+        if (stage.startsWith('reset_reload')) {
+          evidence.reset_reload.failure_category ??= browserFailureCategory(error);
+          evidence.reset_reload.lifecycle ??= await panelLifecycleDiagnostic(panel);
+        }
+        throw error;
       } finally {
         await web.close();
       }

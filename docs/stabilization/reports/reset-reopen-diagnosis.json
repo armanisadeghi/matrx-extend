@@ -1,13 +1,14 @@
 {
   "schema_version": 1,
   "defect_id": "EXT-D-0015",
-  "status": "diagnostic_instrumentation_ready",
+  "status": "reload_diagnostic_instrumentation_ready",
   "evidence": [
     "docs/stabilization/runs/isolated-admin-reset-001.json",
-    "docs/stabilization/runs/isolated-admin-reset-002.json"
+    "docs/stabilization/runs/isolated-admin-reset-002.json",
+    "docs/stabilization/runs/isolated-admin-reset-003.json"
   ],
   "observed_boundary": "Both guarded runs completed real web and extension sign-in, persisted the Dark and disposable storage fixtures, and proved Cancel preserved them. Run 002 stopped within the second native reset action click before dialog wait, Confirm, or any post-confirm storage read.",
-  "current_limit": "The acceptance runner suppresses raw browser exceptions to protect credentials and auth URLs. Existing receipts therefore cannot distinguish a missing target, failed hit test, dialog overlay, animation, or CDP input failure. Product reset behavior is unverified.",
+  "current_limit": "Run 003 reopened the dialog, clicked Confirm, observed zero local and session keys and a guest UI. Its final reset_reload label combines a CDP reload, guest wait, three native UI actions, default assertion, and storage assertion, so the failing boundary remains unknown. Earlier reopen failures remain unexplained because run 003 succeeded without a demonstrated causal repair.",
   "hypotheses_for_next_guarded_run": [
     {
       "cause": "The target is no longer visible or unique after Cancel",
@@ -26,7 +27,7 @@
       "prediction": "open_click_diagnostic reports native_input_failed with target_hit true."
     }
   ],
-  "change": "Capture a fixed click error category plus safe target, viewport, hit-test, modal, inert, and animation facts only when the second native click fails. target_count and its hit test use the driver's eligible-visible filter; raw_target_count and raw_target_in_inert_tree are explicitly separate diagnostics. No raw exception, page text, storage value, credential, or URL is recorded.",
+  "change": "Capture fixed native-action categories plus safe target, viewport, hit-test, modal, inert, and animation facts on the second reset click and reload UI actions. Reload now has a separate stage for each command, wait, native action, and storage assertion, with bounded CDP target/runtime availability and last observed guest-state booleans. target_count and its hit test use the driver's eligible-visible filter; raw_target_count and raw_target_in_inert_tree are explicitly separate diagnostics. No raw exception, page text, storage value, credential, or URL is recorded.",
   "peer_review": {
     "report": "docs/stabilization/reports/reopen-diagnostic-peer.json",
     "finding": "Initial diagnostic counted hidden and inert exact-text buttons while the click driver filtered them.",
@@ -35,7 +36,7 @@
   "verification": {
     "node_check": "pass",
     "git_diff_check": "pass",
-    "browser_retest": "reserved for root resource guard"
+    "browser_retest": "run 003 confirms reset clearing/sign-out; new reload instrumentation reserved for root resource guard"
   },
-  "next_action": "Root runs the exact acceptance runner through the resource gate once and reads reset_confirm.open_click_diagnostic. Apply a repair only after the first failing boundary is identified, then rerun the original case and independent UI retest."
+  "next_action": "Root runs the exact acceptance runner through the resource gate once and reads reset_reload stage, failure_category, lifecycle, last_panel, and any action_diagnostic. Repair only after the first failing boundary is identified, then rerun the original case and independent UI retest."
 }
