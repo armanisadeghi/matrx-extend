@@ -99,6 +99,16 @@ export async function clearCapturePagePanel(request: CapturePagePanelRequest): P
 const claimQueues = new Map<number, Promise<void>>();
 const attemptedClaimKeys = new Map<string, number>();
 
+/**
+ * The result of consuming a popup route request. `claim_failed` deliberately
+ * carries no intent data: the panel only needs to tell the person that Capture
+ * did not open and offer the safe manual Scrape route.
+ */
+export type PopupLaunchTargetClaim =
+  | { status: 'none' }
+  | { status: 'claimed'; target: SidepanelTab }
+  | { status: 'claim_failed' };
+
 function pruneAttemptedClaims(now: number): void {
   for (const [key, expiresAt] of attemptedClaimKeys) {
     if (expiresAt < now) attemptedClaimKeys.delete(key);
@@ -109,14 +119,14 @@ function pruneAttemptedClaims(now: number): void {
 export function takePopupLaunchTarget(
   windowId: number,
   contextId: string,
-): Promise<SidepanelTab | null> {
+): Promise<PopupLaunchTargetClaim> {
   const previous = claimQueues.get(windowId) ?? Promise.resolve();
-  const claimPopupLaunchTarget = previous.then(async () => {
+  const claimPopupLaunchTarget = previous.then(async (): Promise<PopupLaunchTargetClaim> => {
     let rows: Record<string, unknown>;
     try {
       rows = await chrome.storage.session.get(null);
     } catch {
-      return null;
+      return { status: 'none' };
     }
 
     const now = Date.now();
@@ -136,16 +146,16 @@ export function takePopupLaunchTarget(
       }
     }
     candidates.sort(([, left], [, right]) => right.createdAt - left.createdAt);
-    if (candidates.length === 0) return null;
+    if (candidates.length === 0) return { status: 'none' };
 
     try {
       await chrome.storage.session.remove(candidates.map(([key]) => key));
     } catch {
       for (const [key, intent] of candidates) attemptedClaimKeys.set(key, intent.expiresAt);
-      return null;
+      return { status: 'claim_failed' };
     }
     for (const [key, intent] of candidates) attemptedClaimKeys.set(key, intent.expiresAt);
-    return 'scrape';
+    return { status: 'claimed', target: 'scrape' };
   });
   claimQueues.set(
     windowId,
