@@ -623,9 +623,8 @@ export async function lookupCapturedByUrl(url: string): Promise<CaptureLookup> {
   if (!(await hasSupabaseAccessToken())) return { status: 'none' };
   const identity = canonicalUrl(url);
   if (!identity) return { status: 'none' };
-  // Recognition does not raise the picker. A signed-in person's RLS-visible
-  // Sources may span several organizations, so a read without this device's
-  // selected organization cannot answer whether THIS workspace saved the page.
+  // Read-only recognition never raises the workspace picker or performs an
+  // unscoped read: a person may see Sources in several organizations under RLS.
   let organizationId: string | null;
   try {
     organizationId = await getActiveOrganizationId();
