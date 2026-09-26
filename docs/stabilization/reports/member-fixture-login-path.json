@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "report_id": "member-fixture-login-path",
+  "status": "local_frontend_member_qa_path_supported_extension_member_oauth_unproven",
+  "checked_at": "2026-09-26",
+  "scope": "Read-only source review. No nonce was minted, auth request made, browser opened, credential read, session created, or account or role changed in this lane.",
+  "principal": "test@test.com is the existing designated non-admin test account; prior member-access-probe verified its auth user, absence from extension admin, and member-role organizations. This report does not repeat that live check.",
+  "supported_frontend_path": {
+    "entry": "In ai-matrx/matrx-frontend, pnpm dev-login /dashboard mints a single-use nonce for the caller's private *.localhost host and prints an /api/dev-login URL. Add the URL query parameter &as=test%40test.com before opening it in that host's owned browser profile. The script itself accepts a destination positional argument, not an as= positional argument; pnpm dev-login as=test@test.com would only put that text into the destination position and would default to the admin identity.",
+    "guards": "The route is disabled in production, accepts loopback hosts only, consumes a per-host nonce on first presentation, and selects only its closed-list designated test accounts. The test member uses the server's service-role magic-link generation and in-process OTP redemption; it requires the local server's configured secret key. The resulting normal Supabase web session stays in that browser host's cookie jar. The route locally signs out a different existing session before selecting the requested test identity.",
+    "verification": "After redirect, use the frontend's /api/whoami identity-only endpoint and confirm the test email. For org-scoped member assertions, choose an organization where the verified live role is member, rather than one where this account is owner or admin.",
+    "coverage": "This establishes a real Supabase-authenticated session for localhost frontend feature and member authorization QA. It does not exercise the email/password login form, a user-held magic-link email, production sign-in, or the extension's OAuth authorization and callback."
+  },
+  "extension_boundary": {
+    "result": "No source-supported transfer from the localhost dev-login session to the extension's OAuth session was found.",
+    "reason": "The frontend's auth-cookie package sets no Domain on non-aimatrx.com hosts, so the dev-login cookie is host-only for the private *.localhost name. The extension launches its own Supabase OAuth 2.1 PKCE authorization; the branded consent UI checks the www.aimatrx.com Supabase browser session and sends an unsigned visitor to /login. The extension then exchanges its own authorization code and stores its own bearer. A localhost member cookie cannot authenticate www.aimatrx.com consent, and opening the dev-login URL does not sign in the extension.",
+    "safe_next_step": "Use dev-login for owned localhost frontend member coverage only. Keep ordinary-member extension sign-in and member acceptance cells unverified until an authorized normal www.aimatrx.com login for this principal is available and the actual extension Sign in flow completes in the same isolated Chrome profile. Confirm the extension's displayed identity and admin=false separately, then select a verified member-role organization. Do not copy tokens or cookies, reuse the server-side OTP, inject auth storage, create or reset the account, or change roles to bridge this gap."
+  },
+  "sources": [
+    "docs/stabilization/reports/member-access-probe.json",
+    "docs/stabilization/reports/member-credential-path.json",
+    "ai-matrx/scripts/dev-login.sh lines 22-38",
+    "ai-matrx/app/api/dev-login/route.ts lines 98-155, 157-239, 250-286, 385-465",
+    "ai-matrx/utils/supabase/authCookie.ts",
+    "ai-matrx/node_modules/@ai-matrx/data/dist/next.js lines 40-52 (installed package cookie-domain decision)",
+    "ai-matrx/app/oauth/consent/ConsentClient.tsx lines 226-266",
+    "ai-matrx/app/(auth-pages)/login/actions.ts (password form uses signInWithPassword)",
+    "matrx-extend/src/lib/auth/flow.ts lines 1-9, 70-142, 403-427",
+    "common-docs/systems/clients/extension/ARCHITECTURE.md section Authentication",
+    "matrx-oauth and supabase skills"
+  ]
+}
