@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "task_id": "permission-denial-source-peer",
+  "reviewed_commit": "d9c50f40f3f1a2d615753e63ea76caf8b690ca1c",
+  "lane": "source-only independent peer review",
+  "status": "DONE_WITH_CONCERNS",
+  "runtime": "PENDING: no headed Chrome launched by this reviewer; native prompt and denial have not been observed here.",
+  "verdict_a_acceptance": {
+    "result": "PARTIAL",
+    "evidence": [
+      "Runner uses runNativeSidepanelQa({headed:true}) and existing harness verifies release receipt, owned temporary profile, spawned process/profile lock, extension identity, and real side panel target.",
+      "It signs in through the real web form and extension Settings UI; no injected auth or permission API override is present.",
+      "Before and after assertions check declared permission, sole switch row, native Chrome permissions.contains and getAll, and the actual refusal alert text; final pass requires post-denial absence and switch-off."
+    ],
+    "missing": [
+      "The source cannot independently establish the native UI action: any process able to write the acknowledgement file can put 'denied' there. Thus the runner can report PASS without observing a native prompt or a Deny click if the postconditions happen to hold. The report's operator attestation is a human procedure, not an enforced evidence condition."
+    ],
+    "runtime_evidence": "Not collected by this source lane; A remains PARTIAL until the native prompt is visibly observed and Deny is clicked on the verified owned window, followed by the stated Chrome and product-state checks."
+  },
+  "verdict_b_quality": {
+    "result": "IMPORTANT",
+    "findings": [
+      {
+        "severity": "Important",
+        "finding": "The pass path trusts a plaintext acknowledgement token as proof of an external action. It is explicitly acknowledged as an operator attestation in the accompanying report, but the script's PASS is not guarded by evidence that the native dialog existed or that the operator saw/clicked Deny. This leaves a straightforward false-pass route, contrary to the forcing-function requirement.",
+        "evidence": "tests/browser/isolated-permission-denial-acceptance.mjs: waitForNativeDeny accepts any exact 'denied' file content, then success only checks permission absence and UI state.",
+        "recommendation": "Make the report's top-level outcome distinguish 'source assertions pass, human native action attested' from an unqualified PASS, or require a contemporaneous CUA observation record tied to this run/profile before emitting PASS. Keep independent Chrome permission absence and honest UI checks."
+      }
+    ],
+    "positive_quality": [
+      "No permission.request mocking, grant seeding, response interception, auth injection, or primary profile use found.",
+      "Headed launch is an additive option and headless remains default.",
+      "Credential parsing is limited to the expected admin variables; browser/auth exceptions are suppressed and output contains booleans/receipt metadata rather than credentials."
+    ]
+  },
+  "checks": {
+    "source_review": "completed",
+    "runtime": "not run; explicitly pending root resource admission and native UI operation",
+    "tests": "not run; source-only review",
+    "commit": "none"
+  }
+}
