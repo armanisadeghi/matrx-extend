@@ -83,7 +83,10 @@ beforeEach(() => {
     error: null,
     mine: [],
     shared: [],
-    matches: [{ item_id: 'ffffffff-1111-4111-8111-111111111111', display_name: 'Parent account' }],
+    matches: [
+      { item_id: PERSONAL_ID, display_name: 'Child personal' },
+      { item_id: WORK_ID, display_name: 'Child work' },
+    ],
     matchesLoading: false,
     matchesError: null,
     reload: vi.fn(),
@@ -234,9 +237,34 @@ describe('VaultView focused child-frame projection', () => {
     expect(screen.queryByRole('button', { name: 'Save this site' })).toBeNull();
   });
 
+  it.each([
+    ['returns no current candidates', []],
+    [
+      'returns a different current candidate',
+      [{ item_id: 'other-item', display_name: 'Other login' }],
+    ],
+  ])('withholds a ready panel offer when the server %s', async (_label, matches) => {
+    mocks.panelStatus = readyTopStatus;
+    mocks.vault = { ...mocks.vault, matches };
+    render(<VaultView />);
+
+    expect(await screen.findByText('No saved login fills this page.')).toBeTruthy();
+    expect(screen.queryByText('Child personal')).toBeNull();
+    expect(screen.queryByText('Child work')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Fill' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Sign in' })).toBeNull();
+  });
+
   it('distinguishes duplicate saved-login names and fills the selected item id', async () => {
     mocks.panelStatus = {
       ...readyChildStatus,
+      matches: [
+        { item_id: PERSONAL_ID, display_name: 'Harbor Dental patient portal' },
+        { item_id: WORK_ID, display_name: 'Harbor Dental patient portal' },
+      ],
+    };
+    mocks.vault = {
+      ...mocks.vault,
       matches: [
         { item_id: PERSONAL_ID, display_name: 'Harbor Dental patient portal' },
         { item_id: WORK_ID, display_name: 'Harbor Dental patient portal' },
@@ -268,6 +296,14 @@ describe('VaultView focused child-frame projection', () => {
     mocks.panelStatus = {
       ...readyChildStatus,
       itemIds: [first, selected, third],
+      matches: [
+        { item_id: first, display_name: 'Harbor Dental patient portal' },
+        { item_id: selected, display_name: 'Harbor Dental patient portal' },
+        { item_id: third, display_name: 'Harbor Dental patient portal' },
+      ],
+    };
+    mocks.vault = {
+      ...mocks.vault,
       matches: [
         { item_id: first, display_name: 'Harbor Dental patient portal' },
         { item_id: selected, display_name: 'Harbor Dental patient portal' },

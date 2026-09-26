@@ -141,9 +141,10 @@ function VaultSession({
   admission: PanelActionAdmission;
 }) {
   const pageUrl = tab.url;
-  const vault = useVault(pageUrl, tab.id, actor, admission);
-  const login = useCredentialLogin(admission);
   const panel = usePanelFill(tab.id, admission);
+  const matchPageUrl = panel.status === 'ready' ? panel.pageUrl : pageUrl;
+  const vault = useVault(matchPageUrl, tab.id, actor, admission);
+  const login = useCredentialLogin(admission);
   const [scope, setScope] = useState<Scope>('mine');
   const [query, setQuery] = useState('');
   const [creating, setCreating] = useState(false);
@@ -152,6 +153,12 @@ function VaultSession({
   const fillable = isFillablePageUrl(pageUrl);
   const childOffer = panel.status === 'ready' && panel.frameId > 0;
   const panelUnavailable = panel.status === 'loading' || panel.status === 'unavailable';
+  const siteMatches =
+    panel.status === 'ready'
+      ? panel.matches.filter((panelMatch) =>
+          vault.matches.some((match) => match.item_id === panelMatch.item_id),
+        )
+      : vault.matches;
 
   const list = scope === 'mine' ? vault.mine : vault.shared;
   const filtered = useMemo(() => {
@@ -219,8 +226,8 @@ function VaultSession({
                     ? 'Browser login is not available in this browser yet.'
                     : null
           }
-          pageUrl={panel.status === 'ready' ? panel.pageUrl : pageUrl}
-          matches={panel.status === 'ready' ? panel.matches : vault.matches}
+          pageUrl={matchPageUrl}
+          matches={siteMatches}
           matchesLoading={panel.status === 'loading' || vault.matchesLoading}
           matchesError={vault.matchesError}
           running={login.running}

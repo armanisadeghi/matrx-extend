@@ -298,38 +298,38 @@ it('fences list and match publication at invalidation even before React remount'
 it.each(['page', 'tab', 'actor'] as const)(
   'clears a failed match lookup for a new %s and restores matching after a successful retry',
   async (dimension) => {
-  let data!: VaultData;
-  const admission = { current: () => true, run: async <T,>(work: () => Promise<T>) => work() };
-  let actor = { userId: 'user-a', organizationId: 'org-a' };
-  const recovery = deferred<unknown>();
-  deps.matches
-    .mockResolvedValueOnce({ ok: false, failure: { kind: 'forbidden' } })
-    .mockReturnValueOnce(recovery.promise);
+    let data!: VaultData;
+    const admission = { current: () => true, run: async <T,>(work: () => Promise<T>) => work() };
+    let actor = { userId: 'user-a', organizationId: 'org-a' };
+    const recovery = deferred<unknown>();
+    deps.matches
+      .mockResolvedValueOnce({ ok: false, failure: { kind: 'forbidden' } })
+      .mockReturnValueOnce(recovery.promise);
 
-  function Probe() {
-    data = useVault(deps.tab.url, deps.tab.id, actor, admission);
-    return (
-      <div>
-        {data.matchesError?.kind ?? 'clear'}|{data.matches.map((item) => item.display_name)}
-      </div>
+    function Probe() {
+      data = useVault(deps.tab.url, deps.tab.id, actor, admission);
+      return (
+        <div>
+          {data.matchesError?.kind ?? 'clear'}|{data.matches.map((item) => item.display_name)}
+        </div>
+      );
+    }
+
+    await act(async () => root.render(<Probe />));
+    expect(node.textContent).toContain('forbidden');
+    expect(data.matches).toEqual([]);
+
+    if (dimension === 'page') deps.tab = { ...deps.tab, url: 'https://other.example/login' };
+    if (dimension === 'tab') deps.tab = { ...deps.tab, id: 8 };
+    if (dimension === 'actor') actor = { userId: 'user-b', organizationId: 'org-b' };
+    await act(async () => root.render(<Probe />));
+    expect(node.textContent).toContain('clear');
+
+    await act(async () =>
+      recovery.resolve({ ok: true, data: { matches: [{ display_name: 'Recovered match' }] } }),
     );
-  }
-
-  await act(async () => root.render(<Probe />));
-  expect(node.textContent).toContain('forbidden');
-  expect(data.matches).toEqual([]);
-
-  if (dimension === 'page') deps.tab = { ...deps.tab, url: 'https://other.example/login' };
-  if (dimension === 'tab') deps.tab = { ...deps.tab, id: 8 };
-  if (dimension === 'actor') actor = { userId: 'user-b', organizationId: 'org-b' };
-  await act(async () => root.render(<Probe />));
-  expect(node.textContent).toContain('clear');
-
-  await act(async () =>
-    recovery.resolve({ ok: true, data: { matches: [{ display_name: 'Recovered match' }] } }),
-  );
-  expect(data.matchesError).toBeNull();
-  expect(node.textContent).toContain('Recovered match');
+    expect(data.matchesError).toBeNull();
+    expect(node.textContent).toContain('Recovered match');
   },
 );
 
