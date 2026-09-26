@@ -205,6 +205,10 @@ export function ScrapeView() {
   // signed-in person on a page that CAN be a Source, and never while a check,
   // a capture or a save is still running (the answer is not known yet). While
   // the retry card holds this page, the card's Retry is the one control.
+  // While the retry card holds this page its Retry save is the page's ONE save
+  // control: the banner and the main Save both step aside (a second Save would
+  // queue a duplicate or race the retry).
+  const cardHoldsPage = unsavedUrls.some((u) => canonicalUrl(u) === canonicalUrl(tab.url ?? ''));
   const notYetASource =
     signedIn &&
     /^https?:\/\//i.test(tab.url ?? '') &&
@@ -214,7 +218,7 @@ export function ScrapeView() {
     !saved &&
     !saving &&
     !loading &&
-    !unsavedUrls.some((u) => canonicalUrl(u) === canonicalUrl(tab.url ?? ''));
+    !cardHoldsPage;
 
   return (
     <div className="flex h-full flex-col">
@@ -236,6 +240,7 @@ export function ScrapeView() {
         )}
         <UnsavedCapturesCard
           onUrlsChange={setUnsavedUrls}
+          currentPage={current ? { url: current.url, save: handleSave } : null}
           onLanded={(url, id) => {
             if (current && url === current.url) {
               setSaved(true);
@@ -645,7 +650,7 @@ export function ScrapeView() {
             )}
           </Button>
         </div>
-        {current && (
+        {current && !cardHoldsPage && (
           <Button
             onClick={() => void handleSave()}
             disabled={saving}

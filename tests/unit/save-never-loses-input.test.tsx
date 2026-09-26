@@ -10,7 +10,7 @@
  * Drives the REAL ScrapeView → useScrape → saveCaptureAsSource → landSource
  * path; only the network (`apiPost`) and identity are faked.
  */
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
@@ -49,7 +49,11 @@ vi.mock('@/features/seo/SeoDetails', () => ({ SeoDetails: () => null }));
 
 import { ScrapeView } from '@/features/scrape/ScrapeView';
 import type { SoupResult } from '@/lib/scrape/pipeline';
-import { UNSAVED_CAPTURES_KEY, listUnsavedCaptures } from '@/lib/sources/save-capture';
+import {
+  UNSAVED_CAPTURES_KEY,
+  listUnsavedCaptures,
+  saveCaptureAsSource,
+} from '@/lib/sources/save-capture';
 import { useScrapeStore } from '@/state/scrape';
 
 const soup = {
@@ -119,6 +123,18 @@ beforeEach(async () => {
 
 afterEach(cleanup);
 
+const landedResponse = {
+  ok: true,
+  data: {
+    processed_document_id: '6b8c38dd-6d68-4824-b664-a380b7611627',
+    source_id: 'spp-1',
+    reused_existing: false,
+    kept: true,
+    intelligence: 'queued',
+    notices: [],
+  },
+};
+
 describe('Save never loses input', () => {
   it('server unreachable → retry card, capture kept, unsaved-edits guard armed; retry lands', async () => {
     mocks.apiPost.mockResolvedValue({ ok: false, status: 0, error: 'Failed to fetch' });
@@ -130,6 +146,10 @@ describe('Save never loses input', () => {
     expect(await screen.findByText(/Not yet a Source — kept on this device/)).toBeTruthy();
     expect(screen.getByText(/could not be reached/)).toBeTruthy();
     expect(screen.queryByRole('button', { name: /Saved/ })).toBeNull();
+    // One control per state: while the card holds this page, its Retry is the
+    // only save action — the main Save steps aside.
+    await waitFor(() => expect(screen.queryByRole('button', { name: /^Save$/ })).toBeNull());
+    expect(screen.getAllByRole('button', { name: /Retry save/ })).toHaveLength(1);
 
     // 2. The capture is kept — on the device, with everything the door needs…
     const kept = await listUnsavedCaptures();
@@ -191,6 +211,82 @@ describe('Save never loses input', () => {
       expect(screen.queryByText(/Not yet a Source — kept on this device/)).toBeNull(),
     );
     expect(await listUnsavedCaptures()).toHaveLength(0);
+  });
+
+  it('re-saving a page already waiting replaces its entry — one per canonical URL, never two', async () => {
+    mocks.apiPost.mockResolvedValue({ ok: false, status: 0, error: 'Failed to fetch' });
+    const first = await saveCaptureAsSource(useScrapeStore.getState().current as SoupResult);
+    const again = await saveCaptureAsSource({ ...soup, url: `${soup.url}#section` } as SoupResult);
+    const kept = await listUnsavedCaptures();
+    expect(kept).toHaveLength(1);
+    expect(first.status === 'unsaved' && again.status === 'unsaved').toBe(true);
+    if (first.status === 'unsaved' && again.status === 'unsaved') {
+      expect(again.unsaved.id).toBe(first.unsaved.id);
+    }
+    expect(kept[0]?.attempts).toBe(2);
+    // The newest content wins (the second save carried the un-edited article).
+    expect(kept[0]?.prepared.portions.map((p) => p.text).join('\n')).not.toContain(
+      'Intro, edited.',
+    );
+
+    // A save of that page that lands clears it from the queue.
+    mocks.apiPost.mockResolvedValue({
+      ok: true,
+      data: {
+        processed_document_id: '6b8c38dd-6d68-4824-b664-a380b7611627',
+        source_id: 'spp-1',
+        reused_existing: false,
+        kept: true,
+        intelligence: 'queued',
+        notices: [],
+      },
+    });
+    expect((await saveCaptureAsSource(soup)).status).toBe('landed');
+    expect(await listUnsavedCaptures()).toHaveLength(0);
+  });
+
+  it("Retry for the open page sends the panel's CURRENT capture — edits after the failed save included", async () => {
+    mocks.apiPost.mockResolvedValue({ ok: false, status: 0, error: 'Failed to fetch' });
+    render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    expect(await screen.findByText(/Not yet a Source — kept on this device/)).toBeTruthy();
+    // The person keeps editing after the save failed (a real edit renders
+    // before the next click, hence act).
+    act(() =>
+      useScrapeStore
+        .getState()
+        .editArticleMarkdown('# Guide\n\nIntro, edited twice.\n\n## Install\n\nRun it.'),
+    );
+    mocks.apiPost.mockResolvedValue(landedResponse);
+    fireEvent.click(screen.getByRole('button', { name: /Retry save/ }));
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(2));
+    const body = mocks.apiPost.mock.calls[1]?.[1] as { portions: { text: string }[] };
+    expect(body.portions.map((p) => p.text).join('\n')).toContain('Intro, edited twice.');
+    await waitFor(async () => expect(await listUnsavedCaptures()).toHaveLength(0));
+  });
+
+  it('Retry for a page NOT open in the panel sends its queued content', async () => {
+    mocks.apiPost.mockResolvedValue({ ok: false, status: 0, error: 'Failed to fetch' });
+    const other = {
+      ...soup,
+      url: 'https://elsewhere.example.com/page',
+      article: {
+        ...soup.article,
+        content_markdown: '# Elsewhere\n\nQueued words.',
+        content_html_safe: '<h1>Elsewhere</h1><p>Queued words.</p>',
+      },
+    } as SoupResult;
+    await saveCaptureAsSource(other);
+    render(<ScrapeView />);
+    mocks.apiPost.mockResolvedValue(landedResponse);
+    fireEvent.click(await screen.findByRole('button', { name: /Retry save/ }));
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(2));
+    const body = mocks.apiPost.mock.calls[1]?.[1] as {
+      portions: { text: string }[];
+      canonical_identity: string;
+    };
+    expect(body.canonical_identity).toBe(other.url);
+    expect(body.portions.map((p) => p.text).join('\n')).toContain('Queued words.');
   });
 
   it('a refusal from the door is kept too, with the server’s own sentence', async () => {
