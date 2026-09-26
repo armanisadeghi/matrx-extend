@@ -15,28 +15,27 @@ const localReleaseZipManifestSha256 =
   'c395a10b2b8d6dfc42dc045f553a9098781eab3d33634e5a0a1a947f0bec8b9b';
 const localReleaseZipKind = 'local-release-zip-artifact';
 const localReleaseZipVersion = '0.2.38';
-const localSourceCommit = 'dee5e6bb047f2ef3d3d726183faba5b7a21b7593';
+const localSourceCommit = 'eca3ab8ab9a138bebeb63b0aa7efe0e29edd3af8';
 const localSourceManifestSha256 =
-  'b8fc7872dd88dc79a7137d68b0d76743a6944d2fc72ed449ca1816e900652130';
+  '1ee9665455d4aecabd753b274f5269ad69c84db56c421cd7dd5d5ec832df39ff';
 const reviewedLocalSourceArtifact = {
   path: path.join(
     __dirname,
-    '../../.matrx/realbrowser-vault/2026-09-26T07-27-29-927Z-6a4d7bdc-c2f8-46e2-9e55-3b90d62eb3d1/artifact-manifest.json',
+    '../../.matrx/realbrowser-vault/2026-09-26T08-23-50-230Z-5c4c3289-9ce6-40b8-8458-8d4a5c210118/artifact-manifest.json',
   ),
-  sourceCommit: 'dee5e6bb047f2ef3d3d726183faba5b7a21b7593',
-  manifestSha256: 'b8fc7872dd88dc79a7137d68b0d76743a6944d2fc72ed449ca1816e900652130',
-  version: '0.2.54',
+  sourceCommit: 'eca3ab8ab9a138bebeb63b0aa7efe0e29edd3af8',
+  manifestSha256: '1ee9665455d4aecabd753b274f5269ad69c84db56c421cd7dd5d5ec832df39ff',
+  version: '0.2.56',
   kind: 'local-multi-repo-source-artifact',
 };
 const cleanupSourceRoot = path.join(
   __dirname,
-  '../../.matrx/task1-active/cleanup-source-b20c757670f5',
+  '../../.matrx/task1-active/cleanup-source-b20c757-git-verified-20260926',
 );
 const cleanupAdapter = path.join(__dirname, 'cleanup-vault-canary.py');
 const cleanupSourceCommit = 'b20c757670f5348f5d198f3a1c64d25a1343f5c3';
 const cleanupSourceGitTree = 'dbe91a70fbc62eb3c7496eb3fc8445c6f52ea54e';
-const cleanupSourceTreeSha256 =
-  '8a473cca03f5c9b8b464faee102091c8967ac08a2b97ed7a1418177dc9f17f58';
+const cleanupSourceEntryCount = 21210;
 const routerHash = '22be9386e3a8cb9cddb51c8b2dfe78883242967d6cf94d06e23dec10fa658f6f';
 const serviceHash = '0dd2347f4637b8f7787a34ba98af6767aa90eca7b3827d610147f29d6211e174';
 
@@ -67,7 +66,7 @@ try {
     MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256: serviceHash,
     MATRX_VAULT_CANARY_EXPECTED_COMMIT: frozenCommit,
   };
-  const verifySource = (command, sourceRoot, treeDigest = cleanupSourceTreeSha256) => {
+  const verifySource = (command, sourceRoot) => {
     const result = spawnSync(
       '/Users/armanisadeghi/code/aidream/.venv/bin/python',
       [
@@ -76,23 +75,15 @@ try {
         sourceRoot,
         routerHash,
         serviceHash,
-        treeDigest,
-        cleanupSourceGitTree,
-        cleanupSourceCommit,
       ],
-      { encoding: 'utf8', timeout: 30000 },
+      {
+        encoding: 'utf8',
+        env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' },
+        timeout: 60000,
+      },
     );
     assert.equal(result.error, undefined, `source verifier subprocess error: ${result.error?.code || 'unknown'}`);
     return { result, body: JSON.parse(result.stdout) };
-  };
-  const calculateSourceTreeDigest = (sourceRoot) => {
-    const result = spawnSync(
-      '/Users/armanisadeghi/code/aidream/.venv/bin/python',
-      [cleanupAdapter, '--source-tree-digest', sourceRoot],
-      { encoding: 'utf8', timeout: 30000 },
-    );
-    assert.equal(result.status, 0, `source digest failed: ${result.stdout}`);
-    return JSON.parse(result.stdout).sourceTreeSha256;
   };
   const proveArchivePreflightAndPackageClosure = () => {
     const source = verifySource('--verify-source-root', cleanupSourceRoot);
@@ -102,10 +93,8 @@ try {
       service: serviceHash,
       sourceCommit: cleanupSourceCommit,
       sourceGitTree: cleanupSourceGitTree,
-      sourceTreeSha256: cleanupSourceTreeSha256,
+      sourceEntryCount: cleanupSourceEntryCount,
     });
-    const closure = verifySource('--verify-import-closure', cleanupSourceRoot);
-    assert.equal(closure.result.status, 0, closure.result.stdout);
   };
   const rejectUnrelatedArchiveMutationBeforeCustody = () => {
     const mutatedSource = path.join(root, 'unrelated-archive-mutation');
@@ -118,32 +107,57 @@ try {
     const readme = path.join(mutatedSource, 'README.md');
     fs.chmodSync(readme, 0o644);
     fs.appendFileSync(readme, '\narchive mutation must refuse\n');
-    rejectBeforeCustody('unrelated-archive-mutation', 'local_cleanup_source_tree_hash_mismatch', {
+    rejectBeforeCustody('unrelated-archive-mutation', 'local_cleanup_archive_git_tree_mismatch', {
       ...strictReceiptEnv,
       MATRX_VAULT_CANARY_LOCAL_SOURCE_ROOT: mutatedSource,
     });
   };
   const rejectFallbackToCheckoutPackage = () => {
-    const fallbackSource = path.join(root, 'package-origin-fallback');
-    fs.cpSync(cleanupSourceRoot, fallbackSource, {
+    const result = verifySource('--self-test-checkout-package-fallback', cleanupSourceRoot);
+    assert.notEqual(result.result.status, 0, 'checkout package fallback unexpectedly passed');
+    assert.equal(result.body.ok, false);
+    assert.equal(result.body.code, 'required_import_origin_refused');
+  };
+  const rejectExtraBytecodeBeforeCustody = () => {
+    const bytecodeSource = path.join(root, 'archive-extra-bytecode');
+    fs.cpSync(cleanupSourceRoot, bytecodeSource, {
       recursive: true,
       dereference: false,
       verbatimSymlinks: true,
     });
-    fs.chmodSync(path.join(fallbackSource, 'packages'), 0o755);
-    fs.chmodSync(path.join(fallbackSource, 'packages/matrx-connect'), 0o755);
-    fs.renameSync(
-      path.join(fallbackSource, 'packages/matrx-connect/matrx_connect'),
-      path.join(fallbackSource, 'packages/matrx-connect/matrx_connect.withheld'),
+    const packageDir = path.join(bytecodeSource, 'aidream');
+    fs.chmodSync(packageDir, 0o700);
+    const cacheDir = path.join(packageDir, '__pycache__');
+    fs.mkdirSync(cacheDir, { mode: 0o500 });
+    const bytecode = path.join(cacheDir, 'vault.cpython-313.pyc');
+    fs.writeFileSync(bytecode, 'extra bytecode', { mode: 0o400 });
+    fs.chmodSync(bytecode, 0o444);
+    rejectBeforeCustody('archive-extra-bytecode', 'local_cleanup_archive_git_tree_mismatch', {
+      ...strictReceiptEnv,
+      MATRX_VAULT_CANARY_LOCAL_SOURCE_ROOT: bytecodeSource,
+    });
+  };
+  const rejectCallerSuppliedFalseCommitTree = () => {
+    const result = spawnSync(
+      '/Users/armanisadeghi/code/aidream/.venv/bin/python',
+      [
+        cleanupAdapter,
+        '--verify-source-root',
+        cleanupSourceRoot,
+        routerHash,
+        serviceHash,
+        '0'.repeat(40),
+        'f'.repeat(40),
+      ],
+      { encoding: 'utf8', timeout: 30000 },
     );
-    const result = verifySource(
-      '--verify-import-closure',
-      fallbackSource,
-      calculateSourceTreeDigest(fallbackSource),
-    );
-    assert.notEqual(result.result.status, 0, 'checkout package fallback unexpectedly passed');
-    assert.equal(result.body.ok, false);
-    assert.equal(result.body.code, 'required_import_origin_refused');
+    assert.notEqual(result.status, 0, 'caller-selected commit/tree unexpectedly accepted');
+    assert.equal(JSON.parse(result.stdout).code, 'source_verify_args_refused');
+  };
+  const rejectBootstrapFailureBeforeCustody = () => {
+    const result = verifySource('--self-test-bootstrap-refusal', cleanupSourceRoot);
+    assert.notEqual(result.result.status, 0, 'bootstrap failure unexpectedly accepted');
+    assert.equal(result.body.code, 'bootstrap_refused');
   };
   const receiptZeroWriteProof = {
     schema: 3,
@@ -304,7 +318,7 @@ try {
         schema: 2,
         extensionDirectory: 'extension',
         kind: 'local-multi-repo-source-artifact',
-        manifestVersion: '0.2.54',
+        manifestVersion: '0.2.56',
         sourceCommit: localSourceCommit,
         extensionFiles: [
           {
@@ -452,7 +466,10 @@ try {
   rejectSourceDriftBeforeCustody();
   proveArchivePreflightAndPackageClosure();
   rejectUnrelatedArchiveMutationBeforeCustody();
+  rejectExtraBytecodeBeforeCustody();
   rejectFallbackToCheckoutPackage();
+  rejectCallerSuppliedFalseCommitTree();
+  rejectBootstrapFailureBeforeCustody();
   rejectNearMatchLocalReleaseManifestBeforeCustody();
   rejectNearMatchLocalSourceManifestBeforeCustody();
   assertReviewedLocalSourceArtifactAdmission();
