@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T15:01:00Z",
+  "updated_at": "2026-09-26T15:11:00Z",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -1857,7 +1857,9 @@
             "contained-navigation-001",
             "contained-navigation-002",
             "contained-navigation-003",
-            "contained-navigation-004"
+            "contained-navigation-004",
+            "contained-navigation-005",
+            "contained-navigation-006"
           ],
           "retest_status": "pass"
         },
@@ -1878,7 +1880,9 @@
             "contained-navigation-001",
             "contained-navigation-002",
             "contained-navigation-003",
-            "contained-navigation-004"
+            "contained-navigation-004",
+            "contained-navigation-005",
+            "contained-navigation-006"
           ],
           "retest_status": "not-run"
         }
@@ -10145,7 +10149,8 @@
           "run_ids": [
             "guest-local-001",
             "render-retest-001",
-            "svg-caption-native-001"
+            "svg-caption-native-001",
+            "svg-caption-native-002"
           ],
           "retest_status": "not-run"
         },
@@ -10647,7 +10652,8 @@
           "defect_ids": [],
           "run_ids": [
             "seo-guest-001",
-            "seo-guest-002"
+            "seo-guest-002",
+            "seo-guest-003"
           ],
           "retest_status": "not-run"
         },
@@ -10666,7 +10672,65 @@
       },
       "inventory_status": "complete",
       "missing_items": [],
-      "source_complete": true
+      "source_complete": true,
+      "runtime_evidence": [
+        {
+          "run_id": "seo-guest-003",
+          "mode": "guest",
+          "build": "0.2.67",
+          "status": "partial",
+          "accepted_subtargets": [
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "page_0_title_and_headings",
+              "status": "pass",
+              "evidence": {
+                "publicTitle": "Example Domain",
+                "titleMatches": true,
+                "headingsPresenceMatches": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "page_1_title_and_headings",
+              "status": "pass",
+              "evidence": {
+                "publicTitle": "IANA-managed Reserved Domains",
+                "titleMatches": true,
+                "headingsPresenceMatches": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T01",
+              "subtarget": "new_url_replaces_visible_title",
+              "status": "pass",
+              "evidence": {
+                "twoDistinctPublicTitles": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T02",
+              "subtarget": "manual_button_returns_to_current_page",
+              "status": "pass",
+              "evidence": {
+                "currentTitlePreserved": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+              "status": "pass",
+              "evidence": {
+                "textChoice": true,
+                "agentChoice": true,
+                "jsonAbsent": true
+              }
+            }
+          ],
+          "independent_review": "docs/stabilization/reports/seo003-evidence-peer.json",
+          "limits": "Titles, heading-section presence, URL-title replacement, manual button return state and menu choices only; clipboard, reload, race/freshness, remaining details, member/admin unverified. Full cases and feature remain unverified."
+        }
+      ]
     },
     {
       "id": "EXT-F-1009",
