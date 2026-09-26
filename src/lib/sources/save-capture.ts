@@ -199,9 +199,32 @@ async function writeUnsaved(rows: UnsavedCapture[]): Promise<void> {
   await chrome.storage.local.set({ [UNSAVED_CAPTURES_KEY]: rows });
 }
 
-async function upsertUnsaved(row: UnsavedCapture): Promise<void> {
+/**
+ * The queue is keyed by the page's canonical URL: one entry per page. A
+ * re-save of a page already waiting REPLACES its entry (newest content, same
+ * id, attempts counted) — it never adds a second card for the same page.
+ */
+async function upsertUnsaved(row: UnsavedCapture): Promise<UnsavedCapture> {
   const rows = await listUnsavedCaptures();
-  await writeUnsaved([...rows.filter((r) => r.id !== row.id), row]);
+  const key = canonicalUrl(row.url);
+  const prior = rows.find((r) => r.id === row.id || canonicalUrl(r.url) === key);
+  const merged = prior
+    ? { ...row, id: prior.id, createdAt: prior.createdAt, attempts: prior.attempts + row.attempts }
+    : row;
+  await writeUnsaved([
+    ...rows.filter((r) => r.id !== merged.id && canonicalUrl(r.url) !== key),
+    merged,
+  ]);
+  return merged;
+}
+
+/** A page that landed leaves the queue, whichever control landed it. */
+async function dropUnsavedForUrl(url: string): Promise<void> {
+  const rows = await listUnsavedCaptures();
+  const key = canonicalUrl(url);
+  if (rows.some((r) => canonicalUrl(r.url) === key)) {
+    await writeUnsaved(rows.filter((r) => canonicalUrl(r.url) !== key));
+  }
 }
 
 export async function discardUnsavedCapture(id: string): Promise<void> {
@@ -242,8 +265,11 @@ export async function saveCaptureAsSource(
     };
   }
   const result = await send(prepared);
-  if (result.ok) return { status: 'landed', landed: result.landed };
-  const unsaved: UnsavedCapture = {
+  if (result.ok) {
+    await dropUnsavedForUrl(soup.url).catch(() => undefined);
+    return { status: 'landed', landed: result.landed };
+  }
+  let unsaved: UnsavedCapture = {
     id: newId(),
     url: soup.url,
     title: prepared.name,
@@ -253,7 +279,7 @@ export async function saveCaptureAsSource(
     prepared,
   };
   try {
-    await upsertUnsaved(unsaved);
+    unsaved = await upsertUnsaved(unsaved);
   } catch (err) {
     // The device store refused too (quota, storage disabled). The capture is
     // still open in the panel and the unsaved-edits guard stays armed; say so.

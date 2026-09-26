@@ -49,7 +49,11 @@ vi.mock('@/features/seo/SeoDetails', () => ({ SeoDetails: () => null }));
 
 import { ScrapeView } from '@/features/scrape/ScrapeView';
 import type { SoupResult } from '@/lib/scrape/pipeline';
-import { UNSAVED_CAPTURES_KEY, listUnsavedCaptures } from '@/lib/sources/save-capture';
+import {
+  UNSAVED_CAPTURES_KEY,
+  listUnsavedCaptures,
+  saveCaptureAsSource,
+} from '@/lib/sources/save-capture';
 import { useScrapeStore } from '@/state/scrape';
 
 const soup = {
@@ -130,6 +134,10 @@ describe('Save never loses input', () => {
     expect(await screen.findByText(/Not yet a Source — kept on this device/)).toBeTruthy();
     expect(screen.getByText(/could not be reached/)).toBeTruthy();
     expect(screen.queryByRole('button', { name: /Saved/ })).toBeNull();
+    // One control per state: while the card holds this page, its Retry is the
+    // only save action — the main Save steps aside.
+    await waitFor(() => expect(screen.queryByRole('button', { name: /^Save$/ })).toBeNull());
+    expect(screen.getAllByRole('button', { name: /Retry save/ })).toHaveLength(1);
 
     // 2. The capture is kept — on the device, with everything the door needs…
     const kept = await listUnsavedCaptures();
@@ -190,6 +198,38 @@ describe('Save never loses input', () => {
     await waitFor(() =>
       expect(screen.queryByText(/Not yet a Source — kept on this device/)).toBeNull(),
     );
+    expect(await listUnsavedCaptures()).toHaveLength(0);
+  });
+
+  it('re-saving a page already waiting replaces its entry — one per canonical URL, never two', async () => {
+    mocks.apiPost.mockResolvedValue({ ok: false, status: 0, error: 'Failed to fetch' });
+    const first = await saveCaptureAsSource(useScrapeStore.getState().current as SoupResult);
+    const again = await saveCaptureAsSource({ ...soup, url: `${soup.url}#section` } as SoupResult);
+    const kept = await listUnsavedCaptures();
+    expect(kept).toHaveLength(1);
+    expect(first.status === 'unsaved' && again.status === 'unsaved').toBe(true);
+    if (first.status === 'unsaved' && again.status === 'unsaved') {
+      expect(again.unsaved.id).toBe(first.unsaved.id);
+    }
+    expect(kept[0]?.attempts).toBe(2);
+    // The newest content wins (the second save carried the un-edited article).
+    expect(kept[0]?.prepared.portions.map((p) => p.text).join('\n')).not.toContain(
+      'Intro, edited.',
+    );
+
+    // A save of that page that lands clears it from the queue.
+    mocks.apiPost.mockResolvedValue({
+      ok: true,
+      data: {
+        processed_document_id: '6b8c38dd-6d68-4824-b664-a380b7611627',
+        source_id: 'spp-1',
+        reused_existing: false,
+        kept: true,
+        intelligence: 'queued',
+        notices: [],
+      },
+    });
+    expect((await saveCaptureAsSource(soup)).status).toBe('landed');
     expect(await listUnsavedCaptures()).toHaveLength(0);
   });
 
