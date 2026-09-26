@@ -254,6 +254,8 @@ async function seoState(panel) {
     const history = [...(pane?.querySelectorAll('button[title]') ?? [])]
       .filter((node) => node.title === 'Saved audits for this URL');
     const historyToggle = history.length === 1 ? history[0] : null;
+    const countSpans = [...(historyToggle?.querySelectorAll('span.tabular-nums') ?? [])];
+    const countText = countSpans.length === 1 ? countSpans[0].textContent.trim() : null;
     const historyHeading = [...(pane?.querySelectorAll('div') ?? [])]
       .find((node) => node.childElementCount === 0
         && node.textContent.trim() === 'Saved audits for this URL');
@@ -279,8 +281,8 @@ async function seoState(panel) {
       menuOpen: menuOwnedByCopy, choices,
       saveCount: saveButtons.length, savedCount: savedButtons.length,
       historyToggleCount: history.length,
-      historyCount: historyToggle && /^\d+$/.test(historyToggle.textContent.trim())
-        ? Number(historyToggle.textContent.trim()) : 0,
+      historyCount: countText !== null && /^[0-9]+$/.test(countText)
+        ? Number(countText) : null,
       historyOpen: !!historyHeading,
       historyRowCount: historyRows.length,
       historyIdentities,

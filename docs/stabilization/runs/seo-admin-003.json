@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "run_id": "seo-admin-003",
+  "feature_id": "EXT-F-1008",
+  "mode": "admin",
+  "extension_version": "0.2.73",
+  "status": "unverified",
+  "wrapper": {
+    "resource_log": "/tmp/matrx-seo-admin-003.log",
+    "admitted": true,
+    "resource_watch_healthy": true,
+    "child_exit_code": 1,
+    "child_exit_at_utc": "2026-09-26T18:34:18.709Z"
+  },
+  "runtime_output": "test-results/seo-admin-acceptance.json",
+  "save_attempt": "Read-only resume from the existing 0600 checkpoint with a real prior Save ID. This run did not click Save or create another row.",
+  "history_observation": {
+    "linked": true,
+    "history_toggle_count": 1,
+    "parsed_history_count": 0,
+    "history_open": true,
+    "rendered_row_count": 1,
+    "saved_row_id_present": true,
+    "audit_error_visible": false
+  },
+  "failure": {
+    "stage": "history_list_wait",
+    "wait": "history_list_open",
+    "cause": "The runner's numeric regex was embedded in a JavaScript template string. Its backslash-d was cooked to literal d before browser evaluation, so it rejected the component's numeric badge and defaulted the parsed count to zero. The count-equals-row predicate then failed despite the opened list containing the saved row ID.",
+    "repair": "Read the component's single span.tabular-nums directly and validate it with a template-safe [0-9] regex. Retain row-count equality and exact saved-row ID requirements."
+  },
+  "limits": [
+    "This is a read-only failed attempt; T05 history/snapshot/reload remains unverified.",
+    "No browser run occurred during the harness repair. Fresh source review and a guarded read-only rerun remain required."
+  ]
+}

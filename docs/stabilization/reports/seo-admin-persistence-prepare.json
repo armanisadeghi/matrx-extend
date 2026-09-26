@@ -12,6 +12,12 @@
     "uncertainty": "The prior runner used one stage for waiting on the history toggle, clicking it, and waiting for the row list, and discarded the error. Existing evidence cannot distinguish a missing toggle, pointer hit-test refusal, or row-list/ID timeout. No product defect is inferred.",
     "repair": "The read-only rerun now records separate operation stages, the shared pointer driver's bounded diagnostic if a click fails, and only booleans/counts from the latest history observation. It retains the existing checkpoint and skips Save."
   },
+  "actual_run_003_diagnosis": {
+    "receipt": "docs/stabilization/runs/seo-admin-003.json",
+    "observation": "Read-only resume opened history in the active linked SEO pane. The list contained one row carrying the saved response ID; the UI badge existed, but the runner parsed its count as zero. Resource watch was healthy and the child exited unverified at history_list_wait.",
+    "root_cause": "A regex inside the Runtime.evaluate JavaScript template used backslash-d. JavaScript template cooking removed the backslash, turning the browser regex into a literal d check. A numeric badge therefore fell through to zero. This is a harness oracle defect, not evidence of a product history failure.",
+    "repair": "The runner now reads the component's single numeric count span and applies a template-safe [0-9] regex. It still requires the rendered row count to equal the badge and the actual saved row ID to be present. No Save is attempted on read-only resume."
+  },
   "scope": "At most one new public IANA audit row in the explicitly selected existing campaign test organization, identified through the real Save response and stable history/snapshot DOM attributes.",
   "identity_contract": {
     "production_ui": "History button and selected Saved snapshot expose the same existing row UUID as data-audit-id. The attribute changes no visible copy or database/API shape.",
