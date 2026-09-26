@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/package_catchup_004_peer",
+  "scope": "Consumer review for the guarded refresh from @ai-matrx/agents 0.14.0 to 0.14.3 and @ai-matrx/design-system 0.46.2 to 0.46.3. No install, build, tests, or browser verification were run in this lane.",
+  "release_failure": {
+    "runId": "release-stabilization-029",
+    "wrapperLog": "/tmp/matrx-release-stabilization-029.log",
+    "fullLog": "tmp/release-logs/latest.log",
+    "childExitCode": 1,
+    "finishedAt": "2026-09-26T20:09:32.571Z",
+    "result": "Candidate v0.2.77 was not published or pushed because check:matrx-packages found agents 0.14.0 below npm 0.14.3 and design-system 0.46.2 below npm 0.46.3."
+  },
+  "update_receipt": {
+    "command": "pnpm update -r '@ai-matrx/*' --latest --ignore-scripts",
+    "ownerReportedWrapper": "28833",
+    "ownerReportedChildExitCode": 0,
+    "ownerReportedFinishedAt": "2026-09-26T20:11:22.030Z",
+    "observedLockfileSha256": "2094f1ff29c54c81f4e401b7bc23e1b16148dbe5998bfb75e000bf9167124ea2",
+    "observedLockfileDelta": "Only agents 0.14.0 to 0.14.3 and design-system 0.46.2 to 0.46.3, including transitive references; package.json already declares both as latest.",
+    "installedVersionsObserved": {
+      "@ai-matrx/agents": "0.14.3",
+      "@ai-matrx/design-system": "0.46.3"
+    }
+  },
+  "package_review": {
+    "agents": {
+      "sourceDiff": "aidream tags npm/matrx-agents/v0.14.0..npm/matrx-agents/v0.14.3",
+      "publishedChangelogSha256": "ae82ea3143cbe3848a406c2f1e140978a75155101b7a8e7ac79942d1dc778a64",
+      "actualChanges": "Archived agent rows now show a default Archived badge; AgentListDropdown sizes itself to available space below its trigger when at least 300px fits; panelHeightBelow is exported. The 0.14.3 mandate-key snapshot is present. No required host prop or changed call signature.",
+      "extensionUsage": "Four AgentListDropdown call sites in ChatView, PilotView, SettingsView, and AiExtractTab. None passes a labels override or uses panelHeightBelow; all inherit the package behavior.",
+      "consumerAction": "None required."
+    },
+    "designSystem": {
+      "sourceDiff": "aidream tags npm/design-system/v0.46.2..npm/design-system/v0.46.3",
+      "publishedChangelogSha256": "0c63aa4cd7c2afbd0d248d50ed866c563837d6c8f284df2a9f4dd58ed59927f1",
+      "actualChanges": "BottomSheet overlay and content z-index rose from z-50 to z-[10000], matching the dialog layer. The installed dist/index.js contains the new class. No API change.",
+      "changelogAccuracy": "The 0.46.3 changelog calls this docs/metadata drift with no intended source change, but the tag diff and installed bundle show a real runtime change.",
+      "extensionUsage": "No direct BottomSheet or TabbedBottomSheet call sites in extension src.",
+      "consumerAction": "None required."
+    }
+  },
+  "verdict": "No extension source adoption required for these package versions. Root owns package gate, compile, tests, browser verification, and release retry; none is claimed here."
+}

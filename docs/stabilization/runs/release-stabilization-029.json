@@ -1,0 +1,14 @@
+{
+  "id": "release-stabilization-029",
+  "status": "stopped-before-push",
+  "wrapper": {
+    "source": "/tmp/matrx-release-stabilization-029.log",
+    "childExitCode": 1,
+    "finishedAt": "2026-09-26T20:09:32.571Z"
+  },
+  "rawLog": "tmp/release-logs/latest.log",
+  "candidateVersion": "0.2.77",
+  "failure": "Mandatory check:matrx-packages failed because installed @ai-matrx/agents 0.14.0 lagged npm 0.14.3 and installed @ai-matrx/design-system 0.46.2 lagged npm 0.46.3.",
+  "publication": "No push or package publication occurred in this attempt.",
+  "remedy": "Guarded dependency refresh completed outside this lane; peer consumer review is docs/stabilization/reports/package-catchup-004-peer.json. Retry full release after owner verification."
+}
