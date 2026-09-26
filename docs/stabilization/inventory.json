@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T08:40:07.126926+00:00",
+  "updated_at": "2026-09-26T09:00:40.289165+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -14,7 +14,8 @@
     "docs/stabilization/reports/inventory-operations.json",
     "docs/stabilization/reports/inventory-local.json",
     "docs/stabilization/reports/inventory-connected.json",
-    "docs/stabilization/reports/inventory-tools.json"
+    "docs/stabilization/reports/inventory-tools.json",
+    "docs/stabilization/reports/remote-delta-e17e070-reconcile.json"
   ],
   "features": [
     {
@@ -111,7 +112,14 @@
               ],
               "evidence": "docs/stabilization/runs/baseline-build-001.json"
             }
-          }
+          },
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "Optional environment reads and the outer identity diagnostic now catch unavailable Chrome/environment state and warn/skip instead of throwing through the caller."
+            }
+          ]
         },
         {
           "id": "EXT-F-0001-T02",
@@ -216,6 +224,13 @@
             "warm",
             "idle-restart",
             "page-navigation"
+          ],
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "The e17e070 startup sequence waits for stale offscreen cleanup before reconnect probing. Follow-up ab5d151 also installs the cleanup promise at the shared offscreen acquisition boundary so streams, media, and bridge reconnects cannot race cleanup; timeout/failure continues with a warning."
+            }
           ]
         },
         {
@@ -252,7 +267,14 @@
               "Callback origin not exposed in observed UI; directcallback-observation criterion remainsunverified.",
               "Ordinary-member signin remainsunverified."
             ]
-          }
+          },
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "Optional environment reads and the outer identity diagnostic now catch unavailable Chrome/environment state and warn/skip instead of throwing through the caller."
+            }
+          ]
         }
       ],
       "cells": {
@@ -5717,6 +5739,13 @@
             "warm",
             "reload",
             "service-error"
+          ],
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "Optional environment reads and the outer identity diagnostic now catch unavailable Chrome/environment state and warn/skip instead of throwing through the caller."
+            }
           ]
         },
         {
@@ -7558,6 +7587,13 @@
             "warm",
             "reload",
             "service-error"
+          ],
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "The e17e070 startup sequence waits for stale offscreen cleanup before reconnect probing. Follow-up ab5d151 also installs the cleanup promise at the shared offscreen acquisition boundary so streams, media, and bridge reconnects cannot race cleanup; timeout/failure continues with a warning."
+            }
           ]
         },
         {
@@ -7750,6 +7786,13 @@
             "warm",
             "reload",
             "service-error"
+          ],
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "The e17e070 startup sequence waits for stale offscreen cleanup before reconnect probing. Follow-up ab5d151 also installs the cleanup promise at the shared offscreen acquisition boundary so streams, media, and bridge reconnects cannot race cleanup; timeout/failure continues with a warning."
+            }
           ]
         },
         {
@@ -7774,6 +7817,13 @@
             "warm",
             "reload",
             "service-error"
+          ],
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "The e17e070 startup sequence waits for stale offscreen cleanup before reconnect probing. Follow-up ab5d151 also installs the cleanup promise at the shared offscreen acquisition boundary so streams, media, and bridge reconnects cannot race cleanup; timeout/failure continues with a warning."
+            }
           ]
         },
         {
@@ -8735,7 +8785,14 @@
           ],
           "verification_status": "unverified",
           "remote_delta_acceptance": "Add assertions for the signed-in not-yet-a-Source notice/action and ensure a failed lookup displays unknown rather than this notice.",
-          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json"
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json",
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "The capture and save buttons now say Capture this page and Save as a Source."
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T22",
@@ -8931,7 +8988,14 @@
               "status": "unverified",
               "detail": "New remote source behavior; frozen0.2.56 artifact does not include this delta."
             }
-          }
+          },
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "The capture and save buttons now say Capture this page and Save as a Source."
+            }
+          ]
         }
       ],
       "cells": {
@@ -19650,7 +19714,14 @@
             "reload"
           ],
           "remote_delta_acceptance": "Generic Vault case should include match-lookup refusal, truthful error versus empty result, no stale candidate action, and successful retry.",
-          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json"
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json",
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "When the page-fill panel is ready, Vault resolves against its page URL and displays only candidates shared by the page-fill panel and the current Vault lookup. The blocked panel reason no longer coexists with the ordinary no-outcome guidance."
+            }
+          ]
         },
         {
           "id": "EXT-F-2011-T03",
@@ -19764,6 +19835,13 @@
             "stale-response",
             "no-submit",
             "no-write"
+          ],
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "When the page-fill panel is ready, Vault resolves against its page URL and displays only candidates shared by the page-fill panel and the current Vault lookup. The blocked panel reason no longer coexists with the ordinary no-outcome guidance."
+            }
           ]
         },
         {
@@ -19835,7 +19913,14 @@
               "status": "unverified",
               "detail": "New remote source behavior; frozen0.2.56 artifact does not include this delta."
             }
-          }
+          },
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "When the page-fill panel is ready, Vault resolves against its page URL and displays only candidates shared by the page-fill panel and the current Vault lookup. The blocked panel reason no longer coexists with the ordinary no-outcome guidance."
+            }
+          ]
         }
       ],
       "cells": {
@@ -20456,7 +20541,7 @@
         },
         {
           "id": "EXT-F-2013-C25",
-          "label": "Choose Agent Official model",
+          "label": "Choose Your default model",
           "action": "Clear model override",
           "source_anchor": "src/features/chat/ChatView.tsx",
           "test_design_status": "unverified",
@@ -21333,6 +21418,16 @@
           "id": "EXT-F-2013-C134",
           "label": "Send explicit page Source status in Chat context",
           "action": "The outgoing context carries exactly the corresponding source, not_yet_a_source, or unknown status; the not-yet state includes the Scrape Save action and unknown never claims absence."
+        },
+        {
+          "id": "EXT-F-2013-C135",
+          "label": "Apply account default model when no extension model is selected",
+          "action": "Verify general chat sends the account default with no local choice, an explicit extension model takes precedence, and an agent-specific model is unchanged."
+        },
+        {
+          "id": "EXT-F-2013-C136",
+          "label": "Render typed decision answer in Chat live stream and conversation history",
+          "action": "The verdict appears as readable assistant content during the stream and after reopening the conversation, without an empty assistant bubble."
         }
       ],
       "source_anchors": [
@@ -21405,6 +21500,13 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "General chat now resolves the person's platform account default when the extension model menu has no explicit selection; the existing chip describes that choice as Your default. Agent-specific models remain untouched by the helper."
+            }
           ]
         },
         {
@@ -21437,7 +21539,19 @@
             "reload"
           ],
           "remote_delta_acceptance": "Composer send now carries page_source context in place of prior_capture; verify all three statuses reach the request.",
-          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json"
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json",
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "General chat now resolves the person's platform account default when the extension model menu has no explicit selection; the existing chip describes that choice as Your default. Agent-specific models remain untouched by the helper."
+            },
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "Chat and Pilot stream listeners now turn decision_answers data events into readable render blocks; saved decision_answers parts are converted into text during message hydration."
+            }
+          ]
         },
         {
           "id": "EXT-F-2013-T03",
@@ -21493,6 +21607,13 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "Chat and Pilot stream listeners now turn decision_answers data events into readable render blocks; saved decision_answers parts are converted into text during message hydration."
+            }
           ]
         },
         {
@@ -21564,7 +21685,14 @@
               "status": "unverified",
               "detail": "New remote behavior; loaded0.2.51 predates this source."
             }
-          }
+          },
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "Read-aloud voice resolution now uses a shared, short-lived platform-knob snapshot reader. The snapshot is also used for account-default model resolution and reports read failures before falling back."
+            }
+          ]
         },
         {
           "id": "EXT-F-2013-T07",
@@ -21599,6 +21727,88 @@
             "admin": {
               "status": "unverified",
               "detail": "New remote source behavior; frozen0.2.56 artifact does not include this delta."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-2013-T08",
+          "title": "Apply account default model when no extension model is selected",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2013-C135"
+          ],
+          "preconditions": [
+            "Record current build receipt, reload extension and relevant pages, confirm actual mode. Use only controlled owned fixtures. Chat/Pilot execution remains deferred wave D."
+          ],
+          "steps": [
+            "Exercise the named behavior, positive and negative outcomes, and reload persistence/history where applicable."
+          ],
+          "expected": [
+            "Verify general chat sends the account default with no local choice, an explicit extension model takes precedence, and an agent-specific model is unchanged."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "negative-path"
+          ],
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "New remote behavior; source census only."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "New remote behavior; source census only."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New remote behavior; source census only."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-2013-T09",
+          "title": "Render typed decision answer in Chat live stream and conversation history",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2013-C136"
+          ],
+          "preconditions": [
+            "Record current build receipt, reload extension and relevant pages, confirm actual mode. Use only controlled owned fixtures. Chat/Pilot execution remains deferred wave D."
+          ],
+          "steps": [
+            "Exercise the named behavior, positive and negative outcomes, and reload persistence/history where applicable."
+          ],
+          "expected": [
+            "The verdict appears as readable assistant content during the stream and after reopening the conversation, without an empty assistant bubble."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "negative-path"
+          ],
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "New remote behavior; source census only."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "New remote behavior; source census only."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New remote behavior; source census only."
             }
           }
         }
@@ -22109,6 +22319,11 @@
           "id": "EXT-F-2014-C60",
           "label": "Pilot receives page Source status and truthful local-browser terminal outcomes",
           "action": "Pilot context carries the explicit page Source state; a terminal operation reports a reason matching its actual failed stage and never mislabels an unavailable observation as configuration_error."
+        },
+        {
+          "id": "EXT-F-2014-C61",
+          "label": "Render typed decision answer in Pilot live stream and conversation history",
+          "action": "The verdict appears as readable assistant content during the Pilot stream and after history reload, without an empty assistant bubble."
         }
       ],
       "source_anchors": [
@@ -22197,7 +22412,14 @@
             "reload"
           ],
           "remote_delta_acceptance": "Pilot inherits the page_source context and also exercises more specific local-browser terminal outcomes.",
-          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json"
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json",
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "Chat and Pilot stream listeners now turn decision_answers data events into readable render blocks; saved decision_answers parts are converted into text during message hydration."
+            }
+          ]
         },
         {
           "id": "EXT-F-2014-T03",
@@ -22228,6 +22450,44 @@
             "admin": {
               "status": "unverified",
               "detail": "New remote source behavior; frozen0.2.56 artifact does not include this delta."
+            }
+          },
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "Failed or missing top-frame reads no longer validate a navigation target; post-submit document changes are not reclassified using a check intended for pre-submit binding, and an expired wait is reported as form_changed."
+            }
+          ]
+        },
+        {
+          "id": "EXT-F-2014-T04",
+          "title": "Render typed decision answer in Pilot live stream and conversation history",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2014-C61"
+          ],
+          "preconditions": [
+            "Record current build receipt, reload extension and relevant pages, confirm actual mode. Use only controlled owned fixtures. Chat/Pilot execution remains deferred wave D."
+          ],
+          "steps": [
+            "Exercise the named behavior, positive and negative outcomes, and reload persistence/history where applicable."
+          ],
+          "expected": [
+            "The verdict appears as readable assistant content during the Pilot stream and after history reload, without an empty assistant bubble."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "negative-path"
+          ],
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "detail": "New remote behavior; source census only."
             }
           }
         }
@@ -34028,6 +34288,11 @@
           "id": "EXT-F-4089-C09",
           "label": "action: propose_recipe",
           "action": "Exercise the action=propose_recipe branch through the real executor"
+        },
+        {
+          "id": "EXT-F-4089-C10",
+          "label": "Reject failed or missing navigation document during credential execution",
+          "action": "A Chrome error document or unavailable frame cannot be treated as a successful login-page navigation; terminal classification follows the actual stage."
         }
       ],
       "source_anchors": [
@@ -34411,7 +34676,50 @@
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "remote_delta_history": [
+            {
+              "source": "ab5d151",
+              "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+              "acceptance": "Failed or missing top-frame reads no longer validate a navigation target; post-submit document changes are not reclassified using a check intended for pre-submit binding, and an expired wait is reported as form_changed."
+            }
           ]
+        },
+        {
+          "id": "EXT-F-4089-T02",
+          "title": "Reject failed or missing navigation document during credential execution",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-4089-C10"
+          ],
+          "preconditions": [
+            "Record current build receipt, reload extension and relevant pages, confirm actual mode. Use only controlled owned fixtures. Chat/Pilot execution remains deferred wave D."
+          ],
+          "steps": [
+            "Exercise the named behavior, positive and negative outcomes, and reload persistence/history where applicable."
+          ],
+          "expected": [
+            "A Chrome error document or unavailable frame cannot be treated as a successful login-page navigation; terminal classification follows the actual stage."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "negative-path"
+          ],
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "New remote behavior; source census only."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New remote behavior; source census only."
+            }
+          }
         }
       ],
       "cells": {

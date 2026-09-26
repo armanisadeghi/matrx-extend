@@ -3,7 +3,14 @@
 ## Resume contract
 User authorizes autonomous test → capture → fix → independent retest → green integration. Read PLAN.md, inventory.json, defects and runs. Inventory is sole coverage register; campaign remains largely unverified. Chat/Pilot systematic testing stays last. Shared main only; preserve concurrent edits, fetch before push, never publish red trunk. Root alone launches one resource-guarded heavy test/build OR native browser lease. Flat root+3 max: Luna medium narrow execution, Sol medium coding/moderate diagnosis, fresh independent reviews with separate acceptance/quality verdicts.
 
-## Latest integration checkpoint — 2026-09-26 08:53 UTC
+## Latest successful synchronization — 2026-09-26 09:00 UTC
+- release005 passed all14 checks and1424 tests with3 explicit dev-clone DB skips. Two concurrent remote pushes were merged and revalidated. v0.2.57 tag/source dd41089e7a35b7e334d1b3128c448a83ec7b0e35; actual receipt in runs/release-stabilization-005.json. No Store submission. Mandate scan's exit0 does not prove DB report submission (unmeasured).
+- Pulled released main into shared checkout, preserved later reports, pushed f9cc08b6a6290c7d0f7b3de002d76ad4690d2f4b; ls-remote verified and ahead/behind0/0. Next hourly synchronization deadline10:00UTC; fetch at task boundaries/15min and before push.
+- D9 and D10 closed after original retests, independent review, green integration and push. Their remaining unrelated product coverage is explicitly unverified.
+- Guest Settings local001 now running isolated native acceptance on receipt-verified0.2.57; no concurrent browser/heavy work. Primary Chrome still needs full0.2.57 reload verification. Reset helper extraction also awaits current-build replay.
+- Remote source map throughab5d151 plus cleanup followupee089a3 recorded; four new controls/cases added with no runtime passes. Chat/Pilot systematic testing remains last.
+
+## Prior integration checkpoint — 2026-09-26 08:53 UTC
 - User flagged synchronization lag and explicitly ordered hourly pull/merge/push. Fetch found 11 remote commits; merged 70bb6d3 via f87628d, then newer e17e070 via 304b66f, preserving both sides without conflicts. Newest origin ab5d151 also merged via4009419. Push remains pending green integration; do not mistake merge for push.
 - remote-deps-007 passed frozen-lock installation; content-ir0.19.1 metadata republish needs no consumer action.
 - release-stabilization-003 stopped on one unhandled popup identity diagnostic error despite1417 passing tests. EXT-D-0010 is tracked; upstream70bb6d3/8745413/e17e070 already repair its cause. No duplicate fix. Focused popup-async-red-001 passed and did not reproduce full-suite failure. Full merged release-stabilization-004 passed1419 tests/zero unhandled errors, but stopped on newly published design-system0.44.0. Refresh008 adopted it; fresh consumer peer3879c740 confirms no extension host-window-manager adoption required. release-stabilization-005 now running under guard; D10 retest-pass pending integration.
