@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0020",
   "feature_id": "EXT-F-0003",
-  "case_ids": [
-    "EXT-F-0003-T10"
-  ],
+  "case_ids": ["EXT-F-0003-T10"],
   "surface": "CI sidepanel lazy-import teardown",
   "auth_mode": "guest/member/admin infrastructure",
   "reproduction": [
@@ -88,7 +86,5 @@
     }
   ],
   "closure_requirement": "Independent no-weakening review, local focused/full suite and remote CI pass containing repair.",
-  "fix_commits": [
-    "9a3cdb9c"
-  ]
+  "fix_commits": ["9a3cdb9c"]
 }

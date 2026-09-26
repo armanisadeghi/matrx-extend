@@ -1,5 +1,7 @@
 {
-  "defect_id": "EXT-D-0020", "reviewed_commit": "bff8ecea", "status": "DONE_WITH_CONCERNS",
+  "defect_id": "EXT-D-0020",
+  "reviewed_commit": "bff8ecea",
+  "status": "DONE_WITH_CONCERNS",
   "verdict_A_behavior": "PENDING: actual CI 36259193096 proves recurrence with 9a3cdb9c, but this repair has no runtime evidence yet; retain in-fix.",
   "verdict_B_source_quality": "PASS with evidence gap: the one App renderer now unmounts React before awaiting Vitest-tracked imports in an unconditional afterEach; all original routing/quarantine assertions remain; no error suppression, owned-behavior stub, or configuration weakening was added.",
   "sibling_census": "rg finds only popup-claim-recovery importing/rendering sidepanel App; neighboring popup-main tests do not own its VIEW_LOADERS imports.",
