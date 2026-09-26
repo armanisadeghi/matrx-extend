@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T02:03:36.014047+00:00",
+  "updated_at": "2026-09-26T02:28:14.192234+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "f70ecd47bd8a864bee377ddb1235219efc8eff23",
@@ -1536,7 +1536,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "scope": "Visible state or preference persistence only; not full integration behavior",
+              "run_id": "guest-settings-002",
+              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T02",
@@ -1688,7 +1696,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "scope": "Visible state or preference persistence only; not full integration behavior",
+              "run_id": "guest-settings-002",
+              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T08",
@@ -1920,7 +1936,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "scope": "Visible state or preference persistence only; not full integration behavior",
+              "run_id": "guest-settings-002",
+              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T17",
@@ -2064,7 +2088,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "scope": "Visible state or preference persistence only; not full integration behavior",
+              "run_id": "guest-settings-002",
+              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T23",
@@ -2208,7 +2240,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "scope": "Visible state or preference persistence only; not full integration behavior",
+              "run_id": "guest-settings-002",
+              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T29",
@@ -2280,7 +2320,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "scope": "Visible state or preference persistence only; not full integration behavior",
+              "run_id": "guest-settings-002",
+              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T32",
@@ -2352,7 +2400,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "scope": "Visible state or preference persistence only; not full integration behavior",
+              "run_id": "guest-settings-002",
+              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T35",
@@ -2424,7 +2480,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "scope": "Visible state or preference persistence only; not full integration behavior",
+              "run_id": "guest-settings-002",
+              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T38",
@@ -3144,7 +3208,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "scope": "Visible state or preference persistence only; not full integration behavior",
+              "run_id": "guest-settings-002",
+              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T68",
@@ -3203,7 +3275,8 @@
           ],
           "run_ids": [
             "guest-local-001",
-            "render-retest-001"
+            "render-retest-001",
+            "guest-settings-002"
           ],
           "retest_status": "not-run"
         },

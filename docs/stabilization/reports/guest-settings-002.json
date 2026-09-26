@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "report_id": "guest-settings-002",
+  "run_id": "guest-settings-002",
+  "at": "2026-09-26T02:26:55Z",
+  "status": "completed",
+  "summary": "Executed nine guest Settings cases under the root-owned browser lease. All nine passed at the visible-state or local-preference level; every changed preference and collapsible state was restored. Candidate 0.2.47 and guest state were verified. No product defect observed.",
+  "counts": {"cases_total": 9, "passed": 9, "failed": 0, "blocked": 0, "unverifiable": 0},
+  "feature_controls_cases": [
+    {"feature_id": "EXT-F-1003", "control_ids": ["EXT-F-1003-C01"], "case_ids": ["EXT-F-1003-T01"], "status": "passed"},
+    {"feature_id": "EXT-F-1003", "control_ids": ["EXT-F-1003-C03"], "case_ids": ["EXT-F-1003-T07"], "status": "passed"},
+    {"feature_id": "EXT-F-1003", "control_ids": ["EXT-F-1003-C08"], "case_ids": ["EXT-F-1003-T22"], "status": "passed"},
+    {"feature_id": "EXT-F-1003", "control_ids": ["EXT-F-1003-C10"], "case_ids": ["EXT-F-1003-T28"], "status": "passed"},
+    {"feature_id": "EXT-F-1003", "control_ids": ["EXT-F-1003-C06"], "case_ids": ["EXT-F-1003-T16"], "status": "passed"},
+    {"feature_id": "EXT-F-1003", "control_ids": ["EXT-F-1003-C11"], "case_ids": ["EXT-F-1003-T31"], "status": "passed"},
+    {"feature_id": "EXT-F-1003", "control_ids": ["EXT-F-1003-C12"], "case_ids": ["EXT-F-1003-T34"], "status": "passed"},
+    {"feature_id": "EXT-F-1003", "control_ids": ["EXT-F-1003-C13"], "case_ids": ["EXT-F-1003-T37"], "status": "passed"},
+    {"feature_id": "EXT-F-1003", "control_ids": ["EXT-F-1003-C29"], "case_ids": ["EXT-F-1003-T67"], "status": "passed"}
+  ],
+  "evidence": ["Chrome Extensions and Settings About showed dev extension cihdmkcdjjckfhjpgoedmgfpoljebaml v0.2.47.", "Settings AX showed guest Email —, Sign in, and Default agent Choose an organization above.", "Full AX observed the requested guest controls, preference changes, cross-view persistence, collapsible state transitions, and restored final values.", "Auto-scrape Capture and Scroll & capture were each observed selected after extension reload; cleanup Capture was reloaded and verified."],
+  "resource_lease": "root-owned guest-settings-002, session 94455; lease freed after closing UI and fixture tab, before receipt writes.",
+  "limitations": ["UI/accessibility evidence does not establish backend network silence; no request monitor was used.", "No screenshots saved; no product defect filed.", "Feature behavior requiring sign-in, admin state, desktop integration, credentials, or a discriminating long-page/never-capture fixture remains unverified as listed in next-guest-settings-brief.json."]
+}

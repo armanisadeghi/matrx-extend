@@ -1,0 +1,280 @@
+{
+  "schema_version": 1,
+  "id": "guest-settings-002",
+  "at": "2026-09-26T02:26:55Z",
+  "status": "completed",
+  "lane": "guest_settings_runtime_verification",
+  "resource_lease": "root-owned guest-settings-002, session 94455; resource log /tmp/matrx-guest-settings-002-resource.log; lease released after UI stop and before receipt writing",
+  "browser": "Google Chrome native app (com.google.Chrome), AI (aimatrx.com) profile",
+  "extension": {
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.47",
+    "enabled": true,
+    "loaded_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "build_receipt": "docs/stabilization/runs/render-build-001.json",
+    "candidate_commit": "bb9f18f",
+    "version_gate": "Chrome Extensions showed Matrx Extend 0.2.47 with the expected ID; Settings > About showed Version 0.2.47 and the same ID. After each extension Reload, Chrome showed Reloaded and the version/ID remained 0.2.47 / cihdmkcdjjckfhjpgoedmgfpoljebaml.",
+    "reload_recovery": "No stale-version recovery was needed; no Load unpacked or removal action was performed."
+  },
+  "auth_mode": "guest; AX showed Email \u2014, Sign in, and Default agent Choose an organization above; no sign-in or account change occurred.",
+  "fixture": {
+    "url": "https://example.com/",
+    "title": "Example Domain",
+    "evidence": "AX: heading Example Domain; body text 'This domain is for use in documentation examples without needing permission. Avoid use in operations.'",
+    "cleanup": "Closed the dedicated fixture tab and the Settings side panel. Returned to the pre-existing chrome://extensions tab. No capture or other page data was saved."
+  },
+  "timing_method": "Date.now immediately before each UI action and immediately after reading the resulting AX state. Values below include CUA automation and AX observation overhead and are not pure UI latency. Visibility-only observations without a discrete action have no timing claim.",
+  "counts": {
+    "cases_total": 9,
+    "passed": 9,
+    "failed": 0,
+    "blocked": 0,
+    "unverified": 0
+  },
+  "cases": [
+    {
+      "id": "EXT-F-1003-T01",
+      "control_id": "EXT-F-1003-C01",
+      "status": "pass",
+      "steps": [
+        "Opened Settings > Organization."
+      ],
+      "exact_ax": [
+        "Organization Sign in to choose"
+      ],
+      "expected_result": "Guest organization view offered sign-in and did not render an organization selector.",
+      "timing": {
+        "before_ms": 1790389147598,
+        "after_ms": 1790389148603,
+        "automation_inclusive_elapsed_ms": 1005
+      },
+      "cleanup": "Read-only; no changes."
+    },
+    {
+      "id": "EXT-F-1003-T07",
+      "control_id": "EXT-F-1003-C03",
+      "status": "pass",
+      "steps": [
+        "Inspected Settings > Chat while signed out and without an active organization."
+      ],
+      "exact_ax": [
+        "Default agent Choose an organization above Default mode",
+        "Email \u2014",
+        "Sign in"
+      ],
+      "expected_result": "The agent picker was unavailable and the guest instruction to choose an organization appeared.",
+      "timing": "Visibility-only AX observation; no action-to-AX duration captured.",
+      "cleanup": "Read-only; no changes. No network observation was collected, so no network-request claim is made."
+    },
+    {
+      "id": "EXT-F-1003-T22",
+      "control_id": "EXT-F-1003-C08",
+      "status": "pass",
+      "steps": [
+        "Inspected the guest Settings section list."
+      ],
+      "exact_ax": [
+        "Advanced agent capabilities was absent from the guest Settings AX tree."
+      ],
+      "expected_result": "The admin-only section was not visibly offered to a guest.",
+      "timing": "Visibility-only AX observation; no action-to-AX duration captured.",
+      "cleanup": "Read-only negative visibility check. No direct route/component or role state was manipulated."
+    },
+    {
+      "id": "EXT-F-1003-T28",
+      "control_id": "EXT-F-1003-C10",
+      "status": "pass",
+      "steps": [
+        "For each visible group, clicked twice, reading AX after each click so the original state was restored."
+      ],
+      "groups": [
+        {
+          "label": "ACCOUNT",
+          "initial": "open",
+          "close_ax": "Email row removed",
+          "restore_ax": "Email \u2014 returned"
+        },
+        {
+          "label": "ORGANIZATION",
+          "initial": "open",
+          "close_ax": "Organization row removed",
+          "restore_ax": "Organization Sign in to choose returned"
+        },
+        {
+          "label": "APPEARANCE",
+          "initial": "open",
+          "close_ax": "Theme combo removed",
+          "restore_ax": "Theme System returned"
+        },
+        {
+          "label": "CHAT",
+          "initial": "open",
+          "close_ax": "Default agent/mode/speed rows removed",
+          "restore_ax": "Those rows returned"
+        },
+        {
+          "label": "PRIVACY",
+          "initial": "open",
+          "close_ax": "Privacy preference rows removed",
+          "restore_ax": "All four switches and labels returned"
+        },
+        {
+          "label": "SCRAPE",
+          "initial": "open",
+          "close_ax": "Scrape rows removed",
+          "restore_ax": "Deep clean, auto-scrape and mode rows returned"
+        },
+        {
+          "label": "DATA",
+          "initial": "closed",
+          "open_ax": "No options yet appeared",
+          "restore_ax": "No options row removed"
+        },
+        {
+          "label": "SEO",
+          "initial": "closed",
+          "open_ax": "No options yet appeared",
+          "restore_ax": "No options row removed"
+        },
+        {
+          "label": "DESKTOP BRIDGE",
+          "initial": "open",
+          "close_ax": "Status/pair/port rows removed",
+          "restore_ax": "Not connected, Pair code and Local engine port returned"
+        },
+        {
+          "label": "DATA & RESET",
+          "initial": "open",
+          "close_ax": "Clear local data action removed",
+          "restore_ax": "Clear local data action returned; not activated"
+        },
+        {
+          "label": "ABOUT",
+          "initial": "open",
+          "close_ax": "Version row removed",
+          "restore_ax": "Version 0.2.47 and expected ID returned"
+        }
+      ],
+      "expected_result": "Every visible group opened/closed with corresponding content visibility and returned to its original state.",
+      "timing": "Per-toggle action-to-AX observations ranged 612\u20131,073 ms, automation-inclusive; raw per-action AX diffs were captured during the run.",
+      "cleanup": "All group initial states restored; no nested settings activated."
+    },
+    {
+      "id": "EXT-F-1003-T16",
+      "control_id": "EXT-F-1003-C06",
+      "status": "pass",
+      "initial": "on",
+      "steps": [
+        "Toggled off, navigated Settings > Scrape > Settings, observed off, then restored on."
+      ],
+      "exact_ax": [
+        "switch Share page identity & email content, Value: off",
+        "switch Share page identity & email content, Value: on"
+      ],
+      "expected_result": "Switch state persisted across view navigation.",
+      "timing": "Direct toggle observations 1,277 ms and 449 ms automation-inclusive; navigation persistence observed in later AX reread.",
+      "cleanup": "Restored original on value. No sharing action was invoked; no network capture was collected, so absence of transmission is not claimed."
+    },
+    {
+      "id": "EXT-F-1003-T31",
+      "control_id": "EXT-F-1003-C11",
+      "status": "pass",
+      "initial": "on",
+      "steps": [
+        "Toggled off, navigated to Scrape and back, AX still showed off, then restored on."
+      ],
+      "exact_ax": [
+        "switch Offer saved logins on sign-in forms, Value: off",
+        "switch Offer saved logins on sign-in forms, Value: on"
+      ],
+      "expected_result": "Preference persisted through view navigation.",
+      "timing": {
+        "toggle_off_ms": 492,
+        "navigate_to_scrape_ms": 1168,
+        "navigate_back_ms": 899,
+        "restore_ms": 2003,
+        "measurement": "All durations include automation and AX observation."
+      },
+      "cleanup": "Restored original on value. No sign-in form was opened; no credential matching or saving was invoked. An initial helper attempt was stopped and restored before the case was rerun correctly."
+    },
+    {
+      "id": "EXT-F-1003-T34",
+      "control_id": "EXT-F-1003-C12",
+      "status": "pass",
+      "initial": "off",
+      "steps": [
+        "Toggled on, navigated to Scrape and back, AX still showed on, then restored off."
+      ],
+      "exact_ax": [
+        "switch Show password suggestions on websites, Value: on",
+        "switch Show password suggestions on websites, Value: off"
+      ],
+      "expected_result": "Presentation preference persisted through view navigation.",
+      "timing": {
+        "toggle_on_ms": 924,
+        "navigate_to_scrape_ms": 1210,
+        "navigate_back_ms": 901,
+        "restore_ms": 1224,
+        "measurement": "All durations include automation and AX observation."
+      },
+      "cleanup": "Restored original quiet/off state. No credential form was opened and no credential data was present or saved."
+    },
+    {
+      "id": "EXT-F-1003-T37",
+      "control_id": "EXT-F-1003-C13",
+      "status": "pass",
+      "initial": "off",
+      "steps": [
+        "Verified coming soon hint; toggled on, navigated to Scrape and back, AX still showed on, then restored off."
+      ],
+      "exact_ax": [
+        "text Deep clean COMING SOON",
+        "switch Deep clean, Value: on",
+        "switch Deep clean, Value: off"
+      ],
+      "expected_result": "Setting state persisted; control remained labeled coming soon. No behavioral effect was asserted.",
+      "timing": {
+        "toggle_on_ms": 623,
+        "navigate_to_scrape_ms": 1269,
+        "navigate_back_ms": 924,
+        "restore_ms": 1265,
+        "measurement": "All durations include automation and AX observation."
+      },
+      "cleanup": "Restored original off value."
+    },
+    {
+      "id": "EXT-F-1003-T67",
+      "control_id": "EXT-F-1003-C29",
+      "status": "pass",
+      "initial": "Capture",
+      "steps": [
+        "Selected Capture and reloaded; selected Scroll & capture and reloaded; restored Capture and reloaded."
+      ],
+      "exact_ax_after_reload": [
+        "Auto-scrape mode ... combo box (settable) Capture",
+        "Auto-scrape mode ... combo box (settable) Scroll & capture",
+        "Auto-scrape mode ... combo box (settable) Capture"
+      ],
+      "reload_receipts": [
+        "Chrome AX reported Reloaded; extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml remained version 0.2.47 after each reload."
+      ],
+      "expected_result": "Both selected modes survived extension reload; original Capture mode restored and verified after cleanup reload.",
+      "timing": "Mode selection and reload actions were individually timestamped; observed action-to-AX durations included roughly 0.9\u20131.5 seconds for selection/reopen actions, automation-inclusive. No pure UI-latency claim.",
+      "cleanup": "Restored Capture and verified it after reload. Scroll & capture content quality was not tested; the short example.com output is not evidence of failure."
+    }
+  ],
+  "limitations": [
+    "AX visibility and preference persistence were tested; network requests were not observed.",
+    "No screenshots were saved.",
+    "No defect draft created; no product failure observed."
+  ],
+  "stop": {
+    "ui_stopped": true,
+    "fixture_tab_closed": true,
+    "side_panel_closed": true,
+    "resource_warning_seen": false,
+    "resource_log": "/tmp/matrx-guest-settings-002-resource.log"
+  },
+  "resource_exit_code": 0,
+  "resource_invalid": false
+}
