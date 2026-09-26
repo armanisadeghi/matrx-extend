@@ -550,6 +550,7 @@ const completedResults = z.discriminatedUnion('operation', [
           origin: canonicalOrigin,
           form: z.enum(['login', 'username_first', 'password_change', 'none', 'ambiguous']),
           challenge: z.enum(['none', 'mfa', 'captcha', 'unknown']),
+          mfa_selector: z.string().min(1).max(512).optional(),
         })
         .strict(),
     })

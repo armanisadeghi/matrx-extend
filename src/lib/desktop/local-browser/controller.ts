@@ -142,6 +142,27 @@ export interface LocalBrowserControllerDeps {
 }
 
 type BrowserDocument = { documentId: string; url: string };
+type InspectLoginProbe = LoginFormProbe & { mfa_selector?: unknown };
+
+/**
+ * A probe result crosses the page-extension boundary, so retain only a small,
+ * printable selector. The selector is informational here; no MFA action is
+ * taken from it by this controller.
+ */
+function saneMfaSelector(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const selector = value.trim();
+  if (
+    !selector ||
+    selector.length > 512 ||
+    Array.from(selector).some((character) => {
+      const code = character.charCodeAt(0);
+      return code < 32 || code === 127;
+    })
+  )
+    return null;
+  return selector;
+}
 
 export function postSubmitDocumentObserver({
   original,
@@ -973,7 +994,7 @@ export class LocalBrowserController {
           func: credentialDomSource,
           args: [{ operation: 'auto_probe' }],
         });
-        const value = probe?.result as LoginFormProbe | undefined;
+        const value = probe?.result as InspectLoginProbe | undefined;
         const origin = new URL(document.url).origin;
         if (
           !value ||
@@ -983,6 +1004,7 @@ export class LocalBrowserController {
           !(await assertCurrentDocument())
         )
           return terminal('unsafe_destination');
+        const mfaSelector = saneMfaSelector(value.mfa_selector);
         return {
           command_id: claimed.command_id,
           operation: 'inspect_login',
@@ -995,7 +1017,8 @@ export class LocalBrowserController {
               : value.username_selector
                 ? 'username_first'
                 : 'none',
-            challenge: 'unknown',
+            challenge: mfaSelector ? 'mfa' : 'unknown',
+            ...(mfaSelector ? { mfa_selector: mfaSelector } : {}),
           },
         };
       } catch {
