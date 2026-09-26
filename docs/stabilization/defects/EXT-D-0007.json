@@ -17,7 +17,8 @@
     "docs/stabilization/reports/reload-auth-diagnosis.json",
     "docs/stabilization/runs/debugger-build-002.json",
     "docs/stabilization/runs/auth-permission-green-001.json",
-    "docs/stabilization/reports/auth-hydration-peer.json"
+    "docs/stabilization/reports/auth-hydration-peer.json",
+    "docs/stabilization/runs/auth-native-observation.json"
   ],
   "severity": "S1: authenticated development testing blocked by missing identity",
   "priority": "P0: baseline authentication blocker",
@@ -64,5 +65,12 @@
       "findings": "Broadcast and interactive sign-in bypass truthful hydration; role lookup error silently maps to nonadmin. Source confirmed, next regression proof required.",
       "report": "docs/stabilization/reports/auth-classification-peer.json"
     }
-  ]
+  ],
+  "partial_retest": {
+    "status": "original-repro-pass",
+    "source_implementation": "553bad3",
+    "run_id": "auth-native-observation",
+    "result": "Actual unpacked development extension recovered admin identity and same explicitly selected organization after full Reload, stable30seconds, then retained both after second full Reload; no new sign-in or account-data mutation.",
+    "closure_hold": "Remaining source-peer entrypoint and role-failure findings still in repair; final-build recheck/integration pending."
+  }
 }
