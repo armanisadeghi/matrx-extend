@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "reviewedCommit": "43dde8600a7ecab94733a77adfe792fc6e26d890",
+  "lane": "design-system 0.44.0 host window-manager consumer check",
+  "applicability": "NOT_APPLICABLE",
+  "engineering": "PASS",
+  "basis": "The 0.44.0 consumer action applies to a host-owned DOM window manager: it should call announceLayerFront(windowElement) when its managed floating window opens or receives focus. This extension has no such window manager or WindowPanel equivalent. Its top-level surfaces are Chrome-managed sidepanel/popup surfaces (src/lib/panel/adapter.ts, src/entrypoints/popup/main.tsx); the chrome.windows.create/update callers open or focus browser-owned windows and do not own a DOM window element. Shared dialogs and popovers are rendered inside the sidepanel DOM (including Dialog in OrganizationPickerDialog.tsx and ConfirmDialogHost mounted in App.tsx); these are layers managed by design-system itself, not windows managed by an extension host window manager.",
+  "inventory": "Searched source for announceLayerFront, LAYER_FRONT_EVENT, WindowPanel/window-manager symbols, DialogContent/Dialog/ConfirmDialogHost, chrome.windows.create/update, and side-panel open paths. The package changelog names matrx-frontend WindowPanel as the concrete consumer. Extension chrome.windows calls focus Chrome tab windows; no host floating-window registry, open/focus lifecycle, or DOM window element exists to instrument.",
+  "unverified": "No tests, build, browser, or runtime acceptance were run, per lane scope. No code action is indicated by this release note for the extension.",
+  "scope": "Source consumer applicability review only."
+}
