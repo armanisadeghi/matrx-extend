@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T15:13:00Z",
+  "updated_at": "2026-09-26T15:24:00Z",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -5096,7 +5096,8 @@
             "permissions-auth-native-sol",
             "release-native-verification",
             "native-0258-port-verification",
-            "isolated-permission-denial-005"
+            "isolated-permission-denial-005",
+            "native-0267-reload-001"
           ],
           "retest_status": "not-run"
         }
@@ -5133,6 +5134,32 @@
           "wave": "A",
           "resolution": "guest-reset005 real pointer settles target and focuses input; typed port65001 and Set persist successfully. Earlier failures were test input mechanics, not a demonstrated product save failure.",
           "retest_evidence": "docs/stabilization/runs/guest-reset-005.json"
+        }
+      ],
+      "runtime_evidence": [
+        {
+          "run_id": "native-0267-reload-001",
+          "mode": "admin",
+          "build": "0.2.67",
+          "status": "partial",
+          "report": "docs/stabilization/reports/native-0267-reload.json",
+          "preserved": [
+            "account",
+            "organization",
+            "automatic engine port",
+            "four optional permission switches OFF",
+            "required DevTools informational row"
+          ],
+          "unresolved_observation": {
+            "case_ids": [
+              "EXT-F-1003-T45",
+              "EXT-F-1003-T48"
+            ],
+            "expected": "Observe bridge lifecycle and eventual connection state after extension reload.",
+            "actual": "Connected (http) before reload, Not connected immediately after. No reconnection or settings change attempted.",
+            "state": "unverified-lead",
+            "next_action": "Reobserve after settled reload with actual engine availability, distinguish expected transient discovery from persistent failure before triage. No healthy connection claim."
+          }
         }
       ]
     },
