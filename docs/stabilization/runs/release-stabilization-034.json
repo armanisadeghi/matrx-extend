@@ -1,0 +1,103 @@
+{
+  "id": "release-stabilization-034",
+  "status": "pushed-ci-success",
+  "wrapper": {
+    "session": 66422,
+    "source": "/tmp/matrx-release-stabilization-034.log",
+    "sha256": "6e637ae5e4769ac36a31767e40652bf57802393b13992506e2e4d57286fa3f91",
+    "childExitCode": 0,
+    "finishedAt": "2026-09-26T20:47:24.817Z"
+  },
+  "candidate": {
+    "version": "0.2.77",
+    "commit": "2315f02b979332b7784209f8228cbee25205e2a7",
+    "tag": "v0.2.77",
+    "remoteMain": "2315f02b979332b7784209f8228cbee25205e2a7",
+    "remoteTag": "2315f02b979332b7784209f8228cbee25205e2a7",
+    "commitValidation": "The release log initially validated 7473562d, then its atomic push lost a race. It reassembled from updated base 6e641c04, produced candidate 2315f02b, and pushed that commit and v0.2.77. Read-only remote refs confirm main and tag both point to 2315f02b.",
+    "excludedUntrackedPath": "tests/browser/source-workspace-acceptance.mjs"
+  },
+  "releaseLog": {
+    "sourceAtReview": "tmp/release-logs/latest.log",
+    "sha256AtReview": "35635383dea4ffb2a75d92c19c98491b35590b487c629d5adcb1607a46b0d0d6"
+  },
+  "build": {
+    "releaseReceipt": ".output/release-receipt.json",
+    "releaseReceiptSha256": "89d6bc98586536d26729c133b550ca40df701a0173a5a884a9793e116f724064",
+    "sourceSha": "2315f02b979332b7784209f8228cbee25205e2a7",
+    "treeSha256": "007c94aae25c20c235eba269d6e5673367c1916e1eff4d17e8e55ecccdda760b",
+    "treeFileCount": 532,
+    "storeZip": {
+      "path": ".output/matrx-extend-0.2.77-store.zip",
+      "sha256": "5991e86117272b8a9f947039f0161bf2489fbde07200cc19e923a4c82fce473e"
+    },
+    "localZip": {
+      "path": ".output/matrx-extend-0.2.77-local.zip",
+      "sha256": "d0d74edb67229a8f82b8ce7e708a0e7c9287621c018a748206dc5f71f1f44753"
+    },
+    "storeManifest": {
+      "sha256": "942581650f7c9d7f86a46dbd51252a5317033eca21a78efb8a60dc5691669d39",
+      "manifestVersion": 3,
+      "version": "0.2.77",
+      "devKeyPresent": false,
+      "expectedStoreExtensionIdFromSourceConfig": "hnfolienncfklkgmdjjmhhegglimlamg",
+      "identityLimit": "The Store package manifest omits the dev key as intended. The expected Chrome Web Store ID is present in src/config/identity.ts; this release receipt does not prove the ID of an installed browser instance."
+    }
+  },
+  "releaseChecks": {
+    "candidateCheckCount": 15,
+    "passed": 15,
+    "failed": 0,
+    "unitTestFiles": {
+      "passed": 181,
+      "skipped": 1,
+      "total": 182
+    },
+    "unitTests": {
+      "passed": 1467,
+      "skipped": 3,
+      "total": 1470
+    },
+    "nonBlockingMandateScan": "11 findings; scan was not submitted to the database because credentials were unavailable. The gate is explicitly non-blocking."
+  },
+  "ci": {
+    "runId": 36270728976,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/36270728976",
+    "headSha": "2315f02b979332b7784209f8228cbee25205e2a7",
+    "conclusion": "success",
+    "jobCount": 1,
+    "jobsSucceeded": 1,
+    "substantiveStepsSucceeded": 12,
+    "unitTestFiles": {
+      "passed": 181,
+      "skipped": 1,
+      "total": 182
+    },
+    "unitTests": {
+      "passed": 1466,
+      "skipped": 4,
+      "total": 1470
+    },
+    "passedGates": [
+      "Typecheck",
+      "Schema routing",
+      "There is one agent picker",
+      "Picker guard self-test",
+      "Archived-items law",
+      "Archive guard self-test",
+      "Sign-out scope",
+      "Sign-out scope guard self-test",
+      "Mandate references scan (non-blocking)",
+      "Lint",
+      "Unit tests",
+      "Production build"
+    ]
+  },
+  "publication": "Git main and tag were pushed. The release log provides a Chrome Web Store upload path, but no Store upload or publication is evidenced here.",
+  "verificationLimits": [
+    "The live primary UI on 0.2.77 remains unverified.",
+    "The local Store package's manifest has no dev key; its configured Store ID is recorded, but no live installed extension ID was observed.",
+    "The untracked source-workspace browser acceptance file was explicitly excluded from the release candidate and its CI test counts."
+  ],
+  "evidenceScope": "Receipt-only independent reconciliation of the wrapper log, release log and receipt, artifact hashes, manifest, remote refs, and GitHub Actions run. No browser, build, tests, release, upload, or push was performed for this record."
+}
