@@ -1,0 +1,75 @@
+{
+  "id": "release-stabilization-024",
+  "feature_id": "EXT-F-0003",
+  "defect_ids": ["EXT-D-0017", "EXT-D-0018"],
+  "status": "pass",
+  "exit_code": 0,
+  "release": {
+    "sourceSha": "8742ff91f07cb2bb13f46e84ce94cf54ac8fb5c4",
+    "version": "0.2.70",
+    "publishState": "pushed",
+    "storeZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.70-store.zip",
+      "sha256": "f8ab89ab888e8d993457883619efbe4b02d70f4ef95c110f81505ae4c4b87e06"
+    },
+    "localZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.70-local.zip",
+      "sha256": "439829ed2478f6bfce0c5a62e42a8218c491474f0f8518efa2c64cfe0211c599"
+    },
+    "destinationPaths": [
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3"
+    ],
+    "treeSha256": "ed3b3bf990740c5d604ecde803ee46904b4210c8dc39026696c00d1f65d5c5aa",
+    "fileCount": 532
+  },
+  "raw_log": "tmp/release-logs/release-2026-09-26_10-12-34.log",
+  "check_results": [
+    { "name": "matrx-packages", "exit_code": 0 },
+    { "name": "typecheck", "exit_code": 0 },
+    { "name": "lint", "exit_code": 0 },
+    { "name": "unit-tests", "exit_code": 0 },
+    { "name": "schema-routing", "exit_code": 0 },
+    { "name": "package-twins", "exit_code": 0 },
+    { "name": "canonical-pickers", "exit_code": 0 },
+    { "name": "archived-items", "exit_code": 0 },
+    { "name": "archived-items-self-test", "exit_code": 0 },
+    { "name": "org-default-ban", "exit_code": 0 },
+    { "name": "org-default-ban-self-test", "exit_code": 0 },
+    { "name": "swallowed-refusals", "exit_code": 0 },
+    { "name": "migrations", "exit_code": 0 },
+    { "name": "tool-drift", "exit_code": 0 },
+    { "name": "mandate-references", "exit_code": 0 }
+  ],
+  "unit_tests": {
+    "passed": 1446,
+    "skipped": 3,
+    "failed": 0,
+    "test_files_passed": 179,
+    "test_files_skipped": 1
+  },
+  "verification": {
+    "source_tag_local_main_origin_main": "verified equal at release SHA; subsequent local HEAD advanced independently",
+    "tag": "v0.2.70",
+    "remote_main": "8742ff91f07cb2bb13f46e84ce94cf54ac8fb5c4",
+    "previous_tag_race": {
+      "candidate": "v0.2.69",
+      "candidate_sha": "24a9ea86b0b898267d25cca1ebb3fb7d76074267",
+      "existing_remote_tag_sha": "520f50c825571ddd080e7941c1003c53b03dd0c3",
+      "resolution": "release script revalidated candidate v0.2.70 and pushed it"
+    },
+    "store_zip_sha256_recomputed": "f8ab89ab888e8d993457883619efbe4b02d70f4ef95c110f81505ae4c4b87e06",
+    "local_zip_sha256_recomputed": "439829ed2478f6bfce0c5a62e42a8218c491474f0f8518efa2c64cfe0211c599",
+    "unpacked_tree_sha256": "ed3b3bf990740c5d604ecde803ee46904b4210c8dc39026696c00d1f65d5c5aa",
+    "unpacked_file_count": 532,
+    "manifest_version": "0.2.70",
+    "store_upload": "not_performed",
+    "primary_chrome_reload": "not_verified",
+    "limits": [
+      "Unit tests report 3 skipped tests across 1 skipped test file.",
+      "Mandate scan reported 11 findings; it is explicitly non-blocking, and repo identity was unavailable to that scanner.",
+      "Package-twins check passed with 5 explicitly reported pre-existing census items (4 collapsed exports and 1 formatCount item).",
+      "Lint passed with 572 warnings."
+    ]
+  }
+}
