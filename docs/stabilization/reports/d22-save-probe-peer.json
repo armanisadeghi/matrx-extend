@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-save-probe-peer",
+  "reviewed_commit": "b848e3abecdb61e3e195d5e5838609818df576ea",
+  "scope": "Independent source-only safety review of the existing-checkpoint, lookup-none recovery branch and Save geometry probe. No browser or test run.",
+  "A_runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "The new read-only diagnostic branch has not been run in this review lane. Run 002 only establishes the earlier recovery lookup-none stop before this branch existed."
+  },
+  "B_source": {
+    "verdict": "PASS_SOURCE_REVIEW",
+    "findings": [
+      "With an existing checkpoint, the runner validates it and reads the exact approved-organization recognition result. On result none it captures the same public fixture, waits for the real Scrape UI Save control, samples geometry, then deliberately fails into diagnostic_only. This branch never calls reserveSaveAttempt, recordObservedSourceId, or the Save click; it sends no keyboard input or DOM click. The existing checkpoint is opened read-only and is not rewritten or removed.",
+      "The capture action is the existing local page-capture path; the saving hook's network writes are only reached by its separate Save handler, which this recovery-none branch does not invoke. The recognition observer performs GET/event reads and response-body parsing only.",
+      "Diagnostic output is limited to counts, booleans, and nulls for active-pane state, target ownership, disabled state, area, clipping, hit testing, and clipping ancestor count. It emits no page text, organization name or ID, Source ID, URL, credentials, or response body.",
+      "The diagnostic measures one post-scroll geometry snapshot and does not claim stable-pointer acceptance. If the unique visible Save button is outside the linked active Scrape pane, it records ownership false rather than claiming a valid target."
+    ],
+    "limits": [
+      "This is source safety approval for a read-only probe only; it does not prove runtime geometry or establish why the earlier Save attempt was ambiguous.",
+      "Existing unrelated SEO worktree changes were left untouched."
+    ]
+  },
+  "checks": ["No browser, tests, build, or network writes performed in this review."]
+}
