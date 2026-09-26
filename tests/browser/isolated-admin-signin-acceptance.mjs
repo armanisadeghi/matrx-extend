@@ -118,9 +118,10 @@ async function accountState(panel) {
     const buttons = [...document.querySelectorAll('button')];
     const signIn = buttons.find((button) => button.textContent.trim() === 'Sign in');
     const retry = buttons.find((button) => button.textContent.trim() === 'Try again');
+    const expanded = account?.getAttribute('aria-expanded');
     return {
       accountPresent: Boolean(account),
-      accountExpanded: account?.getAttribute('aria-expanded') ?? null,
+      accountExpanded: expanded === 'true' ? true : expanded === 'false' ? false : null,
       emailRowPresent: emailRow !== null,
       expectedEmailMatch: emailRow === 'Email${EXPECTED_ADMIN}',
       roleRowPresent: roleRow !== null,
