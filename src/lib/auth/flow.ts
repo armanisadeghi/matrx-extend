@@ -54,10 +54,24 @@ async function withAuthMutationLock<T>(callback: () => Promise<T>): Promise<T> {
   return locks.request(AUTH_MUTATION_LOCK, { mode: 'exclusive' }, callback);
 }
 
+type BrowserIdentityApi = {
+  getRedirectURL?: () => string;
+  launchWebAuthFlow?: (details: { url: string; interactive: boolean }) => Promise<string | undefined>;
+};
+
+function getBrowserIdentity(): BrowserIdentityApi | undefined {
+  // Safari exposes the standards-shaped promise API as `browser.identity`.
+  // Keep this lookup lazy: content/offscreen contexts do not expose identity.
+  return (globalThis as unknown as { browser?: { identity?: BrowserIdentityApi } }).browser?.identity;
+}
+
 export function getRedirectUri(): string {
-  // Recompute lazily — chrome.identity is not available in offscreen / content
-  // contexts but this module is only imported from SW + UI surfaces.
-  return chrome.identity.getRedirectURL();
+  const browserIdentity = getBrowserIdentity();
+  if (browserIdentity?.getRedirectURL) return browserIdentity.getRedirectURL();
+
+  // Chrome retains its callback-oriented `chrome.identity` implementation.
+  if (chrome.identity?.getRedirectURL) return chrome.identity.getRedirectURL();
+  throw new Error('OAuth sign-in is unavailable because this browser does not provide an identity API');
 }
 
 /**
@@ -381,6 +395,19 @@ async function doRefresh(): Promise<OAuthTokens | null> {
 // ─── helpers ────────────────────────────────────────────────────────────────
 
 function launchWebAuthFlow(url: string): Promise<string> {
+  const browserIdentity = getBrowserIdentity();
+  if (browserIdentity?.launchWebAuthFlow) {
+    return browserIdentity.launchWebAuthFlow({ url, interactive: true }).then((callbackUrl) => {
+      if (!callbackUrl) throw new Error('OAuth flow cancelled or returned no URL');
+      return callbackUrl;
+    });
+  }
+
+  if (!chrome.identity?.launchWebAuthFlow) {
+    return Promise.reject(
+      new Error('OAuth sign-in is unavailable because this browser does not provide an identity API'),
+    );
+  }
   return new Promise((resolve, reject) => {
     chrome.identity.launchWebAuthFlow({ url, interactive: true }, (callbackUrl) => {
       if (chrome.runtime.lastError) {

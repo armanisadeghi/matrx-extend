@@ -40,6 +40,7 @@ describe('concurrent PKCE sign-in reproduction', () => {
   beforeEach(() => {
     state.verifierIndex = 0;
     state.nonceIndex = 0;
+    vi.stubGlobal('browser', undefined);
     vi.stubGlobal('navigator', {
       locks: {
         request: async (_name: string, _options: unknown, callback: () => Promise<unknown>) =>
@@ -98,6 +99,82 @@ describe('concurrent PKCE sign-in reproduction', () => {
       'verifier-1',
       'verifier-2',
     ]);
+  });
+
+  it('uses Safari browser.identity promises without requiring chrome.identity', async () => {
+    const session = new Map<string, unknown>();
+    const local = new Map<string, unknown>();
+    vi.stubGlobal('browser', {
+      identity: {
+        getRedirectURL: () => 'https://com.example.matrx.safariwebext.apple/',
+        launchWebAuthFlow: async () =>
+          'https://com.example.matrx.safariwebext.apple/?code=safari-code&state=state-1',
+      },
+    });
+    vi.stubGlobal('chrome', {
+      runtime: { lastError: undefined },
+      storage: {
+        session: {
+          set: async (values: Record<string, unknown>) => {
+            for (const [key, value] of Object.entries(values)) session.set(key, value);
+          },
+          get: async (keys: string[]) =>
+            Object.fromEntries(
+              keys.filter((key) => session.has(key)).map((key) => [key, session.get(key)]),
+            ),
+          remove: async (keys: string[]) => {
+            for (const key of keys) session.delete(key);
+          },
+        },
+        local: {
+          get: async (keys: string[]) =>
+            Object.fromEntries(keys.filter((key) => local.has(key)).map((key) => [key, local.get(key)])),
+          set: async (values: Record<string, unknown>) => {
+            for (const [key, value] of Object.entries(values)) local.set(key, value);
+          },
+          remove: vi.fn(),
+        },
+      },
+      alarms: { create: vi.fn(), clear: vi.fn() },
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              access_token: 'safari-access',
+              refresh_token: 'safari-refresh',
+              expires_in: 3600,
+              token_type: 'bearer',
+            }),
+            { status: 200 },
+          ),
+        )
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              id: '00000000-0000-4000-8000-000000000001',
+              email: 'admin@example.com',
+              email_confirmed_at: '2026-01-01T00:00:00Z',
+              user_metadata: {},
+            }),
+            { status: 200 },
+          ),
+        ),
+    );
+
+    const { signIn } = await import('@/lib/auth/flow');
+    await expect(signIn()).resolves.toMatchObject({ user: { email: 'admin@example.com' } });
+    expect(fetch).toHaveBeenCalledWith(
+      'https://db.example.test/auth/v1/oauth/token',
+      expect.objectContaining({
+        body: expect.stringContaining(
+          'redirect_uri=https%3A%2F%2Fcom.example.matrx.safariwebext.apple%2F',
+        ),
+      }),
+    );
   });
 
   it('does not replace an existing session when the exchanged bearer cannot fetch a profile', async () => {
