@@ -1,0 +1,25 @@
+{
+  "defect_id": "EXT-D-0006",
+  "reviewed_build": "debugger-build-002",
+  "scope": "Independent native Chrome retest of EXT-F-1003-T55 and Chrome optional permission rows; no source edits, build, tests, permission mutations, CDP calls, or agent messages.",
+  "verdict_a_acceptance": {
+    "status": "UNVERIFIED",
+    "reason": "Chrome full Reload loaded the requested build identity, but reopening its Settings UI showed a signed-out account and no selected organization. The original live interaction reproduction and post-reload checks could not be completed without changing the specified account/org state.",
+    "observed_before_stop": "DevTools Protocol appeared on as an informational row without a switch. Cookies, Page archive (MHTML), Clipboard read, and Tab video capture appeared off.",
+    "unverified": [
+      "Original interaction reproduction after reload and warm reload persistence.",
+      "Page archive (MHTML) and Tab video capture grant, denial, removal, and reload behavior.",
+      "Post-reload permission row state."
+    ]
+  },
+  "verdict_b_observed_quality": {
+    "status": "BLOCKED",
+    "finding": "The loaded build identity matched the requested 0.2.53 source path and stable ID. After full extension reload, the extension UI exposed Email —, no organization selected, and Sign in, despite the pre-reload UI showing admin@admin.com / ADMIN. The requested permission surface was therefore unavailable under the required session state.",
+    "risk": "The retest cannot distinguish intended session invalidation from a reload/session persistence defect. No sign-in, organization selection, or local-data reset was attempted."
+  },
+  "evidence_run": "docs/stabilization/runs/permission-native-retest.json",
+  "files": [
+    "docs/stabilization/runs/permission-native-retest.json",
+    "docs/stabilization/reports/permission-native-retest.json"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "permission-native-retest",
+  "status": "blocked",
+  "defect_id": "EXT-D-0006",
+  "case_id": "EXT-F-1003-T55",
+  "build": {
+    "run_id": "debugger-build-002",
+    "source_sha": "013fd432147fb3c75185d027e97f233d889dd885",
+    "tree_sha256": "9e4d31b73ed8c873ea979b54c5ae7e51601b1aaceb6f30f9aba5626e06c47afd",
+    "version": "0.2.53",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev"
+  },
+  "reproduction": {
+    "status": "not_reached",
+    "expected": "DevTools Protocol is presented as install-required and has no actionable runtime switch; no false toggle or impossible removal is offered.",
+    "observed": "Immediately before reload, Advanced agent capabilities showed DevTools Protocol on as an informational row without a toggle. After full extension reload, the reopened Settings UI showed Email —, no selected organization, and Sign in instead of the specified existing ADMIN session.",
+    "limitation": "Stopped before signing in or changing organization. Could not reach the post-reload Advanced agent capabilities view or reproduce the original click-and-reload sequence against its current logged-in state. No CDP tool, debugger session, or agent message was invoked."
+  },
+  "permission_rows": {
+    "pre_reload": {
+      "debugger": "on; informational row, no switch",
+      "cookies": "off",
+      "pageCapture": "off",
+      "clipboardRead": "off",
+      "tabCapture": "off"
+    },
+    "post_reload": "Not inspected: reloaded UI was signed out and had no organization selected.",
+    "pageCapture_and_tabCapture_exercise": "not_run"
+  },
+  "cleanup": {
+    "permission_changes_by_retest": "none; no permission switch was changed",
+    "initial_state": "Pre-reload state observed as debugger on and all four optional rows off. Post-reload state could not be independently rechecked because the UI was signed out.",
+    "other_settings": "No account, organization, theme, agent, or speed settings changed by this retest.",
+    "restricted_actions": "No archive, capture, clipboard, cookies read, debugger invocation, or agent message occurred."
+  },
+  "evidence": [
+    "Native Chrome Extensions details AX after full Reload showed version 0.2.53, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, and source path /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev; Chrome showed Reloaded.",
+    "Pre-reload Settings AX showed admin@admin.com, ADMIN, System theme, Matrx Browser Agent, Fast speed, DevTools Protocol on, and Cookies, Page archive (MHTML), Clipboard read, and Tab video capture off.",
+    "Post-reload Settings AX showed Email —, Default agent ‘Choose an organization above’, and a Sign in button. Native screenshot captured the same extension details and signed-out Settings view in the CUA session; screenshot was not written to a separate file."
+  ],
+  "next_action": "Restore the admin session and explicitly selected fixture organization through the authorized guided session, then repeat the original T55 reproduction and pageCapture/tabCapture deny, allow, remove, and reload checks."
+}
