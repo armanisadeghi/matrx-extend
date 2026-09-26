@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "report_id": "member-vault-shared-click-repair",
+  "status": "scoped_click_source_prepared_runtime_unverified",
+  "run_receipt": "docs/stabilization/runs/member-vault-access-005.json",
+  "observed": "In the owned Chrome profile, real admin web and extension sign-in passed. The approved organization was explicitly selected. The Vault Mine panel was active and settled, with no test@test.com title candidate. The Shared tab was present, but the click stage failed before Shared inventory could be read.",
+  "source_boundary": "The Vault Shared control is a Radix button[role=tab] inside the panel linked by the active Vault tab's aria-controls. The probe instead passes a dynamic Shared (count) label to the generic settings-panel-driver click kind, which searches all document buttons by exact text. The run did not capture whether that click failed from zero candidates, multiple candidates, occlusion, movement, or another hit-test condition.",
+  "minimal_repair": "The driver now has one scoped vault-shared-tab kind: it locates the active Vault trigger, follows aria-controls to its panel, and requires exactly one visible Shared count tab there. It retains the driver's existing scroll, hit-test, stable-point, and trusted Input.dispatchMouseEvent gates. The member probe invokes this fixed kind without carrying a stale count label. This is a selector-hardening repair; run 005 did not record enough detail to prove why the earlier generic click failed.",
+  "concurrency_hold": "The root confirmed the other guarded run exited successfully before allowing this shared driver edit. No browser, test, or build run occurred in this repair.",
+  "remaining": "A guarded rerun must establish whether the scoped click reaches Shared inventory. Mine has zero candidates in run 005; Shared and member authentication remain unverified."
+}

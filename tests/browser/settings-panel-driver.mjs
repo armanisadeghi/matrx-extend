@@ -93,6 +93,19 @@ export async function click(panel, kind, label) {
       .flatMap((el) => [...el.querySelectorAll('button[role="option"]')])
       .filter((el) => [...el.querySelectorAll('span.truncate')]
         .some((name) => name.textContent.trim() === label));
+    else if (kind === 'vault-shared-tab') {
+      // Scope the changing count label to the active Vault panel. The caller
+      // still uses this driver's visible, hit-tested, trusted pointer path.
+      const vaultTrigger = document.querySelector('button[role="tab"][title="Vault"][data-state="active"]');
+      const vaultPanel = document.getElementById(vaultTrigger?.getAttribute('aria-controls') ?? '');
+      candidates = label === 'Shared'
+        ? [...(vaultPanel?.querySelectorAll('button[role="tab"]') ?? [])].filter((el) => {
+            const text = el.textContent.trim();
+            return text.startsWith('Shared (') && text.endsWith(')') &&
+              /^[0-9]+$/.test(text.slice(8, -1));
+          })
+        : [];
+    }
     else if (kind === 'dialog') candidates = [...document.querySelectorAll('[role="alertdialog"]')]
       .filter((el) => el.querySelector('[data-slot="alert-dialog-title"]')?.textContent.trim() === 'Clear local data?')
       .flatMap((el) => [...el.querySelectorAll('button')])

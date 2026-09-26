@@ -288,7 +288,7 @@ try {
         if (mine.errorVisible) fail('vault_inventory_error');
         if (!mine.sharedTabLabel) fail('shared_inventory_tab_missing');
         stage = 'shared_tab_click';
-        await click(panel, 'button', mine.sharedTabLabel);
+        await click(panel, 'vault-shared-tab', 'Shared');
         stage = 'shared_inventory_wait';
         await waitFor(
           'shared_vault_inventory',
