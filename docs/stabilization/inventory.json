@@ -936,7 +936,8 @@
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
-            "EXT-D-0004"
+            "EXT-D-0004",
+            "EXT-D-0005"
           ],
           "run_ids": [
             "release-red-001",
@@ -944,7 +945,9 @@
             "release-recovery-001",
             "release-worker-guard-001",
             "integrated-regression-001",
-            "release-real-002"
+            "release-real-002",
+            "release-real-003",
+            "release-real-004"
           ],
           "retest_status": "not-run"
         },
@@ -953,7 +956,8 @@
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
-            "EXT-D-0004"
+            "EXT-D-0004",
+            "EXT-D-0005"
           ],
           "run_ids": [
             "release-red-001",
@@ -961,7 +965,9 @@
             "release-recovery-001",
             "release-worker-guard-001",
             "integrated-regression-001",
-            "release-real-002"
+            "release-real-002",
+            "release-real-003",
+            "release-real-004"
           ],
           "retest_status": "not-run"
         },
@@ -970,7 +976,8 @@
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
-            "EXT-D-0004"
+            "EXT-D-0004",
+            "EXT-D-0005"
           ],
           "run_ids": [
             "release-red-001",
@@ -978,16 +985,18 @@
             "release-recovery-001",
             "release-worker-guard-001",
             "integrated-regression-001",
-            "release-real-002"
+            "release-real-002",
+            "release-real-003",
+            "release-real-004"
           ],
           "retest_status": "not-run"
         }
       },
       "readiness_gaps": [
-        "Real strict release and final integration remain unverified: release-real-002 stopped before publication when package-twins reported numeric resource telemetry as a formatter (EXT-D-0003).",
+        "Pending strict green real release; latest release-real-004 refused publication on EXT-D-0005 records inclusion mismatch.",
         "Isolated fixture evidence validates targeted release ordering/recovery controls but does not prove external service gates or a completed real push."
       ],
-      "current_source_behavior": "Committed release path assembles a generated candidate, runs mandatory gates and builds before atomic main/tag publication, refuses failed candidates, rebuilds and revalidates after a remote race, and stages/promotes artifacts transactionally. Isolated release-green-001 and recovery/guard runs cover those targeted behaviors. A real strict release remains incomplete: release-real-002 stopped before publication at package-twins due the separate numeric-arithmetic false positive EXT-D-0003; no successful real release/integration is claimed.",
+      "current_source_behavior": "Validated-before-publication release path has independent fixture proof and real refusal proof. Release-real-004 passed 1300 unit tests, live private catalog reads and migration verification, then refused publication at records surface inclusion mismatch. Real successful publication remains unverified.",
       "unverified_leads": [
         {
           "id": "EXT-L-0003",
@@ -998,7 +1007,7 @@
           "wave": "A"
         }
       ],
-      "integration_status": "Pending a strict green real release and final integration; latest real attempt stopped before publication on EXT-D-0003."
+      "integration_status": "Pending strict green real release; latest release-real-004 refused publication on EXT-D-0005 records inclusion mismatch."
     },
     {
       "id": "EXT-F-1001",

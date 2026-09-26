@@ -1,0 +1,45 @@
+{
+  "id": "release-real-004",
+  "feature_id": "EXT-F-0003",
+  "defect_id": "EXT-D-0005",
+  "status": "fail",
+  "source_sha": "d98e00a",
+  "candidate_sha": "0ab27eff189f7fb7be26566c3a09245e7a70d943",
+  "candidate_version": "0.2.51",
+  "at": "2026-09-26T03:44:04.533Z",
+  "command": [
+    "bash",
+    "release.sh",
+    "--message",
+    "EXT-D-0002 validated release integration"
+  ],
+  "exit_code": 1,
+  "resource_invalid": false,
+  "tests_passed": 1300,
+  "tests_skipped": 3,
+  "test_files_passed": 157,
+  "test_files_skipped": 1,
+  "passed_checks": [
+    "typecheck",
+    "unit-tests",
+    "schema-routing",
+    "matrx-packages",
+    "package-twins",
+    "canonical-pickers",
+    "archived-items",
+    "archived-items-self-test",
+    "org-default-ban",
+    "org-default-ban-self-test",
+    "swallowed-refusals",
+    "migrations"
+  ],
+  "failed_gate": "tool-drift: records missing surface inclusion",
+  "diagnosis": "reports/records-drift-diagnosis.json",
+  "publication": "Stopped before push; no candidate main or tag published",
+  "log_sha256": "cf9d690c89403b63415bf56bdb4a79363889fc344e201f28dc914d331f630507",
+  "successful_live_reads": [
+    "docs regenerated from 82 bound definitions",
+    "migration ledger verified",
+    "tool drift completed comparison and reported one concrete inclusion mismatch"
+  ]
+}
