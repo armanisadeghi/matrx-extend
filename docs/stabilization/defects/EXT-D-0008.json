@@ -17,11 +17,13 @@
     "docs/stabilization/reports/remote-popup-about-reconciliation.json",
     "docs/stabilization/runs/popup-cleanup-green-001.json",
     "docs/stabilization/runs/popup-cleanup-green-002.json",
-    "docs/stabilization/reports/popup-cleanup-final-peer.json"
+    "docs/stabilization/reports/popup-cleanup-final-peer.json",
+    "docs/stabilization/runs/release-stabilization-002.json",
+    "docs/stabilization/runs/release-native-verification.json"
   ],
   "severity": "S2: integrated release validation blocked; no evidence of user-data deletion or broken native Capture UI.",
   "priority": "P1: repair before next green integration",
-  "state": "retest-pass",
+  "state": "closed",
   "owner": "/root/popup_cleanup_guard_repair",
   "root_cause": "New popup launch-intent session-record cleanup was not included in the destructive-operation classification registry. Source trace shows only owned transient request records removed.",
   "transition_history": [
@@ -54,6 +56,12 @@
       "from": "fixed",
       "to": "retest-pass",
       "reason": "Original discoveryguard plus surroundingpopup tests17/17pass; integration required beforeclosed. No nativepopuphealth claim."
+    },
+    {
+      "at": "2026-09-26T07:59:46.133282+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent source review and original reproduction retests passed; strict v0.2.56 integration passed all14 gates/1380 tests, remote main/tag verified. Final actual sidepanel artifact smoke passed; popup user workflow remains separately unverified."
     }
   ],
   "review_rounds": [
