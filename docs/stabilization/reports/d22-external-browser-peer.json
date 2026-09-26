@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-external-browser-peer",
+  "reviewed_commit": "3cb04727b22ed951a9248323537319f695397f96",
+  "scope": "Independent source review of the bounded Source workspace browser acceptance runner and its native harness, recognition query, click driver, and app route dependencies. No browser or test run.",
+  "A_runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "No browser run has occurred in this review lane. The runner's own report correctly begins unverified and does not turn preparation into acceptance."
+  },
+  "B_source": {
+    "verdict": "PASS_SOURCE_REVIEW",
+    "findings": [
+      "The only Save path follows real admin web and extension sign-in, unique explicit selection of the private-config approved existing organization, and a real recognition GET whose exact canonical URL and selected organization match. Save requires one 200 array response with zero rows and the linked Scrape UI's not-saved state; duplicate, failed, malformed, or ambiguous requests time out or fail closed. Example is first; IANA is considered only after Example is found saved.",
+      "The runner reserves the absent attempt file with exclusive mode-0600 creation, writes and fsyncs it, then fsyncs the parent directory before dispatching the one trusted Save click. After any attempted click, failure is recorded as ambiguous and there is no retry path. Only the Source ID observed through the real Open Source UI link is written to that private checkpoint.",
+      "Real organization selection is checked against both the Settings UI and device storage. The comparison organization is selected through the UI for read-only recognition; restoration is attempted even after an ambiguous comparison switch and must be verified before the runner can finish.",
+      "Public evidence contains fixed status fields and build version/tree hash; private organization names and organization/source IDs are not written to that report. The native harness verifies the release receipt against the actual unpacked tree hash and manifest before launch, loads that verified directory, and confirms the expected extension in the owned profile. The runner checks the same receipt/manifest identity again after the scenario.",
+      "The browser runner, recognition source, and UI assertions align on canonical identity, organization, extension-origin capture derivations, and saved/open-link states. Network response bodies are parsed in memory and reduced to none/found/unknown; raw body, credentials, and login errors are not emitted."
+    ],
+    "limits": [
+      "The optional immediate-clear observation may remain unverified if the Scrape pane is not observable while Settings is selected; later settled recognition does not substitute for it.",
+      "Missing-organization and late-inflight behavior are not exercised by this scenario unless naturally encountered."
+    ]
+  },
+  "checks": ["Source, harness, and dependency review only; no runtime verification claimed."]
+}
