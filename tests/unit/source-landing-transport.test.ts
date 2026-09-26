@@ -35,7 +35,30 @@ it('refuses a workspace switch between landing body creation and authorization h
   state.switchBeforeHeaders = true;
   const result = await landSource(body);
   expect(network).not.toHaveBeenCalled();
-  expect(result.ok).toBe(false);
+  expect(result).toMatchObject({
+    ok: false,
+    refusal: {
+      code: 'actor_changed_before_send',
+      remedy: 'choose_a_workspace_and_retry',
+      retryable: true,
+    },
+  });
+  if (!result.ok) {
+    expect(result.refusal.message).toMatch(/not sent/i);
+    expect(result.refusal.message).toMatch(/workspace/i);
+    expect(result.refusal.message).not.toMatch(/server refused|report this/i);
+  }
+});
+it('reports an actual server 403 as a server refusal', async () => {
+  const network = vi.fn(async () => new Response('Forbidden', { status: 403 }));
+  vi.stubGlobal('fetch', network);
+  const result = await landSource(body);
+  expect(network).toHaveBeenCalledTimes(1);
+  expect(result).toMatchObject({
+    ok: false,
+    refusal: { status: 403, code: 'refused', remedy: 'report_this', retryable: false },
+  });
+  if (!result.ok) expect(result.refusal.message).toMatch(/server refused/i);
 });
 it('keeps dispatched body and header in the original workspace when the response arrives after a switch', async () => {
   const network = vi.fn(async (_url: unknown, init: RequestInit) => {
