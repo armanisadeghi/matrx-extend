@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T20:15:00+00:00",
+  "updated_at": "2026-09-26T21:21:36+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -10391,7 +10391,10 @@
             "EXT-D-0018"
           ],
           "run_ids": [
-            "incoming-sources-001"
+            "incoming-sources-001",
+            "source-workspace-001",
+            "source-workspace-002",
+            "source-workspace-003"
           ],
           "retest_status": "not-run"
         }
@@ -10412,6 +10415,60 @@
           "review": "docs/stabilization/reports/svg003-runtime-peer.json",
           "proven": "Fast/Deep:2loadedSVGs,2captions,2HTMLlabels,interleavedorder,exactgeometry; Deepchangedsource observed.",
           "limits": "Ownedlocalhostfixture, no publicproduction/member/admin/fullT28 pass."
+        },
+        {
+          "run_id": "source-workspace-001",
+          "mode": "admin",
+          "status": "unverified",
+          "receipt": "docs/stabilization/runs/source-workspace-001.json",
+          "defect_id": "EXT-D-0022",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1007-T21",
+              "subtarget": "save_capture_as_source",
+              "status": "unverified",
+              "observation": "One Save attempt had an ambiguous result; pointer dispatch phase is unknown. A Source may have been created; no retry was made."
+            },
+            {
+              "case_id": "EXT-F-1007-T26",
+              "subtarget": "pre_save_lookup_recognition",
+              "status": "unverified",
+              "observation": "Fixture was definitively not saved before the Save attempt; post-attempt recognition is not established."
+            }
+          ],
+          "limits": "Admin UI with approved existing organization; local saved/open Source remains unverified. The ambiguous click does not establish whether dispatch occurred or a Source was created."
+        },
+        {
+          "run_id": "source-workspace-002",
+          "mode": "admin",
+          "status": "unverified",
+          "receipt": "docs/stabilization/runs/source-workspace-002.json",
+          "defect_id": "EXT-D-0022",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1007-T26",
+              "subtarget": "scoped_recovery_lookup",
+              "status": "unverified",
+              "observation": "Read-only scoped recovery lookup found no fixture; Save input was not attempted."
+            }
+          ],
+          "limits": "Original Save remains ambiguous. No positive recognition or cause was established; existing checkpoint remains reserved and unchanged."
+        },
+        {
+          "run_id": "source-workspace-003",
+          "mode": "admin",
+          "status": "diagnostic-only",
+          "receipt": "docs/stabilization/runs/source-workspace-003.json",
+          "defect_id": "EXT-D-0022",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1007-T26",
+              "subtarget": "save_button_hit_test_diagnostic",
+              "status": "diagnostic-only",
+              "observation": "One enabled visible Save button had geometry, but center and eight other interior points hit no target. No Save input was sent."
+            }
+          ],
+          "limits": "Observation-time hit-test diagnostic only; does not identify the covering element or establish the cause of run 001. Existing checkpoint remains authoritative."
         }
       ]
     },
@@ -10897,7 +10954,9 @@
             "seo-guest-009",
             "seo-guest-010",
             "seo-guest-011",
-            "seo-guest-012"
+            "seo-guest-012",
+            "seo-guest-013",
+            "seo-guest-014"
           ],
           "retest_status": "not-run"
         },
@@ -11301,6 +11360,102 @@
             }
           ],
           "limits": "16 bounded subtargets pass and one remains unverified. Automatic exact-data correctness and readability metric correctness remain unverified; T09 and EXT-F-1008 as a whole are not passed. Other deferred T01-T14 portions and member/admin modes remain uncovered."
+        },
+        {
+          "run_id": "seo-guest-013",
+          "mode": "guest",
+          "status": "unverified",
+          "receipt": "docs/stabilization/runs/seo-guest-013.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+              "status": "unverified",
+              "observation": "Run recorded 16 passing bounded subtargets; this door target remained unverified when the opt-in Airbnb metadata/schema continuation failed during schema activation. No target diagnostic was saved."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "metadata_fixture_scope",
+              "status": "unverified",
+              "observation": "The saved acceptance summary includes the preserved Wikipedia targets and one opt-in continuation; it does not show a completed combined metadata/schema door check."
+            },
+            {
+              "case_id": "EXT-F-1008-T01",
+              "subtarget": "bounded_guest_navigation_recheck",
+              "status": "partial",
+              "observation": "Run summary reports bounded prior/navigation predicates; this does not establish the full T01 case."
+            },
+            {
+              "case_id": "EXT-F-1008-T02",
+              "subtarget": "bounded_guest_manual_audit_recheck",
+              "status": "partial",
+              "observation": "Run summary reports bounded prior/manual predicates; this does not establish the full T02 case."
+            },
+            {
+              "case_id": "EXT-F-1008-T03",
+              "subtarget": "bounded_guest_restricted_page_recheck",
+              "status": "partial",
+              "observation": "Run summary reports bounded prior/restricted-page predicates; this does not establish the full T03 case."
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "bounded_guest_role_gate_recheck",
+              "status": "partial",
+              "observation": "Run summary reports bounded prior/role-gate predicates; this does not establish the full T07 case."
+            }
+          ],
+          "limits": "Acceptance remains unverified; exact automatic data and readability metric correctness remain unverified. Hreflang/schema doors remain unverified. No whole case or feature pass; member/admin remain uncovered."
+        },
+        {
+          "run_id": "seo-guest-014",
+          "mode": "guest",
+          "status": "unverified",
+          "receipt": "docs/stabilization/runs/seo-guest-014.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+              "status": "unverified",
+              "observation": "The acceptance result retained 16 bounded passes and one unverified door target; the attempt stopped at metadata_fixture_audit_wait before manual re-audit. Last safe sample showed scopeValid, Airbnb title/headings, Re-audit offered, and no audit error; no contemporaneous public-DOM title was saved, so the wait failure cause is indeterminate."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "automatic_exact_data",
+              "status": "unverified",
+              "observation": "Run receipt does not verify automatic exact data correctness."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "readability_metric_correctness",
+              "status": "unverified",
+              "observation": "Populated/explained display is not evidence of metric value correctness."
+            },
+            {
+              "case_id": "EXT-F-1008-T01",
+              "subtarget": "bounded_guest_navigation_coverage",
+              "status": "partial",
+              "observation": "Only enumerated bounded predicates are linked; full T01 remains unverified."
+            },
+            {
+              "case_id": "EXT-F-1008-T02",
+              "subtarget": "bounded_guest_manual_audit_coverage",
+              "status": "partial",
+              "observation": "Only enumerated bounded predicates are linked; full T02 remains unverified."
+            },
+            {
+              "case_id": "EXT-F-1008-T03",
+              "subtarget": "bounded_guest_restricted_page_coverage",
+              "status": "partial",
+              "observation": "Only enumerated bounded predicates are linked; full T03 remains unverified."
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "bounded_guest_role_gate_coverage",
+              "status": "partial",
+              "observation": "Only enumerated bounded predicates are linked; full T07 remains unverified."
+            }
+          ],
+          "limits": "Unverified receipt; metadata fixture audit wait did not distinguish mismatch from another transient condition. No cause, case pass, or feature pass is inferred; member/admin and other deferred dimensions remain uncovered."
         }
       ]
     },

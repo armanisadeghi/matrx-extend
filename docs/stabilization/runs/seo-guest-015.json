@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "run_id": "seo-guest-015",
+  "feature_id": "EXT-F-1008",
+  "status": "unverified",
+  "source": {
+    "result_path": "test-results/seo-guest-acceptance.json",
+    "result_sha256": "2a4a699ddc208cc7db0f11026179c74b48cca77bdda61844811962ef9d126c03",
+    "guard_log_path": "/tmp/matrx-seo-guest-015.log",
+    "guard_log_sha256": "4dbd6b32f9ce56ff619b61c2b16e35ed6146ee3d7a089b6835ed11f626e91bee"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T21:20:18.695Z",
+    "child_exit_at": "2026-09-26T21:20:29.878Z",
+    "child_exit_code": 1
+  },
+  "acceptance": {
+    "passing_subtargets_before_failure": 16,
+    "unverified_subtargets_before_failure": 1,
+    "failure_stage": "metadata_fixture_schema_outbound_activation",
+    "door_activation_diagnostic": {
+      "group": "structured_data",
+      "step": "anchor_sample",
+      "candidateCount": 1,
+      "destinationMatched": true,
+      "opensNewTab": true,
+      "stableHitSamples": 1,
+      "pointerPressReturned": false,
+      "pointerReleaseReturned": false,
+      "newPageObserved": false,
+      "expectedPageReached": false,
+      "sourcePageStillOpen": true,
+      "sourceUrlUnchanged": true
+    }
+  },
+  "interpretation": "The optional fixture's audit wait and earlier hreflang activation completed. The Structured data anchor existed, matched the public destination, and passed one stable hit sample; activation stopped during a later sample before pointer input. The receipt does not identify whether the later failure was obstruction, zero area, or moving geometry. No product defect is established by this run alone."
+}

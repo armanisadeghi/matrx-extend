@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "status": "source_diagnostic_ready_for_review",
+  "latest_receipt": "docs/stabilization/runs/seo-guest-015.json",
+  "finding": "Guest run 014 completed 16 passing subtargets but timed out waiting for the optional Airbnb fixture audit; its saved output lacked the public title needed to identify the mismatch. Run 015 passed that wait and reached the Structured data outbound door after a successful hreflang activation. The schema anchor was unique, pointed to the expected public destination, and passed one stable hit sample; the helper failed on the later sample before any pointer press. The current receipt cannot distinguish an overlay from a zero-area or moving anchor. No product defect is established.",
+  "source_change": "The bounded audit wait records expected and current public titles without relaxing the equality assertion or 30-second bound. The outbound door probe now retains the initial and each later hit-test sample with safe geometry and occluder category, records the failed predicate, and attempts one private panel screenshot only on anchor-sample failure. It does not retry the click, change timing, or mark the door passing.",
+  "limits": [
+    "No browser or heavy test was launched in this lane.",
+    "The next guarded run must identify the actual failing anchor sample and inspect the private screenshot before a reliability fix or product bug is claimed.",
+    "The built extension version and binary digest are not recorded in this runner output; this source-only diagnosis does not assert a new build attribution."
+  ],
+  "next_action": "Independent source review, then root-owned bounded browser run. Preserve runs 014 and 015 and inspect the safe anchor-sample fields and private screenshot on any repeat failure."
+}
