@@ -221,7 +221,18 @@
           "dimensions": [
             "warm",
             "auth-redirect"
-          ]
+          ],
+          "readiness_evidence": {
+            "run_id": "dev-auth-readiness-001",
+            "status": "unverified",
+            "verified_substeps": [
+              "Actual login source uses public PKCE OAuth client registration, not general Auth redirect allowlist.",
+              "Active client registration contains exact development callback and expected browser callbacks."
+            ],
+            "remaining_criteria": [
+              "Actual browser sign-in and reload/session behavior on fresh unpacked build; Mac unlock pending."
+            ]
+          }
         }
       ],
       "cells": {
@@ -235,7 +246,8 @@
             "render-compile-001",
             "integrated-compile-001",
             "integrated-install-002",
-            "integrated-regression-001"
+            "integrated-regression-001",
+            "dev-auth-readiness-001"
           ],
           "retest_status": "not-run"
         },
@@ -249,7 +261,8 @@
             "render-compile-001",
             "integrated-compile-001",
             "integrated-install-002",
-            "integrated-regression-001"
+            "integrated-regression-001",
+            "dev-auth-readiness-001"
           ],
           "retest_status": "not-run"
         },
@@ -263,7 +276,8 @@
             "render-compile-001",
             "integrated-compile-001",
             "integrated-install-002",
-            "integrated-regression-001"
+            "integrated-regression-001",
+            "dev-auth-readiness-001"
           ],
           "retest_status": "not-run"
         }
@@ -2251,7 +2265,7 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
+              "status": "blocked",
               "run_id": "guest-settings-002",
               "evidence": "docs/stabilization/runs/guest-settings-002.json",
               "verified_substeps": [
@@ -2260,7 +2274,9 @@
               "remaining_criteria": [
                 "Run the guest negative-visibility/guidance check in warm and cold/reloaded UI state, confirming signed-out state throughout."
               ],
-              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases."
+              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
+              "blocked_run_id": "guest-settings-003",
+              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved."
             }
           }
         },
@@ -2337,7 +2353,7 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
+              "status": "blocked",
               "run_id": "render-retest-001",
               "evidence": "docs/stabilization/runs/render-retest-001.json",
               "verified_substeps": [
@@ -2345,7 +2361,9 @@
               ],
               "remaining_criteria": [
                 "Verify each selected appearance is actually applied and persists after reopen/reload."
-              ]
+              ],
+              "blocked_run_id": "guest-settings-003",
+              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved."
             }
           }
         },
@@ -2422,7 +2440,7 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
+              "status": "blocked",
               "run_id": "guest-settings-002",
               "evidence": "docs/stabilization/runs/guest-settings-002.json",
               "verified_substeps": [
@@ -2431,7 +2449,9 @@
               "remaining_criteria": [
                 "Run the guest negative-visibility/guidance check in warm and cold/reloaded UI state, confirming signed-out state throughout."
               ],
-              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases."
+              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
+              "blocked_run_id": "guest-settings-003",
+              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved."
             }
           }
         },
@@ -2825,7 +2845,7 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
+              "status": "blocked",
               "run_id": "guest-settings-002",
               "evidence": "docs/stabilization/runs/guest-settings-002.json",
               "verified_substeps": [
@@ -2834,7 +2854,9 @@
               "remaining_criteria": [
                 "Run the guest negative-visibility/guidance check in warm and cold/reloaded UI state, confirming signed-out state throughout."
               ],
-              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases."
+              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
+              "blocked_run_id": "guest-settings-003",
+              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved."
             }
           }
         },
@@ -3611,7 +3633,14 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "blocked",
+              "blocked_run_id": "guest-settings-003",
+              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T53",

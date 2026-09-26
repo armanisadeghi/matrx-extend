@@ -28,14 +28,26 @@
   "reproducibility_count": "1/1 observed real release regeneration; strict post-fix run pending",
   "severity": "S1: strict release cannot verify private catalog and migration state on this host",
   "priority": "P0: blocks a truthful strict release",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "/root",
   "root_cause": "The build-time shared reader assumed an installed, authenticated Supabase CLI instead of consuming the existing operator Management API credential at the read point.",
   "sibling_census": "The docs:tools generator, strict tool-drift checker, and strict migration ledger checker share this helper. Review round 1 found all three had an early public-credential branch; each now attempts the operator read when public configuration is absent. The catalog checker also validates full private definition and surface shapes before comparison. Final repair adds complete docs row validation, canonical private bundle-member reads, strict unknown-membership failure, and discovered command-level guards in tests/unit.",
-  "fix_commits": [],
+  "fix_commits": [
+    "2042903",
+    "decb69e",
+    "6f87da0",
+    "b61a6b3"
+  ],
   "original_reproduction_retest_run": null,
-  "surrounding_case_runs": [],
-  "reviewer_identity": null,
+  "surrounding_case_runs": [
+    "management-tests-002",
+    "management-tests-003",
+    "management-compile-001"
+  ],
+  "reviewer_identity": [
+    "/root/management_read_final_peer",
+    "/root/public_read_boundary_peer"
+  ],
   "transition_history": [
     {
       "at": "2026-09-26T02:56:57Z",
@@ -72,6 +84,12 @@
       "from": "in-fix",
       "to": "in-fix",
       "reason": "Final peer confirmed public-success transport bypass of private row validators. Same predicates now validate public bindings, definitions, surfaces, and ledger before acceptance; new public positive/negative command guards require root execution."
+    },
+    {
+      "at": "2026-09-26T03:29:30.630256+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Bounded escalation completed private/public validation and canonical bundle relation; independent source recheck accepted correction, 40 discovered guards passed. Actual strict release remains pending."
     }
   ],
   "limitations": [

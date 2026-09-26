@@ -1,0 +1,23 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "reviewed_commits": ["2042903c2fb34daaca2ce531043a3ea0373231f1", "decb69e6a88b32510d79268ceaf7497867599b1e"],
+  "scope": "Independent source-only re-verification. No tests, builds, UI, SQL, network writes, product edits, commits, or pushes in this lane.",
+  "original_findings": [
+    {"finding": "Strict migration check returned success with absent public credentials", "disposition": "ADDRESSED", "evidence": "scripts/check-migrations.ts now attempts fetchLedgerViaManagementApi when loadSupabaseEnv is null and returns 2 in strict mode if that read fails."},
+    {"finding": "Private catalog predicates accepted shallow malformed rows", "disposition": "ADDRESSED", "evidence": "scripts/check-tool-db-drift.ts uses isDbToolRow and isDbSurfaceDefaultsRow for private definition and surface reads; scripts/_tool-db-row-validation.ts checks all selected fields and nested parameter/list shapes."},
+    {"finding": "Focused guards omitted auth, malformed payloads, real predicates, and strict exit", "disposition": "ADDRESSED IN TEST SOURCE", "evidence": "scripts/_supabase-management.test.ts covers missing auth, invalid JSON and top-level shape; scripts/_tool-db-row-validation.test.ts imports production predicates; scripts/check-migrations.test.ts checks absent public configuration and strict failure. Execution and RED/GREEN proof remain root-owned."},
+    {"finding": "Migration script header named the CLI", "disposition": "ADDRESSED", "evidence": "scripts/check-migrations.ts header names the direct read-only Management API."}
+  ],
+  "verdict_a_behavior_contract": {
+    "status": "PARTIAL",
+    "evidence": "scripts/_supabase-management.ts obtains operator auth at invocation, sends fixed caller SELECTs via POST /v1/projects/{ref}/database/query with read_only:true, requires HTTP 201 and an array of predicate-valid rows, and emits generic failures. Three callers await it. Strict migration and drift commands fail when both public and private reads fail.",
+    "fresh_finding": "scripts/check-tool-db-drift.ts:408-411 marks a missing direct inclusion as unverified whenever any bundle is declared, but unverifiedSurface is omitted from totalProblems at :435-443. Strict mode can exit 0 without verifying that this tool belongs to that bundle. This is an existing checker gap made material by the private-read acceptance claim; it does read the private surface rows but does not prove the required catalog relation.",
+    "cannot_verify": "No live Management API request or strict release result was run by this lane. Root's SELECT 1 HTTP 201 probe does not prove the new helper and its three callers."
+  },
+  "verdict_b_quality_security": {
+    "status": "PARTIAL",
+    "evidence": "The operator token is read from process configuration or sibling aidream/.env at query time and used only in the Authorization header. No literal, CLI argument, WXT_ variable, returned response body, or token-bearing error is added. Changed source has no extension-bundle import of the helper.",
+    "fresh_finding": "scripts/dump-tools-from-db.ts:56-61 still accepts any private definition with a string name. Malformed description, parameters, tier, category, admin_only, or is_active can be treated as valid generator data; use the complete production row validator or a docs-specific complete shape before writing generated docs. This path is non-blocking by design, but the private data validation claim is too broad.",
+    "limitations": "No emitted bundle/log artifact inspection or guard execution in this lane. The public REST reader's errors include server response text; this predates these commits and was not changed by the private helper."
+  }
+}
