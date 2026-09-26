@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "review": "seo-metadata-doors-prepare",
+  "change": {
+    "file": "tests/browser/seo-guest-acceptance.mjs",
+    "mode": "Opt-in bounded continuation selected by SEO_GUEST_METADATA_FIXTURE=airbnb.",
+    "fixture": "https://www.airbnb.com/",
+    "preserved": [
+      "Default Wikipedia acceptance path and its prior predicates are unchanged.",
+      "Existing automatic observations remain explicitly unverified for exact-data correctness.",
+      "Existing manual link, image, readability, and performance claims are not broadened."
+    ]
+  },
+  "new_bounded_observation": [
+    "Read hreflang links and JSON-LD or microdata schema types independently from the public page DOM.",
+    "Wait for the guest SEO panel to show the fixture title, then perform a trusted manual re-audit and confirm public metadata stability around it.",
+    "Compare all displayed metadata values, destinations, labels, and link safety attributes with the public DOM-derived expectation.",
+    "Use real pointer activation for one unique hreflang destination and one unique schema.org destination; require each opened tab to reach the expected URL, then close it.",
+    "Record a bounded T09 subtarget only if both candidates exist; otherwise record it unverified."
+  ],
+  "controls_scope": {
+    "expansion": "Not applicable: SeoDetails renders International and Structured data as static groups and exposes no expand/collapse controls.",
+    "tested_controls": "Existing outbound hreflang anchors and schema type chips only. No product UI or public-page controls were added."
+  },
+  "prior_http_fixture_evidence": {
+    "source_report": "docs/stabilization/reports/seo-public-metadata-fixture.json",
+    "status": 200,
+    "alternate_hreflang_count": 96,
+    "unique_hreflang_href_count": 95,
+    "json_ld_schema_org_types": ["SearchAction", "WebSite"]
+  },
+  "verification": {
+    "node_check": "node --check tests/browser/seo-guest-acceptance.mjs passed.",
+    "biome": "Exact-file Biome check passed.",
+    "runtime": "No browser, build, or acceptance run was launched. Runtime behavior remains unverified."
+  },
+  "limits": [
+    "The HTTP fixture can vary by geography and time; absent candidates leave this subtarget unverified, while unreachable fixture navigation leaves the run unverified.",
+    "This source change does not convert the existing 16/17 Wikipedia result into a pass or establish full EXT-F-1008/T09 coverage.",
+    "No product, authentication, database, or inventory changes were made."
+  ]
+}

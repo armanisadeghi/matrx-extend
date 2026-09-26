@@ -15,6 +15,8 @@ const OUTPUT = join(REPO, 'test-results', 'seo-guest-acceptance.json');
 const PAGES = ['https://example.org/', 'https://www.iana.org/domains/reserved'];
 const DETAIL_PAGE = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link';
 const NEXT_DETAIL_PAGE = 'https://en.wikipedia.org/wiki/HTML';
+const METADATA_FIXTURE_PAGE = 'https://www.airbnb.com/';
+const RUN_METADATA_FIXTURE = process.env.SEO_GUEST_METADATA_FIXTURE === 'airbnb';
 const report = {
   schema_version: 1,
   feature_id: 'EXT-F-1008',
@@ -1104,6 +1106,98 @@ try {
         sourceUrl: NEXT_DETAIL_PAGE,
         doorStatus: report.targets.at(-1).status,
       });
+
+      // Optional bounded continuation for public sources whose HTTP markup
+      // exposes both metadata groups. The default Wikipedia run is unchanged.
+      if (RUN_METADATA_FIXTURE) {
+        enter('metadata_fixture_page_navigation');
+        const fixtureResponse = await page.goto(METADATA_FIXTURE_PAGE, { waitUntil: 'load' });
+        const fixtureExpected = await observe('metadata_fixture_public_dom_inspected', () =>
+          publicNextDetailEvidence(page, fixtureResponse),
+        );
+        assert.equal(page.url(), METADATA_FIXTURE_PAGE, 'owned tab reached public fixture URL');
+        await waitObserved(
+          'metadata_fixture_audit_wait',
+          () => seoContent(panel),
+          (state) =>
+            state?.scopeValid &&
+            state.title === fixtureExpected.title &&
+            state.reAudit &&
+            !state.error,
+          30000,
+        );
+        const fixtureBefore = await observe('metadata_fixture_public_before_inspected', () =>
+          publicNextDetailEvidence(page, fixtureResponse),
+        );
+        enter('metadata_fixture_reaudit_click');
+        await click(panel, 'button', 'Re-audit');
+        advance('metadata_fixture_reaudit_click_dispatched', { trustedInput: true });
+        await waitObserved(
+          'metadata_fixture_reaudit_running_wait',
+          () => seoContent(panel),
+          (state) => state?.scopeValid && !state.reAudit,
+        );
+        await waitObserved(
+          'metadata_fixture_reaudit_settle_wait',
+          () => seoContent(panel),
+          (state) =>
+            state?.scopeValid &&
+            state.title === fixtureBefore.title &&
+            state.reAudit &&
+            !state.error,
+          30000,
+        );
+        const fixtureAfter = await observe('metadata_fixture_public_after_inspected', () =>
+          publicNextDetailEvidence(page, fixtureResponse),
+        );
+        assertNext('metadata_fixture_source_stability', () =>
+          assert.deepEqual(
+            fixtureAfter,
+            fixtureBefore,
+            'public metadata and navigation remain stable around manual re-audit',
+          ),
+        );
+        const fixtureDetails = await observe('metadata_fixture_seo_details_inspected', () =>
+          seoNextDetailState(panel),
+        );
+        let fixtureSchemaLinks;
+        assertNext('metadata_fixture_doors', () => {
+          fixtureSchemaLinks = assertNextDoors(fixtureDetails, fixtureAfter);
+        });
+        const uniqueFixtureAlternate = fixtureAfter.alternates.find(
+          (item) =>
+            item.href !== METADATA_FIXTURE_PAGE &&
+            fixtureAfter.alternates.filter((other) => other.href === item.href).length === 1,
+        );
+        const uniqueFixtureSchema = fixtureSchemaLinks.find(
+          (item) => fixtureSchemaLinks.filter((other) => other.href === item.href).length === 1,
+        );
+        if (uniqueFixtureAlternate && uniqueFixtureSchema) {
+          enter('metadata_fixture_hreflang_outbound_activation');
+          await activateSeoLink(panel, page, 'International', uniqueFixtureAlternate.href);
+          enter('metadata_fixture_schema_outbound_activation');
+          await activateSeoLink(panel, page, 'Structured data', uniqueFixtureSchema.href);
+          target('T09', 'guest_airbnb_hreflang_and_schema_doors_match_public_dom', {
+            sourceUrl: METADATA_FIXTURE_PAGE,
+            alternate: uniqueFixtureAlternate,
+            schemaType: uniqueFixtureSchema.type,
+            schemaUrl: uniqueFixtureSchema.href,
+            trustedInput: true,
+          });
+        } else {
+          unverifiedTarget(
+            'T09',
+            'guest_airbnb_hreflang_and_schema_doors_match_public_dom',
+            'The live public DOM did not expose unique hreflang and openable schema candidates.',
+          );
+        }
+        advance('metadata_fixture_bounded_observation_complete', {
+          sourceUrl: METADATA_FIXTURE_PAGE,
+          alternateCount: fixtureAfter.alternates.length,
+          schemaTypeCount: fixtureAfter.schemaTypes.length,
+          doorStatus: report.targets.at(-1).status,
+        });
+      }
     },
   });
   report.extension_id = harness.extensionId;
