@@ -1,0 +1,53 @@
+{
+  "id": "auth-broadcast-census-red-001",
+  "status": "expected-fail-with-assertion-timing-refinement-pending",
+  "defect_id": "EXT-D-0007",
+  "test_commit": "1b143df",
+  "results": {
+    "failed": 1,
+    "passed": 6,
+    "unhandled_errors": 0
+  },
+  "finding": "Stale positive message after newer canonical account correctly preserves new account; only negative message fails.",
+  "limitation": "Negative assertion currently checks immediately after ack; root requires settled-state assertion before final repair to permit truthful async loading.",
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:06:02.140Z",
+      "runId": "auth-broadcast-census-red-001",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.76,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.14751428571428574,
+        "swapUsedMiB": 1765.12,
+        "repoFreeGiB": 1676.3730545043945,
+        "profileFreeGiB": 1676.3730545043945
+      },
+      "cpuBusySamples": [
+        0.123,
+        0.09420000000000006,
+        0.21609999999999996,
+        0.11340000000000006,
+        0.27190000000000003,
+        0.09860000000000002,
+        0.11540000000000006
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:06:03.390Z",
+      "runId": "auth-broadcast-census-red-001",
+      "childExitCode": 1,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ]
+}
