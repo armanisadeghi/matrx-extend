@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T19:17:33.386368+00:00",
+  "updated_at": "2026-09-26T20:15:00+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -10894,7 +10894,10 @@
             "seo-guest-006",
             "seo-guest-007",
             "seo-guest-008",
-            "seo-guest-009"
+            "seo-guest-009",
+            "seo-guest-010",
+            "seo-guest-011",
+            "seo-guest-012"
           ],
           "retest_status": "not-run"
         },
@@ -11141,6 +11144,163 @@
           "new_subtargets": 0,
           "independent_review": "docs/stabilization/reports/seo007-runtime-peer.json",
           "limits": "Currentbuildrecheck of prior12boundedpredicates. Design-systempopoverfinding limitedto actualCopyauditmenu; nofullfeature or allpopover claim."
+        },
+        {
+          "run_id": "seo-guest-010",
+          "mode": "guest",
+          "status": "unverified",
+          "receipt": "docs/stabilization/runs/seo-guest-010.json",
+          "independent_review": "docs/stabilization/reports/seo010-diagnostic-sol-peer.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_link_counts_match_live_dom",
+              "status": "unverified",
+              "observation": "The detail assertion stopped on a count mismatch: panel internal links 1,782 vs public DOM 1,785; panel external 409 vs public DOM 410. This is mismatch evidence, not a passing detail check."
+            }
+          ],
+          "limits": "The run acceptance status is unverified after the links assertion; 12 prior subtargets are counted but not enumerated here. No whole case or feature pass."
+        },
+        {
+          "run_id": "seo-guest-011",
+          "mode": "guest",
+          "build": "0.2.73",
+          "status": "unverified",
+          "receipt": "docs/stabilization/runs/seo-guest-011.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_link_counts_match_live_dom",
+              "status": "pass",
+              "observation": "1,785 internal and 410 external links matched the public DOM."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_image_alt_counts_match_live_dom",
+              "status": "pass",
+              "observation": "28 images total and 10 missing alt matched the public DOM."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_readability_display_is_populated_and_explained",
+              "status": "pass",
+              "observation": "Readability display populated while body text existed; metricValueCorrectness remains unverified."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_performance_reflects_current_navigation",
+              "status": "unverified",
+              "observation": "Performance assertion failed before this target was accepted; automatic duration was null."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_hreflang_and_schema_doors_match_page",
+              "status": "unverified",
+              "observation": "Door assertion was not reached."
+            }
+          ],
+          "limits": "The acceptance status is unverified despite the three named detail subtargets passing; 12 prior subtargets are not enumerated here. Exact automatic data and full T09 remain unverified."
+        },
+        {
+          "run_id": "seo-guest-012",
+          "mode": "guest",
+          "build": "0.2.73",
+          "status": "partial",
+          "receipt": "docs/stabilization/runs/seo-guest-012.json",
+          "independent_review": "docs/stabilization/reports/seo012-evidence-peer.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "page_0_title_and_headings",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "page_1_title_and_headings",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "sparse_public_detail_groups",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "rich_public_detail_groups_and_canonical_door",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "canonical_outbound_opens_expected_public_tab",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_link_counts_match_live_dom",
+              "status": "pass",
+              "observation": "1,789 internal and 445 external links matched the public DOM."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_image_alt_counts_match_live_dom",
+              "status": "pass",
+              "observation": "42 total images and 20 missing alt matched the public DOM."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_readability_display_is_populated_and_explained",
+              "status": "pass",
+              "observation": "Display populated; metricValueCorrectness remains unverified."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_performance_reflects_current_navigation",
+              "status": "pass",
+              "observation": "Observed status 200, navigate, 595 ms, 123,751 transferred bytes."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+              "status": "unverified",
+              "observation": "Unique hreflang and openable schema candidates were absent."
+            },
+            {
+              "case_id": "EXT-F-1008-T01",
+              "subtarget": "new_url_replaces_visible_title",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T01",
+              "subtarget": "reload_audits_current_url",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T02",
+              "subtarget": "manual_button_returns_to_current_page",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T03",
+              "subtarget": "about_blank_clear_error_without_stale_audit",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T03",
+              "subtarget": "public_page_recovers_after_restricted_url",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_role_gate_after_reload",
+              "status": "pass"
+            }
+          ],
+          "limits": "16 bounded subtargets pass and one remains unverified. Automatic exact-data correctness and readability metric correctness remain unverified; T09 and EXT-F-1008 as a whole are not passed. Other deferred T01-T14 portions and member/admin modes remain uncovered."
         }
       ]
     },

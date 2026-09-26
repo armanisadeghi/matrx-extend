@@ -29,5 +29,21 @@
     "result": "NOT_ASSESSED",
     "note": "Kept separate from runtime evidence for the independent source-quality peer."
   },
-  "review_scope": "Independent receipt and saved acceptance-artifact check for guest run 012. No browser, test, build, or implementation code was run or changed."
+  "review_scope": "Independent receipt and saved acceptance-artifact check for guest run 012. No browser, test, build, or implementation code was run or changed.",
+  "inventory_tracking": {
+    "inventory": "docs/stabilization/inventory.json",
+    "case_links": [
+      "EXT-F-1008-T01",
+      "EXT-F-1008-T02",
+      "EXT-F-1008-T03",
+      "EXT-F-1008-T07",
+      "EXT-F-1008-T09"
+    ],
+    "run_ids": [
+      "seo-guest-010",
+      "seo-guest-011",
+      "seo-guest-012"
+    ],
+    "result": "The guest cell now lists runs 010-012. Per-run subtargets are linked to their relevant cases; all overall runs remain unverified/partial, and no whole case or feature is marked passed. Exact automatic data and readability correctness, the unavailable hreflang/schema door, deferred case dimensions, and member/admin modes remain open."
+  }
 }
