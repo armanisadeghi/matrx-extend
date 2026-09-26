@@ -37,6 +37,7 @@ const evidence = {
   adminWebSignedIn: false,
   adminExtensionSignedIn: false,
   inventory: null,
+  lastVaultObservation: null,
   failureCategory: null,
   limitations: [
     'A matching masked title is only a candidate, not proof of credential identity or member access.',
@@ -124,6 +125,7 @@ async function maskedInventory(panel) {
   return evaluate(
     panel,
     `(() => {
+    const vaultTab = document.querySelector('button[role="tab"][title="Vault"]');
     const active = document.querySelector('[role="tabpanel"][data-state="active"]');
     const rows = [...(active?.querySelectorAll('li.rounded-md.border.bg-card > button') ?? [])];
     const candidateRows = rows.filter((row) => {
@@ -131,9 +133,15 @@ async function maskedInventory(panel) {
       return title.toLowerCase().includes('${TARGET_MEMBER}');
     });
     return {
+      activePanelFound: Boolean(active),
+      vaultTabActive: vaultTab?.getAttribute('data-state') === 'active',
       vaultHeadingVisible: Boolean(active?.querySelector('span.text-sm.font-medium')) &&
         [...(active?.querySelectorAll('span') ?? [])].some((span) => span.textContent.trim() === 'Vault'),
-      loading: Boolean(active?.querySelector('.animate-spin')),
+      // Site matching and the password generator have independent spinners.
+      // Neither is evidence that the Mine/Shared inventory is still loading.
+      inventorySpinner: Boolean(active?.querySelector('div.h-20 .animate-spin')),
+      refreshSpinner: Boolean(active?.querySelector('button[title="Refresh"] .animate-spin')),
+      siteSpinner: Boolean(active?.querySelector('div.border-b .animate-spin')),
       signedOutPrompt: Boolean(active?.textContent?.includes('Sign in to open your Vault')),
       errorVisible: [...(active?.querySelectorAll('div') ?? [])]
         .some((node) => node.classList.contains('border-amber-500/40')),
@@ -147,6 +155,29 @@ async function maskedInventory(panel) {
     };
   })()`,
   );
+}
+
+async function observeInventory(panel) {
+  const observed = await maskedInventory(panel);
+  evidence.lastVaultObservation = {
+    activePanelFound: observed.activePanelFound === true,
+    vaultTabActive: observed.vaultTabActive === true,
+    vaultHeadingVisible: observed.vaultHeadingVisible === true,
+    inventorySpinner: observed.inventorySpinner === true,
+    refreshSpinner: observed.refreshSpinner === true,
+    siteSpinner: observed.siteSpinner === true,
+    signedOutPrompt: observed.signedOutPrompt === true,
+    errorVisible: observed.errorVisible === true,
+    activeScope: observed.activeScope?.startsWith('Mine (')
+      ? 'mine'
+      : observed.activeScope?.startsWith('Shared (')
+        ? 'shared'
+        : 'none',
+    sharedTabAvailable: observed.sharedTabLabel !== null,
+    designatedCandidateCount: observed.candidateCount,
+    designatedCandidateFillOnCount: observed.candidateFillOnCount,
+  };
+  return observed;
 }
 
 let lease;
@@ -179,32 +210,39 @@ try {
         );
         evidence.adminExtensionSignedIn = true;
 
-        stage = 'vault_inventory';
+        stage = 'vault_tab_click';
         await click(panel, 'title', 'Vault');
+        stage = 'mine_inventory_wait';
         await waitFor(
           'masked_vault_inventory',
-          () => maskedInventory(panel),
+          () => observeInventory(panel),
           (state) =>
             state?.vaultHeadingVisible &&
-            !state.loading &&
+            !state.inventorySpinner &&
+            !state.refreshSpinner &&
             !state.signedOutPrompt &&
             state.activeScope?.startsWith('Mine ('),
           30_000,
         );
-        const mine = await maskedInventory(panel);
+        stage = 'mine_inventory_read';
+        const mine = await observeInventory(panel);
         if (mine.errorVisible) fail('vault_inventory_error');
         if (!mine.sharedTabLabel) fail('shared_inventory_tab_missing');
+        stage = 'shared_tab_click';
         await click(panel, 'button', mine.sharedTabLabel);
+        stage = 'shared_inventory_wait';
         await waitFor(
           'shared_vault_inventory',
-          () => maskedInventory(panel),
+          () => observeInventory(panel),
           (state) =>
             state?.vaultHeadingVisible &&
-            !state.loading &&
+            !state.inventorySpinner &&
+            !state.refreshSpinner &&
             state.activeScope?.startsWith('Shared ('),
           30_000,
         );
-        const shared = await maskedInventory(panel);
+        stage = 'shared_inventory_read';
+        const shared = await observeInventory(panel);
         if (shared.errorVisible) fail('vault_inventory_error');
         evidence.inventory = {
           designatedCandidateVisible: mine.candidateCount + shared.candidateCount > 0,
