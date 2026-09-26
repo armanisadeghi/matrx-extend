@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "status": "source_diagnostic_ready_for_review",
+  "latest_receipt": "docs/stabilization/runs/seo-guest-014.json",
+  "finding": "Guest run 014 completed 16 passing subtargets and reached the optional Airbnb metadata fixture. Its final wait sample showed a linked SEO pane, an Airbnb title, headings, an enabled Re-audit button, and no audit error, but the wait timed out. The original predicate also required an exact match to the public document title captured just after page load. That expected title was overwritten from last_safe_observable by the wait samples, so the saved output cannot establish whether the public title changed or the pane lagged. Run 013 reached later metadata stages, which rules out a deterministic stop at this wait but does not prove the fixture stable.",
+  "source_change": "The bounded audit wait now records the expected public title at navigation, the current public document title, their stability comparison, and whether the SEO title matches the original oracle in each safe sample. It retains the same exact-match acceptance predicate and 30-second bound. No assertion is removed or marked passing.",
+  "limits": [
+    "No browser or heavy test was launched in this lane.",
+    "A live public page may change its title after load or vary by request. The next guarded run must establish the actual mismatch before a reliability fix or product bug is claimed.",
+    "The built extension version and binary digest are not recorded in this runner output; this source-only diagnosis does not assert a new build attribution."
+  ],
+  "next_action": "Independent source review, then root-owned bounded browser run. Preserve run 014 and inspect only the safe title-comparison fields in the next receipt."
+}

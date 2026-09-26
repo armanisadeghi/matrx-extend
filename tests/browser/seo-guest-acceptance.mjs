@@ -1152,7 +1152,17 @@ try {
         assert.equal(page.url(), METADATA_FIXTURE_PAGE, 'owned tab reached public fixture URL');
         await waitObserved(
           'metadata_fixture_audit_wait',
-          () => seoContent(panel),
+          async () => {
+            const state = await seoContent(panel);
+            const publicDomTitleAtSample = await page.evaluate(() => document.title.trim());
+            return {
+              ...state,
+              expectedPublicTitleAtNavigation: fixtureExpected.title,
+              publicDomTitleAtSample,
+              publicTitleStable: publicDomTitleAtSample === fixtureExpected.title,
+              seoTitleMatchesExpected: state.title === fixtureExpected.title,
+            };
+          },
           (state) =>
             state?.scopeValid &&
             state.title === fixtureExpected.title &&
