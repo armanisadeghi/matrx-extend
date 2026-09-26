@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "task_id": "native-denial-operator-001",
+  "case_id": "EXT-F-1003-T57",
+  "status": "native_prompt_observed_and_denied",
+  "operator": "independent CUA operator",
+  "owned_browser": {
+    "app": "Google Chrome for Testing",
+    "executable": "/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+    "pid": 80351,
+    "profile": "/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/matrx-native-sidepanel-qa-lL2Sb4/profile",
+    "window": "Dashboard — AI Matrx",
+    "extension": "Matrx Extend",
+    "identity_evidence": "CUA bound by exact Chrome for Testing app path; window showed aimatrx.com/dashboard and chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html. Settings showed admin@admin.com, ADMIN, Page archive (MHTML) switch off before request. Parent launch evidence identifies this window as sole owned browser for PID 80351 and the fresh profile above."
+  },
+  "native_prompt": {
+    "observed": true,
+    "accessibility_evidence": "Native Chrome sheet: heading 'Matrx Extend has requested additional permissions.'; warning 'It could: Read and change all your data on all websites'; buttons Deny and Allow.",
+    "screenshot_evidence": "CUA captured and displayed the native prompt screenshot before acting; screenshot visibly showed Matrx Extend permission request and Deny/Allow buttons.",
+    "action": "Clicked the native Deny button by fresh accessibility element index.",
+    "result": "Prompt closed and the real Settings page displayed 'Chrome did not grant Page archive (MHTML). Check this extension's permissions in Chrome, then try again.' The Page archive switch remained off."
+  },
+  "coordination_acknowledgement": "Wrote exactly 'denied' to test-results/isolated-permission-denial-native-ack.txt only after observing and clicking native Deny. ACK is coordination only; runner postconditions remain required.",
+  "runner_corroboration": {
+    "source": "test-results/isolated-permission-denial-acceptance.json, produced by guarded run 002; root reported runner exit code 0",
+    "status": "postconditions_verified_requires_operator_evidence",
+    "before": {
+      "admin": true,
+      "declared": true,
+      "row_count": 1,
+      "switch_on": false,
+      "contains": false,
+      "get_all": false,
+      "refusal_alert": false
+    },
+    "after": {
+      "admin": true,
+      "declared": true,
+      "row_count": 1,
+      "switch_on": false,
+      "contains": false,
+      "get_all": false,
+      "refusal_alert": true
+    },
+    "attribution": "Runner-produced corroboration; separate from this operator's direct CUA observations."
+  },
+  "limits": [
+    "No screenshot file was saved by this operator; native screenshot was captured and surfaced directly by CUA in the task evidence stream.",
+    "Chrome's native wording is broad and does not name pageCapture; association with Page archive is established by the immediate sequence from the real Settings switch to the prompt and the subsequent refusal alert.",
+    "Runner postconditions are corroborated by its result artifact and root's exit-code report; this operator did not independently inspect runner internals or permission APIs."
+  ]
+}
