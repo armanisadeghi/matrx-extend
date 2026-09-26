@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T14:52:11.284598+00:00",
+  "updated_at": "2026-09-26T15:01:00Z",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -1856,7 +1856,8 @@
             "render-retest-001",
             "contained-navigation-001",
             "contained-navigation-002",
-            "contained-navigation-003"
+            "contained-navigation-003",
+            "contained-navigation-004"
           ],
           "retest_status": "pass"
         },
@@ -1876,7 +1877,8 @@
           "run_ids": [
             "contained-navigation-001",
             "contained-navigation-002",
-            "contained-navigation-003"
+            "contained-navigation-003",
+            "contained-navigation-004"
           ],
           "retest_status": "not-run"
         }
@@ -10644,7 +10646,8 @@
           "test_status": "unverified",
           "defect_ids": [],
           "run_ids": [
-            "seo-guest-001"
+            "seo-guest-001",
+            "seo-guest-002"
           ],
           "retest_status": "not-run"
         },
