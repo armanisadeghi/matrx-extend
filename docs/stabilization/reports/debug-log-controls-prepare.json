@@ -1,7 +1,7 @@
 {
   "feature_id": "EXT-F-1005",
   "scope": ["T14 search", "T15 pause/resume", "T17 clear", "T22 details and empty states"],
-  "status": "real_service_error_scenario_prepared_for_independent_review",
+  "status": "service_error_outage_through_controls_prepared_for_independent_review",
   "runner": "tests/browser/debug-log-controls-acceptance.mjs",
   "execution": "Not run in this lane; independent source review and the root-owned admitted native browser run remain required. Runtime output is ignored test-results/debug-log-controls-acceptance.json.",
   "profile": "The existing owned-profile harness creates a disposable profile and removes it after execution; clear is scoped to that run only.",
@@ -11,15 +11,16 @@
   "limitations": [
     "No service-error browser execution occurred in this source-only lane; root-owned admitted runtime and independent source review are required.",
     "The read-only /health probe is intentionally silent in the Debug event log on failure. A visible FAIL and actual network failure do not prove a corresponding error row or badge.",
-    "If an online 200/OK positive control or offline loading failure/FAIL is absent, the service-error dimension remains unverified; the runner still restores the owned target network before ordinary controls.",
+    "If an online 200/OK control, initial offline failure/FAIL, or final offline failure/FAIL is absent, the service-error dimension remains unverified. Restoration of the owned panel network is mandatory after the battery.",
     "T14 detail search remains unverified if naturally displayed JSON supplies no unique key or primitive value absent all observed messages.",
     "T17 error-badge clearing requires a natural positive badge before Clear; the runner does not create one."
   ],
   "service_error_scenario": {
     "opt_in": "DEBUG_SERVICE_ERROR_BEFORE_CONTROLS=1; mutually exclusive with DEBUG_RELOAD_BEFORE_CONTROLS=1",
     "source_path": "Debug Bridges Channel A Send test ping invokes pingHealth, which issues a read-only GET /health from the side-panel target and displays OK or FAIL. The health helper uses silent request errors, so this does not prove an error log row or badge.",
-    "proof": "The runner captures one actual panel-target GET /health with HTTP 200 and visible OK before applying target-scoped CDP offline conditions. It then requires one same-URL GET with a Network.loadingFailed event and visible FAIL. Cache is disabled during the two probes; network and cache settings are restored in finally before the existing natural-event Debug controls run. No response mock, event insertion, service write, Chat/Pilot, or global network change is used.",
+    "proof": "The runner captures one actual panel-target GET /health with HTTP 200 and visible OK, then applies target-scoped CDP offline conditions and requires the same-URL GET to report Network.loadingFailed with ERR_INTERNET_DISCONNECTED and visible FAIL. It keeps the owned panel offline while the existing natural-event Debug control battery runs on that panel; the public page remains a separate browser target. After the control assertions, it repeats the health ping and requires another same-URL ERR_INTERNET_DISCONNECTED failure plus visible FAIL. The network/cache settings are restored in finally, including when a control fails. No response mock, event insertion, service write, Chat/Pilot, or global network change is used.",
     "privacy": "The health URL is held only in memory for exact request matching; result fields contain booleans and fixed stage/categories, never URL, response body, credentials, or event text.",
-    "evidence_scope": "A successful probe establishes an actual service-error precondition for the subsequent search, pause/resume, clear and detail checks. It does not itself establish a service-error Debug event or positive error badge; T17 badge-clearing remains independently conditional on an observed badge before Clear."
-  }
+    "evidence_scope": "Service-error dimension evidence is conditional on an online positive control, a real ERR_INTERNET_DISCONNECTED request failure and visible FAIL before controls, and the same proof after controls. If the final outage probe is absent, all service-error dimension evidence is downgraded to unverified. The silent health helper does not establish an error log row or positive badge; T17 badge-clearing remains independently conditional. If a control stage fails after the initial proven outage, the runtime result is fail with a fixed stage and a controlFailure flag; this does not by itself classify a product root cause. A missing positive control or missing final outage proof remains unverified."
+  },
+  "source_peer_correction": "The first source review rejected restoration before the controls, which would have tested ordinary connectivity while claiming a service-error dimension. This revision holds CDP offline state across the actual control battery and verifies it afterward before restoring."
 }

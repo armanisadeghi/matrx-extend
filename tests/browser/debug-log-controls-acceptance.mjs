@@ -327,7 +327,12 @@ function observeHealthRequests(panel) {
   };
   const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
     if (request?.method === 'GET' && isHealth(request.url))
-      requests.set(requestId, { url: request.url, status: null, finished: false, failed: false });
+      requests.set(requestId, {
+        url: request.url,
+        status: null,
+        finished: false,
+        offlineFailure: false,
+      });
   });
   const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
     const request = requests.get(requestId);
@@ -337,9 +342,9 @@ function observeHealthRequests(panel) {
     const request = requests.get(requestId);
     if (request) request.finished = true;
   });
-  const offFailed = panel.on('Network.loadingFailed', ({ requestId }) => {
+  const offFailed = panel.on('Network.loadingFailed', ({ requestId, errorText }) => {
     const request = requests.get(requestId);
-    if (request) request.failed = true;
+    if (request) request.offlineFailure = errorText === 'net::ERR_INTERNET_DISCONNECTED';
   });
   return {
     read: () => [...requests.values()],
@@ -375,6 +380,7 @@ async function exerciseServiceError(panel) {
     onlinePositiveControl: false,
     actualFailedRequest: false,
     visibleFailure: false,
+    outagePersistedThroughControls: false,
     networkRestored: false,
     status: 'unverified',
   };
@@ -383,6 +389,31 @@ async function exerciseServiceError(panel) {
   let cacheDisabled = false;
   let offlineAttempted = false;
   let probe;
+  let onlineUrl;
+  let restored = false;
+  const restore = async () => {
+    if (restored) return;
+    probe?.stop();
+    if (offlineAttempted) {
+      await panel.send('Network.emulateNetworkConditions', {
+        offline: false,
+        latency: 0,
+        downloadThroughput: -1,
+        uploadThroughput: -1,
+      });
+      offlineAttempted = false;
+    }
+    if (cacheDisabled) {
+      await panel.send('Network.setCacheDisabled', { cacheDisabled: false });
+      cacheDisabled = false;
+    }
+    if (networkEnabled) {
+      await panel.send('Network.disable');
+      networkEnabled = false;
+    }
+    restored = true;
+    observed.networkRestored = true;
+  };
   try {
     stage = 'service_error_bridges';
     await click(panel, 'button', 'Bridges');
@@ -409,7 +440,7 @@ async function exerciseServiceError(panel) {
       15_000,
     );
     observed.onlinePositiveControl = true;
-    const onlineUrl = online.requests[0].url;
+    onlineUrl = online.requests[0].url;
     probe.stop();
     probe = observeHealthRequests(panel);
     stage = 'service_error_offline_control';
@@ -427,45 +458,80 @@ async function exerciseServiceError(panel) {
       (sample) =>
         sample.requests.length === 1 &&
         sample.requests[0].url === onlineUrl &&
-        sample.requests[0].failed &&
+        sample.requests[0].offlineFailure &&
         sample.ui?.status === 'fail',
       15_000,
     );
-    observed.actualFailedRequest = failed.requests[0].failed;
+    observed.actualFailedRequest = failed.requests[0].offlineFailure;
     observed.visibleFailure = failed.ui.status === 'fail';
-    observed.status = 'verified_precondition';
+    observed.status = 'outage_active_for_controls';
     serviceErrorProved = true;
   } catch {
     // The scenario remains unverified; no raw URL, payload, or transport error
     // enters the receipt. The normal read-only Debug battery may still run.
     observed.status = 'unverified';
     observed.failureStage = stage;
-  } finally {
-    probe?.stop();
-    if (offlineAttempted) {
-      await panel.send('Network.emulateNetworkConditions', {
-        offline: false,
-        latency: 0,
-        downloadThroughput: -1,
-        uploadThroughput: -1,
-      });
-    }
-    if (cacheDisabled) await panel.send('Network.setCacheDisabled', { cacheDisabled: false });
-    if (networkEnabled) await panel.send('Network.disable');
-    observed.networkRestored = true;
+    await restore();
   }
   stage = 'service_error_return_to_log';
-  await click(panel, 'button', 'Log');
-  await waitFor(
-    'debug_log_after_service_ping',
-    () => snapshot(panel),
-    (state) => state?.searchPresent && state.counterMatchesRows,
-  );
+  try {
+    await click(panel, 'button', 'Log');
+    await waitFor(
+      'debug_log_after_service_ping',
+      () => snapshot(panel),
+      (state) => state?.searchPresent && state.counterMatchesRows,
+    );
+  } catch {
+    await restore();
+    throw new Error('service_error_return_to_log_failed');
+  }
+  if (!serviceErrorProved) return null;
+  return {
+    restore,
+    async verifyAfterControls() {
+      try {
+        stage = 'service_error_persistence_after_controls';
+        await click(panel, 'button', 'Bridges');
+        await waitFor(
+          'bridge_ping_after_controls_ready',
+          () => bridgePingUi(panel),
+          (ui) => ui?.buttonCount === 1,
+        );
+        probe?.stop();
+        probe = observeHealthRequests(panel);
+        await click(panel, 'button', 'Send test ping');
+        const persisted = await waitFor(
+          'real_offline_health_ping_after_controls',
+          async () => ({ requests: probe.read(), ui: await bridgePingUi(panel) }),
+          (sample) =>
+            sample.requests.length === 1 &&
+            sample.requests[0].url === onlineUrl &&
+            sample.requests[0].offlineFailure &&
+            sample.ui?.status === 'fail',
+          15_000,
+        );
+        observed.outagePersistedThroughControls =
+          persisted.requests[0].offlineFailure && persisted.ui.status === 'fail';
+        observed.status = 'verified_during_controls';
+      } catch {
+        observed.status = 'unverified_after_controls';
+        observed.failureStage = stage;
+        serviceErrorProved = false;
+        for (const item of result.cases) {
+          if (item.evidence && typeof item.evidence === 'object')
+            item.evidence.serviceError = 'unverified_outage_not_proven_through_controls';
+        }
+      } finally {
+        await restore();
+      }
+    },
+  };
 }
 
 async function exercise({ page, panel, artifacts }) {
   let preClearCount = 0;
   let noMatchObserved = false;
+  let serviceOutage = null;
   try {
     await signInAsAdmin(page, panel);
     if (RELOAD_BEFORE_CONTROLS) {
@@ -501,7 +567,7 @@ async function exercise({ page, panel, artifacts }) {
       () => snapshot(panel),
       (state) => state?.searchPresent && state.counterMatchesRows,
     );
-    if (SERVICE_ERROR_BEFORE_CONTROLS) await exerciseServiceError(panel);
+    if (SERVICE_ERROR_BEFORE_CONTROLS) serviceOutage = await exerciseServiceError(panel);
     stage = 'natural_event_generation';
     await page.goto(PUBLIC_URL, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.locator('body').click({ position: { x: 5, y: 5 } });
@@ -773,9 +839,20 @@ async function exercise({ page, panel, artifacts }) {
         scenarioEvidence(warmDetails ? 'pass' : 'unverified'),
       );
     }
+    if (serviceOutage) await serviceOutage.verifyAfterControls();
   } catch (error) {
+    const controlFailure =
+      serviceErrorProved &&
+      [
+        'natural_event_observation',
+        'search_control',
+        'pause_resume',
+        'details',
+        'clear_disposable_profile',
+      ].includes(stage);
     result.failure = {
       stage,
+      controlFailure,
       driverFailure: safeDriverFailure(error),
       priorRowCount: preClearCount,
     };
@@ -793,6 +870,8 @@ async function exercise({ page, panel, artifacts }) {
       result.failure.privateScreenshot = false;
     }
     throw new Error('debug_log_controls_stage_failed');
+  } finally {
+    if (serviceOutage) await serviceOutage.restore();
   }
 }
 
@@ -841,7 +920,7 @@ try {
       ? 'unverified'
       : 'partial';
 } catch {
-  result.status = 'unverified';
+  result.status = result.failure?.controlFailure === true ? 'fail' : 'unverified';
   result.failure ??= { stage, driverFailure: { present: false } };
 }
 await mkdir(dirname(OUTPUT), { recursive: true });
