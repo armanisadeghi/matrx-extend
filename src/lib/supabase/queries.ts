@@ -632,10 +632,14 @@ export async function lookupCapturedByUrl(url: string): Promise<CaptureLookup> {
   } catch (error) {
     return {
       status: 'unknown',
-      reason: error instanceof Error ? `could not resolve the workspace: ${error.message}` : 'could not resolve the workspace',
+      reason:
+        error instanceof Error
+          ? `could not resolve the workspace: ${error.message}`
+          : 'could not resolve the workspace',
     };
   }
-  if (!organizationId) return { status: 'unknown', reason: 'select a workspace before checking saved Sources' };
+  if (!organizationId)
+    return { status: 'unknown', reason: 'select a workspace before checking saved Sources' };
   const query = docprocDb()
     .from('processed_documents')
     .select('id, canonical_identity, created_at, name')
