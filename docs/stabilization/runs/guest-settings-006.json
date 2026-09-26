@@ -18,9 +18,10 @@
     "owner": "coordinator-held native browser lease, session 5402",
     "admitted_at": "2026-09-26T04:14:53Z",
     "stop_reason": "Coordinator instructed stop after a second sustained memory-pressure event at 2026-09-26T04:16:15.627Z.",
-    "ui_actions_after_stop": 0,
     "resource_invalid": true,
-    "resource_exit_metadata": "Not observed by this worker."
+    "stop_confirmed_at": "2026-09-26T04:17:23.830Z",
+    "exit_code": 3,
+    "stop_note": "Guard requested stop04:16:15.627UTC; worker reports a restoration attempt during cleanup and then no further UI. Exact post-request action count not proven; root interrupted and stopped lease."
   },
   "observations": {
     "role": "signed-out guest; no email shown",
@@ -89,7 +90,7 @@
     "Native Chrome showed extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.51, source /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev; the release receipt is docs/stabilization/runs/release-real-005.json.",
     "Settings UI after reopening showed Organization 'Sign in to choose', Default agent 'Choose an organization above', and no Advanced agent capabilities section.",
     "Light theme was visibly white in a screenshot and remained Light after closing and reopening the side panel and Settings.",
-    "Coordinator stop instruction received at 2026-09-26T04:16:15.627Z due to a second sustained memory-pressure event; no UI calls occurred afterward."
+    "Guard requested stop04:16:15.627UTC; worker reports restoration attempt, so no zero-post-request-action claim is retained. Root confirmed resource-invalid exit3 at04:17:23.830UTC."
   ],
   "next_action": "If the coordinator admits another safe lease, restore System first; then check Dark/System and sign-in criteria."
 }

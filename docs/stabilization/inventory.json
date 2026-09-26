@@ -2291,8 +2291,8 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "guest-settings-005",
-              "evidence": "docs/stabilization/runs/guest-settings-005.json",
+              "run_id": "guest-settings-006",
+              "evidence": "docs/stabilization/runs/guest-settings-006.json",
               "verified_substeps": [
                 "Guest Organization view showed sign-in to choose; no organization selection or post-reload Acting as result was observed."
               ],
@@ -2302,7 +2302,7 @@
               "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
               "blocked_run_id": "guest-settings-003",
               "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "detail": "Actual0.2.51 guest UI accessible; batch stopped for memory pressure before full expected criteria. Warm observations retained in run; no complete case pass."
+              "detail": "Resource-invalid partial batch. Warm and panel-reopen observations retained; full extension reload and full theme criteria remain unverified. Theme restoration pending."
             }
           }
         },
@@ -2380,8 +2380,8 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "guest-settings-005",
-              "evidence": "docs/stabilization/runs/guest-settings-005.json",
+              "run_id": "guest-settings-006",
+              "evidence": "docs/stabilization/runs/guest-settings-006.json",
               "verified_substeps": [
                 "System/Light/Dark selections were reflected by selection controls."
               ],
@@ -2390,7 +2390,7 @@
               ],
               "blocked_run_id": "guest-settings-003",
               "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "detail": "Actual0.2.51 guest UI accessible; batch stopped for memory pressure before full expected criteria. Warm observations retained in run; no complete case pass."
+              "detail": "Resource-invalid partial batch. Warm and panel-reopen observations retained; full extension reload and full theme criteria remain unverified. Theme restoration pending."
             }
           }
         },
@@ -2468,8 +2468,8 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "guest-settings-005",
-              "evidence": "docs/stabilization/runs/guest-settings-005.json",
+              "run_id": "guest-settings-006",
+              "evidence": "docs/stabilization/runs/guest-settings-006.json",
               "verified_substeps": [
                 "Without an organization, Default agent displayed \u201cChoose an organization above.\u201d"
               ],
@@ -2479,7 +2479,7 @@
               "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
               "blocked_run_id": "guest-settings-003",
               "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "detail": "Actual0.2.51 guest UI accessible; batch stopped for memory pressure before full expected criteria. Warm observations retained in run; no complete case pass."
+              "detail": "Resource-invalid partial batch. Warm and panel-reopen observations retained; full extension reload and full theme criteria remain unverified. Theme restoration pending."
             }
           }
         },
@@ -2874,8 +2874,8 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "guest-settings-005",
-              "evidence": "docs/stabilization/runs/guest-settings-005.json",
+              "run_id": "guest-settings-006",
+              "evidence": "docs/stabilization/runs/guest-settings-006.json",
               "verified_substeps": [
                 "Advanced agent capabilities was absent from guest Settings AX tree."
               ],
@@ -2885,7 +2885,7 @@
               "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
               "blocked_run_id": "guest-settings-003",
               "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "detail": "Actual0.2.51 guest UI accessible; batch stopped for memory pressure before full expected criteria. Warm observations retained in run; no complete case pass."
+              "detail": "Resource-invalid partial batch. Warm and panel-reopen observations retained; full extension reload and full theme criteria remain unverified. Theme restoration pending."
             }
           }
         },
@@ -3668,9 +3668,9 @@
               "status": "unverified",
               "blocked_run_id": "guest-settings-003",
               "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "run_id": "guest-settings-005",
-              "evidence": "docs/stabilization/runs/guest-settings-005.json",
-              "detail": "Actual0.2.51 guest UI accessible; batch stopped for memory pressure before full expected criteria. Warm observations retained in run; no complete case pass."
+              "run_id": "guest-settings-006",
+              "evidence": "docs/stabilization/runs/guest-settings-006.json",
+              "detail": "Resource-invalid partial batch. Warm and panel-reopen observations retained; full extension reload and full theme criteria remain unverified. Theme restoration pending."
             }
           }
         },
@@ -4094,7 +4094,8 @@
             "render-retest-001",
             "guest-settings-002",
             "guest-settings-004",
-            "guest-settings-005"
+            "guest-settings-005",
+            "guest-settings-006"
           ],
           "retest_status": "not-run"
         },
