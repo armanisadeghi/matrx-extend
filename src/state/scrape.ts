@@ -5,6 +5,18 @@ import { create } from 'zustand';
 
 interface ScrapeState {
   current: SoupResult | null;
+  /**
+   * The capture exactly as it came off the page, before any local edit. Save
+   * sends THIS as the Source's original (S3); the edited `current` supplies
+   * the text and collectors. Replaced only by `setCurrent`.
+   */
+  original: SoupResult | null;
+  /**
+   * True once the article text itself was edited (sticky until re-capture):
+   * the saved portions must then come from the edited markdown, because the
+   * captured HTML still holds the old text.
+   */
+  articleEdited: boolean;
   loading: boolean;
   error: CaptureError | null;
   alreadyCapturedAt: string | null;
@@ -56,6 +68,8 @@ const linkKey = (href: string, text: string) => `${href}|${text}`;
 
 export const useScrapeStore = create<ScrapeState>((set) => ({
   current: null,
+  original: null,
+  articleEdited: false,
   loading: false,
   error: null,
   alreadyCapturedAt: null,
@@ -66,7 +80,8 @@ export const useScrapeStore = create<ScrapeState>((set) => ({
     lastResult: null,
     draftNote: '',
   },
-  setCurrent: (current) => set({ current, error: null, edited: false }),
+  setCurrent: (current) =>
+    set({ current, original: current, articleEdited: false, error: null, edited: false }),
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error, loading: false }),
   setAlreadyCaptured: (alreadyCapturedAt) => set({ alreadyCapturedAt }),
@@ -90,6 +105,7 @@ export const useScrapeStore = create<ScrapeState>((set) => ({
       const wc = markdown.split(/\s+/).filter(Boolean).length || null;
       return {
         edited: true,
+        articleEdited: true,
         current: {
           ...s.current,
           article: {

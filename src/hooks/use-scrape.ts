@@ -40,8 +40,18 @@ interface CaptureOptions {
 }
 
 export function useScrape() {
-  const { current, loading, error, edited, setCurrent, setLoading, setError, markSaved } =
-    useScrapeStore();
+  const {
+    current,
+    original,
+    articleEdited,
+    loading,
+    error,
+    edited,
+    setCurrent,
+    setLoading,
+    setError,
+    markSaved,
+  } = useScrapeStore();
   const setDiagnosePicking = useScrapeStore((s) => s.setDiagnosePicking);
   const setDiagnoseResult = useScrapeStore((s) => s.setDiagnoseResult);
   const diagnoseMode = useScrapeStore((s) => s.diagnose.mode);
@@ -200,7 +210,13 @@ export function useScrape() {
   const save = useCallback(
     async (extra: { patternId?: string } = {}): Promise<SaveOutcome | null> => {
       if (!current) return null;
-      const outcome = await saveCaptureAsSource(current, extra);
+      // Text and collectors from the (possibly edited) capture; the untouched
+      // capture is the original; edited article text wins over the old HTML.
+      const outcome = await saveCaptureAsSource(current, {
+        ...extra,
+        ...(original ? { original } : {}),
+        articleEdited,
+      });
       if (outcome.status !== 'landed') return outcome;
       markSaved();
       // The normalized wbx_seo_audit row powers the SEO tab's "Previously
@@ -222,7 +238,7 @@ export function useScrape() {
       }
       return outcome;
     },
-    [current, markSaved],
+    [current, original, articleEdited, markSaved],
   );
 
   return {

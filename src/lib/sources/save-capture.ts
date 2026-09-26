@@ -23,7 +23,16 @@ import type { SourceLandingBody } from '@/lib/api/routes/sources';
 import { getCurrentUser } from '@/lib/auth/flow';
 import type { SoupResult } from '@/lib/scrape/pipeline';
 import { canonicalUrl } from '@/lib/sources/canonical';
-import { buildCapturePortions } from '@/lib/sources/portions';
+import {
+  type CapturePortions,
+  buildCapturePortions,
+  portionsFromMarkdown,
+} from '@/lib/sources/portions';
+
+function portionsFromEditedMarkdown(soup: SoupResult): CapturePortions {
+  const portions = portionsFromMarkdown(soup.article.content_markdown);
+  return { portions, from: portions.length > 0 ? 'article_markdown' : null };
+}
 
 export const UNSAVED_CAPTURES_KEY = 'matrx.sources.unsaved';
 
@@ -91,11 +100,28 @@ export function structuredFromSoup(soup: SoupResult, patternId?: string): Record
 }
 
 /** Everything the door needs that is known at capture time. Null = nothing to save. */
+export interface CaptureSaveOptions {
+  patternId?: string;
+  /**
+   * The capture as it came off the page, before local edits — kept as the
+   * Source's original. Defaults to `soup` when nothing was edited.
+   */
+  original?: SoupResult;
+  /**
+   * The person edited the article text: cut the portions from the edited
+   * markdown. The captured HTML still carries the pre-edit text, so preferring
+   * it would silently save the original words instead of theirs.
+   */
+  articleEdited?: boolean;
+}
+
 export function prepareLanding(
   soup: SoupResult,
-  extra: { patternId?: string } = {},
+  extra: CaptureSaveOptions = {},
 ): PreparedLanding | null {
-  const { portions, from } = buildCapturePortions(soup);
+  const { portions, from } = extra.articleEdited
+    ? portionsFromEditedMarkdown(soup)
+    : buildCapturePortions(soup);
   if (portions.length === 0) return null;
   return {
     source_kind: 'scrape_parsed_page',
@@ -104,7 +130,10 @@ export function prepareLanding(
     name: captureName(soup),
     mime_type: from === 'article_markdown' ? 'text/markdown' : 'text/plain',
     portions,
-    original: { bytes_b64: utf8ToBase64(JSON.stringify(soup)), mime_type: 'application/json' },
+    original: {
+      bytes_b64: utf8ToBase64(JSON.stringify(extra.original ?? soup)),
+      mime_type: 'application/json',
+    },
     structured: structuredFromSoup(soup, extra.patternId),
     provenance: {
       origin_client: 'extension',
@@ -203,7 +232,7 @@ function newId(): string {
  */
 export async function saveCaptureAsSource(
   soup: SoupResult,
-  extra: { patternId?: string } = {},
+  extra: CaptureSaveOptions = {},
 ): Promise<SaveOutcome> {
   const prepared = prepareLanding(soup, extra);
   if (!prepared) {

@@ -148,8 +148,22 @@ describe('Save never loses input', () => {
     await waitFor(() => expect(screen.queryByText('Discard unsaved edits?')).toBeNull());
     expect(useScrapeStore.getState().edited).toBe(true);
 
-    // The request that was attempted is the door's contract.
+    // The request that was attempted is the door's contract…
     const [path, body] = mocks.apiPost.mock.calls[0] as [string, Record<string, unknown>];
+    // …carrying the EDITED text (the captured HTML still holds the old words),
+    const sent = (body.portions as { text: string }[]).map((p) => p.text).join('\n');
+    expect(sent).toContain('Intro, edited.');
+    expect(sent).not.toMatch(/Intro\.(?!,)/);
+    // …while the original kept in S3 is the untouched capture.
+    const original = JSON.parse(
+      new TextDecoder().decode(
+        Uint8Array.from(atob((body.original as { bytes_b64: string }).bytes_b64), (c) =>
+          c.charCodeAt(0),
+        ),
+      ),
+    ) as SoupResult;
+    expect(original.article.content_markdown).toBe(soup.article.content_markdown);
+    expect(kept[0]?.prepared.portions.map((p) => p.text).join('\n')).toContain('Intro, edited.');
     expect(path).toBe('/sources/land');
     expect(body).toMatchObject({
       source_kind: 'scrape_parsed_page',
@@ -197,6 +211,29 @@ describe('Save never loses input', () => {
     expect(useScrapeStore.getState().edited).toBe(true);
   });
 
+  it('a stored unsaved capture is read on mount and survives closing and reopening the panel', async () => {
+    // A save that failed in an earlier session of the panel.
+    mocks.apiPost.mockResolvedValue({ ok: false, status: 0, error: 'Failed to fetch' });
+    const first = render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    expect(await screen.findByText(/Unsaved — retry/)).toBeTruthy();
+    first.unmount();
+    listeners.clear(); // no change event will announce it to the next panel
+
+    // Reopen: a fresh panel with nothing in memory.
+    useScrapeStore.getState().setCurrent(null);
+    render(<ScrapeView />);
+    expect(await screen.findByText(/Unsaved — retry \(1\)/)).toBeTruthy();
+    const card = screen.getByRole('alert', { name: 'Unsaved captures' });
+    expect(card.textContent).toContain(soup.url);
+    expect(card.textContent).toContain('Retry save');
+    // Mounting did not wipe it.
+    await new Promise((r) => setTimeout(r, 50));
+    const kept = await listUnsavedCaptures();
+    expect(kept).toHaveLength(1);
+    expect(kept[0]?.url).toBe(soup.url);
+  });
+
   it('a landed save disarms the guard and links the Source in the web app', async () => {
     mocks.apiPost.mockResolvedValue({
       ok: true,
@@ -215,5 +252,7 @@ describe('Save never loses input', () => {
     expect(screen.getByText('Heads up from the door.')).toBeTruthy();
     expect(useScrapeStore.getState().edited).toBe(false);
     expect(await listUnsavedCaptures()).toHaveLength(0);
+    const [, body] = mocks.apiPost.mock.calls[0] as [string, { portions: { text: string }[] }];
+    expect(body.portions.map((p) => p.text).join('\n')).toContain('Intro, edited.');
   });
 });
