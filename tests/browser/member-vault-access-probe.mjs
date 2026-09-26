@@ -26,6 +26,7 @@ const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const EXPECTED_ADMIN = 'admin@admin.com';
 const TARGET_MEMBER = 'test@test.com';
+const APPROVED_ORGANIZATION = 'ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete';
 
 let stage = 'admission';
 const evidence = {
@@ -166,7 +167,26 @@ async function maskedInventory(panel) {
 
 async function observeInventory(panel) {
   const observed = await maskedInventory(panel);
+  // Only fixed diagnostic booleans cross the page boundary. Never inspect
+  // React hook state, organization identities, tokens, or Vault data here.
+  const prerequisite = await evaluate(
+    panel,
+    `(async () => {
+    const stored = await chrome.storage.local.get(['matrx.org.active', 'matrx.org.picker-pending']);
+    const picker = [...document.querySelectorAll('[role="dialog"]')].find((node) =>
+      node.textContent.includes('Which organization are you working in?'));
+    return {
+      organizationSelected: Boolean(stored['matrx.org.active']?.id),
+      organizationPickerPending: stored['matrx.org.picker-pending'] === true,
+      organizationPickerVisible: Boolean(picker),
+      organizationPickerLoading: Boolean(picker?.querySelector('[aria-label="Loading organizations"]')),
+      approvedOrganizationOffered: [...(picker?.querySelectorAll('[role="option"] span.truncate') ?? [])]
+        .filter((node) => node.textContent.trim() === ${JSON.stringify(APPROVED_ORGANIZATION)}).length === 1,
+    };
+  })()`,
+  );
   evidence.lastVaultObservation = {
+    ...prerequisite,
     activePanelFound: observed.activePanelFound === true,
     vaultTabActive: observed.vaultTabActive === true,
     vaultPanelActive: observed.vaultPanelActive === true,
@@ -187,7 +207,7 @@ async function observeInventory(panel) {
     designatedCandidateCount: observed.candidateCount,
     designatedCandidateFillOnCount: observed.candidateFillOnCount,
   };
-  return observed;
+  return { ...observed, ...prerequisite };
 }
 
 let lease;
@@ -222,6 +242,34 @@ try {
 
         stage = 'vault_tab_click';
         await click(panel, 'title', 'Vault');
+        stage = 'vault_prerequisite_observation';
+        const prerequisite = await waitFor(
+          'vault_prerequisite_or_content',
+          () => observeInventory(panel),
+          (state) => state?.vaultHeadingVisible || state?.organizationPickerVisible,
+          30_000,
+        );
+        evidence.beforeOrganizationChoice = { ...evidence.lastVaultObservation };
+        if (prerequisite.organizationPickerVisible) {
+          stage = 'vault_organization_prerequisite';
+          const offered = await waitFor(
+            'organization_choices_loaded',
+            () => observeInventory(panel),
+            (state) => state?.organizationPickerVisible && !state.organizationPickerLoading,
+            30_000,
+          );
+          if (!offered.approvedOrganizationOffered)
+            fail('approved_organization_prerequisite_unavailable');
+          if (offered.organizationSelected) fail('organization_prerequisite_state_inconsistent');
+          await click(panel, 'organization-picker-choice', APPROVED_ORGANIZATION);
+          await waitFor(
+            'explicit_organization_selected',
+            () => observeInventory(panel),
+            (state) => state?.organizationSelected && !state.organizationPickerVisible,
+            30_000,
+          );
+          evidence.afterOrganizationChoice = { ...evidence.lastVaultObservation };
+        }
         stage = 'mine_inventory_wait';
         await waitFor(
           'masked_vault_inventory',

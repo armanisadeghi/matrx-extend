@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "run_id": "member-vault-access-004",
+  "status": "unverified",
+  "resource_guard": {
+    "log_path": "/tmp/matrx-member-vault-access-004.log",
+    "log_sha256": "d2918e2af4bb45cd2b9a70c54117d1b539209892e110f0ab2444374558123b06",
+    "admission": {
+      "at": "2026-09-26T16:39:31.969Z",
+      "code": "RESOURCE_ADMITTED"
+    },
+    "watch_events": [
+      {
+        "at": "2026-09-26T16:39:48.371Z",
+        "code": "RESOURCE_WATCH_HEALTHY"
+      },
+      {
+        "at": "2026-09-26T16:40:04.751Z",
+        "code": "RESOURCE_WATCH_HEALTHY"
+      }
+    ],
+    "exit": {
+      "at": "2026-09-26T16:40:09.587Z",
+      "code": "RESOURCE_JOB_EXIT",
+      "child_exit_code": 1,
+      "child_signal": null
+    }
+  },
+  "sanitized_runner_result": {
+    "schema_version": 1,
+    "status": "unverified",
+    "scope": "owned disposable Chrome profile; real admin web and extension sign-in; masked Vault inventory",
+    "targetMember": "test@test.com",
+    "adminWebSignedIn": true,
+    "adminExtensionSignedIn": true,
+    "inventory": null,
+    "lastVaultObservation": {
+      "activePanelFound": true,
+      "vaultTabActive": true,
+      "vaultPanelActive": true,
+      "firstActivePanelIsVault": true,
+      "vaultHeadingVisible": false,
+      "preContentSpinner": true,
+      "inventorySpinner": false,
+      "refreshSpinner": false,
+      "siteSpinner": false,
+      "signedOutPrompt": false,
+      "errorVisible": false,
+      "activeScope": "none",
+      "sharedTabAvailable": false,
+      "designatedCandidateCount": 0,
+      "designatedCandidateFillOnCount": 0
+    },
+    "failureCategory": "stage_operation_failed",
+    "limitations": [
+      "A matching masked title is only a candidate, not proof of credential identity or member access.",
+      "This probe stops before website sign-out, member Vault Fill, or member extension sign-in."
+    ],
+    "failureStage": "mine_inventory_wait"
+  },
+  "member_credential_observed": false,
+  "interpretation": "Healthy resource watch throughout. Admin web and extension identity passed. Correct linked Vault panel confirmed; wrong-panel hypothesis refuted. Pre-content loading remained after 30 seconds. Existing observation does not distinguish auth checking, lazy loading, or organization prerequisite."
+}

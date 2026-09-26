@@ -88,6 +88,11 @@ export async function click(panel, kind, label) {
       .filter((el) => el.getAttribute('aria-label') === label);
     else if (kind === 'option') candidates = [...document.querySelectorAll('[role="option"]')]
       .filter((el) => el.textContent.trim() === label);
+    else if (kind === 'organization-picker-choice') candidates = [...document.querySelectorAll('[role="dialog"]')]
+      .filter((el) => el.textContent.includes('Which organization are you working in?'))
+      .flatMap((el) => [...el.querySelectorAll('button[role="option"]')])
+      .filter((el) => [...el.querySelectorAll('span.truncate')]
+        .some((name) => name.textContent.trim() === label));
     else if (kind === 'dialog') candidates = [...document.querySelectorAll('[role="alertdialog"]')]
       .filter((el) => el.querySelector('[data-slot="alert-dialog-title"]')?.textContent.trim() === 'Clear local data?')
       .flatMap((el) => [...el.querySelectorAll('button')])
