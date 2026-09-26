@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "report_id": "debug-service-error-target-peer",
+  "reviewed_source_commit": "bf0573b7",
+  "runner": "tests/browser/debug-log-controls-acceptance.mjs",
+  "A_runtime": {
+    "status": "UNVERIFIED_FOR_PROSPECTIVE_RUN_008",
+    "reason": "This independent lane did not launch the browser, build, or tests. Run 007 diagnosed a source oracle problem but never entered the offline phase; run 008 must supply actual online/offline observations."
+  },
+  "B_source": {
+    "status": "ACCEPTED_FOR_RUNTIME_VERIFICATION",
+    "findings": [
+      "The real Debug BackendSwitcher renders backend.url in the title of the span beside its Ping /health/ control. The runner reads that selected URL in the owned side panel, checks HTTP(S) syntax without credentials/query/fragment, and constructs its /health endpoint privately. The Bridges Send test ping button calls pingHealth, which uses the same backend config through apiGet('/health') in this panel.",
+      "The CDP observer is scoped to the owned panel target and its proof read now retains only Fetch GET requests whose full URL equals that UI-derived endpoint. The online gate requires at least one completed HTTP 200 request to that target plus the real Bridges OK label. Run 007 observed two completed 200 health GETs, so removing the background-inclusive exact-one cardinality is justified; a different health origin cannot substitute.",
+      "Before emulating offline, the runner requires the selected backend endpoint to remain unchanged. The first outage gate requires a matching target request with net::ERR_INTERNET_DISCONNECTED plus the real Bridges FAIL label. After the Debug control battery, it rechecks the selected endpoint and requires another same-target offline failure plus FAIL before promoting serviceError evidence. An unproven outage remains unverified, and restore runs on failure and completion.",
+      "Diagnostics expose only selected_backend or other_health_endpoint categories, numeric counts/statuses, and fixed failure classifications. The expected URL, raw request URL, headers, bodies, request IDs, initiator details, and raw network errors remain in private runner memory. The change does not alter the natural Debug control assertions, build/profile binding, or per-case partial status."
+    ],
+    "limits": [
+      "The positive request need not be uniquely attributable to the manual click because app-start health checks may overlap; the same-target request plus the manual UI OK/FAIL state is the bounded product observation. No unrelated endpoint can satisfy the request predicate.",
+      "A UI/backend configuration divergence, invalid override, or absent Fetch event fails closed as unverified rather than silently choosing another endpoint. Only native run 008 can show whether the new target binding works in the real profile."
+    ]
+  }
+}
