@@ -214,7 +214,7 @@ function validateCommand() {
     (allowed) => JSON.stringify(command) === JSON.stringify(allowed),
   );
   // Only positional test-file filters may follow the single-worker test command.
-  const testPrefix = ['pnpm', 'exec', 'vitest', 'run', '--maxWorkers=1', '--minWorkers=1'];
+  const testPrefix = ['pnpm', 'exec', 'vitest', 'run', '--maxWorkers=1'];
   const filteredTest =
     testPrefix.every((part, i) => command[i] === part) &&
     command

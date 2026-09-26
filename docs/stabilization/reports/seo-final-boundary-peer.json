@@ -1,0 +1,34 @@
+{
+  "reviewed_commit": "ad25ddd6",
+  "review_scope": "Independent source-only review of the three findings in seo-stage-peer.json and the retained guest SEO acceptance oracles. No tests, build, runner, browser, or root-owned guard was invoked.",
+  "prior_findings": [
+    {
+      "finding": "Wait timeout was reported as the last successful sample.",
+      "verdict": "addressed",
+      "evidence": "waitObserved sets current_operation once before polling. Successful polls update last_safe_stage and last_safe_observable without clearing current_operation; advance clears it only after acceptance. The catch records failure_stage from current_operation first and preserves the last safe observable separately."
+    },
+    {
+      "finding": "SEO content could be read from a different active tabpanel.",
+      "verdict": "addressed",
+      "evidence": "selectedSeo and seoContent share SEO_SCOPE. It requires one outer tablist, one SEO role=tab, and the tab's aria-controls panel linked back by aria-labelledby and active/visible state. seoContent fails closed unless that relationship is valid and the tab is selected; all title, headings, button, and error reads are scoped to pane."
+    },
+    {
+      "finding": "The trusted SEO click used a global title locator without checking ownership.",
+      "verdict": "addressed_with_source_preflight",
+      "evidence": "Immediately before click, selectedSeo counts visible title-button candidates and asserts the sole candidate is the unique main navigation SEO tab. The driver re-resolves the same visible button[title] selector and dispatches trusted pointer input only for a unique hit-tested candidate. Runtime identity at the instant of input remains unverified."
+    }
+  ],
+  "retained_oracles": {
+    "verdict": "honest_partial_source_oracles",
+    "detail": "T09 checks page title equality and h1-presence agreement on two public pages. T01 checks distinct page titles and replacement of the visible SEO title. T02 checks the running/settled re-audit button and current title without a visible error. T07 checks visible guest menu choices and JSON absence. These do not prove fresh capture, audit count/race handling, clipboard contents, other detail groups, links, or reload behavior; those remain explicitly deferred."
+  },
+  "data_retention": {
+    "verdict": "no_new_sensitive_retention_found",
+    "detail": "The report stores only fixed operation/stage labels, booleans/counts, and public page title evidence. The failure path does not serialize exception text or transient page content."
+  },
+  "runtime_and_limits": {
+    "verdict": "unverified",
+    "detail": "This review establishes source properties only. It does not establish actual rendered aria relationships, selector uniqueness in the native panel, successful trusted input, or an SEO acceptance pass. The inherited attempt remains stopped at public_page_0_ready; a root-owned guarded rerun and its independent output review remain outstanding."
+  },
+  "unresolved_source_findings": []
+}

@@ -1,0 +1,46 @@
+{
+  "id": "EXT-D-0017",
+  "feature_id": "EXT-F-0003",
+  "case_ids": ["EXT-F-0003-T01"],
+  "surface": "Release unit-test invocation",
+  "auth_mode": "auth-independent engineering infrastructure",
+  "reproduction": [
+    "Adopt remote ea86560d and frozen install Vitest4.1.11.",
+    "Invoke historical release test command pnpm exec vitest run --maxWorkers=1 --minWorkers=1.",
+    "Vitest4 removed minWorkers; compare current release/resourceguard command to supported CLI."
+  ],
+  "expected": "Run required unit tests under the one-worker resource cap before publication.",
+  "actual": "Historical release and allowlist still require removed minWorkers option; CLI cannot execute suite.",
+  "evidence": ["ea86560d", "docs/stabilization/reports/remote-stack-integration.json"],
+  "severity": "S2: mandatory validation blocked after dependency upgrade",
+  "priority": "P1: synchronized integration prerequisite",
+  "state": "fixed",
+  "owner": "/root/remote_stack_integration",
+  "transition_history": [
+    {
+      "at": "2026-09-26T14:23:22.042436+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Incoming remote dependency/code integration review identified concrete incompatible path."
+    },
+    {
+      "at": "2026-09-26T14:23:22.042436+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Self-contained reproduction and source cause recorded; focused runtime evidence assigned."
+    },
+    {
+      "at": "2026-09-26T14:23:22.042436+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol medium remote_stack_integration assigned, independent peer and root guarded verification required."
+    },
+    {
+      "at": "2026-09-26T14:23:22.042436+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "cb6b85e6 updates release, resourceguard and fixture to supported single-worker command; runtime pending."
+    }
+  ],
+  "fix_commits": ["cb6b85e6"]
+}

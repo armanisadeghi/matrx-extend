@@ -1,0 +1,55 @@
+{
+  "reviewed_commit": "f68978b0a8dbafbd2e741a25b5425016dcd46113",
+  "review_scope": "Source-only peer review of guest SEO runner failure-stage reporting, panel scoping, data retention, and retained acceptance oracles. No runner, test, build, browser, or root-owned guard was invoked.",
+  "A_acceptance_and_runtime": {
+    "verdict": "partial_source_acceptance_only",
+    "retained_oracles": [
+      {
+        "oracle": "T09 title and headings presence on two public pages",
+        "assessment": "Valid source-level partial oracle: the page title and h1 presence are observed from the live page DOM; the visible SEO title and Headings group are compared against them. It does not prove other SEO fields, detail groups, links, or runtime success."
+      },
+      {
+        "oracle": "T01 new URL replaces visible title",
+        "assessment": "Valid source-level partial oracle: each page must render its own title and the two titles must differ, detecting a title retained from the previous page. It does not establish one audit per URL or the slow-old-result race, which remain explicitly deferred."
+      },
+      {
+        "oracle": "T02 manual re-audit settles on current title",
+        "assessment": "Valid as a limited source-level oracle for observing a running button state followed by a settled title and no visible audit error. The title is unchanged, so this does not prove fresh capture or stale-advice replacement; those are explicitly deferred."
+      },
+      {
+        "oracle": "T07 guest copy menu choices",
+        "assessment": "Valid for menu visibility and guest JSON absence. Clipboard contents and reload behavior remain unverified and are explicitly deferred."
+      }
+    ],
+    "runtime_evidence": "The inherited runtime_attempt_001 record says the native browser reached example.org and observed its title, then ended at public_page_0_ready before recording an SEO subtarget. This peer review did not repeat or extend that run. There is no runtime pass from this source review."
+  },
+  "B_source_findings": [
+    {
+      "severity": "high",
+      "finding": "Polling samples overwrite the last-safe stage, so a wait timeout is reported as the last successful sample rather than the failed wait boundary. Each waitFor callback calls observe(), which advances the report after every successful read; when waitFor times out it throws, but the outer catch only copies the already-overwritten stage into failure_stage. This loses whether readiness or audit-content acceptance timed out and can misleadingly label a sample as the failure stage.",
+      "evidence": "tests/browser/seo-guest-acceptance.mjs:40-49, 134-143, 170-183, 244-247",
+      "recommendation": "Track a fixed operation/wait stage separately from the last successful safe observable. Set a wait-specific failure stage at the wait boundary without serializing the wait error or transient page content."
+    },
+    {
+      "severity": "medium",
+      "finding": "The improved selectedSeo readiness probe links the unique top-level SEO trigger to its controlled panel, but seoContent still selects the first globally active tabpanel. Therefore the audit-title and re-audit oracles are not guaranteed to read the panel that selectedSeo validated; another active tabpanel could supply a false result or conceal the intended panel's failure.",
+      "evidence": "tests/browser/seo-guest-acceptance.mjs:55-80, 85-103",
+      "recommendation": "Resolve the unique SEO trigger and its aria-controls panel for content observations too, and fail closed on ambiguous or missing relationships."
+    },
+    {
+      "severity": "low",
+      "finding": "The click helper is invoked with the global title locator 'SEO', while the new readiness probe identifies the SEO role=tab inside the unique top-level tablist. The preflight confirms the intended tab exists but does not constrain the actual click candidate to it; another visible button with the same title can make the click ambiguous or select a different control.",
+      "evidence": "tests/browser/seo-guest-acceptance.mjs:129-132; tests/browser/settings-panel-driver.mjs:63-66",
+      "recommendation": "Use an action locator scoped to the same unique top-level tablist and role=tab, or assert that the existing click candidate is exactly that trigger before dispatching trusted input."
+    }
+  ],
+  "data_retention": {
+    "verdict": "no_secret_leak_found_in_reviewed_changes",
+    "detail": "New report fields are fixed stage names, booleans, counts, public page title evidence, and a generic observationFailed marker. Raw errors, page body, authentication data, and browser storage are not added to the persisted report. The extension ID remains present from the existing harness output path and is not a credential."
+  },
+  "actual_ui_and_gaps": {
+    "verdict": "unverified",
+    "detail": "Source confirms the ScrapeView has a top-level SEO tab and SeoView has the audited heading and controls. Source inspection cannot establish the actual native panel DOM, selector uniqueness at runtime, rendered accessibility relationships, or whether this patch reaches the prior failure boundary. No product behavior is declared passed.",
+    "remaining_runtime_gap": "A root-owned guarded native run is still required after the source reporting/scoping issues are addressed, then its output must be independently reviewed."
+  }
+}

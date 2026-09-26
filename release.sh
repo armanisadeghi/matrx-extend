@@ -321,7 +321,7 @@ CHECKS+=("matrx-packages|300|ERROR|@ai-matrx packages are stale or pinned|pnpm s
 $SKIP_TYPECHECK || CHECKS+=("typecheck|600|ERROR|typecheck failed|pnpm compile|pnpm -s compile")
 CHECKS+=("lint|300|ERROR|Biome lint or formatting failed|pnpm lint|pnpm -s lint")
 CHECKS+=(
-    "unit-tests|900|ERROR|unit tests failed|pnpm exec vitest run --maxWorkers=1 --minWorkers=1|pnpm -s exec vitest run --maxWorkers=1 --minWorkers=1"
+    "unit-tests|900|ERROR|unit tests failed|pnpm exec vitest run --maxWorkers=1|pnpm -s exec vitest run --maxWorkers=1"
     "schema-routing|300|ERROR|unqualified Supabase table routing (404s at runtime)|pnpm check:schema-routing|pnpm -s check:schema-routing:strict"
     "package-twins|300|ERROR|package logic re-grown outside its @ai-matrx package|pnpm check:package-twins|pnpm -s check:package-twins"
     "canonical-pickers|300|ERROR|an alternate agent picker was reintroduced|pnpm check:canonical-pickers|pnpm -s check:canonical-pickers"

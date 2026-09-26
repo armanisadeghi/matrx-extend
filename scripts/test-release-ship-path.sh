@@ -65,7 +65,7 @@ case " \$* " in
   *" catalog:tools:md "*) mkdir -p types; echo "regenerated catalog" > types/tool-catalog.md ;;
   *" check:matrx-packages "*) [ -f "$SANDBOX/fail-matrx-packages" ] && exit 1 ;;
   *" lint "*) [ -f "$SANDBOX/fail-lint" ] && exit 1 ;;
-  *" exec vitest run --maxWorkers=1 --minWorkers=1 "*)
+  *" exec vitest run --maxWorkers=1 "*)
     git rev-parse HEAD >> "$SANDBOX/checked-shas"
     if [ -f "$SANDBOX/fail-tests" ]; then
       echo " FAIL  tests/unit/release-contract.test.ts"

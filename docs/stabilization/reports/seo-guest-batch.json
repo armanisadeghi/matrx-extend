@@ -26,5 +26,15 @@
     "diagnosis_limit": "The original runner suppressed the failing error and had no stage between public-page readiness, the SEO click, and the SEO selected/content waits. The failure cannot yet be attributed to the extension.",
     "source_scope_check": "Showcase's nested tablist is admin gated, so it does not explain this guest run. The runner now resolves the SEO trigger from the sole top-level tablist and links the panel by aria-controls, preventing the same selector class from affecting later modes.",
     "instrumentation": "Before every click or wait in this batch, the runner records a fixed stage and safe observable. SEO readiness records counts and booleans for main tablists, SEO triggers, selection, linked panel, view heading, fallback, audit button, and error presence. No raw error, page body, authentication data, or browser storage is retained."
+  },
+  "source_review_round_2": {
+    "review": "docs/stabilization/reports/seo-stage-peer.json",
+    "runtime_executed": false,
+    "addressed": [
+      "A pending operation now remains separate from the last safe sample, so wait timeouts report the failed readiness, audit, running, settled, or menu wait boundary.",
+      "SEO readiness and content use the same unique main navigation trigger and linked aria-controls panel; content fails closed if the panel is missing, inactive, or unselected.",
+      "Before dispatching the existing trusted title click, the runner confirms its globally visible SEO title-button candidate is exactly the unique main navigation trigger."
+    ],
+    "runtime_verdict": "unverified pending root-owned guarded rerun and independent review"
   }
 }

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "task_id": "cookies-prompt-semantics",
+  "lane": "source-backed applicability diagnosis",
+  "status": "native-deny-unavailable-under-current-manifest-inferred",
+  "manifest_version": "0.2.66",
+  "scope": "Determine whether the observed Cookies OFF-to-ON toggle with no native prompt can establish a native Chrome denial test for cookies under the current generated MV3 manifest.",
+  "observed_input": {
+    "source": "Parent-provided CUA observation; not independently reproduced in this lane.",
+    "result": "Cookies changed OFF to ON without a native Chrome permission prompt and without a Deny acknowledgement.",
+    "interpretation": "This observation alone does not establish why Chrome granted the permission silently."
+  },
+  "facts": [
+    {
+      "claim": "The generated Chrome MV3 manifest declares cookies in optional_permissions, declares <all_urls> in host_permissions, and includes debugger in required permissions.",
+      "source": ".output/chrome-mv3-dev/manifest.json and wxt.config.ts",
+      "kind": "local source observation"
+    },
+    {
+      "claim": "The Settings toggle calls chrome.permissions.request({permissions: [perm]}) directly for cookies; the app's permission prompt store is a separate product flow.",
+      "source": "src/features/settings/AdvancedAgentCapabilities.tsx; src/lib/permissions/optional.ts; src/state/permission-prompts.ts",
+      "kind": "local source observation"
+    },
+    {
+      "claim": "Chrome says permissions.request prompts when adding permissions results in warning messages different from those already seen and accepted; after remove(), request usually restores access without prompting.",
+      "source": "https://developer.chrome.com/docs/extensions/reference/api/permissions",
+      "kind": "official Chrome documentation"
+    },
+    {
+      "claim": "Chrome's permissions list gives cookies access to chrome.cookies but lists no warning for cookies. It lists an all-websites warning for debugger, pageCapture, and tabCapture.",
+      "source": "https://developer.chrome.com/docs/extensions/reference/permissions-list",
+      "kind": "official Chrome documentation"
+    },
+    {
+      "claim": "The cookies API requires both the cookies permission and host permissions for the cookie hosts.",
+      "source": "https://developer.chrome.com/docs/extensions/reference/api/cookies",
+      "kind": "official Chrome documentation"
+    }
+  ],
+  "inference": [
+    "For this manifest, Chrome already has broad host access and the required debugger permission's all-websites warning. Since cookies itself has no warning in Chrome's permission list, requesting cookies adds no documented warning delta that would trigger a native permission prompt. A silent grant is therefore expected under the documented warning semantics.",
+    "A native Deny action for cookies is consequently unavailable as a reliable acceptance path under the current Chrome manifest. This conclusion is based on the manifest plus official warning semantics, not on treating one silent grant as proof.",
+    "Runtime behavior was not tested independently here. Chrome version/profile state can explain the supplied observation too; this source ruling predicts the current-manifest behavior but does not establish the cause of that particular CUA run."
+  ],
+  "recommendation": {
+    "next_test": "Use a declared optional permission that Chrome documents with a distinct warning, such as pageCapture, tabCapture, or clipboardRead, in a fresh owned profile where permissions.contains and getAll both show it absent. Capture the real warning prompt and explicit Deny separately from the runner's postconditions.",
+    "cookies_coverage": "If cookies needs runtime coverage, verify the product's cookies request/grant/contains path as a grant-path check, or redesign host-permission scoping so cookies adds a warning delta. Do not classify a silent cookies grant as a denial-path pass or defect.",
+    "scope_note": "Do not use cookies as a native prompt/Deny acceptance case while <all_urls> and debugger remain required in this manifest."
+  },
+  "verification": {
+    "manifest_inspected": true,
+    "permission_ui_source_inspected": true,
+    "official_chrome_sources_checked": true,
+    "browser_or_permission_mutation": "not performed",
+    "tests_or_builds": "not run, per assignment"
+  }
+}
