@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-readonly-scope-final-peer",
+  "reviewed_source_commit": "a39679804a7b02d1b3f1fdb3f19cbace819f47c8",
+  "source_review": {
+    "verdict": "ACCEPT",
+    "reason": "The opt-in observer establishes the no-workspace state from the real Settings UI and stored device selection, watches the public fixture's recognition interval for any processed_documents GET, then uses the real organization picker before requiring the scoped lookup and UI result. The exact filter checks now match the production recognition query. The branch is read-only and returns before the D23/D22 Save flow; it does not touch the private attempt checkpoint.",
+    "evidence": [
+      "Before selection, the picker must show Choose… and no stored organization. The listener is attached before navigating to the exact public fixture and opening Scrape; the settled UI must show choose-workspace unknown, and any processed_documents GET in this interval fails the branch, including one with an organization filter.",
+      "After selection through chooseOrganization, the observer requires at least one completed exact GET whose canonical_identity equals the fixture's canonical URL, organization_id equals the selected stored ID, origin_client is eq.extension, derivation_kind is in.(initial_extract,recapture), and deleted_at is is.null.",
+      "The observer only returns none when every observed exact request completed with HTTP 200 and an empty JSON array; zero requests, pending/failed responses, malformed bodies, mixed none/found results, or any nonempty response remain null/unknown or fail closed. Repeated identical reads are permitted, but every one must be empty/200.",
+      "After the scoped response, the active Scrape UI must show notSaved with no saved banner, checkUnknown, or Source link. The branch issues no Capture/Save input and bypasses existingSaveAttempt/reserveSaveAttempt entirely; only an exclusive private diagnostic screenshot may be created on failure.",
+      "Production lookupCapturedByUrl uses the same .eq(canonical_identity), .eq(origin_client, 'extension'), .eq(organization_id), .in(derivation_kind, ['initial_extract','recapture']), and .is(deleted_at, null) filters."
+    ],
+    "limits": [
+      "Source review only; no browser, tests, or heavy runtime was run. Runtime remains unverified.",
+      "This checks the current page's bounded recognition path; it does not resolve the earlier ambiguous Save attempt, prove Saved/Open identity, or cover late in-flight writes."
+    ]
+  },
+  "runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "No runtime or browser verification was performed in this source-review lane."
+  }
+}
