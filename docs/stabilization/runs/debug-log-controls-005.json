@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "run_id": "debug-log-controls-005",
+  "feature_id": "EXT-F-1005",
+  "source": {
+    "guard_log_path": "/tmp/matrx-debug-log-controls-005.log",
+    "guard_log_sha256": "48dcaf2e4ed470570d3e7127e6a023c05c5e9640070b96f7f4c577f5364f76da",
+    "acceptance_result_path": "test-results/debug-log-controls-acceptance.json",
+    "acceptance_result_sha256": "de5fd18fdc987ad9d5addc5ed6317863d0ad209f3804cece108d22674762d8a0",
+    "runner_path": "tests/browser/debug-log-controls-acceptance.mjs",
+    "runner_sha256": "774a923deef1c38f9ebbe208c1cdd1c756fad348cc94c69f7a63eadb965e97d2",
+    "release_receipt_sha256": "17abd491f49295df5eb6e262ae7710e9dbf70cb4904af54d598e26040b8277d3",
+    "manifest_sha256": "e088c1689d542df9b12222e6feb2ff45c4102f95fedf057ba8b2553dbcd1b77b"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T23:18:50.898Z",
+    "healthy_watch_at": "2026-09-26T23:19:07.346Z",
+    "child_exit_at": "2026-09-26T23:19:20.996Z",
+    "child_exit_code": 0,
+    "wrapper_confirmed_exit_code": 0,
+    "stdout": "PARTIAL debug_log_controls_acceptance"
+  },
+  "build": {
+    "version": "0.2.79",
+    "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "identity_cross_check": "Acceptance result matches release receipt version/tree and generated manifest version; runner compares identity before and after the native owned-profile run."
+  },
+  "runtime": {
+    "scenario": "real_panel_service_error",
+    "top_level_status": "partial",
+    "real_admin_ui": true,
+    "owned_profile": true,
+    "natural_event_rows_before": 51,
+    "natural_event_rows_after": 71,
+    "service_error_observation": {
+      "online_positive_control": true,
+      "actual_failed_request": false,
+      "visible_failure": false,
+      "outage_persisted_through_controls": false,
+      "network_restored": true,
+      "status": "unverified",
+      "failure_stage": "service_error_offline_control"
+    },
+    "case_count": 4,
+    "case_statuses": {
+      "EXT-F-1005-T14": "partial; warm/reload/service-error dimensions unverified",
+      "EXT-F-1005-T15": "partial; warm/reload/service-error dimensions unverified",
+      "EXT-F-1005-T17": "partial; warm/reload/service-error dimensions unverified",
+      "EXT-F-1005-T22": "partial; warm/reload/service-error dimensions unverified"
+    },
+    "observed_controls_after_network_restoration": "Message and detail-only primitive search, pause/resume counts, Clear with natural error-badge clearing, detail expansion/collapse, no-detail inertness, and distinct no-match/no-events states were observed in this profile; they do not establish service-error resilience because the offline proof failed and network was restored before the controls."
+  },
+  "interpretation": "The run is a source-bound partial diagnostic. Online health was positively observed, but no actual offline failed request or visible FAIL state was established, so service-error coverage remains unverified for all four cases. Child exit 0 reflects partial evidence, not full acceptance."
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "report_id": "debug005-runtime-peer",
+  "run_receipt": "docs/stabilization/runs/debug-log-controls-005.json",
+  "A_runtime": {
+    "status": "PARTIAL_DIAGNOSTIC_SERVICE_ERROR_UNVERIFIED",
+    "verified": [
+      "The resource guard admitted the native run and recorded child exit 0 with explicit PARTIAL stdout; the raw result is also partial, not pass. The saved result and log hashes match the immutable receipt.",
+      "The owned admin profile and build fields name release 0.2.79, tree be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0, and the expected extension ID. The local release receipt and generated manifest agree with the result, and the runner checks identity before and after execution.",
+      "The online /health positive control passed. The offline probe did not observe an actual failed request or a visible FAIL label, so its outage proof failed at service_error_offline_control. The runner restored network before continuing and recorded networkRestored=true.",
+      "Natural Debug rows and several controls were exercised after restoration, including message and detail-only search, pause/resume, clear with an error badge, and detail toggling. Their raw case statuses are partial, but every warm, reload, and serviceError dimension in this scenario remains unverified."
+    ]
+  },
+  "B_evidence_quality": {
+    "status": "CORROBORATED_WITH_EXPLICIT_UNVERIFIED_DIMENSION",
+    "checks": [
+      "Recomputed hashes for the guard log, sanitized result, runner, release receipt, and manifest match the receipt. Guard timestamps, terminal exit, and stdout agree with the raw result.",
+      "Runner source requires one matching offline Network.loadingFailed event and a visible FAIL label before setting actualFailedRequest and visibleFailure. Neither predicate was met in the saved result; the fallback restoration path ran before the control battery.",
+      "No service-error dimension was promoted in T14, T15, T17, or T22. A successful online control alone cannot stand in for a real outage."
+    ],
+    "limits": [
+      "The result does not reveal why the offline probe lacked the required failed request and visible UI state; this peer does not infer a product defect from it.",
+      "Run 005 does not establish service-error resilience or complete any full case or feature. A corrected native scenario needs an actual observed failure and visible product state while controls execute."
+    ]
+  }
+}
