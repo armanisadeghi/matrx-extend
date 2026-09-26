@@ -219,9 +219,11 @@ async function exercise({ page, panel, artifacts }) {
   let preClearCount = 0;
   try {
     await signInAsAdmin(page, panel);
-    stage = 'open_debug';
+    stage = 'debug_tab_click';
     await click(panel, 'title', 'Debug (admin only)');
-    await click(panel, 'button', 'Log');
+    // DebugView is lazy-loaded and starts in Log. Its loading fallback has no
+    // Log button yet; wait for the real Search/counter controls to mount.
+    stage = 'debug_log_mount';
     const baseline = await waitFor(
       'debug_log_counter_ready',
       () => snapshot(panel),
