@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/reset_repair_peer",
+  "reviewed_commits": ["ff6b609", "0322640"],
+  "case_id": "EXT-F-1003-T51",
+  "method": "Independent source-only review of the acceptance runner, its sanitized report, inventory acceptance, and reset implementation. No test, browser, build, install, or process was run.",
+  "verdict_a_acceptance_and_runtime": {
+    "source_status": "PASS_WITH_LIMITS",
+    "runtime_status": "UNVERIFIED; this lane did not execute the runner",
+    "acceptance_evidence": [
+      "Runner performs real web login, extension Settings sign-in, Cancel, Confirm, then native panel reload in harness-owned profile.",
+      "Cancel checks signed-in admin UI, auth presence, Dark preference, exact disposable local/session fixture values, and no loss of prior keys.",
+      "Confirm checks both fixtures and every preexisting local/session key absent immediately; reload then checks guest/System state and no prior non-regenerated key names.",
+      "This matches T51's cancel-preserves / confirm-clears-and-signs-out expectation across warm and reload dimensions."
+    ],
+    "corrected_reload_proof": "Confirmed prior gap is repaired: snapshots remain in process memory; the post-reload intersection is asserted across all prior local/session key names except narrowly listed regenerated-key sets. Immediate post-confirm intersection has no exceptions. No storage values are serialized.",
+    "remaining_limit": "The reload name comparison is only an oracle for keys present before reset. Listed regenerated names can reappear after clearing by fresh boot; the immediate post-confirm assertion proves those same prior keys were absent before reload. No runtime evidence is claimed."
+  },
+  "verdict_b_correctness_and_safety": {
+    "status": "PASS_WITH_LIMITS",
+    "evidence": [
+      "The runner drives Settings UI instead of invoking reset implementation directly; reset implementation clears extension local/session storage before signOut (SettingsView.tsx:147-149).",
+      "Credential values stay at the real web form; storage inspection returns auth-key booleans, names, theme and fixture equality only. Output is an allowlisted object with restrictive mode.",
+      "The harness uses its owned disposable Chrome profile and no application-data mutation route is present in runner source. Real sign-in and sign-out can create/revoke disposable authentication sessions; this is correctly disclosed in the runner report."
+    ],
+    "confirmed_prior_finding": "admin-reset-source-peer's missing post-reload all-key comparison was valid for ff6b609 and is repaired by 0322640.",
+    "new_blocking_findings": [],
+    "runtime_safety_boundary": "Source supports isolation and credential handling; only the root-admitted guarded native run can establish actual browser/profile behavior."
+  }
+}
