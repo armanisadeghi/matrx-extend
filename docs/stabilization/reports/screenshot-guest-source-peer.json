@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-guest-source-peer",
+  "reviewed_commits": ["ac11f05e", "26c5c51d"],
+  "feature_id": "EXT-F-1009",
+  "case_id": "EXT-F-1009-T09",
+  "verdict": "source_rejected_runtime_unverified",
+  "runtime": "not_run_in_source_review",
+  "blocking_findings": [
+    {
+      "severity": "blocking",
+      "location": "tests/browser/screenshot-guest-acceptance.mjs:72,76",
+      "evidence": "Both waitFor calls pass guestNavigation directly, but guestNavigation requires a panel argument. settings-panel-driver.mjs calls read() with no argument, so guestNavigation(undefined) fails in evaluate before it can observe Settings or SEO. waitFor swallows that exception as transient until its fixed timeout, making the visible-navigation subcase impossible to pass even when the product works.",
+      "remedy": "Pass a zero-argument closure that calls guestNavigation(panel) at both waits, and assert the selected Settings and SEO tab identities rather than only activePaneCount === 1."
+    },
+    {
+      "severity": "blocking_oracle",
+      "location": "tests/browser/screenshot-guest-acceptance.mjs:72-80",
+      "evidence": "activePaneCount === 1 does not establish that the requested Settings or SEO view became active. A pre-existing public pane can satisfy it, so the after-navigation absence check could pass without exercising both navigation transitions.",
+      "remedy": "Return the active pane/tab value or selected trigger title from guestNavigation and require Settings then SEO explicitly."
+    }
+  ],
+  "accepted_boundaries": [
+    "The inventory assigns T09 to guest and T01-T08 to member/admin; the runner claims only the guest access gate.",
+    "Fresh guest state and trusted Settings/SEO clicks use the owned native side-panel harness, whose startup verifies release receipt, manifest version, and extension tree hash before loading the expected extension in a newly owned profile.",
+    "The runner labels stale-selection after a real role change unverified rather than claiming N/A or manufacturing authentication state.",
+    "The runner contains no screenshot capture, gallery mutation, delete, backend write, Chat, or Pilot action; its only screenshot call is a private mode-0600 failure artifact."
+  ],
+  "resource_policy": "No allowlist entry added while the source verdict is rejected; existing capacity thresholds remain unchanged.",
+  "next_step": "Correct the callback and selected-view oracle, then obtain a fresh source review before guarded native execution."
+}
