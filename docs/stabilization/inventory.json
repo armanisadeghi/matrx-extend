@@ -4126,6 +4126,23 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0015"
+          ],
+          "runtime_evidence": [
+            {
+              "runs": [
+                "isolated-admin-reset-001",
+                "isolated-admin-reset-002"
+              ],
+              "status": "unverified",
+              "verified_substeps": [
+                "Real admin sign-in",
+                "Cancel preserves admin and fixtures"
+              ],
+              "remaining": "Confirmation/reload not reached; EXT-D-0015 tracks native test interaction failure."
+            }
           ]
         },
         {

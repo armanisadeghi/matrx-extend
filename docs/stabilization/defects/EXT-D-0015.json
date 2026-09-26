@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0015",
+  "feature_id": "EXT-F-1003",
+  "case_ids": [
+    "EXT-F-1003-T51"
+  ],
+  "surface": "Disposable admin Settings reset acceptance runner",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Use released unpacked0.2.60, receipt fde1a11, and root resource guard with installed runtime/browser paths documented in PLAN.",
+    "Run node tests/browser/isolated-admin-reset-acceptance.mjs in fresh owned profile; credentials retrieved at point of use by runner.",
+    "Real web+extension signin and Dark/local/session fixtures pass; open Clear local data, Cancel, then reopen same action."
+  ],
+  "expected": "The native test can reopen the visible reset dialog after Cancel and proceed with confirmation acceptance.",
+  "actual": "Two runs fail before reopening; run002 pinpoints reset_confirm_open_action with dialog_reopened=false, confirm_click_completed=false and zero storage reads. Product reset behavior has not been executed or adjudicated.",
+  "evidence": [
+    "docs/stabilization/runs/isolated-admin-reset-001.json",
+    "docs/stabilization/runs/isolated-admin-reset-002.json"
+  ],
+  "severity": "S2: authenticated reset coverage blocked; no demonstrated product data-loss defect",
+  "priority": "P1: complete contained Settings acceptance",
+  "state": "in-fix",
+  "owner": "/root/reset_reopen_diagnosis",
+  "transition_history": [
+    {
+      "at": "2026-09-26T11:37:01.104672+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Two real guarded attempts localize test interaction failure; fresh Sol diagnosis under objective escalation threshold."
+    },
+    {
+      "at": "2026-09-26T11:37:01.104672+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Two real guarded attempts localize test interaction failure; fresh Sol diagnosis under objective escalation threshold."
+    },
+    {
+      "at": "2026-09-26T11:37:01.104672+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Two real guarded attempts localize test interaction failure; fresh Sol diagnosis under objective escalation threshold."
+    }
+  ]
+}
