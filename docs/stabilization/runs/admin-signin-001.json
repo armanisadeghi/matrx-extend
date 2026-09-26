@@ -1,0 +1,78 @@
+{
+  "id": "admin-signin-001",
+  "feature_id": "EXT-F-1003",
+  "at": "2026-09-26T04:59:59Z",
+  "status": "partial",
+  "scope": "Guest Settings T52 sign-in start/result and authenticated admin identity persistence through full extension Reload; observe dev auth redirect outcome without exposing credentials or tokens.",
+  "resource": {
+    "lease_id": "guest-settings-007",
+    "owner": "coordinator-held native browser lease, session 76318",
+    "admitted_at": "2026-09-26T04:47:36Z",
+    "stop_observation": "No stop message received by this worker during this check."
+  },
+  "installation": {
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.51",
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "build_receipt": "docs/stabilization/runs/release-real-005.json",
+    "receipt_candidate_sha": "760c7a1c5dba504b894dd5450b83e9fee060d065"
+  },
+  "preconditions": {
+    "role": "signed-out guest in extension; Email displayed as —",
+    "device_organization": "none selected",
+    "permissions": "No permission prompt or permission change occurred.",
+    "build_channel": "unpacked dev extension, version 0.2.51",
+    "existing_web_session": "Existing aimatrx.com/dashboard tab visibly showed admin@admin.com before the extension sign-in action; no credential was entered or copied."
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-1003-T52",
+      "status": "pass",
+      "expected": "Guest sign-in begins or signed-in user becomes guest; visible state follows auth result.",
+      "warm_evidence": [
+        "Clicked Sign in from the actual dev extension Settings while signed out.",
+        "The first screenshot after the action showed Email admin@admin.com, Role ADMIN, and Sign out; no password form or auth error appeared."
+      ],
+      "reload_evidence": [
+        "After clicking the Chrome extension Reload button and reopening the side panel, Chat greeted 'Hello, admin' and said 'Choose an organization in Settings'.",
+        "Settings after the same reload showed Email admin@admin.com, Role ADMIN, and Sign out."
+      ]
+    },
+    {
+      "case_id": "EXT-F-0001-T05",
+      "status": "partial",
+      "expected": "The development identity is accepted by the configured redirect allowlist and auth returns to the extension with a truthful signed-in or recoverable error state.",
+      "runtime_result": "The actual dev extension returned to an authenticated admin state after Sign in, and that identity persisted through a real extension Reload. This is runtime evidence that the dev identity flow succeeded.",
+      "remaining_criterion": "The browser UI did not expose an OAuth provider page or the chromiumapp callback origin, so the redirect/callback origin was not directly observed as required by the case steps."
+    }
+  ],
+  "organization": {
+    "selected": false,
+    "signin_prompted_for_choice": false,
+    "manual_picker": "Opening Settings > Organization showed 'Acting as REQUIRED — EVERY REQUEST CARRIES YOUR ORGANIZATION' and a Choose… combo. Opening it displayed a list of 142 choices; Escape dismissed it without selecting an organization.",
+    "toast": {
+      "exact_text": "Capture list unavailable AI Matrx could not check which pages need your browser: no workspace is selected, so the request was never sent. Nothing is being shown for it — this is NOT an empty result. Pick a workspace from the account menu and try again. select media.capture_handoff · NO_ORGANIZATION: no organization selected",
+      "first_observed": "Visible in the first screenshot after clicking Sign in, before any organization was selected; no intermediate login form or OAuth page was visible.",
+      "observed_at_utc": "2026-09-26T04:58:23Z",
+      "timing_note": "The toast remained visible during the pre-reload observation and reappeared after extension Reload. Exact elapsed milliseconds from the Sign in click were not instrumented."
+    },
+    "membership_or_selection_changed": false
+  },
+  "authentication": {
+    "identity": "admin@admin.com",
+    "role": "ADMIN",
+    "persisted_after_extension_reload": true,
+    "signed_out_after_test": false
+  },
+  "other_settings_changed": false,
+  "evidence": [
+    "Native Chrome showed the existing aimatrx.com dashboard session signed in as admin@admin.com before sign-in was started from the extension.",
+    "The guest Sign in control returned an authenticated state in extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, loaded from /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev.",
+    "Chrome's extension Reload button returned 'Reloaded'; after reopening Settings the same admin identity and role remained visible.",
+    "The exact no-organization toast was visible before and after reload. Settings offered an explicit org picker; its 142-item list was inspected but left unselected."
+  ],
+  "limitations": [
+    "The auth UI did not expose the OAuth provider page or callback URL; T05 remains partial until the required redirect/callback origin is directly observed."
+  ],
+  "next_action": null
+}
