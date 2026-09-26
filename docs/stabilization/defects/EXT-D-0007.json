@@ -23,7 +23,7 @@
   "severity": "S1: authenticated development testing blocked by missing identity",
   "priority": "P0: baseline authentication blocker",
   "state": "in-fix",
-  "owner": "/root/reload_auth_diagnosis",
+  "owner": "/root/auth_broadcast_order_repair",
   "hypothesis": "StrictMode lifecycle cause proven by RED003 positive control; repair remains in-fix after independent surrounding authentication classification findings.",
   "transition_history": [
     {
@@ -64,6 +64,15 @@
       "previous_findings": "Addressed",
       "findings": "Broadcast and interactive sign-in bypass truthful hydration; role lookup error silently maps to nonadmin. Source confirmed, next regression proof required.",
       "report": "docs/stabilization/reports/auth-classification-peer.json"
+    },
+    {
+      "round": 3,
+      "commit": "824a4b4",
+      "engineering": "fail",
+      "live_acceptance": "latest-build-unverified",
+      "previous_findings": "All three addressed",
+      "findings": "Negative broadcast still trusts stale payload; possible delayed signout after newer canonical signIn misclassifies guest. Source-ordering lead; freshworker must prove regression.",
+      "report": "docs/stabilization/reports/auth-final-peer.json"
     }
   ],
   "partial_retest": {
