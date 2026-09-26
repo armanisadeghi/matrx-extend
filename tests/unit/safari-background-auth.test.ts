@@ -123,6 +123,6 @@ describe('Safari background OAuth tab transport', () => {
     await callbacks.handlers.get('auth:safari-start')?.();
     callbacks.alarm?.({ name: 'safari-timeout' });
     await vi.waitFor(() => expect(session.has('safari-attempt')).toBe(false));
-    expect(removed).toHaveLength(0);
+    expect(removed).toContain(44);
   });
 });

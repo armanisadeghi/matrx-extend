@@ -43,11 +43,13 @@ export function readExtensionIdentity(): ExtensionIdentity {
   } catch {
     // Identity diagnostics stay readable in contexts without the OAuth API.
   }
-  const expectedIdentity = getExpectedExtensionIdentity(runtime_id);
   const safari = BROWSER === 'safari';
+  const expectedIdentity = getExpectedExtensionIdentity(runtime_id);
   const known_id = expectedIdentity !== undefined;
-  const expected_redirect_uri = expectedIdentity?.redirect_uri ?? '';
-  const redirect_matches_expected = safari || (known_id && redirect_uri === expected_redirect_uri);
+  const expected_redirect_uri = safari
+    ? 'https://www.aimatrx.com/auth/extension-callback'
+    : (expectedIdentity?.redirect_uri ?? '');
+  const redirect_matches_expected = redirect_uri === expected_redirect_uri;
   return {
     runtime_id,
     redirect_uri,
@@ -58,9 +60,7 @@ export function readExtensionIdentity(): ExtensionIdentity {
     known_id,
     expected_redirect_uri,
     redirect_matches_expected,
-    matches_expected: safari
-      ? redirect_uri === 'https://www.aimatrx.com/auth/extension-callback'
-      : known_id && redirect_matches_expected,
+    matches_expected: safari ? redirect_matches_expected : known_id && redirect_matches_expected,
     extension_version: chrome.runtime.getManifest().version,
     extension_name: chrome.runtime.getManifest().name,
     ...(typeof navigator !== 'undefined' && { user_agent: navigator.userAgent }),

@@ -144,11 +144,12 @@ async function handleCallback(tabId: number, callbackUrl: string): Promise<void>
   if (received.origin !== expected.origin || received.pathname !== expected.pathname) return;
   const state = received.searchParams.get('state');
   const code = received.searchParams.get('code');
-  if (received.searchParams.has('error') && state === attempt.state) {
+  if (!state || state !== attempt.state) return;
+  if (received.searchParams.has('error')) {
     await failAttempt(attempt, 'Sign-in was cancelled or rejected. Please try again.');
     return;
   }
-  if (!state || state !== attempt.state || !code) {
+  if (!code) {
     await failAttempt(attempt, 'Sign-in could not verify its callback. Please try again.', true);
     return;
   }
