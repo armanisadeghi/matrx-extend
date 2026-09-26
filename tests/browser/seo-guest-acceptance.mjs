@@ -32,48 +32,84 @@ const report = {
   ],
   last_safe_stage: 'before_owned_profile',
   last_safe_observable: null,
+  current_operation: null,
 };
 const advance = (stage, observable = null) => {
   report.last_safe_stage = stage;
   report.last_safe_observable = observable;
+  report.current_operation = null;
+};
+const enter = (operation) => {
+  report.current_operation = operation;
 };
 async function observe(stage, read) {
-  const previous = report.last_safe_observable;
-  advance(`${stage}_pending`, previous);
+  enter(stage);
   try {
     const value = await read();
     advance(stage, value);
     return value;
   } catch {
-    advance(stage, { observationFailed: true, previous });
     throw new Error(`${stage}_observation_failed`);
   }
 }
+async function waitObserved(operation, read, accept, timeoutMs) {
+  enter(operation);
+  const result = await waitFor(
+    operation,
+    async () => {
+      const value = await read();
+      report.last_safe_stage = `${operation}_sample`;
+      report.last_safe_observable = value;
+      return value;
+    },
+    accept,
+    timeoutMs,
+  );
+  advance(`${operation}_accepted`, result);
+  return result;
+}
 const target = (caseId, subtarget, evidence) =>
   report.targets.push({ case_id: `EXT-F-1008-${caseId}`, subtarget, status: 'pass', evidence });
+
+// One scoped relationship for all SEO observations. The outer tablist is the
+// app navigation; mounted feature panels may contain their own nested tabs.
+const SEO_SCOPE = `
+  const lists = [...document.querySelectorAll('[role="tablist"]')]
+    .filter((node) => !node.closest('[role="tabpanel"]'));
+  const tabs = lists.length === 1
+    ? [...lists[0].querySelectorAll('[role="tab"]')]
+      .filter((node) => node.closest('[role="tablist"]') === lists[0]
+        && node.title === 'SEO')
+    : [];
+  const tab = tabs.length === 1 ? tabs[0] : null;
+  const controls = tab?.getAttribute('aria-controls');
+  const pane = controls ? document.getElementById(controls) : null;
+  const linked = !!pane && pane.id === controls
+    && pane.getAttribute('aria-labelledby') === tab.id
+    && pane.getAttribute('data-state') === 'active'
+    && pane.getBoundingClientRect().height > 0;
+`;
 
 async function selectedSeo(panel) {
   return evaluate(
     panel,
     `(() => {
-      const lists = [...document.querySelectorAll('[role="tablist"]')]
-        .filter((node) => !node.closest('[role="tabpanel"]'));
-      const tabs = lists.length === 1
-        ? [...lists[0].querySelectorAll('[role="tab"]')]
-          .filter((node) => node.closest('[role="tablist"]') === lists[0]
-            && node.title === 'SEO')
-        : [];
-      const tab = tabs.length === 1 ? tabs[0] : null;
-      const pane = tab ? document.getElementById(tab.getAttribute('aria-controls')) : null;
+      ${SEO_SCOPE}
+      const visible = (node) => {
+        const style = getComputedStyle(node), rect = node.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden'
+          && style.display !== 'none' && !node.closest('[inert]');
+      };
+      const clickCandidates = [...document.querySelectorAll('button[title]')]
+        .filter((node) => node.title === 'SEO' && visible(node));
       const heading = [...(pane?.querySelectorAll('span') ?? [])]
         .some((node) => node.textContent.trim() === 'SEO audit');
       const text = pane?.innerText ?? '';
       return { mainTablists: lists.length, seoTabs: tabs.length,
+        visibleSeoTitleButtons: clickCandidates.length,
+        clickCandidateIsMainTab: clickCandidates.length === 1 && clickCandidates[0] === tab,
         selected: tab?.getAttribute('aria-selected') === 'true',
-        linked: !!pane && pane.id === tab?.getAttribute('aria-controls')
-          && pane.getAttribute('aria-labelledby') === tab?.id
-          && pane.getAttribute('data-state') === 'active'
-          && pane.getBoundingClientRect().height > 0,
+        linked,
         heading, fallback: !!pane?.querySelector('svg.animate-spin') && !text.trim(),
         auditButtonCount: [...(pane?.querySelectorAll('button') ?? [])]
           .filter((node) => /^(Audit this page|Re-audit)$/.test(node.textContent.trim())).length,
@@ -86,7 +122,9 @@ async function seoContent(panel) {
   return evaluate(
     panel,
     `(() => {
-      const pane = document.querySelector('[role="tabpanel"][data-state="active"]');
+      ${SEO_SCOPE}
+      if (!linked || tab?.getAttribute('aria-selected') !== 'true')
+        return { scopeValid: false, title: null, headings: false, reAudit: false, error: false };
       const group = [...(pane?.querySelectorAll('span') ?? [])]
         .find((node) => node.textContent.trim() === 'Title & description');
       const rows = group?.parentElement?.nextElementSibling;
@@ -95,7 +133,7 @@ async function seoContent(panel) {
       const title = titleRow?.lastElementChild?.lastElementChild?.textContent.trim() ?? null;
       const headingGroup = [...(pane?.querySelectorAll('span') ?? [])]
         .find((node) => node.textContent.trim() === 'Headings');
-      return { title, headings: !!headingGroup,
+      return { scopeValid: true, title, headings: !!headingGroup,
         reAudit: [...(pane?.querySelectorAll('button') ?? [])]
           .some((node) => node.textContent.trim() === 'Re-audit' && !node.disabled),
         error: [...(pane?.querySelectorAll('div') ?? [])]
@@ -117,7 +155,7 @@ try {
     exercisePanel: async ({ page, panel }) => {
       advance('owned_guest_panel_ready', { nativePanel: true });
       for (const [index, url] of PAGES.entries()) {
-        advance(`public_page_${index}_navigation_pending`, { nativePanel: true });
+        enter(`public_page_${index}_navigation`);
         await page.goto(url, { waitUntil: 'domcontentloaded' });
         advance(`public_page_${index}_loaded`, { reachedExpectedPage: page.url() === url });
         const observedPage = await observe(`public_page_${index}_inspected`, () =>
@@ -127,19 +165,29 @@ try {
         advance(`public_page_${index}_ready`, { title: observedPage.title });
         if (index === 0) {
           const beforeClick = await observe('seo_click_preflight', () => selectedSeo(panel));
-          advance('seo_click_pending', beforeClick);
+          assert.equal(
+            beforeClick.clickCandidateIsMainTab,
+            true,
+            'SEO click candidate is the unique main navigation tab',
+          );
+          enter('seo_click');
           await click(panel, 'title', 'SEO');
-          await observe('seo_click_completed', () => selectedSeo(panel));
+          advance('seo_click_dispatched', { trustedInput: true });
+          await observe('seo_post_click_observation', () => selectedSeo(panel));
         }
-        await waitFor(
-          'SEO selected and linked',
-          () => observe(`seo_page_${index}_readiness_sample`, () => selectedSeo(panel)),
+        await waitObserved(
+          `seo_page_${index}_readiness_wait`,
+          () => selectedSeo(panel),
           (state) => state?.selected && state.linked && state.heading && !state.fallback,
         );
-        const content = await waitFor(
-          `SEO audit reflects public page ${index}`,
-          () => observe(`seo_page_${index}_audit_sample`, () => seoContent(panel)),
-          (state) => state?.title === observedPage.title && state.reAudit && !state.error,
+        const content = await waitObserved(
+          `seo_page_${index}_audit_wait`,
+          () => seoContent(panel),
+          (state) =>
+            state?.scopeValid &&
+            state.title === observedPage.title &&
+            state.reAudit &&
+            !state.error,
           30000,
         );
         assert.equal(
@@ -161,43 +209,38 @@ try {
       );
       target('T01', 'new_url_replaces_visible_title', { twoDistinctPublicTitles: true });
 
-      advance(
-        'manual_reaudit_click_pending',
-        await observe('manual_reaudit_preflight', () => seoContent(panel)),
-      );
+      await observe('manual_reaudit_preflight', () => seoContent(panel));
+      enter('manual_reaudit_click');
       await click(panel, 'button', 'Re-audit');
-      await observe('manual_reaudit_click_completed', () => seoContent(panel));
-      await waitFor(
-        're-audit enters running state',
-        () => observe('manual_reaudit_running_sample', () => seoContent(panel)),
-        (state) => state?.reAudit === false,
+      advance('manual_reaudit_click_dispatched', { trustedInput: true });
+      await waitObserved(
+        'manual_reaudit_running_wait',
+        () => seoContent(panel),
+        (state) => state?.scopeValid && state.reAudit === false,
       );
-      await waitFor(
-        're-audit settles on second page',
-        () => observe('manual_reaudit_settle_sample', () => seoContent(panel)),
+      await waitObserved(
+        'manual_reaudit_settle_wait',
+        () => seoContent(panel),
         (state) =>
-          state?.title === report.targets[1].evidence.publicTitle && state.reAudit && !state.error,
+          state?.scopeValid &&
+          state.title === report.targets[1].evidence.publicTitle &&
+          state.reAudit &&
+          !state.error,
         30000,
       );
       target('T02', 'manual_button_returns_to_current_page', { currentTitlePreserved: true });
       advance('manual_reaudit_settled', { currentTitlePreserved: true });
 
-      advance(
-        'copy_menu_click_pending',
-        await observe('copy_menu_preflight', () => selectedSeo(panel)),
-      );
+      await observe('copy_menu_preflight', () => selectedSeo(panel));
+      enter('copy_menu_click');
       await click(panel, 'title', 'Copy audit');
-      advance(
-        'copy_menu_click_completed',
-        await observe('copy_menu_post_click', () => selectedSeo(panel)),
-      );
-      const menu = await waitFor(
-        'guest copy choices visible',
+      advance('copy_menu_click_dispatched', { trustedInput: true });
+      const menu = await waitObserved(
+        'copy_menu_choices_wait',
         () =>
-          observe('copy_menu_sample', () =>
-            evaluate(
-              panel,
-              `(() => {
+          evaluate(
+            panel,
+            `(() => {
           const popover = [...document.querySelectorAll('[data-state="open"]')]
             .find((node) => node.textContent?.includes('Summary (text)')
               && node.textContent?.includes('For AI agent'));
@@ -205,7 +248,6 @@ try {
             .map((node) => node.textContent.trim());
           return { open: !!popover, choices };
         })()`,
-            ),
           ),
         (state) =>
           state?.open &&
@@ -229,7 +271,7 @@ try {
   report.status = 'partial';
 } catch {
   report.status = 'unverified';
-  report.failure_stage = report.last_safe_stage;
+  report.failure_stage = report.current_operation ?? report.last_safe_stage;
   process.exitCode = 1;
 }
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
