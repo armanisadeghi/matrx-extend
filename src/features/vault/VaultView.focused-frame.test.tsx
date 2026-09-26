@@ -9,6 +9,8 @@ const mocks = vi.hoisted(() => ({
   sendMessage: vi.fn(),
   tabsQuery: vi.fn(),
   automaticLogin: vi.fn(),
+  retryMatches: vi.fn(),
+  vault: null as Record<string, unknown> | null,
   listeners: new Set<(message: unknown) => void>(),
 }));
 
@@ -24,24 +26,7 @@ vi.mock('@/lib/org/active-org', () => ({
   getActiveOrganizationId: async () => mocks.organization.id,
 }));
 vi.mock('@/features/vault/useVault', () => ({
-  useVault: () => ({
-    auth: 'ready',
-    loading: false,
-    error: null,
-    mine: [],
-    shared: [],
-    matches: [{ item_id: 'ffffffff-1111-4111-8111-111111111111', display_name: 'Parent account' }],
-    matchesLoading: false,
-    matchesError: null,
-    reload: vi.fn(),
-    retryMatches: vi.fn(),
-    patchItem: vi.fn(),
-    createItem: vi.fn(),
-    changeFieldValue: vi.fn(),
-    addField: vi.fn(),
-    removeVaultField: vi.fn(),
-    removeVaultItem: vi.fn(),
-  }),
+  useVault: () => mocks.vault,
   useCredentialLogin: () => ({
     supported: true,
     running: null,
@@ -91,6 +76,25 @@ beforeEach(() => {
     return null;
   });
   mocks.automaticLogin.mockReset();
+  mocks.retryMatches.mockReset();
+  mocks.vault = {
+    auth: 'ready',
+    loading: false,
+    error: null,
+    mine: [],
+    shared: [],
+    matches: [{ item_id: 'ffffffff-1111-4111-8111-111111111111', display_name: 'Parent account' }],
+    matchesLoading: false,
+    matchesError: null,
+    reload: vi.fn(),
+    retryMatches: mocks.retryMatches,
+    patchItem: vi.fn(),
+    createItem: vi.fn(),
+    changeFieldValue: vi.fn(),
+    addField: vi.fn(),
+    removeVaultField: vi.fn(),
+    removeVaultItem: vi.fn(),
+  };
   mocks.tabsQuery.mockReset().mockResolvedValue([mocks.tab]);
   mocks.listeners.clear();
   const tabsActivated = event();
@@ -196,6 +200,38 @@ describe('VaultView focused child-frame projection', () => {
     expect(screen.getAllByRole('button', { name: 'Fill' })).toHaveLength(2);
     expect(screen.getAllByRole('button', { name: 'Sign in' })).toHaveLength(2);
     expect(mocks.automaticLogin).not.toHaveBeenCalled();
+  });
+
+  it('suppresses a ready panel offer after the current match lookup fails', async () => {
+    mocks.panelStatus = readyTopStatus;
+    mocks.vault = {
+      ...mocks.vault,
+      matchesError: { kind: 'forbidden' },
+    };
+    render(<VaultView />);
+
+    expect(
+      await screen.findByText(
+        'The Vault refused this request. You may not have access to this item.',
+      ),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
+    expect(mocks.retryMatches).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('button', { name: 'Fill' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Sign in' })).toBeNull();
+    expect(screen.queryByText('Child personal')).toBeNull();
+  });
+
+  it('shows only checking while a ready panel offer waits for its current match lookup', async () => {
+    mocks.panelStatus = readyTopStatus;
+    mocks.vault = { ...mocks.vault, matchesLoading: true };
+    render(<VaultView />);
+
+    expect(await screen.findByText('Checking saved logins…')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Fill' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Sign in' })).toBeNull();
+    expect(screen.queryByText('No saved login fills this page.')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Save this site' })).toBeNull();
   });
 
   it('distinguishes duplicate saved-login names and fills the selected item id', async () => {

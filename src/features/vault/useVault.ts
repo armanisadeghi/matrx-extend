@@ -289,7 +289,15 @@ export function useVault(
     mine,
     shared,
     matches: matchesOwner === matchOwner ? matches : [],
-    matchesLoading,
+    matchesLoading:
+      matchesLoading ||
+      (auth === 'ready' &&
+        actor !== null &&
+        tabId !== null &&
+        normalizeLoginUrl(pageUrl) !== null &&
+        isFillablePageUrl(pageUrl) &&
+        matchesOwner !== matchOwner &&
+        matchesErrorOwner !== matchOwner),
     matchesError: matchesErrorOwner === matchOwner ? matchesError : null,
     retryMatches,
     reload,
