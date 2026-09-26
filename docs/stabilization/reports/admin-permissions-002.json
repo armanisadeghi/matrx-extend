@@ -1,0 +1,18 @@
+{
+  "id": "admin-permissions-002",
+  "type": "ui-verification-report",
+  "summary": "T55 DevTools Protocol did not respond to repeated labeled-switch clicks and remained on through reload; dependent CDP tools were not invoked. T59 Tab video capture completed the Chrome deny/allow flow, returned to off, and remained off after reload.",
+  "cases": {
+    "EXT-F-1003-T55": "Fail: initial state was on; two accessibility-targeted clicks and one visible switch click left it on with no Chrome prompt. It remained on after reload. Off/on, denial, and CDP tool availability remain unverified.",
+    "EXT-F-1003-T59": "Pass: Chrome denial left the switch off; accepting on retry turned it on; toggling off and reloading preserved off. No recording was started."
+  },
+  "defects": [
+    "DevTools Protocol switch did not leave its on state after repeated UI clicks; recorded as observed without inferring a cause."
+  ],
+  "limitations": [
+    "Transient busy state was not observed in immediate post-click accessibility snapshots.",
+    "No debugger session or CDP tool was invoked; no video was recorded."
+  ],
+  "cleanup": "DevTools Protocol on and Tab video capture off, both matching initial states. Settings remains open at Advanced agent capabilities after extension reload; UI stopped.",
+  "run_file": "docs/stabilization/runs/admin-permissions-002.json"
+}
