@@ -1,0 +1,12 @@
+{
+  "run_id": "source-org-green-002",
+  "defect_id": "EXT-D-0022",
+  "command": "pnpm exec vitest run src/lib/supabase/queries.recognition.test.ts src/hooks/use-page-recognition.test.tsx src/lib/chat/context/page-source.test.ts --maxWorkers=1",
+  "guarded_wrapper": "resource guard 17957",
+  "completed_at": "2026-09-26T19:29:21.368Z",
+  "child_exit_code": 0,
+  "log_path": "/tmp/matrx-source-org-green-002.log",
+  "log_sha256": "a42fa9cc8787ae1d97ee6c42b6cf95b4c61ea912b47988df97987cf2234bb091",
+  "result": "3 test files passed; 14 tests passed, including the late background Saved broadcast case",
+  "limits": "Precedes the separate Scrape local Saved-state repair; no live browser observation."
+}

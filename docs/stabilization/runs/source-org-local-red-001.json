@@ -1,0 +1,13 @@
+{
+  "run_id": "source-org-local-red-001",
+  "defect_id": "EXT-D-0022",
+  "source_commit": "a2c072de",
+  "command": "pnpm exec vitest run tests/unit/save-never-loses-input.test.tsx --maxWorkers=1",
+  "guarded_wrapper": "resource guard 7234",
+  "completed_at": "2026-09-26T19:33:06.461Z",
+  "child_exit_code": 1,
+  "log_path": "/tmp/matrx-source-org-local-red-001.log",
+  "log_sha256": "5928463d771a932c21617e6d7fb0931b4bf27c7556e827e294bd42794e9bc8b7",
+  "result": "2 new Scrape UI assertions failed: local Saved button and Source link survived an A-to-B workspace switch and an A Save finishing after the switch; 7 existing controls passed",
+  "limits": "Controlled UI test with the real ScrapeView, save hook, landing preparation, and storage-change event; network is stubbed."
+}

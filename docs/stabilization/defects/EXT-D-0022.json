@@ -8,7 +8,8 @@
     "With a valid session but no selected organization on this device, look up a URL that is saved in one of multiple RLS-visible organizations.",
     "The prior lookup catches an organization-resolution error as null, conditionally omits organization_id from the docproc read, and may claim the other organization's Source as saved in the current workspace.",
     "The Scrape recognition hook also watches only the tab URL, so a workspace switch on the same page can leave the prior workspace's saved claim visible.",
-    "The background saved-page broadcast carries no organization, so a late event from the prior workspace can overwrite a new workspace's recognition state."
+    "The background saved-page broadcast carries no organization, so a late event from the prior workspace can overwrite a new workspace's recognition state.",
+    "Scrape's local Saved button and Source link can remain bound to A after switching to B, or be restored by an A Save that finishes late; an overlapping B retry must remain queued."
   ],
   "expected": "Guest recognition returns none without a read. Authenticated recognition reads only the selected organization; missing or unreadable selection returns an honest unknown without a docproc read. Switching organization clears stale recognition, starts a scoped recheck, and ignores an older lookup or background broadcast that finishes late.",
   "actual": "The shared query can read without an organization predicate, and the hook can retain a prior organization's claim after selection changes.",
@@ -16,7 +17,10 @@
     "src/lib/supabase/queries.ts:620",
     "src/hooks/use-page-recognition.ts:26",
     "docs/stabilization/reports/incoming-sources6644-peer.json",
-    "src/lib/supabase/queries.recognition.test.ts"
+    "src/lib/supabase/queries.recognition.test.ts",
+    "docs/stabilization/reports/d22-source-peer.json",
+    "docs/stabilization/runs/source-org-local-red-001.json",
+    "docs/stabilization/runs/source-org-green-002.json"
   ],
   "severity": "S2: wrong-workspace Saved claim may reveal another RLS-visible organization's Source identity and misstate capture status",
   "priority": "P1: close the organization boundary before claiming workspace-correct recognition",
@@ -48,7 +52,7 @@
       "reason": "Same-class late PAGE_ALREADY_CAPTURED broadcast found without organization identity; the hook now rechecks through the scoped query and needs another focused green run."
     }
   ],
-  "fix_commits": [],
+  "fix_commits": ["deb577e8", "e36bf683"],
   "ui_retest": "pending",
-  "closure_requirement": "Focused red/green shared-query and hook guards, typecheck, independent source review, and authenticated multi-organization UI verification."
+  "closure_requirement": "Focused red/green shared-query, hook, and real Scrape Save UI guards; typecheck; independent source review; and authenticated multi-organization UI verification."
 }
