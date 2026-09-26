@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "isolated-admin-reset",
+  "lane": "implementation Sol medium",
+  "status": "source-prepared-runtime-unverified",
+  "feature_ids": ["EXT-F-1003"],
+  "case_ids": ["EXT-F-1003-T51"],
+  "control_ids": ["EXT-F-1003-C17"],
+  "runner": "tests/browser/isolated-admin-reset-acceptance.mjs",
+  "guarded_command": "node tests/browser/isolated-admin-reset-acceptance.mjs",
+  "scope": "The existing receipt-verified native-side-panel harness owns a fresh disposable Chrome profile. The runner performs real Matrx web login and real extension Settings Sign in before touching the reset control. It never attaches to the primary Chrome profile, injects an auth session, intercepts responses, or changes server/account data.",
+  "acceptance": [
+    "Before reset, actual Settings shows admin@admin.com, Role admin, Sign out, and Advanced agent capabilities; the local auth keys, Dark theme preference, and inert session fixture are present.",
+    "Cancel closes the real confirmation while preserving admin UI, auth key presence, the Dark preference, the exact session fixture, and every prior extension local/session key.",
+    "Confirm removes every preexisting extension local/session key and shows signed-out Settings.",
+    "After native-panel reload, Settings remains guest, shows the System theme, and contains no prior auth, settings, or session fixture."
+  ],
+  "secret_custody": "Credentials are read from the authorized aidream .env only at the real web form. Auth storage is observed solely as boolean presence; raw values, cookies, callback URLs, request bodies, and browser exceptions never enter output. The runner writes only allowlisted stage/category results under test-results with mode 0600.",
+  "verification": [
+    {"check": "node --check tests/browser/isolated-admin-reset-acceptance.mjs", "result": "pass"},
+    {"check": "git diff --check", "result": "pass"},
+    {"check": "native Chrome reset acceptance", "result": "not run; root owns resource admission"}
+  ],
+  "limitations": [
+    "No runtime behavior verdict is claimed until root's guarded run and independent review.",
+    "This case checks extension local/session reset and UI sign-out. It does not prove server-side data persistence or ordinary-member reset."
+  ],
+  "next_action": "Root admits the runner under the campaign resource guard against the intended receipt-verified build and files the run evidence; an independent reviewer checks the behavior and source."
+}

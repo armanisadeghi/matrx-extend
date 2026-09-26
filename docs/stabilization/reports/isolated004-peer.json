@@ -1,0 +1,47 @@
+{
+  "task_id": "isolated-admin-signin-004-peer",
+  "lane": "structured independent acceptance review",
+  "model": "GPT-6 Luna / medium",
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Read-only review of the isolated-admin-signin-004 run, raw resource log, inventory acceptance, runner source, harness and release receipt. No build, test, browser, install or authentication launch was performed by this reviewer.",
+  "verdicts": {
+    "A_spec_acceptance": {
+      "verdict": "PARTIAL",
+      "target": "EXT-F-0001-T05",
+      "findings": [
+        "The recorded run and retained runner output agree on a real web login reaching https://www.aimatrx.com/dashboard, followed by the extension Settings showing admin@admin.com, admin role, Advanced agent capabilities and Sign out under development extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml. The raw resource log records admission and child exit 0; it does not itself contain the UI assertions.",
+        "The runner source establishes the sequence: it first completes web-form login, then clicks the extension's Sign in button and checks the resulting Settings state. This is evidence that the extension reached the authenticated admin UI in the owned profile. It does not show that the extension initiated an observed OAuth redirect/callback: the web account is already authenticated before the extension button is clicked, and neither the run nor runner records the callback origin.",
+        "T05's explicit steps require starting sign-in from the extension and observing the redirect/callback origin and return. The callback-origin criterion remains unmet. Only guest baseline and admin result are represented; ordinary-member sign-in is untested. Keep guest, member and admin inventory cells unverified, and do not generalize this run to all authentication, organization behavior, or member access."
+      ]
+    },
+    "B_source_and_evidence_quality": {
+      "verdict": "PASS_WITH_LIMITATIONS",
+      "findings": [
+        "Build provenance is internally consistent: the run record and .output/release-receipt.json name source fde1a11b054c04d7be1a4904441be9838f568633, version 0.2.60, and the same artifact tree hash. Both recorded ZIP SHA-256 values match the existing ZIP files. The reviewed runner, native harness and panel driver exist at that source SHA and have no diff through current HEAD.",
+        "The harness source binds runtime to the receipt: it checks the unpacked tree hash and manifest version, Store ZIP hash, expected extension ID and native side-panel context; it creates a temporary profile, verifies the Chrome process owns it, and removes it during cleanup. This makes the recorded pass credible for the released artifact and isolated native panel, though the run record does not preserve a separate harness receipt-verification trace.",
+        "The runner records only safe state booleans and a fixed failure category; credential values and raw auth/browser errors are suppressed. Its successful assertion covers the final admin UI, not the T05 callback observation, so the runner PASS label is narrower than the inventory case.",
+        "The durable run record omits several receipt dimensions required by the plan: Chrome version, explicit profile label/identity provenance, lockfile hash, permissions, environment/build flags and backend identity. Source code explains the fresh profile and web-login sequence, but those facts and the effective runtime details are not fully carried by the run record."
+      ]
+    }
+  },
+  "evidence": [
+    "docs/stabilization/runs/isolated-admin-signin-004.json",
+    "/tmp/matrx-isolated-admin-signin-004.log",
+    "test-results/isolated-admin-signin-acceptance.json",
+    "docs/stabilization/inventory.json: EXT-F-0001-T05 and its guest/member/admin cells",
+    "tests/browser/isolated-admin-signin-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    ".output/release-receipt.json",
+    "git diff fde1a11..HEAD -- tests/browser/isolated-admin-signin-acceptance.mjs tests/browser/native-sidepanel-qa-harness.mjs tests/browser/settings-panel-driver.mjs",
+    "shasum -a 256 .output/matrx-extend-0.2.60-store.zip .output/matrx-extend-0.2.60-local.zip"
+  ],
+  "changed_files": [
+    "docs/stabilization/reports/isolated004-peer.json"
+  ],
+  "commit_shas": [],
+  "limitations": [
+    "No new runtime observation was performed; this review relies on retained run artifacts and source inspection.",
+    "Callback origin, ordinary-member behavior, and the omitted receipt dimensions remain unverified."
+  ],
+  "next_action": "Retain the run as a successful isolated admin UI sign-in observation, not a pass for EXT-F-0001-T05. Close T05 only after its extension-started redirect/callback origin is observed and required auth modes are covered with complete receipts."
+}
