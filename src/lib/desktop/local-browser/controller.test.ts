@@ -317,6 +317,116 @@ async function frozenDigest(spec: string): Promise<string> {
 }
 
 describe('owned local-browser tab controller', () => {
+  async function inspectLoginProbe(
+    probe: unknown,
+    currentDocument: { documentId: string; url: string } = {
+      documentId: ids.challenge,
+      url: 'https://example.test/login',
+    },
+  ) {
+    const h = harness();
+    const originalChrome = globalThis.chrome;
+    Object.assign(globalThis, {
+      chrome: {
+        ...originalChrome,
+        scripting: {
+          executeScript: vi.fn(async () => [{ result: probe }]),
+        },
+      },
+    });
+    const document = { documentId: ids.challenge, url: 'https://example.test/login' };
+    h.deps.command = {
+      currentDocument: vi.fn(async () => currentDocument),
+    } as unknown as NonNullable<LocalBrowserControllerDeps['command']>;
+    const invoke = h.controller as unknown as {
+      performClaimedCommand: (...args: unknown[]) => Promise<unknown>;
+    };
+    try {
+      return await invoke.performClaimedCommand(
+        { operation: 'inspect_login' },
+        42,
+        document,
+        { command_id: ids.call, deadline_ms: Date.now() + 10_000 },
+        () => true,
+        async () => {
+          const current = await h.deps.command?.currentDocument(42);
+          return current?.documentId === document.documentId && current.url === document.url;
+        },
+      );
+    } finally {
+      h.controller.stop();
+      Object.assign(globalThis, { chrome: originalChrome });
+    }
+  }
+
+  it('returns a sane MFA selector from an otherwise safe inspect probe', async () => {
+    await expect(
+      inspectLoginProbe({
+        is_top_frame: true,
+        origin: 'https://example.test',
+        destination_safe: true,
+        username_selector: '#username',
+        password_selector: null,
+        mfa_selector: ' input[name="one-time-code"] ',
+      }),
+    ).resolves.toMatchObject({
+      outcome: 'completed',
+      reason: 'none',
+      data: {
+        origin: 'https://example.test',
+        form: 'username_first',
+        challenge: 'mfa',
+        mfa_selector: 'input[name="one-time-code"]',
+      },
+    });
+  });
+
+  it('keeps inspect challenge unknown when the optional MFA selector is absent or malformed', async () => {
+    const baseProbe = {
+      is_top_frame: true,
+      origin: 'https://example.test',
+      destination_safe: true,
+      username_selector: null,
+      password_selector: '#password',
+    };
+    for (const mfa_selector of [undefined, '', ' '.repeat(513), 'input\u0000[name=code]', {}]) {
+      const result = await inspectLoginProbe({ ...baseProbe, mfa_selector });
+      expect(result).toMatchObject({
+        outcome: 'completed',
+        reason: 'none',
+        data: { challenge: 'unknown' },
+      });
+      expect((result as { data: Record<string, unknown> }).data).not.toHaveProperty('mfa_selector');
+    }
+  });
+
+  it('refuses MFA inspection when the top-frame, origin, safe-form, or current-document fence fails', async () => {
+    const safeProbe = {
+      is_top_frame: true,
+      origin: 'https://example.test',
+      destination_safe: true,
+      username_selector: null,
+      password_selector: '#password',
+      mfa_selector: '#mfa-code',
+    };
+    const unsafeProbes = [
+      { ...safeProbe, is_top_frame: false },
+      { ...safeProbe, origin: 'https://other.test' },
+      { ...safeProbe, destination_safe: false },
+    ];
+    for (const probe of unsafeProbes)
+      await expect(inspectLoginProbe(probe)).resolves.toMatchObject({
+        outcome: 'outcome_unknown',
+        reason: 'unsafe_destination',
+      });
+    await expect(
+      inspectLoginProbe(safeProbe, {
+        documentId: ids.admission,
+        url: 'https://example.test/login',
+      }),
+    ).resolves.toMatchObject({ outcome: 'outcome_unknown', reason: 'binding_changed' });
+  });
+
   it('does not treat a Chrome network-error document as a completed navigation', async () => {
     const originalChrome = globalThis.chrome;
     let onUpdated: ((tabId: number, changeInfo: { status?: string }) => void) | null = null;

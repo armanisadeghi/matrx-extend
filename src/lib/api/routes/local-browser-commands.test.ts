@@ -245,6 +245,44 @@ describe('local browser command wire validation', () => {
     ).resolves.toEqual({ ok: false, error: 'invalid_response' });
   });
 
+  it('refuses control-bearing MFA selectors and arbitrary private completion fields', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    const result = {
+      command_id: id,
+      operation: 'inspect_login' as const,
+      outcome: 'completed' as const,
+      reason: 'none' as const,
+      data: {
+        origin: 'https://example.com',
+        form: 'username_first' as const,
+        challenge: 'mfa' as const,
+        mfa_selector: '#mfa-code',
+      },
+    };
+    await expect(
+      completeLocalCommand({
+        ...base,
+        grant: 'g',
+        result: {
+          ...result,
+          data: { ...result.data, mfa_selector: '#mfa-code\u0000MFA_PRIVATE_SENTINEL' },
+        } as never,
+      }),
+    ).resolves.toEqual({ ok: false, error: 'invalid_response' });
+    await expect(
+      completeLocalCommand({
+        ...base,
+        grant: 'g',
+        result: {
+          ...result,
+          data: { ...result.data, MFA_PRIVATE_SENTINEL: 'never-send' },
+        } as never,
+      }),
+    ).resolves.toEqual({ ok: false, error: 'invalid_response' });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it('does not send after its authority is stale', async () => {
     const fetchMock = vi.fn();
     vi.stubGlobal('fetch', fetchMock);
