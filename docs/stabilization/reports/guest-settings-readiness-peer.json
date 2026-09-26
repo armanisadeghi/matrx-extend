@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "reviewedCommit": "4c694f1f1574b3fcff6d8d3730daa5fb626f354",
+  "lane": "EXT-F-1003-T70 guest About readiness peer",
+  "engineering": "PASS",
+  "runtime": "UNVERIFIED",
+  "priorFinding": "ADDRESSED",
+  "basis": "SettingsView derives Available from the presence of runtime.sendMessage, tabs.get, scripting.executeScript, and storage.local.get. The native acceptance oracle independently reads those same live APIs and passes the Available/Ready branch only when all are present; absent APIs require Unavailable plus the reload/reinstall remedy.",
+  "inventory": "Original T70 requires both available and unavailable browser API conditions, plus reload persistence. Its update alternatives include real available, no-update, throttled, error, and missing-update-API outcomes.",
+  "unverified": "No browser runtime was exercised. The unavailable password API branch and alternate update outcomes remain unverified; the runner explicitly records these as unverified and does not fabricate browser state. A real no-update result is conditional on requestUpdateCheck being available.",
+  "scope": "Independent source review only; no browser, tests, build, install, or runtime acceptance executed."
+}
