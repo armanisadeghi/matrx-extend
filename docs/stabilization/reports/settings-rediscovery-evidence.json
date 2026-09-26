@@ -1,0 +1,10 @@
+{
+  "case_id": "EXT-F-1003-T46",
+  "status": "candidate_unverified",
+  "runner": "tests/browser/settings-local-controls-acceptance.mjs",
+  "observable": "A real GET /health reaches an isolated loopback listener at the port saved through trusted Settings input, before the next scheduled desktop probe alarm.",
+  "isolation": "The listener uses an OS-assigned port outside the automatic discovery range, records requests, and returns HTTP 503. It never supplies a fabricated desktop health response or alters the extension worker.",
+  "attribution": "The listener has no request before Save; a matching request must arrive after Save and before the preexisting alarm's scheduled time.",
+  "limit": "The listener cannot establish a healthy desktop connection or prove a changed status label. Neither is part of T46's inventory expected result; this runner claims only the real worker rediscovery request.",
+  "execution": "Awaiting the root lane's guarded native-browser run and independent review. This report is not runtime evidence."
+}

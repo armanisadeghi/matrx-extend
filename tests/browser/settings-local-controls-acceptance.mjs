@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createServer } from 'node:http';
 import { join, resolve } from 'node:path';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
@@ -11,7 +12,8 @@ import { click, evaluate, openSection, waitFor } from './settings-panel-driver.m
 const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'settings-local-controls-acceptance.json');
 const EXTENSION_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
-const VALID_PORT = 65001;
+const DISCOVERY_SCAN_START = 22140;
+const DISCOVERY_SCAN_END = 22159;
 const IDS = ['T22', 'T37', 'T46', 'T70'].map((id) => `EXT-F-1003-${id}`);
 const report = {
   schema_version: 1,
@@ -22,6 +24,30 @@ const report = {
 };
 const byId = (suffix) => report.cases.find((c) => c.id.endsWith(suffix));
 const criterion = (c, name, status, evidence) => c.criteria.push({ name, status, evidence });
+
+async function startObservedDeadPort() {
+  const requests = [];
+  const server = createServer((request, response) => {
+    requests.push({ method: request.method, path: request.url, observedAt: Date.now() });
+    // This is an intentionally dead engine port. It records the real worker
+    // probe without supplying a fabricated desktop health response.
+    response.writeHead(503, { 'content-type': 'text/plain', 'cache-control': 'no-store' }).end('No desktop engine here');
+  });
+  await new Promise((resolveListen, rejectListen) => {
+    server.once('error', rejectListen);
+    server.listen(0, '127.0.0.1', () => {
+      server.off('error', rejectListen);
+      resolveListen();
+    });
+  });
+  const address = server.address();
+  if (!address || typeof address === 'string') throw new Error('observed_port_address_missing');
+  if (address.port >= DISCOVERY_SCAN_START && address.port <= DISCOVERY_SCAN_END) {
+    await new Promise((resolveClose) => server.close(resolveClose));
+    return startObservedDeadPort();
+  }
+  return { port: address.port, requests, close: () => new Promise((resolveClose) => server.close(resolveClose)) };
+}
 
 async function settings(panel) {
   await click(panel, 'title', 'Settings');
@@ -69,6 +95,13 @@ async function port(panel) {
       button: [...(row?.querySelectorAll('button') ?? [])].map((b) => b.textContent.trim()),
       override: row?.textContent.includes('override') ?? false,
       error: row?.nextElementSibling?.textContent.trim() ?? null };
+  })()`);
+}
+
+async function nextDesktopProbeAlarm(panel) {
+  return evaluate(panel, `(async () => {
+    const alarm = await chrome.alarms.get('matrx.alarm.desktopProbe');
+    return alarm?.scheduledTime ?? null;
   })()`);
 }
 
@@ -141,6 +174,7 @@ async function runCase(c, fn) {
     : c.criteria.length && c.criteria.every((x) => x.status === 'pass') ? 'pass' : 'unverified';
 }
 
+let observedPort;
 try {
   const packageJson = JSON.parse(await readFile(join(REPO, 'package.json'), 'utf8'));
   const receipt = JSON.parse(await readFile(join(REPO, '.output', 'release-receipt.json'), 'utf8'));
@@ -149,6 +183,7 @@ try {
   execFileSync('git', ['merge-base', '--is-ancestor', receipt.sourceSha, 'HEAD'], { cwd: REPO });
   execFileSync('git', ['diff', '--quiet', receipt.sourceSha, '--', 'src/features/settings/SettingsView.tsx'], { cwd: REPO });
   report.build = { ...report.build, version: receipt.version, sourceSha: receipt.sourceSha, treeSha256: receipt.treeSha256 };
+  observedPort = await startObservedDeadPort();
   const result = await runNativeSidepanelQa({ exercisePanel: async ({ panel }) => {
     await settings(panel);
     await runCase(byId('T22'), async () => {
@@ -193,12 +228,23 @@ try {
       c.steps.push({ phase: 'warm', action: 'Record original engine port state', observation: initial });
       assert.equal(initial.saved, null, 'fresh disposable profile must have no override');
       try {
-        await replacePort(panel, String(VALID_PORT));
-        const saved = await waitFor('valid_port_saved', () => port(panel), (s) => s?.saved === VALID_PORT && s.override);
+        const nextAlarm = await waitFor('desktop_probe_alarm_window',
+          () => nextDesktopProbeAlarm(panel),
+          (scheduledTime) => typeof scheduledTime === 'number' && scheduledTime - Date.now() > 12000,
+          35000);
+        const beforeProbeCount = observedPort.requests.length;
+        assert.equal(beforeProbeCount, 0, 'isolated override port must not be probed before save');
+        await replacePort(panel, String(observedPort.port));
+        const saved = await waitFor('valid_port_saved', () => port(panel), (s) => s?.saved === observedPort.port && s.override);
         c.steps.push({ phase: 'warm', action: 'Save valid port', observation: saved });
         criterion(c, 'valid port saved', 'pass', saved);
-        criterion(c, 'rediscovery triggered and reflected in desktop status', 'unverified',
-          'Settings ignores the send response; desktop:availability is also broadcast at worker bootstrap and on probe changes, so UI/storage or a broadcast alone cannot attribute worker handling to this save.');
+        const workerProbe = await waitFor('worker_override_health_probe',
+          () => observedPort.requests.slice(beforeProbeCount),
+          (requests) => requests.some((request) => request.method === 'GET' && request.path === '/health' &&
+            request.observedAt < nextAlarm));
+        c.steps.push({ phase: 'warm', action: 'Observe real worker probe to saved port', observation: workerProbe });
+        criterion(c, 'saved port triggers desktop worker rediscovery', 'pass',
+          { port: observedPort.port, nextScheduledBackgroundProbeAt: nextAlarm, requests: workerProbe });
         await reloadSettings(panel);
         await openSection(panel, 'Desktop bridge');
         const reloaded = await port(panel);
@@ -207,7 +253,7 @@ try {
         await replacePort(panel, '65536');
         const invalid = await waitFor('invalid_port_error', () => port(panel), (s) => /Port must be 1–65535/.test(s?.error ?? ''));
         c.steps.push({ phase: 'warm', action: 'Submit invalid range', observation: invalid });
-        criterion(c, 'invalid range shows error and retains saved port', invalid.saved === VALID_PORT ? 'pass' : 'fail', invalid);
+        criterion(c, 'invalid range shows error and retains saved port', invalid.saved === observedPort.port ? 'pass' : 'fail', invalid);
         await replacePort(panel, '');
         const cleared = await waitFor('port_override_cleared', () => port(panel), (s) => s?.saved === null && !s.override);
         c.steps.push({ phase: 'warm', action: 'Clear override without leaving the invalid-error view', observation: cleared });
@@ -265,6 +311,7 @@ try {
   report.setup_error = String(error?.message ?? error);
   for (const c of report.cases) if (c.criteria.length === 0) criterion(c, 'setup completed', 'unverified', report.setup_error);
 } finally {
+  await observedPort?.close();
   for (const c of report.cases) {
     c.build = report.build;
     c.preconditions = report.preconditions;
