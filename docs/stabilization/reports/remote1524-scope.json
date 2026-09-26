@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "task_id": "remote1524_scope",
+  "source_sha": "b525a7c2d1b1c2012c71234919f40310faeef532",
+  "comparison": {
+    "base": "52d769a489d5ea3ac1c47bff9a2882e73b68a80b",
+    "merge_base": "52d769a489d5ea3ac1c47bff9a2882e73b68a80b",
+    "method": "Compared exact Git objects; working HEAD was not moved."
+  },
+  "source_census": {
+    "EXT-F-1004": {
+      "name": "Edit and persist personal profile",
+      "existing_coverage": [
+        {
+          "case_id": "EXT-F-1004-T03",
+          "impact": "Member Save/Discard now includes first-save organization resolution and persistence."
+        },
+        {
+          "case_id": "EXT-F-1004-T04",
+          "impact": "Admin Save/Discard now includes first-save organization resolution and persistence."
+        },
+        {
+          "case_id": "EXT-F-1004-T26",
+          "impact": "Save refusal/retry should assert an organization-resolution refusal retains the draft and exposes its remedy."
+        }
+      ],
+      "new_controls_proposed": [
+        {
+          "id": "EXT-F-1004-C17",
+          "label": "First profile save organization",
+          "action": "For a profile with no existing row, resolve and explicitly persist the device's active organization; for an existing row, retain its stored organization."
+        }
+      ],
+      "new_cases_proposed": [
+        {
+          "id": "EXT-F-1004-T28",
+          "title": "First profile save names active organization and existing profile stays filed",
+          "control_ids": ["EXT-F-1004-C02", "EXT-F-1004-C17"],
+          "modes": ["member", "admin"],
+          "preconditions": [
+            "Use a disposable profile with no existing row and a principal belonging to two organizations; then use a separate existing profile filed in the other organization."
+          ],
+          "steps": [
+            "Set organization A on this device and save the new profile.",
+            "Inspect the saved row's organization_id.",
+            "Switch this device to organization B and save an existing profile filed under A.",
+            "Repeat a new-profile save with no active device organization."
+          ],
+          "expected": [
+            "First save explicitly uses A.",
+            "Saving the existing row retains A and does not move it to B.",
+            "Without an active organization, no profile write occurs and the user receives the resolver remedy."
+          ]
+        }
+      ]
+    },
+    "EXT-F-2004": {
+      "name": "Create and manage scheduled agenda tasks",
+      "existing_coverage": [
+        {
+          "case_id": "EXT-F-2004-T02",
+          "impact": "Valid task creation now uses create_agent_task with explicit active organization; extend expected behavior to verify persisted organization and reload."
+        }
+      ],
+      "new_controls_proposed": [
+        {
+          "id": "EXT-F-2004-C47",
+          "label": "Visible task-creation failure",
+          "action": "Show an alert with the resolver remedy or specific creation error; retain the open form for recovery."
+        },
+        {
+          "id": "EXT-F-2004-C48",
+          "label": "Task creation organization resolution",
+          "action": "Resolve and pass the active organization to the atomic create RPC; do not write if resolution fails."
+        }
+      ],
+      "new_cases_proposed": [
+        {
+          "id": "EXT-F-2004-T07",
+          "title": "Task create carries selected organization or shows recovery remedy",
+          "control_ids": ["EXT-F-2004-C07", "EXT-F-2004-C47", "EXT-F-2004-C48"],
+          "modes": ["member", "admin"],
+          "preconditions": [
+            "Use a disposable task and a principal belonging to two organizations."
+          ],
+          "steps": [
+            "Set organization A on this device and create a task; inspect its organization and reload Agenda.",
+            "Clear the device organization or use a principal with no memberships and submit the form.",
+            "Restore an organization and retry from the retained form."
+          ],
+          "expected": [
+            "The atomic RPC receives organization A and the created task persists in A.",
+            "A resolver refusal creates no task and displays a clear remedy while retaining the form.",
+            "A subsequent valid retry creates the task once."
+          ]
+        }
+      ]
+    },
+    "EXT-F-4091": {
+      "name": "capture_study_set",
+      "existing_coverage": [
+        {
+          "case_id": "EXT-F-4091-T01",
+          "impact": "Existing case is design-needed with empty steps/expected; specify org-bound capture, no-org refusal, and no-write behavior here."
+        }
+      ],
+      "new_controls_proposed": [
+        {
+          "id": "EXT-F-4091-C04",
+          "label": "Capture organization resolution",
+          "action": "Resolve and pass active organization to edu_import_deck for capture; refuse before RPC if unavailable."
+        }
+      ],
+      "case_updates_proposed": [
+        {
+          "case_id": "EXT-F-4091-T01",
+          "title": "Controlled manual execution: capture_study_set with organization handling",
+          "modes": ["member", "admin"],
+          "steps": [
+            "Preview a controlled public study set and confirm preview writes nothing.",
+            "With organization A selected, capture and inspect the import request and resulting deck organization.",
+            "With no selected organization or membership, attempt capture and inspect the result and write count."
+          ],
+          "expected": [
+            "Preview remains read-only.",
+            "Capture calls only edu_import_deck with p_organization_id equal to A.",
+            "Unavailable organization returns organization_required with a remedy and makes no RPC/write."
+          ],
+          "dimensions": [
+            "valid-input",
+            "preview-no-write",
+            "organization-binding",
+            "missing-organization",
+            "reload"
+          ]
+        }
+      ]
+    },
+    "EXT-F-2011": {
+      "name": "Manage saved credentials and vault items",
+      "result": "No changed source paths or behavior in this commit; no new coverage mapping proposed."
+    },
+    "cross_cutting": {
+      "class_guard": "New tests add static coverage for org-scoped inserts/upserts and selected create RPCs; these are source guards, not runtime proof and do not mark any inventory cell passed.",
+      "destructive_census": "createTask was removed from INTERNAL_ONLY because its legacy partial-write rollback path was deleted with the fallback. No user-facing destructive operation or Agenda deletion behavior changed; EXT-F-2004-T06 remains the relevant user deletion case.",
+      "profile_storage": "Existing profile lookup failure is surfaced as a save error; organization selection occurs only when no existing profile row supplies one. This is database-dependent runtime behavior and remains unverified."
+    }
+  },
+  "coverage_status": "source-only; no inventory status/cells are marked passed",
+  "verification_limits": "Read-only source reconciliation only. No tests, builds, browser, database writes, or runtime checks were performed.",
+  "source_files_reviewed": [
+    "src/features/agenda/AgendaView.tsx",
+    "src/lib/agenda/queries.ts",
+    "src/lib/agenda/create-task-organization.test.ts",
+    "src/lib/destructive/operations.ts",
+    "src/lib/supabase/FEATURE.md",
+    "src/lib/supabase/user-profile.ts",
+    "src/lib/tools/handlers/education.ts",
+    "tests/unit/org-scoped-writes-name-their-organization.test.ts",
+    "tests/unit/study-set-capture.test.ts"
+  ],
+  "excluded_candidate": "EXT-F-2011 is unchanged Vault; the Agenda and org-write deltas do not map to it."
+}
