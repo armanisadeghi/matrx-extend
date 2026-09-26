@@ -1005,6 +1005,20 @@
           "source_anchor": "release.sh:493",
           "state": "needs-reproduction",
           "wave": "A"
+        },
+        {
+          "id": "EXT-L-0004",
+          "summary": "Declared google bundle has is_system=false; source policy R14 expects system bundle. Impact and intended ownership need verification.",
+          "source": "docs/stabilization/reports/records-drift-diagnosis.json",
+          "state": "needs-reproduction",
+          "wave": "D"
+        },
+        {
+          "id": "EXT-L-0005",
+          "summary": "Backend binding-based Chrome discovery may differ from canonical surface-inclusion contract; strict gate error overstates demonstrated model invisibility.",
+          "source": "docs/stabilization/reports/records-drift-diagnosis.json",
+          "state": "needs-reproduction",
+          "wave": "D"
         }
       ],
       "integration_status": "Pending strict green real release; latest release-real-004 refused publication on EXT-D-0005 records inclusion mismatch."
