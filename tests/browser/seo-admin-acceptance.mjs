@@ -225,6 +225,13 @@ async function seoState(panel) {
     const tabs = lists.length === 1 ? [...lists[0].querySelectorAll('[role="tab"]')]
       .filter((node) => node.closest('[role="tablist"]') === lists[0] && node.title === 'SEO') : [];
     const tab = tabs.length === 1 ? tabs[0] : null;
+    const visible = (node) => {
+      const style = getComputedStyle(node), rect = node.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden'
+        && style.display !== 'none' && !node.closest('[inert]');
+    };
+    const seoClickCandidates = [...document.querySelectorAll('button[title]')]
+      .filter((node) => node.title === 'SEO' && visible(node));
     const pane = tab?.getAttribute('aria-controls')
       ? document.getElementById(tab.getAttribute('aria-controls')) : null;
     const linked = !!pane && pane.getAttribute('aria-labelledby') === tab.id
@@ -277,6 +284,9 @@ async function seoState(panel) {
       .filter((node) => node.textContent.trim() === 'Saved');
     return {
       documentTimeOrigin: performance.timeOrigin,
+      mainTablists: lists.length, seoTabs: tabs.length,
+      seoClickCandidateIsMainTab: seoClickCandidates.length === 1 && seoClickCandidates[0] === tab,
+      selected: tab?.getAttribute('aria-selected') === 'true',
       linked, title, headings, reAudit, copyCount: copy.length,
       menuOpen: menuOwnedByCopy, choices,
       saveCount: saveButtons.length, savedCount: savedButtons.length,
@@ -542,12 +552,20 @@ try {
       const beforeReload = await seoState(panel);
       await panel.send('Page.reload', { ignoreCache: false });
       const remounted = await waitFor(
-        'admin_panel_document_reloaded',
+        'admin_panel_navigation_ready_after_reload',
         () => seoState(panel),
-        (state) => state?.documentTimeOrigin > beforeReload.documentTimeOrigin,
+        (state) =>
+          state?.documentTimeOrigin > beforeReload.documentTimeOrigin &&
+          state.mainTablists === 1 &&
+          state.seoTabs === 1 &&
+          state.seoClickCandidateIsMainTab,
         30_000,
       );
-      if (!remounted.linked) await click(panel, 'title', 'SEO');
+      if (!remounted.selected) {
+        stage = 'seo_reselect_after_reload';
+        await click(panel, 'title', 'SEO');
+      }
+      stage = 'seo_current_page_after_reload';
       const persisted = await waitFor(
         'saved_history_after_reload',
         () => seoState(panel),

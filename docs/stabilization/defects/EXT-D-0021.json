@@ -16,11 +16,13 @@
     "/tmp/matrx-seo-admin-003.log",
     "tests/browser/seo-admin-acceptance.mjs",
     "src/features/seo/SeoView.tsx",
-    "docs/stabilization/reports/seo-admin-persistence-prepare.json"
+    "docs/stabilization/reports/seo-admin-persistence-prepare.json",
+    "docs/stabilization/runs/seo-admin-005.json",
+    "docs/stabilization/reports/seo005-evidence-review.json"
   ],
   "severity": "S3: false-negative acceptance harness; no demonstrated SEO product failure or data loss",
   "priority": "P1: restore trustworthy admin SEO history verification while retaining the one-write checkpoint",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/seo_admin_prepare",
   "transition_history": [
     {
@@ -46,9 +48,21 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Commit e2855b39 replaced the cooked regex with template-safe [0-9] and read the component's single span.tabular-nums; isolated expression check turned green. Native UI retest remains pending."
+    },
+    {
+      "at": "2026-09-26T18:47:56.699245+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Guarded read-only admin005 wrapper exit0: count equality, actual saved-row/snapshot ID and Live path pass, same ID verified after real document reload. Independent peer2456774f confirms bounded regression proof."
+    },
+    {
+      "at": "2026-09-26T18:47:56.699245+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original false-negative reproduction and surrounding history/reload paths pass; broader SEO coverage remains unverified."
     }
   ],
   "fix_commits": ["e2855b39"],
-  "ui_retest": "pending; a fresh source peer and root-guarded read-only run must confirm T05 without another Save",
+  "ui_retest": "passed bounded original history-count reproduction and surrounding snapshot/Live/reload assertions in seo-admin-005; full feature remains unverified",
   "closure_requirement": "Independent review plus a guarded read-only native rerun showing numeric badge count equals actual rows, exact saved ID appears in history and snapshot, and the same ID survives panel reload. Keep the existing checkpoint intact."
 }

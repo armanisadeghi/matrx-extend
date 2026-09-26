@@ -24,6 +24,12 @@
     "fix_commit": "e2855b39",
     "sibling_census": "Read-only TypeScript AST scan of 104 tests/browser .mjs/.cjs files inspected raw template chunks for single backslash regex-class escapes d/D/s/S/w/W/b/B. It found zero candidates after the targeted repair. Ripgrep candidates in ordinary regex literals and doubly escaped template text were reviewed as separate syntax; no additional confirmed cooked-regex sibling was found. This does not prove every embedded regex form is safe."
   },
+  "actual_run_004_diagnosis": {
+    "receipt": "docs/stabilization/runs/seo-admin-004.json",
+    "observation": "Read-only admin004 passed the corrected count-equals-row oracle, found the exact saved response ID, opened/closed/reopened history, selected the matching Saved snapshot, and returned Live. It then failed after panel reload with the shared pointer driver's pointer_target_not_unique, matched target count zero.",
+    "root_cause": "The runner accepted a new document time origin before the app's navigation controls were mounted, and immediately attempted to click SEO when the pane was not yet linked. The guest runner already waits for one outer tablist and one SEO tab before reselecting.",
+    "repair": "The admin reload path now requires a new document, one main tablist, one SEO tab, and a unique visible SEO click candidate owned by that main tab before any reselect click. If SEO is already selected, it waits for the linked current-page audit without clicking. Exact post-reload saved-row and snapshot ID checks remain required."
+  },
   "scope": "At most one new public IANA audit row in the explicitly selected existing campaign test organization, identified through the real Save response and stable history/snapshot DOM attributes.",
   "identity_contract": {
     "production_ui": "History button and selected Saved snapshot expose the same existing row UUID as data-audit-id. The attribute changes no visible copy or database/API shape.",

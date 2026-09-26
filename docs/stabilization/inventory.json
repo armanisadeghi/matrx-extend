@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T17:04:06.015697+00:00",
+  "updated_at": "2026-09-26T18:47:56.699245+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -10899,9 +10899,15 @@
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0021"
+          ],
           "run_ids": [
-            "seo-admin-001"
+            "seo-admin-001",
+            "seo-admin-002",
+            "seo-admin-003",
+            "seo-admin-004",
+            "seo-admin-005"
           ],
           "retest_status": "not-run"
         }

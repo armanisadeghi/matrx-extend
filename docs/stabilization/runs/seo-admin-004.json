@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "run_id": "seo-admin-004",
+  "feature_id": "EXT-F-1008",
+  "mode": "admin",
+  "extension_version": "0.2.73",
+  "status": "unverified",
+  "wrapper": {
+    "resource_log": "/tmp/matrx-seo-admin-004.log",
+    "admitted": true,
+    "child_exit_code": 1,
+    "child_exit_at_utc": "2026-09-26T18:39:51.168Z"
+  },
+  "runtime_output": "test-results/seo-admin-acceptance.json",
+  "save_attempt": "Read-only resume from the existing 0600 checkpoint; no Save click or new row in this run.",
+  "confirmed_partial_t05": [
+    "History badge count 1 matched its one rendered row, and that row carried the actual prior Save response ID.",
+    "History opened, closed, and reopened; selecting the identified row showed the same ID on Saved snapshot; Live restored the current public audit."
+  ],
+  "failure": {
+    "stage": "panel_reload",
+    "pointer_code": "pointer_target_not_unique",
+    "matched_target_count": 0,
+    "diagnosis": "The runner waited only for a newer document time origin, then immediately tried the SEO navigation button when the selected pane was not yet linked. The shared pointer driver correctly found no mounted visible target. The guest SEO runner already waits for the main tablist and unique SEO tab before reselecting after reload."
+  },
+  "limits": [
+    "Post-reload saved-row and selected-snapshot ID remain unverified.",
+    "The bounded mount-readiness repair was prepared after this run; no browser rerun occurred during preparation."
+  ]
+}

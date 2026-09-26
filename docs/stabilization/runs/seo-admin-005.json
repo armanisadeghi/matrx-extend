@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "run_id": "seo-admin-005",
+  "feature_id": "EXT-F-1008",
+  "mode": "admin",
+  "extension_version": "0.2.73",
+  "status": "partial",
+  "wrapper": {
+    "resource_log": "/tmp/matrx-seo-admin-005.log",
+    "resource_log_sha256": "97dc655b5bd7dcc53baecb4f8708ee64a2d2f851184f5dfedb028f6c5aba306e",
+    "admitted": true,
+    "child_exit_code": 0,
+    "child_exit_at_utc": "2026-09-26T18:45:04.090Z"
+  },
+  "acceptance_artifact": {
+    "path": "test-results/seo-admin-acceptance.json",
+    "sha256": "ed3e20e42c159321960fccf18a49b799e076ebfc193eb28cc1226bb768e66b1f",
+    "status": "partial",
+    "save_attempt": "Read-only resume from the existing 0600 checkpoint; no second Save was issued."
+  },
+  "build_identity": {
+    "version": "0.2.73",
+    "source_sha": "6acf1801d3ed65c016b96cf3cb194e0a83163e81",
+    "provenance": "release-stabilization-028 receipt; runtime log itself does not embed version or artifact digest"
+  },
+  "runner_identity": {
+    "commit": "b42c5f5c0db92d1e68606d9ff1678f542c5266bf",
+    "path": "tests/browser/seo-admin-acceptance.mjs",
+    "sha256": "642d9f98b59a4b9d374e3d2f4f35079e225a41bef76d0b6af8b8900b4fa9a45e"
+  },
+  "confirmed_subtargets": [
+    "EXT-F-1008-T07 real admin identity and explicitly selected organization prerequisite",
+    "EXT-F-1008-T07 admin Copy audit menu offers text, AI, and JSON without selecting an option",
+    "EXT-F-1008-T09 public page 0 title and heading-group presence match its live DOM",
+    "EXT-F-1008-T09 public page 1 title and heading-group presence match its live DOM",
+    "EXT-F-1008-T05 history badge count equals rendered rows and the identified saved row matches the real prior Save response ID",
+    "EXT-F-1008-T05 selected snapshot and Live return use the identified audit",
+    "EXT-F-1008-T05 after panel reload, the identified audit remains in history and its selected snapshot"
+  ],
+  "limits": [
+    "This is partial T05 runtime evidence, not full EXT-F-1008 or member-role coverage.",
+    "The runner asserts history count equals rendered row count and requires the actual response ID in the row; it requires that same ID on the selected snapshot before reload and in reloaded history and snapshot after reload. The durable aggregate records match booleans only, so the ID is intentionally absent.",
+    "Clipboard content, provider recommendation, Chat, member behavior, remaining SEO fields, history empty/error/loading, two-snapshot comparison, and changed-page diff remain unverified.",
+    "Reloaded current-page matching uses the prior public title and linked live audit; the acceptance does not independently assert the browser tab URL after reload."
+  ]
+}
