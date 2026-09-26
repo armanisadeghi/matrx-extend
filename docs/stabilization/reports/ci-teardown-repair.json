@@ -1,6 +1,6 @@
 {
   "defect_id": "EXT-D-0020",
-  "status": "test-lifecycle-repair-awaiting-post-edit-run",
+  "status": "focused-local-pass-full-ci-pending",
   "owner_lane": "ci_teardown_repair",
   "original_remote_failure": {
     "run_id": "36253562084",
@@ -16,8 +16,12 @@
   "source_supported_cause": "The sidepanel App pre-warms its selected view with a fire-and-forget dynamic import. The test mounted App, switched from Chat to Scrape, and ended after routing assertions without waiting for either view import. The CI stack proves the Chat import was still in flight when Vitest tore down this test environment.",
   "repair": "The test now awaits the Chat view import after mounting App and the Scrape view import after the recovery click, before teardown. Its alert, route, and consumed-intent assertions remain unchanged.",
   "sibling_census": "This is the only unit test that renders sidepanel App. Popup route and remedy tests import popup/main and do not start the sidepanel view loaders.",
-  "verification": ["Biome check on the changed test passed."],
+  "repair_commit": "9a3cdb9c",
+  "verification": [
+    "Biome check on the changed test and report passed.",
+    "popup-teardown-green-001: focused post-edit test passed 1/1 in 505 ms; exit 0."
+  ],
   "remaining": [
-    "Run the repaired focused test and full CI suite; local green alone cannot prove this timing race is closed in CI."
+    "Run the full CI suite; local focused green alone cannot prove this timing race is closed in CI."
   ]
 }
