@@ -142,7 +142,8 @@ async function inventory(panel) {
   return evaluate(
     panel,
     `(() => [...document.querySelectorAll('[role="tab"]')]
-    .map((el) => el.title).filter(Boolean))()`,
+    .map((el) => ({ title: el.getAttribute('title') ?? '',
+      captureIdentity: el.getAttribute('aria-controls')?.endsWith('-content-capture') === true })))()`,
   );
 }
 
@@ -319,8 +320,13 @@ try {
     exercisePanel: async ({ page, panel }) => {
       advance('guest_tab_inventory');
       const guestTabs = await inventory(panel);
-      assert.deepEqual(guestTabs.filter((title) => title !== 'Chat').sort(), [...GUEST].sort());
-      target('guest-tab-inventory', 'guest', 'EXT-F-1001-C01', { titles: guestTabs });
+      const guestTitles = guestTabs.map((tab) => tab.title);
+      assert.deepEqual(guestTitles.sort(), ['Chat', ...GUEST].sort());
+      assert.equal(
+        guestTabs.some((tab) => tab.captureIdentity),
+        false,
+      );
+      target('guest-tab-inventory', 'guest', 'EXT-F-1001-C01', { titles: guestTitles });
       const guestAvatar = await evaluate(
         panel,
         `(() => !!document.querySelector('button[title="Account"]'))()`,
@@ -330,7 +336,10 @@ try {
       await avatar(panel, 'guest', 'Account');
       advance('guest_navigation');
       for (const title of GUEST) await navigate(panel, title, 'guest');
-      assert.equal(guestTabs.some(isCaptureTitle), false);
+      assert.equal(
+        guestTabs.some((tab) => isCaptureTitle(tab.title)),
+        false,
+      );
       target('capture-absent:guest', 'guest', 'EXT-F-1001-C02', { triggerAbsent: true });
       const vaultShortcutAbsent = await evaluate(
         panel,
@@ -342,15 +351,21 @@ try {
       await realAdminSignin(page, panel);
       advance('admin_tab_inventory');
       const adminTabs = await inventory(panel);
-      const captureTitles = adminTabs.filter(isCaptureTitle);
-      report.admin_tab_inventory = { titles: adminTabs, captureTitles };
-      assert.equal(captureTitles.length, 1);
+      const adminTitles = adminTabs.map((tab) => tab.title);
+      const captureTabs = adminTabs.filter((tab) => tab.captureIdentity);
+      report.admin_tab_inventory = {
+        titles: adminTitles,
+        capture_identity_count: captureTabs.length,
+        capture_title: captureTabs[0]?.title ?? null,
+      };
+      assert.equal(captureTabs.length, 1);
+      assert.equal(isCaptureTitle(captureTabs[0].title), true);
       const expected = [...GUEST, ...ADMIN, 'Chat', 'Pilot (admin only — sandboxed tab group)'];
       assert.deepEqual(
-        adminTabs.map((title) => (isCaptureTitle(title) ? 'Capture' : title)).sort(),
+        adminTabs.map((tab) => (tab.captureIdentity ? 'Capture' : tab.title)).sort(),
         expected.concat('Capture').sort(),
       );
-      target('admin-tab-inventory', 'admin', 'EXT-F-1001-C01', { titles: adminTabs });
+      target('admin-tab-inventory', 'admin', 'EXT-F-1001-C01', { titles: adminTitles });
       advance('admin_avatar');
       await avatar(panel, 'admin', 'admin@admin.com');
       advance('admin_navigation');
@@ -360,14 +375,14 @@ try {
       const capture = await evaluate(
         panel,
         `(() => {
-        const isCaptureTitle = ${isCaptureTitle.toString()};
         const tab = [...document.querySelectorAll('[role="tab"]')]
-          .find((el) => isCaptureTitle(el.title ?? ''));
+          .find((el) => el.getAttribute('aria-controls')?.endsWith('-content-capture'));
         return { present: !!tab, label: tab?.getAttribute('aria-label') ?? null,
           badge: tab?.querySelector('.rounded-full')?.textContent?.trim() ?? null };
       })()`,
       );
       assert.equal(capture.present, true);
+      assert.equal(isCaptureTitle(capture.label), true);
       report.targets.push({
         id: 'capture-observed:admin',
         role: 'admin',
