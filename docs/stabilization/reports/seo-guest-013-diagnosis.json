@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "review": "seo-guest-013-diagnosis",
+  "run_receipt": "docs/stabilization/runs/seo-guest-013.json",
+  "finding": {
+    "verdict": "CAUSE_NOT_IDENTIFIABLE_FROM_SAVED_RUN",
+    "failure_stage": "metadata_fixture_schema_outbound_activation",
+    "last_safe_stage": "metadata_fixture_seo_details_inspected",
+    "explanation": "The acceptance catch retained only the operation name. The saved report does not distinguish a missing or unstable anchor, pointer dispatch failure, missing new-page event, or navigation that did not reach the expected URL. No product cause can be concluded from this run."
+  },
+  "evidence": {
+    "previously_recorded_targets": "16 pass, 1 unverified out of 17 before the Airbnb continuation; the exact subtargets and immutable artifact hashes are in the run receipt.",
+    "airbnb_panel_state": {
+      "title": "Airbnb | Vacation rentals, cabins, beach houses, & more",
+      "hreflang_count": 96,
+      "schema_types": ["WebSite", "SearchAction"],
+      "schema_links": [
+        {
+          "type": "WebSite",
+          "url": "https://schema.org/WebSite",
+          "target": "_blank",
+          "noopener": true,
+          "noreferrer": true
+        },
+        {
+          "type": "SearchAction",
+          "url": "https://schema.org/SearchAction",
+          "target": "_blank",
+          "noopener": true,
+          "noreferrer": true
+        }
+      ]
+    },
+    "target_limit": "The combined Airbnb door target is appended only after both trusted activations, so it is absent. The observed panel state proves values and safe anchor attributes, not successful schema activation."
+  },
+  "source_diagnosis": {
+    "runner": "tests/browser/seo-guest-acceptance.mjs",
+    "activation_path": "activateSeoLink samples the scoped anchor, hit-tests it, dispatches mouse press/release with CDP, waits for a BrowserContext page event, then waits for the exact destination URL.",
+    "diagnostic_gap": "The helper threw unclassified assertion or timeout errors and the top-level catch discarded them. Unlike settings-panel-driver.click, this path persisted no structured pointer or navigation result.",
+    "change": "Added content-free, allowlisted per-step evidence for candidate count, href match, target mode, stable hit samples, pointer dispatch completion, new-page observation, expected destination, and source-page URL preservation. No interaction behavior or timeout was changed.",
+    "separate_run": "A separate Source Save failure uses settings-panel-driver.click and its driverFailure path. That is not evidence that the SEO link failure shares its cause; this report does not transfer a diagnosis between them."
+  },
+  "verification": {
+    "node_check": "node --check tests/browser/seo-guest-acceptance.mjs passed.",
+    "biome": "Exact-file Biome checks passed.",
+    "runtime": "No browser, build, or acceptance run was launched. New diagnostics need an independently reviewed run before they can identify the cause."
+  },
+  "limits": [
+    "The original Wikipedia 16/17 result remains partial; this run does not pass T09 or EXT-F-1008.",
+    "Airbnb automatic exact-data correctness and readability metric correctness remain unverified.",
+    "The loaded extension build identity is absent from the acceptance report."
+  ]
+}

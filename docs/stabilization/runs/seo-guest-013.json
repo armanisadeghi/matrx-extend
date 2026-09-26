@@ -1,0 +1,137 @@
+{
+  "id": "seo-guest-013",
+  "feature_id": "EXT-F-1008",
+  "at": "2026-09-26T21:03:48.419Z",
+  "status": "unverified",
+  "mode": "guest",
+  "scope": "Preserved guest SEO run 013 acceptance output and bounded summary; original Wikipedia run plus opt-in Airbnb metadata door continuation.",
+  "runtime_output": "test-results/seo-guest-acceptance.json",
+  "runtime_output_sha256": "557435c818c97bc8b830b46e5e2af4586cec13b286f6ddf9e9c8c42855f69a01",
+  "resource_log": "/tmp/matrx-seo-guest-013.log",
+  "resource_log_sha256": "015be70fbae6acb695f6d0a1920c8fb6f86ebf6255c439dfaae2039bcca603e5",
+  "resource": {
+    "run_id": "seo-guest-013",
+    "admission_code": "RESOURCE_ADMITTED",
+    "admitted_at": "2026-09-26T21:03:48.419Z",
+    "reasons": [],
+    "child_exit_code": 1,
+    "child_signal": null,
+    "exit_at": "2026-09-26T21:04:02.401Z",
+    "wrapper_stdout": ["UNVERIFIED seo_guest_native_batch"],
+    "wrapper_session": "root confirmed wrapper 35101 exit 1"
+  },
+  "runtime_source": {
+    "acceptance_runner": "tests/browser/seo-guest-acceptance.mjs",
+    "acceptance_runner_commit": "6740fc045d036d4068296da7423186145cecc408",
+    "built_extension_version": null,
+    "build_attribution_limit": "The saved acceptance JSON does not record the loaded extension version or bind a binary digest."
+  },
+  "acceptance_result": {
+    "status": "unverified",
+    "passing_subtargets": 16,
+    "unverified_subtargets": ["guest_manual_hreflang_and_schema_doors_match_page"],
+    "targets": [
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "page_0_title_and_headings",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "page_1_title_and_headings",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T01",
+        "subtarget": "new_url_replaces_visible_title",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "manual_button_returns_to_current_page",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T01",
+        "subtarget": "reload_audits_current_url",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_role_gate_after_reload",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T03",
+        "subtarget": "about_blank_clear_error_without_stale_audit",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T03",
+        "subtarget": "public_page_recovers_after_restricted_url",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "sparse_public_detail_groups",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "rich_public_detail_groups_and_canonical_door",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "canonical_outbound_opens_expected_public_tab",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_link_counts_match_live_dom",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_image_alt_counts_match_live_dom",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_readability_display_is_populated_and_explained",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_performance_reflects_current_navigation",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+        "status": "unverified"
+      }
+    ],
+    "failed_at": "metadata_fixture_schema_outbound_activation",
+    "last_safe_stage": "metadata_fixture_seo_details_inspected",
+    "airbnb_observed": {
+      "title": "Airbnb | Vacation rentals, cabins, beach houses, & more",
+      "hreflang_count": 96,
+      "schema_types": ["WebSite", "SearchAction"],
+      "schema_hint": "2",
+      "schema_links_safe": true
+    }
+  },
+  "limits": [
+    "The failure stage identifies the schema door activation block only; no step-level click, opened-page, or destination diagnostic was persisted.",
+    "The 16 passes are bounded recorded observations and do not make EXT-F-1008 or T09 fully passed.",
+    "The original Wikipedia hreflang/schema target remains unverified; Airbnb metadata values were observed, but the combined door target was not recorded as pass.",
+    "The acceptance JSON and resource log are preserved externally and hashed here; the concise receipt does not copy the full metadata or raw runtime output."
+  ],
+  "evidence_note": "Resource admission was healthy. Wrapper child exit 1 matches the runner output UNVERIFIED. The saved acceptance report status is unverified."
+}

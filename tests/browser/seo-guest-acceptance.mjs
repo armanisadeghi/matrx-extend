@@ -610,6 +610,22 @@ function assertNextDoors(actual, expected) {
 async function activateSeoLink(panel, page, groupName, expectedHref) {
   // A real mouse press reaches only the scoped, hit-tested outbound anchor.
   // The anchor's href and target are asserted before any outbound navigation.
+  const diagnostic = {
+    group: groupName === 'International' ? 'international' : 'structured_data',
+    step: 'anchor_sample',
+    candidateCount: null,
+    destinationMatched: null,
+    opensNewTab: null,
+    stableHitSamples: 0,
+    pointerPressReturned: false,
+    pointerReleaseReturned: false,
+    newPageObserved: false,
+    expectedPageReached: false,
+    sourcePageStillOpen: null,
+    sourceUrlUnchanged: null,
+  };
+  const sourceUrl = page.url();
+  let opened;
   const sample = () =>
     evaluate(
       panel,
@@ -631,43 +647,61 @@ async function activateSeoLink(panel, page, groupName, expectedHref) {
       hit: anchor.contains(document.elementFromPoint(x, y)) };
   })()`,
     );
-  const first = await sample();
-  assert.equal(first?.count, 1, `unique ${groupName} outbound anchor`);
-  assert.equal(first.href, expectedHref, `${groupName} anchor points to public DOM destination`);
-  assert.equal(first.target, '_blank', `${groupName} opens in a new tab`);
-  let previous = first;
-  for (let index = 0; index < 2; index += 1) {
-    await new Promise((resolveWait) => setTimeout(resolveWait, 50));
-    const current = await sample();
-    assert.equal(current?.hit, true, `${groupName} link is unobstructed for real pointer`);
-    assert.ok(current.width > 0 && current.height > 0, `${groupName} link has a click area`);
-    assert.ok(
-      Math.abs(previous.x - current.x) < 0.25 && Math.abs(previous.y - current.y) < 0.25,
-      `${groupName} link remains stable`,
-    );
-    previous = current;
-  }
-  const openedPromise = page.context().waitForEvent('page', { timeout: 20000 });
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mousePressed',
-    x: previous.x,
-    y: previous.y,
-    button: 'left',
-    clickCount: 1,
-  });
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mouseReleased',
-    x: previous.x,
-    y: previous.y,
-    button: 'left',
-    clickCount: 1,
-  });
-  const opened = await openedPromise;
   try {
+    const first = await sample();
+    diagnostic.candidateCount = Number.isInteger(first?.count) ? first.count : null;
+    diagnostic.destinationMatched = first?.href === expectedHref;
+    diagnostic.opensNewTab = first?.target === '_blank';
+    assert.equal(first?.count, 1, `unique ${groupName} outbound anchor`);
+    assert.equal(first.href, expectedHref, `${groupName} anchor points to public DOM destination`);
+    assert.equal(first.target, '_blank', `${groupName} opens in a new tab`);
+    let previous = first;
+    for (let index = 0; index < 2; index += 1) {
+      await new Promise((resolveWait) => setTimeout(resolveWait, 50));
+      const current = await sample();
+      assert.equal(current?.hit, true, `${groupName} link is unobstructed for real pointer`);
+      assert.ok(current.width > 0 && current.height > 0, `${groupName} link has a click area`);
+      assert.ok(
+        Math.abs(previous.x - current.x) < 0.25 && Math.abs(previous.y - current.y) < 0.25,
+        `${groupName} link remains stable`,
+      );
+      diagnostic.stableHitSamples += 1;
+      previous = current;
+    }
+    diagnostic.step = 'pointer_press';
+    const openedPromise = page.context().waitForEvent('page', { timeout: 20000 });
+    await panel.send('Input.dispatchMouseEvent', {
+      type: 'mousePressed',
+      x: previous.x,
+      y: previous.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    diagnostic.pointerPressReturned = true;
+    diagnostic.step = 'pointer_release';
+    await panel.send('Input.dispatchMouseEvent', {
+      type: 'mouseReleased',
+      x: previous.x,
+      y: previous.y,
+      button: 'left',
+      clickCount: 1,
+    });
+    diagnostic.pointerReleaseReturned = true;
+    diagnostic.step = 'new_page_wait';
+    opened = await openedPromise;
+    diagnostic.newPageObserved = true;
+    diagnostic.step = 'destination_wait';
     await opened.waitForURL((url) => url.href === expectedHref, { timeout: 20000 });
+    diagnostic.expectedPageReached = true;
     assert.equal(opened.url(), expectedHref, 'new tab reaches the observed outbound URL');
+    diagnostic.step = 'source_page_restoration';
+  } catch (error) {
+    if (error && typeof error === 'object') error.seoDoorDiagnostic = diagnostic;
+    throw error;
   } finally {
-    await opened.close();
+    if (opened) await opened.close();
+    diagnostic.sourcePageStillOpen = !page.isClosed();
+    diagnostic.sourceUrlUnchanged = page.url() === sourceUrl;
   }
 }
 
@@ -1202,9 +1236,10 @@ try {
   });
   report.extension_id = harness.extensionId;
   report.status = 'partial';
-} catch {
+} catch (error) {
   report.status = 'unverified';
   report.failure_stage = report.current_operation ?? report.last_safe_stage;
+  if (error?.seoDoorDiagnostic) report.door_activation_diagnostic = error.seoDoorDiagnostic;
   process.exitCode = 1;
 }
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
