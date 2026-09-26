@@ -541,7 +541,7 @@ export function SiteSection(props: SiteSectionProps) {
           Turn on saved-login matching in extension settings to use Fill.
         </p>
       )}
-      {props.panelStatus === 'none' && !outcome && (
+      {props.panelStatus === 'none' && blockedReason === null && !outcome && (
         <p className="mt-1.5 text-[11px] text-muted-foreground">
           Click the username or password box on the website, then choose Fill.
         </p>

@@ -81,4 +81,23 @@ describe('SiteSection match lookup failures', () => {
     expect(screen.queryByRole('button', { name: 'Save this site' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Fill' })).toBeNull();
   });
+
+  it('shows one manual recovery when no focused login field is available', () => {
+    render(
+      <SiteSection
+        {...baseProps()}
+        panelStatus="none"
+        blockedReason="No login field is ready to fill. Enter the login manually, or focus the username or password field on a supported sign-in page and try Fill again."
+      />,
+    );
+
+    expect(
+      screen.getAllByText(
+        'No login field is ready to fill. Enter the login manually, or focus the username or password field on a supported sign-in page and try Fill again.',
+      ),
+    ).toHaveLength(1);
+    expect(
+      screen.queryByText('Click the username or password box on the website, then choose Fill.'),
+    ).toBeNull();
+  });
 });
