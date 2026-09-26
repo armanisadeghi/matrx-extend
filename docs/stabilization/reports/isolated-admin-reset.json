@@ -2,7 +2,7 @@
   "schema_version": 1,
   "task_id": "isolated-admin-reset",
   "lane": "implementation Sol medium",
-  "status": "source-prepared-runtime-unverified",
+  "status": "diagnostic-ready-runtime-unverified",
   "feature_ids": ["EXT-F-1003"],
   "case_ids": ["EXT-F-1003-T51"],
   "control_ids": ["EXT-F-1003-C17"],
@@ -17,17 +17,23 @@
   ],
   "peer_finding_ruling": "Confirmed the peer's non-sentinel restoration gap. Repaired with an independent inert local fixture and an after-reload comparison of all pre-reset key names outside a narrow source-backed regenerated-key set. A blanket intersection would falsely fail new guest identity, cross-component instance, or live desktop port cache keys created by fresh boot. The immediate post-Confirm comparison still requires every pre-reset key to be absent without exceptions.",
   "ruling_cost_if_wrong": "A stale value under an exempt guest or desktop discovery key could escape the reload key-name check; the immediate post-Confirm zero-intersection proves it was cleared first, but the runner does not prove a later same-named value is newly minted. A missing legitimate boot-key exception would produce a false failure that must be diagnosed from a guarded run rather than silently waived.",
+  "runtime_attempt_001": "Root's resource-admitted isolated-admin-reset-001 on receipt-verified 0.2.60 passed real web/extension admin sign-in, Dark/local/session fixture setup, and Cancel preservation. It exited unverified after about 14 seconds in the former combined reset_confirm stage. The sanitized receipt cannot distinguish dialog reopening, real Confirm click, storage clearing, prior-key overlap, or UI sign-out; no product defect is inferred from this opaque result.",
+  "diagnostic_repair": "The next guarded run has separate allowlisted stages for reopening the dialog, waiting for the dialog, clicking Confirm, waiting for storage clearing, reading the post-clear snapshot, checking all prior key names, and waiting for signed-out UI. It records only boolean/count observations: whether the dialog and click completed; storage read attempts/successes; current local/session key counts and overlap counts with pre-reset keys; presence of auth/settings/inert fixtures; and signed-in/out UI flags. Raw storage key names/values and browser/auth exceptions remain suppressed.",
+  "diagnostic_ruling": "Keep the immediate post-Confirm all-prior-key rejection until a guarded run shows whether the first failure occurs there. A same-named key recreated by background work is plausible from source, but the current receipt does not establish that it happened. Cost if this is wrong: the next run can fail on a legitimate newly created key, but it will identify the exact safe substage and overlap count so root can rule on reset semantics without weakening the test blindly.",
   "server_effects": "The runner itself sends only the real web/extension authentication flow and UI clicks. Static source shows Settings reset clears extension local/session storage before signOut; signOut may issue a best-effort Supabase POST /auth/v1/logout?scope=local only if an access token remains at its read. In the ordinary reset order the prior token has already been cleared. No runner path invokes application-data writes. Real sign-in may create disposable auth sessions, and guest boot may mint an anonymous guest identity through the existing backend flow; no claim of zero authentication-system effects is made.",
   "secret_custody": "Credentials are read from the authorized aidream .env only at the real web form. Auth storage is observed solely as boolean presence; raw values, cookies, callback URLs, request bodies, and browser exceptions never enter output. The runner writes only allowlisted stage/category results under test-results with mode 0600.",
   "verification": [
     { "check": "node --check tests/browser/isolated-admin-reset-acceptance.mjs", "result": "pass" },
     { "check": "git diff --check", "result": "pass" },
-    { "check": "native Chrome reset acceptance", "result": "not run; root owns resource admission" }
+    {
+      "check": "native Chrome reset acceptance",
+      "result": "isolated-admin-reset-001 unverified at formerly combined reset_confirm stage; root owns retry admission"
+    }
   ],
   "limitations": [
-    "No runtime behavior verdict is claimed until root's guarded run and independent review.",
+    "No runtime reset verdict is claimed until root's guarded diagnostic retry and independent review.",
     "This case checks extension local/session reset and UI sign-out. It does not prove server-side data persistence or ordinary-member reset.",
     "The regenerated-key exceptions are based on current source behavior; a guarded run or source change may require revisiting them."
   ],
-  "next_action": "Root admits the runner under the campaign resource guard against the intended receipt-verified build and files the run evidence; an independent reviewer checks the behavior and source."
+  "next_action": "Root admits one guarded diagnostic retry against the intended receipt-verified build, files the sanitized run evidence, and routes a product fix only after the failing substage is known."
 }
