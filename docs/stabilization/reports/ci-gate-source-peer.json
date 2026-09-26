@@ -1,0 +1,25 @@
+{
+  "task_id": "userneverpushredtrunk-ci-gate-source-review",
+  "reviewer": "/root/ci_gate_source_peer",
+  "reviewed_commits": [
+    "a8966b96059056ceeaf3f19335c09ff7b25ff36f",
+    "3f853c0b15ca8c542d80959ab621c1a4d632b448"
+  ],
+  "verdict_a": "PASS source gate",
+  "verdict_b": "PASS_WITH_LIMITS fixture source",
+  "runtime_verdict": "PENDING root guarded fixture execution",
+  "evidence": [
+    "release.sh adds pnpm -s lint as an ERROR-level mandatory CHECKS entry before unit-tests; the existing typecheck, test, schema, package, and other gate entries remain present.",
+    "run_checks executes within CHECK_SNAP, which is exported from RELEASE_SHA; it runs for each candidate after a remote race, before build_zips and before atomic main/tag push.",
+    "scripts/test-release-ship-path.sh forces its pnpm lint stub to fail, then requires the lint failure message and call record, no Vitest call, the original local bare-origin main SHA, and no v0.1.2 tag.",
+    "The fixture creates a mktemp sandbox with a local bare origin and checkout, copies the script under test, and routes pnpm, node, and supabase through local stubs. Source review found no route from this fixture to GitHub or the user's checkout refs.",
+    "3f853c0 correctly separates failed-CI SHA ba0a4e35ea20e8d3dce6b725c9d604035b05578c from v0.2.64 release SHA 5d2b70e66af22959e957bf593fca9b2c3c8bb42c. The failed-CI commit is a later main commit and the 0.2.64 tag is its ancestor, so that run does not prove the exact tagged release candidate failed lint."
+  ],
+  "limits": [
+    "The fixture and real lint gate have not been executed in this source-review lane; the coordinator owns the single guarded fixture execution.",
+    "The fixture's pnpm stub simulates lint failure; it verifies release orchestration and publication refusal, not Biome's actual detection behavior.",
+    "The source review cannot establish that the exact 0.2.64 release candidate failed CI lint; the report correctly limits that claim to a later CI commit and the missing-gate class."
+  ],
+  "findings": [],
+  "next_action": "Root runs the guarded fixture once and records the runtime result."
+}
