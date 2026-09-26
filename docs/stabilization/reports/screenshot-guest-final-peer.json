@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-guest-final-peer",
+  "reviewed_source_commit": "c47c2d84",
+  "runner": "tests/browser/screenshot-guest-acceptance.mjs",
+  "A_runtime": {
+    "status": "UNVERIFIED",
+    "reason": "This independent lane did not build, launch a browser, or exercise the guest UI."
+  },
+  "B_source": {
+    "status": "CORRECTION_REQUIRED_BEFORE_RUNTIME_ADMISSION",
+    "accepted_boundaries": [
+      "The owned native harness starts a fresh guest profile and verifies a release receipt, manifest, and unpacked extension tree before launch. The runner does not inject authentication, tab state, or screenshot rows.",
+      "The corrected Settings and SEO waits call guestNavigation with the actual panel. Each requires one exact target trigger selected, one linked visible active pane, and a mounted Settings or SEO audit marker. This prevents a pre-existing active pane or lazy-loading fallback from satisfying navigation.",
+      "Initial guest state and both trusted public-tab transitions require no Screenshots trigger, no Screenshots pane, and no screenshot capture controls. The product gates both Screenshots trigger and content through canAccess('screenshots'), whose audience is signed-in. No Screenshot, Chat, or Pilot control is clicked, and no screenshot capture/save/delete input is sent.",
+      "The result contains counts and booleans, not page text or account values. A failure screenshot is written only inside the harness-owned artifact directory using a unique name, exclusive wx creation, and mode 0600."
+    ],
+    "blocking_finding": "The runner emits only a static buildBinding sentence. It does not record the actual release version and tree SHA-256 read for this run or compare receipt/manifest identity and unpacked bytes at the end. A later immutable receipt could not bind a guest result to its exact tested artifact without inference from mutable disk. Require the established before/after release identity check and actual version/tree fields in the successful result before adding the resource-policy command.",
+    "scope_and_claim_corrections": [
+      "The runner covers fresh-guest initial state and navigation after trusted Settings then SEO clicks. A persisted/direct Screenshots selection after a real auth or role transition is not exercised and is correctly marked unverified. The inventory also lists reload as a T09 dimension; this runner does not cover it. T09 and EXT-F-1009 must remain partial/unverified rather than full pass.",
+      "The preparation claim that navigation calls no backend service is too broad. SeoView fetches saved audit history and auto-runs a read-only page audit on mount. The runner sends no Save and no mutating screenshot/capture action, which is the defensible safety claim.",
+      "Guest screenshot capture/gallery T01–T08 are not applicable in the inventory; this lane does not run or promote them."
+    ]
+  },
+  "resource_policy": "NOT_CHANGED until exact per-run build identity is recorded and independently rereviewed."
+}
