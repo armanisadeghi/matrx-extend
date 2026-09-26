@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/release021_peer",
+  "receipt": "docs/stabilization/runs/release-stabilization-021.json",
+  "method": "Independent read-only verification of Git refs, receipt artifacts, raw release log, and the release tree hash algorithm. No tests, builds, or browser sessions launched.",
+  "release_identity": {
+    "verdict": "PASS",
+    "source_sha": "79d1dba35ea1157a6dbf7a8ce23942a0a2a8f271",
+    "evidence": [
+      "v0.2.67 tag, origin/main, local origin/HEAD, and release receipt sourceSha resolve to the same commit.",
+      "Local main contains the source commit as an ancestor; that commit's package.json version is 0.2.67.",
+      "Both unpacked directories reproduce the receipt treeSha256 ce7a1faadd3a7ba45ceb90f6754b26a6be8f6573ec8b660e995e4f5c4bd8a82a over 526 files.",
+      "Local ZIP SHA-256 matches the receipt and its 526 members reproduce that same release tree hash.",
+      "Store ZIP SHA-256 matches the receipt; its manifest reports version 0.2.67. Its 513 files are a separate optimized build, so its member tree is not expected to equal the local unpacked tree."
+    ],
+    "store_upload": "No upload claim: receipt and log establish generation/package validation only."
+  },
+  "a_acceptance": {
+    "verdict": "PASS_FOR_D17; D18_UI_PENDING",
+    "d17": {
+      "verdict": "CLOSURE_CRITERION_MET",
+      "evidence": "Raw release log records the mandatory unit-tests gate exiting 0 under Vitest 4.1.11 with the supported --maxWorkers=1 command; 177 test files passed, 1 skipped, and 1,436 tests passed, 3 skipped, 0 failed. All 15 receipt-listed gates are present in the log and exit 0."
+    },
+    "d18": {
+      "verdict": "ENGINEERING_RELEASE_EVIDENCE_PASS; UI_REMAINS_OPEN",
+      "evidence": "The current source contains the added multi-figure and layered-SVG normalization cases, and the full unit suite passed with zero failures.",
+      "open": "This review does not establish the independent native Chrome capture-and-copy check. Keep D18 open until root's separate UI evidence is recorded."
+    }
+  },
+  "b_quality": {
+    "verdict": "PASS_WITH_EXPLICIT_LIMITS",
+    "evidence": [
+      "Source, tag, remote main, ZIP digests, unpacked bundle hashes, file counts, and the raw log agree with the receipt's release identity.",
+      "The D17 repair's actual supported single-worker Vitest invocation is exercised by the strict release log, beyond the fixture's command-text assertion.",
+      "The release log reports the three skipped tests; skipped database-dependent tests do not establish database health."
+    ],
+    "limits": [
+      "The generated Store ZIP was not uploaded and no Store review or publication is established.",
+      "No live Chrome behavior is claimed here; D18's independent UI check remains with root.",
+      "The aggregate Vitest summary does not independently attribute each newly added D18 assertion to an individual pass row."
+    ]
+  },
+  "recommendation": "Close D17 against this full strict release evidence. Do not close D18 until the separate native UI verification is recorded."
+}
