@@ -63,6 +63,7 @@ function assertVaultExtensionLifecycleVerdict({ lifecycle, requireOrganizationSw
         'replacementPanelObserved',
         'noVaultWrites',
         'replacementJournalBound',
+        'postBindVaultReadRecovered',
         'launchProvenanceVerified',
       ],
     ],
@@ -95,6 +96,37 @@ function assertVaultExtensionLifecycleVerdict({ lifecycle, requireOrganizationSw
     restart.previousBrowserPid === restart.replacementBrowserPid
   )
     throw new Error('vault_lifecycle_browserRestart_process_not_replaced');
+  const custody = lifecycle.browserRestartCustody;
+  const targetId = (value) => typeof value === 'string' && /^[A-Fa-f0-9]{32}$/.test(value);
+  const sha256 = (value) => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
+  if (!sha256(custody?.profileSha256) || !sha256(custody?.executableSha256))
+    throw new Error('vault_lifecycle_browserRestart_custody_source_invalid');
+  if (
+    custody?.initial?.browserPid !== restart.previousBrowserPid ||
+    custody?.replacement?.browserPid !== restart.replacementBrowserPid ||
+    custody.initial.cdpOwnerVerified !== true ||
+    custody.replacement.cdpOwnerVerified !== true
+  )
+    throw new Error('vault_lifecycle_browserRestart_custody_process_invalid');
+  for (const kind of ['worker', 'panel']) {
+    const initial = custody.initial[`${kind}TargetId`];
+    const replacement = custody.replacement[`${kind}TargetId`];
+    if (!targetId(initial) || !targetId(replacement) || initial === replacement)
+      throw new Error(`vault_lifecycle_browserRestart_custody_${kind}_invalid`);
+  }
+  if (custody.replacement.workerTargetId !== restart.replacementWorkerTargetId)
+    throw new Error('vault_lifecycle_browserRestart_custody_worker_unbound');
+  const journal = custody.replacement.journal;
+  if (
+    journal?.journalSemanticVersion !== 2 ||
+    journal.boundTargetAttached !== true ||
+    journal.panelItemsReadRequestSeen !== true ||
+    journal.panelItemsReadResponse2xxSeen !== true ||
+    journal.vaultMutationRequests !== 0 ||
+    journal.observerError !== false ||
+    journal.transportFatal !== false
+  )
+    throw new Error('vault_lifecycle_browserRestart_custody_journal_invalid');
 
   const signOut = lifecycle.signOut;
   requireDisposition(signOut, 'vault_lifecycle_sign_out');
@@ -151,7 +183,7 @@ function assertVaultExtensionLifecycleVerdict({ lifecycle, requireOrganizationSw
       'twoAdminMembershipsObserved',
       'oldOrganizationAuthorityRefusedAfterSwitch',
       'newOrganizationResolvedAfterSwitch',
-      'disposableRecordScopePreserved',
+      'personalVaultScopePreserved',
     ],
     'vault_lifecycle_organization_invalidation',
   );

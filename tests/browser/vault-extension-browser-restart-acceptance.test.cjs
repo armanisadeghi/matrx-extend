@@ -288,6 +288,20 @@ const scenario = (overrides = {}) => {
   assert.equal(cleanup.cleanupProven, false);
   assert.ok(cleanup.cleanupFailures.some((failure) => failure.step === 'context_close'));
   assert.ok(cleanup.cleanupFailures.some((failure) => failure.step === 'process_exit_verify'));
+  const boundContext = {
+    closed: false,
+    async close() {
+      assert.equal(this, boundContext, 'replacement close must keep its context receiver');
+      this.closed = true;
+    },
+  };
+  const boundCleanup = scenario({ context: boundContext, postBindVaultRead: false });
+  await assert.rejects(
+    () => runOwnedBrowserRestart(boundCleanup.args),
+    /browser_restart_post_bind_vault_read_unverified/,
+  );
+  assert.equal(boundContext.closed, true);
+  assert.equal(boundCleanup.args.proof.lifecycle.browserRestart.cleanupProven, true);
   process.stdout.write(
     'PASS: owned restart rejects forged process, launch, worker, and panel evidence\n',
   );

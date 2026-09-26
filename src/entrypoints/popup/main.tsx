@@ -1,5 +1,10 @@
 import { useAuth } from '@/hooks/use-auth';
 import { openFirefoxSidebarFromGesture, openPanel, panelOpenRemedy } from '@/lib/panel/adapter';
+import {
+  type CapturePagePanelRequest,
+  clearCapturePagePanel,
+  requestCapturePagePanel,
+} from '@/lib/panel/launch-intent';
 import { Button } from '@ai-matrx/design-system';
 import { ExternalLink, MessageSquare, ScanLine } from 'lucide-react';
 import React, { useState } from 'react';
@@ -9,10 +14,11 @@ import '@/styles/globals.css';
 export function Popup() {
   const { error, signIn, status, user } = useAuth();
   const [panelError, setPanelError] = useState<string | null>(null);
+  const [captureInFlight, setCaptureInFlight] = useState(false);
+
   const openSidePanel = async () => {
     setPanelError(null);
-    // Firefox must receive sidebarAction.open() while this toolbar click is
-    // still active. It is window-global, so no tab/window is passed.
+    // Firefox's sidebar opener must be the first operation after the click.
     const firefoxAttempt = openFirefoxSidebarFromGesture();
     if (firefoxAttempt) {
       if (!firefoxAttempt.promise) {
@@ -45,6 +51,50 @@ export function Popup() {
     }
   };
 
+  const openCapturePage = async () => {
+    setPanelError(null);
+    setCaptureInFlight(true);
+    let request: CapturePagePanelRequest | null = null;
+    // Must happen before any query or storage await.
+    const firefoxAttempt = openFirefoxSidebarFromGesture();
+    const prepareRequest = async () => {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (tab?.windowId == null) throw new Error('Matrx could not find this browser window.');
+      request = requestCapturePagePanel(tab.windowId);
+      await request.write;
+    };
+
+    try {
+      if (firefoxAttempt) {
+        if (!firefoxAttempt.promise) throw new Error(firefoxAttempt.reason);
+        const [prepared, opened] = await Promise.allSettled([
+          prepareRequest(),
+          firefoxAttempt.promise,
+        ]);
+        if (prepared.status !== 'fulfilled') throw prepared.reason;
+        if (opened.status !== 'fulfilled') throw opened.reason;
+      } else {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (tab?.windowId == null) throw new Error('Matrx could not find this browser window.');
+        request = requestCapturePagePanel(tab.windowId);
+        const attempt = openPanel({ windowId: tab.windowId });
+        if (!attempt.promise) throw new Error(attempt.reason);
+        const [written, opened] = await Promise.allSettled([request.write, attempt.promise]);
+        if (written.status !== 'fulfilled') throw written.reason;
+        if (opened.status !== 'fulfilled') throw opened.reason;
+      }
+      window.close();
+    } catch (err) {
+      if (request) await clearCapturePagePanel(request);
+      setPanelError(
+        panelOpenRemedy(
+          (err as Error)?.message ?? "Couldn't prepare Capture page. Open Matrx and select Scrape.",
+        ),
+      );
+      setCaptureInFlight(false);
+    }
+  };
+
   return (
     <div className="space-y-3 p-3 dark:bg-background">
       <div className="text-sm font-semibold">Matrx Extend</div>
@@ -52,11 +102,16 @@ export function Popup() {
         <>
           <div className="text-xs text-muted-foreground">{user.email}</div>
           <div className="grid gap-2">
-            <Button onClick={() => void openSidePanel()} className="justify-start">
+            <Button
+              onClick={() => void openSidePanel()}
+              disabled={captureInFlight}
+              className="justify-start"
+            >
               <MessageSquare className="size-4" /> Open chat
             </Button>
             <Button
-              onClick={() => void openSidePanel()}
+              onClick={() => void openCapturePage()}
+              disabled={captureInFlight}
               variant="secondary"
               className="justify-start"
             >

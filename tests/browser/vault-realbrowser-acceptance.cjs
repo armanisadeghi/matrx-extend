@@ -26,6 +26,7 @@ const {
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
 const { assertVaultExtensionLifecycleVerdict } = require('./vault-extension-lifecycle-verdict.cjs');
 const { runOwnedBrowserRestart } = require('./vault-extension-browser-restart-acceptance.cjs');
+const { runOrganizationSwitchOfferProbe } = require('./vault-organization-switch-offer.cjs');
 const {
   inspectIdentity,
   sameLifecycleIdentity,
@@ -844,15 +845,38 @@ async function verifyOwnedBrowserProcess({ profile: candidateProfile, launchOpti
 }
 
 async function verifyBrowserProcessExited(browserPid) {
-  try {
-    await execFileAsync('ps', ['-p', String(browserPid), '-o', 'pid='], {
-      timeout: 5000,
-      maxBuffer: 1024,
-    });
-    return false;
-  } catch (error) {
-    return error?.code === 1;
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    try {
+      await execFileAsync('ps', ['-p', String(browserPid), '-o', 'pid='], {
+        timeout: 5000,
+        maxBuffer: 1024,
+      });
+    } catch (error) {
+      if (error?.code === 1) return true;
+      throw error;
+    }
+    await wait(100);
   }
+  return false;
+}
+
+async function verifyNoBrowserProcessForProfile(candidateProfile) {
+  const profileArgument = new RegExp(
+    `(?:^|[\\s\\0])--user-data-dir=${escapeRegExp(candidateProfile)}(?=$|[\\s\\0])`,
+  );
+  let consecutiveAbsent = 0;
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    const { stdout } = await execFileAsync('ps', ['-axo', 'args='], {
+      timeout: 5000,
+      maxBuffer: 4 * 1024 * 1024,
+    });
+    consecutiveAbsent = stdout.split('\n').some((line) => profileArgument.test(line))
+      ? 0
+      : consecutiveAbsent + 1;
+    if (consecutiveAbsent >= 3) return true;
+    await wait(100);
+  }
+  return false;
 }
 
 function persist() {
@@ -2063,11 +2087,12 @@ async function openSidePanelFromActionPopup(
   fixturePage,
   fixtureWindowId,
   workerFacade = worker,
+  browserContext = context,
 ) {
   // This is intentionally not a normal popup.html tab. The action popup is
   // opened for the already-focused fixture window, then its existing product
   // control receives real target-directed CDP input.
-  const cdp = await context.newCDPSession(fixturePage);
+  const cdp = await browserContext.newCDPSession(fixturePage);
   let handedOff = false;
   let panel;
   try {
@@ -2161,12 +2186,14 @@ async function openSidePanelFromActionPopup(
     if (!(contexts.length === 1 && contexts[0].tabId === -1))
       return { opened: false, reason: 'reopened_side_panel_context_missing' };
     const targets = await cdp.send('Target.getTargets');
-    const target = targets.targetInfos.find(
+    const matchingPanels = targets.targetInfos.filter(
       (candidate) =>
         candidate.url === `chrome-extension://${extensionId}/sidepanel.html` &&
         candidate.type === 'page',
     );
-    if (!target) return { opened: false, reason: 'reopened_side_panel_target_missing' };
+    if (matchingPanels.length !== 1)
+      return { opened: false, reason: 'reopened_side_panel_target_not_unique' };
+    const target = matchingPanels[0];
     panel = await attachPanelSession(cdp, target.targetId);
     try {
       await panel.send('Network.enable');
@@ -2279,6 +2306,7 @@ async function openSidePanelFromActionPopup(
       panel: {
         targetId: target.targetId,
         send: (method, params) => panel.send(method, params),
+        onEvent: panel.onEvent,
         evaluate,
         click,
         waitFor,
@@ -2985,6 +3013,125 @@ async function verifyObservedVaultPanelRead() {
   }
   throw new Error('vault_panel_items_read_sentinel_missing');
 }
+async function chooseDifferentOrganizationInPanel(panel, activeWorker) {
+  await panel.click(visibleSettingsControl);
+  await panel.waitFor(`document.body.innerText.includes('Settings')`);
+  const section = `Array.from(document.querySelectorAll('button[aria-expanded]')).find(
+    (button) => button.textContent?.trim() === 'Organization')`;
+  const expanded = await panel.evaluate(`(${section})?.getAttribute('aria-expanded') === 'true'`);
+  if (!expanded) await panel.click(section);
+  const trigger = `(() => {
+    const labels = Array.from(document.querySelectorAll('span')).filter(
+      (span) => span.textContent?.trim() === 'Acting as');
+    return labels.length === 1 ? labels[0].parentElement?.parentElement?.querySelector('[role="combobox"]') : null;
+  })()`;
+  await panel.waitFor(`(${trigger}) !== null`);
+  const before = await activeWorker.evaluate(async () => {
+    const stored = await chrome.storage.local.get('matrx.org.active');
+    return stored['matrx.org.active']?.id ?? null;
+  });
+  assert(typeof before === 'string' && before.length > 10, 'org_switch_initial_org_missing');
+  await panel.click(trigger);
+  const options = await panel.evaluate(`(() => {
+    const visible = Array.from(document.querySelectorAll('[role="option"]')).filter((option) => {
+      const rect = option.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    });
+    const selected = visible.map((option, index) =>
+      option.getAttribute('aria-selected') === 'true' || option.getAttribute('data-state') === 'checked'
+        ? index : -1).filter((index) => index >= 0);
+    return { count: visible.length, selectedCount: selected.length, next: visible.findIndex((_, index) => index !== selected[0]) };
+  })()`);
+  assert(
+    options?.count >= 2 && options.selectedCount === 1 && options.next >= 0,
+    'org_switch_second_membership_missing',
+  );
+  const choice = `Array.from(document.querySelectorAll('[role="option"]')).filter((option) => {
+    const rect = option.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0;
+  })[${options.next}]`;
+  await panel.click(choice);
+  let after;
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    after = await activeWorker.evaluate(async () => {
+      const stored = await chrome.storage.local.get('matrx.org.active');
+      return stored['matrx.org.active']?.id ?? null;
+    });
+    if (typeof after === 'string' && after.length > 10 && after !== before) break;
+    await wait(250);
+  }
+  assert(typeof after === 'string' && after !== before, 'org_switch_selection_not_persisted');
+  return { before, after, memberOptionCount: options.count };
+}
+async function verifyPanelReadInOrganization(panel, expectedOrganizationId) {
+  assert(typeof panel?.onEvent === 'function', 'org_switch_panel_observer_missing');
+  const requests = new Map();
+  const expectedApiOrigin = new URL(API).origin;
+  const stop = panel.onEvent((method, params) => {
+    if (method === 'Network.requestWillBeSent') {
+      let requestUrl;
+      try {
+        requestUrl = new URL(params.request?.url);
+      } catch {
+        return;
+      }
+      if (
+        requestUrl.origin !== expectedApiOrigin ||
+        requestUrl.pathname !== '/api/vault/items' ||
+        requestUrl.searchParams.get('principal_type') !== 'user' ||
+        params.request?.method !== 'GET'
+      )
+        return;
+      const header = Object.entries(params.request?.headers || {}).find(
+        ([name]) => name.toLowerCase() === 'x-organization-id',
+      )?.[1];
+      requests.set(params.requestId, { correctOrganization: header === expectedOrganizationId });
+    }
+    if (method === 'Network.responseReceived' && requests.has(params.requestId)) {
+      const request = requests.get(params.requestId);
+      request.status = params.response?.status;
+    }
+    if (method === 'Network.loadingFinished' && requests.has(params.requestId)) {
+      requests.get(params.requestId).finished = true;
+    }
+  });
+  try {
+    await panel.click(visibleVaultControl);
+    await panel.waitFor(`(() => {
+      const control = (${visibleVaultControl});
+      return control?.getAttribute('aria-selected') === 'true' &&
+        !!document.querySelector('[role="tabpanel"]');
+    })()`);
+    for (let attempt = 0; attempt < 60; attempt += 1) {
+      const completed = [...requests].find(
+        ([, entry]) =>
+          entry.correctOrganization &&
+          entry.status >= 200 &&
+          entry.status < 300 &&
+          entry.finished === true,
+      );
+      if (completed) {
+        const response = await panel.send('Network.getResponseBody', { requestId: completed[0] });
+        const body = response.base64Encoded
+          ? Buffer.from(response.body, 'base64').toString('utf8')
+          : response.body;
+        const payload = JSON.parse(body);
+        assert(Array.isArray(payload?.items), 'org_switch_panel_items_response_invalid');
+        const count = payload.items.length;
+        await panel.waitFor(`(() => {
+          const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+          return tabs.some((tab) => tab.getAttribute('aria-selected') === 'true' &&
+            tab.textContent?.trim() === 'Mine (${count})');
+        })()`);
+        return true;
+      }
+      await wait(250);
+    }
+    throw new Error('org_switch_new_panel_read_unverified');
+  } finally {
+    stop();
+  }
+}
 async function prewriteVaultPanelScreenshot() {
   // The Vault navigation control contains no credential value. Verify the
   // actual panel screenshot channel before any fixture write can occur.
@@ -3361,6 +3508,8 @@ async function materializedPassword(id) {
       const restartCustody = {
         profileSha256: sha256Value(profile),
         executableSha256: sha256Value(restartExecutable),
+        replacementLaunchAttempted: false,
+        failedLaunchCleanupProven: false,
         initial: {
           browserPid: initialBrowser.browserPid,
           cdpOwnerVerified: rawCdp.ownerVerified === true,
@@ -3398,11 +3547,13 @@ async function materializedPassword(id) {
         launchOptions: restartLaunchOptions,
         launchOwnedPersistentContext: async ({ profile: candidateProfile, launchOptions }) => {
           replacementPreparedProfile = await prepareOwnedProfile(candidateProfile);
-          const replacementContext = await chromium.launchPersistentContext(
-            candidateProfile,
-            launchOptions,
-          );
+          restartCustody.replacementLaunchAttempted = true;
+          let replacementContext;
           try {
+            replacementContext = await chromium.launchPersistentContext(
+              candidateProfile,
+              launchOptions,
+            );
             const replacementBrowser = await ownedBrowserProcess({
               candidateProfile,
               executablePath: launchOptions.executablePath,
@@ -3410,7 +3561,19 @@ async function materializedPassword(id) {
             });
             return { context: replacementContext, browserPid: replacementBrowser.browserPid };
           } catch (error) {
-            await replacementContext.close().catch(() => {});
+            let contextClosed = replacementContext == null;
+            try {
+              if (replacementContext) await replacementContext.close();
+              contextClosed = true;
+            } catch {
+              contextClosed = false;
+            }
+            try {
+              restartCustody.failedLaunchCleanupProven =
+                contextClosed && (await verifyNoBrowserProcessForProfile(candidateProfile));
+            } catch {
+              restartCustody.failedLaunchCleanupProven = false;
+            }
             throw error;
           }
         },
@@ -3462,15 +3625,56 @@ async function materializedPassword(id) {
             wait,
           });
           assert(replacementContext?.pages, 'browser_restart_replacement_context_unowned');
-          return exactCdpWorkerFacade(replacementCdp, replacementTarget.targetId);
+          return {
+            worker: exactCdpWorkerFacade(replacementCdp, replacementTarget.targetId),
+            targetId: replacementTarget.targetId,
+          };
         },
-        openPanel: async ({ context: replacementContext, worker: replacementWorker }) =>
-          openGenuineSidePanel(extensionId, null, {
-            existing: true,
-            previousTargetId: initialPanelTargetId,
-            browserContext: replacementContext,
-            workerFacade: replacementWorker,
-          }),
+        openPanel: async ({ context: replacementContext, worker: replacementWorker }) => {
+          const fixturePage = await replacementContext.newPage();
+          try {
+            await fixturePage.bringToFront();
+            const active = await replacementWorker.evaluate(async () => {
+              const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+              return Number.isInteger(tab?.windowId) ? { windowId: tab.windowId } : null;
+            });
+            assert(active?.windowId, 'browser_restart_window_missing');
+            const reopened = await openSidePanelFromActionPopup(
+              extensionId,
+              fixturePage,
+              active.windowId,
+              replacementWorker,
+              replacementContext,
+            );
+            assert(reopened.opened && reopened.panel, 'browser_restart_action_panel_missing');
+            assert(
+              reopened.panel.targetId !== initialPanelTargetId,
+              'browser_restart_panel_target_reused',
+            );
+            return reopened.panel;
+          } finally {
+            if (!fixturePage.isClosed()) await fixturePage.close();
+          }
+        },
+        verifyPostBindVaultRead: async ({ panel: replacementPanel, journal }) => {
+          // Leave the startup route after binding: any startup GET predates the
+          // journal epoch and cannot prove this replacement panel can read.
+          await replacementPanel.click(visibleSettingsControl);
+          await replacementPanel.waitFor(`document.body.innerText.includes('Settings')`);
+          await replacementPanel.click(visibleVaultControl);
+          await replacementPanel.waitFor(`(() => {
+            const control = (${visibleVaultControl});
+            return control?.getAttribute('aria-selected') === 'true' &&
+              !!document.querySelector('[role="tabpanel"]');
+          })()`);
+          for (let attempt = 0; attempt < 60; attempt += 1) {
+            const snapshot = journal.snapshot();
+            if (snapshot?.panelItemsReadRequestSeen && snapshot?.panelItemsReadResponse2xxSeen)
+              return true;
+            await wait(250);
+          }
+          throw new Error('browser_restart_post_bind_panel_read_missing');
+        },
         verifySettingsIdentity: async (_replacementWorker, replacementPanel) => {
           await replacementPanel.click(visibleSettingsControl);
           await replacementPanel.waitFor(
@@ -3494,11 +3698,7 @@ async function materializedPassword(id) {
       restartCustody.replacement = {
         browserPid: replacementBrowser.browserPid,
         cdpOwnerVerified: rawCdp.ownerVerified === true,
-        workerTargetId: proof.lifecycle.browserRestart.replacementWorkerObserved
-          ? (await rawCdp.send('Target.getTargets')).targetInfos.find(
-              (target) => target.type === 'service_worker' && target.url === workerUrl,
-            )?.targetId
-          : null,
+        workerTargetId: proof.lifecycle.browserRestart.replacementWorkerTargetId,
         panelTargetId: realPanel.targetId,
         journal: networkJournal.snapshot(),
       };
@@ -3722,6 +3922,61 @@ async function materializedPassword(id) {
           ? 'passed'
           : 'failed';
       if (extensionLifecycleMode) {
+        proof.phase = 'organization_switch_lifecycle';
+        persist();
+        const beforeOrganizationMetadata = baselineMetadataSha256(await items());
+        assert(
+          beforeOrganizationMetadata === proof.baselineMetadataSha256,
+          'org_switch_initial_personal_vault_drift',
+        );
+        let switchedOrganization;
+        const offerProbe = await runOrganizationSwitchOfferProbe({
+          context,
+          worker,
+          panel: realPanel,
+          wait,
+          assert,
+          focusOwnedBrowser,
+          switchOrganization: async () => {
+            switchedOrganization = await chooseDifferentOrganizationInPanel(realPanel, worker);
+            organizationId = switchedOrganization.after;
+            return switchedOrganization;
+          },
+        });
+        assert(switchedOrganization, 'org_switch_ui_transition_missing');
+        const newPanelRead = await verifyPanelReadInOrganization(
+          realPanel,
+          switchedOrganization.after,
+        );
+        const personalVaultScopePreserved =
+          baselineMetadataSha256(await items()) === beforeOrganizationMetadata;
+        proof.lifecycle.organizationInvalidation = {
+          disposition:
+            offerProbe.staleResponse === true &&
+            offerProbe.newActorOfferReady === true &&
+            offerProbe.noCompetingBrowserInvalidation === true &&
+            offerProbe.fieldsUnchanged === true &&
+            offerProbe.noWebsiteSubmission === true &&
+            offerProbe.portClosed === true &&
+            offerProbe.ownedFixturePageClosed === true &&
+            offerProbe.ownedFixtureServerClosed === true &&
+            offerProbe.focusWitnessDisposed === true &&
+            newPanelRead === true &&
+            personalVaultScopePreserved
+              ? 'passed'
+              : 'failed',
+          twoAdminMembershipsObserved: switchedOrganization.memberOptionCount >= 2,
+          oldOrganizationAuthorityRefusedAfterSwitch: offerProbe.staleResponse === true,
+          newOrganizationResolvedAfterSwitch: newPanelRead === true,
+          personalVaultScopePreserved,
+          oldOrganizationSha256: sha256Value(switchedOrganization.before),
+          newOrganizationSha256: sha256Value(switchedOrganization.after),
+          offerProbe,
+        };
+        assert(
+          proof.lifecycle.organizationInvalidation.disposition === 'passed',
+          'org_switch_lifecycle_incomplete',
+        );
         proof.lifecycle.verdict = { disposition: 'in_progress' };
         persist();
         assertVaultExtensionLifecycleVerdict({ lifecycle: proof.lifecycle });
@@ -4708,6 +4963,16 @@ async function materializedPassword(id) {
     } catch {
       proof.cleanup.browserClosed = false;
     }
+    const restartReplacementPid = proof.lifecycle?.browserRestart?.replacementBrowserPid;
+    if (Number.isSafeInteger(restartReplacementPid) && restartReplacementPid > 1) {
+      try {
+        proof.cleanup.restartReplacementProcessExited =
+          await verifyBrowserProcessExited(restartReplacementPid);
+      } catch {
+        proof.cleanup.restartReplacementProcessExited = false;
+      }
+      if (!proof.cleanup.restartReplacementProcessExited) proof.cleanup.browserClosed = false;
+    }
     try {
       if (local)
         await new Promise((resolve, reject) =>
@@ -4798,6 +5063,13 @@ async function materializedPassword(id) {
               proof.cleanup.finalBaselineMetadataMatches === true)));
       const safeToRelease =
         vaultCleanupProven &&
+        (!proof.lifecycle?.browserRestartCustody?.replacementLaunchAttempted ||
+          Number.isSafeInteger(restartReplacementPid) ||
+          proof.lifecycle.browserRestartCustody.failedLaunchCleanupProven === true) &&
+        (!Number.isSafeInteger(restartReplacementPid) ||
+          (proof.cleanup.restartReplacementProcessExited === true &&
+            (proof.lifecycle.browserRestart.cleanupProven === true ||
+              proof.lifecycle.browserRestart.replacementOwnership === 'caller'))) &&
         proof.cleanup.browserClosed === true &&
         proof.cleanup.profileRemoved === true &&
         [true, 'not_started'].includes(proof.cleanup.localFixtureServerClosed) &&
