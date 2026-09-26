@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T09:59:12.941268+00:00",
+  "updated_at": "2026-09-26T10:07:00.934527+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -414,22 +414,37 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "scope": "isolated scratch fixture only; resource controls are auth-independent",
-              "detail": "Unsafe admission is refused by the isolated scratch fixture when the resource sample crosses a configured safety boundary. Production thresholds are unchanged.",
-              "evidence": "docs/stabilization/reports/resource-scope-review.json"
+              "status": "unverified",
+              "historical_result": {
+                "status": "pass",
+                "scope": "isolated scratch fixture only; resource controls are auth-independent",
+                "detail": "Unsafe admission is refused by the isolated scratch fixture when the resource sample crosses a configured safety boundary. Production thresholds are unchanged.",
+                "evidence": "docs/stabilization/reports/resource-scope-review.json"
+              },
+              "detail": "Historical fixture proof retained; current infrastructure audit requires revalidation after guard repairs before asserting current pass.",
+              "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
             },
             "member": {
-              "status": "pass",
-              "scope": "isolated scratch fixture only; resource controls are auth-independent",
-              "detail": "Unsafe admission is refused by the isolated scratch fixture when the resource sample crosses a configured safety boundary. Production thresholds are unchanged.",
-              "evidence": "docs/stabilization/reports/resource-scope-review.json"
+              "status": "unverified",
+              "historical_result": {
+                "status": "pass",
+                "scope": "isolated scratch fixture only; resource controls are auth-independent",
+                "detail": "Unsafe admission is refused by the isolated scratch fixture when the resource sample crosses a configured safety boundary. Production thresholds are unchanged.",
+                "evidence": "docs/stabilization/reports/resource-scope-review.json"
+              },
+              "detail": "Historical fixture proof retained; current infrastructure audit requires revalidation after guard repairs before asserting current pass.",
+              "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
             },
             "admin": {
-              "status": "pass",
-              "scope": "isolated scratch fixture only; resource controls are auth-independent",
-              "detail": "Unsafe admission is refused by the isolated scratch fixture when the resource sample crosses a configured safety boundary. Production thresholds are unchanged.",
-              "evidence": "docs/stabilization/reports/resource-scope-review.json"
+              "status": "unverified",
+              "historical_result": {
+                "status": "pass",
+                "scope": "isolated scratch fixture only; resource controls are auth-independent",
+                "detail": "Unsafe admission is refused by the isolated scratch fixture when the resource sample crosses a configured safety boundary. Production thresholds are unchanged.",
+                "evidence": "docs/stabilization/reports/resource-scope-review.json"
+              },
+              "detail": "Historical fixture proof retained; current infrastructure audit requires revalidation after guard repairs before asserting current pass.",
+              "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
             }
           }
         },
@@ -458,21 +473,36 @@
           "results": {
             "guest": {
               "status": "pass",
-              "scope": "isolated scratch fixture only; resource controls are auth-independent",
-              "detail": "Concurrent second runner received RESOURCE_HEAVY_BUSY while the first scratch owner held the permit.",
-              "evidence": "docs/stabilization/reports/resource-scope-review.json"
+              "scope": "Current host-level single-lease contention; auth-independent infrastructure only",
+              "run_id": "resource-contention-current-001",
+              "evidence": [
+                "docs/stabilization/runs/resource-contention-current-001.json",
+                "docs/stabilization/reports/resource-current-peer.json",
+                "docs/stabilization/runs/final-release-native-003.json"
+              ],
+              "detail": "Second admission refused with exit2 RESOURCE_HEAVY_BUSY, no second child; incumbent remained healthy. Does not prove every launcher uses the guard."
             },
             "member": {
               "status": "pass",
-              "scope": "isolated scratch fixture only; resource controls are auth-independent",
-              "detail": "Concurrent second runner received RESOURCE_HEAVY_BUSY while the first scratch owner held the permit.",
-              "evidence": "docs/stabilization/reports/resource-scope-review.json"
+              "scope": "Current host-level single-lease contention; auth-independent infrastructure only",
+              "run_id": "resource-contention-current-001",
+              "evidence": [
+                "docs/stabilization/runs/resource-contention-current-001.json",
+                "docs/stabilization/reports/resource-current-peer.json",
+                "docs/stabilization/runs/final-release-native-003.json"
+              ],
+              "detail": "Second admission refused with exit2 RESOURCE_HEAVY_BUSY, no second child; incumbent remained healthy. Does not prove every launcher uses the guard."
             },
             "admin": {
               "status": "pass",
-              "scope": "isolated scratch fixture only; resource controls are auth-independent",
-              "detail": "Concurrent second runner received RESOURCE_HEAVY_BUSY while the first scratch owner held the permit.",
-              "evidence": "docs/stabilization/reports/resource-scope-review.json"
+              "scope": "Current host-level single-lease contention; auth-independent infrastructure only",
+              "run_id": "resource-contention-current-001",
+              "evidence": [
+                "docs/stabilization/runs/resource-contention-current-001.json",
+                "docs/stabilization/reports/resource-current-peer.json",
+                "docs/stabilization/runs/final-release-native-003.json"
+              ],
+              "detail": "Second admission refused with exit2 RESOURCE_HEAVY_BUSY, no second child; incumbent remained healthy. Does not prove every launcher uses the guard."
             }
           }
         },
@@ -501,22 +531,37 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "scope": "isolated scratch fixture only; resource controls are auth-independent",
-              "detail": "Injected unsafe watchdog samples stopped only the owned process group; the descendant was confirmed gone.",
-              "evidence": "docs/stabilization/reports/resource-admission.json"
+              "status": "unverified",
+              "historical_result": {
+                "status": "pass",
+                "scope": "isolated scratch fixture only; resource controls are auth-independent",
+                "detail": "Injected unsafe watchdog samples stopped only the owned process group; the descendant was confirmed gone.",
+                "evidence": "docs/stabilization/reports/resource-admission.json"
+              },
+              "detail": "Historical fixture proof retained; current infrastructure audit requires revalidation after guard repairs before asserting current pass.",
+              "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
             },
             "member": {
-              "status": "pass",
-              "scope": "isolated scratch fixture only; resource controls are auth-independent",
-              "detail": "Injected unsafe watchdog samples stopped only the owned process group; the descendant was confirmed gone.",
-              "evidence": "docs/stabilization/reports/resource-admission.json"
+              "status": "unverified",
+              "historical_result": {
+                "status": "pass",
+                "scope": "isolated scratch fixture only; resource controls are auth-independent",
+                "detail": "Injected unsafe watchdog samples stopped only the owned process group; the descendant was confirmed gone.",
+                "evidence": "docs/stabilization/reports/resource-admission.json"
+              },
+              "detail": "Historical fixture proof retained; current infrastructure audit requires revalidation after guard repairs before asserting current pass.",
+              "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
             },
             "admin": {
-              "status": "pass",
-              "scope": "isolated scratch fixture only; resource controls are auth-independent",
-              "detail": "Injected unsafe watchdog samples stopped only the owned process group; the descendant was confirmed gone.",
-              "evidence": "docs/stabilization/reports/resource-admission.json"
+              "status": "unverified",
+              "historical_result": {
+                "status": "pass",
+                "scope": "isolated scratch fixture only; resource controls are auth-independent",
+                "detail": "Injected unsafe watchdog samples stopped only the owned process group; the descendant was confirmed gone.",
+                "evidence": "docs/stabilization/reports/resource-admission.json"
+              },
+              "detail": "Historical fixture proof retained; current infrastructure audit requires revalidation after guard repairs before asserting current pass.",
+              "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
             }
           }
         },
@@ -544,22 +589,37 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "scope": "isolated scratch fixture only; resource controls are auth-independent",
-              "detail": "Scratch evidence confirmed owned descendant cleanup before release; browser lease remained held until explicit operator stop confirmation.",
-              "evidence": "docs/stabilization/reports/resource-admission.json"
+              "status": "unverified",
+              "historical_result": {
+                "status": "pass",
+                "scope": "isolated scratch fixture only; resource controls are auth-independent",
+                "detail": "Scratch evidence confirmed owned descendant cleanup before release; browser lease remained held until explicit operator stop confirmation.",
+                "evidence": "docs/stabilization/reports/resource-admission.json"
+              },
+              "detail": "Historical fixture proof retained; current infrastructure audit requires revalidation after guard repairs before asserting current pass.",
+              "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
             },
             "member": {
-              "status": "pass",
-              "scope": "isolated scratch fixture only; resource controls are auth-independent",
-              "detail": "Scratch evidence confirmed owned descendant cleanup before release; browser lease remained held until explicit operator stop confirmation.",
-              "evidence": "docs/stabilization/reports/resource-admission.json"
+              "status": "unverified",
+              "historical_result": {
+                "status": "pass",
+                "scope": "isolated scratch fixture only; resource controls are auth-independent",
+                "detail": "Scratch evidence confirmed owned descendant cleanup before release; browser lease remained held until explicit operator stop confirmation.",
+                "evidence": "docs/stabilization/reports/resource-admission.json"
+              },
+              "detail": "Historical fixture proof retained; current infrastructure audit requires revalidation after guard repairs before asserting current pass.",
+              "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
             },
             "admin": {
-              "status": "pass",
-              "scope": "isolated scratch fixture only; resource controls are auth-independent",
-              "detail": "Scratch evidence confirmed owned descendant cleanup before release; browser lease remained held until explicit operator stop confirmation.",
-              "evidence": "docs/stabilization/reports/resource-admission.json"
+              "status": "unverified",
+              "historical_result": {
+                "status": "pass",
+                "scope": "isolated scratch fixture only; resource controls are auth-independent",
+                "detail": "Scratch evidence confirmed owned descendant cleanup before release; browser lease remained held until explicit operator stop confirmation.",
+                "evidence": "docs/stabilization/reports/resource-admission.json"
+              },
+              "detail": "Historical fixture proof retained; current infrastructure audit requires revalidation after guard repairs before asserting current pass.",
+              "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
             }
           }
         },
@@ -588,22 +648,37 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "scope": "isolated scratch fixture only; resource controls are auth-independent",
-              "detail": "Manual-browser scratch run retained the lease after unsafe samples until explicit SIGINT confirmation.",
-              "evidence": "docs/stabilization/reports/resource-admission.json"
+              "status": "unverified",
+              "historical_result": {
+                "status": "pass",
+                "scope": "isolated scratch fixture only; resource controls are auth-independent",
+                "detail": "Manual-browser scratch run retained the lease after unsafe samples until explicit SIGINT confirmation.",
+                "evidence": "docs/stabilization/reports/resource-admission.json"
+              },
+              "detail": "Historical fixture proof retained; current infrastructure audit requires revalidation after guard repairs before asserting current pass.",
+              "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
             },
             "member": {
-              "status": "pass",
-              "scope": "isolated scratch fixture only; resource controls are auth-independent",
-              "detail": "Manual-browser scratch run retained the lease after unsafe samples until explicit SIGINT confirmation.",
-              "evidence": "docs/stabilization/reports/resource-admission.json"
+              "status": "unverified",
+              "historical_result": {
+                "status": "pass",
+                "scope": "isolated scratch fixture only; resource controls are auth-independent",
+                "detail": "Manual-browser scratch run retained the lease after unsafe samples until explicit SIGINT confirmation.",
+                "evidence": "docs/stabilization/reports/resource-admission.json"
+              },
+              "detail": "Historical fixture proof retained; current infrastructure audit requires revalidation after guard repairs before asserting current pass.",
+              "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
             },
             "admin": {
-              "status": "pass",
-              "scope": "isolated scratch fixture only; resource controls are auth-independent",
-              "detail": "Manual-browser scratch run retained the lease after unsafe samples until explicit SIGINT confirmation.",
-              "evidence": "docs/stabilization/reports/resource-admission.json"
+              "status": "unverified",
+              "historical_result": {
+                "status": "pass",
+                "scope": "isolated scratch fixture only; resource controls are auth-independent",
+                "detail": "Manual-browser scratch run retained the lease after unsafe samples until explicit SIGINT confirmation.",
+                "evidence": "docs/stabilization/reports/resource-admission.json"
+              },
+              "detail": "Historical fixture proof retained; current infrastructure audit requires revalidation after guard repairs before asserting current pass.",
+              "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
             }
           }
         }
