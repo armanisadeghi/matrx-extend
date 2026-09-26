@@ -12,7 +12,7 @@
     "result": "The owned native browser reached Fast capture but the Article readiness wait timed out after 30 seconds; no mode was accepted.",
     "last_stage": "fast_article_wait",
     "diagnosis_limit": "The first runner recorded no Article or Scrape pane sample. Source inspection shows rendered images use lazy loading, but the run does not establish whether image loading, capture, a visible error, or panel selection caused the timeout.",
-    "instrumentation_for_rerun": "Each Article wait sample now preserves bounded pane state, error-card text, image load and viewport flags, and fixture text markers. On failure, the runner captures its owned panel before harness cleanup. No extension behavior or acceptance expectation was changed."
+    "instrumentation_for_rerun": "Each Article wait sample preserves bounded pane state, error-card text, image load and viewport flags, decoded SVG path/bar coordinates, and the positions of expected text and image markers. On failure, the runner captures its owned panel to a stable test-results path before harness cleanup. Assertion and settled-state stages remain distinct, with the assertion label retained in the failure detail. No extension behavior or acceptance expectation was changed."
   },
   "execution_owner": "root guarded browser/build launch",
   "deferred": [

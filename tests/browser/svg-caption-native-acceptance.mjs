@@ -159,6 +159,13 @@ function safeObservation(article, pane) {
   const svgImages =
     article?.images?.map((image, index) => {
       const svg = Buffer.from(image.src.split(',')[1] ?? '', 'base64').toString('utf8');
+      const path = svg.match(/<path\b[^>]*>/)?.[0] ?? '';
+      const bars = [...svg.matchAll(/<rect\b[^>]*>/g)].map(([tag]) => ({
+        x: attributeOf(tag, 'x'),
+        y: attributeOf(tag, 'y'),
+        width: attributeOf(tag, 'width'),
+        height: attributeOf(tag, 'height'),
+      }));
       return {
         alt: image.alt,
         visible: image.visible,
@@ -167,12 +174,22 @@ function safeObservation(article, pane) {
         loading: image.loading,
         nearViewport: image.nearViewport,
         hasSvgRoot: /<svg\b/.test(svg),
+        ...(index === 0 ? { pathD: attributeOf(path, 'd') } : { bars }),
         expectedGeometry:
-          index === 0
-            ? /<path\b[^>]*d="M15 115 L125 70 L245 20"/.test(svg)
-            : [...svg.matchAll(/<rect\b/g)].length === 3,
+          index === 0 ? /<path\b[^>]*d="M15 115 L125 70 L245 20"/.test(svg) : bars.length === 3,
       };
     }) ?? [];
+  const orderStream = article?.linked
+    ? article.sequence
+        .map((node) => (node.kind === 'image' ? `\u0001${node.value}\u0002` : node.value))
+        .join(' ')
+    : '';
+  const orderMarkers = article?.linked
+    ? expectedSequence(report.active_mode ?? 'fast').map((item) => {
+        const marker = item.kind === 'image' ? `\u0001${item.value}\u0002` : item.value;
+        return { marker: item.value, offset: orderStream.indexOf(marker) };
+      })
+    : [];
   return {
     articleScope: article?.scope ?? 'read_failed',
     linked: article?.linked ?? false,
@@ -188,6 +205,7 @@ function safeObservation(article, pane) {
     paneTail: pane?.paneTail ?? null,
     allImageCount: article?.allImageCount ?? null,
     svgImages,
+    orderMarkers,
     textMarkers: article?.linked
       ? {
           heading: article.text.includes('Appointments booked'),
@@ -202,7 +220,7 @@ function safeObservation(article, pane) {
   };
 }
 
-async function captureFailureScreenshot(panel, artifacts) {
+async function captureFailureScreenshot(panel) {
   try {
     await panel.send('Page.enable');
     const { data } = await panel.send('Page.captureScreenshot', {
@@ -210,7 +228,7 @@ async function captureFailureScreenshot(panel, artifacts) {
       captureBeyondViewport: false,
     });
     if (typeof data !== 'string' || data.length < 100) throw new Error('png_missing');
-    const path = join(artifacts, 'svg-caption-failure-panel.png');
+    const path = join(dirname(OUTPUT), 'svg-caption-failure-panel.png');
     await writeFile(path, Buffer.from(data, 'base64'), { mode: 0o600 });
     report.failure_screenshot = path;
   } catch (error) {
@@ -222,6 +240,21 @@ async function captureFailureScreenshot(panel, artifacts) {
 
 function attributeOf(tag, name) {
   return new RegExp(`\\b${name}="([^"]+)"`).exec(tag)?.[1] ?? null;
+}
+
+function expectedSequence(mode) {
+  return [
+    { kind: 'text', value: 'Appointments booked' },
+    { kind: 'image', value: expected[0].image },
+    { kind: 'text', value: expected[0].caption },
+    { kind: 'text', value: expected[0].label },
+    { kind: 'text', value: 'Follow-up visits' },
+    { kind: 'image', value: expected[1].image },
+    { kind: 'text', value: mode === 'deep' ? deepCaption : expected[1].caption },
+    { kind: 'text', value: expected[1].label },
+    ...(mode === 'deep' ? [{ kind: 'text', value: deepRevision }] : []),
+    { kind: 'text', value: 'The operations team used both trends' },
+  ];
 }
 
 function assertArticle(observed, mode) {
@@ -263,18 +296,7 @@ function assertArticle(observed, mode) {
     `${mode}: three real bars survive with the expected revision`,
   );
 
-  const ordered = [
-    { kind: 'text', value: 'Appointments booked' },
-    { kind: 'image', value: expected[0].image },
-    { kind: 'text', value: expected[0].caption },
-    { kind: 'text', value: expected[0].label },
-    { kind: 'text', value: 'Follow-up visits' },
-    { kind: 'image', value: expected[1].image },
-    { kind: 'text', value: mode === 'deep' ? deepCaption : expected[1].caption },
-    { kind: 'text', value: expected[1].label },
-    ...(mode === 'deep' ? [{ kind: 'text', value: deepRevision }] : []),
-    { kind: 'text', value: 'The operations team used both trends' },
-  ];
+  const ordered = expectedSequence(mode);
   const stream = observed.sequence
     .map((node) => (node.kind === 'image' ? `\u0001${node.value}\u0002` : node.value))
     .join(' ');
@@ -297,7 +319,7 @@ let server;
 try {
   await mkdir(dirname(OUTPUT), { recursive: true, mode: 0o700 });
   const harness = await runNativeSidepanelQa({
-    exercisePanel: async ({ page, panel, artifacts }) => {
+    exercisePanel: async ({ page, panel }) => {
       try {
         server = serveArticle();
         await new Promise((resolveListen, rejectListen) => {
@@ -329,6 +351,7 @@ try {
         report.last_stage = 'scrape_view_ready';
 
         for (const mode of ['fast', 'deep']) {
+          report.active_mode = mode;
           if (mode === 'deep') {
             report.last_stage = 'deep_source_revision';
             const revised = await page.evaluate(
@@ -378,8 +401,11 @@ try {
               ),
             mode === 'deep' ? 60000 : 30000,
           );
+          report.last_stage = `${mode}_article_assertions`;
           assertArticle(observed, mode);
+          report.last_stage = `${mode}_settled_state`;
           const settled = await scrapePane(panel);
+          report.last_observation = safeObservation(observed, settled);
           assert.equal(settled.recapture, 1, `${mode}: capture completed`);
           assert.equal(settled.error, false, `${mode}: no visible capture error`);
           report.modes.push({
@@ -395,7 +421,7 @@ try {
           report.last_stage = `${mode}_rendered_article_confirmed`;
         }
       } catch (error) {
-        await captureFailureScreenshot(panel, artifacts);
+        await captureFailureScreenshot(panel);
         throw error;
       }
     },
@@ -406,9 +432,10 @@ try {
   report.status = 'unverified';
   report.failure_stage = report.last_stage;
   report.failure_code = error?.code ?? error?.name ?? 'unknown_error';
-  report.failure_detail = String(error?.message ?? '')
-    .split(':')[0]
-    .slice(0, 180);
+  const firstLine = String(error?.message ?? '').split('\n')[0];
+  report.failure_detail = (
+    error?.name === 'AssertionError' ? firstLine : firstLine.split(':')[0]
+  ).slice(0, 220);
   process.exitCode = 1;
 } finally {
   if (server?.listening) {
