@@ -523,19 +523,25 @@ const readOnlyAdmissionMode =
   lifecycleDryRun || process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_READ_ONLY_ADMISSION';
 const receiptBackedSaveUpdateMode =
   process.env.MATRX_VAULT_CANARY_ADMISSION === 'RUN_RECEIPT_BACKED_SAVE_UPDATE';
-// Receipt-backed Save/Update is deliberately limited to two independently
-// reviewed source artifacts. The release ZIP path is bound to the bytes of
+// Receipt-backed Save/Update is limited to hash-pinned source artifacts.
+// The release ZIP paths are bound to the bytes of
 // its checked manifest as well as its declared identity; it is not evidence
 // of Store publication or installation.
 const RECEIPT_BACKED_FROZEN_SOURCE_COMMIT = 'a2b5aa7e1082330ab6658b07477b31ea3705ca72';
-const RECEIPT_BACKED_LOCAL_RELEASE_ZIP_SOURCE_COMMIT = '3bad3aaea3d8906caff1f05504570145eb813c04';
-const RECEIPT_BACKED_LOCAL_RELEASE_ZIP_MANIFEST_SHA256 =
-  'c395a10b2b8d6dfc42dc045f553a9098781eab3d33634e5a0a1a947f0bec8b9b';
+const RECEIPT_BACKED_LOCAL_RELEASE_ZIPS = new Map([
+  ['3bad3aaea3d8906caff1f05504570145eb813c04', {
+    manifestSha256: 'c395a10b2b8d6dfc42dc045f553a9098781eab3d33634e5a0a1a947f0bec8b9b',
+    version: '0.2.38',
+  }],
+  ['c4430ab5b19491ff57bfc649eae9938ea6b3dab4', {
+    manifestSha256: 'e3d17a8d95b3f99805c74aba6a6cc42560dfac6f865cc75cf6e675f7ad3fd5dd',
+    version: '0.2.53',
+  }],
+]);
 const RECEIPT_BACKED_LOCAL_RELEASE_ZIP_ARTIFACT_KIND = 'local-release-zip-artifact';
-const RECEIPT_BACKED_LOCAL_RELEASE_ZIP_VERSION = '0.2.38';
 const RECEIPT_BACKED_SAVE_UPDATE_COMMITS = new Set([
   RECEIPT_BACKED_FROZEN_SOURCE_COMMIT,
-  RECEIPT_BACKED_LOCAL_RELEASE_ZIP_SOURCE_COMMIT,
+  ...RECEIPT_BACKED_LOCAL_RELEASE_ZIPS.keys(),
 ]);
 const RECEIPT_BACKED_ROUTER_SHA256 =
   '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
@@ -1319,9 +1325,10 @@ async function verifyArtifact() {
   );
   assert(extensionManifest.manifest_version === 3, 'artifact_not_mv3');
   if (receiptBackedSaveUpdateMode) {
-    if (manifest.sourceCommit === RECEIPT_BACKED_LOCAL_RELEASE_ZIP_SOURCE_COMMIT) {
+    const localRelease = RECEIPT_BACKED_LOCAL_RELEASE_ZIPS.get(manifest.sourceCommit);
+    if (localRelease) {
       assert(
-        manifestSha256 === RECEIPT_BACKED_LOCAL_RELEASE_ZIP_MANIFEST_SHA256,
+        manifestSha256 === localRelease.manifestSha256,
         'receipt_backed_local_release_manifest_mismatch',
       );
       assert(
@@ -1329,7 +1336,7 @@ async function verifyArtifact() {
         'receipt_backed_local_release_kind_mismatch',
       );
       assert(
-        manifest.manifestVersion === RECEIPT_BACKED_LOCAL_RELEASE_ZIP_VERSION,
+        manifest.manifestVersion === localRelease.version,
         'receipt_backed_local_release_version_mismatch',
       );
     } else {
@@ -3220,10 +3227,43 @@ async function materializedPassword(id) {
         reopenPanel: async () => {
           await realPanel?.dispose();
           realPanel = undefined;
-          const reopened = await openGenuineSidePanel(extensionId, null, {
-            existing: true,
-            previousTargetId: enabledPanelTargetId,
-          });
+          // Reload destroys the old side-panel target. An idle extension does
+          // not recreate it on its own, so use the extension's actual Open
+          // chat control in a new owned popup page to supply a browser gesture.
+          const reloadPopup = await context.newPage();
+          let reopened;
+          try {
+            let popupNavigated = false;
+            for (let attempt = 0; attempt < 30; attempt += 1) {
+              try {
+                await reloadPopup.goto(`chrome-extension://${extensionId}/popup.html`, {
+                  waitUntil: 'domcontentloaded',
+                  timeout: 3000,
+                });
+                popupNavigated = true;
+                break;
+              } catch (error) {
+                // Chrome can refuse an extension page during the short reload
+                // gap. Keep only a fixed protocol category, never the URL or
+                // browser error text, and still require a real panel below.
+                const code = String(error?.message ?? '').match(/net::(ERR_[A-Z_]+)/)?.[1];
+                proof.lifecycle ||= {};
+                proof.lifecycle.reloadPopupNavigation = {
+                  attempts: attempt + 1,
+                  errorClass: ['ERR_BLOCKED_BY_CLIENT', 'ERR_ABORTED', 'ERR_FAILED'].includes(code)
+                    ? code
+                    : 'other',
+                };
+                if (attempt < 29) await wait(250);
+              }
+            }
+            assert(popupNavigated, 'lifecycle_reload_popup_navigation_unavailable');
+            reopened = await openGenuineSidePanel(extensionId, reloadPopup, {
+              previousTargetId: enabledPanelTargetId,
+            });
+          } finally {
+            if (!reloadPopup.isClosed()) await reloadPopup.close();
+          }
           assert(
             reopened.targetId !== enabledPanelTargetId,
             'lifecycle_reload_panel_target_not_replaced',
@@ -3248,6 +3288,7 @@ async function materializedPassword(id) {
           return {
             worker: exactCdpWorkerFacade(rawCdp, replacementTarget.targetId),
             replacementWorkerTargetObserved: true,
+            replacementWorkerTargetId: replacementTarget.targetId,
           };
         },
         verifySettingsIdentity: async (panel) => {
@@ -3305,6 +3346,7 @@ async function materializedPassword(id) {
       assert(restartCustody.initial.cdpOwnerVerified, 'browser_restart_initial_cdp_unowned');
       lifecycleLogoutObserver?.();
       lifecycleLogoutObserver = undefined;
+      let replacementPreparedProfile;
       const restarted = await runOwnedBrowserRestart({
         profile,
         extensionId,
@@ -3328,21 +3370,22 @@ async function materializedPassword(id) {
         },
         launchOptions: restartLaunchOptions,
         launchOwnedPersistentContext: async ({ profile: candidateProfile, launchOptions }) => {
-          const preparedProfile = await prepareOwnedProfile(candidateProfile);
+          replacementPreparedProfile = await prepareOwnedProfile(candidateProfile);
           const replacementContext = await chromium.launchPersistentContext(
             candidateProfile,
             launchOptions,
           );
-          const replacementBrowser = await ownedBrowserProcess({
-            candidateProfile,
-            executablePath: launchOptions.executablePath,
-            launchOptions,
-          });
-          return {
-            context: replacementContext,
-            browserPid: replacementBrowser.browserPid,
-            preparedProfile,
-          };
+          try {
+            const replacementBrowser = await ownedBrowserProcess({
+              candidateProfile,
+              executablePath: launchOptions.executablePath,
+              launchOptions,
+            });
+            return { context: replacementContext, browserPid: replacementBrowser.browserPid };
+          } catch (error) {
+            await replacementContext.close().catch(() => {});
+            throw error;
+          }
         },
         assertLaunchProvenance: async ({
           profile: candidateProfile,
@@ -3360,8 +3403,12 @@ async function materializedPassword(id) {
         verifyProcessExited: verifyBrowserProcessExited,
         verifyOwnedBrowserProcess,
         connectOwnedCdp: async (replacementContext, candidateProfile) => {
+          assert(
+            replacementPreparedProfile?.profile === candidateProfile,
+            'browser_restart_prelaunch_profile_provenance_missing',
+          );
           const replacementCdp = await connectOwnedCdp({
-            preparedProfile: Object.freeze({ profile: candidateProfile }),
+            preparedProfile: replacementPreparedProfile,
             chromeExecutable: restartExecutable,
           });
           const command = await replacementCdp.send('Browser.getBrowserCommandLine');

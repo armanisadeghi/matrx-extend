@@ -188,6 +188,12 @@ async function runExtensionReload({
   const replacement = refreshed?.worker || refreshed;
   const replacementWorkerObserved =
     refreshed?.replacementWorkerTargetObserved === true && replacement !== worker;
+  const replacementWorkerTargetId = refreshed?.replacementWorkerTargetId;
+  assert(
+    typeof replacementWorkerTargetId === 'string' &&
+      replacementWorkerTargetId !== previousWorkerTargetId,
+    'lifecycle_reload_worker_target_not_replaced',
+  );
   const after = await inspectIdentity(replacement);
   proof.lifecycle ||= {};
   proof.lifecycle.initialIdentitySha256 ||= before.identitySha256;
@@ -201,6 +207,9 @@ async function runExtensionReload({
     replacementWorkerObserved,
     previousWorkerTargetRetired: previousTargetsGone.workerTargetGone,
     previousPanelTargetRetired: previousTargetsGone.panelTargetGone,
+    initialWorkerTargetId: previousWorkerTargetId,
+    replacementWorkerTargetId,
+    initialPanelTargetId: previousPanelTargetId,
     replacementPanelTargetId: panel.targetId,
     sameIdentityRecovered: before.identitySha256 === after.identitySha256,
     settingsUiRecovered,

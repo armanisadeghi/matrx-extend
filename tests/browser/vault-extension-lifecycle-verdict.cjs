@@ -32,7 +32,13 @@ function assertVaultExtensionLifecycleVerdict({ lifecycle, requireOrganizationSw
   for (const [name, required] of [
     [
       'extensionReload',
-      ['settingsUiRecovered', 'replacementWorkerObserved', 'sameIdentityRecovered'],
+      [
+        'settingsUiRecovered',
+        'replacementWorkerObserved',
+        'sameIdentityRecovered',
+        'previousWorkerTargetRetired',
+        'previousPanelTargetRetired',
+      ],
     ],
     [
       'disableEnable',
@@ -59,6 +65,19 @@ function assertVaultExtensionLifecycleVerdict({ lifecycle, requireOrganizationSw
     requireTrue(evidence, required, `vault_lifecycle_${name}`);
     if (evidence.identitySha256 !== lifecycle.initialIdentitySha256)
       throw new Error(`vault_lifecycle_${name}_identity_changed`);
+  }
+
+  for (const kind of ['Worker', 'Panel']) {
+    const initial = lifecycle.extensionReload[`initial${kind}TargetId`];
+    const replacement = lifecycle.extensionReload[`replacement${kind}TargetId`];
+    if (
+      typeof initial !== 'string' ||
+      typeof replacement !== 'string' ||
+      !/^[A-Fa-f0-9]{32}$/.test(initial) ||
+      !/^[A-Fa-f0-9]{32}$/.test(replacement) ||
+      initial === replacement
+    )
+      throw new Error(`vault_lifecycle_extensionReload_${kind.toLowerCase()}_target_not_replaced`);
   }
 
   const signOut = lifecycle.signOut;
