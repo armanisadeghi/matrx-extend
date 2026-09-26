@@ -1,0 +1,12 @@
+{
+  "id": "popup-teardown-red-001",
+  "defect_id": "EXT-D-0020",
+  "feature_id": "EXT-F-0003",
+  "status": "pass",
+  "scope": "Unchanged local focused attempt; remote intermittent error not reproduced.",
+  "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/popup-claim-recovery.test.tsx",
+  "result": "1 passed; exit 0; 506ms",
+  "admitted_at": "2026-09-26T15:59:15.077Z",
+  "exited_at": "2026-09-26T15:59:16.185Z",
+  "source_log": "/tmp/matrx-popup-teardown-red-001.log"
+}

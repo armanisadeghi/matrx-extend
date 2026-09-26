@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0020",
+  "feature_id": "EXT-F-0003",
+  "case_ids": ["EXT-F-0003-T10"],
+  "surface": "CI sidepanel lazy-import teardown",
+  "auth_mode": "guest/member/admin infrastructure",
+  "reproduction": [
+    "Check out ca8c023c54b2a0ac6e7d5c86e6806c8bf9331bf0 with frozen dependencies and run configured CI.",
+    "Inspect CI run 36253562084: assertions pass but EnvironmentTeardownError reports clsx imported through ChatView and App after popup-claim-recovery test environment teardown.",
+    "Intermittent: unchanged local focused run popup-teardown-red-001 passed one test; it is not a local red reproduction."
+  ],
+  "expected": "Tests settle pending imports and lifecycle work before environment teardown, retaining routing assertions.",
+  "actual": "CI failed with one unhandled teardown error despite 1441 passed assertions and four skips.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/36253562084",
+    "/tmp/matrx-ci-36253562084.log",
+    "docs/stabilization/runs/popup-teardown-red-001.json"
+  ],
+  "severity": "S3: unreliable integration gate; no product impact established",
+  "priority": "P1: restore trustworthy main",
+  "state": "in-fix",
+  "owner": "/root/ci_teardown_repair",
+  "transition_history": [
+    {
+      "at": "2026-09-26T16:03:25.533582+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual remote CI teardown failure."
+    },
+    {
+      "at": "2026-09-26T16:03:25.533582+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Stack identifies lazy imports surviving App test teardown; local focused run passes."
+    },
+    {
+      "at": "2026-09-26T16:03:25.533582+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol assigned bounded lifecycle repair and sibling census; independent review required."
+    }
+  ],
+  "closure_requirement": "Independent no-weakening review, local focused/full suite and remote CI pass containing repair."
+}
