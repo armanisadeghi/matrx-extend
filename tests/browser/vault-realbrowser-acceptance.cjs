@@ -572,6 +572,13 @@ const RECEIPT_BACKED_LOCAL_SOURCE_ARTIFACTS = new Map([
       version: '0.2.56',
     },
   ],
+  [
+    'f60a904dc8843443b4585db615bcb1297cbd072a',
+    {
+      manifestSha256: '34b398260054f64fd9df2f44272ce0b094edd57e7e57a0cbd2697002ebf678c9',
+      version: '0.2.56',
+    },
+  ],
 ]);
 const RECEIPT_BACKED_SAVE_UPDATE_COMMITS = new Set([
   RECEIPT_BACKED_FROZEN_SOURCE_COMMIT,
@@ -585,6 +592,11 @@ const RECEIPT_BACKED_SERVICE_SHA256 =
 const RECEIPT_BACKED_SOURCE_COMMIT = 'b20c757670f5348f5d198f3a1c64d25a1343f5c3';
 const RECEIPT_BACKED_SOURCE_GIT_TREE = 'dbe91a70fbc62eb3c7496eb3fc8445c6f52ea54e';
 const RECEIPT_BACKED_SOURCE_ENTRY_COUNT = 21210;
+// A measured cold full-tree proof and bootstrap took 133 seconds under
+// concurrent local load. This remains bounded and runs before any custody.
+const LOCAL_CLEANUP_PREWRITE_TIMEOUT_MS = 180000;
+const LOCAL_CLEANUP_AGGREGATE_TIMEOUT_MS = 300000;
+const LOCAL_CLEANUP_TERM_GRACE_MS = 5000;
 const generatorTransportMode =
   lifecycleDryRun || process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
 const displayMode =
@@ -1351,9 +1363,9 @@ async function verifyPinnedLocalCanonicalSource() {
       {
         cwd: sourceRoot,
         env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' },
-        // Measured archive proof plus bootstrap completes in about 31 seconds;
-        // this bounded ceiling prevents a stalled preflight from reaching custody.
-        timeout: 60000,
+        // The cold Git-derived archive proof plus FastAPI bootstrap is bounded
+        // before custody and cannot be mistaken for a successful preflight.
+        timeout: LOCAL_CLEANUP_PREWRITE_TIMEOUT_MS,
         maxBuffer: 32768,
       },
     ));
@@ -1727,19 +1739,33 @@ async function localCanonicalCleanup(proven) {
       env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' },
       stdio: ['pipe', 'pipe', 'ignore'],
     });
+    let timedOut = false;
+    let termGraceTimeout;
+    // This covers archive admission, identity, receipt reconciliation,
+    // bootstrap, and the bounded cleanup set.  A timeout remains a failed
+    // cleanup: wait for child close after TERM/KILL before releasing control.
     const timeout = setTimeout(() => {
-      child.kill();
-      reject(new Error('local_cleanup_timeout'));
-    }, 60000);
+      timedOut = true;
+      child.kill('SIGTERM');
+      termGraceTimeout = setTimeout(() => {
+        if (child.exitCode === null) child.kill('SIGKILL');
+      }, LOCAL_CLEANUP_TERM_GRACE_MS);
+    }, LOCAL_CLEANUP_AGGREGATE_TIMEOUT_MS);
     let stdout = '';
     child.stdout.setEncoding('utf8');
     child.stdout.on('data', (chunk) => {
       stdout += chunk;
       if (stdout.length > 32768) child.kill();
     });
-    child.once('error', () => reject(new Error('local_cleanup_spawn_refused')));
+    child.once('error', () => {
+      clearTimeout(timeout);
+      clearTimeout(termGraceTimeout);
+      reject(new Error('local_cleanup_spawn_refused'));
+    });
     child.once('close', (code) => {
       clearTimeout(timeout);
+      clearTimeout(termGraceTimeout);
+      if (timedOut) return reject(new Error('local_cleanup_timeout_reaped'));
       let parsed;
       try {
         parsed = JSON.parse(stdout);
