@@ -40,6 +40,21 @@ function isCaptureTitle(title) {
     /^Nothing needs your browser here — \d+ waiting in another workspace$/.test(title)
   );
 }
+// App owns the one tablist outside a tabpanel. Force-mounted feature panels
+// (notably Showcase's 12 text-labeled tabs) own separate, nested tablists.
+// Never filter on title or visibility: an untitled or hidden main trigger must
+// remain in the exact roster, while a hidden feature's tabs are not navigation.
+const NAVIGATION_SCOPE = `
+    const allTabs = [...document.querySelectorAll('[role="tab"]')];
+    const lists = [...document.querySelectorAll('[role="tablist"]')]
+      .filter((el) => !el.closest('[role="tabpanel"]'));
+    const list = lists.length === 1 ? lists[0] : null;
+    const tabs = allTabs.filter((el) => list && el.closest('[role="tablist"]') === list);
+    const panes = [...document.querySelectorAll('[role="tabpanel"]')]
+      .filter((el) => !el.parentElement?.closest('[role="tabpanel"]'));
+    const activePanes = panes.filter((el) => el.getAttribute('data-state') === 'active');
+    const pane = activePanes.length === 1 ? activePanes[0] : null;
+`;
 const LAZY_VIEW_MARKERS = {
   Data: 'Structured data',
   SEO: 'SEO audit',
@@ -88,6 +103,7 @@ const report = {
     },
   },
   admin_tab_inventory: null,
+  navigation_surfaces: {},
 };
 let stage = 'owned_profile';
 const advance = (next) => {
@@ -102,9 +118,10 @@ async function selected(panel, title, marker = null) {
   return evaluate(
     panel,
     `(() => {
-    const tab = [...document.querySelectorAll('[role="tab"]')].find((el) => el.title === ${JSON.stringify(title)});
-    const pane = document.querySelector('[role="tabpanel"][data-state="active"]');
-    return { count: tab ? 1 : 0, selected: tab?.getAttribute('aria-selected') === 'true',
+    ${NAVIGATION_SCOPE}
+    const matches = tabs.filter((el) => el.title === ${JSON.stringify(title)});
+    const tab = matches.length === 1 ? matches[0] : null;
+    return { count: matches.length, navigationLists: lists.length, activePanels: activePanes.length, selected: tab?.getAttribute('aria-selected') === 'true',
       linkedPaneVisible: !!pane && pane.id === tab?.getAttribute('aria-controls')
         && pane.getAttribute('aria-labelledby') === tab?.id && pane.getBoundingClientRect().height > 0,
       markerPresent: ${JSON.stringify(marker)} === null ? null : [...(pane?.querySelectorAll('span, h1, h2') ?? [])]
@@ -115,7 +132,9 @@ async function selected(panel, title, marker = null) {
 }
 
 async function navigate(panel, title, role) {
+  report.navigation_attempt = { role, title, stage: 'click' };
   await click(panel, 'title', title);
+  report.navigation_attempt.stage = 'selection';
   const state = await waitFor(
     `selected_${role}_${title}`,
     () => selected(panel, title),
@@ -124,6 +143,7 @@ async function navigate(panel, title, role) {
   target(`navigation:${role}:${title}`, role, 'EXT-F-1001-C01', state);
   const marker = LAZY_VIEW_MARKERS[title];
   if (marker) {
+    report.navigation_attempt.stage = 'lazy_view';
     const loaded = await waitFor(
       `loaded_${role}_${title}`,
       () => selected(panel, title, marker),
@@ -136,15 +156,25 @@ async function navigate(panel, title, role) {
       suspenseFallbackAbsent: !loaded.fallback,
     });
   }
+  report.navigation_attempt.stage = 'complete';
 }
 
-async function inventory(panel) {
-  return evaluate(
+async function inventory(panel, role) {
+  const observed = await evaluate(
     panel,
-    `(() => [...document.querySelectorAll('[role="tab"]')]
-    .map((el) => ({ title: el.getAttribute('title') ?? '',
-      captureIdentity: el.getAttribute('aria-controls')?.endsWith('-content-capture') === true })))()`,
+    `(() => {
+    ${NAVIGATION_SCOPE}
+    return { navigationLists: lists.length, allTabCount: allTabs.length,
+      nestedTabCount: allTabs.filter((el) => el.closest('[role="tabpanel"]')).length,
+      unownedTabCount: allTabs.filter((el) => !el.closest('[role="tabpanel"]') && !tabs.includes(el)).length,
+      tabs: tabs.map((el) => ({ title: el.getAttribute('title') ?? '',
+        captureIdentity: el.getAttribute('aria-controls')?.endsWith('-content-capture') === true })) };
+    })()`,
   );
+  report.navigation_surfaces[role] = observed;
+  assert.equal(observed.navigationLists, 1, 'one owning navigation tablist');
+  assert.equal(observed.unownedTabCount, 0, 'no unowned top-level tab controls');
+  return observed.tabs;
 }
 
 async function avatar(panel, role, title) {
@@ -178,7 +208,7 @@ async function avatar(panel, role, title) {
         evaluate(
           panel,
           `(() => {
-        const pane = document.querySelector('[role="tabpanel"][data-state="active"]');
+        ${NAVIGATION_SCOPE}
         const text = pane?.innerText ?? '';
         return { profileHeader: [...(pane?.querySelectorAll('span') ?? [])]
             .some((el) => el.textContent.trim() === 'Profile'),
@@ -319,7 +349,7 @@ try {
   const harness = await runNativeSidepanelQa({
     exercisePanel: async ({ page, panel }) => {
       advance('guest_tab_inventory');
-      const guestTabs = await inventory(panel);
+      const guestTabs = await inventory(panel, 'guest');
       const guestTitles = guestTabs.map((tab) => tab.title);
       assert.deepEqual(guestTitles.sort(), ['Chat', ...GUEST].sort());
       assert.equal(
@@ -350,7 +380,7 @@ try {
 
       await realAdminSignin(page, panel);
       advance('admin_tab_inventory');
-      const adminTabs = await inventory(panel);
+      const adminTabs = await inventory(panel, 'admin');
       const adminTitles = adminTabs.map((tab) => tab.title);
       const captureTabs = adminTabs.filter((tab) => tab.captureIdentity);
       report.admin_tab_inventory = {
@@ -375,14 +405,17 @@ try {
       const capture = await evaluate(
         panel,
         `(() => {
-        const tab = [...document.querySelectorAll('[role="tab"]')]
-          .find((el) => el.getAttribute('aria-controls')?.endsWith('-content-capture'));
+        ${NAVIGATION_SCOPE}
+        const matches = tabs.filter((el) => el.getAttribute('aria-controls')?.endsWith('-content-capture'));
+        const tab = matches.length === 1 ? matches[0] : null;
         return { present: !!tab, label: tab?.getAttribute('aria-label') ?? null,
           badge: tab?.querySelector('.rounded-full')?.textContent?.trim() ?? null };
       })()`,
       );
       assert.equal(capture.present, true);
       assert.equal(isCaptureTitle(capture.label), true);
+      advance('admin_capture_navigation');
+      await navigate(panel, capture.label, 'admin');
       report.targets.push({
         id: 'capture-observed:admin',
         role: 'admin',
