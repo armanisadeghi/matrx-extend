@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "native-denial-operator-005",
+  "case_id": "EXT-F-1003-T56",
+  "status": "unverified_no_native_prompt_switch_turned_on",
+  "operator": "independent CUA operator",
+  "owned_browser": {
+    "app": "Google Chrome for Testing",
+    "executable": "/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+    "pid": 99970,
+    "parent_pid": 99951,
+    "profile": "/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/matrx-native-sidepanel-qa-Fokwt5/profile",
+    "window": "Dashboard — AI Matrx",
+    "extension": "Matrx Extend",
+    "identity_evidence": "CUA bound to the exact Chrome for Testing app path. The window showed aimatrx.com/dashboard and chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html. Real Settings showed admin@admin.com, ADMIN, and Cookies switch off before the click. Root launch evidence identifies this as the owned disposable profile for PID 99970."
+  },
+  "interaction": {
+    "target": "Cookies (cookies)",
+    "action": "Clicked the real Cookies switch in Settings.",
+    "observed_result": "No native Chrome permission sheet appeared in the bound window. The Cookies switch changed from off to on.",
+    "native_prompt_observed": false,
+    "deny_clicked": false,
+    "acknowledgement_written": false,
+    "reason": "The operator must not acknowledge denial without observing and clicking the actual native Deny control."
+  },
+  "evidence": {
+    "accessibility": "Before click, Settings labeled the switch 'Cookies cookies Read, set, and delete cookies for any site. Required for session-aware automation.' with Value: off. After click and fresh full accessibility observation, the same switch had Value: on. The native permission sheet was absent from the accessibility tree.",
+    "inventory": "CUA inventory showed Google Chrome for Testing running; no native prompt was present in the selected app window."
+  },
+  "limits": [
+    "No native Deny evidence exists and no acknowledgement was written.",
+    "The operator did not independently query Chrome permissions APIs or determine why the switch became on without a visible prompt.",
+    "Case remains unverified; root should inspect the runner result and disposable profile cleanup status."
+  ]
+}
