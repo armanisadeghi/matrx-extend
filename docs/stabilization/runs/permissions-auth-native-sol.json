@@ -1,0 +1,50 @@
+{
+  "id": "permissions-auth-native-sol",
+  "observed_at_utc": "2026-09-26T07:36:44Z",
+  "status": "pass_with_refusal_path_unverified",
+  "defect_ids": ["EXT-D-0006", "EXT-D-0007"],
+  "case_id": "EXT-F-1003-T55",
+  "build": {
+    "receipt": "docs/stabilization/runs/integrated-build-001.json",
+    "version_observed_in_chrome": "0.2.54",
+    "extension_id_observed_in_chrome": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "unpacked_path_observed_in_chrome": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "receipt_tree_sha256": "7b4d4fcab9a02b728f3d50917b4eed96c2a3446e2d66ddee31724db06df7c589",
+    "full_extension_reload_observed": true
+  },
+  "surface": "Native Google Chrome side panel at chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html; the Chrome details Inspect views list also showed sidepanel.html open. Settings was selected inside that side panel, not an options.html tab or overlay.",
+  "authentication_after_first_full_reload": {
+    "wait_seconds": 30,
+    "account_email": "admin@admin.com",
+    "role": "ADMIN",
+    "acting_as_organization": "ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete",
+    "result": "PASS: all three remained visible in actual side panel Settings after the 30-second settling interval; no new sign-in was used. Subsequent full reloads during permission cycles again displayed the same account, role, and selected organization."
+  },
+  "permission_rows": {
+    "DevTools Protocol": "Informational row, included with extension, with accurate Chrome explanation and no actionable switch; Chrome extension details listed Access the page debugger backend.",
+    "Cookies": "Off initially and in the final post-reload side panel; untouched.",
+    "Clipboard read": "Off initially and in the final post-reload side panel; untouched.",
+    "Page archive (MHTML) pageCapture": {
+      "initial": "off",
+      "grant": "on immediately after Settings switch click; no native permission dialog appeared",
+      "after_full_reload": "on in reopened actual side panel Settings",
+      "remove": "off immediately after Settings switch click",
+      "after_second_full_reload": "off in reopened actual side panel Settings",
+      "refusal_path": "UNVERIFIED: Chrome did not offer a permission dialog, so there was no deny action to exercise."
+    },
+    "Tab video capture tabCapture": {
+      "initial": "off",
+      "grant": "on immediately after Settings switch click; no native permission dialog appeared",
+      "after_full_reload": "on in reopened actual side panel Settings",
+      "remove": "off immediately after Settings switch click",
+      "after_second_full_reload": "off in reopened actual side panel Settings",
+      "refusal_path": "UNVERIFIED: Chrome did not offer a permission dialog, so there was no deny action to exercise."
+    }
+  },
+  "cleanup": {
+    "final_optional_permissions": "cookies off, pageCapture off, clipboardRead off, tabCapture off, all observed after final full extension Reload",
+    "account_and_organization": "admin@admin.com / ADMIN and original selected throwaway organization remained visible; no account or organization change",
+    "restricted_actions": "No actual CDP session, archive, recording, clipboard or cookies read, agent message, Chat, or Pilot execution. No credentials, tokens, storage, or DevTools were inspected. No screenshot was committed.",
+    "ui_stop": "Native Chrome UI released after final side panel observation."
+  }
+}

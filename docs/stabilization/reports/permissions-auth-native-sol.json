@@ -1,0 +1,16 @@
+{
+  "reviewer": "/root/permissions_auth_native_sol",
+  "evidence_run": "docs/stabilization/runs/permissions-auth-native-sol.json",
+  "build_receipt": "docs/stabilization/runs/integrated-build-001.json",
+  "scope": "Independent fresh native Chrome verification of the actual extension side panel after full Reload, including D7 authenticated identity and organization hydration and D6 Advanced agent capabilities rows. No source review or automated test result is claimed.",
+  "verdict_EXT_D_0007": {
+    "status": "PASS_NATIVE_ORIGINAL_REPRO",
+    "reason": "With Chrome showing unpacked version 0.2.54, expected ID and path, a full extension Reload followed by reopening actual sidepanel.html Settings retained admin@admin.com, ADMIN, and the same selected ZZZ APPROVAL-TAIL throwaway organization after 30 seconds. Later full reloads during permission cycles also rendered the same account and organization without sign-in."
+  },
+  "verdict_EXT_D_0006": {
+    "status": "PASS_NATIVE_GRANT_REMOVE_RELOAD_WITH_REFUSAL_UNVERIFIED",
+    "reason": "DevTools Protocol is a truthful informational required-permission row without a switch. All four optional rows were visible and initially off. Page archive and Tab video capture each turned on, stayed on after full Reload, turned off, and stayed off after another full Reload in actual sidepanel.html Settings.",
+    "remaining_limit": "Neither grant presented a native Chrome permission dialog. A deny/refusal path was therefore not exercised and must not be counted as passed or not applicable. Actual capture and debugger functionality were outside this permission UI run."
+  },
+  "final_environment": "After the last full Reload, Cookies, Clipboard read, Page archive, and Tab video capture all showed off; the admin account and selected throwaway organization remained visible. Native UI control was released to the owner lane."
+}
