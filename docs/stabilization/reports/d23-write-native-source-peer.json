@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "report_id": "d23-write-native-source-peer",
+  "reviewed_source_commit": "1211b540",
+  "runner": "tests/browser/notice-write-retention-acceptance.mjs",
+  "A_runtime": {
+    "status": "UNVERIFIED",
+    "reason": "This lane did not build, run the native browser, or exercise the real account."
+  },
+  "B_source": {
+    "status": "CORRECTION_REQUIRED_BEFORE_RUNTIME",
+    "accepted_boundaries": [
+      "The owned-profile harness verifies the release receipt and unpacked artifact before use. The runner signs in through the real web form and extension Sign in control, then requires the rendered admin identity and a Choose… control with no device-stored workspace. It reads credentials only at sign-in and does not print their values.",
+      "The real Highlights control starts the public-page overlay. The page mouse selects the Example Domain heading and releases it, which reaches the highlighter mouseup handler, HIGHLIGHT_CAPTURED, the side-panel useHighlightBridge handler, and createHighlight. The pre-start listHighlightsForUrl lookup calls Supabase directly and does not itself enter the organization hold; it may return an empty list on failure, after which startHighlighter remains reachable.",
+      "createHighlight awaits requireRequestOrganizationId before constructing or sending its insert. Its no-organization catch raises the typed Highlight not saved notice through failDbCall. The runner requires exactly one notice with the no-workspace, request-never-sent, and Nothing was saved sentences before choosing a workspace. Once that notice exists, this createHighlight invocation has thrown and has no pending insert to resume.",
+      "The runner chooses the exact privately approved existing workspace through the trusted picker click, then requires the selected name in device storage and a closed picker. It observes the original notice after a bounded quiet interval and fails on a highlight insert request. No Source Save, deletion, checkpoint read or edit, auth storage injection, event fabrication, network interception, or mock response appears in this runner. Public output contains fixed booleans, counts, stages, and failure categories; the failure screenshot uses a unique wx mode-0600 path."
+    ],
+    "blocking_finding": "The CDP Network listener is used only as a zero-count oracle for POST /wbx_highlight. It does not require any real request event to prove that the side-panel target listener is functioning. If the listener is attached to a silent or wrong target, or Network events are not delivered, the runner can report zero inserts and bounded_pass while an insert may have been sent. After the listener starts, the no-workspace hold calls listMemberOrganizations from the side panel, which gives a suitable real membership-request positive control. Require an observed relevant panel request before treating zero inserts as evidence; retain only safe request categories and counts.",
+    "limits": [
+      "The two-second post-selection interval is a bounded no-retry observation, not a proof about an arbitrarily late future write or notice.",
+      "The run can prove this real admin highlight path only. Member mode, deliberately late notices, and other failed-write callers remain separate obligations."
+    ]
+  },
+  "resource_policy": "NOT_CHANGED: the exact node command should be admitted only after the source correction is independently accepted."
+}
