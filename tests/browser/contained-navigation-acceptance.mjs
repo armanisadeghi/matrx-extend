@@ -59,6 +59,29 @@ const report = {
       reason: 'requires naturally active credential assistance',
     },
   ],
+  admin_prerequisite: {
+    stage: 'not_started',
+    web: {
+      expectedOrigin: null,
+      loginPath: null,
+      credentialFileReadable: null,
+      credentialVariablesAvailable: null,
+      formAvailable: null,
+      submitClickCompleted: false,
+      dashboardReached: false,
+    },
+    extension: {
+      accountReady: null,
+      signInAvailable: null,
+      signInClickCompleted: false,
+      lastObserved: null,
+    },
+  },
+};
+let stage = 'owned_profile';
+const advance = (next) => {
+  stage = next;
+  report.admin_prerequisite.stage = next;
 };
 
 const target = (id, role, control, detail) =>
@@ -164,7 +187,15 @@ async function avatar(panel, role, title) {
 }
 
 async function adminCredentials() {
-  const source = await readFile(ADMIN_ENV, 'utf8');
+  advance('credential_file_read');
+  let source;
+  try {
+    source = await readFile(ADMIN_ENV, 'utf8');
+    report.admin_prerequisite.web.credentialFileReadable = true;
+  } catch {
+    report.admin_prerequisite.web.credentialFileReadable = false;
+    throw new Error('credential_file_unreadable');
+  }
   const values = {};
   for (const line of source.split(/\r?\n/)) {
     const match = /^\s*(AI_ADMIN_USERNAME|AI_ADMIN_PASSWORD)\s*=\s*(.*?)\s*$/.exec(line);
@@ -172,43 +203,91 @@ async function adminCredentials() {
     const raw = match[2];
     values[match[1]] = /^(['"]).*\1$/.test(raw) ? raw.slice(1, -1) : raw;
   }
-  assert.equal(values.AI_ADMIN_USERNAME, 'admin@admin.com');
-  assert.ok(values.AI_ADMIN_PASSWORD);
+  report.admin_prerequisite.web.credentialVariablesAvailable =
+    values.AI_ADMIN_USERNAME === 'admin@admin.com' && Boolean(values.AI_ADMIN_PASSWORD);
+  assert.equal(report.admin_prerequisite.web.credentialVariablesAvailable, true);
   return { email: values.AI_ADMIN_USERNAME, password: values.AI_ADMIN_PASSWORD };
 }
 
+async function safeAdminState(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+    const section = [...document.querySelectorAll('button[aria-expanded]')]
+      .find((el) => el.textContent.trim() === 'Account');
+    const content = section?.parentElement?.nextElementSibling;
+    const row = (label) => [...(content?.querySelectorAll('span') ?? [])]
+      .find((el) => el.textContent.trim() === label)?.parentElement?.textContent.trim() ?? null;
+    const buttons = [...document.querySelectorAll('button')].map((el) => el.textContent.trim());
+    return { accountPresent: !!section, accountExpanded: section?.getAttribute('aria-expanded') === 'true',
+      emailRowPresent: row('Email') !== null, expectedEmailMatch: row('Email') === 'Emailadmin@admin.com',
+      roleRowPresent: row('Role') !== null, adminRoleMatch: row('Role')?.toLowerCase() === 'roleadmin',
+      signInAvailable: buttons.includes('Sign in'), signOutPresent: buttons.includes('Sign out'),
+      advancedPresent: buttons.includes('Advanced agent capabilities'),
+      authAlertPresent: !!document.querySelector('[role="alert"]') };
+  })()`,
+  );
+}
+
 async function realAdminSignin(page, panel) {
+  advance('web_page_open');
   const web = await page.context().newPage();
   try {
+    advance('web_login_navigation');
     await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-    assert.equal(new URL(web.url()).origin, WEB_ORIGIN);
-    assert.equal(new URL(web.url()).pathname, '/login');
+    advance('web_login_location_check');
+    report.admin_prerequisite.web.expectedOrigin = new URL(web.url()).origin === WEB_ORIGIN;
+    report.admin_prerequisite.web.loginPath = new URL(web.url()).pathname === '/login';
+    assert.equal(report.admin_prerequisite.web.expectedOrigin, true);
+    assert.equal(report.admin_prerequisite.web.loginPath, true);
     const { email, password } = await adminCredentials();
+    advance('web_form_ready');
+    report.admin_prerequisite.web.formAvailable =
+      (await web.locator('input[name="email"]').count()) === 1 &&
+      (await web.locator('input[name="password"]').count()) === 1 &&
+      (await web.getByRole('button', { name: 'Sign in', exact: true }).count()) === 1;
+    assert.equal(report.admin_prerequisite.web.formAvailable, true);
+    advance('web_form_fill');
     await web.locator('input[name="email"]').fill(email);
     await web.locator('input[name="password"]').fill(password);
+    advance('web_submit_dashboard_wait');
     await Promise.all([
       web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname === '/dashboard', {
         timeout: 90_000,
       }),
-      web.getByRole('button', { name: 'Sign in', exact: true }).click(),
+      web
+        .getByRole('button', { name: 'Sign in', exact: true })
+        .click()
+        .then(() => {
+          report.admin_prerequisite.web.submitClickCompleted = true;
+        }),
     ]);
+    report.admin_prerequisite.web.dashboardReached = true;
+    advance('extension_settings_open');
     await click(panel, 'title', 'Settings');
+    advance('extension_account_open');
     await openSection(panel, 'Account');
+    const before = await safeAdminState(panel);
+    report.admin_prerequisite.extension.accountReady =
+      before.accountPresent && before.accountExpanded;
+    report.admin_prerequisite.extension.signInAvailable = before.signInAvailable;
+    assert.equal(report.admin_prerequisite.extension.accountReady, true);
+    assert.equal(report.admin_prerequisite.extension.signInAvailable, true);
+    advance('extension_signin_click');
     await click(panel, 'button', 'Sign in');
+    report.admin_prerequisite.extension.signInClickCompleted = true;
+    advance('extension_admin_wait');
     await waitFor(
       'real_admin_state',
-      () =>
-        evaluate(
-          panel,
-          `(() => {
-      const text = document.body?.innerText ?? '';
-      return text.includes('admin@admin.com') && text.includes('Advanced agent capabilities')
-        && [...document.querySelectorAll('button')].some((el) => el.textContent.trim() === 'Sign out');
-    })()`,
-        ),
-      (v) => v === true,
+      async () => {
+        const observed = await safeAdminState(panel);
+        report.admin_prerequisite.extension.lastObserved = observed;
+        return observed;
+      },
+      (v) => v?.expectedEmailMatch && v.adminRoleMatch && v.signOutPresent && v.advancedPresent,
       90_000,
     );
+    advance('extension_admin_observed');
     target('real-admin-signin', 'admin', 'prerequisite', {
       webDashboard: true,
       extensionAccount: true,
@@ -271,7 +350,9 @@ try {
   report.status = 'partial';
 } catch {
   report.status = 'unverified';
-  report.failure_category = 'native_or_stage_unverified';
+  report.failure_stage = stage;
+  report.failure_category =
+    stage === 'owned_profile' ? 'native_profile_unverified' : `${stage}_unverified`;
   process.exitCode = 1;
 }
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });

@@ -36,5 +36,10 @@
     "diff_check": "pass"
   },
   "runtime_verdict": "unverified",
-  "source_peer": "navigation-source-peer.json reviewed 2d93a09; repaired oracle requires fresh source peer before root runtime"
+  "source_peer": "navigation-source-peer.json reviewed 2d93a09; repaired oracle requires fresh source peer before root runtime",
+  "runtime_attempt_001": {
+    "result": "unverified after guest subtargets passed",
+    "evidence": "test-results/contained-navigation-acceptance.json retains guest target passes and only native_or_stage_unverified as its failure category. It records no admin prerequisite boundary, so the cause is unknown.",
+    "diagnostic_repair": "The next run records allowlisted web-login, form, dashboard, extension Account, Sign in, and observed admin-state booleans plus the exact failing stage. It never writes credentials, raw errors, auth URLs, browser storage, or page text."
+  }
 }
