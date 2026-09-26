@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "obstruction_confirmed_source_unresolved_diagnostic_ready",
+  "run_id": "member-vault-access-008",
+  "receipt": "docs/stabilization/runs/member-vault-access-008.json",
+  "observed_boundary": {
+    "admin_web_signed_in": true,
+    "admin_extension_signed_in": true,
+    "organization_selected": true,
+    "mine_inventory_ready": true,
+    "failure_stage": "shared_tab_click",
+    "shared_tab_unique_visible_enabled": true,
+    "shared_tab_position_stable": true,
+    "interior_points_tested": 9,
+    "interior_points_hitting_shared_tab": 0,
+    "occluder": "static p outside the active Vault tabpanel, x47 y252.34375 width262 height117",
+    "trusted_pointer_dispatched": false
+  },
+  "source_findings": [
+    "The Vault Shared tab is inside the active Vault tabpanel in App.tsx and VaultView.tsx. The hit paragraph is outside that panel, so the current run does not establish a Vault list or Shared tab defect.",
+    "App.tsx keeps Chat, Pilot, Tasks, and Showcase tabpanels mounted while inactive and mounts several root-level hosts. OrganizationPickerDialog also renders a description paragraph in a dialog portal. The 008 categories cannot distinguish these potential owners because they report only the hit element, not its ancestor chain or owning tabpanel.",
+    "No safe dismissal path is established by the 008 receipt. A forced click or blind overlay dismissal would defeat the trusted hit-test gate."
+  ],
+  "diagnostic_change": "On a pointer failure, report the target rectangle and a bounded occluder classification: owning top-level tabpanel from fixed App tab titles, active/inactive state, known static paragraph enum, app-root/dialog/alert/modal-overlay membership, and up to ten ancestor nodes with fixed tag/role/slot/state/position and display/pointer booleans. No DOM text, arbitrary attributes, URLs, account or Vault values, raw errors, screenshots, or secrets cross the page boundary.",
+  "falsifiable_next_observation": [
+    "An inactive mounted tabpanel owner plus active computed display or pointer coverage would identify a hidden-panel layering defect.",
+    "A dialog or modal slot in the ancestor chain would identify a live prerequisite/modal that needs its own explicit user action, not a Shared-tab click bypass.",
+    "A root host or unclassified paragraph with no panel/dialog owner would narrow the source to an app-level notice or a missing overlay category, preserving its structural chain for source matching."
+  ],
+  "next_step": "Root serial runner should execute one admitted owned-profile probe after this diagnostic commit and inspect the bounded failure fields before deciding whether any UI dismissal or product fix is justified.",
+  "member_auth_status": "unverified"
+}

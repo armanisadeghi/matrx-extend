@@ -91,6 +91,7 @@ function pointerFailure(code, location) {
     clippingAncestorCount: pointer?.clipping_ancestor_count ?? null,
     testedPointCount: pointer?.tested_point_count ?? null,
     interiorHitKinds: pointer?.interior_hit_kinds ?? null,
+    targetRectangle: pointer?.target_rect ?? null,
     centerOccluder: pointer?.center_occluder ?? null,
     firstInteriorOccluder: pointer?.first_interior_occluder ?? null,
   };
@@ -223,6 +224,66 @@ export async function click(panel, kind, label) {
       const style = getComputedStyle(hit);
       const box = hit.getBoundingClientRect();
       const vaultPanel = target.closest('[role="tabpanel"]');
+      const panelAncestors = [];
+      for (let node = hit; node; node = node.parentElement) {
+        if (node.getAttribute?.('role') === 'tabpanel') panelAncestors.push(node);
+      }
+      const panelTitles = [
+        ['chat', 'Chat'], ['pilot', 'Pilot (admin only — sandboxed tab group)'],
+        ['lists', 'Plan & tasks'], ['tasks', 'Tasks'], ['agenda', 'Agenda'],
+        ['scrape', 'Scrape'], ['saved_captures', 'Saved captures'],
+        ['data', 'Data'], ['seo', 'SEO'], ['highlight', 'Highlights'],
+        ['guidance', 'Guidance'], ['notes', 'Notes'], ['files', 'Files'],
+        ['screenshots', 'Screenshots'], ['vault', 'Vault'], ['tools', 'Tools'],
+        ['settings', 'Settings'], ['showcase', 'Showcase (admin only)'],
+        ['broker', 'Token broker (admin only)'], ['debug', 'Debug (admin only)'],
+      ];
+      const owner = panelTitles.find(([, title]) => {
+        const trigger = [...document.querySelectorAll('button[role="tab"][title]')]
+          .find((button) => button.title === title);
+        return trigger && panelAncestors.includes(document.getElementById(trigger.getAttribute('aria-controls') ?? ''));
+      })?.[0] ?? (panelAncestors.length ? 'unmapped_tabpanel' : 'none');
+      const owningPanel = panelAncestors[0] ?? null;
+      // Compare only fixed source copy inside the page. No paragraph text is
+      // returned to Node, including when it contains account or Vault data.
+      const paragraph = hit.closest('p');
+      const knownParagraph = paragraph?.textContent?.trim() ===
+        'Everything AI Matrx does for you happens inside one organization, and this browser has not been told which one to use. Pick it once — you can switch any time in Settings.'
+          ? 'organization_picker_description'
+          : paragraph?.textContent?.trim() === 'No logins saved yet.'
+            ? 'vault_mine_empty'
+            : paragraph?.textContent?.trim() === 'Nobody has shared a login with you.'
+              ? 'vault_shared_empty'
+              : paragraph?.textContent?.trim() === 'No logins match that search.'
+                ? 'vault_search_empty' : 'other_or_none';
+      const knownSlot = (element) => {
+        const slot = element.getAttribute?.('data-slot');
+        return ['dialog-content', 'dialog-description', 'dialog-overlay',
+          'alert-dialog-content', 'alert-dialog-description', 'alert-dialog-overlay',
+          'popover-content', 'tooltip-content'].includes(slot) ? slot : 'other_or_none';
+      };
+      const ancestorChain = [];
+      for (let node = hit, depth = 0; node && depth < 10; node = node.parentElement, depth++) {
+        const nodeTag = node.tagName?.toLowerCase();
+        const nodeRole = node.getAttribute?.('role');
+        const nodeState = node.getAttribute?.('data-state');
+        const nodeStyle = getComputedStyle(node);
+        ancestorChain.push({
+          tag: ['button', 'div', 'span', 'svg', 'path', 'input', 'header', 'main',
+            'section', 'p', 'li', 'body', 'html'].includes(nodeTag) ? nodeTag : 'other',
+          role: ['dialog', 'alertdialog', 'alert', 'tab', 'tablist', 'tabpanel',
+            'button', 'listbox', 'option'].includes(nodeRole) ? nodeRole : 'other_or_none',
+          slot: knownSlot(node),
+          state: ['active', 'inactive', 'open', 'closed'].includes(nodeState)
+            ? nodeState : 'other_or_none',
+          position: ['static', 'relative', 'absolute', 'fixed', 'sticky'].includes(nodeStyle.position)
+            ? nodeStyle.position : 'other',
+          displayNone: nodeStyle.display === 'none',
+          pointerEventsNone: nodeStyle.pointerEvents === 'none',
+          isAppRoot: node === document.getElementById('app'),
+          isVaultPanel: node === vaultPanel,
+        });
+      }
       return {
         tag: ['button', 'div', 'span', 'svg', 'path', 'input', 'header', 'main',
           'section', 'p', 'li'].includes(tag) ? tag : 'other',
@@ -236,6 +297,16 @@ export async function click(panel, kind, label) {
         position: ['static', 'relative', 'absolute', 'fixed', 'sticky'].includes(style.position)
           ? style.position : 'other',
         pointer_events: style.pointerEvents === 'none' ? 'none' : 'enabled',
+        owning_panel: owner,
+        owning_panel_state: owningPanel?.getAttribute('data-state') === 'active' ? 'active'
+          : owningPanel?.getAttribute('data-state') === 'inactive' ? 'inactive' : 'none_or_other',
+        tabpanel_ancestor_count: panelAncestors.length,
+        known_paragraph: knownParagraph,
+        in_app_root: document.getElementById('app')?.contains(hit) === true,
+        in_dialog: Boolean(hit.closest('[role="dialog"], [role="alertdialog"]')),
+        in_alert: Boolean(hit.closest('[role="alert"]')),
+        in_known_modal_overlay: Boolean(hit.closest('[data-slot="dialog-overlay"], [data-slot="alert-dialog-overlay"]')),
+        ancestor_chain: ancestorChain,
         rectangle: { x: box.x, y: box.y, width: box.width, height: box.height },
       };
     };
