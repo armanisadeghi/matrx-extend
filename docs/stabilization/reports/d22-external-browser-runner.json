@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0022",
+  "status": "prepared_source_review_required",
+  "runner": "tests/browser/source-workspace-acceptance.mjs",
+  "mode": "owned isolated Chrome-for-Testing profile via receipt-verified native side-panel harness",
+  "authorization": "For this new isolated profile only, root authorized selecting the same previously approved existing test organization through the real Settings picker after real UI admin sign-in. The earlier primary-profile prerequisite remains unchanged. No organization is created, and another existing organization is used only for a read-only comparison before restoring the approved one.",
+  "private_inputs": [
+    "test-results/d22-private-config.json must be a regular mode-0600 file with approved_organization_name. The name is read at selection time and never written to the public report.",
+    "At most one Save is permitted. A definitive not-saved result requires both the real Scrape UI state and one observed 200 response from its own processed_documents recognition request, scoped to the approved organization and exact public URL, with an empty result. Example is checked first, then IANA only if Example is definitively saved. An absent, duplicate, refused, or ambiguous request stops without a write.",
+    "The absent-at-entry test-results/d22-source-save-attempt.json is created with exclusive mode-0600 open and fsynced with its parent directory before the trusted Save click. Any existing or ambiguous checkpoint refuses Save. After a definitive Saved and Open this Source UI result, only that private checkpoint receives the observed Source ID."
+  ],
+  "evidence": "The runner checks real admin identity and approved organization selection, observes Saved and Open this Source after one UI Save, reopens Scrape for recognition, switches through Settings to another existing organization without saving there, checks the prior Source is absent or the comparison organization owns a different Source, restores the approved organization, and checks recognition and link identity again. Missing-organization and late-inflight behavior stay unverified unless naturally observed. The output records only generic statuses and the receipt-verified build version/tree hash; it omits credentials, organization names and IDs, and Source IDs.",
+  "limits": [
+    "No browser run or Save has occurred in this preparation lane. The private pre-click attempt checkpoint was absent during source preparation.",
+    "The optional immediate-clear check can only pass if the Scrape pane remains mounted and observable while Settings is selected; otherwise it remains unverified rather than inferred from the later settled state.",
+    "The existing real-UI sign-in scripts are executable entrypoints with no exported helper. This runner mirrors the narrow proven login sequence from isolated-admin-signin-acceptance.mjs to avoid launching a second browser through import; a later shared-helper extraction may remove this duplication."
+  ],
+  "next_action": "Independent source peer review, then root-owned guarded browser execution after release 034 completes. Preserve the private attempt checkpoint and output if a Save is attempted; never retry an ambiguous Save."
+}
