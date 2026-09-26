@@ -9,8 +9,8 @@
     "Select an existing organization in Settings. Capture refreshes, but the original no-workspace notice persists until manually dismissed.",
     "On a 360 by 421 panel, the stale notice overlaps the enabled Scrape Save button. The trusted pointer driver finds zero hit-tested points within that button."
   ],
-  "expected": "The no-workspace notice remains visible while no organization is selected, then retires when an active organization becomes available, including a delayed refusal that arrives after selection. Unrelated refusals remain visible.",
-  "actual": "The notice store retains all notices until explicit dismissal or eviction. The selected-workspace event refreshes Capture but does not retire the resolved notice, which can cover unrelated controls.",
+  "expected": "A no-workspace read notice retires when selecting an organization completes its prerequisite, including a delayed read refusal. A failed insert or update remains visible because choosing an organization does not replay that write. Unrelated refusals remain visible.",
+  "actual": "The current repair marks every no-workspace database failure as resolved by organization selection. The Capture read notice correctly retires, but an unperformed highlight insert or saved-capture update is also retired even though the user must retry the action.",
   "evidence": [
     "docs/stabilization/runs/source-workspace-004.json",
     "docs/stabilization/reports/d22-click-diagnosis.json",
@@ -28,11 +28,12 @@
     "docs/stabilization/runs/source-workspace-006.json",
     "docs/stabilization/runs/source-workspace-007.json",
     "docs/stabilization/reports/d23-runtime-peer.json",
-    "docs/stabilization/runs/release-stabilization-037.json"
+    "docs/stabilization/runs/release-stabilization-037.json",
+    "docs/stabilization/reports/d23-notice-operation-census.json"
   ],
-  "severity": "S2: a resolved notice can obstruct Save, Reset and other visible controls after ordinary workspace selection; no Source data loss is demonstrated",
-  "priority": "P1: retire resolved no-workspace notices in the shared notice layer so core controls remain usable, while preserving unrelated errors",
-  "state": "closed",
+  "severity": "S2: a resolved read notice can obstruct controls; an unperformed write notice can disappear after workspace selection, leaving an unsaved highlight or undeleted capture without its failure announcement",
+  "priority": "P1: make notice retirement depend on whether the operation's remedy is actually complete; keep unperformed write failures visible until a real retry or explicit dismissal",
+  "state": "open",
   "owner": "/root/d22_ci_refusal_timing",
   "transition_history": [
     {
@@ -64,9 +65,15 @@
       "from": "retest-pass",
       "to": "closed",
       "reason": "D23 closure requirements are satisfied by the focused red-to-green 24-test guard, independent source review, release 0.2.78 local typecheck/full 1,469-test suite and exact CI success, and native read-only D23 retest. EXT-F-2010-T02 full pending-queue semantics remain unverified; EXT-D-0022 remains open and the earlier Save result ambiguous."
+    },
+    {
+      "at": "2026-09-26T22:22:22Z",
+      "from": "closed",
+      "to": "open",
+      "reason": "Independent operation census found that the shared no-workspace marker also auto-retires unperformed highlight insert and saved-capture update failures when an organization is selected. The earlier native read retest remains valid but does not cover this write-notice gap."
     }
   ],
   "fix_commits": ["9b64e44e"],
   "ui_retest": "passed: source-workspace-007 native read-only D23 notice-retirement and Save hit-testability acceptance at 2026-09-26T21:59:09.585Z; no Save input was sent. This closes EXT-D-0023 only, not EXT-F-2010-T02 or EXT-D-0022.",
-  "closure_requirement": "Guarded red-to-green notice-resolution tests, typecheck, independent source review, and a read-only native panel rerun showing that selecting a workspace removes only the resolved no-workspace notice so Save is hit-testable. No second Save input is needed."
+  "closure_requirement": "Preserve the previously verified read-notice retirement and native D23 evidence; add guarded failing-then-passing write-notice tests proving unperformed inserts and updates remain visible after selection, including late arrival. Complete typecheck and independent source review. No second Source Save input is needed."
 }

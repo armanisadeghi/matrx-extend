@@ -36,10 +36,28 @@ const CAPTURE_LIST = {
   what: 'check which pages need your browser',
   title: 'Capture list unavailable',
 };
+const HIGHLIGHT_INSERT = {
+  table: 'extend.wbx_highlight',
+  operation: 'insert' as const,
+  what: 'save this highlight',
+  title: 'Highlight not saved',
+};
+const CAPTURE_DELETE = {
+  table: 'docproc.processed_documents',
+  operation: 'update' as const,
+  what: 'remove this saved capture',
+  title: 'Saved capture not removed',
+};
 
 function announceMissingWorkspace() {
   expect(() =>
     failDbCall(CAPTURE_LIST, { code: 'NO_ORGANIZATION', message: 'no organization selected' }),
+  ).toThrow();
+}
+
+function announceFailedWrite(site: typeof HIGHLIGHT_INSERT | typeof CAPTURE_DELETE) {
+  expect(() =>
+    failDbCall(site, { code: 'no_organization', message: 'no organization selected' }),
   ).toThrow();
 }
 
@@ -93,5 +111,28 @@ describe('resolved notices', () => {
       ).toBeNull(),
     );
     expect(useNoticeStore.getState().notices).toHaveLength(0);
+  });
+
+  it('keeps an unperformed highlight insert visible after a workspace is selected', async () => {
+    announceFailedWrite(HIGHLIGHT_INSERT);
+    render(<NoticeHost />);
+    expect(screen.getByText('Highlight not saved')).toBeTruthy();
+
+    await act(async () => {
+      org.selected = WORKSPACE_ID;
+      for (const listener of org.listeners) listener(WORKSPACE_ID);
+    });
+
+    expect(screen.getByText('Highlight not saved')).toBeTruthy();
+    expect(useNoticeStore.getState().notices[0]?.resolvesWhen).toBeUndefined();
+  });
+
+  it('keeps a late unperformed saved-capture update visible after selection', async () => {
+    org.selected = WORKSPACE_ID;
+    render(<NoticeHost />);
+    await act(async () => announceFailedWrite(CAPTURE_DELETE));
+
+    expect(screen.getByText('Saved capture not removed')).toBeTruthy();
+    expect(useNoticeStore.getState().notices[0]?.resolvesWhen).toBeUndefined();
   });
 });
