@@ -2,24 +2,37 @@
 /** EXT-F-1009 guest gate only; the capture/gallery features are signed-in-only. */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { mkdir, open, writeFile } from 'node:fs/promises';
+import { mkdir, open, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const OUTPUT = join(REPO, 'test-results', `screenshot-guest-acceptance-${randomUUID()}.json`);
+const EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
+const RELEASE_RECEIPT = join(REPO, '.output', 'release-receipt.json');
+const MANIFEST = join(EXTENSION_DIR, 'manifest.json');
 let stage = 'owned_profile';
 const report = {
   schema: 1,
   feature: 'EXT-F-1009',
   mode: 'guest',
   status: 'unverified',
-  buildBinding:
-    'native harness validates exact release receipt, manifest version, and tree hash before launch',
+  build: null,
   cases: [],
 };
+
+async function readBuildIdentity() {
+  const [receipt, manifest] = await Promise.all([
+    readFile(RELEASE_RECEIPT, 'utf8').then(JSON.parse),
+    readFile(MANIFEST, 'utf8').then(JSON.parse),
+  ]);
+  if (receipt.version !== manifest.version || !/^[a-f0-9]{64}$/.test(receipt.treeSha256 ?? ''))
+    throw new Error('screenshot_guest_release_manifest_identity_mismatch');
+  return { version: manifest.version, treeSha256: receipt.treeSha256 };
+}
 
 async function guestNavigation(panel, targetTitle = null, viewMarker = null) {
   return evaluate(
@@ -155,7 +168,28 @@ function safeFailure(error) {
 }
 
 try {
+  stage = 'build_identity_start';
+  const buildAtStart = await readBuildIdentity();
+  report.build = {
+    version: buildAtStart.version,
+    treeSha256: buildAtStart.treeSha256,
+    before: buildAtStart,
+    after: null,
+    artifactTreeMatchedAfter: false,
+  };
+  stage = 'owned_profile';
   const run = await runNativeSidepanelQa({ exercisePanel: exercise });
+  assert.equal(run.verified, true, 'owned profile and released artifact verified');
+  stage = 'build_identity_end';
+  const buildAtEnd = await readBuildIdentity();
+  if (
+    buildAtEnd.version !== buildAtStart.version ||
+    buildAtEnd.treeSha256 !== buildAtStart.treeSha256 ||
+    hashReleaseTree(EXTENSION_DIR) !== buildAtStart.treeSha256
+  )
+    throw new Error('screenshot_guest_release_changed_during_run');
+  report.build.after = { ...buildAtEnd, extensionId: run.extensionId };
+  report.build.artifactTreeMatchedAfter = true;
   report.profileOwned = run.verified === true;
 } catch {
   report.status = 'unverified';
