@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   tabsQuery: vi.fn(),
   automaticLogin: vi.fn(),
   retryMatches: vi.fn(),
+  useVault: vi.fn(),
   vault: null as Record<string, unknown> | null,
   listeners: new Set<(message: unknown) => void>(),
 }));
@@ -26,7 +27,10 @@ vi.mock('@/lib/org/active-org', () => ({
   getActiveOrganizationId: async () => mocks.organization.id,
 }));
 vi.mock('@/features/vault/useVault', () => ({
-  useVault: () => mocks.vault,
+  useVault: (...args: unknown[]) => {
+    mocks.useVault(...args);
+    return mocks.vault;
+  },
   useCredentialLogin: () => ({
     supported: true,
     running: null,
@@ -77,6 +81,7 @@ beforeEach(() => {
   });
   mocks.automaticLogin.mockReset();
   mocks.retryMatches.mockReset();
+  mocks.useVault.mockReset();
   mocks.vault = {
     auth: 'ready',
     loading: false,
@@ -253,6 +258,41 @@ describe('VaultView focused child-frame projection', () => {
     expect(screen.queryByText('Child work')).toBeNull();
     expect(screen.queryByRole('button', { name: 'Fill' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Sign in' })).toBeNull();
+  });
+
+  it('saves a zero-match focused child offer for the child origin', async () => {
+    mocks.vault = { ...mocks.vault, matches: [] };
+    render(<VaultView />);
+
+    expect(await screen.findByText('No saved login fills this page.')).toBeTruthy();
+    expect(mocks.useVault).toHaveBeenCalledWith(
+      'https://accounts.child.example/login',
+      47,
+      { userId: 'user-focused-frame', organizationId: 'org-focused-frame' },
+      expect.anything(),
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save this site' }));
+    expect(
+      screen.getByText('Saved for accounts.child.example and enabled for browser fill.'),
+    ).toBeTruthy();
+    fireEvent.change(screen.getByPlaceholderText('Password'), {
+      target: { value: 'test-password' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save to Vault' }));
+
+    await waitFor(() =>
+      expect(mocks.vault?.createItem).toHaveBeenCalledWith(
+        expect.objectContaining({
+          login_urls: ['https://accounts.child.example/login'],
+        }),
+      ),
+    );
+    expect(mocks.vault?.createItem).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        login_urls: ['https://parent.example/account'],
+      }),
+    );
   });
 
   it('distinguishes duplicate saved-login names and fills the selected item id', async () => {

@@ -254,7 +254,7 @@ function VaultSession({
 
         {creating && (
           <CreateLoginForm
-            pageUrl={pageUrl}
+            pageUrl={matchPageUrl}
             onCancel={() => setCreating(false)}
             onCreate={async (input) => {
               const error = await vault.createItem(input);
