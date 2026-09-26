@@ -156,6 +156,49 @@ function isAdmin(state) {
     !state.signIn;
 }
 
+// Keep a failed native click diagnosable without recording browser exceptions,
+// page text, storage values, auth URLs, or credentials in the durable receipt.
+async function resetOpenClickDiagnostic(panel, error) {
+  const message = String(error?.message ?? '');
+  const category = message.startsWith('unique visible button ') ? 'target_count' :
+    message.startsWith('stable hit target for button ') ? 'unstable_or_blocked_hit' :
+      message.startsWith('pointer_sample_failed for button ') ? 'pointer_sample_failed' :
+        'native_input_failed';
+  try {
+    const state = await evaluate(panel, `(() => {
+      const targets = [...document.querySelectorAll('button')]
+        .filter((button) => button.textContent.trim() === 'Clear local data on this device');
+      const target = targets[0];
+      const rect = target?.getBoundingClientRect();
+      const x = rect ? rect.x + rect.width / 2 : null;
+      const y = rect ? rect.y + rect.height / 2 : null;
+      const hit = rect ? document.elementFromPoint(x, y) : null;
+      const dialogs = [...document.querySelectorAll('[role="alertdialog"]')];
+      const section = [...document.querySelectorAll('button[aria-expanded]')]
+        .find((button) => button.textContent.trim() === 'Data & reset');
+      return {
+        target_count: targets.length,
+        target_has_layout: Boolean(rect && rect.width > 0 && rect.height > 0),
+        target_in_viewport: Boolean(rect && x >= 0 && x < innerWidth && y >= 0 && y < innerHeight),
+        target_hit: Boolean(target && hit && (hit === target || target.contains(hit))),
+        hit_is_dialog: Boolean(hit?.closest('[role="alertdialog"]')),
+        target_in_inert_tree: Boolean(target?.closest('[inert]')),
+        target_animating: Boolean(target?.getAnimations({ subtree: true })
+          .some((animation) => animation.playState === 'running')),
+        dialog_count: dialogs.length,
+        dialog_animating: dialogs.some((dialog) => dialog.getAnimations({ subtree: true })
+          .some((animation) => animation.playState === 'running')),
+        section_expanded: section?.getAttribute('aria-expanded') === 'true',
+        body_pointer_events_none: getComputedStyle(document.body).pointerEvents === 'none',
+        body_scroll_locked: document.body.hasAttribute('data-scroll-locked'),
+      };
+    })()`);
+    return { category, ...state };
+  } catch {
+    return { category, snapshot_available: false };
+  }
+}
+
 try {
   stage = 'release_receipt';
   const receipt = JSON.parse(await readFile(join(REPO, '.output', 'release-receipt.json'), 'utf8'));
@@ -215,7 +258,12 @@ try {
         storage_read_successes: 0,
       };
       stage = 'reset_confirm_open_action';
-      await click(panel, 'button', 'Clear local data on this device');
+      try {
+        await click(panel, 'button', 'Clear local data on this device');
+      } catch (error) {
+        evidence.reset_confirm.open_click_diagnostic = await resetOpenClickDiagnostic(panel, error);
+        throw error;
+      }
       stage = 'reset_confirm_dialog_wait';
       await waitFor('admin_reset_dialog_reopened', () => panelState(panel), (s) => s?.dialog);
       evidence.reset_confirm.dialog_reopened = true;
