@@ -9,12 +9,12 @@
     {
       "case_id": "EXT-F-1008-T09",
       "subtarget": "admin_public_page_0_and_1_title_and_heading_presence",
-      "oracle": "Each page's actual document title and h1 presence are read from its public DOM; the selected linked SEO pane must match. Distinct titles prevent stale first-page content from passing the second page."
+      "oracle": "Each page's actual document title and presence of any h1-h6 are read from its public DOM; the selected linked SEO pane must match the title and Headings-group presence. Distinct titles prevent stale first-page content from passing the second page."
     },
     {
       "case_id": "EXT-F-1008-T07",
       "subtarget": "admin_menu_offers_json_without_copying",
-      "oracle": "After actual admin identity and on-device organization selection, the selected SEO pane's Copy audit menu opens from trusted input and offers Summary (text), For AI agent, and JSON. No menu option is activated."
+      "oracle": "After actual admin identity and on-device organization selection, the selected SEO pane's unique Copy audit trigger opens from trusted input. Its aria-controls popup must be open and offer Summary (text), For AI agent, and JSON. No menu option is activated."
     }
   ],
   "provenance": "The runner uses the owned native side-panel release harness and Settings pointer driver, follows the existing real-web/extension sign-in route, reads the admin test secret only at form fill, and records no secret or raw exception.",
@@ -23,6 +23,7 @@
     "The prerequisite target records identity and explicit organization selection; it does not count as a separate SEO control.",
     "This batch does not copy to the host clipboard, save or delete records, start recommendations, stage Chat/Pilot work, or exercise provider requests.",
     "History, saved snapshots, diff, clipboard contents, the ordinary member role, and the remaining SEO detail groups remain unverified.",
-    "The root-owned guarded run and independent runtime review remain required before adding inventory pass claims."
+    "The root-owned guarded run and independent runtime review remain required before adding inventory pass claims.",
+    "The runner creates test-results before writing its sanitized receipt, including after an early owned-harness failure."
   ]
 }

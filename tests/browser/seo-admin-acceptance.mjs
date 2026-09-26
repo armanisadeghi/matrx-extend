@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Read-only admin SEO gate in the owned native panel. Root admits execution. */
 import assert from 'node:assert/strict';
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
@@ -133,14 +133,17 @@ async function seoState(panel) {
       .some((node) => node.textContent.trim() === 'Re-audit' && !node.disabled);
     const copy = [...(pane?.querySelectorAll('button[title]') ?? [])]
       .filter((node) => node.title === 'Copy audit');
-    const openMenu = [...document.querySelectorAll('[data-state="open"]')]
-      .find((node) => node.textContent?.includes('Summary (text)')
-        && node.textContent?.includes('For AI agent'));
+    const trigger = copy.length === 1 ? copy[0] : null;
+    const menuId = trigger?.getAttribute('aria-controls');
+    const openMenu = trigger?.getAttribute('aria-expanded') === 'true' && menuId
+      ? document.getElementById(menuId) : null;
+    const menuOwnedByCopy = !!openMenu && openMenu.getAttribute('data-state') === 'open'
+      && trigger?.getAttribute('data-state') === 'open';
     const choices = [...(openMenu?.querySelectorAll('button') ?? [])]
       .map((node) => node.textContent.trim());
     return {
       linked, title, headings, reAudit, copyCount: copy.length,
-      menuOpen: !!openMenu, choices,
+      menuOpen: menuOwnedByCopy, choices,
       error: /Audit failed:|This page cannot be audited/.test(pane?.innerText ?? ''),
     };
   })()`,
@@ -202,7 +205,7 @@ try {
         assert.equal(page.url(), url);
         const publicPage = await page.evaluate(() => ({
           title: document.title,
-          hasHeading: !!document.querySelector('h1'),
+          hasHeading: !!document.querySelector('h1, h2, h3, h4, h5, h6'),
         }));
         assert.ok(publicPage.title, 'public page supplies a real title');
         titles.push(publicPage.title);
@@ -254,4 +257,5 @@ try {
   process.exitCode = 1;
   process.stderr.write(`UNVERIFIED seo_admin_native_batch at ${stage}\n`);
 }
+await mkdir(join(REPO, 'test-results'), { recursive: true });
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
