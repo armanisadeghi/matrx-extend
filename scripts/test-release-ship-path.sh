@@ -63,7 +63,7 @@ echo "\$*" >> "$SANDBOX/pnpm-calls"
 case " \$* " in
   *" update-api-types "*) [ -f "$SANDBOX/fail-generation" ] && exit 1 ;;
   *" catalog:tools:md "*) mkdir -p types; echo "regenerated catalog" > types/tool-catalog.md ;;
-  *" test "*)
+  *" exec vitest run --maxWorkers=1 --minWorkers=1 "*)
     git rev-parse HEAD >> "$SANDBOX/checked-shas"
     if [ -f "$SANDBOX/fail-tests" ]; then
       echo " FAIL  tests/unit/release-contract.test.ts"

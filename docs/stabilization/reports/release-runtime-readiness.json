@@ -3,6 +3,7 @@
   "summary": "The release script serializes generation, checks, and Store/local packaging before atomic publication. Its unit-test check was narrowed to one Vitest worker. Actual release execution remains pending; the campaign resource guard does not admit release.sh as a command, and this host lacks timeout/gtimeout, so release.sh's bounded helper would not enforce time limits.",
   "changed_files": [
     "release.sh",
+    "scripts/test-release-ship-path.sh",
     "docs/stabilization/reports/release-runtime-readiness.json"
   ],
   "verification": [
@@ -13,6 +14,10 @@
     {
       "check": "source inspection of release CHECKS and resource-policy allowedCommands",
       "result": "unit-tests now uses pnpm exec vitest run --maxWorkers=1 --minWorkers=1; release.sh itself is not in the guard allowlist"
+    },
+    {
+      "check": "source inspection of local release fixture failure injection",
+      "result": "fixture now matches the single-worker Vitest command, preserving the red-test publication guard"
     },
     {
       "check": "prerequisite presence only; no credential values read",
