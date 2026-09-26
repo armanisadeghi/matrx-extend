@@ -155,6 +155,82 @@ async function renderedArticle(panel) {
   );
 }
 
+async function chartScrollState(panel, alt) {
+  return evaluate(
+    panel,
+    `(() => {
+    const mainLists = [...document.querySelectorAll('[role="tablist"]')]
+      .filter(el => !el.closest('[role="tabpanel"]'));
+    const scrape = mainLists.length === 1
+      ? [...mainLists[0].querySelectorAll('[role="tab"]')]
+        .find(el => el.closest('[role="tablist"]') === mainLists[0] && el.title === 'Scrape') : null;
+    const pane = scrape && document.getElementById(scrape.getAttribute('aria-controls'));
+    const articleTab = pane && [...pane.querySelectorAll('[role="tab"]')]
+      .find(el => el.textContent.trim() === 'Article');
+    const article = articleTab && document.getElementById(articleTab.getAttribute('aria-controls'));
+    if (!article || article.getAttribute('data-state') !== 'active')
+      return { scope: 'article_inactive' };
+    const images = [...article.querySelectorAll('img')]
+      .filter(el => el.getAttribute('src')?.startsWith('data:image/svg+xml;base64,')
+        && el.alt === ${JSON.stringify(alt)});
+    const image = images.length === 1 ? images[0] : null;
+    if (!image) return { scope: 'image_missing', imageCount: images.length };
+    let scroller = image.parentElement;
+    while (scroller && !(scroller.scrollHeight > scroller.clientHeight
+      && /^(auto|scroll)$/.test(getComputedStyle(scroller).overflowY))) scroller = scroller.parentElement;
+    if (!scroller) return { scope: 'scroller_missing' };
+    const box = scroller.getBoundingClientRect(), target = image.getBoundingClientRect();
+    const x = Math.max(box.left + 1, Math.min(box.right - 1, box.left + box.width / 2));
+    const y = Math.max(box.top + 1, Math.min(box.bottom - 1, box.top + box.height / 2));
+    const hit = document.elementFromPoint(x, y);
+    const distance = target.top - (box.top + box.height / 2);
+    return { scope: 'chart_scroller', imageCount: images.length, x, y,
+      hitScroller: hit === scroller || scroller.contains(hit),
+      scrollTop: scroller.scrollTop, maxScroll: scroller.scrollHeight - scroller.clientHeight,
+      targetTop: target.top, scrollerTop: box.top, scrollerBottom: box.bottom,
+      inScroller: target.top >= box.top && target.top < box.bottom,
+      nearViewport: target.top >= 0 && target.top < innerHeight,
+      loaded: image.complete && image.naturalWidth > 0 && image.naturalHeight > 0,
+      deltaY: Math.sign(distance) * Math.min(Math.max(Math.abs(distance), 80), box.height * 0.8) };
+  })()`,
+  );
+}
+
+async function loadChartByNativeScroll(panel, alt, mode) {
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    const state = await chartScrollState(panel, alt);
+    report.scroll_observation = { chart: alt, attempt, ...state };
+    assert.equal(state.scope, 'chart_scroller', `${mode}: chart scroll surface exists for ${alt}`);
+    if (state.loaded && state.inScroller && state.nearViewport) return;
+    assert.equal(state.hitScroller, true, `${mode}: wheel point belongs to article scroller`);
+    if (state.inScroller && !state.loaded) {
+      await waitFor(
+        `${mode}_${alt}_image_load`,
+        () => chartScrollState(panel),
+        (next) => next?.loaded,
+        10000,
+      );
+      return;
+    }
+    await panel.send('Input.dispatchMouseEvent', {
+      type: 'mouseWheel',
+      x: state.x,
+      y: state.y,
+      deltaX: 0,
+      deltaY: state.deltaY,
+    });
+    await waitFor(
+      `${mode}_${alt}_wheel_progress`,
+      () => chartScrollState(panel),
+      (next) =>
+        next?.scope === 'chart_scroller' &&
+        (next.scrollTop !== state.scrollTop || next.inScroller || next.loaded),
+      3000,
+    );
+  }
+  throw new Error(`${mode}_chart_scroll_exhausted:${alt}`);
+}
+
 function safeObservation(article, pane) {
   const svgImages =
     article?.images?.map((image, index) => {
@@ -379,8 +455,8 @@ try {
           report.last_stage = `${mode}_click`;
           await click(panel, 'button', action);
           report.last_stage = `${mode}_article_wait`;
-          const observed = await waitFor(
-            `${mode}_article_rendered`,
+          await waitFor(
+            `${mode}_article_content_rendered`,
             async () => {
               const article = await renderedArticle(panel);
               const pane = await scrapePane(panel);
@@ -390,7 +466,6 @@ try {
             (value) =>
               value?.linked &&
               value.images?.length === 2 &&
-              value.images.every((image) => image.loaded) &&
               (mode === 'fast' ||
                 (value.text.includes(deepCaption) && value.text.includes(deepRevision))) &&
               expected.every(
@@ -401,11 +476,28 @@ try {
               ),
             mode === 'deep' ? 60000 : 30000,
           );
+          report.last_stage = `${mode}_native_chart_scroll`;
+          for (const item of expected) await loadChartByNativeScroll(panel, item.image, mode);
+          report.last_stage = `${mode}_loaded_article_wait`;
+          const loadedArticle = await waitFor(
+            `${mode}_loaded_article`,
+            async () => {
+              const article = await renderedArticle(panel);
+              const pane = await scrapePane(panel);
+              report.last_observation = safeObservation(article, pane);
+              return article;
+            },
+            (value) =>
+              value?.linked &&
+              value.images?.length === 2 &&
+              value.images.every((image) => image.loaded),
+            10000,
+          );
           report.last_stage = `${mode}_article_assertions`;
-          assertArticle(observed, mode);
+          assertArticle(loadedArticle, mode);
           report.last_stage = `${mode}_settled_state`;
           const settled = await scrapePane(panel);
-          report.last_observation = safeObservation(observed, settled);
+          report.last_observation = safeObservation(loadedArticle, settled);
           assert.equal(settled.recapture, 1, `${mode}: capture completed`);
           assert.equal(settled.error, false, `${mode}: no visible capture error`);
           report.modes.push({

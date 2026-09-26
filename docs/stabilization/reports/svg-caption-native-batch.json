@@ -14,6 +14,12 @@
     "diagnosis_limit": "The first runner recorded no Article or Scrape pane sample. Source inspection shows rendered images use lazy loading, but the run does not establish whether image loading, capture, a visible error, or panel selection caused the timeout.",
     "instrumentation_for_rerun": "Each Article wait sample preserves bounded pane state, error-card text, image load and viewport flags, decoded SVG path/bar coordinates, and the positions of expected text and image markers. On failure, the runner captures its owned panel to a stable test-results path before harness cleanup. Assertion and settled-state stages remain distinct, with the assertion label retained in the failure detail. No extension behavior or acceptance expectation was changed."
   },
+  "runtime_attempt_002": {
+    "result": "Fast capture completed and the Article pane contained both SVG data payloads, both captions and labels, and the expected text/graphic order. The second SVG stayed unloaded below the viewport with loading=lazy, so the runner's image-load wait timed out before accepting Fast or attempting Deep.",
+    "evidence": "docs/stabilization/reports/svg-caption-native-run-002.json",
+    "screenshot": "docs/stabilization/evidence/svg-caption-native-002.png",
+    "diagnosis": "The acceptance runner waited for a lazy image that it never scrolled into view. This is a runner interaction gap; native scrolling and the loaded-image assertion are now explicit. Product extraction remains unverified until the guarded rerun."
+  },
   "execution_owner": "root guarded browser/build launch",
   "deferred": [
     "An independent public production article with inline SVG, caption, and HTML label has not been identified.",
