@@ -8280,14 +8280,51 @@
           "defect_ids": [],
           "run_ids": [
             "admin-debug-filters-001",
-            "admin-debug-filter-matrix-001"
+            "admin-debug-filter-matrix-001",
+            "debug-log-controls-002"
           ],
           "retest_status": "not-run"
         }
       },
       "inventory_status": "complete",
       "missing_items": [],
-      "source_complete": true
+      "source_complete": true,
+      "runtime_evidence": [
+        {
+          "run_id": "debug-log-controls-002",
+          "mode": "admin",
+          "status": "partial",
+          "receipt": "docs/stabilization/runs/debug-log-controls-002.json",
+          "independent_review": "docs/stabilization/reports/debug002-runtime-peer.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1005-T14",
+              "subtarget": "message_search_and_no_match",
+              "status": "partial",
+              "observation": "Trusted message search retained the original message-only row and the distinct no-match state was observed; detail search remains unverified."
+            },
+            {
+              "case_id": "EXT-F-1005-T15",
+              "subtarget": "warm_pause_resume",
+              "status": "partial",
+              "observation": "Rows remained frozen at 65 while total rose from 65 to 75; after Resume displayed rows reached 75."
+            },
+            {
+              "case_id": "EXT-F-1005-T17",
+              "subtarget": "warm_clear_to_empty",
+              "status": "partial",
+              "observation": "Nonempty rows were present before Clear; result reached no-events state with zero displayed rows."
+            },
+            {
+              "case_id": "EXT-F-1005-T22",
+              "subtarget": "detail_expansion_and_no-detail_behavior",
+              "status": "unverified",
+              "observation": "No expansion/collapse positive control was performed."
+            }
+          ],
+          "limits": "Top-level run status is partial. T14 detail search, T15 reload/service-error, T17 error-badge/reload/service-error, and T22 remain open. Result does not bind observations to an exact release artifact; feature/case statuses remain unchanged."
+        }
+      ]
     },
     {
       "id": "EXT-F-1006",
@@ -10396,7 +10433,8 @@
             "source-workspace-002",
             "source-workspace-003",
             "source-workspace-004",
-            "source-workspace-008"
+            "source-workspace-008",
+            "source-workspace-009"
           ],
           "retest_status": "not-run"
         }
@@ -10505,6 +10543,25 @@
           "independent_review": "docs/stabilization/reports/source-workspace-008-peer.json",
           "proven": "Read-only: no-workspace state emitted no unscoped or processed-documents lookup; after UI workspace selection, exact scoped lookup was HTTP 200 empty and UI showed not_saved.",
           "limits": "No Save input, checkpoint creation, Source creation/open, or D23 notice observation. D22 remains open; feature/case statuses and retest status are unchanged."
+        },
+        {
+          "run_id": "source-workspace-009",
+          "mode": "admin",
+          "build": "0.2.79",
+          "defect_id": "EXT-D-0022",
+          "related_defect_id": "EXT-D-0023",
+          "status": "diagnostic-only",
+          "receipt": "docs/stabilization/runs/source-workspace-009.json",
+          "independent_review": "docs/stabilization/reports/source-workspace-009-runtime-peer.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1007-T21",
+              "subtarget": "read_only_save_pointer_hit_test",
+              "status": "diagnostic-only",
+              "observation": "Unique enabled Save was hit-testable at nine points; pointer dispatch and Save input were not attempted."
+            }
+          ],
+          "limits": "D22 remains open: prior ambiguous Save was not retried and saved/open Source is unverified. This run supports only read-only pointer geometry; no feature or case pass."
         }
       ]
     },
@@ -21446,7 +21503,8 @@
             "source-workspace-006",
             "source-workspace-007",
             "notice-write-retention-red-001",
-            "notice-write-retention-green-001"
+            "notice-write-retention-green-001",
+            "source-workspace-009"
           ],
           "retest_status": "not-run"
         }
@@ -21544,6 +21602,24 @@
             }
           ],
           "limits": "Focused behavior guard only; does not exercise full member/admin pending-handoff queue semantics or real Chrome relay. Native UI retest on the corrected build and release typecheck remain pending. Feature/case statuses stay unverified/not-run; EXT-D-0022 remains open."
+        },
+        {
+          "run_id": "source-workspace-009",
+          "mode": "admin",
+          "build": "0.2.79",
+          "defect_id": "EXT-D-0023",
+          "status": "partial",
+          "receipt": "docs/stabilization/runs/source-workspace-009.json",
+          "independent_review": "docs/stabilization/reports/source-workspace-009-runtime-peer.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-2010-T02",
+              "subtarget": "read_notice_retires_after_approved_org_selection",
+              "status": "partial",
+              "observation": "No-workspace notice was observed before selection and absent after; Save was only hit-tested, not activated."
+            }
+          ],
+          "limits": "Read-side notice behavior only. Native retention of an unperformed write notice and full pending-handoff queue semantics remain unverified; D23 stays fixed pending write-boundary native proof and feature/case statuses remain unchanged."
         }
       ]
     },

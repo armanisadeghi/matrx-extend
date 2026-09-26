@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "run_id": "source-workspace-009",
+  "defect_id": "EXT-D-0022",
+  "related_defect_id": "EXT-D-0023",
+  "source": {
+    "result_path": "test-results/source-workspace-acceptance.json",
+    "result_sha256": "cdae385d24ce786dabca37c58253298604f5bdccdf20bae65e7f7fd087d2f1a8",
+    "runner_path": "tests/browser/source-workspace-acceptance.mjs",
+    "runner_sha256": "15a28c2350e69f51f3bcad69c9de0f598f8f72627adad093689d10774baab901",
+    "guard_log_path": "/tmp/matrx-source-workspace-009.log",
+    "guard_log_sha256": "fd15ca004c1316463fe586f824be5b39f6d59e9e0a0f4924466e9652fb2a6244"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T22:47:01.234Z",
+    "child_exit_at": "2026-09-26T22:47:12.123Z",
+    "child_exit_code": 1,
+    "wrapper_stdout": "DIAGNOSTIC_ONLY d22_source_workspace_native",
+    "semantics": "The guarded child intentionally stopped at the read-only pointer diagnostic. Exit 1 records that D22 acceptance did not complete; D23 read-only observations in the same run remain bounded evidence."
+  },
+  "build": {
+    "version": "0.2.79",
+    "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0",
+    "cross_check": "Result tree matches the local release receipt; generated manifest version agrees."
+  },
+  "scope": {
+    "mode": "read_only_recovery",
+    "real_admin_ui": true,
+    "approved_existing_organization_selected_by_ui": true,
+    "operation": "observe D23 notice retirement and Save pointer only; no Save input"
+  },
+  "observations": {
+    "d23_notice_before_selection": "observed",
+    "d23_notice_after_selection": "absent",
+    "save_pointer_after_public_capture": "hit_testable",
+    "save_pointer": {
+      "unique_visible_enabled_button": true,
+      "viewport": "360x421",
+      "interior_hit_count": 9,
+      "center_hits_target": true,
+      "selected_point_available": true
+    },
+    "pointer_dispatch": "not_attempted",
+    "save_attempt_reserved_by_this_run": false,
+    "save_result": "prior_attempt_ambiguous_no_retry",
+    "recovery_lookup": "none",
+    "local_saved_and_open_source": "unverified",
+    "prior_checkpoint": {
+      "phase": "reserved",
+      "sha256": "0e91ccf2543a445e476af2955e045d758133bbafdea4d68fd7c3b449ef4b84c8",
+      "modified_before_run": true,
+      "organization_and_fixture_values_omitted": true
+    },
+    "private_pointer_screenshot": "unavailable"
+  },
+  "interpretation": "D23 read-side behavior was observed: the no-workspace notice appeared before approved organization selection and was absent afterward; the enabled Save button hit-tested at all nine sampled interior points. The run intentionally stopped before pointer dispatch. It does not verify native retention of an unperformed write notice, full T02 queue semantics, Source Save, or saved/open recognition. D22 remains open and its earlier Save result remains ambiguous."
+}

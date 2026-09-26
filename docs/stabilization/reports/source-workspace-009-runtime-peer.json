@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "report_id": "source-workspace-009-runtime-peer",
+  "run_receipt": "docs/stabilization/runs/source-workspace-009.json",
+  "A_runtime": {
+    "status": "BOUNDED_READ_ONLY_D23_OBSERVATION; D22_UNVERIFIED",
+    "verified": [
+      "Resource guard admitted the run; child exited 1 at the intentional read-only diagnostic checkpoint with explicit DIAGNOSTIC_ONLY output.",
+      "The actual 0.2.79 result tree hash matches the generated release receipt; manifest version agrees.",
+      "In real admin UI, the no-workspace notice was observed before organization selection and absent after selection.",
+      "The enabled unique Save button was hit-testable at its center and all eight other sampled interior points."
+    ],
+    "not_exercised": [
+      "No pointer event was dispatched and no Save input was sent; prior ambiguous Save remains unretried.",
+      "Saved/open Source recognition remains unverified; read-only recovery lookup found none.",
+      "Native retention of an unperformed write notice was not exercised, so D23 remains fixed pending that write-boundary retest."
+    ]
+  },
+  "B_evidence_quality": {
+    "status": "CORROBORATED_WITH_EXPLICIT_STOP",
+    "checks": [
+      "Guard timestamps, child exit code, and diagnostic-only stdout agree with the raw log.",
+      "Raw result, runner, and log hashes are recorded; result build tree and version agree with the local release receipt and generated manifest.",
+      "Result has no Save dispatch and reports saveAttemptReserved=false; the pre-existing private checkpoint remains reserved and its file modification time predates the run. No private screenshot was accessed."
+    ],
+    "limits": [
+      "This is not a D22 pass or a Source Save result; D22 remains open.",
+      "Read-side D23 evidence does not complete write-boundary native verification or the full EXT-F-2010-T02 queue case.",
+      "No case, feature, or defect status is promoted by this peer."
+    ]
+  }
+}
