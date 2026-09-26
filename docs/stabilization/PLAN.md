@@ -35,6 +35,9 @@ Independent closure retests also use a fresh unpacked non-HMR build. Record buil
 
 Sources: https://developer.chrome.com/docs/extensions/get-started/tutorial/debug ; https://developer.chrome.com/docs/extensions/develop/concepts/service-workers/lifecycle ; https://wxt.dev/guide/essentials/config/browser-startup .
 
+### Runner diagnostic acceptance
+Before the first launch of a new acceptance runner, its source reviewer must verify that every potentially failing boundary records a fixed stage/target and the last safe observable booleans or counts. An opaque catch that reports only “unverified” is insufficient. Never serialize raw auth URLs, errors, credentials, tokens, storage values, or unrestricted page text. After repeated native hit refusal, obtain a safe targeted screenshot/hit-element observation or hand the real click to the native operator before another speculative repair. This rule follows repeated fixture failures that consumed runs without identifying their failing boundary.
+
 ## One inventory, linked durable evidence
 
 Home: `docs/stabilization/`. `inventory.json` is the only authoritative scope/coverage register. Supporting records contain evidence, not competing feature status. Coordinator alone merges canonical status; workers write uniquely owned evidence/report files. All authored tracking files are committed and pushed frequently.
