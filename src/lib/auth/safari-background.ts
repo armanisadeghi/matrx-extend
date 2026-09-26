@@ -2,6 +2,7 @@
 
 import { ALARMS, ENV, STORAGE_KEYS } from '@/config/env';
 import { completeBackgroundAuthorizationCode } from '@/lib/auth/flow';
+import { checkIsAdmin } from '@/lib/supabase/queries';
 import { getSafariRedirectUri } from '@/lib/auth/identity-transport';
 import { generateCodeChallenge, generateCodeVerifier, generateNonce } from '@/lib/auth/pkce';
 import { BROWSER } from '@/lib/browser/detect';
@@ -18,6 +19,7 @@ interface SafariAttempt {
   tabId: number;
   redirectUri: string;
   createdAt: number;
+  claimed?: boolean;
 }
 
 const verifierKey = (state: string) => `${STORAGE_KEYS.PKCE_VERIFIER}.${state}`;
@@ -47,9 +49,9 @@ async function clearAttempt(attempt: SafariAttempt, failure?: string): Promise<v
   }
 }
 
-async function failAttempt(attempt: SafariAttempt, message: string): Promise<void> {
+async function failAttempt(attempt: SafariAttempt, message: string, closeTab = false): Promise<void> {
   await clearAttempt(attempt, message);
-  await chrome.tabs.remove(attempt.tabId).catch(() => undefined);
+  if (closeTab) await chrome.tabs.remove(attempt.tabId).catch(() => undefined);
 }
 
 export async function startSafariAuthorization(): Promise<{ pending: true }> {
@@ -58,49 +60,31 @@ export async function startSafariAuthorization(): Promise<{ pending: true }> {
 
   const previous = await readAttempt();
   if (previous) await clearAttempt(previous);
-  const verifier = generateCodeVerifier();
-  const state = generateNonce();
-  const attemptId = `oauth:${state}`;
-  const redirectUri = getSafariRedirectUri();
   const tab = await chrome.tabs.create({ url: 'about:blank', active: true });
   if (tab.id === undefined) throw new Error('Could not create the Safari sign-in tab');
-  const attempt: SafariAttempt = {
-    attemptId,
-    state,
-    tabId: tab.id,
-    redirectUri,
-    createdAt: Date.now(),
-  };
-  const challenge = await generateCodeChallenge(verifier);
-  await chrome.storage.session.set({
-    [verifierKey(state)]: verifier,
-    [ACTIVE_AUTH_ATTEMPT_KEY]: attemptId,
-    [STORAGE_KEYS.SAFARI_AUTH_ATTEMPT]: attempt,
-  });
-  await chrome.storage.session.remove([STORAGE_KEYS.SAFARI_AUTH_FAILURE]);
-  chrome.alarms.create(ALARMS.SAFARI_AUTH_TIMEOUT, { when: attempt.createdAt + AUTH_TIMEOUT_MS });
-  const params = new URLSearchParams({
-    response_type: 'code',
-    client_id: ENV.EXTENSION_OAUTH_CLIENT_ID,
-    redirect_uri: redirectUri,
-    state,
-    code_challenge: challenge,
-    code_challenge_method: 'S256',
-    scope: 'email profile',
-  });
   try {
+    const verifier = generateCodeVerifier();
+    const state = generateNonce();
+    const attemptId = `oauth:${state}`;
+    const redirectUri = getSafariRedirectUri();
+    const attempt: SafariAttempt = { attemptId, state, tabId: tab.id, redirectUri, createdAt: Date.now() };
+    const challenge = await generateCodeChallenge(verifier);
+    await chrome.storage.session.set({ [verifierKey(state)]: verifier, [ACTIVE_AUTH_ATTEMPT_KEY]: attemptId, [STORAGE_KEYS.SAFARI_AUTH_ATTEMPT]: attempt });
+    await chrome.storage.session.remove([STORAGE_KEYS.SAFARI_AUTH_FAILURE]);
+    chrome.alarms.create(ALARMS.SAFARI_AUTH_TIMEOUT, { when: attempt.createdAt + AUTH_TIMEOUT_MS });
+    const params = new URLSearchParams({ response_type: 'code', client_id: ENV.EXTENSION_OAUTH_CLIENT_ID, redirect_uri: redirectUri, state, code_challenge: challenge, code_challenge_method: 'S256', scope: 'email profile' });
     await chrome.tabs.update(attempt.tabId, { url: `${authorizeUrl()}?${params.toString()}` });
+    log.info('auth', 'Safari OAuth sign-in tab opened', { callbackOrigin: redirectUri });
   } catch (error) {
-    await failAttempt(attempt, 'Could not open the sign-in page. Please try again.');
+    await chrome.tabs.remove(tab.id).catch(() => undefined);
     throw error;
   }
-  log.info('auth', 'Safari OAuth sign-in tab opened', { callbackOrigin: redirectUri });
   return { pending: true };
 }
 
 async function handleCallback(tabId: number, callbackUrl: string): Promise<void> {
   const attempt = await readAttempt();
-  if (!attempt || attempt.tabId !== tabId) return;
+  if (!attempt || attempt.tabId !== tabId || attempt.claimed) return;
   if (Date.now() > attempt.createdAt + AUTH_TIMEOUT_MS) {
     await failAttempt(attempt, 'Sign-in timed out. Please try again.');
     return;
@@ -121,10 +105,11 @@ async function handleCallback(tabId: number, callbackUrl: string): Promise<void>
     return;
   }
   if (!state || state !== attempt.state || !code) {
-    await failAttempt(attempt, 'Sign-in could not verify its callback. Please try again.');
+    await failAttempt(attempt, 'Sign-in could not verify its callback. Please try again.', true);
     return;
   }
   try {
+    await chrome.storage.session.set({ [STORAGE_KEYS.SAFARI_AUTH_ATTEMPT]: { ...attempt, claimed: true } });
     const user = await completeBackgroundAuthorizationCode(
       attempt.attemptId,
       state,
@@ -132,11 +117,12 @@ async function handleCallback(tabId: number, callbackUrl: string): Promise<void>
       attempt.redirectUri,
     );
     await clearAttempt(attempt);
-    broadcast(CHANNELS.AUTH_STATE_CHANGED, { user, isAdmin: false, reason: 'safari_sign_in' });
+    const isAdmin = await checkIsAdmin(user.id);
+    broadcast(CHANNELS.AUTH_STATE_CHANGED, { user, isAdmin, reason: 'safari_sign_in' });
     await chrome.tabs.remove(attempt.tabId).catch(() => undefined);
   } catch (error) {
     log.warn('auth', 'Safari OAuth completion failed', { reason: (error as Error).name });
-    await failAttempt(attempt, 'Sign-in could not be completed. Please try again.');
+    await failAttempt(attempt, 'Sign-in could not be completed. Please try again.', true);
   }
 }
 

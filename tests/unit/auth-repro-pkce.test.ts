@@ -101,7 +101,7 @@ describe('concurrent PKCE sign-in reproduction', () => {
     ]);
   });
 
-  it.skip('uses Safari browser.identity promises without requiring chrome.identity', async () => {
+  it('does not use a fabricated Safari identity API', async () => {
     const session = new Map<string, unknown>();
     const local = new Map<string, unknown>();
     vi.stubGlobal('browser', {
@@ -168,15 +168,8 @@ describe('concurrent PKCE sign-in reproduction', () => {
     );
 
     const { signIn } = await import('@/lib/auth/flow');
-    await expect(signIn()).resolves.toMatchObject({ user: { email: 'admin@example.com' } });
-    expect(fetch).toHaveBeenCalledWith(
-      'https://db.example.test/auth/v1/oauth/token',
-      expect.objectContaining({
-        body: expect.stringContaining(
-          'redirect_uri=https%3A%2F%2Fcom.example.matrx.safariwebext.apple%2F',
-        ),
-      }),
-    );
+    await expect(signIn()).rejects.toThrow('does not provide an identity API');
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it('does not replace an existing session when the exchanged bearer cannot fetch a profile', async () => {

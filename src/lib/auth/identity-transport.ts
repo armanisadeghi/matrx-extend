@@ -5,13 +5,12 @@
  * by the extension background page. Chrome retains its managed identity flow.
  */
 
-import { ENV } from '@/config/env';
 import { BROWSER } from '@/lib/browser/detect';
 
-const SAFARI_CALLBACK_PATH = '/auth/extension-callback';
+const SAFARI_REDIRECT_URI = 'https://www.aimatrx.com/auth/extension-callback';
 
 export function getSafariRedirectUri(): string {
-  return new URL(SAFARI_CALLBACK_PATH, ENV.FRONTEND_URL).toString();
+  return SAFARI_REDIRECT_URI;
 }
 
 export function getRedirectUri(): string {
