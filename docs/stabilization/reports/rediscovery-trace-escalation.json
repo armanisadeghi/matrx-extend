@@ -1,0 +1,34 @@
+{
+  "status": "candidate_unverified",
+  "lane": "rare escalation / Astra / medium",
+  "scope": "EXT-F-1003-T46; Settings trusted Save to real released-worker rediscovery evidence",
+  "adjudications": [
+    {
+      "finding": "Unrelated pre-Save or mixed handler invocations can satisfy the observer",
+      "ruling": "Refuted as an actual caller path in this isolated guest exercise; strengthened defensively with a Save boundary and exact ordered pair",
+      "evidence": "Repository census of DESKTOP_REDISCOVER finds sends only in SettingsView.tsx Save/Clear and debug/BridgesView.tsx user actions. bootstrap.ts startup and alarm handlers call probeDesktop directly, never the rediscovery message handler. The owned fresh browser opens one settled guest panel, exercises no Bridges view, and performs exactly one Save while observation is active. No clear/reload occurs until observation closes.",
+      "change": "Arm immediately before the trusted Save click, reject any earlier pause, retain every pause, and require exactly handler entry then post-probe completion after the boundary. Do not choose the first matching entries out of an ambiguous event set.",
+      "cost_if_wrong": "A new automatic rediscovery sender invalidates the isolated single-caller assumption; the exact-pair check rejects extra observed invocations and the caller census must be revisited. This is not a general multi-client request-correlator."
+    },
+    {
+      "finding": "Resume rejection can settle after acceptance",
+      "ruling": "Confirmed by asynchronous control flow; repaired",
+      "change": "Every pause retains a settled resume result. A read snapshots the pause list and awaits all matching resume promises before returning evidence. Debugger close also awaits outstanding resumes and rejects errors before acceptance is recorded."
+    },
+    {
+      "finding": "Debugger teardown error skips override cleanup",
+      "ruling": "Confirmed by sequential fail-fast finally; repaired",
+      "change": "Attempt watcher teardown, worker detach, and trusted UI override clearing independently; record any cleanup errors as a failing criterion. Existing outer harness still destroys only its owned disposable browser/profile."
+    },
+    {
+      "finding": "A health request must be required to prove rediscovery",
+      "ruling": "Not applicable to T46; native messaging is a valid transport and may skip HTTP",
+      "evidence": "inventory.json T46 expects rediscovery to run, not successful desktop connectivity. bootstrap.ts handler awaits probeDesktop before its availability broadcast; bridge.ts prefers native health. The optional HTTP listener remains diagnostic and returns 503, never fabricated health."
+    }
+  ],
+  "preserved": ["Real trusted pointer and keyboard actions", "Released build receipt verification", "Valid override persistence after reload", "Invalid range retains saved override", "Blank clear removes stale error in the same rendered view", "Cleared override persistence after reload", "No product edits, injected application state, fabricated health, credentials, primary profile, or Chat/Pilot exercise"],
+  "source_evidence": "Reviewed inventory T46, both prior peer reports, prior evidence report, commits 47e9004 and f15e907, complete current runner, relevant harness ownership/cleanup, all rediscovery callers, worker handler and native-first probe implementation.",
+  "runtime_evidence": "None added. No tests, browser, build, or managed workload launched by this lane. Source review is not a runtime pass.",
+  "required_root_commands": ["Resource-guard-admitted node --check tests/browser/settings-local-controls-acceptance.mjs", "Resource-guard-admitted node tests/browser/settings-local-controls-acceptance.mjs using the existing isolated native-browser configuration"],
+  "remaining": ["Root runtime evidence must show exactly one post-Save entry/completion pair and successful resumes, plus retained T46 assertions", "Fresh independent evidence review", "Forcing-function no-op/missing rediscovery negative proof remains root-owned and unexecuted; any mutation must follow plant.py and disposable candidate rules, never active product state", "No push by this lane; root integrates after its evidence gate"]
+}

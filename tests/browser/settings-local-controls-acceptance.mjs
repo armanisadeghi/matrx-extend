@@ -101,7 +101,8 @@ async function port(panel) {
 async function observeWorkerRediscover(worker) {
   const scripts = [];
   const pauses = [];
-  let resumeError = null;
+  const resumes = [];
+  let saveStartedAt = null;
   const offScript = worker.on('Debugger.scriptParsed', (event) => {
     if (event.url.endsWith('/background.js')) scripts.push(event.scriptId);
   });
@@ -110,9 +111,10 @@ async function observeWorkerRediscover(worker) {
       callFrames: event.callFrames?.slice(0, 3).map((frame) => ({
         functionName: frame.functionName, url: frame.url, location: frame.location,
       })) ?? [], observedAt: Date.now() });
-    void worker.send('Debugger.resume').catch((error) => {
-      resumeError = String(error?.message ?? error);
-    });
+    // Record settlement, not just the pause: a delayed resume rejection must
+    // never race the acceptance verdict. The event emitter cannot await us.
+    resumes.push(worker.send('Debugger.resume').then(
+      () => null, (error) => String(error?.message ?? error)));
   });
   try {
     await worker.send('Debugger.enable');
@@ -143,13 +145,28 @@ async function observeWorkerRediscover(worker) {
     const entryBreakpoint = await setAt(entryOffset, 'rediscovery entry');
     const completionBreakpoint = await setAt(completionOffset, 'post-probe availability');
     return {
-      read: () => ({ entry: pauses.find((pause) => pause.hitBreakpoints.includes(entryBreakpoint)) ?? null,
-        postProbe: pauses.find((pause) => pause.hitBreakpoints.includes(completionBreakpoint)) ?? null,
-        resumeError }),
+      armForSave() {
+        assert.equal(saveStartedAt, null, 'rediscovery observer may cover only one Save');
+        assert.equal(pauses.length, 0, 'no rediscovery may precede the trusted Save');
+        saveStartedAt = Date.now();
+      },
+      async read() {
+        const observed = [...pauses];
+        const resumeResults = await Promise.all(resumes.slice(0, observed.length));
+        return { saveStartedAt, pauses: observed,
+          entryBreakpoint, completionBreakpoint,
+          resumeError: resumeResults.find((error) => error !== null) ?? null };
+      },
       async close() {
-        offPaused();
-        offScript();
-        await worker.send('Debugger.disable');
+        try {
+          const resumeResults = await Promise.all(resumes);
+          await worker.send('Debugger.disable');
+          assert.deepEqual(resumeResults.filter((error) => error !== null), [],
+            'every observed worker pause must resume successfully');
+        } finally {
+          offPaused();
+          offScript();
+        }
       },
     };
   } catch (error) {
@@ -168,7 +185,7 @@ async function portSelection(panel) {
   })()`);
 }
 
-async function replacePort(panel, value) {
+async function replacePort(panel, value, beforeSave = () => {}) {
   await click(panel, 'port', 'Local engine port');
   const initial = await portSelection(panel);
   assert.equal(initial?.focused, true, 'real pointer must focus port input');
@@ -192,7 +209,9 @@ async function replacePort(panel, value) {
   }
   if (value) await panel.send('Input.insertText', { text: value });
   await waitFor('port_input', () => port(panel), (s) => s?.value === value);
-  await click(panel, 'button', (await port(panel)).button.includes('Save') ? 'Save' : 'Set');
+  const saveLabel = (await port(panel)).button.includes('Save') ? 'Save' : 'Set';
+  beforeSave();
+  await click(panel, 'button', saveLabel);
 }
 
 async function about(panel) {
@@ -289,14 +308,26 @@ try {
         rediscoverWatch = await observeWorkerRediscover(worker);
         const beforeProbeCount = observedPort.requests.length;
         assert.equal(beforeProbeCount, 0, 'isolated override port must not be probed before save');
-        await replacePort(panel, String(observedPort.port));
+        await replacePort(panel, String(observedPort.port), () => rediscoverWatch.armForSave());
         const saved = await waitFor('valid_port_saved', () => port(panel), (s) => s?.saved === observedPort.port && s.override);
         c.steps.push({ phase: 'warm', action: 'Save valid port', observation: saved });
         criterion(c, 'valid port saved', 'pass', saved);
         const handler = await waitFor('worker_rediscovery_handler',
           () => rediscoverWatch.read(), (state) =>
-            (state.entry !== null && state.postProbe !== null) || state.resumeError !== null);
+            state.pauses.length >= 2 || state.resumeError !== null);
         assert.equal(handler.resumeError, null, 'owned worker debugger must resume');
+        // This owned guest panel has one manual rediscovery action in this
+        // interval. Bootstrap/alarm probes never enter this handler. Requiring
+        // exactly entry -> completion rejects pre-Save, extra or mixed calls.
+        assert.equal(typeof handler.saveStartedAt, 'number');
+        assert.equal(handler.pauses.length, 2, 'one Save must have exactly one rediscovery entry and completion');
+        assert.deepEqual(handler.pauses.map((pause) => pause.hitBreakpoints),
+          [[handler.entryBreakpoint], [handler.completionBreakpoint]],
+          'the same single rediscovery invocation must enter then finish its probe');
+        assert.ok(handler.pauses.every((pause) => pause.observedAt >= handler.saveStartedAt),
+          'rediscovery observations must follow the trusted Save boundary');
+        await rediscoverWatch.close();
+        rediscoverWatch = null;
         c.steps.push({ phase: 'warm', action: 'Observe worker rediscovery enter and reach post-probe broadcast after Save',
           observation: { ...handler, port: observedPort.port,
             healthRequests: observedPort.requests.slice(beforeProbeCount) } });
@@ -320,12 +351,24 @@ try {
         c.steps.push({ phase: 'reload', action: 'Inspect cleared override after reload', observation: empty });
         criterion(c, 'cleared override persists after reload', empty.saved === null && empty.value === '' ? 'pass' : 'fail', empty);
       } finally {
-        await rediscoverWatch?.close();
-        await worker?.detach();
-        if ((await port(panel))?.saved !== null) {
-          await replacePort(panel, '');
-          const cleared = await waitFor('port_cleanup', () => port(panel), (s) => s?.saved === null);
-          c.steps.push({ phase: 'cleanup', action: 'Clear disposable override', observation: cleared });
+        // Attempt every cleanup even if debugger teardown fails. The harness
+        // also disposes the owned browser/profile after this case.
+        const cleanupErrors = [];
+        for (const cleanup of [
+          async () => { await rediscoverWatch?.close(); },
+          async () => { await worker?.detach(); },
+          async () => {
+            if ((await port(panel))?.saved !== null) {
+              await replacePort(panel, '');
+              const cleared = await waitFor('port_cleanup', () => port(panel), (s) => s?.saved === null);
+              c.steps.push({ phase: 'cleanup', action: 'Clear disposable override', observation: cleared });
+            }
+          },
+        ]) {
+          try { await cleanup(); } catch (error) { cleanupErrors.push(String(error?.message ?? error)); }
+        }
+        if (cleanupErrors.length) {
+          criterion(c, 'all disposable override and debugger cleanup completed', 'fail', cleanupErrors);
         }
       }
     });
