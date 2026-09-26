@@ -70,9 +70,9 @@ async function exercise({ panel, artifacts }) {
     stage = 'accessible_view_navigation';
     await click(panel, 'title', 'Settings');
     await waitFor('settings_selected', guestNavigation, (value) => value?.activePaneCount === 1);
-    await click(panel, 'title', 'Chat');
+    await click(panel, 'title', 'SEO');
     const afterNavigation = await waitFor(
-      'chat_selected',
+      'seo_selected',
       guestNavigation,
       (value) => value?.activePaneCount === 1,
     );
@@ -87,18 +87,16 @@ async function exercise({ panel, artifacts }) {
       evidence: 'public tab navigation remained protected',
     });
 
-    // This app keeps tab selection in ephemeral in-memory React state and a new
-    // owned profile has no stale selection. No state is fabricated to simulate it.
     report.cases.push({
       id: 'EXT-F-1009-T09',
       subcase: 'stale_selection',
-      status: 'not_applicable',
+      status: 'unverified',
       expected: 'Attempt stale Screenshots selection after a role change.',
       actual:
-        'Fresh guest profile has no prior signed-in selection; app tab state is not persisted.',
-      evidence: 'source state model plus fresh-profile precondition',
+        'Fresh guest profile has no prior signed-in Screenshots selection; a real auth transition was outside this guest-only run.',
+      evidence: 'No auth state or tab selection was fabricated.',
     });
-    report.status = 'pass';
+    report.status = 'partial';
   } catch (error) {
     report.status = 'unverified';
     report.failure = { stage, driverFailure: safeFailure(error) };
