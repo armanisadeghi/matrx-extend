@@ -129,7 +129,7 @@ try {
   process.stdout.write('PASS isolated_admin_signin_real_ui\n');
 } catch {
   // No raw exception: browser/auth errors can contain redirect URLs, tokens,
-  entered form values, request bodies, or console content.
+  // entered form values, request bodies, or console content.
   evidence.status = 'unverified';
   evidence.failureStage = stage;
   await writeFile(OUTPUT, `${JSON.stringify(evidence, null, 2)}\n`, { mode: 0o600 });

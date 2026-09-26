@@ -1,5 +1,6 @@
 {
   "status": "source-prepared-runtime-unverified",
+  "source_preflight": "Root's node --check of commit 999e0ca failed before browser launch because a catch-block prose line lacked its // comment prefix. This repair restores the comment; root syntax recheck and runtime admission remain pending.",
   "scope": "An owned, receipt-verified disposable Chrome profile signs in through the real aimatrx.com login form, then clicks the real extension Settings Sign in button and observes admin Settings. No browser, build, test, credential read, or account change was run while preparing this source.",
   "runner": "tests/browser/isolated-admin-signin-acceptance.mjs",
   "guarded_command": "node tests/browser/isolated-admin-signin-acceptance.mjs",
