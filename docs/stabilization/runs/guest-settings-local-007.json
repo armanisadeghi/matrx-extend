@@ -1,0 +1,754 @@
+{
+  "id": "guest-settings-local-007",
+  "status": "unverified",
+  "acceptance": {
+    "schema_version": 1,
+    "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+    "build": {
+      "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "version": "0.2.63",
+      "sourceSha": "b76367b00b9cfa59a5b81d505e6ecfc1f4a3c413",
+      "treeSha256": "d1afc8cfbcbbde0b9fd5106b5529b06f46bcb96fdc5b4ada7db397bfd8f15a35",
+      "verified": true
+    },
+    "preconditions": [
+      "Owned disposable profile",
+      "Released extension receipt and tree hash verified",
+      "Guest panel settled before interaction"
+    ],
+    "cases": [
+      {
+        "id": "EXT-F-1003-T22",
+        "role": "guest",
+        "status": "pass",
+        "steps": [
+          {
+            "phase": "warm",
+            "action": "Inspect guest Settings section list and admin controls",
+            "observation": {
+              "sections": [
+                "G",
+                "",
+                "Compute",
+                "Ask before acting",
+                "",
+                "",
+                "Customize",
+                "Files",
+                "Account",
+                "Organization",
+                "Appearance",
+                "System",
+                "Chat",
+                "Ask before acting",
+                "Fast",
+                "Privacy",
+                "Scrape",
+                "Capture",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "advancedText": false,
+              "adminControls": []
+            }
+          },
+          {
+            "phase": "reload",
+            "action": "Inspect guest Settings section list and admin controls",
+            "observation": {
+              "sections": [
+                "G",
+                "",
+                "Compute",
+                "Ask before acting",
+                "",
+                "",
+                "Customize",
+                "Files",
+                "Account",
+                "Organization",
+                "Appearance",
+                "System",
+                "Chat",
+                "Ask before acting",
+                "Fast",
+                "Privacy",
+                "Scrape",
+                "Capture",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "advancedText": false,
+              "adminControls": []
+            }
+          }
+        ],
+        "criteria": [
+          {
+            "name": "warm admin section and controls absent",
+            "status": "pass",
+            "evidence": {
+              "sections": [
+                "G",
+                "",
+                "Compute",
+                "Ask before acting",
+                "",
+                "",
+                "Customize",
+                "Files",
+                "Account",
+                "Organization",
+                "Appearance",
+                "System",
+                "Chat",
+                "Ask before acting",
+                "Fast",
+                "Privacy",
+                "Scrape",
+                "Capture",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "advancedText": false,
+              "adminControls": []
+            }
+          },
+          {
+            "name": "reload admin section and controls absent",
+            "status": "pass",
+            "evidence": {
+              "sections": [
+                "G",
+                "",
+                "Compute",
+                "Ask before acting",
+                "",
+                "",
+                "Customize",
+                "Files",
+                "Account",
+                "Organization",
+                "Appearance",
+                "System",
+                "Chat",
+                "Ask before acting",
+                "Fast",
+                "Privacy",
+                "Scrape",
+                "Capture",
+                "Data",
+                "SEO",
+                "Desktop bridge",
+                "Data & reset",
+                "About"
+              ],
+              "advancedText": false,
+              "adminControls": []
+            }
+          }
+        ],
+        "build": {
+          "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+          "version": "0.2.63",
+          "sourceSha": "b76367b00b9cfa59a5b81d505e6ecfc1f4a3c413",
+          "treeSha256": "d1afc8cfbcbbde0b9fd5106b5529b06f46bcb96fdc5b4ada7db397bfd8f15a35",
+          "verified": true
+        },
+        "preconditions": [
+          "Owned disposable profile",
+          "Released extension receipt and tree hash verified",
+          "Guest panel settled before interaction"
+        ],
+        "evidence": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-rTGBwL"
+      },
+      {
+        "id": "EXT-F-1003-T37",
+        "role": "guest",
+        "status": "pass",
+        "steps": [
+          {
+            "phase": "warm",
+            "action": "Observe initial Deep clean preference",
+            "observation": {
+              "count": 1,
+              "checked": "false",
+              "hint": "Deep cleancoming soon"
+            }
+          },
+          {
+            "phase": "warm",
+            "action": "Toggle Deep clean",
+            "observation": {
+              "count": 1,
+              "checked": "true",
+              "hint": "Deep cleancoming soon"
+            }
+          },
+          {
+            "phase": "reload",
+            "action": "Inspect persisted state",
+            "observation": {
+              "count": 1,
+              "checked": "true",
+              "hint": "Deep cleancoming soon"
+            }
+          },
+          {
+            "phase": "cleanup",
+            "action": "Restore original preference",
+            "observation": {
+              "count": 1,
+              "checked": "false",
+              "hint": "Deep cleancoming soon"
+            }
+          }
+        ],
+        "criteria": [
+          {
+            "name": "visible coming-soon hint",
+            "status": "pass",
+            "evidence": {
+              "count": 1,
+              "checked": "false",
+              "hint": "Deep cleancoming soon"
+            }
+          },
+          {
+            "name": "toggle changes state",
+            "status": "pass",
+            "evidence": {
+              "count": 1,
+              "checked": "true",
+              "hint": "Deep cleancoming soon"
+            }
+          },
+          {
+            "name": "state and coming-soon hint persist after reload",
+            "status": "pass",
+            "evidence": {
+              "count": 1,
+              "checked": "true",
+              "hint": "Deep cleancoming soon"
+            }
+          }
+        ],
+        "build": {
+          "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+          "version": "0.2.63",
+          "sourceSha": "b76367b00b9cfa59a5b81d505e6ecfc1f4a3c413",
+          "treeSha256": "d1afc8cfbcbbde0b9fd5106b5529b06f46bcb96fdc5b4ada7db397bfd8f15a35",
+          "verified": true
+        },
+        "preconditions": [
+          "Owned disposable profile",
+          "Released extension receipt and tree hash verified",
+          "Guest panel settled before interaction"
+        ],
+        "evidence": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-rTGBwL"
+      },
+      {
+        "id": "EXT-F-1003-T46",
+        "role": "guest",
+        "status": "pass",
+        "steps": [
+          {
+            "phase": "warm",
+            "action": "Record original engine port state",
+            "observation": {
+              "value": "",
+              "saved": null,
+              "button": ["Set"],
+              "override": false,
+              "error": null
+            }
+          },
+          {
+            "phase": "warm",
+            "action": "Save valid port",
+            "observation": {
+              "value": "62171",
+              "saved": 62171,
+              "button": ["Save"],
+              "override": true,
+              "error": null
+            }
+          },
+          {
+            "phase": "warm",
+            "action": "Observe worker rediscovery enter and reach post-probe broadcast after Save",
+            "observation": {
+              "saveStartedAt": 1790426549214,
+              "pauses": [
+                {
+                  "reason": "other",
+                  "hitBreakpoints": ["4:1:119498:5"],
+                  "callFrames": [
+                    {
+                      "functionName": "",
+                      "url": "",
+                      "location": {
+                        "scriptId": "5",
+                        "lineNumber": 1,
+                        "columnNumber": 119498
+                      }
+                    },
+                    {
+                      "functionName": "s",
+                      "url": "",
+                      "location": {
+                        "scriptId": "8",
+                        "lineNumber": 0,
+                        "columnNumber": 1294
+                      }
+                    }
+                  ],
+                  "observedAt": 1790426549385
+                },
+                {
+                  "reason": "other",
+                  "hitBreakpoints": ["4:1:119574:5"],
+                  "callFrames": [
+                    {
+                      "functionName": "",
+                      "url": "",
+                      "location": {
+                        "scriptId": "5",
+                        "lineNumber": 1,
+                        "columnNumber": 119574
+                      }
+                    }
+                  ],
+                  "observedAt": 1790426549389
+                }
+              ],
+              "entryBreakpoint": "4:1:119498:5",
+              "completionBreakpoint": "4:1:119574:5",
+              "resumeError": null,
+              "port": 62171,
+              "healthRequests": [
+                {
+                  "method": "GET",
+                  "path": "/health",
+                  "observedAt": 1790426549388
+                }
+              ]
+            }
+          },
+          {
+            "phase": "reload",
+            "action": "Inspect valid override after reload",
+            "observation": {
+              "value": "62171",
+              "saved": 62171,
+              "button": ["Save"],
+              "override": true,
+              "error": null
+            }
+          },
+          {
+            "phase": "warm",
+            "action": "Submit invalid range",
+            "observation": {
+              "value": "65536",
+              "saved": 62171,
+              "button": ["Save"],
+              "override": true,
+              "error": "Port must be 1\u201365535."
+            }
+          },
+          {
+            "phase": "warm",
+            "action": "Clear override without leaving the invalid-error view",
+            "observation": {
+              "value": "",
+              "saved": null,
+              "button": ["Set"],
+              "override": false,
+              "error": null
+            }
+          },
+          {
+            "phase": "reload",
+            "action": "Inspect cleared override after reload",
+            "observation": {
+              "value": "",
+              "saved": null,
+              "button": ["Set"],
+              "override": false,
+              "error": null
+            }
+          }
+        ],
+        "criteria": [
+          {
+            "name": "valid port saved",
+            "status": "pass",
+            "evidence": {
+              "value": "62171",
+              "saved": 62171,
+              "button": ["Save"],
+              "override": true,
+              "error": null
+            }
+          },
+          {
+            "name": "saved port triggers desktop worker rediscovery",
+            "status": "pass",
+            "evidence": {
+              "saveStartedAt": 1790426549214,
+              "pauses": [
+                {
+                  "reason": "other",
+                  "hitBreakpoints": ["4:1:119498:5"],
+                  "callFrames": [
+                    {
+                      "functionName": "",
+                      "url": "",
+                      "location": {
+                        "scriptId": "5",
+                        "lineNumber": 1,
+                        "columnNumber": 119498
+                      }
+                    },
+                    {
+                      "functionName": "s",
+                      "url": "",
+                      "location": {
+                        "scriptId": "8",
+                        "lineNumber": 0,
+                        "columnNumber": 1294
+                      }
+                    }
+                  ],
+                  "observedAt": 1790426549385
+                },
+                {
+                  "reason": "other",
+                  "hitBreakpoints": ["4:1:119574:5"],
+                  "callFrames": [
+                    {
+                      "functionName": "",
+                      "url": "",
+                      "location": {
+                        "scriptId": "5",
+                        "lineNumber": 1,
+                        "columnNumber": 119574
+                      }
+                    }
+                  ],
+                  "observedAt": 1790426549389
+                }
+              ],
+              "entryBreakpoint": "4:1:119498:5",
+              "completionBreakpoint": "4:1:119574:5",
+              "resumeError": null
+            }
+          },
+          {
+            "name": "valid override persists after reload",
+            "status": "pass",
+            "evidence": {
+              "value": "62171",
+              "saved": 62171,
+              "button": ["Save"],
+              "override": true,
+              "error": null
+            }
+          },
+          {
+            "name": "invalid range shows error and retains saved port",
+            "status": "pass",
+            "evidence": {
+              "value": "65536",
+              "saved": 62171,
+              "button": ["Save"],
+              "override": true,
+              "error": "Port must be 1\u201365535."
+            }
+          },
+          {
+            "name": "blank clears override and stale error",
+            "status": "pass",
+            "evidence": {
+              "value": "",
+              "saved": null,
+              "button": ["Set"],
+              "override": false,
+              "error": null
+            }
+          },
+          {
+            "name": "cleared override persists after reload",
+            "status": "pass",
+            "evidence": {
+              "value": "",
+              "saved": null,
+              "button": ["Set"],
+              "override": false,
+              "error": null
+            }
+          }
+        ],
+        "build": {
+          "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+          "version": "0.2.63",
+          "sourceSha": "b76367b00b9cfa59a5b81d505e6ecfc1f4a3c413",
+          "treeSha256": "d1afc8cfbcbbde0b9fd5106b5529b06f46bcb96fdc5b4ada7db397bfd8f15a35",
+          "verified": true
+        },
+        "preconditions": [
+          "Owned disposable profile",
+          "Released extension receipt and tree hash verified",
+          "Guest panel settled before interaction"
+        ],
+        "evidence": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-rTGBwL"
+      },
+      {
+        "id": "EXT-F-1003-T70",
+        "role": "guest",
+        "status": "unverified",
+        "steps": [
+          {
+            "phase": "warm",
+            "action": "Inspect About identity, API readiness, and update affordance",
+            "observation": {
+              "browser": "Chrome",
+              "version": "0.2.63",
+              "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "readiness": "Available",
+              "expectedBrowser": "Chrome",
+              "manifestVersion": "0.2.63",
+              "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passwordApis": true,
+              "updateApi": true,
+              "hasUpdateButton": true,
+              "updateText": null,
+              "browserManaged": false,
+              "unavailableRemedy": false
+            }
+          },
+          {
+            "phase": "warm",
+            "action": "Request real browser update check",
+            "observation": {
+              "browser": "Chrome",
+              "version": "0.2.63",
+              "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "readiness": "Available",
+              "expectedBrowser": "Chrome",
+              "manifestVersion": "0.2.63",
+              "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passwordApis": true,
+              "updateApi": true,
+              "hasUpdateButton": true,
+              "updateText": "Your browser did not find an update right now.",
+              "browserManaged": false,
+              "unavailableRemedy": false
+            }
+          },
+          {
+            "phase": "reload",
+            "action": "Inspect current identity and API readiness",
+            "observation": {
+              "browser": "Chrome",
+              "version": "0.2.63",
+              "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "readiness": "Available",
+              "expectedBrowser": "Chrome",
+              "manifestVersion": "0.2.63",
+              "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passwordApis": true,
+              "updateApi": true,
+              "hasUpdateButton": true,
+              "updateText": null,
+              "browserManaged": false,
+              "unavailableRemedy": false
+            }
+          }
+        ],
+        "criteria": [
+          {
+            "name": "identity matches running browser, manifest, receipt and runtime ID",
+            "status": "pass",
+            "evidence": {
+              "browser": "Chrome",
+              "version": "0.2.63",
+              "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "readiness": "Available",
+              "expectedBrowser": "Chrome",
+              "manifestVersion": "0.2.63",
+              "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passwordApis": true,
+              "updateApi": true,
+              "hasUpdateButton": true,
+              "updateText": null,
+              "browserManaged": false,
+              "unavailableRemedy": false
+            }
+          },
+          {
+            "name": "password-flow API readiness label and remedy",
+            "status": "pass",
+            "evidence": {
+              "browser": "Chrome",
+              "version": "0.2.63",
+              "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "readiness": "Available",
+              "expectedBrowser": "Chrome",
+              "manifestVersion": "0.2.63",
+              "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passwordApis": true,
+              "updateApi": true,
+              "hasUpdateButton": true,
+              "updateText": null,
+              "browserManaged": false,
+              "unavailableRemedy": false
+            }
+          },
+          {
+            "name": "password-flow API unavailable branch",
+            "status": "unverified",
+            "evidence": "No browser API was removed or mocked."
+          },
+          {
+            "name": "observed browser update result shown accurately",
+            "status": "pass",
+            "evidence": {
+              "browser": "Chrome",
+              "version": "0.2.63",
+              "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "readiness": "Available",
+              "expectedBrowser": "Chrome",
+              "manifestVersion": "0.2.63",
+              "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passwordApis": true,
+              "updateApi": true,
+              "hasUpdateButton": true,
+              "updateText": "Your browser did not find an update right now.",
+              "browserManaged": false,
+              "unavailableRemedy": false
+            }
+          },
+          {
+            "name": "no-update outcome",
+            "status": "pass",
+            "evidence": {
+              "browser": "Chrome",
+              "version": "0.2.63",
+              "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "readiness": "Available",
+              "expectedBrowser": "Chrome",
+              "manifestVersion": "0.2.63",
+              "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passwordApis": true,
+              "updateApi": true,
+              "hasUpdateButton": true,
+              "updateText": "Your browser did not find an update right now.",
+              "browserManaged": false,
+              "unavailableRemedy": false
+            }
+          },
+          {
+            "name": "update available branch",
+            "status": "unverified",
+            "evidence": "No browser API or update result was fabricated."
+          },
+          {
+            "name": "throttled branch",
+            "status": "unverified",
+            "evidence": "No browser API or update result was fabricated."
+          },
+          {
+            "name": "update error branch",
+            "status": "unverified",
+            "evidence": "No browser API or update result was fabricated."
+          },
+          {
+            "name": "update API unavailable branch",
+            "status": "unverified",
+            "evidence": "No browser API or update result was fabricated."
+          },
+          {
+            "name": "identity and API readiness remain current after reload",
+            "status": "pass",
+            "evidence": {
+              "browser": "Chrome",
+              "version": "0.2.63",
+              "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "readiness": "Available",
+              "expectedBrowser": "Chrome",
+              "manifestVersion": "0.2.63",
+              "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+              "passwordApis": true,
+              "updateApi": true,
+              "hasUpdateButton": true,
+              "updateText": null,
+              "browserManaged": false,
+              "unavailableRemedy": false
+            }
+          }
+        ],
+        "build": {
+          "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+          "version": "0.2.63",
+          "sourceSha": "b76367b00b9cfa59a5b81d505e6ecfc1f4a3c413",
+          "treeSha256": "d1afc8cfbcbbde0b9fd5106b5529b06f46bcb96fdc5b4ada7db397bfd8f15a35",
+          "verified": true
+        },
+        "preconditions": [
+          "Owned disposable profile",
+          "Released extension receipt and tree hash verified",
+          "Guest panel settled before interaction"
+        ],
+        "evidence": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-rTGBwL"
+      }
+    ],
+    "artifacts": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-rTGBwL",
+    "status": "unverified"
+  },
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:42:24.995Z",
+      "runId": "guest-settings-local-007",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.8399999999999999,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1915,
+        "swapUsedMiB": 2685.69,
+        "repoFreeGiB": 1675.9322242736816,
+        "profileFreeGiB": 22.424068450927734
+      },
+      "cpuBusySamples": [
+        0.23860000000000003, 0.1744, 0.09660000000000002, 0.3014, 0.3275, 0.09599999999999997,
+        0.10599999999999998
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:42:33.489Z",
+      "runId": "guest-settings-local-007",
+      "childExitCode": 0,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ]
+}

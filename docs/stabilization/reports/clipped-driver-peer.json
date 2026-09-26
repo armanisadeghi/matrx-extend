@@ -1,0 +1,18 @@
+{
+  "task_id": "clipped-driver-peer",
+  "lane": "fresh independent source-only native-driver review",
+  "reviewed_commit": "fead20f",
+  "case_id": "EXT-D-0015",
+  "run_reference": "docs/stabilization/runs/isolated-admin-reset-006.json",
+  "verdict_a": {
+    "status": "SOURCE ACCEPTABLE; runtime unverified",
+    "finding": "The driver accepts exactly one visible, non-inert match, scrolls it into view, intersects its rectangle with viewport and overflow-clipping ancestors, and sends CDP mouse press/release only after repeated stable browser hit tests on that same target or its descendant. Missing or occluded hit points, a disabled target, motion, and animation fail closed. No DOM click or overlay removal was introduced. The fixed interior grid can miss a small available region and therefore fail closed; run 006 cannot establish that clipping caused its old center miss because it did not retain clip geometry.",
+    "source_limits": "The clipping calculation adds unscaled clientLeft/clientWidth/clientHeight to a transformed getBoundingClientRect rectangle. A scaled clipping ancestor can make the diagnostic clipped rectangle and sampled grid inaccurate, though elementFromPoint still prevents selecting a different control. target.disabled misses semantic disabled states such as a button inside a disabled fieldset or aria-disabled role controls; these could receive coordinates but are unlikely to activate and would fail later outcome checks. Consider getClientRects/quad-aware clipping and matches(':disabled') plus aria-disabled ancestry if this driver is generalized beyond the current reset control.",
+    "next_action": "Root must run the original Cancel/reopen/Confirm/reload path under its guard and inspect open_pointer or open_click_diagnostic.pointer. An old-center miss followed by a valid alternative point would demonstrate this seam; continued miss requires diagnosing the persisted geometry and hit category."
+  },
+  "verdict_b": {
+    "status": "PASS with source limits",
+    "finding": "Persisted pointer evidence contains coordinates, booleans, counts, and fixed hit categories. The new code does not persist DOM text, arbitrary attributes, class names, URLs, screenshots, values, or raw storage data. Selector labels remain in in-process error messages, as before. The new failure path attaches structured geometry to the error without relaxing the action assertion. No browser, build, install, test, or mutation run was performed in this lane."
+  },
+  "source_guard": "Inspected the exact commit and full click driver: candidate count must equal one before target selection; stableSamples needs two consecutive coordinate-stable, animated=false, hitTarget=true observations; the only action dispatch is Input.dispatchMouseEvent pressed/released. A changed target or newly arriving overlay between final sample and dispatch remains a normal time-of-check race and is judged by the downstream outcome assertion."
+}

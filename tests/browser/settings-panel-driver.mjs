@@ -76,6 +76,13 @@ export async function click(panel, kind, label) {
     else if (kind === 'theme') candidates = [...document.querySelectorAll('span')]
       .filter((el) => el.textContent.trim() === 'Theme')
       .flatMap((el) => [...el.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
+    else if (kind === 'organization') candidates = [...document.querySelectorAll('span')]
+      .filter((el) => el.textContent.trim() === 'Acting as')
+      .flatMap((el) => [...el.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
+    else if (kind === 'capture-no-workspace-dismiss') candidates = [...document.querySelectorAll('[role="alert"]')]
+      .filter((el) => el.querySelector('.font-medium')?.textContent.trim() === 'Capture list unavailable'
+        && el.querySelector('p')?.textContent.includes('no workspace is selected, so the request was never sent'))
+      .flatMap((el) => [...el.querySelectorAll('button[aria-label="Dismiss"]')]);
     else if (kind === 'port') candidates = [...document.querySelectorAll('input[placeholder="auto"]')];
     else if (kind === 'switch') candidates = [...document.querySelectorAll('[role="switch"][aria-label]')]
       .filter((el) => el.getAttribute('aria-label') === label);
@@ -95,28 +102,63 @@ export async function click(panel, kind, label) {
     // Never click unless the real target subsequently passes hit-testing.
     target.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' });
     const rect = target.getBoundingClientRect();
-    const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2;
-    const hit = document.elementFromPoint(x, y);
-    const hitTarget = hit === target || target.contains(hit);
-    const scroller = [target, ...(() => {
-      const ancestors = []; for (let el = target.parentElement; el; el = el.parentElement) ancestors.push(el);
-      return ancestors;
-    })()].find((el) => {
-      const style = getComputedStyle(el);
-      return /auto|scroll/.test(style.overflowY) && el.scrollHeight > el.clientHeight + 1;
-    });
-    const scrollRect = scroller?.getBoundingClientRect();
-    const describe = (el) => el ? { tag: el.tagName, role: el.getAttribute('role'),
-      className: String(el.className), pointerEvents: getComputedStyle(el).pointerEvents } : null;
-    const scrollState = { top: scroller?.scrollTop ?? null,
-      height: scroller?.clientHeight ?? null, contentHeight: scroller?.scrollHeight ?? null,
-      rect: scrollRect ? { x: scrollRect.x, y: scrollRect.y,
-        width: scrollRect.width, height: scrollRect.height } : null,
-      hit: describe(hit), container: describe(scroller),
-      bodyOverflow: getComputedStyle(document.body).overflow,
-      bodyPointerEvents: getComputedStyle(document.body).pointerEvents,
-      bodyScrollLocked: document.body.getAttribute('data-scroll-locked'),
-      openListboxes: document.querySelectorAll('[role="listbox"]').length };
+    // A viewport-visible center can still lie outside a nested overflow clip.
+    // Intersect every clipping ancestor, then use only points that the browser
+    // says actually hit this target. Never dismiss an overlay or invoke click().
+    const bounds = { left: Math.max(0, rect.left), top: Math.max(0, rect.top),
+      right: Math.min(innerWidth, rect.right), bottom: Math.min(innerHeight, rect.bottom) };
+    let clippingAncestors = 0;
+    for (let ancestor = target.parentElement; ancestor; ancestor = ancestor.parentElement) {
+      const style = getComputedStyle(ancestor), box = ancestor.getBoundingClientRect();
+      const clips = (overflow) => /^(auto|scroll|hidden|clip)$/.test(overflow);
+      if (clips(style.overflowX)) {
+        bounds.left = Math.max(bounds.left, box.left + ancestor.clientLeft);
+        bounds.right = Math.min(bounds.right, box.left + ancestor.clientLeft + ancestor.clientWidth);
+      }
+      if (clips(style.overflowY)) {
+        clippingAncestors++;
+        bounds.top = Math.max(bounds.top, box.top + ancestor.clientTop);
+        bounds.bottom = Math.min(bounds.bottom, box.top + ancestor.clientTop + ancestor.clientHeight);
+      }
+    }
+    const originalCenter = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+    const centerHit = document.elementFromPoint(originalCenter.x, originalCenter.y);
+    const hitsTarget = (hit) => Boolean(hit && (hit === target || target.contains(hit)));
+    const points = [];
+    if (bounds.right > bounds.left && bounds.bottom > bounds.top) {
+      for (const fy of [0.5, 0.25, 0.75]) for (const fx of [0.5, 0.25, 0.75]) {
+        points.push({ x: bounds.left + (bounds.right - bounds.left) * fx,
+          y: bounds.top + (bounds.bottom - bounds.top) * fy });
+      }
+    }
+    const selected = points.find((point) => hitsTarget(document.elementFromPoint(point.x, point.y)));
+    const { x, y } = selected ?? originalCenter;
+    const hitTarget = Boolean(selected) && !target.disabled;
+    const hitCategory = (hit) => {
+      if (!hit) return 'none';
+      if (hitsTarget(hit)) return 'target';
+      if (hit.closest('[role="alertdialog"], [role="dialog"]')) return 'dialog';
+      if (hit.closest('[role="listbox"]')) return 'listbox';
+      if (hit.closest('[data-slot="alert-dialog-overlay"], [data-slot="dialog-overlay"]')) return 'modal_overlay';
+      if (hit.contains(target)) return 'target_ancestor';
+      if (hit.closest('header, [role="tablist"]')) return 'header_or_tabs';
+      return 'other_element';
+    };
+    // Fixed categories and geometry only: never element text, attributes,
+    // class names, form values, URL, or screenshot contents.
+    const pointerDiagnostic = {
+      target_rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+      clipped_rect: { x: bounds.left, y: bounds.top,
+        width: Math.max(0, bounds.right - bounds.left), height: Math.max(0, bounds.bottom - bounds.top) },
+      viewport: { width: innerWidth, height: innerHeight },
+      clipping_ancestor_count: clippingAncestors,
+      tested_point_count: points.length,
+      center_hit_category: hitCategory(centerHit),
+      selected_point_available: Boolean(selected),
+      selected_point: selected ?? null,
+      target_disabled: Boolean(target.disabled),
+      target_pointer_events_none: getComputedStyle(target).pointerEvents === 'none',
+    };
     let animating = false;
     for (let ancestor = target; ancestor; ancestor = ancestor.parentElement) {
       if (ancestor.getAnimations({ subtree: false }).some((animation) => animation.playState === 'running')) {
@@ -126,7 +168,7 @@ export async function click(panel, kind, label) {
     }
     return { count: 1, x, y, hitTarget, animating,
       viewport: { width: innerWidth, height: innerHeight },
-      scrollState, hitTag: hit?.tagName ?? null };
+      pointerDiagnostic };
   })()`,
     );
   let location = await pointerSample();
@@ -158,11 +200,11 @@ export async function click(panel, kind, label) {
     if (stableSamples >= 2) break;
     previous = location?.count === 1 ? { x: location.x, y: location.y } : undefined;
   } while (Date.now() < deadline);
-  assert.equal(
-    stableSamples >= 2,
-    true,
-    `stable hit target for ${kind} ${label}: ${JSON.stringify(location)}`,
-  );
+  if (stableSamples < 2) {
+    const error = new Error(`stable hit target for ${kind} ${label}`);
+    error.pointerDiagnostic = location?.pointerDiagnostic ?? { sample_unavailable: true };
+    throw error;
+  }
   await panel.send('Input.dispatchMouseEvent', {
     type: 'mousePressed',
     x: location.x,
@@ -191,4 +233,5 @@ export async function click(panel, kind, label) {
       `real mouse click focused port input: ${JSON.stringify({ location, focused })}`,
     );
   }
+  return location.pointerDiagnostic;
 }

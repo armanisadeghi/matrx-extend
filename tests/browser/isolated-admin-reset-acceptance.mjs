@@ -18,6 +18,7 @@ const OUTPUT = join(REPO, 'test-results', 'isolated-admin-reset-acceptance.json'
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const EXPECTED_ADMIN = 'admin@admin.com';
+const OWNED_ORGANIZATION = 'ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete';
 const LOCAL_KEY = 'matrx.qa.adminReset.local';
 const LOCAL_VALUE = 'disposable-admin-reset-local-fixture';
 const SESSION_KEY = 'matrx.qa.adminReset.session';
@@ -37,7 +38,8 @@ const evidence = {
   login_method: 'real web form followed by extension Settings Sign in',
   response_interception: false,
   injected_auth_session: false,
-  fixture: 'Dark theme through Settings and inert local/session values',
+  fixture:
+    'Existing owned organization and Dark theme through Settings; inert local/session values',
   steps: [],
 };
 
@@ -139,6 +141,41 @@ async function panelState(panel) {
         ?.querySelector('button[role="combobox"]')?.textContent.trim() ?? null,
       dialog: Boolean(dialog),
     };
+  })()`,
+  );
+}
+
+async function organizationSetupState(panel) {
+  return evaluate(
+    panel,
+    `(async () => {
+    const label = ${JSON.stringify(OWNED_ORGANIZATION)};
+    const rows = [...document.querySelectorAll('span')]
+      .filter((span) => span.textContent.trim() === 'Acting as');
+    const controls = rows.flatMap((span) =>
+      [...span.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
+    const options = [...document.querySelectorAll('[role="option"]')]
+      .filter((option) => option.textContent.trim() === label);
+    const stored = (await chrome.storage.local.get('matrx.org.active'))['matrx.org.active'];
+    return {
+      control_count: controls.length,
+      option_count: options.length,
+      displayed_match: controls.length === 1 && controls[0].textContent.trim() === label,
+      stored_match: typeof stored?.id === 'string' && stored.id.length > 0 && stored.name === label,
+    };
+  })()`,
+  );
+}
+
+async function captureNoWorkspaceNoticeState(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+    const matches = [...document.querySelectorAll('[role="alert"]')]
+      .filter((el) => el.querySelector('.font-medium')?.textContent.trim() === 'Capture list unavailable'
+        && el.querySelector('p')?.textContent.includes('no workspace is selected, so the request was never sent'));
+    return { matching_count: matches.length,
+      dismiss_count: matches.flatMap((el) => [...el.querySelectorAll('button[aria-label="Dismiss"]')]).length };
   })()`,
   );
 }
@@ -353,9 +390,101 @@ async function nativeActionDiagnostic(panel, error, kind, label) {
       };
     })()`,
     );
-    return { category, ...state };
+    return {
+      category,
+      ...state,
+      ...(error?.pointerDiagnostic ? { pointer: error.pointerDiagnostic } : {}),
+    };
   } catch {
     return { category, snapshot_available: false };
+  }
+}
+
+// Failure-only evidence on the already attached native Settings target. Never
+// attach to the login tab; never serialize node text, arbitrary attrs or values.
+async function resetOcclusionDiagnostic(panel) {
+  try {
+    const snapshot = await evaluate(
+      panel,
+      `(() => {
+      const activeSettings = document.querySelector('button[title="Settings"][data-state="active"]');
+      const target = [...document.querySelectorAll('button')].find((el) =>
+        el.textContent.trim() === 'Clear local data on this device' &&
+        el.getBoundingClientRect().width > 0 && !el.closest('[inert]'));
+      const settings = target?.closest('[role="tabpanel"]');
+      const visible = (el) => { const r = el.getBoundingClientRect();
+        return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden'; };
+      const safeSurface = location.protocol === 'chrome-extension:' &&
+        location.pathname === '/sidepanel.html' && Boolean(activeSettings && settings) &&
+        ![...document.querySelectorAll('form, input[type="password"], iframe')].some(visible);
+      if (!safeSurface) return { surface_verified: false };
+      const rect = (el) => { const r = el.getBoundingClientRect();
+        return { x: r.x, y: r.y, width: r.width, height: r.height }; };
+      const ids = new Map();
+      const fixed = (value, allowed) => allowed.includes(value) ? value : value == null ? null : 'other';
+      const describe = (el) => {
+        if (!el) return null;
+        if (!ids.has(el)) ids.set(el, ids.size + 1);
+        const style = getComputedStyle(el);
+        return { node: ids.get(el),
+          tag: fixed(el.localName, ['html','body','div','span','button','svg','path','input','section','header','main','nav','p','a']),
+          role: fixed(el.getAttribute('role'), ['tabpanel','tablist','tab','dialog','alertdialog','button','listbox','option','presentation','none']),
+          // These slots are already source-declared selectors in this runner/driver.
+          slot: fixed(el.getAttribute('data-slot'), ['alert-dialog-title','alert-dialog-overlay','dialog-overlay']),
+          state: fixed(el.getAttribute('data-state'), ['active','inactive','open','closed']),
+          aria_hidden: fixed(el.getAttribute('aria-hidden'), ['true','false']),
+          inert: el.hasAttribute('inert'), hidden: el.hasAttribute('hidden'),
+          is_target: el === target, contains_target: el.contains(target),
+          within_settings: settings.contains(el), rect: rect(el),
+          pointer_events: fixed(style.pointerEvents, ['auto','none']),
+          position: fixed(style.position, ['static','relative','absolute','fixed','sticky']),
+          z_index: style.zIndex === 'auto' ? 'auto' : Number.isFinite(Number(style.zIndex)) ? Number(style.zIndex) : 'other',
+          opacity: Number(style.opacity),
+          visibility: fixed(style.visibility, ['visible','hidden','collapse']),
+          overflow_x: fixed(style.overflowX, ['visible','hidden','clip','scroll','auto']),
+          overflow_y: fixed(style.overflowY, ['visible','hidden','clip','scroll','auto']),
+          scroll_top: el.scrollTop, scroll_left: el.scrollLeft,
+          client_width: el.clientWidth, client_height: el.clientHeight,
+          transformed: style.transform !== 'none' };
+      };
+      const chain = (el) => { const result = [];
+        for (; el; el = el.parentElement) result.push(describe(el)); return result; };
+      const r = target.getBoundingClientRect();
+      const x = r.x + r.width / 2, y = r.y + r.height / 2;
+      const hit = document.elementFromPoint(x, y);
+      const box = settings.getBoundingClientRect();
+      const left = Math.max(0, box.left), top = Math.max(0, box.top);
+      const width = Math.max(0, Math.min(innerWidth, box.right) - left);
+      const height = Math.max(0, Math.min(innerHeight, box.bottom) - top);
+      return { surface_verified: true, target_chain: chain(target), hit_chain: chain(hit),
+        center_stack: document.elementsFromPoint(x, y).map(describe),
+        point: { x, y }, viewport: { width: innerWidth, height: innerHeight },
+        screenshot_clip: width > 0 && height > 0 ? { x: left + scrollX, y: top + scrollY, width, height, scale: 1 } : null };
+    })()`,
+    );
+    if (!snapshot?.surface_verified || !snapshot.screenshot_clip)
+      return { ...snapshot, screenshot_status: 'surface_refused' };
+    try {
+      const { data } = await panel.send('Page.captureScreenshot', {
+        format: 'png',
+        captureBeyondViewport: false,
+        clip: snapshot.screenshot_clip,
+      });
+      if (typeof data !== 'string' || data.length < 100) throw new Error('png_missing');
+      const filename = 'isolated-admin-reset-occlusion.png';
+      await writeFile(join(REPO, 'test-results', filename), Buffer.from(data, 'base64'), {
+        mode: 0o600,
+      });
+      return {
+        ...snapshot,
+        screenshot_status: 'captured',
+        screenshot_path: 'test-results/' + filename,
+      };
+    } catch {
+      return { ...snapshot, screenshot_status: 'capture_failed' };
+    }
+  } catch {
+    return { snapshot_available: false, screenshot_status: 'surface_unavailable' };
   }
 }
 
@@ -442,6 +571,48 @@ try {
         stage = 'extension_signin';
         await click(panel, 'button', 'Sign in');
         await waitFor('admin_settings_after_real_signin', () => panelState(panel), isAdmin, 90_000);
+        stage = 'organization_fixture_selection';
+        await openSection(panel, 'Organization');
+        await waitFor(
+          'organization_control_ready',
+          () => organizationSetupState(panel),
+          (s) => s?.control_count === 1,
+        );
+        await click(panel, 'organization', 'Acting as');
+        const offered = await organizationSetupState(panel);
+        evidence.organization_setup = {
+          fixture_option_unique: offered.option_count === 1,
+          displayed_match: false,
+          stored_match: false,
+          matching_notice_present: false,
+          matching_notice_dismissed: false,
+        };
+        if (offered.option_count !== 1) fail('organization_fixture_option_unavailable');
+        await click(panel, 'option', OWNED_ORGANIZATION);
+        const chosen = await waitFor(
+          'organization_choice_stored',
+          () => organizationSetupState(panel),
+          (s) => s?.displayed_match && s.stored_match,
+        );
+        evidence.organization_setup.displayed_match = chosen.displayed_match;
+        evidence.organization_setup.stored_match = chosen.stored_match;
+        const notice = await captureNoWorkspaceNoticeState(panel);
+        if (notice.matching_count > 1 || notice.dismiss_count !== notice.matching_count)
+          fail('matching_capture_notice_ambiguous');
+        evidence.organization_setup.matching_notice_present = notice.matching_count === 1;
+        if (notice.matching_count === 1) {
+          await click(panel, 'capture-no-workspace-dismiss', 'Dismiss');
+          await waitFor(
+            'matching_capture_notice_dismissed',
+            () => captureNoWorkspaceNoticeState(panel),
+            (s) => s?.matching_count === 0,
+          );
+          evidence.organization_setup.matching_notice_dismissed = true;
+        }
+        evidence.steps.push(
+          'Existing owned organization selected through Settings and stored on this device',
+        );
+        stage = 'theme_fixture_selection';
         await openSection(panel, 'Appearance');
         await click(panel, 'theme', 'Theme');
         await click(panel, 'option', 'Dark');
@@ -551,7 +722,11 @@ try {
         };
         stage = 'reset_confirm_open_action';
         try {
-          await click(panel, 'button', 'Clear local data on this device');
+          evidence.reset_confirm.open_pointer = await click(
+            panel,
+            'button',
+            'Clear local data on this device',
+          );
         } catch (error) {
           evidence.reset_confirm.open_click_diagnostic = await nativeActionDiagnostic(
             panel,
@@ -559,6 +734,7 @@ try {
             'button',
             'Clear local data on this device',
           );
+          evidence.reset_confirm.occlusion = await resetOcclusionDiagnostic(panel);
           throw error;
         }
         stage = 'reset_confirm_dialog_wait';

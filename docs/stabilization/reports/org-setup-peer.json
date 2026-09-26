@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "org-setup-peer",
+  "lane": "fresh source peer Luna medium",
+  "reviewed_commit": "fe4369fc3a7d73f1d5831c7f4e28f8b1f10531e0",
+  "status": "source_accepted_runtime_pending",
+  "contract": "EXT-D-0015; docs/stabilization/reports/reset-occlusion-diagnosis.json",
+  "A_source": {
+    "verdict": "accepted",
+    "evidence": [
+      "Exact existing fixture label is selected through the Settings Organization Acting as combobox and role=option.",
+      "The selector ancestry matches SettingsView.tsx ControlRow: label span -> column -> row -> combobox.",
+      "The state oracle emits displayed_match and stored_match booleans; stored selection requires a nonempty id and exact expected name without returning the id.",
+      "Only role=alert cards matching both the Capture list unavailable title and no-workspace explanation qualify; exactly one native hit-tested Dismiss button is required, followed by absence verification.",
+      "No auth/org injection, arbitrary alert dismissal, storage whitelist, DOM mutation, or reset oracle change found."
+    ],
+    "preserved_oracle": "Cancel value identity, native reopen, Confirm empty storage, guest reload defaults, diagnostics, and unknown post-reset chat_preferences verdict remain intact."
+  },
+  "B_runtime": {
+    "verdict": "pending",
+    "reason": "Peer scope explicitly excludes browser, test, build, and install; root owns the guarded real-UI acceptance run.",
+    "required": "Verify the fixture is uniquely offered, displayed/stored booleans become true, any matching notice alone is natively dismissed, and the original reset acceptance path passes."
+  },
+  "changed_files": ["docs/stabilization/reports/org-setup-peer.json"],
+  "verification": [
+    "Source inspection against SettingsView.tsx, NoticeHost.tsx, driver selectors, and reset diagnosis contract."
+  ],
+  "next_action": "Root performs the guarded browser run; retain runtime-pending status until its full reset oracle is green."
+}

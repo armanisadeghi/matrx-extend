@@ -8,9 +8,10 @@
   "summary": "Replaced key-name exceptions with browser-side prior-value identity comparisons and fixed aggregate categories. No product change or defect closure.",
   "changed_files": [
     "tests/browser/isolated-admin-reset-acceptance.mjs",
-    "docs/stabilization/reports/reset-oracle-escalation.json"
+    "docs/stabilization/reports/reset-oracle-escalation.json",
+    "tests/browser/settings-panel-driver.mjs"
   ],
-  "commit_shas": ["2a8fdd5", "acb4753"],
+  "commit_shas": ["2a8fdd5", "acb4753", "c3d169c"],
   "diagnosis": {
     "confirmed": "Run 004 observed empty local/session storage immediately after Confirm, signed-out UI, and guest/System UI after reload. Its final failure checks key-name overlap after bootstrap; the receipt does not record the names or value identities needed to determine whether state was restored.",
     "unresolved": "Four returning local key names cannot be classified retrospectively. They may be fresh bootstrap data or retained data; source inspection alone cannot choose.",
@@ -70,7 +71,7 @@
     "Source inspection ruled out assuming the admin flag is automatically persisted for a guest; no such exception was added."
   ],
   "open_questions": [],
-  "next_action": "Fresh peer review, then one root-guarded run to identify the remaining source class with initial-guest/shape evidence. Trace its writer and exact default before any acceptance exception; unknown remains failure.",
+  "next_action": "Fresh source review then guarded original Cancel/reopen/Confirm/reload run. Use persisted pointer geometry on either result to confirm or reject the clipping hypothesis; continue value-census diagnosis after Confirm. Do not close EXT-D-0015 based only on static checks.",
   "peer_followup": {
     "review": "docs/stabilization/reports/reset-identity-peer.json",
     "finding": "Cancel previously checked only key presence and sentinel values, allowing mutation of other prior values to pass.",
@@ -87,5 +88,17 @@
     "causal_proof_requirement": "Matching initial guest state is corroboration only. Classify a repeat as safe initialization only after binding that observed class to the actual writer and its exact non-user default. Immediate empty storage establishes removal, not the origin of a subsequent identical write.",
     "acceptance_unchanged": "All unexplained overlap still fails. No whitelist/default exemption added. Original dialog reopening fault remains unresolved despite passes 003/004/005.",
     "verification": "Source-only Node syntax, local Biome formatting, and exact-path diff whitespace checks. No browser/runtime/build/install/mutation run."
+  },
+  "native_driver_followup_006": {
+    "evidence": "docs/stabilization/runs/isolated-admin-reset-006.json",
+    "observed": "After Cancel the unique button is laid out and its center is in the viewport, but the center fails hit testing. No dialog, inert state, animation or body lock was observed. Confirm was never clicked.",
+    "proven_source_gap": "The driver used only the full bounding-box center, ignoring overflow ancestor clipping. Viewport membership does not imply that point belongs to the visible hit-test area. A partially clipped or partially occluded button can remain reachable by native input at another interior point.",
+    "causality_limit": "006 omitted actual target/scroller geometry and occluding-element category. Nested clipping is a concrete driver gap, not a proven retrospective cause of 006 or 001/002.",
+    "repair": "Intersect the target rectangle with viewport and each overflow-clipping ancestor, test a fixed 3-by-3 interior grid, and accept only native browser hit tests to that exact target or descendants. Disabled targets, absent hit points, motion and animation still fail. Dispatch remains CDP native mouse press/release; no DOM click, overlay removal, wait extension or skipped assertion.",
+    "decisive_next_observation": "Both success and failure of the reopen action now retain target/clipped rectangles, viewport, clipping count, center occluder fixed category, selected point and disabled/pointer-events booleans. Success with an occluded old center and valid alternative demonstrates the corrected seam. Failure identifies the actual geometric/semantic obstruction instead of another count-only receipt.",
+    "privacy": "No screenshot or DOM text/attribute/class dumps. The structured pointer evidence contains fixed categories, coordinates and booleans only.",
+    "census_bonus": "006 initial guest storage has four local keys, and only chat_preferences among the five other Cancel classes matches initial guest. This strongly narrows the remaining reload candidate to the chat store, but reload was not reached and exact default/writer proof remains pending.",
+    "verification": "Node --check for both runner files; local Biome format; exact-path git diff --check. No runtime or mutation run authorized in this lane. Fresh source peer plus root guarded original reproduction required.",
+    "status": "Source-ready repair of driver coverage gap; original D15 and one reload identity remain open."
   }
 }
