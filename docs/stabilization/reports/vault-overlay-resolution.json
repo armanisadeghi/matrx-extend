@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "status": "obstruction_confirmed_source_unresolved_diagnostic_ready",
-  "run_id": "member-vault-access-008",
-  "receipt": "docs/stabilization/runs/member-vault-access-008.json",
+  "status": "notice_host_obstruction_confirmed_bounded_remedy_unverified",
+  "run_id": "member-vault-access-009",
+  "receipt": "docs/stabilization/runs/member-vault-access-009.json",
   "observed_boundary": {
     "admin_web_signed_in": true,
     "admin_extension_signed_in": true,
@@ -13,20 +13,19 @@
     "shared_tab_position_stable": true,
     "interior_points_tested": 9,
     "interior_points_hitting_shared_tab": 0,
-    "occluder": "static p outside the active Vault tabpanel, x47 y252.34375 width262 height117",
+    "occluder": "static p inside an app-root role=alert card, below a fixed pointer-events-none container; outside every tabpanel and dialog; x47 y252.34375 width262 height117",
     "trusted_pointer_dispatched": false
   },
   "source_findings": [
-    "The Vault Shared tab is inside the active Vault tabpanel in App.tsx and VaultView.tsx. The hit paragraph is outside that panel, so the current run does not establish a Vault list or Shared tab defect.",
-    "App.tsx keeps Chat, Pilot, Tasks, and Showcase tabpanels mounted while inactive and mounts several root-level hosts. OrganizationPickerDialog also renders a description paragraph in a dialog portal. The 008 categories cannot distinguish these potential owners because they report only the hit element, not its ancestor chain or owning tabpanel.",
-    "No safe dismissal path is established by the 008 receipt. A forced click or blind overlay dismissal would defeat the trusted hit-test gate."
+    "Run 009's p→div→role=alert div→fixed pointer-events-none div→#app chain matches NoticeHost.tsx. Its role=alert cards are pointer-events-auto notices with a real Dismiss button. The fixed ancestor layout rules out an inactive mounted tabpanel or organization picker dialog as this occluder.",
+    "NoticeHost presents real database failures as well as other notices. Run 009 does not disclose the notice title or message; blind dismissal would hide a product error. The driver already has a source-specific Capture list unavailable/no-workspace Dismiss selector from an earlier acceptance lane.",
+    "The probe now checks only that known stale capture notice after the approved organization is selected, dismisses it through the existing trusted click path, waits for disappearance, and records a boolean. All other notices stay visible and can still block the Shared click."
   ],
-  "diagnostic_change": "On a pointer failure, report the target rectangle and a bounded occluder classification: owning top-level tabpanel from fixed App tab titles, active/inactive state, known static paragraph enum, app-root/dialog/alert/modal-overlay membership, and up to ten ancestor nodes with fixed tag/role/slot/state/position and display/pointer booleans. No DOM text, arbitrary attributes, URLs, account or Vault values, raw errors, screenshots, or secrets cross the page boundary.",
+  "diagnostic_change": "On a pointer failure, report a fixed known_notice enum derived inside the page from NoticeHost's known static title and db-failure sentence fragments. The paragraph and alert content remain in the page; no arbitrary notice text, Vault values, raw errors, screenshots, or secrets cross to Node.",
   "falsifiable_next_observation": [
-    "An inactive mounted tabpanel owner plus active computed display or pointer coverage would identify a hidden-panel layering defect.",
-    "A dialog or modal slot in the ancestor chain would identify a live prerequisite/modal that needs its own explicit user action, not a Shared-tab click bypass.",
-    "A root host or unclassified paragraph with no panel/dialog owner would narrow the source to an app-level notice or a missing overlay category, preserving its structural chain for source matching."
+    "If run 009's notice is the stale capture no-workspace notice, the next run dismisses it with a real trusted pointer and reaches the Shared inventory.",
+    "If it is another notice, the Shared click remains blocked and known_notice distinguishes database refusal, missing relation, expired sign-in, unreachable database, another no-workspace notice, or other alert. Its actual error remains visible for diagnosis."
   ],
-  "next_step": "Root serial runner should execute one admitted owned-profile probe after this diagnostic commit and inspect the bounded failure fields before deciding whether any UI dismissal or product fix is justified.",
+  "next_step": "Root serial runner should execute one admitted owned-profile probe after this commit. A successful Shared click still does not establish member authorization; inspect only masked inventory and continue the separate member-auth acceptance work.",
   "member_auth_status": "unverified"
 }

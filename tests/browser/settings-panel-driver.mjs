@@ -247,6 +247,23 @@ export async function click(panel, kind, label) {
       // Compare only fixed source copy inside the page. No paragraph text is
       // returned to Node, including when it contains account or Vault data.
       const paragraph = hit.closest('p');
+      const alert = hit.closest('[role="alert"]');
+      const alertTitle = alert?.querySelector('.font-medium')?.textContent?.trim();
+      const alertMessage = alert?.querySelector('p')?.textContent ?? '';
+      const knownNotice = alertTitle === 'Capture list unavailable' &&
+        alertMessage.includes('no workspace is selected, so the request was never sent')
+          ? 'capture_no_workspace'
+          : alertMessage.includes('no workspace is selected, so the request was never sent')
+            ? 'other_no_workspace'
+            : alertMessage.includes('the database refused the request because your account is not allowed')
+              ? 'database_refused'
+              : alertMessage.includes('the data table this feature needs is not available')
+                ? 'database_missing_relation'
+                : alertMessage.includes('your sign-in has expired')
+                  ? 'database_not_authenticated'
+                  : alertMessage.includes('the database could not be reached')
+                    ? 'database_unreachable'
+                    : alert ? 'other_alert' : 'none';
       const knownParagraph = paragraph?.textContent?.trim() ===
         'Everything AI Matrx does for you happens inside one organization, and this browser has not been told which one to use. Pick it once — you can switch any time in Settings.'
           ? 'organization_picker_description'
@@ -302,6 +319,7 @@ export async function click(panel, kind, label) {
           : owningPanel?.getAttribute('data-state') === 'inactive' ? 'inactive' : 'none_or_other',
         tabpanel_ancestor_count: panelAncestors.length,
         known_paragraph: knownParagraph,
+        known_notice: knownNotice,
         in_app_root: document.getElementById('app')?.contains(hit) === true,
         in_dialog: Boolean(hit.closest('[role="dialog"], [role="alertdialog"]')),
         in_alert: Boolean(hit.closest('[role="alert"]')),
