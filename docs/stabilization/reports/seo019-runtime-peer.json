@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "report_id": "seo019-runtime-peer",
+  "run_id": "seo-guest-019",
+  "A_product_acceptance": {
+    "verdict": "BOUNDED_AIRBNB_METADATA_DOOR_TARGET_PASSED",
+    "evidence": [
+      "The raw output contains 18 target records: 17 pass and one unverified; overall status is partial.",
+      "The new Airbnb T09 target records one public-DOM hreflang destination (es-US -> https://es.airbnb.com/) and one schema.org WebSite destination. It reports trustedInput true.",
+      "The runner's oracle first compares all displayed hreflang and schema groups/chips/links with the public DOM, checks new-tab/noopener/noreferrer attributes, then performs a real mouse press/release on a uniquely matched, hit-tested anchor and waits for the new page at the expected href. The function returns only after that outbound-page assertion succeeds.",
+      "The pre-existing Wikipedia hreflang/schema door target remains unverified because its public DOM offered no unique hreflang/openable schema candidates; the acceptance did not turn absent data into a pass."
+    ],
+    "limits": "Only the bounded Airbnb door subtarget is newly passed. Automatic exact title correctness remains explicitly point-in-time unverified; readability metric correctness remains unverified; full T09 and EXT-F-1008 remain incomplete."
+  },
+  "B_evidence_quality": {
+    "verdict": "RAW_TARGETS_AND_RUNNER_ASSERTIONS_AGREE",
+    "checks": [
+      "Hashed and parsed the ignored raw acceptance JSON; target counts and target statuses match the receipt summary.",
+      "Matched the runner's resource-log run ID, admission and child-exit timestamps, stdout PARTIAL classification, and child exit code 0.",
+      "Reviewed the exact target-generation and door-activation assertions in the runner at e7e6e24d; runNativeSidepanelQa verifies the recorded release receipt, manifest version, extension tree hash, and Store ZIP hash before launch.",
+      "The raw acceptance JSON itself does not embed the release receipt hash or build tree digest, so this receipt preserves that provenance limit rather than treating it as a self-contained binary attestation.",
+      "No private screenshot was needed: the target pass is backed by the runner's successful trusted-pointer/new-tab oracle."
+    ]
+  },
+  "validation": {
+    "raw_output_sha256_matched": true,
+    "guard_log_sha256_matched": true,
+    "runner_sha256_matched": true,
+    "target_count_verified": true,
+    "no_full_feature_or_automatic_title_pass_claim": true
+  }
+}
