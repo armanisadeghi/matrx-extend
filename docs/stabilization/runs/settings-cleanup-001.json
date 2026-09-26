@@ -1,0 +1,24 @@
+{
+  "id": "settings-cleanup-001",
+  "at": "2026-09-26T04:21:01Z",
+  "status": "complete",
+  "lease": {
+    "id": "settings-cleanup-001",
+    "owner": "coordinator-held native browser lease, session 24180",
+    "admitted_at": "2026-09-26T04:20:17Z"
+  },
+  "action": "Restored Matrx Extend Settings > Appearance > Theme from Light to System.",
+  "observation": {
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.51",
+    "theme_selected": "System",
+    "appearance": "side panel rendered dark after selection, matching the previously observed System appearance",
+    "role": "signed-out guest"
+  },
+  "evidence": [
+    "Native Chrome accessibility state reported Theme combo box value System after restoration.",
+    "Screenshot captured at 2026-09-26T04:21:01Z showed the side panel dark with System selected."
+  ],
+  "ui_stopped": true,
+  "resource_exit_metadata": "Not observed by this worker."
+}
