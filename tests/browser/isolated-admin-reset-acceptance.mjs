@@ -353,7 +353,11 @@ async function nativeActionDiagnostic(panel, error, kind, label) {
       };
     })()`,
     );
-    return { category, ...state };
+    return {
+      category,
+      ...state,
+      ...(error?.pointerDiagnostic ? { pointer: error.pointerDiagnostic } : {}),
+    };
   } catch {
     return { category, snapshot_available: false };
   }
@@ -551,7 +555,11 @@ try {
         };
         stage = 'reset_confirm_open_action';
         try {
-          await click(panel, 'button', 'Clear local data on this device');
+          evidence.reset_confirm.open_pointer = await click(
+            panel,
+            'button',
+            'Clear local data on this device',
+          );
         } catch (error) {
           evidence.reset_confirm.open_click_diagnostic = await nativeActionDiagnostic(
             panel,
