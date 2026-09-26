@@ -1,0 +1,79 @@
+{
+  "id": "admin-permissions-001",
+  "feature_id": "EXT-F-1003",
+  "at": "2026-09-26T05:22:24Z",
+  "status": "partial_pass",
+  "scope": "Admin optional permission controls T56 Cookies, T57 Page archive (MHTML), T58 Clipboard read; warm and extension reload persistence.",
+  "installation": {
+    "status": "verified",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.51",
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev"
+  },
+  "resource": {
+    "lease_id": "guest-settings-007",
+    "owner": "coordinator-held native browser lease, session 76318",
+    "resource_invalid": false,
+    "stop_reason": null
+  },
+  "initial_state": {
+    "role": "ADMIN; admin@admin.com",
+    "organization": "ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete",
+    "agent": "Matrx Browser Agent",
+    "speed": "Fast",
+    "theme": "System",
+    "cookies": "off",
+    "pageCapture": "off",
+    "clipboardRead": "off"
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-1003-T56",
+      "status": "partial_pass",
+      "verified_substeps": [
+        "Labeled Cookies switch changed off → on → off in Settings; its state reflected each click.",
+        "After full extension reload, Cookies remained off, matching initial state."
+      ],
+      "limitations": [
+        "No Chrome permission dialog appeared for Cookies; denial could not be exercised. Busy state was not observed in the immediate UI snapshots."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T57",
+      "status": "pass",
+      "verified_substeps": [
+        "Labeled Page archive (MHTML) switch requested Chrome permission; prompt named ‘Read and change all your data on all websites’. Deny returned to Settings with switch off.",
+        "Retried and accepted the Chrome prompt; switch reflected on, then off when toggled back.",
+        "After full extension reload, Page archive remained off, matching initial state."
+      ],
+      "limitations": [
+        "Busy state was not observed in the immediate UI snapshots."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T58",
+      "status": "pass",
+      "verified_substeps": [
+        "Labeled Clipboard read switch requested Chrome permission; prompt named ‘Read data you copy and paste’. Deny returned to Settings with switch off.",
+        "Retried and accepted the Chrome prompt; Chrome’s extension permission list then showed ‘Read and modify data you copy and paste’; switch reflected on, then off when toggled back.",
+        "After full extension reload, Clipboard read remained off, matching initial state."
+      ],
+      "limitations": [
+        "Busy state was not observed in the immediate UI snapshots."
+      ]
+    }
+  ],
+  "cleanup": {
+    "permission_states": "Cookies off; Page archive off; Clipboard read off, all matching initial state.",
+    "other_initial_settings": "Theme System, agent Matrx Browser Agent, and speed Fast remained as observed initially.",
+    "data_access": "No cookie values, clipboard contents, or archived page contents accessed; no tools/ChatPilot run.",
+    "current_ui": "Chrome extension details page is foreground; side panel Settings > Advanced agent capabilities is open after reload.",
+    "ui_stopped": true
+  },
+  "evidence": [
+    "Chrome extension details showed enabled unpacked extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.51, loaded from .output/chrome-mv3-dev.",
+    "Settings showed admin@admin.com, ADMIN, the named throwaway organization, System theme, Matrx Browser Agent, and Fast before exercising controls.",
+    "After Chrome extension Reload, reopened Settings > Advanced agent capabilities showed all three requested permissions off."
+  ],
+  "next_action": null
+}

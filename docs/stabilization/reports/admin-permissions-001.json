@@ -1,0 +1,17 @@
+{
+  "id": "admin-permissions-001",
+  "type": "ui-verification-report",
+  "summary": "Admin permission toggles for Cookies, Page archive, and Clipboard read were exercised in the real unpacked Chrome extension. All ended off, matching their initial states, and remained off after extension reload. Chrome denial and acceptance were verified for Page archive and Clipboard read. Cookies produced no Chrome permission dialog, so its denial path remains unverified.",
+  "cases": {
+    "EXT-F-1003-T56": "Partial pass: Cookies reflected off → on → off and persisted off after reload; no Chrome dialog appeared, so denial was not testable.",
+    "EXT-F-1003-T57": "Pass: Chrome denial left Page archive off; a retry was accepted and reflected on; switch returned off and persisted off after reload.",
+    "EXT-F-1003-T58": "Pass: Chrome denial left Clipboard read off; a retry was accepted and reflected on; switch returned off and persisted off after reload."
+  },
+  "defects": [],
+  "limitations": [
+    "Transient busy state was not observed in immediate post-click accessibility snapshots.",
+    "No cookie, clipboard, or archive content was read; no dependent tool was run."
+  ],
+  "cleanup": "All three target switches are off. Settings remains open at Advanced agent capabilities after extension reload; no further UI actions taken.",
+  "run_file": "docs/stabilization/runs/admin-permissions-001.json"
+}
