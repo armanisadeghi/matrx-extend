@@ -1,0 +1,12 @@
+{
+  "feature_id": "EXT-F-1009",
+  "status": "prepared_unverified",
+  "case_scope": "EXT-F-1009-T09 guest access gate only",
+  "runner": "tests/browser/screenshot-guest-acceptance.mjs",
+  "inventory_applicability": "Guest applicability is explicitly false for screenshot capture/gallery; T01-T08 are member/admin cases and are not run here.",
+  "prior_evidence": "contained-navigation-006 recorded guest navigation without Screenshots, but predates the dedicated EXT-F-1009 guest case and does not exercise its stale-selection subcase.",
+  "runner_behavior": "Uses the receipt-verified owned native-profile harness and trusted tab navigation. It checks trigger absence and protected-content absence after public navigation. It does not capture, read, copy, or delete screenshots or call backend services.",
+  "stale_selection": "Not applicable on a fresh guest profile: sidepanel selection is in-memory, not persisted. No UI path creates a prior signed-in selection without a role transition, and no state is injected.",
+  "execution": "Not run in preparation lane; awaiting root source peer and resource admission.",
+  "evidence_safety": "Counts and booleans only; any failure screenshot is uniquely named, exclusive-created, mode 0600, and stored under harness-owned private artifacts."
+}
