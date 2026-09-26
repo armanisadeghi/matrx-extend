@@ -24,12 +24,16 @@ import { useCallback, useEffect } from 'react';
  * recheck and health ping.
  */
 let bootRan = false;
+let mountedAuthConsumers = 0;
+let bootGeneration = 0;
 // `useAuth` is mounted by several independently-rendered surfaces. This must
 // be realm-wide rather than a hook ref: a sign-out or newer sign-in from one
 // surface cancels every older in-flight attempt in this extension context.
 let signInGeneration = 0;
 export function resetAuthBootGuard(): void {
   bootRan = false;
+  mountedAuthConsumers = 0;
+  bootGeneration += 1;
   signInGeneration = 0;
 }
 
@@ -46,9 +50,23 @@ export function useAuth() {
   // then ping health. Guarded so it runs once per sidepanel lifetime even
   // when N components subscribe to useAuth().
   useEffect(() => {
-    if (bootRan) return;
+    mountedAuthConsumers += 1;
+    if (bootRan) {
+      return () => {
+        mountedAuthConsumers -= 1;
+        if (mountedAuthConsumers === 0) {
+          bootRan = false;
+          bootGeneration += 1;
+        }
+      };
+    }
     bootRan = true;
-    let cancelled = false;
+    const currentBoot = ++bootGeneration;
+    const currentAuth = signInGeneration;
+    const isCurrent = () =>
+      mountedAuthConsumers > 0 &&
+      bootGeneration === currentBoot &&
+      signInGeneration === currentAuth;
     void (async () => {
       await restoreSupabaseSession();
       const result = await chrome.storage.local.get([
@@ -56,7 +74,7 @@ export function useAuth() {
         STORAGE_KEYS.IS_ADMIN,
       ]);
       const session = await chrome.storage.session.get([STORAGE_KEYS.SAFARI_AUTH_FAILURE]);
-      if (cancelled) return;
+      if (!isCurrent()) return;
       const profile = result[STORAGE_KEYS.USER_PROFILE] as UserProfile | undefined;
       const cachedAdmin = result[STORAGE_KEYS.IS_ADMIN] as boolean | undefined;
       setUser(profile ?? null);
@@ -67,7 +85,7 @@ export function useAuth() {
       // Refresh admin flag in the background — guards against role changes.
       if (profile?.id) {
         void checkIsAdmin(profile.id).then(async (admin) => {
-          if (cancelled) return;
+          if (!isCurrent()) return;
           setIsAdmin(admin);
           await chrome.storage.local.set({ [STORAGE_KEYS.IS_ADMIN]: admin });
         });
@@ -76,7 +94,11 @@ export function useAuth() {
       void pingHealth('app start');
     })();
     return () => {
-      cancelled = true;
+      mountedAuthConsumers -= 1;
+      if (mountedAuthConsumers === 0) {
+        bootRan = false;
+        bootGeneration += 1;
+      }
     };
   }, [setUser, setIsAdmin, setError]);
 

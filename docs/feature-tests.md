@@ -47,6 +47,13 @@
   keyed local release bundle. A Store/unkeyed bundle, a changed source tree, or a push
   race stops the release without replacing the existing development tree.
 
+### Signed-in identity survives a development build reload
+
+- **What it does:** the side panel restores the saved account when development React replays its mount effects during extension reload.
+- **Where to test:** the keyed unpacked Chrome development extension, signed in as the admin, with an organization explicitly selected.
+- **Steps:** open Settings and confirm the account and organization, use Chrome's full extension Reload, reopen the side panel, and return to Settings without pressing Sign in.
+- **Expected:** the same account and organization appear after hydration. The account must not settle at Email — with Sign in offered while its saved session remains present. If a refresh is truly rejected, the signed-out state and its reason must be visible.
+
 ### Reload and transient-outage console hygiene
 
 - **What it does:** extension reloads and optional-context startup races do not leave
