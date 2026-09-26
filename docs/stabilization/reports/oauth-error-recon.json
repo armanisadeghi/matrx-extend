@@ -1,0 +1,49 @@
+{
+  "id": "oauth-error-recon",
+  "status": "boundary_localized_cause_unproven",
+  "scope": "Read-only source and recorded-evidence review of the 2026-09-26 Chrome extension Sign in authorization error; no browser, auth-state, credential, or provider request was inspected in this lane.",
+  "observed": [
+    "docs/stabilization/runs/permission-native-retest.json records a normal Sign in click from the reloaded dev extension, followed by the AI Matrx OAuth page showing Authorization error (400) and Failed to load authorization details: Auth session missing! at 06:13:13 UTC. No consent or credential entry followed.",
+    "That run separately records a guest-rendered extension Settings view after Reload. It did not inspect extension storage and does not prove that the extension's persisted session was deleted.",
+    "docs/stabilization/runs/admin-signin-001.json records a successful sign-in and post-Reload admin display earlier in the same extension ID at version 0.2.51. The failing run used version 0.2.53.",
+    "docs/stabilization/reports/dev-auth-readiness.json records an active public OAuth client with the exact dev Chromium callback registered at 03:19 UTC. This is a previous read-only registration observation, not proof of provider state at 06:13 UTC."
+  ],
+  "source_boundary": [
+    "src/lib/auth/flow.ts builds a fresh state, code challenge, public client ID, and Chrome identity redirect URI, then calls chrome.identity.launchWebAuthFlow. Token exchange and extension session commit occur only after a callback URL is returned.",
+    "src/lib/auth/identity-transport.ts launches the Chrome-managed interactive OAuth window. The observed provider error precedes any recorded callback or token exchange, so extension token exchange and local session commit cannot explain that displayed 400.",
+    "ai-matrx/app/oauth/consent/ConsentClient.tsx checks the website user with getClaimsUser, redirects to /login when no user is found, then calls supabase.auth.oauth.getAuthorizationDetails(authorization_id). The exact title and message observed are composed by mapAuthError when that details call returns status 400 and message Auth session missing!. This identifies the failing displayed boundary, assuming the deployed page matches this source.",
+    "The provider's displayed error does not reveal whether the authorization_id was freshly minted, whether its server-side state still existed, or whether the website's auth session was available to the details call. No URL, request trace, or sanitized provider error code was captured in the run."
+  ],
+  "hypotheses": [
+    {
+      "cause": "The provider page was showing an old or superseded authorization request rather than the request from the latest extension click.",
+      "prediction": "A single fresh launch creates a new authorization_id and its details request succeeds while revisiting the old page still fails.",
+      "status": "plausible_unverified"
+    },
+    {
+      "cause": "The current website auth session was unavailable at the details call, despite the page reaching that call.",
+      "prediction": "A fresh authorization_id fails at details with the same error while a sanitized session-presence check changes or reports no session at that boundary; restoring website sign-in makes the same fresh flow reach consent.",
+      "status": "plausible_unverified"
+    },
+    {
+      "cause": "The provider's authorization record or its session binding was missing or expired before details lookup.",
+      "prediction": "A fresh request with a present website session still fails at getAuthorizationDetails, and provider-side sanitized request diagnostics identify missing or mismatched authorization state.",
+      "status": "plausible_unverified"
+    }
+  ],
+  "smallest_next_probe": "After the D7 hydration repair is loaded, inspect the existing extension identity display without signing in. If Sign in is still necessary, close only the failed OAuth window and start one fresh extension-owned Sign in. At the provider details boundary capture only origin/path, whether authorization_id is present and new (never its value), details request status/error code, and website session-presence boolean before and after the call. Check whether the fresh flow reaches consent or returns the same 400; do not clear browser or extension storage. This one run separates a stale page from a repeatable current-request failure and leaves the existing account intact.",
+  "limitations": [
+    "This is boundary localization, not a confirmed root cause or a repair.",
+    "The checked-out ai-matrx source was read locally; its exact deployed revision at the time of the screenshot was not verified.",
+    "No browser, network trace, stored session presence, authorization_id, or credential value was read by this lane."
+  ],
+  "files_read": [
+    "docs/stabilization/runs/permission-native-retest.json",
+    "docs/stabilization/runs/admin-signin-001.json",
+    "docs/stabilization/reports/dev-auth-readiness.json",
+    "src/lib/auth/flow.ts",
+    "src/lib/auth/identity-transport.ts",
+    "../ai-matrx/app/oauth/consent/ConsentClient.tsx",
+    "../ai-matrx/utils/supabase/claimsUser.ts"
+  ]
+}
