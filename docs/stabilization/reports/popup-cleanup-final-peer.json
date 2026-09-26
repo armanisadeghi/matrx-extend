@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "task_id": "popup-cleanup-final-source-peer",
+  "defect_id": "EXT-D-0008",
+  "reviewed_commit": "d9d86aa831f69060fb3042dfd19cefeb441cf8c7",
+  "prior_finding": "ADDRESSED: the registry now names claimPopupLaunchTarget, the nested Promise callback that owns the deletion; the earlier takePopupLaunchTarget entry did not name that owner.",
+  "verdict_a": "SOURCE_PASS; engineering guard runtime PENDING_ROOT; native popup UNVERIFIED.",
+  "verdict_b": "PASS: both removal paths touch only extension-owned transient session requests; the patch does not broaden the guard or change queue behavior.",
+  "evidence": ["Guard isRemovalPrimitive matches chrome.storage.session.remove; enclosingFunctionName walks from the removal through previous.then(async () => ...) to the claimPopupLaunchTarget variable declaration, and REGISTERED contains that exact INTERNAL_ONLY name.", "rg finds claimPopupLaunchTarget only in launch-intent.ts and its registry entry, avoiding an accidental same-name exemption in current source; the guard still uses global function-name matching, so this is a current-source conclusion.", "clearCapturePagePanel waits for the request write then removes only request.key; failed popup launch is its sole caller. The claim filters session rows by owned prefix, current window, valid capture-page intent, armed phase and unexpired time, then removes only the filtered keys; per-window promise chaining remains unchanged.", "The commit changes only the nested callback variable name and matching registry entry; no guard rule, exclusion, confirmation policy, or popup routing branch changed."],
+  "files": ["tests/unit/destructive-confirm-guard.test.ts", "src/lib/panel/launch-intent.ts", "src/lib/destructive/operations.ts", "src/entrypoints/popup/main.tsx", "src/entrypoints/sidepanel/App.tsx"],
+  "open_questions": ["Root runtime green002 result and native popup exercise remain outside this source-only review."],
+  "limitations": "No tests, build, browser, network write, or source edit by this peer."
+}
