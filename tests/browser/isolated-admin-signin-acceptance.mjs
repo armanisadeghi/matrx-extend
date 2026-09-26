@@ -25,13 +25,25 @@ const evidence = {
   status: 'unverified',
   web: null,
   extension: null,
+  failureCategory: null,
   limitations: ['OAuth callback origin is not directly observed by this runner.'],
 };
+
+function fail(category) {
+  evidence.failureCategory = category;
+  throw new Error('isolated_admin_signin_unverified');
+}
 
 // Read only the two authorized test-account variables at the moment the real
 // web form needs them. The values stay local to the login function.
 async function readAdminCredentials() {
-  const source = await readFile(ADMIN_ENV, 'utf8');
+  let source;
+  try {
+    source = await readFile(ADMIN_ENV, 'utf8');
+  } catch (error) {
+    fail(error?.code === 'ENOENT' ? 'credential_file_missing' :
+      error?.code === 'EACCES' ? 'credential_file_denied' : 'credential_file_unreadable');
+  }
   const values = {};
   for (const line of source.split(/\r?\n/)) {
     const match = /^\s*(AI_ADMIN_USERNAME|AI_ADMIN_PASSWORD)\s*=\s*(.*?)\s*$/.exec(line);
@@ -42,7 +54,7 @@ async function readAdminCredentials() {
     values[match[1]] = value;
   }
   if (values.AI_ADMIN_USERNAME !== EXPECTED_ADMIN || !values.AI_ADMIN_PASSWORD)
-    throw new Error('isolated_admin_credentials_unavailable');
+    fail('credential_variables_unavailable');
   return { email: values.AI_ADMIN_USERNAME, password: values.AI_ADMIN_PASSWORD };
 }
 
@@ -54,19 +66,37 @@ function safeLocation(rawUrl) {
 async function signInOnRealWebPage(page) {
   const web = await page.context().newPage();
   try {
-    stage = 'web_login_page';
-    await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-    assert.equal(new URL(web.url()).origin, WEB_ORIGIN);
-    assert.equal(new URL(web.url()).pathname, '/login');
+    stage = 'web_navigation';
+    try {
+      await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    } catch {
+      fail('web_navigation_failed');
+    }
+    stage = 'web_url_check';
+    const observed = new URL(web.url());
+    evidence.web = { signedIn: false, location: safeLocation(web.url()) };
+    if (observed.origin !== WEB_ORIGIN) fail('web_origin_mismatch');
+    if (observed.pathname !== '/login') fail('web_login_path_mismatch');
+    stage = 'credential_file_read';
     const { email, password } = await readAdminCredentials();
+    stage = 'web_form_fill';
+    try {
+      await web.locator('input[name="email"]').fill(email);
+      await web.locator('input[name="password"]').fill(password);
+    } catch {
+      fail('web_form_unavailable');
+    }
     stage = 'web_login_submit';
-    await web.locator('input[name="email"]').fill(email);
-    await web.locator('input[name="password"]').fill(password);
-    await Promise.all([
-      web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname === '/dashboard',
-        { timeout: 90_000 }),
-      web.getByRole('button', { name: 'Sign in', exact: true }).click(),
-    ]);
+    try {
+      await Promise.all([
+        web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname === '/dashboard',
+          { timeout: 90_000 }),
+        web.getByRole('button', { name: 'Sign in', exact: true }).click(),
+      ]);
+    } catch {
+      evidence.web = { signedIn: false, location: safeLocation(web.url()) };
+      fail('web_login_did_not_reach_dashboard');
+    }
     // The app login form performs a hard redirect after real server sign-in.
     // Preserve only origin/path; query or hash may contain sensitive material.
     evidence.web = { signedIn: true, location: safeLocation(web.url()) };
@@ -104,8 +134,9 @@ try {
 
     const web = await signInOnRealWebPage(page);
     try {
-      stage = 'extension_signin';
+      stage = 'extension_signin_click';
       await click(panel, 'button', 'Sign in');
+      stage = 'extension_admin_wait';
       await waitFor('admin_settings_after_real_signin', () => accountState(panel),
         (state) => state?.emailRow === `Email${EXPECTED_ADMIN}` &&
           state.roleRow?.toLowerCase() === 'roleadmin' && state.signOut && state.advanced,
@@ -132,6 +163,7 @@ try {
   // entered form values, request bodies, or console content.
   evidence.status = 'unverified';
   evidence.failureStage = stage;
+  evidence.failureCategory ??= 'stage_operation_failed';
   await writeFile(OUTPUT, `${JSON.stringify(evidence, null, 2)}\n`, { mode: 0o600 });
   process.stderr.write(`UNVERIFIED isolated_admin_signin at ${stage}\n`);
   process.exitCode = 1;
