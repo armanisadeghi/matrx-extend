@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "report_id": "source005-selection-peer",
+  "reviewed_commit": "08b84bb603e5635800c0082925f2220cf8df584c",
+  "scope": "Independent source review of the D23 organization-selection diagnostics added after source-workspace-005. No browser, build, or heavy test was run in this lane.",
+  "A_runtime": {
+    "verdict": "UNVERIFIED",
+    "evidence": "source-workspace-005 predates this diagnostic change and stopped during approved-organization selection. It cannot validate the new categories, screenshot permissions, or the notice remedy. A new root-owned guarded browser run remains necessary."
+  },
+  "B_source": {
+    "verdict": "ACCEPTED",
+    "fixed_fields": "The step value is assigned from fixed literals before each existing UI action and wait. driverFailure.code comes from the settings pointer driver's fixed failure codes, with non_pointer_failure as the fallback. The captured pointer hit, known-notice category, dialog/alert flags, and UI-surface counts/active flag are categorical or scalar; no DOM text, selector, URL, organization name, ID, or raw error enters the new receipt fields.",
+    "screenshot": "On selection failure, a randomUUID path under test-results is written with writeFile flag wx and mode 0600. Exclusive creation refuses an existing file or final-path symlink and cannot overwrite an earlier capture. The report records only captured_private or unavailable, never screenshot bytes, path, or raw capture error.",
+    "acceptance": "The preexisting Settings tab, Organization section, unique control, unique approved/comparison option, real option click, stored-selection wait, and equality predicates are retained. return await makes wait rejection observable to the diagnostic catch without changing pass criteria. The catch rethrows the original error. No retry or passing fallback was added.",
+    "save_boundary": "D23_READ_ONLY remains true and requires an existing private Save checkpoint. The changed chooseOrganization code sends no Save input and never calls reserveSaveAttempt or recordObservedSourceId; its failure rethrows before reaching recovery. The prior source-workspace-005 run reports save_input not_attempted and checkpoint existing_reserved_unchanged.",
+    "checkpoint_preservation": "Outside this diagnostic diff, the D23 read_only_recovery branch may append a definitively observed Source ID to an existing reserved checkpoint. The original D22 recovery contract and docs/stabilization/reports/d22-readonly-recovery-peer.json authorize that narrow append after exact scoped network and real UI proof. It does not reset, delete, replace an existing ID, or issue a new Save. The new selection diagnostic changes none of this behavior.",
+    "limits": "Source inspection only. The existing test-results parent-directory trust boundary and behavior of the real browser on failure were not exercised here."
+  }
+}
