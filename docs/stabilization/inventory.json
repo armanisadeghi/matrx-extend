@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T21:21:36+00:00",
+  "updated_at": "2026-09-26T21:23:00+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -10394,7 +10394,8 @@
             "incoming-sources-001",
             "source-workspace-001",
             "source-workspace-002",
-            "source-workspace-003"
+            "source-workspace-003",
+            "source-workspace-004"
           ],
           "retest_status": "not-run"
         }
@@ -10469,6 +10470,29 @@
             }
           ],
           "limits": "Observation-time hit-test diagnostic only; does not identify the covering element or establish the cause of run 001. Existing checkpoint remains authoritative."
+        },
+        {
+          "run_id": "source-workspace-004",
+          "mode": "admin",
+          "status": "diagnostic-only",
+          "receipt": "docs/stabilization/runs/source-workspace-004.json",
+          "defect_id": "EXT-D-0022",
+          "related_defect_id": "EXT-D-0023",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1007-T04",
+              "subtarget": "save_button_unoccluded_after_workspace_selection",
+              "status": "diagnostic-only",
+              "observation": "The enabled Save control was covered by a persistent no-workspace Capture notice after organization selection; no Save input was sent."
+            },
+            {
+              "case_id": "EXT-F-1007-T21",
+              "subtarget": "save_button_unoccluded_after_workspace_selection",
+              "status": "diagnostic-only",
+              "observation": "The notice covered Save at observation time. The run did not establish Source creation, saved landing, or the outcome of the earlier ambiguous Save."
+            }
+          ],
+          "limits": "Read-only diagnosis links the D23 notice defect to the D22 Save obstruction. Source recognition remained none; checkpoint remained reserved; D22 Save outcome stays ambiguous and unverified."
         }
       ]
     },
@@ -10956,7 +10980,8 @@
             "seo-guest-011",
             "seo-guest-012",
             "seo-guest-013",
-            "seo-guest-014"
+            "seo-guest-014",
+            "seo-guest-015"
           ],
           "retest_status": "not-run"
         },
@@ -11456,6 +11481,21 @@
             }
           ],
           "limits": "Unverified receipt; metadata fixture audit wait did not distinguish mismatch from another transient condition. No cause, case pass, or feature pass is inferred; member/admin and other deferred dimensions remain uncovered."
+        },
+        {
+          "run_id": "seo-guest-015",
+          "mode": "guest",
+          "status": "unverified",
+          "receipt": "docs/stabilization/runs/seo-guest-015.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+              "status": "unverified",
+              "observation": "Acceptance retained 16 passing bounded subtargets and one unverified door. In the opt-in fixture the structured-data anchor matched the expected destination and opened a new-tab affordance; one stable hit sample was observed, then pointer press/release returned false and no new page appeared. The source URL remained open and unchanged."
+            }
+          ],
+          "limits": "Receipt does not distinguish obstruction, zero area, or moving geometry. No SEO product defect is inferred; automatic exact data and readability metric correctness remain unverified. No whole T09 or feature pass."
         }
       ]
     },
@@ -21216,14 +21256,24 @@
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
-          "run_ids": [],
+          "defect_ids": [
+            "EXT-D-0023"
+          ],
+          "run_ids": [
+            "notice-resolution-red-001",
+            "notice-resolution-green-001"
+          ],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
-          "run_ids": [],
+          "defect_ids": [
+            "EXT-D-0023"
+          ],
+          "run_ids": [
+            "notice-resolution-red-001",
+            "notice-resolution-green-001"
+          ],
           "retest_status": "not-run"
         }
       },
@@ -21231,6 +21281,27 @@
       "missing_items": [],
       "readiness_gaps": [
         "No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel."
+      ],
+      "runtime_evidence": [
+        {
+          "run_ids": [
+            "notice-resolution-red-001",
+            "notice-resolution-green-001"
+          ],
+          "mode": "focused-unit-guard",
+          "status": "partial",
+          "receipt": "docs/stabilization/reports/d23-notice-resolution.json",
+          "defect_id": "EXT-D-0023",
+          "case_links": [
+            {
+              "case_id": "EXT-F-2010-T02",
+              "subtarget": "retire_resolved_no_workspace_notice_after_org_selection_and_late_arrival",
+              "status": "partial",
+              "observation": "The red run failed both intended stale-notice assertions; the guarded green run passed 24 tests across the notice-resolution and database-refusal files. The guard does not exercise member/admin org-switch queue semantics or native hit-testing."
+            }
+          ],
+          "limits": "Focused logic regression evidence only. Independent source review and native read-only panel retest remain pending; feature/case status and retest status remain unverified/not-run. D22 remains open: no Source Save retry or saved/open Source proof."
+        }
       ]
     },
     {
