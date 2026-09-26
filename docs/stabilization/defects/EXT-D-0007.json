@@ -21,11 +21,12 @@
     "docs/stabilization/runs/auth-native-observation.json",
     "docs/stabilization/runs/auth-broadcast-outcome-red-001.json",
     "docs/stabilization/runs/auth-broadcast-green-001.json",
-    "docs/stabilization/reports/auth-broadcast-peer.json"
+    "docs/stabilization/reports/auth-broadcast-peer.json",
+    "docs/stabilization/runs/permissions-auth-native-sol.json"
   ],
   "severity": "S1: authenticated development testing blocked by missing identity",
   "priority": "P0: baseline authentication blocker",
-  "state": "fixed",
+  "state": "retest-pass",
   "owner": "/root/auth_broadcast_order_repair",
   "hypothesis": "StrictMode lifecycle cause proven by RED003 positive control; repair remains in-fix after independent surrounding authentication classification findings.",
   "transition_history": [
@@ -52,6 +53,12 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "d623f64 completes shared canonical hydration; fresh peer7f375a0 engineeringPASS and45regressionspass. Final types/build/native/release remain."
+    },
+    {
+      "at": "2026-09-26T07:40:16.687680+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "FreshSol native actualsidepanel0.2.54 restoresadmin/ADMIN/sameorg afterfullReload and30seconds, repeatedthroughpermissionreloads; latestd623f64 included. Await strictintegration/finalartifactcheck."
     }
   ],
   "separate_observation": "A later manual OAuth SignIn attempt returned Authorization error400/Auth session missing; not assumed to have the same cause.",
@@ -85,10 +92,11 @@
     }
   ],
   "partial_retest": {
-    "status": "original-repro-pass",
+    "status": "superseded-by-final-development-retest",
     "source_implementation": "553bad3",
     "run_id": "auth-native-observation",
     "result": "Actual unpacked development extension recovered admin identity and same explicitly selected organization after full Reload, stable30seconds, then retained both after second full Reload; no new sign-in or account-data mutation.",
-    "closure_hold": "Remaining source-peer entrypoint and role-failure findings still in repair; final-build recheck/integration pending."
+    "closure_hold": "Remaining source-peer entrypoint and role-failure findings still in repair; final-build recheck/integration pending.",
+    "final_run_id": "permissions-auth-native-sol"
   }
 }
