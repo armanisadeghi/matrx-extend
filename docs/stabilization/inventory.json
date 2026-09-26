@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T09:21:03.751573+00:00",
+  "updated_at": "2026-09-26T09:25:23.068998+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -3721,13 +3721,15 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "guest-settings-local-003",
-              "evidence": [
-                "docs/stabilization/runs/guest-settings-local-003.json",
-                "docs/stabilization/reports/native-driver-final-peer.json"
+              "status": "fail",
+              "run_id": "guest-settings-local-004",
+              "defect_ids": [
+                "EXT-D-0012"
               ],
-              "detail": "Trusted interactions pass; T46 rediscovery and same-render invalid-to-blank remain unverified. T70 alternate API/update branches remain unverified. EXT-D-0011 infrastructure repair closed."
+              "evidence": [
+                "docs/stabilization/runs/guest-settings-local-004.json"
+              ],
+              "detail": "Successful blank clear leaves previous invalid-port error. Worker rediscovery separately unverified."
             }
           }
         },
@@ -4583,10 +4585,11 @@
       ],
       "cells": {
         "guest": {
-          "test_status": "unverified",
+          "test_status": "fail",
           "defect_ids": [
             "EXT-D-0001",
-            "EXT-D-0009"
+            "EXT-D-0009",
+            "EXT-D-0012"
           ],
           "run_ids": [
             "guest-local-001",
