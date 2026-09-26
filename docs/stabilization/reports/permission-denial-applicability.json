@@ -1,0 +1,50 @@
+{
+  "scope": "Official-source research on whether unpacked installation or prior grants explain the absence of a Chrome optional-permission prompt, and a safe way to exercise the denial path. No browser UI, permission mutations, builds, tests, installs, source changes, or auth changes were performed.",
+  "status": "UNVERIFIED",
+  "finding": "A missing prompt is not evidence that Chrome skipped authorization. Chrome documents that permissions.request prompts only when necessary / when the resulting warning differs from warnings already accepted. Chromium's permission design documentation explicitly says an accepted optional permission remains in the granted-permissions record after permissions.remove; requesting it again does not prompt. That directly explains successful request + contains=false after remove for a permission previously accepted.",
+  "facts": [
+    {
+      "claim": "Chrome's API documentation says request() displays a prompt if necessary, and its concepts section says Chrome prompts when adding permissions results in warning messages different from those already seen and accepted.",
+      "source": "https://developer.chrome.com/docs/extensions/reference/api/permissions",
+      "kind": "official Chrome documentation"
+    },
+    {
+      "claim": "The current Chromium extension permission design doc says a first optional request prompts; after acceptance, remove() removes active access but leaves the permission in granted permissions, and requesting the same permission after removal does not prompt again.",
+      "source": "https://chromium.googlesource.com/chromium/src/+/lkgr/extensions/docs/permissions.md",
+      "kind": "official Chromium source documentation"
+    },
+    {
+      "claim": "Chrome's older permission-warning guide says no permission warnings are displayed when an extension is loaded unpacked. This concerns warnings on unpacked loading; it does not establish that runtime optional-permission denial cannot be tested in an unpacked extension.",
+      "source": "https://developer.chrome.com/docs/extensions/mv2/permission-warnings",
+      "kind": "official Chrome documentation; MV2 guide, limited applicability"
+    },
+    {
+      "claim": "This repository declares pageCapture and tabCapture in optional_permissions and routes requests through chrome.permissions.request; its UI/request code explicitly expects Chrome to prompt only when needed.",
+      "source": "src/lib/permissions/optional.ts; wxt.config.ts; src/lib/video/useTabVideoRecorder.ts",
+      "kind": "local source observation"
+    }
+  ],
+  "inference": [
+    "Prior acceptance is a sufficient documented explanation for a request resolving true while contains() is false after remove(); it is not possible to infer from that observation alone whether prior acceptance was the actual cause in the observed profile.",
+    "Unpacked loading suppressing install-time permission warnings does not by itself explain or prove suppression of a runtime optional permission request. The official material reviewed does not state that unpacked extensions cannot display runtime permission prompts.",
+    "The docs say prompt visibility depends on warning delta, so an optional permission that produces no new warning (for example, because another granted permission subsumes it) may also be granted without a visible prompt. The precise warning behavior for pageCapture/tabCapture in the observed Chrome version/profile remains unverified."
+  ],
+  "safe_falsifiable_follow_up": {
+    "method": "Use a disposable Chrome user-data directory/profile, separate from the primary profile, and load the extension there. Do not sign into Matrx or change the primary profile. In that fresh profile, use a real user click to call permissions.request for one declared optional permission that is currently absent; observe the native prompt, choose Deny, and record the returned boolean plus permissions.contains/getAll before and after. Repeat with pageCapture and tabCapture if both branches matter. Then remove/re-request only inside that disposable profile to demonstrate the documented prior-grant behavior. Delete the disposable profile after collecting evidence.",
+    "falsifiable_outcomes": [
+      "Fresh profile + absent optional permission + request from click shows prompt; Deny returns false and contains remains false: denial branch exercised.",
+      "Fresh profile + absent optional permission + request returns true without prompt: investigate the specific permission's warning/message and Chrome version; this falsifies the assumption that unpacked status alone predicts prompt behavior.",
+      "After grant then remove, contains=false and request=true without prompt: confirms Chrome's documented retained-grant behavior in the tested version."
+    ],
+    "safety_boundary": "Do not remove/revoke permissions or clear storage in the primary profile. No product auth is needed for the permission API test; avoid sign-in and org selection entirely."
+  },
+  "potential_minimal_follow_up": "Run the disposable-profile interaction and attach timestamped evidence of prompt choice, request result, and contains/getAll state. Treat pageCapture and tabCapture separately because prompt warning behavior may differ.",
+  "open_questions": [
+    "Was either permission previously accepted in the original browser profile before remove() was called?",
+    "What exact Chrome version and permission-row/manifest state produced the observed behavior?",
+    "Does pageCapture independently produce a warning prompt in the target Chrome version when requested from a fresh profile?"
+  ],
+  "files": [
+    "docs/stabilization/reports/permission-denial-applicability.json"
+  ]
+}
