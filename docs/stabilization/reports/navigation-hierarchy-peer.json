@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "b16e57982682ed8f382f5edd94f3ffaa8461a268",
+  "status": "DONE_WITH_CONCERNS",
+  "review_scope": "Independent source-only review of the navigation hierarchy fixture; no browser, build, or acceptance run",
+  "verdict_a_acceptance": {
+    "status": "PARTIAL",
+    "finding": "The revised fixture explicitly targets every accessible guest and admin outer navigation trigger except Chat and Pilot, and opens Profile through the user menu. It also clicks Capture. Member, stale role selection, active Vault assistance, and natural lazy-load failure remain declared exclusions, so full EXT-F-1001 acceptance is still open.",
+    "evidence": [
+      "src/entrypoints/sidepanel/App.tsx:381-549: one outer TabsList with icon triggers and a dynamic Capture title",
+      "src/entrypoints/sidepanel/App.tsx:719-733: Showcase outer TabsContent remains mounted when inactive",
+      "src/features/showcase/ShowcaseView.tsx:56-80: twelve nested, untitled Showcase tab triggers",
+      "tests/browser/contained-navigation-acceptance.mjs:345-426: exact guest/admin rosters, direct navigation loops, Profile, and Capture activation",
+      "docs/stabilization/inventory.json:1361-1437: five controls and role-specific navigation contract"
+    ],
+    "blocking_findings": [],
+    "limits": [
+      "No runtime green evidence was produced in this lane; the root-owned browser run must validate the actual rendered hierarchy.",
+      "The fixture records status partial and explicitly defers member role, stale selection, lazy chunk failure, and active Vault assistance."
+    ]
+  },
+  "verdict_b_quality": {
+    "status": "PASS_WITH_MINOR_LIMITS",
+    "finding": "The source repair addresses the class of nested mounted tab controls without filtering away untitled or hidden outer controls. One outer tablist is required, every tab whose nearest tablist is that owner enters the exact title roster, and any unowned top-level tab fails. Active panel observation excludes descendant tabpanels and requires one active outer panel before reciprocal aria linkage can pass.",
+    "evidence": [
+      "tests/browser/contained-navigation-acceptance.mjs:47-56: owner list, nearest-tablist membership, and outer-panel selection",
+      "tests/browser/contained-navigation-acceptance.mjs:117-129: unique matching title and reciprocal selected-pane checks",
+      "tests/browser/contained-navigation-acceptance.mjs:162-177: no-title-filter census and unowned top-level rejection",
+      "tests/browser/contained-navigation-acceptance.mjs:403-417: Capture identity is taken from the owning list"
+    ],
+    "blocking_findings": [],
+    "minor_limits": [
+      "The trusted click helper selects visible button[title] globally, while post-click validation is scoped to the outer list. Current source search found no same-title feature button, but a future duplicate could make the click fail before selection; an owner-scoped click would preserve the fixture's ownership rule end to end.",
+      "The selected assertion does not count all aria-selected=true outer triggers; it proves the intended tab and unique active outer panel, but not that every other trigger is deselected."
+    ]
+  },
+  "runtime_verification": "NOT_RUN_BY_REVIEW_LANE",
+  "disposition": "Source review finds no blocking hierarchy defect; root should run the sole native fixture and retain partial acceptance classification."
+}
