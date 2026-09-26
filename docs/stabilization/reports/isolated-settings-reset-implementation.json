@@ -14,7 +14,7 @@
     "Open Settings in the real native panel as an isolated guest.",
     "Choose Dark and set a disposable local engine port through trusted native-panel input; verify two independent local keys.",
     "Seed one harmless guest session value in the isolated extension profile, and verify it exists.",
-    "Open Clear local data, Cancel; verify theme, port, and session value remain.",
+    "Open Clear local data, Cancel; verify theme, port, and exact harmless session value remain.",
     "Reopen and Confirm; wait for both local and session clear, then verify every pre-confirm key was removed.",
     "Reload the panel; verify guest UI, System default, and no persisted theme, port, or session fixture."
   ],
@@ -25,6 +25,7 @@
     "runtime_evidence_path": "test-results/settings-local-reset-acceptance.json",
     "partial_execution_policy": "The command exits nonzero if any assertion fails, if the receipt is stale, or if either storage area retains any pre-confirm key.",
     "peer_round_1": "Confirmed all three runner findings. A controlled session fixture replaces the unreliable natural-key precondition; checks now wait for both clears and bind the released source to the current package. The narrow inherited child-cleanup hang was also repaired.",
+    "peer_round_2": "Cancel now proves the harmless session fixture retains its exact value, not merely its key; runtime storage observations expose only a Boolean match result.",
     "mutation_proof": "Pending browser lease: a real run and scratch-only sabotage are required before this case may be reported as passed."
   }
 }

@@ -11,6 +11,7 @@ const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'settings-local-reset-acceptance.json');
 const PORT = 65001;
 const SESSION_KEY = 'matrx.qa.settingsReset.session';
+const SESSION_VALUE = 'disposable-guest-session-state';
 const report = {
   feature: 'EXT-F-1003',
   case: 'EXT-F-1003-T49',
@@ -105,9 +106,9 @@ async function setEnginePort(panel) {
 
 async function seedDisposableSession(panel) {
   await evaluate(panel, `(async () => {
-    await chrome.storage.session.set({ [${JSON.stringify(SESSION_KEY)}]: 'disposable-guest-session-state' });
+    await chrome.storage.session.set({ [${JSON.stringify(SESSION_KEY)}]: ${JSON.stringify(SESSION_VALUE)} });
   })()`);
-  await waitFor('session_fixture_persisted', () => storageState(panel), (s) => s.hasSessionFixture);
+  await waitFor('session_fixture_persisted', () => storageState(panel), (s) => s.sessionFixtureMatches);
 }
 
 async function panelState(panel) {
@@ -136,6 +137,7 @@ async function storageState(panel) {
     return { theme, port: local.matrxLocalEnginePortOverride ?? null,
       hasSettingsKey: Object.hasOwn(local, 'matrx.settings.v1'),
       hasSessionFixture: Object.hasOwn(session, ${JSON.stringify(SESSION_KEY)}),
+      sessionFixtureMatches: session[${JSON.stringify(SESSION_KEY)}] === ${JSON.stringify(SESSION_VALUE)},
       localKeys: Object.keys(local).sort(), sessionKeys: Object.keys(session).sort() };
   })()`);
 }
@@ -175,6 +177,7 @@ try {
     assert.equal(beforeConfirm.theme, 'dark');
     assert.equal(beforeConfirm.port, PORT, 'Cancel must preserve local port override');
     assert.equal(beforeConfirm.hasSessionFixture, true, 'Cancel must preserve guest session fixture');
+    assert.equal(beforeConfirm.sessionFixtureMatches, true, 'Cancel must preserve exact guest session value');
     report.steps.push({ action: 'Cancel Clear local data', result: 'dialog closed; Dark theme, port override, and session fixture preserved' });
 
     await click(panel, 'button', 'Clear local data on this device');
