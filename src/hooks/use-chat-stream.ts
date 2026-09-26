@@ -10,6 +10,7 @@ import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
 import { buildChatContext } from '@/lib/chat/build-context';
 import type { AttachedHighlight } from '@/lib/chat/context/types';
+import { decisionRenderBlock, isDecisionAnswers } from '@/lib/chat/decision-answers';
 import { refreshPageContextBeforeSend } from '@/lib/chat/refresh-page-context';
 import { presentChatStreamError } from '@/lib/chat/stream-error';
 import { progressFromWire } from '@/lib/chat/tool-progress';
@@ -593,6 +594,12 @@ function ensureStreamListeners(): void {
         const state = (chunk.payload.data as { state?: unknown } | undefined)?.state;
         if (state === 'stopped') useChatStore.getState().closeReasoning(target);
         log.info('stream', `reasoning: ${String(state)}`, chunk.payload.data);
+      } else if (chunk.payload.eventName === 'data' && isDecisionAnswers(chunk.payload.data)) {
+        // A decision turn is ONE typed `decision_answers` data event and no
+        // text. Logging it (the generic branch below) left an empty bubble
+        // over a finished verdict; it lands as a markdown block instead.
+        const block = decisionRenderBlock(chunk.payload.data, eventCountRef.current);
+        if (block) useChatStore.getState().upsertRenderBlock(target, block);
       } else if (chunk.payload.eventName === 'render_block') {
         // THE SERVER ALREADY DID THE WORK. A render block carries a validated
         // Content-IR envelope on `metadata.__ir`: the region was detected,

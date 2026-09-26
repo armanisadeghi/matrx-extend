@@ -24,6 +24,7 @@ import { conversationResumePath } from '@/lib/api/routes/tool-results';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
 import { buildChatContext } from '@/lib/chat/build-context';
+import { decisionRenderBlock, isDecisionAnswers } from '@/lib/chat/decision-answers';
 import { refreshPageContextBeforeSend } from '@/lib/chat/refresh-page-context';
 import { progressFromWire } from '@/lib/chat/tool-progress';
 import { readInboundRenderBlock } from '@/lib/content-ir/inbound';
@@ -301,6 +302,12 @@ export function usePilotChatStream() {
               chunk.payload.data,
             );
           }
+        } else if (chunk.payload.eventName === 'data' && isDecisionAnswers(chunk.payload.data)) {
+          // A decision turn is ONE typed `decision_answers` data event and no
+          // text. Logging it (the generic branch below) left an empty bubble
+          // over a finished verdict; it lands as a markdown block instead.
+          const block = decisionRenderBlock(chunk.payload.data, Date.now());
+          if (block) usePilotChatStore.getState().upsertRenderBlock(target, block);
         } else if (chunk.payload.eventName === 'render_block') {
           // Same law as the Assistant surface: the server already detected,
           // parsed and schema-checked the region, so the envelope is rendered
