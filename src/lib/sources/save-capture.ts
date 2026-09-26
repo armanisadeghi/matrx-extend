@@ -35,6 +35,7 @@ function portionsFromEditedMarkdown(soup: SoupResult): CapturePortions {
 }
 
 export const UNSAVED_CAPTURES_KEY = 'matrx.sources.unsaved';
+const UNSAVED_REVISION_KEY = 'matrx.sources.unsaved_revision';
 
 /** A landing body before the send-time fields (organization, person) are stamped on. */
 export type PreparedLanding = Omit<SourceLandingBody, 'organization_id' | 'provenance'> & {
@@ -47,6 +48,8 @@ export interface UnsavedCapture {
   title: string;
   /** Organization of the last attempted send, when one was selected. */
   organizationId?: string;
+  /** Durable order of the Save/Retry start, independent of response arrival order. */
+  revision?: number;
   createdAt: number;
   attempts: number;
   lastRefusal: LandingRefusal;
@@ -205,47 +208,96 @@ async function writeUnsaved(rows: UnsavedCapture[]): Promise<void> {
   await chrome.storage.local.set({ [UNSAVED_CAPTURES_KEY]: rows });
 }
 
+let localQueueTail: Promise<void> = Promise.resolve();
+
+/** Serialize read/write decisions across extension contexts when Web Locks is available. */
+async function withQueueLock<T>(operation: () => Promise<T>): Promise<T> {
+  if (typeof navigator !== 'undefined' && navigator.locks?.request) {
+    return navigator.locks.request('matrx:sources:unsaved-queue', operation);
+  }
+  // Local fallback for environments without Web Locks; the extension's Save
+  // and Retry callers currently live together in the side panel.
+  const prior = localQueueTail;
+  let release!: () => void;
+  localQueueTail = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await prior;
+  try {
+    return await operation();
+  } finally {
+    release();
+  }
+}
+
+/** Reserve order before network I/O, so a slow old refusal cannot become newest. */
+async function reserveQueueRevision(): Promise<number> {
+  return withQueueLock(async () => {
+    const stored = await chrome.storage.local.get(UNSAVED_REVISION_KEY);
+    const prior = stored[UNSAVED_REVISION_KEY];
+    const revision =
+      typeof prior === 'number' && Number.isSafeInteger(prior) && prior >= 0 ? prior : 0;
+    if (revision === Number.MAX_SAFE_INTEGER) throw new Error('Save order on this device is full.');
+    await chrome.storage.local.set({ [UNSAVED_REVISION_KEY]: revision + 1 });
+    return revision + 1;
+  });
+}
+
 /**
  * The queue is keyed by the page's canonical URL: one entry per page. A
  * re-save of a page already waiting REPLACES its entry (newest content, same
  * id, attempts counted) — it never adds a second card for the same page.
  */
 async function upsertUnsaved(row: UnsavedCapture): Promise<UnsavedCapture> {
-  const rows = await listUnsavedCaptures();
-  const key = canonicalUrl(row.url);
-  const prior = rows.find((r) => r.id === row.id || canonicalUrl(r.url) === key);
-  const merged = prior
-    ? { ...row, id: prior.id, createdAt: prior.createdAt, attempts: prior.attempts + row.attempts }
-    : row;
-  await writeUnsaved([
-    ...rows.filter((r) => r.id !== merged.id && canonicalUrl(r.url) !== key),
-    merged,
-  ]);
-  return merged;
+  return withQueueLock(async () => {
+    const rows = await listUnsavedCaptures();
+    const key = canonicalUrl(row.url);
+    const prior = rows.find((r) => r.id === row.id || canonicalUrl(r.url) === key);
+    if (prior && (prior.revision ?? 0) > (row.revision ?? 0)) return prior;
+    const merged = prior
+      ? {
+          ...row,
+          id: prior.id,
+          createdAt: prior.createdAt,
+          attempts: prior.attempts + row.attempts,
+        }
+      : row;
+    await writeUnsaved([
+      ...rows.filter((r) => r.id !== merged.id && canonicalUrl(r.url) !== key),
+      merged,
+    ]);
+    return merged;
+  });
 }
 
 /** A page that landed leaves the queue, whichever control landed it. */
 async function dropUnsavedForUrl(
   url: string,
-  expected: Pick<UnsavedCapture, 'id' | 'attempts'> | null,
+  revision: number,
   organizationId: string,
+  retryRowId?: string,
 ): Promise<void> {
-  if (!expected) return;
-  const rows = await listUnsavedCaptures();
-  const key = canonicalUrl(url);
-  const queued = rows.find((r) => canonicalUrl(r.url) === key);
-  if (
-    queued?.id === expected.id &&
-    queued.attempts === expected.attempts &&
-    (!queued.organizationId || queued.organizationId === organizationId)
-  ) {
-    await writeUnsaved(rows.filter((r) => r.id !== queued.id));
-  }
+  await withQueueLock(async () => {
+    const rows = await listUnsavedCaptures();
+    const key = canonicalUrl(url);
+    const queued = rows.find((r) => canonicalUrl(r.url) === key);
+    if (
+      queued &&
+      (queued.revision ?? 0) <= revision &&
+      (!queued.organizationId ||
+        queued.organizationId === organizationId ||
+        queued.id === retryRowId)
+    ) {
+      await writeUnsaved(rows.filter((r) => r.id !== queued.id));
+    }
+  });
 }
 
 export async function discardUnsavedCapture(id: string): Promise<void> {
-  const rows = await listUnsavedCaptures();
-  await writeUnsaved(rows.filter((r) => r.id !== id));
+  await withQueueLock(async () => {
+    const rows = await listUnsavedCaptures();
+    await writeUnsaved(rows.filter((r) => r.id !== id));
+  });
 }
 
 export function onUnsavedCapturesChange(cb: (rows: UnsavedCapture[]) => void): () => void {
@@ -280,12 +332,10 @@ export async function saveCaptureAsSource(
         'This capture has no article text, so there is nothing to save. Try "Scroll & capture" to load the page fully, then save again.',
     };
   }
-  const queuedBefore = await listUnsavedCaptures()
-    .then((rows) => rows.find((row) => canonicalUrl(row.url) === canonicalUrl(soup.url)) ?? null)
-    .catch(() => null);
+  const revision = await reserveQueueRevision();
   const result = await send(prepared);
   if (result.ok) {
-    await dropUnsavedForUrl(soup.url, queuedBefore, result.organizationId).catch(() => undefined);
+    await dropUnsavedForUrl(soup.url, revision, result.organizationId).catch(() => undefined);
     return { status: 'landed', landed: result.landed, organizationId: result.organizationId };
   }
   let unsaved: UnsavedCapture = {
@@ -293,6 +343,7 @@ export async function saveCaptureAsSource(
     url: soup.url,
     title: prepared.name,
     ...(result.organizationId && { organizationId: result.organizationId }),
+    revision,
     createdAt: Date.now(),
     attempts: 1,
     lastRefusal: result.refusal,
@@ -317,18 +368,18 @@ export async function retryUnsavedCapture(id: string): Promise<SaveOutcome> {
   if (!row) {
     return { status: 'empty', message: 'That unsaved capture is no longer on this device.' };
   }
+  const revision = await reserveQueueRevision();
   const result = await send(row.prepared);
   if (result.ok) {
-    const current = (await listUnsavedCaptures()).find((pending) => pending.id === id);
-    if (current?.attempts === row.attempts) await discardUnsavedCapture(id);
+    await dropUnsavedForUrl(row.url, revision, result.organizationId, id);
     return { status: 'landed', landed: result.landed, organizationId: result.organizationId };
   }
   const next: UnsavedCapture = {
     ...row,
     ...(result.organizationId && { organizationId: result.organizationId }),
-    attempts: row.attempts + 1,
+    revision,
+    attempts: 1,
     lastRefusal: result.refusal,
   };
-  await upsertUnsaved(next);
-  return { status: 'unsaved', unsaved: next };
+  return { status: 'unsaved', unsaved: await upsertUnsaved(next) };
 }

@@ -34,6 +34,7 @@ export function UnsavedCapturesCard({
 }) {
   const [rows, setRows] = useState<UnsavedCapture[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
+  const [retryError, setRetryError] = useState<string | null>(null);
   const [discardTarget, setDiscardTarget] = useState<UnsavedCapture | null>(null);
 
   useEffect(() => {
@@ -57,6 +58,7 @@ export function UnsavedCapturesCard({
   const retry = useCallback(
     async (row: UnsavedCapture) => {
       setBusy(row.id);
+      setRetryError(null);
       try {
         if (currentPage && canonicalUrl(currentPage.url) === canonicalUrl(row.url)) {
           await currentPage.save();
@@ -66,6 +68,8 @@ export function UnsavedCapturesCard({
             onLanded?.(row.url, outcome.landed.processed_document_id, outcome.organizationId);
         }
         setRows(await listUnsavedCaptures());
+      } catch {
+        setRetryError('Could not retry this capture. It remains on this device; try again.');
       } finally {
         setBusy(null);
       }
@@ -85,6 +89,7 @@ export function UnsavedCapturesCard({
         <AlertTriangle className="size-3.5 shrink-0" />
         Not yet a Source — kept on this device until the save lands ({rows.length})
       </div>
+      {retryError && <p className="text-red-700 dark:text-red-300">{retryError}</p>}
       {rows.map((row) => (
         <div key={row.id} className="rounded-lg bg-background/60 px-2 py-1.5">
           <div className="truncate font-medium">{row.title}</div>
