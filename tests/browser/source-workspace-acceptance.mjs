@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * EXT-D-0022: one bounded Source save and workspace-switch observation in an
+ * EXT-D-0022: one bounded Source save or read-only recovery and workspace-switch observation in an
  * owned, receipt-verified native Chrome panel. Root owns guarded execution.
  * Real UI login follows isolated-admin-signin-acceptance.mjs; that script is
  * an executable entrypoint, so importing it would launch a second browser.
@@ -37,8 +37,10 @@ const report = {
     approvedExistingOrganizationSelectedByUi: false,
     fixtureLookup: 'unverified',
     checkpointDurableBeforeSave: false,
-    saveClicks: 0,
+    saveAttemptReserved: false,
+    pointerDispatch: 'not_attempted',
     saveResult: 'not_attempted',
+    recoveryLookup: 'not_applicable',
     localSavedAndOpenSource: 'unverified',
     comparisonOrganization: 'unverified',
     immediateClaimClear: 'unverified',
@@ -360,6 +362,42 @@ async function reserveSaveAttempt(organizationId, fixture) {
   report.observations.checkpointDurableBeforeSave = true;
 }
 
+async function existingSaveAttempt(organizationId) {
+  let stat;
+  try {
+    stat = await lstat(ATTEMPT);
+  } catch (error) {
+    if (error?.code === 'ENOENT') return null;
+    fail('save_checkpoint_unavailable');
+  }
+  if (!stat.isFile() || (stat.mode & 0o777) !== 0o600) fail('save_checkpoint_not_private_file');
+  let parsed;
+  try {
+    parsed = JSON.parse(await readFile(ATTEMPT, 'utf8'));
+  } catch {
+    fail('save_checkpoint_unreadable');
+  }
+  if (
+    parsed?.schema !== 1 ||
+    !['reserved', 'source_link_observed'].includes(parsed.phase) ||
+    parsed.organizationId !== organizationId ||
+    typeof parsed.fixtureSha256 !== 'string'
+  )
+    fail('save_checkpoint_mismatch');
+  const matches = FIXTURES.filter(
+    (fixture) => createHash('sha256').update(fixture).digest('hex') === parsed.fixtureSha256,
+  );
+  if (matches.length !== 1) fail('save_checkpoint_fixture_mismatch');
+  if (parsed.sourceId !== undefined && !UUID.test(parsed.sourceId))
+    fail('save_checkpoint_source_id_invalid');
+  if (
+    (parsed.phase === 'reserved' && parsed.sourceId !== undefined) ||
+    (parsed.phase === 'source_link_observed' && !parsed.sourceId)
+  )
+    fail('save_checkpoint_phase_id_mismatch');
+  return { phase: parsed.phase, fixture: matches[0], sourceId: parsed.sourceId ?? null };
+}
+
 async function recordObservedSourceId(id) {
   if (!UUID.test(id)) fail('observed_source_id_invalid');
   const existing = JSON.parse(await readFile(ATTEMPT, 'utf8'));
@@ -422,82 +460,117 @@ try {
       if (!approvedId) fail('approved_org_id_unavailable');
       report.observations.approvedExistingOrganizationSelectedByUi = true;
 
-      let fixture = null;
-      for (const candidate of FIXTURES) {
-        stage = 'public_fixture_lookup';
-        const lookup = await watchScopedLookup(panel, candidate, approvedId);
+      const checkpoint = await existingSaveAttempt(approvedId);
+      report.mode = checkpoint ? 'read_only_recovery' : 'single_save_attempt';
+      let sourceId;
+      if (checkpoint) {
+        stage = 'read_only_recovery_lookup';
+        report.observations.saveResult = 'prior_attempt_ambiguous_no_retry';
+        const lookup = await watchScopedLookup(panel, checkpoint.fixture, approvedId);
         try {
-          await page.goto(candidate, { waitUntil: 'load', timeout: 60_000 });
-          if (page.url() !== candidate) fail('public_fixture_redirected');
+          await page.goto(checkpoint.fixture, { waitUntil: 'load', timeout: 60_000 });
+          if (page.url() !== checkpoint.fixture) fail('recovery_public_fixture_redirected');
           await click(panel, 'title', 'Scrape');
           const network = await waitFor(
-            'scoped_recognition_network_result',
+            'recovery_scoped_recognition_network_result',
             lookup.read,
             (result) => result === 'none' || result === 'found' || result === 'unknown',
             30_000,
           );
-          if (network === 'unknown') fail('source_lookup_network_unknown');
-          const state = await waitFor(
-            'scoped_source_lookup_ui',
+          report.observations.recoveryLookup = network;
+          if (network !== 'found') fail('recovery_source_not_definitively_found');
+          const recovered = await waitFor(
+            'recovery_source_ui',
             () => scrapeState(panel),
-            (s) =>
-              s?.linked &&
-              (s.checkUnknown ||
-                (network === 'none' && s.notSaved && !s.savedBanner) ||
-                (network === 'found' && s.savedBanner)),
+            (state) => state?.linked && (state.savedBanner || state.checkUnknown || state.notSaved),
             30_000,
           );
-          if (state.checkUnknown) fail('source_lookup_ui_unknown');
-          if (network === 'none' && state.notSaved && !state.savedBanner) {
-            fixture = candidate;
-            break;
-          }
+          if (recovered.checkUnknown || !recovered.savedBanner || !recovered.openRecognized)
+            fail('recovery_source_ui_unverified');
+          sourceId = await sourceIdFromRealUi(panel, page, 'Open (web app)');
+          if (checkpoint.sourceId && checkpoint.sourceId !== sourceId)
+            fail('recovery_source_id_mismatch');
+          if (!checkpoint.sourceId) await recordObservedSourceId(sourceId);
+          report.observations.recoveryLookup = 'found_with_matching_ui_and_link';
         } finally {
           lookup.stop();
         }
+      } else {
+        let fixture = null;
+        for (const candidate of FIXTURES) {
+          stage = 'public_fixture_lookup';
+          const lookup = await watchScopedLookup(panel, candidate, approvedId);
+          try {
+            await page.goto(candidate, { waitUntil: 'load', timeout: 60_000 });
+            if (page.url() !== candidate) fail('public_fixture_redirected');
+            await click(panel, 'title', 'Scrape');
+            const network = await waitFor(
+              'scoped_recognition_network_result',
+              lookup.read,
+              (result) => result === 'none' || result === 'found' || result === 'unknown',
+              30_000,
+            );
+            if (network === 'unknown') fail('source_lookup_network_unknown');
+            const state = await waitFor(
+              'scoped_source_lookup_ui',
+              () => scrapeState(panel),
+              (s) =>
+                s?.linked &&
+                (s.checkUnknown ||
+                  (network === 'none' && s.notSaved && !s.savedBanner) ||
+                  (network === 'found' && s.savedBanner)),
+              30_000,
+            );
+            if (state.checkUnknown) fail('source_lookup_ui_unknown');
+            if (network === 'none' && state.notSaved && !state.savedBanner) {
+              fixture = candidate;
+              break;
+            }
+          } finally {
+            lookup.stop();
+          }
+        }
+        if (!fixture) fail('allowed_fixtures_already_saved');
+        report.observations.fixtureLookup = 'definitively_not_saved';
+
+        stage = 'public_capture';
+        await click(panel, 'button', 'Capture this page');
+        await waitFor(
+          'capture_ready_for_save',
+          () => scrapeState(panel),
+          (state) => state?.linked && state.save && state.notSaved && !state.checkUnknown,
+          60_000,
+        );
+        if (page.url() !== fixture) fail('public_page_changed_before_save');
+        const preSave = await scrapeState(panel);
+        if (!preSave.save || !preSave.notSaved || preSave.savedBanner || preSave.checkUnknown)
+          fail('pre_save_ui_not_definitive');
+        const selectedBeforeSave = await evaluate(
+          panel,
+          `(async () => (await chrome.storage.local.get('matrx.org.active'))['matrx.org.active']?.id ?? null)()`,
+        );
+        if (selectedBeforeSave !== approvedId) fail('approved_org_changed_before_save');
+
+        stage = 'reserve_save_attempt';
+        await reserveSaveAttempt(approvedId, fixture);
+        stage = 'one_save_click';
+        report.observations.saveAttemptReserved = true;
+        report.observations.pointerDispatch = 'unknown';
+        await click(panel, 'button', 'Save');
+        report.observations.pointerDispatch = 'press_and_release_returned';
+        stage = 'save_result';
+        const saved = await waitFor(
+          'saved_source_and_open_link',
+          () => scrapeState(panel),
+          (state) => state?.linked && state.saved && state.openSource,
+          60_000,
+        );
+        if (!saved.saved || !saved.openSource) fail('save_result_ambiguous');
+        sourceId = await sourceIdFromRealUi(panel, page, 'Open this Source (opens in the web app)');
+        await recordObservedSourceId(sourceId);
+        report.observations.saveResult = 'definitive_success';
+        report.observations.localSavedAndOpenSource = 'pass';
       }
-      if (!fixture) fail('allowed_fixtures_already_saved');
-      report.observations.fixtureLookup = 'definitively_not_saved';
-
-      stage = 'public_capture';
-      await click(panel, 'button', 'Capture this page');
-      await waitFor(
-        'capture_ready_for_save',
-        () => scrapeState(panel),
-        (state) => state?.linked && state.save && state.notSaved && !state.checkUnknown,
-        60_000,
-      );
-      if (page.url() !== fixture) fail('public_page_changed_before_save');
-      const preSave = await scrapeState(panel);
-      if (!preSave.save || !preSave.notSaved || preSave.savedBanner || preSave.checkUnknown)
-        fail('pre_save_ui_not_definitive');
-      const selectedBeforeSave = await evaluate(
-        panel,
-        `(async () => (await chrome.storage.local.get('matrx.org.active'))['matrx.org.active']?.id ?? null)()`,
-      );
-      if (selectedBeforeSave !== approvedId) fail('approved_org_changed_before_save');
-
-      stage = 'reserve_save_attempt';
-      await reserveSaveAttempt(approvedId, fixture);
-      stage = 'one_save_click';
-      report.observations.saveClicks = 1;
-      await click(panel, 'button', 'Save');
-      stage = 'save_result';
-      const saved = await waitFor(
-        'saved_source_and_open_link',
-        () => scrapeState(panel),
-        (state) => state?.linked && state.saved && state.openSource,
-        60_000,
-      );
-      if (!saved.saved || !saved.openSource) fail('save_result_ambiguous');
-      const sourceId = await sourceIdFromRealUi(
-        panel,
-        page,
-        'Open this Source (opens in the web app)',
-      );
-      await recordObservedSourceId(sourceId);
-      report.observations.saveResult = 'definitive_success';
-      report.observations.localSavedAndOpenSource = 'pass';
 
       stage = 'approved_recognition_reopen';
       await click(panel, 'title', 'Settings');
@@ -603,12 +676,41 @@ try {
   )
     fail('release_build_changed_during_run');
   report.build = { ...buildAtEnd, extensionId: nativeResult.extensionId };
-} catch {
+} catch (error) {
   report.status = 'unverified';
   report.failureStage = stage;
   report.failureCode ??= 'stage_failed';
+  if (stage === 'one_save_click') {
+    const allowedCodes = new Set([
+      'pointer_initial_evaluation_failed',
+      'pointer_page_sample_failed',
+      'pointer_target_not_unique',
+      'pointer_followup_evaluation_failed',
+      'pointer_stable_hit_not_observed',
+      'pointer_press_dispatch_failed',
+      'pointer_release_dispatch_failed',
+    ]);
+    const driver = error?.driverFailure;
+    if (allowedCodes.has(driver?.code)) {
+      report.pointerDiagnostic = {
+        code: driver.code,
+        matchedTargetCount: Number.isInteger(driver.matchedTargetCount)
+          ? driver.matchedTargetCount
+          : null,
+        visibleMatchCount: Number.isInteger(driver.visibleMatchCount)
+          ? driver.visibleMatchCount
+          : null,
+        hitTarget: driver.hitTarget === true,
+        stableSamples: Number.isInteger(driver.stableSamples) ? driver.stableSamples : null,
+      };
+      if (driver.code === 'pointer_release_dispatch_failed')
+        report.observations.pointerDispatch = 'press_returned_release_unknown';
+      else if (driver.code !== 'pointer_press_dispatch_failed')
+        report.observations.pointerDispatch = 'pre_dispatch_failure';
+    }
+  }
   if (
-    report.observations.saveClicks === 1 &&
+    report.observations.saveAttemptReserved &&
     report.observations.saveResult !== 'definitive_success'
   )
     report.observations.saveResult = 'ambiguous_no_retry';

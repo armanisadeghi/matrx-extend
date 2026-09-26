@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "run_id": "source-workspace-001",
+  "defect_id": "EXT-D-0022",
+  "source": {
+    "result_path": "test-results/source-workspace-acceptance.json",
+    "result_sha256": "fab76d2e33616043e9723f2fb9bb134508970897bc88bbaebc56a3078183e09b",
+    "guard_log_path": "/tmp/matrx-source-workspace-001.log",
+    "guard_log_sha256": "b865923113e6ffa62634d575349129e120e525ab6cd09bc067c92c78f3b42734"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T20:57:04.738Z",
+    "watch_healthy_at": "2026-09-26T20:57:21.155Z",
+    "child_exit_at": "2026-09-26T20:57:26.140Z",
+    "child_exit_code": 1
+  },
+  "build": {
+    "version": "0.2.77",
+    "tree_sha256": "007c94aae25c20c235eba269d6e5673367c1916e1eff4d17e8e55ecccdda760b"
+  },
+  "observations": {
+    "real_admin_ui": true,
+    "approved_existing_organization_selected_by_ui": true,
+    "fixture_lookup_before_save": "definitively_not_saved",
+    "checkpoint_durable_before_save": true,
+    "checkpoint_mode": "0600",
+    "checkpoint_phase_after_run": "reserved",
+    "save_attempts_entered": 1,
+    "save_result": "ambiguous_no_retry",
+    "local_saved_and_open_source": "unverified"
+  },
+  "failure": {
+    "stage": "one_save_click",
+    "code": "stage_failed",
+    "pointer_dispatch_phase": "unknown"
+  },
+  "conclusion": "The click helper threw, but this run did not preserve its error or distinguish a pre-dispatch failure from a post-press or post-release failure. A Source may have been created. The existing checkpoint must not be reset and Save must not be retried."
+}
