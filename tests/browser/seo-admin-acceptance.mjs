@@ -36,6 +36,15 @@ const target = (caseId, subtarget, evidence) =>
   report.targets.push({ case_id: `EXT-F-1008-${caseId}`, subtarget, status: 'pass', evidence });
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+async function syncDirectory(path) {
+  const handle = await open(path, 'r');
+  try {
+    await handle.sync();
+  } finally {
+    await handle.close();
+  }
+}
+
 async function saveAttempt(organizationId) {
   await mkdir(join(REPO, 'test-results'), { recursive: true });
   try {
@@ -47,6 +56,9 @@ async function saveAttempt(organizationId) {
   } catch (error) {
     if (error?.code !== 'ENOENT') throw new Error('save_attempt_checkpoint_requires_coordination');
   }
+  // Persist test-results itself if mkdir just created it. If directory fsync
+  // is unsupported, the Save click is never reached.
+  await syncDirectory(REPO);
   const handle = await open(ATTEMPT, 'wx', 0o600);
   try {
     await handle.writeFile(
@@ -56,18 +68,25 @@ async function saveAttempt(organizationId) {
   } finally {
     await handle.close();
   }
+  // File fsync alone does not guarantee this new directory entry survives.
+  await syncDirectory(join(REPO, 'test-results'));
   return { reserved: false, id: null };
 }
 
 async function storeObservedSaveId(id, organizationId) {
   assert.match(id, UUID, 'real Save response ID');
   const temp = `${ATTEMPT}.tmp`;
-  await writeFile(
-    temp,
-    `${JSON.stringify({ organization: ORGANIZATION, organizationId, urlSha256: SAVE_URL_SHA256, phase: 'save_id_observed', id })}\n`,
-    { mode: 0o600 },
-  );
+  const handle = await open(temp, 'wx', 0o600);
+  try {
+    await handle.writeFile(
+      `${JSON.stringify({ organization: ORGANIZATION, organizationId, urlSha256: SAVE_URL_SHA256, phase: 'save_id_observed', id })}\n`,
+    );
+    await handle.sync();
+  } finally {
+    await handle.close();
+  }
   await rename(temp, ATTEMPT);
+  await syncDirectory(join(REPO, 'test-results'));
 }
 
 // Observe the real PostgREST insert response without changing or replaying it.

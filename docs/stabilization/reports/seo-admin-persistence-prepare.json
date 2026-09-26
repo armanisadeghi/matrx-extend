@@ -12,7 +12,7 @@
     "real_save_response": "The runner observes, without interception or replay, the real POST to wbx_seo_audit for the exact public URL and selected organization and reads only its returned ID from the response body.",
     "history": "The selected URL's rendered history must contain that exact ID; the clicked row's selected snapshot must expose the same ID before and after a new panel document reload. Count growth is not used because history is capped at 25."
   },
-  "durable_one_write_guard": "test-results/seo-admin-save-attempt.json is created exclusively and synced before the trusted Save click, keyed to the selected on-device organization ID and SHA-256 of the exact public URL. A rerun with its observed ID skips Save and verifies read-only. A checkpoint without an observed ID refuses another Save and reports an ambiguous prior outcome for coordination.",
+  "durable_one_write_guard": "Before the trusted Save click, the runner syncs the repository directory after creating test-results, exclusively creates and syncs the 0600 checkpoint file, then syncs test-results so its new directory entry survives a crash. Any unsupported fsync stops before mutation. The checkpoint is keyed to the selected on-device organization ID and SHA-256 of the public URL. The later response-ID update writes and syncs a temporary file, renames it over the checkpoint, then syncs test-results. A rerun with an ID skips Save; a checkpoint without an ID refuses another Save.",
   "new_subtargets": [
     {
       "case_id": "EXT-F-1008-T04",
