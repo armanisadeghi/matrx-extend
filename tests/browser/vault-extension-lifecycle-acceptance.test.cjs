@@ -208,10 +208,14 @@ const {
   // The watcher owns an attached CDP session until lifecycle cleanup; a
   // worker destroyed before that attachment is a named lifecycle failure.
   const destroyedListeners = new Map();
+  let resolveDestroyedAttach;
   const destroyedCdp = {
     send: async (method, _params) => {
       if (method === 'Target.setDiscoverTargets') return undefined;
-      if (method === 'Target.attachToTarget') return new Promise(() => {});
+      if (method === 'Target.attachToTarget')
+        return new Promise((resolve) => {
+          resolveDestroyedAttach = () => resolve({ sessionId: 'destroyed-session' });
+        });
       if (method === 'Target.detachFromTarget') return undefined;
       assert.fail(`unexpected CDP method ${method}`);
     },
@@ -239,7 +243,14 @@ const {
     destroyedWatcher.replacementTarget,
     /lifecycle_reload_replacement_worker_destroyed_before_attach/,
   );
-  destroyedWatcher.dispose();
+  let destroyedDisposed = false;
+  const destroyedDisposal = destroyedWatcher.dispose().then(() => {
+    destroyedDisposed = true;
+  });
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(destroyedDisposed, false, 'destroyed target disposal must await pending attach');
+  resolveDestroyedAttach();
+  await destroyedDisposal;
   assert.equal(destroyedListeners.size, 0, 'watcher cleanup must remove every CDP listener');
   const timeoutWatcher = await armReplacementExtensionWorkerTargetWatcher({
     cdp: destroyedCdp,
@@ -251,7 +262,7 @@ const {
     timeoutWatcher.replacementTarget,
     /lifecycle_reload_replacement_worker_target_timeout/,
   );
-  timeoutWatcher.dispose();
+  await timeoutWatcher.dispose();
   assert.equal(
     destroyedListeners.size,
     0,
@@ -297,6 +308,13 @@ const {
     lateWatcher.replacementTarget,
     /lifecycle_reload_replacement_worker_target_timeout/,
   );
+  let lateDisposalFinished = false;
+  const lateDisposal = lateWatcher.dispose().then(() => {
+    lateDisposalFinished = true;
+  });
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(lateDisposalFinished, false, 'disposal must await late attachment');
+  assert.equal(detachedSession, undefined, 'detach cannot precede attachment');
   resolveLateAttach();
   await new Promise((resolve) => setTimeout(resolve, 0));
   assert.equal(
@@ -304,8 +322,9 @@ const {
     'late-late-worker',
     'late attachment must be detached after timeout',
   );
+  assert.equal(lateDisposalFinished, false, 'disposal must await late detach');
   resolveDetach();
-  await lateWatcher.dispose();
+  await lateDisposal;
   assert.equal(lateListeners.size, 0, 'late watcher cleanup must remove every CDP listener');
 
   const attachedListeners = new Map();

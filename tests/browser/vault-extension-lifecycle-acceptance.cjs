@@ -127,6 +127,7 @@ async function armReplacementExtensionWorkerTargetWatcher({
   let settled = false;
   let disposed = false;
   let attachmentDetached = false;
+  let attachmentTask;
   const replacementTarget = new Promise((resolve, reject) => {
     resolveReplacement = resolve;
     rejectReplacement = reject;
@@ -151,28 +152,37 @@ async function armReplacementExtensionWorkerTargetWatcher({
     attachmentDetached = true;
     await cdp.send('Target.detachFromTarget', { sessionId: attachment.sessionId });
   };
-  const onTargetCreated = async ({ targetInfo } = {}) => {
+  const onTargetCreated = ({ targetInfo } = {}) => {
     if (
       targetInfo?.type === 'service_worker' &&
       targetInfo.url === workerUrl &&
-      targetInfo.targetId !== previousTargetId
+      targetInfo.targetId !== previousTargetId &&
+      !candidateTargetId
     ) {
       candidateTargetId = targetInfo.targetId;
-      try {
-        attachment = await cdp.send('Target.attachToTarget', {
-          targetId: targetInfo.targetId,
-          flatten: false,
-        });
-        assert(typeof attachment?.sessionId === 'string', 'lifecycle_reload_worker_attach_missing');
-        if (disposed || settled || candidateDestroyed) {
-          await detachAttachment().catch(() => {});
-          return;
+      attachmentTask = (async () => {
+        try {
+          attachment = await cdp.send('Target.attachToTarget', {
+            targetId: targetInfo.targetId,
+            flatten: false,
+          });
+          assert(
+            typeof attachment?.sessionId === 'string',
+            'lifecycle_reload_worker_attach_missing',
+          );
+          if (disposed || settled || candidateDestroyed) {
+            await detachAttachment();
+            return;
+          }
+          resolve({ ...targetInfo, attachment });
+        } catch {
+          reject(new Error('lifecycle_reload_replacement_worker_attach_refused'));
+          throw new Error('lifecycle_reload_replacement_worker_attach_refused');
         }
-        resolve({ ...targetInfo, attachment });
-      } catch {
-        clearTimeout(timeout);
-        reject(new Error('lifecycle_reload_replacement_worker_attach_refused'));
-      }
+      })();
+      // Disposal owns this task, including a late attachment and its detach.
+      // Observe early failure without consuming the error that disposal awaits.
+      attachmentTask.catch(() => {});
     }
   };
   const onTargetDestroyed = ({ targetId } = {}) => {
@@ -208,6 +218,7 @@ async function armReplacementExtensionWorkerTargetWatcher({
     if (typeof cdp.off === 'function') cdp.off('Target.targetDestroyed', onTargetDestroyed);
     else if (typeof cdp.removeListener === 'function')
       cdp.removeListener('Target.targetDestroyed', onTargetDestroyed);
+    if (attachmentTask) await attachmentTask;
     await detachAttachment();
   };
   return { replacementTarget, dispose };
