@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "review": "seo-013-diagnostics-peer",
+  "target_commit": "b043645e2999fc446a403daf21765302c5d8fecf",
+  "scope": "Source-only re-review of bounded failure diagnostics around guest SEO metadata-door activation.",
+  "verdict_a_runtime": {
+    "result": "UNVERIFIED",
+    "evidence": [
+      "Run 013's saved receipt says its runner was commit 6740fc045d036d4068296da7423186145cecc408; the new diagnostics are in later commit b043645e, so that run did not exercise them.",
+      "The preserved run identifies metadata_fixture_schema_outbound_activation as the failure stage and includes the panel's observed schema anchors, but no step diagnostic. The cause remains unknown; this review did not run a browser or acceptance flow."
+    ],
+    "limit": "Only a fresh run of the instrumented runner can show which allowlisted step was reached. The earlier error was discarded, so no click, popup, or navigation cause is inferred."
+  },
+  "verdict_b_source": {
+    "result": "PASS_WITH_LIMITS",
+    "evidence": [
+      "The diagnostic object is built from fixed group and step labels, an integer candidate count, booleans, and a bounded 0-2 stable-hit sample count. It stores no expected or actual URL, page text, exception message, stack, or arbitrary DOM value.",
+      "The activation still requires exactly one scoped anchor, exact href equality, target=_blank, two stable hit-tested samples with a positive click area, successful pointer press and release, a new page event, and the exact expected destination URL. Assertion errors are rethrown after attaching diagnostics; the top-level catch keeps the report unverified and copies only the diagnostic object.",
+      "The change wraps existing assertions and interaction steps; it adds no success target, skips no assertion, and changes no timeout. The metadata target remains appended only after both link activations resolve successfully."
+    ],
+    "limitations": [
+      "sourcePageStillOpen and sourceUrlUnchanged are diagnostic observations only; they are not asserted as acceptance predicates. Do not claim source-tab preservation from this target, and do not treat this as a weakening because those predicates were not previously acceptance gates.",
+      "A thrown error during opened.close() in finally could replace the original activation error and prevent the already-attached diagnostic from reaching the top-level catch. The report would still be unverified, but the added detail could be lost on that cleanup failure.",
+      "No live run has confirmed the new fields, their values, or diagnostic completeness."
+    ]
+  },
+  "review_scope": "Reviewed b043645e and the preserved run 013 receipt/diagnosis. No source changes, browser, heavy test, build, auth session, data write, or push was performed."
+}
