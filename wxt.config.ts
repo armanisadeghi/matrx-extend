@@ -97,9 +97,19 @@ export default defineConfig({
         isFirefox
           ? !['sidePanel', 'offscreen', 'tabGroups', 'debugger'].includes(permission)
           : isSafari
-            ? !['sidePanel', 'offscreen', 'tabGroups', 'debugger', 'nativeMessaging'].includes(
-                permission,
-              )
+            ? ![
+                'sidePanel',
+                'offscreen',
+                'tabGroups',
+                'debugger',
+                'nativeMessaging',
+                'history',
+                'bookmarks',
+                'downloads',
+                'identity',
+                'notifications',
+                'sessions',
+              ].includes(permission)
             : true,
       ),
       // Risky / privacy-sensitive permissions live here. Granted at runtime via
@@ -117,7 +127,11 @@ export default defineConfig({
       //   'management'
       optional_permissions: ['cookies', 'pageCapture', 'clipboardRead', 'tabCapture'].filter(
         (permission) =>
-          isFirefox || isSafari ? !['pageCapture', 'tabCapture'].includes(permission) : true,
+          isFirefox
+            ? !['pageCapture', 'tabCapture'].includes(permission)
+            : isSafari
+              ? !['pageCapture', 'clipboardRead', 'tabCapture'].includes(permission)
+              : true,
       ),
       // Host permissions — broad web access at install time so the agent can
       // read / interact with arbitrary pages without the user fighting Chrome
@@ -277,6 +291,21 @@ export default defineConfig({
       chunkSizeWarningLimit: 1700,
     },
   }),
+  hooks: {
+    'build:manifestGenerated': (wxt, manifest) => {
+      // WXT always adds options_ui.open_in_tab for an options entrypoint, but
+      // Safari's converter rejects that key. Keep the settings page reachable
+      // through options_ui while omitting the unsupported navigation flag.
+      if (wxt.config.browser === 'safari' && manifest.options_ui) {
+        (
+          manifest.options_ui as {
+            page: string;
+            open_in_tab?: boolean | undefined;
+          }
+        ).open_in_tab = undefined;
+      }
+    },
+  },
   // Dev server port. WXT defaults to 3000 (with fallbacks 3001-3010), which
   // collides with matrx-frontend's Next.js dev server. Pin to 3025 — clearly
   // off the beaten path and out of conflict with the sibling app.

@@ -26,8 +26,30 @@ const {
     refresh: true,
     organization: true,
   };
+  const targetListeners = new Map();
+  const reloadCdp = {
+    send: async (method, params) => {
+      assert.equal(method, 'Target.setDiscoverTargets');
+      assert.deepEqual(params, { discover: true });
+    },
+    on: (event, listener) => targetListeners.set(event, listener),
+    off: (event, listener) => {
+      if (targetListeners.get(event) === listener) targetListeners.delete(event);
+    },
+    emit: (event, payload) => targetListeners.get(event)?.(payload),
+  };
   const worker = {
-    evaluate: async (fn) => (fn.toString().includes('runtime.reload') ? undefined : snapshot),
+    evaluate: async (fn) => {
+      if (!fn.toString().includes('runtime.reload')) return snapshot;
+      reloadCdp.emit('Target.targetCreated', {
+        targetInfo: {
+          targetId: 'replacement-worker',
+          type: 'service_worker',
+          url: 'chrome-extension://abcdefghijklmnopabcdefghijklmnop/background.js',
+        },
+      });
+      return undefined;
+    },
   };
   await assert.rejects(
     () => inspectIdentity({ evaluate: async () => ({ userId: null }) }),
@@ -77,6 +99,8 @@ const {
   const reloadProof = {};
   const replacement = { ...worker };
   const reloadBoundary = {
+    cdp: reloadCdp,
+    workerUrl: 'chrome-extension://abcdefghijklmnopabcdefghijklmnop/background.js',
     previousWorkerTargetId: 'old-worker',
     previousPanelTargetId: 'old-panel',
     assertPreviousTargetsGone: async () => ({ workerTargetGone: true, panelTargetGone: true }),
@@ -85,11 +109,10 @@ const {
   const returned = await runExtensionReload({
     worker,
     ...reloadBoundary,
-    refreshWorker: async () => ({
-      worker: replacement,
-      replacementWorkerTargetObserved: true,
-      replacementWorkerTargetId: 'replacement-worker',
-    }),
+    refreshWorker: async (target) => {
+      assert.equal(target.targetId, 'replacement-worker');
+      return replacement;
+    },
     verifySettingsIdentity: async () => true,
     checkpoint: () => {},
     proof: reloadProof,
@@ -97,34 +120,36 @@ const {
   assert.equal(returned, replacement);
   assert.equal(reloadProof.lifecycle.extensionReload.disposition, 'passed');
 
-  // A reloaded MV3 worker can be absent until a replacement panel performs
-  // real work. The old targets must retire and the new panel must bind before
-  // target reacquisition begins.
+  // The replacement target must be captured before reload, then rebound before
+  // the owned-window action.openPopup path opens the replacement panel.
   const reloadWakeOrder = [];
   await runExtensionReload({
     worker,
+    cdp: {
+      ...reloadCdp,
+      send: async (method, params) => {
+        reloadWakeOrder.push('watcher-armed');
+        assert.equal(method, 'Target.setDiscoverTargets');
+        assert.deepEqual(params, { discover: true });
+      },
+    },
+    workerUrl: 'chrome-extension://abcdefghijklmnopabcdefghijklmnop/background.js',
     previousWorkerTargetId: 'old-worker',
     previousPanelTargetId: 'old-panel',
     assertPreviousTargetsGone: async () => {
       reloadWakeOrder.push('previous-targets-gone');
       return { workerTargetGone: true, panelTargetGone: true };
     },
-    reopenPanel: async () => {
+    refreshWorker: async (target) => {
+      assert.deepEqual(reloadWakeOrder, ['watcher-armed', 'previous-targets-gone']);
+      assert.equal(target.targetId, 'replacement-worker');
+      reloadWakeOrder.push('replacement-worker');
+      return replacement;
+    },
+    reopenPanel: async (reboundWorker) => {
+      assert.equal(reboundWorker, replacement);
       reloadWakeOrder.push('replacement-panel');
       return { targetId: 'replacement-panel' };
-    },
-    refreshWorker: async () => {
-      assert.deepEqual(
-        reloadWakeOrder,
-        ['previous-targets-gone', 'replacement-panel', 'settings'],
-        'a post-reload replacement panel interaction must precede replacement target polling',
-      );
-      reloadWakeOrder.push('replacement-target');
-      return {
-        worker: replacement,
-        replacementWorkerTargetObserved: true,
-        replacementWorkerTargetId: 'replacement-worker',
-      };
     },
     verifySettingsIdentity: async () => {
       reloadWakeOrder.push('settings');
@@ -134,10 +159,11 @@ const {
     proof: {},
   });
   assert.deepEqual(reloadWakeOrder, [
+    'watcher-armed',
     'previous-targets-gone',
+    'replacement-worker',
     'replacement-panel',
     'settings',
-    'replacement-target',
   ]);
 
   // A stale panel can remain callable across a reload, but it cannot be used
@@ -148,6 +174,7 @@ const {
     () =>
       runExtensionReload({
         worker,
+        ...reloadBoundary,
         previousWorkerTargetId: 'old-worker',
         previousPanelTargetId: 'old-panel',
         assertPreviousTargetsGone: async () => ({ workerTargetGone: true, panelTargetGone: true }),
@@ -157,7 +184,7 @@ const {
         }),
         refreshWorker: async () => {
           stalePanelRefreshCalls += 1;
-          return { worker: replacement, replacementWorkerTargetObserved: true };
+          return replacement;
         },
         verifySettingsIdentity: async (panel) => {
           stalePanelSettingsCalls += 1;
@@ -170,13 +197,14 @@ const {
     /lifecycle_reload_panel_target_not_replaced/,
   );
   assert.equal(stalePanelSettingsCalls, 0);
-  assert.equal(stalePanelRefreshCalls, 0);
+  assert.equal(stalePanelRefreshCalls, 1);
 
   let oldTargetReopenCalls = 0;
   await assert.rejects(
     () =>
       runExtensionReload({
         worker,
+        ...reloadBoundary,
         previousWorkerTargetId: 'old-worker',
         previousPanelTargetId: 'old-panel',
         assertPreviousTargetsGone: async () => ({ workerTargetGone: false, panelTargetGone: true }),
@@ -184,7 +212,7 @@ const {
           oldTargetReopenCalls += 1;
           return { targetId: 'replacement-panel' };
         },
-        refreshWorker: async () => ({ worker: replacement, replacementWorkerTargetObserved: true }),
+        refreshWorker: async () => replacement,
         verifySettingsIdentity: async () => true,
         checkpoint: () => {},
         proof: {},
@@ -195,14 +223,15 @@ const {
 
   const unobservedProof = {};
   await assert.rejects(
-    () => runExtensionReload({
-      worker,
-      ...reloadBoundary,
-      refreshWorker: async () => replacement,
-      verifySettingsIdentity: async () => true,
-      checkpoint: () => {},
-      proof: unobservedProof,
-    }),
+    () =>
+      runExtensionReload({
+        worker,
+        ...reloadBoundary,
+        refreshWorker: async () => worker,
+        verifySettingsIdentity: async () => true,
+        checkpoint: () => {},
+        proof: unobservedProof,
+      }),
     /lifecycle_reload_worker_target_not_replaced/,
   );
 

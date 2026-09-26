@@ -33,12 +33,26 @@ assert.equal(safari.minimum_chrome_version, undefined);
 assert.equal(safari.key, undefined);
 assert.equal(safari.browser_action?.default_popup, 'popup.html');
 assert.equal(safari.externally_connectable, undefined);
-for (const permission of ['sidePanel', 'offscreen', 'tabGroups', 'debugger', 'nativeMessaging']) {
+for (const permission of [
+  'sidePanel',
+  'offscreen',
+  'tabGroups',
+  'debugger',
+  'nativeMessaging',
+  'history',
+  'bookmarks',
+  'downloads',
+  'identity',
+  'notifications',
+  'sessions',
+]) {
   assert.ok(!safari.permissions?.includes(permission), `Safari must omit ${permission}`);
 }
-for (const permission of ['pageCapture', 'tabCapture']) {
+for (const permission of ['pageCapture', 'clipboardRead', 'tabCapture']) {
   assert.ok(
     !safari.optional_permissions?.includes(permission),
     `Safari must omit optional ${permission}`,
   );
 }
+assert.equal(safari.options_ui?.page, 'options.html');
+assert.equal(safari.options_ui?.open_in_tab, undefined);

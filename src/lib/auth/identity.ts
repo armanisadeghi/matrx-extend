@@ -16,6 +16,7 @@
 
 import { ENV } from '@/config/env';
 import { EXPECTED_EXTENSION_IDS, getExpectedExtensionIdentity } from '@/config/identity';
+import { getRedirectUri } from '@/lib/auth/identity-transport';
 import { log } from '@/lib/debug/log';
 
 export interface ExtensionIdentity {
@@ -35,7 +36,12 @@ export interface ExtensionIdentity {
 
 export function readExtensionIdentity(): ExtensionIdentity {
   const runtime_id = chrome.runtime.id;
-  const redirect_uri = chrome.identity?.getRedirectURL ? chrome.identity.getRedirectURL() : '';
+  let redirect_uri = '';
+  try {
+    redirect_uri = getRedirectUri();
+  } catch {
+    // Identity diagnostics stay readable in contexts without the OAuth API.
+  }
   const expectedIdentity = getExpectedExtensionIdentity(runtime_id);
   const known_id = expectedIdentity !== undefined;
   const expected_redirect_uri = expectedIdentity?.redirect_uri ?? '';

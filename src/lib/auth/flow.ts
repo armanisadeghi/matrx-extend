@@ -11,6 +11,7 @@
 
 import { ALARMS, ENV, STORAGE_KEYS } from '@/config/env';
 import { decryptString, encryptString } from '@/lib/auth/crypto';
+import { getRedirectUri, launchWebAuthFlow } from '@/lib/auth/identity-transport';
 import { generateCodeChallenge, generateCodeVerifier, generateNonce } from '@/lib/auth/pkce';
 import { type OAuthTokens, OAuthTokensSchema, type UserProfile } from '@/lib/auth/types';
 import { verifyBearerClaims } from '@/lib/auth/verify-claims';
@@ -52,12 +53,6 @@ async function withAuthMutationLock<T>(callback: () => Promise<T>): Promise<T> {
     throw new Error('Secure authentication storage locking is unavailable in this browser context');
   }
   return locks.request(AUTH_MUTATION_LOCK, { mode: 'exclusive' }, callback);
-}
-
-export function getRedirectUri(): string {
-  // Recompute lazily — chrome.identity is not available in offscreen / content
-  // contexts but this module is only imported from SW + UI surfaces.
-  return chrome.identity.getRedirectURL();
 }
 
 /**
@@ -376,24 +371,6 @@ async function doRefresh(): Promise<OAuthTokens | null> {
   if (!committed) return null;
   if (committed !== tokens.access_token) return { access_token: committed } as OAuthTokens;
   return tokens;
-}
-
-// ─── helpers ────────────────────────────────────────────────────────────────
-
-function launchWebAuthFlow(url: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    chrome.identity.launchWebAuthFlow({ url, interactive: true }, (callbackUrl) => {
-      if (chrome.runtime.lastError) {
-        reject(new Error(chrome.runtime.lastError.message));
-        return;
-      }
-      if (!callbackUrl) {
-        reject(new Error('OAuth flow cancelled or returned no URL'));
-        return;
-      }
-      resolve(callbackUrl);
-    });
-  });
 }
 
 function parseCallbackUrl(callbackUrl: string): { code: string; returnedState: string } {

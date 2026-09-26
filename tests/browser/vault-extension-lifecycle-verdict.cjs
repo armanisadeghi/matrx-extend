@@ -57,6 +57,13 @@ function assertVaultExtensionLifecycleVerdict({ lifecycle, requireOrganizationSw
         'newBrowserProcessObserved',
         'settingsUiRecovered',
         'sameIdentityRecovered',
+        'previousWorkerTargetGone',
+        'previousPanelTargetGone',
+        'replacementWorkerObserved',
+        'replacementPanelObserved',
+        'noVaultWrites',
+        'replacementJournalBound',
+        'launchProvenanceVerified',
       ],
     ],
   ]) {
@@ -79,6 +86,15 @@ function assertVaultExtensionLifecycleVerdict({ lifecycle, requireOrganizationSw
     )
       throw new Error(`vault_lifecycle_extensionReload_${kind.toLowerCase()}_target_not_replaced`);
   }
+  const restart = lifecycle.browserRestart;
+  if (
+    !Number.isSafeInteger(restart.previousBrowserPid) ||
+    restart.previousBrowserPid <= 1 ||
+    !Number.isSafeInteger(restart.replacementBrowserPid) ||
+    restart.replacementBrowserPid <= 1 ||
+    restart.previousBrowserPid === restart.replacementBrowserPid
+  )
+    throw new Error('vault_lifecycle_browserRestart_process_not_replaced');
 
   const signOut = lifecycle.signOut;
   requireDisposition(signOut, 'vault_lifecycle_sign_out');

@@ -101,6 +101,48 @@ async function waitForReplacementExtensionWorkerTarget({
   throw new Error('lifecycle_replacement_worker_target_timeout');
 }
 
+// Arm this before chrome.runtime.reload(). Target discovery is event-based so
+// the replacement cannot be missed in the gap between reload and polling.
+// The returned waiter accepts only a new MV3 worker for this extension URL.
+async function armReplacementExtensionWorkerTargetWatcher({ cdp, workerUrl, previousTargetId }) {
+  assert(cdp && typeof cdp.send === 'function', 'lifecycle_reload_cdp_missing');
+  assert(typeof cdp.on === 'function', 'lifecycle_reload_target_watcher_missing');
+  assert(typeof workerUrl === 'string' && workerUrl.length > 0, 'lifecycle_worker_url_missing');
+  assert(
+    typeof previousTargetId === 'string' && previousTargetId.length > 0,
+    'lifecycle_initial_worker_target_missing',
+  );
+
+  let resolveReplacement;
+  const replacementTarget = new Promise((resolve) => {
+    resolveReplacement = resolve;
+  });
+  const onTargetCreated = ({ targetInfo } = {}) => {
+    if (
+      targetInfo?.type === 'service_worker' &&
+      targetInfo.url === workerUrl &&
+      targetInfo.targetId !== previousTargetId
+    ) {
+      resolveReplacement(targetInfo);
+    }
+  };
+  cdp.on('Target.targetCreated', onTargetCreated);
+  try {
+    await cdp.send('Target.setDiscoverTargets', { discover: true });
+  } catch (error) {
+    if (typeof cdp.off === 'function') cdp.off('Target.targetCreated', onTargetCreated);
+    else if (typeof cdp.removeListener === 'function')
+      cdp.removeListener('Target.targetCreated', onTargetCreated);
+    throw error;
+  }
+  const dispose = () => {
+    if (typeof cdp.off === 'function') cdp.off('Target.targetCreated', onTargetCreated);
+    else if (typeof cdp.removeListener === 'function')
+      cdp.removeListener('Target.targetCreated', onTargetCreated);
+  };
+  return { replacementTarget, dispose };
+}
+
 // Target discovery precedes creation of the service worker's execution
 // context. Retry only the documented transient CDP refusal, and only while
 // proving the replacement's exact extension identity.
@@ -137,6 +179,8 @@ async function refreshReadyExtensionWorker({
 
 async function runExtensionReload({
   worker,
+  cdp,
+  workerUrl,
   previousWorkerTargetId,
   previousPanelTargetId,
   assertPreviousTargetsGone,
@@ -159,63 +203,66 @@ async function runExtensionReload({
     'lifecycle_reload_target_retirement_missing',
   );
   assert(typeof reopenPanel === 'function', 'lifecycle_reload_panel_reopen_missing');
+  assert(typeof refreshWorker === 'function', 'lifecycle_reload_worker_refresh_missing');
+  assert(typeof verifySettingsIdentity === 'function', 'lifecycle_settings_verify_missing');
   const before = await inspectIdentity(worker);
+  const watcher = await armReplacementExtensionWorkerTargetWatcher({
+    cdp,
+    workerUrl,
+    previousTargetId: previousWorkerTargetId,
+  });
   checkpoint('lifecycle_extension_reload');
-  await worker.evaluate(() => chrome.runtime.reload());
-  checkpoint('lifecycle_extension_reload_previous_targets_retired');
-  const previousTargetsGone = await assertPreviousTargetsGone();
-  assert(
-    previousTargetsGone?.workerTargetGone === true,
-    'lifecycle_reload_old_worker_target_observed',
-  );
-  assert(
-    previousTargetsGone?.panelTargetGone === true,
-    'lifecycle_reload_old_panel_target_observed',
-  );
+  try {
+    await worker.evaluate(() => chrome.runtime.reload());
+    checkpoint('lifecycle_extension_reload_previous_targets_retired');
+    const previousTargetsGone = await assertPreviousTargetsGone();
+    assert(
+      previousTargetsGone?.workerTargetGone === true,
+      'lifecycle_reload_old_worker_target_observed',
+    );
+    assert(
+      previousTargetsGone?.panelTargetGone === true,
+      'lifecycle_reload_old_panel_target_observed',
+    );
+    const replacementTarget = await watcher.replacementTarget;
+    checkpoint('lifecycle_extension_reload_replacement_target_observed');
+    const replacement = await refreshWorker(replacementTarget);
+    assert(replacement && replacement !== worker, 'lifecycle_reload_worker_target_not_replaced');
+    const after = await inspectIdentity(replacement);
 
-  // MV3 workers are demand-started. Rebind a target that was created after
-  // reload before using Settings to wake the worker; a surviving, callable
-  // pre-reload panel is explicitly insufficient lifecycle evidence.
-  checkpoint('lifecycle_extension_reload_panel_reopened');
-  const panel = await reopenPanel();
-  assert(
-    typeof panel?.targetId === 'string' && panel.targetId !== previousPanelTargetId,
-    'lifecycle_reload_panel_target_not_replaced',
-  );
-  checkpoint('lifecycle_extension_reload_settings_wake');
-  const settingsUiRecovered = await verifySettingsIdentity(panel);
-  const refreshed = await refreshWorker(worker);
-  const replacement = refreshed?.worker || refreshed;
-  const replacementWorkerObserved =
-    refreshed?.replacementWorkerTargetObserved === true && replacement !== worker;
-  const replacementWorkerTargetId = refreshed?.replacementWorkerTargetId;
-  assert(
-    typeof replacementWorkerTargetId === 'string' &&
-      replacementWorkerTargetId !== previousWorkerTargetId,
-    'lifecycle_reload_worker_target_not_replaced',
-  );
-  const after = await inspectIdentity(replacement);
-  proof.lifecycle ||= {};
-  proof.lifecycle.initialIdentitySha256 ||= before.identitySha256;
-  proof.lifecycle.extensionReload = {
-    disposition:
-      replacementWorkerObserved &&
-      sameLifecycleIdentity(before.identitySha256, after.identitySha256) &&
-      settingsUiRecovered
-        ? 'passed'
-        : 'failed',
-    replacementWorkerObserved,
-    previousWorkerTargetRetired: previousTargetsGone.workerTargetGone,
-    previousPanelTargetRetired: previousTargetsGone.panelTargetGone,
-    initialWorkerTargetId: previousWorkerTargetId,
-    replacementWorkerTargetId,
-    initialPanelTargetId: previousPanelTargetId,
-    replacementPanelTargetId: panel.targetId,
-    sameIdentityRecovered: before.identitySha256 === after.identitySha256,
-    settingsUiRecovered,
-    identitySha256: after.identitySha256,
-  };
-  return replacement;
+    // Bind the replacement worker before opening the panel. The caller's
+    // action.openPopup path supplies the owned-window gesture; a navigated
+    // chrome-extension popup is not a reload recovery mechanism.
+    checkpoint('lifecycle_extension_reload_panel_reopened');
+    const panel = await reopenPanel(replacement);
+    assert(
+      typeof panel?.targetId === 'string' && panel.targetId !== previousPanelTargetId,
+      'lifecycle_reload_panel_target_not_replaced',
+    );
+    checkpoint('lifecycle_extension_reload_settings_wake');
+    const settingsUiRecovered = await verifySettingsIdentity(panel);
+    proof.lifecycle ||= {};
+    proof.lifecycle.initialIdentitySha256 ||= before.identitySha256;
+    proof.lifecycle.extensionReload = {
+      disposition:
+        sameLifecycleIdentity(before.identitySha256, after.identitySha256) && settingsUiRecovered
+          ? 'passed'
+          : 'failed',
+      replacementWorkerObserved: true,
+      previousWorkerTargetRetired: previousTargetsGone.workerTargetGone,
+      previousPanelTargetRetired: previousTargetsGone.panelTargetGone,
+      initialWorkerTargetId: previousWorkerTargetId,
+      replacementWorkerTargetId: replacementTarget.targetId,
+      initialPanelTargetId: previousPanelTargetId,
+      replacementPanelTargetId: panel.targetId,
+      sameIdentityRecovered: before.identitySha256 === after.identitySha256,
+      settingsUiRecovered,
+      identitySha256: after.identitySha256,
+    };
+    return replacement;
+  } finally {
+    watcher.dispose();
+  }
 }
 
 async function runExtensionDisableEnable({
@@ -446,6 +493,7 @@ module.exports = {
   inspectIdentity,
   sameLifecycleIdentity,
   waitForReplacementExtensionWorkerTarget,
+  armReplacementExtensionWorkerTargetWatcher,
   refreshReadyExtensionWorker,
   runExtensionReload,
   runExtensionDisableEnable,

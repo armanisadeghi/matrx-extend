@@ -37,6 +37,15 @@ const passed = {
     newBrowserProcessObserved: true,
     settingsUiRecovered: true,
     sameIdentityRecovered: true,
+    previousWorkerTargetGone: true,
+    previousPanelTargetGone: true,
+    replacementWorkerObserved: true,
+    replacementPanelObserved: true,
+    noVaultWrites: true,
+    replacementJournalBound: true,
+    launchProvenanceVerified: true,
+    previousBrowserPid: 101,
+    replacementBrowserPid: 102,
     identitySha256: initialIdentitySha256,
   },
   signOut: {
@@ -102,6 +111,26 @@ for (const [section, prefix, field] of [
     new RegExp(`vault_lifecycle_${prefix}_missing_${field}`),
   );
 }
+assert.throws(
+  () =>
+    assertVaultExtensionLifecycleVerdict({
+      lifecycle: {
+        ...passed,
+        browserRestart: { ...passed.browserRestart, noVaultWrites: undefined },
+      },
+    }),
+  /vault_lifecycle_browserRestart_missing_noVaultWrites/,
+);
+assert.throws(
+  () =>
+    assertVaultExtensionLifecycleVerdict({
+      lifecycle: {
+        ...passed,
+        browserRestart: { ...passed.browserRestart, replacementBrowserPid: 101 },
+      },
+    }),
+  /vault_lifecycle_browserRestart_process_not_replaced/,
+);
 assert.throws(
   () =>
     assertVaultExtensionLifecycleVerdict({
