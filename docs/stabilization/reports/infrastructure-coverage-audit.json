@@ -3,11 +3,7 @@
   "task_id": "infrastructure-coverage-audit",
   "date": "2026-09-26",
   "lane": "structured evidence reconciliation; no builds, tests, browser work, or resource-heavy commands",
-  "scope": [
-    "EXT-F-0001",
-    "EXT-F-0002",
-    "EXT-F-0003"
-  ],
+  "scope": ["EXT-F-0001", "EXT-F-0002", "EXT-F-0003"],
   "summary": "Reconciled each case against existing run receipts and reports, incorporating the later 0.2.57 publication with two genuine remote push races and the current 0.2.58 publication. Evidence supports several exact fixture outcomes and real publication/race behaviors, while identity-specific runtime gaps and a stale-candidate negative-path receipt remain distinct. No inventory status was changed.",
   "applicability": {
     "EXT-F-0001": "Build identity, extension reload, content-script refresh, and worker/offscreen recovery are infrastructure behaviors independent of authentication. The runtime identity retained after reload is still mode-specific, so guest, ordinary-member, and admin observations are recorded separately below. An admin observation cannot stand in for member behavior.",
@@ -56,9 +52,7 @@
       "case_id": "EXT-F-0001-T03",
       "verdict": "unverified",
       "proven": [],
-      "evidence": [
-        "docs/stabilization/reports/operations-traceability-repair.json"
-      ],
+      "evidence": ["docs/stabilization/reports/operations-traceability-repair.json"],
       "limits": [
         "Build, install, and sidepanel reload receipts do not exercise a content-script-backed entry point after page reload."
       ],
@@ -70,9 +64,7 @@
       "case_id": "EXT-F-0001-T04",
       "verdict": "unverified",
       "proven": [],
-      "evidence": [
-        "docs/stabilization/reports/operations-traceability-repair.json"
-      ],
+      "evidence": ["docs/stabilization/reports/operations-traceability-repair.json"],
       "limits": [
         "Source changes that serialize offscreen cleanup and reconnect probing are not runtime evidence."
       ],
@@ -139,9 +131,7 @@
       "proven": [
         "After injected unsafe watchdog samples, the final-runner scratch execution requested a safe-boundary stop, stopped the owned group, and confirmed the descendant gone."
       ],
-      "evidence": [
-        "docs/stabilization/reports/resource-admission.json"
-      ],
+      "evidence": ["docs/stabilization/reports/resource-admission.json"],
       "limits": [
         "This is builder-produced scratch evidence, not independent post-repair verification. The review notes a contract boundary for descendants that escape into a new session; only permitted foreground/trusted launch behavior is in scope."
       ],
@@ -173,9 +163,7 @@
       "proven": [
         "Injected unsafe samples left the manual-browser lease held until explicit operator SIGINT/stop confirmation, then exited resource-invalid."
       ],
-      "evidence": [
-        "docs/stabilization/reports/resource-admission.json"
-      ],
+      "evidence": ["docs/stabilization/reports/resource-admission.json"],
       "limits": [
         "This verifies the operator confirmation protocol in scratch; it cannot independently prove the person stopped browser actions, and post-repair independent review is pending."
       ],

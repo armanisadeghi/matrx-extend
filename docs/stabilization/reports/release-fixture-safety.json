@@ -5,10 +5,7 @@
   "verdict_a": "PASS isolation",
   "verdict_b": "PASS_WITH_LIMITS",
   "reviewed_sha256": "7bc5a70035903f2418c09061763eaeb549157d63c5a8777bf8b059067658f37c",
-  "command": [
-    "bash",
-    "scripts/test-release-ship-path.sh"
-  ],
+  "command": ["bash", "scripts/test-release-ship-path.sh"],
   "evidence": "Source constructs mktemp checkout and local bare origin; release.sh copied there, cwd/output sandbox-local, PATH pnpm/supabase stubbed; no external remote input. No product builds/tests execute.",
   "limits": [
     "No OS network sandbox; isolation depends on local fixture construction.",

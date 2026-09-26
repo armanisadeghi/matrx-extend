@@ -1,12 +1,7 @@
 {
   "id": "remote-deps-011",
   "status": "pass",
-  "command": [
-    "pnpm",
-    "install",
-    "--frozen-lockfile",
-    "--ignore-scripts"
-  ],
+  "command": ["pnpm", "install", "--frozen-lockfile", "--ignore-scripts"],
   "merged_remote": "c6e8af1",
   "resource_events": [
     {
@@ -27,13 +22,8 @@
         "profileFreeGiB": 23.57732391357422
       },
       "cpuBusySamples": [
-        0.10670000000000002,
-        0.08150000000000002,
-        0.10370000000000001,
-        0.08569999999999989,
-        0.13370000000000004,
-        0.0929000000000001,
-        0.07700000000000007
+        0.10670000000000002, 0.08150000000000002, 0.10370000000000001, 0.08569999999999989,
+        0.13370000000000004, 0.0929000000000001, 0.07700000000000007
       ],
       "reasons": [],
       "swapWindowSeconds": 60,

@@ -50,9 +50,7 @@
       "verified_substeps": [
         "Warm Chat settings showed 'Choose an organization above'; no Default agent selector/action was exposed."
       ],
-      "remaining_criteria": [
-        "Reload/reopen while signed out and confirm guidance persists."
-      ]
+      "remaining_criteria": ["Reload/reopen while signed out and confirm guidance persists."]
     },
     {
       "case_id": "EXT-F-1003-T22",
@@ -62,9 +60,7 @@
     {
       "case_id": "EXT-F-1003-T04",
       "status": "unverified",
-      "verified_substeps": [
-        "Theme control initially showed System selected."
-      ],
+      "verified_substeps": ["Theme control initially showed System selected."],
       "remaining_criteria": [
         "Exercise System/Light/Dark, verify visual application and persistence after reopen/reload; no option was changed."
       ]

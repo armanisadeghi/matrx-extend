@@ -11,15 +11,44 @@
   "B_code_quality": {
     "verdict": "PASS for reviewed source; runtime and negative mutation evidence remain outstanding",
     "prior_findings": [
-      {"finding":"VALID_PORT removed but still used in persistence assertion","status":"ADDRESSED","evidence":"Current runner asserts persisted observedPort.port at valid save/reload assertions (around lines 306-337)."},
-      {"finding":"Probe before the next alarm is not attributable to Save rediscovery","status":"ADDRESSED","evidence":"armForSave runs immediately before the trusted Save click (lines 188-215); assertions reject earlier pauses and require both exact ordered hits after saveStartedAt (lines 311-330)."},
-      {"finding":"HTTP observer would fail valid native rediscovery","status":"ADDRESSED","evidence":"Completion is the real worker handler's post-probe broadcast; HTTP /health is diagnostic only. bootstrap.ts:957 awaits probeDesktop across transport implementations."},
-      {"finding":"Debugger resume rejection may settle after acceptance","status":"ADDRESSED","evidence":"Each pause stores its resume promise; read awaits the snapshot, close awaits all resumes and asserts none failed (lines 109-119, 154-169)."},
-      {"finding":"Debugger teardown failure can skip override cleanup","status":"ADDRESSED","evidence":"Watcher close, worker detach, and UI override clearing are attempted independently; cleanup errors add a failing criterion (lines 353-367)."}
+      {
+        "finding": "VALID_PORT removed but still used in persistence assertion",
+        "status": "ADDRESSED",
+        "evidence": "Current runner asserts persisted observedPort.port at valid save/reload assertions (around lines 306-337)."
+      },
+      {
+        "finding": "Probe before the next alarm is not attributable to Save rediscovery",
+        "status": "ADDRESSED",
+        "evidence": "armForSave runs immediately before the trusted Save click (lines 188-215); assertions reject earlier pauses and require both exact ordered hits after saveStartedAt (lines 311-330)."
+      },
+      {
+        "finding": "HTTP observer would fail valid native rediscovery",
+        "status": "ADDRESSED",
+        "evidence": "Completion is the real worker handler's post-probe broadcast; HTTP /health is diagnostic only. bootstrap.ts:957 awaits probeDesktop across transport implementations."
+      },
+      {
+        "finding": "Debugger resume rejection may settle after acceptance",
+        "status": "ADDRESSED",
+        "evidence": "Each pause stores its resume promise; read awaits the snapshot, close awaits all resumes and asserts none failed (lines 109-119, 154-169)."
+      },
+      {
+        "finding": "Debugger teardown failure can skip override cleanup",
+        "status": "ADDRESSED",
+        "evidence": "Watcher close, worker detach, and UI override clearing are attempted independently; cleanup errors add a failing criterion (lines 353-367)."
+      }
     ],
     "caller_adjudication": "Current DESKTOP_REDISCOVER senders are Settings Save/Clear and explicit Debug Bridges actions. Startup and alarm paths call probeDesktop directly, so cannot hit this handler's breakpoints. The isolated case performs one Save while watching, does not exercise Bridges, and closes observation before later clear/reload actions; the reported mixed-call scenario is refuted for this documented run path, not for a future concurrent sender.",
     "residual": "The breakpoints verify handler entry and reaching the post-probe broadcast, not successful desktop connectivity; that matches T46's expected 'rediscovery runs'. The report correctly does not claim HTTP health or status-label change. Exact breakpoint shape matching is brittle to bundle changes but fails explicitly rather than silently passing."
   },
-  "evidence_read": ["docs/stabilization/inventory.json EXT-F-1003-T46", "docs/stabilization/reports/rediscovery-trace-peer.json", "docs/stabilization/reports/rediscovery-trace-escalation.json", "docs/stabilization/reports/settings-rediscovery-evidence.json", "tests/browser/settings-local-controls-acceptance.mjs", "src/features/settings/SettingsView.tsx", "src/features/debug/BridgesView.tsx", "src/lib/background/bootstrap.ts"],
+  "evidence_read": [
+    "docs/stabilization/inventory.json EXT-F-1003-T46",
+    "docs/stabilization/reports/rediscovery-trace-peer.json",
+    "docs/stabilization/reports/rediscovery-trace-escalation.json",
+    "docs/stabilization/reports/settings-rediscovery-evidence.json",
+    "tests/browser/settings-local-controls-acceptance.mjs",
+    "src/features/settings/SettingsView.tsx",
+    "src/features/debug/BridgesView.tsx",
+    "src/lib/background/bootstrap.ts"
+  ],
   "runtime_evidence": "None. Root-owned guarded execution and fresh independent evidence review remain required."
 }

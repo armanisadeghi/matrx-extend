@@ -6,7 +6,14 @@
   "verdictAEvidence": "Frozen SettingsView at 1cd0a3f (src/features/settings/SettingsView.tsx:548-567) opens ConfirmDialog from the exact Clear local data action, titled Clear local data?, with Cancel and Clear & sign out. Updated acceptance query scopes role=alertdialog by data-slot=alert-dialog-title and uses those exact buttons; it retains cancel preservation, confirm local+session clearing, and reload/guest assertions. Live run remains unverified pending root's guarded run.",
   "verdictB": "PASS_STATIC",
   "verdictBEvidence": "browser-runtime.mjs resolves repo-local or explicit MATRX_PLAYWRIGHT_MODULE, validates chromium APIs and executable access, and emits actionable missing/invalid errors. Native harness plus all seven migrated callers pass node --check; old matrx-frontend runtime imports are removed from those callers. launchPersistentContext receives resolved executablePath; native harness retains owned-profile/CDP flow. Existing headless, --keep-open, sign-in and data flows remain materially intact in diff.",
-  "checks": ["node --check shared runtime and all eight changed callers", "searched migrated callers for sibling Playwright imports", "reviewed frozen SettingsView source and complete caller diffs"],
-  "limitations": ["No browser, UI, test, or build was run by this reviewer.", "Two unrelated older .cjs probes still reference matrx-frontend Playwright; they are outside the two commits' migrated native harness plus seven runner scope."],
+  "checks": [
+    "node --check shared runtime and all eight changed callers",
+    "searched migrated callers for sibling Playwright imports",
+    "reviewed frozen SettingsView source and complete caller diffs"
+  ],
+  "limitations": [
+    "No browser, UI, test, or build was run by this reviewer.",
+    "Two unrelated older .cjs probes still reference matrx-frontend Playwright; they are outside the two commits' migrated native harness plus seven runner scope."
+  ],
   "findings": []
 }

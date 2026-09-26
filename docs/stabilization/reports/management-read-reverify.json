@@ -1,12 +1,31 @@
 {
   "status": "DONE_WITH_CONCERNS",
-  "reviewed_commits": ["2042903c2fb34daaca2ce531043a3ea0373231f1", "decb69e6a88b32510d79268ceaf7497867599b1e"],
+  "reviewed_commits": [
+    "2042903c2fb34daaca2ce531043a3ea0373231f1",
+    "decb69e6a88b32510d79268ceaf7497867599b1e"
+  ],
   "scope": "Independent source-only re-verification. No tests, builds, UI, SQL, network writes, product edits, commits, or pushes in this lane.",
   "original_findings": [
-    {"finding": "Strict migration check returned success with absent public credentials", "disposition": "ADDRESSED", "evidence": "scripts/check-migrations.ts now attempts fetchLedgerViaManagementApi when loadSupabaseEnv is null and returns 2 in strict mode if that read fails."},
-    {"finding": "Private catalog predicates accepted shallow malformed rows", "disposition": "ADDRESSED", "evidence": "scripts/check-tool-db-drift.ts uses isDbToolRow and isDbSurfaceDefaultsRow for private definition and surface reads; scripts/_tool-db-row-validation.ts checks all selected fields and nested parameter/list shapes."},
-    {"finding": "Focused guards omitted auth, malformed payloads, real predicates, and strict exit", "disposition": "ADDRESSED IN TEST SOURCE", "evidence": "scripts/_supabase-management.test.ts covers missing auth, invalid JSON and top-level shape; scripts/_tool-db-row-validation.test.ts imports production predicates; scripts/check-migrations.test.ts checks absent public configuration and strict failure. Execution and RED/GREEN proof remain root-owned."},
-    {"finding": "Migration script header named the CLI", "disposition": "ADDRESSED", "evidence": "scripts/check-migrations.ts header names the direct read-only Management API."}
+    {
+      "finding": "Strict migration check returned success with absent public credentials",
+      "disposition": "ADDRESSED",
+      "evidence": "scripts/check-migrations.ts now attempts fetchLedgerViaManagementApi when loadSupabaseEnv is null and returns 2 in strict mode if that read fails."
+    },
+    {
+      "finding": "Private catalog predicates accepted shallow malformed rows",
+      "disposition": "ADDRESSED",
+      "evidence": "scripts/check-tool-db-drift.ts uses isDbToolRow and isDbSurfaceDefaultsRow for private definition and surface reads; scripts/_tool-db-row-validation.ts checks all selected fields and nested parameter/list shapes."
+    },
+    {
+      "finding": "Focused guards omitted auth, malformed payloads, real predicates, and strict exit",
+      "disposition": "ADDRESSED IN TEST SOURCE",
+      "evidence": "scripts/_supabase-management.test.ts covers missing auth, invalid JSON and top-level shape; scripts/_tool-db-row-validation.test.ts imports production predicates; scripts/check-migrations.test.ts checks absent public configuration and strict failure. Execution and RED/GREEN proof remain root-owned."
+    },
+    {
+      "finding": "Migration script header named the CLI",
+      "disposition": "ADDRESSED",
+      "evidence": "scripts/check-migrations.ts header names the direct read-only Management API."
+    }
   ],
   "verdict_a_behavior_contract": {
     "status": "PARTIAL",

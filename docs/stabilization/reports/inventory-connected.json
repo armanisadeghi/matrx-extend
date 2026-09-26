@@ -7,9 +7,7 @@
       "id": "EXT-F-2001",
       "name": "Review and organize scrape task queue",
       "surface": "Tasks side-panel",
-      "entry_points": [
-        "Side-panel navigation tab; direct control entry points listed in controls"
-      ],
+      "entry_points": ["Side-panel navigation tab; direct control entry points listed in controls"],
       "controls": [
         {
           "id": "EXT-F-2001-C01",
@@ -436,24 +434,15 @@
             "EXT-F-2001-C21",
             "EXT-F-2001-C23"
           ],
-          "modes": [
-            "guest"
-          ],
+          "modes": ["guest"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
           "steps": [
             "In guest mode, inspect the tab strip and attempt to navigate to Tasks through any supported tab state restoration path."
           ],
-          "expected": [
-            "Tasks tab is absent and guest cannot render protected task queue."
-          ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "expected": ["Tasks tab is absent and guest cannot render protected task queue."],
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2001-T02",
@@ -486,10 +475,7 @@
             "EXT-F-2001-C36",
             "EXT-F-2001-C37"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
@@ -499,12 +485,7 @@
           "expected": [
             "Search narrows and clear restores matching rows; project/group/sort selections affect visible ordering/grouping and remain consistent after reload."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2001-T03",
@@ -529,10 +510,7 @@
             "EXT-F-2001-C46",
             "EXT-F-2001-C47"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
@@ -542,12 +520,7 @@
           "expected": [
             "Each selection updates results/count; conditional facets appear only when source data supports them; clear restores unfiltered queue."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2001-T04",
@@ -567,10 +540,7 @@
             "EXT-F-2001-C11",
             "EXT-F-2001-C48"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
@@ -580,12 +550,7 @@
           "expected": [
             "Selection counts match selected rows; bulk capture only processes eligible sources and reports progress; each verdict updates only selected rows; clear removes selection."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2001-T05",
@@ -609,10 +574,7 @@
             "EXT-F-2001-C51",
             "EXT-F-2001-C52"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
@@ -622,24 +584,13 @@
           "expected": [
             "Open acts on the source URL; Run/Enrich starts the matching action; Go resumes user-held capture; each verdict updates that source and Retry visibility follows attempted-level state; copied URL matches row URL."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2001-T06",
           "title": "Paste-only source submission",
-          "control_ids": [
-            "EXT-F-2001-C16",
-            "EXT-F-2001-C48"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-2001-C16", "EXT-F-2001-C48"],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
@@ -649,12 +600,7 @@
           "expected": [
             "Submitted content is acknowledged and associated with that source; refresh shows the resulting status or explicit actionable error."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2001-T07",
@@ -666,10 +612,7 @@
             "EXT-F-2001-C51",
             "EXT-F-2001-C52"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
@@ -679,12 +622,7 @@
           "expected": [
             "Expanded rows show URL/output/error/data events as available; empty/running state is explicit; collapse preserves session; unfinished session cannot be mistaken for completed dismissal."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         }
       ],
       "cells": {
@@ -717,9 +655,7 @@
       "id": "EXT-F-2002",
       "name": "Capture and submit a queued page",
       "surface": "Tasks capture flow",
-      "entry_points": [
-        "Side-panel navigation tab; direct control entry points listed in controls"
-      ],
+      "entry_points": ["Side-panel navigation tab; direct control entry points listed in controls"],
       "controls": [
         {
           "id": "EXT-F-2002-C01",
@@ -869,10 +805,7 @@
         {
           "id": "EXT-F-2002-T01",
           "title": "Queued capture and paste fallback",
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use current source-visible surface with an owned fixture and selected device organization where required."
           ],
@@ -890,10 +823,7 @@
             "retry performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "each verdict performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         }
       ],
       "cells": {
@@ -926,9 +856,7 @@
       "id": "EXT-F-2003",
       "name": "Review conversation plans and task lists",
       "surface": "Lists side-panel",
-      "entry_points": [
-        "Side-panel navigation tab; direct control entry points listed in controls"
-      ],
+      "entry_points": ["Side-panel navigation tab; direct control entry points listed in controls"],
       "controls": [
         {
           "id": "EXT-F-2003-C01",
@@ -1212,30 +1140,16 @@
         {
           "id": "EXT-F-2003-T01",
           "title": "Guest cannot open Lists",
-          "control_ids": [
-            "EXT-F-2003-C01",
-            "EXT-F-2003-C13",
-            "EXT-F-2003-C14",
-            "EXT-F-2003-C15"
-          ],
-          "modes": [
-            "guest"
-          ],
+          "control_ids": ["EXT-F-2003-C01", "EXT-F-2003-C13", "EXT-F-2003-C14", "EXT-F-2003-C15"],
+          "modes": ["guest"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
-          "steps": [
-            "In a guest profile inspect the tab strip and try the saved Lists tab state."
-          ],
+          "steps": ["In a guest profile inspect the tab strip and try the saved Lists tab state."],
           "expected": [
             "Lists tab is unavailable to guests and protected list data is not rendered."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2003-T02",
@@ -1248,10 +1162,7 @@
             "EXT-F-2003-C16",
             "EXT-F-2003-C17"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
@@ -1261,12 +1172,7 @@
           "expected": [
             "Expanded detail belongs to selected conversation; collapse hides it; Open in chat selects same conversation and changes to Chat."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2003-T03",
@@ -1285,10 +1191,7 @@
             "EXT-F-2003-C32",
             "EXT-F-2003-C35"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
@@ -1298,12 +1201,7 @@
           "expected": [
             "Cancel preserves all rows; confirm removes that conversation’s plan, tasks and todos; dialog names permanent consequence."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2003-T04",
@@ -1327,10 +1225,7 @@
             "EXT-F-2003-C34",
             "EXT-F-2003-C36"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
@@ -1340,12 +1235,7 @@
           "expected": [
             "Status and edit persist on reload; removal affects only chosen task; clear removes completed/skipped rows only after confirmation."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2003-T05",
@@ -1359,10 +1249,7 @@
             "EXT-F-2003-C25",
             "EXT-F-2003-C26"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
@@ -1372,12 +1259,7 @@
           "expected": [
             "Both todos appear under correct conversation; checkbox persists; done group reveals; confirmed clear removes done item and preserves open one."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2003-T06",
@@ -1394,10 +1276,7 @@
             "EXT-F-2003-C26",
             "EXT-F-2003-C24"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
@@ -1407,12 +1286,7 @@
           "expected": [
             "Task persists and is scoped to current conversation; no-conversation state explains how to start; close hides panel and reopen reflects state."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         }
       ],
       "cells": {
@@ -1445,9 +1319,7 @@
       "id": "EXT-F-2004",
       "name": "Create and manage scheduled agenda tasks",
       "surface": "Agenda side-panel",
-      "entry_points": [
-        "Side-panel navigation tab; direct control entry points listed in controls"
-      ],
+      "entry_points": ["Side-panel navigation tab; direct control entry points listed in controls"],
       "controls": [
         {
           "id": "EXT-F-2004-C01",
@@ -1818,27 +1690,16 @@
         {
           "id": "EXT-F-2004-T01",
           "title": "Guest cannot open Agenda",
-          "control_ids": [
-            "EXT-F-2004-C01"
-          ],
-          "modes": [
-            "guest"
-          ],
+          "control_ids": ["EXT-F-2004-C01"],
+          "modes": ["guest"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
           "steps": [
             "In a genuinely signed-out profile inspect the tab strip and attempt to restore Agenda as active tab."
           ],
-          "expected": [
-            "Agenda tab is absent and agenda records/form are not rendered to guests."
-          ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "expected": ["Agenda tab is absent and agenda records/form are not rendered to guests."],
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2004-T02",
@@ -1866,10 +1727,7 @@
             "EXT-F-2004-C21",
             "EXT-F-2004-C22"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
@@ -1879,12 +1737,7 @@
           "expected": [
             "Create is enabled for valid input; created task appears with chosen trigger/auth/surface and next due time after reload."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2004-T03",
@@ -1904,10 +1757,7 @@
             "EXT-F-2004-C29",
             "EXT-F-2004-C30"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
@@ -1917,12 +1767,7 @@
           "expected": [
             "Only fields for selected trigger appear; invalid cron is visibly identified and creation is disabled; context-match requires at least one condition; valid config becomes eligible."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2004-T04",
@@ -1934,25 +1779,15 @@
             "EXT-F-2004-C13",
             "EXT-F-2004-C19"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
-          "steps": [
-            "Open form, enter draft values, cancel, reopen the form."
-          ],
+          "steps": ["Open form, enter draft values, cancel, reopen the form."],
           "expected": [
             "Form closes; reopening starts without the canceled draft and no record is created."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2004-T05",
@@ -1966,10 +1801,7 @@
             "EXT-F-2004-C16",
             "EXT-F-2004-C17"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
@@ -1979,12 +1811,7 @@
           "expected": [
             "Run-now enters chat stream and refreshes row; paused task is disabled across reload; resumed task is enabled."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         },
         {
           "id": "EXT-F-2004-T06",
@@ -1996,10 +1823,7 @@
             "EXT-F-2004-C20",
             "EXT-F-2004-C18"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use the campaign PLAN.md resource/build receipt. For member/admin choose a device organization and record membership; for guest use a genuinely signed-out profile. Use campaign-owned controlled records."
           ],
@@ -2009,12 +1833,7 @@
           "expected": [
             "Cancel preserves task/history; confirm deletes task and linked trigger/run history as described by dialog."
           ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "auth-role-org",
-            "backend-error-retry"
-          ]
+          "dimensions": ["warm", "reload", "auth-role-org", "backend-error-retry"]
         }
       ],
       "cells": {
@@ -2047,9 +1866,7 @@
       "id": "EXT-F-2005",
       "name": "Extract structured data from the active page",
       "surface": "Data side-panel",
-      "entry_points": [
-        "Side-panel navigation tab; direct control entry points listed in controls"
-      ],
+      "entry_points": ["Side-panel navigation tab; direct control entry points listed in controls"],
       "controls": [
         {
           "id": "EXT-F-2005-C01",
@@ -2328,9 +2145,7 @@
             "EXT-F-2005-C12",
             "EXT-F-2005-C13"
           ],
-          "modes": [
-            "guest"
-          ],
+          "modes": ["guest"],
           "preconditions": [
             "Signed-out profile; controlled ordinary webpage with two distinct repeated field values; no saved session."
           ],
@@ -2340,11 +2155,7 @@
           "expected": [
             "Page field selection/extraction is reachable to guest; pattern save is withheld and directs to auth; no pattern is written before auth."
           ],
-          "dimensions": [
-            "guest",
-            "active-tab",
-            "auth"
-          ]
+          "dimensions": ["guest", "active-tab", "auth"]
         },
         {
           "id": "EXT-F-2005-T02",
@@ -2357,10 +2168,7 @@
             "EXT-F-2005-C05",
             "EXT-F-2005-C06"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Signed-in controlled domain with an owned saved pattern, known matching page, and network retry available."
           ],
@@ -2370,13 +2178,7 @@
           "expected": [
             "Rows correspond to the selected page; copy formats match selector/agent/JSON variants; retry either restores saved patterns or presents explicit error; role option visibility follows source."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "warm",
-            "reload",
-            "network"
-          ]
+          "dimensions": ["member", "admin", "warm", "reload", "network"]
         },
         {
           "id": "EXT-F-2005-T03",
@@ -2392,10 +2194,7 @@
             "EXT-F-2005-C09",
             "EXT-F-2005-C10"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Signed-in member with selected device organization; controlled page and disposable pattern target."
           ],
@@ -2405,24 +2204,13 @@
           "expected": [
             "Saved pattern contains chosen fields and organization; extraction output matches page values; each clipboard variant encodes those rows; cancel clears unsaved selection."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "org-set",
-            "reload"
-          ]
+          "dimensions": ["member", "admin", "org-set", "reload"]
         },
         {
           "id": "EXT-F-2005-T04",
           "title": "Non-matching page and active-tab boundary",
-          "control_ids": [
-            "EXT-F-2005-C02",
-            "EXT-F-2005-C07"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-2005-C02", "EXT-F-2005-C07"],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Saved pattern belongs to controlled host A; active tab is controlled host B with different DOM."
           ],
@@ -2432,12 +2220,7 @@
           "expected": [
             "No silent cross-host match; run failures identify no-match/error and do not show stale rows; navigation clears prior results."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "navigation",
-            "error"
-          ]
+          "dimensions": ["member", "admin", "navigation", "error"]
         }
       ],
       "cells": {
@@ -2470,9 +2253,7 @@
       "id": "EXT-F-2006",
       "name": "Find and create notes",
       "surface": "Notes side-panel",
-      "entry_points": [
-        "Side-panel navigation tab; direct control entry points listed in controls"
-      ],
+      "entry_points": ["Side-panel navigation tab; direct control entry points listed in controls"],
       "controls": [
         {
           "id": "EXT-F-2006-C01",
@@ -2588,39 +2369,22 @@
         {
           "id": "EXT-F-2006-T01",
           "title": "Guest cannot open Notes",
-          "control_ids": [
-            "EXT-F-2006-C01"
-          ],
-          "modes": [
-            "guest"
-          ],
-          "preconditions": [
-            "Genuinely signed-out profile."
-          ],
+          "control_ids": ["EXT-F-2006-C01"],
+          "modes": ["guest"],
+          "preconditions": ["Genuinely signed-out profile."],
           "steps": [
             "Inspect tabs and attempt to reach Notes by restoring the previous selected tab."
           ],
           "expected": [
             "Notes tab is omitted by the signed-in gate; note data/editor is not mounted for guest."
           ],
-          "dimensions": [
-            "guest",
-            "reload"
-          ]
+          "dimensions": ["guest", "reload"]
         },
         {
           "id": "EXT-F-2006-T02",
           "title": "Find notes by search and folder",
-          "control_ids": [
-            "EXT-F-2006-C02",
-            "EXT-F-2006-C03",
-            "EXT-F-2006-C04",
-            "EXT-F-2006-C05"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-2006-C02", "EXT-F-2006-C03", "EXT-F-2006-C04", "EXT-F-2006-C05"],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Signed-in user with controlled notes in two folders and one without folder."
           ],
@@ -2630,23 +2394,13 @@
           "expected": [
             "Search and folder selections narrow the visible collection correctly; selector reflects folder-filtered notes; both entry paths open the chosen note."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "reload"
-          ]
+          "dimensions": ["member", "admin", "reload"]
         },
         {
           "id": "EXT-F-2006-T03",
           "title": "Create first note and empty/loading states",
-          "control_ids": [
-            "EXT-F-2006-C01",
-            "EXT-F-2006-C06"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-2006-C01", "EXT-F-2006-C06"],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Signed-in user with no notes; selected device organization established."
           ],
@@ -2656,12 +2410,7 @@
           "expected": [
             "New note opens editor and list subsequently shows the new note; loading and empty/error states are honest."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "empty",
-            "reload"
-          ]
+          "dimensions": ["member", "admin", "empty", "reload"]
         }
       ],
       "cells": {
@@ -2694,9 +2443,7 @@
       "id": "EXT-F-2007",
       "name": "Edit, preview, organize, and delete a note",
       "surface": "Notes editor",
-      "entry_points": [
-        "Side-panel navigation tab; direct control entry points listed in controls"
-      ],
+      "entry_points": ["Side-panel navigation tab; direct control entry points listed in controls"],
       "controls": [
         {
           "id": "EXT-F-2007-C01",
@@ -2934,10 +2681,7 @@
             "EXT-F-2007-C05",
             "EXT-F-2007-C06"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Signed-in owner of one controlled note; autosave status initially idle."
           ],
@@ -2947,12 +2691,7 @@
           "expected": [
             "Each field change saves and is reflected after reload; Preview renders markdown and Edit restores editable content; save/error indicator is visible."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "reload",
-            "network"
-          ]
+          "dimensions": ["member", "admin", "reload", "network"]
         },
         {
           "id": "EXT-F-2007-T02",
@@ -2966,10 +2705,7 @@
             "EXT-F-2007-C15",
             "EXT-F-2007-C16"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Signed-in controlled note; regular page contains selection, article text, links, metadata; second pass has no selected text."
           ],
@@ -2979,40 +2715,21 @@
           "expected": [
             "Each selected action appends its corresponding content at end without overwriting prior note; empty extraction shows warning and leaves content intact."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "active-tab",
-            "reload"
-          ]
+          "dimensions": ["member", "admin", "active-tab", "reload"]
         },
         {
           "id": "EXT-F-2007-T03",
           "title": "Delete note and cancel confirmation",
-          "control_ids": [
-            "EXT-F-2007-C07",
-            "EXT-F-2007-C09",
-            "EXT-F-2007-C08",
-            "EXT-F-2007-C01"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
-          "preconditions": [
-            "Signed-in owner of controlled disposable note."
-          ],
+          "control_ids": ["EXT-F-2007-C07", "EXT-F-2007-C09", "EXT-F-2007-C08", "EXT-F-2007-C01"],
+          "modes": ["member", "admin"],
+          "preconditions": ["Signed-in owner of controlled disposable note."],
           "steps": [
             "Open Delete note; cancel via dialog close/Escape and verify note remains. Reopen, confirm, return to list and refresh."
           ],
           "expected": [
             "Cancel preserves note; confirm marks it deleted and returns list without it; dialog explains recoverability."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "reload"
-          ]
+          "dimensions": ["member", "admin", "reload"]
         }
       ],
       "cells": {
@@ -3045,9 +2762,7 @@
       "id": "EXT-F-2008",
       "name": "Browse files and saved captures",
       "surface": "Files side-panel",
-      "entry_points": [
-        "Side-panel navigation tab; direct control entry points listed in controls"
-      ],
+      "entry_points": ["Side-panel navigation tab; direct control entry points listed in controls"],
       "controls": [
         {
           "id": "EXT-F-2008-C01",
@@ -3298,25 +3013,14 @@
         {
           "id": "EXT-F-2008-T01",
           "title": "Guest cannot open Files",
-          "control_ids": [
-            "EXT-F-2008-C01"
-          ],
-          "modes": [
-            "guest"
-          ],
-          "preconditions": [
-            "Genuinely signed-out profile."
-          ],
-          "steps": [
-            "Inspect tab strip and attempt to restore Files tab."
-          ],
+          "control_ids": ["EXT-F-2008-C01"],
+          "modes": ["guest"],
+          "preconditions": ["Genuinely signed-out profile."],
+          "steps": ["Inspect tab strip and attempt to restore Files tab."],
           "expected": [
             "Files tab is omitted by signed-in gate; library and captures are not mounted for guest."
           ],
-          "dimensions": [
-            "guest",
-            "reload"
-          ]
+          "dimensions": ["guest", "reload"]
         },
         {
           "id": "EXT-F-2008-T02",
@@ -3328,10 +3032,7 @@
             "EXT-F-2008-C05",
             "EXT-F-2008-C02"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Signed-in user with controlled library file and screenshot rows plus active conversation."
           ],
@@ -3341,26 +3042,13 @@
           "expected": [
             "Refresh reloads data, query filters each current inventory, tabs show the matching row/card types and correct empty state."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "reload",
-            "network"
-          ]
+          "dimensions": ["member", "admin", "reload", "network"]
         },
         {
           "id": "EXT-F-2008-T03",
           "title": "Open and attach file/screenshot",
-          "control_ids": [
-            "EXT-F-2008-C06",
-            "EXT-F-2008-C08",
-            "EXT-F-2008-C09",
-            "EXT-F-2008-C11"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-2008-C06", "EXT-F-2008-C08", "EXT-F-2008-C09", "EXT-F-2008-C11"],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Signed-in user with file and screenshot rows; current conversation exists."
           ],
@@ -3370,12 +3058,7 @@
           "expected": [
             "Open actions navigate to selected resource; attach state toggles and persists; attachment is disabled with explanation until conversation exists."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "conversation",
-            "reload"
-          ]
+          "dimensions": ["member", "admin", "conversation", "reload"]
         },
         {
           "id": "EXT-F-2008-T04",
@@ -3388,10 +3071,7 @@
             "EXT-F-2008-C14",
             "EXT-F-2008-C15"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Signed-in user with an item having a multi-page provenance family; one request can be made to fail."
           ],
@@ -3401,12 +3081,7 @@
           "expected": [
             "Family identifies selected root and related provenance; page controls move by one page and disable at bounds; Back returns; Retry replaces error with data or actionable error."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "network",
-            "reload"
-          ]
+          "dimensions": ["member", "admin", "network", "reload"]
         }
       ],
       "cells": {
@@ -3439,9 +3114,7 @@
       "id": "EXT-F-2009",
       "name": "Search and manage saved captures",
       "surface": "Saved captures side-panel",
-      "entry_points": [
-        "Side-panel navigation tab; direct control entry points listed in controls"
-      ],
+      "entry_points": ["Side-panel navigation tab; direct control entry points listed in controls"],
       "controls": [
         {
           "id": "EXT-F-2009-C01",
@@ -3703,25 +3376,14 @@
         {
           "id": "EXT-F-2009-T01",
           "title": "Guest cannot open saved captures",
-          "control_ids": [
-            "EXT-F-2009-C01"
-          ],
-          "modes": [
-            "guest"
-          ],
-          "preconditions": [
-            "Genuinely signed-out profile."
-          ],
-          "steps": [
-            "Inspect tabs and attempt to reopen Saved captures from prior tab state."
-          ],
+          "control_ids": ["EXT-F-2009-C01"],
+          "modes": ["guest"],
+          "preconditions": ["Genuinely signed-out profile."],
+          "steps": ["Inspect tabs and attempt to reopen Saved captures from prior tab state."],
           "expected": [
             "Saved captures tab is omitted for guests; list/detail data is not mounted."
           ],
-          "dimensions": [
-            "guest",
-            "reload"
-          ]
+          "dimensions": ["guest", "reload"]
         },
         {
           "id": "EXT-F-2009-T02",
@@ -3733,10 +3395,7 @@
             "EXT-F-2009-C04",
             "EXT-F-2009-C05"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Signed-in user with at least two saved captures and an additional page; one no-results query."
           ],
@@ -3746,11 +3405,7 @@
           "expected": [
             "Search filters list; detail corresponds to selected capture; pagination adds results without duplicates; empty-state shortcut opens Scrape."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "reload"
-          ]
+          "dimensions": ["member", "admin", "reload"]
         },
         {
           "id": "EXT-F-2009-T03",
@@ -3766,10 +3421,7 @@
             "EXT-F-2009-C18",
             "EXT-F-2009-C19"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Signed-in owner of controlled capture with article text, metadata and structured soup."
           ],
@@ -3779,12 +3431,7 @@
           "expected": [
             "Changes persist and render in corresponding views; details reflect stored capture values; data view exposes stored structured payload; copies match chosen formats."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "reload",
-            "network"
-          ]
+          "dimensions": ["member", "admin", "reload", "network"]
         },
         {
           "id": "EXT-F-2009-T04",
@@ -3797,10 +3444,7 @@
             "EXT-F-2009-C10",
             "EXT-F-2009-C20"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Signed-in owner of a disposable capture and a second capture whose detail read can be retried."
           ],
@@ -3810,12 +3454,7 @@
           "expected": [
             "Cancel leaves saved item; confirm removes only saved capture and does not alter original page; original URL opens separately; Retry reloads detail or reports an error."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "reload",
-            "network"
-          ]
+          "dimensions": ["member", "admin", "reload", "network"]
         }
       ],
       "cells": {
@@ -3848,9 +3487,7 @@
       "id": "EXT-F-2010",
       "name": "Capture handoff items needing the browser",
       "surface": "Capture side-panel",
-      "entry_points": [
-        "Side-panel navigation tab; direct control entry points listed in controls"
-      ],
+      "entry_points": ["Side-panel navigation tab; direct control entry points listed in controls"],
       "controls": [
         {
           "id": "EXT-F-2010-C01",
@@ -4042,36 +3679,18 @@
         {
           "id": "EXT-F-2010-T01",
           "title": "Guest cannot open Capture handoff queue",
-          "control_ids": [
-            "EXT-F-2010-C02"
-          ],
-          "modes": [
-            "guest"
-          ],
-          "preconditions": [
-            "Genuinely signed-out profile."
-          ],
-          "steps": [
-            "Inspect tab strip and attempt to restore Capture as active tab."
-          ],
-          "expected": [
-            "Capture is omitted for guest because its queue is org-scoped."
-          ],
-          "dimensions": [
-            "guest",
-            "reload"
-          ]
+          "control_ids": ["EXT-F-2010-C02"],
+          "modes": ["guest"],
+          "preconditions": ["Genuinely signed-out profile."],
+          "steps": ["Inspect tab strip and attempt to restore Capture as active tab."],
+          "expected": ["Capture is omitted for guest because its queue is org-scoped."],
+          "dimensions": ["guest", "reload"]
         },
         {
           "id": "EXT-F-2010-T02",
           "title": "Switch organization holding pending items",
-          "control_ids": [
-            "EXT-F-2010-C01"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-2010-C01"],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Signed-in member who belongs to two organizations; other membership has a controlled waiting handoff."
           ],
@@ -4081,24 +3700,13 @@
           "expected": [
             "Only a membership-listed organization can be selected; device org switches and queue refreshes; pointer clears after successful switch; membership loss yields explicit explanation."
           ],
-          "dimensions": [
-            "member",
-            "org-switch",
-            "reload"
-          ]
+          "dimensions": ["member", "org-switch", "reload"]
         },
         {
           "id": "EXT-F-2010-T03",
           "title": "Run waiting queue and observe outcomes",
-          "control_ids": [
-            "EXT-F-2010-C02",
-            "EXT-F-2010-C09",
-            "EXT-F-2010-C08"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-2010-C02", "EXT-F-2010-C09", "EXT-F-2010-C08"],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Signed-in member with controlled waiting item on safe test page; service/permission can be unavailable on a separate attempt."
           ],
@@ -4108,12 +3716,7 @@
           "expected": [
             "Progress and terminal success/refusal appear per item; degraded data identifies staleness and timed refresh; no silent successful state for refused action."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "backend",
-            "reload"
-          ]
+          "dimensions": ["member", "admin", "backend", "reload"]
         },
         {
           "id": "EXT-F-2010-T04",
@@ -4125,10 +3728,7 @@
             "EXT-F-2010-C06",
             "EXT-F-2010-C07"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Signed-in member with controlled needs_drive handoff and safe test page."
           ],
@@ -4138,12 +3738,7 @@
           "expected": [
             "Extension leaves page actions to user until explicit capture; capture completes and updates status; skip removes only selected handoff and records note; pickup opens matching item/tab."
           ],
-          "dimensions": [
-            "member",
-            "admin",
-            "active-tab",
-            "backend"
-          ]
+          "dimensions": ["member", "admin", "active-tab", "backend"]
         }
       ],
       "cells": {
@@ -4176,9 +3771,7 @@
       "id": "EXT-F-2011",
       "name": "Manage saved credentials and vault items",
       "surface": "Vault side-panel",
-      "entry_points": [
-        "Side-panel navigation tab; direct control entry points listed in controls"
-      ],
+      "entry_points": ["Side-panel navigation tab; direct control entry points listed in controls"],
       "controls": [
         {
           "id": "EXT-F-2011-C01",
@@ -4592,11 +4185,7 @@
         {
           "id": "EXT-F-2011-T01",
           "title": "Vault sign-in gate and list",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
+          "modes": ["guest", "member", "admin"],
           "preconditions": [
             "Use current source-visible surface with an owned fixture and selected device organization where required."
           ],
@@ -4614,18 +4203,12 @@
             "search performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "mine/shared scopes performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2011-T02",
           "title": "Current-page credential use",
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use current source-visible surface with an owned fixture and selected device organization where required."
           ],
@@ -4639,18 +4222,12 @@
             "restricted/no focused login refusal performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "dismiss outcome performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2011-T03",
           "title": "Create and edit a login",
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use current source-visible surface with an owned fixture and selected device organization where required."
           ],
@@ -4670,18 +4247,12 @@
             "field add/edit/reveal/copy/remove performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "item delete confirmation performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2011-T04",
           "title": "Pending capture decisions",
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use current source-visible surface with an owned fixture and selected device organization where required."
           ],
@@ -4699,30 +4270,18 @@
             "never for site performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "expired/unavailable status performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2011-T05",
           "title": "Guest cannot open Vault",
-          "modes": [
-            "guest"
-          ],
-          "preconditions": [
-            "Use a signed-out side panel."
-          ],
-          "steps": [
-            "Inspect tab navigation and attempt a saved deep link to Vault."
-          ],
+          "modes": ["guest"],
+          "preconditions": ["Use a signed-out side panel."],
+          "steps": ["Inspect tab navigation and attempt a saved deep link to Vault."],
           "expected": [
             "The signed-in tab/content is absent or denied with an honest sign-in path."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         }
       ],
       "cells": {
@@ -4755,9 +4314,7 @@
       "id": "EXT-F-2012",
       "name": "Browse and manually run extension tools",
       "surface": "Tools/manual runner",
-      "entry_points": [
-        "Side-panel navigation tab; direct control entry points listed in controls"
-      ],
+      "entry_points": ["Side-panel navigation tab; direct control entry points listed in controls"],
       "controls": [
         {
           "id": "EXT-F-2012-C01",
@@ -5058,10 +4615,7 @@
         {
           "id": "EXT-F-2012-T01",
           "title": "Catalog filters and manual runner",
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use current source-visible surface with an owned fixture and selected device organization where required."
           ],
@@ -5079,18 +4633,12 @@
             "invalid JSON/schema errors performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "run and copy result performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2012-T02",
           "title": "Smart tests and Recorder",
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use current source-visible surface with an owned fixture and selected device organization where required."
           ],
@@ -5106,30 +4654,18 @@
             "optional tabCapture recovery performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "saved recording row actions performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2012-T03",
           "title": "Guest cannot open Tools",
-          "modes": [
-            "guest"
-          ],
-          "preconditions": [
-            "Use a signed-out side panel."
-          ],
-          "steps": [
-            "Inspect tab navigation and attempt a saved deep link to Tools."
-          ],
+          "modes": ["guest"],
+          "preconditions": ["Use a signed-out side panel."],
+          "steps": ["Inspect tab navigation and attempt a saved deep link to Tools."],
           "expected": [
             "The signed-in tab/content is absent or denied with an honest sign-in path."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         }
       ],
       "cells": {
@@ -5162,9 +4698,7 @@
       "id": "EXT-F-2013",
       "name": "Use assistant chat and conversation controls",
       "surface": "Chat (deferred wave D)",
-      "entry_points": [
-        "Side-panel navigation tab; direct control entry points listed in controls"
-      ],
+      "entry_points": ["Side-panel navigation tab; direct control entry points listed in controls"],
       "controls": [
         {
           "id": "EXT-F-2013-C01",
@@ -6203,18 +5737,14 @@
           "label": "Guest banner Sign in",
           "action": "Start the standard OAuth sign-in flow.",
           "source_anchor": "src/components/GuestBanner.tsx:25",
-          "modes": [
-            "guest"
-          ]
+          "modes": ["guest"]
         },
         {
           "id": "EXT-F-2013-C133",
           "label": "Guest banner Sign up free",
           "action": "Open configured frontend URL in a new browser tab.",
           "source_anchor": "src/components/GuestBanner.tsx:31",
-          "modes": [
-            "guest"
-          ]
+          "modes": ["guest"]
         }
       ],
       "source_anchors": [
@@ -6261,11 +5791,7 @@
         {
           "id": "EXT-F-2013-T01",
           "title": "Chat conversation navigation and modes",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
+          "modes": ["guest", "member", "admin"],
           "preconditions": [
             "Use current source-visible surface with an owned fixture and selected device organization where required."
           ],
@@ -6284,19 +5810,12 @@
             "model/page settings performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "language performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2013-T02",
           "title": "Composer and active run controls",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
+          "modes": ["guest", "member", "admin"],
           "preconditions": [
             "Use current source-visible surface with an owned fixture and selected device organization where required."
           ],
@@ -6314,18 +5833,12 @@
             "Stop performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "voice grant/transcription performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2013-T03",
           "title": "Chat attachments and exports",
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use current source-visible surface with an owned fixture and selected device organization where required."
           ],
@@ -6341,18 +5854,12 @@
             "copy reply/conversation options performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "attachment removal performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2013-T04",
           "title": "Interactive agent cards and tool receipt",
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Use current source-visible surface with an owned fixture and selected device organization where required."
           ],
@@ -6370,24 +5877,14 @@
             "credential capture performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "tool timeline/receipt performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2013-T05",
           "title": "Guest banner sign-in and sign-up actions",
-          "modes": [
-            "guest"
-          ],
-          "control_ids": [
-            "EXT-F-2013-C132",
-            "EXT-F-2013-C133"
-          ],
-          "preconditions": [
-            "Open Chat as guest after auth state resolves."
-          ],
+          "modes": ["guest"],
+          "control_ids": ["EXT-F-2013-C132", "EXT-F-2013-C133"],
+          "preconditions": ["Open Chat as guest after auth state resolves."],
           "steps": [
             "Click Sign in and check OAuth initiation.",
             "Return as guest; click Sign up free.",
@@ -6397,10 +5894,7 @@
             "Sign in starts OAuth; Sign up free opens the configured frontend in a new tab.",
             "Banner disappears after sign-in and while auth status is unknown."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
+          "dimensions": ["warm", "reload"],
           "wave": "D"
         }
       ],
@@ -6436,9 +5930,7 @@
       "id": "EXT-F-2014",
       "name": "Start and operate a Pilot browser session",
       "surface": "Pilot (deferred wave D)",
-      "entry_points": [
-        "Side-panel navigation tab; direct control entry points listed in controls"
-      ],
+      "entry_points": ["Side-panel navigation tab; direct control entry points listed in controls"],
       "controls": [
         {
           "id": "EXT-F-2014-C01",
@@ -6919,11 +6411,7 @@
         {
           "id": "EXT-F-2014-T01",
           "title": "Pilot admin gate and session lifecycle",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
+          "modes": ["guest", "member", "admin"],
           "preconditions": [
             "Use current source-visible surface with an owned fixture and selected device organization where required."
           ],
@@ -6935,17 +6423,12 @@
             "Non-admin users cannot open Pilot.",
             "A submitted turn pins to a tab in the Pilot group and ending closes the group."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2014-T02",
           "title": "Pilot conversation and interactive cards",
-          "modes": [
-            "admin"
-          ],
+          "modes": ["admin"],
           "preconditions": [
             "Use current source-visible surface with an owned fixture and selected device organization where required."
           ],
@@ -6964,10 +6447,7 @@
             "approval/ask-user performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "stream error recovery performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         }
       ],
       "cells": {
@@ -7002,9 +6482,7 @@
       "id": "EXT-F-2015",
       "name": "Run built-in browser AI scenarios",
       "surface": "Tools Smart tests",
-      "entry_points": [
-        "Tools tab → Tools Smart tests"
-      ],
+      "entry_points": ["Tools tab → Tools Smart tests"],
       "controls": [
         {
           "id": "EXT-F-2015-C01",
@@ -7215,9 +6693,7 @@
           "test_design_item": "Verify Copy scenario result (Copy returned output) on Tools Smart tests in source-applicable roles; include refusal and reload where state persists."
         }
       ],
-      "source_anchors": [
-        "src/features/tools/SmartTestsView.tsx:1"
-      ],
+      "source_anchors": ["src/features/tools/SmartTestsView.tsx:1"],
       "dependency_class": "cross-system",
       "wave": "C",
       "applicability": {
@@ -7238,106 +6714,63 @@
         {
           "id": "EXT-F-2015-T01",
           "title": "Summarize and classify active page",
-          "modes": [
-            "member",
-            "admin"
-          ],
-          "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
-          ],
+          "modes": ["member", "admin"],
+          "preconditions": ["Use an owned regular page and authorized signed-in organization."],
           "steps": [
             "Open the two scenario cards; vary summary type, length, content cap and classification labels; run each."
           ],
           "expected": [
             "Selected options shape the requests; input payload and result/error are inspectable."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2015-T02",
           "title": "Extract and translate page text",
-          "modes": [
-            "member",
-            "admin"
-          ],
-          "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
-          ],
+          "modes": ["member", "admin"],
+          "preconditions": ["Use an owned regular page and authorized signed-in organization."],
           "steps": [
             "Edit a valid and invalid JSON schema; run extraction; choose translation target and run."
           ],
           "expected": [
             "Invalid schema is explained without success; valid response and translation show input/result evidence."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2015-T03",
           "title": "Detect, proofread, scan and describe",
-          "modes": [
-            "member",
-            "admin"
-          ],
-          "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
-          ],
+          "modes": ["member", "admin"],
+          "preconditions": ["Use an owned regular page and authorized signed-in organization."],
           "steps": [
             "Run language detection, selection proofreading, prompt-injection scan and first-image description on suitable owned pages."
           ],
           "expected": [
             "Each card reports result or precise refusal; selection/image absence is honest."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2015-T04",
           "title": "Inspect and copy model inputs",
-          "modes": [
-            "member",
-            "admin"
-          ],
-          "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
-          ],
-          "steps": [
-            "Expand input events after a scenario; copy full payload and result."
-          ],
+          "modes": ["member", "admin"],
+          "preconditions": ["Use an owned regular page and authorized signed-in organization."],
+          "steps": ["Expand input events after a scenario; copy full payload and result."],
           "expected": [
             "Visible inputs match invoked wrapper calls, and copy actions yield their displayed content."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2015-T05",
           "title": "Guest cannot open Tools Smart tests",
-          "modes": [
-            "guest"
-          ],
-          "preconditions": [
-            "Use a signed-out side panel."
-          ],
-          "steps": [
-            "Inspect navigation and attempt to reach this surface."
-          ],
+          "modes": ["guest"],
+          "preconditions": ["Use a signed-out side panel."],
+          "steps": ["Inspect navigation and attempt to reach this surface."],
           "expected": [
             "Signed-in tab and nested content remain unavailable with an honest sign-in path."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         }
       ],
       "cells": {
@@ -7370,9 +6803,7 @@
       "id": "EXT-F-2016",
       "name": "Record active browser tab",
       "surface": "Tools Recorder",
-      "entry_points": [
-        "Tools tab → Tools Recorder"
-      ],
+      "entry_points": ["Tools tab → Tools Recorder"],
       "controls": [
         {
           "id": "EXT-F-2016-C01",
@@ -7515,15 +6946,10 @@
           "label": "Open saved recording file",
           "action": "Follow Open link in a new tab when the row has fileUrl.",
           "source_anchor": "src/features/tools/RecorderPane.tsx:366",
-          "modes": [
-            "member",
-            "admin"
-          ]
+          "modes": ["member", "admin"]
         }
       ],
-      "source_anchors": [
-        "src/features/tools/RecorderPane.tsx:1"
-      ],
+      "source_anchors": ["src/features/tools/RecorderPane.tsx:1"],
       "dependency_class": "cross-system",
       "wave": "C",
       "applicability": {
@@ -7544,109 +6970,64 @@
         {
           "id": "EXT-F-2016-T01",
           "title": "Record current tab with and without audio",
-          "modes": [
-            "member",
-            "admin"
-          ],
-          "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
-          ],
+          "modes": ["member", "admin"],
+          "preconditions": ["Use an owned regular page and authorized signed-in organization."],
           "steps": [
             "Set duration, toggle audio, start Chrome tab capture and stop before duration."
           ],
           "expected": [
             "Recorder shows progress, uploads saved file, and persists a local row after reload."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2016-T02",
           "title": "Recover from permission rejection",
-          "modes": [
-            "member",
-            "admin"
-          ],
-          "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
-          ],
+          "modes": ["member", "admin"],
+          "preconditions": ["Use an owned regular page and authorized signed-in organization."],
           "steps": [
             "Use a profile without tabCapture; press Record; dismiss recovery by each close path; reopen and press Open extension permissions."
           ],
           "expected": [
             "Recovery dialog appears only after Chrome rejection; permission page opens on command."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2016-T03",
           "title": "Manage saved recording index",
-          "modes": [
-            "member",
-            "admin"
-          ],
-          "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
-          ],
+          "modes": ["member", "admin"],
+          "preconditions": ["Use an owned regular page and authorized signed-in organization."],
           "steps": [
             "Copy saved file ID; remove one row with cancel/confirm; clear list with cancel/confirm."
           ],
           "expected": [
             "Cancelled mutations preserve rows; confirmed mutations remove only local index entries, leaving Files assets intact."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2016-T04",
           "title": "Guest cannot open Tools Recorder",
-          "modes": [
-            "guest"
-          ],
-          "preconditions": [
-            "Use a signed-out side panel."
-          ],
-          "steps": [
-            "Inspect navigation and attempt to reach this surface."
-          ],
+          "modes": ["guest"],
+          "preconditions": ["Use a signed-out side panel."],
+          "steps": ["Inspect navigation and attempt to reach this surface."],
           "expected": [
             "Signed-in tab and nested content remain unavailable with an honest sign-in path."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2016-T05",
           "title": "Open saved recording file",
-          "modes": [
-            "member",
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-2016-C18"
-          ],
-          "preconditions": [
-            "Signed in with a saved recording row whose fileUrl is present."
-          ],
-          "steps": [
-            "Click Open on that row."
-          ],
+          "modes": ["member", "admin"],
+          "control_ids": ["EXT-F-2016-C18"],
+          "preconditions": ["Signed in with a saved recording row whose fileUrl is present."],
+          "steps": ["Click Open on that row."],
           "expected": [
             "File URL opens in a new browser tab; rows without fileUrl have no Open link."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         }
       ],
       "cells": {
@@ -7679,9 +7060,7 @@
       "id": "EXT-F-2017",
       "name": "Generate and use credentials",
       "surface": "Vault password generator",
-      "entry_points": [
-        "Tools tab → Vault password generator"
-      ],
+      "entry_points": ["Tools tab → Vault password generator"],
       "controls": [
         {
           "id": "EXT-F-2017-C01",
@@ -7860,9 +7239,7 @@
           "test_design_item": "Verify Use generated value (Fill selected page password field) on Vault password generator in source-applicable roles; include refusal and reload where state persists."
         }
       ],
-      "source_anchors": [
-        "src/features/vault/PasswordGenerator.tsx:1"
-      ],
+      "source_anchors": ["src/features/vault/PasswordGenerator.tsx:1"],
       "dependency_class": "cross-system",
       "wave": "C",
       "applicability": {
@@ -7883,85 +7260,52 @@
         {
           "id": "EXT-F-2017-T01",
           "title": "Generate password options",
-          "modes": [
-            "member",
-            "admin"
-          ],
-          "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
-          ],
+          "modes": ["member", "admin"],
+          "preconditions": ["Use an owned regular page and authorized signed-in organization."],
           "steps": [
             "Expand generator, set length and each character toggle, generate/regenerate, reveal/hide/copy/clear."
           ],
           "expected": [
             "Generated candidate reflects selected settings and is cleared when requested/collapsed."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2017-T02",
           "title": "Generate passphrase options",
-          "modes": [
-            "member",
-            "admin"
-          ],
-          "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
-          ],
+          "modes": ["member", "admin"],
+          "preconditions": ["Use an owned regular page and authorized signed-in organization."],
           "steps": [
             "Choose passphrase, set word count/separator/capitalization/digit, generate and copy."
           ],
           "expected": [
             "Candidate reflects configured phrase options and remains local until used."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2017-T03",
           "title": "Use generated candidate on page",
-          "modes": [
-            "member",
-            "admin"
-          ],
-          "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
-          ],
+          "modes": ["member", "admin"],
+          "preconditions": ["Use an owned regular page and authorized signed-in organization."],
           "steps": [
             "On an owned login page with offered password fields, choose target and press Use."
           ],
           "expected": [
             "Only selected target receives the generated value; page change or unavailable target yields a recoverable message."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         },
         {
           "id": "EXT-F-2017-T04",
           "title": "Guest cannot open Vault password generator",
-          "modes": [
-            "guest"
-          ],
-          "preconditions": [
-            "Use a signed-out side panel."
-          ],
-          "steps": [
-            "Inspect navigation and attempt to reach this surface."
-          ],
+          "modes": ["guest"],
+          "preconditions": ["Use a signed-out side panel."],
+          "steps": ["Inspect navigation and attempt to reach this surface."],
           "expected": [
             "Signed-in tab and nested content remain unavailable with an honest sign-in path."
           ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ]
+          "dimensions": ["warm", "reload"]
         }
       ],
       "cells": {

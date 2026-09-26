@@ -414,8 +414,15 @@ export async function runNativeSidepanelQa({
     if (exercisePanel) {
       const panel = await attachTargetSession(cdp, panelTarget.targetId);
       try {
-        await exercisePanel(Object.freeze({ page, panel, panelTarget, artifacts,
-          attachWorker: () => attachTargetSession(cdp, extensionWorker.targetId) }));
+        await exercisePanel(
+          Object.freeze({
+            page,
+            panel,
+            panelTarget,
+            artifacts,
+            attachWorker: () => attachTargetSession(cdp, extensionWorker.targetId),
+          }),
+        );
       } finally {
         await panel.detach();
       }

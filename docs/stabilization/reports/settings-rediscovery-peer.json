@@ -2,12 +2,34 @@
   "reviewer": "/root/release_final_repair (independent of Settings changes)",
   "commit_reviewed": "47e9004c8cce39a79bf54231cecf1d8a4eb2bfaf",
   "method": "Source-only review against inventory EXT-F-1003-T46 and forcing-function-tests; no test, browser, build or runtime mutation executed.",
-  "A_acceptance_evidence": {"verdict":"NOT ACCEPTED; runtime pending and source cannot support attributable rediscovery", "requirement":"inventory.json:3813-3848 requires valid save plus actual worker rediscovery, blank clear and invalid rejection. A healthy desktop connection or changed status label is not an explicit expected result, so replacing that old extra wording does not itself weaken T46.", "preserved":"Trusted input, valid reload persistence, invalid retention, same-render invalid-to-blank, cleared reload persistence remain in source, but the undefined identifier prevents reaching the latter checks."},
-  "B_code_quality": {"verdict":"CHANGES REQUIRED", "findings":[
-    {"priority":"P1","title":"Removed VALID_PORT still used in persistence assertion","evidence":"tests/browser/settings-local-controls-acceptance.mjs:252 references VALID_PORT twice after its declaration was removed at :15. After a successful probe and reload, evaluation throws ReferenceError and skips invalid-range and same-view blank checks.","remedy":"Use observedPort.port consistently; inspect remaining removed-name references before browser admission."},
-    {"priority":"P1","title":"Probe before next alarm is not attributable to Save rediscovery","evidence":"Runner :231-247 observes only method/path/time. bootstrap.ts:156-166 creates the alarm before asynchronous bootstrap probing, and :286-287 can already be executing an earlier alarm. bridge.ts:31-38 awaits native probing before discovery.ts:141-151 reads the latest override. Either independent probe can therefore reach the new port before nextAlarm even if the rediscover handler does no work. No worker lifetime, in-flight probe, handler invocation or request initiator is recorded.","remedy":"Keep rediscovery unverified until a read-only worker trace correlates the real Save message with its handler/probe, or establish and verify a boundary that excludes startup and in-flight probes. Prove a no-op rediscover handler cannot pass in an admitted isolated mutation run."},
-    {"priority":"P2","title":"HTTP observer marks working native rediscovery as failure","evidence":"bridge.ts:31-36 returns successfully for a healthy native host before any HTTP probe. The disposable browser profile does not remove machine native-host registration, and the runner establishes no native-unavailable precondition. Correct native rediscovery therefore times out waiting for GET /health.","remedy":"Observe actual handler completion independently of transport, or explicitly establish an HTTP-only test precondition and classify unavailable coverage honestly."}
-  ]},
+  "A_acceptance_evidence": {
+    "verdict": "NOT ACCEPTED; runtime pending and source cannot support attributable rediscovery",
+    "requirement": "inventory.json:3813-3848 requires valid save plus actual worker rediscovery, blank clear and invalid rejection. A healthy desktop connection or changed status label is not an explicit expected result, so replacing that old extra wording does not itself weaken T46.",
+    "preserved": "Trusted input, valid reload persistence, invalid retention, same-render invalid-to-blank, cleared reload persistence remain in source, but the undefined identifier prevents reaching the latter checks."
+  },
+  "B_code_quality": {
+    "verdict": "CHANGES REQUIRED",
+    "findings": [
+      {
+        "priority": "P1",
+        "title": "Removed VALID_PORT still used in persistence assertion",
+        "evidence": "tests/browser/settings-local-controls-acceptance.mjs:252 references VALID_PORT twice after its declaration was removed at :15. After a successful probe and reload, evaluation throws ReferenceError and skips invalid-range and same-view blank checks.",
+        "remedy": "Use observedPort.port consistently; inspect remaining removed-name references before browser admission."
+      },
+      {
+        "priority": "P1",
+        "title": "Probe before next alarm is not attributable to Save rediscovery",
+        "evidence": "Runner :231-247 observes only method/path/time. bootstrap.ts:156-166 creates the alarm before asynchronous bootstrap probing, and :286-287 can already be executing an earlier alarm. bridge.ts:31-38 awaits native probing before discovery.ts:141-151 reads the latest override. Either independent probe can therefore reach the new port before nextAlarm even if the rediscover handler does no work. No worker lifetime, in-flight probe, handler invocation or request initiator is recorded.",
+        "remedy": "Keep rediscovery unverified until a read-only worker trace correlates the real Save message with its handler/probe, or establish and verify a boundary that excludes startup and in-flight probes. Prove a no-op rediscover handler cannot pass in an admitted isolated mutation run."
+      },
+      {
+        "priority": "P2",
+        "title": "HTTP observer marks working native rediscovery as failure",
+        "evidence": "bridge.ts:31-36 returns successfully for a healthy native host before any HTTP probe. The disposable browser profile does not remove machine native-host registration, and the runner establishes no native-unavailable precondition. Correct native rediscovery therefore times out waiting for GET /health.",
+        "remedy": "Observe actual handler completion independently of transport, or explicitly establish an HTTP-only test precondition and classify unavailable coverage honestly."
+      }
+    ]
+  },
   "cleanup_and_timeouts": "The listener returns 503 and is closed in outer finally after owned-browser disposal; no fabricated healthy response or worker mutation is introduced. Alarm wait is 35s and request wait 10s; >12s headroom is measured before trusted input, so slow actions can consume it and cause a false failure. Listener close has no separate deadline, though ordinary completed 503 requests and prior browser disposal make normal cleanup credible.",
   "remaining": "Repair runner identifier and attribution/transport evidence, then root-admitted browser execution, forcing-function negative proof and fresh evidence review. No runtime pass or product defect is claimed by this source review."
 }

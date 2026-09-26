@@ -80,7 +80,12 @@
       "behavior_delta": "When the page-fill panel is ready, Vault resolves against its page URL and displays only candidates shared by the page-fill panel and the current Vault lookup. The blocked panel reason no longer coexists with the ordinary no-outcome guidance.",
       "affected_feature_ids": ["EXT-F-2011"],
       "existing_case_ids": ["EXT-F-2011-T02", "EXT-F-2011-T06", "EXT-F-2011-T08"],
-      "existing_control_ids": ["EXT-F-2011-C45", "EXT-F-2011-C49", "EXT-F-2011-C50", "EXT-F-2011-C51"],
+      "existing_control_ids": [
+        "EXT-F-2011-C45",
+        "EXT-F-2011-C49",
+        "EXT-F-2011-C50",
+        "EXT-F-2011-C51"
+      ],
       "control_reconciliation": "T02 covers current-page credential use and T08 covers stale candidates, retry, and binding. T06 covers organization changes. No distinct missing control identified from this delta; these cases need to retain the page/tab and intersection expectations.",
       "missing_controls": [],
       "evidence": ["src/features/vault/VaultView.tsx:matchPageUrl, siteMatches, blockedReason"]
@@ -113,14 +118,21 @@
       "existing_control_ids": ["EXT-F-0001-C01", "EXT-F-0001-C05", "EXT-F-1005-C01"],
       "control_reconciliation": "This is diagnostic hardening with no distinct user action. Existing identity/build cases are the nearest source-level references; no user-facing control is proposed.",
       "missing_controls": [],
-      "evidence": ["src/lib/auth/identity.ts:optionalEnv, readExtensionIdentity, logExtensionIdentityOnce"]
+      "evidence": [
+        "src/lib/auth/identity.ts:optionalEnv, readExtensionIdentity, logExtensionIdentityOnce"
+      ]
     },
     {
       "area": "Offscreen cleanup and acquisition barrier",
       "behavior_delta": "The e17e070 startup sequence waits for stale offscreen cleanup before reconnect probing. Follow-up ab5d151 also installs the cleanup promise at the shared offscreen acquisition boundary so streams, media, and bridge reconnects cannot race cleanup; timeout/failure continues with a warning.",
       "affected_feature_ids": ["EXT-F-0001", "EXT-F-1006"],
       "existing_case_ids": ["EXT-F-0001-T04", "EXT-F-1006-T20", "EXT-F-1006-T26", "EXT-F-1006-T27"],
-      "existing_control_ids": ["EXT-F-0001-C04", "EXT-F-1006-C19", "EXT-F-1006-C25", "EXT-F-1006-C26"],
+      "existing_control_ids": [
+        "EXT-F-0001-C04",
+        "EXT-F-1006-C19",
+        "EXT-F-1006-C25",
+        "EXT-F-1006-C26"
+      ],
       "control_reconciliation": "Worker/offscreen lifecycle and bridge reconnect cases already exist. No additional control is identified, but their expected recovery must exercise the common acquisition path and not only the bootstrap reconnect caller.",
       "missing_controls": [],
       "evidence": [
@@ -155,8 +167,22 @@
   ],
   "summary": {
     "status": "proposed_source_mapping_only",
-    "affected_feature_ids": ["EXT-F-0001", "EXT-F-1005", "EXT-F-1006", "EXT-F-1007", "EXT-F-2011", "EXT-F-2013", "EXT-F-2014", "EXT-F-4089"],
-    "missing_control_proposals": ["EXT-F-2013-C135", "EXT-F-2013-C136", "EXT-F-2014-C61", "EXT-F-4089-C10"],
+    "affected_feature_ids": [
+      "EXT-F-0001",
+      "EXT-F-1005",
+      "EXT-F-1006",
+      "EXT-F-1007",
+      "EXT-F-2011",
+      "EXT-F-2013",
+      "EXT-F-2014",
+      "EXT-F-4089"
+    ],
+    "missing_control_proposals": [
+      "EXT-F-2013-C135",
+      "EXT-F-2013-C136",
+      "EXT-F-2014-C61",
+      "EXT-F-4089-C10"
+    ],
     "runtime_verification": "not_performed",
     "inventory_modified": false,
     "source_delta_end": "ab5d151cdd6e2b668c8d71386f068e2e88301da0"

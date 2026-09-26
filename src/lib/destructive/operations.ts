@@ -175,7 +175,7 @@ export const INTERNAL_ONLY: { fn: string; module: string; why: string }[] = [
   {
     fn: 'clearCapturePagePanel',
     module: 'src/lib/panel/launch-intent.ts',
-    why: 'After a popup Capture page launch fails, removes only that click\'s extension-owned, short-lived session route request. It cannot erase a newer click or saved user content.',
+    why: "After a popup Capture page launch fails, removes only that click's extension-owned, short-lived session route request. It cannot erase a newer click or saved user content.",
   },
   {
     fn: 'claimPopupLaunchTarget',

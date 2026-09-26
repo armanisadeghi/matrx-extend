@@ -10,5 +10,9 @@
     "Trusted Playwright panel-open click and distinct native sidepanel target/context checks remain. Cleanup detaches and terminates only the spawned child; no Browser.close.",
     "No source defect found in scope; real browser acceptance and configured host paths remain unverified."
   ],
-  "checks": ["node --check: PASS", "module import without launch: PASS", "reviewed diff --check: PASS"]
+  "checks": [
+    "node --check: PASS",
+    "module import without launch: PASS",
+    "reviewed diff --check: PASS"
+  ]
 }

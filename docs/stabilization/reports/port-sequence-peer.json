@@ -20,9 +20,7 @@
       "The DOM observation reads the real error element adjacent to the port row, and the invalid-step wait proves the error was present before the blank-clear assertion.",
       "The change is limited to sequence ordering, observation wording, and the corresponding stabilization report; it does not weaken the retained valid-persistence check or claim rediscovery evidence."
     ],
-    "limits": [
-      "No runtime/browser execution was performed as part of this source peer review."
-    ]
+    "limits": ["No runtime/browser execution was performed as part of this source peer review."]
   },
   "review_method": "Inspected the exact commit diff and the port observer, interaction helper, and SettingsView error-rendering/validation source. No tests or browser session were run.",
   "reviewed_paths": [

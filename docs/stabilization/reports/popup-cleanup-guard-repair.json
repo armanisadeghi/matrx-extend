@@ -22,10 +22,7 @@
     "tests/unit/popup-capture-route.test.tsx covers one-shot and window-scoped claims, concurrent claims, failed-click isolation from newer requests, and failed removal.",
     "tests/unit/destructive-confirm-guard.test.ts discovers removal primitives across src and requires every owner to appear in the registry."
   ],
-  "changed_files": [
-    "src/lib/destructive/operations.ts",
-    "src/lib/panel/launch-intent.ts"
-  ],
+  "changed_files": ["src/lib/destructive/operations.ts", "src/lib/panel/launch-intent.ts"],
   "verification": {
     "targeted_command": "pnpm exec vitest run --maxWorkers=1 --minWorkers=1 tests/unit/destructive-confirm-guard.test.ts tests/unit/popup-capture-route.test.tsx",
     "targeted_result": "Root-run targeted suite passed 17/17, exit 0, zero errors on the current shared checkout.",

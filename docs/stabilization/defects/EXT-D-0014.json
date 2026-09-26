@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0014",
   "feature_id": "EXT-F-0001",
-  "case_ids": [
-    "EXT-F-0001-T05"
-  ],
+  "case_ids": ["EXT-F-0001-T05"],
   "surface": "Isolated authenticated browser test setup",
   "auth_mode": "guest to admin",
   "reproduction": [
@@ -62,7 +60,5 @@
       "reason": "Original defect resolved and source/runtime evidence verified; extension auth/setup remains separately unverified."
     }
   ],
-  "limitations": [
-    "Extension authenticated state timed out in run003; fullF0001T05 is not passed."
-  ]
+  "limitations": ["Extension authenticated state timed out in run003; fullF0001T05 is not passed."]
 }

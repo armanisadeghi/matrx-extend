@@ -5,11 +5,7 @@
   "status": "pass",
   "at": "2026-09-26T02:34:13.246Z",
   "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
-  "command": [
-    "node",
-    "--test",
-    "scripts/test-release-recovery.mjs"
-  ],
+  "command": ["node", "--test", "scripts/test-release-recovery.mjs"],
   "exit_code": 0,
   "tests_passed": 4,
   "tests_failed": 0,

@@ -46,9 +46,7 @@
         "Retried and accepted the Chrome prompt; switch reflected on, then off when toggled back.",
         "After full extension reload, Page archive remained off, matching initial state."
       ],
-      "limitations": [
-        "Busy state was not observed in the immediate UI snapshots."
-      ]
+      "limitations": ["Busy state was not observed in the immediate UI snapshots."]
     },
     {
       "case_id": "EXT-F-1003-T58",
@@ -58,9 +56,7 @@
         "Retried and accepted the Chrome prompt; Chrome’s extension permission list then showed ‘Read and modify data you copy and paste’; switch reflected on, then off when toggled back.",
         "After full extension reload, Clipboard read remained off, matching initial state."
       ],
-      "limitations": [
-        "Busy state was not observed in the immediate UI snapshots."
-      ]
+      "limitations": ["Busy state was not observed in the immediate UI snapshots."]
     }
   ],
   "cleanup": {

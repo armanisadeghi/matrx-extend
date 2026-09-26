@@ -1,10 +1,7 @@
 {
   "id": "EXT-D-0010",
   "feature_id": "EXT-F-1002",
-  "case_ids": [
-    "EXT-F-1002-T19",
-    "EXT-F-1002-T20"
-  ],
+  "case_ids": ["EXT-F-1002-T19", "EXT-F-1002-T20"],
   "surface": "Popup claim recovery integration test",
   "auth_mode": "Test infrastructure independent of role; product popup cases member/admin remain unverified",
   "reproduction": [

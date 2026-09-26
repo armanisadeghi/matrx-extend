@@ -116,6 +116,9 @@ async function runOwnedBrowserRestart({
   let replacementCdp;
   let replacementJournal;
   let succeeded = false;
+  let result;
+  let primaryError;
+  let cleanupError;
   const lifecycle = ((proof.lifecycle ||= {}).browserRestart = {
     disposition: 'in_progress',
     previousBrowserExited: false,
@@ -267,10 +270,7 @@ async function runOwnedBrowserRestart({
         panel: replacementPanel,
         journal: replacementJournal,
       })) === true;
-    assert(
-      lifecycle.postBindVaultReadRecovered,
-      'browser_restart_post_bind_vault_read_unverified',
-    );
+    assert(lifecycle.postBindVaultReadRecovered, 'browser_restart_post_bind_vault_read_unverified');
     lifecycle.settingsUiRecovered =
       (await verifySettingsIdentity(replacementWorker, replacementPanel)) === true;
     const recoveredIdentitySha256 = await identityHash(replacementWorker);
@@ -292,13 +292,15 @@ async function runOwnedBrowserRestart({
     assert(lifecycle.disposition === 'passed', 'browser_restart_evidence_incomplete');
     succeeded = true;
     lifecycle.replacementOwnership = 'caller';
-    return {
+    result = {
       context: replacementContext,
       cdp: replacementCdp,
       journal: replacementJournal,
       panel: replacementPanel,
       worker: replacementWorker,
     };
+  } catch (error) {
+    primaryError = error;
   } finally {
     // On a failed restart, the helper owns the replacement it launched. A
     // successful return transfers that ownership to the caller, which must
@@ -338,13 +340,17 @@ async function runOwnedBrowserRestart({
         }
         lifecycle.cleanupProven = lifecycle.cleanupFailures.length === 0;
         if (!lifecycle.cleanupProven) {
-          const cleanupError = new Error('browser_restart_replacement_cleanup_unproven');
+          cleanupError = new Error('browser_restart_replacement_cleanup_unproven', {
+            cause: primaryError,
+          });
           cleanupError.cleanupFailures = lifecycle.cleanupFailures;
-          throw cleanupError;
         }
       }
     }
   }
+  if (cleanupError) throw cleanupError;
+  if (primaryError) throw primaryError;
+  return result;
 }
 
 module.exports = { identityHash, runOwnedBrowserRestart };

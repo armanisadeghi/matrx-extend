@@ -19,7 +19,9 @@
     "No agent was launched. The mismatch prevents claiming an unambiguous alternate-agent selection proof."
   ],
   "resource_lease": "guest-settings-007, coordinator-held session 76318",
-  "limitations": ["Picker row label Quick Test Agent 2 differs from details heading and Default agent value Quick Test Agent; identity equivalence is unresolved."],
+  "limitations": [
+    "Picker row label Quick Test Agent 2 differs from details heading and Default agent value Quick Test Agent; identity equivalence is unresolved."
+  ],
   "state_left": "Signed in as admin@admin.com; explicit throwaway fixture remains selected; Matrx Browser Agent restored; Settings open.",
   "ui_stopped": true
 }

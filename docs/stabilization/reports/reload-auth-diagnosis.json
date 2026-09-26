@@ -67,7 +67,10 @@
     "peer_report": "docs/stabilization/reports/auth-classification-peer.json",
     "peer_verdict": "Earlier cached-profile/admin findings addressed; three remaining entrypoint findings: incoming auth broadcasts trust their payload before canonical storage validation, interactive sign-in ignores restore false, and an admin lookup error is reported as confirmed non-admin.",
     "red_tests_commit": "a11cbd2",
-    "red_test_paths": ["src/hooks/use-auth.entrypoints.test.tsx", "tests/unit/admin-role-query.test.ts"],
+    "red_test_paths": [
+      "src/hooks/use-auth.entrypoints.test.tsx",
+      "tests/unit/admin-role-query.test.ts"
+    ],
     "caller_census": [
       "src/hooks/use-auth.ts boot checks checkIsAdmin after verified hydration; a failed read needs a visible role warning and same-session retry without overwriting the cached admin decision as false.",
       "src/hooks/use-auth.ts interactive sign-in checks checkIsAdmin after OAuth completion; a failed read must keep verified identity while marking role unavailable, rather than claiming non-admin or silently exiting.",
@@ -79,7 +82,13 @@
     "shared_boundary": "src/hooks/use-auth.ts readCanonicalSession is the common decision for boot, interactive sign-in after committed tokens, and positive auth broadcasts. It awaits restoreSupabaseSession, uses existing getVerifiedCurrentUser to validate the current bearer, compares the verified subject with any saved or expected profile, and reports a recoverable guest state without deleting credentials when unavailable. A positive broadcast is only an invalidation notice, never identity or role evidence. Auth generation guards prevent older async decisions from overwriting newer sign-out or sign-in state.",
     "role_result": "src/lib/supabase/queries.ts checkIsAdmin now returns true, false, or null for read failure. All three call sites handle null: the hook keeps a verified user visible, leaves admin-only UI closed until a confirmed true result, shows a truthful role-check warning, and offers a same-session Try again action; it does not cache false for an unavailable read. Safari background emits a non-admin payload on null, while the receiving hook verifies its own canonical identity and role.",
     "user_visible_recovery": "src/components/AuthGate.tsx shows an authenticated role-check warning without a misleading Sign-in failed prefix and binds Try again to useAuth retry. With a saved profile or visible user, retry re-reads the canonical session and role without starting OAuth; a genuinely new guest with no saved profile can initiate normal sign-in.",
-    "test_and_recipe_paths": ["src/hooks/use-auth.entrypoints.test.tsx", "tests/unit/admin-role-query.test.ts", "tests/unit/auth-gate.test.tsx", "tests/unit/use-auth-race.test.tsx", "docs/feature-tests.md"],
+    "test_and_recipe_paths": [
+      "src/hooks/use-auth.entrypoints.test.tsx",
+      "tests/unit/admin-role-query.test.ts",
+      "tests/unit/auth-gate.test.tsx",
+      "tests/unit/use-auth-race.test.tsx",
+      "docs/feature-tests.md"
+    ],
     "verification": "Root coordinator reports 42 of 42 focused tests passing after commit 824a4b4, with zero unhandled errors. The warning for the intentionally failed role read was expected. Type compilation was still in progress at report handoff. This lane did not launch the run.",
     "state": "The three round-two peer findings are addressed in source and the focused suite is green. Fresh independent review identified a further sign-out broadcast race; ownership passed to a new narrow implementer."
   },
@@ -89,7 +98,11 @@
     "scope": "The same report confirms that positive broadcast validation, interactive restore/identity validation, and unavailable admin-role handling from round two are addressed. The remaining race has been assigned to a fresh implementer; this lane makes no further source changes."
   },
   "native_reload_replay": {
-    "receipts": ["docs/stabilization/runs/auth-build-001.json", "docs/stabilization/runs/auth-native-001.json", "docs/stabilization/runs/auth-native-observation.json"],
+    "receipts": [
+      "docs/stabilization/runs/auth-build-001.json",
+      "docs/stabilization/runs/auth-native-001.json",
+      "docs/stabilization/runs/auth-native-observation.json"
+    ],
     "source_scope": "The loaded 0.2.53 dev artifact contained classification repair 553bad3 but preceded round-two repair 824a4b4; native replay therefore proves the original persisted-admin reload path, not the later entrypoint and role-error changes.",
     "observation": "Native Chrome Extensions details showed the same development extension ID and loaded path. After one full Reload, the sidepanel Settings showed admin@admin.com, ADMIN, and the prior organization throughout a 30-second observation; a second full Reload returned the same account, role, and organization. No sign-in, sign-out, storage inspection, or organization change was performed.",
     "limits": "The initial Settings view showed the prior guest/error state and the failed OAuth window still reported Auth session missing. The observation cannot establish the earlier stored-token state or resolve that separate OAuth error."

@@ -24,12 +24,7 @@
         "profileFreeGiB": 23.94509506225586
       },
       "cpuBusySamples": [
-        0.386,
-        0.1614,
-        0.09050000000000002,
-        0.1784,
-        0.09900000000000009,
-        0.1823999999999999,
+        0.386, 0.1614, 0.09050000000000002, 0.1784, 0.09900000000000009, 0.1823999999999999,
         0.09260000000000002
       ],
       "reasons": [],
@@ -191,9 +186,7 @@
       "schema": 1,
       "at": "2026-09-26T07:56:22.259Z",
       "runId": "final-release-native-001",
-      "reasons": [
-        "RESOURCE_MEASUREMENT_FAILED:RESOURCE_MEASUREMENT_INVALID:cpu-busy"
-      ],
+      "reasons": ["RESOURCE_MEASUREMENT_FAILED:RESOURCE_MEASUREMENT_INVALID:cpu-busy"],
       "code": "RESOURCE_WATCH_UNSAFE"
     },
     {

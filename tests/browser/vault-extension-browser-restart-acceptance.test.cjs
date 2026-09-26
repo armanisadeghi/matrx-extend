@@ -282,8 +282,16 @@ const scenario = (overrides = {}) => {
     /browser_restart_replacement_cleanup_unproven/,
   );
   const cleanup = closeRejected.args.proof.lifecycle.browserRestart;
-  assert.equal(closeRejected.state.replacementClosed, true, 'cleanup must still attempt context close');
-  assert.equal(closeRejected.state.replacementProcessExited, true, 'cleanup must verify replacement exit');
+  assert.equal(
+    closeRejected.state.replacementClosed,
+    true,
+    'cleanup must still attempt context close',
+  );
+  assert.equal(
+    closeRejected.state.replacementProcessExited,
+    true,
+    'cleanup must verify replacement exit',
+  );
   assert.equal(cleanup.cleanupAttempted, true);
   assert.equal(cleanup.cleanupProven, false);
   assert.ok(cleanup.cleanupFailures.some((failure) => failure.step === 'context_close'));

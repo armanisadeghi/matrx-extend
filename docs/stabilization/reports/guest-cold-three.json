@@ -17,9 +17,5 @@
   "limitations": [],
   "next_action": null,
   "run_id": "guest-settings-007",
-  "cases": [
-    "EXT-F-1003-T01",
-    "EXT-F-1003-T07",
-    "EXT-F-1003-T22"
-  ]
+  "cases": ["EXT-F-1003-T01", "EXT-F-1003-T07", "EXT-F-1003-T22"]
 }

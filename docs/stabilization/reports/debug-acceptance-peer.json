@@ -12,10 +12,21 @@
     "native_warm_session": {
       "status": "supported",
       "case_ids": [
-        "EXT-F-1005-T13", "EXT-F-1005-T14", "EXT-F-1005-T15",
-        "EXT-F-1005-T39", "EXT-F-1005-T40", "EXT-F-1005-T44", "EXT-F-1005-T45",
-        "EXT-F-1005-T54", "EXT-F-1005-T25", "EXT-F-1005-T29", "EXT-F-1005-T30",
-        "EXT-F-1005-T36", "EXT-F-1005-T38", "EXT-F-1005-T55", "EXT-F-1005-T41"
+        "EXT-F-1005-T13",
+        "EXT-F-1005-T14",
+        "EXT-F-1005-T15",
+        "EXT-F-1005-T39",
+        "EXT-F-1005-T40",
+        "EXT-F-1005-T44",
+        "EXT-F-1005-T45",
+        "EXT-F-1005-T54",
+        "EXT-F-1005-T25",
+        "EXT-F-1005-T29",
+        "EXT-F-1005-T30",
+        "EXT-F-1005-T36",
+        "EXT-F-1005-T38",
+        "EXT-F-1005-T55",
+        "EXT-F-1005-T41"
       ],
       "finding": "All 15 reported passes meet the exercised warm-session criteria in the inventory. The native evidence describes actual row-count changes with positive matching events for each individual source/level case, restoration on re-enable, and unrelated rows remaining. T13/T14/T15 and all/none cases likewise have outcome evidence matching their listed expected behavior. No acceptance defect is exposed by this scoped evidence."
     },

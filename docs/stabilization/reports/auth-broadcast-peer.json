@@ -3,11 +3,23 @@
   "reviewer": "/root/auth_broadcast_peer",
   "reviewed": ["d623f64", "553b45b", "296bc2f", "1b143df", "6bf1c72", "dd269ad"],
   "scope": "Fresh source and test review of the final broadcast race repair and its interaction with canonical hydration and genuine sign-out. No browser, test, build, or network write in this lane.",
-  "prior_finding_delayed_null_broadcast": {"status": "ADDRESSED", "evidence": "src/hooks/use-auth.ts:182-196 now ignores both payload identities and invokes applyCanonicalSession after incrementing signInGeneration. A stale null payload cannot synchronously set guest; only a restored and locally verified current session can install an account. The same generation check rejects superseded async reads."},
-  "verdict_a_actual_native_acceptance": {"status": "UNVERIFIED_LATEST", "evidence": "docs/stabilization/runs/auth-native-observation.json records two full Chrome reloads retaining admin account and organization for source 553bad3. No native observation for d623f64 or delayed broadcast ordering was available to this review."},
-  "verdict_b_engineering": {"status": "PASS_SOURCE_REVIEW_GREEN_PENDING", "evidence": "The final diff removes the negative-payload special case and uses the existing canonical restore/verified-user/role path for both notification directions. src/hooks/use-auth.entrypoints.test.tsx covers delayed negative, delayed prior positive into member, and genuine canonical sign-out. docs/stabilization/runs/auth-broadcast-outcome-red-001.json records 1 expected identity failure and 6 passes before repair; no final green result was available at review time."},
+  "prior_finding_delayed_null_broadcast": {
+    "status": "ADDRESSED",
+    "evidence": "src/hooks/use-auth.ts:182-196 now ignores both payload identities and invokes applyCanonicalSession after incrementing signInGeneration. A stale null payload cannot synchronously set guest; only a restored and locally verified current session can install an account. The same generation check rejects superseded async reads."
+  },
+  "verdict_a_actual_native_acceptance": {
+    "status": "UNVERIFIED_LATEST",
+    "evidence": "docs/stabilization/runs/auth-native-observation.json records two full Chrome reloads retaining admin account and organization for source 553bad3. No native observation for d623f64 or delayed broadcast ordering was available to this review."
+  },
+  "verdict_b_engineering": {
+    "status": "PASS_SOURCE_REVIEW_GREEN_PENDING",
+    "evidence": "The final diff removes the negative-payload special case and uses the existing canonical restore/verified-user/role path for both notification directions. src/hooks/use-auth.entrypoints.test.tsx covers delayed negative, delayed prior positive into member, and genuine canonical sign-out. docs/stabilization/runs/auth-broadcast-outcome-red-001.json records 1 expected identity failure and 6 passes before repair; no final green result was available at review time."
+  },
   "new_regressions": [],
-  "limitations": ["The unit broadcast helper mocks native delivery and the session dependencies, so it does not establish Chrome delivery timing or real credential persistence.", "The delayed negative test observes eventual signed-in state and established a pre-fix red result; the final green run and native acceptance remain owner verification tasks."],
+  "limitations": [
+    "The unit broadcast helper mocks native delivery and the session dependencies, so it does not establish Chrome delivery timing or real credential persistence.",
+    "The delayed negative test observes eventual signed-in state and established a pre-fix red result; the final green run and native acceptance remain owner verification tasks."
+  ],
   "changed_files": ["docs/stabilization/reports/auth-broadcast-peer.json"],
   "questions": []
 }

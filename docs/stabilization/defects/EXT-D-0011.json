@@ -1,11 +1,7 @@
 {
   "id": "EXT-D-0011",
   "feature_id": "EXT-F-1003",
-  "case_ids": [
-    "EXT-F-1003-T46",
-    "EXT-F-1003-T70",
-    "EXT-F-1003-T49"
-  ],
+  "case_ids": ["EXT-F-1003-T46", "EXT-F-1003-T70", "EXT-F-1003-T49"],
   "surface": "Native Settings acceptance driver",
   "auth_mode": "guest; test infrastructure failure",
   "reproduction": [

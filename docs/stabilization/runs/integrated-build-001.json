@@ -5,10 +5,7 @@
   "source_sha": "84f4713db7fd139bf33e93bfdbec97bdf1bde6b3",
   "preflight_source_sha": "8c9c25839a63d5077ae5ad8d235cc6723e5152cc",
   "tree_sha256": "7b4d4fcab9a02b728f3d50917b4eed96c2a3446e2d66ddee31724db06df7c589",
-  "implementation_commits": [
-    "d623f64",
-    "d9d86aa"
-  ],
+  "implementation_commits": ["d623f64", "d9d86aa"],
   "source_sync": "Concurrent e2e0e48 merge at07:26:48UTC brought dee5e6b popup delta before resource admission/build around07:27:04. No auth/permissions delta. Receipt uses postmerge source; no source commit during actual2.293s build.",
   "resource_events": [
     {
@@ -29,12 +26,7 @@
         "profileFreeGiB": 1676.24263381958
       },
       "cpuBusySamples": [
-        0.13080000000000003,
-        0.2277,
-        0.2047,
-        0.2076,
-        0.09250000000000003,
-        0.12459999999999993,
+        0.13080000000000003, 0.2277, 0.2047, 0.2076, 0.09250000000000003, 0.12459999999999993,
         0.11709999999999998
       ],
       "reasons": [],

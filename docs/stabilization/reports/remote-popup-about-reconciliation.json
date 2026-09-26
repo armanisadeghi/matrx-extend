@@ -7,39 +7,21 @@
   "changes": [
     {
       "feature_id": "EXT-F-1002",
-      "controls": [
-        "EXT-F-1002-C02"
-      ],
-      "cases_updated": [
-        "EXT-F-1002-T05",
-        "EXT-F-1002-T06"
-      ],
-      "cases_added": [
-        "EXT-F-1002-T19",
-        "EXT-F-1002-T20"
-      ],
+      "controls": ["EXT-F-1002-C02"],
+      "cases_updated": ["EXT-F-1002-T05", "EXT-F-1002-T06"],
+      "cases_added": ["EXT-F-1002-T19", "EXT-F-1002-T20"],
       "reason": "Capture page now writes a short-lived per-window launch intent, opens the sidepanel, and routes to Scrape. Failure remains visible and retryable.",
       "engineering_defect_link": "EXT-D-0008 in member/admin cells; release-guard classification only, no observed user-facing failure and no behavior pass implied."
     },
     {
       "feature_id": "EXT-F-1003",
-      "controls_added": [
-        "EXT-F-1003-C30",
-        "EXT-F-1003-C31"
-      ],
-      "cases_added": [
-        "EXT-F-1003-T70",
-        "EXT-F-1003-T71",
-        "EXT-F-1003-T72"
-      ],
+      "controls_added": ["EXT-F-1003-C30", "EXT-F-1003-C31"],
+      "cases_added": ["EXT-F-1003-T70", "EXT-F-1003-T71", "EXT-F-1003-T72"],
       "reason": "Settings About now exposes browser/build identity, saved-login API readiness and remedy, and browser update-check outcomes or managed-update instructions. Applicability is guest/member/admin because the section is not auth gated."
     },
     {
       "feature_id": "EXT-F-2011",
-      "cases_added": [
-        "EXT-F-2011-T06",
-        "EXT-F-2011-T07"
-      ],
+      "cases_added": ["EXT-F-2011-T06", "EXT-F-2011-T07"],
       "reason": "Vault acceptance source now checks stale pending-offer invalidation after active-organization switch and a fresh Vault read after replacement browser/sidepanel binding. These remain execution procedures, not product-test results."
     }
   ],
@@ -88,11 +70,7 @@
   "followups": [
     {
       "source_sha": "cfa14fe",
-      "commits_reviewed": [
-        "08c6b252423b31bdf6d0ab79e45963d9a3a33f7b",
-        "ae0e27e",
-        "7c9e0d5"
-      ],
+      "commits_reviewed": ["08c6b252423b31bdf6d0ab79e45963d9a3a33f7b", "ae0e27e", "7c9e0d5"],
       "finding": "Capture intents now begin pending and become armed only after panel open succeeds and exactly one sidepanel context is confirmed for the initiating window. The armed request carries that context ID, and only that context can consume it. The existing popup cases now cover pending/armed order, same-window/same-active-tab expectations, exact panel-instance matching, stale reopened contexts, and missing/ambiguous context recovery; no duplicate cases or controls were needed. All remain unverified in the inventory.",
       "tab_binding_limit": "Implementation binds the route to a window and panel context; it does not store a tab ID. The case verifies the active tab is unchanged and no tab is created during the action, without claiming the request has a tab-ID binding.",
       "vault_observer_commit": {
@@ -104,9 +82,7 @@
     },
     {
       "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
-      "commits_reviewed": [
-        "dee5e6b"
-      ],
+      "commits_reviewed": ["dee5e6b"],
       "finding": "Sidepanel context enumeration exceptions now return no context. Claim removal failure now records the attempted intent key until expiry, so repeated storage events or a reopened panel cannot replay it. Extended existing EXT-F-1002-T19/T20 failure recovery cases; no new controls or cases.",
       "vault_observer_commit": {
         "commit": "1dd54a5",

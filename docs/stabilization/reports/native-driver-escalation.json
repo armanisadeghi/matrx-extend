@@ -1,9 +1,7 @@
 {
   "status": "NEEDS_RUNTIME_VERIFICATION",
   "lane": "Astra medium escalation; source-only worker; runtime owned by root",
-  "scope": [
-    "tests/browser/settings-panel-driver.mjs"
-  ],
+  "scope": ["tests/browser/settings-panel-driver.mjs"],
   "negative_evidence": {
     "run": "guest-reset-008",
     "result": "failed before port click: trusted wheel did not move target at y=1327 in 360x421 viewport",

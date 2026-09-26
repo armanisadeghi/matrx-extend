@@ -22,7 +22,8 @@
       "scripts/duration-shape.mjs",
       "scripts/format-input-shape.mjs",
       "scripts/package-twins.json",
-      "tests/fixtures/portions/**"
+      "tests/fixtures/portions/**",
+      "docs/stabilization/inventory.json"
     ]
   },
   "formatter": {

@@ -44,7 +44,5 @@
     "What exact Chrome version and permission-row/manifest state produced the observed behavior?",
     "Does pageCapture independently produce a warning prompt in the target Chrome version when requested from a fresh profile?"
   ],
-  "files": [
-    "docs/stabilization/reports/permission-denial-applicability.json"
-  ]
+  "files": ["docs/stabilization/reports/permission-denial-applicability.json"]
 }

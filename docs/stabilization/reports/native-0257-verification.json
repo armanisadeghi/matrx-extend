@@ -26,9 +26,7 @@
     "limitations": [
       "Verification covers the requested identity, account, organization, debugger explanation, optional-permission defaults, and About details. It does not exercise the broader denial/grant/removal or update-available/error scenario matrix."
     ],
-    "evidence": [
-      "docs/stabilization/evidence/native0257/native-chrome-after-reload.png"
-    ],
+    "evidence": ["docs/stabilization/evidence/native0257/native-chrome-after-reload.png"],
     "method": "Direct native Chrome accessibility-tree observations and screenshot using CUA; actual UI was the primary Chrome profile."
   },
   "provenance_B": {

@@ -34,13 +34,9 @@
   "owner": "/root/fix_sidepanel_render",
   "root_cause": "Cartesia SDK imports qs\u2192side-channel\u2192object-inspect; its browser:false optional util.inspect mapping becomes Vite throwing proxy, and object-inspect reads .custom during module evaluation.",
   "sibling_census": "not started",
-  "fix_commits": [
-    "bb9f18f"
-  ],
+  "fix_commits": ["bb9f18f"],
   "original_reproduction_retest_run": "render-retest-001",
-  "surrounding_case_runs": [
-    "render-retest-001"
-  ],
+  "surrounding_case_runs": ["render-retest-001"],
   "reviewer_identity": "/root/render_ui_retest",
   "transition_history": [
     {

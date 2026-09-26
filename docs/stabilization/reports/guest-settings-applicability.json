@@ -2,11 +2,7 @@
   "schema_version": 1,
   "report_id": "guest-settings-applicability",
   "reviewed_at": "2026-09-26",
-  "scope": [
-    "EXT-F-1003-T25",
-    "EXT-F-1003-T63",
-    "EXT-F-1003-T22"
-  ],
+  "scope": ["EXT-F-1003-T25", "EXT-F-1003-T63", "EXT-F-1003-T22"],
   "method": "Read-only source and recorded-evidence review. No browser, build, or tests launched.",
   "decisions": {
     "EXT-F-1003-T25": {

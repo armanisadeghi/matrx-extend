@@ -5,11 +5,28 @@
   "run_record": "docs/stabilization/runs/guest-local-001.json",
   "defect_drafts": ["docs/stabilization/defects/EXT-D-0001.json"],
   "summary": "The static dev extension installed successfully and the fixed fixture loaded, but the sidepanel failed to render on first open and again after reopening. This prevented all four Settings and four Scrape guest cases from reaching their controls. No preferences were changed and no capture was saved.",
-  "counts": {"cases_total":8,"passed":0,"failed":0,"blocked":8,"unverifiable":0},
+  "counts": { "cases_total": 8, "passed": 0, "failed": 0, "blocked": 8, "unverifiable": 0 },
   "feature_controls_cases": [
-    {"feature_id":"EXT-F-1003","control_ids":["EXT-F-1003-C02","EXT-F-1003-C04","EXT-F-1003-C05","EXT-F-1003-C14"],"case_ids":["EXT-F-1003-T04","EXT-F-1003-T10","EXT-F-1003-T13","EXT-F-1003-T40"],"status":"blocked"},
-    {"feature_id":"EXT-F-1007","control_ids":["EXT-F-1007-C01","EXT-F-1007-C02","EXT-F-1007-C05","EXT-F-1007-C06"],"case_ids":["EXT-F-1007-T01","EXT-F-1007-T02","EXT-F-1007-T05","EXT-F-1007-T06"],"status":"blocked"},
-    {"feature_id":"EXT-F-1001","control_ids":["EXT-F-1001-C05"],"case_ids":["EXT-F-1001-T13"],"status":"failed","defect_id":"EXT-D-0001","note":"Parent sidepanel render blocker observed while attempting requested batch."}
+    {
+      "feature_id": "EXT-F-1003",
+      "control_ids": ["EXT-F-1003-C02", "EXT-F-1003-C04", "EXT-F-1003-C05", "EXT-F-1003-C14"],
+      "case_ids": ["EXT-F-1003-T04", "EXT-F-1003-T10", "EXT-F-1003-T13", "EXT-F-1003-T40"],
+      "status": "blocked"
+    },
+    {
+      "feature_id": "EXT-F-1007",
+      "control_ids": ["EXT-F-1007-C01", "EXT-F-1007-C02", "EXT-F-1007-C05", "EXT-F-1007-C06"],
+      "case_ids": ["EXT-F-1007-T01", "EXT-F-1007-T02", "EXT-F-1007-T05", "EXT-F-1007-T06"],
+      "status": "blocked"
+    },
+    {
+      "feature_id": "EXT-F-1001",
+      "control_ids": ["EXT-F-1001-C05"],
+      "case_ids": ["EXT-F-1001-T13"],
+      "status": "failed",
+      "defect_id": "EXT-D-0001",
+      "note": "Parent sidepanel render blocker observed while attempting requested batch."
+    }
   ],
   "evidence": [
     "Chrome Extensions UI showed dev version 0.2.44, expected extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, enabled; Store version 0.2.23 remained disabled.",
@@ -17,5 +34,10 @@
     "CUA sidepanel AX state showed the exact module externalization error on both first open and reopen."
   ],
   "resource_lease": "coordinator-held guest-local-001, exec session 36325; no second lease launched",
-  "limitations": ["Guest auth state could not be confirmed because panel failed before account controls.","No screenshot or developer console trace saved.","Cold/warm timings unavailable because panel never rendered.","No root cause is claimed."]
+  "limitations": [
+    "Guest auth state could not be confirmed because panel failed before account controls.",
+    "No screenshot or developer console trace saved.",
+    "Cold/warm timings unavailable because panel never rendered.",
+    "No root cause is claimed."
+  ]
 }

@@ -32,10 +32,7 @@
   },
   "remote_main_and_tag_verified": "d66589855aafacfb9a9cfa521b80561b36f8e8b3",
   "verified_at": "2026-09-26T09:46:37.715346+00:00",
-  "defects": [
-    "EXT-D-0012",
-    "EXT-D-0013"
-  ],
+  "defects": ["EXT-D-0012", "EXT-D-0013"],
   "limits": [
     "Three dev-clone DB cases explicitly skipped.",
     "Mandate scan database submission unmeasured despite exit0.",
@@ -60,13 +57,8 @@
         "profileFreeGiB": 1676.1766815185547
       },
       "cpuBusySamples": [
-        0.11719999999999997,
-        0.08569999999999989,
-        0.24370000000000003,
-        0.10049999999999992,
-        0.11109999999999998,
-        0.09489999999999998,
-        0.08329999999999993
+        0.11719999999999997, 0.08569999999999989, 0.24370000000000003, 0.10049999999999992,
+        0.11109999999999998, 0.09489999999999998, 0.08329999999999993
       ],
       "reasons": [],
       "swapWindowSeconds": 60,

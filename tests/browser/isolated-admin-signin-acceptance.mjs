@@ -41,16 +41,24 @@ async function readAdminCredentials() {
   try {
     source = await readFile(ADMIN_ENV, 'utf8');
   } catch (error) {
-    fail(error?.code === 'ENOENT' ? 'credential_file_missing' :
-      error?.code === 'EACCES' ? 'credential_file_denied' : 'credential_file_unreadable');
+    fail(
+      error?.code === 'ENOENT'
+        ? 'credential_file_missing'
+        : error?.code === 'EACCES'
+          ? 'credential_file_denied'
+          : 'credential_file_unreadable',
+    );
   }
   const values = {};
   for (const line of source.split(/\r?\n/)) {
     const match = /^\s*(AI_ADMIN_USERNAME|AI_ADMIN_PASSWORD)\s*=\s*(.*?)\s*$/.exec(line);
     if (!match) continue;
     let value = match[2];
-    if ((value.startsWith('"') && value.endsWith('"')) ||
-        (value.startsWith("'") && value.endsWith("'"))) value = value.slice(1, -1);
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    )
+      value = value.slice(1, -1);
     values[match[1]] = value;
   }
   if (values.AI_ADMIN_USERNAME !== EXPECTED_ADMIN || !values.AI_ADMIN_PASSWORD)
@@ -89,8 +97,9 @@ async function signInOnRealWebPage(page) {
     stage = 'web_login_submit';
     try {
       await Promise.all([
-        web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname === '/dashboard',
-          { timeout: 90_000 }),
+        web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname === '/dashboard', {
+          timeout: 90_000,
+        }),
         web.getByRole('button', { name: 'Sign in', exact: true }).click(),
       ]);
     } catch {
@@ -108,7 +117,9 @@ async function signInOnRealWebPage(page) {
 }
 
 async function accountState(panel) {
-  return evaluate(panel, `(() => {
+  return evaluate(
+    panel,
+    `(() => {
     const account = [...document.querySelectorAll('button[aria-expanded]')]
       .find((button) => button.textContent.trim() === 'Account');
     const section = account?.parentElement?.nextElementSibling;
@@ -135,55 +146,61 @@ async function accountState(panel) {
       authRetryDisabled: retry?.disabled ?? false,
       loadingIndicatorPresent: Boolean(document.querySelector('[role="progressbar"], [aria-busy="true"]')),
     };
-  })()`);
+  })()`,
+  );
 }
 
 try {
   stage = 'owned_profile';
-  const result = await runNativeSidepanelQa({ exercisePanel: async ({ page, panel }) => {
-    stage = 'guest_settings';
-    await click(panel, 'title', 'Settings');
-    await openSection(panel, 'Account');
-    const guest = await accountState(panel);
-    assert.equal(guest.signIn, true);
-    assert.equal(guest.signOut, false);
-    assert.equal(guest.advanced, false);
+  const result = await runNativeSidepanelQa({
+    exercisePanel: async ({ page, panel }) => {
+      stage = 'guest_settings';
+      await click(panel, 'title', 'Settings');
+      await openSection(panel, 'Account');
+      const guest = await accountState(panel);
+      assert.equal(guest.signIn, true);
+      assert.equal(guest.signOut, false);
+      assert.equal(guest.advanced, false);
 
-    const web = await signInOnRealWebPage(page);
-    try {
-      stage = 'extension_signin_click';
-      await click(panel, 'button', 'Sign in');
-      stage = 'extension_admin_wait';
-      evidence.extension = { guestBefore: true, lastObserved: null };
+      const web = await signInOnRealWebPage(page);
       try {
-        await waitFor('admin_settings_after_real_signin', async () => {
-          try {
-            const observed = await accountState(panel);
-            evidence.extension.lastObserved = observed;
-            return observed;
-          } catch {
-            evidence.extension.observationReadFailed = true;
-            throw new Error('safe_account_observation_failed');
-          }
-        },
-          (state) => state?.expectedEmailMatch && state.adminRoleMatch &&
-            state.signOut && state.advanced,
-          90_000);
-      } catch {
-        fail('extension_admin_state_not_observed');
+        stage = 'extension_signin_click';
+        await click(panel, 'button', 'Sign in');
+        stage = 'extension_admin_wait';
+        evidence.extension = { guestBefore: true, lastObserved: null };
+        try {
+          await waitFor(
+            'admin_settings_after_real_signin',
+            async () => {
+              try {
+                const observed = await accountState(panel);
+                evidence.extension.lastObserved = observed;
+                return observed;
+              } catch {
+                evidence.extension.observationReadFailed = true;
+                throw new Error('safe_account_observation_failed');
+              }
+            },
+            (state) =>
+              state?.expectedEmailMatch && state.adminRoleMatch && state.signOut && state.advanced,
+            90_000,
+          );
+        } catch {
+          fail('extension_admin_state_not_observed');
+        }
+        const admin = await accountState(panel);
+        evidence.extension = {
+          guestBefore: true,
+          signedInAs: EXPECTED_ADMIN,
+          adminRoleVisible: admin.adminRoleMatch,
+          advancedCapabilitiesVisible: admin.advanced,
+          signOutVisible: admin.signOut,
+        };
+      } finally {
+        await web.close();
       }
-      const admin = await accountState(panel);
-      evidence.extension = {
-        guestBefore: true,
-        signedInAs: EXPECTED_ADMIN,
-        adminRoleVisible: admin.adminRoleMatch,
-        advancedCapabilitiesVisible: admin.advanced,
-        signOutVisible: admin.signOut,
-      };
-    } finally {
-      await web.close();
-    }
-  } });
+    },
+  });
   evidence.extension.extensionId = result.extensionId;
   evidence.status = 'pass';
   stage = 'complete';

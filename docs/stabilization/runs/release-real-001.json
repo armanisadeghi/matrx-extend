@@ -6,12 +6,7 @@
   "source_sha": "29085b6",
   "candidate_sha": "dd9c782af49cbef591db501c598c7b6ddaa027e0",
   "candidate_version": "0.2.51",
-  "command": [
-    "bash",
-    "release.sh",
-    "--message",
-    "EXT-D-0002 validated release integration"
-  ],
+  "command": ["bash", "release.sh", "--message", "EXT-D-0002 validated release integration"],
   "exit_code": 3,
   "resource_invalid": true,
   "reason": "Two sustained high-load CPU samples; watchdog terminated owned foreground process group before publication",

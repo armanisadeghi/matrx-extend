@@ -43,9 +43,7 @@
         "Warm Organization view showed 'Sign in to choose' and no organization selector/action.",
         "After closing and reopening the side panel and opening Settings, Organization again showed guest guidance with no selector/action."
       ],
-      "remaining_criteria": [
-        "No full extension reload was performed."
-      ]
+      "remaining_criteria": ["No full extension reload was performed."]
     },
     {
       "case_id": "EXT-F-1003-T07",
@@ -54,9 +52,7 @@
         "Warm Settings showed 'Choose an organization above' and no Default agent picker/action.",
         "After closing and reopening the side panel and opening Settings, Default agent again showed the unavailable guidance and no agent picker/action."
       ],
-      "remaining_criteria": [
-        "No full extension reload was performed."
-      ]
+      "remaining_criteria": ["No full extension reload was performed."]
     },
     {
       "case_id": "EXT-F-1003-T22",
@@ -64,9 +60,7 @@
       "verified_substeps": [
         "Advanced agent capabilities and its controls were absent from the observed Settings section tree before and after panel reopen."
       ],
-      "remaining_criteria": [
-        "No full extension reload was performed."
-      ]
+      "remaining_criteria": ["No full extension reload was performed."]
     },
     {
       "case_id": "EXT-F-1003-T04",

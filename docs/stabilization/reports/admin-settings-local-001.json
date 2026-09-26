@@ -5,9 +5,9 @@
   "run_record": "docs/stabilization/runs/admin-settings-local-001.json",
   "summary": "Admin Settings T06, T15, and T30 completed in native Chrome. Light, Dark, and System each displayed and persisted through extension Reload; Fast/Thinking speed selection persisted; all twelve Settings groups were opened and closed, with their original arrangement restored.",
   "feature_controls_cases": [
-    {"feature_id": "EXT-F-1003", "case_ids": ["EXT-F-1003-T06"], "status": "passed"},
-    {"feature_id": "EXT-F-1003", "case_ids": ["EXT-F-1003-T15"], "status": "passed"},
-    {"feature_id": "EXT-F-1003", "case_ids": ["EXT-F-1003-T30"], "status": "passed"}
+    { "feature_id": "EXT-F-1003", "case_ids": ["EXT-F-1003-T06"], "status": "passed" },
+    { "feature_id": "EXT-F-1003", "case_ids": ["EXT-F-1003-T15"], "status": "passed" },
+    { "feature_id": "EXT-F-1003", "case_ids": ["EXT-F-1003-T30"], "status": "passed" }
   ],
   "evidence": [
     "The actual unpacked extension was cihdmkcdjjckfhjpgoedmgfpoljebaml version 0.2.51 from .output/chrome-mv3-dev.",

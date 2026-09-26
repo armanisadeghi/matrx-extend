@@ -264,9 +264,7 @@
           "observation": {
             "value": "",
             "saved": null,
-            "button": [
-              "Set"
-            ],
+            "button": ["Set"],
             "override": false,
             "error": null
           }
@@ -277,9 +275,7 @@
           "observation": {
             "value": "65001",
             "saved": 65001,
-            "button": [
-              "Save"
-            ],
+            "button": ["Save"],
             "override": true,
             "error": null
           }
@@ -292,9 +288,7 @@
           "evidence": {
             "value": "65001",
             "saved": 65001,
-            "button": [
-              "Save"
-            ],
+            "button": ["Save"],
             "override": true,
             "error": null
           }
@@ -438,13 +432,8 @@
         "profileFreeGiB": 23.93386459350586
       },
       "cpuBusySamples": [
-        0.10840000000000005,
-        0.18290000000000006,
-        0.17420000000000002,
-        0.08860000000000001,
-        0.134,
-        0.1573,
-        0.11309999999999998
+        0.10840000000000005, 0.18290000000000006, 0.17420000000000002, 0.08860000000000001, 0.134,
+        0.1573, 0.11309999999999998
       ],
       "reasons": [],
       "swapWindowSeconds": 60,

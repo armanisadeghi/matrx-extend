@@ -36,12 +36,8 @@
       "id": "EXT-F-1003-T01",
       "control_id": "EXT-F-1003-C01",
       "status": "pass",
-      "steps": [
-        "Opened Settings > Organization."
-      ],
-      "exact_ax": [
-        "Organization Sign in to choose"
-      ],
+      "steps": ["Opened Settings > Organization."],
+      "exact_ax": ["Organization Sign in to choose"],
       "expected_result": "Guest organization view offered sign-in and did not render an organization selector.",
       "timing": {
         "before_ms": 1790389147598,
@@ -54,9 +50,7 @@
       "id": "EXT-F-1003-T07",
       "control_id": "EXT-F-1003-C03",
       "status": "pass",
-      "steps": [
-        "Inspected Settings > Chat while signed out and without an active organization."
-      ],
+      "steps": ["Inspected Settings > Chat while signed out and without an active organization."],
       "exact_ax": [
         "Default agent Choose an organization above Default mode",
         "Email \u2014",
@@ -70,12 +64,8 @@
       "id": "EXT-F-1003-T22",
       "control_id": "EXT-F-1003-C08",
       "status": "pass",
-      "steps": [
-        "Inspected the guest Settings section list."
-      ],
-      "exact_ax": [
-        "Advanced agent capabilities was absent from the guest Settings AX tree."
-      ],
+      "steps": ["Inspected the guest Settings section list."],
+      "exact_ax": ["Advanced agent capabilities was absent from the guest Settings AX tree."],
       "expected_result": "The admin-only section was not visibly offered to a guest.",
       "timing": "Visibility-only AX observation; no action-to-AX duration captured.",
       "cleanup": "Read-only negative visibility check. No direct route/component or role state was manipulated."
@@ -202,9 +192,7 @@
       "control_id": "EXT-F-1003-C12",
       "status": "pass",
       "initial": "off",
-      "steps": [
-        "Toggled on, navigated to Scrape and back, AX still showed on, then restored off."
-      ],
+      "steps": ["Toggled on, navigated to Scrape and back, AX still showed on, then restored off."],
       "exact_ax": [
         "switch Show password suggestions on websites, Value: on",
         "switch Show password suggestions on websites, Value: off"

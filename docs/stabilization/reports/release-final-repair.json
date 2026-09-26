@@ -4,9 +4,31 @@
   "status": "source-candidate-ready-awaiting-root-verification",
   "owner_lane": "release_final_repair (exceptional Astra medium; no descendants)",
   "root_cause": "Lock age incorrectly implied abandonment; post-commit cleanup was reported as rollback-capable failure; ZIP recovery backups belonged to unconditional EXIT deletion.",
-  "change": ["Existing release locks fail closed without reclaiming unknown/stale owners.", "Dirty exclusions are printed and logged before every candidate push.", "Single/multiple unpacked destinations share receipt commit and independent rollback; committed cleanup only warns.", "ZIP restore results are checked and failed recovery backups survive EXIT."],
-  "files": ["release.sh", "scripts/sync-unpacked-release.mjs", "scripts/sync-unpacked-release.d.mts", "scripts/test-release-ship-path.sh", "scripts/test-release-recovery.mjs", "tests/unit/release-artifacts.test.ts", "docs/feature-tests.md", "docs/stabilization/defects/EXT-D-0002.json"],
-  "fault_guards": ["Real live/unknown lock contention; pre-push exclusion evidence; filesystem ZIP install/restore errors.", "Real helper CLI with filesystem cleanup, receipt-commit and backup-restore faults; checks installed bytes, receipt, independent restoration and retained backup paths."],
-  "verification_needed": ["Root admitted: bash scripts/test-release-ship-path.sh", "Root admitted: node --test scripts/test-release-recovery.mjs", "Root admitted: pnpm exec vitest run tests/unit/release-artifacts.test.ts", "Fresh independent review; no runtime pass claimed by this lane."],
+  "change": [
+    "Existing release locks fail closed without reclaiming unknown/stale owners.",
+    "Dirty exclusions are printed and logged before every candidate push.",
+    "Single/multiple unpacked destinations share receipt commit and independent rollback; committed cleanup only warns.",
+    "ZIP restore results are checked and failed recovery backups survive EXIT."
+  ],
+  "files": [
+    "release.sh",
+    "scripts/sync-unpacked-release.mjs",
+    "scripts/sync-unpacked-release.d.mts",
+    "scripts/test-release-ship-path.sh",
+    "scripts/test-release-recovery.mjs",
+    "tests/unit/release-artifacts.test.ts",
+    "docs/feature-tests.md",
+    "docs/stabilization/defects/EXT-D-0002.json"
+  ],
+  "fault_guards": [
+    "Real live/unknown lock contention; pre-push exclusion evidence; filesystem ZIP install/restore errors.",
+    "Real helper CLI with filesystem cleanup, receipt-commit and backup-restore faults; checks installed bytes, receipt, independent restoration and retained backup paths."
+  ],
+  "verification_needed": [
+    "Root admitted: bash scripts/test-release-ship-path.sh",
+    "Root admitted: node --test scripts/test-release-recovery.mjs",
+    "Root admitted: pnpm exec vitest run tests/unit/release-artifacts.test.ts",
+    "Fresh independent review; no runtime pass claimed by this lane."
+  ],
   "release_state": "No tests, builds, releases, commits, pushes or fixture execution performed by this lane; source edits only."
 }

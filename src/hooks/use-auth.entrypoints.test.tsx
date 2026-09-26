@@ -88,7 +88,9 @@ describe('useAuth canonical session entry points', () => {
     expect(result.current.isAdmin).toBe(false);
     expect(result.current.status).toBe('signed-out');
     expect(result.current.error).toMatch(/could not restore your saved sign-in/i);
-    expect((await chrome.storage.local.get(STORAGE_KEYS.USER_PROFILE))[STORAGE_KEYS.USER_PROFILE]).toEqual(admin);
+    expect(
+      (await chrome.storage.local.get(STORAGE_KEYS.USER_PROFILE))[STORAGE_KEYS.USER_PROFILE],
+    ).toEqual(admin);
     expect(dependencies.broadcast).not.toHaveBeenCalledWith(
       CHANNELS.AUTH_STATE_CHANGED,
       expect.objectContaining({ user: admin }),
@@ -182,7 +184,9 @@ describe('useAuth canonical session entry points', () => {
       </AuthGate>,
     );
 
-    await waitFor(() => expect(screen.getByRole('alert').textContent).toMatch(/could not check admin access/i));
+    await waitFor(() =>
+      expect(screen.getByRole('alert').textContent).toMatch(/could not check admin access/i),
+    );
     expect(screen.getByRole('alert').textContent).not.toContain('Sign-in failed');
     expect(useAuthStore.getState().user?.id).toBe(admin.id);
     expect(useAuthStore.getState().isAdmin).toBe(false);

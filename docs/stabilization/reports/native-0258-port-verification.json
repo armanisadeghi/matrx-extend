@@ -20,10 +20,25 @@
       "saved_override": null
     },
     "steps": [
-      {"action": "Save valid 65001", "observed_input": "65001", "override": true, "error": null},
-      {"action": "Save invalid 65536", "observed_input": "65536", "override": true, "error": "Port must be 1–65535."},
-      {"action": "Without reload, clear input and save", "observed_input": "auto", "override": false, "error": null},
-      {"action": "Close and reopen extension side panel, revisit Settings", "observed_input": "auto", "override": false, "error": null}
+      { "action": "Save valid 65001", "observed_input": "65001", "override": true, "error": null },
+      {
+        "action": "Save invalid 65536",
+        "observed_input": "65536",
+        "override": true,
+        "error": "Port must be 1–65535."
+      },
+      {
+        "action": "Without reload, clear input and save",
+        "observed_input": "auto",
+        "override": false,
+        "error": null
+      },
+      {
+        "action": "Close and reopen extension side panel, revisit Settings",
+        "observed_input": "auto",
+        "override": false,
+        "error": null
+      }
     ],
     "cleanup": "Original auto/blank setting restored exactly; no sign-out, reset, organization, permission, or other preference changes."
   },

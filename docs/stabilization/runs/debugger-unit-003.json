@@ -26,13 +26,8 @@
         "profileFreeGiB": 1681.7368087768555
       },
       "cpuBusySamples": [
-        0.15900000000000003,
-        0.14569999999999994,
-        0.1764,
-        0.09060000000000001,
-        0.118,
-        0.09129999999999994,
-        0.09299999999999997
+        0.15900000000000003, 0.14569999999999994, 0.1764, 0.09060000000000001, 0.118,
+        0.09129999999999994, 0.09299999999999997
       ],
       "reasons": [],
       "swapWindowSeconds": 60,
@@ -47,7 +42,5 @@
       "code": "RESOURCE_JOB_EXIT"
     }
   ],
-  "limitations": [
-    "Native Chrome retest and integration still pending."
-  ]
+  "limitations": ["Native Chrome retest and integration still pending."]
 }

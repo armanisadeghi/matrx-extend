@@ -5,15 +5,17 @@ vi.mock('@/lib/settings/platform-knobs', () => ({
   resolvePlatformKnobString: (key: string) => knob(key),
 }));
 
-import { CHAT_DEFAULT_MODEL_KNOB, defaultChatModelFor } from '@/lib/settings/default-chat-model';
 import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
+import { CHAT_DEFAULT_MODEL_KNOB, defaultChatModelFor } from '@/lib/settings/default-chat-model';
 
 describe('the account default model for everyday chat', () => {
   beforeEach(() => knob.mockReset());
 
   it('applies to the general chat door', async () => {
     knob.mockResolvedValue('model-the-person-chose');
-    await expect(defaultChatModelFor(DEFAULT_CHAT_MANDATE_KEY)).resolves.toBe('model-the-person-chose');
+    await expect(defaultChatModelFor(DEFAULT_CHAT_MANDATE_KEY)).resolves.toBe(
+      'model-the-person-chose',
+    );
     expect(knob).toHaveBeenCalledWith(CHAT_DEFAULT_MODEL_KNOB);
   });
 

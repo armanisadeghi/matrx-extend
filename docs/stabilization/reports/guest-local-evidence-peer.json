@@ -2,12 +2,7 @@
   "schema_version": 1,
   "reviewed_commit": "a33fdbf3ae79034d54ac0671afc46e45ecc812ad",
   "lane": "independent guest Settings local evidence review",
-  "scope": [
-    "EXT-F-1003-T22",
-    "EXT-F-1003-T37",
-    "EXT-F-1003-T46",
-    "EXT-F-1003-T70"
-  ],
+  "scope": ["EXT-F-1003-T22", "EXT-F-1003-T37", "EXT-F-1003-T46", "EXT-F-1003-T70"],
   "verdict_a_recorded_evidence_acceptance": {
     "status": "PASS_T22_T37_LIMITED_TO_RECORDED_CRITERIA",
     "runtime_executed_by_reviewer": false,

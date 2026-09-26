@@ -6,17 +6,28 @@
   "runner": "tests/browser/settings-local-controls-acceptance.mjs",
   "runtime_output": "test-results/settings-local-controls-acceptance.json",
   "source": "docs/stabilization/inventory.json",
-  "case_ids_checked": [
-    "EXT-F-1003-T22",
-    "EXT-F-1003-T37",
-    "EXT-F-1003-T46",
-    "EXT-F-1003-T70"
-  ],
+  "case_ids_checked": ["EXT-F-1003-T22", "EXT-F-1003-T37", "EXT-F-1003-T46", "EXT-F-1003-T70"],
   "case_results": [
-    { "id": "EXT-F-1003-T22", "status": "pass", "reason": "Observed absent admin section warm and after reload in guest-settings-local-001 on 0.2.57." },
-    { "id": "EXT-F-1003-T37", "status": "pass", "reason": "Observed coming-soon hint, toggle persistence after reload, and restoration in guest-settings-local-001 on 0.2.57." },
-    { "id": "EXT-F-1003-T46", "status": "unverified", "reason": "guest-settings-local-003 observed valid save, invalid-range error, blank clear, and reload persistence, but a reload between invalid and blank cleared the error before its stale-error assertion. The runner now checks invalid then blank in the same rendered view; retest pending. Worker rediscovery still lacks attributable evidence." },
-    { "id": "EXT-F-1003-T70", "status": "unverified", "reason": "guest-settings-local-002 observed matching identity and readiness, trusted scrolling to the update control, and a real no-update result. Browser API unavailable and alternate update outcomes remain unverified." }
+    {
+      "id": "EXT-F-1003-T22",
+      "status": "pass",
+      "reason": "Observed absent admin section warm and after reload in guest-settings-local-001 on 0.2.57."
+    },
+    {
+      "id": "EXT-F-1003-T37",
+      "status": "pass",
+      "reason": "Observed coming-soon hint, toggle persistence after reload, and restoration in guest-settings-local-001 on 0.2.57."
+    },
+    {
+      "id": "EXT-F-1003-T46",
+      "status": "unverified",
+      "reason": "guest-settings-local-003 observed valid save, invalid-range error, blank clear, and reload persistence, but a reload between invalid and blank cleared the error before its stale-error assertion. The runner now checks invalid then blank in the same rendered view; retest pending. Worker rediscovery still lacks attributable evidence."
+    },
+    {
+      "id": "EXT-F-1003-T70",
+      "status": "unverified",
+      "reason": "guest-settings-local-002 observed matching identity and readiness, trusted scrolling to the update control, and a real no-update result. Browser API unavailable and alternate update outcomes remain unverified."
+    }
   ],
   "defect_provenance": {
     "id": "EXT-D-0011",

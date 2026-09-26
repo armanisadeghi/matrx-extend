@@ -212,10 +212,7 @@ export function useAuth() {
       if ('pending' in result) return;
       const { user: profile } = result;
       if (attempt !== signInGeneration) return;
-      const applied = await applyCanonicalSession(
-        () => attempt === signInGeneration,
-        profile.id,
-      );
+      const applied = await applyCanonicalSession(() => attempt === signInGeneration, profile.id);
       if (applied.kind !== 'authenticated' || attempt !== signInGeneration) return;
       broadcast(CHANNELS.AUTH_STATE_CHANGED, {
         user: applied.user,

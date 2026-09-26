@@ -5,7 +5,12 @@
   "feature_id": "EXT-F-1003",
   "source": "src/features/settings/SettingsView.tsx",
   "basis": "Guest Settings cases other than those already passed in docs/stabilization/runs/render-retest-001.json; no runtime work performed in this preparation lane.",
-  "previously_passed_excluded": ["EXT-F-1003-T04", "EXT-F-1003-T10", "EXT-F-1003-T13", "EXT-F-1003-T40"],
+  "previously_passed_excluded": [
+    "EXT-F-1003-T04",
+    "EXT-F-1003-T10",
+    "EXT-F-1003-T13",
+    "EXT-F-1003-T40"
+  ],
   "resource_lease": "Root-provided lease must be recorded by the executing owner before UI work; this source-only preparation started no process and acquired no lease.",
   "build_reload_version_gate": [
     "Use a fresh completed development-build receipt for the exact source being tested.",
@@ -18,23 +23,36 @@
       "case_id": "EXT-F-1003-T01",
       "control_id": "EXT-F-1003-C01",
       "control": "Guest Organization selector view state",
-      "steps": ["Open Settings > Organization.", "Observe the guest state without signing in or attempting a backend request."],
-      "expected": ["Guest sees the source-defined 'Sign in to choose' organization state; no organization selector is offered."],
+      "steps": [
+        "Open Settings > Organization.",
+        "Observe the guest state without signing in or attempting a backend request."
+      ],
+      "expected": [
+        "Guest sees the source-defined 'Sign in to choose' organization state; no organization selector is offered."
+      ],
       "cleanup": "None; read-only view-state check."
     },
     {
       "case_id": "EXT-F-1003-T07",
       "control_id": "EXT-F-1003-C03",
       "control": "Guest Default agent view state",
-      "steps": ["Open Settings > Chat while remaining signed out and without an active organization.", "Observe the default-agent control area."],
-      "expected": ["The agent picker is absent; source renders 'Choose an organization above'. No agent or organization request is triggered."],
+      "steps": [
+        "Open Settings > Chat while remaining signed out and without an active organization.",
+        "Observe the default-agent control area."
+      ],
+      "expected": [
+        "The agent picker is absent; source renders 'Choose an organization above'. No agent or organization request is triggered."
+      ],
       "cleanup": "None; read-only view-state check."
     },
     {
       "case_id": "EXT-F-1003-T22",
       "control_id": "EXT-F-1003-C08",
       "control": "Guest denial/absence of Advanced agent capabilities",
-      "steps": ["Open Settings and inspect the section list for Advanced agent capabilities.", "Do not invoke the admin component directly or alter role state."],
+      "steps": [
+        "Open Settings and inspect the section list for Advanced agent capabilities.",
+        "Do not invoke the admin component directly or alter role state."
+      ],
       "expected": ["The admin-gated section is absent for a guest."],
       "cleanup": "None; negative visibility check only."
     },
@@ -42,15 +60,24 @@
       "case_id": "EXT-F-1003-T28",
       "control_id": "EXT-F-1003-C10",
       "control": "Settings collapsible groups",
-      "steps": ["Record initial open/closed state for each visible group.", "Open and close each group in turn; verify its content appears and hides with the trigger state."],
-      "expected": ["Visible groups toggle open and closed, with content visibility matching the trigger state."],
+      "steps": [
+        "Record initial open/closed state for each visible group.",
+        "Open and close each group in turn; verify its content appears and hides with the trigger state."
+      ],
+      "expected": [
+        "Visible groups toggle open and closed, with content visibility matching the trigger state."
+      ],
       "cleanup": "Restore each group's recorded initial state; do not change any nested preference."
     },
     {
       "case_id": "EXT-F-1003-T16",
       "control_id": "EXT-F-1003-C06",
       "control": "Share page identity & email content preference",
-      "steps": ["Record the initial switch state.", "Toggle once and verify its checked state; navigate to Chat and back to verify persistence.", "Restore the recorded state and verify it."],
+      "steps": [
+        "Record the initial switch state.",
+        "Toggle once and verify its checked state; navigate to Chat and back to verify persistence.",
+        "Restore the recorded state and verify it."
+      ],
       "expected": ["The switch reflects the selected value and persists through view navigation."],
       "cleanup": "Restore the original value. Do not inspect or transmit page identity or email content."
     },
@@ -58,7 +85,11 @@
       "case_id": "EXT-F-1003-T31",
       "control_id": "EXT-F-1003-C11",
       "control": "Offer saved logins on sign-in forms preference",
-      "steps": ["Record the initial switch state.", "Toggle once and verify the checked state; navigate away and back to verify persistence.", "Restore the recorded state and verify it."],
+      "steps": [
+        "Record the initial switch state.",
+        "Toggle once and verify the checked state; navigate away and back to verify persistence.",
+        "Restore the recorded state and verify it."
+      ],
       "expected": ["The switch reflects the selected value and persists through view navigation."],
       "cleanup": "Restore the original value. Do not use a real sign-in form or invoke credential matching."
     },
@@ -66,41 +97,110 @@
       "case_id": "EXT-F-1003-T34",
       "control_id": "EXT-F-1003-C12",
       "control": "Show password suggestions on websites preference",
-      "steps": ["Record the initial switch state.", "Toggle once and verify On-page/quiet state; navigate away and back to verify persistence.", "Restore the recorded state and verify it."],
-      "expected": ["The switch changes the preference between on_page and quiet and persists through view navigation."],
+      "steps": [
+        "Record the initial switch state.",
+        "Toggle once and verify On-page/quiet state; navigate away and back to verify persistence.",
+        "Restore the recorded state and verify it."
+      ],
+      "expected": [
+        "The switch changes the preference between on_page and quiet and persists through view navigation."
+      ],
       "cleanup": "Restore the original state. Do not open a credential form or expose credentials."
     },
     {
       "case_id": "EXT-F-1003-T37",
       "control_id": "EXT-F-1003-C13",
       "control": "Deep clean preference (coming soon)",
-      "steps": ["Record the initial switch state and verify the visible 'coming soon' hint.", "Toggle once, verify state; navigate away and back to verify persistence.", "Restore the recorded state and verify it."],
-      "expected": ["Switch state persists and the control remains visibly identified as coming soon."],
+      "steps": [
+        "Record the initial switch state and verify the visible 'coming soon' hint.",
+        "Toggle once, verify state; navigate away and back to verify persistence.",
+        "Restore the recorded state and verify it."
+      ],
+      "expected": [
+        "Switch state persists and the control remains visibly identified as coming soon."
+      ],
       "cleanup": "Restore the original value; do not claim deep-clean behavior from the setting toggle alone."
     },
     {
       "case_id": "EXT-F-1003-T67",
       "control_id": "EXT-F-1003-C29",
       "control": "Auto-scrape mode preference (Capture / Scroll & capture)",
-      "steps": ["Record the initial mode.", "Select Capture, reload the extension, and verify Capture remains selected.", "Select Scroll & capture, reload, and verify it remains selected."],
+      "steps": [
+        "Record the initial mode.",
+        "Select Capture, reload the extension, and verify Capture remains selected.",
+        "Select Scroll & capture, reload, and verify it remains selected."
+      ],
       "expected": ["Each mode remains selected after extension reload."],
       "cleanup": "Restore the initial mode and verify it after reload. This case verifies the preference only; it does not infer capture quality from a short static page."
     }
   ],
   "remaining_guest_settings_needing_auth_integration_or_fixture": [
-    {"case_ids": ["EXT-F-1003-T01", "EXT-F-1003-T07"], "dependency": "Guest view states are testable signed out; organization selection and populated agent picker require authenticated membership and organization integration."},
-    {"case_ids": ["EXT-F-1003-T19", "EXT-F-1003-T31", "EXT-F-1003-T34"], "dependency": "Visible preference toggles are locally testable; proving login-save or password-suggestion behavior requires a controlled sign-in-form fixture and credential-safe flow."},
-    {"case_ids": ["EXT-F-1003-T25", "EXT-F-1003-T60", "EXT-F-1003-T61", "EXT-F-1003-T62"], "dependency": "Audit-key view/export/filter interactions are inside the admin-only section and require authenticated admin UI; key rotation is destructive and excluded from this guest batch."},
-    {"case_ids": ["EXT-F-1003-T43", "EXT-F-1003-T46"], "dependency": "Desktop pairing/engine port require desktop bridge integration; do not enter fabricated pairing credentials or disrupt a real bridge."},
-    {"case_ids": ["EXT-F-1003-T49", "EXT-F-1003-T50", "EXT-F-1003-T51"], "dependency": "Clear-local-data confirmation includes destructive deletion/sign-out; excluded, including confirm path."},
-    {"case_ids": ["EXT-F-1003-T52"], "dependency": "Sign-in requires an approved auth session/provider flow; no auth state change in this batch."},
-    {"case_ids": ["EXT-F-1003-T55", "EXT-F-1003-T56", "EXT-F-1003-T57", "EXT-F-1003-T58", "EXT-F-1003-T59"], "dependency": "Optional Chrome permission grants require admin UI and explicit permission prompts; excluded from guest execution."},
-    {"case_ids": ["EXT-F-1003-T64"], "dependency": "Requires a pre-seeded Never ask origin; needs a controlled origin fixture and cleanup to restore the original list."},
-    {"case_ids": ["EXT-F-1003-T40", "EXT-F-1003-T67"], "dependency": "Preference is locally testable; verifying automatic scrape or Scroll & capture behavior needs a discriminating long-page fixture. Prior identical example.com text is inconclusive and must not be reported as failure."}
+    {
+      "case_ids": ["EXT-F-1003-T01", "EXT-F-1003-T07"],
+      "dependency": "Guest view states are testable signed out; organization selection and populated agent picker require authenticated membership and organization integration."
+    },
+    {
+      "case_ids": ["EXT-F-1003-T19", "EXT-F-1003-T31", "EXT-F-1003-T34"],
+      "dependency": "Visible preference toggles are locally testable; proving login-save or password-suggestion behavior requires a controlled sign-in-form fixture and credential-safe flow."
+    },
+    {
+      "case_ids": ["EXT-F-1003-T25", "EXT-F-1003-T60", "EXT-F-1003-T61", "EXT-F-1003-T62"],
+      "dependency": "Audit-key view/export/filter interactions are inside the admin-only section and require authenticated admin UI; key rotation is destructive and excluded from this guest batch."
+    },
+    {
+      "case_ids": ["EXT-F-1003-T43", "EXT-F-1003-T46"],
+      "dependency": "Desktop pairing/engine port require desktop bridge integration; do not enter fabricated pairing credentials or disrupt a real bridge."
+    },
+    {
+      "case_ids": ["EXT-F-1003-T49", "EXT-F-1003-T50", "EXT-F-1003-T51"],
+      "dependency": "Clear-local-data confirmation includes destructive deletion/sign-out; excluded, including confirm path."
+    },
+    {
+      "case_ids": ["EXT-F-1003-T52"],
+      "dependency": "Sign-in requires an approved auth session/provider flow; no auth state change in this batch."
+    },
+    {
+      "case_ids": [
+        "EXT-F-1003-T55",
+        "EXT-F-1003-T56",
+        "EXT-F-1003-T57",
+        "EXT-F-1003-T58",
+        "EXT-F-1003-T59"
+      ],
+      "dependency": "Optional Chrome permission grants require admin UI and explicit permission prompts; excluded from guest execution."
+    },
+    {
+      "case_ids": ["EXT-F-1003-T64"],
+      "dependency": "Requires a pre-seeded Never ask origin; needs a controlled origin fixture and cleanup to restore the original list."
+    },
+    {
+      "case_ids": ["EXT-F-1003-T40", "EXT-F-1003-T67"],
+      "dependency": "Preference is locally testable; verifying automatic scrape or Scroll & capture behavior needs a discriminating long-page fixture. Prior identical example.com text is inconclusive and must not be reported as failure."
+    }
   ],
   "excluded_or_not_guest_visible": [
-    {"controls": ["EXT-F-1003-C08", "EXT-F-1003-C09", "EXT-F-1003-C19", "EXT-F-1003-C20", "EXT-F-1003-C21", "EXT-F-1003-C22", "EXT-F-1003-C23", "EXT-F-1003-C24", "EXT-F-1003-C25", "EXT-F-1003-C26"], "reason": "Admin-only UI or privileged permission/key actions; no guest visibility is asserted."},
-    {"controls": ["EXT-F-1003-C17"], "reason": "Destructive local reset excluded, including confirmation path."},
-    {"controls": ["EXT-F-1003-C15"], "reason": "Pairing would mutate integration state; no fabricated token or bridge change."}
+    {
+      "controls": [
+        "EXT-F-1003-C08",
+        "EXT-F-1003-C09",
+        "EXT-F-1003-C19",
+        "EXT-F-1003-C20",
+        "EXT-F-1003-C21",
+        "EXT-F-1003-C22",
+        "EXT-F-1003-C23",
+        "EXT-F-1003-C24",
+        "EXT-F-1003-C25",
+        "EXT-F-1003-C26"
+      ],
+      "reason": "Admin-only UI or privileged permission/key actions; no guest visibility is asserted."
+    },
+    {
+      "controls": ["EXT-F-1003-C17"],
+      "reason": "Destructive local reset excluded, including confirmation path."
+    },
+    {
+      "controls": ["EXT-F-1003-C15"],
+      "reason": "Pairing would mutate integration state; no fabricated token or bridge change."
+    }
   ]
 }

@@ -46,11 +46,7 @@
       "reason": "Fresh final source peer PASS and8focused tests pass; rebuild/native original reproduction retest remains pending."
     }
   ],
-  "fix_commits": [
-    "9c2a3a3",
-    "77ce8f0",
-    "ba5a9ed"
-  ],
+  "fix_commits": ["9c2a3a3", "77ce8f0", "ba5a9ed"],
   "partial_retest": {
     "status": "original-repro-pass-neighbor-denial-unverified",
     "run_id": "permissions-auth-native-sol",

@@ -1,31 +1,49 @@
+import { writeFileSync } from 'node:fs';
 // @vitest-environment node
 // Use case: an extension release operator verifies the browser tool catalog.
 // Keep the real command, SQL selection, Management HTTP reader, and predicates;
 // replace only the network, local catalog input, public configuration, and output file.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { writeFileSync } from 'node:fs';
-import { main as drift } from '../../scripts/check-tool-db-drift';
-import { main as generateDocs } from '../../scripts/dump-tools-from-db';
 import { loadSupabaseEnv } from '../../scripts/_supabase-rest';
 import type { DbToolRow } from '../../scripts/_tool-db-row-validation';
+import { main as drift } from '../../scripts/check-tool-db-drift';
+import { main as generateDocs } from '../../scripts/dump-tools-from-db';
 
 vi.mock('../../scripts/_supabase-rest', async (original) => ({
-  ...await original<typeof import('../../scripts/_supabase-rest')>(),
+  ...(await original<typeof import('../../scripts/_supabase-rest')>()),
   loadSupabaseEnv: vi.fn(() => null),
 }));
 vi.mock('../../src/lib/tools/catalog', () => ({
-  buildToolCatalogManifest: () => ({ tools: [{
-    name: 'google_workspace', tier: 'read', category: 'google', admin_only: false,
-    input_schema: { type: 'object', properties: {}, required: [] },
-  }] }),
+  buildToolCatalogManifest: () => ({
+    tools: [
+      {
+        name: 'google_workspace',
+        tier: 'read',
+        category: 'google',
+        admin_only: false,
+        input_schema: { type: 'object', properties: {}, required: [] },
+      },
+    ],
+  }),
 }));
-vi.mock('../../src/lib/tools/categories', () => ({ CANONICAL_SURFACE: new Set(['google_workspace']) }));
-vi.mock('node:fs', async (original) => ({ ...await original<typeof import('node:fs')>(), writeFileSync: vi.fn() }));
+vi.mock('../../src/lib/tools/categories', () => ({
+  CANONICAL_SURFACE: new Set(['google_workspace']),
+}));
+vi.mock('node:fs', async (original) => ({
+  ...(await original<typeof import('node:fs')>()),
+  writeFileSync: vi.fn(),
+}));
 
 const tool = {
-  id: 'b1f7624d-8ec0-465d-b5dd-1f0ba47c8859', name: 'google_workspace',
-  description: 'Work with Google Workspace.', parameters: {}, tier: 'read',
-  admin_only: false, is_active: true, category: 'google', source_kind: 'native',
+  id: 'b1f7624d-8ec0-465d-b5dd-1f0ba47c8859',
+  name: 'google_workspace',
+  description: 'Work with Google Workspace.',
+  parameters: {},
+  tier: 'read',
+  admin_only: false,
+  is_active: true,
+  category: 'google',
+  source_kind: 'native',
 } satisfies DbToolRow;
 const argv = [...process.argv];
 let definitions: unknown[];
@@ -40,7 +58,11 @@ beforeEach(() => {
   vi.mocked(loadSupabaseEnv).mockReturnValue(null);
   vi.stubEnv('MATRX_SUPABASE_PROJECT_REF', 'brsgrqvjdzwihsvnfqkf');
   vi.stubEnv('SUPABASE_ACCESS_TOKEN', 'operator-fixture-token');
-  definitions = [tool]; direct = ['google_workspace']; bundles = []; membership = []; membershipStatus = 201;
+  definitions = [tool];
+  direct = ['google_workspace'];
+  bundles = [];
+  membership = [];
+  membershipStatus = 201;
   vi.spyOn(console, 'log').mockImplementation(() => {});
   vi.spyOn(console, 'warn').mockImplementation(() => {});
   vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -53,16 +75,32 @@ beforeEach(() => {
     let status = 201;
     if (sql.includes('platform.associations')) {
       // A wrong relation/direction/filter must not return a passing fixture.
-      for (const clause of ["a.target_id = b.id", "a.source_type = 'tool'", "a.target_type = 'tool_bundle'", "a.role = 'member'", 'a.deleted_at is null', 'd.id = a.source_id', 'b.name = any(s.always_include_bundles)']) {
+      for (const clause of [
+        'a.target_id = b.id',
+        "a.source_type = 'tool'",
+        "a.target_type = 'tool_bundle'",
+        "a.role = 'member'",
+        'a.deleted_at is null',
+        'd.id = a.source_id',
+        'b.name = any(s.always_include_bundles)',
+      ]) {
         if (!sql.includes(clause)) throw new Error('Incorrect membership query');
       }
-      rows = membership; status = membershipStatus;
+      rows = membership;
+      status = membershipStatus;
     } else if (sql.includes('from tool.binding')) {
       rows = [{ tool_id: tool.id, executor_name: 'chrome-extension', is_active: true }];
     } else if (sql.includes('from tool.definition')) {
       rows = definitions;
     } else if (sql.includes('from tool.surface_defaults')) {
-      rows = [{ surface_name: 'chrome-extension/assistant', always_include_tools: direct, always_include_bundles: bundles, never_include_tools: [] }];
+      rows = [
+        {
+          surface_name: 'chrome-extension/assistant',
+          always_include_tools: direct,
+          always_include_bundles: bundles,
+          never_include_tools: [],
+        },
+      ];
     } else throw new Error('Unexpected SQL');
     return new Response(JSON.stringify(rows), { status });
   });
@@ -71,7 +109,9 @@ beforeEach(() => {
 
 afterEach(() => {
   process.argv = [...argv];
-  vi.restoreAllMocks(); vi.unstubAllEnvs(); vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+  vi.unstubAllEnvs();
+  vi.unstubAllGlobals();
 });
 
 describe('private catalog commands through the real Management reader', () => {
@@ -84,15 +124,28 @@ describe('private catalog commands through the real Management reader', () => {
   });
 
   it('documents nested required object members without marking the parameter required', async () => {
-    definitions = [{ ...tool, parameters: {
-      rect: { type: 'object', required: ['x', 'y', 'w', 'h'], properties: {
-        x: { type: 'number' }, y: { type: 'number' },
-        w: { type: 'number' }, h: { type: 'number' },
-      } },
-    } }];
+    definitions = [
+      {
+        ...tool,
+        parameters: {
+          rect: {
+            type: 'object',
+            required: ['x', 'y', 'w', 'h'],
+            properties: {
+              x: { type: 'number' },
+              y: { type: 'number' },
+              w: { type: 'number' },
+              h: { type: 'number' },
+            },
+          },
+        },
+      },
+    ];
     await generateDocs();
     expect(writeFileSync).toHaveBeenCalledOnce();
-    expect(vi.mocked(writeFileSync).mock.calls[0]?.[1]).toContain('**Parameters:** `rect` (object)');
+    expect(vi.mocked(writeFileSync).mock.calls[0]?.[1]).toContain(
+      '**Parameters:** `rect` (object)',
+    );
     expect(vi.mocked(writeFileSync).mock.calls[0]?.[1]).not.toContain('`rect` (object, required)');
   });
 
@@ -105,47 +158,68 @@ describe('private catalog commands through the real Management reader', () => {
   });
 
   it.each([
-    { description: 42 }, { parameters: null }, { parameters: { action: { required: 'yes' } } },
+    { description: 42 },
+    { parameters: null },
+    { parameters: { action: { required: 'yes' } } },
     { parameters: { rect: { type: 'object', required: ['x', 7] } } },
-    { tier: [] }, { category: 3 }, { admin_only: 'false' }, { is_active: 'true' },
-  ])('rejects malformed selected fields before comparison or document writes: %j', async (patch) => {
-    definitions = [{ ...tool, ...patch }];
-    expect(await drift()).toBe(3);
-    await generateDocs();
-    expect(writeFileSync).not.toHaveBeenCalled();
-  });
+    { tier: [] },
+    { category: 3 },
+    { admin_only: 'false' },
+    { is_active: 'true' },
+  ])(
+    'rejects malformed selected fields before comparison or document writes: %j',
+    async (patch) => {
+      definitions = [{ ...tool, ...patch }];
+      expect(await drift()).toBe(3);
+      await generateDocs();
+      expect(writeFileSync).not.toHaveBeenCalled();
+    },
+  );
 
   it('proves bundle-only inclusion from actual member edges', async () => {
-    direct = []; bundles = ['google'];
+    direct = [];
+    bundles = ['google'];
     membership = [{ bundle_name: 'google', tool_name: 'google_workspace' }];
     expect(await drift()).toBe(0);
   });
 
   it('rejects absent membership even though a bundle was declared', async () => {
-    direct = []; bundles = ['google'];
+    direct = [];
+    bundles = ['google'];
     membership = [{ bundle_name: 'google', tool_name: 'google_email_send' }];
     expect(await drift()).toBe(1);
   });
 
   it('does not count a tool from an unrelated bundle', async () => {
-    direct = []; bundles = ['google'];
+    direct = [];
+    bundles = ['google'];
     membership = [{ bundle_name: 'browser', tool_name: 'google_workspace' }];
     expect(await drift()).toBe(1);
   });
 
-  it.each([403, 500])('fails strict verification when member access returns HTTP %s', async (status) => {
-    direct = []; bundles = ['google']; membershipStatus = status;
-    expect(await drift()).toBe(3);
-    expect(console.log).not.toHaveBeenCalledWith(expect.stringContaining('No drift detected'));
-  });
+  it.each([403, 500])(
+    'fails strict verification when member access returns HTTP %s',
+    async (status) => {
+      direct = [];
+      bundles = ['google'];
+      membershipStatus = status;
+      expect(await drift()).toBe(3);
+      expect(console.log).not.toHaveBeenCalledWith(expect.stringContaining('No drift detected'));
+    },
+  );
 
   it('rejects malformed bundle members instead of accepting an unverifiable surface', async () => {
-    direct = []; bundles = ['google']; membership = [{ bundle_name: 'google', tool_name: 7 }];
+    direct = [];
+    bundles = ['google'];
+    membership = [{ bundle_name: 'google', tool_name: 7 }];
     expect(await drift()).toBe(3);
   });
 
   it('keeps an unverified development run loud without calling it clean', async () => {
-    process.argv = [...argv]; direct = []; bundles = ['google']; membershipStatus = 403;
+    process.argv = [...argv];
+    direct = [];
+    bundles = ['google'];
+    membershipStatus = 403;
     expect(await drift()).toBe(0);
     expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('UNVERIFIED'));
     expect(console.log).not.toHaveBeenCalledWith(expect.stringContaining('No drift detected'));
@@ -161,20 +235,37 @@ describe('private catalog commands through the real Management reader', () => {
   });
 });
 
-
 describe('public catalog response validation through the real REST reader', () => {
-  function publicRead(patch: { bindings?: unknown; definitions?: unknown; surfaces?: unknown } = {}) {
-    vi.mocked(loadSupabaseEnv).mockReturnValue({ url: 'https://db.matrxserver.com', key: 'publishable-fixture-key' });
+  function publicRead(
+    patch: { bindings?: unknown; definitions?: unknown; surfaces?: unknown } = {},
+  ) {
+    vi.mocked(loadSupabaseEnv).mockReturnValue({
+      url: 'https://db.matrxserver.com',
+      key: 'publishable-fixture-key',
+    });
     // Disable operator fallback: malformed public data cannot hide behind it.
     vi.stubEnv('SUPABASE_ACCESS_TOKEN', '');
-    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
-      if (!url.includes('/rest/v1/')) throw new Error('Unexpected private request');
-      const value = url.includes('/binding?')
-        ? (patch.bindings ?? [{ tool_id: tool.id, executor_name: 'chrome-extension', is_active: true }])
-        : url.includes('/definition?') ? (patch.definitions ?? [tool])
-        : (patch.surfaces ?? [{ surface_name: 'chrome-extension/assistant', always_include_tools: ['google_workspace'], always_include_bundles: [], never_include_tools: [] }]);
-      return new Response(JSON.stringify(value), { status: 200 });
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => {
+        if (!url.includes('/rest/v1/')) throw new Error('Unexpected private request');
+        const value = url.includes('/binding?')
+          ? (patch.bindings ?? [
+              { tool_id: tool.id, executor_name: 'chrome-extension', is_active: true },
+            ])
+          : url.includes('/definition?')
+            ? (patch.definitions ?? [tool])
+            : (patch.surfaces ?? [
+                {
+                  surface_name: 'chrome-extension/assistant',
+                  always_include_tools: ['google_workspace'],
+                  always_include_bundles: [],
+                  never_include_tools: [],
+                },
+              ]);
+        return new Response(JSON.stringify(value), { status: 200 });
+      }),
+    );
   }
 
   it('accepts validated public catalog rows without operator authorization', async () => {
@@ -198,7 +289,16 @@ describe('public catalog response validation through the real REST reader', () =
   });
 
   it.each([
-    { surfaces: [{ surface_name: 'chrome-extension/assistant', always_include_tools: ['google_workspace'], always_include_bundles: 3, never_include_tools: [] }] },
+    {
+      surfaces: [
+        {
+          surface_name: 'chrome-extension/assistant',
+          always_include_tools: ['google_workspace'],
+          always_include_bundles: 3,
+          never_include_tools: [],
+        },
+      ],
+    },
     { surfaces: { rows: [] } },
   ])('refuses malformed public surface rows: %j', async ({ surfaces }) => {
     publicRead({ surfaces });

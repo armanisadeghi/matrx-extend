@@ -4,10 +4,7 @@
   "feature_id": "EXT-F-0003",
   "status": "pass",
   "at": "2026-09-26T02:32:39.413Z",
-  "command": [
-    "bash",
-    "scripts/test-release-ship-path.sh"
-  ],
+  "command": ["bash", "scripts/test-release-ship-path.sh"],
   "exit_code": 0,
   "resource_invalid": false,
   "head": "ec9f9ab26dc85b6958046d5c36258adb652d688d",

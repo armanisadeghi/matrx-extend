@@ -23,9 +23,12 @@
   "server_effects": "The runner itself sends only the real web/extension authentication flow and UI clicks. Static source shows Settings reset clears extension local/session storage before signOut; signOut may issue a best-effort Supabase POST /auth/v1/logout?scope=local only if an access token remains at its read. In the ordinary reset order the prior token has already been cleared. No runner path invokes application-data writes. Real sign-in may create disposable auth sessions, and guest boot may mint an anonymous guest identity through the existing backend flow; no claim of zero authentication-system effects is made.",
   "secret_custody": "Credentials are read from the authorized aidream .env only at the real web form. Auth storage is observed solely as boolean presence; raw values, cookies, callback URLs, request bodies, and browser exceptions never enter output. The runner writes only allowlisted stage/category results under test-results with mode 0600.",
   "verification": [
-    {"check": "node --check tests/browser/isolated-admin-reset-acceptance.mjs", "result": "pass"},
-    {"check": "git diff --check", "result": "pass"},
-    {"check": "native Chrome reset acceptance", "result": "isolated-admin-reset-001 unverified at formerly combined reset_confirm stage; root owns retry admission"}
+    { "check": "node --check tests/browser/isolated-admin-reset-acceptance.mjs", "result": "pass" },
+    { "check": "git diff --check", "result": "pass" },
+    {
+      "check": "native Chrome reset acceptance",
+      "result": "isolated-admin-reset-001 unverified at formerly combined reset_confirm stage; root owns retry admission"
+    }
   ],
   "limitations": [
     "No runtime reset verdict is claimed until root's guarded diagnostic retry and independent review.",

@@ -43,9 +43,7 @@
       "case_id": "EXT-F-1003-T04",
       "from": "pass",
       "to": "unverified",
-      "verified_substeps": [
-        "System/Light/Dark selections were reflected by selection controls."
-      ],
+      "verified_substeps": ["System/Light/Dark selections were reflected by selection controls."],
       "remaining_criteria": [
         "Verify each selected appearance is actually applied and persists after reopen/reload."
       ]
@@ -76,9 +74,7 @@
       "case_id": "EXT-F-1003-T22",
       "from": "pass",
       "to": "unverified",
-      "verified_substeps": [
-        "Advanced agent capabilities was absent from guest Settings AX tree."
-      ],
+      "verified_substeps": ["Advanced agent capabilities was absent from guest Settings AX tree."],
       "remaining_criteria": [
         "Verify admin can open/operate controls and ordinary member is denied; only guest visibility was checked."
       ]
@@ -120,9 +116,7 @@
       "case_id": "EXT-F-1007-T01",
       "from": "pass",
       "to": "unverified",
-      "verified_substeps": [
-        "Capture produced a 16-word article and result tabs were visible."
-      ],
+      "verified_substeps": ["Capture produced a 16-word article and result tabs were visible."],
       "remaining_criteria": [
         "Observe busy-button disable/progress while capture runs and exercise error recovery actions."
       ]
@@ -147,9 +141,7 @@
     "EXT-F-1003-T13",
     "EXT-F-1007-T06"
   ],
-  "already_unverified_retained": [
-    "EXT-F-1007-T02"
-  ],
+  "already_unverified_retained": ["EXT-F-1007-T02"],
   "source_review_commits": {
     "scope": "Narrow independent source review of commits 88b1f59 and 4dbf7db; no runtime execution.",
     "verdict_a_behavior_contract": {
