@@ -10886,7 +10886,9 @@
         "admin": {
           "test_status": "unverified",
           "defect_ids": [],
-          "run_ids": [],
+          "run_ids": [
+            "seo-admin-001"
+          ],
           "retest_status": "not-run"
         }
       },
@@ -11055,6 +11057,53 @@
           "rechecked_prior_subtargets": 9,
           "independent_review": "docs/stabilization/reports/seo006-runtime-peer.json",
           "limits": "Sparse/rich public detail predicates and actual canonical outbound tab only; remaining detail values/schema/hreflang/performance and all member/admin/fullfeature coverage unverified."
+        },
+        {
+          "run_id": "seo-admin-001",
+          "mode": "admin",
+          "build": "0.2.72",
+          "status": "partial",
+          "accepted_subtargets": [
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "real_admin_and_explicit_organization_prerequisite",
+              "status": "pass",
+              "evidence": {
+                "adminIdentityVisible": true,
+                "organizationSelectedThroughSettings": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "admin_public_page_0_title_and_heading_presence",
+              "status": "pass",
+              "evidence": {
+                "titleMatchesPublicDom": true,
+                "headingPresenceMatchesPublicDom": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "admin_public_page_1_title_and_heading_presence",
+              "status": "pass",
+              "evidence": {
+                "titleMatchesPublicDom": true,
+                "headingPresenceMatchesPublicDom": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "admin_menu_offers_json_without_copying",
+              "status": "pass",
+              "evidence": {
+                "textChoice": true,
+                "agentChoice": true,
+                "jsonChoice": true
+              }
+            }
+          ],
+          "independent_review": "docs/stabilization/reports/seo-admin001-runtime-peer.json",
+          "limits": "Realadmin/orgprerequisite, two publictitle/headingpresence checks and JSONmenu availability only. No clipboardcontents, persistence/history, recommendations, membergate orfullfeatureclaim."
         }
       ]
     },
