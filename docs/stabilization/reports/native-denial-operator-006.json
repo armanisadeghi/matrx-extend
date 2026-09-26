@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "native-denial-operator-006",
+  "case_id": "EXT-F-1003-T56",
+  "status": "native_denial_verified",
+  "build": "0.2.68",
+  "target": "clipboardRead",
+  "owned_browser": {
+    "app": "Google Chrome for Testing",
+    "pid": 37098,
+    "profile": "/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/matrx-native-sidepanel-qa-CwZBLc/profile"
+  },
+  "initial_state": "Settings > Clipboard read clipboardRead switch was off.",
+  "native_prompt": "Matrx Extend has requested additional permissions. It could: Read data you copy and paste. Controls: Deny, Allow.",
+  "action": "Clicked the actual Chrome Deny button.",
+  "refusal": "Chrome did not grant Clipboard read. Check this extension's permissions in Chrome, then try again.",
+  "final_state": "Clipboard read switch remained off.",
+  "acknowledgement": "test-results/isolated-permission-denial-native-ack.txt contains literal denied; coordination only.",
+  "evidence_source": "CUA accessibility state before prompt, native prompt, and post-denial Settings state.",
+  "limits": [
+    "No screenshots, permission API query, auth secrets, or other permission changes were used.",
+    "This report records native UI behavior only; root owns the run receipt and any broader verification."
+  ]
+}
