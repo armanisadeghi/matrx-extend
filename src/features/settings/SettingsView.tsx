@@ -230,7 +230,7 @@ export function SettingsView() {
                         ...(org.active ? [] : [{ value: NONE, label: 'Choose…' }]),
                         ...org.organizations.map((o) => ({
                           value: o.id,
-                          label: o.isPersonal ? `${o.name} (personal)` : o.name,
+                          label: o.name,
                         })),
                       ]}
                     />

@@ -79,7 +79,7 @@ function membershipsFor(...ids: string[]) {
     error: null,
   });
   mocks.orgSelect.mockResolvedValue({
-    data: ids.map((id) => ({ id, name: `Org ${id.slice(0, 4)}`, is_personal: false })),
+    data: ids.map((id) => ({ id, name: `Org ${id.slice(0, 4)}` })),
     error: null,
   });
 }

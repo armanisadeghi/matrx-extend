@@ -38,7 +38,6 @@ vi.mock('@/lib/supabase/schemas', () => ({
           data: harness.memberships.map((id) => ({
             id,
             name: id === ORG_A ? 'Acme Recycling' : 'Data Destruction Inc',
-            is_personal: false,
           })),
           error: null,
         }),

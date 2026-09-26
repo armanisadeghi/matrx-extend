@@ -28,7 +28,7 @@ const mocks = vi.hoisted(() => {
 
 vi.mock('@/hooks/use-active-organization', () => ({
   useActiveOrganization: () => ({
-    active: { id: mocks.activeOrganizationId, name: 'Test organization', isPersonal: false },
+    active: { id: mocks.activeOrganizationId, name: 'Test organization' },
   }),
 }));
 vi.mock('@/hooks/use-active-tab', () => ({

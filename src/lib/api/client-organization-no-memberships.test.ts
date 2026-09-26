@@ -55,7 +55,6 @@ vi.mock('@/lib/supabase/schemas', () => ({
           data: harness.memberships.map((id) => ({
             id,
             name: `Org ${id.slice(0, 4)}`,
-            is_personal: false,
           })),
           error: null,
         }),

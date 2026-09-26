@@ -83,8 +83,8 @@ describe('captureHandoff.pickUp', () => {
 
     vi.mocked(getCurrentUser).mockResolvedValue({ id: 'user-1' } as never);
     vi.mocked(listMemberOrganizations).mockResolvedValue([
-      { id: AI_MATRX, name: 'AI Matrx', isPersonal: false },
-      { id: WORKSPACE, name: "admin's Workspace", isPersonal: true },
+      { id: AI_MATRX, name: 'AI Matrx' },
+      { id: WORKSPACE, name: "admin's Workspace" },
     ]);
     vi.mocked(getActiveOrganizationId).mockResolvedValue(WORKSPACE);
     vi.mocked(countNeedsYou).mockResolvedValue(3);
@@ -115,7 +115,6 @@ describe('captureHandoff.pickUp', () => {
     expect(vi.mocked(selectActiveOrganization)).toHaveBeenCalledWith({
       id: AI_MATRX,
       name: 'AI Matrx',
-      isPersonal: false,
     });
     // The pointer the panel reads.
     await expect(readFreshCapturePickup()).resolves.toMatchObject({

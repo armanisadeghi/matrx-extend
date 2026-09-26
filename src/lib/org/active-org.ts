@@ -20,8 +20,9 @@
  * ## A SAVED "DEFAULT ORGANIZATION" NEVER BUILDS A REQUEST (Arman, 2026-09-19)
  *
  * A user-level saved preference is at most a per-client DISPLAY preference.
- * Nothing that builds a request may read it, and nothing may fall back to the
- * personal organization. Only a choice the person made ON THIS DEVICE counts.
+ * Nothing that builds a request may read it, and nothing may fall back to any
+ * organization the person did not choose. Only a choice the person made ON THIS
+ * DEVICE counts.
  * The reason, in his words: *"one missed org check that should have just
  * failed turns into 50 in a month and 5,000 in a year, and suddenly we don't
  * have orgs anymore, we have a user and a default org, which means we just
@@ -35,7 +36,7 @@
  *   3. Otherwise `null`, ON PURPOSE. `null` is not a failure and never
  *      becomes one: the request is HELD, `holdForActiveOrganizationId()`
  *      raises the picker, the person sets an organization, and the SAME
- *      request proceeds with it. Never "first", "personal", "most recent",
+ *      request proceeds with it. Never "first", "oldest", "most recent",
  *      "system", or a saved preference: a guessed organization writes a
  *      person's work into the wrong tenant, which is the defect class this
  *      whole contract exists to end
@@ -54,7 +55,6 @@ import { iamDb } from '@/lib/supabase/schemas';
 export interface MemberOrganization {
   id: string;
   name: string;
-  isPersonal: boolean;
 }
 
 interface StoredActiveOrganization {
@@ -145,7 +145,7 @@ export async function listMemberOrganizations(): Promise<MemberOrganization[]> {
 
   const { data: orgRows, error: orgError } = await iamDb()
     .from('organizations')
-    .select('id,name,is_personal')
+    .select('id,name')
     .in('id', ids);
   if (orgError) {
     log.error('auth', 'listMemberOrganizations: organization read failed', orgError);
@@ -154,7 +154,6 @@ export async function listMemberOrganizations(): Promise<MemberOrganization[]> {
   return (orgRows ?? []).map((row) => ({
     id: String((row as { id: unknown }).id),
     name: String((row as { name?: unknown }).name ?? 'Untitled organization'),
-    isPersonal: (row as { is_personal?: unknown }).is_personal === true,
   }));
 }
 
