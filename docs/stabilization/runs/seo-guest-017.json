@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "run_id": "seo-guest-017",
+  "feature_id": "EXT-F-1008",
+  "status": "unverified",
+  "source": {
+    "result_path": "test-results/seo-guest-acceptance.json",
+    "result_sha256": "2e531f72ec7be6549aa0aa17f111cd145956eaa221f2f00df8f0ffa6190333dd",
+    "guard_log_path": "/tmp/matrx-seo-guest-017.log",
+    "guard_log_sha256": "dae969edb842e2775bffa9999520aa67503231e92b96d4f349cdd8403d069da3"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T21:56:33.471Z",
+    "child_exit_at": "2026-09-26T21:56:47.781Z",
+    "child_exit_code": 1
+  },
+  "acceptance": {
+    "passing_subtargets_before_failure": 16,
+    "unverified_subtargets_before_failure": 1,
+    "failure_stage": "metadata_fixture_schema_outbound_activation",
+    "door_activation_diagnostic": {
+      "group": "structured_data",
+      "candidateCount": 1,
+      "destinationMatched": true,
+      "opensNewTab": true,
+      "sampleFailure": "position_stability",
+      "stableHitSamplesBeforeFailure": 1,
+      "roundedAnchorCenters": [[54, 230], [54, 230], [54, 231]],
+      "allSamplesHitTarget": true,
+      "allSamplesHadPositiveArea": true,
+      "pointerPressReturned": false,
+      "pointerReleaseReturned": false,
+      "newPageObserved": false,
+      "sourcePageStillOpen": true,
+      "sourceUrlUnchanged": true,
+      "privateScreenshot": "test-results/seo-guest-door-failure-7d80b989-1bb9-4027-a3a2-8b3544d34b18.png"
+    }
+  },
+  "interpretation": "The failure is in the acceptance harness before pointer input: a unique, correct, hittable anchor moved about one pixel between two samples, and the helper immediately asserted failure. This does not establish a product defect. The private screenshot and raw acceptance output remain ignored and were not committed."
+}

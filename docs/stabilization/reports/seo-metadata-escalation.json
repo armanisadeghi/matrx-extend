@@ -2,14 +2,14 @@
   "schema_version": 1,
   "feature_id": "EXT-F-1008",
   "status": "source_diagnostic_ready_for_review",
-  "latest_receipt": "docs/stabilization/runs/seo-guest-016.json",
-  "finding": "Run 016 isolated the optional Airbnb title mismatch: the public title captured after load and the public title sampled during the wait were identical, while the automatic SEO view retained another Airbnb title. The pane was scoped, offered Re-audit, and showed no error. SeoView starts its automatic audit once on URL change and offers manual Re-audit for same-URL refresh; the code does not await the page load event before the automatic capture. This timing is consistent with the mismatch but does not prove the exact moment the page title changed or establish a product defect. Run 015 separately failed before schema-link mouse input; its geometry cause remains open.",
-  "source_change": "The optional fixture now waits only for the correct public URL, scoped SEO pane, enabled Re-audit, and no error, and records the automatic title as unverified point-in-time evidence. It then clicks Re-audit with trusted input and retains the strict exact title wait, independent public DOM pre/post stability assertion, and exact metadata/detail checks. The schema-link geometry and private screenshot diagnostic remain intact. No timeout or final assertion was relaxed.",
+  "latest_receipt": "docs/stabilization/runs/seo-guest-017.json",
+  "finding": "Run 016 isolated a stable post-load public title differing from the automatic SEO snapshot. Run 017 passed the subsequent manual title and detail checks, then failed in the acceptance harness before clicking Structured data: all three anchor samples found the unique expected, hittable, positive-area link, but its rounded center shifted from y=230 to y=231 between the last two samples. The helper asserted immediately on that transient position change. No mouse input occurred, so run 017 does not establish a product link defect.",
+  "source_change": "The optional fixture continues to record the automatic title as unverified point-in-time evidence and requires exact title, public DOM stability, and detail checks after trusted manual Re-audit. The scoped outbound anchor helper now follows the existing trusted pointer driver's three-second bounded stability rule: a moving anchor resets the consecutive stable-hit count; pointer input occurs only after two consecutive hit-tested samples within the unchanged 0.25px tolerance. Uniqueness, href, target, hit, area, and outbound navigation assertions remain, with no click retry or generic navigation-timeout increase.",
   "limits": [
     "No browser or heavy test was launched in this lane.",
-    "Run 016 never executed the manual re-audit; only a later root-owned guarded run can verify that the exact post-load title and metadata match the manually refreshed SEO view.",
-    "The schema-link anchor failure from run 015 remains unresolved until a later failing sample and private screenshot identify the obstruction or movement.",
+    "Run 017's failure was within the browser acceptance sampler, and the root-owned run 018 is needed to verify the bounded stability correction and real outbound navigation.",
+    "A pure unit test of the consecutive-sample arithmetic would mirror this small helper without exercising real DOM movement or CDP hit-testing; the guarded native acceptance is the meaningful regression check.",
     "The built extension version and binary digest are not recorded in this runner output; this source-only diagnosis does not assert a new build attribution."
   ],
-  "next_action": "Independent source review, then root-owned bounded browser run 017. Preserve runs 014-016; require the exact manual metadata assertions, and inspect the safe anchor-sample fields and private screenshot on any repeated schema-link failure."
+  "next_action": "Independent source review, then root-owned bounded browser run 018. Preserve runs 014-017; require the exact manual metadata and outbound-link assertions."
 }

@@ -692,11 +692,18 @@ async function activateSeoLink(panel, page, groupName, expectedHref) {
     assert.equal(first.href, expectedHref, `${groupName} anchor points to public DOM destination`);
     assert.equal(first.target, '_blank', `${groupName} opens in a new tab`);
     let previous = first;
-    for (let index = 0; index < 2; index += 1) {
+    // Match the trusted pointer driver's bounded stability rule: motion resets
+    // consecutive samples, but never relaxes hit-testing or the 0.25px limit.
+    const stableDeadline = Date.now() + 3000;
+    do {
       await new Promise((resolveWait) => setTimeout(resolveWait, 50));
       diagnostic.sampleFailure = 'followup_sample_unavailable';
       const current = await sample();
       diagnostic.samples.push(safeSample(current));
+      const positionStable =
+        current?.count === 1 &&
+        Math.abs(previous.x - current.x) < 0.25 &&
+        Math.abs(previous.y - current.y) < 0.25;
       diagnostic.sampleFailure =
         current?.count !== 1
           ? 'followup_candidate_count'
@@ -704,18 +711,17 @@ async function activateSeoLink(panel, page, groupName, expectedHref) {
             ? 'hit'
             : !(current.width > 0 && current.height > 0)
               ? 'area'
-              : Math.abs(previous.x - current.x) >= 0.25 || Math.abs(previous.y - current.y) >= 0.25
+              : !positionStable
                 ? 'position_stability'
                 : null;
       assert.equal(current?.hit, true, `${groupName} link is unobstructed for real pointer`);
       assert.ok(current.width > 0 && current.height > 0, `${groupName} link has a click area`);
-      assert.ok(
-        Math.abs(previous.x - current.x) < 0.25 && Math.abs(previous.y - current.y) < 0.25,
-        `${groupName} link remains stable`,
-      );
-      diagnostic.stableHitSamples += 1;
+      diagnostic.stableHitSamples = positionStable ? diagnostic.stableHitSamples + 1 : 0;
       previous = current;
-    }
+    } while (diagnostic.stableHitSamples < 2 && Date.now() < stableDeadline);
+    if (diagnostic.stableHitSamples < 2)
+      diagnostic.sampleFailure = 'stable_hit_window_not_observed';
+    assert.equal(diagnostic.stableHitSamples, 2, `${groupName} link remains stable`);
     diagnostic.step = 'pointer_press';
     const openedPromise = page.context().waitForEvent('page', { timeout: 20000 });
     await panel.send('Input.dispatchMouseEvent', {
