@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0022",
+  "status": "prepared_unrun_source_review_required",
+  "runner": "tests/browser/source-workspace-acceptance.mjs",
+  "opt_in": "SOURCE_READONLY_SCOPE=1",
+  "scope": "An owned fresh Chrome-for-Testing profile signs in as admin through the real UI, visits the public Example page before any workspace is selected, then selects the previously approved existing workspace through Settings. The default D23 path is unchanged.",
+  "case_links": [
+    {
+      "case_id": "EXT-F-1007-T26",
+      "subtarget": "missing_workspace_recognition_and_scoped_positive_control",
+      "status": "prepared_unverified"
+    }
+  ],
+  "evidence_contract": [
+    "Before selection, the Settings picker must display Choose… with no device workspace stored. Scrape must settle on its choose-workspace unknown state, with no processed_documents GET observed during the bounded interval.",
+    "After actual UI selection, one exact canonical-identity and organization-scoped processed_documents GET must complete with HTTP 200 and an empty result, and Scrape must show not saved without a prior Source link.",
+    "The runtime report contains fixed failure stage and safe counts or boolean network outcomes, never organization or Source identifiers, request URLs, tokens, or response bodies. A branch failure attempts a private exclusive-create mode-0600 screenshot."
+  ],
+  "safety": [
+    "This opt-in branch sends no Save or Capture input and never reads, resets, replaces, or removes the original private Save checkpoint.",
+    "It uses the existing native owned-profile harness and the approved-workspace picker helper. It does not attach to a primary browser or inject auth, session, or organization storage.",
+    "The ambiguous original Save, Saved/Open Source link, and late in-flight Save cases remain open regardless of this branch's result. EXT-F-1007-T21 is not covered."
+  ],
+  "verification": {
+    "node_check": "passed",
+    "biome": "passed",
+    "browser": "not_run_in_preparation_lane"
+  }
+}

@@ -13,7 +13,14 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
-const OUTPUT = join(REPO, 'test-results', 'source-workspace-acceptance.json');
+const SOURCE_READONLY_SCOPE = process.env.SOURCE_READONLY_SCOPE === '1';
+const OUTPUT = join(
+  REPO,
+  'test-results',
+  SOURCE_READONLY_SCOPE
+    ? 'source-workspace-readonly-scope.json'
+    : 'source-workspace-acceptance.json',
+);
 const PRIVATE_CONFIG = join(REPO, 'test-results', 'd22-private-config.json');
 const ATTEMPT = join(REPO, 'test-results', 'd22-source-save-attempt.json');
 const PRIVATE_POINTER_SCREENSHOT = join(REPO, 'test-results', 'd22-save-pointer-private.png');
@@ -33,7 +40,9 @@ let stage = 'before_owned_profile';
 const report = {
   schema_version: 1,
   defect_id: 'EXT-D-0022',
-  scope: 'isolated native admin panel; at most one approved public Source save',
+  scope: SOURCE_READONLY_SCOPE
+    ? 'isolated native admin panel; read-only missing-workspace and scoped Source recognition'
+    : 'isolated native admin panel; at most one approved public Source save',
   status: 'unverified',
   build: null,
   observations: {
@@ -58,6 +67,15 @@ const report = {
       savePointerAfterPublicCapture: 'unverified',
       readOnlyAcceptance: 'unverified',
     },
+    ...(SOURCE_READONLY_SCOPE && {
+      d22Scope: {
+        noWorkspaceUi: 'unverified',
+        noWorkspaceLookup: 'unverified',
+        scopedLookup: 'unverified',
+        scopedUi: 'unverified',
+        privateScreenshot: 'not_needed',
+      },
+    }),
   },
 };
 const fail = (code) => {
@@ -235,7 +253,10 @@ async function chooseOrganization(panel, name, approvedName) {
     // generic selection failure concealed which real UI action it blocked.
     // Keep only fixed categories and counts from this credential-bearing UI.
     const pointer = error?.driverFailure;
-    report.observations.d23.organizationSelectionFailure = {
+    const diagnostics = SOURCE_READONLY_SCOPE
+      ? report.observations.d22Scope
+      : report.observations.d23;
+    diagnostics.organizationSelectionFailure = {
       step,
       driverCode: pointer?.code ?? 'non_pointer_failure',
       pointerHitTarget: pointer?.hitTarget === true,
@@ -244,7 +265,7 @@ async function chooseOrganization(panel, name, approvedName) {
       centerInAlert: pointer?.centerOccluder?.in_alert === true,
     };
     try {
-      report.observations.d23.organizationSelectionSurface = await evaluate(
+      diagnostics.organizationSelectionSurface = await evaluate(
         panel,
         `(() => {
           const settings = document.querySelector('button[role="tab"][title="Settings"]');
@@ -265,10 +286,14 @@ async function chooseOrganization(panel, name, approvedName) {
         })()`,
       );
     } catch {
-      report.observations.d23.organizationSelectionSurface = 'unavailable';
+      diagnostics.organizationSelectionSurface = 'unavailable';
     }
     try {
-      const privateScreenshot = join(REPO, 'test-results', `d23-org-selection-${randomUUID()}.png`);
+      const privateScreenshot = join(
+        REPO,
+        'test-results',
+        `${SOURCE_READONLY_SCOPE ? 'd22-scope' : 'd23-org-selection'}-${randomUUID()}.png`,
+      );
       const shot = await panel.send('Page.captureScreenshot', {
         format: 'png',
         captureBeyondViewport: false,
@@ -277,9 +302,9 @@ async function chooseOrganization(panel, name, approvedName) {
         flag: 'wx',
         mode: 0o600,
       });
-      report.observations.d23.organizationSelectionScreenshot = 'captured_private';
+      diagnostics.organizationSelectionScreenshot = 'captured_private';
     } catch {
-      report.observations.d23.organizationSelectionScreenshot = 'unavailable';
+      diagnostics.organizationSelectionScreenshot = 'unavailable';
     }
     throw error;
   }
@@ -338,6 +363,7 @@ async function scrapeState(panel) {
       savedBanner: sourceBanner,
       checkUnknown: text.includes("Couldn't check whether this page is already a Source") ||
         text.includes('Choose your organization in the AI Matrx panel'),
+      chooseWorkspace: text.includes('Choose your organization in the AI Matrx panel'),
       save: has('Save'), saved: has('Saved'),
       captureAction: has('Capture this page'),
       openSource: has('Open this Source (opens in the web app)'),
@@ -462,7 +488,7 @@ async function inspectSavePointerWithoutInput(panel) {
 // Observe the request made by the real recognition hook. Its UI can say
 // "not yet" without a request when no token exists, so the Save gate also
 // requires one scoped 200 response with an empty result for this exact URL.
-async function watchScopedLookup(panel, fixture, organizationId) {
+async function watchScopedLookup(panel, fixture, organizationId, { allowRepeated = false } = {}) {
   await panel.send('Network.enable');
   const requests = new Map();
   const expectedIdentity =
@@ -515,13 +541,134 @@ async function watchScopedLookup(panel, fixture, organizationId) {
       });
   });
   return {
-    read: () => (requests.size === 1 ? [...requests.values()][0].verdict : null),
+    read: () => {
+      const verdicts = [...requests.values()].map((request) => request.verdict);
+      if (!allowRepeated) return verdicts.length === 1 ? verdicts[0] : null;
+      if (verdicts.length === 0 || verdicts.includes(null)) return null;
+      if (verdicts.every((verdict) => verdict === 'none')) return 'none';
+      if (verdicts.every((verdict) => verdict === 'found')) return 'found';
+      return 'unknown';
+    },
     stop: () => {
       offRequest();
       offResponse();
       offFinished();
     },
   };
+}
+
+// Observe every processed_documents GET while no workspace is selected. Only
+// counts leave this function; request URLs, query IDs and auth headers do not.
+async function watchNoWorkspaceSourceLookup(panel) {
+  await panel.send('Network.enable');
+  const seen = { processedDocumentsGets: 0, unscopedGets: 0 };
+  const off = panel.on('Network.requestWillBeSent', ({ request }) => {
+    try {
+      const url = new URL(request?.url);
+      if (request?.method !== 'GET' || !url.pathname.endsWith('/processed_documents')) return;
+      seen.processedDocumentsGets += 1;
+      if (!url.searchParams.has('organization_id')) seen.unscopedGets += 1;
+    } catch {
+      // Malformed unrelated traffic never becomes evidence of a valid lookup.
+    }
+  });
+  return { read: () => ({ ...seen }), stop: off };
+}
+
+async function privateScopeScreenshot(panel) {
+  try {
+    await mkdir(join(REPO, 'test-results'), { recursive: true, mode: 0o700 });
+    const shot = await panel.send('Page.captureScreenshot', {
+      format: 'png',
+      captureBeyondViewport: false,
+    });
+    const path = join(REPO, 'test-results', `d22-scope-${randomUUID()}.png`);
+    await writeFile(path, Buffer.from(shot.data, 'base64'), { flag: 'wx', mode: 0o600 });
+    return 'captured_private';
+  } catch {
+    return 'unavailable';
+  }
+}
+
+async function runReadOnlyScope(panel, page) {
+  const fixture = FIXTURES[0];
+  const scope = report.observations.d22Scope;
+  report.mode = 'read_only_scope';
+  const approvedName = await privateApprovedOrganization();
+
+  stage = 'd22_no_workspace_ui';
+  await click(panel, 'title', 'Settings');
+  await openSection(panel, 'Organization');
+  const before = await waitFor(
+    'source_scope_no_workspace_picker',
+    () => organizationState(panel, approvedName),
+    (state) => state?.controlCount === 1 && state.displayed === 'Choose…' && !state.storedId,
+  );
+  if (before.storedId) fail('source_scope_workspace_already_selected');
+  const noWorkspaceTraffic = await watchNoWorkspaceSourceLookup(panel);
+  try {
+    stage = 'd22_no_workspace_recognition';
+    await page.goto(fixture, { waitUntil: 'load', timeout: 60_000 });
+    if (page.url() !== fixture) fail('source_scope_public_fixture_redirected');
+    await click(panel, 'title', 'Scrape');
+    await waitFor(
+      'source_scope_unknown_ui',
+      () => scrapeState(panel),
+      (state) => state?.linked && state.chooseWorkspace && !state.savedBanner && !state.openSource,
+      30_000,
+    );
+    // Absence is the behavior under test: observe a bounded quiet interval
+    // after the real panel reaches its settled unknown state.
+    await new Promise((resolveWait) => setTimeout(resolveWait, 1_500));
+    const settled = await scrapeState(panel);
+    const traffic = noWorkspaceTraffic.read();
+    scope.noWorkspaceNetwork = traffic;
+    if (!settled.linked || !settled.chooseWorkspace || settled.savedBanner || settled.openSource)
+      fail('source_scope_unknown_ui_not_settled');
+    if (traffic.unscopedGets !== 0 || traffic.processedDocumentsGets !== 0)
+      fail('source_scope_lookup_sent_without_workspace');
+    scope.noWorkspaceUi = 'choose_workspace_unknown';
+    scope.noWorkspaceLookup = 'no_processed_documents_get';
+  } finally {
+    noWorkspaceTraffic.stop();
+  }
+
+  stage = 'd22_approved_organization_selection';
+  const approved = await chooseOrganization(panel, approvedName, approvedName);
+  if (!approved.storedId) fail('source_scope_approved_org_id_unavailable');
+  report.observations.approvedExistingOrganizationSelectedByUi = true;
+
+  stage = 'd22_scoped_recognition';
+  const scopedLookup = await watchScopedLookup(panel, fixture, approved.storedId, {
+    allowRepeated: true,
+  });
+  try {
+    await page.goto(fixture, { waitUntil: 'load', timeout: 60_000 });
+    if (page.url() !== fixture) fail('source_scope_public_fixture_redirected');
+    await click(panel, 'title', 'Scrape');
+    const network = await waitFor(
+      'source_scope_scoped_200_empty_lookup',
+      scopedLookup.read,
+      (result) => result === 'none' || result === 'found' || result === 'unknown',
+      30_000,
+    );
+    scope.scopedNetwork = { exactWorkspaceLookup200Empty: network === 'none' };
+    if (network !== 'none') fail('source_scope_scoped_lookup_not_empty_200');
+    const ui = await waitFor(
+      'source_scope_not_saved_ui',
+      () => scrapeState(panel),
+      (state) => state?.linked && (state.notSaved || state.savedBanner || state.checkUnknown),
+      30_000,
+    );
+    if (!ui.notSaved || ui.savedBanner || ui.checkUnknown || ui.openSource || ui.openRecognized)
+      fail('source_scope_not_saved_ui_mismatch');
+    scope.scopedLookup = 'exact_workspace_200_empty';
+    scope.scopedUi = 'not_saved';
+  } finally {
+    scopedLookup.stop();
+  }
+  stage = 'd22_read_only_complete';
+  report.status = 'bounded_pass';
 }
 
 async function sourceIdFromRealUi(panel, page, label) {
@@ -671,6 +818,16 @@ try {
       if (!initialSettings.portAuto || !initialSettings.optionalPermissionsOff)
         fail('isolated_settings_baseline_not_intact');
       report.observations.protectedSettingsAtEntry = true;
+
+      if (SOURCE_READONLY_SCOPE) {
+        try {
+          await runReadOnlyScope(panel, page);
+        } catch (error) {
+          report.observations.d22Scope.privateScreenshot = await privateScopeScreenshot(panel);
+          throw error;
+        }
+        return;
+      }
 
       stage = 'd23_notice_before_organization_selection';
       // The initial Capture queue is read-only. A bounded condition wait
@@ -958,7 +1115,9 @@ try {
     buildAtEnd.treeSha256 !== buildAtStart.treeSha256
   )
     fail('release_build_changed_during_run');
-  report.build = { ...buildAtEnd, extensionId: nativeResult.extensionId };
+  report.build = SOURCE_READONLY_SCOPE
+    ? buildAtEnd
+    : { ...buildAtEnd, extensionId: nativeResult.extensionId };
 } catch (error) {
   report.status =
     stage === 'read_only_save_pointer_diagnostic' && report.observations.readOnlySavePointer
