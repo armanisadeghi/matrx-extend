@@ -14,8 +14,8 @@
     "EXT-F-1001-T09": "unverified: active assistance precondition unavailable",
     "EXT-F-1001-T10": "guest avatar menu identity and desktop state",
     "EXT-F-1001-T12": "admin avatar menu identity and desktop state",
-    "EXT-F-1001-T13": "partial: guest selected-view load; natural chunk failure and retry unproven",
-    "EXT-F-1001-T15": "partial: admin selected-view load; natural chunk failure and retry unproven"
+    "EXT-F-1001-T13": "partial: guest Data, SEO and Settings view headings load in their selected, linked panels; other views and natural chunk failure/retry unproven",
+    "EXT-F-1001-T15": "partial: admin Data, SEO and Settings view headings load in their selected, linked panels; other views and natural chunk failure/retry unproven"
   },
   "deferred": [
     "Chat and Pilot systematic actions are separate targets.",
@@ -23,11 +23,18 @@
     "Reload dimensions and stale-selection transition need a separate natural-state flow.",
     "No synthetic chunk failure or backend mutation is used."
   ],
+  "oracle_repair": {
+    "navigation": "The selected trigger must control and label the visible active panel.",
+    "avatar": "The guest menu must display Guest, and the admin menu must display admin@admin.com, alongside desktop status.",
+    "profile": "The opened view must display Profile, Identity, First name and its Back control.",
+    "lazy": "A pass target is recorded only for Data, SEO and Settings when its distinct view heading appears in the selected linked panel and the Suspense fallback is absent.",
+    "capture_badge": "Only observed label and badge are recorded as partial; pending-count source agreement remains unverified."
+  },
   "static_verification": {
     "node_check": "pass",
     "biome_check": "pass",
     "diff_check": "pass"
   },
   "runtime_verdict": "unverified",
-  "source_peer": "pending before root runtime"
+  "source_peer": "navigation-source-peer.json reviewed 2d93a09; repaired oracle requires fresh source peer before root runtime"
 }

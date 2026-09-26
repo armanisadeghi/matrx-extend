@@ -32,6 +32,11 @@ const ADMIN = [
   'Token broker (admin only)',
   'Debug (admin only)',
 ];
+const LAZY_VIEW_MARKERS = {
+  Data: 'Structured data',
+  SEO: 'SEO audit',
+  Settings: 'Settings',
+};
 const report = {
   schema_version: 1,
   feature_id: 'EXT-F-1001',
@@ -59,14 +64,17 @@ const report = {
 const target = (id, role, control, detail) =>
   report.targets.push({ id, role, control, status: 'pass', detail });
 
-async function selected(panel, title) {
+async function selected(panel, title, marker = null) {
   return evaluate(
     panel,
     `(() => {
     const tab = [...document.querySelectorAll('[role="tab"]')].find((el) => el.title === ${JSON.stringify(title)});
     const pane = document.querySelector('[role="tabpanel"][data-state="active"]');
     return { count: tab ? 1 : 0, selected: tab?.getAttribute('aria-selected') === 'true',
-      pane: !!pane && pane.getBoundingClientRect().height > 0,
+      linkedPaneVisible: !!pane && pane.id === tab?.getAttribute('aria-controls')
+        && pane.getAttribute('aria-labelledby') === tab?.id && pane.getBoundingClientRect().height > 0,
+      markerPresent: ${JSON.stringify(marker)} === null ? null : [...(pane?.querySelectorAll('span, h1, h2') ?? [])]
+        .some((el) => el.textContent.trim() === ${JSON.stringify(marker)}),
       fallback: !!pane?.querySelector('svg.animate-spin') && !pane?.innerText?.trim() };
   })()`,
   );
@@ -77,13 +85,23 @@ async function navigate(panel, title, role) {
   const state = await waitFor(
     `selected_${role}_${title}`,
     () => selected(panel, title),
-    (s) => s?.count === 1 && s.selected && s.pane && !s.fallback,
+    (s) => s?.count === 1 && s.selected && s.linkedPaneVisible,
   );
   target(`navigation:${role}:${title}`, role, 'EXT-F-1001-C01', state);
-  target(`lazy-load:${role}:${title}`, role, 'EXT-F-1001-C05', {
-    activePaneVisible: state.pane,
-    suspenseFallbackAbsent: !state.fallback,
-  });
+  const marker = LAZY_VIEW_MARKERS[title];
+  if (marker) {
+    const loaded = await waitFor(
+      `loaded_${role}_${title}`,
+      () => selected(panel, title, marker),
+      (s) => s?.selected && s.linkedPaneVisible && s.markerPresent && !s.fallback,
+    );
+    target(`lazy-load:${role}:${title}`, role, 'EXT-F-1001-C05', {
+      viewMarker: marker,
+      markerPresent: loaded.markerPresent,
+      linkedPaneVisible: loaded.linkedPaneVisible,
+      suspenseFallbackAbsent: !loaded.fallback,
+    });
+  }
 }
 
 async function inventory(panel) {
@@ -106,11 +124,14 @@ async function avatar(panel, role, title) {
       ?? [...document.querySelectorAll('[data-state="open"]')].find((el) => el.textContent?.includes('Desktop:'));
     const text = popover?.textContent ?? '';
     return { open: !!popover, desktop: /Desktop:\\s*(Not connected|Connected)/i.test(text),
-      guest: text.includes('Guest'), profile: [...(popover?.querySelectorAll('button') ?? [])]
+      identityMatches: ${JSON.stringify(role)} === 'guest'
+        ? [...(popover?.querySelectorAll('.font-semibold') ?? [])].some((el) => el.textContent.trim() === 'Guest')
+        : text.includes('admin@admin.com'),
+      profile: [...(popover?.querySelectorAll('button') ?? [])]
         .some((el) => el.textContent.trim() === 'Profile') };
   })()`,
       ),
-    (s) => s?.open && s.desktop,
+    (s) => s?.open && s.desktop && s.identityMatches,
   );
   assert.equal(state.profile, role === 'admin');
   target(`avatar:${role}`, role, 'EXT-F-1001-C04', state);
@@ -121,11 +142,24 @@ async function avatar(panel, role, title) {
       () =>
         evaluate(
           panel,
-          `(() => !!document.querySelector('[role="tabpanel"][data-state="active"]'))()`,
+          `(() => {
+        const pane = document.querySelector('[role="tabpanel"][data-state="active"]');
+        const text = pane?.innerText ?? '';
+        return { profileHeader: [...(pane?.querySelectorAll('span') ?? [])]
+            .some((el) => el.textContent.trim() === 'Profile'),
+          identitySection: text.includes('Identity'), firstNameField: text.includes('First name'),
+          backControl: !!pane?.querySelector('button[title="Back"]') };
+      })()`,
         ),
-      (v) => v === true,
+      (v) => v?.profileHeader && v.identitySection && v.firstNameField && v.backControl,
     );
-    target('profile:admin', role, 'EXT-F-1001-C01', { openedFromUserMenu: true });
+    target('profile:admin', role, 'EXT-F-1001-C01', {
+      openedFromUserMenu: true,
+      profileHeader: true,
+      identitySection: true,
+      firstNameField: true,
+      backControl: true,
+    });
   }
 }
 
