@@ -21595,7 +21595,9 @@
         "admin": {
           "test_status": "unverified",
           "defect_ids": [],
-          "run_ids": [],
+          "run_ids": [
+            "member-vault-access-011"
+          ],
           "retest_status": "not-run"
         }
       },
@@ -21603,6 +21605,28 @@
       "missing_items": [],
       "readiness_gaps": [
         "No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel."
+      ],
+      "runtime_evidence": [
+        {
+          "run_id": "member-vault-access-011",
+          "mode": "admin",
+          "build": "0.2.72",
+          "status": "partial",
+          "case_ids": [
+            "EXT-F-2011-T01"
+          ],
+          "control_ids": [
+            "EXT-F-2011-C04"
+          ],
+          "independent_review": "docs/stabilization/reports/member011-runtime-peer.json",
+          "accepted_subtargets": [
+            "actualadminwebandextensionsignin",
+            "approveddeviceorgselectedthroughSettings",
+            "knownstaleno-workspaceCapturedismissal",
+            "linkedactiveVaultMineandSharedwithsettledinventory"
+          ],
+          "limits": "Maskedtitlecandidatecountzero is not globalcredentialabsence, memberlogin, current-site readiness, content correctness, reload, create/edit/use or fullVaulthealth. All featurecellsremainunverified."
+        }
       ]
     },
     {
