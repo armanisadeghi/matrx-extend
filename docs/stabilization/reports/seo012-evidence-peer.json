@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "review": "seo012-evidence-peer",
+  "runtime_evidence": {
+    "run_id": "seo-guest-012",
+    "receipt": "/tmp/matrx-seo-guest-012.log",
+    "acceptance_report": "test-results/seo-guest-acceptance.json",
+    "verdict": "PARTIAL",
+    "receipt_checks": [
+      "SHA-256: resource log 288e77bdde68eb4e17e5729fed93090029ae57b91f9c3b61fe7d93f2acce55b4; acceptance JSON ebf4b0420a1643352fa31afe9a234e01a1a11083aed0be104dc23480ed11cdbb.",
+      "The wrapper log records RESOURCE_ADMITTED at 20:04:31.965Z, then childExitCode 0 and RESOURCE_JOB_EXIT at 20:04:39.747Z. Its stdout says PARTIAL seo_guest_native_batch.",
+      "The acceptance JSON has 17 targets: 16 pass and one unverified. Its status is partial, which is consistent with the wrapper output; the child exit code describes process completion, not acceptance completeness.",
+      "Runner source is tests/browser/seo-guest-acceptance.mjs at commit 436214eba226153fbc07b74beabb59da8b3f590f. The supplied run attribution says loaded extension version 0.2.73; these artifacts do not bind a binary digest."
+    ],
+    "observed_targets": [
+      "Bounded guest title/headings, navigation title replacement, manual audit, menu role gate, reload, restricted URL recovery, detail groups, canonical outbound behavior, and manual link/image/readability/performance observations are marked pass.",
+      "Manual Wikipedia link counts are 1,789 internal and 445 external; image counts are 42 total and 20 missing alt. Manual performance is 200/navigate, 595 ms, 123,751 transferred bytes.",
+      "The report marks guest_manual_hreflang_and_schema_doors_match_page unverified because unique hreflang and openable schema candidates were not exposed."
+    ],
+    "limits": [
+      "This is not a full F-1008 pass. Deferred flows and member/admin modes remain untested in this run.",
+      "Manual observed counts matching a live DOM do not establish automatic exact-data correctness; exactDataStatus is unverified and automatic performance duration is null.",
+      "Readability display population is observed; metricValueCorrectness is unverified.",
+      "The wrapper's exit 0 confirms job completion only. The acceptance report is partial.",
+      "No source-quality verdict is inferred from runtime artifacts."
+    ]
+  },
+  "source_quality_verdict": {
+    "result": "NOT_ASSESSED",
+    "note": "Kept separate from runtime evidence for the independent source-quality peer."
+  },
+  "review_scope": "Independent receipt and saved acceptance-artifact check for guest run 012. No browser, test, build, or implementation code was run or changed."
+}

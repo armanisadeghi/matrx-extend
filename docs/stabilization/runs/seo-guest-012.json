@@ -1,0 +1,53 @@
+{
+  "id": "seo-guest-012",
+  "feature_id": "EXT-F-1008",
+  "at": "2026-09-26T20:04:31.965Z",
+  "status": "partial",
+  "mode": "guest",
+  "scope": "Owned native side-panel guest SEO observations on public pages, including bounded Wikipedia detail checks.",
+  "runtime_output": "test-results/seo-guest-acceptance.json",
+  "runtime_output_sha256": "ebf4b0420a1643352fa31afe9a234e01a1a11083aed0be104dc23480ed11cdbb",
+  "resource_log": "/tmp/matrx-seo-guest-012.log",
+  "resource_log_sha256": "288e77bdde68eb4e17e5729fed93090029ae57b91f9c3b61fe7d93f2acce55b4",
+  "resource": {
+    "run_id": "seo-guest-012",
+    "admission_code": "RESOURCE_ADMITTED",
+    "admitted_at": "2026-09-26T20:04:31.965Z",
+    "child_exit_code": 0,
+    "child_signal": null,
+    "exit_at": "2026-09-26T20:04:39.747Z",
+    "wrapper_stdout": ["PARTIAL seo_guest_native_batch"],
+    "wrapper_session": "root confirmed wrapper 13454 exit 0"
+  },
+  "runtime_source": {
+    "acceptance_runner": "tests/browser/seo-guest-acceptance.mjs",
+    "acceptance_runner_commit": "436214eba226153fbc07b74beabb59da8b3f590f",
+    "built_extension_version": "0.2.73",
+    "build_attribution_limit": "The receipt and acceptance JSON do not bind an extension build digest. Version 0.2.73 is the supplied run attribution; this record does not independently establish the loaded binary identity."
+  },
+  "acceptance_result": {
+    "status": "partial",
+    "passing_subtargets": 16,
+    "unverified_subtargets": ["guest_manual_hreflang_and_schema_doors_match_page"],
+    "observed_detail": {
+      "url": "https://en.wikipedia.org/wiki/HTML",
+      "manual_link_counts": {"internal": 1789, "external": 445},
+      "manual_image_counts": {"total": 42, "missing_alt": 20},
+      "manual_performance": {"status": 200, "navigation": "navigate", "duration_ms": 595, "transfer_bytes": 123751}
+    },
+    "automatic_observations": {
+      "readability_metric_correctness": "unverified",
+      "exact_data_status": "unverified",
+      "performance_duration": null
+    }
+  },
+  "limits": [
+    "The 16 passes are bounded recorded observations; they are not a full EXT-F-1008 pass.",
+    "The automatic detail values do not establish exact-data correctness. Manual link/image counts matched the observed public DOM; automatic exactDataStatus remains unverified.",
+    "Readability was populated and explained while page text existed, but metricValueCorrectness is explicitly unverified.",
+    "The report leaves hreflang/schema doors unverified because unique, openable public candidates were absent.",
+    "Deferred T01-T14 portions and member/admin modes remain outside this run."
+  ],
+  "source_quality_verdict": "Not assessed by this runtime evidence record; source-quality review is separate.",
+  "evidence_note": "The resource log records admission and child exit metadata; the acceptance JSON separately records target results. Matching run IDs and timestamps corroborate the association, but wrapper exit 0 does not convert the acceptance status from partial to full pass."
+}
