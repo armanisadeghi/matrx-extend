@@ -281,7 +281,6 @@ async function publicNextDetailEvidence(page, response) {
       .map((node) => ({ lang: node.getAttribute('hreflang')?.trim() ?? '', href: node.href }))
       .filter((item) => item.lang && /^https?:/.test(item.href));
     const schemaTypes = new Set();
-    let jsonLdTypeCount = 0;
     for (const script of document.querySelectorAll('script[type="application/ld+json"]')) {
       try {
         JSON.parse(script.textContent, (key, value) => {
@@ -289,7 +288,6 @@ async function publicNextDetailEvidence(page, response) {
             for (const type of Array.isArray(value) ? value : [value]) {
               if (typeof type === 'string' && type.trim()) {
                 schemaTypes.add(type);
-                jsonLdTypeCount += 1;
               }
             }
           }
@@ -314,7 +312,6 @@ async function publicNextDetailEvidence(page, response) {
       bodyHasText: Boolean(bodyText.trim()),
       alternates,
       schemaTypes: [...schemaTypes],
-      jsonLdTypeCount,
       navigation: nav
         ? {
             type: nav.type,
@@ -481,8 +478,8 @@ function assertNextReadability(actual, expected) {
     'readability follows public text',
   );
   if (!expected.bodyHasText) return;
-  assert.ok(displayedCount(actual.readability.words) > 0, 'word count is measured');
-  assert.ok(displayedCount(actual.readability.sentences) > 0, 'sentence count is measured');
+  assert.ok(displayedCount(actual.readability.words) > 0, 'word count is populated');
+  assert.ok(displayedCount(actual.readability.sentences) > 0, 'sentence count is populated');
   assert.ok(
     actual.readability.score !== null && Number.isFinite(Number(actual.readability.score)),
     'Flesch score is numeric',
@@ -951,10 +948,18 @@ try {
         ...nextExpected.images,
       });
       assertNextReadability(nextDetails, nextExpected);
-      target('T09', 'guest_readability_is_measured_and_explained', {
-        publicBodyHasText: nextExpected.bodyHasText,
-        displayed: nextDetails.readability,
-      });
+      if (nextExpected.bodyHasText)
+        target('T09', 'guest_readability_display_is_populated_and_explained', {
+          publicBodyHasText: true,
+          displayed: nextDetails.readability,
+          metricValueCorrectness: 'unverified',
+        });
+      else
+        unverifiedTarget(
+          'T09',
+          'guest_readability_display_is_populated_and_explained',
+          'The public body had no text, so populated readability fields could not be exercised.',
+        );
       assertNextPerformance(nextDetails, nextExpected);
       target('T09', 'guest_performance_reflects_current_navigation', {
         pageResponseStatus: nextExpected.responseStatus,
@@ -971,7 +976,7 @@ try {
       const uniqueSchema = schemaLinks.find(
         (item) => schemaLinks.filter((other) => other.href === item.href).length === 1,
       );
-      if (uniqueAlternate && nextExpected.jsonLdTypeCount > 0 && uniqueSchema) {
+      if (uniqueAlternate && uniqueSchema) {
         enter('hreflang_outbound_activation');
         await activateSeoLink(panel, page, 'International', uniqueAlternate.href);
         enter('schema_outbound_activation');
@@ -986,7 +991,7 @@ try {
         unverifiedTarget(
           'T09',
           'guest_hreflang_and_schema_doors_match_page',
-          'The public DOM did not expose unique hreflang and JSON-LD schema door candidates.',
+          'The public DOM did not expose unique hreflang and openable schema door candidates.',
         );
       }
       advance('next_detail_batch_observed', {
