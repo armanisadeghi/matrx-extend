@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "report_id": "admin-debug-filter-matrix",
+  "observed_at": "2026-09-26T10:36:19Z",
+  "status": "partial",
+  "feature_id": "EXT-F-1005",
+  "run": "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+  "case_results": {
+    "EXT-F-1005-T54": "pass",
+    "EXT-F-1005-T25": "pass",
+    "EXT-F-1005-T26": "unverified",
+    "EXT-F-1005-T27": "unverified",
+    "EXT-F-1005-T28": "unverified",
+    "EXT-F-1005-T29": "pass",
+    "EXT-F-1005-T30": "pass",
+    "EXT-F-1005-T31": "unverified",
+    "EXT-F-1005-T32": "unverified",
+    "EXT-F-1005-T33": "unverified",
+    "EXT-F-1005-T34": "unverified",
+    "EXT-F-1005-T35": "unverified",
+    "EXT-F-1005-T36": "pass",
+    "EXT-F-1005-T37": "unverified",
+    "EXT-F-1005-T38": "pass",
+    "EXT-F-1005-T55": "pass",
+    "EXT-F-1005-T41": "pass",
+    "EXT-F-1005-T42": "unverified",
+    "EXT-F-1005-T43": "unverified"
+  },
+  "summary": "With a stable 132-event set, positive source filters removed and restored auth (2), api (8), scrape (1), desktop (63), msg (56), and sys (2) events; other displayed sources remained. No current rows matched stream, pilot-stream, pilot, desktop-ws-offscreen, supabase, frontend-bridge, audio, sw, or ui, so those cases remain unverified. The info filter removed 126 events and success removed six; warn and error had no current positive rows and remain unverified. No reproducible defect was found.",
+  "defects": [],
+  "ui_stop": true
+}

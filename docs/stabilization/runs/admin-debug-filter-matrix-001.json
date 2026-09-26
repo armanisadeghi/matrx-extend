@@ -1,0 +1,175 @@
+{
+  "id": "admin-debug-filter-matrix-001",
+  "at": "2026-09-26T10:36:19Z",
+  "status": "partial",
+  "lease": {
+    "id": "admin-debug-filter-matrix-001",
+    "owner": "root-held native browser lease, session 74867"
+  },
+  "feature_id": "EXT-F-1005",
+  "build": {
+    "extension_id_observed_in_chrome": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version_observed_in_chrome": "0.2.58",
+    "unpacked_path_observed_in_chrome": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "reload_cycle": "The currently loaded native Chrome extension still matched the assigned ID and 0.2.58 build; no reload or build change was needed."
+  },
+  "identity": {
+    "account": "admin@admin.com",
+    "role": "ADMIN",
+    "organization": "original selected organization verified unchanged after restoring Settings"
+  },
+  "preconditions": {
+    "subview": "Debug > Log",
+    "search": "empty",
+    "sources": "all selected",
+    "levels": "all selected",
+    "initial_event_count": 132,
+    "feed": "paused during the matrix to stabilize counts; resumed for cleanup"
+  },
+  "cases": [
+    {
+      "id": "EXT-F-1005-T54",
+      "status": "pass",
+      "expected": "Turning auth off removes only auth rows; turning it back on restores them without changing unrelated source filters.",
+      "actual": "Count moved 132 → 130 → 132. Other source rows remained displayed while auth was off.",
+      "evidence": "The selected auth pill removed two rows and restored the full set when re-enabled."
+    },
+    {
+      "id": "EXT-F-1005-T25",
+      "status": "pass",
+      "expected": "Turning api off removes only api rows; turning it back on restores them without changing unrelated source filters.",
+      "actual": "Count moved 132 → 124 → 132. Other source rows remained displayed while api was off.",
+      "evidence": "The selected api pill removed eight rows and restored the full set when re-enabled."
+    },
+    {
+      "id": "EXT-F-1005-T26",
+      "status": "unverified",
+      "expected": "Turning stream off removes stream rows; turning it back on restores them without changing unrelated source filters.",
+      "actual": "Count remained 132 when toggled off and returned to 132 when re-enabled; no stream rows were present in the current event set.",
+      "evidence": "Pill interaction was exercised; no positive stream rows were available to verify row removal/restoration."
+    },
+    {
+      "id": "EXT-F-1005-T27",
+      "status": "unverified",
+      "expected": "Turning pilot-stream off removes pilot-stream rows; turning it back on restores them without changing unrelated source filters.",
+      "actual": "Count remained 132 when toggled off and returned to 132 when re-enabled; no pilot-stream rows were present in the current event set.",
+      "evidence": "Pill interaction was exercised; no positive pilot-stream rows were available to verify row removal/restoration."
+    },
+    {
+      "id": "EXT-F-1005-T28",
+      "status": "unverified",
+      "expected": "Turning pilot off removes pilot rows; turning it back on restores them without changing unrelated source filters.",
+      "actual": "Count remained 132 when toggled off and returned to 132 when re-enabled; no pilot rows were present in the current event set.",
+      "evidence": "Pill interaction was exercised; no positive pilot rows were available to verify row removal/restoration."
+    },
+    {
+      "id": "EXT-F-1005-T29",
+      "status": "pass",
+      "expected": "Turning scrape off removes only scrape rows; turning it back on restores them without changing unrelated source filters.",
+      "actual": "Count moved 132 → 131 → 132. Other source rows remained displayed while scrape was off.",
+      "evidence": "The selected scrape pill removed one row and restored the full set when re-enabled."
+    },
+    {
+      "id": "EXT-F-1005-T30",
+      "status": "pass",
+      "expected": "Turning desktop off removes only desktop rows; turning it back on restores them without changing unrelated source filters.",
+      "actual": "Count moved 132 → 69 → 132. Rows from other sources remained displayed while desktop was off.",
+      "evidence": "The selected desktop pill removed 63 rows and restored the full set when re-enabled."
+    },
+    {
+      "id": "EXT-F-1005-T31",
+      "status": "unverified",
+      "expected": "Turning desktop-ws-offscreen off removes its rows; turning it back on restores them without changing unrelated source filters.",
+      "actual": "Count remained 132 when toggled off and returned to 132 when re-enabled; no desktop-ws-offscreen rows were present in the current event set.",
+      "evidence": "Pill interaction was exercised; no positive matching rows were available to verify row removal/restoration."
+    },
+    {
+      "id": "EXT-F-1005-T32",
+      "status": "unverified",
+      "expected": "Turning supabase off removes its rows; turning it back on restores them without changing unrelated source filters.",
+      "actual": "Count remained 132 when toggled off and returned to 132 when re-enabled; no supabase rows were present in the current event set.",
+      "evidence": "Pill interaction was exercised; no positive matching rows were available to verify row removal/restoration."
+    },
+    {
+      "id": "EXT-F-1005-T33",
+      "status": "unverified",
+      "expected": "Turning frontend-bridge off removes its rows; turning it back on restores them without changing unrelated source filters.",
+      "actual": "Count remained 132 when toggled off and returned to 132 when re-enabled; no frontend-bridge rows were present in the current event set.",
+      "evidence": "Pill interaction was exercised; no positive matching rows were available to verify row removal/restoration."
+    },
+    {
+      "id": "EXT-F-1005-T34",
+      "status": "unverified",
+      "expected": "Turning audio off removes its rows; turning it back on restores them without changing unrelated source filters.",
+      "actual": "Count remained 132 when toggled off and returned to 132 when re-enabled; no audio rows were present in the current event set.",
+      "evidence": "Pill interaction was exercised; no positive matching rows were available to verify row removal/restoration."
+    },
+    {
+      "id": "EXT-F-1005-T35",
+      "status": "unverified",
+      "expected": "Turning sw off removes its rows; turning it back on restores them without changing unrelated source filters.",
+      "actual": "Count remained 132 when toggled off and returned to 132 when re-enabled; no sw rows were present in the current event set.",
+      "evidence": "Pill interaction was exercised; no positive matching rows were available to verify row removal/restoration."
+    },
+    {
+      "id": "EXT-F-1005-T36",
+      "status": "pass",
+      "expected": "Turning msg off removes only msg rows; turning it back on restores them without changing unrelated source filters.",
+      "actual": "Count moved 132 → 76 → 132. Other source rows remained displayed while msg was off.",
+      "evidence": "The selected msg pill removed 56 rows and restored the full set when re-enabled."
+    },
+    {
+      "id": "EXT-F-1005-T37",
+      "status": "unverified",
+      "expected": "Turning ui off removes its rows; turning it back on restores them without changing unrelated source filters.",
+      "actual": "Count remained 132 when toggled off and returned to 132 when re-enabled; no ui rows were present in the current event set.",
+      "evidence": "Pill interaction was exercised; no positive matching rows were available to verify row removal/restoration."
+    },
+    {
+      "id": "EXT-F-1005-T38",
+      "status": "pass",
+      "expected": "Turning sys off removes only sys rows; turning it back on restores them without changing unrelated source filters.",
+      "actual": "Count moved 132 → 130 → 132. Other source rows remained displayed while sys was off.",
+      "evidence": "The selected sys pill removed two rows and restored the full set when re-enabled."
+    },
+    {
+      "id": "EXT-F-1005-T55",
+      "status": "pass",
+      "expected": "Turning info off removes only info events; turning it back on restores them while other levels remain selected.",
+      "actual": "Count moved 132 → 6 → 132. The remaining six rows show other-level events persisted while info was off.",
+      "evidence": "The selected info pill removed 126 rows and restored the full set when re-enabled."
+    },
+    {
+      "id": "EXT-F-1005-T41",
+      "status": "pass",
+      "expected": "Turning success off removes only success events; turning it back on restores them while other levels remain selected.",
+      "actual": "Count moved 132 → 126 → 132. The remaining 126 rows show other-level events persisted while success was off.",
+      "evidence": "The selected success pill removed six rows and restored the full set when re-enabled."
+    },
+    {
+      "id": "EXT-F-1005-T42",
+      "status": "unverified",
+      "expected": "Turning warn off removes warn events; turning it back on restores them while other levels remain selected.",
+      "actual": "Count remained 132 when toggled off and returned to 132 when re-enabled; no warn events were present in the current event set.",
+      "evidence": "Pill interaction was exercised; no positive warn events were available to verify row removal/restoration."
+    },
+    {
+      "id": "EXT-F-1005-T43",
+      "status": "unverified",
+      "expected": "Turning error off removes error events; turning it back on restores them while other levels remain selected.",
+      "actual": "Count remained 132 when toggled off and returned to 132 when re-enabled; no error events were present in the current event set.",
+      "evidence": "Pill interaction was exercised; no positive error events were available to verify row removal/restoration."
+    }
+  ],
+  "cleanup": {
+    "search": "empty",
+    "sources": "all selected",
+    "levels": "all selected",
+    "feed": "resumed; count grew to 136 as four new events arrived",
+    "subview": "Log",
+    "outer_tab": "Settings",
+    "identity": "admin@admin.com / ADMIN; original selected organization remained unchanged",
+    "restricted_actions": "No clear, export, clipboard, backend/model/preference flag changes, credentials, or Chat/Pilot actions.",
+    "ui_stop": true
+  }
+}
