@@ -25,6 +25,7 @@ const {
 } = require('./vault-7356-reconciliation.cjs');
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
 const { assertVaultExtensionLifecycleVerdict } = require('./vault-extension-lifecycle-verdict.cjs');
+const { runOwnedBrowserRestart } = require('./vault-extension-browser-restart-acceptance.cjs');
 const {
   inspectIdentity,
   sameLifecycleIdentity,
@@ -769,6 +770,64 @@ const receiptItemByKey = new Map();
 const createKeys = new Set();
 const createdIds = new Set();
 let baselineIds = new Set();
+
+const sha256Value = (value) => crypto.createHash('sha256').update(String(value)).digest('hex');
+const escapeRegExp = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+async function ownedBrowserProcess({ candidateProfile, executablePath, launchOptions }) {
+  const lock = await fs.readlink(path.join(candidateProfile, 'SingletonLock')).catch(() => null);
+  const pidMatch = /-(\d+)$/.exec(lock || '');
+  assert(pidMatch, 'browser_restart_singleton_lock_missing');
+  const browserPid = Number(pidMatch[1]);
+  assert(Number.isSafeInteger(browserPid) && browserPid > 1, 'browser_restart_pid_invalid');
+  let command;
+  let args;
+  try {
+    [{ stdout: command }, { stdout: args }] = await Promise.all([
+      execFileAsync('ps', ['-p', String(browserPid), '-o', 'comm='], {
+        timeout: 5000,
+        maxBuffer: 32768,
+      }),
+      execFileAsync('ps', ['-p', String(browserPid), '-o', 'args='], {
+        timeout: 5000,
+        maxBuffer: 32768,
+      }),
+    ]);
+  } catch {
+    throw new Error('browser_restart_owned_process_missing');
+  }
+  const observedExecutable = command.trim();
+  const observedArgs = args.trim();
+  const profileArgument = new RegExp(
+    `(?:^|[\\s\\0])--user-data-dir=${escapeRegExp(candidateProfile)}(?=$|[\\s\\0])`,
+  );
+  assert(observedExecutable === executablePath, 'browser_restart_executable_mismatch');
+  assert(profileArgument.test(observedArgs), 'browser_restart_profile_argument_missing');
+  for (const argument of launchOptions.args || [])
+    assert(observedArgs.includes(argument), 'browser_restart_launch_argument_missing');
+  return { browserPid, executable: observedExecutable, args: observedArgs };
+}
+
+async function verifyOwnedBrowserProcess({ profile: candidateProfile, launchOptions, browserPid }) {
+  const observed = await ownedBrowserProcess({
+    candidateProfile,
+    executablePath: launchOptions.executablePath,
+    launchOptions,
+  });
+  return observed.browserPid === browserPid;
+}
+
+async function verifyBrowserProcessExited(browserPid) {
+  try {
+    await execFileAsync('ps', ['-p', String(browserPid), '-o', 'pid='], {
+      timeout: 5000,
+      maxBuffer: 1024,
+    });
+    return false;
+  } catch (error) {
+    return error?.code === 1;
+  }
+}
 
 function persist() {
   syncFs.mkdirSync(root, { recursive: true, mode: 0o700 });
@@ -1692,7 +1751,7 @@ async function attachPanelSession(cdp, targetId) {
 async function openGenuineSidePanel(
   extensionId,
   popup,
-  { existing = false, previousTargetId } = {},
+  { existing = false, previousTargetId, browserContext = context, workerFacade = worker } = {},
 ) {
   if (!existing) {
     await popup.bringToFront();
@@ -1701,7 +1760,7 @@ async function openGenuineSidePanel(
   let contexts = [];
   if (!previousTargetId) {
     for (let attempt = 0; attempt < 30; attempt += 1) {
-      contexts = await worker.evaluate(() =>
+      contexts = await workerFacade.evaluate(() =>
         chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }),
       );
       if (
@@ -1714,9 +1773,9 @@ async function openGenuineSidePanel(
     }
     assert(contexts.length === 1 && contexts[0].tabId === -1, 'real_side_panel_missing');
   }
-  const host = context.pages()[0];
+  const host = browserContext.pages()[0];
   assert(host, 'cdp_host_missing');
-  const cdp = await context.newCDPSession(host);
+  const cdp = await browserContext.newCDPSession(host);
   let target;
   let panel;
   try {
@@ -3048,6 +3107,9 @@ async function materializedPassword(id) {
       recovery7356: await sha256(path.join(__dirname, 'vault-7356-reconciliation.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
+      browserRestart: await sha256(
+        path.join(__dirname, 'vault-extension-browser-restart-acceptance.cjs'),
+      ),
     };
     // A known local canonical-cleanup drift cannot create a durable run or
     // spend authentication work. Recheck it again with the baseline payload
@@ -3198,8 +3260,191 @@ async function materializedPassword(id) {
         checkpoint,
         proof,
       });
+      // A browser restart must start a distinct owned Chrome process from the
+      // same disposable profile. The helper closes the initial browser and its
+      // journal before launch; on success this runner becomes the sole owner of
+      // the replacement for the ordinary final cleanup below.
+      const configuredExecutable = process.env.MATRX_VAULT_CANARY_CHROME_EXECUTABLE;
+      const restartExecutable = configuredExecutable || chromium.executablePath();
+      const restartLaunchOptions = {
+        headless: headlessNoClipboardMode,
+        executablePath: restartExecutable,
+        ...(edgeBrowserMode ? { ignoreDefaultArgs: ['--disable-extensions'] } : {}),
+        args: [
+          ...(headlessNoClipboardMode ? ['--headless=new'] : []),
+          ...(isolatedHeadlessClipboard || edgeBrowserMode ? ['--enable-automation'] : []),
+          ...(edgeBrowserMode ? ['--enable-extensions'] : []),
+          '--remote-debugging-address=127.0.0.1',
+          '--remote-debugging-port=0',
+          `--disable-extensions-except=${extension}`,
+          `--load-extension=${extension}`,
+        ],
+      };
+      const initialBrowser = await ownedBrowserProcess({
+        candidateProfile: profile,
+        executablePath: restartExecutable,
+        launchOptions: restartLaunchOptions,
+      });
+      const restartInitialTarget = (await rawCdp.send('Target.getTargets')).targetInfos.filter(
+        (target) => target.type === 'service_worker' && target.url === workerUrl,
+      );
+      assert(restartInitialTarget.length === 1, 'browser_restart_initial_worker_ambiguous');
+      const initialPanelTargetId = realPanel.targetId;
+      const restartCustody = {
+        profileSha256: sha256Value(profile),
+        executableSha256: sha256Value(restartExecutable),
+        initial: {
+          browserPid: initialBrowser.browserPid,
+          cdpOwnerVerified: rawCdp.ownerVerified === true,
+          workerTargetId: restartInitialTarget[0].targetId,
+          panelTargetId: initialPanelTargetId,
+        },
+        replacement: null,
+      };
+      proof.lifecycle.browserRestartCustody = restartCustody;
+      assert(restartCustody.initial.cdpOwnerVerified, 'browser_restart_initial_cdp_unowned');
+      lifecycleLogoutObserver?.();
+      lifecycleLogoutObserver = undefined;
+      const restarted = await runOwnedBrowserRestart({
+        profile,
+        extensionId,
+        workerUrl,
+        initialContext: context,
+        initialPanel: realPanel,
+        initialWorker: worker,
+        initialWorkerTargetId: restartInitialTarget[0].targetId,
+        initialPanelTargetId,
+        initialBrowserPid: initialBrowser.browserPid,
+        initialCdp: rawCdp,
+        initialJournal: networkJournal,
+        assertOwnedProfile: async (candidateProfile) => {
+          const stat = await fs.lstat(candidateProfile).catch(() => null);
+          return (
+            path.resolve(candidateProfile) === profile &&
+            path.dirname(candidateProfile) === root &&
+            stat?.isDirectory() === true &&
+            stat.isSymbolicLink() === false
+          );
+        },
+        launchOptions: restartLaunchOptions,
+        launchOwnedPersistentContext: async ({ profile: candidateProfile, launchOptions }) => {
+          const preparedProfile = await prepareOwnedProfile(candidateProfile);
+          const replacementContext = await chromium.launchPersistentContext(
+            candidateProfile,
+            launchOptions,
+          );
+          const replacementBrowser = await ownedBrowserProcess({
+            candidateProfile,
+            executablePath: launchOptions.executablePath,
+            launchOptions,
+          });
+          return {
+            context: replacementContext,
+            browserPid: replacementBrowser.browserPid,
+            preparedProfile,
+          };
+        },
+        assertLaunchProvenance: async ({
+          profile: candidateProfile,
+          launchOptions,
+          context: candidateContext,
+          browserPid,
+        }) =>
+          candidateProfile === profile &&
+          candidateContext?.close &&
+          (await verifyOwnedBrowserProcess({
+            profile: candidateProfile,
+            launchOptions,
+            browserPid,
+          })),
+        verifyProcessExited: verifyBrowserProcessExited,
+        verifyOwnedBrowserProcess,
+        connectOwnedCdp: async (replacementContext, candidateProfile) => {
+          const replacementCdp = await connectOwnedCdp({
+            preparedProfile: Object.freeze({ profile: candidateProfile }),
+            chromeExecutable: restartExecutable,
+          });
+          const command = await replacementCdp.send('Browser.getBrowserCommandLine');
+          assert(
+            command.arguments.includes(`--user-data-dir=${candidateProfile}`) &&
+              restartLaunchOptions.args.every((argument) => command.arguments.includes(argument)),
+            'browser_restart_cdp_launch_provenance_unverified',
+          );
+          assert(replacementContext?.close, 'browser_restart_replacement_context_unowned');
+          return replacementCdp;
+        },
+        createReplacementJournal: async ({ cdp }) =>
+          createVaultNetworkJournal({
+            cdp,
+            apiOrigin: API,
+            onVaultRequest: ({ method, pathname, headers }) =>
+              journalVaultMutationRequest(`${API}${pathname}`, method, headers),
+          }),
+        acquireWorker: async (replacementContext, replacementCdp) => {
+          const replacementTarget = await waitForReplacementExtensionWorkerTarget({
+            cdp: replacementCdp,
+            workerUrl,
+            previousTargetId: restartInitialTarget[0].targetId,
+            wait,
+          });
+          assert(replacementContext?.pages, 'browser_restart_replacement_context_unowned');
+          return exactCdpWorkerFacade(replacementCdp, replacementTarget.targetId);
+        },
+        openPanel: async ({ context: replacementContext, worker: replacementWorker }) =>
+          openGenuineSidePanel(extensionId, null, {
+            existing: true,
+            previousTargetId: initialPanelTargetId,
+            browserContext: replacementContext,
+            workerFacade: replacementWorker,
+          }),
+        verifySettingsIdentity: async (_replacementWorker, replacementPanel) => {
+          await replacementPanel.click(visibleSettingsControl);
+          await replacementPanel.waitFor(
+            `document.body.innerText.includes('Settings') && document.body.innerText.includes('admin@admin.com')`,
+          );
+          return true;
+        },
+        vaultWriteCount: () => proof.vaultMutationRequests,
+        proof,
+      });
+      context = restarted.context;
+      rawCdp = restarted.cdp;
+      networkJournal = restarted.journal;
+      realPanel = restarted.panel;
+      worker = restarted.worker;
+      const replacementBrowser = await ownedBrowserProcess({
+        candidateProfile: profile,
+        executablePath: restartExecutable,
+        launchOptions: restartLaunchOptions,
+      });
+      restartCustody.replacement = {
+        browserPid: replacementBrowser.browserPid,
+        cdpOwnerVerified: rawCdp.ownerVerified === true,
+        workerTargetId: proof.lifecycle.browserRestart.replacementWorkerObserved
+          ? (await rawCdp.send('Target.getTargets')).targetInfos.find(
+              (target) => target.type === 'service_worker' && target.url === workerUrl,
+            )?.targetId
+          : null,
+        panelTargetId: realPanel.targetId,
+        journal: networkJournal.snapshot(),
+      };
+      assert(
+        restartCustody.replacement.cdpOwnerVerified,
+        'browser_restart_replacement_cdp_unowned',
+      );
+      lifecycleLogoutObserver = observeOwnedPanelLogout({
+        panel: realPanel,
+        extensionId,
+        onResponse: ({ status }) => {
+          const observed = proof.lifecycleSettingsLogoutResponses || [];
+          proof.lifecycleSettingsLogoutResponses = observed;
+          observed.push({ status, phase: proof.phase, observer: 'raw_cdp_owned_sidepanel' });
+          persist();
+        },
+      });
+      proof.lifecycleSettingsLogoutObserver = 'raw_cdp_owned_sidepanel';
       proof.lifecycle.partialDisposition =
-        'disable_enable_reload_observed_browser_restart_and_organization_switch_pending';
+        'disable_enable_reload_browser_restart_observed_organization_switch_pending';
       persist();
     } else if (setupIdentityOnlyMode) {
       const initial = await inspectIdentity(worker);
@@ -3255,6 +3500,9 @@ async function materializedPassword(id) {
       recovery7356: await sha256(path.join(__dirname, 'vault-7356-reconciliation.cjs')),
       accessibility: await sha256(path.join(__dirname, 'vault-accessibility-acceptance.cjs')),
       passwordChange: await sha256(path.join(__dirname, 'vault-password-change-acceptance.cjs')),
+      browserRestart: await sha256(
+        path.join(__dirname, 'vault-extension-browser-restart-acceptance.cjs'),
+      ),
     };
     assert(
       JSON.stringify(helperHashesBeforeWrites) === JSON.stringify(proof.helperSha256),
