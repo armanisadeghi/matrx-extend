@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "review": "seo-public-metadata-fixture",
+  "recommendation": {
+    "url": "https://www.airbnb.com/",
+    "use": "Candidate public page for a bounded manual hreflang and structured-data door observation in the guest SEO run.",
+    "why": "Its fetched public HTML contains both multiple alternate hreflang links and JSON-LD schema.org types, including distinct targets usable by the current runner's uniqueness selection."
+  },
+  "http_observation": {
+    "fetched_at": "2026-09-26",
+    "method": "Read-only HTTP GET with curl; HTML parsed locally. No browser, account, authenticated request, injection, or site modification.",
+    "airbnb": {
+      "status": 200,
+      "effective_url": "https://www.airbnb.com/",
+      "bytes": 602346,
+      "sha256": "ee8ff35827a190a46509dda83a2984513df7bd10abf0ad7e03cd9d4a527254d4",
+      "markup_evidence": {
+        "alternate_hreflang_count": 96,
+        "unique_hreflang_href_count": 95,
+        "examples": [
+          { "lang": "en", "href": "https://www.airbnb.com/" },
+          { "lang": "es-US", "href": "https://es.airbnb.com/" },
+          { "lang": "de", "href": "https://www.airbnb.de/" }
+        ],
+        "json_ld_schema_org_types": ["SearchAction", "WebSite"]
+      }
+    },
+    "previous_fixture_check": {
+      "url": "https://www.allrecipes.com/recipe/",
+      "status": 403,
+      "effective_url": "https://www.allrecipes.com/recipe/",
+      "bytes": 680324,
+      "sha256": "dcf889f2fc128cb1747d967ee5786296cbc62007c7bacbcd895bc7e21f9bf417",
+      "result": "No alternate hreflang or JSON-LD schema types found in this response; unsuitable for this bounded check."
+    }
+  },
+  "runner_fit": {
+    "runner": "tests/browser/seo-guest-acceptance.mjs",
+    "current_page": "https://en.wikipedia.org/wiki/HTML",
+    "selection": "The current door step requires a unique alternate href and a unique openable schema candidate. The observed Airbnb response has unique alternate hrefs and two schema types that SeoDetails maps to schema.org documentation links.",
+    "renderer": "src/features/seo/SeoDetails.tsx renders hreflang hrefs through OpenUrl and schema types as SchemaTypeChip; src/lib/url/openable.ts maps bare JSON-LD types to https://schema.org/<type>."
+  },
+  "limits": [
+    "HTTP markup does not prove the extension audit observes the same values after browser navigation, nor that either outbound door activates correctly.",
+    "The Airbnb response can vary by region or over time; treat this as a candidate and verify actual page DOM and extension UI in the authorized guest run.",
+    "No runner, product, acceptance, or feature-test files were changed."
+  ]
+}
