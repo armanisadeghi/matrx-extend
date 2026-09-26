@@ -1,0 +1,17 @@
+{
+  "task_id": "reset-identity-peer",
+  "lane": "independent source-only implementation/security/oracle review",
+  "reviewed_commit": "2a8fdd5",
+  "case_id": "EXT-F-1003-T51",
+  "run_reference": "docs/stabilization/runs/isolated-admin-reset-004.json",
+  "verdict_a": {
+    "status": "PARTIAL — runtime unverified",
+    "finding": "Reload oracle compares browser-computed, salted prior key/value fingerprints. Returning account/settings/other keys fail even when changed; stale guest, component and discovery cache values fail; only a valid rediscovered discovery port may retain its value after the immediate absence check. Run 004's four overlaps cannot be classified retrospectively. Cancel still asserts prior key presence and selected sentinel values, so mutation of another prior value can pass despite T51 requiring Cancel to preserve data.",
+    "required_repair": "Assert valueComparison.local/session changed === 0 and missing === 0 after Cancel, or an equivalent browser-side full prior-value comparison; then run fresh guarded real-admin acceptance."
+  },
+  "verdict_b": {
+    "status": "IMPORTANT finding; privacy review passes",
+    "finding": "No raw storage key, arbitrary value, credential, token, salt or opaque fingerprint is written to the durable receipt or console by this delta. The salted fingerprints cross CDP transiently, while the matching and fixed-category aggregation execute inside Chrome. The new comparison logic is source-backed, but the unchanged Cancel assertion does not consume its full-value result and therefore leaves a false-green path for non-sentinel data mutation. No browser, build, install, test or mutation run was performed in this lane."
+  },
+  "next_action": "Repair the Cancel value assertion without relaxing the Confirm/reload checks; fresh source re-review and guarded runtime are required before T51 can be classified pass. EXT-D-0015 remains open."
+}
