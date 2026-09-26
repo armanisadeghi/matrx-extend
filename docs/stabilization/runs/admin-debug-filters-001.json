@@ -1,0 +1,97 @@
+{
+  "id": "admin-debug-filters-001",
+  "at": "2026-09-26T10:24:43Z",
+  "status": "partial",
+  "lease": {
+    "id": "admin-debug-filters-001",
+    "owner": "root-held native browser lease, session 70616"
+  },
+  "feature_id": "EXT-F-1005",
+  "case_ids": [
+    "EXT-F-1005-T13",
+    "EXT-F-1005-T14",
+    "EXT-F-1005-T15",
+    "EXT-F-1005-T21",
+    "EXT-F-1005-T22",
+    "EXT-F-1005-T39",
+    "EXT-F-1005-T40",
+    "EXT-F-1005-T44",
+    "EXT-F-1005-T45"
+  ],
+  "build": {
+    "extension_id_observed_in_chrome": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version_observed_in_chrome": "0.2.58",
+    "unpacked_path_observed_in_chrome": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "debug_identity_version": "0.2.58",
+    "reload_cycle": "The installed native Chrome extension already matched the assigned ID and 0.2.58 target at entry; no reload was required or performed."
+  },
+  "identity": {
+    "account": "admin@admin.com",
+    "role": "ADMIN",
+    "organization": "existing selected organization remained unchanged"
+  },
+  "cases": [
+    {
+      "id": "EXT-F-1005-T13",
+      "status": "pass",
+      "evidence": "Switched Log → Bridges → Log. Both selected subviews rendered their intended content; Logs retained its current 113-row state when revisited, while Bridges showed its existing channel and health state. No bridge action was invoked."
+    },
+    {
+      "id": "EXT-F-1005-T14",
+      "status": "pass",
+      "evidence": "Search for existing message text ‘engine not found’ returned 2 rows. Search for the existing detail value ‘1.4.204’ returned 14 rows, demonstrating serialized details are searched. Clearing search restored the unfiltered set (114 rows after naturally arriving events)."
+    },
+    {
+      "id": "EXT-F-1005-T15",
+      "status": "pass",
+      "evidence": "Paused at 114 displayed rows. After a 35-second wait the feed total advanced to 115 while the displayed count stayed at 114. Resume changed the displayed count to 115 and showed the newly arrived row."
+    },
+    {
+      "id": "EXT-F-1005-T21",
+      "status": "unverified",
+      "evidence": "The current event set exposed no event-tag filter row or dynamic tag pills, so all/none and newly observed tag behavior could not be exercised. No event was created to manufacture a tag."
+    },
+    {
+      "id": "EXT-F-1005-T22",
+      "status": "unverified",
+      "criteria": {
+        "detail_expand_collapse": "pass",
+        "row_without_details_is_non_actionable": "pass",
+        "no_filter_matches_state": "pass",
+        "no_events_state": "unverified"
+      },
+      "evidence": "Expanded and collapsed an existing event with details. Clicking a row without details left the accessibility tree unchanged. Source=none showed ‘No events match the current filter.’ The distinct ‘No events yet’ state was not exercised because clearing logs is excluded."
+    },
+    {
+      "id": "EXT-F-1005-T39",
+      "status": "pass",
+      "evidence": "Source=all restored all source pills and the 113-row filtered set after the source=none check."
+    },
+    {
+      "id": "EXT-F-1005-T40",
+      "status": "pass",
+      "evidence": "Source=none deselected all source pills, reduced the row count to 0, and showed ‘No events match the current filter.’"
+    },
+    {
+      "id": "EXT-F-1005-T44",
+      "status": "pass",
+      "evidence": "Level=all showed all four level pills selected and restored the 113-row set."
+    },
+    {
+      "id": "EXT-F-1005-T45",
+      "status": "pass",
+      "evidence": "Level=none deselected all four level pills, reduced the row count to 0, and showed ‘No events match the current filter.’"
+    }
+  ],
+  "cleanup": {
+    "search": "empty",
+    "pause": "resumed",
+    "source_filters": "all selected",
+    "level_filters": "all selected",
+    "subview": "Log",
+    "expanded_rows": "collapsed",
+    "admin_identity_and_organization": "unchanged",
+    "restricted_actions": "No clear, export, copy, clipboard, environment/model/flag/override changes, or Chat/Pilot actions.",
+    "ui_stop": true
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "report_id": "admin-debug-filters",
+  "observed_at": "2026-09-26T10:24:43Z",
+  "status": "partial",
+  "feature_id": "EXT-F-1005",
+  "run": "docs/stabilization/runs/admin-debug-filters-001.json",
+  "case_results": {
+    "EXT-F-1005-T13": "pass",
+    "EXT-F-1005-T14": "pass",
+    "EXT-F-1005-T15": "pass",
+    "EXT-F-1005-T21": "unverified",
+    "EXT-F-1005-T22": "unverified",
+    "EXT-F-1005-T39": "pass",
+    "EXT-F-1005-T40": "pass",
+    "EXT-F-1005-T44": "pass",
+    "EXT-F-1005-T45": "pass"
+  },
+  "summary": "Native Chrome admin session exercised Logs/Bridges navigation, message and serialized-detail search, pause/resume, source all/none, and level all/none. Tag filters were unavailable in the current event set. T22's detail expansion, no-detail row, and no-match behavior passed; the separate no-events state remains unverified because clear-log actions were excluded.",
+  "defects": [],
+  "build_cycle": "Chrome already showed the assigned extension ID, 0.2.58, and unpacked repo path before testing; no reload was performed.",
+  "ui_stop": true
+}
