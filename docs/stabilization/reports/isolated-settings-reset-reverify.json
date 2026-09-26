@@ -1,0 +1,55 @@
+{
+  "reviewer": "/root/isolated_reset_reverify",
+  "reviewed_commits": ["80db6c2", "ed01c6f"],
+  "method": "Fresh source-only re-verification of the complete guest acceptance runner, scoped repair, native side-panel harness, Settings reset implementation, case contract, and current release receipt. No browser, build, test, or process was launched.",
+  "prior_findings": [
+    {
+      "finding": "Confirm could pass after clearing only the Settings key",
+      "status": "ADDRESSED",
+      "evidence": "A second local value is set through Desktop bridge, checked after Cancel, and required absent after Confirm and reload. Every pre-confirm local key is compared against the post-confirm keys (settings-local-reset-acceptance.mjs:163-205)."
+    },
+    {
+      "finding": "Uncontrolled session precondition and race between local and session clears",
+      "status": "ADDRESSED",
+      "evidence": "A named disposable session key is seeded and its presence checked before reset; the confirm wait requires both local and session sentinels absent before sampling all key names (settings-local-reset-acceptance.mjs:106-110, 165-193)."
+    },
+    {
+      "finding": "Version pinned to obsolete 0.2.51 artifact",
+      "status": "ADDRESSED",
+      "evidence": "The runner compares receipt and package versions, validates receipt sourceSha as an ancestor, refuses a changed SettingsView, records version/source/tree, and the harness checks unpacked tree and store zip hashes (settings-local-reset-acceptance.mjs:143-153; native-sidepanel-qa-harness.mjs:45-95). The current 0.2.51 receipt correctly refuses the current 0.2.53 package until a fresh artifact exists."
+    },
+    {
+      "finding": "Child cleanup can wait forever after signaled exit or missed exit event",
+      "status": "ADDRESSED",
+      "evidence": "Cleanup now checks signalCode, rechecks termination after listener registration, and has a bounded settlement following SIGKILL (native-sidepanel-qa-harness.mjs:253-283)."
+    }
+  ],
+  "verdict_a_acceptance": {
+    "status": "UNVERIFIED",
+    "source_assessment": "The runner is structured to use the actual native SIDE_PANEL in a fresh owned profile, exercise Cancel and Confirm with CDP pointer events, inspect local and session storage, and reload to check guest controls and System theme. The current receipt/version mismatch intentionally blocks execution before Chrome starts.",
+    "remaining_gap": "Cancel preservation checks only the session fixture key's presence, not its seeded value. A Cancel path that overwrites that value while retaining its key would pass this part of the guest contract.",
+    "cannot_verify": [
+      "No native panel execution, trusted input behavior, reset outcome, or profile cleanup was observed in this lane.",
+      "A matching 0.2.53 release receipt and artifact are not yet present; the current receipt identifies 0.2.51.",
+      "Guest mode cannot prove sign-out of an authenticated account; member and admin cases own that behavior."
+    ]
+  },
+  "verdict_b_engineering_quality": {
+    "status": "PARTIAL",
+    "passing_source_evidence": [
+      "The harness derives CDP from the newly created profile's DevToolsActivePort and correlates browser command line, lock owner, extension worker, and SIDE_PANEL context before exercising the panel.",
+      "The reset runner does not attach to an existing browser or profile. Harness cleanup targets only its spawned child and removes only its temporary profile.",
+      "Local and session key names, not credential values, enter the acceptance report."
+    ],
+    "new_breakage_or_gap": [
+      {
+        "severity": "important",
+        "location": "tests/browser/settings-local-reset-acceptance.mjs:106-110, 137-139, 174-177",
+        "issue": "The controlled session fixture has a known string value, but storageState reduces it to a Boolean. Cancel can corrupt the session value without failing. Preserve and assert the exact fixture value before and after Cancel, while keeping it out of the report."
+      }
+    ],
+    "forcing_function_limit": "No scratch mutation or return-expected proof was run; source reasoning alone cannot establish the forcing-function standard.",
+    "runtime_limit": "Playwright resolution, Chrome-for-Testing availability, selectors, CDP operations, and final cleanup remain untested in this lane."
+  },
+  "open_questions": []
+}
