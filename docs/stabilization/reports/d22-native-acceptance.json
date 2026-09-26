@@ -7,7 +7,9 @@
   "prerequisites": [
     "Root confirms the rebuilt extension is ready and grants the primary-Chrome/resource lease. The existing native-0273-reload report describes the baseline environment only; it is not evidence for D22.",
     "Use the already signed-in admin@admin.com account, its currently selected organization, the existing auto local-engine port, and existing permissions. Keep the Store extension off.",
-    "Do not sign in or out, save/delete/edit a Source, create an organization, change roles, clear browser or extension storage, or change settings. Do not navigate to an arbitrary/private URL or record private organization names or URLs."
+    "Root authorizes at most one new Source: one public Example/IANA page saved through the real Scrape UI in the explicitly approved test organization, which must already be the baseline selection. Before Save, the actual lookup for the chosen URL must definitively show not saved in that organization. If Example is already saved, try the allowed IANA alternative. If both are saved, either lookup is unknown, or the approved test organization is not already selected at entry, perform no write and mark local Saved UI proof unverified. No other writes or any delete are authorized; never work around these conditions by editing or upserting an existing Source.",
+    "Before the one Save click, create test-results/d22-source-save-attempt.json as a private mode-0600 durable checkpoint. It must not exist before the actual UI run. Reserve it and fsync both file and parent directory before clicking Save. On success, retain the actual Source ID only if it is observed in the real UI link; keep that ID and organization name out of logs and this report. If the attempt has an ambiguous outcome or checkpoint state, never click Save again.",
+    "Do not sign in or out, save any additional Source, delete/edit a Source, create an organization, change roles, clear browser or extension storage, or change settings. Do not navigate to an arbitrary/private URL or record private organization names or URLs."
   ],
   "procedure": [
     {
@@ -17,23 +19,23 @@
     },
     {
       "step": 2,
-      "action": "Open Side panel → Scrape, then Saved captures. Find an existing capture whose URL is a clearly public page on IANA, Example, or Wikipedia. Open that existing public URL in the ordinary browser tab using the existing capture entry. Do not create or save anything. If there is no suitable existing public capture, stop and report the fixture unavailable.",
-      "expected": "The page URL is public and already has an existing Source in the initially selected organization."
+      "action": "Open Side panel → Scrape. In the approved test organization, navigate the ordinary browser tab to https://example.com/ and use the real UI lookup to confirm it is definitively not saved. If it is already saved, check one clearly public IANA page. If both allowed fixtures are already saved, or either lookup is unknown, stop with no write and mark local Saved UI proof unverified. For a definitively unsaved fixture only, capture it in Scrape, then reserve and durably fsync the mode-0600 checkpoint described above before any Save click. If reservation fails or the checkpoint already exists, stop without saving. Click Save exactly once and wait for a definitive UI result. Do not use another fixture or retry after a timeout, disconnect, or unclear result.",
+      "expected": "The single authorized public Source save reaches a definitive UI result only after a definite not-saved lookup. If successful, observe the real Open this Source link and retain its actual Source ID only in the private checkpoint. If the result is ambiguous, no second Save occurs and the run is reported as ambiguous."
     },
     {
       "step": 3,
-      "action": "Return to Scrape on that same URL and wait for recognition to settle. Observe the selected organization label, recognition/check state, and any Saved/Open this Source control. Do not press Save, recapture, edit, or delete.",
-      "expected": "In the organization that already contains the Source, recognition settles to Saved for that existing Source."
+      "action": "Return to Scrape on that same URL and wait for recognition to settle. Observe the recognition/check state and the Save/Saved and Open this Source controls. Do not press Save again, recapture, edit, or delete.",
+      "expected": "The newly saved public Source is recognized as Saved and the Open this Source control points to the Source created by this run."
     },
     {
       "step": 4,
       "action": "Use the extension's explicit organization picker to select another organization already listed for this account. Keep the browser tab on the same public URL. Observe the recognition UI immediately and again after its recheck settles. Do not change membership, roles, or organization settings.",
-      "expected": "The old organization's claim and Open this Source target clear immediately. A scoped check runs for the newly selected organization; it reports not saved when that organization has no matching Source, or reports the correct existing Source if one is already there. It never continues to show the prior organization's Source."
+      "expected": "The prior claim, local Saved confirmation, and Open this Source target clear immediately. A scoped check runs for the newly selected organization; it reports not saved when that organization has no matching Source, or reports only its correct matching Source if one already exists. It never continues to show the prior organization's Source."
     },
     {
       "step": 5,
       "action": "Use the explicit picker to return to the organization confirmed to contain the existing Source, keeping the same URL open. Wait for recognition to settle.",
-      "expected": "The existing Source is recognized again under that organization, demonstrating the same-page switch recheck in both directions."
+      "expected": "The newly saved Source is recognized again under its organization, with the correct Open this Source target, demonstrating same-page switch recheck and restoration."
     },
     {
       "step": 6,
@@ -48,12 +50,13 @@
   "evidence_to_record": [
     "Actual Chrome profile and extension version/build identity as shown in the UI, plus run time.",
     "Pass/fail/unverified for each step, with sanitized observations limited to generic labels such as entry organization and comparison organization.",
-    "Whether an existing suitable public Source fixture was available; do not include its URL, Source id, or private organization names in this report.",
+    "Whether the allowed public fixture lookup definitively showed not saved before any write and whether the single authorized Save had a definitive success, refusal, or ambiguous result; do not include its URL, Source id, or private organization names in this report.",
+    "Checkpoint reservation and durability completed before the Save click; actual Source ID, if observed, stays only in the private checkpoint and never in logs or this report.",
     "Any deviation or unexpected write prompt; cancel it and stop the affected step without confirming a mutation."
   ],
-  "current_result": "Not executed. Awaiting root GO and the designated rebuilt extension/resource lease.",
+  "current_result": "Not executed. The private pre-click checkpoint does not exist yet. Awaiting root GO and the designated rebuilt extension/resource lease.",
   "limits": [
-    "No UI/browser action was performed while preparing this checklist.",
+    "No UI/browser action was performed while preparing this checklist, and the future-run checkpoint has not been created.",
     "This procedure cannot establish behavior for a missing organization unless that state is naturally reachable through the real UI without destructive setup.",
     "Do not infer final behavior from source review, unit tests, or native-0273-reload."
   ]
