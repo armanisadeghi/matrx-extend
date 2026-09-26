@@ -1,0 +1,27 @@
+{
+  "id": "management-tests-002",
+  "feature_id": "EXT-F-0003",
+  "defect_id": "EXT-D-0004",
+  "status": "pass",
+  "source_sha": "6f87da0",
+  "at": "2026-09-26T03:21:26.588Z",
+  "command": [
+    "pnpm",
+    "exec",
+    "vitest",
+    "run",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "tests/unit/supabase-management.test.ts",
+    "tests/unit/tool-db-row-validation.test.ts",
+    "tests/unit/check-migrations.test.ts",
+    "tests/unit/private-catalog-commands.test.ts"
+  ],
+  "exit_code": 0,
+  "test_files_passed": 4,
+  "tests_passed": 29,
+  "duration_seconds": 0.606,
+  "resource_invalid": false,
+  "log_sha256": "ade4a7077e4461c9d2a76915341bb2c303ec3d6558abede91b2c15bb27da798c",
+  "scope": "Focused production-helper/command boundary guards with controlled HTTP responses; live strict release verification remains pending."
+}

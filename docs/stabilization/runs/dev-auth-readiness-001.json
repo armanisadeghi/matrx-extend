@@ -1,0 +1,20 @@
+{
+  "run_id": "dev-auth-readiness-001",
+  "case_id": "EXT-F-0001-C05",
+  "test_case_id": "EXT-F-0001-T05",
+  "started_at": "2026-09-26T03:18:42Z",
+  "completed_at": "2026-09-26T03:19:56Z",
+  "status": "registration_verified_signin_unverified",
+  "method": "Read-only source inspection, authenticated Supabase Management API auth-config GET, and Supabase MCP read-only information_schema plus targeted OAuth client registration query; token loaded from ../aidream/.env in process for Management API and used only in Authorization header; no client secret columns selected.",
+  "expected_development_callback": "https://cihdmkcdjjckfhjpgoedmgfpoljebaml.chromiumapp.org/",
+  "observed_general_allowlist_match": false,
+  "observed_oauth_client_registration": {
+    "source_client_id_match": true,
+    "client_type": "public",
+    "active": true,
+    "development_callback_exact_match": true,
+    "all_source_expected_callbacks_exact_match": true
+  },
+  "actual_sign_in_proof": false,
+  "limitations": ["Mac locked; no UI sign-in or callback observation.", "OAuth client-specific exact redirect URI registration was not obtained through this authorized read path."]
+}

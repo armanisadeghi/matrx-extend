@@ -1,0 +1,68 @@
+{
+  "id": "release-real-005",
+  "feature_id": "EXT-F-0003",
+  "defect_id": "EXT-D-0005",
+  "status": "pass",
+  "source_sha": "59c94d1",
+  "candidate_sha": "760c7a1c5dba504b894dd5450b83e9fee060d065",
+  "candidate_version": "0.2.51",
+  "at": "2026-09-26T03:52:09.279Z",
+  "command": [
+    "bash",
+    "release.sh",
+    "--message",
+    "EXT-D-0002 validated release integration"
+  ],
+  "exit_code": 0,
+  "resource_invalid": false,
+  "tests_passed": 1300,
+  "tests_skipped": 3,
+  "test_files_passed": 157,
+  "test_files_skipped": 1,
+  "passed_checks": [
+    "typecheck",
+    "unit-tests",
+    "schema-routing",
+    "matrx-packages",
+    "package-twins",
+    "canonical-pickers",
+    "archived-items",
+    "archived-items-self-test",
+    "org-default-ban",
+    "org-default-ban-self-test",
+    "swallowed-refusals",
+    "migrations",
+    "tool-drift",
+    "mandate-references"
+  ],
+  "diagnosis": "reports/records-drift-diagnosis.json",
+  "publication": "Verified remote main and v0.2.51 both equal candidate; local promoted trees and both zip hashes independently match receipt.",
+  "log_sha256": "61d8136c550cc901e1807111494d0e0a6440a4d7adf96c9effe327d01cecb6ea",
+  "successful_live_reads": [
+    "docs regenerated from 82 bound definitions",
+    "migration ledger verified",
+    "tool drift completed comparison and reported one concrete inclusion mismatch"
+  ],
+  "release_receipt": {
+    "sourceSha": "760c7a1c5dba504b894dd5450b83e9fee060d065",
+    "version": "0.2.51",
+    "publishState": "pushed",
+    "storeZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.51-store.zip",
+      "sha256": "c8774b52dfb3038dab66da65bd72ab847c878a1ff29f879b0c9fde735773b680"
+    },
+    "localZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.51-local.zip",
+      "sha256": "1d3a883c654d06aa8a9d67ea7b89944bd55e647fe7a8afcde488fe5d0f4028b5"
+    },
+    "sourcePath": "/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/matrx-extend-release.ommUbf/matrx-extend/.output/chrome-mv3",
+    "destinationPath": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "destinationPaths": [
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3"
+    ],
+    "treeSha256": "b3bc1b31c99c98f3d0bd276b887d195acc311cb8470ca19f18768eadefc8b31b",
+    "fileCount": 518
+  },
+  "artifact_hash_verification": "Both zip SHA256 and both 518-file unpacked tree SHA256 match receipt; manifests0.2.51. Chrome loaded runtime not yet verified."
+}

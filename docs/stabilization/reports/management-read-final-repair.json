@@ -1,0 +1,69 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "what_changed": [
+    "Docs generator now selects and validates the same complete definition shape as the strict checker, rejects malformed rows before writing, and preserves existing docs for empty results.",
+    "Strict drift verifies declared bundle members through canonical tool.bundle + platform.associations; exact source/target types, role=member, and deleted_at null match the server ToolBundleMemberManager.",
+    "Unresolved bundle-only inclusion fails strict mode with code 3; proven nonmembership is drift code 1. A development skip is loud and never prints No drift detected.",
+    "DB-inactive advertised definitions now count as problems rather than allowing the same early clean exit.",
+    "Three previously undiscovered tests moved into tests/unit without widening Vitest discovery; command-level tests drive real command logic and Management reader while substituting only input/network/output boundaries."
+  ],
+  "verification": {
+    "executed_by_worker": [
+      "Read-only Supabase MCP query on brsgrqvjdzwihsvnfqkf returned google_email_send, google_marketing, google_workspace in the google bundle for both chrome-extension/assistant and chrome-extension/pilot.",
+      "Read canonical aidream/services/tooling/surface_resolver.py and aidream/db/tool_managers.py member filters; no database mutations.",
+      "Read-only metadata census confirmed bound parameters are JSON objects; credential_login and records $variants are objects."
+    ],
+    "not_executed": [
+      "All tests, mutation/gut checks, typechecks, builds, release, and original CLI retest remain root-owned under the resource guard.",
+      "No browser or production UI evidence from this worker."
+    ],
+    "root_commands": [
+      "pnpm exec vitest run tests/unit/supabase-management.test.ts tests/unit/tool-db-row-validation.test.ts tests/unit/check-migrations.test.ts tests/unit/private-catalog-commands.test.ts",
+      "pnpm catalog:tools:drift:strict",
+      "pnpm check:migrations --strict",
+      "pnpm docs:tools"
+    ],
+    "guard_cases": [
+      "Direct-inclusion positive control",
+      "Absent public and operator authorization",
+      "Malformed complete definition fields and nested parameter flags",
+      "Verified bundle-only inclusion",
+      "Proven missing member and unrelated bundle member",
+      "Malformed member payload",
+      "HTTP 403/500 membership refusal",
+      "Development unknown never labeled clean",
+      "Empty docs results preserve artifact",
+      "Inactive advertised definitions fail drift",
+      "Malformed migration ledger and pending migrations via actual query path"
+    ],
+    "limits": "HTTP fixtures are regression guards, not live integration proof. Tests and red/green execution are not claimed; root must run them and independent verification before defect closure."
+  },
+  "files": [
+    "scripts/_tool-db-row-validation.ts",
+    "scripts/check-tool-db-drift.ts",
+    "scripts/dump-tools-from-db.ts",
+    "scripts/_supabase-management.test.ts (moved)",
+    "scripts/_tool-db-row-validation.test.ts (moved)",
+    "scripts/check-migrations.test.ts (moved)",
+    "tests/unit/supabase-management.test.ts",
+    "tests/unit/tool-db-row-validation.test.ts",
+    "tests/unit/check-migrations.test.ts",
+    "tests/unit/private-catalog-commands.test.ts",
+    "docs/stabilization/defects/EXT-D-0004.json",
+    "docs/stabilization/reports/management-read-final-repair.json",
+    "scripts/check-migrations.ts"
+  ],
+  "open_questions": [],
+  "pending_actions": [
+    "Root guarded execution of four discovered test files and real private read commands",
+    "Root independent peer verification and release adjudication"
+  ],
+  "commit": "See exact EXT-D-0004 commit containing this report.",
+  "public_boundary_adjudication": {
+    "status": "CORRECTED_SOURCE_PENDING_ROOT_EXECUTION",
+    "finding": "CONFIRMED: successful public REST responses bypassed the private predicates. parameters:null was normalized to {} for a no-argument tool; extra malformed ledger rows were treated as harmless orphans.",
+    "fix": "Shared binding predicate now validates both transports. Public bindings, definitions, surfaces, and ledger arrays must pass their production predicates before acceptance; malformed public data falls back to independently validated operator reads or fails strict if unavailable. Docs validates bindings and definitions before writing.",
+    "tests": "Existing command guards now use the real public REST reader as well as the Management reader. New positive public catalog/ledger controls run with operator auth absent; malformed definition, binding, surface, extra ledger row, and non-array payloads fail strict and preserve docs.",
+    "execution": "No tests executed by worker. Root reported prior 29 cases and compilation passing before these edits; new cases require root guarded rerun."
+  }
+}

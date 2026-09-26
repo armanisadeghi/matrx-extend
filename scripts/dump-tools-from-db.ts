@@ -21,39 +21,18 @@
  */
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import process from 'node:process';
+import { isDbBindingRow, type DbBindingRow, isDbToolRow, type DbToolRow } from './_tool-db-row-validation';
 import { selectRowsViaManagementApi } from './_supabase-management';
 import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
 
 const EXECUTOR_NAME = 'chrome-extension';
 
-interface DbBindingRow {
-  tool_id: string;
-  executor_name: string;
-  is_active: boolean;
-}
-
-interface DbToolRow {
-  name: string;
-  description: string | null;
-  tier: string | null;
-  category: string | null;
-  admin_only: boolean | null;
-  parameters: Record<
-    string,
-    { type?: string | string[]; required?: boolean; enum?: unknown[]; default?: unknown }
-  > | null;
-  is_active: boolean | null;
-}
-
-function isRecord(row: unknown): row is Record<string, unknown> {
-  return typeof row === 'object' && row !== null;
-}
-
 async function fetchToolsViaManagementApi(): Promise<DbToolRow[]> {
   return selectRowsViaManagementApi(
-    `select distinct d.name, d.description, d.tier, d.category, d.admin_only, d.parameters, d.is_active from tool.definition d join tool.binding b on b.tool_id = d.id where b.is_active and (b.executor_name = '${EXECUTOR_NAME}' or b.executor_name like '${EXECUTOR_NAME}.%') order by d.category, d.name`,
-    (row): row is DbToolRow => isRecord(row) && typeof row.name === 'string',
+    `select distinct d.id, d.source_kind, d.name, d.description, d.tier, d.category, d.admin_only, d.parameters, d.is_active from tool.definition d join tool.binding b on b.tool_id = d.id where b.is_active and (b.executor_name = '${EXECUTOR_NAME}' or b.executor_name like '${EXECUTOR_NAME}.%') order by d.category, d.name`,
+    isDbToolRow,
   );
 }
 
@@ -62,14 +41,14 @@ function paramSummary(params: DbToolRow['parameters']): string {
   const parts = Object.entries(params).map(([name, def]) => {
     const t = def?.type;
     const type = Array.isArray(t) ? t.join('|') : (t ?? 'any');
-    const req = def?.required ? ', required' : '';
+    const req = def?.required === true ? ', required' : '';
     const en = def?.enum ? ` = ${JSON.stringify(def.enum)}` : '';
     return `\`${name}\` (${type}${req})${en}`;
   });
   return parts.join('; ');
 }
 
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
   const env = loadSupabaseEnv();
   let rows: DbToolRow[];
   try {
@@ -84,6 +63,7 @@ async function main(): Promise<void> {
       `binding?or=(executor_name.eq.${EXECUTOR_NAME},executor_name.like.${EXECUTOR_NAME}.*)&select=tool_id,executor_name,is_active`,
       'tool',
     );
+    if (!Array.isArray(bindings) || !bindings.every(isDbBindingRow)) throw new Error('Invalid public binding rows');
     const ids = [...new Set(bindings.filter((b) => b.is_active).map((b) => b.tool_id))];
     if (ids.length === 0) {
       console.warn(
@@ -95,9 +75,10 @@ async function main(): Promise<void> {
     rows = await fetchPublicJson<DbToolRow[]>(
       env.url,
       env.key,
-      `definition?id=in.${inList}&select=name,description,tier,category,admin_only,parameters,is_active&order=category.asc,name.asc`,
+      `definition?id=in.${inList}&select=id,source_kind,name,description,tier,category,admin_only,parameters,is_active&order=category.asc,name.asc`,
       'tool',
     );
+    if (!Array.isArray(rows) || !rows.every(isDbToolRow)) throw new Error('Invalid public tool definition rows');
   } catch (err) {
     try {
       rows = await fetchToolsViaManagementApi();
@@ -108,6 +89,11 @@ async function main(): Promise<void> {
       );
       return;
     }
+  }
+
+  if (rows.length === 0) {
+    console.warn('docs:tools — no verified tool definitions; leaving docs/TOOLS.generated.md untouched.');
+    return;
   }
 
   const active = rows.filter((r) => r.is_active !== false);
@@ -156,8 +142,10 @@ async function main(): Promise<void> {
   console.log(`✓ wrote ${active.length} tools to docs/TOOLS.generated.md`);
 }
 
-main().catch((err) => {
-  console.warn(
-    `docs:tools — unexpected error; docs/TOOLS.generated.md untouched. ${(err as Error).message}`,
-  );
-});
+if (resolve(process.argv[1] ?? '') === fileURLToPath(import.meta.url)) {
+  main().catch((err) => {
+    console.warn(
+      `docs:tools — unexpected error; docs/TOOLS.generated.md untouched. ${(err as Error).message}`,
+    );
+  });
+}

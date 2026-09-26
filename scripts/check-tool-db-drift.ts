@@ -48,10 +48,12 @@
  * then match code. Never push code→DB silently (Rule 7).
  */
 import process from 'node:process';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { buildToolCatalogManifest } from '../src/lib/tools/catalog';
 import { CANONICAL_SURFACE } from '../src/lib/tools/categories';
 import { selectRowsViaManagementApi } from './_supabase-management';
-import { isDbSurfaceDefaultsRow, isDbToolRow, type DbSurfaceDefaultsRow, type DbToolRow } from './_tool-db-row-validation';
+import { isDbBindingRow, type DbBindingRow, isDbBundleMemberRow, type DbBundleMemberRow, isDbSurfaceDefaultsRow, isDbToolRow, type DbSurfaceDefaultsRow, type DbToolRow } from './_tool-db-row-validation';
 import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
 
 interface LocalTool {
@@ -67,12 +69,6 @@ interface LocalTool {
     >;
     required?: string[];
   };
-}
-
-interface DbBindingRow {
-  tool_id: string;
-  executor_name: string;
-  is_active: boolean;
 }
 
 interface Drift {
@@ -104,6 +100,7 @@ async function fetchOwnedTools(
     `binding?or=(executor_name.eq.${EXECUTOR_NAME},executor_name.like.${EXECUTOR_NAME}.*)&select=tool_id,executor_name,is_active`,
     'tool',
   );
+  if (!Array.isArray(bindings) || !bindings.every(isDbBindingRow)) throw new Error('Invalid public binding rows');
   const ids = [...new Set(bindings.filter((b) => b.is_active).map((b) => b.tool_id))];
   if (ids.length === 0) return { defs: [], bindings };
   const inList = `(${ids.map((i) => `"${i}"`).join(',')})`;
@@ -113,11 +110,8 @@ async function fetchOwnedTools(
     `definition?id=in.${inList}&select=id,name,description,parameters,tier,admin_only,is_active,category,source_kind&order=name.asc`,
     'tool',
   );
+  if (!Array.isArray(defs) || !defs.every(isDbToolRow)) throw new Error('Invalid tool definition rows');
   return { defs, bindings };
-}
-
-function isRecord(row: unknown): row is Record<string, unknown> {
-  return typeof row === 'object' && row !== null;
 }
 
 async function fetchOwnedToolsViaManagementApi(): Promise<{
@@ -126,11 +120,7 @@ async function fetchOwnedToolsViaManagementApi(): Promise<{
 }> {
   const bindings = await selectRowsViaManagementApi(
     `select tool_id, executor_name, is_active from tool.binding where executor_name = '${EXECUTOR_NAME}' or executor_name like '${EXECUTOR_NAME}.%'`,
-    (row): row is DbBindingRow =>
-      isRecord(row) &&
-      typeof row.tool_id === 'string' &&
-      typeof row.executor_name === 'string' &&
-      typeof row.is_active === 'boolean',
+    isDbBindingRow,
   );
   const defs = await selectRowsViaManagementApi(
     `select distinct d.id, d.name, d.description, d.parameters, d.tier, d.admin_only, d.is_active, d.category, d.source_kind from tool.definition d join tool.binding b on b.tool_id = d.id where b.is_active and (b.executor_name = '${EXECUTOR_NAME}' or b.executor_name like '${EXECUTOR_NAME}.%') order by d.name`,
@@ -147,18 +137,37 @@ async function fetchOwnedToolsViaManagementApi(): Promise<{
  */
 async function fetchSurfaceDefaults(url: string, key: string): Promise<DbSurfaceDefaultsRow[]> {
   // Post 2026-06 canonicalization: tool_surface_defaults → tool.surface_defaults
-  return fetchPublicJson<DbSurfaceDefaultsRow[]>(
+  const rows = await fetchPublicJson<DbSurfaceDefaultsRow[]>(
     url,
     key,
     `surface_defaults?or=(surface_name.eq.${encodeURIComponent(ASSISTANT_SURFACE)},surface_name.eq.${encodeURIComponent(PILOT_SURFACE)})&select=surface_name,always_include_tools,always_include_bundles,never_include_tools`,
     'tool',
   );
+  if (!Array.isArray(rows) || !rows.every(isDbSurfaceDefaultsRow)) throw new Error('Invalid public surface rows');
+  return rows;
 }
 
 async function fetchSurfaceDefaultsViaManagementApi(): Promise<DbSurfaceDefaultsRow[]> {
   return selectRowsViaManagementApi(
     `select surface_name, always_include_tools, always_include_bundles, never_include_tools from tool.surface_defaults where surface_name in ('${ASSISTANT_SURFACE}', '${PILOT_SURFACE}')`,
     isDbSurfaceDefaultsRow,
+  );
+}
+
+/** Match the server's ToolBundleMemberManager: live tool -> tool_bundle member
+ * edges only. This is operator-only metadata, never a browser-role grant. */
+async function fetchBundleMembersViaManagementApi(): Promise<DbBundleMemberRow[]> {
+  return selectRowsViaManagementApi(
+    `select distinct b.name as bundle_name, d.name as tool_name
+     from tool.bundle b
+     left join platform.associations a on a.target_id = b.id
+       and a.source_type = 'tool' and a.target_type = 'tool_bundle'
+       and a.role = 'member' and a.deleted_at is null
+     left join tool.definition d on d.id = a.source_id
+     where exists (select 1 from tool.surface_defaults s
+       where s.surface_name in ('${ASSISTANT_SURFACE}', '${PILOT_SURFACE}')
+       and b.name = any(s.always_include_bundles))`,
+    isDbBundleMemberRow,
   );
 }
 
@@ -306,9 +315,8 @@ function compareTool(local: LocalTool, db: DbToolRow): string[] {
  * verification is loud. Exit codes: 0 clean, 1 drift, 3 could-not-verify
  * (strict only). See docs/AUDIT_2026_06_10.md P1-25.
  */
-const STRICT = process.argv.includes('--strict');
-
-async function main(): Promise<void> {
+export async function main(): Promise<number> {
+  const strict = process.argv.includes('--strict');
   // Missing publishable credentials still permits an operator read. Only when
   // BOTH read paths fail is the catalog unverified (fatal in strict mode).
   const env = loadSupabaseEnv();
@@ -336,16 +344,16 @@ async function main(): Promise<void> {
       dbSurfaces = await fetchSurfaceDefaultsViaManagementApi();
       console.log('drift-check: private tool catalog verified through Supabase Management API');
     } catch (managementError) {
-      if (STRICT) {
+      if (strict) {
         console.error(
           `drift-check (--strict): could not read the DB — FAILING. Publishable read: ${(err as Error).message}; Management API read: ${String(managementError)}`,
         );
-        process.exit(3);
+        return 3;
       }
       console.warn(
         `drift-check: could not read the DB — SKIPPING (this is NOT drift). Publishable read: ${(err as Error).message}; Management API read: ${String(managementError)}`,
       );
-      process.exit(0);
+      return 0;
     }
   }
 
@@ -374,6 +382,21 @@ async function main(): Promise<void> {
     for (const b of s.always_include_bundles ?? []) declaredBundles.add(b);
     if (s.never_include_tools?.length) {
       surfaceExcluded.set(s.surface_name, new Set(s.never_include_tools));
+    }
+  }
+
+  let bundleMembershipVerified = declaredBundles.size === 0;
+  if (declaredBundles.size) {
+    try {
+      const members = await fetchBundleMembersViaManagementApi();
+      for (const member of members) {
+        if (declaredBundles.has(member.bundle_name) && member.tool_name !== null) {
+          surfaceIncluded.add(member.tool_name);
+        }
+      }
+      bundleMembershipVerified = true;
+    } catch (error) {
+      console.warn(`drift-check: bundle membership could not be verified: ${String(error)}`);
     }
   }
 
@@ -407,7 +430,7 @@ async function main(): Promise<void> {
     // shows it to the LLM.
     if (!surfaceIncluded.has(name)) {
       // A declared bundle may well supply it — we just cannot prove it here.
-      if (declaredBundles.size) unverifiedSurface.push(name);
+      if (!bundleMembershipVerified) unverifiedSurface.push(name);
       else missingSurface.push(name);
     }
 
@@ -438,6 +461,7 @@ async function main(): Promise<void> {
   const totalProblems =
     localOnly.length +
     dbOnly.length +
+    dbInactive.length +
     drifts.length +
     missingBinding.length +
     missingSurface.length +
@@ -465,9 +489,17 @@ async function main(): Promise<void> {
   console.log(`  DB tool.surface_defaults rows:              ${dbSurfaces.length}`);
   console.log('');
 
+  // A declared bundle is not evidence that this particular tool belongs to it.
+  // Keep development non-blocking for unavailable evidence, but never label it
+  // clean or permit a strict release until membership is actually verified.
+  if (unverifiedSurface.length) {
+    console.warn(`Surface inclusion UNVERIFIED for ${unverifiedSurface.join(', ')}; declared bundles: ${[...declaredBundles].join(', ')}. Verify tool.bundle membership through platform.associations or declare direct inclusion.`);
+  }
+  if (totalProblems === 0 && unverifiedSurface.length) return strict ? 3 : 0;
+
   if (totalProblems === 0) {
     console.log('\x1b[1;92m✓ No drift detected.\x1b[0m');
-    process.exit(0);
+    return 0;
   }
 
   // ── BIG RED BANNER ───────────────────────────────────────────────────────
@@ -547,7 +579,7 @@ async function main(): Promise<void> {
 
   if (unverifiedSurface.length) {
     console.log(
-      `${YELLOW}⚠ Surface inclusion UNVERIFIED (${unverifiedSurface.length}) — not in always_include_tools, but chrome-extension/{assistant,pilot} declare bundle(s) [${[...declaredBundles].join(', ')}] whose membership the publishable key cannot read:${RESET}`,
+      `${YELLOW}⚠ Surface inclusion UNVERIFIED (${unverifiedSurface.length}) — not in always_include_tools, but chrome-extension/{assistant,pilot} declare bundle(s) [${[...declaredBundles].join(', ')}] whose membership could not be verified:${RESET}`,
     );
     for (const n of unverifiedSurface) console.log(`    ${DIM}-${RESET} ${n}`);
     console.log(
@@ -589,11 +621,16 @@ async function main(): Promise<void> {
   console.log(
     `${DIM}  - If the DB itself is wrong, change it (admin API / migration), then match code.${RESET}`,
   );
-  process.exit(1);
+  return 1;
 }
 
-main().catch((err) => {
-  console.error('drift-check: unexpected error');
-  console.error(err);
-  process.exit(2);
-});
+if (resolve(process.argv[1] ?? '') === fileURLToPath(import.meta.url)) {
+  main().then(
+    (code) => process.exit(code),
+    (err) => {
+      console.error('drift-check: unexpected error');
+      console.error(err);
+      process.exit(2);
+    },
+  );
+}

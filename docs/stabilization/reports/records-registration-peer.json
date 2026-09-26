@@ -1,0 +1,50 @@
+{
+  "review": "independent live registration verification",
+  "project_id": "brsgrqvjdzwihsvnfqkf",
+  "scope": "read-only Supabase metadata verification and canonical contract review",
+  "verdicts": {
+    "A_live_registration": "PASS: records is included exactly once on both intended Chrome surfaces, with active definition and active chrome-extension binding.",
+    "B_quality_and_doctrine": "PASS with existing doctrine debt noted: this is the smallest valid repair given no eligible records-bearing system bundle was identified; existing explicit lists already exceed the canonical S5 guidance."
+  },
+  "canonical_basis": [
+    "common-docs/systems/agents/agent-tools/STATE.md: a Chrome tool requires both an active executor binding and inclusion in always_include_tools on at least one executor surface.",
+    "common-docs/systems/agents/agent-tools/DECISIONS.md S5 prefers system bundles over large explicit always_include_tools lists; R14 permits only system bundles in surface defaults."
+  ],
+  "live_read_evidence": {
+    "query": "Read-only query joined tool.surface_defaults, tool.definition, and tool.binding for records on chrome-extension/assistant and chrome-extension/pilot.",
+    "assistant": {
+      "always_include_tools_count": 83,
+      "records_occurrences": 1,
+      "always_include_bundles": ["google"],
+      "never_include_tools": [],
+      "definition_active": true,
+      "chrome_extension_binding_active": true
+    },
+    "pilot": {
+      "always_include_tools_count": 83,
+      "records_occurrences": 1,
+      "always_include_bundles": ["google"],
+      "never_include_tools": [],
+      "definition_active": true,
+      "chrome_extension_binding_active": true
+    },
+    "bundle_check": {
+      "google_is_system": false,
+      "google_is_active": true,
+      "google_is_eligible_for_surface_defaults_under_R14": false,
+      "records_in_google": false,
+      "note": "Current repair does not modify the existing bundle reference."
+    },
+    "comparison_to_available_before_snapshot": "The diagnosis snapshot showed both lists at 82, records absent, bundles [google], exclusions empty, and the records definition and active executors already present. Current reads show only list counts and inclusion changed; current definition and Chrome binding remain active. No GRANT or definition/binding mutation was made in this lane."
+  },
+  "quality_and_limits": [
+    "Both intended surfaces have parity and existing bundle/exclusion values are preserved.",
+    "Each always_include_tools list contains 83 entries, above S5's 50-entry anti-pattern threshold. The repair adds one required inclusion but does not resolve the pre-existing list design debt; a future consolidation should use an eligible system bundle.",
+    "The referenced google bundle is user-authored (is_system=false), which conflicts with R14. It predates this repair and was left untouched.",
+    "This establishes registry exposure metadata only. It does not establish browser UI behavior or that every records action is implemented by the Chrome executor."
+  ],
+  "limitations": [
+    "Compared definition/binding status against the available pre-repair diagnosis snapshot; this lane had no independent historical database snapshot.",
+    "An exploratory read-only query against the retired tool.bundle_member relation returned relation-not-found; canonical STATE.md confirms that relation did not survive the schema split. No data was changed."
+  ]
+}

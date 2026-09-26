@@ -1,0 +1,61 @@
+{
+  "id": "guest-settings-004",
+  "feature_id": "EXT-F-1003",
+  "at": "2026-09-26T03:54:44Z",
+  "status": "blocked",
+  "scope": "Guest Settings warm/reload checks T01, T07, T22; appearance persistence T04; admin sign-in T52.",
+  "installation": {
+    "status": "unverified",
+    "reason": "Chrome could not be inspected because macOS was locked."
+  },
+  "resource": {
+    "lease_id": "guest-settings-004",
+    "owner": "coordinator-held native browser lease, session 29385",
+    "admitted": true,
+    "stop_reason": "First CUA getApp(Google Chrome) call reported Mac locked; automatic unlock failed and requested manual unlock.",
+    "ui_actions_after_block": 0,
+    "preflight_receipt": "/tmp/matrx-guest-settings-004-resource.log"
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-1003-T01",
+      "status": "blocked",
+      "reason": "Mac locked before Chrome inspection; guest warm state not observed."
+    },
+    {
+      "case_id": "EXT-F-1003-T07",
+      "status": "blocked",
+      "reason": "Mac locked before Chrome inspection; reload state not observed."
+    },
+    {
+      "case_id": "EXT-F-1003-T22",
+      "status": "blocked",
+      "reason": "Mac locked before Chrome inspection; negative org/agent/admin behavior not observed."
+    },
+    {
+      "case_id": "EXT-F-1003-T04",
+      "status": "blocked",
+      "reason": "Mac locked before Chrome inspection; System/Light/Dark appearance and persistence not observed."
+    },
+    {
+      "case_id": "EXT-F-1003-T52",
+      "status": "blocked",
+      "reason": "Mac locked before Chrome inspection; sign-in was not attempted."
+    }
+  ],
+  "evidence": [
+    "CUA native Chrome acquisition returned: Mac locked; automatic unlock could not unlock it; manually unlock before continuing.",
+    "Root observed RESOURCE_BROWSER_STOP_CONFIRMED at03:55:33.141UTC and lease process exit0 after worker stopped; worker initially copied prior-run stop fields, corrected before integration."
+  ],
+  "cleanup": {
+    "ui_started": false,
+    "settings_changed": false,
+    "auth_changed": false,
+    "temporary_tabs": 0
+  },
+  "next_action": "Unlock the Mac, then rerun from the build/extension-ID/path version gate.",
+  "resource_exit_code": 0,
+  "resource_invalid": false,
+  "resource_stop_confirmed_at": "2026-09-26T03:55:33.141Z",
+  "build_receipt": "docs/stabilization/runs/release-real-005.json"
+}

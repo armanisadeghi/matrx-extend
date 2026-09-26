@@ -30,7 +30,7 @@
   "reproducibility_count": "1/1 isolated old-script run reproduced publication after failing tests",
   "severity": "S0: red code can be published as main/tag and installed locally",
   "priority": "P0: blocks safe release of stabilization work",
-  "state": "retest-pass",
+  "state": "closed",
   "owner": "/root",
   "root_cause": "release.sh treats post-push checks as advisory findings and decouples candidate artifact promotion from their result.",
   "sibling_census": "Generation failures, merge conflicts, Store package failures, and race-rebuilt candidates share the same publication boundary and are included in the repair.",
@@ -80,16 +80,19 @@
       "from": "fixed",
       "to": "retest-pass",
       "reason": "Original red reproduction now refused in isolated fixture; failure/race/recovery checks pass. Real release-real-002 also refused publication at a failing strict gate. Integration is separately blocked by EXT-D-0003."
+    },
+    {
+      "at": "2026-09-26T03:52:09.279Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Guarded release005 passed mandatory checks and published validated760c7a1 main/tag; artifact hashes independently verified."
     }
   ],
   "resource_note": "Only root launches admitted fixture/check/build commands. An earlier direct exploratory fixture run exited zero but is invalid as campaign verification.",
   "fix_summary": "Validates exact generated/merged candidate before atomic main/tag publication; serial single-worker gates, refusal on live/unknown lock, preserved dirty work, transactional local artifact recovery.",
   "candidate_receipts": [],
   "limitations": [
-    "Isolated fixtures prove publication ordering and recovery, not actual strict remote service checks or packaging.",
-    "Real release and final integration remain pending.",
-    "EXT-L-0003 stale ZIP cleanup reporting remains an unverified nonblocking lead.",
-    "Release-real-001 invalidated by resource watchdog. Release-real-002 exposed separate guard false-positive EXT-D-0003; not a regression of publication ordering."
+    "Closure scope is this release defect; no whole-product, loaded Chrome runtime or public Store verification claimed."
   ],
   "verification_receipts": [
     "docs/stabilization/runs/release-red-001.json",
@@ -98,5 +101,7 @@
     "docs/stabilization/runs/release-worker-guard-001.json",
     "docs/stabilization/runs/integrated-regression-001.json"
   ],
-  "integration_status": "Awaiting strict green release and push; separate EXT-D-0003 gate failure prevents integration."
+  "integration_status": "Awaiting strict green release and push; separate EXT-D-0003 gate failure prevents integration.",
+  "integration_commit": "760c7a1c5dba504b894dd5450b83e9fee060d065",
+  "integration_run": "release-real-005"
 }
