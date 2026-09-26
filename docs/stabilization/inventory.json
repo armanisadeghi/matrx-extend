@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-25T22:18:35.362031+00:00",
+  "updated_at": "2026-09-26T02:03:36.014047+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "f70ecd47bd8a864bee377ddb1235219efc8eff23",
@@ -705,7 +705,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "render-retest-001",
+              "detail": "pass_original_render_repro_twice",
+              "evidence": "docs/stabilization/runs/render-retest-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1001-T14",
@@ -763,10 +771,10 @@
             "EXT-D-0001"
           ],
           "run_ids": [
-            "guest-local-001"
+            "guest-local-001",
+            "render-retest-001"
           ],
-          "retest_status": "not-run",
-          "blocking_note": "Panel load blocker; actual extension auth state not observable. No mode passes/fails inferred."
+          "retest_status": "not-run"
         },
         "member": {
           "test_status": "unverified",
@@ -774,8 +782,7 @@
             "EXT-D-0001"
           ],
           "run_ids": [],
-          "retest_status": "not-run",
-          "blocking_note": "Panel load blocker; actual extension auth state not observable. No mode passes/fails inferred."
+          "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
@@ -783,8 +790,7 @@
             "EXT-D-0001"
           ],
           "run_ids": [],
-          "retest_status": "not-run",
-          "blocking_note": "Panel load blocker; actual extension auth state not observable. No mode passes/fails inferred."
+          "retest_status": "not-run"
         }
       },
       "inventory_status": "complete",
@@ -1602,7 +1608,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "render-retest-001",
+              "detail": "pass_restored_System",
+              "evidence": "docs/stabilization/runs/render-retest-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T05",
@@ -1746,7 +1760,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "render-retest-001",
+              "detail": "pass_restored_Ask_before_acting",
+              "evidence": "docs/stabilization/runs/render-retest-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T11",
@@ -1818,7 +1840,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "render-retest-001",
+              "detail": "pass_restored_Fast",
+              "evidence": "docs/stabilization/runs/render-retest-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T14",
@@ -2466,7 +2496,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "render-retest-001",
+              "detail": "pass_persisted_after_reload_then_restored_Off",
+              "evidence": "docs/stabilization/runs/render-retest-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T41",
@@ -3164,10 +3202,10 @@
             "EXT-D-0001"
           ],
           "run_ids": [
-            "guest-local-001"
+            "guest-local-001",
+            "render-retest-001"
           ],
-          "retest_status": "not-run",
-          "blocking_note": "Panel load blocker; actual extension auth state not observable. No mode passes/fails inferred."
+          "retest_status": "not-run"
         },
         "member": {
           "test_status": "unverified",
@@ -3175,8 +3213,7 @@
             "EXT-D-0001"
           ],
           "run_ids": [],
-          "retest_status": "not-run",
-          "blocking_note": "Panel load blocker; actual extension auth state not observable. No mode passes/fails inferred."
+          "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
@@ -3184,8 +3221,7 @@
             "EXT-D-0001"
           ],
           "run_ids": [],
-          "retest_status": "not-run",
-          "blocking_note": "Panel load blocker; actual extension auth state not observable. No mode passes/fails inferred."
+          "retest_status": "not-run"
         }
       },
       "inventory_status": "complete",
@@ -6723,7 +6759,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "render-retest-001",
+              "detail": "pass_16_word_article_one_link",
+              "evidence": "docs/stabilization/runs/render-retest-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1007-T02",
@@ -6748,7 +6792,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": "render-retest-001",
+              "detail": "unverified_short_static_fixture_identical_output_inconclusive",
+              "evidence": "docs/stabilization/runs/render-retest-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1007-T03",
@@ -6823,7 +6875,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "render-retest-001",
+              "detail": "pass_preview_and_reopened_editor_no_save",
+              "evidence": "docs/stabilization/runs/render-retest-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1007-T06",
@@ -6848,7 +6908,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "render-retest-001",
+              "detail": "pass_cancel_discarded_draft_and_recapture_cleanup",
+              "evidence": "docs/stabilization/runs/render-retest-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1007-T07",
@@ -7208,10 +7276,10 @@
             "EXT-D-0001"
           ],
           "run_ids": [
-            "guest-local-001"
+            "guest-local-001",
+            "render-retest-001"
           ],
-          "retest_status": "not-run",
-          "blocking_note": "Panel load blocker; actual extension auth state not observable. No mode passes/fails inferred."
+          "retest_status": "not-run"
         },
         "member": {
           "test_status": "unverified",
@@ -7219,8 +7287,7 @@
             "EXT-D-0001"
           ],
           "run_ids": [],
-          "retest_status": "not-run",
-          "blocking_note": "Panel load blocker; actual extension auth state not observable. No mode passes/fails inferred."
+          "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
@@ -7228,8 +7295,7 @@
             "EXT-D-0001"
           ],
           "run_ids": [],
-          "retest_status": "not-run",
-          "blocking_note": "Panel load blocker; actual extension auth state not observable. No mode passes/fails inferred."
+          "retest_status": "not-run"
         }
       },
       "inventory_status": "complete",
@@ -19447,6 +19513,22 @@
         "Execution is deferred to wave D. Source control inventory does not claim chat/provider behavior; run all applicable persona cases after non-Chat/Pilot completion gate.",
         "Agent picker implementation was read from the shared @ai-matrx/agents source checkout; installed package version and live menu behavior require runtime reconciliation.",
         "Public tab label and unavailable Sneak Peek were reconciled from shared package 0.13.10 and host props; still verify picker at wave D."
+      ],
+      "unverified_leads": [
+        {
+          "id": "EXT-L-0001",
+          "summary": "Speech connection completing after unmount may orphan socket; source-review lead, runtime reproduction required.",
+          "source": "docs/stabilization/reports/render-code-review.json",
+          "state": "needs-reproduction",
+          "wave": "D"
+        },
+        {
+          "id": "EXT-L-0002",
+          "summary": "Concurrent speech starts may create duplicate sockets; source-review lead, runtime reproduction required.",
+          "source": "docs/stabilization/reports/render-code-review.json",
+          "state": "needs-reproduction",
+          "wave": "D"
+        }
       ]
     },
     {

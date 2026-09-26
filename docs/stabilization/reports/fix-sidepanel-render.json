@@ -1,0 +1,29 @@
+{
+  "defect_id": "EXT-D-0001",
+  "status": "fresh-build-passed-awaiting-browser-verification",
+  "owner_lane": "fix_sidepanel_render",
+  "root_cause": "The initial sidepanel graph included @cartesia/cartesia-js through useCartesiaSpeaker's static import. Cartesia's qs dependency loads side-channel and object-inspect. object-inspect/index.js reads require('./util.inspect').custom at module initialization, although its package declares ./util.inspect.js false for browsers. Vite represents that false browser mapping with a throwing browser-external proxy, so the optional property read crashes the whole panel before Settings or Scrape render.",
+  "evidence": [
+    "docs/stabilization/runs/guest-local-001.json captured the exact browser-externalized .custom error on two sidepanel opens from source f70ecd47.",
+    "The baseline bundle's use-agent-execution chunk imports __vite-browser-external and contains object-inspect's F=f(),I=F.custom at byte 305409.",
+    "node_modules/.pnpm/object-inspect@1.13.4/node_modules/object-inspect/util.inspect.js requires Node util.inspect; its package.json browser field maps ./util.inspect.js to false.",
+    "pnpm-lock.yaml shows @cartesia/cartesia-js@2.2.9 → qs@6.15.1 → side-channel@1.1.0 → object-inspect@1.13.4."
+  ],
+  "sibling_census": "The only direct Cartesia SDK import in extension source is src/lib/tts/useCartesiaSpeaker.ts. Other built browser externals remain to be assessed by the fresh-bundle and UI check; this report closes only the confirmed .custom crash.",
+  "change": [
+    "Load Cartesia on speech connection instead of panel module evaluation.",
+    "Map only object-inspect's optional ./util.inspect browser request to an empty virtual module during Vite resolution, so .custom is undefined as the package's browser mapping intends; no runtime compatibility module is shipped."
+  ],
+  "tradeoff": "Vite's generic browser-external proxy intentionally throws for property access, while this dependency expects absence to be a normal empty module. A narrowly scoped build resolver preserves that browser contract without polyfilling Node util or changing the Cartesia protocol. Cartesia's other Node dependencies still require a real browser import check.",
+  "fresh_build_evidence": {
+    "receipt": "docs/stabilization/runs/render-build-001.json",
+    "compile_receipt": "docs/stabilization/runs/render-compile-001.json",
+    "output": ".output/chrome-mv3-dev/chunks/cartesia-js-DP9OUaHs.js",
+    "finding": "The rebuilt Cartesia chunk has no __vite-browser-external import. Its object-inspect initialization now reads F.custom from F=(ct(),e(st)), where st=n({custom:()=>void 0}) and ct is an empty initializer. Thus the optional hook is undefined without throwing. The SDK is loaded by a dynamic import from use-agent-execution-TbE0VXos.js only when the speech connection is requested. The prior baseline chunk use-agent-execution-ChUM3C1A.js directly imported __vite-browser-external and read F.custom during module initialization.",
+    "limit": "Static emitted-graph evidence; Chrome module evaluation and audio playback are pending."
+  },
+  "verification_needed": [
+    "Coordinator-owned healthy Chrome retest: open/reopen sidepanel, navigate Settings and Scrape, then verify Cartesia module import on speech action and actual playback if an authorized session is available."
+  ],
+  "closure": "Pending build receipt, browser retest, and independent review."
+}

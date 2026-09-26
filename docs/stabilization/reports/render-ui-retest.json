@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "report_id": "render-ui-retest",
+  "run_id": "render-retest-001",
+  "at": "2026-09-26T02:01:43Z",
+  "status": "completed_with_unverified_case",
+  "summary": "The first check found stale installed 0.2.44 versus receipt 0.2.47, which was a setup mismatch. Loading the exact receipt path updated the same extension ID to 0.2.47. EXT-D-0001's error was absent on two actual sidepanel opens. Settings cases and Fast Capture passed; Scroll & capture is inconclusive on the short static fixture.",
+  "verdict_a": "Original render failure did not reproduce on candidate 0.2.47 in two actual sidepanel opens. EXT-F-1003-T04/T10/T13/T40 and EXT-F-1007-T01/T05/T06 passed. EXT-F-1007-T02 is unverified; identical short-static-page output does not prove failure. No defect drafted.",
+  "verdict_b": "Native Chrome accessibility tree and UI observations support the checked cases, extension ID, candidate version/path, guest mode, and restoration. No screenshot artifact saved. Scroll/busy progression and elapsed-time behavior were not measured; per-case timestamps are approximate to the minute.",
+  "cases": [
+    {"id":"EXT-D-0001-original-repro","status":"pass_candidate_two_clean_sidepanel_opens"},
+    {"id":"EXT-F-1003-T04","status":"pass_restored_System"},
+    {"id":"EXT-F-1003-T10","status":"pass_restored_Ask_before_acting"},
+    {"id":"EXT-F-1003-T13","status":"pass_restored_Fast"},
+    {"id":"EXT-F-1003-T40","status":"pass_persisted_after_reload_then_restored_Off"},
+    {"id":"EXT-F-1007-T01","status":"pass_16_word_article_one_link"},
+    {"id":"EXT-F-1007-T02","status":"unverified_short_static_fixture_identical_output_inconclusive"},
+    {"id":"EXT-F-1007-T05","status":"pass_preview_and_reopened_editor_no_save"},
+    {"id":"EXT-F-1007-T06","status":"pass_cancel_discarded_draft_and_recapture_cleanup"}
+  ],
+  "candidate": {"extension_id":"cihdmkcdjjckfhjpgoedmgfpoljebaml","version":"0.2.47","loaded_path":"/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev","recovery":"Load unpacked exact receipt path updated matching existing ID; Chrome confirmed loaded then Reloaded. Initial stale 0.2.44 mismatch retained in run history."},
+  "fixture_cleanup": "FIRST-TEST-EDIT and CANCEL-ME were not saved. Re-capture confirmation discarded temporary edits, restored 16-word baseline with no EDITED marker, and fixture tab was closed.",
+  "timing": {"cold_warm_elapsed_ms":"not measured"},
+  "resources": {"lease":"render-retest-001, session 46435; UI actions stopped","resource_warning_seen":false},
+  "auth_mode":"guest; visible Sign in and choose-an-agent UI; no auth changed",
+  "no_defect_created": true,
+  "required_followup":"Root owns EXT-D-0001 disposition. Scroll & capture should be evaluated on the stronger long-page fixture root is preparing."
+}
