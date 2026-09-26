@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "run_id": "member-vault-access-003",
+  "status": "unverified",
+  "resource_guard": {
+    "log_path": "/tmp/matrx-member-vault-access-003.log",
+    "log_sha256": "be12cfe35e0516f798ae063fdc27e4af6d2f68cf7d8cafd5cd88094c2641e926",
+    "admission": {
+      "at": "2026-09-26T16:30:10.064Z",
+      "code": "RESOURCE_ADMITTED"
+    },
+    "watch_events": [
+      {
+        "at": "2026-09-26T16:30:26.471Z",
+        "code": "RESOURCE_WATCH_HEALTHY"
+      },
+      {
+        "at": "2026-09-26T16:30:42.882Z",
+        "code": "RESOURCE_WATCH_UNSAFE",
+        "pressure_level": 2
+      }
+    ],
+    "exit": {
+      "at": "2026-09-26T16:30:49.059Z",
+      "code": "RESOURCE_JOB_EXIT",
+      "child_exit_code": 1,
+      "child_signal": null
+    }
+  },
+  "sanitized_runner_result": {
+    "status": "unverified",
+    "adminWebSignedIn": true,
+    "adminExtensionSignedIn": true,
+    "inventory": null,
+    "failureStage": "mine_inventory_wait",
+    "failureCategory": "stage_operation_failed",
+    "lastVaultObservation": {
+      "activePanelFound": true,
+      "vaultTabActive": true,
+      "vaultHeadingVisible": false,
+      "inventorySpinner": false,
+      "refreshSpinner": false,
+      "siteSpinner": false,
+      "signedOutPrompt": false,
+      "errorVisible": false,
+      "activeScope": "none",
+      "sharedTabAvailable": false,
+      "designatedCandidateCount": 0,
+      "designatedCandidateFillOnCount": 0
+    }
+  },
+  "member_credential_observed": false,
+  "interpretation": "Admin web and extension sign-in passed. The runner timed out during the first Vault inventory wait. The final pressure sample was unsafe but no watchdog kill occurred; the child exited with code 1. The observation did not distinguish Vault auth checking or lazy loading from selecting the wrong active tabpanel, so it does not establish a product defect."
+}

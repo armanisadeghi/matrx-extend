@@ -126,7 +126,9 @@ async function maskedInventory(panel) {
     panel,
     `(() => {
     const vaultTab = document.querySelector('button[role="tab"][title="Vault"]');
-    const active = document.querySelector('[role="tabpanel"][data-state="active"]');
+    // Radix links this trigger to its own panel. A document-wide first active
+    // tabpanel can belong to another mounted surface or a nested tab set.
+    const active = document.getElementById(vaultTab?.getAttribute('aria-controls') ?? '');
     const rows = [...(active?.querySelectorAll('li.rounded-md.border.bg-card > button') ?? [])];
     const candidateRows = rows.filter((row) => {
       const title = row.querySelector('span.block.truncate.text-xs.font-medium')?.textContent?.trim() ?? '';
@@ -135,8 +137,13 @@ async function maskedInventory(panel) {
     return {
       activePanelFound: Boolean(active),
       vaultTabActive: vaultTab?.getAttribute('data-state') === 'active',
+      vaultPanelActive: active?.getAttribute('data-state') === 'active',
+      firstActivePanelIsVault: document.querySelector('[role="tabpanel"][data-state="active"]') === active,
       vaultHeadingVisible: Boolean(active?.querySelector('span.text-sm.font-medium')) &&
         [...(active?.querySelectorAll('span') ?? [])].some((span) => span.textContent.trim() === 'Vault'),
+      // Both the lazy view fallback and Vault's auth-checking branch render
+      // this pre-content spinner; it is outside the inventory spinner selector.
+      preContentSpinner: Boolean(active?.querySelector(':scope > div.flex.h-full.items-center.justify-center svg.animate-spin')),
       // Site matching and the password generator have independent spinners.
       // Neither is evidence that the Mine/Shared inventory is still loading.
       inventorySpinner: Boolean(active?.querySelector('div.h-20 .animate-spin')),
@@ -162,7 +169,10 @@ async function observeInventory(panel) {
   evidence.lastVaultObservation = {
     activePanelFound: observed.activePanelFound === true,
     vaultTabActive: observed.vaultTabActive === true,
+    vaultPanelActive: observed.vaultPanelActive === true,
+    firstActivePanelIsVault: observed.firstActivePanelIsVault === true,
     vaultHeadingVisible: observed.vaultHeadingVisible === true,
+    preContentSpinner: observed.preContentSpinner === true,
     inventorySpinner: observed.inventorySpinner === true,
     refreshSpinner: observed.refreshSpinner === true,
     siteSpinner: observed.siteSpinner === true,
@@ -217,6 +227,7 @@ try {
           'masked_vault_inventory',
           () => observeInventory(panel),
           (state) =>
+            state?.vaultPanelActive &&
             state?.vaultHeadingVisible &&
             !state.inventorySpinner &&
             !state.refreshSpinner &&
@@ -235,6 +246,7 @@ try {
           'shared_vault_inventory',
           () => observeInventory(panel),
           (state) =>
+            state?.vaultPanelActive &&
             state?.vaultHeadingVisible &&
             !state.inventorySpinner &&
             !state.refreshSpinner &&

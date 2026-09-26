@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "report_id": "member-vault-probe-diagnose",
+  "status": "harness_observation_gap_repaired_runtime_pending",
+  "scope": "Source and built 0.2.68 inspection after guarded run 003; no browser, network, test, or build launched in this lane.",
+  "run_receipt": "docs/stabilization/runs/member-vault-access-003.json",
+  "known_runtime_truth": {
+    "admin_web_signed_in": true,
+    "admin_extension_signed_in": true,
+    "first_inventory_observed": false,
+    "member_credential_observed": false,
+    "member_auth_verified": false,
+    "exit": "runner exited 1 at mine_inventory_wait; final resource watch reported pressure 2 but did not kill the child"
+  },
+  "confirmed_harness_gap": [
+    "The old probe selected document.querySelector('[role=tabpanel][data-state=active]'), the first active panel anywhere in the document, without proving that it belonged to the clicked Vault trigger. Radix TabsTrigger exposes aria-controls and TabsContent exposes the matching id and data-state. The probe now resolves that exact panel and records whether it is active and whether the prior first-active selection was the Vault panel.",
+    "The built 0.2.68 Vault view returns a full-height spinner while vault.auth is checking; the sidepanel lazy fallback also renders a full-height spinner. Both are outside the probe's inventory and Refresh spinner selectors. The old all-spinners-false snapshot therefore could not rule out pre-content loading. The probe now records one fixed preContentSpinner boolean."
+  ],
+  "sibling_census": {
+    "same_first_active_panel_selector": "No other acceptance runner uses the document-wide first active tabpanel as its Vault content. vault-setup-recovery-acceptance.cjs enumerates active panels but filters by the active Vault trigger's aria-labelledby relationship.",
+    "related_scoped_patterns": "contained-navigation-acceptance.mjs and seo-guest-acceptance.mjs already scope to outer navigation and linked content through aria-controls. Their scope strings are local to those runners and are not exported. The probe uses the same Radix linkage inline to keep this repair bounded.",
+    "weaker_presence_checks": "vault-realbrowser-acceptance.cjs contains bare document-wide tabpanel presence checks; they do not select the first active panel for inventory and are outside this narrow read-only probe repair."
+  },
+  "product_cause": "Unproven. The run-003 booleans cannot distinguish the Vault auth-checking or lazy state from a wrong panel selection. Extension identity did not itself prove a selected organization or a settled Vault request.",
+  "falsifiable_next_observation": {
+    "method": "One root-admitted owned native run of the amended read-only probe, if resource guard and Vault lease permit it; no credential action beyond the already scoped admin sign-in and no authenticated screenshot.",
+    "predictions": [
+      "If the old first-active lookup was wrong, firstActivePanelIsVault is false while vaultPanelActive is true; scoped Vault content may settle and expose the heading and Mine scope.",
+      "If the Vault view remains before content, vaultPanelActive and preContentSpinner are true while vaultHeadingVisible is false; investigate the auth or lazy-load boundary before changing any timeout.",
+      "If the Vault panel is active with no pre-content spinner or heading, inspect fixed-category render/error state in a separate owned observation; the current evidence is insufficient to label a product defect."
+    ]
+  },
+  "validation": [
+    "node --check tests/browser/member-vault-access-probe.mjs passed",
+    "Built .output/matrx-extend-0.2.68-local.zip manifest version and VaultView chunk source map inspected",
+    "No live acceptance or member sign-in claimed"
+  ],
+  "references": [
+    "tests/browser/member-vault-access-probe.mjs",
+    "src/entrypoints/sidepanel/App.tsx",
+    "src/features/vault/VaultView.tsx",
+    "src/features/vault/useVault.ts",
+    "node_modules/@radix-ui/react-tabs/dist/index.mjs",
+    "docs/stabilization/runs/member-vault-access-003.json"
+  ]
+}
