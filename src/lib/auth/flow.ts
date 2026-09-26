@@ -15,8 +15,9 @@ import { getRedirectUri, launchWebAuthFlow } from '@/lib/auth/identity-transport
 import { generateCodeChallenge, generateCodeVerifier, generateNonce } from '@/lib/auth/pkce';
 import { type OAuthTokens, OAuthTokensSchema, type UserProfile } from '@/lib/auth/types';
 import { verifyBearerClaims } from '@/lib/auth/verify-claims';
+import { BROWSER } from '@/lib/browser/detect';
 import { log } from '@/lib/debug/log';
-import { broadcast } from '@/lib/messaging/native';
+import { broadcast, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { Mutex, truncate } from '@/lib/utils';
 
@@ -59,7 +60,13 @@ async function withAuthMutationLock<T>(callback: () => Promise<T>): Promise<T> {
  * Build the authorize URL and launch the browser-side hop.
  * Caller waits on the returned promise; resolves once tokens are stored.
  */
-export async function signIn(): Promise<{ user: UserProfile; tokens: OAuthTokens }> {
+export type SignInResult = { user: UserProfile; tokens: OAuthTokens } | { pending: true };
+
+export async function signIn(): Promise<SignInResult> {
+  if (BROWSER === 'safari') {
+    await send<undefined, { pending: true }>(CHANNELS.AUTH_SAFARI_START, undefined);
+    return { pending: true };
+  }
   if (!ENV.EXTENSION_OAUTH_CLIENT_ID) {
     throw new Error(
       'WXT_EXTENSION_OAUTH_CLIENT_ID is not set. Register the extension as a public PKCE client in the Matrx Supabase dashboard, then add the client ID to .env.* files.',
@@ -147,6 +154,11 @@ export async function signIn(): Promise<{ user: UserProfile; tokens: OAuthTokens
 }
 
 export async function signOut(): Promise<void> {
+  if (BROWSER === 'safari') {
+    await send<undefined, { ok: true }>(CHANNELS.AUTH_SAFARI_CANCEL, undefined, {
+      absenceIsAnAnswer: true,
+    }).catch(() => undefined);
+  }
   await clearLocalSession();
 }
 
@@ -392,10 +404,11 @@ async function exchangeCode(
   code: string,
   codeVerifier: string,
   redirectUri: string,
+  clientId = ENV.EXTENSION_OAUTH_CLIENT_ID,
 ): Promise<OAuthTokens> {
   const body = new URLSearchParams({
     grant_type: 'authorization_code',
-    client_id: ENV.EXTENSION_OAUTH_CLIENT_ID,
+    client_id: clientId,
     code,
     code_verifier: codeVerifier,
     redirect_uri: redirectUri,
@@ -463,6 +476,23 @@ async function commitSignInAttempt(
     });
     scheduleRefresh(tokens);
   });
+}
+
+export async function completeBackgroundAuthorizationCode(
+  attemptId: string,
+  state: string,
+  code: string,
+  redirectUri: string,
+  clientId: string,
+): Promise<UserProfile> {
+  const verifierStorageKey = pkceVerifierStorageKey(state);
+  const verifierRow = await chrome.storage.session.get([verifierStorageKey]);
+  const verifier = verifierRow[verifierStorageKey] as string | undefined;
+  if (!verifier) throw new Error('OAuth sign-in could not recover its PKCE verifier');
+  const tokens = await exchangeCode(code, verifier, redirectUri, clientId);
+  const user = await fetchSupabaseUserAtSignIn(tokens.access_token);
+  await commitSignInAttempt(attemptId, tokens, user);
+  return user;
 }
 
 function scheduleRefresh(tokens: OAuthTokens): void {

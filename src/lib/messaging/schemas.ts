@@ -14,6 +14,9 @@
 export const CHANNELS = {
   // Auth — broadcast only (no request/response)
   AUTH_STATE_CHANGED: 'auth:state-changed',
+  AUTH_SAFARI_START: 'auth:safari-start',
+  AUTH_SAFARI_CANCEL: 'auth:safari-cancel',
+  AUTH_SAFARI_FAILED: 'auth:safari-failed',
 
   // Organization — a request is held and needs the person to set the
   // organization it acts in. Broadcast from any context (usually the service

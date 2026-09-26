@@ -17,6 +17,7 @@
 import { ENV } from '@/config/env';
 import { EXPECTED_EXTENSION_IDS, getExpectedExtensionIdentity } from '@/config/identity';
 import { getRedirectUri } from '@/lib/auth/identity-transport';
+import { BROWSER } from '@/lib/browser/detect';
 import { log } from '@/lib/debug/log';
 
 export interface ExtensionIdentity {
@@ -43,19 +44,23 @@ export function readExtensionIdentity(): ExtensionIdentity {
     // Identity diagnostics stay readable in contexts without the OAuth API.
   }
   const expectedIdentity = getExpectedExtensionIdentity(runtime_id);
+  const safari = BROWSER === 'safari';
   const known_id = expectedIdentity !== undefined;
   const expected_redirect_uri = expectedIdentity?.redirect_uri ?? '';
-  const redirect_matches_expected = known_id && redirect_uri === expected_redirect_uri;
+  const redirect_matches_expected = safari || (known_id && redirect_uri === expected_redirect_uri);
   return {
     runtime_id,
     redirect_uri,
-    oauth_client_id: ENV.EXTENSION_OAUTH_CLIENT_ID ?? '(unset)',
+    oauth_client_id:
+      (safari ? ENV.SAFARI_OAUTH_CLIENT_ID : ENV.EXTENSION_OAUTH_CLIENT_ID) || '(unset)',
     supabase_url: ENV.SUPABASE_URL ?? '(unset)',
     expected_ids: EXPECTED_EXTENSION_IDS,
     known_id,
     expected_redirect_uri,
     redirect_matches_expected,
-    matches_expected: known_id && redirect_matches_expected,
+    matches_expected: safari
+      ? redirect_uri === 'https://www.aimatrx.com/auth/extension-callback'
+      : known_id && redirect_matches_expected,
     extension_version: chrome.runtime.getManifest().version,
     extension_name: chrome.runtime.getManifest().name,
     ...(typeof navigator !== 'undefined' && { user_agent: navigator.userAgent }),

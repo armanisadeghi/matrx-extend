@@ -17,6 +17,7 @@ interface ImportMetaEnv {
   readonly WXT_SUPABASE_URL: string;
   readonly WXT_SUPABASE_PUBLISHABLE_KEY: string;
   readonly WXT_EXTENSION_OAUTH_CLIENT_ID?: string;
+  readonly WXT_SAFARI_OAUTH_CLIENT_ID?: string;
   readonly WXT_DESKTOP_NATIVE_HOST?: string;
   readonly WXT_FRONTEND_URL?: string;
 }

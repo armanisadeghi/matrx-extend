@@ -13,7 +13,8 @@ import { useState } from 'react';
  *
  * The card-style header up top mirrors how iOS surfaces account identity
  * in System Settings: avatar + name + email, then a list of grouped
- * actions below it. Currently: Profile (form-fill PII) and Preferences
+ * actions below it. Currently: Profile (personal PII, saved for the user's own
+ * reference — no tool or handler reads it yet) and Preferences
  * (Settings tab). The desktop-bridge presence dot lives on the avatar
  * itself so it stays visible whether the menu is open or closed.
  */

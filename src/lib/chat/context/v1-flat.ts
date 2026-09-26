@@ -159,7 +159,8 @@ export async function buildContextV1Flat(
   // ── Capture history for this URL ─────────────────────────────────────────
   if (activeUrl) {
     try {
-      const captured = await lookupCapturedByUrl(activeUrl);
+      const lookup = await lookupCapturedByUrl(activeUrl);
+      const captured = lookup.status === 'found' ? lookup.page : null;
       if (captured) {
         ctx.previously_captured_at = captured.captured_at;
         ctx.previously_captured_id = captured.id;

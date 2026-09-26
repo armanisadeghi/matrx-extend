@@ -8,6 +8,11 @@ export interface RecognitionState {
   capturedAt: string | null;
   capturedId: string | null;
   loading: boolean;
+  /**
+   * True when the lookup FAILED — we do not know whether this page was saved.
+   * Never shown as "not saved": the surface says it could not check.
+   */
+  checkFailed: boolean;
 }
 
 export function usePageRecognition(): RecognitionState {
@@ -16,22 +21,25 @@ export function usePageRecognition(): RecognitionState {
     capturedAt: null,
     capturedId: null,
     loading: false,
+    checkFailed: false,
   });
 
   useEffect(() => {
     if (!tab.url) {
-      setState({ capturedAt: null, capturedId: null, loading: false });
+      setState({ capturedAt: null, capturedId: null, loading: false, checkFailed: false });
       return;
     }
     let cancelled = false;
     setState((s) => ({ ...s, loading: true }));
     void (async () => {
-      const captured = await lookupCapturedByUrl(tab.url as string);
+      const lookup = await lookupCapturedByUrl(tab.url as string);
       if (cancelled) return;
+      const captured = lookup.status === 'found' ? lookup.page : null;
       setState({
         capturedAt: captured?.captured_at ?? null,
         capturedId: captured?.id ?? null,
         loading: false,
+        checkFailed: lookup.status === 'unknown',
       });
     })();
     return () => {
@@ -48,6 +56,7 @@ export function usePageRecognition(): RecognitionState {
           capturedAt: payload.capturedAt,
           capturedId: payload.id,
           loading: false,
+          checkFailed: false,
         });
         return { ack: true };
       },

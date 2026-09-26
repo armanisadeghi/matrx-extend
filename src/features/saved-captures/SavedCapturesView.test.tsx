@@ -71,6 +71,10 @@ const soup = {
   raw_html_size: 321,
 };
 
+function page<T>(rows: T[], unreadable = 0) {
+  return { rows, unreadable, fetched: rows.length + unreadable };
+}
+
 const fullCapture = {
   ...firstSummary,
   structured: {
@@ -89,7 +93,7 @@ const fullCapture = {
 };
 
 beforeEach(() => {
-  mocks.list.mockReset().mockResolvedValue([firstSummary, secondSummary]);
+  mocks.list.mockReset().mockResolvedValue(page([firstSummary, secondSummary]));
   mocks.get.mockReset().mockResolvedValue(fullCapture);
   mocks.readOriginal.mockReset().mockResolvedValue(soup);
   mocks.edit.mockReset().mockResolvedValue({
@@ -121,12 +125,14 @@ describe('SavedCapturesView', () => {
   it('searches the complete saved-capture collection on the server', async () => {
     mocks.list.mockImplementation(async ({ search }: { search?: string }) =>
       search === 'later match'
-        ? [secondSummary]
-        : Array.from({ length: 40 }, (_, index) => ({
-            ...firstSummary,
-            id: `11111111-1111-4111-8111-${String(index).padStart(12, '0')}`,
-            title: `Alpha guide ${index + 1}`,
-          })),
+        ? page([secondSummary])
+        : page(
+            Array.from({ length: 40 }, (_, index) => ({
+              ...firstSummary,
+              id: `11111111-1111-4111-8111-${String(index).padStart(12, '0')}`,
+              title: `Alpha guide ${index + 1}`,
+            })),
+          ),
     );
     render(<SavedCapturesView />);
 
@@ -201,6 +207,28 @@ describe('SavedCapturesView', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
     fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
     expect(await screen.findByText('You cannot edit this Source.')).toBeTruthy();
+  });
+
+  it('counts rows that could not be read instead of dropping them silently', async () => {
+    mocks.list.mockResolvedValueOnce(page([firstSummary], 2));
+    render(<SavedCapturesView />);
+    expect(await screen.findByText('Alpha guide')).toBeTruthy();
+    expect(
+      screen.getByText(
+        '2 saved captures could not be read, so they are not shown. Refresh to try again.',
+      ),
+    ).toBeTruthy();
+  });
+
+  it('never says "no saved captures yet" when every row was unreadable', async () => {
+    mocks.list.mockResolvedValueOnce(page([], 1));
+    render(<SavedCapturesView />);
+    expect(
+      await screen.findByText(
+        '1 saved capture could not be read, so it is not shown. Refresh to try again.',
+      ),
+    ).toBeTruthy();
+    expect(screen.queryByText('No saved captures yet')).toBeNull();
   });
 
   it('shows a load failure without also claiming the library is empty', async () => {

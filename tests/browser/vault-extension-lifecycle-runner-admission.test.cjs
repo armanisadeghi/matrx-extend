@@ -16,8 +16,18 @@ assert.match(
 );
 assert.match(
   runner,
-  /waitForReplacementExtensionWorkerTarget\(\{[\s\S]*?previousTargetId: enabledTarget\.targetId/,
-  'reload must wait for a distinct CDP worker target rather than a Playwright facade',
+  /runExtensionReload\(\{[\s\S]*?cdp: rawCdp,[\s\S]*?workerUrl,[\s\S]*?extensionId,/,
+  'reload must arm CDP target discovery with its exact extension worker identity',
+);
+assert.match(
+  runner,
+  /openSidePanelFromActionPopup\([\s\S]*?reloadFixture,[\s\S]*?active\.windowId,[\s\S]*?replacement/,
+  'reload must use the replacement worker to open the real action popup in an owned fixture page',
+);
+assert.doesNotMatch(
+  runner,
+  /reloadFixture\.goto\(/,
+  'reload must not navigate directly to popup.html while the extension is restarting',
 );
 assert.doesNotMatch(
   runner,

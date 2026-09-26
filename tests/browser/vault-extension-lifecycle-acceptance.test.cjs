@@ -2,6 +2,7 @@ const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const {
   inspectIdentity,
+  armReplacementExtensionWorkerTargetWatcher,
   refreshReadyExtensionWorker,
   sameLifecycleIdentity,
   runExtensionDisableEnable,
@@ -29,8 +30,13 @@ const {
   const targetListeners = new Map();
   const reloadCdp = {
     send: async (method, params) => {
-      assert.equal(method, 'Target.setDiscoverTargets');
-      assert.deepEqual(params, { discover: true });
+      if (method === 'Target.setDiscoverTargets') {
+        assert.deepEqual(params, { discover: true });
+        return undefined;
+      }
+      if (method === 'Target.attachToTarget') return { sessionId: `session-${params.targetId}` };
+      if (method === 'Target.detachFromTarget') return undefined;
+      assert.fail(`unexpected CDP method ${method}`);
     },
     on: (event, listener) => targetListeners.set(event, listener),
     off: (event, listener) => {
@@ -88,6 +94,28 @@ const {
       }),
     /lifecycle_reenabled_extension_identity_mismatch/,
   );
+  let delayedReadinessCalls = 0;
+  const delayedReady = await refreshReadyExtensionWorker({
+    replacementTarget: { targetId: 'replacement-worker' },
+    refreshWorker: async () => {
+      delayedReadinessCalls += 1;
+      return delayedReadinessCalls === 1
+        ? {
+            evaluate: async () => {
+              throw new Error('generator_worker_cdp_evaluate_refused');
+            },
+          }
+        : { evaluate: async () => 'abcdefghijklmnopabcdefghijklmnop' };
+    },
+    extensionId: 'abcdefghijklmnopabcdefghijklmnop',
+    wait: async () => {},
+  });
+  assert.equal(
+    delayedReadinessCalls,
+    2,
+    'reload must retry a transient replacement worker refusal',
+  );
+  assert.equal(await delayedReady.evaluate(), 'abcdefghijklmnopabcdefghijklmnop');
   assert.match(visibleSettingsControl, /button\[title="Settings"\]/);
   assert.doesNotMatch(visibleSettingsControl, /textContent/);
   assert.match(visibleVaultControl, /button\[title="Vault"\]/);
@@ -97,12 +125,17 @@ const {
   assert.doesNotMatch(signedOutSidePanelPredicate, /includes\('Settings'\)/);
 
   const reloadProof = {};
-  const replacement = { ...worker };
+  const replacement = {
+    evaluate: async (fn) =>
+      fn.toString().includes('runtime.id') ? 'abcdefghijklmnopabcdefghijklmnop' : snapshot,
+  };
   const reloadBoundary = {
     cdp: reloadCdp,
     workerUrl: 'chrome-extension://abcdefghijklmnopabcdefghijklmnop/background.js',
     previousWorkerTargetId: 'old-worker',
     previousPanelTargetId: 'old-panel',
+    extensionId: 'abcdefghijklmnopabcdefghijklmnop',
+    wait: async () => {},
     assertPreviousTargetsGone: async () => ({ workerTargetGone: true, panelTargetGone: true }),
     reopenPanel: async () => ({ targetId: 'replacement-panel' }),
   };
@@ -125,12 +158,18 @@ const {
   const reloadWakeOrder = [];
   await runExtensionReload({
     worker,
+    ...reloadBoundary,
     cdp: {
       ...reloadCdp,
       send: async (method, params) => {
-        reloadWakeOrder.push('watcher-armed');
-        assert.equal(method, 'Target.setDiscoverTargets');
-        assert.deepEqual(params, { discover: true });
+        if (method === 'Target.setDiscoverTargets') {
+          reloadWakeOrder.push('watcher-armed');
+          assert.deepEqual(params, { discover: true });
+          return undefined;
+        }
+        if (method === 'Target.attachToTarget') return { sessionId: `session-${params.targetId}` };
+        if (method === 'Target.detachFromTarget') return undefined;
+        assert.fail(`unexpected CDP method ${method}`);
       },
     },
     workerUrl: 'chrome-extension://abcdefghijklmnopabcdefghijklmnop/background.js',
@@ -165,6 +204,167 @@ const {
     'replacement-panel',
     'settings',
   ]);
+
+  // The watcher owns an attached CDP session until lifecycle cleanup; a
+  // worker destroyed before that attachment is a named lifecycle failure.
+  const destroyedListeners = new Map();
+  let resolveDestroyedAttach;
+  const destroyedCdp = {
+    send: async (method, _params) => {
+      if (method === 'Target.setDiscoverTargets') return undefined;
+      if (method === 'Target.attachToTarget')
+        return new Promise((resolve) => {
+          resolveDestroyedAttach = () => resolve({ sessionId: 'destroyed-session' });
+        });
+      if (method === 'Target.detachFromTarget') return undefined;
+      assert.fail(`unexpected CDP method ${method}`);
+    },
+    on: (event, listener) => destroyedListeners.set(event, listener),
+    off: (event, listener) => {
+      if (destroyedListeners.get(event) === listener) destroyedListeners.delete(event);
+    },
+  };
+  const destroyedWatcher = await armReplacementExtensionWorkerTargetWatcher({
+    cdp: destroyedCdp,
+    workerUrl: reloadBoundary.workerUrl,
+    previousTargetId: 'old-worker',
+    timeoutMs: 1,
+  });
+  destroyedListeners.get('Target.targetCreated')({
+    targetInfo: {
+      targetId: 'destroyed-worker',
+      type: 'service_worker',
+      url: reloadBoundary.workerUrl,
+    },
+  });
+  destroyedListeners.get('Target.targetDestroyed')({ targetId: 'destroyed-worker' });
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await assert.rejects(
+    destroyedWatcher.replacementTarget,
+    /lifecycle_reload_replacement_worker_destroyed_before_attach/,
+  );
+  let destroyedDisposed = false;
+  const destroyedDisposal = destroyedWatcher.dispose().then(() => {
+    destroyedDisposed = true;
+  });
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(destroyedDisposed, false, 'destroyed target disposal must await pending attach');
+  resolveDestroyedAttach();
+  await destroyedDisposal;
+  assert.equal(destroyedListeners.size, 0, 'watcher cleanup must remove every CDP listener');
+  const timeoutWatcher = await armReplacementExtensionWorkerTargetWatcher({
+    cdp: destroyedCdp,
+    workerUrl: reloadBoundary.workerUrl,
+    previousTargetId: 'old-worker',
+    timeoutMs: 0,
+  });
+  await assert.rejects(
+    timeoutWatcher.replacementTarget,
+    /lifecycle_reload_replacement_worker_target_timeout/,
+  );
+  await timeoutWatcher.dispose();
+  assert.equal(
+    destroyedListeners.size,
+    0,
+    'timed-out watcher cleanup must remove every CDP listener',
+  );
+
+  // A Target.attachToTarget completion after the lifecycle timeout cannot
+  // retain a session, and normal disposal does not finish before detaching.
+  const lateListeners = new Map();
+  let resolveLateAttach;
+  let resolveDetach;
+  let detachedSession;
+  const lateCdp = {
+    send: async (method, params) => {
+      if (method === 'Target.setDiscoverTargets') return undefined;
+      if (method === 'Target.attachToTarget')
+        return new Promise((resolve) => {
+          resolveLateAttach = () => resolve({ sessionId: `late-${params.targetId}` });
+        });
+      if (method === 'Target.detachFromTarget') {
+        detachedSession = params.sessionId;
+        return new Promise((resolve) => {
+          resolveDetach = resolve;
+        });
+      }
+      assert.fail(`unexpected CDP method ${method}`);
+    },
+    on: (event, listener) => lateListeners.set(event, listener),
+    off: (event, listener) => {
+      if (lateListeners.get(event) === listener) lateListeners.delete(event);
+    },
+  };
+  const lateWatcher = await armReplacementExtensionWorkerTargetWatcher({
+    cdp: lateCdp,
+    workerUrl: reloadBoundary.workerUrl,
+    previousTargetId: 'old-worker',
+    timeoutMs: 0,
+  });
+  lateListeners.get('Target.targetCreated')({
+    targetInfo: { targetId: 'late-worker', type: 'service_worker', url: reloadBoundary.workerUrl },
+  });
+  await assert.rejects(
+    lateWatcher.replacementTarget,
+    /lifecycle_reload_replacement_worker_target_timeout/,
+  );
+  let lateDisposalFinished = false;
+  const lateDisposal = lateWatcher.dispose().then(() => {
+    lateDisposalFinished = true;
+  });
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(lateDisposalFinished, false, 'disposal must await late attachment');
+  assert.equal(detachedSession, undefined, 'detach cannot precede attachment');
+  resolveLateAttach();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(
+    detachedSession,
+    'late-late-worker',
+    'late attachment must be detached after timeout',
+  );
+  assert.equal(lateDisposalFinished, false, 'disposal must await late detach');
+  resolveDetach();
+  await lateDisposal;
+  assert.equal(lateListeners.size, 0, 'late watcher cleanup must remove every CDP listener');
+
+  const attachedListeners = new Map();
+  let completeDetach;
+  const attachedCdp = {
+    send: async (method, params) => {
+      if (method === 'Target.setDiscoverTargets') return undefined;
+      if (method === 'Target.attachToTarget') return { sessionId: `attached-${params.targetId}` };
+      if (method === 'Target.detachFromTarget')
+        return new Promise((resolve) => {
+          completeDetach = resolve;
+        });
+      assert.fail(`unexpected CDP method ${method}`);
+    },
+    on: (event, listener) => attachedListeners.set(event, listener),
+    off: (event, listener) => {
+      if (attachedListeners.get(event) === listener) attachedListeners.delete(event);
+    },
+  };
+  const attachedWatcher = await armReplacementExtensionWorkerTargetWatcher({
+    cdp: attachedCdp,
+    workerUrl: reloadBoundary.workerUrl,
+    previousTargetId: 'old-worker',
+  });
+  attachedListeners.get('Target.targetCreated')({
+    targetInfo: {
+      targetId: 'attached-worker',
+      type: 'service_worker',
+      url: reloadBoundary.workerUrl,
+    },
+  });
+  await attachedWatcher.replacementTarget;
+  let disposalFinished = false;
+  const disposal = attachedWatcher.dispose().then(() => {
+    disposalFinished = true;
+  });
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(disposalFinished, false, 'watcher disposal must await CDP detach');
+  completeDetach();
+  await disposal;
 
   // A stale panel can remain callable across a reload, but it cannot be used
   // as recovery evidence even if its Settings interaction appears successful.
@@ -232,7 +432,7 @@ const {
         checkpoint: () => {},
         proof: unobservedProof,
       }),
-    /lifecycle_reload_worker_target_not_replaced/,
+    /lifecycle_reenabled_extension_identity_mismatch/,
   );
 
   let extensionEnabled = true;

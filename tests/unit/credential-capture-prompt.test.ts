@@ -66,6 +66,7 @@ const sessionStorage = new Map<string, unknown>();
 let signedIn = true;
 let matches: Array<{ item_id: string; display_name: string }> = [];
 let matchLookupFailure = false;
+let matchLookupGate: Promise<void> | null = null;
 let itemFields: Array<{ id: string; field_key: string; is_active: boolean }> = [];
 let createGate: Promise<void> | null = null;
 let createResult: unknown = { ok: true, data: { id: 'new-item' } };
@@ -132,6 +133,7 @@ vi.mock('@/lib/api/routes/vault', () => ({
   hasRealUserToken: async () => signedIn,
   fetchBrowserLoginMatches: async (url: string) => {
     calls.push({ name: 'matches', args: [url] });
+    await matchLookupGate;
     if (matchLookupFailure) throw new Error('saved-login lookup unavailable');
     return { ok: true, data: { matches } };
   },
@@ -213,6 +215,7 @@ beforeEach(() => {
   signedIn = true;
   matches = [];
   matchLookupFailure = false;
+  matchLookupGate = null;
   itemFields = [];
   createGate = null;
   createResult = { ok: true, data: { id: 'new-item' } };
@@ -1405,6 +1408,68 @@ describe('host — registered worker listeners and session continuity', () => {
         listener({ name: 'matrx.credentials.capture.expiry' } as chrome.alarms.Alarm);
     },
   );
+
+  it('refuses a stale Save after worker restart until the rehydrated lookup completes', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    await host.holdCandidate(33, WIRE, DEPS);
+    const id = host.pendingCaptureForTab(33)?.candidateId as string;
+    let releaseLookup!: () => void;
+    matchLookupGate = new Promise<void>((resolve) => {
+      releaseLookup = resolve;
+    });
+    host._simulateCaptureWorkerRestartForTest();
+
+    const staleResult = await host.applyCaptureDecision({ candidateId: id, action: 'save' });
+
+    expect(staleResult.status).toBe('expired');
+    expect(broadcasts).toContainEqual({
+      kind: 'credential-capture:changed',
+      payload: { tabId: 33 },
+    });
+    expect(
+      calls.filter((call) => ['create', 'updateValue', 'addField'].includes(call.name)),
+    ).toEqual([]);
+
+    releaseLookup();
+    await vi.waitFor(() =>
+      expect(host.pendingCaptureForTab(33)).toMatchObject({ candidateId: id }),
+    );
+
+    expect((await host.applyCaptureDecision({ candidateId: id, action: 'save' })).status).toBe(
+      'saved',
+    );
+    expect(calls.filter((call) => call.name === 'create')).toHaveLength(1);
+  });
+
+  it('refuses a stale Update after worker restart when the rehydrated lookup fails', async () => {
+    const host = await import('@/lib/credentials/capture-candidates');
+    matches = [{ item_id: ITEM_ID, display_name: 'App login' }];
+    await host.holdCandidate(33, WIRE, DEPS);
+    const id = host.pendingCaptureForTab(33)?.candidateId as string;
+    let releaseLookup!: () => void;
+    matchLookupGate = new Promise<void>((resolve) => {
+      releaseLookup = resolve;
+    });
+    host._simulateCaptureWorkerRestartForTest();
+    matchLookupFailure = true;
+
+    const staleResult = await host.applyCaptureDecision({
+      candidateId: id,
+      action: 'update',
+      itemId: ITEM_ID,
+    });
+
+    expect(staleResult.status).toBe('expired');
+    expect(
+      calls.filter((call) => ['create', 'updateValue', 'addField'].includes(call.name)),
+    ).toEqual([]);
+
+    releaseLookup();
+    await vi.waitFor(() => expect(host.pendingCaptureForTab(33)).toBeNull());
+    expect(
+      calls.filter((call) => ['create', 'updateValue', 'addField'].includes(call.name)),
+    ).toEqual([]);
+  });
 
   it('refuses capture-status requests from wrong extension origins, IDs, and content tabs', () => {
     const message = { __matrx: true, kind: 'credential-capture:status', payload: { tabId: 33 } };

@@ -66,6 +66,8 @@ export function SavedCapturesView() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<SavedCaptureSummary | null>(null);
+  /** Saved captures the database returned that could not be read — said, never hidden. */
+  const [unreadable, setUnreadable] = useState(0);
   const requestGeneration = useRef(0);
   const setTab = useSidepanelTabStore((state) => state.setTab);
 
@@ -75,13 +77,15 @@ export function SavedCapturesView() {
     setLoadingMore(false);
     setError(null);
     try {
-      const rows = await listSavedCaptures({ limit: PAGE_SIZE, search });
+      const page = await listSavedCaptures({ limit: PAGE_SIZE, search });
       if (generation !== requestGeneration.current) return;
-      setCaptures(rows);
-      setHasMore(rows.length === PAGE_SIZE);
+      setCaptures(page.rows);
+      setUnreadable(page.unreadable);
+      setHasMore(page.fetched === PAGE_SIZE);
     } catch (cause) {
       if (generation !== requestGeneration.current) return;
       setCaptures([]);
+      setUnreadable(0);
       setHasMore(false);
       setError(cause instanceof Error ? cause.message : 'Saved captures could not be loaded.');
     } finally {
@@ -115,7 +119,7 @@ export function SavedCapturesView() {
     setLoadingMore(true);
     setError(null);
     try {
-      const rows = await listSavedCaptures({
+      const page = await listSavedCaptures({
         limit: PAGE_SIZE,
         search: query,
         before: { captured_at: lastCapture.captured_at, id: lastCapture.id },
@@ -123,9 +127,10 @@ export function SavedCapturesView() {
       if (generation !== requestGeneration.current) return;
       setCaptures((current) => {
         const seen = new Set(current.map((c) => c.id));
-        return [...current, ...rows.filter((r) => !seen.has(r.id))];
+        return [...current, ...page.rows.filter((r) => !seen.has(r.id))];
       });
-      setHasMore(rows.length === PAGE_SIZE);
+      setUnreadable((n) => n + page.unreadable);
+      setHasMore(page.fetched === PAGE_SIZE);
     } catch (cause) {
       if (generation !== requestGeneration.current) return;
       setError(cause instanceof Error ? cause.message : 'More captures could not be loaded.');
@@ -213,11 +218,17 @@ export function SavedCapturesView() {
 
       <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
         {error && <ErrorNotice message={error} onRetry={() => void load(query)} />}
+        {unreadable > 0 && (
+          <ErrorNotice
+            message={`${unreadable} saved capture${unreadable === 1 ? '' : 's'} could not be read, so ${unreadable === 1 ? 'it is' : 'they are'} not shown. Refresh to try again.`}
+            onRetry={() => void load(query)}
+          />
+        )}
         {loading && captures.length === 0 ? (
           <div className="flex h-full items-center justify-center text-muted-foreground">
             <Loader2 className="size-5 animate-spin" />
           </div>
-        ) : error && captures.length === 0 ? null : captures.length === 0 ? (
+        ) : (error || unreadable > 0) && captures.length === 0 ? null : captures.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
             <Library className="size-8 text-muted-foreground/50" />
             <div>

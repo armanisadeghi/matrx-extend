@@ -144,7 +144,7 @@ const SAFARI: BrowserCapabilities = {
   hasNativeMessaging: false,
   hasOnDeviceAI: false,
   hasSessions: true,
-  hasIdentityWebAuthFlow: true,
+  hasIdentityWebAuthFlow: false,
   hasContextMenus: true,
   hasCaptureVisibleTab: true,
   hasWindowsCreate: true,
