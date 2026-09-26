@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "review": "navigation-oracles-peer",
+  "target_commit": "ffeb0743e5b0c7205a56f047beb27293524c196f",
+  "inventory": "docs/stabilization/reports/inventory-local.json / EXT-F-1001",
+  "runtime_executed": false,
+  "verdict_a": {
+    "result": "PASS_WITH_LIMITS",
+    "evidence": [
+      "Navigation waits for the uniquely titled selected tab and an active visible tabpanel whose id matches aria-controls and whose aria-labelledby points back to the tab; this is a meaningful C01 linkage oracle.",
+      "For Data, SEO and Settings, lazy-load evidence additionally requires the exact view marker (Structured data, SEO audit, Settings) inside the selected linked panel and no spinner-only fallback. Source confirms the Data and SEO markers are rendered by their respective views.",
+      "Guest identity must equal Guest in the emphasized identity element; admin identity must include admin@admin.com. Both require an open menu and desktop status. Admin Profile requires Profile, Identity, First name and its Back button in the active panel.",
+      "The runner and batch retain partial/unverified coverage: only three lazy views are content-checked; chunk failure/retry and reload/stale-selection are deferred. Chat and Pilot remain excluded as separate targets; member mode and active Vault assistance remain unavailable.",
+      "Observed Capture label/badge remain explicitly partial; no pending-count source agreement is claimed."
+    ],
+    "runtime_limit": "Source-only review; no browser launch or live-surface evidence was performed by this peer."
+  },
+  "verdict_b": {
+    "result": "PASS_WITH_LIMITS",
+    "evidence": [
+      "No auth/session injection, synthetic chunk failure, pending-data fabrication or backend mutation appears in the runner. Admin authentication uses the real aimatrx.com login flow and reads credentials from the local aidream .env.",
+      "Credential values are not included in returned detail, report, or stdout; the catch path emits only a generic failure category.",
+      "The batch report status is partial and deferred targets are explicit, so the limited subset is not represented as full EXT-F-1001 coverage. Individual pass observations are limited to their declared controls."
+    ],
+    "limits": [
+      "Credential delivery remains a real login through the production-origin page; this source review did not inspect runtime/network behavior.",
+      "The external native harness is source-reviewed but not run here; runtime remains pending."
+    ]
+  },
+  "follow_up": [
+    "Keep overall batch and T01/T03/T13/T15 claims partial; this batch does not cover all acceptance dimensions or all view content.",
+    "Root runtime owner should inspect the generated report and preserve its generic sanitized failure output."
+  ]
+}
