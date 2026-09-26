@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "review": "seo010-diagnostic-sol-peer",
+  "target_commit": "cb1e00ce628f27f1820ee3502e2a56b16b253fa9",
+  "scope": "Independent source review of the focused guest SEO diagnostic and saved run 009. No browser run, product change, or runtime-cause claim.",
+  "source_verdict": "PASS_WITH_LIMITS",
+  "findings": [
+    {
+      "result": "aligned",
+      "evidence": "seoNextDetailState reads the Performance card rows labeled HTTP status, Navigation, Load duration, and Transfer size. SeoDetails renders those exact labels through SeoRow. SeoRow places each label in its first span and its value in the last span of the sibling div, matching the helper's rowText traversal. There is no source-proven label or selector mismatch."
+    },
+    {
+      "result": "aligned",
+      "evidence": "Both the public oracle and audit collector map a navigation duration of zero or an absent entry to null and round a positive duration. Both normalize an exposed responseStatus of zero to null. The renderer omits Load duration when duration_ms is null. The helper's null and formatted-duration assertions match those source rules."
+    },
+    {
+      "result": "safe_sufficient_next_evidence",
+      "evidence": "The new report field captures only navigation type, rounded duration, transfer-size bytes, navigation response status, and page response status from the public owned tab after page.goto(waitUntil='load'). It is assigned before assertNextPerformance, so a performance failure retains the expected timing. assertNext now keeps only the first line of a bounded assertion message; current wrapped performance assertions supply static labels. The existing performance assertions and pass-target order are unchanged."
+    }
+  ],
+  "runtime_verdict": "PENDING_FOCUSED_RUN_010",
+  "runtime_limit": "Run 009's performance observation had status 200, navigation navigate, transfer 121 KB, and no duration; its saved failure lost the expected timing and exact assertion label. Those facts do not prove a timing race, collector defect, or row-reader defect. The next focused run must compare the new fixed assertion label and post-load navigation scalars with the contemporaneous panel observation before a cause can be assigned.",
+  "unchanged_assertions": "assertNextPerformance still checks card presence, navigation type, HTTP status, page response status, duration, transfer-row presence, and displayed transfer quantity. The new capture neither skips nor weakens a comparison, and the performance pass target remains after all comparisons.",
+  "source_references": [
+    "tests/browser/seo-guest-acceptance.mjs:86",
+    "tests/browser/seo-guest-acceptance.mjs:370",
+    "tests/browser/seo-guest-acceptance.mjs:525",
+    "tests/browser/seo-guest-acceptance.mjs:956",
+    "src/features/seo/SeoDetails.tsx:168",
+    "src/features/seo/SeoDetails.tsx:392",
+    "src/lib/seo/audit.ts:254",
+    "docs/stabilization/runs/seo-guest-009.json"
+  ]
+}
