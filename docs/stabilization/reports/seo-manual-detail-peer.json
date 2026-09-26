@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "review": "seo-manual-detail-peer",
+  "target_commit": "436214eba226153fbc07b74beabb59da8b3f590f",
+  "reviewed_paths": [
+    "tests/browser/seo-guest-acceptance.mjs",
+    "docs/stabilization/reports/seo-snapshot-timing-diagnosis.json"
+  ],
+  "source_verdict": "PASS_WITH_LIMITS",
+  "runtime_verdict": "UNVERIFIED",
+  "findings": [],
+  "evidence": [
+    "The automatic audit still must settle on the selected page title. Its links, images, and performance are recorded as diagnostics with exactDataStatus=unverified; no automatic exact-data assertion or pass target remains.",
+    "The exact detail batch reads public DOM and navigation timing before a trusted Re-audit click, observes the disabled-running and settled states, reads them again, and compares the complete independent snapshots. The selected URL is checked before and after the manual audit.",
+    "Manual link, image, readability-population, performance, and structured-data/hreflang assertions consume the public after-snapshot. Expected counts and destinations are derived from the live page DOM, not copied from panel output or hardcoded values.",
+    "Assertion failures in the new detail batch flow through assertNext, record a bounded predicate and scalar diagnostics, and rethrow. The outer catch produces an unverified receipt and nonzero exit; no new catch converts a failed predicate into a pass.",
+    "The report records readability metric value correctness as unverified. It claims only that nonempty content has populated word/sentence counts and an explained numeric score.",
+    "The prior run receipts seo-guest-008 through seo-guest-011 were not modified. Run 010's automatic link discrepancy remains unexplained and unverified."
+  ],
+  "limits": [
+    "No browser or test was run in this source-review lane, so the prepared runner remains runtime-unverified.",
+    "Readability values are checked for presence and explanation, not independently recalculated against a public text oracle.",
+    "The exact-data claims cover the named detail predicates only; absent unique public hreflang/schema destinations remain unverified by design."
+  ],
+  "execution": "Independent source review only; no browser, test, or heavy command launched."
+}
