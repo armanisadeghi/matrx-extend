@@ -2302,7 +2302,7 @@
               "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
               "blocked_run_id": "guest-settings-003",
               "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "detail": "Resource-invalid partial batch. Warm and panel-reopen observations retained; full extension reload and full theme criteria remain unverified. Theme restoration pending."
+              "detail": "Resource-invalid partial batch; warm/panel-reopen observations retained but full extension reload/full theme criteria unverified. Original System theme restored and verified in settings-cleanup-001."
             }
           }
         },
@@ -2390,7 +2390,7 @@
               ],
               "blocked_run_id": "guest-settings-003",
               "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "detail": "Resource-invalid partial batch. Warm and panel-reopen observations retained; full extension reload and full theme criteria remain unverified. Theme restoration pending."
+              "detail": "Resource-invalid partial batch; warm/panel-reopen observations retained but full extension reload/full theme criteria unverified. Original System theme restored and verified in settings-cleanup-001."
             }
           }
         },
@@ -2479,7 +2479,7 @@
               "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
               "blocked_run_id": "guest-settings-003",
               "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "detail": "Resource-invalid partial batch. Warm and panel-reopen observations retained; full extension reload and full theme criteria remain unverified. Theme restoration pending."
+              "detail": "Resource-invalid partial batch; warm/panel-reopen observations retained but full extension reload/full theme criteria unverified. Original System theme restored and verified in settings-cleanup-001."
             }
           }
         },
@@ -2885,7 +2885,7 @@
               "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
               "blocked_run_id": "guest-settings-003",
               "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "detail": "Resource-invalid partial batch. Warm and panel-reopen observations retained; full extension reload and full theme criteria remain unverified. Theme restoration pending."
+              "detail": "Resource-invalid partial batch; warm/panel-reopen observations retained but full extension reload/full theme criteria unverified. Original System theme restored and verified in settings-cleanup-001."
             }
           }
         },
@@ -3670,7 +3670,7 @@
               "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
               "run_id": "guest-settings-006",
               "evidence": "docs/stabilization/runs/guest-settings-006.json",
-              "detail": "Resource-invalid partial batch. Warm and panel-reopen observations retained; full extension reload and full theme criteria remain unverified. Theme restoration pending."
+              "detail": "Resource-invalid partial batch; warm/panel-reopen observations retained but full extension reload/full theme criteria unverified. Original System theme restored and verified in settings-cleanup-001."
             }
           }
         },
@@ -4095,7 +4095,8 @@
             "guest-settings-002",
             "guest-settings-004",
             "guest-settings-005",
-            "guest-settings-006"
+            "guest-settings-006",
+            "settings-cleanup-001"
           ],
           "retest_status": "not-run"
         },

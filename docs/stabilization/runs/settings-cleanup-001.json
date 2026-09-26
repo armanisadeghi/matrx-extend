@@ -20,5 +20,8 @@
     "Screenshot captured at 2026-09-26T04:21:01Z showed the side panel dark with System selected."
   ],
   "ui_stopped": true,
-  "resource_exit_metadata": "Not observed by this worker."
+  "feature_id": "EXT-F-1003",
+  "case_id": "EXT-F-1003-T04",
+  "resource_exit_code": 0,
+  "resource_stop_confirmed_at": "2026-09-26T04:21:27.526Z"
 }
