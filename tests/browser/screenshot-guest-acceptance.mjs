@@ -66,6 +66,9 @@ async function guestNavigation(panel, targetTitle = null, viewMarker = null) {
       linkedPaneVisible,viewMarkerPresent:viewMarker===null?null:
         [...(pane?.querySelectorAll('span,h1,h2')??[])].some(n=>n.textContent.trim()===viewMarker),
       suspenseFallback:!!pane?.querySelector('svg.animate-spin')&&!pane?.innerText?.trim(),
+      chatComponentMounted:!!pane?.querySelector('button[title="New chat"]'),
+      guestChatGuidancePresent:[...(pane?.querySelectorAll('span')??[])]
+        .some(n=>n.textContent.trim()==='Sign in to choose an agent'),
       guestAvatarCount:document.querySelectorAll('button[title="Account"]').length,
       adminAvatarCount:document.querySelectorAll('button[title="admin@admin.com"]').length};
   })()`,
@@ -79,8 +82,10 @@ function guestViewAccepted(value, title) {
     value.targetSelected &&
     value.activePaneCount === 1 &&
     value.linkedPaneVisible &&
-    (title === 'Chat' || value.viewMarkerPresent) &&
-    (title === 'Chat' || !value.suspenseFallback) &&
+    (title === 'Chat'
+      ? value.chatComponentMounted && value.guestChatGuidancePresent
+      : value.viewMarkerPresent) &&
+    !value.suspenseFallback &&
     value.guestAvatarCount === 1 &&
     value.adminAvatarCount === 0 &&
     value.screenshotTriggerCount === 0 &&
@@ -223,7 +228,7 @@ async function exercise({ page, panel, artifacts }) {
         expected: 'Real guest panel reload keeps Screenshots inaccessible.',
         actual: { newDocument: true, guestView: reloaded },
         evidence:
-          'new loader identity; selected linked public Chat pane and guest avatar; protected trigger/pane/content absent',
+          'new loader identity; settled mounted public Chat pane and guest guidance; protected trigger/pane/content absent',
       });
     } else {
       report.cases.push({
@@ -281,7 +286,7 @@ async function exercise({ page, panel, artifacts }) {
           guestRecovery: recovered,
         },
         evidence:
-          'same owned profile; real avatar Sign out; selected linked public Chat pane with Screenshots trigger/pane/content absent',
+          'same owned profile; real avatar Sign out; settled mounted public Chat pane with Screenshots trigger/pane/content absent',
       });
     } else {
       report.cases.push({
