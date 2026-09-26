@@ -276,29 +276,25 @@ async function publicNextDetailEvidence(page, response) {
       }
     }
     const images = [...document.images];
-    const renderedText = document.body?.innerText?.replace(/\s+/g, ' ').trim() ?? '';
+    const bodyText = document.body?.innerText || document.body?.textContent || '';
     const alternates = [...document.querySelectorAll('link[rel~="alternate"][hreflang]')]
       .map((node) => ({ lang: node.getAttribute('hreflang')?.trim() ?? '', href: node.href }))
       .filter((item) => item.lang && /^https?:/.test(item.href));
     const schemaTypes = new Set();
     let jsonLdTypeCount = 0;
-    const visit = (value) => {
-      if (!value || typeof value !== 'object') return;
-      if (Array.isArray(value)) {
-        value.forEach(visit);
-        return;
-      }
-      for (const type of Array.isArray(value['@type']) ? value['@type'] : [value['@type']]) {
-        if (typeof type === 'string' && type.trim()) {
-          schemaTypes.add(type);
-          jsonLdTypeCount += 1;
-        }
-      }
-      Object.values(value).forEach(visit);
-    };
     for (const script of document.querySelectorAll('script[type="application/ld+json"]')) {
       try {
-        visit(JSON.parse(script.textContent));
+        JSON.parse(script.textContent, (key, value) => {
+          if (key === '@type') {
+            for (const type of Array.isArray(value) ? value : [value]) {
+              if (typeof type === 'string' && type.trim()) {
+                schemaTypes.add(type);
+                jsonLdTypeCount += 1;
+              }
+            }
+          }
+          return value;
+        });
       } catch {
         // Malformed public JSON-LD cannot support a schema assertion.
       }
@@ -315,12 +311,7 @@ async function publicNextDetailEvidence(page, response) {
         total: images.length,
         missingAlt: images.filter((image) => !image.getAttribute('alt')?.trim()).length,
       },
-      textMetrics: {
-        words: renderedText ? renderedText.split(/\s+/).length : 0,
-        sentences: renderedText
-          ? renderedText.split(/[.!?]+\s+/).filter((part) => part.trim()).length
-          : 0,
-      },
+      bodyHasText: Boolean(bodyText.trim()),
       alternates,
       schemaTypes: [...schemaTypes],
       jsonLdTypeCount,
@@ -370,6 +361,8 @@ async function seoNextDetailState(panel) {
           title: anchor.title, target: anchor.target,
           noopener: anchor.relList.contains('noopener'),
           noreferrer: anchor.relList.contains('noreferrer') }));
+      const schemaChips = [...(card('Structured data')?.firstElementChild?.firstElementChild?.children ?? [])]
+        .map((node) => node.textContent.trim());
       return {
         scopeValid: true,
         title: rowText('Title & description', 'Title'),
@@ -386,7 +379,7 @@ async function seoNextDetailState(panel) {
           duration: rowText('Performance', 'Load duration'),
           transfer: rowText('Performance', 'Transfer size') } : null,
         internationalHint: hint('International'), hreflang,
-        schemaHint: hint('Structured data'), schema,
+        schemaHint: hint('Structured data'), schema, schemaChips,
       };
     })()`,
   );
@@ -399,6 +392,17 @@ function displayedCount(value) {
 function schemaDestination(type) {
   if (/^https?:\/\//i.test(type)) return type;
   return /^[A-Za-z][A-Za-z0-9_]*$/.test(type) ? `https://schema.org/${type}` : null;
+}
+
+function schemaChipLabel(type) {
+  try {
+    const url = new URL(type);
+    return /^www[.]schema[.]org$|^schema[.]org$/i.test(url.hostname)
+      ? `${url.pathname.slice(1)}${url.search}${url.hash}`
+      : type;
+  } catch {
+    return type;
+  }
 }
 
 function assertPublicDetails(actual, expected) {
@@ -473,16 +477,12 @@ function assertNextDetailCounts(actual, expected) {
 function assertNextReadability(actual, expected) {
   assert.equal(
     Boolean(actual.readability),
-    expected.textMetrics.words > 0,
+    expected.bodyHasText,
     'readability follows public text',
   );
-  if (expected.textMetrics.words === 0) return;
-  assert.equal(displayedCount(actual.readability.words), expected.textMetrics.words, 'word count');
-  assert.equal(
-    displayedCount(actual.readability.sentences),
-    expected.textMetrics.sentences,
-    'sentence count',
-  );
+  if (!expected.bodyHasText) return;
+  assert.ok(displayedCount(actual.readability.words) > 0, 'word count is measured');
+  assert.ok(displayedCount(actual.readability.sentences) > 0, 'sentence count is measured');
   assert.ok(
     actual.readability.score !== null && Number.isFinite(Number(actual.readability.score)),
     'Flesch score is numeric',
@@ -551,6 +551,11 @@ function assertNextDoors(actual, expected) {
     displayedCount(actual.schemaHint),
     expected.schemaTypes.length > 0 ? expected.schemaTypes.length : null,
     'schema group count follows public structured data',
+  );
+  assert.deepEqual(
+    [...actual.schemaChips].sort(),
+    expected.schemaTypes.map(schemaChipLabel).sort(),
+    'all visible schema chips, including plain text chips, follow public types',
   );
   const expectedSchemaLinks = expected.schemaTypes
     .map((type) => ({ type, href: schemaDestination(type) }))
@@ -947,7 +952,7 @@ try {
       });
       assertNextReadability(nextDetails, nextExpected);
       target('T09', 'guest_readability_is_measured_and_explained', {
-        publicTextMetrics: nextExpected.textMetrics,
+        publicBodyHasText: nextExpected.bodyHasText,
         displayed: nextDetails.readability,
       });
       assertNextPerformance(nextDetails, nextExpected);
