@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "task_id": "popup-cleanup-guard-repair",
+  "defect_id": "EXT-D-0008",
+  "status": "engineering-verified",
+  "source_commits": ["8fbff5e", "d9d86aa"],
+  "summary": "Classified both popup Capture page launch-intent removals as internal cleanup in the destructive-operations registry and gave the nested claim callback a popup-specific name. The discovery and confirmation guard remains unchanged.",
+  "diagnosis": {
+    "reproduced_failure": "The full single-worker suite found clearCapturePagePanel and takePopupLaunchTarget unregistered in tests/unit/destructive-confirm-guard.test.ts; all other tests passed apart from three explicit dev-clone database skips.",
+    "removed_data": "Only extension-owned chrome.storage.session keys under matrx.sidepanel.popup_launch_intent, each containing a short-lived per-window Capture page route request.",
+    "clear_path": "A failed popup launch removes the request key minted for that click after its write settles; a newer click has a different request key.",
+    "claim_path": "The sidepanel selects the newest valid request for its own window, then consumes that window's valid route-request snapshot before routing to Scrape.",
+    "user_impact": "These removals do not delete saved captures, account data, or user content. A failed cleanup can leave a temporary route request, and a failed claim returns no route target."
+  },
+  "repair_round_1": {
+    "targeted_result": "The first targeted run passed 12 tests and failed discovery once: the AST scanner reports the nearest assigned callback name, claim, at launch-intent.ts:90, rather than the exported takePopupLaunchTarget wrapper. The first registry attempt therefore did not satisfy the actual guard.",
+    "change": "Renamed the nested callback to claimPopupLaunchTarget and registered that specific callback. A generic claim registry entry would permit unrelated cleanup functions to escape the census.",
+    "peer_review": "The first source peer missed this mismatch; a fresh Sol reviewer accepted the corrected source."
+  },
+  "sibling_census": "Other chrome.storage.session removals already have registry entries for one-shot drafts, auth attempts, auth adapters, and credential-capture bookkeeping. No second unregistered popup cleanup path was found.",
+  "existing_behavior_guards": [
+    "tests/unit/popup-capture-route.test.tsx covers one-shot and window-scoped claims, concurrent claims, failed-click isolation from newer requests, and failed removal.",
+    "tests/unit/destructive-confirm-guard.test.ts discovers removal primitives across src and requires every owner to appear in the registry."
+  ],
+  "changed_files": [
+    "src/lib/destructive/operations.ts",
+    "src/lib/panel/launch-intent.ts"
+  ],
+  "verification": {
+    "targeted_command": "pnpm exec vitest run --maxWorkers=1 --minWorkers=1 tests/unit/destructive-confirm-guard.test.ts tests/unit/popup-capture-route.test.tsx",
+    "targeted_result": "Root-run targeted suite passed 17/17, exit 0, zero errors on the current shared checkout.",
+    "concurrent_context": "A separate contributor added popup context-binding tests in commits 7c9e0d5 and ae0e27e during this lane; the final targeted run included the current popup suite after those commits.",
+    "fresh_peer_review": "Sol peer cfa14fe: engineering PASS on the corrected source.",
+    "integration": "Root-owned integrated compile was running when this report was finalized; no compile verdict is claimed by this lane."
+  }
+}
