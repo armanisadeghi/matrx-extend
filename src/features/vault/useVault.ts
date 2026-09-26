@@ -13,6 +13,7 @@
 
 import {
   type BrowserLoginMatch,
+  type VaultCallFailure,
   type VaultFieldInput,
   type VaultItemCreateInput,
   type VaultItemMetadataPatch,
@@ -49,6 +50,10 @@ export interface VaultData {
   /** Server-approved candidates for the CURRENT tab. Ids + titles only. */
   matches: BrowserLoginMatch[];
   matchesLoading: boolean;
+  /** A failed lookup is never equivalent to a successful empty result. */
+  matchesError: VaultCallFailure | null;
+  /** Retries the match lookup for this exact tab, page, and actor. */
+  retryMatches: () => Promise<void>;
   reload: () => Promise<void>;
   patchItem: (itemId: string, patch: VaultItemMetadataPatch) => Promise<string | null>;
   createItem: (input: VaultItemCreateInput) => Promise<string | null>;
@@ -81,6 +86,8 @@ export function useVault(
   const [matches, setMatches] = useState<BrowserLoginMatch[]>([]);
   const [matchesOwner, setMatchesOwner] = useState('');
   const [matchesLoading, setMatchesLoading] = useState(false);
+  const [matchesError, setMatchesError] = useState<VaultCallFailure | null>(null);
+  const [matchesErrorOwner, setMatchesErrorOwner] = useState('');
   const generation = useRef(0);
   const matchGeneration = useRef(0);
   const matchOwner = `${tabId ?? 'none'}:${normalizeLoginUrl(pageUrl) ?? 'none'}:${actor?.userId ?? 'none'}:${actor?.organizationId ?? 'none'}`;
@@ -136,9 +143,7 @@ export function useVault(
     };
   }, [reload]);
 
-  // Match candidates re-resolve whenever the tab's URL changes — the whole
-  // point of the panel is that it answers for the page you are looking at.
-  useEffect(() => {
+  const retryMatches = useCallback(async () => {
     const run = ++matchGeneration.current;
     const normalized = normalizeLoginUrl(pageUrl);
     if (
@@ -151,24 +156,36 @@ export function useVault(
     ) {
       setMatches([]);
       setMatchesOwner('');
+      setMatchesError(null);
+      setMatchesErrorOwner('');
       setMatchesLoading(false);
       return;
     }
+    // A retry must not leave old candidates actionable while its result is unknown.
+    setMatches([]);
+    setMatchesOwner('');
+    setMatchesError(null);
+    setMatchesErrorOwner('');
     setMatchesLoading(true);
-    void (async () => {
-      if (!admission.current()) return;
-      const result = await fetchBrowserLoginMatches(normalized, undefined, {
-        expectedActor: actor,
-      });
-      if (run !== matchGeneration.current || !admission.current()) return;
-      setMatches(result.ok ? result.data.matches : []);
-      setMatchesOwner(matchOwner);
-      setMatchesLoading(false);
-    })();
+    const result = await fetchBrowserLoginMatches(normalized, undefined, {
+      expectedActor: actor,
+    });
+    if (run !== matchGeneration.current || !admission.current()) return;
+    setMatches(result.ok ? result.data.matches : []);
+    setMatchesOwner(matchOwner);
+    setMatchesError(result.ok ? null : result.failure);
+    setMatchesErrorOwner(matchOwner);
+    setMatchesLoading(false);
+  }, [admission, actor, auth, matchOwner, pageUrl, tabId]);
+
+  // Match candidates re-resolve whenever the tab's URL changes — the whole
+  // point of the panel is that it answers for the page you are looking at.
+  useEffect(() => {
+    void retryMatches();
     return () => {
       matchGeneration.current++;
     };
-  }, [admission, actor, auth, matchOwner, pageUrl, tabId]);
+  }, [retryMatches]);
 
   const patchItem = useCallback(
     async (itemId: string, patch: VaultItemMetadataPatch): Promise<string | null> => {
@@ -182,21 +199,10 @@ export function useVault(
       setMine(replace);
       setShared(replace);
       // Changing login URLs / fill flag changes what matches this page.
-      matchGeneration.current++;
-      const normalized = normalizeLoginUrl(pageUrl);
-      if (actor && normalized && isFillablePageUrl(pageUrl)) {
-        const run = matchGeneration.current;
-        const fresh = await fetchBrowserLoginMatches(normalized, undefined, {
-          expectedActor: actor,
-        });
-        if (run === matchGeneration.current && admission.current()) {
-          setMatches(fresh.ok ? fresh.data.matches : []);
-          setMatchesOwner(matchOwner);
-        }
-      }
+      await retryMatches();
       return null;
     },
-    [admission, actor, matchOwner, pageUrl],
+    [admission, retryMatches],
   );
 
   const createItem = useCallback(
@@ -284,6 +290,8 @@ export function useVault(
     shared,
     matches: matchesOwner === matchOwner ? matches : [],
     matchesLoading,
+    matchesError: matchesErrorOwner === matchOwner ? matchesError : null,
+    retryMatches,
     reload,
     patchItem,
     createItem,

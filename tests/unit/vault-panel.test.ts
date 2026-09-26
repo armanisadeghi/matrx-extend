@@ -153,6 +153,26 @@ describe('vault routes — a real user JWT or nothing', () => {
       if (!result.ok) expect(result.failure.kind).toBe(kind);
     }
   });
+
+  it('keeps failed and malformed match responses distinct from a real empty match list', async () => {
+    const vault = await import('@/lib/api/routes/vault');
+
+    respond = () => ({ ok: false, status: 403, error: 'forbidden' });
+    const forbidden = await vault.fetchBrowserLoginMatches('https://example.com/login');
+    expect(forbidden).toEqual({ ok: false, failure: { kind: 'forbidden' } });
+
+    respond = () => ({ ok: false, status: 0, error: 'offline' });
+    const offline = await vault.fetchBrowserLoginMatches('https://example.com/login');
+    expect(offline).toEqual({ ok: false, failure: { kind: 'server_error', status: 0 } });
+
+    respond = () => ({ ok: true, status: 200, data: { count: 0 } });
+    const malformed = await vault.fetchBrowserLoginMatches('https://example.com/login');
+    expect(malformed).toEqual({ ok: false, failure: { kind: 'server_error', status: 200 } });
+
+    respond = () => ({ ok: true, status: 200, data: { matches: [], count: 0 } });
+    const empty = await vault.fetchBrowserLoginMatches('https://example.com/login');
+    expect(empty).toEqual({ ok: true, data: { matches: [], count: 0 } });
+  });
 });
 
 // ── 2. Reveal is transient, silent, and unlogged ────────────────────────────
