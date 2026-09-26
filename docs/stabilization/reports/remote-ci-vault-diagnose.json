@@ -1,0 +1,31 @@
+{
+  "defect_id": "EXT-D-0019",
+  "feature_id": "EXT-F-0003",
+  "status": "local-repair-verified-remote-ci-pending",
+  "owner_lane": "remote_ci_vault_diagnose",
+  "original_remote_failure": {
+    "run_id": "36251603459",
+    "commit": "b525a7c2",
+    "log": "/tmp/matrx-ci-36251603459.log",
+    "failed_test": "VaultView focused child-frame projection > selects only the three username-eligible duplicate Fill rows by their stable suffix",
+    "assertion": "VaultView.focused-frame.test.tsx:363 expected typeof selector string, received object (null)",
+    "summary": "1 failed, 1440 passed, 4 skipped"
+  },
+  "root_cause": "The focused test called selectEligibleFillSelector immediately after render. VaultView's usePanelFill initializes its snapshot as loading and sets the ready snapshot only after an asynchronous panel-status message. The selector correctly returns null while its three enabled Fill rows are absent. A dynamic import between render and assertion accidentally supplied enough time in local runs; it is not a readiness contract.",
+  "classification": "test readiness race; no observed product selector defect",
+  "local_before_edit": [
+    "remote-vault-red-001: focused test passed 16/16, so the original CI red did not reproduce locally",
+    "remote-vault-suite-001: full suite passed 1442 tests, 3 skipped"
+  ],
+  "repair_commit": "b406d347",
+  "repair": "Await exactly three Fill buttons before invoking the exact selector; retain the selector's exact labels, duplicate rejection, and clicked item-id assertions.",
+  "sibling_census": "Other asynchronous panel assertions in VaultView.focused-frame.test.tsx await findByText or waitFor before reading the ready UI. The selector is used here and in the Firefox acceptance helper, where adapter.waitFor already supplies the readiness wait.",
+  "verification": [
+    "git diff --check passed",
+    "Biome check on the touched test passed",
+    "remote-vault-green-001: post-edit focused test passed 16/16, exit 0"
+  ],
+  "remaining": [
+    "Rerun external CI on the published repair commit; local green alone does not close the original remote failure."
+  ]
+}
