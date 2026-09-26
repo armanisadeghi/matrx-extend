@@ -10,7 +10,7 @@
     "On a 360 by 421 panel, the stale notice overlaps the enabled Scrape Save button. The trusted pointer driver finds zero hit-tested points within that button."
   ],
   "expected": "A no-workspace read notice retires when selecting an organization completes its prerequisite, including a delayed read refusal. A failed insert or update remains visible because choosing an organization does not replay that write. Unrelated refusals remain visible.",
-  "actual": "The current repair marks every no-workspace database failure as resolved by organization selection. The Capture read notice correctly retires, but an unperformed highlight insert or saved-capture update is also retired even though the user must retry the action.",
+  "actual": "Before the operation-aware correction, selecting an organization retired both resolved no-workspace read notices and unperformed write notices. On the corrected release 0.2.79, the read notice retired after organization selection while the same visible failed highlight-write notice remained; the write had not been sent and was not replayed.",
   "evidence": [
     "docs/stabilization/runs/source-workspace-004.json",
     "docs/stabilization/reports/d22-click-diagnosis.json",
@@ -32,11 +32,18 @@
     "docs/stabilization/reports/d23-notice-operation-census.json",
     "docs/stabilization/runs/notice-write-retention-red-001.json",
     "docs/stabilization/runs/notice-write-retention-green-001.json",
-    "docs/stabilization/reports/d23-write-retention-peer.json"
+    "docs/stabilization/reports/d23-write-retention-peer.json",
+    "docs/stabilization/runs/notice-write-native-002.json",
+    "docs/stabilization/reports/d23-native-write-002-peer.json",
+    "docs/stabilization/reports/d23-native-write-runtime-peer.json",
+    "docs/stabilization/reports/d23-native-build-binding-peer.json",
+    "docs/stabilization/reports/d23-write-native-source-peer.json",
+    "docs/stabilization/runs/source-workspace-009.json",
+    "docs/stabilization/reports/source-workspace-009-runtime-peer.json"
   ],
   "severity": "S2: a resolved read notice can obstruct controls; an unperformed write notice can disappear after workspace selection, leaving an unsaved highlight or undeleted capture without its failure announcement",
   "priority": "P1: make notice retirement depend on whether the operation's remedy is actually complete; keep unperformed write failures visible until a real retry or explicit dismissal",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/d22_ci_refusal_timing",
   "transition_history": [
     {
@@ -92,9 +99,21 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "The independent source review accepted the operation-aware read-only resolution boundary. Guarded notice-write-retention-green-001 passed 26 tests across two files, preserving existing/late read retirement and proving an unperformed highlight insert and late saved-capture update remain visible. Native retest on the corrected build and release typecheck remain pending; the prior read-side source-workspace-007 proof is preserved but does not verify write retention."
+    },
+    {
+      "at": "2026-09-26T23:16:46.054Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Bounded defect-specific native retest on the exact 0.2.79 artifact combines source-workspace-009 read-notice retirement with notice-write-native-002: one real admin highlight write failed before org selection, the same visible unperformed-write notice remained after trusted org selection, the harness confirmed 14 completed membership RPCs, and observed zero highlight inserts. No Source Save was attempted. This does not complete EXT-F-2010-T02."
+    },
+    {
+      "at": "2026-09-26T23:20:13Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Closed at EXT-D-0023 scope after the focused red-to-green 26-test guard, independent source review, and release-bound native read/write evidence. Late-arriving write-notice behavior is covered by unit tests only, not a delayed native arrival; member mode and full EXT-F-2010-T02 pending-handoff queue semantics remain unverified. EXT-D-0022 remains open."
     }
   ],
   "fix_commits": ["9b64e44e", "e210a626"],
-  "ui_retest": "pending on the corrected write-retention build. Prior source-workspace-007 verified only read-notice retirement and Save hit-testability; it remains historical evidence and is not a retest of this write-retention correction. No second Source Save input is authorized or needed.",
-  "closure_requirement": "Preserve the previously verified read-side retirement and source-workspace-007 evidence; retain the guarded read and unperformed-write notice tests and unrelated-error preservation. Complete typecheck and a native read-only panel retest on the corrected write-retention build showing the no-workspace read notice retires after organization selection while an unperformed write notice remains until actual retry or explicit dismissal. No second Source Save input is needed."
+  "ui_retest": "Completed at defect scope on release 0.2.79 by combining Source 009 read-notice retirement with native-write-002 proof that an unperformed highlight-write notice remains visible after workspace selection. No Save/Source action was attempted. Late-arriving write notices are unit-tested only; full EXT-F-2010-T02 queue semantics remain unverified.",
+  "closure_requirement": "Satisfied for EXT-D-0023 by the red-to-green 26-test focused guard, independent implementation/source reviews, and release-bound native evidence for read-notice retirement and one unperformed admin highlight write remaining visible after workspace selection. This defect-specific closure does not pass the full EXT-F-2010-T02 queue case or the EXT-F-2010 feature. Late-arrival write notices remain unit-test-only; member mode is untested. EXT-D-0022 remains open."
 }

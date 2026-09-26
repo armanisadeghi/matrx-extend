@@ -21630,7 +21630,8 @@
             "source-workspace-007",
             "notice-write-retention-red-001",
             "notice-write-retention-green-001",
-            "source-workspace-009"
+            "source-workspace-009",
+            "notice-write-native-002"
           ],
           "retest_status": "not-run"
         }
@@ -21746,6 +21747,29 @@
             }
           ],
           "limits": "Read-side notice behavior only. Native retention of an unperformed write notice and full pending-handoff queue semantics remain unverified; D23 stays fixed pending write-boundary native proof and feature/case statuses remain unchanged."
+        },
+        {
+          "run_id": "notice-write-native-002",
+          "combined_run_ids": [
+            "source-workspace-009",
+            "notice-write-native-002",
+            "notice-write-retention-red-001",
+            "notice-write-retention-green-001"
+          ],
+          "mode": "admin",
+          "build": "0.2.79",
+          "status": "bounded-pass",
+          "receipt": "docs/stabilization/runs/notice-write-native-002.json",
+          "independent_review": "docs/stabilization/reports/d23-native-write-002-peer.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-2010-T02",
+              "subtarget": "read_notice_retires_and_unperformed_highlight_write_notice_remains_after_org_selection",
+              "status": "bounded-pass",
+              "observation": "Source-workspace-009 observed the read notice before/after selection; native-write-002 observed one failed highlight-write notice retained visibly after selection, with zero highlight insert requests."
+            }
+          ],
+          "limits": "Defect-specific EXT-D-0023 evidence only. Late-arriving write notices are unit-tested only; native run used admin mode and one highlight path. Full pending-handoff queue semantics and EXT-F-2010-T02 remain unverified; feature and all case statuses/retest statuses are unchanged. EXT-D-0022 remains open."
         }
       ]
     },

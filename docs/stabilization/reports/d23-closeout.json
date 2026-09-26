@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_id": "d23-closeout",
-  "closed_at": "2026-09-26T22:04:29Z",
+  "closed_at": "2026-09-26T23:20:13Z",
   "defect_id": "EXT-D-0023",
   "state": "closed",
   "closure_basis": [
@@ -24,25 +24,56 @@
     {
       "evidence": "docs/stabilization/runs/release-stabilization-037.json",
       "result": "Release 0.2.78 local checks passed, including typecheck and 1,469 tests; exact GitHub Actions run 36273958725 completed success on df4c51ef5f145855855673d546c692247d5f07e7."
+    },
+    {
+      "evidence": "docs/stabilization/runs/notice-write-retention-red-001.json",
+      "result": "The old behavior failed both intended unperformed-write notice-retention assertions."
+    },
+    {
+      "evidence": "docs/stabilization/runs/notice-write-retention-green-001.json",
+      "result": "Guarded two-file suite passed 26 tests; read retirement remained scoped and existing/late unperformed write notices remained visible at the unit level."
+    },
+    {
+      "evidence": "docs/stabilization/reports/d23-write-retention-peer.json",
+      "result": "Independent source review accepted the read-only resolution boundary and write-notice retention correction."
+    },
+    {
+      "evidence": "docs/stabilization/runs/source-workspace-009.json",
+      "result": "On exact release 0.2.79, read-side no-workspace notice appeared before approved organization selection and was absent afterward; Save was only hit-tested, never activated."
+    },
+    {
+      "evidence": "docs/stabilization/runs/notice-write-native-002.json",
+      "result": "On the same exact release 0.2.79 tree, a real admin highlight write failed before workspace selection and its same visible failure notice remained after selection; membership RPC positive controls completed and no highlight insert was observed."
+    },
+    {
+      "evidence": "docs/stabilization/reports/d23-native-write-002-peer.json",
+      "result": "Independent runtime review accepted native evidence at the defect-specific scope and records limits: late write arrival unit-only, one admin highlight path, full T02 and D22 remain open."
     }
   ],
   "inventory_links": {
-    "EXT-F-2010": ["source-workspace-005", "source-workspace-006", "source-workspace-007"],
+    "EXT-F-2010": [
+      "source-workspace-005",
+      "source-workspace-006",
+      "source-workspace-007",
+      "source-workspace-009",
+      "notice-write-native-002"
+    ],
     "EXT-F-1008": ["seo-guest-016", "seo-guest-017"]
   },
   "status_boundary": {
-    "EXT-D-0023": "Closed after explicit fixed -> retest-pass -> closed history entries. This is defect-specific closure.",
-    "EXT-F-2010-T02": "Remains unverified as a full case; the native run was admin mode and did not exercise pending-handoff queue switching.",
+    "EXT-D-0023": "Closed at defect scope after explicit fixed -> retest-pass -> closed history entries on the combined read/write evidence.",
+    "EXT-F-2010-T02": "Remains unverified as a full case; the native evidence does not exercise pending-handoff queue switching, member mode, or delayed native write arrival.",
     "EXT-F-2010": "Feature mode test_status and retest_status remain unverified/not-run.",
-    "EXT-D-0022": "Remains open. Run 007 made no Save input; the earlier result remains ambiguous, and the reserved checkpoint remains unchanged.",
-    "EXT-F-1008": "Guest case/feature statuses unchanged. SEO016/017 are linked only as unverified bounded observations; exact automatic data and readability metric correctness remain unverified."
+    "EXT-D-0022": "Remains open. No Source Save was attempted; the earlier outcome remains ambiguous and the reserved checkpoint remains unchanged.",
+    "Late-arrival write notice": "Covered by focused unit tests only; not demonstrated in a delayed native run.",
+    "EXT-F-1008": "Guest case/feature statuses unchanged; exact automatic data and readability metric correctness remain unverified."
   },
   "validation": {
     "defect_json_parse": "pass",
     "inventory_json_parse": "pass",
     "report_json_parse": "pass",
     "ascii_escaping": "pass",
-    "biome": "pass",
+    "biome": "pass for defect and closeout report; inventory is intentionally ignored by Biome and independently parsed/ASCII-checked",
     "diff_check": "pass"
   }
 }
