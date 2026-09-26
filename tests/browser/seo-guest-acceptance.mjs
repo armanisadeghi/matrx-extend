@@ -13,6 +13,7 @@ import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'seo-guest-acceptance.json');
 const PAGES = ['https://example.org/', 'https://www.iana.org/domains/reserved'];
+const DETAIL_PAGE = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link';
 const report = {
   schema_version: 1,
   feature_id: 'EXT-F-1008',
@@ -26,7 +27,7 @@ const report = {
     { case: 'T03', part: 'unreachable HTTP(S), other restricted schemes, and reload dimension' },
     { case: 'T04-T06,T08', part: 'database save, history, and diff flows' },
     { case: 'T07', part: 'actual clipboard output, member/admin role gates, and JSON contents' },
-    { case: 'T09', part: 'remaining detail groups and outbound links' },
+    { case: 'T09', part: 'schema chips, hreflang, broken social preview image, readability, performance values, and other URL doors' },
     { case: 'T10-T14', part: 'recommendations, Chat staging, and social snippet actions' },
     { case: 'all', part: 'member and admin modes' },
   ],
@@ -174,6 +175,137 @@ async function pageEvidence(page) {
     title: document.title.trim(),
     heading: document.querySelector('h1')?.textContent?.trim() ?? null,
   }));
+}
+
+// Expected detail values come from the public tab's DOM, independently of the
+// extension's audit and renderer. The sparse and rich pages must disagree so
+// a fixed detail response cannot pass both observations.
+async function publicDetailEvidence(page) {
+  return page.evaluate(() => {
+    const meta = (selector) => document.querySelector(selector)?.getAttribute('content') ?? null;
+    const headings = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')]
+      .map((node) => node.textContent?.trim() ?? '').filter(Boolean);
+    const links = [...document.querySelectorAll('a[href]')].filter((node) => {
+      try { return ['http:', 'https:'].includes(new URL(node.getAttribute('href'), location.href).protocol); }
+      catch { return false; }
+    });
+    return {
+      title: document.title.trim(),
+      description: meta('meta[name="description"]'),
+      canonical: document.querySelector('link[rel="canonical"]')?.href ?? null,
+      robots: meta('meta[name="robots"]'),
+      language: document.documentElement.lang || null,
+      headingCount: Math.min(headings.length, 200),
+      firstHeading: headings[0] ?? null,
+      hasSocialMetadata: [...document.querySelectorAll('meta')].some((node) =>
+        (node.getAttribute('property') ?? '').startsWith('og:') ||
+        (node.getAttribute('name') ?? '').startsWith('twitter:')),
+      hasLinks: links.length > 0,
+      hasImages: document.querySelectorAll('img').length > 0,
+    };
+  });
+}
+
+async function seoDetailState(panel) {
+  return evaluate(panel, `(() => {
+    ${SEO_SCOPE}
+    if (!linked || tab?.getAttribute('aria-selected') !== 'true') return { scopeValid: false };
+    const card = (label) => [...pane.querySelectorAll('span')]
+      .find((node) => node.textContent.trim() === label)
+      ?.parentElement?.nextElementSibling ?? null;
+    const row = (group, label) => [...(card(group)?.querySelectorAll('span') ?? [])]
+      .find((node) => node.textContent.trim() === label)?.parentElement ?? null;
+    const rowText = (group, label) =>
+      row(group, label)?.lastElementChild?.lastElementChild?.textContent.trim() ?? null;
+    const canonical = row('Title & description', 'Canonical')?.querySelector('a');
+    const headingsCard = card('Headings');
+    const firstHeading = [...(headingsCard?.querySelectorAll('span') ?? [])]
+      .find((node) => /^H[1-6]$/.test(node.textContent.trim()))?.parentElement;
+    return {
+      scopeValid: true,
+      title: rowText('Title & description', 'Title'),
+      description: rowText('Title & description', 'Description'),
+      robots: rowText('Title & description', 'Robots'),
+      canonical: canonical ? { href: canonical.href, target: canonical.target,
+        noopener: canonical.relList.contains('noopener'),
+        noreferrer: canonical.relList.contains('noreferrer') } : null,
+      language: rowText('International', 'Page language'),
+      groups: {
+        social: !!card('Social preview'), international: !!card('International'),
+        headings: !!headingsCard, links: !!card('Links'),
+        images: !!card('Images'), readability: !!card('Readability'),
+        performance: !!card('Performance'),
+      },
+      firstHeading: firstHeading?.textContent.trim() ?? null,
+    };
+  })()`);
+}
+
+function assertPublicDetails(actual, expected) {
+  assert.equal(actual.scopeValid, true, 'active SEO pane is linked to its tab');
+  assert.equal(actual.title, expected.title, 'detail title comes from public document');
+  assert.equal(actual.description, expected.description ?? '—', 'description matches public meta');
+  assert.equal(actual.robots, expected.robots, 'robots row follows public meta');
+  assert.equal(actual.canonical?.href ?? null, expected.canonical, 'canonical destination matches public link');
+  assert.equal(actual.language, expected.language, 'language follows public html element');
+  assert.equal(actual.groups.social, expected.hasSocialMetadata, 'social group follows public metadata');
+  assert.equal(actual.groups.international, Boolean(expected.language), 'language group is measured');
+  assert.equal(actual.groups.headings, expected.headingCount > 0, 'headings group follows public headings');
+  assert.equal(actual.groups.links, expected.hasLinks, 'links group follows public anchors');
+  assert.equal(actual.groups.images, expected.hasImages, 'images group follows public images');
+  if (expected.firstHeading)
+    assert.ok(actual.firstHeading?.includes(expected.firstHeading), 'first heading text matches public page');
+}
+
+async function activateCanonicalLink(panel, page, expectedHref) {
+  // A real mouse press reaches only the scoped, hit-tested canonical anchor.
+  // The anchor's href and target are asserted before any outbound navigation.
+  const sample = () => evaluate(panel, `(() => {
+    ${SEO_SCOPE}
+    if (!linked || tab?.getAttribute('aria-selected') !== 'true') return null;
+    const group = [...pane.querySelectorAll('span')]
+      .find((node) => node.textContent.trim() === 'Title & description');
+    const card = group?.parentElement?.nextElementSibling;
+    const label = [...(card?.querySelectorAll('span') ?? [])]
+      .find((node) => node.textContent.trim() === 'Canonical');
+    const anchors = [...(label?.parentElement?.querySelectorAll('a') ?? [])];
+    if (anchors.length !== 1) return { count: anchors.length };
+    const anchor = anchors[0];
+    anchor.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' });
+    const rect = anchor.getBoundingClientRect();
+    const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2;
+    return { count: 1, href: anchor.href, target: anchor.target,
+      x, y, width: rect.width, height: rect.height,
+      hit: anchor.contains(document.elementFromPoint(x, y)) };
+  })()`);
+  const first = await sample();
+  assert.equal(first?.count, 1, 'unique canonical anchor');
+  assert.equal(first.href, expectedHref, 'canonical anchor points to public DOM destination');
+  assert.equal(first.target, '_blank', 'canonical opens in a new tab');
+  let previous = first;
+  for (let index = 0; index < 2; index += 1) {
+    await new Promise((resolveWait) => setTimeout(resolveWait, 50));
+    const current = await sample();
+    assert.equal(current?.hit, true, 'canonical link is unobstructed for real pointer');
+    assert.ok(current.width > 0 && current.height > 0, 'canonical link has a click area');
+    assert.ok(Math.abs(previous.x - current.x) < 0.25 && Math.abs(previous.y - current.y) < 0.25,
+      'canonical link remains stable');
+    previous = current;
+  }
+  const openedPromise = page.context().waitForEvent('page', { timeout: 20000 });
+  await panel.send('Input.dispatchMouseEvent', {
+    type: 'mousePressed', x: previous.x, y: previous.y, button: 'left', clickCount: 1,
+  });
+  await panel.send('Input.dispatchMouseEvent', {
+    type: 'mouseReleased', x: previous.x, y: previous.y, button: 'left', clickCount: 1,
+  });
+  const opened = await openedPromise;
+  try {
+    await opened.waitForURL((url) => url.href === expectedHref, { timeout: 20000 });
+    assert.equal(opened.url(), expectedHref, 'new tab reaches the public canonical URL');
+  } finally {
+    await opened.close();
+  }
 }
 
 async function copyMenu(panel) {
@@ -398,6 +530,53 @@ try {
         headingsPresenceMatched: recovered.headings === !!recoveryPage.heading,
         auditErrorAbsent: !recovered.error,
       });
+
+      // Two independent public DOMs give the detail renderer different
+      // expected values: the sparse Example page has no description/canonical,
+      // while the documentation page supplies both and a real outbound door.
+      const sparseExpected = await observe('sparse_public_details_inspected', () =>
+        publicDetailEvidence(page));
+      const sparseDetails = await observe('sparse_seo_details_inspected', () =>
+        seoDetailState(panel));
+      assertPublicDetails(sparseDetails, sparseExpected);
+      target('T09', 'sparse_public_detail_groups', {
+        descriptionAbsent: sparseExpected.description === null,
+        canonicalAbsent: sparseExpected.canonical === null,
+        groupsMatchPublicDom: true,
+      });
+
+      enter('rich_detail_page_navigation');
+      await page.goto(DETAIL_PAGE, { waitUntil: 'domcontentloaded' });
+      const richExpected = await observe('rich_public_details_inspected', () =>
+        publicDetailEvidence(page));
+      assert.ok(richExpected.description && richExpected.canonical,
+        'public detail page provides description and canonical link');
+      assert.notEqual(richExpected.title, sparseExpected.title,
+        'detail pages distinguish fixed audit responses');
+      await waitObserved(
+        'rich_detail_audit_wait',
+        () => seoContent(panel),
+        (state) => state?.scopeValid && state.title === richExpected.title && state.reAudit && !state.error,
+        30000,
+      );
+      const richDetails = await observe('rich_seo_details_inspected', () => seoDetailState(panel));
+      assertPublicDetails(richDetails, richExpected);
+      assert.equal(richDetails.canonical?.target, '_blank', 'canonical offers outbound tab');
+      assert.equal(richDetails.canonical?.noopener, true, 'canonical tab does not retain opener');
+      assert.equal(richDetails.canonical?.noreferrer, true, 'canonical tab omits referrer');
+      target('T09', 'rich_public_detail_groups_and_canonical_door', {
+        descriptionMatchesPublicDom: true,
+        canonicalMatchesPublicDom: true,
+        groupsMatchPublicDom: true,
+        outboundAnchorSafe: true,
+      });
+      enter('canonical_outbound_activation');
+      await activateCanonicalLink(panel, page, richExpected.canonical);
+      target('T09', 'canonical_outbound_opens_expected_public_tab', {
+        trustedInput: true,
+        destinationMatchesPublicDom: true,
+      });
+      advance('canonical_outbound_verified', { destinationMatchesPublicDom: true });
     },
   });
   report.extension_id = harness.extensionId;

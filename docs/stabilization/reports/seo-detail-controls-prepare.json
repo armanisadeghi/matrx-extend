@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "prepared_unverified",
+  "script": "tests/browser/seo-guest-acceptance.mjs",
+  "prior_run": "docs/stabilization/runs/seo-guest-005.json",
+  "new_subtargets": [
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "sparse_public_detail_groups",
+      "source": "Real https://example.org/ DOM after restricted-page recovery",
+      "oracle": "The independent public tab DOM supplies title, description, canonical, robots, language, heading, link, image, and social-metadata expectations. The linked SEO detail pane must agree; absent metadata stays absent."
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "rich_public_detail_groups_and_canonical_door",
+      "source": "Real https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link DOM",
+      "oracle": "The public DOM provides a nonempty description and canonical URL, distinguishing this page from Example Domain. The active SEO pane must show those values and measured group presence. The canonical anchor must have the DOM URL, a new-tab target, and noopener/noreferrer."
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "canonical_outbound_opens_expected_public_tab",
+      "source": "Canonical URL read from the public page DOM, not from the SEO pane",
+      "oracle": "A trusted mouse press at a stable, unobstructed, hit-tested canonical anchor opens a new browser tab at that independently read URL."
+    }
+  ],
+  "source_check": "The public MDN HTML fetched read-only on 2026-09-26 included a meta description and a canonical link. The runner re-reads both from the owned browser tab during the real run and refuses to claim coverage if either is missing.",
+  "already_verified_by_005_not_new_coverage": [
+    "T01 warm URL title replacement and reload current-page audit",
+    "T02 manual Re-audit returns to the current page",
+    "T03 about:blank clears stale audit and public navigation recovers",
+    "T07 guest copy-menu choices and role gate, including reload",
+    "T09 title and headings presence on two public pages"
+  ],
+  "remaining_t09_coverage": [
+    "hreflang and schema-chip destinations on a page that actually contains them",
+    "broken social-preview image fallback",
+    "readability and performance values",
+    "other URL doors and a second outbound destination",
+    "member and admin modes"
+  ],
+  "limits": [
+    "Preparation only: no native browser, build, or test run was executed in this lane.",
+    "The forcing-function gut check and mutation pass remain for the root's controlled validation; this preparation cannot claim a verified guard.",
+    "A pass will cover only the named guest subtargets, not full T09 or the feature.",
+    "The aggregate script necessarily repeats earlier checks; their repeated result must not be reported as new coverage.",
+    "No clipboard read or write, authentication injection, network mock, Chat/Pilot action, or account write was added."
+  ]
+}
