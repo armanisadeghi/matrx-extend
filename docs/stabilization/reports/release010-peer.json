@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "reviewed_run": "release-stabilization-010",
+  "lane": "independent evidence review; read-only except this report",
+  "A_claims_and_evidence": {
+    "verdict": "SUPPORTED_WITH_LIMITS",
+    "evidence": "Run JSON and raw release log report 14/14 checks and 1430 passed, 3 skipped, 0 unhandled errors; run JSON matches the raw log and /tmp resource receipt. Log records candidate e61967e5fc7d1fbc4b7f08900f0409b356755903 built on 819379218, pushed to main and tagged v0.2.61; 819379218 is its ancestor. Recorded store/local ZIP SHA-256 values match the files on disk. Current origin/main has since advanced to 49efb9132e68aaa4242e334eb641a83b10848f5e, with the release tag still at e61967e.",
+    "qualification": "14 checks passed is the recorded gate outcome; it does not mean every underlying audit measured cleanly."
+  },
+  "B_quality_and_limits": {
+    "verdict": "LIMITS_CONFIRMED",
+    "evidence": "The run explicitly leaves 0.2.61 UI unverified, three live DB tests skipped, and package-twin debt open. Raw log also marks mandate scan UNMEASURED and NOT SUBMITTED for missing DB credentials, with 11 findings; it is non-blocking, not a clean scan. No Store submission is recorded.",
+    "method_limit": "No tests, builds, browser actions, installation, or publication were performed in this review."
+  }
+}
