@@ -18,11 +18,14 @@
   "evidence": [
     "docs/stabilization/runs/guest-settings-local-001.json",
     "docs/stabilization/runs/guest-settings-local-002.json",
-    "docs/stabilization/runs/guest-reset-008.json"
+    "docs/stabilization/runs/guest-reset-008.json",
+    "docs/stabilization/runs/guest-reset-009.json",
+    "docs/stabilization/runs/guest-settings-local-003.json",
+    "docs/stabilization/reports/native-driver-final-peer.json"
   ],
   "severity": "S2: blocks two acceptance cases; product failure not established",
   "priority": "P1: restore trustworthy test execution",
-  "state": "in-fix",
+  "state": "closed",
   "owner": "/root/native_driver_escalation",
   "transition_history": [
     {
@@ -42,6 +45,24 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Original implementation lane repairing shared interaction class."
+    },
+    {
+      "at": "2026-09-26T09:21:03.751573+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "38b0091 bounded viewport preparation and5d7129f Chromium editing commands."
+    },
+    {
+      "at": "2026-09-26T09:21:03.751573+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original trusted-input/viewport failures no longer reproduce in guest-reset009 and guestlocal003. Independent peer bafc91d confirms assertions and limits."
+    },
+    {
+      "at": "2026-09-26T09:21:03.751573+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Repairs and native evidence pushed as0631a43; product T46/T70 gaps remain unverified separately."
     }
   ],
   "escalation": {

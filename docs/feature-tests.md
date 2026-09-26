@@ -3067,6 +3067,13 @@ Every entry follows this shape:
   `tests/unit/ws-reconnect-rediscovers.test.ts`,
   `tests/unit/desktop-native-probe-backoff.test.ts`.
 
+### Clearing a local engine port override clears its validation error
+
+- **Where to test:** Settings → Desktop bridge → Local engine port in a guest profile.
+- **Steps:** save `65001`, reload Settings, enter `65536`, and press Save. Confirm the range error appears and the saved `65001` override remains. Empty the input and press Save without leaving Settings.
+- **Expected:** the override disappears, the button says Set, and the old range error disappears. Reload Settings and confirm the input is empty. Also enter an invalid port followed by a valid port and confirm that successful save clears the error.
+- **Covered by:** `src/features/settings/SettingsView.about.test.tsx` (real Settings component with desktop storage and rediscovery boundaries stubbed); installed-browser acceptance is `tests/browser/settings-local-controls-acceptance.mjs` T46.
+
 ### DevTools console is not a firehose
 
 - **What it does:** the Debug → Logs feed keeps every event at every level,

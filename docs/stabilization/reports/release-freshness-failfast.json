@@ -1,0 +1,25 @@
+{
+  "status": "SOURCE_READY_PENDING_ADMITTED_TESTS",
+  "defect_id": "EXT-D-0013",
+  "summary": "Release candidates with stale @ai-matrx packages previously ran the expensive unit suite before the package freshness gate. The existing freshness gate now runs first for every candidate, including candidates rebuilt after a remote push race. All existing checks remain mandatory and continue to run against the exported candidate SHA.",
+  "evidence": [
+    "The previous release.sh CHECKS list placed unit-tests before matrx-packages.",
+    "Release logs on 2026-09-26 at 00:45:07, 02:29:14, and 02:34:08 recorded successful unit suites followed by matrx-packages failures at 102, 103, and 104 seconds respectively."
+  ],
+  "changed_files": [
+    "release.sh",
+    "scripts/test-release-ship-path.sh",
+    "docs/stabilization/reports/release-freshness-failfast.json"
+  ],
+  "verification": [
+    "bash -n release.sh: pass",
+    "bash -n scripts/test-release-ship-path.sh: pass",
+    "git diff --check: pass",
+    "The release fixture now rejects a stale-package candidate before Vitest and publication, and asserts the package gate reruns on a remote race. The fixture has not been executed in this lane."
+  ],
+  "limitations": [
+    "This lane did not run tests, compilation, builds, installation, browser checks, or release; the root owner holds the sole heavy-work permit.",
+    "The package freshness gate still needs the registry check on every candidate; this change only avoids spending unit-suite time before a known freshness failure."
+  ],
+  "next_action": "Root owner runs the admitted release fixture and independent verification before release."
+}

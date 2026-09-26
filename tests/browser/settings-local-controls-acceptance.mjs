@@ -198,19 +198,19 @@ try {
         c.steps.push({ phase: 'warm', action: 'Save valid port', observation: saved });
         criterion(c, 'valid port saved', 'pass', saved);
         criterion(c, 'rediscovery triggered and reflected in desktop status', 'unverified',
-          'This UI/storage observation does not prove the worker handled DESKTOP_REDISCOVER.');
-        await replacePort(panel, '65536');
-        const invalid = await waitFor('invalid_port_error', () => port(panel), (s) => /Port must be 1–65535/.test(s?.error ?? ''));
-        c.steps.push({ phase: 'warm', action: 'Submit invalid range', observation: invalid });
-        criterion(c, 'invalid range shows error and retains saved port', invalid.saved === VALID_PORT ? 'pass' : 'fail', invalid);
+          'Settings ignores the send response; desktop:availability is also broadcast at worker bootstrap and on probe changes, so UI/storage or a broadcast alone cannot attribute worker handling to this save.');
         await reloadSettings(panel);
         await openSection(panel, 'Desktop bridge');
         const reloaded = await port(panel);
         c.steps.push({ phase: 'reload', action: 'Inspect valid override after reload', observation: reloaded });
         criterion(c, 'valid override persists after reload', reloaded.saved === VALID_PORT && reloaded.value === String(VALID_PORT) ? 'pass' : 'fail', reloaded);
+        await replacePort(panel, '65536');
+        const invalid = await waitFor('invalid_port_error', () => port(panel), (s) => /Port must be 1–65535/.test(s?.error ?? ''));
+        c.steps.push({ phase: 'warm', action: 'Submit invalid range', observation: invalid });
+        criterion(c, 'invalid range shows error and retains saved port', invalid.saved === VALID_PORT ? 'pass' : 'fail', invalid);
         await replacePort(panel, '');
         const cleared = await waitFor('port_override_cleared', () => port(panel), (s) => s?.saved === null && !s.override);
-        c.steps.push({ phase: 'warm', action: 'Clear override', observation: cleared });
+        c.steps.push({ phase: 'warm', action: 'Clear override without leaving the invalid-error view', observation: cleared });
         criterion(c, 'blank clears override and stale error', cleared.error ? 'fail' : 'pass', cleared);
         await reloadSettings(panel);
         await openSection(panel, 'Desktop bridge');

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "report_id": "guest-settings-applicability",
+  "reviewed_at": "2026-09-26",
+  "scope": [
+    "EXT-F-1003-T25",
+    "EXT-F-1003-T63",
+    "EXT-F-1003-T22"
+  ],
+  "method": "Read-only source and recorded-evidence review. No browser, build, or tests launched.",
+  "decisions": {
+    "EXT-F-1003-T25": {
+      "status": "NOT_APPLICABLE_TO_GUEST_AS_WRITTEN",
+      "reason": "The audit-key card and its inspect/export/filter/re-key controls render only inside Advanced agent capabilities, which SettingsView renders under `isAdmin`. T25 asks a guest to inspect configured audit-key behavior, which crosses that explicit admin-only boundary. This is an applicability correction, not evidence that the audit-key feature passed or failed.",
+      "source_evidence": [
+        "src/features/settings/SettingsView.tsx renders <AdvancedAgentCapabilities /> only within `{isAdmin && ...}`.",
+        "src/features/settings/AdvancedAgentCapabilities.tsx renders <AuditKeyCard /> inside the restricted section.",
+        "src/features/settings/AuditKeyCard.tsx defines the audit-key display and actions."
+      ],
+      "recorded_evidence": "EXT-F-1003-T22 is separately recorded as passed in guest-settings-002 and accepted by guest-local-evidence-peer: the guest section tree and named Audit key control text were absent. guest-cold-three also records T22 absent after full extension reload. These are evidence for guest visibility denial only, not audit-key operation.",
+      "recommended_handling": "Keep guest audit-key access represented by the negative-access case T63. Exercise audit-key behavior in an authenticated-admin case; do not count T25 as guest feature coverage."
+    },
+    "EXT-F-1003-T63": {
+      "status": "NEGATIVE_ACCESS_CASE_STILL_PARTLY_UNVERIFIED",
+      "reason": "T63 is the applicable guest/member denial case. T22 provides recorded guest UI evidence for the ordinary Settings rendering path, but T63 additionally covers ordinary members and direct component route/state attempts. No inspected evidence proves those additional dimensions.",
+      "source_evidence": [
+        "SettingsView.tsx gates the Advanced agent capabilities section on `isAdmin`.",
+        "AdvancedAgentCapabilities is exported and contains no local auth/admin guard; the inspected source has no separate route to it. The normal Settings gate is therefore source-evident, while direct mounting/state manipulation has no recorded runtime proof here."
+      ],
+      "recorded_evidence": "guest-settings-002 and guest-cold-three cover T22 for a guest, including absence after reload. The peer review limits its acceptance to the recorded T22 criteria. No member run or direct-component attempt was found in the inspected artifacts.",
+      "open_gaps": [
+        "Ordinary member denial in the live Settings UI remains unverified by this evidence set.",
+        "Direct component/state access denial remains unverified; the source component itself does not enforce the auth boundary, and no separate route was found.",
+        "No claim is made here about backend authorization or audit-key data protection."
+      ]
+    },
+    "EXT-F-1003-T22": {
+      "status": "RECORDED_GUEST_UI_DENIAL_SUPPORTED_WITHIN_EXISTING_CRITERIA",
+      "reason": "Prior records observe the restricted section and named controls absent for a guest in warm/reload UI states. This establishes the guest-facing negative visibility criterion, not member coverage or bypass resistance.",
+      "evidence": [
+        "docs/stabilization/reports/guest-settings-002.json records T22 passed.",
+        "docs/stabilization/reports/guest-local-evidence-peer.json accepts T22 only to its recorded criteria and identifies both panel reload/reopen and separate full-extension-reload evidence.",
+        "docs/stabilization/reports/guest-cold-three.json records Advanced agent capabilities absent after full extension reload."
+      ]
+    }
+  },
+  "limits": [
+    "This is a source and artifact applicability audit, not a new runtime verification.",
+    "No statuses outside the scoped decisions are inferred or changed."
+  ]
+}

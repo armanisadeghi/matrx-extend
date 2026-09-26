@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0012",
+  "feature_id": "EXT-F-1003",
+  "case_ids": [
+    "EXT-F-1003-T46"
+  ],
+  "surface": "Settings > Desktop bridge > Local engine port",
+  "auth_mode": "guest reproduced; member/admin same component not yet exercised",
+  "reproduction": [
+    "Use unpacked0.2.57 source dd41089, fresh isolated guest profile; build/reload and confirm release receipt.",
+    "Open Settings > Desktop bridge, save port65001 and reload to confirm persistence.",
+    "Enter65536 andSave; observe Port must be1\u201365535 error with prioroverride retained.",
+    "Without reload, clear input andSave."
+  ],
+  "expected": "Blank successfully removes override and clears obsolete validation message.",
+  "actual": "Override is removed and input blank, but Port must be1\u201365535 remains visible.",
+  "evidence": [
+    "docs/stabilization/runs/guest-settings-local-004.json"
+  ],
+  "severity": "S3: misleading stale validation after successful action",
+  "priority": "P2: contained Settings correctness before broader surfaces",
+  "state": "in-fix",
+  "owner": "/root/port_error_repair",
+  "transition_history": [
+    {
+      "at": "2026-09-26T09:25:23.068998+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual native same-render reproduction captured."
+    },
+    {
+      "at": "2026-09-26T09:25:23.068998+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Trusted input proven; stored override absent while error persists."
+    },
+    {
+      "at": "2026-09-26T09:25:23.068998+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol medium owns component repair and focused regression."
+    }
+  ]
+}

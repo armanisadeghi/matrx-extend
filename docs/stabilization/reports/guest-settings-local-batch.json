@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_id": "guest-settings-local-batch",
-  "status": "keyboard_command_repair_prepared_retest_pending",
+  "status": "same_view_stale_error_check_prepared_retest_pending",
   "scope": "Isolated native Chrome sidepanel guest acceptance runner for EXT-F-1003-T22, T37, T46, and T70",
   "runner": "tests/browser/settings-local-controls-acceptance.mjs",
   "runtime_output": "test-results/settings-local-controls-acceptance.json",
@@ -15,7 +15,7 @@
   "case_results": [
     { "id": "EXT-F-1003-T22", "status": "pass", "reason": "Observed absent admin section warm and after reload in guest-settings-local-001 on 0.2.57." },
     { "id": "EXT-F-1003-T37", "status": "pass", "reason": "Observed coming-soon hint, toggle persistence after reload, and restoration in guest-settings-local-001 on 0.2.57." },
-    { "id": "EXT-F-1003-T46", "status": "unverified", "reason": "Valid save observed in two native runs. guest-settings-local-002 confirmed raw modifier key events did not select the old value on macOS. Runner now sends Chromium's documented selectAll editing command; retest pending. Worker rediscovery still needs separate observable evidence for a full pass." },
+    { "id": "EXT-F-1003-T46", "status": "unverified", "reason": "guest-settings-local-003 observed valid save, invalid-range error, blank clear, and reload persistence, but a reload between invalid and blank cleared the error before its stale-error assertion. The runner now checks invalid then blank in the same rendered view; retest pending. Worker rediscovery still lacks attributable evidence." },
     { "id": "EXT-F-1003-T70", "status": "unverified", "reason": "guest-settings-local-002 observed matching identity and readiness, trusted scrolling to the update control, and a real no-update result. Browser API unavailable and alternate update outcomes remain unverified." }
   ],
   "defect_provenance": {
@@ -41,6 +41,14 @@
       "https://chromium.googlesource.com/chromium/src/+/3d3ee67f6904c527aca96b54588cb1008a17b23e/third_party/blink/web_tests/inspector-protocol/input/dispatchKeyEvent-commands.js"
     ]
   },
+  "third_run_provenance": {
+    "run_id": "guest-settings-local-003",
+    "evidence": "test-results/settings-local-controls-acceptance.json",
+    "build_version": "0.2.57",
+    "observed": "T22 and T37 passed. T46 completed with no failed criteria; its previous blank-clear assertion was a false pass because reload removed the invalid error. T70 reached the real browser no-update result and retained unverified alternate branches.",
+    "repair": "The runner now verifies valid override persistence first, then submits invalid 65536 and clears it with blank in the same Settings render. Its stale-error criterion fails if the error remains visible after clearing."
+  },
+  "rediscovery_observability_gap": "SettingsView sends desktop:rediscover but discards errors and response. The service worker broadcasts desktop:availability after handling it, but also broadcasts on bootstrap and probe changes; observing only UI/storage or that broadcast cannot attribute a worker handler result to this save. This runner has no read-only per-request response or worker event correlation and keeps the criterion unverified rather than claiming a pass.",
   "source_leads_for_owner": [
     "T46 blank-port save does not clear a prior invalid-range error in SettingsView.tsx; the native runner checks for a stale error after clearing."
   ],
