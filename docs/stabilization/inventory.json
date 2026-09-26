@@ -1172,16 +1172,41 @@
               "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             }
           }
+        },
+        {
+          "id": "EXT-F-0003-T08",
+          "title": "Refuse a CI lint-red release candidate",
+          "modes": ["guest", "member", "admin"],
+          "control_ids": ["EXT-F-0003-C03"],
+          "preconditions": [
+            "Use the resource-guarded isolated release fixture with its temporary bare origin and controlled pnpm lint failure; no real remote is configured.",
+            "For the red proof, pass the pre-fix release.sh scratch copy to scripts/test-release-ship-path.sh; use current release.sh for the green proof."
+          ],
+          "steps": [
+            "Run the fixture against the pre-fix release script and observe its lint-publication assertion fail.",
+            "Run the fixture against current release.sh and inspect lint invocation, exit status, fixture main/tag and prior installed artifacts."
+          ],
+          "expected": [
+            "The pre-fix script fails the lint-publication fixture for the missing gate.",
+            "The current script runs pnpm lint against the exact candidate and refuses publication on lint failure before unit tests or packaging; fixture main/tag and installed artifacts remain unchanged."
+          ],
+          "dimensions": ["isolated-fixture", "red-candidate", "CI-parity"],
+          "results": {
+            "guest": {"status": "unverified", "detail": "Source fix and independent review only; root guarded red/green fixture pending."},
+            "member": {"status": "unverified", "detail": "Source fix and independent review only; root guarded red/green fixture pending."},
+            "admin": {"status": "unverified", "detail": "Source fix and independent review only; root guarded red/green fixture pending."}
+          }
         }
       ],
       "cells": {
         "guest": {
-          "test_status": "pass",
+          "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
             "EXT-D-0004",
-            "EXT-D-0005"
+            "EXT-D-0005",
+            "EXT-D-0016"
           ],
           "run_ids": [
             "release-red-001",
@@ -1195,15 +1220,16 @@
             "release-real-005",
             "release-stabilization-008"
           ],
-          "retest_status": "pass"
+          "retest_status": "not-run"
         },
         "member": {
-          "test_status": "pass",
+          "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
             "EXT-D-0004",
-            "EXT-D-0005"
+            "EXT-D-0005",
+            "EXT-D-0016"
           ],
           "run_ids": [
             "release-red-001",
@@ -1217,15 +1243,16 @@
             "release-real-005",
             "release-stabilization-008"
           ],
-          "retest_status": "pass"
+          "retest_status": "not-run"
         },
         "admin": {
-          "test_status": "pass",
+          "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
             "EXT-D-0004",
-            "EXT-D-0005"
+            "EXT-D-0005",
+            "EXT-D-0016"
           ],
           "run_ids": [
             "release-red-001",
@@ -1239,11 +1266,12 @@
             "release-real-005",
             "release-stabilization-008"
           ],
-          "retest_status": "pass"
+          "retest_status": "not-run"
         }
       },
       "readiness_gaps": [
-        "Real successful release proven; exhaustive operational feature acceptance still needs per-case evidence reconciliation."
+        "Real successful release proven; exhaustive operational feature acceptance still needs per-case evidence reconciliation.",
+        "T08 CI lint parity requires the root-owned guarded red/green release fixture before full feature cells can pass."
       ],
       "current_source_behavior": "Release005 green, main/tag760c7a1 published, both zip and unpacked tree hashes verified. No Store upload or loaded runtime proof.",
       "unverified_leads": [
