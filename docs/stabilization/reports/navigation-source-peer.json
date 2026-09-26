@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "review": "navigation-source-peer",
+  "target_commit": "2d93a09a69d53642178e847f5dfb9e3474590e98",
+  "inventory": "docs/stabilization/reports/inventory-local.json / EXT-F-1001",
+  "runtime_executed": false,
+  "verdict_a": {
+    "result": "PARTIAL",
+    "evidence": [
+      "The batch asserts exact guest/admin tab inventories and visits non-Chat/Pilot tabs; its report labels the result partial and separately defers Chat/Pilot.",
+      "Capture is only checked for presence, accessible label, and visible badge. It does not compare either value to pending/elsewhere source state.",
+      "Avatar checks establish an open menu and a desktop status string; they do not assert the guest/admin identity content. Admin Profile navigation is recorded after checking only that some active tabpanel exists.",
+      "The lazy-load observation checks selected trigger, visible active panel, and absence of a spinner-only fallback. It does not prove meaningful view content, error handling, or retry behavior.",
+      "Inventory T01/T03 explicitly remains partial: no reload or role-transition stale-selection fallback; member mode is unavailable. T09 active assistance is unavailable.",
+      "No Chat or Pilot action is performed, as required by the separate ownership boundary."
+    ],
+    "runtime_limit": "Source-only review; no browser launch or live-surface evidence was performed by this peer."
+  },
+  "verdict_b": {
+    "result": "PASS_WITH_LIMITS",
+    "evidence": [
+      "The harness verifies the released artifact tree and receipt, creates a fresh profile, correlates DevTools with its spawned Chrome child, checks the extension and side-panel context, and cleans up only its owned child/profile.",
+      "The admin login is constrained to https://www.aimatrx.com/login with origin/path checks and a dashboard URL wait. Credentials are read from the local aidream .env, filled into the form, not placed in the report or stdout.",
+      "The batch does not inject auth/session state, intercept or synthesize chunk failures, fabricate pending data, or mutate backend records.",
+      "The catch branch discards the exception text and emits only a generic failure category; this weakens diagnosis but avoids leaking page or credential data."
+    ],
+    "limits": [
+      "Credential delivery still depends on the real aimatrx.com login page being trustworthy; no runtime/network inspection was performed.",
+      "The report path is under test-results and is written with mode 0600, but an existing file's mode is not tightened by writeFile's mode option.",
+      "The report's per-target pass helper is used for observations whose predicates do not prove the inventory's full expected behavior; root must retain partial status."
+    ]
+  },
+  "follow_up": [
+    "Keep the submitted batch status partial; do not translate its observed subsets to complete T01/T03/T06/T13/T15 passes.",
+    "For any later extension, make Profile readiness identify the Profile view and its expected content; make lazy-load evidence identify usable view content.",
+    "Keep credentials and detailed exceptions out of artifacts; preserve only sanitized error classes if diagnosis is needed."
+  ]
+}
