@@ -73,8 +73,10 @@ const report = {
     extension: {
       accountReady: null,
       signInAvailable: null,
+      beforeClick: null,
       signInClickCompleted: false,
       lastObserved: null,
+      observationReadFailed: false,
     },
   },
 };
@@ -268,6 +270,7 @@ async function realAdminSignin(page, panel) {
     advance('extension_account_open');
     await openSection(panel, 'Account');
     const before = await safeAdminState(panel);
+    report.admin_prerequisite.extension.beforeClick = before;
     report.admin_prerequisite.extension.accountReady =
       before.accountPresent && before.accountExpanded;
     report.admin_prerequisite.extension.signInAvailable = before.signInAvailable;
@@ -280,9 +283,14 @@ async function realAdminSignin(page, panel) {
     await waitFor(
       'real_admin_state',
       async () => {
-        const observed = await safeAdminState(panel);
-        report.admin_prerequisite.extension.lastObserved = observed;
-        return observed;
+        try {
+          const observed = await safeAdminState(panel);
+          report.admin_prerequisite.extension.lastObserved = observed;
+          return observed;
+        } catch {
+          report.admin_prerequisite.extension.observationReadFailed = true;
+          throw new Error('safe_admin_observation_failed');
+        }
       },
       (v) => v?.expectedEmailMatch && v.adminRoleMatch && v.signOutPresent && v.advancedPresent,
       90_000,
@@ -300,6 +308,7 @@ async function realAdminSignin(page, panel) {
 try {
   const harness = await runNativeSidepanelQa({
     exercisePanel: async ({ page, panel }) => {
+      advance('guest_tab_inventory');
       const guestTabs = await inventory(panel);
       assert.deepEqual(guestTabs.filter((title) => title !== 'Chat').sort(), [...GUEST].sort());
       target('guest-tab-inventory', 'guest', 'EXT-F-1001-C01', { titles: guestTabs });
@@ -308,7 +317,9 @@ try {
         `(() => !!document.querySelector('button[title="Account"]'))()`,
       );
       assert.equal(guestAvatar, true);
+      advance('guest_avatar');
       await avatar(panel, 'guest', 'Account');
+      advance('guest_navigation');
       for (const title of GUEST) await navigate(panel, title, 'guest');
       assert.equal(guestTabs.includes('Capture'), false);
       target('capture-absent:guest', 'guest', 'EXT-F-1001-C02', { triggerAbsent: true });
@@ -320,11 +331,14 @@ try {
       target('vault-shortcut-absent:guest', 'guest', 'EXT-F-1001-C03', { shortcutAbsent: true });
 
       await realAdminSignin(page, panel);
+      advance('admin_tab_inventory');
       const adminTabs = await inventory(panel);
       const expected = [...GUEST, ...ADMIN, 'Chat', 'Pilot (admin only — sandboxed tab group)'];
       assert.deepEqual(adminTabs.sort(), expected.sort());
       target('admin-tab-inventory', 'admin', 'EXT-F-1001-C01', { titles: adminTabs });
+      advance('admin_avatar');
       await avatar(panel, 'admin', 'admin@admin.com');
+      advance('admin_navigation');
       for (const title of [...GUEST, ...ADMIN]) await navigate(panel, title, 'admin');
       // The badge is state-dependent; preserve observed accessible label and
       // visible count without inventing pending work or mutating server data.
@@ -344,6 +358,7 @@ try {
         status: 'partial',
         detail: capture,
       });
+      advance('complete');
     },
   });
   report.extension_id = harness.extensionId;

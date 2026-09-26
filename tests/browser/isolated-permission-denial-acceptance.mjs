@@ -43,7 +43,20 @@ const evidence = {
   evidence_boundary: 'ACK is coordination only; native UI evidence is recorded separately',
   response_interception: false,
   injected_auth_session: false,
+  auth_readiness: {
+    stage: 'not_started',
+    guest: null,
+    before_click: null,
+    click_completed: false,
+    last_observed: null,
+    observation_read_failed: false,
+  },
 };
+
+function advance(next) {
+  stage = next;
+  evidence.auth_readiness.stage = next;
+}
 
 function fail(category) {
   evidence.failure_category = category;
@@ -77,14 +90,21 @@ async function credentials() {
 async function signInOnWeb(page) {
   const web = await page.context().newPage();
   try {
-    stage = 'web_login';
+    advance('web_login_navigation');
     await web.goto(`${WEB}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    advance('web_login_location');
     const location = new URL(web.url());
+    evidence.auth_readiness.web_origin_match = location.origin === WEB;
+    evidence.auth_readiness.web_login_path_match = location.pathname === '/login';
     if (location.origin !== WEB || location.pathname !== '/login')
       fail('web_login_route_unavailable');
+    advance('credential_file_read');
     const secret = await credentials();
+    evidence.auth_readiness.credentials_available = true;
+    advance('web_form_fill');
     await web.locator('input[name="email"]').fill(secret.AI_ADMIN_USERNAME);
     await web.locator('input[name="password"]').fill(secret.AI_ADMIN_PASSWORD);
+    advance('web_dashboard_wait');
     await Promise.all([
       web.waitForURL((url) => url.origin === WEB && url.pathname === '/dashboard', {
         timeout: 90_000,
@@ -92,11 +112,42 @@ async function signInOnWeb(page) {
       web.getByRole('button', { name: 'Sign in', exact: true }).click(),
     ]);
     evidence.web_login_reached_dashboard = true;
+    advance('web_dashboard_reached');
     return web;
   } catch {
     await web.close();
-    fail('real_web_login_failed');
+    fail(evidence.failure_category ?? 'real_web_login_failed');
   }
+}
+
+async function authState(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+      const account = [...document.querySelectorAll('button[aria-expanded]')]
+        .find((el) => el.textContent.trim() === 'Account');
+      const content = account?.parentElement?.nextElementSibling;
+      const row = (label) => [...(content?.querySelectorAll('span') ?? [])]
+        .find((el) => el.textContent.trim() === label)?.parentElement?.textContent.trim() ?? null;
+      const buttons = [...document.querySelectorAll('button')];
+      const signIn = buttons.find((el) => el.textContent.trim() === 'Sign in');
+      return {
+        account_present: !!account,
+        account_expanded: account?.getAttribute('aria-expanded') === 'true',
+        email_row_present: row('Email') !== null,
+        expected_email_match: row('Email') === 'Email${EMAIL}',
+        role_row_present: row('Role') !== null,
+        admin_role_match: row('Role')?.toLowerCase() === 'roleadmin',
+        sign_in_present: !!signIn,
+        sign_in_disabled: signIn?.disabled ?? false,
+        sign_out_present: buttons.some((el) => el.textContent.trim() === 'Sign out'),
+        advanced_present: buttons.some((el) => el.textContent.trim() === 'Advanced agent capabilities'),
+        auth_alert_present: !!document.querySelector('[role="alert"]'),
+        retry_present: buttons.some((el) => el.textContent.trim() === 'Try again'),
+        loading_present: !!document.querySelector('[role="progressbar"], [aria-busy="true"]'),
+      };
+    })()`,
+  );
 }
 
 async function state(panel) {
@@ -154,7 +205,7 @@ async function waitForNativeDeny() {
 }
 
 try {
-  stage = 'prepare';
+  advance('prepare');
   if (!TARGET) fail('target_not_allowlisted');
   await rm(ACK, { force: true });
   const receipt = JSON.parse(await readFile(join(REPO, '.output', 'release-receipt.json'), 'utf8'));
@@ -166,19 +217,40 @@ try {
   const result = await runNativeSidepanelQa({
     headed: true,
     exercisePanel: async ({ page, panel }) => {
-      stage = 'guest_settings';
+      advance('guest_settings');
       await click(panel, 'title', 'Settings');
       await openSection(panel, 'Account');
+      evidence.auth_readiness.guest = await authState(panel);
       const web = await signInOnWeb(page);
       try {
-        stage = 'extension_signin';
+        advance('extension_signin_ready');
+        evidence.auth_readiness.before_click = await authState(panel);
+        if (!evidence.auth_readiness.before_click?.sign_in_present)
+          fail('extension_signin_control_unavailable');
+        advance('extension_signin_click');
         await click(panel, 'button', 'Sign in');
+        evidence.auth_readiness.click_completed = true;
+        advance('extension_admin_wait');
         await waitFor(
           'real_admin_settings',
-          () => state(panel),
-          (s) => s?.admin,
+          async () => {
+            try {
+              const observed = await authState(panel);
+              evidence.auth_readiness.last_observed = observed;
+              return observed;
+            } catch {
+              evidence.auth_readiness.observation_read_failed = true;
+              throw new Error('safe_auth_observation_failed');
+            }
+          },
+          (s) =>
+            s?.expected_email_match &&
+            s.admin_role_match &&
+            s.sign_out_present &&
+            s.advanced_present,
           90_000,
         );
+        advance('extension_admin_observed');
         await openSection(panel, 'Advanced agent capabilities');
         const before = await state(panel);
         evidence.before = before;
@@ -193,7 +265,7 @@ try {
           true,
         );
         await waitForNativeDeny();
-        stage = 'denial_result';
+        advance('denial_result');
         const after = await waitFor(
           'native_refusal_ui',
           () => state(panel),
@@ -202,7 +274,7 @@ try {
         );
         evidence.after = after;
         assert.equal(after.admin && after.declared && after.row_count === 1, true);
-        stage = 'sidepanel_reload';
+        advance('sidepanel_reload');
         await panel.send('Page.reload', { ignoreCache: true });
         await waitFor(
           'sidepanel_ready_after_reload',
@@ -216,7 +288,7 @@ try {
           (s) => s?.ready && s.settings,
           30_000,
         );
-        stage = 'settings_after_reload';
+        advance('settings_after_reload');
         await click(panel, 'title', 'Settings');
         await openSection(panel, 'Account');
         await openSection(panel, 'Advanced agent capabilities');
@@ -240,7 +312,7 @@ try {
   });
   evidence.extension_id = result.extensionId;
   evidence.status = 'postconditions_verified_requires_operator_evidence';
-  stage = 'complete';
+  advance('complete');
   process.stdout.write(
     'POSTCONDITIONS_VERIFIED_REQUIRES_OPERATOR_EVIDENCE isolated_native_permission_denial\n',
   );
