@@ -3,7 +3,9 @@
 ## Resume contract
 User authorizes autonomous test → capture → fix → independent retest → green integration. Read PLAN.md, inventory.json, defects and runs. Inventory is sole coverage register; campaign remains largely unverified. Chat/Pilot systematic testing stays last. Shared main only; preserve concurrent edits, fetch before push, never publish red trunk. Root alone launches one resource-guarded heavy test/build OR native browser lease. Flat root+3 max: Luna medium narrow execution, Sol medium coding/moderate diagnosis, fresh independent reviews with separate acceptance/quality verdicts.
 
-## Current integration checkpoint — 2026-09-26 11:39 UTC
+## Current integration checkpoint — 2026-09-26 11:51 UTC
+- Release010 passed all14 gates1430tests/3skips and pushed0.2.61 e61967e; remote main verifiedequal11:51UTC. Conflict withremote8193792 resolvedpreservingboth sides9e6b5b3; frozeninstall012passed; census c5dac5b found formatting+packageupdates no requiredconsumeredit. Deadline12:50UTC, fetchbeforepush/boundaries.
+- Next root guardedreset003 usesnew0.2.61. Diagnostic filterpeer42efdfe accepts matchingvisiblefilter but hitfacts ambiguous if multipleeligible targets; root ruling: interpret hitfacts onlywhen target_count=1, uniqueness category/countotherwise, no oraclechange. D15stillin-fix pendingactualcausaldiagnosis, notproductresetfailure.
 - EXT-D-0015 in-fix: reset001/002 prove realadmin+Cancel preservation but fail native reopening before actual Confirm. Fresh Sol reset_reopen_diagnosis added exact safe click-seam diagnostics1f81902; fresh peer pending, root next guardedreset003. No productresetfailure claimed. No heavy/browser currently.
 - Efficiency correction: new native acceptance runners must preserve fixed-category driver failure diagnostics from their first run (target/hit-test/modal/viewport booleans, never raw error/value). Stage-only catches caused repeated paid runs without root-cause evidence; do not repeat this pattern.
 - Last own pushad9d67911:37UTC; fetch at boundaries and hourlypush deadline12:37UTC. Existing hourly automation remains active.
