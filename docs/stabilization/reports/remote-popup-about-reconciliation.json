@@ -101,6 +101,19 @@
         "reason": "Test harness detaches the old logout observer before destroying its panel and binds a new observer to the final panel; no product behavior or user-facing Vault control changed."
       },
       "test_result_note": "Root reported popup-cleanup-green-002 as passing 17 checks including the guard. This lane did not run or independently verify that result; inventory behavior remains runtime-unverified."
+    },
+    {
+      "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
+      "commits_reviewed": [
+        "dee5e6b"
+      ],
+      "finding": "Sidepanel context enumeration exceptions now return no context. Claim removal failure now records the attempted intent key until expiry, so repeated storage events or a reopened panel cannot replay it. Extended existing EXT-F-1002-T19/T20 failure recovery cases; no new controls or cases.",
+      "vault_observer_commit": {
+        "commit": "1dd54a5",
+        "inventory_delta": false,
+        "reason": "This remains a browser acceptance observer/harness correction only; it detaches and rebinds the logout observer to the final panel and does not change Vault product behavior."
+      },
+      "runtime_note": "Latest dev build included this source delta per root’s preflight note. This lane performed source-only review; the updated inventory cases remain unverified here."
     }
   ]
 }

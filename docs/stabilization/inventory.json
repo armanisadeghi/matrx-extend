@@ -2095,7 +2095,7 @@
             "EXT-F-1002-C02"
           ],
           "preconditions": [
-            "Local/unpacked signed-in extension; exercise a failed panel open, failed session-storage write, unavailable sidepanel-context API, or missing/ambiguous matching sidepanel context."
+            "Local/unpacked signed-in extension; exercise failed panel open, failed session-storage write, unavailable or rejecting sidepanel-context enumeration, missing/ambiguous matching sidepanel context, or failure removing a matching claimed request."
           ],
           "steps": [
             "Open toolbar popup.",
@@ -2104,7 +2104,8 @@
           ],
           "expected": [
             "Failure is announced with a specific recovery path; the popup remains available and the in-flight button state clears.",
-            "The request is not armed or consumed unless the opened sidepanel context is uniquely confirmed.",
+            "A request is not armed or consumed unless the opened sidepanel context is uniquely confirmed.",
+            "If claim removal fails, subsequent storage events in that panel and a reopened panel context cannot replay the same route before the intent expires.",
             "Cleanup of a failed click does not route a later panel or active-tab session."
           ],
           "dimensions": [
@@ -2112,7 +2113,10 @@
             "failure",
             "retry",
             "context-unavailable",
-            "context-ambiguous"
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
           ]
         },
         {
@@ -2125,7 +2129,7 @@
             "EXT-F-1002-C02"
           ],
           "preconditions": [
-            "Local/unpacked signed-in extension; exercise a failed panel open, failed session-storage write, unavailable sidepanel-context API, or missing/ambiguous matching sidepanel context."
+            "Local/unpacked signed-in extension; exercise failed panel open, failed session-storage write, unavailable or rejecting sidepanel-context enumeration, missing/ambiguous matching sidepanel context, or failure removing a matching claimed request."
           ],
           "steps": [
             "Open toolbar popup.",
@@ -2134,7 +2138,8 @@
           ],
           "expected": [
             "Failure is announced with a specific recovery path; the popup remains available and the in-flight button state clears.",
-            "The request is not armed or consumed unless the opened sidepanel context is uniquely confirmed.",
+            "A request is not armed or consumed unless the opened sidepanel context is uniquely confirmed.",
+            "If claim removal fails, subsequent storage events in that panel and a reopened panel context cannot replay the same route before the intent expires.",
             "Cleanup of a failed click does not route a later panel or active-tab session."
           ],
           "dimensions": [
@@ -2142,7 +2147,10 @@
             "failure",
             "retry",
             "context-unavailable",
-            "context-ambiguous"
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
           ]
         }
       ],
