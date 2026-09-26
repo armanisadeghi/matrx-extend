@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "report_id": "seo-017-stability-peer",
+  "reviewed_commit": "e7e6e24d08b0517dde2ea34a08f1b8050e43bf03",
+  "scope": "Independent source review of the bounded SEO outbound-anchor stability sampler after run 017 saw a roughly one-pixel move before pointer input. No browser or heavy test was run in this lane.",
+  "A_runtime": {
+    "verdict": "UNVERIFIED",
+    "evidence": "seo-guest-017 predates the sampler change. It recorded one unique expected anchor with exact destination and _blank target, positive area and target hits on all three samples; rounded y centers were 230, 230, 231. The old sampler failed on position_stability before any mouse press. Run 018 or later must verify the new bounded wait and actual destination in a browser."
+  },
+  "B_source": {
+    "verdict": "ACCEPTED",
+    "stability_rule": "After the unchanged initial exact candidate/href/target assertions, followup samples are 50 ms apart. A current sample still must hit the target and have positive width and height; either failure aborts. Motion of 0.25 px or more on either axis resets stableHitSamples to zero. Two consecutive stable position comparisons are required before pointer input, otherwise an assertion fails after the bounded wait.",
+    "time_bound_change": "The previous code took exactly two 50 ms followup samples, about 100 ms plus evaluation time, and failed immediately on motion. The new code uses a Date.now()+3000 deadline with 50 ms polling; a final in-flight sample can finish just after the deadline. This intentionally lengthens the pre-click observation window to match the canonical pointer driver's nominal three-second stability window. It does not extend a navigation timeout.",
+    "click_and_destination": "After stability succeeds, the code still sends one mousePressed and one mouseReleased event at the last sampled center, awaits one page event with the unchanged 20,000 ms timeout, then awaits the exact expected URL with the unchanged 20,000 ms timeout and asserts opened.url() equals expectedHref. No click retry or destination fallback was introduced.",
+    "limits": "The new loop retains the earlier behavior of checking href and _blank target on the initial sample, while followup samples filter by expectedHref and assert hit/area. Browser behavior and motion timing are not proven by source inspection."
+  }
+}
