@@ -3,7 +3,10 @@
 ## Resume contract
 User authorizes autonomous test → capture → fix → independent retest → green integration. Read PLAN.md, inventory.json, defects and runs. Inventory is sole coverage register; campaign remains largely unverified. Chat/Pilot systematic testing stays last. Shared main only; preserve concurrent edits, fetch before push, never publish red trunk. Root alone launches one resource-guarded heavy test/build OR native browser lease. Flat root+3 max: Luna medium narrow execution, Sol medium coding/moderate diagnosis, fresh independent reviews with separate acceptance/quality verdicts.
 
-## Current integration checkpoint — 2026-09-26 11:51 UTC
+## Current integration checkpoint — 2026-09-26 12:02 UTC
+- Reset004 on0.2.61 proves Confirm emptylocal/session andguestUI, reloadguest/System/noauthorfixtures; failure onlyreturned4priorlocalnames, notyetretaineduserdata. Rare bounded Astra medium reset_oracle_escalation owns meaningful browser-only prioridentity oracle; D15 remainsin-fix, originalreopenintermittencycauseunproven. No productedit.
+- Remote be77e57 records0.58.22 merged49fea5c, frozeninstall013passed, changelog explicitlynoconsumeraction. Nextguardedrelease011beforepush; lastconfirmedownpushbbc4d53~11:54UTC; deadline12:54UTC.
+- Keepawake renewed ownedcaffeinatePID41576/session54559 at11:52UTC for4hours (expires~15:52UTC); password/manual-lock unchanged.
 - Release010 passed all14 gates1430tests/3skips and pushed0.2.61 e61967e; remote main verifiedequal11:51UTC. Conflict withremote8193792 resolvedpreservingboth sides9e6b5b3; frozeninstall012passed; census c5dac5b found formatting+packageupdates no requiredconsumeredit. Deadline12:50UTC, fetchbeforepush/boundaries.
 - Next root guardedreset003 usesnew0.2.61. Diagnostic filterpeer42efdfe accepts matchingvisiblefilter but hitfacts ambiguous if multipleeligible targets; root ruling: interpret hitfacts onlywhen target_count=1, uniqueness category/countotherwise, no oraclechange. D15stillin-fix pendingactualcausaldiagnosis, notproductresetfailure.
 - EXT-D-0015 in-fix: reset001/002 prove realadmin+Cancel preservation but fail native reopening before actual Confirm. Fresh Sol reset_reopen_diagnosis added exact safe click-seam diagnostics1f81902; fresh peer pending, root next guardedreset003. No productresetfailure claimed. No heavy/browser currently.
