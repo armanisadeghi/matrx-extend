@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T11:12:51.735435+00:00",
+  "updated_at": "2026-09-26T13:05:00Z",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -3243,11 +3243,11 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "guest-settings-local-001",
+              "run_id": "guest-settings-local-007",
               "detail": "Real isolated native0.2.57 guest warm/reload criteria passed; independent evidence peer a005b2e. Deep clean functional implementation not claimed beyond coming-soon preference.",
               "evidence": [
-                "docs/stabilization/runs/guest-settings-local-001.json",
-                "docs/stabilization/reports/guest-local-evidence-peer.json"
+                "docs/stabilization/runs/guest-settings-local-007.json",
+                "docs/stabilization/reports/occlusion-capture-peer.json"
               ],
               "prior_evidence": [
                 {
@@ -3255,6 +3255,13 @@
                   "run_id": "guest-settings-007",
                   "evidence": "docs/stabilization/runs/guest-settings-007.json",
                   "detail": "Native Chrome guest controls matched all expected criteria warm and after full extension Reload; ID/path/version0.2.51 verified, resource healthy."
+                },
+                {
+                  "run_id": "guest-settings-local-001",
+                  "evidence": [
+                    "docs/stabilization/runs/guest-settings-local-001.json",
+                    "docs/stabilization/reports/guest-local-evidence-peer.json"
+                  ]
                 }
               ]
             }
@@ -3674,11 +3681,11 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "guest-settings-local-001",
+              "run_id": "guest-settings-local-007",
               "detail": "Real isolated native0.2.57 guest warm/reload criteria passed; independent evidence peer a005b2e. Deep clean functional implementation not claimed beyond coming-soon preference.",
               "evidence": [
-                "docs/stabilization/runs/guest-settings-local-001.json",
-                "docs/stabilization/reports/guest-local-evidence-peer.json"
+                "docs/stabilization/runs/guest-settings-local-007.json",
+                "docs/stabilization/reports/occlusion-capture-peer.json"
               ],
               "prior_evidence": [
                 {
@@ -3686,6 +3693,13 @@
                   "scope": "Visible state or preference persistence only; not full integration behavior",
                   "run_id": "guest-settings-002",
                   "evidence": "docs/stabilization/runs/guest-settings-002.json"
+                },
+                {
+                  "run_id": "guest-settings-local-001",
+                  "evidence": [
+                    "docs/stabilization/runs/guest-settings-local-001.json",
+                    "docs/stabilization/reports/guest-local-evidence-peer.json"
+                  ]
                 }
               ]
             }
@@ -3922,16 +3936,25 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "guest-settings-local-006",
+              "run_id": "guest-settings-local-007",
               "evidence": [
-                "docs/stabilization/runs/guest-settings-local-006.json",
-                "docs/stabilization/reports/rediscovery-runtime-peer.json"
+                "docs/stabilization/runs/guest-settings-local-007.json",
+                "docs/stabilization/reports/occlusion-capture-peer.json"
               ],
-              "detail": "Actual guest0.2.58: valid save and persistence; exactly one Save-bounded worker handler entry/post-probe pair with successful resumes; invalid range preserves override; blank removes override and error; cleared state persists. Does not claim healthy desktop connection.",
+              "detail": "Actual guest0.2.63: valid save and persistence; exactly one Save-bounded worker handler entry/post-probe pair with successful resumes; invalid range preserves override; blank removes override and error; cleared state persists. Does not claim healthy desktop connection.",
               "defect_ids": [
                 "EXT-D-0012"
               ],
-              "retest_status": "pass"
+              "retest_status": "pass",
+              "prior_evidence": [
+                {
+                  "run_id": "guest-settings-local-006",
+                  "evidence": [
+                    "docs/stabilization/runs/guest-settings-local-006.json",
+                    "docs/stabilization/reports/rediscovery-runtime-peer.json"
+                  ]
+                }
+              ]
             }
           }
         },
@@ -4155,7 +4178,22 @@
               ],
               "remaining": "Default chat preference matches initial guest baseline; narrow source-backed oracle reconciliation in progress. D15 original no-workspace obstruction closed; do not infer retained data from matching default alone."
             }
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "isolated-admin-reset-010",
+              "evidence": [
+                "docs/stabilization/runs/isolated-admin-reset-010.json",
+                "docs/stabilization/reports/admin-reset-final-peer.json"
+              ],
+              "detail": "Actual isolated admin 0.2.63: real sign-in and explicit device organization; Cancel preserves all prior key/value identities; Confirm empties local/session storage and signs out; reload remains guest/System with only narrowly verified fresh defaults and zero unexplained overlaps. Independent artifact/log review, not an independent browser replay.",
+              "defect_ids": [
+                "EXT-D-0015"
+              ],
+              "retest_status": "pass"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T52",
@@ -9670,7 +9708,9 @@
             "Resolve the cause and retry; verify a repeated refusal leaves the item queued."
           ],
           "expected": [
-            "The item remains visible and retryable on this device after failure; it leaves the queue only after confirmed landing. A guest is told to sign in."
+            "The item remains visible and retryable on this device after failure; it leaves the queue only after confirmed landing. A guest is told to sign in.",
+            "Failed saves for equivalent canonical URLs keep one queued item with stable identity/creation time, incremented attempts, and newest capture payload.",
+            "Successful landing through any save path removes all queued entries for that canonical URL."
           ],
           "dimensions": [
             "offline",
@@ -9678,7 +9718,17 @@
             "retry",
             "guest-auth"
           ],
-          "verification_status": "unverified"
+          "verification_status": "unverified",
+          "source_changes": [
+            {
+              "commits": [
+                "b1e9a82",
+                "557e6a0"
+              ],
+              "report": "docs/stabilization/reports/remote-sources-1300.json",
+              "runtime": "unverified"
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T23",
@@ -9730,7 +9780,9 @@
             "Save as a Source; inspect the landed reader-facing content and original capture."
           ],
           "expected": [
-            "The Source content contains the edited sentence and excludes the replaced original sentence; the original capture stored with the Source retains the pre-edit article."
+            "The Source content contains the edited sentence and excludes the replaced original sentence; the original capture stored with the Source retains the pre-edit article.",
+            "When the active page is queued, Retry is its only Save action and submits current panel edits made after the failed save; a repeat failure keeps those newest edits in one queue item.",
+            "Retry for a different queued page submits that queued page content rather than the active panel content."
           ],
           "dimensions": [
             "edit",
@@ -9739,7 +9791,17 @@
             "original-preservation"
           ],
           "verification_status": "unverified-after-source-change",
-          "source_evidence": "b8c8313 and d2b61d1 add the edited-text save path and real-extension acceptance assertions; no current runtime pass is recorded."
+          "source_evidence": "b8c8313 and d2b61d1 add the edited-text save path and real-extension acceptance assertions; no current runtime pass is recorded.",
+          "source_changes": [
+            {
+              "commits": [
+                "b1e9a82",
+                "557e6a0"
+              ],
+              "report": "docs/stabilization/reports/remote-sources-1300.json",
+              "runtime": "unverified"
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T25",
@@ -9763,7 +9825,8 @@
             "Inspect Unsaved captures and retry the item."
           ],
           "expected": [
-            "The persisted queue item, its source URL and retry action are restored on mount; reopening does not clear it. A retry removes it only after confirmed landing."
+            "The persisted queue item, its source URL and retry action are restored on mount; reopening does not clear it. A retry removes it only after confirmed landing.",
+            "After panel reopen the canonical URL has one retained retry item and no duplicate ordinary Save control."
           ],
           "dimensions": [
             "offline",
@@ -9772,7 +9835,17 @@
             "retry"
           ],
           "verification_status": "unverified-after-source-change",
-          "source_evidence": "b8c8313 adds mount-time queue restoration and a close/reopen regression scenario; no current runtime pass is recorded."
+          "source_evidence": "b8c8313 adds mount-time queue restoration and a close/reopen regression scenario; no current runtime pass is recorded.",
+          "source_changes": [
+            {
+              "commits": [
+                "b1e9a82",
+                "557e6a0"
+              ],
+              "report": "docs/stabilization/reports/remote-sources-1300.json",
+              "runtime": "unverified"
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T26",
