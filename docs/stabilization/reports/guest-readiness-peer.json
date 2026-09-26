@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "commit": "cda37b3071f0197fddbb0deb9bb538b11d4fa98f",
+  "lane": "independent source review",
+  "engineering": "PASS",
+  "runtime": "UNVERIFIED",
+  "finding": "openSection now has a bounded 10-second render wait requiring exactly one Appearance aria-expanded button with true/false state before interacting. SettingsView is lazy-loaded inside active Settings TabsContent, and tab content is not force-mounted, so this observes the actual current view. The reload acceptance still waits for guest plus sign-in, then requires System in the rendered control and verifies theme, port, and session fixture are absent from storage. Prior cancel preservation and confirmed removal of every pre-confirm local/session key remain intact.",
+  "limitation": "No browser, test, or build was run in this independent source-review lane; native runtime acceptance remains UNVERIFIED for the root lane."
+}
