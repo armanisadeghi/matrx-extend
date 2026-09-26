@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T15:26:00Z",
+  "updated_at": "2026-09-26T15:30:55.907236+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -5250,6 +5250,11 @@
           "id": "EXT-F-1004-C16",
           "label": "Backend profile field constraints",
           "action": "Save malformed email/date and boundary values on disposable profile; inspect database/API rejection and retained draft."
+        },
+        {
+          "id": "EXT-F-1004-C17",
+          "label": "First profile save organization",
+          "action": "For a profile with no existing row, resolve and explicitly persist the device's active organization; for an existing row, retain its stored organization."
         }
       ],
       "source_anchors": [
@@ -5926,6 +5931,38 @@
             "reload",
             "backend-error"
           ]
+        },
+        {
+          "id": "EXT-F-1004-T28",
+          "title": "First profile save names active organization and existing profile stays filed",
+          "control_ids": [
+            "EXT-F-1004-C02",
+            "EXT-F-1004-C17"
+          ],
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Use a disposable profile with no existing row and a principal belonging to two organizations; then use a separate existing profile filed in the other organization."
+          ],
+          "steps": [
+            "Set organization A on this device and save the new profile.",
+            "Inspect the saved row's organization_id.",
+            "Switch this device to organization B and save an existing profile filed under A.",
+            "Repeat a new-profile save with no active device organization."
+          ],
+          "expected": [
+            "First save explicitly uses A.",
+            "Saving the existing row retains A and does not move it to B.",
+            "Without an active organization, no profile write occurs and the user receives the resolver remedy."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "organization-unset",
+            "organization-switch"
+          ]
         }
       ],
       "cells": {
@@ -5950,7 +5987,14 @@
       },
       "inventory_status": "complete",
       "missing_items": [],
-      "source_complete": true
+      "source_complete": true,
+      "source_review": [
+        {
+          "source_sha": "b525a7c2d1b1c2012c71234919f40310faeef532",
+          "report": "docs/stabilization/reports/remote1524-scope.json",
+          "status": "source-only-runtime-unverified"
+        }
+      ]
     },
     {
       "id": "EXT-F-1005",
@@ -17968,6 +18012,16 @@
           "source_anchor": "src/features/agenda/AgendaView.tsx",
           "test_design_status": "unverified",
           "test_design_item": "Verify Observe new task loading/empty state (Show list status honestly) on Agenda side-panel in source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2004-C47",
+          "label": "Visible task-creation failure",
+          "action": "Show an alert with the resolver remedy or specific creation error; retain the open form for recovery."
+        },
+        {
+          "id": "EXT-F-2004-C48",
+          "label": "Task creation organization resolution",
+          "action": "Resolve and pass the active organization to the atomic create RPC; do not write if resolution fails."
         }
       ],
       "source_anchors": [
@@ -18197,6 +18251,38 @@
             "auth-role-org",
             "backend-error-retry"
           ]
+        },
+        {
+          "id": "EXT-F-2004-T07",
+          "title": "Task create carries selected organization or shows recovery remedy",
+          "control_ids": [
+            "EXT-F-2004-C07",
+            "EXT-F-2004-C47",
+            "EXT-F-2004-C48"
+          ],
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Use a disposable task and a principal belonging to two organizations."
+          ],
+          "steps": [
+            "Set organization A on this device and create a task; inspect its organization and reload Agenda.",
+            "Clear the device organization or use a principal with no memberships and submit the form.",
+            "Restore an organization and retry from the retained form."
+          ],
+          "expected": [
+            "The atomic RPC receives organization A and the created task persists in A.",
+            "A resolver refusal creates no task and displays a clear remedy while retaining the form.",
+            "A subsequent valid retry creates the task once."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "organization-unset",
+            "organization-switch"
+          ]
         }
       ],
       "cells": {
@@ -18223,6 +18309,13 @@
       "missing_items": [],
       "readiness_gaps": [
         "No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel."
+      ],
+      "source_review": [
+        {
+          "source_sha": "b525a7c2d1b1c2012c71234919f40310faeef532",
+          "report": "docs/stabilization/reports/remote1524-scope.json",
+          "status": "source-only-runtime-unverified"
+        }
       ]
     },
     {
@@ -36195,6 +36288,11 @@
           "id": "EXT-F-4091-C03",
           "label": "action: capture",
           "action": "Exercise the action=capture branch through the real executor"
+        },
+        {
+          "id": "EXT-F-4091-C04",
+          "label": "Capture organization resolution",
+          "action": "Resolve and pass active organization to edu_import_deck for capture; refuse before RPC if unavailable."
         }
       ],
       "source_anchors": [
@@ -36266,28 +36364,40 @@
       "cases": [
         {
           "id": "EXT-F-4091-T01",
-          "title": "Controlled manual execution: capture_study_set",
+          "title": "Controlled manual execution: capture_study_set with organization handling",
           "control_ids": [
             "EXT-F-4091-C01",
             "EXT-F-4091-C02",
-            "EXT-F-4091-C03"
+            "EXT-F-4091-C03",
+            "EXT-F-4091-C04"
           ],
           "modes": [
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "ready",
           "preconditions": [
             "Resource permit and current build receipt",
             "Controlled owned target and no unauthorized external effects"
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Preview a controlled public study set and confirm preview writes nothing.",
+            "With organization A selected, capture and inspect the import request and resulting deck organization.",
+            "With no selected organization or membership, attempt capture and inspect the result and write count."
+          ],
+          "expected": [
+            "Preview remains read-only.",
+            "Capture calls only edu_import_deck with p_organization_id equal to A.",
+            "Unavailable organization returns organization_required with a remedy and makes no RPC/write."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
-            "reload"
+            "reload",
+            "preview-no-write",
+            "organization-binding",
+            "missing-organization"
           ]
         }
       ],
@@ -36310,7 +36420,14 @@
           "run_ids": [],
           "retest_status": "not-run"
         }
-      }
+      },
+      "source_review": [
+        {
+          "source_sha": "b525a7c2d1b1c2012c71234919f40310faeef532",
+          "report": "docs/stabilization/reports/remote1524-scope.json",
+          "status": "source-only-runtime-unverified"
+        }
+      ]
     },
     {
       "id": "EXT-F-4092",
