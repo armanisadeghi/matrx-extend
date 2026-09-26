@@ -96,10 +96,13 @@ export async function click(panel, kind, label) {
     else if (kind === 'vault-shared-tab') {
       // Scope the changing count label to the active Vault panel. The caller
       // still uses this driver's visible, hit-tested, trusted pointer path.
-      const vaultTrigger = document.querySelector('button[role="tab"][title="Vault"][data-state="active"]');
-      const vaultPanel = document.getElementById(vaultTrigger?.getAttribute('aria-controls') ?? '');
+      const vaultTriggers = [...document.querySelectorAll('button[role="tab"][title="Vault"][data-state="active"]')];
+      const vaultTrigger = vaultTriggers.length === 1 ? vaultTriggers[0] : null;
+      const panelId = vaultTrigger?.getAttribute('aria-controls') ?? '';
+      const vaultPanel = panelId ? document.getElementById(panelId) : null;
+      const activeVaultPanel = vaultPanel?.matches('[role="tabpanel"][data-state="active"]') ? vaultPanel : null;
       candidates = label === 'Shared'
-        ? [...(vaultPanel?.querySelectorAll('button[role="tab"]') ?? [])].filter((el) => {
+        ? [...(activeVaultPanel?.querySelectorAll('button[role="tab"]') ?? [])].filter((el) => {
             const text = el.textContent.trim();
             return text.startsWith('Shared (') && text.endsWith(')') &&
               /^[0-9]+$/.test(text.slice(8, -1));
