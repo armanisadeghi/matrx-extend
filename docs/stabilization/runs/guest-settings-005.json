@@ -19,7 +19,10 @@
     "admitted": true,
     "stop_reason": "Root instructed immediate UI stop at 2026-09-26T04:10:07Z due to memory pressure 2 and swap growth; no further UI calls were made.",
     "ui_actions_after_stop": 0,
-    "resource_invalid": true
+    "resource_invalid": true,
+    "stop_confirmed_at": "2026-09-26T04:11:18.709Z",
+    "exit_code": 3,
+    "preflight_receipt": "/tmp/matrx-guest-settings-005-resource.log"
   },
   "observations": {
     "role": "signed-out guest, observed before stop",
