@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "review": "seo007-runtime-peer",
+  "run_id": "seo-guest-007",
+  "reviewed_at": "2026-09-26",
+  "acceptance": "PARTIAL: 12 passing records are rechecks of the seo-guest-006 aggregate; no new subtargets were added. EXT-F-1008 remains incomplete.",
+  "runtime": "Resource log records admission at 17:57:01.139Z, child exit 0/no signal at 17:57:07.354Z, and PARTIAL seo_guest_native_batch; owner confirmed wrapper 97636 exit 0. Runtime JSON contains 12 pass records and last_safe_stage canonical_outbound_verified.",
+  "provenance": "The run follows release 0.2.72/source 4a57aa4af4e7260665d166f6aba4a5371d948b6d (release-stabilization-027) and runner 65436c9ec34e99736386772f1a221cba8f553fe5 plus driver dced501c9f7b37d9c28e8480cb0961b9c5df1d44. Acceptance JSON SHA-256 is identical to seo-guest-006: 04c3b68fd397b7e1f058ec1fdc4e4e83249fdc27a8440885a27b8e3533a97636. The artifact has no per-run timestamp or runner/build identifiers, so its own bytes do not independently identify run 007; the separate resource log does.",
+  "popover_delta_scope": "The 0.46.2 default collision padding was encountered at the actual Copy audit menu. The runner trusted-clicks Copy audit and observes the opened popover containing Summary (text) and For AI agent. This verifies that menu's opening and choices in this run; it does not verify popover geometry or any other popover caller.",
+  "oracle_limits": "The 12 records do not add coverage. The feature remains partial; T01-T08/T10-T14 gaps and member/admin modes remain deferred as listed in the runtime artifact. Group-presence checks do not establish every detail semantic.",
+  "verification": "Compared runtime JSON and resource log with seo-guest-006 run evidence, current runner and driver provenance, release-stabilization-027, and design0462-consumer-peer. No runtime, browser, build, test, source, or inventory activity was performed in this lane."
+}

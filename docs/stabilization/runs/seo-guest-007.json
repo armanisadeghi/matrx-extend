@@ -1,0 +1,56 @@
+{
+  "id": "seo-guest-007",
+  "feature_id": "EXT-F-1008",
+  "at": "2026-09-26T17:57:01.139Z",
+  "status": "partial",
+  "mode": "guest",
+  "scope": "Recheck of public-page guest SEO actions in an owned native side panel against release 0.2.72.",
+  "runtime_output": "test-results/seo-guest-acceptance.json",
+  "runtime_output_sha256": "04c3b68fd397b7e1f058ec1fdc4e4e83249fdc27a8440885a27b8e3533a97636",
+  "resource_log": "/tmp/matrx-seo-guest-007.log",
+  "resource_log_sha256": "7ccc787c1a3b173f3caa21061f887083b745c8462c0fc8ba5156fdada28dc24b",
+  "resource": {
+    "run_id": "seo-guest-007",
+    "admission_code": "RESOURCE_ADMITTED",
+    "admitted_at": "2026-09-26T17:57:01.139Z",
+    "child_exit_code": 0,
+    "child_signal": null,
+    "exit_at": "2026-09-26T17:57:07.354Z",
+    "wrapper_stdout": ["PARTIAL seo_guest_native_batch"],
+    "wrapper_session": "root confirmed wrapper 97636 exit 0"
+  },
+  "release_receipt": {
+    "source_sha": "4a57aa4af4e7260665d166f6aba4a5371d948b6d",
+    "version": "0.2.72",
+    "publish_state": "published-local-and-remote-ci-pass",
+    "unpacked_tree_sha256": "25394eea2b1f8d4805731986c021996b6bdb6cc0ca68718c087cfdb1eac76b37",
+    "receipt_source": "docs/stabilization/runs/release-stabilization-027.json"
+  },
+  "runtime_source": {
+    "acceptance_runner": "tests/browser/seo-guest-acceptance.mjs",
+    "acceptance_runner_commit": "65436c9ec34e99736386772f1a221cba8f553fe5",
+    "driver_commit": "dced501c9f7b37d9c28e8480cb0961b9c5df1d44",
+    "runtime_started_after_release_and_both_runner_commits": true
+  },
+  "new_subtargets": [],
+  "rechecked_prior_subtargets": 12,
+  "acceptance_result": {
+    "status": "partial",
+    "target_count": 12,
+    "last_safe_stage": "canonical_outbound_verified",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "deferred": [
+      "T01 race/audit count",
+      "T02 fresh capture/advice replacement",
+      "T03 unreachable HTTP(S), other schemes and reload",
+      "T04-T06/T08 persistence and history",
+      "T07 clipboard output and role gates",
+      "T09 remaining groups/doors",
+      "T10-T14",
+      "member/admin modes"
+    ]
+  },
+  "interpretation": "All 12 recorded subtargets reproduce the seo-guest-006 aggregate; their output hash is also identical to the prior run. This is a recheck, not new coverage. The overall feature remains partial.",
+  "popover_delta_scope": "The design-system 0.46.2 collision-padding default was exercised only at the actual Copy audit popover: after trusted activation, the runner observed its open state and the Summary (text) and For AI agent choices. This does not establish positioning or behavior for the extension's other popovers.",
+  "peer_report": "docs/stabilization/reports/seo007-runtime-peer.json"
+}
