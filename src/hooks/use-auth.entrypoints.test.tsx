@@ -44,6 +44,14 @@ const admin = {
   avatar_url: null,
 } satisfies UserProfile;
 
+const member = {
+  id: '58aef532-3b16-4d7c-a7d8-48b4ff83dbba',
+  email: 'test@test.com',
+  email_verified: true,
+  full_name: 'Member',
+  avatar_url: null,
+} satisfies UserProfile;
+
 async function broadcastAuth(payload: { user: UserProfile | null; isAdmin?: boolean }) {
   await act(async () => {
     const listeners = dependencies.listeners.get(CHANNELS.AUTH_STATE_CHANGED) ?? new Set();
@@ -130,6 +138,20 @@ describe('useAuth canonical session entry points', () => {
     await waitFor(() => expect(dependencies.checkIsAdmin).toHaveBeenCalledTimes(3));
     expect(result.current.status).toBe('signed-in');
     expect(result.current.error).toBeNull();
+  });
+
+  it('keeps the newer verified account when a delayed prior sign-in broadcast arrives', async () => {
+    dependencies.verifiedUser.mockResolvedValue(member);
+    await chrome.storage.local.set({ [STORAGE_KEYS.USER_PROFILE]: member });
+    const { result } = renderHook(() => useAuth());
+    await waitFor(() => expect(result.current.user?.id).toBe(member.id));
+
+    await broadcastAuth({ user: admin, isAdmin: true });
+
+    await waitFor(() => expect(dependencies.checkIsAdmin).toHaveBeenCalledTimes(2));
+    expect(result.current.user?.id).toBe(member.id);
+    expect(result.current.isAdmin).toBe(false);
+    expect(result.current.status).toBe('signed-in');
   });
 
   it('shows a guest after a genuine sign-out broadcast clears the canonical session', async () => {
