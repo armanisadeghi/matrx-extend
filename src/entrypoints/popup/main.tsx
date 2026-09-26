@@ -2,6 +2,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { openFirefoxSidebarFromGesture, openPanel, panelOpenRemedy } from '@/lib/panel/adapter';
 import {
   type CapturePagePanelRequest,
+  armCapturePagePanel,
   clearCapturePagePanel,
   requestCapturePagePanel,
 } from '@/lib/panel/launch-intent';
@@ -83,6 +84,8 @@ export function Popup() {
         if (written.status !== 'fulfilled') throw written.reason;
         if (opened.status !== 'fulfilled') throw opened.reason;
       }
+      if (!request) throw new Error("Couldn't prepare Capture page.");
+      await armCapturePagePanel(request);
       window.close();
     } catch (err) {
       if (request) await clearCapturePagePanel(request);

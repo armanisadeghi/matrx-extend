@@ -66,23 +66,25 @@ describe('popup capture route', () => {
   });
 
   it('never routes a second browser window, then lets the initiating window claim it', async () => {
-    const { requestCapturePagePanel, takePopupLaunchTarget } = await import(
+    const { armCapturePagePanel, requestCapturePagePanel, takePopupLaunchTarget } = await import(
       '@/lib/panel/launch-intent'
     );
     const request = requestCapturePagePanel(9);
     await request.write;
+    await armCapturePagePanel(request);
 
     expect(await takePopupLaunchTarget(10)).toBeNull();
     expect(await takePopupLaunchTarget(9)).toBe('scrape');
   });
 
   it('keeps simultaneous Capture clicks in separate browser windows', async () => {
-    const { requestCapturePagePanel, takePopupLaunchTarget } = await import(
+    const { armCapturePagePanel, requestCapturePagePanel, takePopupLaunchTarget } = await import(
       '@/lib/panel/launch-intent'
     );
     const first = requestCapturePagePanel(9);
     const second = requestCapturePagePanel(10);
     await Promise.all([first.write, second.write]);
+    await Promise.all([armCapturePagePanel(first), armCapturePagePanel(second)]);
 
     expect(first.key).not.toBe(second.key);
     await expect(
@@ -91,11 +93,12 @@ describe('popup capture route', () => {
   });
 
   it('serializes concurrent claims so only one callback can route the page', async () => {
-    const { requestCapturePagePanel, takePopupLaunchTarget } = await import(
+    const { armCapturePagePanel, requestCapturePagePanel, takePopupLaunchTarget } = await import(
       '@/lib/panel/launch-intent'
     );
     const request = requestCapturePagePanel(9);
     await request.write;
+    await armCapturePagePanel(request);
 
     await expect(
       Promise.all([takePopupLaunchTarget(9), takePopupLaunchTarget(9)]),
@@ -103,7 +106,22 @@ describe('popup capture route', () => {
   });
 
   it('fails closed when removing a claimed intent fails', async () => {
-    const { requestCapturePagePanel, takePopupLaunchTarget } = await import(
+    const { armCapturePagePanel, requestCapturePagePanel, takePopupLaunchTarget } = await import(
+      '@/lib/panel/launch-intent'
+    );
+    const request = requestCapturePagePanel(9);
+    await request.write;
+    await armCapturePagePanel(request);
+    const remove = vi
+      .spyOn(chrome.storage.session, 'remove')
+      .mockRejectedValueOnce(new Error('remove failed'));
+
+    await expect(takePopupLaunchTarget(9)).resolves.toBeNull();
+    remove.mockRestore();
+  });
+
+  it('leaves a failed-open request inert when exact cleanup also fails', async () => {
+    const { clearCapturePagePanel, requestCapturePagePanel, takePopupLaunchTarget } = await import(
       '@/lib/panel/launch-intent'
     );
     const request = requestCapturePagePanel(9);
@@ -112,8 +130,24 @@ describe('popup capture route', () => {
       .spyOn(chrome.storage.session, 'remove')
       .mockRejectedValueOnce(new Error('remove failed'));
 
-    await expect(takePopupLaunchTarget(9)).resolves.toBeNull();
+    await expect(clearCapturePagePanel(request)).resolves.toBe(false);
+    expect(await takePopupLaunchTarget(9)).toBeNull();
     remove.mockRestore();
+  });
+
+  it('does not route when arming the pending request fails', async () => {
+    const { armCapturePagePanel, requestCapturePagePanel, takePopupLaunchTarget } = await import(
+      '@/lib/panel/launch-intent'
+    );
+    const request = requestCapturePagePanel(9);
+    await request.write;
+    const set = vi
+      .spyOn(chrome.storage.session, 'set')
+      .mockRejectedValueOnce(new Error('arm failed'));
+
+    await expect(armCapturePagePanel(request)).rejects.toThrow('arm failed');
+    expect(await takePopupLaunchTarget(9)).toBeNull();
+    set.mockRestore();
   });
 
   it('clears its own pending intent and names a native panel refusal', async () => {
@@ -163,13 +197,17 @@ describe('popup capture route', () => {
   });
 
   it('clears only the failed click, leaving a newer capture intent intact', async () => {
-    const { clearCapturePagePanel, requestCapturePagePanel, takePopupLaunchTarget } = await import(
-      '@/lib/panel/launch-intent'
-    );
+    const {
+      armCapturePagePanel,
+      clearCapturePagePanel,
+      requestCapturePagePanel,
+      takePopupLaunchTarget,
+    } = await import('@/lib/panel/launch-intent');
     const failed = requestCapturePagePanel(9);
     await failed.write;
     const newer = requestCapturePagePanel(9);
     await newer.write;
+    await armCapturePagePanel(newer);
 
     await expect(clearCapturePagePanel(failed)).resolves.toBe(true);
     expect(await takePopupLaunchTarget(9)).toBe('scrape');
