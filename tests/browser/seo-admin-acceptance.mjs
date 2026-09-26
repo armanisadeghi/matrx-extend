@@ -20,13 +20,13 @@ const report = {
   mode: 'admin',
   status: 'unverified',
   scope:
-    'real admin sign-in and selected organization; public SEO audit, menu, and one saved history row',
+    'real admin sign-in and selected organization; public SEO audit, menu, and read-only existing history',
   targets: [],
   limitations: [
-    'Only one new public-page audit is saved in the selected campaign test organization; no prior row is changed or deleted.',
+    'No Save is clicked: the history UI does not expose a stable row ID, so a newly written row cannot be attributed to the opened snapshot.',
     'No clipboard content, provider recommendation, Chat, or member role is exercised.',
     'Title and heading presence are a bounded detail baseline; they do not prove every SEO field.',
-    'Backend failure/retry, history empty/error/loading, two-snapshot comparison, and changed-page diff remain unverified.',
+    'Save success/failure/retry, history empty/error/loading, two-snapshot comparison, and changed-page diff remain unverified.',
   ],
 };
 const target = (caseId, subtarget, evidence) =>
@@ -157,15 +157,10 @@ async function seoState(panel) {
       .some((node) => node.childElementCount === 0 && node.textContent.trim() === 'Saved snapshot');
     const liveButtons = [...(pane?.querySelectorAll('button') ?? [])]
       .filter((node) => node.textContent.trim() === 'Live');
-    const saveButtons = [...(pane?.querySelectorAll('button') ?? [])]
-      .filter((node) => node.textContent.trim() === 'Save');
-    const savedButtons = [...(pane?.querySelectorAll('button') ?? [])]
-      .filter((node) => node.textContent.trim() === 'Saved');
     return {
       documentTimeOrigin: performance.timeOrigin,
       linked, title, headings, reAudit, copyCount: copy.length,
       menuOpen: menuOwnedByCopy, choices,
-      saveCount: saveButtons.length, savedCount: savedButtons.length,
       historyToggleCount: history.length,
       historyCount: historyToggle && /^\d+$/.test(historyToggle.textContent.trim())
         ? Number(historyToggle.textContent.trim()) : 0,
@@ -278,8 +273,9 @@ try {
       });
       assert.ok(menu.menuOpen);
 
-      // Close the popover without choosing a clipboard action. One Save creates
-      // a new row for the current public URL in the selected test organization.
+      // Close the popover without choosing a clipboard action. Existing
+      // history is read-only; Save remains withheld until a row ID can be
+      // joined to the specific UI snapshot opened by this runner.
       stage = 'close_copy_menu';
       await click(panel, 'title', 'Copy audit');
       await waitFor(
@@ -287,27 +283,11 @@ try {
         () => seoState(panel),
         (state) => state?.linked && !state.menuOpen,
       );
-      const beforeSave = await seoState(panel);
-      assert.equal(beforeSave.saveCount, 1, 'one Save button for current live audit');
-      assert.equal(beforeSave.savedCount, 0, 'audit has not been saved by this run');
-      stage = 'save_public_audit';
-      await click(panel, 'button', 'Save');
-      const afterSave = await waitFor(
-        'save_returned_and_history_refreshed',
-        () => seoState(panel),
-        (state) =>
-          state?.linked &&
-          state.savedCount === 1 &&
-          state.saveCount === 0 &&
-          state.historyToggleCount === 1 &&
-          state.historyCount >= beforeSave.historyCount + 1 &&
-          !state.error,
-        30_000,
-      );
-      target('T04', 'one_public_audit_saved_and_history_refreshed', {
-        savedButtonVisible: true,
-        historyCountIncreased: true,
-      });
+      const existing = await seoState(panel);
+      if (existing.historyToggleCount !== 1 || existing.historyCount < 1) {
+        report.read_only_history = { status: 'unverified', reason: 'no_existing_visible_rows' };
+        return;
+      }
 
       stage = 'history_open';
       await click(panel, 'title', 'Saved audits for this URL');
@@ -317,10 +297,10 @@ try {
         (state) =>
           state?.linked &&
           state.historyOpen &&
-          state.historyRowCount === afterSave.historyCount &&
+          state.historyRowCount === existing.historyCount &&
           state.newestHistoryLabelUnique,
       );
-      target('T05', 'history_opens_for_current_public_url', {
+      target('T05', 'existing_history_opens_for_current_public_url', {
         rowCountMatchesBadge: true,
         newestRowHasUniqueVisibleLabel: true,
       });
@@ -351,7 +331,7 @@ try {
           state.savedSnapshot &&
           state.liveButtonCount === 1 &&
           !state.historyOpen &&
-          state.title === titles[1],
+          !!state.title,
       );
       stage = 'return_to_live';
       await click(panel, 'button', 'Live');
@@ -365,9 +345,9 @@ try {
           state.title === titles[1] &&
           state.reAudit,
       );
-      target('T05', 'newest_saved_snapshot_and_live_return', {
+      target('T05', 'existing_snapshot_and_live_return', {
         snapshotVisible: true,
-        selectedSnapshotTitleMatchesPublicDom: true,
+        savedSnapshotHasTitle: true,
         liveAuditRestored: true,
       });
 
@@ -389,7 +369,7 @@ try {
           state.title === titles[1] &&
           state.reAudit &&
           state.historyToggleCount === 1 &&
-          state.historyCount >= afterSave.historyCount &&
+          state.historyCount >= existing.historyCount &&
           !state.error,
         30_000,
       );
@@ -404,10 +384,10 @@ try {
           state.historyRowCount === persisted.historyCount &&
           state.newestHistoryLabel === open.newestHistoryLabel,
       );
-      target('T05', 'saved_history_survives_panel_reload', {
+      target('T05', 'existing_history_survives_panel_reload', {
         newDocumentObserved: true,
         currentPublicTitleMatches: true,
-        newestSavedRowStillVisible: true,
+        sameVisibleRowLabelStillPresent: true,
       });
     },
   });

@@ -1,26 +1,26 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "feature_id": "EXT-F-1008",
   "mode": "admin",
-  "status": "prepared_unverified",
+  "status": "read_only_history_prepared_save_held",
   "script": "tests/browser/seo-admin-acceptance.mjs",
   "prior_run": "docs/stabilization/runs/seo-admin-001.json",
-  "scope": "One authorized Save of the live public IANA audit into the explicitly selected existing campaign test organization, then read-only history and reload controls in an owned native panel.",
-  "new_subtargets": [
+  "source_peer": "docs/stabilization/reports/seo-admin-persistence-peer.json",
+  "decision": "The first Save runtime is held. The runner contains no Save click, so an ambiguous partial run cannot create a second audit row on retry.",
+  "identity_blocker": {
+    "save_boundary": "saveSeoAudit returns a real row ID from the insert, but SeoView stores it only in component state.",
+    "history_boundary": "fetchSeoAuditHistoryForUrl returns row IDs, but HistoryList renders each ID only as a React key. The DOM button exposes a formatted timestamp and summary, not the row ID; opening it renders a Saved snapshot without the ID.",
+    "effect": "Under the current runner-only file ownership, a real response or read-only backend query can identify a saved row but cannot prove that this exact ID is the UI row opened before and after reload. A timestamp/title/count match could select an older or concurrent row. The 25-row query cap also makes badge growth an invalid save proof at the cap.",
+    "needed_change": "Expose the saved row ID on its history button and selected snapshot through the production SEO UI, or provide another stable user-facing identity. Then a runner may observe the real insert ID, durably reserve the one authorized Save before clicking, and compare that ID across history and reload."
+  },
+  "read_only_subtargets_if_existing_rows_are_visible": [
     {
-      "case_id": "EXT-F-1008-T04",
-      "subtarget": "one_public_audit_saved_and_history_refreshed",
-      "oracle": "After one trusted Save click, the live button says Saved, the current URL's history badge rises by at least one, and no visible audit error is present. The underlying save and history fetch use the real extension and backend."
+      "case_id": "EXT-F-1008-T05",
+      "scope": "History list opens, closes, and reopens for the current public URL; its row count matches the visible badge. The newest unique visible row opens a Saved snapshot, and Live restores the current audit."
     },
     {
       "case_id": "EXT-F-1008-T05",
-      "subtarget": "history_open_close_newest_snapshot_live",
-      "oracle": "The current URL's history list opens with a row count matching its badge, closes and reopens, then the unique newest row opens a Saved snapshot with the public page title. Live restores the current audit."
-    },
-    {
-      "case_id": "EXT-F-1008-T05",
-      "subtarget": "saved_history_survives_panel_reload",
-      "oracle": "A new panel document time origin is observed; the current public audit returns, its saved history badge remains, and reopening history shows the same newest row label."
+      "scope": "After a new panel document is observed, the current public audit returns and the same visible history-row label appears again. This is a UI continuity observation, not row-ID attribution."
     }
   ],
   "already_verified_by_admin001_not_new_coverage": [
@@ -28,12 +28,11 @@
     "T09 two public title and heading-group presence matches"
   ],
   "limits": [
-    "Preparation only; no browser, runtime, build, or acceptance suite ran in this lane. Root guard and fresh independent source review precede first execution.",
-    "The campaign creates one new public-page audit row. It does not alter or delete prior rows, accounts, roles, or other organizations.",
-    "T04 backend failure and retry remain unverified.",
-    "T05 second snapshot and saved-row diff remain unverified; a unique newest visible label is required to prevent ambiguous selection.",
-    "T06 empty, loading, and backend error states remain unverified.",
-    "T08 changed-page diff and verdict behavior remain unverified.",
-    "No clipboard action, provider recommendation, Chat/Pilot operation, response interception, or auth injection is performed."
+    "No browser, runtime, build, or test was run in this repair lane; root guard and fresh peer review precede execution.",
+    "If no existing row is visible, read-only history remains unverified and the runner reports that reason without writing data.",
+    "T04 Save and failure/retry remain unverified; no row is created, changed, or deleted.",
+    "T05 exact row identity, second snapshot, and saved-row diff remain unverified.",
+    "T06 empty, loading, and backend error states and T08 changed-page diff remain unverified.",
+    "No clipboard, provider recommendation, Chat/Pilot, interception, or auth injection occurs."
   ]
 }
