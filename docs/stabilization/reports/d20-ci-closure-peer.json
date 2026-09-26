@@ -1,0 +1,54 @@
+{
+  "defect_id": "EXT-D-0020",
+  "role": "independent_ci_closure_peer",
+  "reviewed_at": "2026-09-26",
+  "original_reproduction": {
+    "commit": "ca8c023c54b2a0ac6e7d5c86e6806c8bf9331bf0",
+    "run_id": "36253562084",
+    "symptom": "EnvironmentTeardownError after assertions passed, with lazy ChatView import chain reaching clsx after test environment teardown",
+    "local_red_reproduction": false
+  },
+  "repair": {
+    "commit": "9a3cdb9c435ff3cb67a124ea45a524a0642880e0",
+    "included_in_ci_commit": "79f5cdeb5bd2e29bfa0e05d3e646d900f82319e0",
+    "change": "popup-claim-recovery test awaits the active ChatView import after mounting App and the ScrapeView import after the recovery click before teardown",
+    "assertions_retained": true
+  },
+  "integration_ci": {
+    "run_id": "36254397373",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/36254397373",
+    "commit": "79f5cdeb5bd2e29bfa0e05d3e646d900f82319e0",
+    "result": "success",
+    "log": "/tmp/matrx-ci-36254397373.log",
+    "unit_suite": "179 files passed, 1 skipped; 1441 tests passed, 4 skipped",
+    "teardown_error": false
+  },
+  "remote_lock_update": {
+    "commit": "79f5cdeb5bd2e29bfa0e05d3e646d900f82319e0",
+    "verified": true,
+    "evidence": "The CI commit is origin/main and includes merge 89ed14ac; that merge updates pnpm-lock.yaml by six lines changed in each direction. The repair commit is an ancestor of origin/main."
+  },
+  "verdict_a_acceptance": {
+    "status": "PASS_BOUNDED",
+    "evidence": [
+      "The exact original CI symptom was a post-assertion environment teardown error; the unchanged local red attempt was already documented as passing and is not treated as deterministic reproduction.",
+      "The named remote CI run completed successfully on a commit containing the repair, and its full unit suite log contains no EnvironmentTeardownError.",
+      "The test's route and recovery assertions remain in the repaired source."
+    ],
+    "limits": [
+      "The intermittent failure was not reproduced deterministically on the original state locally.",
+      "A passing CI rerun is integration evidence but does not prove zero future flake probability or overall product health."
+    ]
+  },
+  "verdict_b_quality": {
+    "status": "PASS_BOUNDED",
+    "evidence": [
+      "The repair awaits both modules at the test lifecycle boundary without suppressions or changes to production behavior.",
+      "The repair commit is present in the exact successful CI commit.",
+      "The lockfile merge is present in that same CI commit and origin/main."
+    ],
+    "limits": [
+      "This review establishes closure evidence only for EXT-D-0020's specified CI teardown symptom."
+    ]
+  }
+}

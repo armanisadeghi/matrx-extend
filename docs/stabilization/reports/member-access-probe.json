@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "report_id": "member-access-probe",
+  "status": "designated_principal_and_member_role_verified_access_method_unverified",
+  "checked_at": "2026-09-26",
+  "principal": {
+    "email": "test@test.com",
+    "provenance": "Existing designated non-admin test account in common-docs/projects/question-desk-in-app/ATTACK-2026-09-12.md and common-docs/projects/coding-agent-bridge/verify-2026-09-15-cross-tool-2.md",
+    "auth_user_exists_live": true,
+    "extension_admin_row_exists_live": false,
+    "role_source": "src/lib/supabase/queries.ts checkIsAdmin reads admin.admins by user_id; the live check found no row for this designated principal"
+  },
+  "organization_role_evidence": {
+    "method": "Read-only aggregate over iam.organization_member for the designated test user, grouped by role; shared-with-admin fixture counted by existence join, without selecting organization or other user data",
+    "member_memberships": 22,
+    "member_memberships_shared_with_admin_fixture": 22,
+    "owner_memberships": 3,
+    "admin_memberships": 2,
+    "implication": "A member-role organization exists for ordinary-member coverage. Select and verify that exact organization before an org-scoped case; an owner/admin organization would not prove an ordinary-member boundary."
+  },
+  "credential_access": {
+    "status": "unverified",
+    "local_metadata": "The authorized aidream .env has TEST_USER_EMAIL and TEST_USER_ID variable names, but no TEST_USER_PASSWORD or other test-member password variable name. No value was printed or copied.",
+    "known_alternate": "The frontend dev-login route has a closed-list as=test@test.com path, previously used in a non-admin browser walk documented in common-docs/operations/for-arman/2026-09-26/final-independent-check.md. That route is not evidence of the real web-form plus extension OAuth sign-in required by this campaign.",
+    "vault": "No dedicated Vault MCP tool was available. The primary Chrome session is admin-authenticated; Vault UI was not opened because the root has not granted a browser lease."
+  },
+  "runtime_verdict": "No ordinary-member extension case was executed. All corresponding inventory cells remain unverified.",
+  "next_safe_route": [
+    "After root resource/browser guard GO, use an isolated test profile and the existing designated test account through the real web form; retrieve its credential only at point of use from a known authorized Vault item if available.",
+    "Confirm the resulting extension account is test@test.com, checkIsAdmin resolves false, and choose an organization where the live membership role is member before any org-scoped ordinary-member assertion.",
+    "If a credential cannot be located or the real sign-in cannot complete, preserve the member cells as unverified and record the exact access failure. Do not create a principal, change membership, inject a session, or promote a dev-login walk to OAuth proof."
+  ],
+  "sources": [
+    "docs/stabilization/PLAN.md",
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/reports/dev-auth-readiness.json",
+    "docs/stabilization/reports/isolated-auth-fixture-diagnosis.json",
+    "src/lib/supabase/queries.ts",
+    "src/lib/org/active-org.ts",
+    "Supabase MCP read-only SQL against project brsgrqvjdzwihsvnfqkf: designated auth.users and admin.admins existence booleans; iam.organization_member role counts for only the designated test account"
+  ]
+}

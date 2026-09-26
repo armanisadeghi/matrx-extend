@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "remote-deps-021-peer",
+  "status": "consumer action review complete",
+  "packages": [
+    {
+      "name": "@ai-matrx/content-ir",
+      "previous_version": "0.19.5",
+      "target_version": "0.19.6",
+      "consumer_action": "None. The published 0.19.6 changelog changes `/source` table continuation around backtick fences and adds `findInlineCodeSpans` / `mapInlineCodeSpans` for inline content. The extension imports Content IR core and wire APIs, but has no `/source` imports or direct source tokenizer/table parser use, so these APIs do not require extension call-site changes.",
+      "evidence": "Published npm tarball package/CHANGELOG.md, heading 0.19.6; pnpm-lock.yaml importer/package/snapshot entries; src/components/kinds/RenderBlockView.tsx:43-44 imports core and wire; src/lib/content-ir/inbound.ts:16-17 imports core and wire; source search across src found no @ai-matrx/content-ir/source import, findInlineCodeSpans, mapInlineCodeSpans, or direct source parser use."
+    }
+  ],
+  "verification": [
+    "Compared the published 0.19.6 changelog fetched from the npm registry with the prior 0.19.5 changelog and package release metadata.",
+    "Inspected extension Content IR imports and searched source call sites to determine whether the changed /source API is consumed.",
+    "No install, build, test, or browser verification performed; root owns the guarded frozen install and broader verification."
+  ],
+  "open_actions": [
+    "None for extension consumer adoption; dependency refresh is recorded in the already-merged lockfile change."
+  ],
+  "source_limit": "The aidream sibling checkout's content-ir-core package.json and local changelog remain at 0.19.5, and node_modules is also 0.19.5. The 0.19.6 release notes were therefore read from the published npm tarball rather than the sibling working tree."
+}

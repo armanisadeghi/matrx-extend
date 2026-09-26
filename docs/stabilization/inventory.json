@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T15:51:13.818389+00:00",
+  "updated_at": "2026-09-26T16:13:25.236558+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -1261,6 +1261,31 @@
             "full-suite",
             "remote-CI"
           ]
+        },
+        {
+          "id": "EXT-F-0003-T10",
+          "title": "Settle sidepanel lazy imports before test teardown",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Frozen source and dependencies; resource guard admission."
+          ],
+          "steps": [
+            "Run sidepanel popup recovery test retaining route and error assertions.",
+            "Run full configured CI and inspect unhandled errors."
+          ],
+          "expected": [
+            "No pending lazy import accesses a disposed test environment.",
+            "Assertions pass with zero unhandled errors."
+          ],
+          "dimensions": [
+            "focused",
+            "full-suite",
+            "remote-CI"
+          ]
         }
       ],
       "cells": {
@@ -1273,7 +1298,8 @@
             "EXT-D-0005",
             "EXT-D-0016",
             "EXT-D-0017",
-            "EXT-D-0019"
+            "EXT-D-0019",
+            "EXT-D-0020"
           ],
           "run_ids": [
             "release-red-001",
@@ -1291,7 +1317,8 @@
             "release-stabilization-017",
             "release-stabilization-018",
             "release-stabilization-021",
-            "release-stabilization-023"
+            "release-stabilization-023",
+            "popup-teardown-suite-001"
           ],
           "retest_status": "pass"
         },
@@ -1304,7 +1331,8 @@
             "EXT-D-0005",
             "EXT-D-0016",
             "EXT-D-0017",
-            "EXT-D-0019"
+            "EXT-D-0019",
+            "EXT-D-0020"
           ],
           "run_ids": [
             "release-red-001",
@@ -1322,7 +1350,8 @@
             "release-stabilization-017",
             "release-stabilization-018",
             "release-stabilization-021",
-            "release-stabilization-023"
+            "release-stabilization-023",
+            "popup-teardown-suite-001"
           ],
           "retest_status": "pass"
         },
@@ -1335,7 +1364,8 @@
             "EXT-D-0005",
             "EXT-D-0016",
             "EXT-D-0017",
-            "EXT-D-0019"
+            "EXT-D-0019",
+            "EXT-D-0020"
           ],
           "run_ids": [
             "release-red-001",
@@ -1353,7 +1383,8 @@
             "release-stabilization-017",
             "release-stabilization-018",
             "release-stabilization-021",
-            "release-stabilization-023"
+            "release-stabilization-023",
+            "popup-teardown-suite-001"
           ],
           "retest_status": "pass"
         }

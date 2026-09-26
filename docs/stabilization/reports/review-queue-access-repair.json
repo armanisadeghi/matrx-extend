@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "artifact": "review-queue-access-repair",
+  "observed_at_utc": "2026-09-26 16:15:41 UTC",
+  "scope": "Read-only duplicate and feedback lookup for EXT-D-0012; no queue or credential mutation.",
+  "canonical_target": "https://db.matrxserver.com",
+  "operator_diagnosis": {
+    "operator": "/Users/armanisadeghi/code/ai-matrx/scripts/execute-admin-query.ts",
+    "reported_failure": "pnpm admin-query --file /tmp/matrx-review-queue-stabilization-read.sql returned Invalid API key",
+    "local_source": "The operator loads NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SECRET_KEY from ai-matrx/.env.local when process variables are unset. The selected URL host is db.matrxserver.com and the secret key is present in sb_secret format. No credential value was printed or changed.",
+    "remaining_cause": "The canonical gateway rejected the existing local operator key. Key rotation, revocation, and operator-specific compatibility were not determined in this read-only lane."
+  },
+  "connector_target_verification": {
+    "dns_cname": "db.matrxserver.com resolves to brsgrqvjdzwihsvnfqkf.supabase.co",
+    "gateway_project_ref": "An unauthenticated HEAD response from db.matrxserver.com/rest/v1/ returned sb-project-ref brsgrqvjdzwihsvnfqkf",
+    "connector_project": "The Supabase connector lists brsgrqvjdzwihsvnfqkf as AI Matrx; get_project_url returns https://brsgrqvjdzwihsvnfqkf.supabase.co.",
+    "conclusion": "The connector project and the required canonical custom domain address the same Supabase project."
+  },
+  "read_only_lookup": {
+    "method": "Supabase execute_sql connector against the verified canonical project",
+    "table": "agent.review_queue",
+    "filter": "repo_slug = matrx-extend and (title contains port or instructions contains local engine port or origin.agent_label = matrx-extend-stabilization), ordered newest first, limit 30",
+    "result": "Zero rows",
+    "duplicate_port_review_row": false,
+    "prior_lane_feedback_row": false
+  },
+  "handoff": "The prepared EXT-D-0012 review item in port-review-handoff-prepare.json has no matching existing row in the live queue at observation time. This lane did not insert it or perform UI verification."
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "report_id": "member-vault-probe-peer",
+  "reviewed_commit": "6c0003b5",
+  "reviewed_source": "tests/browser/member-vault-access-probe.mjs",
+  "acceptance_verdict": "unverified_runtime_not_executed",
+  "quality_verdict": "source_ready_for_guarded_runtime",
+  "findings": [
+    {
+      "severity": "informational",
+      "finding": "The probe deliberately treats a title containing test@test.com as a candidate only. A zero-candidate inventory still yields the inventory-observed status, so that status must never be read as member credential availability or member authentication.",
+      "evidence": "The output includes candidate visibility and counts; the limitations explicitly disclaim credential identity and member access."
+    }
+  ],
+  "acceptance_evidence": {
+    "isolated_browser": "The imported native side-panel harness creates a disposable Chrome profile, verifies its spawned process and release artifact, and removes that profile after closing its own child process.",
+    "real_admin_authentication": "The source enters admin credentials on the real web login page, waits for the dashboard URL, then waits for the extension Account panel to show the admin email, admin role, and Sign out control.",
+    "settled_masked_inventory": "Vault auth and list loading settle before the Mine view is rendered; the probe waits for the Vault heading and a nonloading Mine scope, then observes the Shared scope. Item titles are reduced to candidate counts within the panel realm.",
+    "sensitive_data_boundary": "No credential values, item IDs, item titles, raw auth URLs, page text, tokens, or authenticated screenshots are returned or persisted. The harness screenshots precede authentication. Failure output contains only fixed stage and category labels.",
+    "prohibited_actions": "No member sign-in, Fill, Reveal, item mutation, account or role change, primary-profile action, or injected session appears in this source path."
+  },
+  "runtime_readiness": "Ready for one root-guarded run with MATRX_MEMBER_VAULT_PROBE_RUN=1 while the shared admin Vault lease is free. Inspect the sanitized result for candidate visibility; any member identity claim requires a separate guarded step.",
+  "checks": [
+    "node --check tests/browser/member-vault-access-probe.mjs: pass",
+    "pnpm exec biome check tests/browser/member-vault-access-probe.mjs docs/stabilization/reports/member-vault-runtime-prepare.json: pass",
+    "No browser, build, or test run was launched by this peer."
+  ]
+}
