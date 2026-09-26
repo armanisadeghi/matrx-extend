@@ -110,8 +110,8 @@ describe('switching workspace is visible immediately', () => {
     selects.length = 0;
     vi.mocked(getActiveOrganizationId).mockResolvedValue(OLD_ORG);
     vi.mocked(listMemberOrganizations).mockResolvedValue([
-      { id: OLD_ORG, name: "admin's Workspace", isPersonal: true },
-      { id: NEW_ORG, name: 'AI Matrx', isPersonal: false },
+      { id: OLD_ORG, name: "admin's Workspace" },
+      { id: NEW_ORG, name: 'AI Matrx' },
     ]);
   });
 

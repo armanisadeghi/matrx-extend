@@ -66,9 +66,9 @@ const WORKSPACE = '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f';
 const PROBE = '304cd2ed-a65e-4c52-8375-324e605d16bd';
 
 const MEMBERSHIPS = [
-  { id: AI_MATRX, name: 'AI Matrx', isPersonal: false },
-  { id: WORKSPACE, name: "admin's Workspace", isPersonal: true },
-  { id: PROBE, name: 'ZZZ G2 Activation Probe', isPersonal: false },
+  { id: AI_MATRX, name: 'AI Matrx' },
+  { id: WORKSPACE, name: "admin's Workspace" },
+  { id: PROBE, name: 'ZZZ G2 Activation Probe' },
 ];
 
 /** A `mediaDb()` stand-in that records the filters and answers with rows. */

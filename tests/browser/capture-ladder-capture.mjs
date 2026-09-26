@@ -27,6 +27,8 @@
  * RUN (needs an aidream serving /capture — local is fine):
  *   pnpm build
  *   MATRX_LADDER_API=http://127.0.0.1:8077 node tests/browser/capture-ladder-capture.mjs
+ *   MATRX_LADDER_ORGANIZATION_ID=<uuid>  the organization to act in; required
+ *                   when the account belongs to more than one.
  */
 
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
@@ -107,7 +109,7 @@ async function memberOrganizations(accessToken) {
     ...new Set((await rpc.json()).map((r) => r.container_id ?? r.containerId).filter(Boolean)),
   ];
   const orgs = await fetch(
-    `${SUPABASE}/rest/v1/organizations?select=id,name,is_personal&id=in.(${ids.join(',')})`,
+    `${SUPABASE}/rest/v1/organizations?select=id,name&id=in.(${ids.join(',')})`,
     { headers: { apikey: ANON, Authorization: `Bearer ${accessToken}`, 'Accept-Profile': 'iam' } },
   );
   return orgs.json();
@@ -133,6 +135,26 @@ async function api(path, { token, organizationId, method = 'GET', body } = {}) {
   return { ok: response.ok, status: response.status, body: parsed };
 }
 
+/**
+ * The organization this run acts in: the one the operator named in
+ * MATRX_LADDER_ORGANIZATION_ID, or the sole membership. With several
+ * memberships and nothing named, the run stops and lists them — it never picks.
+ */
+function chooseOrganization(orgs) {
+  const wanted = process.env.MATRX_LADDER_ORGANIZATION_ID;
+  if (wanted) {
+    const hit = orgs.find((row) => row.id === wanted);
+    if (!hit)
+      fail(`MATRX_LADDER_ORGANIZATION_ID=${wanted} is not one of this account's organizations.`);
+    return hit;
+  }
+  if (orgs.length === 1) return orgs[0];
+  fail(
+    'this account belongs to several organizations; set MATRX_LADDER_ORGANIZATION_ID to one of: ' +
+      orgs.map((row) => `${row.id} (${row.name})`).join(', '),
+  );
+}
+
 async function main() {
   if (!existsSync(join(EXTENSION_DIR, 'manifest.json'))) {
     fail(`no built extension at ${EXTENSION_DIR} — run \`pnpm build\` first.`);
@@ -151,7 +173,7 @@ async function main() {
 
   const session = await signIn();
   const orgs = await memberOrganizations(session.access_token);
-  const org = orgs.find((o) => o.is_personal !== true) ?? orgs[0];
+  const org = chooseOrganization(orgs);
   console.log(`  signed in   ${EMAIL} · organization ${org.name}`);
 
   const before = await api('/capture/handoffs', {

@@ -33,6 +33,8 @@
  *                   steals keyboard focus from whoever is at the machine.
  *   --seed          write one real handoff row for this org through aidream
  *                   /capture/handoffs first (needs the endpoints deployed)
+ *   MATRX_LADDER_ORGANIZATION_ID=<uuid>  the organization to act in; required
+ *                   when the account belongs to more than one.
  *
  * Nothing here prints a credential. The password is read from aidream's .env
  * and passed straight to the token endpoint.
@@ -135,7 +137,7 @@ async function organizationsFor({ supabaseUrl, publishableKey, accessToken }) {
   ];
   if (!ids.length) return [];
   const orgs = await fetch(
-    `${supabaseUrl}/rest/v1/organizations?select=id,name,is_personal&id=in.(${ids.join(',')})`,
+    `${supabaseUrl}/rest/v1/organizations?select=id,name&id=in.(${ids.join(',')})`,
     {
       headers: {
         apikey: publishableKey,
@@ -168,6 +170,26 @@ async function handoffsFor({ supabaseUrl, publishableKey, accessToken, organizat
     return { error: `${response.status} ${await response.text()}` };
   }
   return { rows: await response.json() };
+}
+
+/**
+ * The organization this run acts in: the one the operator named in
+ * MATRX_LADDER_ORGANIZATION_ID, or the sole membership. With several
+ * memberships and nothing named, the run stops and lists them — it never picks.
+ */
+function chooseOrganization(orgs) {
+  const wanted = process.env.MATRX_LADDER_ORGANIZATION_ID;
+  if (wanted) {
+    const hit = orgs.find((row) => row.id === wanted);
+    if (!hit)
+      fail(`MATRX_LADDER_ORGANIZATION_ID=${wanted} is not one of this account's organizations.`);
+    return hit;
+  }
+  if (orgs.length === 1) return orgs[0];
+  fail(
+    'this account belongs to several organizations; set MATRX_LADDER_ORGANIZATION_ID to one of: ' +
+      orgs.map((row) => `${row.id} (${row.name})`).join(', '),
+  );
 }
 
 async function main() {
@@ -213,10 +235,9 @@ async function main() {
         'That is a real finding, not a harness problem.',
     );
   }
-  // Prefer a real shared organization over the personal one: a capture queue is
-  // the organisation's material, and a personal tenant is the least interesting
-  // place to prove it.
-  const organization = orgs.find((row) => row.is_personal !== true) ?? orgs[0];
+  // The organization is an explicit choice, exactly as in the product: the one
+  // named by MATRX_LADDER_ORGANIZATION_ID, or the sole membership. Never a guess.
+  const organization = chooseOrganization(orgs);
   const organizationId = organization.id;
   const organizationName = organization.name ?? organizationId;
   console.log(`  acting as   organization ${organizationName} (of ${orgs.length} membership(s))`);

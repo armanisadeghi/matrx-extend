@@ -1,13 +1,13 @@
 #!/usr/bin/env tsx
 /**
  * check:org-default-ban — NOTHING THAT BUILDS A REQUEST READS A "DEFAULT
- * ORGANIZATION", AND NOTHING FALLS BACK TO THE PERSONAL ONE.
+ * ORGANIZATION", AND NOTHING BRINGS BACK AN ORGANIZATION "TYPE".
  *
  * THE RULING (Arman, 2026-09-19). A "default organization" is at most a
  * per-client DISPLAY preference. The user-level saved preference
  * (`users.user_preferences → preferences.organization.defaultOrganizationId`)
  * must never participate in resolving the organization a request acts in, and
- * the personal organization is never a fallback. A client may remember the
+ * no organization is ever a fallback. A client may remember the
  * organization the person SET ON THIS DEVICE; with nothing set, the request is
  * HELD, the picker is shown, they set one, and the request proceeds. In his
  * words:
@@ -25,10 +25,12 @@
  * file, so documentation of the dead rung is allowed and code is not):
  *
  *   1. Any read of `defaultOrganizationId` / `default_organization_id`.
- *   2. Any personal-organization fallback in the org resolver:
- *      `current_personal_org_id` anywhere, or `isPersonal` / `is_personal`
- *      used inside `src/lib/org/` to CHOOSE an organization (find / filter /
- *      sort / a ternary / a return) rather than to LABEL one.
+ *   2. Any trace of the deleted personal/business organization type
+ *      (access ladder: organizations are unlimited and equal). The
+ *      `iam.organizations.is_personal` column and the
+ *      `current_personal_org_id` / `ensure_personal_organization` RPCs are gone
+ *      from the database; `isPersonal` / `is_personal` anywhere, or either RPC
+ *      name, is a re-introduction — as a fallback, a sort, or a label.
  *   3. The phrase "default organization" (any case) in copy or an error
  *      string — a screen that says it teaches the concept back into the
  *      product.
@@ -57,7 +59,6 @@ const ROOT = path.resolve(import.meta.dirname, '..');
  * regression, not for the class.
  */
 const SCAN_ROOTS = ['src', 'scripts', 'tests'];
-const ORG_RESOLVER_DIR = 'src/lib/org/';
 
 /** This guard and its planted fixtures name the banned shapes on purpose. */
 const SELF = ['scripts/check-org-default-ban.ts'];
@@ -79,12 +80,8 @@ const EXEMPT = /org-default-exempt:\s*\S.{19,}/;
  * real regression walks past is worse than none.
  */
 const SAVED_DEFAULT = /default_?organization_?id/i;
-const PERSONAL_ORG_COLUMN = /\bcurrent_personal_org_id\b/;
+const PERSONAL_ORG_RPC = /\b(?:current_personal_org_id|ensure_personal_organization)\b/;
 const PERSONAL_FLAG = /\b(?:isPersonal|is_personal)\b/;
-/** Shapes that pick a row rather than describe one. */
-const CHOOSES = /\b(?:find|filter|sort|some|every)\s*\(|\?\s*[^:\n]*:|\breturn\b/;
-/** `isPersonal: …` / `'is_personal'` in a select list — a label, not a choice. */
-const LABELS = /\b(?:isPersonal|is_personal)\s*:|['"`][^'"`]*is_personal[^'"`]*['"`]/;
 const DEFAULT_ORG_PHRASE = /default\s+organization/i;
 
 export interface Finding {
@@ -132,19 +129,14 @@ export function findingsIn(source: string, file: string): Finding[] {
         reason: 'reads the account-level saved default organization preference',
       });
     }
-    if (PERSONAL_ORG_COLUMN.test(line)) {
-      out.push({ file, line: at, reason: 'falls back to the personal organization' });
+    if (PERSONAL_ORG_RPC.test(line)) {
+      out.push({ file, line: at, reason: 'calls a deleted personal-organization RPC' });
     }
-    if (
-      file.startsWith(ORG_RESOLVER_DIR) &&
-      PERSONAL_FLAG.test(line) &&
-      CHOOSES.test(line) &&
-      !LABELS.test(line)
-    ) {
+    if (PERSONAL_FLAG.test(line)) {
       out.push({
         file,
         line: at,
-        reason: 'uses is_personal to CHOOSE an organization instead of to label one',
+        reason: 'reads the deleted is_personal organization type (organizations are all equal)',
       });
     }
     if (DEFAULT_ORG_PHRASE.test(line)) {
@@ -211,7 +203,13 @@ function selfTest(): number {
       'src/lib/org/active-org.ts',
       'const org = rows.find((r) => r.current_personal_org_id === user.id);',
       1,
-      'the personal-organization column',
+      'the deleted personal-organization RPC',
+    ],
+    [
+      'src/lib/auth/signup.ts',
+      "await supabase.rpc('ensure_personal_organization', { p_user_id: user.id });",
+      1,
+      'the deleted ensure-personal-organization RPC',
     ],
     [
       'src/features/settings/SettingsView.tsx',
@@ -228,14 +226,20 @@ function selfTest(): number {
     [
       'src/lib/org/active-org.ts',
       '    isPersonal: (row as { is_personal?: unknown }).is_personal === true,',
-      0,
-      'is_personal read as a LABEL (allowed)',
+      1,
+      'is_personal read as a label (the column is gone)',
     ],
     [
       'src/lib/org/active-org.ts',
       "  .select('id,name,is_personal')",
-      0,
-      'is_personal in a select list (allowed)',
+      1,
+      'is_personal in a select list (the column is gone)',
+    ],
+    [
+      'src/features/settings/SettingsView.tsx',
+      'label: o.isPersonal ? `${o.name} (personal)` : o.name,',
+      1,
+      'a "(personal)" badge outside the resolver',
     ],
     [
       'src/lib/org/active-org.ts',
@@ -293,7 +297,7 @@ function main(): void {
     }
     if (
       !SAVED_DEFAULT.test(source) &&
-      !PERSONAL_ORG_COLUMN.test(source) &&
+      !PERSONAL_ORG_RPC.test(source) &&
       !DEFAULT_ORG_PHRASE.test(source) &&
       !PERSONAL_FLAG.test(source)
     ) {
@@ -304,7 +308,7 @@ function main(): void {
 
   if (findings.length === 0) {
     console.log(
-      '✅ check:org-default-ban: no saved-default read, no personal-organization fallback,\n' +
+      '✅ check:org-default-ban: no saved-default read, no organization type or its RPCs,\n' +
         '   and nothing says "default organization". The organization a request acts in comes\n' +
         '   from what the person set ON THIS DEVICE — or the request is held and they are asked\n' +
         '   (src/lib/org/active-org.ts § holdForActiveOrganizationId).',
@@ -320,7 +324,7 @@ function main(): void {
       'a default org, which means we just have user now."\n\n' +
       "The organization comes from this device's own selection, or from the sole membership, or\n" +
       'the request is HELD and the person is asked: holdForActiveOrganizationId() in\n' +
-      'src/lib/org/active-org.ts. Never a saved preference, never the personal organization,\n' +
+      'src/lib/org/active-org.ts. Never a saved preference, never an organization type,\n' +
       'never "first".\n',
   );
   process.exit(1);

@@ -128,8 +128,8 @@ describe('the side panel opens on the gesture the web app hands us', () => {
       await Promise.resolve();
       gestureSpent = true;
       return [
-        { id: AI_MATRX, name: 'AI Matrx', isPersonal: false },
-        { id: WORKSPACE, name: "admin's Workspace", isPersonal: true },
+        { id: AI_MATRX, name: 'AI Matrx' },
+        { id: WORKSPACE, name: "admin's Workspace" },
       ];
     });
     vi.mocked(getActiveOrganizationId).mockResolvedValue(WORKSPACE);
