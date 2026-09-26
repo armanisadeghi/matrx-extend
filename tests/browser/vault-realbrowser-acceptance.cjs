@@ -533,19 +533,35 @@ const receiptBackedSaveUpdateMode =
 // of Store publication or installation.
 const RECEIPT_BACKED_FROZEN_SOURCE_COMMIT = 'a2b5aa7e1082330ab6658b07477b31ea3705ca72';
 const RECEIPT_BACKED_LOCAL_RELEASE_ZIPS = new Map([
-  ['3bad3aaea3d8906caff1f05504570145eb813c04', {
-    manifestSha256: 'c395a10b2b8d6dfc42dc045f553a9098781eab3d33634e5a0a1a947f0bec8b9b',
-    version: '0.2.38',
-  }],
-  ['c4430ab5b19491ff57bfc649eae9938ea6b3dab4', {
-    manifestSha256: 'e3d17a8d95b3f99805c74aba6a6cc42560dfac6f865cc75cf6e675f7ad3fd5dd',
-    version: '0.2.53',
-  }],
+  [
+    '3bad3aaea3d8906caff1f05504570145eb813c04',
+    {
+      manifestSha256: 'c395a10b2b8d6dfc42dc045f553a9098781eab3d33634e5a0a1a947f0bec8b9b',
+      version: '0.2.38',
+    },
+  ],
+  [
+    'c4430ab5b19491ff57bfc649eae9938ea6b3dab4',
+    {
+      manifestSha256: 'e3d17a8d95b3f99805c74aba6a6cc42560dfac6f865cc75cf6e675f7ad3fd5dd',
+      version: '0.2.53',
+    },
+  ],
 ]);
 const RECEIPT_BACKED_LOCAL_RELEASE_ZIP_ARTIFACT_KIND = 'local-release-zip-artifact';
+const RECEIPT_BACKED_LOCAL_SOURCE_ARTIFACTS = new Map([
+  [
+    '41bf5be59dc5a279b5a6c1f4e91cebdade34bf51',
+    {
+      manifestSha256: '510d508d9d3e75ad581a956a3c89b00e63465e4a99198ddc5d144da70b34132a',
+      version: '0.2.53',
+    },
+  ],
+]);
 const RECEIPT_BACKED_SAVE_UPDATE_COMMITS = new Set([
   RECEIPT_BACKED_FROZEN_SOURCE_COMMIT,
   ...RECEIPT_BACKED_LOCAL_RELEASE_ZIPS.keys(),
+  ...RECEIPT_BACKED_LOCAL_SOURCE_ARTIFACTS.keys(),
 ]);
 const RECEIPT_BACKED_ROUTER_SHA256 =
   '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
@@ -1330,6 +1346,7 @@ async function verifyArtifact() {
   assert(extensionManifest.manifest_version === 3, 'artifact_not_mv3');
   if (receiptBackedSaveUpdateMode) {
     const localRelease = RECEIPT_BACKED_LOCAL_RELEASE_ZIPS.get(manifest.sourceCommit);
+    const localSource = RECEIPT_BACKED_LOCAL_SOURCE_ARTIFACTS.get(manifest.sourceCommit);
     if (localRelease) {
       assert(
         manifestSha256 === localRelease.manifestSha256,
@@ -1342,6 +1359,19 @@ async function verifyArtifact() {
       assert(
         manifest.manifestVersion === localRelease.version,
         'receipt_backed_local_release_version_mismatch',
+      );
+    } else if (localSource) {
+      assert(
+        manifestSha256 === localSource.manifestSha256,
+        'receipt_backed_local_source_manifest_mismatch',
+      );
+      assert(
+        manifest.kind === 'local-multi-repo-source-artifact',
+        'receipt_backed_local_source_kind_mismatch',
+      );
+      assert(
+        manifest.manifestVersion === localSource.version,
+        'receipt_backed_local_source_version_mismatch',
       );
     } else {
       assert(

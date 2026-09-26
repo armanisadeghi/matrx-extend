@@ -45,37 +45,66 @@ vi.mock('@/lib/debug/log', () => ({ log: { info: vi.fn(), warn: vi.fn() } }));
 describe('Safari background OAuth tab transport', () => {
   const session = new Map<string, unknown>();
   const removed: number[] = [];
+  let tabUrl = 'https://db.example.test/auth/v1/oauth/authorize';
   beforeEach(async () => {
+    session.clear();
     vi.resetModules();
     callbacks.handlers.clear();
     callbacks.broadcasts.length = 0;
     callbacks.complete.mockReset();
     removed.length = 0;
+    tabUrl = 'https://db.example.test/auth/v1/oauth/authorize';
+    const setSession = async (values: Record<string, unknown>) => {
+      for (const [key, value] of Object.entries(values)) {
+        session.set(key, value);
+      }
+    };
+    const getSession = async (keys: string[]) => {
+      const values: Record<string, unknown> = {};
+      for (const key of keys) {
+        if (session.has(key)) {
+          values[key] = session.get(key);
+        }
+      }
+      return values;
+    };
+    const removeSession = async (keys: string[]) => {
+      for (const key of keys) {
+        session.delete(key);
+      }
+    };
+    const registerRemoved = (listener: typeof callbacks.removed) => {
+      callbacks.removed = listener;
+    };
+    const registerAlarm = (listener: typeof callbacks.alarm) => {
+      callbacks.alarm = listener;
+    };
+    const registerCommitted = (listener: typeof callbacks.committed) => {
+      callbacks.committed = listener;
+    };
     vi.stubGlobal('browser', undefined);
     vi.stubGlobal('chrome', {
       storage: {
         session: {
-          set: async (v: Record<string, unknown>) =>
-            Object.entries(v).forEach(([k, x]) => session.set(k, x)),
-          get: async (keys: string[]) =>
-            Object.fromEntries(keys.filter((k) => session.has(k)).map((k) => [k, session.get(k)])),
-          remove: async (keys: string[]) => keys.forEach((k) => session.delete(k)),
+          set: setSession,
+          get: getSession,
+          remove: removeSession,
         },
       },
       tabs: {
         create: async () => ({ id: 44 }),
         update: vi.fn(),
-        get: async () => ({ url: 'https://db.example.test/auth/v1/oauth/authorize' }),
+        get: async () => ({ url: tabUrl }),
         remove: async (id: number) => removed.push(id),
-        onRemoved: { addListener: (f: typeof callbacks.removed) => (callbacks.removed = f) },
+        onRemoved: { addListener: registerRemoved },
       },
       alarms: {
         create: vi.fn(),
         clear: async () => true,
-        onAlarm: { addListener: (f: typeof callbacks.alarm) => (callbacks.alarm = f) },
+        onAlarm: { addListener: registerAlarm },
       },
       webNavigation: {
-        onCommitted: { addListener: (f: typeof callbacks.committed) => (callbacks.committed = f) },
+        onCommitted: { addListener: registerCommitted },
       },
     });
     const { registerSafariAuthorizationBackground } = await import('@/lib/auth/safari-background');
@@ -110,19 +139,45 @@ describe('Safari background OAuth tab transport', () => {
     ['wrong path', 44, 'https://www.aimatrx.com/wrong?code=x&state=state'],
     ['wrong state', 44, 'https://www.aimatrx.com/auth/extension-callback?code=x&state=wrong'],
   ])('refuses %s without exchanging a code', async (_case, tabId, url) => {
-    session.clear();
     await callbacks.handlers.get('auth:safari-start')?.();
     callbacks.committed?.({ tabId, frameId: 0, url });
     await vi.waitFor(() => expect(callbacks.complete).not.toHaveBeenCalled());
   });
 
-  it('cleans its attempt when cancelled or timed out', async () => {
+  it('closes an owned authorization tab when cancelled', async () => {
     await callbacks.handlers.get('auth:safari-start')?.();
-    callbacks.removed?.(44);
+    await callbacks.handlers.get('auth:safari-cancel')?.();
     await vi.waitFor(() => expect(session.has('safari-attempt')).toBe(false));
+    expect(removed).toContain(44);
+  });
+
+  it('preserves a repurposed tab while cancelling its attempt', async () => {
+    await callbacks.handlers.get('auth:safari-start')?.();
+    tabUrl = 'https://example.com/reused';
+    await callbacks.handlers.get('auth:safari-cancel')?.();
+    expect(removed).toHaveLength(0);
+  });
+
+  it('cleans its attempt on timeout without closing a tab the user may reuse', async () => {
     await callbacks.handlers.get('auth:safari-start')?.();
     callbacks.alarm?.({ name: 'safari-timeout' });
     await vi.waitFor(() => expect(session.has('safari-attempt')).toBe(false));
-    expect(removed).toContain(44);
+    expect(removed).toHaveLength(0);
+  });
+
+  it('keeps a matching attempt after a forged error and accepts its real callback', async () => {
+    await callbacks.handlers.get('auth:safari-start')?.();
+    callbacks.committed?.({
+      tabId: 44,
+      frameId: 0,
+      url: 'https://www.aimatrx.com/auth/extension-callback?error=denied&state=wrong',
+    });
+    callbacks.complete.mockResolvedValue({ id: 'u', email: 'a@example.com' });
+    callbacks.committed?.({
+      tabId: 44,
+      frameId: 0,
+      url: 'https://www.aimatrx.com/auth/extension-callback?code=code&state=state',
+    });
+    await vi.waitFor(() => expect(callbacks.complete).toHaveBeenCalledOnce());
   });
 });

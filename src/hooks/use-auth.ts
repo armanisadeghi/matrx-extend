@@ -73,7 +73,13 @@ export function useAuth() {
         STORAGE_KEYS.USER_PROFILE,
         STORAGE_KEYS.IS_ADMIN,
       ]);
-      const session = await chrome.storage.session.get([STORAGE_KEYS.SAFARI_AUTH_FAILURE]);
+      // Safari's extension storage has no session area in some test and older
+      // runtime contexts. A missing one means there is simply no transient
+      // Safari sign-in failure to show.
+      const sessionStorage = chrome.storage.session;
+      const session = sessionStorage
+        ? await sessionStorage.get([STORAGE_KEYS.SAFARI_AUTH_FAILURE])
+        : {};
       if (!isCurrent()) return;
       const profile = result[STORAGE_KEYS.USER_PROFILE] as UserProfile | undefined;
       const cachedAdmin = result[STORAGE_KEYS.IS_ADMIN] as boolean | undefined;
