@@ -1,0 +1,11 @@
+{
+  "task_id": "reset-census-peer",
+  "lane": "independent source-only privacy and oracle review",
+  "reviewed_commit": "c3d169c",
+  "verdict": "PASS for diagnostics only; runtime remains pending",
+  "privacy": "Receipts contain fixed source-class/shape counts only; raw key/value, salt, and fingerprints stay out of durable evidence. Opaque identities are transiently passed through CDP and compared in-page.",
+  "oracle": "Initial-guest equality contributes only matches_initial_guest diagnostics. No assertion consumes it as an exemption; all unexplained overlap remains fatal, including unclassified keys and unchanged values.",
+  "categories": "The finite source map yields coarse named classes, with every unmapped key assigned unclassified. Shapes are limited to fixed primitive/array/object buckets.",
+  "limitation": "A class label or matching guest baseline does not bind an observed value to its writer/default. Source tracing and exact default proof remain required before any acceptance exception.",
+  "runtime": "Not run; root owns browser/resource guard. EXT-D-0015 remains open."
+}
