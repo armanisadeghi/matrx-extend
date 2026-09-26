@@ -549,6 +549,7 @@ describe('owned local-browser tab controller', () => {
     });
     const h = harness();
     const registration = await register(h);
+    vi.mocked(log.warn).mockClear();
     const expiresAtSecond = Math.floor(Date.now() / 1000) + 30;
     const deadlineMs = expiresAtSecond * 1000;
     await h.emit({
@@ -643,9 +644,176 @@ describe('owned local-browser tab controller', () => {
       outcome: 'outcome_unknown',
       reason: 'field_unavailable',
     });
-    expect(JSON.stringify({ result, logs: vi.mocked(log.warn).mock.calls })).not.toContain(
+    const diagnostic = vi.mocked(log.warn).mock.calls;
+    expect(diagnostic).toEqual([
+      ['desktop', 'local_browser_terminal:vault_login:selector_check:filled=false:submitted=false'],
+    ]);
+    const safeReceipt = JSON.stringify(result);
+    const safeDiagnostic = JSON.stringify(diagnostic);
+    for (const sentinel of [
       'private-password',
+      'https://example.test/login',
+      '#password',
+      'selector_not_found',
+      'admitted_document_lost',
+    ])
+      expect(`${safeReceipt}${safeDiagnostic}`).not.toContain(sentinel);
+    expect(safeDiagnostic).not.toContain(ids.call);
+    h.controller.stop();
+    Object.assign(globalThis, { chrome: originalChrome });
+    HTMLElement.prototype.getBoundingClientRect = originalRect;
+  });
+
+  it('maps a local step wait timeout to form_changed before the command deadline', async () => {
+    const happyWindow = window as typeof window & { happyDOM: DetachedWindowAPI };
+    happyWindow.happyDOM.setURL('https://example.test/login');
+    document.body.innerHTML =
+      '<form method="post" action="/login"><input id="username"><input id="password" type="password"></form>';
+    const originalChrome = globalThis.chrome;
+    const originalRect = HTMLElement.prototype.getBoundingClientRect;
+    HTMLElement.prototype.getBoundingClientRect = () => ({ width: 10, height: 10 }) as DOMRect;
+    Object.assign(globalThis.chrome as object, {
+      scripting: {
+        executeScript: async (request: { func: (...args: never[]) => unknown; args?: never[] }) => [
+          { result: await request.func(...(request.args ?? [])) },
+        ],
+      },
+    });
+    const spec = JSON.stringify({
+      version: 1,
+      expect: { timeout_ms: 1000 },
+      url_vocabulary: { version: 1, challenge: ['challenge'], sign_in: ['login'] },
+      recipe_id: '00000000-0000-4000-8000-000000000099',
+      recipe_version: 1,
+      descriptors: [],
+    });
+    const original = { documentId: ids.challenge, url: 'https://example.test/login' };
+    const h = harness();
+    h.deps.command = {
+      currentDocument: vi.fn(async () => original),
+    } as unknown as NonNullable<LocalBrowserControllerDeps['command']>;
+    vi.mocked(log.warn).mockClear();
+    const invoke = h.controller as unknown as {
+      performClaimedCommand: (...args: unknown[]) => Promise<{ reason: string }>;
+    };
+    const result = await invoke.performClaimedCommand(
+      {
+        operation: 'vault_login',
+        credential_item_id: ids.call,
+        fields: [
+          { selector: '#username', field_key: 'username', clear_first: true },
+          { selector: '#password', field_key: 'password', clear_first: true },
+        ],
+        steps: [
+          {
+            fields: ['#username', '#password'],
+            submit: { kind: 'none' },
+            wait_for: { selector: '#account-home', timeout_ms: 1000 },
+          },
+        ],
+        expect: { timeout_ms: 1000 },
+        verification_spec_json: spec,
+        verification_digest: await frozenDigest(spec),
+      },
+      42,
+      original,
+      {
+        status: 'claimed',
+        command_id: ids.call,
+        deadline_ms: Date.now() + 10_000,
+        completion_grant: 'complete',
+        injection: {
+          origin: 'https://example.test',
+          expires_at_ms: Date.now() + 9_000,
+          fields: { username: 'portal-user', password: 'private-password' },
+        },
+      },
+      () => true,
+      async () => true,
     );
+    expect(vi.mocked(log.warn).mock.calls).toEqual([
+      ['desktop', 'local_browser_terminal:vault_login:wait:filled=true:submitted=false'],
+    ]);
+    expect(result.reason).toBe('form_changed');
+    h.controller.stop();
+    Object.assign(globalThis, { chrome: originalChrome });
+    HTMLElement.prototype.getBoundingClientRect = originalRect;
+  }, 10_000);
+
+  it('keeps a submitted same-origin transition out of original-document binding checks', async () => {
+    const happyWindow = window as typeof window & { happyDOM: DetachedWindowAPI };
+    happyWindow.happyDOM.setURL('https://example.test/login');
+    document.body.innerHTML =
+      '<form method="post" action="/login"><input id="username"><input id="password" type="password"><button id="submit">Sign in</button></form>';
+    let submitted = false;
+    document.getElementById('submit')?.addEventListener('click', () => {
+      submitted = true;
+    });
+    const originalChrome = globalThis.chrome;
+    const originalRect = HTMLElement.prototype.getBoundingClientRect;
+    HTMLElement.prototype.getBoundingClientRect = () => ({ width: 10, height: 10 }) as DOMRect;
+    Object.assign(globalThis.chrome as object, {
+      scripting: {
+        executeScript: async (request: { func: (...args: never[]) => unknown; args?: never[] }) => [
+          { result: await request.func(...(request.args ?? [])) },
+        ],
+      },
+    });
+    const spec = JSON.stringify({
+      version: 1,
+      expect: { timeout_ms: 1000 },
+      url_vocabulary: { version: 1, challenge: ['challenge'], sign_in: ['login'] },
+      recipe_id: '00000000-0000-4000-8000-000000000099',
+      recipe_version: 1,
+      descriptors: [],
+    });
+    const original = { documentId: ids.challenge, url: 'https://example.test/login' };
+    const h = harness();
+    h.deps.command = {
+      currentDocument: vi.fn(async () =>
+        submitted ? { documentId: ids.challenge, url: 'https://other.test/after-login' } : original,
+      ),
+    } as unknown as NonNullable<LocalBrowserControllerDeps['command']>;
+    vi.mocked(log.warn).mockClear();
+    const invoke = h.controller as unknown as {
+      performClaimedCommand: (...args: unknown[]) => Promise<{ reason: string }>;
+    };
+    const result = await invoke.performClaimedCommand(
+      {
+        operation: 'vault_login',
+        credential_item_id: ids.call,
+        fields: [
+          { selector: '#username', field_key: 'username', clear_first: true },
+          { selector: '#password', field_key: 'password', clear_first: true },
+        ],
+        submit: { kind: 'click', selector: '#submit' },
+        expect: { timeout_ms: 1000 },
+        verification_spec_json: spec,
+        verification_digest: await frozenDigest(spec),
+      },
+      42,
+      original,
+      {
+        status: 'claimed',
+        command_id: ids.call,
+        deadline_ms: Date.now() + 10_000,
+        completion_grant: 'complete',
+        injection: {
+          origin: 'https://example.test',
+          expires_at_ms: Date.now() + 9_000,
+          fields: { username: 'portal-user', password: 'private-password' },
+        },
+      },
+      () => true,
+      async () => !submitted,
+    );
+    expect(result.reason).toBe('tab_lost');
+    expect(vi.mocked(log.warn).mock.calls).toEqual([
+      [
+        'desktop',
+        'local_browser_terminal:vault_login:post_submit_document:filled=true:submitted=true',
+      ],
+    ]);
     h.controller.stop();
     Object.assign(globalThis, { chrome: originalChrome });
     HTMLElement.prototype.getBoundingClientRect = originalRect;

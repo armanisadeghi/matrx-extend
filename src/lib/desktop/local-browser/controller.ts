@@ -984,7 +984,7 @@ export class LocalBrowserController {
       status: CredentialLoginStatus,
     ): Promise<LocalCommandResult> => {
       const reason =
-        !isCurrent() || !(await assertCurrentDocument())
+        !isCurrent() || (!submitted && !(await assertCurrentDocument()))
           ? 'binding_changed'
           : Date.now() >= claimed.deadline_ms
             ? 'deadline_exceeded'
@@ -995,7 +995,7 @@ export class LocalBrowserController {
                 : lastStage === 'selector_check' || lastStage === 'materialize'
                   ? 'field_unavailable'
                   : lastStage === 'wait'
-                    ? 'deadline_exceeded'
+                    ? 'form_changed'
                     : lastStage === 'post_submit_document'
                       ? 'tab_lost'
                       : lastStage === 'before_evidence' ||
