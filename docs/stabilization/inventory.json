@@ -227,10 +227,12 @@
             "status": "unverified",
             "verified_substeps": [
               "Actual login source uses public PKCE OAuth client registration, not general Auth redirect allowlist.",
-              "Active client registration contains exact development callback and expected browser callbacks."
+              "Active client registration contains exact development callback and expected browser callbacks.",
+              "admin-signin001 proved actual admin signin and full extension reload persistence on0.2.51."
             ],
             "remaining_criteria": [
-              "Actual browser sign-in and reload/session behavior on fresh unpacked build; Mac unlock pending."
+              "Callback origin not exposed in observed UI; directcallback-observation criterion remainsunverified.",
+              "Ordinary-member signin remainsunverified."
             ]
           }
         }
@@ -3630,12 +3632,10 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "blocked_run_id": "guest-settings-003",
-              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "run_id": "guest-settings-006",
-              "evidence": "docs/stabilization/runs/guest-settings-006.json",
-              "detail": "Resource-invalid partial batch; warm/panel-reopen observations retained but full extension reload/full theme criteria unverified. Original System theme restored and verified in settings-cleanup-001."
+              "status": "pass",
+              "run_id": "admin-signin-001",
+              "evidence": "docs/stabilization/runs/admin-signin-001.json",
+              "detail": "Real Settings sign-in reached admin@admin.com ADMIN and identity persisted through full extension Reload. Noorgselected; separatecapturelistwarning recorded."
             }
           }
         },
@@ -4063,7 +4063,8 @@
             "guest-settings-006",
             "settings-cleanup-001",
             "guest-settings-007",
-            "guest-theme-001"
+            "guest-theme-001",
+            "admin-signin-001"
           ],
           "retest_status": "not-run"
         },
@@ -4086,7 +4087,16 @@
       },
       "inventory_status": "complete",
       "missing_items": [],
-      "source_complete": true
+      "source_complete": true,
+      "unverified_leads": [
+        {
+          "id": "EXT-L-0006",
+          "summary": "Capture list no-workspace notice appears immediately after signin and reload before explicit org selection. Determine intended unset-state UX before labeling defect; authentication succeeded.",
+          "source": "docs/stabilization/runs/admin-signin-001.json",
+          "state": "needs-expected-behavior-review",
+          "wave": "A"
+        }
+      ]
     },
     {
       "id": "EXT-F-1004",
