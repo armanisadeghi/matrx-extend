@@ -1,32 +1,24 @@
 # Stabilization coordinator
 
-## Mandate and resume
-User approved autonomous test→capture→fix→independent retest→green integration. Read PLAN.md, inventory.json, defects/, runs/ and this file. Chat/Pilot waveD remains last, except universal blockers. Inventory source gate passed; runtime coverage is partial. No new approval is needed for authorized work. Preserve concurrent changes, fetch main at boundaries and before push; never invoke current push-first release.sh until repaired.
+## Resume contract
+User authorized continuous test → capture → fix → independent retest → green integration. Read PLAN.md, inventory.json, defects/ and runs/. The inventory alone determines coverage. Chat/Pilot wave D stays last. Preserve concurrent changes; fetch main before integration and push. No branches, worktrees, destructive Git or unguarded test/build/browser runs.
 
 ## Current truth
-- Base main53fd39f, release0.2.47. All campaign artifacts and interrupted partial fix were preserved in external sweep76ba129. No data was discarded. Provider disconnect interrupted work; user explicitly resumed.
-- EXT-D-0001 (sidepanel .custom render crash): fixed candidate, fresh peer original repro passed twice as guest; seven adjacent cases passed. Typecheck/build/catalog passed; unit suite1233passed,3live-db tests explicitly skipped. Independent source review accepted browser mapping. Commitbb9f18f pushed origin/main; EXT-D-0001 closed.
-- Fresh development build receipt runs/render-build-001.json. Chrome devIDcihdmkcdjjckfhjpgoedmgfpoljebaml version0.2.47 confirmed. Store0.2.23 remains disabled, data retained. Reload initially left0.2.44; Loadunpacked exactabsolute path corrected it. Always verify live version, not just clicking Reload.
-- Deepcapture remains unverified: short example.com fixture cannot distinguish deep vs fast behavior. No defect claimed from unchanged output. UI latency was not measured, so no performance pass claim.
-- Guest confirmed. Admin web session/vault credential located earlier without revealing secret; extension signed-in testing remains unverified. Ordinary-member credential unresolved.
-- Resource guard independently verified for trusted bounded foreground commands, cap1. All current leases/jobs stopped. Guard is not an arbitrary daemon sandbox; see policy. One first-batch resource invalidation retained; latest retest/regression healthy.
+- EXT-D-0001 sidepanel startup crash is independently verified and closed; fix bb9f18f and closure e42f2b1 pushed. Guest panel opened twice; six neighboring guest cases fully supported across two runs; ten prior pass labels downgraded to unverified after independent evidence audit. Full feature health is not proven.
+- Main merged remote release 0.2.50 at 6532e639; frozen-lockfile installation passed. Local unpublished commits include e216abd Settings evidence and d9350b4 EXT-D-0002 release repair. Latest Source landing changes are inventoried; changed Save cases remain unverified. Remote-delta report records stable-ID additions and retirements.
+- EXT-D-0002 reached a peer-approved candidate after two failed lower-tier reviews and bounded Astra repair. Root-guarded original red proof, 54 shipping fixture assertions and 4 filesystem recovery tests passed. Merged-source typecheck passed. Full 0.2.48 suite passed 1257 tests, three explicit live-DB skips; focused release guard after worker-cap edit passed 8 tests. New 0.2.50 packages/source need release gates. Actual strict release/build and integration remain pending. No claim of closure yet.
+- Chrome development extension cihdmkcdjjckfhjpgoedmgfpoljebaml runs 0.2.47 from .output/chrome-mv3-dev. Source is now 0.2.50: rebuild and verify live version/hash before more UI tests. Store 0.2.23 remains disabled with data preserved. Clicking Reload once previously left stale 0.2.44; Load unpacked at the exact path corrected it.
+- Guest verified. Admin web session and vault entry located without revealing secrets; extension authenticated testing remains unverified. Ordinary-member credential and explicit development-clone DB credentials unresolved. Three prior live-DB tests were skipped, never counted as pass.
+- Deep capture needs a discriminating real fixture. Short example.com text does not prove deep behavior. Timing includes automation overhead and is not a product latency benchmark.
+- Deferred leads EXT-L-0001/2 concern Chat speech lifecycle. EXT-L-0003 is unverified release stale-ZIP cleanup reporting. Leads are not confirmed defects.
 
-## Completed agents
-- fix_sidepanel_render Sol implementation: reports/fix-sidepanel-render.json.
-- render_code_review Sol fresh peer: reports/render-code-review.json. Two preexisting speech lifecycle leads EXT-L-0001/2 remain unverified in Chat feature waveD.
-- render_ui_retest Luna fresh peer: reports/render-ui-retest.json and runs/render-retest-001.json. No active UI work. fix_release_gate Sol owns release repair; release_fixture_safety Luna reviews isolation; next_guest_batch Luna prepares next local Settings cases.
+## Active ownership and next actions
+Sol release_runtime_readiness is checking package consumer actions and latest SavedCaptures source census. Evidence-audit Luna completed corrections. Release final peer and repair agents completed; reports on disk.
+1. Finish package-consumer/source reconciliation, commit exact campaign evidence, then invoke admitted real release. Root owns a 15-minute wall deadline; no timeout binary installed. No heavy/browser job active after integrated-install-002 exit.
+2. Commit exact campaign receipts and inventory changes; inspect remote again. Verify real release strict gates before publication. No red trunk pushes. Keep public Store verification distinct from local packaging; no public Store health claim.
+3. Rebuild/reload development runtime with receipt, then continue contained guest/admin feature testing in narrow Luna batches. Defer Chat/Pilot until the canonical non-chat gate passes.
+4. Independently retest fixes, close only with linked evidence, push verified increments frequently. Register reviewable UI handoff using existing review-queue skill without creating an owner approval pause.
 
-## Next actions
-1. EXT-D-0001 integratedbb9f18f and closed; maintain closure receipts.
-2. Repair release candidate ordering before campaign shipping: current release publishes before checks, contrary to user mandate. Reproduce with isolated local fixture, independent review and safe candidate validation; never test publication against realremote.
-3. Continue contained guest/auth local features. Deepcapture needs discriminating fixture. Keep every remaining case/mode unverified until evidence; coverage comes only from inventory.json.
-4. Reconcile remote changes at each batch. Update environment/runtime receipt after every build/reload. No stale-build defect reports.
-
-## Quality, performance and efficiency
-Reject generic evidence and invalid fixtures; keep reports compact and batches narrow. Two failed lower-tier attempts trigger decomposition/escalation. Resource preflight failures are environment events, not product defects. Preserve raw timing evidence with overhead caveats; no invented latency. First product fix validation complete; full-system health remains far from proven. Follow PLAN thresholds, no management layers or dashboard work.
-
-## Active work after first fix
-EXT-D-0002 guarded old-script red proof: runs/release-red-001.json confirms failedchecks stillpublish/replacebundle. First candidate peer review found ship.sh sync prepush bypass, conflict handling, non-atomic tag/main publication, snapshot setup and insufficientfaultfixtures. Sol fix_release_gate is in correctionround2; no worker mayexecute rawtests. Its exploratory rawfixture run is invalid and notaccepted. Root alone launches approved commands throughguard.
-Luna next_guest_batch is executing nine Settings cases under ROOT-held guest-settings-002 browserpermit session94455; watchdog log /tmp/matrx-guest-settings-002-resource.log. Root must stopUI then releasepermit; no otherheavyjoballowed. Code/buildsnapshot unchanged; v0.2.47 UI. Resourcepolicy has exact isolated release fixture commands added, pendingcommit.
-
-Release round2 peer review still failed on live-lock takeover and artifactcleanup/rollback dishonesty. Objective two-failurethreshold triggered /root/release_final_repair Astra medium, bounded15min. Solimplementation/review agentscomplete. No greenfixture accepted yet; firstrawfixture invalid, oldscriptguardedredproofvalid. UIguest-settings-002 stillactive asabove.
+## Resource and efficiency rules
+One heavy run or manual browser lease at a time, admitted by scripts/stabilization-resource.mjs and the configurable policy. Guard refuses unsafe admission and stops its owned job on sustained pressure. No raw worker tests/builds. At most one lightweight source worker alongside heavy work. No active browser permit now. A previous unguarded worker fixture run is invalid, superseded by admitted proofs.
+Reject unsupported evidence; two failed lower-tier attempts trigger decomposition/escalation. Source fixtures establish release ordering and recovery, not actual compiler or Store behavior. Use compact reports and evidence paths; do not rebuild process scaffolding. Every remaining unverified case stays visible.

@@ -1,0 +1,17 @@
+{
+  "id": "integrated-install-002",
+  "feature_id": "EXT-F-0001",
+  "status": "pass",
+  "at": "2026-09-26T02:47:57.072Z",
+  "source_sha": "6532e63911778fd97a7e8fb813859b56c66b7bc8",
+  "command": [
+    "pnpm",
+    "install",
+    "--frozen-lockfile",
+    "--ignore-scripts"
+  ],
+  "exit_code": 0,
+  "resource_invalid": false,
+  "log_sha256": "a4d38d1cca885f8844ba42a32f1f5a568e47bd687d5d1ed838e09dcfe5a42a51",
+  "lock_sha256": "23ddcc65bcd21855ee8fd3fbdd248461d6b85061c4ab2a9c81ed8ff2567235a8"
+}

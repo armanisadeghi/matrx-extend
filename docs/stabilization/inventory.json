@@ -4,7 +4,7 @@
   "updated_at": "2026-09-26T02:28:14.192234+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
-  "source_sha": "f70ecd47bd8a864bee377ddb1235219efc8eff23",
+  "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
   "modes": [
     "guest",
     "member",
@@ -272,7 +272,17 @@
       "readiness_gaps": [
         "Current release implementation violates pre-push green requirement. Reproduce safely with isolated fixture before repair; never invoke actual release until corrected."
       ],
-      "current_source_behavior": "release.sh pushes before validation, tolerates failed checks and parallelizes checks/builds. This conflicts with current campaign requirements; no acceptance claim is made."
+      "current_source_behavior": "release.sh pushes before validation, tolerates failed checks and parallelizes checks/builds. This conflicts with current campaign requirements; no acceptance claim is made.",
+      "unverified_leads": [
+        {
+          "id": "EXT-L-0003",
+          "summary": "Old/stale ZIP cleanup failure may be silently ignored; nonblocking source-review lead, runtime reproduction required.",
+          "source": "docs/stabilization/reports/release-final-peer.json",
+          "source_anchor": "release.sh:493",
+          "state": "needs-reproduction",
+          "wave": "A"
+        }
+      ]
     },
     {
       "id": "EXT-F-1001",
@@ -1539,10 +1549,15 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "scope": "Visible state or preference persistence only; not full integration behavior",
+              "status": "unverified",
               "run_id": "guest-settings-002",
-              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+              "evidence": "docs/stabilization/runs/guest-settings-002.json",
+              "verified_substeps": [
+                "Guest Organization view showed sign-in to choose; no organization selection or post-reload Acting as result was observed."
+              ],
+              "remaining_criteria": [
+                "Guest cold/reload verification remains open: confirm the guest sees the sign-in/choose-organization remedy and no organization selector, with no implicit org selected. The expected text also includes authenticated selection and Acting as behavior that a guest case cannot perform; record this as an acceptance-spec mode-mixing defect. Preserve that expected text pending explicit mode-specific correction; authenticated positive selection belongs to existing member/admin cases."
+              ]
             }
           }
         },
@@ -1619,10 +1634,15 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
+              "status": "unverified",
               "run_id": "render-retest-001",
-              "detail": "pass_restored_System",
-              "evidence": "docs/stabilization/runs/render-retest-001.json"
+              "evidence": "docs/stabilization/runs/render-retest-001.json",
+              "verified_substeps": [
+                "System/Light/Dark selections were reflected by selection controls."
+              ],
+              "remaining_criteria": [
+                "Verify each selected appearance is actually applied and persists after reopen/reload."
+              ]
             }
           }
         },
@@ -1699,10 +1719,15 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "scope": "Visible state or preference persistence only; not full integration behavior",
+              "status": "unverified",
               "run_id": "guest-settings-002",
-              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+              "evidence": "docs/stabilization/runs/guest-settings-002.json",
+              "verified_substeps": [
+                "Without an organization, Default agent displayed “Choose an organization above.”"
+              ],
+              "remaining_criteria": [
+                "Guest cold/reload verification remains open for the no-organization instruction and unavailable picker. The expected text also includes selecting/persisting an agent when an organization is set, which a guest case cannot perform; record this as an acceptance-spec mode-mixing defect. Preserve that expected text pending explicit mode-specific correction; authenticated positive behavior belongs to existing member/admin cases."
+              ]
             }
           }
         },
@@ -1939,10 +1964,15 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "scope": "Visible state or preference persistence only; not full integration behavior",
+              "status": "unverified",
               "run_id": "guest-settings-002",
-              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+              "evidence": "docs/stabilization/runs/guest-settings-002.json",
+              "verified_substeps": [
+                "Privacy switch was toggled off/on and observed across Settings navigation; original value restored."
+              ],
+              "remaining_criteria": [
+                "Verify whether identity/email context sharing follows the preference; no sharing action or network behavior was exercised."
+              ]
             }
           }
         },
@@ -2091,10 +2121,15 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "scope": "Visible state or preference persistence only; not full integration behavior",
+              "status": "unverified",
               "run_id": "guest-settings-002",
-              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+              "evidence": "docs/stabilization/runs/guest-settings-002.json",
+              "verified_substeps": [
+                "Advanced agent capabilities was absent from guest Settings AX tree."
+              ],
+              "remaining_criteria": [
+                "Guest cold/reload verification remains open: confirm the admin-only section and its controls remain absent/inaccessible to a guest. The expected text also requires admin-positive behavior and ordinary-member denial, which do not belong to a guest case; record this as an acceptance-spec mode-mixing defect. Preserve that expected text pending explicit mode-specific correction; authenticated positive/denial checks belong to existing admin/member cases."
+              ]
             }
           }
         },
@@ -2323,10 +2358,15 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "scope": "Visible state or preference persistence only; not full integration behavior",
+              "status": "unverified",
               "run_id": "guest-settings-002",
-              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+              "evidence": "docs/stabilization/runs/guest-settings-002.json",
+              "verified_substeps": [
+                "Saved-login offer preference toggled and persisted through Settings navigation; original value restored."
+              ],
+              "remaining_criteria": [
+                "Open supported sign-in form and verify the saved-login offer follows preference; no form was exercised."
+              ]
             }
           }
         },
@@ -2403,10 +2443,15 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "scope": "Visible state or preference persistence only; not full integration behavior",
+              "status": "unverified",
               "run_id": "guest-settings-002",
-              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+              "evidence": "docs/stabilization/runs/guest-settings-002.json",
+              "verified_substeps": [
+                "Password suggestion preference toggled and persisted through Settings navigation; original value restored."
+              ],
+              "remaining_criteria": [
+                "Verify on-page suggestion presentation changes between enabled and quiet; no credential form was exercised."
+              ]
             }
           }
         },
@@ -2563,10 +2608,15 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
+              "status": "unverified",
               "run_id": "render-retest-001",
-              "detail": "pass_persisted_after_reload_then_restored_Off",
-              "evidence": "docs/stabilization/runs/render-retest-001.json"
+              "evidence": "docs/stabilization/runs/render-retest-001.json",
+              "verified_substeps": [
+                "Auto-scrape preference persisted after extension reload, then original Off value was restored."
+              ],
+              "remaining_criteria": [
+                "Verify the preference actually controls background scrape on page load; only the setting and persistence were tested."
+              ]
             }
           }
         },
@@ -3083,7 +3133,7 @@
             "Select all, agent, pilot, parallel and webmcp receipt filters."
           ],
           "expected": [
-            "Visible receipt rows and counts match selected origin; empty filter shows \u201cNo receipts with origin=\u2026\u201d; all restores every row."
+            "Visible receipt rows and counts match selected origin; empty filter shows “No receipts with origin=…”; all restores every row."
           ],
           "dimensions": [
             "warm",
@@ -5745,7 +5795,7 @@
         {
           "id": "EXT-F-1006-C07",
           "label": "Desktop port override validation",
-          "action": "Enter blank, valid 1\u201365535, 0, >65535, fractional and nonnumeric values; Save."
+          "action": "Enter blank, valid 1–65535, 0, >65535, fractional and nonnumeric values; Save."
         },
         {
           "id": "EXT-F-1006-C09",
@@ -6046,7 +6096,7 @@
             "Signed in as an admin; open Debug > Bridges; use local test services and harmless requests."
           ],
           "steps": [
-            "Enter blank, valid 1\u201365535, 0, >65535, fractional and nonnumeric values; Save."
+            "Enter blank, valid 1–65535, 0, >65535, fractional and nonnumeric values; Save."
           ],
           "expected": [
             "Blank clears; valid integer persists and discovery reruns; invalid values are rejected and existing override remains."
@@ -6685,8 +6735,10 @@
         },
         {
           "id": "EXT-F-1007-C04",
-          "label": "Save capture",
-          "action": "Save populated capture; simulate database failure and retry."
+          "label": "Save capture as a Source",
+          "action": "Land the current capture through the Sources endpoint; show confirmation/notices on success and retain refusal or unreachable captures in the device-local Unsaved queue for retry.",
+          "source_anchor": "src/lib/sources/save-capture.ts:204",
+          "source_delta": "Changed from direct saved-capture persistence; historical run evidence is retained but does not verify this behavior."
         },
         {
           "id": "EXT-F-1007-C05",
@@ -6767,6 +6819,34 @@
           "id": "EXT-F-1007-C20",
           "label": "No current capture empty state",
           "action": "Open Scrape before capturing, then navigate active tab to another URL."
+        },
+        {
+          "id": "EXT-F-1007-C21",
+          "label": "Open landed Source in web app",
+          "action": "Open the newly landed Source from the Save success state.",
+          "source_anchor": "src/features/scrape/ScrapeView.tsx:608",
+          "source_applicable": true
+        },
+        {
+          "id": "EXT-F-1007-C22",
+          "label": "Review unsaved captures and refusal remedy",
+          "action": "Show each device-local capture, its refusal reason, and retry/discard actions.",
+          "source_anchor": "src/features/scrape/UnsavedCapturesCard.tsx:43",
+          "source_applicable": true
+        },
+        {
+          "id": "EXT-F-1007-C23",
+          "label": "Retry saving an unsaved capture",
+          "action": "Retry Source landing; remove the item from local storage only after confirmed landing.",
+          "source_anchor": "src/features/scrape/UnsavedCapturesCard.tsx:26",
+          "source_applicable": true
+        },
+        {
+          "id": "EXT-F-1007-C24",
+          "label": "Discard unsaved capture with confirmation",
+          "action": "Confirm permanent removal of a capture that never landed.",
+          "source_anchor": "src/features/scrape/UnsavedCapturesCard.tsx:70",
+          "source_applicable": true
         }
       ],
       "source_anchors": [
@@ -6790,10 +6870,15 @@
         "src/features/scrape/ScrapeView.tsx:851",
         "src/features/scrape/ScrapeView.tsx:883",
         "src/features/scrape/ScrapeView.tsx:942",
-        "src/lib/scrape/pipeline.ts:1"
+        "src/lib/scrape/pipeline.ts:1",
+        "src/features/scrape/UnsavedCapturesCard.tsx:1",
+        "src/lib/sources/save-capture.ts:1",
+        "src/lib/api/routes/sources.ts:1",
+        "src/lib/sources/portions.ts:1",
+        "src/lib/sources/canonical.ts:1"
       ],
-      "dependency_class": "local",
-      "wave": "A",
+      "dependency_class": "cross-system",
+      "wave": "C",
       "applicability": {
         "guest": {
           "applicable": true,
@@ -6835,10 +6920,15 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
+              "status": "unverified",
               "run_id": "render-retest-001",
-              "detail": "pass_16_word_article_one_link",
-              "evidence": "docs/stabilization/runs/render-retest-001.json"
+              "evidence": "docs/stabilization/runs/render-retest-001.json",
+              "verified_substeps": [
+                "Capture produced a 16-word article and result tabs were visible."
+              ],
+              "remaining_criteria": [
+                "Observe busy-button disable/progress while capture runs and exercise error recovery actions."
+              ]
             }
           }
         },
@@ -6902,28 +6992,34 @@
         },
         {
           "id": "EXT-F-1007-T04",
-          "title": "Save capture",
+          "title": "Save capture as a Source",
           "modes": [
             "guest",
             "member",
             "admin"
           ],
           "control_ids": [
-            "EXT-F-1007-C04"
+            "EXT-F-1007-C04",
+            "EXT-F-1007-C21"
           ],
           "preconditions": [
-            "Open Scrape on a controlled page with extension access and record auth/org state."
+            "Open Scrape on a controlled page with article text; record signed-in state and device-selected organization."
           ],
           "steps": [
-            "Save populated capture; simulate database failure and retry."
+            "Save the populated capture.",
+            "Observe the Source landing result and any notices.",
+            "Open the Source in the web app."
           ],
           "expected": [
-            "Successful save shows Saved; local edit clears stale Saved badge; failure text is visible and retry works."
+            "A confirmed landing is shown as saved and opens the corresponding Source; refusal remains an honest, recoverable outcome."
           ],
           "dimensions": [
             "warm",
-            "reload"
-          ]
+            "valid-input",
+            "backend-available"
+          ],
+          "verification_status": "unverified-after-source-change",
+          "prior_results_history": "Prior EXT-F-1007 cell run and defect IDs are retained; this older Save procedure predates Source landing and is not fresh proof."
         },
         {
           "id": "EXT-F-1007-T05",
@@ -6951,10 +7047,15 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
+              "status": "unverified",
               "run_id": "render-retest-001",
-              "detail": "pass_preview_and_reopened_editor_no_save",
-              "evidence": "docs/stabilization/runs/render-retest-001.json"
+              "evidence": "docs/stabilization/runs/render-retest-001.json",
+              "verified_substeps": [
+                "Temporary edit appeared in preview and reopened editor; Save capture was not performed."
+              ],
+              "remaining_criteria": [
+                "Complete the specified Save capture step and verify the server write follows Save, with no write before Save."
+              ]
             }
           }
         },
@@ -7334,12 +7435,102 @@
             "Open Scrape before capturing, then navigate active tab to another URL."
           ],
           "expected": [
-            "Empty state invites capture; previous page\u2019s content and Saved badge clear after navigation."
+            "Empty state invites capture; previous page’s content and Saved badge clear after navigation."
           ],
           "dimensions": [
             "warm",
             "reload"
           ]
+        },
+        {
+          "id": "EXT-F-1007-T21",
+          "title": "Save a capture as a Source and follow its success state",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C04",
+            "EXT-F-1007-C21"
+          ],
+          "preconditions": [
+            "Authenticated user with a device-selected organization; capture contains article text."
+          ],
+          "steps": [
+            "Capture a page and Save it.",
+            "Observe the saved state and any server notices.",
+            "Open the Source in the web app."
+          ],
+          "expected": [
+            "A confirmed landing is identified as saved, server notices are visible, and the linked Source opens."
+          ],
+          "dimensions": [
+            "warm",
+            "valid-input",
+            "backend-available"
+          ],
+          "verification_status": "unverified"
+        },
+        {
+          "id": "EXT-F-1007-T22",
+          "title": "Retain and retry a refused or unreachable save",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C04",
+            "EXT-F-1007-C22",
+            "EXT-F-1007-C23"
+          ],
+          "preconditions": [
+            "Capture contains article text; use a controlled refusal or offline condition. Guest mode should receive the sign-in remedy."
+          ],
+          "steps": [
+            "Save while landing is refused or unreachable.",
+            "Inspect the Unsaved card, refusal sentence, and remedy.",
+            "Resolve the cause and retry; verify a repeated refusal leaves the item queued."
+          ],
+          "expected": [
+            "The item remains visible and retryable on this device after failure; it leaves the queue only after confirmed landing. A guest is told to sign in."
+          ],
+          "dimensions": [
+            "offline",
+            "refusal",
+            "retry",
+            "guest-auth"
+          ],
+          "verification_status": "unverified"
+        },
+        {
+          "id": "EXT-F-1007-T23",
+          "title": "Discard an unsaved capture only after confirmation",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C22",
+            "EXT-F-1007-C24"
+          ],
+          "preconditions": [
+            "At least one capture remains in the device-local unsaved queue."
+          ],
+          "steps": [
+            "Choose Discard and cancel once.",
+            "Reopen the confirmation, confirm discard, and inspect the queue."
+          ],
+          "expected": [
+            "Cancel preserves the item; confirmation removes it and communicates permanent local deletion."
+          ],
+          "dimensions": [
+            "warm",
+            "confirmation",
+            "local-persistence"
+          ],
+          "verification_status": "unverified"
         }
       ],
       "cells": {
@@ -7373,7 +7564,10 @@
       },
       "inventory_status": "complete",
       "missing_items": [],
-      "source_complete": true
+      "source_complete": true,
+      "readiness_gaps": [
+        "Source landing, refusal/retry, organization authorization, and server persistence require live member/admin evidence; guest Save must show sign-in remedy while retaining the device-local capture. Endpoint/RLS behavior is a runtime readiness gap, not a source-census blocker."
+      ]
     },
     {
       "id": "EXT-F-1008",
@@ -7558,7 +7752,7 @@
             "Run/auto-run on browser-internal or restricted URL."
           ],
           "expected": [
-            "No fabricated partial audit is shown; clear \u201ccannot be audited\u201d or capture failure appears."
+            "No fabricated partial audit is shown; clear “cannot be audited” or capture failure appears."
           ],
           "dimensions": [
             "warm",
@@ -7783,7 +7977,7 @@
             "Choose Ask the agent to fix this for a finding."
           ],
           "expected": [
-            "The finding\u2019s section and message are staged in Chat composer; user can review before sending."
+            "The finding’s section and message are staged in Chat composer; user can review before sending."
           ],
           "dimensions": [
             "warm",
@@ -8242,7 +8436,7 @@
         {
           "id": "EXT-F-1010-C08",
           "label": "Overlay stop toolbar control",
-          "action": "Click \u2715 in injected highlighter toolbar."
+          "action": "Click ✕ in injected highlighter toolbar."
         },
         {
           "id": "EXT-F-1010-C09",
@@ -8546,7 +8740,7 @@
             "Sign in; open Highlights on a controlled page with test text and selectable elements."
           ],
           "steps": [
-            "Click \u2715 in injected highlighter toolbar."
+            "Click ✕ in injected highlighter toolbar."
           ],
           "expected": [
             "Overlay sends inactive state and unmounts all page listeners/host."
@@ -14452,7 +14646,7 @@
             "On a conversation with disposable plan/task/todo rows, click Wipe all and cancel; verify rows remain. Reopen, confirm, then refresh."
           ],
           "expected": [
-            "Cancel preserves all rows; confirm removes that conversation\u2019s plan, tasks and todos; dialog names permanent consequence."
+            "Cancel preserves all rows; confirm removes that conversation’s plan, tasks and todos; dialog names permanent consequence."
           ],
           "dimensions": [
             "warm",
@@ -16646,7 +16840,9 @@
           "label": "Confirm capture deletion",
           "action": "Delete selected saved capture",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Confirm capture deletion (Delete selected saved capture) on Saved captures side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Confirm capture deletion (Delete selected saved capture) on Saved captures side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "source_delta": "Confirmed deletion now removes the Source from Saved Captures and Sources; original web page remains unaffected.",
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:141"
         },
         {
           "id": "EXT-F-2009-C08",
@@ -16681,28 +16877,40 @@
           "label": "Edit title",
           "action": "Change capture title",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Edit title (Change capture title) on Saved captures side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Edit title (Change capture title) on Saved captures side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "lifecycle_status": "retired",
+          "source_applicable": false,
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:454",
+          "source_not_applicable_reason": "Standalone title editing was removed; current UI edits article text as Source portions."
         },
         {
           "id": "EXT-F-2009-C13",
           "label": "Edit description",
           "action": "Change capture description",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Edit description (Change capture description) on Saved captures side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Edit description (Change capture description) on Saved captures side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "lifecycle_status": "retired",
+          "source_applicable": false,
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:454",
+          "source_not_applicable_reason": "Standalone description editing was removed; current UI edits article text as Source portions."
         },
         {
           "id": "EXT-F-2009-C14",
           "label": "Edit article markdown",
           "action": "Change captured article text",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Edit article markdown (Change captured article text) on Saved captures side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Edit article markdown (Change captured article text) on Saved captures side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "source_delta": "Edit reader-facing Article text as Source portions while preserving the original capture.",
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:344"
         },
         {
           "id": "EXT-F-2009-C15",
           "label": "Save capture edits",
           "action": "Persist changed fields",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Save capture edits (Persist changed fields) on Saved captures side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Save capture edits (Persist changed fields) on Saved captures side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "source_delta": "Save Source text edits, and verify empty-edit refusal plus visible failure handling.",
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:365"
         },
         {
           "id": "EXT-F-2009-C16",
@@ -16723,14 +16931,18 @@
           "label": "Show Data tab",
           "action": "Render stored structured page data",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Show Data tab (Render stored structured page data) on Saved captures side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Show Data tab (Render stored structured page data) on Saved captures side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "source_delta": "Data tab shows original SoupResult when loaded or Source structured data as fallback.",
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:547"
         },
         {
           "id": "EXT-F-2009-C19",
           "label": "Copy capture formats",
           "action": "Open nested copy menu and choose available formats",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Copy capture formats (Open nested copy menu and choose available formats) on Saved captures side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Copy capture formats (Open nested copy menu and choose available formats) on Saved captures side-panel in source-applicable roles; include refusal and reload where state persists.",
+          "source_delta": "Verify copy formats against Source and edited text representation.",
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:358"
         },
         {
           "id": "EXT-F-2009-C20",
@@ -16818,6 +17030,50 @@
           "source_anchor": "src/lib/scrape/copy-options.ts",
           "test_design_status": "unverified",
           "test_design_item": "Verify Inspect data representation (Read extracted data tab) on Saved captures side-panel in source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2009-C31",
+          "label": "Open Source in web app",
+          "action": "Open the selected Source in the AI Matrx web app.",
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:431",
+          "source_applicable": true
+        },
+        {
+          "id": "EXT-F-2009-C32",
+          "label": "Load original capture and handle unavailable original",
+          "action": "Load the Source original separately; show truthful loading, missing, failure, and structured-data fallback states.",
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:332",
+          "source_applicable": true
+        },
+        {
+          "id": "EXT-F-2009-C33",
+          "label": "Inspect edited Source text and original-preserved notice",
+          "action": "Show edited text as the reader-facing version and communicate that the original is unchanged.",
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:499",
+          "source_applicable": true
+        },
+        {
+          "id": "EXT-F-2009-C34",
+          "label": "Inspect saved versus kept Source status",
+          "action": "Distinguish kept from not-yet-kept state in list and detail views.",
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:263",
+          "source_applicable": false,
+          "lifecycle_status": "retired",
+          "source_not_applicable_reason": "The Kept/Saved list badge and Kept detail row were removed; current list shows the source host and Details reports original-file availability."
+        },
+        {
+          "id": "EXT-F-2009-C35",
+          "label": "Inspect source host in saved-capture list",
+          "action": "Show the saved URL host beside each capture, with the URL as fallback when it cannot be parsed.",
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:263",
+          "source_applicable": true
+        },
+        {
+          "id": "EXT-F-2009-C36",
+          "label": "Inspect original-file status in Details",
+          "action": "Show saved-file, loading, failure, or text-only state for the original capture.",
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:525",
+          "source_applicable": true
         }
       ],
       "source_anchors": [
@@ -16837,10 +17093,14 @@
         "src/features/saved-captures/SavedCapturesView.tsx:471",
         "src/features/saved-captures/SavedCapturesView.tsx:511",
         "src/lib/scrape/copy-options.ts:1",
-        "src/lib/scrape/copy-options.ts:258"
+        "src/lib/scrape/copy-options.ts:258",
+        "src/lib/api/routes/sources.ts:1",
+        "src/lib/sources/read-original.ts:1",
+        "src/lib/sources/portions.ts:1",
+        "src/lib/sources/web-app-link.ts:1"
       ],
-      "dependency_class": "backend",
-      "wave": "B",
+      "dependency_class": "cross-system",
+      "wave": "C",
       "applicability": {
         "guest": {
           "applicable": false,
@@ -16910,17 +17170,21 @@
         },
         {
           "id": "EXT-F-2009-T03",
-          "title": "Edit capture and inspect its representations",
+          "title": "Edit Source text and inspect original and structured representations",
           "control_ids": [
             "EXT-F-2009-C11",
-            "EXT-F-2009-C12",
-            "EXT-F-2009-C13",
             "EXT-F-2009-C14",
             "EXT-F-2009-C15",
             "EXT-F-2009-C16",
             "EXT-F-2009-C17",
             "EXT-F-2009-C18",
-            "EXT-F-2009-C19"
+            "EXT-F-2009-C19",
+            "EXT-F-2009-C27",
+            "EXT-F-2009-C28",
+            "EXT-F-2009-C29",
+            "EXT-F-2009-C30",
+            "EXT-F-2009-C32",
+            "EXT-F-2009-C33"
           ],
           "modes": [
             "member",
@@ -16930,17 +17194,23 @@
             "Signed-in owner of controlled capture with article text, metadata and structured soup."
           ],
           "steps": [
-            "Edit each field and save; reload detail. Inspect Article, Details, Data, then copy each available representation."
+            "Edit Article text and save; reload detail.",
+            "Inspect Article, Details, and Data while original is available, then exercise missing/unavailable original.",
+            "Copy each available representation."
           ],
           "expected": [
-            "Changes persist and render in corresponding views; details reflect stored capture values; data view exposes stored structured payload; copies match chosen formats."
+            "Reader-facing edited text appears after save; original remains unchanged; structured data remains inspectable when original is missing or unavailable."
           ],
           "dimensions": [
             "member",
             "admin",
             "reload",
-            "network"
-          ]
+            "network",
+            "edit",
+            "original-failure"
+          ],
+          "verification_status": "unverified-after-source-change",
+          "prior_results_history": "No prior run IDs were present for the original T03; new behavior remains unverified."
         },
         {
           "id": "EXT-F-2009-T04",
@@ -16972,6 +17242,35 @@
             "reload",
             "network"
           ]
+        },
+        {
+          "id": "EXT-F-2009-T05",
+          "title": "Open Source in web app and inspect source host and original file",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2009-C31",
+            "EXT-F-2009-C35",
+            "EXT-F-2009-C36"
+          ],
+          "preconditions": [
+            "A listed Source is available to the active organization."
+          ],
+          "steps": [
+            "Inspect the source host in the list and the original-file status in Details.",
+            "Open the Source in the web app."
+          ],
+          "expected": [
+            "The list shows the source host, Details truthfully reports whether the original file is saved, loading, unavailable, or text-only, and the web-app link opens the corresponding Source."
+          ],
+          "dimensions": [
+            "warm",
+            "organization",
+            "backend-available"
+          ],
+          "verification_status": "unverified"
         }
       ],
       "cells": {
@@ -16997,7 +17296,8 @@
       "inventory_status": "source-complete",
       "missing_items": [],
       "readiness_gaps": [
-        "No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel."
+        "No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.",
+        "Source list/edit/delete authorization, organization RLS, and original-file reads require live signed-in organization evidence; endpoint/RLS behavior is not a source inventory blocker."
       ]
     },
     {
@@ -17232,7 +17532,7 @@
             "Signed-in member who belongs to two organizations; other membership has a controlled waiting handoff."
           ],
           "steps": [
-            "Open Capture with active organization A; use \u201cwaiting elsewhere\u201d control to switch to organization B; wait for subscription refresh."
+            "Open Capture with active organization A; use “waiting elsewhere” control to switch to organization B; wait for subscription refresh."
           ],
           "expected": [
             "Only a membership-listed organization can be selected; device org switches and queue refreshes; pointer clears after successful switch; membership loss yields explicit explanation."
@@ -17289,7 +17589,7 @@
             "Signed-in member with controlled needs_drive handoff and safe test page."
           ],
           "steps": [
-            "Open it; perform page sign-in/navigation manually; enter page-specific note and capture. Repeat with another handoff and choose This one won\u2019t work with a reason. Follow a valid pickup pointer."
+            "Open it; perform page sign-in/navigation manually; enter page-specific note and capture. Repeat with another handoff and choose This one won’t work with a reason. Follow a valid pickup pointer."
           ],
           "expected": [
             "Extension leaves page actions to user until explicit capture; capture completes and updates status; skip removes only selected handoff and records note; pickup opens matching item/tab."
@@ -20175,7 +20475,7 @@
       "name": "Run built-in browser AI scenarios",
       "surface": "Tools Smart tests",
       "entry_points": [
-        "Tools tab \u2192 Tools Smart tests"
+        "Tools tab → Tools Smart tests"
       ],
       "controls": [
         {
@@ -20543,7 +20843,7 @@
       "name": "Record active browser tab",
       "surface": "Tools Recorder",
       "entry_points": [
-        "Tools tab \u2192 Tools Recorder"
+        "Tools tab → Tools Recorder"
       ],
       "controls": [
         {
@@ -20852,7 +21152,7 @@
       "name": "Generate and use credentials",
       "surface": "Vault password generator",
       "entry_points": [
-        "Tools tab \u2192 Vault password generator"
+        "Tools tab → Vault password generator"
       ],
       "controls": [
         {
@@ -44350,5 +44650,5 @@
   "notes": [
     "Independent source census passed. Runtime test execution still requires safe resource admission, fresh build receipt, concrete per-case steps and fixtures."
   ],
-  "source_review": "docs/stabilization/reports/inventory-gate-review.json"
+  "source_review": "docs/stabilization/reports/inventory-remote-delta.json"
 }

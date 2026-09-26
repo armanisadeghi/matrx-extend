@@ -1,0 +1,14 @@
+{
+  "id": "integrated-compile-001",
+  "feature_id": "EXT-F-0001",
+  "status": "pass",
+  "at": "2026-09-26T02:36:03.597Z",
+  "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
+  "command": [
+    "pnpm",
+    "compile"
+  ],
+  "exit_code": 0,
+  "resource_invalid": false,
+  "log_sha256": "b13d8914b3e10ee6541ab4e35bb7d94623984dd35ca9bfb895d510420e5e35d9"
+}

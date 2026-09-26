@@ -1,0 +1,28 @@
+{
+  "reviewer": "/root/release_final_peer",
+  "method": "Fresh source-only review of current release.sh, ship.sh, unpacked helper, unit guard, and local bare-origin fixture. No tests, builds, UI, Git mutations, or release commands executed.",
+  "A_original_findings_and_requirements": {
+    "verdict": "PASS in source, pending root runtime verification",
+    "original_findings": {
+      "unvalidated_ship_push": "ADDRESSED: ship.sh execs release.sh; generation, checks, Store/local ZIP construction and package checks precede git push --atomic (release.sh:385-407).",
+      "conflict_omission": "ADDRESSED: merge-tree conflict stops before validation/publication and preserves both refs (release.sh:251-263).",
+      "separate_main_tag_push": "ADDRESSED: one atomic main/tag push; rejection refetches and revalidates a new candidate (release.sh:406-421).",
+      "dirty_exclusion_notice": "ADDRESSED: excluded checkout paths print and log before each push attempt (release.sh:391-405).",
+      "snapshot_setup_failure": "ADDRESSED: export/setup and prepare failures return nonzero and stop before publication (release.sh:166-190, 393-394).",
+      "live_lock_theft": "ADDRESSED: occupied lock fails closed, including missing/unknown PID; owner lock is never reclaimed on elapsed time (release.sh:194-215).",
+      "unpacked_cleanup_after_receipt": "ADDRESSED: receipt is the commit point; subsequent backup cleanup warns and retains the path without signaling rollback (scripts/sync-unpacked-release.mjs:74-82, 165-168, 200-213).",
+      "failed_zip_restore_backup_loss": "ADDRESSED: restore checks each move/delete, reports incomplete recovery and retains staging outside EXIT cleanup (release.sh:429-457, 483-485)."
+    },
+    "other_requirements": "--no-push maps to dry-run before lock/build/push (release.sh:121-123, 228-240); failed check/build leaves remote refs untouched; shell fixture uses a temp local bare origin and real helper CLI fault guard uses only mkdtemp paths.",
+    "material_limit": "Remote publication precedes local ZIP/unpacked installation by design; a local installation failure leaves the remote release published and reports that state. Atomicity is per remote refs and recoverable local artifacts, not one transaction across GitHub and the filesystem."
+  },
+  "B_quality_and_runtime": {
+    "verdict": "No new blocking source defect found within requested scope; runtime verification pending root.",
+    "evidence": "The recovery guard executes the actual helper CLI in temporary directories and injects filesystem failures at cleanup, receipt commit, and backup restore; it asserts installed bundle versions, retained backups, and receipt contents. The shell guard constructs a throwaway bare origin and checkout, stubs build commands, and injects lock/race/ZIP failures.",
+    "limitations": [
+      "This reviewer did not execute node --test, the shell fixture, pnpm tests, a real build, UI exercise, or release.",
+      "The shell fixture's stubbed pnpm commands prove gate ordering and refusal, not the actual compiler/build/package tools; root's admitted checks and build are still required.",
+      "Post-publication stale ZIP deletion at release.sh:493-494 has no checked outcome; a deletion error could leave an old upload ZIP without a finding. This is a nonblocking cleanup/reporting gap, distinct from validated current ZIP and receipt integrity."
+    ]
+  }
+}

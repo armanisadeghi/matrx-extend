@@ -1,0 +1,441 @@
+{
+  "schema_version": 1,
+  "task_id": "inventory-remote-delta",
+  "baseline_source_sha": "53fd39f972817210572fe219f4f5c48e203666a7",
+  "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
+  "remote_source_commit": "72b419d",
+  "release_commit": "6f797e8",
+  "scope": "Source-only delta for Scrape Save, Unsaved Captures, and Saved Captures. Proposed inventory changes; no runtime result is claimed.",
+  "provenance": {
+    "prior_inventory": "docs/stabilization/inventory.json at 53fd39f",
+    "prior_feature_ids": [
+      "EXT-F-1007",
+      "EXT-F-2009"
+    ],
+    "prior_case_ids": [
+      "EXT-F-1007-T04",
+      "EXT-F-2009-T01",
+      "EXT-F-2009-T02",
+      "EXT-F-2009-T03",
+      "EXT-F-2009-T04"
+    ],
+    "prior_results": {
+      "EXT-F-1007": {
+        "guest": {
+          "test_status": "unverified",
+          "run_ids": [
+            "guest-local-001"
+          ],
+          "defect_ids": [
+            "EXT-D-0001"
+          ]
+        },
+        "member": {
+          "test_status": "unverified",
+          "run_ids": [],
+          "defect_ids": [
+            "EXT-D-0001"
+          ]
+        },
+        "admin": {
+          "test_status": "unverified",
+          "run_ids": [],
+          "defect_ids": [
+            "EXT-D-0001"
+          ]
+        },
+        "handling": "Existing run evidence predates this source change. Preserve history; it does not verify the changed Save behavior or added retry controls."
+      },
+      "EXT-F-2009": {
+        "guest": {
+          "test_status": "unverified",
+          "run_ids": [],
+          "defect_ids": []
+        },
+        "member": {
+          "test_status": "unverified",
+          "run_ids": [],
+          "defect_ids": []
+        },
+        "admin": {
+          "test_status": "unverified",
+          "run_ids": [],
+          "defect_ids": []
+        },
+        "handling": "Existing cases were unverified. Source changes require fresh evidence for affected controls."
+      }
+    }
+  },
+  "changes": [
+    {
+      "kind": "change_existing_feature",
+      "feature_id": "EXT-F-1007",
+      "feature_name": "Capture and manage current page scrape",
+      "dependency_class_proposal": "cross-system",
+      "dependency_class_reason": "Save now requires aidream POST /sources/land and Sources data in docproc.processed_documents; the UI contains outage, refusal, and local-retry behavior, but server availability and persistence cross the extension boundary.",
+      "controls_changed": [
+        {
+          "id": "EXT-F-1007-C04",
+          "label": "Save capture",
+          "change": "Keep the stable ID; redefine as land current capture as a Source, show landing notices and a web-app link on success, and retain a refused/unreachable capture in the device-local unsaved queue. Empty captures show an actionable message.",
+          "evidence": [
+            "src/features/scrape/ScrapeView.tsx:167",
+            "src/lib/sources/save-capture.ts:204",
+            "src/lib/api/routes/sources.ts:180"
+          ]
+        }
+      ],
+      "controls_to_add": [
+        {
+          "id": "EXT-F-1007-C21",
+          "label": "Open landed Source in web app",
+          "action": "Open the newly landed Source from the Save success state.",
+          "evidence": [
+            "src/features/scrape/ScrapeView.tsx:608"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-C22",
+          "label": "Review unsaved captures and refusal remedy",
+          "action": "Show each device-local capture, its refusal sentence, and available retry/discard actions.",
+          "evidence": [
+            "src/features/scrape/UnsavedCapturesCard.tsx:43"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-C23",
+          "label": "Retry saving an unsaved capture",
+          "action": "Retry landing; remove from local queue only after confirmed landing.",
+          "evidence": [
+            "src/features/scrape/UnsavedCapturesCard.tsx:26",
+            "src/lib/sources/save-capture.ts:237"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-C24",
+          "label": "Discard unsaved capture with confirmation",
+          "action": "Confirm permanent removal of a capture that never landed.",
+          "evidence": [
+            "src/features/scrape/UnsavedCapturesCard.tsx:70",
+            "src/features/scrape/UnsavedCapturesCard.tsx:82"
+          ]
+        }
+      ],
+      "cases_to_add": [
+        {
+          "id": "EXT-F-1007-T21",
+          "title": "Save a capture as a Source and follow its success state",
+          "control_ids": [
+            "EXT-F-1007-C04",
+            "EXT-F-1007-C21"
+          ],
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Authenticated user with a device-selected organization; capture contains article text."
+          ],
+          "steps": [
+            "Capture a page and Save it.",
+            "Observe the saved state and any server notices.",
+            "Open the Source in the web app."
+          ],
+          "expected": [
+            "A confirmed landing is identified as saved, server notices are visible, and the linked Source opens."
+          ],
+          "dimensions": [
+            "warm",
+            "valid-input",
+            "backend-available"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-T22",
+          "title": "Retain and retry a refused or unreachable save",
+          "control_ids": [
+            "EXT-F-1007-C04",
+            "EXT-F-1007-C22",
+            "EXT-F-1007-C23"
+          ],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Capture contains article text; use a controlled server refusal or offline condition. Guest mode should receive the sign-in remedy."
+          ],
+          "steps": [
+            "Save while landing is refused or unreachable.",
+            "Inspect the Unsaved card, reason, and remedy.",
+            "Resolve the cause and retry; also verify a repeated refusal leaves the item queued."
+          ],
+          "expected": [
+            "The item remains visible and retryable on this device after failure; it leaves the queue only after a confirmed landing. A guest is told to sign in."
+          ],
+          "dimensions": [
+            "offline",
+            "refusal",
+            "retry",
+            "guest-auth"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-T23",
+          "title": "Discard an unsaved capture only after confirmation",
+          "control_ids": [
+            "EXT-F-1007-C22",
+            "EXT-F-1007-C24"
+          ],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "At least one capture remains in the device-local unsaved queue."
+          ],
+          "steps": [
+            "Choose Discard and cancel once.",
+            "Reopen the confirmation, confirm discard, and inspect the queue."
+          ],
+          "expected": [
+            "Cancel preserves the item; confirmation removes it and communicates permanent local deletion."
+          ],
+          "dimensions": [
+            "warm",
+            "confirmation",
+            "local-persistence"
+          ]
+        }
+      ],
+      "applicability_notes": {
+        "guest": "Scrape is source-visible to guests; Save must be checked for an honest sign-in remedy and device-local retention when server landing cannot authenticate.",
+        "member": "Applicable; landing requires the active device organization and server authorization.",
+        "admin": "Applicable; same Source landing contract as member."
+      },
+      "stale_result_rule": "Keep existing EXT-F-1007 cell history and run IDs. Mark these proposed cases unverified when merged; do not mark old Save UI evidence fresh."
+    },
+    {
+      "kind": "change_existing_feature",
+      "feature_id": "EXT-F-2009",
+      "feature_name": "Search and manage saved captures",
+      "dependency_class_proposal": "cross-system",
+      "dependency_class_reason": "Saved Captures now lists, edits, and deletes docproc.processed_documents Sources; loading a full original uses the backend file service. Server and organization/RLS behavior require cross-system verification.",
+      "controls_changed": [
+        {
+          "id": "EXT-F-2009-C07",
+          "label": "Confirm capture deletion",
+          "change": "Retain stable ID; deletion now removes the Source from Saved Captures and Sources. Verify refusal messaging and that the original web page is unaffected.",
+          "evidence": [
+            "src/features/saved-captures/SavedCapturesView.tsx:141",
+            "src/features/saved-captures/SavedCapturesView.tsx:177"
+          ]
+        },
+        {
+          "id": "EXT-F-2009-C12",
+          "label": "Edit title",
+          "change": "This former standalone field is no longer editable; note that title and description edits were replaced by an Article text edit. Retire this control ID or map it to the unified edit case without claiming a title-edit action exists.",
+          "evidence": [
+            "src/features/saved-captures/SavedCapturesView.tsx:454"
+          ]
+        },
+        {
+          "id": "EXT-F-2009-C13",
+          "label": "Edit description",
+          "change": "This former standalone field is no longer editable; fold its removal into the unified Article text edit case and retire this control ID.",
+          "evidence": [
+            "src/features/saved-captures/SavedCapturesView.tsx:454"
+          ]
+        },
+        {
+          "id": "EXT-F-2009-C14",
+          "label": "Edit article markdown",
+          "change": "Retain stable ID and update to edit Article text as Source portions; successful edits preserve the original capture and reload the Source.",
+          "evidence": [
+            "src/features/saved-captures/SavedCapturesView.tsx:344",
+            "src/features/saved-captures/SavedCapturesView.tsx:365"
+          ]
+        },
+        {
+          "id": "EXT-F-2009-C15",
+          "label": "Save capture edits",
+          "change": "Retain stable ID and verify source edit success, empty-edit refusal, and visible error/retry behavior. The original capture remains unchanged.",
+          "evidence": [
+            "src/features/saved-captures/SavedCapturesView.tsx:365"
+          ]
+        },
+        {
+          "id": "EXT-F-2009-C18",
+          "label": "Show Data tab",
+          "change": "Data now shows original SoupResult when it loads, otherwise Source structured data; verify data remains available when original is absent or fails to load.",
+          "evidence": [
+            "src/features/saved-captures/SavedCapturesView.tsx:547"
+          ]
+        },
+        {
+          "id": "EXT-F-2009-C19",
+          "label": "Copy capture formats",
+          "change": "Retain the control ID; validate available copy formats against Source content and the edited text representation.",
+          "evidence": [
+            "src/features/saved-captures/SavedCapturesView.tsx:358"
+          ]
+        }
+      ],
+      "controls_to_add": [
+        {
+          "id": "EXT-F-2009-C31",
+          "label": "Open Source in web app",
+          "action": "Open the selected Source in the AI Matrx web app.",
+          "evidence": [
+            "src/features/saved-captures/SavedCapturesView.tsx:431"
+          ]
+        },
+        {
+          "id": "EXT-F-2009-C32",
+          "label": "Load original capture and handle unavailable original",
+          "action": "Load the Source original separately; show truthful loading, unavailable, failure, and structured-data fallback states.",
+          "evidence": [
+            "src/features/saved-captures/SavedCapturesView.tsx:332",
+            "src/features/saved-captures/SavedCapturesView.tsx:523"
+          ]
+        },
+        {
+          "id": "EXT-F-2009-C33",
+          "label": "Inspect edited Source text and original-preserved notice",
+          "action": "Show the edited text as the reader-facing version while communicating that the original capture is unchanged.",
+          "evidence": [
+            "src/features/saved-captures/SavedCapturesView.tsx:499",
+            "src/features/saved-captures/SavedCapturesView.tsx:460"
+          ]
+        },
+        {
+          "id": "EXT-F-2009-C34",
+          "label": "Inspect saved versus kept Source status",
+          "action": "Distinguish kept from not-yet-kept state in the list and detail view.",
+          "evidence": [
+            "src/features/saved-captures/SavedCapturesView.tsx:263",
+            "src/features/saved-captures/SavedCapturesView.tsx:517"
+          ]
+        }
+      ],
+      "cases_to_add_or_revise": [
+        {
+          "id": "EXT-F-2009-T03",
+          "title": "Edit Source text and inspect original and structured representations",
+          "change": "Revise existing case; preserve ID and old result provenance. Remove title/description editing expectation; cover unified article text edit, original preservation, original loading/failure fallback, and Data representation.",
+          "control_ids": [
+            "EXT-F-2009-C11",
+            "EXT-F-2009-C14",
+            "EXT-F-2009-C15",
+            "EXT-F-2009-C16",
+            "EXT-F-2009-C17",
+            "EXT-F-2009-C18",
+            "EXT-F-2009-C19",
+            "EXT-F-2009-C27",
+            "EXT-F-2009-C28",
+            "EXT-F-2009-C29",
+            "EXT-F-2009-C30",
+            "EXT-F-2009-C32",
+            "EXT-F-2009-C33"
+          ],
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "expected": [
+            "The reader-facing edited text is reflected after save; the original remains intact; structured data remains inspectable even when the original is missing or unavailable."
+          ],
+          "dimensions": [
+            "edit",
+            "original-loading",
+            "original-failure",
+            "reload",
+            "backend-available"
+          ]
+        },
+        {
+          "id": "EXT-F-2009-T05",
+          "title": "Open Source in web app and inspect keep state",
+          "control_ids": [
+            "EXT-F-2009-C31",
+            "EXT-F-2009-C34"
+          ],
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "A listed Source is available to the active organization."
+          ],
+          "steps": [
+            "Inspect saved/kept status in list and detail.",
+            "Open the Source in the web app."
+          ],
+          "expected": [
+            "Kept state is represented accurately and the web-app link opens the corresponding Source."
+          ],
+          "dimensions": [
+            "warm",
+            "organization",
+            "backend-available"
+          ]
+        }
+      ],
+      "applicability_notes": {
+        "guest": "Saved Captures tab remains signed-in only; retain the negative guest access case.",
+        "member": "Applicable for an authorized active organization.",
+        "admin": "Applicable for an authorized active organization."
+      },
+      "stale_result_rule": "Prior EXT-F-2009 cases had no run evidence. New/revised cases begin unverified; no pass is inferred from source or prior inventory status."
+    }
+  ],
+  "backend_dependency": {
+    "proposal": "Treat Source landing/read/edit/delete behavior as a contained cross-system dependency (wave C) before a full backend campaign.",
+    "basis": [
+      "src/lib/api/routes/sources.ts",
+      "src/lib/supabase/queries.ts",
+      "src/lib/sources/read-original.ts"
+    ],
+    "scope_note": "The extension-side containment and recovery paths are in the source; this report does not claim aidream endpoint behavior, database policy, or live persistence was verified."
+  },
+  "evidence_reviewed": [
+    "git diff 53fd39f..ec9f9ab -- ScrapeView, UnsavedCapturesCard, SavedCapturesView, use-scrape, sources route and save helper",
+    "git show 72b419d",
+    "docs/stabilization/inventory.json at 53fd39f and current checkout",
+    "src/config/sidepanel-visibility.ts"
+  ],
+  "unresolved_questions": [
+    "Confirm whether the inventory merge should retire legacy EXT-F-2009-C12 and EXT-F-2009-C13 IDs outright or preserve them as explicitly removed controls for historical traceability.",
+    "Confirm backend endpoint and organization/RLS semantics against the matching aidream source before marking the cross-system dependency reconciled."
+  ],
+  "summary": {
+    "status": "proposed_source_delta_only",
+    "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
+    "affected_feature_ids": [
+      "EXT-F-1007",
+      "EXT-F-2009"
+    ],
+    "new_control_count": 8,
+    "changed_control_count": 8,
+    "added_case_count": 4,
+    "revised_case_count": 1,
+    "prior_results_carried_forward_as_fresh": 0,
+    "runtime_verification": "not_performed",
+    "questions": 2
+  },
+  "application_receipt": {
+    "applied_to": "docs/stabilization/inventory.json",
+    "inventory_source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
+    "applied_at": "2026-09-26T02:37:36Z",
+    "actions": [
+      "Updated EXT-F-1007 and EXT-F-2009 per reviewed source delta; added cases T21-T23 and T05.",
+      "Preserved cell run and defect IDs; changed Save case proof remains unverified.",
+      "Retained EXT-F-2009-C12/C13 IDs as retired/source-not-applicable with reasons.",
+      "Added nonblocking EXT-L-0003 under EXT-F-0003."
+    ],
+    "runtime_verification": "not-performed",
+    "settings_results": "preserved unchanged"
+  }
+}

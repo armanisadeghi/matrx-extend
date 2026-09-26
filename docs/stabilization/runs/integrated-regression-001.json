@@ -1,0 +1,30 @@
+{
+  "id": "integrated-regression-001",
+  "feature_id": "EXT-F-0001",
+  "defect_id": "EXT-D-0002",
+  "status": "pass-with-explicit-skips",
+  "at": "2026-09-26T02:43:26.104Z",
+  "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
+  "command": [
+    "pnpm",
+    "exec",
+    "vitest",
+    "run",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "exit_code": 0,
+  "test_files_passed": 153,
+  "test_files_skipped": 1,
+  "tests_passed": 1257,
+  "tests_skipped": 3,
+  "duration_seconds": 76.13,
+  "skips": [
+    "scraped-rows-land-where-the-table-lives.live: explicit development-clone credentials unavailable; not a pass"
+  ],
+  "resource_invalid": false,
+  "log_sha256": "3aabfe8a598093359f87e0b7133228f53c72e02e81ad2deaefe0c56250dd50ef",
+  "limitations": [
+    "A concurrent bounded release invocation worker-limit edit may have occurred during the run; repeat the affected release guard after that edit before integration."
+  ]
+}

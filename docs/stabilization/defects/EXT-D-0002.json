@@ -30,14 +30,25 @@
   "reproducibility_count": "1/1 isolated old-script run reproduced publication after failing tests",
   "severity": "S0: red code can be published as main/tag and installed locally",
   "priority": "P0: blocks safe release of stabilization work",
-  "state": "in-fix",
-  "owner": "/root/release_final_repair",
+  "state": "fixed",
+  "owner": "/root",
   "root_cause": "release.sh treats post-push checks as advisory findings and decouples candidate artifact promotion from their result.",
   "sibling_census": "Generation failures, merge conflicts, Store package failures, and race-rebuilt candidates share the same publication boundary and are included in the repair.",
-  "fix_commits": [],
-  "original_reproduction_retest_run": null,
-  "surrounding_case_runs": [],
-  "reviewer_identity": null,
+  "fix_commits": [
+    "d9350b4",
+    "88b1f59",
+    "4dbf7db"
+  ],
+  "original_reproduction_retest_run": "release-green-001",
+  "surrounding_case_runs": [
+    "release-recovery-001",
+    "release-worker-guard-001",
+    "integrated-regression-001"
+  ],
+  "reviewer_identity": [
+    "/root/release_final_peer",
+    "/root/coverage_evidence_audit"
+  ],
   "transition_history": [
     {
       "at": "2026-09-26T02:15:00Z",
@@ -56,15 +67,28 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Release path repair includes ship.sh bypass, atomic main/tag publication, race revalidation, and artifact rollback."
+    },
+    {
+      "at": "2026-09-26T02:47:45.975065+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent source review accepted candidate; root-admitted original reproduction and surrounding failure/recovery guards pass. Real strict release/integration pending."
     }
   ],
   "resource_note": "Only root launches admitted fixture/check/build commands. An earlier direct exploratory fixture run exited zero but is invalid as campaign verification.",
-  "fix_summary": "Final bounded source repair addresses live/unknown lock ownership, pre-push dirty exclusions, committed cleanup warnings, and retained independent ZIP/unpacked rollback recovery. Root-admitted fixture and independent review remain pending.",
+  "fix_summary": "Validates exact generated/merged candidate before atomic main/tag publication; serial single-worker gates, refusal on live/unknown lock, preserved dirty work, transactional local artifact recovery.",
   "candidate_receipts": [],
   "limitations": [
-    "Source-only final repair: no test/build/release/commit/push executed by repair lane.",
-    "Root must admit scripts/test-release-ship-path.sh and scripts/test-release-recovery.mjs and obtain fresh independent review."
+    "Isolated fixtures prove publication ordering and recovery, not actual strict remote service checks or packaging.",
+    "Real release and final integration remain pending.",
+    "EXT-L-0003 stale ZIP cleanup reporting remains an unverified nonblocking lead."
   ],
-  "verification_receipts": [],
-  "integration_status": "Uncommitted candidate; no release or push"
+  "verification_receipts": [
+    "docs/stabilization/runs/release-red-001.json",
+    "docs/stabilization/runs/release-green-001.json",
+    "docs/stabilization/runs/release-recovery-001.json",
+    "docs/stabilization/runs/release-worker-guard-001.json",
+    "docs/stabilization/runs/integrated-regression-001.json"
+  ],
+  "integration_status": "Committed locally, merged origin/main through fb9ecd4; not yet published by this campaign."
 }
