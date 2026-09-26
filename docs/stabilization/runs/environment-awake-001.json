@@ -1,0 +1,30 @@
+{
+  "id": "environment-awake-001",
+  "feature_id": "EXT-F-0001",
+  "status": "configuration-verified",
+  "at": "2026-09-26T04:08:23Z",
+  "authorization": "User asked to prevent computer locking during ongoing testing.",
+  "observed_before": {
+    "ac_system_sleep_minutes": 0,
+    "ac_display_sleep_minutes": 0,
+    "screensaver_idle_seconds": 3600
+  },
+  "change": {
+    "screensaver_idle_seconds": 0,
+    "command": "defaults -currentHost write com.apple.screensaver idleTime -int 0",
+    "readback": 0
+  },
+  "temporary_assertion": {
+    "command": "caffeinate -di -t 14400",
+    "session_id": 85503,
+    "pid": 736,
+    "duration_hours": 4,
+    "verification": "pmset -g assertions confirmed PreventUserIdleDisplaySleep=1 and owned PreventUserIdleSystemSleep assertion."
+  },
+  "limitations": [
+    "Password requirement unchanged; explicit/manual lock or managed policy can still lock screen.",
+    "Idle screen saver was configured at one hour, but no OS event log proof establishes it as sole cause of earlier lock.",
+    "Temporary assertion expires around2026-09-26T08:08UTC; screensaver setting persists."
+  ],
+  "reversal": "defaults -currentHost write com.apple.screensaver idleTime -int 3600"
+}
