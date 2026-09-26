@@ -77,6 +77,7 @@ scheduled sweep only catches what a session forgot; it is a safety net, not the 
   shims, no compatibility layers, no dead code left behind; every touched package moves to latest.
   Revisited on go-live day when customer-facing edges get versioned stability — never permanent:
   `/Users/armanisadeghi/code/common-docs/policies/no-legacy.md` + `/Users/armanisadeghi/code/common-docs/policies/pre-launch-mode.md`
+- **The access ladder decides who can open a record.** Every table starts at Organization; only Arman approves Confidential or Private; sharing sits outside the ladder; children inherit their parent; organizations are unlimited and equal, with no personal type. → `/Users/armanisadeghi/code/common-docs/policies/access-ladder.md`
 - **Human steps are guided sessions:**
   `/Users/armanisadeghi/code/common-docs/policies/human-steps-are-guided-sessions.md`
 
@@ -92,10 +93,10 @@ authenticated backend call carries `X-Organization-Id` and every org-scoped writ
 the same id. The server refuses an authenticated request without one at the top
 (`aidream@8e5ee0b93`) and never picks one for you. The ONE resolver is
 [src/lib/org/active-org.ts](./src/lib/org/active-org.ts) — never resolve an org at a call
-site, never fall back to first/personal/system, and never re-add a `whoami` round trip to
+site, never fall back to the first, signup, or system organization, and never re-add a `whoami` round trip to
 ask the server which org it "carried". A new sink attaches the header or refuses to send.
 Only what the person set ON THIS DEVICE counts — a saved account-level default never builds a
-request and the personal org is never a fallback (Arman, 2026-09-19); with nothing set the request
+request and the organization created at signup is never a fallback; with nothing set the request
 HOLDS on `holdForActiveOrganizationId()`, the picker opens, and it resumes with their choice.
 Guard: `pnpm check:org-default-ban`. Register row EX-T05: `../common-docs/projects/no-db-assigned-org/PLAN.md`.
 
