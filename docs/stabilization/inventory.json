@@ -1793,7 +1793,15 @@
       },
       "inventory_status": "complete",
       "missing_items": [],
-      "source_complete": true
+      "source_complete": true,
+      "runtime_evidence": [
+        {
+          "run": "contained-navigation-001",
+          "status": "partial",
+          "verified": "Guest nav actual selected linked panels; Guest avatar identity; Data/SEO/Settings distinct rendered headings; Capture and Vault-assistance absent.",
+          "remaining": "Admin prerequisite failed before admin cases; failure stage/cause insufficiently diagnosed. Reload/stale/member/assistance and natural chunk failure unverified. Chat/Pilot deferred."
+        }
+      ]
     },
     {
       "id": "EXT-F-1002",
