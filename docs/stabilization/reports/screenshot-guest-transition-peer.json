@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-guest-transition-peer",
+  "reviewed_commit": "b579bad4",
+  "feature_id": "EXT-F-1009",
+  "case_id": "EXT-F-1009-T09",
+  "source_verdict": "accepted_for_guarded_runtime",
+  "runtime_verdict": "unverified_not_run_by_source_peer",
+  "scope": "Optional SCREENSHOT_GUEST_RELOAD=1 and SCREENSHOT_ROLE_CHANGE=1 paths in the existing guest acceptance runner.",
+  "findings": [
+    {
+      "check": "real_guest_reload",
+      "verdict": "accepted_source",
+      "evidence": "The runner sends Page.reload to its owned side-panel target, requires a new main-frame loader ID, then requires the uniquely selected linked Chat pane, guest avatar, and absence of Screenshots trigger, pane, and capture buttons."
+    },
+    {
+      "check": "real_admin_to_guest_transition",
+      "verdict": "accepted_source",
+      "evidence": "The runner uses the real web login form and extension Account sign-in, verifies admin identity, selects the real Screenshots trigger with linked mounted view, opens the avatar menu, clicks its Sign out button, and requires same-panel guest Chat recovery with protected navigation and content absent. It does not write auth or tab storage directly."
+    },
+    {
+      "check": "local_signout_scope",
+      "verdict": "accepted_source",
+      "evidence": "UserMenu invokes useAuth.signOut; use-auth calls auth/flow.signOut. That path clears this extension profile's session and sends only POST /auth/v1/logout?scope=local with the captured bearer. clearSupabaseSession clears Realtime auth rather than issuing a global sign-out. The local logout request is an intentional auth side effect of the real UI action."
+    },
+    {
+      "check": "artifact_and_profile_provenance",
+      "verdict": "accepted_source",
+      "evidence": "The runner records receipt/manifest version and tree SHA-256 before launch; the native harness verifies actual unpacked tree, receipt, expected extension and newly owned profile. After execution the runner checks receipt/manifest identity and rehashes the unpacked tree, then records extension ID."
+    },
+    {
+      "check": "interaction_boundary",
+      "verdict": "accepted_source",
+      "evidence": "No product screenshot capture, save, delete, direct tab-state mutation, Chat send, or Pilot action is scripted. Initial Chat is observed as the default guest landing. SEO can cause the product's automatic read-only audit/history requests. Failure-only PNG evidence is exclusively created in private mode 0600."
+    }
+  ],
+  "remaining": "A guarded native run with both flags is required to establish guest reload and stale-selection recovery in the real panel. Source acceptance is not runtime proof."
+}
