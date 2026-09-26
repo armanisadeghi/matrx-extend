@@ -83,5 +83,11 @@
     "guest-pointer-final-peer.json",
     "guest-runtime-dialog-peer.json",
     "guest-readiness-peer.json"
-  ]
+  ],
+  "retained_visual_evidence": {
+    "initial_native_panel": "docs/stabilization/evidence/guest-reset-007/initial-native-panel.png",
+    "helper_page": "docs/stabilization/evidence/guest-reset-007/helper-page.png",
+    "scope": "Initial guest panel and owned helper page only; final Reset outcomes are assertion/receipt evidence, not depicted by these PNGs."
+  },
+  "independent_evidence_review": "docs/stabilization/reports/guest-reset-evidence-peer.json"
 }
