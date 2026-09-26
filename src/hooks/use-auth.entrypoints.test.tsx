@@ -114,6 +114,41 @@ describe('useAuth canonical session entry points', () => {
     expect(result.current.status).toBe('signed-out');
   });
 
+  it('keeps the newer verified session when a delayed sign-out broadcast arrives', async () => {
+    dependencies.verifiedUser.mockResolvedValue(admin);
+    await chrome.storage.local.set({ [STORAGE_KEYS.USER_PROFILE]: admin });
+    const { result } = renderHook(() => useAuth());
+    await waitFor(() => expect(result.current.user?.id).toBe(admin.id));
+
+    // Another extension context committed this session before its older
+    // sign-out notification reached the panel.
+    await broadcastAuth({ user: admin, isAdmin: false });
+    await waitFor(() => expect(dependencies.checkIsAdmin).toHaveBeenCalledTimes(2));
+    await broadcastAuth({ user: null, isAdmin: false });
+
+    expect(result.current.user?.id).toBe(admin.id);
+    await waitFor(() => expect(dependencies.checkIsAdmin).toHaveBeenCalledTimes(3));
+    expect(result.current.status).toBe('signed-in');
+    expect(result.current.error).toBeNull();
+  });
+
+  it('shows a guest after a genuine sign-out broadcast clears the canonical session', async () => {
+    dependencies.verifiedUser.mockResolvedValue(admin);
+    await chrome.storage.local.set({ [STORAGE_KEYS.USER_PROFILE]: admin });
+    const { result } = renderHook(() => useAuth());
+    await waitFor(() => expect(result.current.user?.id).toBe(admin.id));
+
+    await chrome.storage.local.remove(STORAGE_KEYS.USER_PROFILE);
+    dependencies.restore.mockResolvedValue(false);
+    dependencies.verifiedUser.mockResolvedValue(null);
+    await broadcastAuth({ user: null, isAdmin: false });
+
+    await waitFor(() => expect(result.current.user).toBeNull());
+    expect(result.current.status).toBe('signed-out');
+    expect(result.current.isAdmin).toBe(false);
+    expect(result.current.error).toBeNull();
+  });
+
   it('warns and retries the admin read without starting OAuth', async () => {
     dependencies.verifiedUser.mockResolvedValue(admin);
     dependencies.checkIsAdmin.mockResolvedValueOnce(null).mockResolvedValueOnce(true);
