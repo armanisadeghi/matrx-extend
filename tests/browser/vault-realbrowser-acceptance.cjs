@@ -26,6 +26,7 @@ const {
 const { assertRequestedLifecycleVerdicts } = require('./vault-lifecycle-verdict.cjs');
 const { assertVaultExtensionLifecycleVerdict } = require('./vault-extension-lifecycle-verdict.cjs');
 const { runOwnedBrowserRestart } = require('./vault-extension-browser-restart-acceptance.cjs');
+const { runOrganizationSwitchOfferProbe } = require('./vault-organization-switch-offer.cjs');
 const {
   inspectIdentity,
   sameLifecycleIdentity,
@@ -2305,6 +2306,7 @@ async function openSidePanelFromActionPopup(
       panel: {
         targetId: target.targetId,
         send: (method, params) => panel.send(method, params),
+        onEvent: panel.onEvent,
         evaluate,
         click,
         waitFor,
@@ -3010,6 +3012,93 @@ async function verifyObservedVaultPanelRead() {
     await wait(250);
   }
   throw new Error('vault_panel_items_read_sentinel_missing');
+}
+async function chooseDifferentOrganizationInPanel(panel, activeWorker) {
+  await panel.click(visibleSettingsControl);
+  await panel.waitFor(`document.body.innerText.includes('Settings')`);
+  const section = `Array.from(document.querySelectorAll('button[aria-expanded]')).find(
+    (button) => button.textContent?.trim() === 'Organization')`;
+  const expanded = await panel.evaluate(`(${section})?.getAttribute('aria-expanded') === 'true'`);
+  if (!expanded) await panel.click(section);
+  const trigger = `(() => {
+    const labels = Array.from(document.querySelectorAll('span')).filter(
+      (span) => span.textContent?.trim() === 'Acting as');
+    return labels.length === 1 ? labels[0].parentElement?.parentElement?.querySelector('[role="combobox"]') : null;
+  })()`;
+  await panel.waitFor(`(${trigger}) !== null`);
+  const before = await activeWorker.evaluate(async () => {
+    const stored = await chrome.storage.local.get('matrx.org.active');
+    return stored['matrx.org.active']?.id ?? null;
+  });
+  assert(typeof before === 'string' && before.length > 10, 'org_switch_initial_org_missing');
+  await panel.click(trigger);
+  const options = await panel.evaluate(`(() => {
+    const visible = Array.from(document.querySelectorAll('[role="option"]')).filter((option) => {
+      const rect = option.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0;
+    });
+    return { count: visible.length, next: visible.findIndex((option) => option.getAttribute('aria-selected') !== 'true') };
+  })()`);
+  assert(options?.count >= 2 && options.next >= 0, 'org_switch_second_membership_missing');
+  const choice = `Array.from(document.querySelectorAll('[role="option"]')).filter((option) => {
+    const rect = option.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0;
+  })[${options.next}]`;
+  await panel.click(choice);
+  let after;
+  for (let attempt = 0; attempt < 60; attempt += 1) {
+    after = await activeWorker.evaluate(async () => {
+      const stored = await chrome.storage.local.get('matrx.org.active');
+      return stored['matrx.org.active']?.id ?? null;
+    });
+    if (typeof after === 'string' && after.length > 10 && after !== before) break;
+    await wait(250);
+  }
+  assert(typeof after === 'string' && after !== before, 'org_switch_selection_not_persisted');
+  return { before, after, memberOptionCount: options.count };
+}
+async function verifyPanelReadInOrganization(panel, expectedOrganizationId) {
+  assert(typeof panel?.onEvent === 'function', 'org_switch_panel_observer_missing');
+  const requests = new Map();
+  const stop = panel.onEvent((method, params) => {
+    if (method === 'Network.requestWillBeSent') {
+      let pathname;
+      try {
+        pathname = new URL(params.request?.url).pathname;
+      } catch {
+        return;
+      }
+      if (pathname !== '/api/vault/items' || params.request?.method !== 'GET') return;
+      const header = Object.entries(params.request?.headers || {}).find(
+        ([name]) => name.toLowerCase() === 'x-organization-id',
+      )?.[1];
+      requests.set(params.requestId, { correctOrganization: header === expectedOrganizationId });
+    }
+    if (method === 'Network.responseReceived' && requests.has(params.requestId)) {
+      const request = requests.get(params.requestId);
+      request.status = params.response?.status;
+    }
+  });
+  try {
+    await panel.click(visibleVaultControl);
+    await panel.waitFor(`(() => {
+      const control = (${visibleVaultControl});
+      return control?.getAttribute('aria-selected') === 'true' &&
+        !!document.querySelector('[role="tabpanel"]');
+    })()`);
+    for (let attempt = 0; attempt < 60; attempt += 1) {
+      if (
+        [...requests.values()].some(
+          (entry) => entry.correctOrganization && entry.status >= 200 && entry.status < 300,
+        )
+      )
+        return true;
+      await wait(250);
+    }
+    throw new Error('org_switch_new_panel_read_unverified');
+  } finally {
+    stop();
+  }
 }
 async function prewriteVaultPanelScreenshot() {
   // The Vault navigation control contains no credential value. Verify the
@@ -3801,6 +3890,59 @@ async function materializedPassword(id) {
           ? 'passed'
           : 'failed';
       if (extensionLifecycleMode) {
+        proof.phase = 'organization_switch_lifecycle';
+        persist();
+        const beforeOrganizationMetadata = baselineMetadataSha256(await items());
+        assert(
+          beforeOrganizationMetadata === proof.baselineMetadataSha256,
+          'org_switch_initial_personal_vault_drift',
+        );
+        let switchedOrganization;
+        const offerProbe = await runOrganizationSwitchOfferProbe({
+          context,
+          worker,
+          panel: realPanel,
+          wait,
+          assert,
+          focusOwnedBrowser,
+          switchOrganization: async () => {
+            switchedOrganization = await chooseDifferentOrganizationInPanel(realPanel, worker);
+            organizationId = switchedOrganization.after;
+            return switchedOrganization;
+          },
+        });
+        assert(switchedOrganization, 'org_switch_ui_transition_missing');
+        const newPanelRead = await verifyPanelReadInOrganization(
+          realPanel,
+          switchedOrganization.after,
+        );
+        const personalVaultScopePreserved =
+          baselineMetadataSha256(await items()) === beforeOrganizationMetadata;
+        proof.lifecycle.organizationInvalidation = {
+          disposition:
+            offerProbe.staleResponse === true &&
+            offerProbe.newActorOfferReady === true &&
+            offerProbe.fieldsUnchanged === true &&
+            offerProbe.noWebsiteSubmission === true &&
+            offerProbe.portClosed === true &&
+            offerProbe.ownedFixturePageClosed === true &&
+            offerProbe.ownedFixtureServerClosed === true &&
+            newPanelRead === true &&
+            personalVaultScopePreserved
+              ? 'passed'
+              : 'failed',
+          twoAdminMembershipsObserved: switchedOrganization.memberOptionCount >= 2,
+          oldOrganizationAuthorityRefusedAfterSwitch: offerProbe.staleResponse === true,
+          newOrganizationResolvedAfterSwitch: newPanelRead === true,
+          personalVaultScopePreserved,
+          oldOrganizationSha256: sha256Value(switchedOrganization.before),
+          newOrganizationSha256: sha256Value(switchedOrganization.after),
+          offerProbe,
+        };
+        assert(
+          proof.lifecycle.organizationInvalidation.disposition === 'passed',
+          'org_switch_lifecycle_incomplete',
+        );
         proof.lifecycle.verdict = { disposition: 'in_progress' };
         persist();
         assertVaultExtensionLifecycleVerdict({ lifecycle: proof.lifecycle });

@@ -104,7 +104,7 @@ const passed = {
     twoAdminMembershipsObserved: true,
     oldOrganizationAuthorityRefusedAfterSwitch: true,
     newOrganizationResolvedAfterSwitch: true,
-    disposableRecordScopePreserved: true,
+    personalVaultScopePreserved: true,
     oldOrganizationSha256: fingerprint('first admin organization'),
     newOrganizationSha256: fingerprint('second admin organization'),
   },

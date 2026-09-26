@@ -24,7 +24,10 @@ function harness({ cleanupFailure = false } = {}) {
     evaluate: async (expression) => {
       if (expression.includes('chrome.runtime.connect')) return 'a'.repeat(36);
       if (expression.includes('"operation":"discover"'))
-        return { status: 'ready', offers: [{ id: 'raw-offer', expiresAt: Date.now() + 15_000 }] };
+        return {
+          status: 'ready',
+          offers: [{ id: switched ? 'fresh-offer' : 'raw-offer', expiresAt: Date.now() + 15_000 }],
+        };
       if (expression.includes('"operation":"use"')) return { status: 'stale' };
       if (expression.includes('__vaultOrganizationSwitchOfferPort')) {
         if (cleanupFailure) throw new Error('forced_port_close_failure');
@@ -67,6 +70,7 @@ function harness({ cleanupFailure = false } = {}) {
     {
       offerDiscoveredWithGenerousTtl: evidence.offerDiscoveredWithGenerousTtl,
       organizationSwitchInvoked: evidence.organizationSwitchInvoked,
+      newActorOfferReady: evidence.newActorOfferReady,
       staleResponse: evidence.staleResponse,
       fieldsUnchanged: evidence.fieldsUnchanged,
       noWebsiteSubmission: evidence.noWebsiteSubmission,
@@ -77,6 +81,7 @@ function harness({ cleanupFailure = false } = {}) {
     {
       offerDiscoveredWithGenerousTtl: true,
       organizationSwitchInvoked: true,
+      newActorOfferReady: true,
       staleResponse: true,
       fieldsUnchanged: true,
       noWebsiteSubmission: true,
@@ -90,7 +95,9 @@ function harness({ cleanupFailure = false } = {}) {
   const failingCleanup = harness({ cleanupFailure: true });
   await assert.rejects(failingCleanup.run(), /organization_switch_offer_probe_cleanup_failed/);
   assert.equal(failingCleanup.switched(), 1);
-  process.stdout.write('PASS: organization switch probe requires stale raw offer use and closes custody\n');
+  process.stdout.write(
+    'PASS: organization switch probe requires stale raw offer use and closes custody\n',
+  );
 })().catch((error) => {
   console.error(error);
   process.exitCode = 1;

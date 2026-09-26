@@ -66,6 +66,7 @@ exports.runOrganizationSwitchOfferProbe = async ({
   let fixture;
   let page;
   let portOpened = false;
+  let failure;
   const evidence = {
     scope: 'owned localhost password form and raw extension generation port',
     fixtureMutations: false,
@@ -125,11 +126,11 @@ exports.runOrganizationSwitchOfferProbe = async ({
       port.onDisconnect.addListener(disconnected);
       timer = setTimeout(() => finish(null), 10000);
     })`);
-    portOpened = true;
     assert(
       typeof connectionId === 'string' && /^[a-f0-9]{36}$/.test(connectionId),
       'organization_switch_port_handshake_missing',
     );
+    portOpened = true;
     const request = (payload) =>
       panel.evaluate(
         `chrome.runtime.sendMessage(${JSON.stringify({
@@ -145,6 +146,23 @@ exports.runOrganizationSwitchOfferProbe = async ({
 
     await switchOrganization({ tabId, offerExpiresAt: offer.expiresAt });
     evidence.organizationSwitchInvoked = true;
+    assert(
+      offer.expiresAt >= Date.now() + 3_000,
+      'organization_switch_old_offer_expired_before_use',
+    );
+    const focused = await worker.evaluate(async (id) => {
+      const tab = await chrome.tabs.get(id);
+      const window = await chrome.windows.get(tab.windowId);
+      return tab.active === true && window.focused === true;
+    }, tabId);
+    assert(focused === true, 'organization_switch_fixture_lost_focus');
+    const afterSwitchDiscovery = await request({ operation: 'discover', tabId });
+    evidence.newActorOfferReady =
+      afterSwitchDiscovery?.status === 'ready' &&
+      afterSwitchDiscovery.offers?.some(
+        (candidate) => isOffer(candidate) && candidate.id !== offer.id,
+      ) === true;
+    assert(evidence.newActorOfferReady, 'organization_switch_new_actor_offer_unavailable');
     const result = await request({ operation: 'use', offerId: offer.id, value: syntheticValue });
     assert(result?.status === 'stale', 'organization_switch_offer_not_stale');
     evidence.staleResponse = true;
@@ -156,36 +174,38 @@ exports.runOrganizationSwitchOfferProbe = async ({
     assert(evidence.fieldsUnchanged, 'organization_switch_stale_offer_wrote_fields');
     evidence.noWebsiteSubmission = fixture.state.submits === 0;
     assert(evidence.noWebsiteSubmission, 'organization_switch_stale_offer_submitted_form');
-    return evidence;
-  } finally {
-    // Values are never returned or retained after the request reaches the extension.
-    const cleanup = await Promise.allSettled([
-      Promise.resolve().then(async () => {
-        if (portOpened)
-          return panel.evaluate(`(() => {
+  } catch (error) {
+    failure = error;
+  }
+  // Values are never returned or retained after the request reaches the extension.
+  const cleanup = await Promise.allSettled([
+    Promise.resolve().then(async () => {
+      if (portOpened)
+        return panel.evaluate(`(() => {
             const port = globalThis.__vaultOrganizationSwitchOfferPort;
             if (!port) return false;
             try { port.disconnect(); } finally { delete globalThis.__vaultOrganizationSwitchOfferPort; }
             return true;
           })()`);
-        return true;
-      }),
-      Promise.resolve().then(async () => {
-        if (page && !page.isClosed()) await page.close();
-      }),
-      Promise.resolve().then(async () => {
-        if (fixture) await fixture.close();
-      }),
-    ]);
-    evidence.portClosed = cleanup[0].status === 'fulfilled' && cleanup[0].value === true;
-    evidence.ownedFixturePageClosed = cleanup[1].status === 'fulfilled' && (!page || page.isClosed());
-    evidence.ownedFixtureServerClosed = cleanup[2].status === 'fulfilled';
-    if (
-      cleanup.some((result) => result.status === 'rejected') ||
-      !evidence.portClosed ||
-      !evidence.ownedFixturePageClosed ||
-      !evidence.ownedFixtureServerClosed
-    )
-      throw new Error('organization_switch_offer_probe_cleanup_failed');
-  }
+      return true;
+    }),
+    Promise.resolve().then(async () => {
+      if (page && !page.isClosed()) await page.close();
+    }),
+    Promise.resolve().then(async () => {
+      if (fixture) await fixture.close();
+    }),
+  ]);
+  evidence.portClosed = cleanup[0].status === 'fulfilled' && cleanup[0].value === true;
+  evidence.ownedFixturePageClosed = cleanup[1].status === 'fulfilled' && (!page || page.isClosed());
+  evidence.ownedFixtureServerClosed = cleanup[2].status === 'fulfilled';
+  if (
+    cleanup.some((result) => result.status === 'rejected') ||
+    !evidence.portClosed ||
+    !evidence.ownedFixturePageClosed ||
+    !evidence.ownedFixtureServerClosed
+  )
+    throw new Error('organization_switch_offer_probe_cleanup_failed');
+  if (failure) throw failure;
+  return evidence;
 };

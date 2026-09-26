@@ -183,7 +183,7 @@ function assertVaultExtensionLifecycleVerdict({ lifecycle, requireOrganizationSw
       'twoAdminMembershipsObserved',
       'oldOrganizationAuthorityRefusedAfterSwitch',
       'newOrganizationResolvedAfterSwitch',
-      'disposableRecordScopePreserved',
+      'personalVaultScopePreserved',
     ],
     'vault_lifecycle_organization_invalidation',
   );
