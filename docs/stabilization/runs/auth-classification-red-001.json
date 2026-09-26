@@ -1,0 +1,59 @@
+{
+  "id": "auth-classification-red-001",
+  "defect_id": "EXT-D-0007",
+  "status": "expected-fail",
+  "test_commit": "3ad520c",
+  "command": "pnpm exec vitest run --maxWorkers=1 --minWorkers=1 src/hooks/use-auth.strict-mode.test.tsx tests/unit/sidepanel-visibility.test.ts",
+  "results": {
+    "passed": 11,
+    "failed": 5,
+    "unhandled_errors": 0
+  },
+  "failures": [
+    "Guest with stale admin flag can see admin tab",
+    "Cached profile appears signed in after restore false",
+    "Stale admin cache accepted without profile",
+    "Cached profile accepted despite mismatched verified bearer",
+    "Unverifiable bearer treated as signed in"
+  ],
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T06:41:22.223Z",
+      "runId": "auth-classification-red-001",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.8199999999999998,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.11974285714285714,
+        "swapUsedMiB": 1789.12,
+        "repoFreeGiB": 1676.3745727539062,
+        "profileFreeGiB": 1676.3745727539062
+      },
+      "cpuBusySamples": [
+        0.21310000000000007,
+        0.10370000000000001,
+        0.0948,
+        0.10629999999999995,
+        0.1119,
+        0.11099999999999999,
+        0.09739999999999993
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T06:41:26.819Z",
+      "runId": "auth-classification-red-001",
+      "childExitCode": 1,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ]
+}
