@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/svg_diagnostics_peer",
+  "reviewed_commit": "9cb693f5cf68ff963864c618ee3a252044e2ca41",
+  "scope": "Independent source-only review of native SVG capture diagnostics. No browser, build, or tests were launched; no product files were edited.",
+  "verdict_a_runtime_acceptance": {
+    "status": "UNVERIFIED",
+    "evidence": [
+      "The runner exercises both Fast and Deep from a real guest side panel against an owned localhost article, with SVG image load checks, exact path/rect geometry assertions, caption and label checks, and an ordered article sequence.",
+      "Deep changes the source caption, bar geometry, and a unique paragraph after Fast, then waits for the changed text before asserting the second capture.",
+      "This lane did not launch Chrome or inspect rendered output, so runtime acceptance remains with the owning lane."
+    ]
+  },
+  "verdict_b_diagnostic_quality": {
+    "status": "CONCERNS",
+    "changes": [
+      "The runner now writes bounded failure status, stage, and a structured safe observation, and attempts a panel screenshot when panel exercise fails.",
+      "The observation records image load/visibility, caption/label marker presence, and visible error state without saving raw SVG payloads."
+    ],
+    "evidence": [
+      "The screenshot is written under the harness-provided artifacts directory (svg-caption-native-acceptance.mjs:215); native-sidepanel-qa-harness.mjs removes its temporary root recursively in finally after exercisePanel returns or throws (native-sidepanel-qa-harness.mjs:439-445). The report therefore points at a deleted screenshot after failure.",
+      "safeObservation records expectedGeometry for the second image as only a count of three rect elements, not their coordinates; it stores text marker booleans but no order evidence. A geometry or ordering assertion failure consequently leaves insufficient structured state to identify the mismatch (svg-caption-native-acceptance.mjs:155-197).",
+      "failure_detail splits the assertion message at the first colon; assertArticle messages start with 'fast:' or 'deep:', so geometry, caption, and ordering failures collapse to only the mode name (svg-caption-native-acceptance.mjs:407-411; assertArticle at 231 onward).",
+      "The failure stage remains '*_article_wait' for assertions and settled-state checks that happen after waitFor, so it can misidentify where the failure occurred (svg-caption-native-acceptance.mjs:359-394)."
+    ],
+    "open_questions": [
+      "The owner should decide whether to repair failure artifact persistence and improve the sanitized snapshot before treating diagnostics as sufficient for runtime failure triage."
+    ]
+  },
+  "files": [
+    "tests/browser/svg-caption-native-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs"
+  ]
+}
