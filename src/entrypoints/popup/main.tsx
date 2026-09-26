@@ -7,7 +7,7 @@ import { createRoot } from 'react-dom/client';
 import '@/styles/globals.css';
 
 export function Popup() {
-  const { user, signIn } = useAuth();
+  const { error, signIn, status, user } = useAuth();
   const [panelError, setPanelError] = useState<string | null>(null);
   const openSidePanel = async () => {
     setPanelError(null);
@@ -72,7 +72,16 @@ export function Popup() {
       ) : (
         <>
           <p className="text-xs text-muted-foreground">Sign in to start using the extension.</p>
-          <Button onClick={signIn} className="w-full">
+          {error && (
+            <p role="alert" className="text-xs text-destructive">
+              Sign-in failed: {error}
+            </p>
+          )}
+          <Button
+            onClick={() => void signIn()}
+            disabled={status === 'signing-in'}
+            className="w-full"
+          >
             <ExternalLink /> Sign in
           </Button>
         </>

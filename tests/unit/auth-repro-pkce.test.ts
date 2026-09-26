@@ -128,7 +128,9 @@ describe('concurrent PKCE sign-in reproduction', () => {
         },
         local: {
           get: async (keys: string[]) =>
-            Object.fromEntries(keys.filter((key) => local.has(key)).map((key) => [key, local.get(key)])),
+            Object.fromEntries(
+              keys.filter((key) => local.has(key)).map((key) => [key, local.get(key)]),
+            ),
           set: async (values: Record<string, unknown>) => {
             for (const [key, value] of Object.entries(values)) local.set(key, value);
           },

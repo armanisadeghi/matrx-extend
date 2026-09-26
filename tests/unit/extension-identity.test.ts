@@ -46,6 +46,7 @@ describe('extension identity diagnostics', () => {
   beforeEach(() => {
     vi.resetModules();
     vi.clearAllMocks();
+    vi.stubGlobal('browser', undefined);
   });
 
   it.each([
@@ -79,6 +80,25 @@ describe('extension identity diagnostics', () => {
       expected_redirect_uri: FIREFOX_REDIRECT_URI,
       redirect_matches_expected: true,
       matches_expected: true,
+    });
+  });
+
+  it('displays Safari browser.identity callback URI without chrome.identity', async () => {
+    vi.stubGlobal('browser', {
+      identity: { getRedirectURL: () => 'https://com.example.matrx.safariwebext.apple/' },
+    });
+    vi.stubGlobal('chrome', {
+      runtime: {
+        id: 'safari-extension',
+        getManifest: () => ({ version: '0.0.0-test', name: 'Matrx Extend' }),
+      },
+    });
+    const { readExtensionIdentity } = await import('@/lib/auth/identity');
+
+    expect(readExtensionIdentity()).toMatchObject({
+      redirect_uri: 'https://com.example.matrx.safariwebext.apple/',
+      known_id: false,
+      matches_expected: false,
     });
   });
 
