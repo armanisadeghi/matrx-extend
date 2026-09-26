@@ -23,7 +23,7 @@
       "control_reconciliation": "EXT-F-2013-C25 is still labeled Choose Agent Official model and is stale against the current UI copy. Its case coverage does not explicitly verify that the account default is used only when no extension override is selected.",
       "missing_controls": [
         {
-          "proposed_id": "EXT-F-2013-C136",
+          "proposed_id": "EXT-F-2013-C135",
           "label": "Apply account default model when no extension model is selected",
           "case_proposal": "EXT-F-2013-T08",
           "expected_scope": "Verify general chat sends the account default with no local choice, an explicit extension model takes precedence, and an agent-specific model is unchanged."
@@ -46,7 +46,7 @@
       "control_reconciliation": "The broad conversation cases do not name typed decision answers or their live-versus-reloaded rendering path.",
       "missing_controls": [
         {
-          "proposed_id": "EXT-F-2013-C135",
+          "proposed_id": "EXT-F-2013-C136",
           "label": "Render typed decision answer in Chat live stream and conversation history",
           "case_proposal": "EXT-F-2013-T09",
           "expected_scope": "The verdict appears as readable assistant content during the stream and after reopening the conversation, without an empty assistant bubble."
