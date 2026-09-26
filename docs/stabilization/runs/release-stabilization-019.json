@@ -59,5 +59,6 @@
       "childSignal": null,
       "code": "RESOURCE_JOB_EXIT"
     }
-  ]
+  ],
+  "subsequent_diagnosis": "remote-deps-1433.json proves trackedlockadvancedafterpreviousinstall; installedlock/rootlinksold, notjustunreferencedorphans. Repairfreshfrozeninstall againstcurrentlock, no deletion."
 }
