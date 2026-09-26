@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T08:05:41.166944+00:00",
+  "updated_at": "2026-09-26T08:17:17.930027+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -2134,7 +2134,9 @@
             "context-ambiguous",
             "claim-removal-failure",
             "expiry"
-          ]
+          ],
+          "remote_delta_acceptance": "Already covers Capture claim failure; confirm the sidepanel's Open Scrape alert is visible and actionable.",
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json"
         },
         {
           "id": "EXT-F-1002-T20",
@@ -2168,7 +2170,9 @@
             "context-ambiguous",
             "claim-removal-failure",
             "expiry"
-          ]
+          ],
+          "remote_delta_acceptance": "Same claim-failure behavior for admin.",
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json"
         }
       ],
       "cells": {
@@ -8056,6 +8060,11 @@
           "label": "Inspect prior-save lookup failure",
           "action": "When the saved-page lookup fails, say the prior-save status could not be checked and keep Save available; do not imply the page is new.",
           "source_anchor": "src/features/scrape/ScrapeView.tsx:211"
+        },
+        {
+          "id": "EXT-F-1007-C28",
+          "label": "Show not-yet-a-Source state with its next action",
+          "action": "An absent Source is described as not yet a Source with the correct next action; a known Source shows saved status; unknown lookup state is explicit and never presented as not-yet-saved."
         }
       ],
       "source_anchors": [
@@ -8681,7 +8690,9 @@
             "valid-input",
             "backend-available"
           ],
-          "verification_status": "unverified"
+          "verification_status": "unverified",
+          "remote_delta_acceptance": "Add assertions for the signed-in not-yet-a-Source notice/action and ensure a failed lookup displays unknown rather than this notice.",
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json"
         },
         {
           "id": "EXT-F-1007-T22",
@@ -8836,7 +8847,48 @@
             "honest-state"
           ],
           "verification_status": "unverified-after-source-change",
-          "source_evidence": "c3a2477 changed lookup results to found/none/unknown and added the could-not-check state; runtime behavior remains unverified."
+          "source_evidence": "c3a2477 changed lookup results to found/none/unknown and added the could-not-check state; runtime behavior remains unverified.",
+          "remote_delta_acceptance": "Already covers failed prior-save lookup; retain and extend to ensure the new notice is suppressed while lookup is unknown.",
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json"
+        },
+        {
+          "id": "EXT-F-1007-T27",
+          "title": "Show not-yet-a-Source state with its next action",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "steps": [
+            "Open Scrape on a signed-in HTTP(S) page not present in Sources.",
+            "Check the notice and choose Capture; after capture, choose Save.",
+            "Repeat with an existing Source and with a failed lookup."
+          ],
+          "expected": [
+            "An absent Source is described as not yet a Source with the correct next action; a known Source shows saved status; unknown lookup state is explicit and never presented as not-yet-saved."
+          ],
+          "dimensions": [
+            "warm",
+            "backend-available",
+            "lookup-failure",
+            "source-status"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C28"
+          ],
+          "preconditions": [
+            "Use a fresh build receipt including source75cfb09 or later; follow the campaign resource/build/reload contract. Use controlled owned fixtures and never expose credential values."
+          ],
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json",
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "New remote source behavior; frozen0.2.56 artifact does not include this delta."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New remote source behavior; frozen0.2.56 artifact does not include this delta."
+            }
+          }
         }
       ],
       "cells": {
@@ -19469,6 +19521,11 @@
           "source_anchor": "src/features/vault/VaultView.tsx",
           "test_design_status": "unverified",
           "test_design_item": "Verify Never save this site's captures (Reject future capture prompts for site) on Vault side-panel in source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2011-C51",
+          "label": "Distinguish failed site-login lookup from no matches and retry",
+          "action": "Failure is not shown as an empty successful result; candidates from an earlier page or actor are cleared; retry runs for the same current tab, page, and actor and then displays the returned result."
         }
       ],
       "source_anchors": [
@@ -19548,7 +19605,9 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "remote_delta_acceptance": "Generic Vault case should include match-lookup refusal, truthful error versus empty result, no stale candidate action, and successful retry.",
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json"
         },
         {
           "id": "EXT-F-2011-T03",
@@ -19695,6 +19754,45 @@
             "post-bind-read",
             "no-write"
           ]
+        },
+        {
+          "id": "EXT-F-2011-T08",
+          "title": "Distinguish failed site-login lookup from no matches and retry",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "steps": [
+            "On a supported login page, force the browser-login match request to fail.",
+            "Confirm the error and Retry control appear and prior candidates are not actionable.",
+            "Restore service and retry."
+          ],
+          "expected": [
+            "Failure is not shown as an empty successful result; candidates from an earlier page or actor are cleared; retry runs for the same current tab, page, and actor and then displays the returned result."
+          ],
+          "dimensions": [
+            "backend-refusal",
+            "retry",
+            "tab-binding",
+            "organization-binding"
+          ],
+          "control_ids": [
+            "EXT-F-2011-C51"
+          ],
+          "preconditions": [
+            "Use a fresh build receipt including source75cfb09 or later; follow the campaign resource/build/reload contract. Use controlled owned fixtures and never expose credential values."
+          ],
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json",
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "New remote source behavior; frozen0.2.56 artifact does not include this delta."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New remote source behavior; frozen0.2.56 artifact does not include this delta."
+            }
+          }
         }
       ],
       "cells": {
@@ -21187,6 +21285,11 @@
           "modes": [
             "guest"
           ]
+        },
+        {
+          "id": "EXT-F-2013-C134",
+          "label": "Send explicit page Source status in Chat context",
+          "action": "The outgoing context carries exactly the corresponding source, not_yet_a_source, or unknown status; the not-yet state includes the Scrape Save action and unknown never claims absence."
         }
       ],
       "source_anchors": [
@@ -21289,7 +21392,9 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "remote_delta_acceptance": "Composer send now carries page_source context in place of prior_capture; verify all three statuses reach the request.",
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json"
         },
         {
           "id": "EXT-F-2013-T03",
@@ -21417,6 +21522,42 @@
               "detail": "New remote behavior; loaded0.2.51 predates this source."
             }
           }
+        },
+        {
+          "id": "EXT-F-2013-T07",
+          "title": "Send explicit page Source status in Chat context",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "steps": [
+            "Send from a known Source page, a page without a landed Source, and while Source lookup fails."
+          ],
+          "expected": [
+            "The outgoing context carries exactly the corresponding source, not_yet_a_source, or unknown status; the not-yet state includes the Scrape Save action and unknown never claims absence."
+          ],
+          "dimensions": [
+            "context-contract",
+            "backend-available",
+            "lookup-failure"
+          ],
+          "control_ids": [
+            "EXT-F-2013-C134"
+          ],
+          "preconditions": [
+            "Use a fresh build receipt including source75cfb09 or later; follow the campaign resource/build/reload contract. Use controlled owned fixtures and never expose credential values."
+          ],
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json",
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "New remote source behavior; frozen0.2.56 artifact does not include this delta."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New remote source behavior; frozen0.2.56 artifact does not include this delta."
+            }
+          }
         }
       ],
       "cells": {
@@ -21460,6 +21601,14 @@
           "source": "docs/stabilization/reports/render-code-review.json",
           "state": "needs-reproduction",
           "wave": "D"
+        },
+        {
+          "id": "EXT-L-0009",
+          "state": "deferred-source-contract-reconciliation",
+          "summary": "Remote source replaces prior_capture with page_source but canonical WIRE_CONTRACT still names prior_capture. Public context compatibility/documentation not yet verified.",
+          "source": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json",
+          "wave": "D",
+          "reason": "Chat/Pilot cross-system work remains last; not blocking contained Settings tests."
         }
       ]
     },
@@ -21912,6 +22061,11 @@
           "source_anchor": "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/AgentListContent.tsx",
           "test_design_status": "unverified",
           "test_design_item": "Verify Agent picker retry default row (Retry failed default-agent lookup) on Pilot (deferred wave D) in source-applicable roles; include refusal/reload where state persists."
+        },
+        {
+          "id": "EXT-F-2014-C60",
+          "label": "Pilot receives page Source status and truthful local-browser terminal outcomes",
+          "action": "Pilot context carries the explicit page Source state; a terminal operation reports a reason matching its actual failed stage and never mislabels an unavailable observation as configuration_error."
         }
       ],
       "source_anchors": [
@@ -21998,7 +22152,41 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "remote_delta_acceptance": "Pilot inherits the page_source context and also exercises more specific local-browser terminal outcomes.",
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json"
+        },
+        {
+          "id": "EXT-F-2014-T03",
+          "title": "Pilot receives page Source status and truthful local-browser terminal outcomes",
+          "modes": [
+            "admin"
+          ],
+          "steps": [
+            "Send Pilot work from source, not-yet, and unknown pages; exercise an admitted credential operation with a controlled changed binding, unavailable field, or lost post-submit document."
+          ],
+          "expected": [
+            "Pilot context carries the explicit page Source state; a terminal operation reports a reason matching its actual failed stage and never mislabels an unavailable observation as configuration_error."
+          ],
+          "dimensions": [
+            "context-contract",
+            "local-browser",
+            "terminal-reason",
+            "failure-recovery"
+          ],
+          "control_ids": [
+            "EXT-F-2014-C60"
+          ],
+          "preconditions": [
+            "Use a fresh build receipt including source75cfb09 or later; follow the campaign resource/build/reload contract. Use controlled owned fixtures and never expose credential values."
+          ],
+          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json",
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "detail": "New remote source behavior; frozen0.2.56 artifact does not include this delta."
+            }
+          }
         }
       ],
       "cells": {
@@ -46207,7 +46395,8 @@
     }
   ],
   "notes": [
-    "Independent source census passed. Runtime test execution still requires safe resource admission, fresh build receipt, concrete per-case steps and fixtures."
+    "Independent source census passed. Runtime test execution still requires safe resource admission, fresh build receipt, concrete per-case steps and fixtures.",
+    "Remote75cfb09 inventory reconciliation includes Source status, Vault match-error retry, popup recovery, deferred Chat/Pilot context and terminal cases. Runtime proof remains tied to frozen0.2.56 until a new integration."
   ],
   "source_review": "docs/stabilization/reports/inventory-remote-delta.json"
 }
