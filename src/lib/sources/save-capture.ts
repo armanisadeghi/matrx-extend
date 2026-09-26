@@ -12,7 +12,7 @@
  *     `keep: true`, `visibility: 'personal'`.
  *
  * NEVER LOSE INPUT. A refused or unreachable landing does not drop the capture:
- * it is written to `chrome.storage.local` and shown as an "Unsaved — retry"
+ * it is written to `chrome.storage.local` and shown as an "Not yet a Source" (retry)
  * card until it lands. Only a successful landing removes it.
  */
 
@@ -157,7 +157,7 @@ async function send(prepared: PreparedLanding): Promise<SendResult> {
         status: 401,
         code: 'sign_in_required',
         message:
-          'You are signed out, so this page is not saved yet. It is kept on this device; sign in and retry.',
+          'You are signed out, so this page is not yet a Source. It is kept on this device; sign in and retry.',
         remedy: 'sign_in',
         retryable: true,
       },
@@ -226,7 +226,7 @@ function newId(): string {
 }
 
 /**
- * Save a capture. Lands it, or keeps it on this device under "Unsaved — retry".
+ * Save a capture. Lands it, or keeps it on this device under "Not yet a Source" (retry).
  * Never throws for a refusal or an outage: the outcome says what happened.
  */
 export async function saveCaptureAsSource(

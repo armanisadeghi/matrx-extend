@@ -87,7 +87,7 @@ export function SavedCapturesView() {
       setCaptures([]);
       setUnreadable(0);
       setHasMore(false);
-      setError(cause instanceof Error ? cause.message : 'Saved captures could not be loaded.');
+      setError(cause instanceof Error ? cause.message : 'Your saved Sources could not be loaded.');
     } finally {
       if (generation === requestGeneration.current) setLoading(false);
     }
@@ -103,10 +103,10 @@ export function SavedCapturesView() {
     setError(null);
     try {
       const capture = await getSavedCapture(summary.id);
-      if (!capture) throw new Error('This saved capture no longer exists.');
+      if (!capture) throw new Error('This Source no longer exists.');
       setSelected(capture);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'The saved capture could not be opened.');
+      setError(cause instanceof Error ? cause.message : 'This Source could not be opened.');
     } finally {
       setLoading(false);
     }
@@ -133,7 +133,7 @@ export function SavedCapturesView() {
       setHasMore(page.fetched === PAGE_SIZE);
     } catch (cause) {
       if (generation !== requestGeneration.current) return;
-      setError(cause instanceof Error ? cause.message : 'More captures could not be loaded.');
+      setError(cause instanceof Error ? cause.message : 'More Sources could not be loaded.');
     } finally {
       if (generation === requestGeneration.current) setLoadingMore(false);
     }
@@ -154,7 +154,7 @@ export function SavedCapturesView() {
           ? cause.userMessage
           : cause instanceof Error
             ? cause.message
-            : 'The capture could not be deleted.',
+            : 'The Source could not be deleted.',
       );
     }
   };
@@ -178,8 +178,8 @@ export function SavedCapturesView() {
           onOpenChange={(open) => {
             if (!open) setDeleteTarget(null);
           }}
-          title="Delete saved capture?"
-          description="This removes it from your saved captures and your Sources. The original web page is not affected."
+          title="Delete this Source?"
+          description="It is removed from your Sources everywhere in AI Matrx, not just this list. The web page itself is not affected."
           confirmLabel="Delete"
           variant="destructive"
           onConfirm={() => void confirmDelete()}
@@ -220,7 +220,7 @@ export function SavedCapturesView() {
         {error && <ErrorNotice message={error} onRetry={() => void load(query)} />}
         {unreadable > 0 && (
           <ErrorNotice
-            message={`${unreadable} saved capture${unreadable === 1 ? '' : 's'} could not be read, so ${unreadable === 1 ? 'it is' : 'they are'} not shown. Refresh to try again.`}
+            message={`${unreadable} saved Source${unreadable === 1 ? '' : 's'} could not be read, so ${unreadable === 1 ? 'it is' : 'they are'} not shown. Refresh to try again.`}
             onRetry={() => void load(query)}
           />
         )}
@@ -233,11 +233,11 @@ export function SavedCapturesView() {
             <Library className="size-8 text-muted-foreground/50" />
             <div>
               <p className="text-sm font-medium">
-                {query ? 'No captures match your search' : 'No saved captures yet'}
+                {query ? 'No Sources match your search' : 'No Sources saved from this browser yet'}
               </p>
               {!query && (
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Capture a page in Scrape, then press Save.
+                  Capture a page in Scrape, then press Save to make it a Source.
                 </p>
               )}
             </div>
@@ -307,8 +307,8 @@ export function SavedCapturesView() {
         onOpenChange={(open) => {
           if (!open) setDeleteTarget(null);
         }}
-        title="Delete saved capture?"
-        description="This removes it from your saved captures and your Sources. The original web page is not affected."
+        title="Delete this Source?"
+        description="It is removed from your Sources everywhere in AI Matrx, not just this list. The web page itself is not affected."
         confirmLabel="Delete"
         variant="destructive"
         onConfirm={() => void confirmDelete()}
@@ -393,12 +393,12 @@ function SavedCaptureDetail({
         return;
       }
       const reloaded = await getSavedCapture(capture.id);
-      if (!reloaded) throw new Error('This saved capture no longer exists.');
+      if (!reloaded) throw new Error('This Source no longer exists.');
       setSavedNote(outcome.landed.notices.map((n) => n.message).join(' ') || null);
       onUpdated(reloaded);
       setEditing(false);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'The capture could not be updated.');
+      setError(cause instanceof Error ? cause.message : 'The Source could not be updated.');
     } finally {
       setSaving(false);
     }
@@ -509,7 +509,7 @@ function SavedCaptureDetail({
               {text ? (
                 <MarkdownView content={text} />
               ) : (
-                <EmptyDetail icon={FileText} text="This capture has no article text." />
+                <EmptyDetail icon={FileText} text="This Source has no article text." />
               )}
             </TabsContent>
             <TabsContent value="details" className="space-y-3 text-xs">

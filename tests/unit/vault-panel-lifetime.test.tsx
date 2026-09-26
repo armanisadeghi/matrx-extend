@@ -295,10 +295,12 @@ it('fences list and match publication at invalidation even before React remount'
   expect(node.textContent).not.toContain('Old actor');
 });
 
-it('clears a failed match lookup for a new page and restores matching after a successful retry', async () => {
+it.each(['page', 'tab', 'actor'] as const)(
+  'clears a failed match lookup for a new %s and restores matching after a successful retry',
+  async (dimension) => {
   let data!: VaultData;
   const admission = { current: () => true, run: async <T,>(work: () => Promise<T>) => work() };
-  const actor = { userId: 'user-a', organizationId: 'org-a' };
+  let actor = { userId: 'user-a', organizationId: 'org-a' };
   const recovery = deferred<unknown>();
   deps.matches
     .mockResolvedValueOnce({ ok: false, failure: { kind: 'forbidden' } })
@@ -317,7 +319,9 @@ it('clears a failed match lookup for a new page and restores matching after a su
   expect(node.textContent).toContain('forbidden');
   expect(data.matches).toEqual([]);
 
-  deps.tab = { ...deps.tab, url: 'https://other.example/login' };
+  if (dimension === 'page') deps.tab = { ...deps.tab, url: 'https://other.example/login' };
+  if (dimension === 'tab') deps.tab = { ...deps.tab, id: 8 };
+  if (dimension === 'actor') actor = { userId: 'user-b', organizationId: 'org-b' };
   await act(async () => root.render(<Probe />));
   expect(node.textContent).toContain('clear');
 
@@ -326,7 +330,8 @@ it('clears a failed match lookup for a new page and restores matching after a su
   );
   expect(data.matchesError).toBeNull();
   expect(node.textContent).toContain('Recovered match');
-});
+  },
+);
 
 it('clears revoked Vault metadata and restores it only after a successful reload', async () => {
   let data!: VaultData;

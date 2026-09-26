@@ -4,7 +4,7 @@
  *
  * The door canonicalizes whatever the client sends, so the extension does not
  * need this to SAVE. It needs it to READ: recognition ("you captured this
- * page"), `PAGE_ALREADY_CAPTURED` and `prior_capture` look a Source up by
+ * page"), `PAGE_ALREADY_CAPTURED` and the chat context's `page_source` look a Source up by
  * `docproc.processed_documents.canonical_identity`, and a lookup keyed any
  * other way silently misses every capture it should find.
  *

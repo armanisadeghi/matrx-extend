@@ -171,10 +171,10 @@ describe('SavedCapturesView', () => {
       {
         ordinal: 1,
         kind: 'section',
-        text: '# Revised alpha\n\nComplete text.',
+        text: 'Revised alpha\nComplete text.',
         locator: {
           heading_path: ['Revised alpha'],
-          text_fragment: '# Revised alpha Complete text.',
+          text_fragment: 'Revised alpha Complete text.',
         },
         method: 'native',
       },
@@ -215,20 +215,20 @@ describe('SavedCapturesView', () => {
     expect(await screen.findByText('Alpha guide')).toBeTruthy();
     expect(
       screen.getByText(
-        '2 saved captures could not be read, so they are not shown. Refresh to try again.',
+        '2 saved Sources could not be read, so they are not shown. Refresh to try again.',
       ),
     ).toBeTruthy();
   });
 
-  it('never says "no saved captures yet" when every row was unreadable', async () => {
+  it('never says "no Sources saved from this browser yet" when every row was unreadable', async () => {
     mocks.list.mockResolvedValueOnce(page([], 1));
     render(<SavedCapturesView />);
     expect(
       await screen.findByText(
-        '1 saved capture could not be read, so it is not shown. Refresh to try again.',
+        '1 saved Source could not be read, so it is not shown. Refresh to try again.',
       ),
     ).toBeTruthy();
-    expect(screen.queryByText('No saved captures yet')).toBeNull();
+    expect(screen.queryByText('No Sources saved from this browser yet')).toBeNull();
   });
 
   it('shows a load failure without also claiming the library is empty', async () => {
@@ -236,7 +236,7 @@ describe('SavedCapturesView', () => {
     render(<SavedCapturesView />);
 
     expect(await screen.findByText('Saved captures are unavailable.')).toBeTruthy();
-    expect(screen.queryByText('No saved captures yet')).toBeNull();
+    expect(screen.queryByText('No Sources saved from this browser yet')).toBeNull();
   });
 
   it('soft-deletes a capture only after the consequence dialog is confirmed', async () => {

@@ -76,6 +76,7 @@ export function ScrapeView() {
   const removeLink = useScrapeStore((s) => s.removeLink);
   const addLink = useScrapeStore((s) => s.addLink);
   const isAdmin = useAuthStore((s) => s.isAdmin);
+  const signedIn = useAuthStore((s) => s.user !== null);
   const recognition = usePageRecognition();
   const tab = useActiveTab();
   const [saving, setSaving] = useState(false);
@@ -181,7 +182,7 @@ export function ScrapeView() {
       } else if (outcome.status === 'empty') {
         setSaveError(outcome.message);
       }
-      // 'unsaved': the capture is on this device and the "Unsaved — retry"
+      // 'unsaved': the capture is on this device and the "Not yet a Source" (retry)
       // card above shows it with the server's sentence — nothing else to say.
     } catch (err) {
       // save() never throws for a refusal or an outage; reaching here is a bug
@@ -195,6 +196,20 @@ export function ScrapeView() {
       setSaving(false);
     }
   };
+
+  // SOURCE-CONVERGENCE §1 rule 6: a web address whose content has not landed is
+  // "not yet a Source", said with the action that makes it one. Only for a
+  // signed-in person on a page that CAN be a Source, and never while a check,
+  // a capture or a save is still running (the answer is not known yet).
+  const notYetASource =
+    signedIn &&
+    /^https?:\/\//i.test(tab.url ?? '') &&
+    !recognition.loading &&
+    !recognition.checkFailed &&
+    !recognition.capturedAt &&
+    !saved &&
+    !saving &&
+    !loading;
 
   return (
     <div className="flex h-full flex-col">
@@ -226,7 +241,7 @@ export function ScrapeView() {
           <div className="mt-2 flex items-center gap-2 rounded-xl bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-700 dark:text-emerald-300">
             <CheckCircle2 className="size-3.5 shrink-0" />
             <span className="min-w-0 flex-1">
-              Saved {new Date(recognition.capturedAt).toLocaleString()}
+              This page is a Source · saved {new Date(recognition.capturedAt).toLocaleString()}
             </span>
             {recognition.capturedId && (
               <button
@@ -240,6 +255,34 @@ export function ScrapeView() {
                 }
               >
                 Open (web app)
+              </button>
+            )}
+          </div>
+        )}
+        {notYetASource && (
+          <div
+            data-testid="not-yet-a-source"
+            className="mt-2 flex items-center gap-2 rounded-xl bg-secondary/60 px-3 py-1.5 text-xs text-muted-foreground"
+          >
+            <span className="min-w-0 flex-1">
+              Not yet a Source — {current ? 'Save' : 'capture this page, then Save'} to keep its
+              content.
+            </span>
+            {current ? (
+              <button
+                type="button"
+                className="shrink-0 font-medium text-primary underline-offset-2 hover:underline"
+                onClick={() => void handleSave()}
+              >
+                Save
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="shrink-0 font-medium text-primary underline-offset-2 hover:underline"
+                onClick={() => guardedCapture('fast')}
+              >
+                Capture
               </button>
             )}
           </div>

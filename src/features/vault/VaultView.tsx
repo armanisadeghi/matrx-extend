@@ -221,10 +221,8 @@ function VaultSession({
           }
           pageUrl={panel.status === 'ready' ? panel.pageUrl : pageUrl}
           matches={panel.status === 'ready' ? panel.matches : vault.matches}
-          matchesLoading={
-            panel.status === 'loading' || (panel.status !== 'ready' && vault.matchesLoading)
-          }
-          matchesError={panel.status === 'ready' ? null : vault.matchesError}
+          matchesLoading={panel.status === 'loading' || vault.matchesLoading}
+          matchesError={vault.matchesError}
           running={login.running}
           outcome={!panelUnavailable && !childOffer ? login.outcome : null}
           panelStatus={panel.status}
@@ -440,6 +438,8 @@ export function SiteSection(props: SiteSectionProps) {
             Retry
           </Button>
         </div>
+      ) : matchesLoading ? (
+        <p className="text-[11px] text-muted-foreground">Checking saved logins…</p>
       ) : blockedReason !== null ? (
         <p className="text-[11px] text-muted-foreground">{blockedReason}</p>
       ) : matches.length === 0 ? (

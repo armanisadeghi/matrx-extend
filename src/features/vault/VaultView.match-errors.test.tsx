@@ -64,4 +64,21 @@ describe('SiteSection match lookup failures', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save this site' }));
     expect(props.onCreateFromPage).toHaveBeenCalledTimes(1);
   });
+
+  it('does not expose an absence claim, save action, or candidate while retrying', () => {
+    const props = baseProps();
+    render(
+      <SiteSection
+        {...props}
+        matchesLoading
+        matches={[{ item_id: 'candidate', display_name: 'Stale candidate' }]}
+      />,
+    );
+
+    expect(screen.getByText('Checking saved logins…')).toBeTruthy();
+    expect(screen.queryByText('Stale candidate')).toBeNull();
+    expect(screen.queryByText('No saved login fills this page.')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Save this site' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Fill' })).toBeNull();
+  });
 });

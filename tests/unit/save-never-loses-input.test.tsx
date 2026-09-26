@@ -1,7 +1,7 @@
 /**
  * Release guard (SOURCE-CONVERGENCE §7, Phase 1b): Save with the server
  * unreachable
- *   1. shows the "Unsaved — retry" card,
+ *   1. shows the "Not yet a Source" (retry) card,
  *   2. keeps the capture (on this device, in chrome.storage.local, AND open in
  *      the panel),
  *   3. keeps the unsaved-edits guard armed (a Re-capture still asks first),
@@ -127,7 +127,7 @@ describe('Save never loses input', () => {
     fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
 
     // 1. The retry card, with the sentence.
-    expect(await screen.findByText(/Unsaved — retry/)).toBeTruthy();
+    expect(await screen.findByText(/Not yet a Source — kept on this device/)).toBeTruthy();
     expect(screen.getByText(/could not be reached/)).toBeTruthy();
     expect(screen.queryByRole('button', { name: /Saved/ })).toBeNull();
 
@@ -187,7 +187,9 @@ describe('Save never loses input', () => {
       },
     });
     fireEvent.click(screen.getByRole('button', { name: /Retry save/ }));
-    await waitFor(() => expect(screen.queryByText(/Unsaved — retry/)).toBeNull());
+    await waitFor(() =>
+      expect(screen.queryByText(/Not yet a Source — kept on this device/)).toBeNull(),
+    );
     expect(await listUnsavedCaptures()).toHaveLength(0);
   });
 
@@ -216,15 +218,17 @@ describe('Save never loses input', () => {
     mocks.apiPost.mockResolvedValue({ ok: false, status: 0, error: 'Failed to fetch' });
     const first = render(<ScrapeView />);
     fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
-    expect(await screen.findByText(/Unsaved — retry/)).toBeTruthy();
+    expect(await screen.findByText(/Not yet a Source — kept on this device/)).toBeTruthy();
     first.unmount();
     listeners.clear(); // no change event will announce it to the next panel
 
     // Reopen: a fresh panel with nothing in memory.
     useScrapeStore.getState().setCurrent(null);
     render(<ScrapeView />);
-    expect(await screen.findByText(/Unsaved — retry \(1\)/)).toBeTruthy();
-    const card = screen.getByRole('alert', { name: 'Unsaved captures' });
+    expect(
+      await screen.findByText(/Not yet a Source — kept on this device until the save lands \(1\)/),
+    ).toBeTruthy();
+    const card = screen.getByRole('alert', { name: 'Captures not yet saved as Sources' });
     expect(card.textContent).toContain(soup.url);
     expect(card.textContent).toContain('Retry save');
     // Mounting did not wipe it.
