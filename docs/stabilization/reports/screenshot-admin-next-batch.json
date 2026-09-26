@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-admin-next-batch",
+  "status": "READY_FOR_SOURCE_REVIEW",
+  "basis": {
+    "inventory": "docs/stabilization/inventory.json EXT-F-1009-T01 through T08",
+    "accepted_guest_boundary": "docs/stabilization/reports/screenshot-guest-003-peer.json",
+    "implementation": [
+      "src/features/screenshots/ScreenshotsView.tsx",
+      "src/lib/supabase/queries.ts",
+      "src/lib/screenshot/persist.ts"
+    ]
+  },
+  "next_batch": {
+    "name": "Authenticated admin gallery read path",
+    "mode": "admin only; warm and real panel reload",
+    "profile_and_identity": "Use one root-owned disposable browser profile and the established real UI admin sign-in. Select the previously approved existing disposable organization by exact UI name from private configuration at point of use; if absent, stop. Do not modify the primary profile or report the organization name or IDs.",
+    "page_controls": "Use an owned regular browser tab at the real public https://example.com/ URL, then a second owned regular public URL. Record actual selected tab and canonical URL privately; do not inject gallery rows, auth state, product events, or network responses.",
+    "sequence": [
+      "Select the linked, mounted Screenshots pane through its real navigation control. Observe initial loading if actually visible, then wait for the settled gallery and a completed real list request. Record safe state categories, row counts, and canonical-URL agreement, without screenshot content or file IDs.",
+      "Click enabled Refresh once on the first URL and prove a new real list request completes for that URL. A second click while the control is visibly disabled may establish the disabled state; do not force a duplicate request or claim an overlap unless requests actually overlap.",
+      "Switch the owned tab to the second public URL, wait for its own completed request and settled pane, then verify the displayed rows correspond to that URL. Record request ordering; claim stale-response protection only if a first-URL request was genuinely still pending when the switch occurred.",
+      "Reload the actual panel document, confirm the main-frame loader changed and the admin identity, selected Screenshots pane, active URL, and settled gallery recovered; repeat one Refresh against the current URL.",
+      "If a real persisted row already exists for either selected public URL, click its thumbnail and Open in Files in separate observations. Compare each new tab's canonical Files target with that row's actual file ID held only in private runner memory. If no row exists, mark T04 unverified and perform no capture to manufacture one."
+    ],
+    "bounded_claims": [
+      "T01: current-URL Refresh and URL-switch settled state only; in-flight stale-response prevention and no-page disabling remain unverified unless directly observed.",
+      "T04: new-tab canonical Files navigation only if a genuine pre-existing row is present.",
+      "T08: loading and empty states only when actually observed; no-page, list-error, and recovery remain unverified without their real conditions."
+    ],
+    "write_delete_scope": "No capture, file upload, screenshot index insert or delete, clipboard write, response interception, simulated failure, or Source/SEO save. Do not read, reset, or retry the SourceSave and SEO save checkpoints.",
+    "provenance": "Bind each result to the current release receipt and unpacked extension manifest/version/tree before launch, record actual version/tree before and after, and verify post-run tree equality using the existing release-tree hash primitive. Preserve the root resource guard and independent source review before root-owned execution."
+  },
+  "deferred": {
+    "T02_T03": "Visible/full-page capture would upload a Files object and insert a screenshot row; this read-only batch has no authorization for either write. No unsupported-page, persistence-failure, or tile-cap condition is fabricated.",
+    "T05_T06_T07": "Clipboard and delete are outside the batch; preview requires a genuine existing row and a real viewport/download observation. No unrelated row may be deleted or used to force a failure.",
+    "member_and_service_error": "No member sign-in credential or naturally failing screenshot service request is established in the saved evidence, so these dimensions remain unverified."
+  }
+}
