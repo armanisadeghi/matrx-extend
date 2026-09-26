@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "review": "seo-remaining-peer",
+  "target_commit": "ceb0f41b3b58c82d509c4d7c3688319c0656328f",
+  "scope": "Independent source review of new guest SEO clipboard and reload checks. No browser, tests, build, or guard run was performed.",
+  "verdict_a_runtime_acceptance": {
+    "result": "PENDING",
+    "reason": "The new subtargets have not been exercised in the owned native side panel. The earlier guest run stopped at public_page_0_ready, before any SEO subtarget was recorded. The clipboard safety finding below must be repaired before running this batch.",
+    "prior_coverage": {
+      "T01": "Warm navigation oracle compares two distinct real public document titles and requires the visible SEO title to change to the second one; audit count and delayed old-result race remain unverified.",
+      "T02": "Manual Re-audit control was prepared with running/settled observations; fresh capture and advice replacement remain unverified.",
+      "T07": "Warm guest menu choices were prepared: Summary (text) and For AI agent visible, JSON absent. Actual clipboard output was not previously checked.",
+      "T09": "Two page titles and h1 presence are compared with the live page DOM. Heading text, level, count, other groups, and outbound links remain unverified."
+    },
+    "new_source_oracles": {
+      "T07_clipboard": "Each choice gets a new random canary, then trusted button input. A no-op copy leaves the canary and fails. The readback requires the second public page URL, title, and, when present, h1 text plus choice-specific text or AI wrapper. This is a real clipboard-output oracle but does not prove complete field coverage or byte-for-byte agreement with the displayed audit.",
+      "T01_reload": "Page.reload is issued against the owned panel target. A later performance.timeOrigin is required, so a no-op Page.reload fails. After remount, the selected SEO pane must show the second public page title, h1-presence agreement, enabled Re-audit, and no visible audit error. Current SeoView starts with null audit and sets it only through runAudit, so skipping capture after reload fails this oracle in the reviewed implementation. It does not count requests or challenge an out-of-order result.",
+      "T07_reload_gate": "After document reload, the guest menu is reopened and again must offer text and AI while omitting JSON. Guest identity comes from the owned guest panel; no authentication injection is present. Member/admin role behavior remains unverified."
+    }
+  },
+  "verdict_b_source_quality": {
+    "result": "BLOCKED_FOR_CLIPBOARD_REPAIR",
+    "findings": [
+      {
+        "severity": "blocking",
+        "location": "tests/browser/seo-guest-acceptance.mjs:329-357",
+        "finding": "An owned Chrome profile is not evidence of an isolated host clipboard. The runner overwrites the current clipboard with a canary and audit text, then writes an empty string. It never preserves or restores the prior clipboard. Any assertion or browser failure before the clear leaves test content behind; successful execution destroys the user's prior clipboard content.",
+        "required_repair": "Before the first clipboard mutation, snapshot the current clipboard only in memory and fail closed if snapshot fails. Restore it in a finally path covering both copy choices and every failure. Never serialize, log, or include the private snapshot in an exception or report. Check restore success without exposing the value. If host clipboard isolation cannot be established and preservation cannot be guaranteed for process interruption, keep runtime blocked or use an isolated clipboard environment."
+      },
+      {
+        "severity": "limit",
+        "location": "tests/browser/seo-guest-acceptance.mjs:391-407",
+        "finding": "The reload oracle compares title and heading presence, not the audit URL or a changed page fact after reload. Given the current component's null initial audit this is a useful fresh-mount check, but the subtarget must remain partial T01 coverage and cannot prove all current-URL/race requirements."
+      }
+    ],
+    "good_properties": [
+      "Clipboard values are reduced to booleans before CDP returns; no copied content is placed in the report.",
+      "A distinct per-choice canary prevents the second copy from passing on the first copy's clipboard contents.",
+      "No test-only auth injection, network mocking, fabricated page title, or false fallback pass is present.",
+      "The document time-origin comparison makes reload an actual navigation check rather than a cosmetic UI read."
+    ]
+  },
+  "final_status": "Source-reviewed only. Do not treat prepared subtargets as runtime pass; hold this batch until clipboard safety is repaired and root performs the guarded run."
+}
