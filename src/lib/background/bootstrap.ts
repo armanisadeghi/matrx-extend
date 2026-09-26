@@ -88,6 +88,7 @@ import { registerToolsOnActiveTab } from '@/lib/webmcp/register';
 import { getPilotSessionSnapshotAsync, usePilotStore } from '@/state/pilot';
 
 let bootstrapped = false;
+const STALE_OFFSCREEN_PREFLIGHT_TIMEOUT_MS = 5_000;
 
 export function bootstrapBackground(): void {
   if (bootstrapped) return;
@@ -836,32 +837,11 @@ async function closeStaleOffscreenOnBoot(): Promise<void> {
     // caused. Skip the close while any recently-started run is live; a
     // 30-minute age-out keeps crash debris from pinning a genuinely stale
     // document forever.
-    if (await hasRecentActiveStream(30 * 60_000)) {
-      log.info('sw', 'offscreen has a live stream — skipping stale-close on boot');
-      return;
-    }
-    let exists = false;
-    if (chrome.runtime.getContexts) {
-      try {
-        const contexts = await chrome.runtime.getContexts({
-          contextTypes: ['OFFSCREEN_DOCUMENT' as chrome.runtime.ContextType],
-        });
-        exists = contexts.length > 0;
-      } catch {
-        /* fall through to hasDocument */
-      }
-    }
-    if (!exists && 'hasDocument' in chrome.offscreen) {
-      try {
-        exists = await (chrome.offscreen as { hasDocument: () => Promise<boolean> }).hasDocument();
-      } catch {
-        /* fall through */
-      }
-    }
-    if (!exists) {
-      log.info('sw', 'no stale offscreen to close');
-      return;
-    }
+    const stale = await staleOffscreenPreflight();
+    if (!stale) return;
+    // This is destructive to the singleton. Do not time-limit it: callers
+    // remain behind the acquisition barrier until Chrome confirms the old
+    // document is gone, so a late close can never destroy a fresh socket.
     await chrome.offscreen.closeDocument();
     log.info('sw', 'closed stale offscreen document on boot');
   } catch (err) {
@@ -870,6 +850,59 @@ async function closeStaleOffscreenOnBoot(): Promise<void> {
     // decoder guard instead.
     log.warn('sw', 'closeStaleOffscreenOnBoot failed', (err as Error)?.message);
   }
+}
+
+async function staleOffscreenPreflight(): Promise<boolean> {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  try {
+    const result = await Promise.race<boolean | null>([
+      staleOffscreenExists(),
+      new Promise<null>((resolve) => {
+        timeoutId = setTimeout(() => resolve(null), STALE_OFFSCREEN_PREFLIGHT_TIMEOUT_MS);
+      }),
+    ]);
+    if (result === null) {
+      log.warn('sw', 'stale offscreen preflight timed out; skipping cleanup');
+      return false;
+    }
+    return result;
+  } finally {
+    if (timeoutId !== null) clearTimeout(timeoutId);
+  }
+}
+
+async function staleOffscreenExists(): Promise<boolean> {
+  // P1-15 guard: this runs on EVERY SW boot — including the routine ~30s
+  // idle reap/rewake — and the offscreen doc is where the live SSE (and
+  // mic capture) lives. Closing it during an in-flight run was killing
+  // streams mid-execution; the 75s watchdog then mopped up a stall WE
+  // caused. Skip the close while any recently-started run is live; a
+  // 30-minute age-out keeps crash debris from pinning a genuinely stale
+  // document forever.
+  if (await hasRecentActiveStream(30 * 60_000)) {
+    log.info('sw', 'offscreen has a live stream — skipping stale-close on boot');
+    return false;
+  }
+  let exists = false;
+  if (chrome.runtime.getContexts) {
+    try {
+      const contexts = await chrome.runtime.getContexts({
+        contextTypes: ['OFFSCREEN_DOCUMENT' as chrome.runtime.ContextType],
+      });
+      exists = contexts.length > 0;
+    } catch {
+      /* fall through to hasDocument */
+    }
+  }
+  if (!exists && 'hasDocument' in chrome.offscreen) {
+    try {
+      exists = await (chrome.offscreen as { hasDocument: () => Promise<boolean> }).hasDocument();
+    } catch {
+      /* fall through */
+    }
+  }
+  if (!exists) log.info('sw', 'no stale offscreen to close');
+  return exists;
 }
 
 /**

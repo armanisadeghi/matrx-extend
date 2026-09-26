@@ -73,7 +73,7 @@ describe('ensureOffscreen creation barrier', () => {
     expect(createDocument).toHaveBeenCalledOnce();
   });
 
-  it('fails open after cleanup rejects or exceeds its bounded wait', async () => {
+  it('fails open when cleanup rejects before issuing a close', async () => {
     vi.useFakeTimers();
     const getContexts = vi.fn(async () => []);
     const createDocument = vi.fn(async () => undefined);
@@ -88,15 +88,33 @@ describe('ensureOffscreen creation barrier', () => {
     deferOffscreenAcquisitionUntil(Promise.reject(new Error('chrome close rejected')));
     await ensureOffscreen();
     expect(createDocument).toHaveBeenCalledOnce();
+  });
 
-    vi.resetModules();
-    const hanging = new Promise<void>(() => undefined);
-    const next = await import('@/lib/stream/offscreen-proxy');
-    next.deferOffscreenAcquisitionUntil(hanging);
-    const afterTimeout = next.ensureOffscreen();
+  it('does not acquire a fresh document after the former timeout while close is still pending', async () => {
+    vi.useFakeTimers();
+    const getContexts = vi.fn(async () => []);
+    const createDocument = vi.fn(async () => undefined);
+    vi.stubGlobal('chrome', {
+      runtime: { getContexts },
+      offscreen: { createDocument },
+    });
+    const { deferOffscreenAcquisitionUntil, ensureOffscreen } = await import(
+      '@/lib/stream/offscreen-proxy'
+    );
+    let completeClose!: () => void;
+    const closeIssued = new Promise<void>((resolve) => {
+      completeClose = resolve;
+    });
+    deferOffscreenAcquisitionUntil(closeIssued);
+    const afterTimeout = ensureOffscreen();
     await vi.advanceTimersByTimeAsync(5_000);
+    expect(createDocument).not.toHaveBeenCalled();
+
+    // A close issued before this point completes before the new singleton is
+    // acquired, so it cannot later destroy the recovered socket.
+    completeClose();
     await afterTimeout;
-    expect(createDocument).toHaveBeenCalledTimes(2);
+    expect(createDocument).toHaveBeenCalledOnce();
     vi.useRealTimers();
   });
 });
