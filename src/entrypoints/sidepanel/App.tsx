@@ -21,6 +21,7 @@ import { getAgentCatalog } from '@/lib/agents/catalog';
 import { useDebugStore } from '@/lib/debug/log';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { POPUP_LAUNCH_INTENT_KEY, takePopupLaunchTarget } from '@/lib/panel/launch-intent';
 import { useSettingsStore } from '@/state/settings';
 import { type SidepanelTab, useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { AgentCatalogProvider } from '@ai-matrx/agents/catalog/react';
@@ -164,6 +165,34 @@ export function App() {
   }, [capturePickup, setTab]);
   const canAccess = (candidate: SidepanelTab) =>
     canAccessSidepanelTab(candidate, { signedIn, isAdmin });
+
+  // A Capture page click in the toolbar asks only to land at Scrape. The
+  // intent is session-scoped, expires quickly, and is consumed before routing
+  // so reopening the panel cannot repeat it. Watching for the write covers
+  // Chromium opening this document before storage.set finishes.
+  useEffect(() => {
+    let mounted = true;
+    const applyPopupIntent = () => {
+      void takePopupLaunchTarget().then((target) => {
+        if (mounted && target) setTab(target);
+      });
+    };
+    const onStorageChanged = (
+      changes: Record<string, chrome.storage.StorageChange>,
+      areaName: string,
+    ) => {
+      if (areaName === 'session' && changes[POPUP_LAUNCH_INTENT_KEY]?.newValue !== undefined) {
+        applyPopupIntent();
+      }
+    };
+
+    applyPopupIntent();
+    chrome.storage.onChanged.addListener(onStorageChanged);
+    return () => {
+      mounted = false;
+      chrome.storage.onChanged.removeListener(onStorageChanged);
+    };
+  }, [setTab]);
 
   // A persisted tab may become unavailable after sign-out or a release config
   // change. Never render hidden feature content; return to the first public tab.

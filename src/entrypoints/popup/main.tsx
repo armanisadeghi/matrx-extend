@@ -1,5 +1,6 @@
 import { useAuth } from '@/hooks/use-auth';
 import { openFirefoxSidebarFromGesture, openPanel, panelOpenRemedy } from '@/lib/panel/adapter';
+import { requestCapturePagePanel } from '@/lib/panel/launch-intent';
 import { Button } from '@ai-matrx/design-system';
 import { ExternalLink, MessageSquare, ScanLine } from 'lucide-react';
 import React, { useState } from 'react';
@@ -45,6 +46,16 @@ export function Popup() {
     }
   };
 
+  const openCapturePage = () => {
+    // Do not await before opening the native panel: Chromium treats this
+    // toolbar click as the required user gesture. The side panel also watches
+    // storage changes, covering a session write that settles after it mounts.
+    void requestCapturePagePanel().catch(() => {
+      setPanelError("Couldn't prepare Capture page. Open Matrx and select Scrape.");
+    });
+    void openSidePanel();
+  };
+
   return (
     <div className="space-y-3 p-3 dark:bg-background">
       <div className="text-sm font-semibold">Matrx Extend</div>
@@ -55,11 +66,7 @@ export function Popup() {
             <Button onClick={() => void openSidePanel()} className="justify-start">
               <MessageSquare className="size-4" /> Open chat
             </Button>
-            <Button
-              onClick={() => void openSidePanel()}
-              variant="secondary"
-              className="justify-start"
-            >
+            <Button onClick={openCapturePage} variant="secondary" className="justify-start">
               <ScanLine className="size-4" /> Capture page
             </Button>
           </div>
