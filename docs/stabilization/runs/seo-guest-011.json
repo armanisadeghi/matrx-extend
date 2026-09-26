@@ -1,0 +1,67 @@
+{
+  "id": "seo-guest-011",
+  "feature_id": "EXT-F-1008",
+  "at": "2026-09-26T19:49:49.638Z",
+  "status": "unverified",
+  "mode": "guest",
+  "scope": "Owned native side-panel guest SEO acceptance against public pages, including Wikipedia detail timing.",
+  "runtime_output": "test-results/seo-guest-acceptance.json",
+  "runtime_output_sha256": "cb670f293cbbdfa5d08f98c64a11d11c2509d808fc0e99d005c1d20860bd7c39",
+  "resource_log": "/tmp/matrx-seo-guest-011.log",
+  "resource_log_sha256": "169805ff86ef11fcf1361e4b4c46335d7a201a7b15bb21f0f4c5ff8e3e5a5d78",
+  "resource": {
+    "run_id": "seo-guest-011",
+    "admission_code": "RESOURCE_ADMITTED",
+    "admitted_at": "2026-09-26T19:49:49.638Z",
+    "child_exit_code": 1,
+    "child_signal": null,
+    "exit_at": "2026-09-26T19:49:58.764Z",
+    "wrapper_stdout": ["UNVERIFIED seo_guest_native_batch"],
+    "wrapper_session": "root confirmed wrapper 41952 exit 1"
+  },
+  "runtime_source": {
+    "acceptance_runner": "tests/browser/seo-guest-acceptance.mjs",
+    "acceptance_runner_commit": "ce23ba5e",
+    "release_artifact_version": "0.2.73",
+    "release_attribution_limit": "The runtime output does not bind a build digest; version 0.2.73 is the owner's inspected local candidate, not a digest asserted by this runner."
+  },
+  "acceptance_result": {
+    "status": "unverified",
+    "prior_subtargets_passed": 12,
+    "new_subtargets_passed": [
+      "guest_link_counts_match_live_dom",
+      "guest_image_alt_counts_match_live_dom",
+      "guest_readability_display_is_populated_and_explained"
+    ],
+    "new_subtargets_unverified": [
+      "guest_performance_reflects_current_navigation",
+      "guest_hreflang_and_schema_doors_match_page"
+    ],
+    "failure_stage": "next_detail_performance_assertion",
+    "failure_diagnostic": {
+      "predicate": "performance",
+      "assertion_label": "load duration follows available browser timing",
+      "panel_duration": null,
+      "post_load_public_duration_ms": 702
+    },
+    "public_links": {
+      "post_load": { "internal": 1785, "external": 410 },
+      "before_manual_reaudit": { "internal": 1785, "external": 410 },
+      "after_manual_reaudit": { "internal": 1785, "external": 410 }
+    },
+    "public_navigation_duration_ms": {
+      "post_load": 702,
+      "before_manual_reaudit": 702,
+      "after_manual_reaudit": 702
+    },
+    "panel_observation": {
+      "auto_links": { "internal": "1,785", "external": "410" },
+      "auto_duration": null,
+      "manual_reaudit_links": { "internal": "1,785", "external": "410" },
+      "manual_reaudit_duration": "702 ms",
+      "manual_reaudit_links_match": true,
+      "manual_reaudit_performance_match": true
+    }
+  },
+  "interpretation": "The automatic audit omitted load duration while a post-load manual re-audit on the same public page displayed the measured 702 ms. This demonstrates a capture-time difference in this run. It does not by itself establish whether an automatic SEO audit is required to wait for load completion. The original auto-performance assertion remains failed, and outbound-door coverage was not reached."
+}

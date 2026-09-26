@@ -1,20 +1,24 @@
 {
   "schema_version": 1,
   "review": "seo-snapshot-timing-diagnosis",
-  "runs": ["seo-guest-008", "seo-guest-009", "seo-guest-010"],
+  "runs": ["seo-guest-008", "seo-guest-009", "seo-guest-010", "seo-guest-011"],
   "runtime_verdict": "UNVERIFIED",
   "observed": [
     "Run 010 was resource-admitted and the child exited 1 at 2026-09-26T19:21:05.944Z. The 12 earlier subtargets passed; the first new assertion failed on internal links: panel 1782, public DOM 1785. The same panel showed external 409 while the public DOM read showed 410.",
     "Run 009's new link and image assertions passed with public internal links 1785, external links 410, and 28 images. It then failed at the performance predicate; the panel's load-duration row was absent, but the expected navigation duration was not retained.",
     "Run 008 did not retain a public DOM count or the failing assertion, so it cannot establish the cause of its first detail failure.",
-    "The product auto-audits on URL change. The runner navigates with waitUntil load, then reads the public DOM before waiting for the panel's auto-audit. Thus the audit capture and the runner's public DOM oracle have no guaranteed shared capture instant."
+    "The product auto-audits on URL change. The runner navigates with waitUntil load, then reads the public DOM before waiting for the panel's auto-audit. Thus the audit capture and the runner's public DOM oracle have no guaranteed shared capture instant.",
+    "Run 011's public link counts were 1785 internal and 410 external at post-load, before manual re-audit, and after manual re-audit. Public navigation duration was 702 ms at all three samples. The auto panel's links matched but its duration was absent; after trusted manual re-audit the panel displayed 702 ms and matched the public navigation. The original auto-performance assertion failed with the fixed load-duration label."
   ],
   "not_proven": [
     "Wikipedia changed its links after the extension capture",
     "The SEO collector or renderer omitted links from an unchanged document",
     "The browser navigation duration was positive when the auto-audit captured it",
-    "The performance failure in run 009 had a particular assertion label"
+    "The performance failure in run 009 had a particular assertion label",
+    "The auto-audit's own navigation entry duration at its exact capture instant was zero; the runner did not record that instant",
+    "The product contract requires an automatic audit to wait for full page load or refresh its metrics later"
   ],
-  "focused_next_diagnostic": "When the auto result disagrees with the post-load public source, the runner now records the public link counts and navigation duration before and after a trusted manual Re-audit, plus the refreshed panel values and independent match verdicts. The original auto-audit assertions remain unchanged and still fail on a mismatch. A changed public count across samples implicates source drift; stable counts with a mismatching refreshed panel implicate collection or display; a refreshed match with an auto mismatch implicates capture timing. The diagnostic alone does not claim a product fix.",
-  "execution": "Prepared only. No additional browser or heavy UI run was launched because the owning root lane had a concurrent green run. The root must schedule a separately admitted focused run and preserve its runtime receipt before claiming a cause."
+  "source_contract": "SeoView auto-runs when useActiveTab reports a new URL; useActiveTab refreshes on tabs.onUpdated without a status=complete gate. captureWithFallback sends SCRAPE_CAPTURE immediately and does not wait for page load. The collector maps navigation duration 0 or absent to null, and SeoDetails omits the Load duration row when null. docs/feature-tests.md says Performance shows whichever values the browser exposed. No source contract found that promises post-load timing for an automatic audit.",
+  "focused_next_step": "Keep the run 011 failure as evidence of the runner's post-load oracle being later than the automatic snapshot. For acceptance, compare auto-audit fields that are available at its capture point, then trigger a trusted manual Re-audit after load and assert link counts and all exposed navigation fields against stable public DOM/timing samples. Retain a separate failing check only if the product's automatic audit is explicitly required to represent the fully loaded page. For the run 010 link mismatch, a focused run must still capture source counts around that specific mismatch; run 011 does not prove its cause.",
+  "execution": "Run 011 was executed by the owning root lane and preserved separately at docs/stabilization/runs/seo-guest-011.json. This lane launched no additional browser or heavy test."
 }
