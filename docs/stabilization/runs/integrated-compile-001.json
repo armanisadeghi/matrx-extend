@@ -1,14 +1,46 @@
 {
   "id": "integrated-compile-001",
-  "feature_id": "EXT-F-0001",
   "status": "pass",
-  "at": "2026-09-26T02:36:03.597Z",
-  "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
-  "command": [
-    "pnpm",
-    "compile"
-  ],
-  "exit_code": 0,
-  "resource_invalid": false,
-  "log_sha256": "b13d8914b3e10ee6541ab4e35bb7d94623984dd35ca9bfb895d510420e5e35d9"
+  "command": "pnpm compile",
+  "source": "Current shared0.2.54 includes finalD7 d623f64, D8 d9d86aa andpopup7c9e0d5",
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:25:29.067Z",
+      "runId": "integrated-compile-001",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.68,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.56,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.16315714285714286,
+        "swapUsedMiB": 1749.12,
+        "repoFreeGiB": 1676.2492790222168,
+        "profileFreeGiB": 1676.2492790222168
+      },
+      "cpuBusySamples": [
+        0.11299999999999999,
+        0.09770000000000001,
+        0.12549999999999994,
+        0.1523,
+        0.16459999999999997,
+        0.2589,
+        0.23010000000000008
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:25:30.854Z",
+      "runId": "integrated-compile-001",
+      "childExitCode": 0,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ]
 }
