@@ -9036,6 +9036,12 @@
               "source": "ab5d151",
               "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
               "acceptance": "The capture and save buttons now say Capture this page and Save as a Source."
+            },
+            {
+              "source": "bdcb146",
+              "acceptance": "When retry card holds the page, do not render duplicate Save as a Source banner; each state has one matching control.",
+              "evidence": "docs/stabilization/runs/remote-source-001.json",
+              "runtime_status": "unverified"
             }
           ]
         }
