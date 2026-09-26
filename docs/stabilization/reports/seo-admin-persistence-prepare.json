@@ -18,6 +18,12 @@
     "root_cause": "A regex inside the Runtime.evaluate JavaScript template used backslash-d. JavaScript template cooking removed the backslash, turning the browser regex into a literal d check. A numeric badge therefore fell through to zero. This is a harness oracle defect, not evidence of a product history failure.",
     "repair": "The runner now reads the component's single numeric count span and applies a template-safe [0-9] regex. It still requires the rendered row count to equal the badge and the actual saved row ID to be present. No Save is attempted on read-only resume."
   },
+  "harness_defect": {
+    "id": "EXT-D-0021",
+    "state": "fixed; native UI retest pending",
+    "fix_commit": "e2855b39",
+    "sibling_census": "Read-only TypeScript AST scan of 104 tests/browser .mjs/.cjs files inspected raw template chunks for single backslash regex-class escapes d/D/s/S/w/W/b/B. It found zero candidates after the targeted repair. Ripgrep candidates in ordinary regex literals and doubly escaped template text were reviewed as separate syntax; no additional confirmed cooked-regex sibling was found. This does not prove every embedded regex form is safe."
+  },
   "scope": "At most one new public IANA audit row in the explicitly selected existing campaign test organization, identified through the real Save response and stable history/snapshot DOM attributes.",
   "identity_contract": {
     "production_ui": "History button and selected Saved snapshot expose the same existing row UUID as data-audit-id. The attribute changes no visible copy or database/API shape.",
