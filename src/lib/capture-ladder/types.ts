@@ -161,7 +161,8 @@ export const handoffSchema = z.object({
   claimed_at: z.string().nullable().default(null),
   claim_expires_at: z.string().nullable().default(null),
   attempt_count: z.number().nullable().default(null),
-  captured_item_id: z.string().nullable().default(null),
+  /** The Source this capture became (SOURCE-CONVERGENCE §4.3). */
+  captured_processed_document_id: z.string().nullable().default(null),
   captured_chars: z.number().nullable().default(null),
   captured_at: z.string().nullable().default(null),
   captured_by_rung: z.enum(RUNGS).nullable().default(null),
@@ -248,6 +249,16 @@ export interface RunnerOutcome {
   chars: number;
   /** The sentence shown next to this item in the tray. Always present. */
   note: string;
+  /** The Source a successful page capture landed as, when the server named one. */
+  processedDocumentId?: string | null;
+  /** The landing door's notices for this capture, in the server's words. */
+  notices?: { code: string; message: string; remedy: string }[];
+}
+
+/** A success sentence plus every door notice — the notices are never dropped. */
+export function withLandingNotices(note: string, notices: { message: string }[]): string {
+  const said = notices.map((n) => n.message.trim()).filter(Boolean);
+  return said.length ? `${note} ${said.join(' ')}` : note;
 }
 
 /**

@@ -13,7 +13,7 @@ import { describe, expect, it } from 'vitest';
 
 describe('sourceFeatureForTable', () => {
   it('maps web-capture tables', () => {
-    expect(sourceFeatureForTable('extend.wbx_capture')).toBe('web-capture');
+    expect(sourceFeatureForTable('docproc.processed_documents')).toBe('web-capture');
     expect(sourceFeatureForTable('capture_handoff')).toBe('web-capture');
     expect(sourceFeatureForTable('media.capture_handoff')).toBe('web-capture');
     expect(sourceFeatureForTable('extend.wbx_highlight')).toBe('web-capture');

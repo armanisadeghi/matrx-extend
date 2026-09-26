@@ -35,7 +35,6 @@ const STRICT = process.argv.includes('--strict');
 const MOVED_TABLES: Record<string, string> = {
   wbx_pattern: 'extend',
   wbx_recipe: 'extend',
-  wbx_capture: 'extend',
   wbx_guidance: 'extend',
   wbx_demo: 'extend',
   wbx_screenshot: 'extend',
@@ -67,6 +66,8 @@ const REMOVED_TABLES: Record<string, string> = {
   tool_binding: 'renamed — see the tool schema',
   cx_tool_call: 'renamed — use chat.tool_call (via chatDb())',
   cx_conversation: 'renamed — use chat.conversation (via chatDb())',
+  wbx_capture:
+    'retired into Sources — read docproc.processed_documents (via docprocDb()); save through POST /sources/land',
 };
 
 const ACCESSOR =

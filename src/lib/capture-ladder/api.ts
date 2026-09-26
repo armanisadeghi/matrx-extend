@@ -22,6 +22,7 @@
  */
 
 import { type ApiResult, STATUS_INVALID_BODY, apiGet, apiPost } from '@/lib/api/client';
+import { type LandingNotice, LandingNoticeSchema } from '@/lib/api/routes/sources';
 import { getAccessToken } from '@/lib/auth/flow';
 import {
   DEFAULT_OWN_BROWSER_SCROLL_PASSES,
@@ -82,10 +83,41 @@ export interface ResultBody {
   caption_track?: CaptionTrackBody;
 }
 
+/**
+ * What `…/result` answers. A page capture lands as a Source through the door
+ * (SOURCE-CONVERGENCE §4.3): `processed_document_id` is that Source and
+ * `notices` is every decision the door made about it — rendered, never dropped.
+ * A caption capture answers `transcript_id` instead. The old `library_item_id`
+ * is gone: captures no longer mint a Library item.
+ */
 export interface ResultResponse {
   handoff: unknown;
-  library_item_id: string;
-  library_id: string;
+  processed_document_id: string | null;
+  source_id: string | null;
+  transcript_id: string | null;
+  library_id: string | null;
+  notices: LandingNotice[];
+}
+
+function nullableString(value: unknown): string | null {
+  return typeof value === 'string' && value ? value : null;
+}
+
+/** Read the result defensively: a shape drift must never cost the person their notices. */
+export function parseResultResponse(data: unknown): ResultResponse {
+  const raw = (data && typeof data === 'object' ? data : {}) as Record<string, unknown>;
+  const notices = Array.isArray(raw.notices) ? raw.notices : [];
+  return {
+    handoff: raw.handoff ?? null,
+    processed_document_id: nullableString(raw.processed_document_id),
+    source_id: nullableString(raw.source_id),
+    transcript_id: nullableString(raw.transcript_id),
+    library_id: nullableString(raw.library_id),
+    notices: notices.flatMap((n) => {
+      const parsed = LandingNoticeSchema.safeParse(n);
+      return parsed.success ? [parsed.data] : [];
+    }),
+  };
 }
 
 /** `POST …/needs-drive` — rung 3 failed; ask the person. */
@@ -116,7 +148,8 @@ export async function postCaptureResult(
   signal?: AbortSignal,
 ): Promise<ApiResult<ResultResponse>> {
   if (!(await getAccessToken())) return signedOut();
-  return apiPost<ResultResponse>(`${BASE}/${id}/result`, body, signal);
+  const res = await apiPost<unknown>(`${BASE}/${id}/result`, body, signal);
+  return res.ok ? { ok: true, data: parseResultResponse(res.data) } : res;
 }
 
 export async function postNeedsDrive(

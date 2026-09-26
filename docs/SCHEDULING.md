@@ -214,13 +214,13 @@ Different kinds produce different artifacts. Instead of one column per output ty
 { "kind": "conversation", "id": "<cx_conversation uuid>" }
 
 // Future scrape runs:
-{ "kind": "capture", "id": "<wbx_capture uuid>" }
+{ "kind": "processed_document", "id": "<docproc.processed_documents uuid — the Source>" }
 
 // Future workflow runs:
 { "kind": "workflow_run", "id": "<sch_workflow_run uuid>" }
 ```
 
-**UI use.** Click a run row → if `output_ref.kind === 'conversation'`, deep-link to the chat thread; if `'capture'`, deep-link to the capture viewer; etc. Always switch on `kind` first.
+**UI use.** Click a run row → if `output_ref.kind === 'conversation'`, deep-link to the chat thread; if `'processed_document'`, deep-link to the Source; etc. Always switch on `kind` first.
 
 ---
 

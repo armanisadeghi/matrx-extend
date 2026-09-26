@@ -1,8 +1,7 @@
 /**
  * Save a captured page as a Source — through the landing door, never lost.
  *
- * SOURCE-CONVERGENCE §4.2. The extension used to insert straight into
- * `extend.wbx_capture`; a saved page is now a Source (`docproc.processed_documents`)
+ * SOURCE-CONVERGENCE §4.2. A saved page is a Source (`docproc.processed_documents`)
  * landed by `POST /sources/land`:
  *   - `original`   = the full `SoupResult` JSON (the door keeps it in S3),
  *   - `portions`   = the article cut into H1–H3 sections (`portions.ts`),
