@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "status": "prepared_unverified",
+  "purpose": "Next compact read-only SEO detail batch after the owned admin Save/history retest completes.",
+  "source_basis": {
+    "inventory": "docs/stabilization/inventory.json: EXT-F-1008 guest/admin cells remain unverified; T09/C09 is the remaining eligible detail control.",
+    "receipts": [
+      "docs/stabilization/runs/seo-guest-006.json: sparse/rich detail groups and canonical door only.",
+      "docs/stabilization/runs/seo-guest-007.json: recheck only; no new subtargets.",
+      "docs/stabilization/runs/seo-admin-001.json: title/heading presence only; other detail values remain unverified.",
+      "docs/stabilization/runs/seo-admin-002.json: Save ID observed; history retest belongs to the current admin owner."
+    ],
+    "selected_case": "EXT-F-1008-T09",
+    "selected_control": "EXT-F-1008-C09"
+  },
+  "sequence": "Run only after the current admin Save/history retest is terminal. Visit https://en.wikipedia.org/wiki/HTML in the owned active tab, open SEO, and wait for its live audit. Repeat the same read-only observations as guest and admin; admin reuses the authenticated session/checkpoint and must not click Save.",
+  "runner_reuse": {
+    "guest": "tests/browser/seo-guest-acceptance.mjs: reuse runNativeSidepanelQa, owned tab navigation, selected SEO scope, public DOM oracle and seoDetailState; add bounded observations after rich_detail_audit_wait.",
+    "admin": "tests/browser/seo-admin-acceptance.mjs: reuse existing admin/org session and linked-pane locators after history retest; continue directly to public detail observation without another Save.",
+    "shared": "tests/browser/native-sidepanel-qa-harness.mjs and tests/browser/settings-panel-driver.mjs; no new browser harness."
+  },
+  "assertions": [
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_admin_link_counts_match_live_dom",
+      "action": "On the live Wikipedia HTML page, inspect SEO > Links in each role.",
+      "expected_evidence": "Internal and external counts equal counts independently derived from the page's href anchors after URL resolution; omit the group only if both source counts are zero."
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_admin_image_alt_counts_match_live_dom",
+      "action": "Inspect SEO > Images in each role.",
+      "expected_evidence": "Total equals the public DOM img count and Missing alt equals images whose alt attribute is absent or empty; rendered values agree exactly."
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_admin_readability_is_measured_and_explained",
+      "action": "Inspect SEO > Readability in each role.",
+      "expected_evidence": "For nonempty page text, the group shows word and sentence counts plus a named Flesch band and numeric score; no invented zero-valued group when source text is unavailable."
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_admin_performance_reflects_current_navigation",
+      "action": "Inspect SEO > Performance after the page navigation settles in each role.",
+      "expected_evidence": "HTTP status matches the owned page response; navigation type and available duration/transfer measurements are rendered, while unavailable measurements are omitted rather than fabricated."
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_admin_hreflang_and_schema_doors_match_page",
+      "action": "Inspect SEO > International and Structured data; activate one hreflang URL and one schema type chip with trusted clicks.",
+      "expected_evidence": "Preflight the live public DOM for nonempty hreflang alternates and JSON-LD schema types; displayed values match them, schema links target the matching schema.org type page, and the hreflang door opens its observed URL in a new tab. If either source datum is absent, record that assertion unverified rather than passing it."
+    }
+  ],
+  "limits": [
+    "This is a test-ready selection, not runtime coverage; do not change inventory status or reassign existing cases from this brief.",
+    "Counts only the five named T09 subtargets, not full T09 or EXT-F-1008 acceptance.",
+    "No clipboard read/write, Save, history mutation, provider recommendation, Chat/Pilot action, new database record, or member authentication.",
+    "If public-page preflight lacks required hreflang or schema data, retain that assertion as unverified; do not substitute assumed values."
+  ]
+}
