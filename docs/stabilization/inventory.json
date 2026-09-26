@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T06:16:57.606993+00:00",
+  "updated_at": "2026-09-26T06:38:54.547763+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "9734466f0e83532c2e66c8dfa1c631b2ed420c7d",
@@ -14273,7 +14273,18 @@
             "real-oauth"
           ],
           "verification_status": "unverified-after-source-change",
-          "source_evidence": "1b605be introduced Safari tab OAuth; bf17af8 selected a dedicated Safari OAuth client and 89ad1d4 bound callback errors; no runtime UI evidence is recorded."
+          "source_evidence": "1b605be introduced Safari tab OAuth; bf17af8 selected a dedicated Safari OAuth client and 89ad1d4 bound callback errors; no runtime UI evidence is recorded.",
+          "platform_applicability": {
+            "chrome": {
+              "applicable": false,
+              "reason": "Safari-owned OAuth transport is not a Chrome surface; Safari runtime evidence remains unverified."
+            },
+            "safari": {
+              "applicable": true,
+              "test_status": "unverified"
+            }
+          },
+          "campaign_scope": "outside current Chrome stabilization scope; retained for remote-change traceability"
         },
         {
           "id": "EXT-F-1015-T37",
@@ -14305,7 +14316,18 @@
             "retry"
           ],
           "verification_status": "unverified-after-source-change",
-          "source_evidence": "1b605be, 89ad1d4, and 62667cb changed callback validation, error delivery, and owned-tab cleanup; no runtime UI evidence is recorded."
+          "source_evidence": "1b605be, 89ad1d4, and 62667cb changed callback validation, error delivery, and owned-tab cleanup; no runtime UI evidence is recorded.",
+          "platform_applicability": {
+            "chrome": {
+              "applicable": false,
+              "reason": "Safari-owned OAuth transport is not a Chrome surface; Safari runtime evidence remains unverified."
+            },
+            "safari": {
+              "applicable": true,
+              "test_status": "unverified"
+            }
+          },
+          "campaign_scope": "outside current Chrome stabilization scope; retained for remote-change traceability"
         }
       ],
       "cells": {
