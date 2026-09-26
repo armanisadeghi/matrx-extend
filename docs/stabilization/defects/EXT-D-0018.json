@@ -1,0 +1,40 @@
+{
+  "id": "EXT-D-0018",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T28"],
+  "surface": "Scrape article with inline SVG figure",
+  "auth_mode": "guest/member/admin",
+  "reproduction": [
+    "Use remote ea86560d scrape pipeline and Defuddle0.19.4.",
+    "Run runScrape on an article containing figure > svg plus figcaption Revenue grew from January to March. and span Measured in thousands of dollars.",
+    "Inspect article content_markdown for graph, caption and HTML label; focused reproduction is tests/unit/normalize-markup.test.ts keeps an inline chart caption and HTML label with the graphic."
+  ],
+  "expected": "Keep inline graphic together with its caption and nearby HTML label in captured article.",
+  "actual": "Source replaces closest figure with token paragraph, dropping figcaption and HTML siblings; guarded reproduction pending.",
+  "evidence": ["ea86560d", "docs/stabilization/reports/remote-stack-integration.json"],
+  "severity": "S2: captured article silently loses meaningful chart context",
+  "priority": "P1: confirmed source regression in incoming scrape changes",
+  "state": "in-fix",
+  "owner": "/root/remote_stack_integration",
+  "transition_history": [
+    {
+      "at": "2026-09-26T14:23:22.042436+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Incoming remote dependency/code integration review identified concrete incompatible path."
+    },
+    {
+      "at": "2026-09-26T14:23:22.042436+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Self-contained reproduction and source cause recorded; focused runtime evidence assigned."
+    },
+    {
+      "at": "2026-09-26T14:23:22.042436+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol medium remote_stack_integration assigned, independent peer and root guarded verification required."
+    }
+  ],
+  "fix_commits": []
+}

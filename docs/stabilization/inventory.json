@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T14:20:19.079678+00:00",
+  "updated_at": "2026-09-26T14:23:22.042436+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -1237,13 +1237,14 @@
       ],
       "cells": {
         "guest": {
-          "test_status": "pass",
+          "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
             "EXT-D-0004",
             "EXT-D-0005",
-            "EXT-D-0016"
+            "EXT-D-0016",
+            "EXT-D-0017"
           ],
           "run_ids": [
             "release-red-001",
@@ -1261,16 +1262,17 @@
             "release-stabilization-017",
             "release-stabilization-018"
           ],
-          "retest_status": "pass"
+          "retest_status": "not-run"
         },
         "member": {
-          "test_status": "pass",
+          "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
             "EXT-D-0004",
             "EXT-D-0005",
-            "EXT-D-0016"
+            "EXT-D-0016",
+            "EXT-D-0017"
           ],
           "run_ids": [
             "release-red-001",
@@ -1288,16 +1290,17 @@
             "release-stabilization-017",
             "release-stabilization-018"
           ],
-          "retest_status": "pass"
+          "retest_status": "not-run"
         },
         "admin": {
-          "test_status": "pass",
+          "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
             "EXT-D-0004",
             "EXT-D-0005",
-            "EXT-D-0016"
+            "EXT-D-0016",
+            "EXT-D-0017"
           ],
           "run_ids": [
             "release-red-001",
@@ -1315,7 +1318,7 @@
             "release-stabilization-017",
             "release-stabilization-018"
           ],
-          "retest_status": "pass"
+          "retest_status": "not-run"
         }
       },
       "readiness_gaps": [
@@ -10058,13 +10061,65 @@
               "runtime_status": "unverified"
             }
           ]
+        },
+        {
+          "id": "EXT-F-1007-T28",
+          "title": "Preserve inline chart, caption and surrounding HTML labels",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C01",
+            "EXT-F-1007-C02",
+            "EXT-F-1007-C08"
+          ],
+          "preconditions": [
+            "Freshly built/reloaded development extension; article page containing inlineSVG figure, visible figcaption and HTML label."
+          ],
+          "steps": [
+            "Capture article in fast and deep modes.",
+            "Inspect captured article markdown and rendered result for graphic, caption and HTML label.",
+            "Retest ordinary article, standaloneSVG and existinggraph preservation cases."
+          ],
+          "expected": [
+            "Graphic and both meaningful text siblings survive capture without duplication or raw placeholder tokens."
+          ],
+          "dimensions": [
+            "fast",
+            "deep",
+            "rendered-result",
+            "regression"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "defect_ids": [
+                "EXT-D-0018"
+              ]
+            },
+            "member": {
+              "status": "unverified",
+              "defect_ids": [
+                "EXT-D-0018"
+              ]
+            },
+            "admin": {
+              "status": "unverified",
+              "defect_ids": [
+                "EXT-D-0018"
+              ]
+            }
+          }
         }
       ],
       "cells": {
         "guest": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0001"
+            "EXT-D-0001",
+            "EXT-D-0018"
           ],
           "run_ids": [
             "guest-local-001",
@@ -10075,7 +10130,8 @@
         "member": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0001"
+            "EXT-D-0001",
+            "EXT-D-0018"
           ],
           "run_ids": [],
           "retest_status": "not-run"
@@ -10083,7 +10139,8 @@
         "admin": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0001"
+            "EXT-D-0001",
+            "EXT-D-0018"
           ],
           "run_ids": [],
           "retest_status": "not-run"
