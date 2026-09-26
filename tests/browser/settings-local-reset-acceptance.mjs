@@ -78,7 +78,9 @@ async function click(panel, kind, label) {
     else if (kind === 'port') candidates = [...document.querySelectorAll('input[placeholder="auto"]')];
     else if (kind === 'option') candidates = [...document.querySelectorAll('[role="option"]')]
       .filter((el) => el.textContent.trim() === label);
-    else if (kind === 'dialog') candidates = [...document.querySelectorAll('[role="dialog"] button')]
+    else if (kind === 'dialog') candidates = [...document.querySelectorAll('[role="alertdialog"]')]
+      .filter((el) => el.querySelector('[data-slot="alert-dialog-title"]')?.textContent.trim() === 'Clear local data?')
+      .flatMap((el) => [...el.querySelectorAll('button')])
       .filter((el) => el.textContent.trim() === label);
     else candidates = [...document.querySelectorAll('button')]
       .filter((el) => el.textContent.trim() === label);
@@ -171,12 +173,14 @@ async function panelState(panel) {
     const row = [...document.querySelectorAll('span')].find((el) => el.textContent.trim() === 'Theme');
     const trigger = row?.parentElement?.parentElement?.querySelector('button[role="combobox"]');
     const text = document.body?.innerText ?? '';
+    const resetDialog = [...document.querySelectorAll('[role="alertdialog"]')]
+      .find((el) => el.querySelector('[data-slot="alert-dialog-title"]')?.textContent.trim() === 'Clear local data?');
     return {
       settings: !!document.querySelector('button[title="Settings"][data-state="active"]'),
       theme: trigger?.textContent.trim() ?? null,
       guest: text.includes('Sign in to choose') || text.includes("You're using Matrx as a guest."),
       signIn: [...document.querySelectorAll('button')].some((el) => /sign in/i.test(el.textContent)),
-      dialog: !!document.querySelector('[role="dialog"]'),
+      dialog: !!resetDialog,
     };
   })()`);
 }
