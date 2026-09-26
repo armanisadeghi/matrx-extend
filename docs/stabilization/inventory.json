@@ -7504,13 +7504,14 @@
           "id": "EXT-F-1007-C04",
           "label": "Save capture as a Source",
           "action": "Land the current capture through the Sources endpoint; show confirmation/notices on success and retain refusal or unreachable captures in the device-local Unsaved queue for retry.",
-          "source_anchor": "src/lib/sources/save-capture.ts:204",
+          "source_anchor": "src/lib/sources/save-capture.ts:232",
           "source_delta": "Changed from direct saved-capture persistence; historical run evidence is retained but does not verify this behavior."
         },
         {
           "id": "EXT-F-1007-C05",
           "label": "Article markdown edit/apply",
-          "action": "Open Edit article markdown, change text, Apply, then Save capture."
+          "action": "Open Edit article markdown, change text, Apply, then Save capture.",
+          "source_anchor": "src/state/scrape.ts:105"
         },
         {
           "id": "EXT-F-1007-C06",
@@ -7613,6 +7614,20 @@
           "label": "Discard unsaved capture with confirmation",
           "action": "Confirm permanent removal of a capture that never landed.",
           "source_anchor": "src/features/scrape/UnsavedCapturesCard.tsx:70",
+          "source_applicable": true
+        },
+        {
+          "id": "EXT-F-1007-C25",
+          "label": "Save edited article text as Source content",
+          "action": "Apply an article markdown edit, then save; verify the landed Source uses the edited text while its original capture remains unchanged.",
+          "source_anchor": "src/lib/sources/save-capture.ts:100",
+          "source_applicable": true
+        },
+        {
+          "id": "EXT-F-1007-C26",
+          "label": "Restore unsaved capture after panel reopen",
+          "action": "After a refused or unreachable save, close and reopen the side panel; verify the device-local Unsaved card and retry action return.",
+          "source_anchor": "src/features/scrape/ScrapeView.tsx:1",
           "source_applicable": true
         }
       ],
@@ -7806,7 +7821,7 @@
             "Open Edit article markdown, change text, Apply, then Save capture."
           ],
           "expected": [
-            "Applied draft updates in-memory capture and shows edited state; server write only follows Save."
+            "Applied draft updates the in-memory capture and shows edited state; server write occurs only after Save. The saved Source uses the edited article text and preserves the untouched capture as its original."
           ],
           "dimensions": [
             "warm",
@@ -7824,7 +7839,8 @@
                 "Complete the specified Save capture step and verify the server write follows Save, with no write before Save."
               ]
             }
-          }
+          },
+          "verification_status": "unverified-after-source-change"
         },
         {
           "id": "EXT-F-1007-T06",
@@ -8298,6 +8314,71 @@
             "local-persistence"
           ],
           "verification_status": "unverified"
+        },
+        {
+          "id": "EXT-F-1007-T24",
+          "title": "Save edited article text and preserve the original capture",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C04",
+            "EXT-F-1007-C05",
+            "EXT-F-1007-C25"
+          ],
+          "preconditions": [
+            "Signed-in user with a device-selected organization and a controlled page whose article has distinguishable original text."
+          ],
+          "steps": [
+            "Capture the page in Scrape.",
+            "Edit the article markdown to contain a unique replacement sentence and Apply.",
+            "Save as a Source; inspect the landed reader-facing content and original capture."
+          ],
+          "expected": [
+            "The Source content contains the edited sentence and excludes the replaced original sentence; the original capture stored with the Source retains the pre-edit article."
+          ],
+          "dimensions": [
+            "edit",
+            "backend-available",
+            "organization",
+            "original-preservation"
+          ],
+          "verification_status": "unverified-after-source-change",
+          "source_evidence": "b8c8313 and d2b61d1 add the edited-text save path and real-extension acceptance assertions; no current runtime pass is recorded."
+        },
+        {
+          "id": "EXT-F-1007-T25",
+          "title": "Unsaved capture survives closing and reopening the panel",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C22",
+            "EXT-F-1007-C23",
+            "EXT-F-1007-C26"
+          ],
+          "preconditions": [
+            "Capture has article text; arrange an unreachable or refused Source landing so the device-local Unsaved queue receives the item."
+          ],
+          "steps": [
+            "Close the side panel after the failed save.",
+            "Reopen the side panel with no in-memory capture.",
+            "Inspect Unsaved captures and retry the item."
+          ],
+          "expected": [
+            "The persisted queue item, its source URL and retry action are restored on mount; reopening does not clear it. A retry removes it only after confirmed landing."
+          ],
+          "dimensions": [
+            "offline",
+            "panel-reopen",
+            "local-persistence",
+            "retry"
+          ],
+          "verification_status": "unverified-after-source-change",
+          "source_evidence": "b8c8313 adds mount-time queue restoration and a close/reopen regression scenario; no current runtime pass is recorded."
         }
       ],
       "cells": {

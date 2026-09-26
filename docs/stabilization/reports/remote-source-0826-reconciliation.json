@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "task_id": "remote-source-0826-reconciliation",
+  "source_sha": "0826d6f",
+  "commits_reviewed": [
+    "b8c831342a5a21507718498119a8c17c1a5854b8",
+    "d2b61d1dc371db77b0a30bbddb7459c1e2825b8e",
+    "d1fc310fe85c9ccbd531c4895e0d546bc6306a60"
+  ],
+  "features": [
+    {
+      "id": "EXT-F-1007",
+      "name": "Capture and manage current page scrape",
+      "delta": "Added stable controls C25/C26 and cases T24/T25 for saving edited article text while preserving the untouched original, and restoring device-local unsaved captures after panel reopen. Existing T05 now states the corrected save expectation. All remain unverified."
+    },
+    {
+      "id": "EXT-F-2009",
+      "name": "Search and manage saved captures",
+      "delta": "No inventory change needed: current C35/C36 and T05 already cover source host, original-file availability, and the live viewer link; these commits introduce no additional Saved Captures UI behavior."
+    },
+    {
+      "id": "Source portioning",
+      "name": "Source content portioning fixtures",
+      "delta": "Server-matched example.com, Wikipedia HTTP, and python.org tracking-URL fixtures exercise HTML/markdown portioning and canonical identity. These automated fixture assertions do not establish a runtime/UI pass and do not add a separate user control."
+    }
+  ],
+  "unresolved": [
+    "Real signed-in member/admin Source landing and original preservation remain runtime-unverified.",
+    "Panel close/reopen queue restoration and retry remain runtime-unverified.",
+    "The fresh disk bundle remains 760c7a1/v0.2.51; commits reviewed here are not included in that bundle."
+  ],
+  "source_files_reviewed": [
+    "src/hooks/use-scrape.ts",
+    "src/lib/sources/save-capture.ts",
+    "src/lib/sources/portions.test.ts",
+    "src/lib/sources/web-app-link.ts",
+    "src/state/scrape.ts",
+    "tests/browser/saved-captures-e2e.mjs",
+    "tests/fixtures/portions/example_com.json",
+    "tests/fixtures/portions/python_org_tracking.json",
+    "tests/fixtures/portions/wikipedia_http.json",
+    "tests/unit/save-never-loses-input.test.tsx"
+  ],
+  "verification": [
+    "Compared each requested commit's changed paths and implementation against EXT-F-1007, EXT-F-2009, and adjacent scrape queue inventory entries.",
+    "Confirmed existing C35/C36/T05 already capture saved-capture UI state; no new case required there.",
+    "Kept all affected case statuses unverified; did not run tests, builds, browser, or process launches."
+  ]
+}
