@@ -1,0 +1,13 @@
+{
+  "reviewed_commit": "38b009180900fa174922f7f49d1db5db50a5ca3a",
+  "lane": "independent source peer; Luna medium; no browser/runtime",
+  "scope": ["tests/browser/settings-panel-driver.mjs", "EXT-D-0011", "guest-reset-008"],
+  "engineering": "ACCEPT_SOURCE",
+  "runtime": "UNVERIFIED; root must run fresh admitted reset and local-controls acceptance",
+  "acceptance": "Matches the ruling: scrollIntoView is viewport preparation; actions remain trusted CDP input. Selection commands and scenario assertions are untouched in this commit.",
+  "bounds": "Unique visible non-inert candidate; center hit must resolve to target; two stable samples, no active ancestor animation, then trusted press/release. Outside-viewport points cannot pass the elementFromPoint hit requirement, though there is no separate numeric bounds assertion.",
+  "false_pass_review": "No forced click, DOM event dispatch, or product-state injection. Actual state assertions remain in scenario runners. Immediate layout/overlay change after final sample is a narrow race; scenarios' resulting state checks catch missed actions.",
+  "controls": "Reset Cancel/confirm storage invariants and local-controls cases/assertions are unchanged; T46 keyboard select-all flow remains intact.",
+  "limitations": "Does not explain/fix native wheel routing and does not prove manual scrolling or product behavior. Geometry/lock diagnostics are observational only.",
+  "recommendation": "Source review passes; accept engineering only. Keep EXT-D-0011 open pending both fresh native scenarios and their state assertions."
+}
