@@ -1,0 +1,49 @@
+{
+  "defect_id": "EXT-D-0007",
+  "reviewer": "/root/auth_classification_peer",
+  "reviewed_commits": ["064af8e", "3ad520c", "553bad3"],
+  "scope": "Independent source review of the original defect, repaired auth hook, token verifier, sidepanel gates, Settings, auth broadcasts, and focused regression assertions. No build, test, browser, or network write was run in this lane.",
+  "verdict_a_native_acceptance": {
+    "status": "UNVERIFIED",
+    "reason": "No unpacked development-extension Reload and 30-second Settings observation after 553bad3 was available to this reviewer. A real admin and member session, guest fallback, and saved credentials after recoverable failure still need native observation."
+  },
+  "verdict_b_engineering": {
+    "status": "FAIL",
+    "positive_evidence": "The boot now waits for session restoration and locally verified bearer claims, refuses a profile/bearer mismatch, preserves saved profile on transient restore or verification failure, and checks admin against the verified ID. The sidepanel admin gate and Settings role require a signed-in user. StrictMode and classification tests cover those decisions with mocks; auth-classification-red-001 records five failures before 553bad3. The owner reports auth-classification-green-001 passed 37/37 tests across seven files with no unhandled errors; this lane did not run that suite.",
+    "prior_peer_findings": [
+      {
+        "finding": "Cached profile presented as authenticated after failed session restoration",
+        "status": "ADDRESSED in persisted-session boot",
+        "evidence": "src/hooks/use-auth.ts:71-117 requires restored session, verified bearer, and matching cached profile before setUser; src/hooks/use-auth.strict-mode.test.tsx covers restore false, mismatched user, and unverifiable bearer. The saved profile remains in storage for retry."
+      },
+      {
+        "finding": "Stale admin flag exposes admin UI without authenticated user",
+        "status": "ADDRESSED in persisted-session boot and sidepanel gate",
+        "evidence": "src/hooks/use-auth.ts:101-129 ignores cached IS_ADMIN and checks the verified user; src/config/sidepanel-visibility.ts:47 and src/features/settings/SettingsView.tsx:119 require signed-in identity. Tests exercise stale guest flag and positive admin check."
+      }
+    ],
+    "new_findings": [
+      {
+        "priority": "P1",
+        "title": "Cross-context auth broadcast can assert signed-in and admin before canonical session validation",
+        "evidence": "src/hooks/use-auth.ts:143-160 calls restoreSupabaseSession without awaiting or checking it, then immediately installs payload.user and payload.isAdmin. The same hook's boot treats failed restore or unverified bearer as guest (lines 71-117), but a later broadcast bypasses that rule. src/lib/messaging/native.ts broadcasts asynchronously to other contexts; the receiving side does not compare the message to current storage or verified bearer. A delayed prior sign-in message or restore failure can therefore produce signed-in/admin UI inconsistent with the canonical session. No regression test covers this listener.",
+        "requested_repair": "Treat the broadcast as an invalidation signal, rehydrate from canonical storage, and apply a result only if its generation is still current; cover a stale sign-in message after sign-out and a failed receiver restore."
+      },
+      {
+        "priority": "P1",
+        "title": "Interactive sign-in ignores failed session installation",
+        "evidence": "src/hooks/use-auth.ts:179-196 awaits restoreSupabaseSession() but ignores its boolean, then calls setUser(profile) and publishes signed-in state. A transient setSupabaseSession failure returns false (src/lib/auth/flow.ts:607-631), so the UI can report success while the Supabase client is unauthenticated. This diverges from the new boot classification and has no focused assertion.",
+        "requested_repair": "Require successful session installation before showing signed-in UI or broadcasting it; preserve committed credentials and offer reload/retry on a transient failure."
+      },
+      {
+        "priority": "P2",
+        "title": "Admin lookup failure is silently classified as a non-admin member",
+        "evidence": "src/hooks/use-auth.ts:117-129 clears admin and awaits checkIsAdmin; src/lib/supabase/queries.ts:104-117 turns an admin query error into false. Thus a temporary database/read failure hides all admin tabs and role without a recoverable warning or retry. This path became decisive when the new boot stopped trusting the cached flag.",
+        "requested_repair": "Represent failed role lookup separately from a confirmed non-admin result, show a retryable explanation, and test an admin read failure."
+      }
+    ],
+    "evidence_limit": "Unit mocks prove hook decisions under supplied restore and verification results; they do not establish real Chrome storage, Supabase session installation, role query, message ordering, or native extension Reload acceptance."
+  },
+  "questions": [],
+  "changed_files": ["docs/stabilization/reports/auth-classification-peer.json"]
+}
