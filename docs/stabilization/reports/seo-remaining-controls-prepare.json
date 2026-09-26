@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "prepared_unverified",
+  "script": "tests/browser/seo-guest-acceptance.mjs",
+  "prior_run": "docs/stabilization/runs/seo-guest-003.json",
+  "new_subtargets": [
+    {
+      "case_id": "EXT-F-1008-T07",
+      "dimension": "warm",
+      "subtargets": ["guest_summary_clipboard_content", "guest_ai_clipboard_content"],
+      "oracle": "Owned clipboard canary is replaced after trusted menu input; copied text contains the current public page URL, title, and heading; text and AI formats have distinct headers."
+    },
+    {
+      "case_id": "EXT-F-1008-T01",
+      "dimension": "reload",
+      "subtarget": "reload_audits_current_url",
+      "oracle": "Owned panel document time origin changes; the remounted SEO audit shows the current public page title and heading presence, with no error."
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "dimension": "reload",
+      "subtarget": "guest_role_gate_after_reload",
+      "oracle": "After the panel reload, guest copy menu again offers text and AI and omits JSON."
+    }
+  ],
+  "already_verified_by_prior_run_not_new_full_coverage": [
+    "EXT-F-1008-T09: two public page title and heading-presence matches",
+    "EXT-F-1008-T01: warm URL title replacement",
+    "EXT-F-1008-T02: manual Re-audit button return to current title",
+    "EXT-F-1008-T07: warm guest menu choices and hidden JSON"
+  ],
+  "limits": [
+    "No browser or build was launched in this preparation; runtime status stays unverified.",
+    "Clipboard checks use an owned browser permission and fail closed if native clipboard access is unavailable; they do not assert byte-for-byte agreement with every displayed field.",
+    "Reload coverage checks a fresh current-page audit and the guest menu gate, not saved audit persistence or a slow old-result race.",
+    "Restricted pages, database save/history/diff, recommendations, Chat staging, social snippets, and member/admin modes remain unverified."
+  ]
+}
