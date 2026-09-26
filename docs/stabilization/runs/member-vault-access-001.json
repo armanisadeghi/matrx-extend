@@ -1,0 +1,17 @@
+{
+  "id": "member-vault-access-001",
+  "feature_id": "EXT-F-0001",
+  "case_id": "EXT-F-0001-T05",
+  "status": "resource-refused",
+  "at": "2026-09-26T16:19:38.386Z",
+  "result": "RESOURCE_PREFLIGHT_REFUSED; no child/browser launched; wrapper exit2 confirmed",
+  "reasons": ["RESOURCE_PRESSURE_UNSAFE", "RESOURCE_SWAP_GROWTH"],
+  "sample": {
+    "pressureLevel": 2,
+    "availableMemoryGiB": 5.44,
+    "swapUsedMiB": 4175.31,
+    "profileFreeGiB": 20.594223022460938
+  },
+  "source_log": "/tmp/matrx-member-vault-access-001.log",
+  "coverage_effect": "None; member auth and Vault candidate availability remain unverified."
+}
