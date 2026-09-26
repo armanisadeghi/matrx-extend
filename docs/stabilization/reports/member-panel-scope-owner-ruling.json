@@ -1,0 +1,16 @@
+{
+  "review_commit": "3851a4f7",
+  "implementation_commit": "66c9df2b",
+  "ruling": "Source ready for one guarded observation; runtime acceptance remains unverified.",
+  "finding_disposition": {
+    "targetMember_output": "REFUTED as a sensitive-data blocker",
+    "evidence": "TARGET_MEMBER is the fixed, already documented designated test fixture test@test.com, not a Vault-retrieved field, secret, token, password or unrelated user identity. The output identifies the intended fixture independently of inventory. No matching item identity or value is emitted.",
+    "scope": "Does not permit logging credentials, session data, Vault values, item titles/IDs, unrelated metadata, or raw auth URLs.",
+    "cost_if_wrong": "A non-secret designated fixture identifier appears in ignored local runtime evidence; no materialized credential is exposed."
+  },
+  "accepted_findings": [
+    "Linked Vault tabpanel scoping corrects an observation gap.",
+    "Pre-content spinner observation is needed; previous timeout does not prove product failure."
+  ],
+  "remaining": ["Actual runtime and member identity remain unverified."]
+}
