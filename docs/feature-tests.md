@@ -2152,6 +2152,10 @@ Every entry follows this shape:
   4. Read the "Since your last saved audit" card at the top of the results.
   5. Click the **history chip** (clock icon + count) next to the "SEO audit" title.
   6. Click a saved row → the body switches to that snapshot; click **Live** to return.
+  7. For an admin acceptance pass, save one public-page audit in the selected test
+     organization, open that exact history row, reload the panel, and open it again.
+     The row and selected snapshot carry the same `data-audit-id` as the real
+     Save response; a formatted timestamp or history count is not row identity.
 - **Expected:**
   - The card names each change as a sentence with both numbers, e.g.
     "3 fewer images missing alt text (5 → 2)", "412 more words (1,200 → 1,612)",
@@ -2166,6 +2170,8 @@ Every entry follows this shape:
     audit"); opening one shows its diff against the audit saved before it.
   - Saving again immediately makes the new row the baseline (the diff resets to
     "Nothing changed").
+  - The saved row's identity stays attached to its history button and selected
+    snapshot before and after panel reload, while the visible copy stays unchanged.
 - **Edge cases worth poking:**
   - Narrow the side panel to ~360px: long titles/canonicals wrap, nothing scrolls
     horizontally.

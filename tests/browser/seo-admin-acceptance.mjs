@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /** Admin SEO acceptance in the owned native panel. Root admits execution. */
 import assert from 'node:assert/strict';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { mkdir, open, readFile, rename, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
@@ -9,9 +10,11 @@ import { click, evaluate, openSection, waitFor } from './settings-panel-driver.m
 
 const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'seo-admin-acceptance.json');
+const ATTEMPT = join(REPO, 'test-results', 'seo-admin-save-attempt.json');
 const EMAIL = 'admin@admin.com';
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const PAGES = ['https://example.org/', 'https://www.iana.org/domains/reserved'];
+const SAVE_URL_SHA256 = createHash('sha256').update(PAGES[1]).digest('hex');
 const ORGANIZATION = 'ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete';
 let stage = 'owned_profile';
 const report = {
@@ -20,17 +23,101 @@ const report = {
   mode: 'admin',
   status: 'unverified',
   scope:
-    'real admin sign-in and selected organization; public SEO audit, menu, and read-only existing history',
+    'real admin sign-in and selected organization; one guarded public SEO Save and identified history row',
   targets: [],
   limitations: [
-    'No Save is clicked: the history UI does not expose a stable row ID, so a newly written row cannot be attributed to the opened snapshot.',
+    'At most one new IANA public-page audit is saved in the selected test organization; a durable pre-click checkpoint prevents a second Save on rerun.',
     'No clipboard content, provider recommendation, Chat, or member role is exercised.',
     'Title and heading presence are a bounded detail baseline; they do not prove every SEO field.',
-    'Save success/failure/retry, history empty/error/loading, two-snapshot comparison, and changed-page diff remain unverified.',
+    'Save failure/retry, history empty/error/loading, two-snapshot comparison, and changed-page diff remain unverified.',
   ],
 };
 const target = (caseId, subtarget, evidence) =>
   report.targets.push({ case_id: `EXT-F-1008-${caseId}`, subtarget, status: 'pass', evidence });
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+async function saveAttempt(organizationId) {
+  await mkdir(join(REPO, 'test-results'), { recursive: true });
+  try {
+    const existing = JSON.parse(await readFile(ATTEMPT, 'utf8'));
+    assert.equal(existing.organization, ORGANIZATION, 'save checkpoint organization');
+    assert.equal(existing.organizationId, organizationId, 'save checkpoint organization ID');
+    assert.equal(existing.urlSha256, SAVE_URL_SHA256, 'save checkpoint URL');
+    return { reserved: true, id: UUID.test(existing.id ?? '') ? existing.id : null };
+  } catch (error) {
+    if (error?.code !== 'ENOENT') throw new Error('save_attempt_checkpoint_requires_coordination');
+  }
+  const handle = await open(ATTEMPT, 'wx', 0o600);
+  try {
+    await handle.writeFile(
+      `${JSON.stringify({ organization: ORGANIZATION, organizationId, urlSha256: SAVE_URL_SHA256, phase: 'reserved' })}\n`,
+    );
+    await handle.sync();
+  } finally {
+    await handle.close();
+  }
+  return { reserved: false, id: null };
+}
+
+async function storeObservedSaveId(id, organizationId) {
+  assert.match(id, UUID, 'real Save response ID');
+  const temp = `${ATTEMPT}.tmp`;
+  await writeFile(
+    temp,
+    `${JSON.stringify({ organization: ORGANIZATION, organizationId, urlSha256: SAVE_URL_SHA256, phase: 'save_id_observed', id })}\n`,
+    { mode: 0o600 },
+  );
+  await rename(temp, ATTEMPT);
+}
+
+// Observe the real PostgREST insert response without changing or replaying it.
+// Only the response ID leaves CDP; raw URLs, headers, and audit signals do not.
+async function watchRealSaveId(panel, organizationId) {
+  await panel.send('Network.enable');
+  const requests = new Map();
+  const responses = new Map();
+  let observedId = null;
+  const isSeoEndpoint = (value) => {
+    try {
+      return new URL(value).pathname.endsWith('/wbx_seo_audit');
+    } catch {
+      return false;
+    }
+  };
+  const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
+    if (request?.method !== 'POST' || !isSeoEndpoint(request.url)) return;
+    try {
+      const payload = JSON.parse(request.postData);
+      if (payload.url === PAGES[1] && payload.organization_id === organizationId)
+        requests.set(requestId, true);
+    } catch {
+      /* Missing or malformed post data cannot establish provenance. */
+    }
+  });
+  const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
+    if (requests.has(requestId)) responses.set(requestId, response?.status);
+  });
+  const offFinished = panel.on('Network.loadingFinished', ({ requestId }) => {
+    if (!requests.has(requestId) || ![200, 201].includes(responses.get(requestId))) return;
+    void panel
+      .send('Network.getResponseBody', { requestId })
+      .then(({ body, base64Encoded }) => {
+        const raw = base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body;
+        const parsed = JSON.parse(raw);
+        const candidate = Array.isArray(parsed) ? parsed[0]?.id : parsed?.id;
+        if (typeof candidate === 'string' && UUID.test(candidate)) observedId = candidate;
+      })
+      .catch(() => {});
+  });
+  return {
+    read: () => (requests.size === 1 ? observedId : null),
+    stop: () => {
+      offRequest();
+      offResponse();
+      offFinished();
+    },
+  };
+}
 
 // Same real-web/extension Settings route as isolated-admin-signin-acceptance.
 // Read only the test-account variables when the form is ready. Never retain
@@ -104,6 +191,7 @@ async function organizationState(panel) {
       optionCount: options.length,
       displayed: controls.length === 1 && controls[0].textContent.trim() === label,
       stored: typeof stored?.id === 'string' && stored.id.length > 0 && stored.name === label,
+      organizationId: stored?.name === label && typeof stored.id === 'string' ? stored.id : null,
     };
   })()`,
   );
@@ -153,23 +241,36 @@ async function seoState(panel) {
     const list = historyHeading?.parentElement;
     const historyRows = [...(list?.children ?? [])]
       .filter((node) => node.tagName === 'BUTTON');
+    const historyIdentities = historyRows.map((node) => ({
+      id: node.getAttribute('data-audit-id'), label: node.textContent.trim(),
+    }));
     const savedSnapshot = [...(pane?.querySelectorAll('div') ?? [])]
       .some((node) => node.childElementCount === 0 && node.textContent.trim() === 'Saved snapshot');
+    const snapshotNodes = [...(pane?.querySelectorAll('div[data-audit-id]') ?? [])]
+      .filter((node) => node.textContent.includes('Saved snapshot'));
     const liveButtons = [...(pane?.querySelectorAll('button') ?? [])]
       .filter((node) => node.textContent.trim() === 'Live');
+    const saveButtons = [...(pane?.querySelectorAll('button') ?? [])]
+      .filter((node) => node.textContent.trim() === 'Save');
+    const savedButtons = [...(pane?.querySelectorAll('button') ?? [])]
+      .filter((node) => node.textContent.trim() === 'Saved');
     return {
       documentTimeOrigin: performance.timeOrigin,
       linked, title, headings, reAudit, copyCount: copy.length,
       menuOpen: menuOwnedByCopy, choices,
+      saveCount: saveButtons.length, savedCount: savedButtons.length,
       historyToggleCount: history.length,
       historyCount: historyToggle && /^\d+$/.test(historyToggle.textContent.trim())
         ? Number(historyToggle.textContent.trim()) : 0,
       historyOpen: !!historyHeading,
       historyRowCount: historyRows.length,
+      historyIdentities,
       newestHistoryLabel: historyRows[0]?.textContent.trim() ?? null,
       newestHistoryLabelUnique: historyRows.length > 0
         && historyRows.filter((node) => node.textContent.trim() === historyRows[0].textContent.trim()).length === 1,
-      savedSnapshot, liveButtonCount: liveButtons.length,
+      savedSnapshot, snapshotId: snapshotNodes.length === 1
+        ? snapshotNodes[0].getAttribute('data-audit-id') : null,
+      liveButtonCount: liveButtons.length,
       error: /Audit failed:|This page cannot be audited/.test(pane?.innerText ?? ''),
     };
   })()`,
@@ -179,6 +280,7 @@ async function seoState(panel) {
 try {
   await runNativeSidepanelQa({
     exercisePanel: async ({ page, panel }) => {
+      let selectedOrganizationId = null;
       stage = 'guest_settings';
       await click(panel, 'title', 'Settings');
       await openSection(panel, 'Account');
@@ -203,11 +305,13 @@ try {
         const offered = await organizationState(panel);
         assert.equal(offered.optionCount, 1, 'existing test organization must be offered');
         await click(panel, 'option', ORGANIZATION);
-        await waitFor(
+        const chosen = await waitFor(
           'organization_selected_on_device',
           () => organizationState(panel),
           (state) => state?.displayed && state.stored,
         );
+        selectedOrganizationId = chosen.organizationId;
+        assert.ok(selectedOrganizationId, 'selected organization has actual on-device ID');
         const notice = await evaluate(
           panel,
           `(() => [...document.querySelectorAll('[role="alert"]')]
@@ -273,9 +377,8 @@ try {
       });
       assert.ok(menu.menuOpen);
 
-      // Close the popover without choosing a clipboard action. Existing
-      // history is read-only; Save remains withheld until a row ID can be
-      // joined to the specific UI snapshot opened by this runner.
+      // Close without copying. The checkpoint is written before the only
+      // permitted Save click; any ambiguous attempt can only resume read-only.
       stage = 'close_copy_menu';
       await click(panel, 'title', 'Copy audit');
       await waitFor(
@@ -283,13 +386,52 @@ try {
         () => seoState(panel),
         (state) => state?.linked && !state.menuOpen,
       );
-      const existing = await seoState(panel);
-      if (existing.historyToggleCount !== 1 || existing.historyCount < 1) {
-        report.read_only_history = { status: 'unverified', reason: 'no_existing_visible_rows' };
-        return;
+      const attempt = await saveAttempt(selectedOrganizationId);
+      let saveId = attempt.id;
+      if (!attempt.reserved) {
+        const beforeSave = await seoState(panel);
+        assert.equal(beforeSave.saveCount, 1, 'one Save button for current live audit');
+        stage = 'save_public_audit';
+        const witness = await watchRealSaveId(panel, selectedOrganizationId);
+        try {
+          await click(panel, 'button', 'Save');
+          saveId = await waitFor(
+            'real_save_response_id',
+            () => witness.read(),
+            (id) => typeof id === 'string' && UUID.test(id),
+            30_000,
+          );
+          await storeObservedSaveId(saveId, selectedOrganizationId);
+        } finally {
+          witness.stop();
+        }
+        await waitFor(
+          'save_button_success',
+          () => seoState(panel),
+          (state) => state?.linked && state.savedCount === 1 && !state.error,
+          30_000,
+        );
+        target('T04', 'one_public_audit_saved_with_real_response_id', {
+          realInsertIdObserved: true,
+          savedButtonVisible: true,
+        });
+      } else if (!saveId) {
+        stage = 'ambiguous_prior_save';
+        report.save_attempt = {
+          status: 'unverified',
+          reason: 'prior_save_outcome_ambiguous_no_second_write',
+        };
+        throw new Error('prior_save_outcome_ambiguous');
+      } else {
+        report.save_attempt = { status: 'read_only_resume', realInsertIdFromCheckpoint: true };
       }
 
       stage = 'history_open';
+      await waitFor(
+        'saved_history_row_loaded',
+        () => seoState(panel),
+        (state) => state?.linked && state.historyToggleCount === 1,
+      );
       await click(panel, 'title', 'Saved audits for this URL');
       const open = await waitFor(
         'history_list_open',
@@ -297,12 +439,19 @@ try {
         (state) =>
           state?.linked &&
           state.historyOpen &&
-          state.historyRowCount === existing.historyCount &&
-          state.newestHistoryLabelUnique,
+          state.historyRowCount === state.historyCount &&
+          state.historyIdentities.some((row) => row.id === saveId),
       );
-      target('T05', 'existing_history_opens_for_current_public_url', {
+      const savedRow = open.historyIdentities.find((row) => row.id === saveId);
+      assert.ok(savedRow, 'real Save ID appears in current URL history');
+      assert.equal(
+        open.historyIdentities.filter((row) => row.label === savedRow.label).length,
+        1,
+        'saved row label resolves to one trusted pointer target',
+      );
+      target('T05', 'identified_saved_history_row_opens_for_current_url', {
         rowCountMatchesBadge: true,
-        newestRowHasUniqueVisibleLabel: true,
+        actualSaveIdMatchesHistoryRow: true,
       });
       stage = 'history_close';
       await click(panel, 'title', 'Saved audits for this URL');
@@ -319,19 +468,20 @@ try {
         (state) =>
           state?.linked &&
           state.historyOpen &&
-          state.newestHistoryLabel === open.newestHistoryLabel,
+          state.historyIdentities.some((row) => row.id === saveId),
       );
       stage = 'saved_snapshot_open';
-      await click(panel, 'button', open.newestHistoryLabel);
+      await click(panel, 'button', savedRow.label);
       await waitFor(
         'saved_snapshot_visible',
         () => seoState(panel),
         (state) =>
           state?.linked &&
           state.savedSnapshot &&
+          state.snapshotId === saveId &&
           state.liveButtonCount === 1 &&
           !state.historyOpen &&
-          !!state.title,
+          state.title === titles[1],
       );
       stage = 'return_to_live';
       await click(panel, 'button', 'Live');
@@ -345,9 +495,9 @@ try {
           state.title === titles[1] &&
           state.reAudit,
       );
-      target('T05', 'existing_snapshot_and_live_return', {
+      target('T05', 'identified_snapshot_and_live_return', {
         snapshotVisible: true,
-        savedSnapshotHasTitle: true,
+        snapshotIdMatchesActualSaveResponse: true,
         liveAuditRestored: true,
       });
 
@@ -369,25 +519,37 @@ try {
           state.title === titles[1] &&
           state.reAudit &&
           state.historyToggleCount === 1 &&
-          state.historyCount >= existing.historyCount &&
           !state.error,
         30_000,
       );
       stage = 'persisted_history_reopen';
       await click(panel, 'title', 'Saved audits for this URL');
-      await waitFor(
+      const reloadedHistory = await waitFor(
         'persisted_history_list_visible',
         () => seoState(panel),
         (state) =>
           state?.linked &&
           state.historyOpen &&
           state.historyRowCount === persisted.historyCount &&
-          state.newestHistoryLabel === open.newestHistoryLabel,
+          state.historyIdentities.some((row) => row.id === saveId),
       );
-      target('T05', 'existing_history_survives_panel_reload', {
+      const reloadedRow = reloadedHistory.historyIdentities.find((row) => row.id === saveId);
+      assert.equal(
+        reloadedHistory.historyIdentities.filter((row) => row.label === reloadedRow.label).length,
+        1,
+        'reloaded saved row remains a unique pointer target',
+      );
+      stage = 'persisted_snapshot_open';
+      await click(panel, 'button', reloadedRow.label);
+      await waitFor(
+        'persisted_snapshot_identity',
+        () => seoState(panel),
+        (state) => state?.linked && state.savedSnapshot && state.snapshotId === saveId,
+      );
+      target('T05', 'identified_saved_history_survives_panel_reload', {
         newDocumentObserved: true,
         currentPublicTitleMatches: true,
-        sameVisibleRowLabelStillPresent: true,
+        actualSaveIdStillInHistoryAndSnapshot: true,
       });
     },
   });

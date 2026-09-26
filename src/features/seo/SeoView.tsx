@@ -254,7 +254,10 @@ export function SeoView() {
           )}
 
           {viewing && (
-            <div className="flex items-center gap-2 rounded-xl bg-secondary/50 px-3 py-2 text-xs">
+            <div
+              data-audit-id={viewing.row.id}
+              className="flex items-center gap-2 rounded-xl bg-secondary/50 px-3 py-2 text-xs"
+            >
               <div className="min-w-0 flex-1">
                 <div className="font-medium">Saved snapshot</div>
                 <div className="truncate text-muted-foreground">
@@ -418,6 +421,7 @@ function HistoryList({
       {entries.map((e) => (
         <button
           key={e.row.id}
+          data-audit-id={e.row.id}
           type="button"
           onClick={() => onOpen(e.row.id)}
           className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs hover:bg-secondary/60 ${
