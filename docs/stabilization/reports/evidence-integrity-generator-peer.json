@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "report_id": "evidence-integrity-generator-peer",
-  "reviewed_commit": "5e22dd9e",
-  "source_verdict": "rejected_pending_guard_outcome_repair",
+  "reviewed_commits": ["5e22dd9e", "06f23afa"],
+  "source_verdict": "accepted_for_guarded_unit_runtime",
   "unit_runtime": "pending_root_guarded_run",
   "scope": "scripts/record-stabilization-evidence.mjs and tests/unit/stabilization-evidence.test.ts; no browser or heavy test run by this reviewer",
   "accepted_source_properties": [
@@ -11,18 +11,19 @@
     "The writer uses exclusive create with mode 0600 and cannot overwrite an existing receipt or either source file.",
     "Raw child stdout and arbitrary result fields are not copied into the record; the test independently recomputes both digests and checks private fixture strings are absent."
   ],
-  "blocking_findings": [
+  "resolved_findings": [
     {
       "location": "scripts/record-stabilization-evidence.mjs:39-67",
-      "problem": "An admitted run with RESOURCE_JOB_EXIT childExitCode 0 is accepted even if the wrapper subsequently emits RESOURCE_OWNED_PROCESS_STILL_RUNNING or RESOURCE_GROUP_STILL_RUNNING for the same run. stabilization-resource.mjs sets wrapper exit code 3 on those post-child cleanup failures, so the generated summary can look successful despite failed resource ownership. The guard parser only validates the admitted and child-exit pair; it does not classify terminal wrapper failure events.",
-      "required_repair": "Refuse guard logs containing terminal unsafe/cleanup failure events and add a test with RESOURCE_ADMITTED, child exit 0, then RESOURCE_OWNED_PROCESS_STILL_RUNNING for the same run. Do not promote a child result to overall run success when wrapper completion is unproven."
+      "original_problem": "A child exit 0 could coexist with a later wrapper cleanup failure.",
+      "repair_evidence": "The parser now refuses RESOURCE_OWNED_PROCESS_STILL_RUNNING, RESOURCE_GROUP_STILL_RUNNING, RESOURCE_GROUP_UNCONFIRMED, and RESOURCE_STOP_AT_SAFE_BOUNDARY. A test places owned-process failure after child exit 0 and requires refusal before output creation. The output separately labels wrapper completion unverified from the guard log and overall acceptance not adjudicated."
     },
     {
       "location": "scripts/record-stabilization-evidence.mjs:69-91; tests/unit/stabilization-evidence.test.ts:68-79",
-      "problem": "The result status is copied independently of the guard exit. A child exit code 1 paired with a raw result status of pass remains raw_result.status=pass, with no classified inconsistency or failure verdict. The current tests cover only exit 0 with partial status.",
-      "required_repair": "Explicitly classify or reject nonzero-child/pass inconsistencies and test that failure cannot be represented as an accepted pass. Preserve the raw status only as an attributed observation if needed."
+      "original_problem": "A nonzero child exit could coexist with a raw pass without any classified contradiction.",
+      "repair_evidence": "The generator now rejects nonzero child exit paired with raw pass, before output creation; the new test covers that exact contradiction. A nonzero child with raw fail remains representable and is explicitly classified child_exit=nonzero with no overall acceptance claim."
     }
   ],
-  "bounded_metadata_note": "The fixed output shape excludes private payload fields. Source path strings and accepted version strings are not length-bounded, so callers should pass only intended evidence paths; a bounded-path/version check would make this guarantee stronger without copying raw payload.",
-  "next_step": "Repair the two guard-status cases, obtain a fresh source review and root-owned guarded unit run, then generate a separate Screenshot 001 correction without modifying the original receipt."
+  "regression_review": "The repair does not change digest computation from actual bytes, distinct realpath checks, private payload omission, or exclusive mode-0600 output creation. The fixed output shape still excludes child stdout and arbitrary private result fields.",
+  "bounded_metadata_note": "Source paths and valid build-version strings are still not length-bounded. Use only intended evidence paths; the correction records provenance and does not claim overall run acceptance.",
+  "next_step": "Await the root-owned guarded unit result, then generate a separate Screenshot 001 correction without modifying the original receipt."
 }
