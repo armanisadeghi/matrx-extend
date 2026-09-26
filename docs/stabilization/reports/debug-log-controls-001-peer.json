@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "report_id": "debug-log-controls-001-peer",
+  "run_receipt": "docs/stabilization/runs/debug-log-controls-001.json",
+  "A_runtime": {
+    "status": "UNVERIFIED",
+    "evidence": "The guarded run was admitted, but the child exited 1 before any acceptance cases. The sanitized result records stage open_debug, pointer_target_not_unique, and zero matching/visible targets."
+  },
+  "B_evidence_quality": {
+    "status": "BOUNDED_DIAGNOSTIC_ONLY",
+    "verified": [
+      "Guard metadata distinguishes admission from child completion: admitted 2026-09-26T22:36:58.462Z; child exit 1 at 2026-09-26T22:37:11.878Z.",
+      "The sanitized result is counts-only and enumerates no cases; no case or feature pass is supported.",
+      "The child stopped while opening Debug because the driver reported zero matching and visible targets. The run does not establish whether Debug controls work after that step."
+    ],
+    "limits": [
+      "No EXT-F-1005 control was exercised or passed by this run.",
+      "The result marks a private screenshot present; its contents were intentionally not accessed.",
+      "The Debug-opening diagnostic is not sufficient to attribute a product defect without a successful target match or equivalent independent evidence."
+    ]
+  },
+  "reviewed_source_commits": [
+    "45a2490b7fde55d63562a2953b0f5e78fc7f631c",
+    "ccfb365bab39212add45a5532b0bf909da13c3e1",
+    "5ad1a655ba29a505bc2f3bc14f72f6747378635b"
+  ]
+}

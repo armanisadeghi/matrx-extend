@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "run_id": "debug-log-controls-001",
+  "feature_id": "EXT-F-1005",
+  "source": {
+    "guard_log_path": "/tmp/matrx-debug-log-controls-001.log",
+    "guard_log_sha256": "f95095d79529dd21004e4842cc7ac0cb7d748741b231fbd383500047da914315",
+    "acceptance_result_path": "test-results/debug-log-controls-acceptance.json",
+    "acceptance_result_sha256": "0ece84e3c934b1cfbbca905cfe63b5734f46f31394c0d34669db9a80686cab91",
+    "runner_path": "tests/browser/debug-log-controls-acceptance.mjs",
+    "runner_sha256_at_run_revision": "c77179d6d0f757e9075627994b1b4201bf974138cb2adc5be5e18d8c9aeb879c",
+    "reviewed_source_commits": [
+      "45a2490b7fde55d63562a2953b0f5e78fc7f631c",
+      "ccfb365bab39212add45a5532b0bf909da13c3e1",
+      "5ad1a655ba29a505bc2f3bc14f72f6747378635b"
+    ]
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T22:36:58.462Z",
+    "child_exit_at": "2026-09-26T22:37:11.878Z",
+    "child_exit_code": 1,
+    "child_signal": null,
+    "wrapper_stdout": "UNVERIFIED debug_log_controls_acceptance",
+    "semantics": "Guard admitted the run and the acceptance child exited nonzero; this records an unverified diagnostic stop, not a product assertion result."
+  },
+  "observed": {
+    "status": "unverified",
+    "stage": "open_debug",
+    "driver_failure_code": "pointer_target_not_unique",
+    "matched_target_count": 0,
+    "visible_match_count": 0,
+    "unique_visible_target": false,
+    "hit_target": false,
+    "prior_row_count": 0,
+    "case_count": 0,
+    "counts_only": true,
+    "private_screenshot_present": true
+  },
+  "interpretation": "The driver found no matching visible target at the Debug-opening step. No feature cases ran, so this result neither passes nor fails any EXT-F-1005 control. The private screenshot was not inspected or copied.",
+  "inventory_linking": "No case-level inventory link or status change is appropriate because the acceptance result contains zero cases."
+}
