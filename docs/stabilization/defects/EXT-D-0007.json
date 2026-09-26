@@ -19,7 +19,7 @@
   ],
   "severity": "S1: authenticated development testing blocked by missing identity",
   "priority": "P0: baseline authentication blocker",
-  "state": "triaged",
+  "state": "in-fix",
   "owner": "/root/reload_auth_diagnosis",
   "hypothesis": "React development StrictMode cancels first async boot while module bootRan suppresses replacement effect; focused RED proof required before fix.",
   "transition_history": [
@@ -34,7 +34,14 @@
       "from": "open",
       "to": "triaged",
       "reason": "FocusedStrictMode regression produces2expected hydration failures; codeeffectcancellation/globalbootguard mechanism traced. Positivecontrol pending before sourcefix."
+    },
+    {
+      "at": "2026-09-26T06:29:17.251348+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "RED003 positivecontrol isolates lifecyclecause; minimalsharedboot repair assigned with cross-hookauth race protection and accuratebrowserfixtures."
     }
   ],
-  "separate_observation": "A later manual OAuth SignIn attempt returned Authorization error400/Auth session missing; not assumed to have the same cause."
+  "separate_observation": "A later manual OAuth SignIn attempt returned Authorization error400/Auth session missing; not assumed to have the same cause.",
+  "root_cause": "Component-owned cancellation aborts asynchronous module-once auth bootstrap during React developmentStrictMode replay; globalbootRan prevents replacement hydration. Positivecontrol withoutreplay hydrates samefixture."
 }
