@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "review": "seo-timing-diagnostic-peer",
+  "commit": "ce23ba5ec141ad035252c8799725e0ea2467c2be",
+  "source_verdict": "PASS_WITH_CONCERNS",
+  "runtime_verdict": "UNVERIFIED",
+  "findings": [
+    {
+      "severity": "positive",
+      "finding": "The original auto-audit observations are captured into nextDetails before any manual re-audit. Diagnostics only classify matches inside guarded checks; the original assertNext calls still execute against nextDetails and nextExpected, so a mismatch remains the acceptance failure."
+    },
+    {
+      "severity": "positive",
+      "finding": "The diagnostic records separate public-page samples and corresponding panel values, including null when navigation timing is absent. It does not synthesize zero timing or claim a product fix. The receipt and report use fixed labels, counts, status, and hashes rather than credentials or arbitrary page text."
+    },
+    {
+      "severity": "positive",
+      "finding": "The manual Re-audit runs the capture path and updates in-memory audit state. The separately named Save action is the persistence path and is not clicked here, so the added diagnosis does not add an audit-history write."
+    },
+    {
+      "severity": "concern",
+      "finding": "The diagnostic catches all errors and stores only observation_failed. That keeps output bounded and non-sensitive, but loses whether the manual click, running transition, settled wait, or sampling failed, reducing the next run's diagnostic value. Consider a fixed stage label if this branch is revised; do not store raw error messages."
+    },
+    {
+      "severity": "concern",
+      "finding": "Before/after public samples can show observed stability or change across those instants, but cannot prove what the collector saw at its exact capture instant. The stated implications in the diagnosis are appropriately framed as implicating a cause, not proving it."
+    }
+  ],
+  "runtime_evidence": "No browser, tests, or heavy commands were run per lane constraints. The run receipt in the reviewed commit records a prior failure; it does not execute or verify the new diagnostic branch.",
+  "secrets_or_extra_writes": "No secret-bearing values found in the added source/report. Manual Re-audit does not call the user-facing Save path; no additional persistent write is introduced by the diagnostic branch.",
+  "files_reviewed": [
+    "tests/browser/seo-guest-acceptance.mjs",
+    "docs/stabilization/runs/seo-guest-010.json",
+    "docs/stabilization/reports/seo-snapshot-timing-diagnosis.json"
+  ]
+}
