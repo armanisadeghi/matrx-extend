@@ -53,6 +53,7 @@ async function runOwnedBrowserRestart({
   acquireWorker,
   openPanel,
   verifySettingsIdentity,
+  verifyPostBindVaultRead,
   vaultWriteCount,
   proof,
 }) {
@@ -95,6 +96,7 @@ async function runOwnedBrowserRestart({
     [typeof acquireWorker === 'function', 'browser_restart_worker_acquirer_missing'],
     [typeof openPanel === 'function', 'browser_restart_panel_opener_missing'],
     [typeof verifySettingsIdentity === 'function', 'browser_restart_settings_verifier_missing'],
+    [typeof verifyPostBindVaultRead === 'function', 'browser_restart_post_bind_read_missing'],
     [typeof vaultWriteCount === 'function', 'browser_restart_write_counter_missing'],
   ])
     assert(Boolean(value), code);
@@ -125,11 +127,18 @@ async function runOwnedBrowserRestart({
     previousPanelTargetGone: false,
     replacementWorkerObserved: false,
     replacementPanelObserved: false,
+    replacementWorkerTargetId: null,
     noVaultWrites: false,
     replacementJournalBound: false,
+    postBindVaultReadRecovered: false,
     previousBrowserPid: initialBrowserPid,
     replacementBrowserPid: null,
     launchProvenanceVerified: false,
+    cleanupAttempted: false,
+    cleanupProven: false,
+    cleanupFailures: [],
+    replacementProcessExited: null,
+    replacementOwnership: 'helper',
   });
   try {
     await initialPanel?.dispose?.();
@@ -147,8 +156,8 @@ async function runOwnedBrowserRestart({
       Number.isSafeInteger(replacementBrowserPid) && replacementBrowserPid > 1,
       'browser_restart_replacement_pid_invalid',
     );
-    assert(replacementBrowserPid !== initialBrowserPid, 'browser_restart_process_pid_reused');
     lifecycle.replacementBrowserPid = replacementBrowserPid;
+    assert(replacementBrowserPid !== initialBrowserPid, 'browser_restart_process_pid_reused');
     lifecycle.launchProvenanceVerified =
       (await assertLaunchProvenance({
         profile,
@@ -204,15 +213,29 @@ async function runOwnedBrowserRestart({
       lifecycle.previousWorkerTargetGone && lifecycle.previousPanelTargetGone,
       'browser_restart_previous_targets_survived',
     );
-    const replacementWorker = await acquireWorker(replacementContext, replacementCdp);
+    const acquiredWorker = await acquireWorker(replacementContext, replacementCdp);
+    const replacementWorker = acquiredWorker?.worker;
+    const replacementWorkerTargetId = acquiredWorker?.targetId;
+    assert(replacementWorker?.evaluate, 'browser_restart_replacement_worker_missing');
+    assert(
+      typeof replacementWorkerTargetId === 'string' && replacementWorkerTargetId,
+      'browser_restart_replacement_worker_target_missing',
+    );
     const runtimeId = await replacementWorker.evaluate(() => chrome.runtime.id);
     assert(runtimeId === extensionId, 'browser_restart_extension_identity_mismatch');
     const replacementTargets = (await replacementCdp.send('Target.getTargets')).targetInfos;
-    const replacementWorkers = replacementTargets.filter(
-      (target) => target.type === 'service_worker' && target.url === workerUrl,
+    const replacementTargetsForWorker = replacementTargets.filter(
+      (target) =>
+        target.targetId === replacementWorkerTargetId &&
+        target.type === 'service_worker' &&
+        target.url === workerUrl,
     );
-    assert(replacementWorkers.length === 1, 'browser_restart_replacement_worker_ambiguous');
-    const replacementTarget = replacementWorkers[0];
+    assert(
+      replacementTargetsForWorker.length === 1,
+      'browser_restart_replacement_worker_target_unverified',
+    );
+    const replacementTarget = replacementTargetsForWorker[0];
+    lifecycle.replacementWorkerTargetId = replacementTarget.targetId;
     lifecycle.replacementWorkerObserved = replacementTarget.targetId !== initialWorkerTargetId;
     assert(lifecycle.replacementWorkerObserved, 'browser_restart_worker_target_reused');
     replacementPanel = await openPanel({
@@ -235,6 +258,19 @@ async function runOwnedBrowserRestart({
     assert(exactPanelTargets.length === 1, 'browser_restart_panel_target_unverified');
     await replacementJournal.bindPanelTarget(replacementPanel.targetId);
     lifecycle.replacementJournalBound = true;
+    lifecycle.postBindVaultReadRecovered =
+      (await verifyPostBindVaultRead({
+        context: replacementContext,
+        cdp: replacementCdp,
+        worker: replacementWorker,
+        workerTargetId: replacementTarget.targetId,
+        panel: replacementPanel,
+        journal: replacementJournal,
+      })) === true;
+    assert(
+      lifecycle.postBindVaultReadRecovered,
+      'browser_restart_post_bind_vault_read_unverified',
+    );
     lifecycle.settingsUiRecovered =
       (await verifySettingsIdentity(replacementWorker, replacementPanel)) === true;
     const recoveredIdentitySha256 = await identityHash(replacementWorker);
@@ -255,6 +291,7 @@ async function runOwnedBrowserRestart({
         : 'failed';
     assert(lifecycle.disposition === 'passed', 'browser_restart_evidence_incomplete');
     succeeded = true;
+    lifecycle.replacementOwnership = 'caller';
     return {
       context: replacementContext,
       cdp: replacementCdp,
@@ -263,13 +300,49 @@ async function runOwnedBrowserRestart({
       worker: replacementWorker,
     };
   } finally {
-    // On a failed restart, the helper owns the replacement it launched and
-    // closes it. On success the caller receives it and owns final cleanup.
+    // On a failed restart, the helper owns the replacement it launched. A
+    // successful return transfers that ownership to the caller, which must
+    // retain final-close proof in its own custody record.
     if (!succeeded) {
-      await replacementPanel?.dispose?.().catch(() => {});
-      await replacementJournal?.dispose?.().catch(() => {});
-      await replacementCdp?.detach?.().catch(() => {});
-      await replacementContext?.close?.().catch(() => {});
+      lifecycle.cleanupAttempted = replacementContext != null;
+      const cleanupStep = async (name, operation) => {
+        try {
+          await operation?.();
+        } catch (error) {
+          lifecycle.cleanupFailures.push({
+            step: name,
+            code: error instanceof Error ? error.message : String(error),
+          });
+        }
+      };
+      await cleanupStep('panel_dispose', replacementPanel?.dispose);
+      await cleanupStep('journal_dispose', replacementJournal?.dispose);
+      await cleanupStep('cdp_detach', replacementCdp?.detach);
+      await cleanupStep('context_close', replacementContext?.close);
+      if (Number.isSafeInteger(lifecycle.replacementBrowserPid)) {
+        try {
+          lifecycle.replacementProcessExited =
+            (await verifyProcessExited(lifecycle.replacementBrowserPid)) === true;
+        } catch (error) {
+          lifecycle.cleanupFailures.push({
+            step: 'process_exit_verify',
+            code: error instanceof Error ? error.message : String(error),
+          });
+          lifecycle.replacementProcessExited = false;
+        }
+        if (!lifecycle.replacementProcessExited) {
+          lifecycle.cleanupFailures.push({
+            step: 'process_exit_verify',
+            code: 'browser_restart_replacement_process_alive',
+          });
+        }
+        lifecycle.cleanupProven = lifecycle.cleanupFailures.length === 0;
+        if (!lifecycle.cleanupProven) {
+          const cleanupError = new Error('browser_restart_replacement_cleanup_unproven');
+          cleanupError.cleanupFailures = lifecycle.cleanupFailures;
+          throw cleanupError;
+        }
+      }
     }
   }
 }

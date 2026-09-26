@@ -14,6 +14,7 @@ const worker = (runtimeId = extensionId) => ({
 const scenario = (overrides = {}) => {
   const state = {
     replacementClosed: false,
+    replacementProcessExited: false,
     replacementJournalDisposed: false,
     writes: 0,
     order: [],
@@ -22,7 +23,7 @@ const scenario = (overrides = {}) => {
     { targetId: 'new-worker', type: 'service_worker', url: workerUrl },
     { targetId: 'new-panel', type: 'page', url: panelUrl },
   ];
-  const context = {
+  const context = overrides.context ?? {
     close: async () => {
       state.replacementClosed = true;
     },
@@ -74,7 +75,9 @@ const scenario = (overrides = {}) => {
         profile === '/owned/disposable-profile' &&
         launchOptions.executablePath === '/owned/chrome' &&
         browserPid === 222,
-      verifyProcessExited: async (pid) => pid === 111 && overrides.oldExited !== false,
+      verifyProcessExited: async (pid) =>
+        (pid === 111 && overrides.oldExited !== false) ||
+        (pid === (overrides.browserPid ?? 222) && overrides.replacementExited !== false),
       verifyOwnedBrowserProcess: async ({ profile, launchOptions, browserPid }) =>
         profile === '/owned/disposable-profile' &&
         launchOptions.args[0] === '--headless=new' &&
@@ -110,13 +113,21 @@ const scenario = (overrides = {}) => {
       }),
       acquireWorker: async () => {
         state.order.push('replacement-worker-acquire');
-        return worker();
+        return { worker: worker(), targetId: overrides.workerTargetId ?? 'new-worker' };
       },
       openPanel: async () => {
         state.order.push('replacement-panel-open');
         return { targetId: overrides.panelTargetId ?? 'new-panel', dispose: async () => {} };
       },
       verifySettingsIdentity: async () => true,
+      verifyPostBindVaultRead: async ({ panel, journal, worker, workerTargetId }) => {
+        assert.equal(panel.targetId, overrides.panelTargetId ?? 'new-panel');
+        assert.equal(typeof journal.assertCoverage, 'function');
+        assert.equal(typeof worker.evaluate, 'function');
+        assert.equal(workerTargetId, overrides.workerTargetId ?? 'new-worker');
+        state.order.push('replacement-post-bind-vault-read');
+        return overrides.postBindVaultRead !== false;
+      },
       vaultWriteCount: () => state.writes,
       proof: {},
       ...overrides,
@@ -151,6 +162,13 @@ const scenario = (overrides = {}) => {
   assert.equal(passed.args.proof.lifecycle.browserRestart.newBrowserProcessObserved, true);
   assert.equal(passed.args.proof.lifecycle.browserRestart.launchProvenanceVerified, true);
   assert.equal(passed.args.proof.lifecycle.browserRestart.replacementJournalBound, true);
+  assert.equal(passed.args.proof.lifecycle.browserRestart.replacementWorkerTargetId, 'new-worker');
+  assert.equal(passed.args.proof.lifecycle.browserRestart.postBindVaultReadRecovered, true);
+  assert.ok(
+    passed.state.order.indexOf('replacement-journal-bind') <
+      passed.state.order.indexOf('replacement-post-bind-vault-read'),
+    'a real Vault read must follow panel binding',
+  );
   assert.ok(
     passed.state.order.indexOf('replacement-journal-settle') <
       passed.state.order.indexOf('replacement-journal-coverage'),
@@ -183,7 +201,14 @@ const scenario = (overrides = {}) => {
     [
       'forged worker target',
       { targets: [{ targetId: 'new-panel', type: 'page', url: panelUrl }] },
-      'browser_restart_replacement_worker_ambiguous',
+      'browser_restart_replacement_worker_target_unverified',
+      true,
+      true,
+    ],
+    [
+      'worker facade churn',
+      { workerTargetId: 'stale-worker' },
+      'browser_restart_replacement_worker_target_unverified',
       true,
       true,
     ],
@@ -220,6 +245,13 @@ const scenario = (overrides = {}) => {
       true,
       true,
     ],
+    [
+      'missing post-bind vault read',
+      { postBindVaultRead: false },
+      'browser_restart_post_bind_vault_read_unverified',
+      true,
+      true,
+    ],
   ]) {
     const failed = scenario(overrides);
     await assert.rejects(() => runOwnedBrowserRestart(failed.args), new RegExp(code), name);
@@ -230,6 +262,32 @@ const scenario = (overrides = {}) => {
       `${name} journal cleanup mismatch`,
     );
   }
+
+  const closeRejected = scenario({
+    context: {
+      close: async () => {
+        closeRejected.state.replacementClosed = true;
+        throw new Error('close_rejected');
+      },
+    },
+    verifyProcessExited: async (pid) => {
+      if (pid === 111) return true;
+      closeRejected.state.replacementProcessExited = true;
+      return false;
+    },
+    postBindVaultRead: false,
+  });
+  await assert.rejects(
+    () => runOwnedBrowserRestart(closeRejected.args),
+    /browser_restart_replacement_cleanup_unproven/,
+  );
+  const cleanup = closeRejected.args.proof.lifecycle.browserRestart;
+  assert.equal(closeRejected.state.replacementClosed, true, 'cleanup must still attempt context close');
+  assert.equal(closeRejected.state.replacementProcessExited, true, 'cleanup must verify replacement exit');
+  assert.equal(cleanup.cleanupAttempted, true);
+  assert.equal(cleanup.cleanupProven, false);
+  assert.ok(cleanup.cleanupFailures.some((failure) => failure.step === 'context_close'));
+  assert.ok(cleanup.cleanupFailures.some((failure) => failure.step === 'process_exit_verify'));
   process.stdout.write(
     'PASS: owned restart rejects forged process, launch, worker, and panel evidence\n',
   );
