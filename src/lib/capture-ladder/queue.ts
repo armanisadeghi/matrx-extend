@@ -56,6 +56,7 @@ const SITE = {
   operation: 'select',
   what: 'check which pages need your browser',
   title: 'Capture list unavailable',
+  retriesOnOrganizationSelection: true,
 } as const;
 
 /**

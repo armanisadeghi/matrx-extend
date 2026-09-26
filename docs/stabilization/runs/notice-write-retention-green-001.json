@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "run_id": "notice-write-retention-green-001",
+  "defect_id": "EXT-D-0023",
+  "source_commit": "e210a6266a609c7391c5c1bc9688d6aea2f83467",
+  "independent_source_review": "docs/stabilization/reports/d23-write-retention-peer.json",
+  "independent_source_review_commit": "0cc069956c92b5b8194039b55ba7c667f28ac217",
+  "command": "pnpm exec vitest run tests/unit/notice-resolution.test.tsx tests/unit/db-refusal-seam.test.ts --maxWorkers=1",
+  "guard_log_path": "/tmp/matrx-notice-write-retention-green-001.log",
+  "guard_log_sha256": "cc282fd22c1ae51f1c55ca8b73eb1396cad779748f56a390937b5d720339d1fb",
+  "guard": {
+    "wrapper_session": "root confirmed wrapper 83185 exit 0",
+    "admitted_at": "2026-09-26T22:30:35.258Z",
+    "child_exit_at": "2026-09-26T22:30:36.827Z",
+    "child_exit_code": 0
+  },
+  "result": {
+    "test_files_passed": 2,
+    "tests_passed": 26,
+    "failure_count": 0,
+    "preserved_read_notice_cases": 2,
+    "write_notice_retention_cases": 2
+  },
+  "interpretation": "The guarded write-notice retention tests passed with the existing read-retirement guards and sibling database-refusal suite. This is focused unit evidence, not native UI verification or full EXT-F-2010-T02 coverage. The correction does not retry or perform failed writes.",
+  "remaining": "Typecheck/release validation and native UI retest on the corrected build remain pending. The prior source-workspace-007 read-side native result remains historical evidence only."
+}

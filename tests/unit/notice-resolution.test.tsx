@@ -35,6 +35,7 @@ const CAPTURE_LIST = {
   operation: 'select' as const,
   what: 'check which pages need your browser',
   title: 'Capture list unavailable',
+  retriesOnOrganizationSelection: true as const,
 };
 const HIGHLIGHT_INSERT = {
   table: 'extend.wbx_highlight',
@@ -45,8 +46,8 @@ const HIGHLIGHT_INSERT = {
 const CAPTURE_DELETE = {
   table: 'docproc.processed_documents',
   operation: 'update' as const,
-  what: 'remove this saved capture',
-  title: 'Saved capture not removed',
+  what: 'delete this saved capture',
+  title: 'Saved capture not deleted',
 };
 
 function announceMissingWorkspace() {
@@ -132,7 +133,7 @@ describe('resolved notices', () => {
     render(<NoticeHost />);
     await act(async () => announceFailedWrite(CAPTURE_DELETE));
 
-    expect(screen.getByText('Saved capture not removed')).toBeTruthy();
+    expect(screen.getByText('Saved capture not deleted')).toBeTruthy();
     expect(useNoticeStore.getState().notices[0]?.resolvesWhen).toBeUndefined();
   });
 });

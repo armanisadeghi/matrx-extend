@@ -501,8 +501,8 @@ async function watchScopedLookup(panel, fixture, organizationId, { allowRepeated
       if (
         query.get('canonical_identity') !== `eq.${expectedIdentity}` ||
         query.get('organization_id') !== `eq.${organizationId}` ||
-        !query.has('origin_client') ||
-        !query.has('derivation_kind') ||
+        query.get('origin_client') !== 'eq.extension' ||
+        query.get('derivation_kind') !== 'in.(initial_extract,recapture)' ||
         query.get('deleted_at') !== 'is.null'
       )
         return;

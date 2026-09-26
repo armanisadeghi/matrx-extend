@@ -84,6 +84,12 @@ export interface DbCallSite {
   what: string;
   /** Short headline for the notice. e.g. "Page capture not saved". */
   title: string;
+  /**
+   * A subscribed read that runs again when the person selects an organization
+   * may retire its old no-workspace notice then. Never set this on an action:
+   * selecting an organization does not replay an insert, update, or delete.
+   */
+  retriesOnOrganizationSelection?: true;
 }
 
 /** Minimal shape of a PostgREST error — we never depend on the SDK's class. */
@@ -339,7 +345,11 @@ export function failDbCall(site: DbCallSite, error: DbErrorLike | null | undefin
     title: site.title,
     message: userMessage,
     detail: `${site.operation} ${site.table} · ${technical}`,
-    ...(kind === 'no_workspace' && { resolvesWhen: 'active_organization_available' as const }),
+    ...(kind === 'no_workspace' &&
+      site.operation === 'select' &&
+      site.retriesOnOrganizationSelection === true && {
+        resolvesWhen: 'active_organization_available' as const,
+      }),
   });
   void recordDbFailure(site, kind, error);
 

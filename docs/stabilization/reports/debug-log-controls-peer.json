@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "report_id": "debug-log-controls-peer",
+  "reviewed_source_commits": ["a5a96395", "7b0fdf77", "45a2490b", "ccfb365b"],
+  "runner": "tests/browser/debug-log-controls-acceptance.mjs",
+  "A_runtime": {
+    "status": "UNVERIFIED",
+    "reason": "This independent lane did not run the browser or build. No claims about actual native UI behavior follow from source inspection."
+  },
+  "B_source": {
+    "status": "ACCEPTED_FOR_RUNTIME_VERIFICATION",
+    "verified": [
+      "The owned native harness creates a disposable Chrome profile, and the runner signs in through the real web form and extension Sign in control. It verifies the exact admin email, admin role and Sign out control before opening Debug; it does not inject auth or debug events.",
+      "The Debug snapshot scopes rows to the Log view beneath Search and cross-checks displayed rows against the filtered/total counter. Search requires a real existing row for its positive branch and zero rows plus the distinct no-match state for its negative branch.",
+      "Pause can pass only when rows stay frozen while the total event count grows and resumed rows then grow. Clear can pass only when pre-clear rows existed and the no-events state has zero displayed and total events. T22 remains explicitly unverified rather than receiving a fabricated pass.",
+      "The public result stores counts, booleans, fixed stage names and allowlisted pointer diagnostics. Raw credentials and auth errors do not enter it. Failure screenshots use exclusive mode-0600 creation in an owned private artifact directory."
+    ],
+    "resolved_on_rereview": [
+      "setSearch now hit-tests and clicks the unique actual input, requires stable pointer geometry and focus, selects through CDP key input, and inserts text through CDP Input.insertText. Synthetic DOM input/change dispatch is gone.",
+      "T14 now reports only partial when message search and no-match are observed; it explicitly leaves detail search unverified, and no safe message-only row makes T14 unverified.",
+      "A run with all cases unverified now has top-level unverified and exits nonzero. An explicitly partial run may exit zero, but that status is not a full acceptance pass."
+    ],
+    "final_rereview": "The ccfb365b correction retains the positive message-only row's rendered button text and full message privately, then requires a message-only row with the same values after trusted filtering, alongside nonzero rows and a matching counter. A detail-bearing row alone can no longer satisfy T14's message-search positive control. The runner reports only the boolean and counts; raw event text is neither printed nor written to the public result. The comparison is a rendered-text signature, not an internal event ID, which is sufficient for this message-search assertion.",
+    "limits": [
+      "Public-page navigation is a plausible natural event source, but the runtime must show that it actually produced rows; the current source correctly leaves event-dependent cases unverified when it does not.",
+      "T22 has no automated expand/collapse positive control and remains a separate manual or future runner obligation."
+    ]
+  },
+  "builder_response": {
+    "status": "source_corrections_prepared_for_rereview",
+    "trusted_search": "The runner now hit-tests and clicks the actual Search input, uses trusted select-all keyboard commands, and types through CDP Input.insertText. Synthetic DOM input/change dispatch was removed.",
+    "T14_scope": "A message from a natural row without a detail affordance supplies the positive term. The case is partial only when that same private row identity and message remain rendered after trusted filtering and the distinct no-match state is observed; detail-only search remains unverified. With no safe message-only row, T14 is unverified. No event text is emitted in results.",
+    "empty_evidence_exit": "A run whose cases are all unverified now receives top-level unverified and exits nonzero. Per-case evidence remains explicit.",
+    "runtime": "Unverified until independent source rereview and a root-owned admitted native run."
+  }
+}

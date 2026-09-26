@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "report_id": "package-catchup-008-peer",
+  "scope": "Independent @ai-matrx/records 0.58.26 to 0.58.27 consumer review",
+  "lock_commit": "d947b081",
+  "evidence": {
+    "verdict": "EXACT_GRAPH_DELTA_CONFIRMED",
+    "lockfile": "The only changed dependency is the records importer, package resolution/integrity and snapshot key, all 0.58.26 to 0.58.27. The declaration remains latest and the React optional peer remains 19.3.0.",
+    "installed_package": "node_modules/@ai-matrx/records resolves to published 0.58.27; the previous published 0.58.26 artifact remains available in the local pnpm store for direct comparison.",
+    "published_changelog": "The 0.58.27 entry says docs/metadata drift and no consumer action; this report checks the actual artifact rather than treating that wording as conclusive.",
+    "artifact_comparison": "The root, core and react JavaScript entrypoints in 0.58.27 each remove only system_personal_org_failure from the generated ENTITY_TOKENS array. Their CJS entrypoints match this change. Declarations remove the same token from the EntityToken vocabulary; generated declaration chunk names and sourcemaps change as build artifacts. No called door implementation or exported function signature changed in the inspected published artifacts.",
+    "upstream_source": "aidream commit 351f93c232 removes the same entry from apps/shared/records/src/store.generated.ts, reducing the generated count from 1032 to 1031 after removal of that graveyard entity."
+  },
+  "consumer_review": {
+    "verdict": "NO_EXTENSION_ADOPTION_REQUIRED",
+    "basis": "The extension imports RecordsClient and createRecordsClient from @ai-matrx/records/core and calls store/table/record doors through its adapter. A source/test census found no reference to ENTITY_TOKENS, EntityToken or system_personal_org_failure. Removing that generated vocabulary member cannot change these observed call shapes.",
+    "limits": "No build, unit test, browser test or release gate was run in this peer lane. This is a package artifact and consumer-source verdict, not runtime verification."
+  }
+}

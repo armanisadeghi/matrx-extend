@@ -1,0 +1,16 @@
+{
+  "id": "release-stabilization-038",
+  "status": "command-refused-before-workload",
+  "event": {
+    "at": "2026-09-26T22:31:49.181Z",
+    "code": "RESOURCE_COMMAND_NOT_ALLOWED:see docs/stabilization/resource-policy.json",
+    "detail": "RESOURCE_COMMAND_NOT_ALLOWED:see docs/stabilization/resource-policy.json"
+  },
+  "wrapper_log": {
+    "source": "/tmp/matrx-release-stabilization-038.log",
+    "sha256": "9f6381cd3a0e15d92d6e346000fa3fae85b555ff1aa86ac1104a5516e3550018"
+  },
+  "scope": "Guard refused the unallowlisted release command before admission or workload launch.",
+  "result": "No product command, test, build, release, tag, or push ran; this is a command-policy refusal, not a product/resource-pressure failure. Resource thresholds and guard configuration were unchanged.",
+  "follow_up_at_capture": "The later corrected release-stabilization-039 run was admitted but stopped before push because @ai-matrx/records 0.58.26 was stale against npm latest 0.58.27; see docs/stabilization/runs/release-stabilization-039.json."
+}

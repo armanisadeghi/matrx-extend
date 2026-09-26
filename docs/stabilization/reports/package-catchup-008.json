@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "run_id": "package-catchup-008",
+  "status": "source_adopted_peer_review_required",
+  "resource_guard": {
+    "admitted_at": "2026-09-26T22:35:16.665Z",
+    "child_exit_at": "2026-09-26T22:35:20.258Z",
+    "child_exit_code": 0,
+    "log_path": "/tmp/matrx-package-catchup-008.log",
+    "log_sha256": "75865478b462f56398e451effd6126cb9ededb619251c423ee0d25cf8e03332c"
+  },
+  "resolution": {
+    "package": "@ai-matrx/records",
+    "before": "0.58.26",
+    "after": "0.58.27",
+    "declaration": "latest",
+    "other_ai_matrx_versions_changed": false,
+    "lockfile_only": true
+  },
+  "consumer_action": {
+    "changelog_says": "No source changes intended and no consumer action required.",
+    "published_artifact_delta": "The generated store vocabulary no longer contains system_personal_org_failure, consistent with aidream commit 351f93c232 removing a graveyard table from records store types. Other observed JavaScript differences were build artifact hashes/maps associated with that generated change.",
+    "host_reference_census": "No references to system_personal_org_failure under src/ or tests/ in matrx-extend.",
+    "host_source_change_required": false
+  },
+  "verification": {
+    "guarded_pnpm_update": "exit_0",
+    "installed_records_version": "0.58.27",
+    "lockfile_diff": "Only the records importer version, package resolution/integrity, and snapshot key changed; package.json remains latest.",
+    "runtime_tests": "not_run_in_source_lane",
+    "next_action": "Independent lockfile/source review, then root-owned release gate."
+  }
+}

@@ -14,7 +14,7 @@
   ],
   "evidence_contract": [
     "Before selection, the Settings picker must display Choose… with no device workspace stored. Scrape must settle on its choose-workspace unknown state, with no processed_documents GET observed during the bounded interval.",
-    "After actual UI selection, one exact canonical-identity and organization-scoped processed_documents GET must complete with HTTP 200 and an empty result, and Scrape must show not saved without a prior Source link.",
+    "After actual UI selection, one processed_documents GET for the exact canonical identity and selected organization, origin_client=eq.extension, derivation_kind=in.(initial_extract,recapture), and deleted_at=is.null must complete with HTTP 200 and an empty result. Scrape must show not saved without a prior Source link.",
     "The runtime report contains fixed failure stage and safe counts or boolean network outcomes, never organization or Source identifiers, request URLs, tokens, or response bodies. A branch failure attempts a private exclusive-create mode-0600 screenshot."
   ],
   "safety": [
