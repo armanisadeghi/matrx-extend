@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "reviewed_commits": [
+    "079050106863e7e58819677205b9ebeabba71a67",
+    "6a68ad966d539e30f9fde934dd3863f4e6c02927"
+  ],
+  "feature_id": "EXT-F-1008",
+  "mode": "admin",
+  "review_scope": "Fresh source-only review of the bounded one-new-public-IANA-audit Save runner against seo-identity-save-peer.json and the earlier one-row rerun and saved-row attribution blockers. No browser, build, test, backend request, or production source edit was performed.",
+  "source_quality": {
+    "verdict": "accepted_for_one_guarded_runtime_attempt",
+    "addressed": [
+      {
+        "id": "checkpoint_directory_durability",
+        "evidence": "saveAttempt creates the checkpoint with wx and mode 0600, writes and syncs the file, and syncs test-results before returning to the only Save click. It also syncs the repository directory after mkdir, covering a newly created test-results entry. Any sync error exits before the click."
+      },
+      {
+        "id": "post_id_atomic_durable_update",
+        "evidence": "storeObservedSaveId validates the real response UUID, exclusively creates a 0600 temporary file, writes and syncs it, renames it over the checkpoint, and syncs test-results. The old checkpoint remains a conservative no-repeat marker if the ID update fails before rename."
+      },
+      {
+        "id": "one_row_rerun_guard",
+        "evidence": "An existing checkpoint is checked for the selected on-device organization ID and exact public URL hash. A valid ID resumes read-only history verification; an absent or invalid ID throws before Save. Parse, mismatch, exclusive-create and sync failures do not reach the Save click. No code path removes the checkpoint or prior records."
+      },
+      {
+        "id": "saved_row_attribution",
+        "evidence": "The passive CDP observer correlates a real POST to wbx_seo_audit with the exact IANA URL and selected organization ID, successful response, loading completion, and returned UUID. The Save ID must match the rendered current-URL history row and selected snapshot before and after a new panel document time origin. A badge count or title alone cannot establish the row."
+      }
+    ],
+    "blocking_findings": [],
+    "bounded_limitations": [
+      "A missing or malformed CDP request body, failed response observation, or failed checkpoint update can leave the Save outcome ambiguous. The runner then refuses another Save and requires coordination; it does not independently recover the row from the database.",
+      "The ignored test-results checkpoint must be retained between runs. Deleting it outside the runner removes its one-write memory.",
+      "History-label collision makes the trusted pointer selection stop safely even when the correct UUID is visible.",
+      "T04 failure and retry, T05 second snapshot and diff, T06 empty/loading/error, and T08 changed-page diff remain unverified."
+    ]
+  },
+  "privacy_and_mutation": {
+    "finding": "The runner saves at most one new audit for the exact public IANA page in the explicitly selected existing test organization. It does not delete or update prior records, select a clipboard action, call a provider, inject a mock response, or log credentials, request bodies, or response bodies. The report and failure path contain bounded status, stage and booleans."
+  },
+  "runtime": {
+    "status": "pending_root_run",
+    "reviewer_executed_build_test_or_browser": false,
+    "required_next_step": "Root must make a fresh build containing the data-audit-id source attributes and root-owned resource guard, then perform at most one controlled real Save. Record the runtime result separately; source acceptance is not a T04 or T05 pass."
+  }
+}
