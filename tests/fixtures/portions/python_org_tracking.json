@@ -1,0 +1,231 @@
+{
+  "_source": "aidream aa298925b8 packages/matrx-scraper/tests/fixtures/portions/python_org_tracking.json — copied verbatim below this key; regenerate from the server, never edit by hand.",
+  "name": "python_org_tracking",
+  "url": "https://www.python.org/?utm_source=newsletter&utm_medium=email&utm_campaign=fixture#content",
+  "fetched": "2026-09-25",
+  "region": "#content",
+  "note": "Real page, fetched once, attributes/comments/script/style removed (neither portioner reads them). Expected outputs are the extension's (matrx-extend/src/lib/sources/portions.ts), equal to the server's.",
+  "html": "<div class=\"content-wrapper\" id=\"content\">\n\n<div>\n<section>\n<div>\n<div>\n<h2><span></span>Get Started</h2>\n<p>Whether you're new to programming or an experienced developer, it's easy to learn and use Python.</p>\n<p><a>Start with our Beginner’s Guide</a></p>\n</div>\n<div>\n<h2><span></span>Download</h2>\n<p>Python source code and installers are available for download for all versions!</p>\n<p>Latest: <a>Python 3.14.7</a></p>\n</div>\n<div>\n<h2><span></span>Docs</h2>\n<p>Documentation for Python's standard library, along with tutorials and guides, are available online.</p>\n<p><a>docs.python.org</a></p>\n</div>\n<div>\n<h2><span></span>Jobs</h2>\n<p>Looking for work or have a Python related position that you're trying to hire for? Our <strong>relaunched community-run job board</strong> is the place to go.</p>\n<p><a>jobs.python.org</a></p>\n</div>\n</div>\n<div>\n<div>\n<div>\n<h2><span></span>Latest News</h2>\n<p><a>More news</a></p>\n<ul>\n<li>\n<time><span>2026-</span>09-23</time>\n<a>The Python documentation is now available in Persian</a></li>\n<li>\n<time><span>2026-</span>09-23</time>\n<a>The Python documentation is now available in Persian</a></li>\n<li>\n<time><span>2026-</span>09-17</time>\n<a>Announcing the 2026 PSF Board Election Results!</a></li>\n<li>\n<time><span>2026-</span>09-17</time>\n<a>Announcing the 2026 Python Packaging Council Election Results!</a></li>\n<li>\n<time><span>2026-</span>09-15</time>\n<a>Announcing the PSF Strategic Plan 2026</a></li>\n</ul>\n</div>\n</div>\n<div>\n<div>\n<h2><span></span>Upcoming Events</h2>\n<p><a>More</a></p>\n<ul>\n<li>\n<time><span>2026-</span>10-03</time>\n<a>PyBay 2026</a></li>\n<li>\n<time><span>2026-</span>10-07</time>\n<a>PyCon Africa 2026</a></li>\n<li>\n<time><span>2026-</span>10-08</time>\n<a>PyEducation – IPAF – Alda de Fátima</a></li>\n<li>\n<time><span>2026-</span>10-08</time>\n<a>PyCon Estonia 2026</a></li>\n<li>\n<time><span>2026-</span>10-12</time>\n<a>PyCon Greece 2026</a></li>\n</ul>\n</div>\n</div>\n</div>\n<div>\n<div>\n<div>\n<h2><span></span>Success Stories</h2>\n<p><a>More</a></p>\n<div>\n<blockquote>\n<a>Python programmability on Algorand makes the entire development lifecycle easier and means more affordable and efficient maintenance and upgrades going forward.</a>\n</blockquote>\n<table>\n<tbody>\n<tr>\n<td><p><a>Using Python to build a solution for instant tokenized real estate redemptions</a> <em>by Brian Whippo, Head of Developer Relations, Algorand Foundation</em></p></td>\n</tr>\n</tbody>\n</table>\n</div>\n</div>\n</div>\n<div>\n<div>\n<h2><span></span>Use Python for…</h2>\n<p><a>More</a></p>\n<ul>\n<li><b>Web Development</b>:\r\n        <span><a>Django</a>, <a>Pyramid</a>, <a>Bottle</a>, <a>Tornado</a>, <a>Flask</a>, <a>Litestar</a>, <a>FastAPI</a></span></li>\n<li><b>GUI Development</b>:\r\n        <span><a>tkInter</a>, <a>PyGObject</a>, <a>PyQt</a>, <a>PySide</a>, <a>Kivy</a>, <a>wxPython</a>, <a>DearPyGui</a></span></li>\n<li><b>AI and Machine Learning</b>:\r\n        <span><a>PyTorch</a>, <a>TensorFlow</a>, <a>scikit-learn</a>, <a>Transformers</a>, <a>Anthropic</a>, <a>LangChain</a></span></li>\n<li><b>Scientific and Numeric</b>:\r\n        <span><a>SciPy</a>, <a>Pandas</a>, <a>IPython</a></span></li>\n<li><b>Software Development</b>:\r\n        <span><a>Buildbot</a>, <a>Trac</a>, <a>Roundup</a></span></li>\n<li><b>System Administration</b>:\r\n        <span><a>Ansible</a>, <a>Salt</a>, <a>OpenStack</a>, <a>xonsh</a></span></li>\n</ul>\n</div>\n</div>\n</div>\n<div>\n<div></div>\n<h2>\n<span>&gt;&gt;&gt;</span> <a>Python Software Foundation</a>\n</h2>\n<p>The mission of the Python Software Foundation is to promote, protect, and advance the Python programming language, and to support and facilitate the growth of a diverse and international community of Python programmers. <a>Learn more</a> </p>\n<p>\n<a>Become a Member</a>\n<a>Donate to the PSF</a>\n</p>\n</div>\n</section>\n</div>\n</div>",
+  "markdown": "## Get Started\n\nWhether you're new to programming or an experienced developer, it's easy to learn and use Python.\n\nStart with our Beginner’s Guide\n\n## Download\n\nPython source code and installers are available for download for all versions!\n\nLatest: Python 3.14.7\n\n## Docs\n\nDocumentation for Python's standard library, along with tutorials and guides, are available online.\n\ndocs.python.org\n\n## Jobs\n\nLooking for work or have a Python related position that you're trying to hire for? Our **relaunched community-run job board** is the place to go.\n\njobs.python.org\n\n## Latest News\n\nMore news\n\n* 2026-09-23\n  The Python documentation is now available in Persian\n* 2026-09-23\n  The Python documentation is now available in Persian\n* 2026-09-17\n  Announcing the 2026 PSF Board Election Results!\n* 2026-09-17\n  Announcing the 2026 Python Packaging Council Election Results!\n* 2026-09-15\n  Announcing the PSF Strategic Plan 2026\n\n## Upcoming Events\n\nMore\n\n* 2026-10-03\n  PyBay 2026\n* 2026-10-07\n  PyCon Africa 2026\n* 2026-10-08\n  PyEducation – IPAF – Alda de Fátima\n* 2026-10-08\n  PyCon Estonia 2026\n* 2026-10-12\n  PyCon Greece 2026\n\n## Success Stories\n\nMore\n\n> Python programmability on Algorand makes the entire development lifecycle easier and means more affordable and efficient maintenance and upgrades going forward.\n\n|  |\n| --- |\n| Using Python to build a solution for instant tokenized real estate redemptions *by Brian Whippo, Head of Developer Relations, Algorand Foundation* |\n\n## Use Python for…\n\nMore\n\n* **Web Development**:\n  Django, Pyramid, Bottle, Tornado, Flask, Litestar, FastAPI\n* **GUI Development**:\n  tkInter, PyGObject, PyQt, PySide, Kivy, wxPython, DearPyGui\n* **AI and Machine Learning**:\n  PyTorch, TensorFlow, scikit-learn, Transformers, Anthropic, LangChain\n* **Scientific and Numeric**:\n  SciPy, Pandas, IPython\n* **Software Development**:\n  Buildbot, Trac, Roundup\n* **System Administration**:\n  Ansible, Salt, OpenStack, xonsh\n\n## >>> Python Software Foundation\n\nThe mission of the Python Software Foundation is to promote, protect, and advance the Python programming language, and to support and facilitate the growth of a diverse and international community of Python programmers. Learn more\n\nBecome a Member\nDonate to the PSF",
+  "canonical_url": "https://www.python.org/?utm_source=newsletter&utm_medium=email&utm_campaign=fixture",
+  "html_portions": [
+    {
+      "ordinal": 1,
+      "kind": "section",
+      "text": "Get Started\nWhether you're new to programming or an experienced developer, it's easy to learn and use Python.\nStart with our Beginner’s Guide",
+      "locator": {
+        "heading_path": [
+          "Get Started"
+        ],
+        "text_fragment": "Get Started Whether you're new to programming or an experienced developer, it's "
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 2,
+      "kind": "section",
+      "text": "Download\nPython source code and installers are available for download for all versions!\nLatest: Python 3.14.7",
+      "locator": {
+        "heading_path": [
+          "Download"
+        ],
+        "text_fragment": "Download Python source code and installers are available for download for all ve"
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 3,
+      "kind": "section",
+      "text": "Docs\nDocumentation for Python's standard library, along with tutorials and guides, are available online.\ndocs.python.org",
+      "locator": {
+        "heading_path": [
+          "Docs"
+        ],
+        "text_fragment": "Docs Documentation for Python's standard library, along with tutorials and guide"
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 4,
+      "kind": "section",
+      "text": "Jobs\nLooking for work or have a Python related position that you're trying to hire for? Our relaunched community-run job board is the place to go.\njobs.python.org",
+      "locator": {
+        "heading_path": [
+          "Jobs"
+        ],
+        "text_fragment": "Jobs Looking for work or have a Python related position that you're trying to hi"
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 5,
+      "kind": "section",
+      "text": "Latest News\nMore news\n2026-09-23\nThe Python documentation is now available in Persian\n2026-09-23\nThe Python documentation is now available in Persian\n2026-09-17\nAnnouncing the 2026 PSF Board Election Results!\n2026-09-17\nAnnouncing the 2026 Python Packaging Council Election Results!\n2026-09-15\nAnnouncing the PSF Strategic Plan 2026",
+      "locator": {
+        "heading_path": [
+          "Latest News"
+        ],
+        "text_fragment": "Latest News More news 2026-09-23 The Python documentation is now available in Pe"
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 6,
+      "kind": "section",
+      "text": "Upcoming Events\nMore\n2026-10-03\nPyBay 2026\n2026-10-07\nPyCon Africa 2026\n2026-10-08\nPyEducation – IPAF – Alda de Fátima\n2026-10-08\nPyCon Estonia 2026\n2026-10-12\nPyCon Greece 2026",
+      "locator": {
+        "heading_path": [
+          "Upcoming Events"
+        ],
+        "text_fragment": "Upcoming Events More 2026-10-03 PyBay 2026 2026-10-07 PyCon Africa 2026 2026-10-"
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 7,
+      "kind": "section",
+      "text": "Success Stories\nMore\nPython programmability on Algorand makes the entire development lifecycle easier and means more affordable and efficient maintenance and upgrades going forward.\nUsing Python to build a solution for instant tokenized real estate redemptions by Brian Whippo, Head of Developer Relations, Algorand Foundation",
+      "locator": {
+        "heading_path": [
+          "Success Stories"
+        ],
+        "text_fragment": "Success Stories More Python programmability on Algorand makes the entire develop"
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 8,
+      "kind": "section",
+      "text": "Use Python for…\nMore\nWeb Development:\nDjango, Pyramid, Bottle, Tornado, Flask, Litestar, FastAPI\nGUI Development:\ntkInter, PyGObject, PyQt, PySide, Kivy, wxPython, DearPyGui\nAI and Machine Learning:\nPyTorch, TensorFlow, scikit-learn, Transformers, Anthropic, LangChain\nScientific and Numeric:\nSciPy, Pandas, IPython\nSoftware Development:\nBuildbot, Trac, Roundup\nSystem Administration:\nAnsible, Salt, OpenStack, xonsh",
+      "locator": {
+        "heading_path": [
+          "Use Python for…"
+        ],
+        "text_fragment": "Use Python for… More Web Development: Django, Pyramid, Bottle, Tornado, Flask, L"
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 9,
+      "kind": "section",
+      "text": ">>> Python Software Foundation\nThe mission of the Python Software Foundation is to promote, protect, and advance the Python programming language, and to support and facilitate the growth of a diverse and international community of Python programmers. Learn more\nBecome a Member\nDonate to the PSF",
+      "locator": {
+        "heading_path": [
+          ">>> Python Software Foundation"
+        ],
+        "text_fragment": ">>> Python Software Foundation The mission of the Python Software Foundation is "
+      },
+      "method": "native"
+    }
+  ],
+  "markdown_portions": [
+    {
+      "ordinal": 1,
+      "kind": "section",
+      "text": "## Get Started\n\nWhether you're new to programming or an experienced developer, it's easy to learn and use Python.\n\nStart with our Beginner’s Guide",
+      "locator": {
+        "heading_path": [
+          "Get Started"
+        ],
+        "text_fragment": "## Get Started Whether you're new to programming or an experienced developer, it"
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 2,
+      "kind": "section",
+      "text": "## Download\n\nPython source code and installers are available for download for all versions!\n\nLatest: Python 3.14.7",
+      "locator": {
+        "heading_path": [
+          "Download"
+        ],
+        "text_fragment": "## Download Python source code and installers are available for download for all"
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 3,
+      "kind": "section",
+      "text": "## Docs\n\nDocumentation for Python's standard library, along with tutorials and guides, are available online.\n\ndocs.python.org",
+      "locator": {
+        "heading_path": [
+          "Docs"
+        ],
+        "text_fragment": "## Docs Documentation for Python's standard library, along with tutorials and gu"
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 4,
+      "kind": "section",
+      "text": "## Jobs\n\nLooking for work or have a Python related position that you're trying to hire for? Our **relaunched community-run job board** is the place to go.\n\njobs.python.org",
+      "locator": {
+        "heading_path": [
+          "Jobs"
+        ],
+        "text_fragment": "## Jobs Looking for work or have a Python related position that you're trying to"
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 5,
+      "kind": "section",
+      "text": "## Latest News\n\nMore news\n\n* 2026-09-23\n  The Python documentation is now available in Persian\n* 2026-09-23\n  The Python documentation is now available in Persian\n* 2026-09-17\n  Announcing the 2026 PSF Board Election Results!\n* 2026-09-17\n  Announcing the 2026 Python Packaging Council Election Results!\n* 2026-09-15\n  Announcing the PSF Strategic Plan 2026",
+      "locator": {
+        "heading_path": [
+          "Latest News"
+        ],
+        "text_fragment": "## Latest News More news * 2026-09-23 The Python documentation is now available "
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 6,
+      "kind": "section",
+      "text": "## Upcoming Events\n\nMore\n\n* 2026-10-03\n  PyBay 2026\n* 2026-10-07\n  PyCon Africa 2026\n* 2026-10-08\n  PyEducation – IPAF – Alda de Fátima\n* 2026-10-08\n  PyCon Estonia 2026\n* 2026-10-12\n  PyCon Greece 2026",
+      "locator": {
+        "heading_path": [
+          "Upcoming Events"
+        ],
+        "text_fragment": "## Upcoming Events More * 2026-10-03 PyBay 2026 * 2026-10-07 PyCon Africa 2026 *"
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 7,
+      "kind": "section",
+      "text": "## Success Stories\n\nMore\n\n> Python programmability on Algorand makes the entire development lifecycle easier and means more affordable and efficient maintenance and upgrades going forward.\n\n|  |\n| --- |\n| Using Python to build a solution for instant tokenized real estate redemptions *by Brian Whippo, Head of Developer Relations, Algorand Foundation* |",
+      "locator": {
+        "heading_path": [
+          "Success Stories"
+        ],
+        "text_fragment": "## Success Stories More > Python programmability on Algorand makes the entire de"
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 8,
+      "kind": "section",
+      "text": "## Use Python for…\n\nMore\n\n* **Web Development**:\n  Django, Pyramid, Bottle, Tornado, Flask, Litestar, FastAPI\n* **GUI Development**:\n  tkInter, PyGObject, PyQt, PySide, Kivy, wxPython, DearPyGui\n* **AI and Machine Learning**:\n  PyTorch, TensorFlow, scikit-learn, Transformers, Anthropic, LangChain\n* **Scientific and Numeric**:\n  SciPy, Pandas, IPython\n* **Software Development**:\n  Buildbot, Trac, Roundup\n* **System Administration**:\n  Ansible, Salt, OpenStack, xonsh",
+      "locator": {
+        "heading_path": [
+          "Use Python for…"
+        ],
+        "text_fragment": "## Use Python for… More * **Web Development**: Django, Pyramid, Bottle, Tornado,"
+      },
+      "method": "native"
+    },
+    {
+      "ordinal": 9,
+      "kind": "section",
+      "text": "## >>> Python Software Foundation\n\nThe mission of the Python Software Foundation is to promote, protect, and advance the Python programming language, and to support and facilitate the growth of a diverse and international community of Python programmers. Learn more\n\nBecome a Member\nDonate to the PSF",
+      "locator": {
+        "heading_path": [
+          ">>> Python Software Foundation"
+        ],
+        "text_fragment": "## >>> Python Software Foundation The mission of the Python Software Foundation "
+      },
+      "method": "native"
+    }
+  ]
+}
