@@ -4,7 +4,7 @@
   "scope": "Independent native Chrome retest of EXT-F-1003-T55 and Chrome optional permission rows; no source edits, build, tests, permission mutations, CDP calls, or agent messages.",
   "verdict_a_acceptance": {
     "status": "UNVERIFIED",
-    "reason": "Chrome full Reload loaded the requested build identity. Settings continued to render Account Email —, Organization ‘Sign in to choose’, and a Sign in button in snapshots after approximately 5, 12, 20, and 30 seconds. This is the settled observed UI, not proof that the underlying session was logged out. The original live interaction reproduction and post-reload checks could not be completed with the specified admin and organization visible.",
+    "reason": "Chrome full Reload loaded the requested build identity. Settings continued to render Account Email —, Organization ‘Sign in to choose’, and a Sign in button in snapshots after approximately 5, 12, 20, and 30 seconds. This is the settled observed UI, not proof that the underlying session was logged out. The authorized Sign in action opened the AI Matrx OAuth route, which displayed Authorization error (400), ‘Auth session missing!’, and ‘Please return to the application and try again.’ The original live interaction reproduction and post-reload checks could not be completed with the specified admin and organization visible.",
     "observed_before_stop": "DevTools Protocol appeared on as an informational row without a switch. Cookies, Page archive (MHTML), Clipboard read, and Tab video capture appeared off.",
     "unverified": [
       "Original interaction reproduction after reload and warm reload persistence.",
@@ -15,7 +15,7 @@
   "verdict_b_observed_quality": {
     "status": "BLOCKED",
     "finding": "The loaded build identity matched the requested 0.2.53 source path and stable ID. After full extension reload, the Account and Organization sections remained at Email — and ‘Sign in to choose’, with a Sign in button, through approximately 30 seconds of spaced snapshots. Before reload the UI showed admin@admin.com / ADMIN. This reports the settled rendered UI and does not claim underlying logout.",
-    "risk": "The permission surface and required account/org context were not available in the observed UI. No sign-in, organization selection, or local-data reset was attempted. Latest snapshot: 2026-09-26 06:11:40 UTC."
+    "risk": "The permission surface and required account/org context were not available in the observed UI. The OAuth error blocks normal session restoration; no consent, credentials, organization selection, or local-data reset was attempted. Sign-in error observed at 2026-09-26 06:13:13 UTC."
   },
   "evidence_run": "docs/stabilization/runs/permission-native-retest.json",
   "files": [
