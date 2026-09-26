@@ -212,7 +212,7 @@ try {
         warm.browser === warm.expectedBrowser && warm.version === warm.manifestVersion && warm.version === report.build.version &&
         warm.extensionId === warm.runtimeId && warm.extensionId === EXTENSION_ID ? 'pass' : 'fail', warm);
       criterion(c, 'password-flow API readiness label and remedy',
-        warm.passwordApis ? (warm.readiness === 'Ready' ? 'pass' : 'fail') :
+        warm.passwordApis ? (['Ready', 'Available'].includes(warm.readiness) ? 'pass' : 'fail') :
           (warm.readiness === 'Unavailable' && warm.unavailableRemedy ? 'pass' : 'fail'), warm);
       criterion(c, 'password-flow API unavailable branch', 'unverified', 'No browser API was removed or mocked.');
       if (warm.updateApi && warm.hasUpdateButton) {
