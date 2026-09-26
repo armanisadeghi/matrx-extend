@@ -19,7 +19,7 @@
   ],
   "severity": "S1: authenticated development testing blocked by missing identity",
   "priority": "P0: baseline authentication blocker",
-  "state": "open",
+  "state": "triaged",
   "owner": "/root/reload_auth_diagnosis",
   "hypothesis": "React development StrictMode cancels first async boot while module bootRan suppresses replacement effect; focused RED proof required before fix.",
   "transition_history": [
@@ -28,6 +28,12 @@
       "from": null,
       "to": "open",
       "reason": "Settled native reproduction after verified fresh development build; source mechanism identified, validation pending."
+    },
+    {
+      "at": "2026-09-26T06:26:33.614161+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "FocusedStrictMode regression produces2expected hydration failures; codeeffectcancellation/globalbootguard mechanism traced. Positivecontrol pending before sourcefix."
     }
   ],
   "separate_observation": "A later manual OAuth SignIn attempt returned Authorization error400/Auth session missing; not assumed to have the same cause."
