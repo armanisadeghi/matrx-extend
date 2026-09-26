@@ -1,0 +1,30 @@
+{
+  "status": "NEEDS_RUNTIME_VERIFICATION",
+  "lane": "Astra medium escalation; source-only worker; runtime owned by root",
+  "scope": [
+    "tests/browser/settings-panel-driver.mjs"
+  ],
+  "negative_evidence": {
+    "run": "guest-reset-008",
+    "result": "failed before port click: trusted wheel did not move target at y=1327 in 360x421 viewport",
+    "last_good": "guest-reset-007 passed using viewport positioning before shared wheel replacement"
+  },
+  "source_finding": "b8df377 replaced viewport positioning with wheel delivery and made acceptance dependent on native wheel routing; existing samples cannot establish why that wheel was consumed. One-shot positioning previously also became stale during layout changes.",
+  "ruling": "Root authorizes viewport-only scrollIntoView as preparation. Acceptance actions remain trusted CDP clicks and keyboard events. Wheel-input behavior is outside reset/local-controls acceptance.",
+  "changes": [
+    "Replace wheel loop with instant centered viewport preparation on every bounded pointer sample.",
+    "Retain unique visible non-inert target, hit test, no active ancestor animation, two stable samples, trusted pointer press/release, and actual input focus assertion.",
+    "Keep scroll geometry, hit element, body scroll/pointer lock, and listbox diagnostics for bounded failure."
+  ],
+  "source_checks": [
+    "node --check on shared driver and both acceptance runners passed",
+    "git diff --check passed"
+  ],
+  "acceptance_changes": "None: both scenario files and their assertions unchanged; selectAll commands from 5d7129f preserved.",
+  "runtime": "NOT RUN by worker; root must run fresh admitted reset and local-controls scenarios.",
+  "risks": [
+    "Native reason for lost wheel remains undetermined; removing that harness dependency does not claim wheel behavior repaired.",
+    "scrollIntoView can reveal a target without proving manual wheel navigation; actual click must still hit the visible target.",
+    "No product behavior is verified by source checks."
+  ]
+}

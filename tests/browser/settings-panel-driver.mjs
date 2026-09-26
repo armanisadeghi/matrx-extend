@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-// Read-only DOM sampling plus trusted CDP pointer input in the owned native panel.
+// DOM observation/viewport preparation plus trusted CDP input in the owned panel.
 export async function evaluate(panel, expression) {
   const response = await panel.send('Runtime.evaluate', {
     expression,
@@ -70,6 +70,10 @@ export async function click(panel, kind, label) {
     candidates = candidates.filter(visible);
     if (candidates.length !== 1) return { count: candidates.length };
     const target = candidates[0];
+    // Viewport preparation is not the acceptance action. Reposition on every
+    // sample because an expanding section can invalidate a one-shot scroll.
+    // Never click unless the real target subsequently passes hit-testing.
+    target.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' });
     const rect = target.getBoundingClientRect();
     const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2;
     const hit = document.elementFromPoint(x, y);
@@ -82,10 +86,17 @@ export async function click(panel, kind, label) {
       return /auto|scroll/.test(style.overflowY) && el.scrollHeight > el.clientHeight + 1;
     });
     const scrollRect = scroller?.getBoundingClientRect();
-    const scrollPoint = scrollRect ? {
-      x: Math.max(1, Math.min(innerWidth - 1, scrollRect.x + scrollRect.width / 2)),
-      y: Math.max(1, Math.min(innerHeight - 1, scrollRect.y + scrollRect.height / 2)),
-    } : { x: innerWidth / 2, y: innerHeight / 2 };
+    const describe = (el) => el ? { tag: el.tagName, role: el.getAttribute('role'),
+      className: String(el.className), pointerEvents: getComputedStyle(el).pointerEvents } : null;
+    const scrollState = { top: scroller?.scrollTop ?? null,
+      height: scroller?.clientHeight ?? null, contentHeight: scroller?.scrollHeight ?? null,
+      rect: scrollRect ? { x: scrollRect.x, y: scrollRect.y,
+        width: scrollRect.width, height: scrollRect.height } : null,
+      hit: describe(hit), container: describe(scroller),
+      bodyOverflow: getComputedStyle(document.body).overflow,
+      bodyPointerEvents: getComputedStyle(document.body).pointerEvents,
+      bodyScrollLocked: document.body.getAttribute('data-scroll-locked'),
+      openListboxes: document.querySelectorAll('[role="listbox"]').length };
     let animating = false;
     for (let ancestor = target; ancestor; ancestor = ancestor.parentElement) {
       if (ancestor.getAnimations({ subtree: false }).some((animation) => animation.playState === 'running')) {
@@ -95,24 +106,10 @@ export async function click(panel, kind, label) {
     }
     return { count: 1, x, y, hitTarget, animating,
       viewport: { width: innerWidth, height: innerHeight },
-      scrollPoint, hitTag: hit?.tagName ?? null };
+      scrollState, hitTag: hit?.tagName ?? null };
   })()`);
   let location = await pointerSample();
   assert.equal(location?.count, 1, `unique visible ${kind} ${label}`);
-  // Browser input must move the real scroll container. DOM scrollIntoView was
-  // insufficient in the native panel and left About's update button below it.
-  for (let wheel = 0; wheel < 8 && (location.y < 0 || location.y >= location.viewport.height); wheel += 1) {
-    const previousY = location.y;
-    const distance = location.y - location.scrollPoint.y;
-    await panel.send('Input.dispatchMouseEvent', {
-      type: 'mouseWheel', x: location.scrollPoint.x, y: location.scrollPoint.y,
-      deltaX: 0, deltaY: Math.sign(distance) * Math.min(320, Math.max(60, Math.abs(distance))),
-    });
-    location = await waitFor(`trusted_wheel_moved_${kind}_${label}`, pointerSample,
-      (sample) => sample?.count === 1 && (sample.hitTarget || Math.abs(sample.y - previousY) > 2), 800);
-  }
-  assert.equal(location.y >= 0 && location.y < location.viewport.height, true,
-    `target remained outside native panel viewport for ${kind} ${label}: ${JSON.stringify(location)}`);
   // Poll outside the page: a paused requestAnimationFrame must not strand
   // Runtime.evaluate(awaitPromise) or hide the last pointer diagnostic.
   const deadline = Date.now() + 3000;
