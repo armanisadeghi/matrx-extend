@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-unlocked-retest",
+  "status": "partial_resource_invalid",
+  "run_record": "docs/stabilization/runs/guest-settings-005.json",
+  "summary": "The required build and installed extension identity/path were verified. Warm guest Organization and Default agent states were partially observed. The coordinator stopped UI activity for memory pressure and swap growth; reload persistence, guest capability exclusion, theme behavior, and sign-in remain unverified.",
+  "counts": {
+    "cases_total": 5,
+    "passed": 0,
+    "failed": 0,
+    "partial": 2,
+    "unverified": 3
+  },
+  "feature_controls_cases": [
+    {
+      "feature_id": "EXT-F-1003",
+      "control_ids": [
+        "EXT-F-1003-C01",
+        "EXT-F-1003-C03",
+        "EXT-F-1003-C08",
+        "EXT-F-1003-C02",
+        "EXT-F-1003-C18"
+      ],
+      "case_ids": [
+        "EXT-F-1003-T01",
+        "EXT-F-1003-T07",
+        "EXT-F-1003-T22",
+        "EXT-F-1003-T04",
+        "EXT-F-1003-T52"
+      ],
+      "status": "partial"
+    }
+  ],
+  "evidence": [
+    "Verified actual native Chrome extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.51, source path .output/chrome-mv3-dev against release-real-005.json.",
+    "Observed warm guest Organization guidance 'Sign in to choose' with no selector/action and warm Default agent guidance 'Choose an organization above' with no agent picker/action.",
+    "Received root stop instruction at 2026-09-26T04:10:07Z; no UI interactions occurred after it."
+  ],
+  "resource_lease": "guest-settings-005, coordinator-held session 51616",
+  "limitations": [
+    "The admitted browser lease was marked resource-invalid by the coordinator stop instruction; this worker does not claim resource exit or cleanup metadata.",
+    "T01/T07 reload criteria, all T22 criteria, T04 appearance application/persistence, and T52 sign-in outcome are unverified.",
+    "Theme options were visible in a dropdown at stop; no theme setting was changed. Guest authentication remained unchanged."
+  ]
+}
