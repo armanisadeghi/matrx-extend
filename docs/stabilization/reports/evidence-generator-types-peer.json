@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "report_id": "evidence-generator-types-peer",
+  "reviewed_commit": "74f7c996",
+  "source_verdict": "accepted_pending_guarded_compile",
+  "runtime_verdict": "unverified_by_source_peer",
+  "scope": "Colocated TypeScript declaration for scripts/record-stabilization-evidence.mjs after CI TS7016; no generator runtime change",
+  "checks": [
+    {
+      "name": "module_and_export_seam",
+      "result": "accepted",
+      "evidence": "The .d.mts shares the .mjs basename and declares the only two runtime named exports, buildEvidenceRecord and writeEvidenceRecord. The CLI is not exported. Both functions take the actual required input field names; writeEvidenceRecord additionally requires outputPath."
+    },
+    {
+      "name": "record_shape_and_unions",
+      "result": "accepted",
+      "evidence": "The declaration matches schema_version=1, source path/hash fields, guard timestamps and integer-validated child exit number, raw status values including unclassified, nullable validated build version/tree, and literal execution_evidence values returned by the implementation. There are no invented result fields or widened success states."
+    },
+    {
+      "name": "caller_and_behavior_safety",
+      "result": "accepted",
+      "evidence": "The existing test imports writeEvidenceRecord through the .mjs path and calls it with all required fields; extra fixture properties are only spread into the object and ignored by destructuring. The commit adds no runtime JavaScript mutation, so byte digests, guard refusals, privacy filtering, and exclusive receipt creation retain their prior reviewed behavior."
+    }
+  ],
+  "remaining": "Root's guarded compile result is required to establish that TypeScript resolves the declaration and CI TS7016 is closed. This source review does not claim runtime or compile success."
+}
