@@ -1,0 +1,15 @@
+{
+  "run_id": "source-org-boundary-green-001",
+  "defect_id": "EXT-D-0022",
+  "source_commit": "560efb66",
+  "wrapper_session": 74516,
+  "wrapper_exit_code": 0,
+  "child_exit_code": 0,
+  "completed_at": "2026-09-26T20:01:48.689Z",
+  "test_files_passed": 7,
+  "tests_passed": 47,
+  "log_path": "/tmp/matrx-source-org-boundary-green-001.log",
+  "log_sha256": "d9615643780bed2b241a9d6ac87da5114c2cefb854059e3b06f204dd20f16bae",
+  "result": "Request actor binding, stale queue results and storage failure/recovery focused guards pass.",
+  "limits": "Fresh peer2bada139 still requires honest local-preflight refusal wording. No browser acceptance or full integration claim."
+}
