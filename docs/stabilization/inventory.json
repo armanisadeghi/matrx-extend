@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T06:38:54.547763+00:00",
+  "updated_at": "2026-09-26T00:17:33-07:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
-  "source_sha": "9734466f0e83532c2e66c8dfa1c631b2ed420c7d",
+  "source_sha": "c8046192f22db3dab3233e20a77a3a7317c4e642",
   "modes": [
     "guest",
     "member",
@@ -1572,7 +1572,7 @@
         {
           "id": "EXT-F-1002-C02",
           "label": "Capture page",
-          "action": "In local/unpacked signed-in popup, open the same sidepanel in the active browser window; does not select Capture or create a tab."
+          "action": "In local/unpacked signed-in popup, open the active window sidepanel and route to Scrape using a short-lived, window-scoped, one-time launch intent; does not create a tab."
         },
         {
           "id": "EXT-F-1002-C03",
@@ -1603,7 +1603,9 @@
         "src/entrypoints/mic-grant/index.ts:1",
         "wxt.config.ts:9",
         "wxt.config.ts:33",
-        "src/lib/panel/adapter.ts:74"
+        "src/lib/panel/adapter.ts:74",
+        "src/lib/panel/launch-intent.ts:1",
+        "src/entrypoints/sidepanel/App.tsx:180"
       ],
       "dependency_class": "local",
       "wave": "A",
@@ -1732,18 +1734,24 @@
             "EXT-F-1002-C02"
           ],
           "preconditions": [
-            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+            "Local/unpacked signed-in extension; record active window and active tab before opening the toolbar popup."
           ],
           "steps": [
             "Open toolbar popup.",
-            "Click Capture page."
+            "Click Capture page.",
+            "Observe the newly opened active-window sidepanel and its selected view.",
+            "Reopen the sidepanel and confirm the consumed launch intent does not repeat the route."
           ],
           "expected": [
-            "Sidepanel opens in the active window and popup closes; the button does not choose Capture or create a browser tab."
+            "Sidepanel opens in the same browser window, popup closes, and Scrape is selected.",
+            "The active browser tab is unchanged; no new browser tab is created.",
+            "The short-lived request is one-time and window-scoped; an unrelated window or later reopen does not consume/replay it."
           ],
           "dimensions": [
             "warm",
-            "reload"
+            "reload",
+            "active-window",
+            "one-time-intent"
           ],
           "build_variant": "local-unpacked"
         },
@@ -1757,18 +1765,24 @@
             "EXT-F-1002-C02"
           ],
           "preconditions": [
-            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+            "Local/unpacked signed-in extension; record active window and active tab before opening the toolbar popup."
           ],
           "steps": [
             "Open toolbar popup.",
-            "Click Capture page."
+            "Click Capture page.",
+            "Observe the newly opened active-window sidepanel and its selected view.",
+            "Reopen the sidepanel and confirm the consumed launch intent does not repeat the route."
           ],
           "expected": [
-            "Sidepanel opens in the active window and popup closes; the button does not choose Capture or create a browser tab."
+            "Sidepanel opens in the same browser window, popup closes, and Scrape is selected.",
+            "The active browser tab is unchanged; no new browser tab is created.",
+            "The short-lived request is one-time and window-scoped; an unrelated window or later reopen does not consume/replay it."
           ],
           "dimensions": [
             "warm",
-            "reload"
+            "reload",
+            "active-window",
+            "one-time-intent"
           ],
           "build_variant": "local-unpacked"
         },
@@ -2062,6 +2076,62 @@
             "warm",
             "reload"
           ]
+        },
+        {
+          "id": "EXT-F-1002-T19",
+          "title": "member: Capture page reports launch failure and permits retry",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1002-C02"
+          ],
+          "preconditions": [
+            "Local/unpacked signed-in extension; use a browser state where the sidepanel cannot open or the session-storage intent write fails."
+          ],
+          "steps": [
+            "Open toolbar popup.",
+            "Click Capture page.",
+            "Inspect the visible error and retry after restoring the required browser capability."
+          ],
+          "expected": [
+            "Failure is announced with a specific recovery path; the popup remains available.",
+            "The in-flight button state clears so the person can retry.",
+            "A failed attempt does not leave a stale launch intent that routes a later unrelated panel opening."
+          ],
+          "dimensions": [
+            "warm",
+            "failure",
+            "retry"
+          ]
+        },
+        {
+          "id": "EXT-F-1002-T20",
+          "title": "admin: Capture page reports launch failure and permits retry",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1002-C02"
+          ],
+          "preconditions": [
+            "Local/unpacked signed-in extension; use a browser state where the sidepanel cannot open or the session-storage intent write fails."
+          ],
+          "steps": [
+            "Open toolbar popup.",
+            "Click Capture page.",
+            "Inspect the visible error and retry after restoring the required browser capability."
+          ],
+          "expected": [
+            "Failure is announced with a specific recovery path; the popup remains available.",
+            "The in-flight button state clears so the person can retry.",
+            "A failed attempt does not leave a stale launch intent that routes a later unrelated panel opening."
+          ],
+          "dimensions": [
+            "warm",
+            "failure",
+            "retry"
+          ]
         }
       ],
       "cells": {
@@ -2073,13 +2143,17 @@
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0008"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0008"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         }
@@ -2242,6 +2316,16 @@
           "label": "Auto-scrape mode: Capture / Scroll & capture",
           "action": "Choose and persist either scrape mode.",
           "source_anchor": "src/features/settings/SettingsView.tsx:322"
+        },
+        {
+          "id": "EXT-F-1003-C30",
+          "label": "About readiness and installed identity",
+          "action": "Expand About and inspect detected browser, installed version, extension ID, and saved-login browser support; unavailable support includes an actionable remedy."
+        },
+        {
+          "id": "EXT-F-1003-C31",
+          "label": "Check for extension update",
+          "action": "When browser API exists, request an update check and report available/no-update/throttled/error outcomes; otherwise show browser-managed update instructions."
         }
       ],
       "source_anchors": [
@@ -2254,7 +2338,9 @@
         "src/features/settings/FEATURE.md:1",
         "src/features/settings/SettingsView.tsx:110",
         "src/features/settings/SettingsView.tsx:337",
-        "src/state/settings.ts:1"
+        "src/state/settings.ts:1",
+        "src/features/settings/SettingsView.tsx:50",
+        "src/features/settings/SettingsView.tsx:570"
       ],
       "dependency_class": "local",
       "wave": "A",
@@ -2290,7 +2376,7 @@
             "Reload/reopen Settings in the still-signed-out guest session; confirm the same guidance and absence of the selector."
           ],
           "expected": [
-            "The guest sees \u201cSign in to choose\u201d; no organization selector or guest organization-choice action is exposed, and the guest guidance remains after reload."
+            "The guest sees “Sign in to choose”; no organization selector or guest organization-choice action is exposed, and the guest guidance remains after reload."
           ],
           "dimensions": [
             "warm",
@@ -2318,7 +2404,7 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
+            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
             "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
             "Perform a full extension Reload and confirm the organization persists."
           ],
@@ -2344,7 +2430,7 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
+            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
             "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
             "Perform a full extension Reload and confirm the organization persists."
           ],
@@ -2470,7 +2556,7 @@
             "Reload/reopen Settings in the same guest state; confirm the unavailable-state guidance remains."
           ],
           "expected": [
-            "The guest sees \u201cChoose an organization above\u201d and no agent picker or selection action; this unavailable-state guidance remains after reload."
+            "The guest sees “Choose an organization above” and no agent picker or selection action; this unavailable-state guidance remains after reload."
           ],
           "dimensions": [
             "warm",
@@ -3963,7 +4049,7 @@
             "Select all, agent, pilot, parallel and webmcp receipt filters."
           ],
           "expected": [
-            "Visible receipt rows and counts match selected origin; empty filter shows \u201cNo receipts with origin=\u2026\u201d; all restores every row."
+            "Visible receipt rows and counts match selected origin; empty filter shows “No receipts with origin=…”; all restores every row."
           ],
           "dimensions": [
             "warm",
@@ -4144,6 +4230,120 @@
           "dimensions": [
             "warm",
             "reload"
+          ]
+        },
+        {
+          "id": "EXT-F-1003-T70",
+          "title": "guest: About browser readiness and extension update status",
+          "modes": [
+            "guest"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C10",
+            "EXT-F-1003-C30",
+            "EXT-F-1003-C31"
+          ],
+          "preconditions": [
+            "Open Settings in the actual extension and record browser family, installed build/channel, version, and extension ID. This section is not gated on sign-in or role."
+          ],
+          "steps": [
+            "Expand About.",
+            "Check browser name, installed version, and extension ID against the running extension.",
+            "Inspect saved-login support; repeat with browser APIs available and unavailable.",
+            "If requestUpdateCheck is available, exercise available, no-update, throttled, and error outcomes; otherwise inspect the browser-managed update instructions.",
+            "Reload Settings and confirm the readiness status still reflects current browser APIs."
+          ],
+          "expected": [
+            "Identity fields match the running extension and browser.",
+            "Supported password-flow APIs show Ready; missing APIs show Unavailable with a reload/reinstall remedy.",
+            "Supported update checks report the browser result accurately, never claim the update is installed, and recover visibly from errors/throttling.",
+            "When update checks are unavailable, instructions direct the person to their browser Extensions page."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "api-available",
+            "api-unavailable",
+            "update-available",
+            "no-update",
+            "throttled",
+            "error"
+          ]
+        },
+        {
+          "id": "EXT-F-1003-T71",
+          "title": "member: About browser readiness and extension update status",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C10",
+            "EXT-F-1003-C30",
+            "EXT-F-1003-C31"
+          ],
+          "preconditions": [
+            "Open Settings in the actual extension and record browser family, installed build/channel, version, and extension ID. This section is not gated on sign-in or role."
+          ],
+          "steps": [
+            "Expand About.",
+            "Check browser name, installed version, and extension ID against the running extension.",
+            "Inspect saved-login support; repeat with browser APIs available and unavailable.",
+            "If requestUpdateCheck is available, exercise available, no-update, throttled, and error outcomes; otherwise inspect the browser-managed update instructions.",
+            "Reload Settings and confirm the readiness status still reflects current browser APIs."
+          ],
+          "expected": [
+            "Identity fields match the running extension and browser.",
+            "Supported password-flow APIs show Ready; missing APIs show Unavailable with a reload/reinstall remedy.",
+            "Supported update checks report the browser result accurately, never claim the update is installed, and recover visibly from errors/throttling.",
+            "When update checks are unavailable, instructions direct the person to their browser Extensions page."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "api-available",
+            "api-unavailable",
+            "update-available",
+            "no-update",
+            "throttled",
+            "error"
+          ]
+        },
+        {
+          "id": "EXT-F-1003-T72",
+          "title": "admin: About browser readiness and extension update status",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C10",
+            "EXT-F-1003-C30",
+            "EXT-F-1003-C31"
+          ],
+          "preconditions": [
+            "Open Settings in the actual extension and record browser family, installed build/channel, version, and extension ID. This section is not gated on sign-in or role."
+          ],
+          "steps": [
+            "Expand About.",
+            "Check browser name, installed version, and extension ID against the running extension.",
+            "Inspect saved-login support; repeat with browser APIs available and unavailable.",
+            "If requestUpdateCheck is available, exercise available, no-update, throttled, and error outcomes; otherwise inspect the browser-managed update instructions.",
+            "Reload Settings and confirm the readiness status still reflects current browser APIs."
+          ],
+          "expected": [
+            "Identity fields match the running extension and browser.",
+            "Supported password-flow APIs show Ready; missing APIs show Unavailable with a reload/reinstall remedy.",
+            "Supported update checks report the browser result accurately, never claim the update is installed, and recover visibly from errors/throttling.",
+            "When update checks are unavailable, instructions direct the person to their browser Extensions page."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "api-available",
+            "api-unavailable",
+            "update-available",
+            "no-update",
+            "throttled",
+            "error"
           ]
         }
       ],
@@ -6659,7 +6859,7 @@
         {
           "id": "EXT-F-1006-C07",
           "label": "Desktop port override validation",
-          "action": "Enter blank, valid 1\u201365535, 0, >65535, fractional and nonnumeric values; Save."
+          "action": "Enter blank, valid 1–65535, 0, >65535, fractional and nonnumeric values; Save."
         },
         {
           "id": "EXT-F-1006-C09",
@@ -6960,7 +7160,7 @@
             "Signed in as an admin; open Debug > Bridges; use local test services and harmless requests."
           ],
           "steps": [
-            "Enter blank, valid 1\u201365535, 0, >65535, fractional and nonnumeric values; Save."
+            "Enter blank, valid 1–65535, 0, >65535, fractional and nonnumeric values; Save."
           ],
           "expected": [
             "Blank clears; valid integer persists and discovery reruns; invalid values are rejected and existing override remains."
@@ -8323,7 +8523,7 @@
             "Open Scrape before capturing, then navigate active tab to another URL."
           ],
           "expected": [
-            "Empty state invites capture; previous page\u2019s content and Saved badge clear after navigation."
+            "Empty state invites capture; previous page’s content and Saved badge clear after navigation."
           ],
           "dimensions": [
             "warm",
@@ -8734,7 +8934,7 @@
             "Run/auto-run on browser-internal or restricted URL."
           ],
           "expected": [
-            "No fabricated partial audit is shown; clear \u201ccannot be audited\u201d or capture failure appears."
+            "No fabricated partial audit is shown; clear “cannot be audited” or capture failure appears."
           ],
           "dimensions": [
             "warm",
@@ -8959,7 +9159,7 @@
             "Choose Ask the agent to fix this for a finding."
           ],
           "expected": [
-            "The finding\u2019s section and message are staged in Chat composer; user can review before sending."
+            "The finding’s section and message are staged in Chat composer; user can review before sending."
           ],
           "dimensions": [
             "warm",
@@ -9418,7 +9618,7 @@
         {
           "id": "EXT-F-1010-C08",
           "label": "Overlay stop toolbar control",
-          "action": "Click \u2715 in injected highlighter toolbar."
+          "action": "Click ✕ in injected highlighter toolbar."
         },
         {
           "id": "EXT-F-1010-C09",
@@ -9722,7 +9922,7 @@
             "Sign in; open Highlights on a controlled page with test text and selectable elements."
           ],
           "steps": [
-            "Click \u2715 in injected highlighter toolbar."
+            "Click ✕ in injected highlighter toolbar."
           ],
           "expected": [
             "Overlay sends inactive state and unmounts all page listeners/host."
@@ -15733,7 +15933,7 @@
             "On a conversation with disposable plan/task/todo rows, click Wipe all and cancel; verify rows remain. Reopen, confirm, then refresh."
           ],
           "expected": [
-            "Cancel preserves all rows; confirm removes that conversation\u2019s plan, tasks and todos; dialog names permanent consequence."
+            "Cancel preserves all rows; confirm removes that conversation’s plan, tasks and todos; dialog names permanent consequence."
           ],
           "dimensions": [
             "warm",
@@ -18658,7 +18858,7 @@
             "Signed-in member who belongs to two organizations; other membership has a controlled waiting handoff."
           ],
           "steps": [
-            "Open Capture with active organization A; use \u201cwaiting elsewhere\u201d control to switch to organization B; wait for subscription refresh."
+            "Open Capture with active organization A; use “waiting elsewhere” control to switch to organization B; wait for subscription refresh."
           ],
           "expected": [
             "Only a membership-listed organization can be selected; device org switches and queue refreshes; pointer clears after successful switch; membership loss yields explicit explanation."
@@ -18715,7 +18915,7 @@
             "Signed-in member with controlled needs_drive handoff and safe test page."
           ],
           "steps": [
-            "Open it; perform page sign-in/navigation manually; enter page-specific note and capture. Repeat with another handoff and choose This one won\u2019t work with a reason. Follow a valid pickup pointer."
+            "Open it; perform page sign-in/navigation manually; enter page-specific note and capture. Repeat with another handoff and choose This one won’t work with a reason. Follow a valid pickup pointer."
           ],
           "expected": [
             "Extension leaves page actions to user until explicit capture; capture completes and updates status; skip removes only selected handoff and records note; pickup opens matching item/tab."
@@ -19304,6 +19504,72 @@
           "dimensions": [
             "warm",
             "reload"
+          ]
+        },
+        {
+          "id": "EXT-F-2011-T06",
+          "title": "Reject stale credential offers after organization switch",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2011-C45",
+            "EXT-F-2011-C49",
+            "EXT-F-2011-C50"
+          ],
+          "preconditions": [
+            "Signed-in principal belongs to two organizations; device active organization is explicitly set. Use an owned disposable sign-in form and fixture; capture page is open before switching."
+          ],
+          "steps": [
+            "Trigger and observe a pending credential offer for the current organization.",
+            "Switch the device active organization while the offer is pending.",
+            "Observe the prior offer, then wait for any offer under the newly active organization.",
+            "Do not submit the website form; verify fields remain unchanged."
+          ],
+          "expected": [
+            "Offer from the prior organization is invalidated and cannot be accepted or submitted after the switch.",
+            "Any new offer is resolved under the newly selected organization.",
+            "No credential is written and no website form is submitted during the check."
+          ],
+          "dimensions": [
+            "warm",
+            "organization-switch",
+            "stale-response",
+            "no-submit",
+            "no-write"
+          ]
+        },
+        {
+          "id": "EXT-F-2011-T07",
+          "title": "Vault list can be freshly read after browser restart",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2011-C01",
+            "EXT-F-2011-C04"
+          ],
+          "preconditions": [
+            "Signed-in principal with explicitly selected organization and controlled Vault fixture; browser lifecycle harness records the replacement extension worker and sidepanel."
+          ],
+          "steps": [
+            "Open Vault and observe its list before restarting the browser.",
+            "Close the owned browser fully and start a replacement process against the same profile.",
+            "Reopen the extension sidepanel, navigate to Settings and then Vault after replacement binding.",
+            "Observe the Vault items request and response initiated by the replacement sidepanel."
+          ],
+          "expected": [
+            "Replacement process and extension contexts are distinct from the original run.",
+            "A successful Vault list read occurs after replacement sidepanel binding, not only during startup.",
+            "Vault data is read without creating, editing, or deleting credential records."
+          ],
+          "dimensions": [
+            "cold-restart",
+            "replacement-process",
+            "post-bind-read",
+            "no-write"
           ]
         }
       ],
@@ -21644,7 +21910,7 @@
       "name": "Run built-in browser AI scenarios",
       "surface": "Tools Smart tests",
       "entry_points": [
-        "Tools tab \u2192 Tools Smart tests"
+        "Tools tab → Tools Smart tests"
       ],
       "controls": [
         {
@@ -22012,7 +22278,7 @@
       "name": "Record active browser tab",
       "surface": "Tools Recorder",
       "entry_points": [
-        "Tools tab \u2192 Tools Recorder"
+        "Tools tab → Tools Recorder"
       ],
       "controls": [
         {
@@ -22321,7 +22587,7 @@
       "name": "Generate and use credentials",
       "surface": "Vault password generator",
       "entry_points": [
-        "Tools tab \u2192 Vault password generator"
+        "Tools tab → Vault password generator"
       ],
       "controls": [
         {
