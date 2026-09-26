@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "d22-boundary-final-peer",
+  "defect_id": "EXT-D-0022",
+  "reviewed_commits": ["8c0e8a19", "560efb66"],
+  "scope": "Independent source inspection of Source landing actor binding, queue ordering and terminal actions, and storage failure messages; no tests or browser run in this lane.",
+  "verdict_source_quality": "FAIL_NARROW_REPAIR",
+  "verdict_runtime": "UNVERIFIED",
+  "confirmed_from_source": [
+    "landSource supplies expectedActor from the landing body's provenance.user_id and organization_id. The client verifies the bearer subject and selected organization, then builds X-Organization-Id from that same organization; a pre-dispatch switch stops the fetch, while a post-dispatch switch leaves the already sent body/header bound to the original actor.",
+    "Save and Retry reserve durable revisions before network work. Queue upserts compare the incoming revision with the queued row; a slow earlier refusal cannot replace a newer refused edit.",
+    "Completion and discard record durable per-URL terminal revisions under the queue lock. An earlier failure arriving afterward cannot recreate the card; an explicit later Save gets a higher revision and may queue again.",
+    "A failed revision reservation returns persisted:false without sending. A failed refusal upsert returns persisted:false, and ScrapeView shows its message while retaining the current capture. Failed discard and retry operations show an error in the card."
+  ],
+  "findings": [
+    {
+      "severity": "medium",
+      "title": "A client-side workspace switch is reported as a server refusal",
+      "evidence": "src/lib/api/client.ts returns {ok:false,status:403,error:'expected_actor_mismatch'} before fetch when the selected workspace or verified user no longer matches. src/lib/api/routes/sources.ts refusalFromResult has no case for that sentinel; its generic 403 branch says 'The server refused to save this page (error 403)' with remedy 'report_this'. tests/unit/source-landing-transport.test.ts confirms no fetch but asserts only ok:false.",
+      "implication": "The capture is queued, but the person is told that the server rejected it even though no request was sent, and is directed to report a problem instead of retrying in the selected workspace. This fails the requested honest pre-send refusal.",
+      "required_repair": "Map expected_actor_mismatch to a local not-sent refusal with a plain workspace/account-change explanation and retry remedy; cover the message and remedy in the transport guard."
+    }
+  ],
+  "limits": [
+    "No localhost session, browser actions, tests, or network writes were performed by this verifier.",
+    "The source review does not establish authenticated two-workspace UI acceptance or storage behavior in a real extension context."
+  ]
+}
