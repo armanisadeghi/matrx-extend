@@ -844,15 +844,19 @@ async function verifyOwnedBrowserProcess({ profile: candidateProfile, launchOpti
 }
 
 async function verifyBrowserProcessExited(browserPid) {
-  try {
-    await execFileAsync('ps', ['-p', String(browserPid), '-o', 'pid='], {
-      timeout: 5000,
-      maxBuffer: 1024,
-    });
-    return false;
-  } catch (error) {
-    return error?.code === 1;
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    try {
+      await execFileAsync('ps', ['-p', String(browserPid), '-o', 'pid='], {
+        timeout: 5000,
+        maxBuffer: 1024,
+      });
+    } catch (error) {
+      if (error?.code === 1) return true;
+      throw error;
+    }
+    await wait(100);
   }
+  return false;
 }
 
 function persist() {
@@ -2063,11 +2067,12 @@ async function openSidePanelFromActionPopup(
   fixturePage,
   fixtureWindowId,
   workerFacade = worker,
+  browserContext = context,
 ) {
   // This is intentionally not a normal popup.html tab. The action popup is
   // opened for the already-focused fixture window, then its existing product
   // control receives real target-directed CDP input.
-  const cdp = await context.newCDPSession(fixturePage);
+  const cdp = await browserContext.newCDPSession(fixturePage);
   let handedOff = false;
   let panel;
   try {
@@ -3462,15 +3467,52 @@ async function materializedPassword(id) {
             wait,
           });
           assert(replacementContext?.pages, 'browser_restart_replacement_context_unowned');
-          return exactCdpWorkerFacade(replacementCdp, replacementTarget.targetId);
+          return {
+            worker: exactCdpWorkerFacade(replacementCdp, replacementTarget.targetId),
+            targetId: replacementTarget.targetId,
+          };
         },
-        openPanel: async ({ context: replacementContext, worker: replacementWorker }) =>
-          openGenuineSidePanel(extensionId, null, {
-            existing: true,
-            previousTargetId: initialPanelTargetId,
-            browserContext: replacementContext,
-            workerFacade: replacementWorker,
-          }),
+        openPanel: async ({ context: replacementContext, worker: replacementWorker }) => {
+          const fixturePage = await replacementContext.newPage();
+          try {
+            await fixturePage.bringToFront();
+            const active = await replacementWorker.evaluate(async () => {
+              const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+              return Number.isInteger(tab?.windowId) ? { windowId: tab.windowId } : null;
+            });
+            assert(active?.windowId, 'browser_restart_window_missing');
+            const reopened = await openSidePanelFromActionPopup(
+              extensionId,
+              fixturePage,
+              active.windowId,
+              replacementWorker,
+              replacementContext,
+            );
+            assert(reopened.opened && reopened.panel, 'browser_restart_action_panel_missing');
+            assert(
+              reopened.panel.targetId !== initialPanelTargetId,
+              'browser_restart_panel_target_reused',
+            );
+            return reopened.panel;
+          } finally {
+            if (!fixturePage.isClosed()) await fixturePage.close();
+          }
+        },
+        verifyPostBindVaultRead: async ({ panel: replacementPanel, journal }) => {
+          await replacementPanel.click(visibleVaultControl);
+          await replacementPanel.waitFor(`(() => {
+            const control = (${visibleVaultControl});
+            return control?.getAttribute('aria-selected') === 'true' &&
+              !!document.querySelector('[role="tabpanel"]');
+          })()`);
+          for (let attempt = 0; attempt < 60; attempt += 1) {
+            const snapshot = journal.snapshot();
+            if (snapshot?.panelItemsReadRequestSeen && snapshot?.panelItemsReadResponse2xxSeen)
+              return true;
+            await wait(250);
+          }
+          throw new Error('browser_restart_post_bind_panel_read_missing');
+        },
         verifySettingsIdentity: async (_replacementWorker, replacementPanel) => {
           await replacementPanel.click(visibleSettingsControl);
           await replacementPanel.waitFor(
@@ -3494,11 +3536,7 @@ async function materializedPassword(id) {
       restartCustody.replacement = {
         browserPid: replacementBrowser.browserPid,
         cdpOwnerVerified: rawCdp.ownerVerified === true,
-        workerTargetId: proof.lifecycle.browserRestart.replacementWorkerObserved
-          ? (await rawCdp.send('Target.getTargets')).targetInfos.find(
-              (target) => target.type === 'service_worker' && target.url === workerUrl,
-            )?.targetId
-          : null,
+        workerTargetId: proof.lifecycle.browserRestart.replacementWorkerTargetId,
         panelTargetId: realPanel.targetId,
         journal: networkJournal.snapshot(),
       };
@@ -4708,6 +4746,16 @@ async function materializedPassword(id) {
     } catch {
       proof.cleanup.browserClosed = false;
     }
+    const restartReplacementPid = proof.lifecycle?.browserRestart?.replacementBrowserPid;
+    if (Number.isSafeInteger(restartReplacementPid) && restartReplacementPid > 1) {
+      try {
+        proof.cleanup.restartReplacementProcessExited =
+          await verifyBrowserProcessExited(restartReplacementPid);
+      } catch {
+        proof.cleanup.restartReplacementProcessExited = false;
+      }
+      if (!proof.cleanup.restartReplacementProcessExited) proof.cleanup.browserClosed = false;
+    }
     try {
       if (local)
         await new Promise((resolve, reject) =>
@@ -4798,6 +4846,10 @@ async function materializedPassword(id) {
               proof.cleanup.finalBaselineMetadataMatches === true)));
       const safeToRelease =
         vaultCleanupProven &&
+        (!Number.isSafeInteger(restartReplacementPid) ||
+          (proof.cleanup.restartReplacementProcessExited === true &&
+            (proof.lifecycle.browserRestart.cleanupProven === true ||
+              proof.lifecycle.browserRestart.replacementOwnership === 'caller'))) &&
         proof.cleanup.browserClosed === true &&
         proof.cleanup.profileRemoved === true &&
         [true, 'not_started'].includes(proof.cleanup.localFixtureServerClosed) &&

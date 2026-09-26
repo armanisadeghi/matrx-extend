@@ -43,10 +43,37 @@ const passed = {
     replacementPanelObserved: true,
     noVaultWrites: true,
     replacementJournalBound: true,
+    postBindVaultReadRecovered: true,
     launchProvenanceVerified: true,
     previousBrowserPid: 101,
     replacementBrowserPid: 102,
+    replacementWorkerTargetId: 'F'.repeat(32),
     identitySha256: initialIdentitySha256,
+  },
+  browserRestartCustody: {
+    profileSha256: fingerprint('owned profile path'),
+    executableSha256: fingerprint('owned browser executable path'),
+    initial: {
+      browserPid: 101,
+      cdpOwnerVerified: true,
+      workerTargetId: 'E'.repeat(32),
+      panelTargetId: '1'.repeat(32),
+    },
+    replacement: {
+      browserPid: 102,
+      cdpOwnerVerified: true,
+      workerTargetId: 'F'.repeat(32),
+      panelTargetId: '2'.repeat(32),
+      journal: {
+        journalSemanticVersion: 2,
+        boundTargetAttached: true,
+        panelItemsReadRequestSeen: true,
+        panelItemsReadResponse2xxSeen: true,
+        vaultMutationRequests: 0,
+        observerError: false,
+        transportFatal: false,
+      },
+    },
   },
   signOut: {
     disposition: 'passed',
@@ -130,6 +157,57 @@ assert.throws(
       },
     }),
   /vault_lifecycle_browserRestart_process_not_replaced/,
+);
+assert.throws(
+  () =>
+    assertVaultExtensionLifecycleVerdict({
+      lifecycle: {
+        ...passed,
+        browserRestartCustody: {
+          ...passed.browserRestartCustody,
+          replacement: {
+            ...passed.browserRestartCustody.replacement,
+            cdpOwnerVerified: false,
+          },
+        },
+      },
+    }),
+  /vault_lifecycle_browserRestart_custody_process_invalid/,
+);
+assert.throws(
+  () =>
+    assertVaultExtensionLifecycleVerdict({
+      lifecycle: {
+        ...passed,
+        browserRestartCustody: {
+          ...passed.browserRestartCustody,
+          replacement: {
+            ...passed.browserRestartCustody.replacement,
+            workerTargetId: '3'.repeat(32),
+          },
+        },
+      },
+    }),
+  /vault_lifecycle_browserRestart_custody_worker_unbound/,
+);
+assert.throws(
+  () =>
+    assertVaultExtensionLifecycleVerdict({
+      lifecycle: {
+        ...passed,
+        browserRestartCustody: {
+          ...passed.browserRestartCustody,
+          replacement: {
+            ...passed.browserRestartCustody.replacement,
+            journal: {
+              ...passed.browserRestartCustody.replacement.journal,
+              panelItemsReadResponse2xxSeen: false,
+            },
+          },
+        },
+      },
+    }),
+  /vault_lifecycle_browserRestart_custody_journal_invalid/,
 );
 assert.throws(
   () =>
