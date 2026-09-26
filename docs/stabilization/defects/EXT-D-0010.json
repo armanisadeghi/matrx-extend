@@ -16,11 +16,12 @@
   "evidence": [
     "docs/stabilization/runs/release-stabilization-003.json",
     "docs/stabilization/runs/popup-async-red-001.json",
-    "docs/stabilization/reports/popup-async-error-repair.json"
+    "docs/stabilization/reports/popup-async-error-repair.json",
+    "docs/stabilization/runs/release-stabilization-004.json"
   ],
   "severity": "S2: integration blocked; no native user failure demonstrated",
   "priority": "P1: restore green integration",
-  "state": "fixed",
+  "state": "retest-pass",
   "owner": "/root/popup_async_error_repair",
   "transition_history": [
     {
@@ -46,6 +47,12 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Upstream70bb6d3/8745413/e17e070 address captured diagnostic rejection; full merged suite retest pending."
+    },
+    {
+      "at": "2026-09-26T08:50:47.152837+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "release-stabilization-004 full suite1419 passed, no unhandled errors. Package freshness gate still blocks integration; not closed."
     }
   ]
 }
