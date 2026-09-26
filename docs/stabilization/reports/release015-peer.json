@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "reviewed_run": "release-stabilization-015",
+  "lane": "independent integration evidence review; read-only except this report",
+  "A_claims_and_evidence": {
+    "verdict": "SUPPORTED_WITH_LIMITS",
+    "evidence": "The run receipt and raw log identify version 0.2.64 and candidate 5d2b70e66af22959e957bf593fca9b2c3c8bb42c. The raw log records publication of that SHA to origin/main and creation of v0.2.64; read-only git ls-remote confirms both remote refs resolve to the same full SHA, and the local tag resolves there too. The candidate's parent is 3829acf, matching the logged release base. The receipts report 14 checks passed and 1433 tests passed, 3 skipped, 0 unhandled errors. Both recorded ZIP SHA-256 values match the ZIPs on disk. Using the release tree hash implementation, .output/chrome-mv3 and .output/chrome-mv3-dev each contain 524 files and hash to 9428eb4ef971b3f468e041397274d41986c22d9622f21f687ecf1742957ef148, matching both receipts and the raw promotion record.",
+    "qualification": "The 14-check result is the release's recorded gate outcome. It does not establish clean underlying DB or audit health."
+  },
+  "B_quality_and_limits": {
+    "verdict": "LIMITS_CONFIRMED",
+    "evidence": "The run explicitly leaves the new artifact's primary Chrome reload and new remote capture scenarios runtime-unverified. Three DB tests are skipped; the raw log says the dev-clone Supabase credentials were not set for the skipped integration test. The mandate scan reports UNMEASURED and NOT SUBMITTED because DB credentials were unavailable, including 11 unresolved findings; it is non-blocking and is not evidence of a clean scan. The tool DB drift and migration-ledger checks did contact Supabase Management API and passed, but that does not substitute for the skipped runtime DB coverage. The receipt records no Chrome Web Store submission. The raw log has a local fast-forward warning after successful remote publication; this did not change the remote refs, but local main is not at the candidate: this checkout reports four commits ahead of origin/main and has an unrelated modified browser acceptance file.",
+    "method_limit": "No builds, tests, browser actions, installations, or publication were performed for this review. Remote verification used git ls-remote; artifact verification read existing ZIPs and tree contents."
+  }
+}
