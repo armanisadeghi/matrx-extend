@@ -572,9 +572,13 @@ const RECEIPT_BACKED_SAVE_UPDATE_COMMITS = new Set([
   ...RECEIPT_BACKED_LOCAL_SOURCE_ARTIFACTS.keys(),
 ]);
 const RECEIPT_BACKED_ROUTER_SHA256 =
-  '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
+  '22be9386e3a8cb9cddb51c8b2dfe78883242967d6cf94d06e23dec10fa658f6f';
 const RECEIPT_BACKED_SERVICE_SHA256 =
-  'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
+  '0dd2347f4637b8f7787a34ba98af6767aa90eca7b3827d610147f29d6211e174';
+const RECEIPT_BACKED_SOURCE_COMMIT = 'b20c757670f5348f5d198f3a1c64d25a1343f5c3';
+const RECEIPT_BACKED_SOURCE_GIT_TREE = 'dbe91a70fbc62eb3c7496eb3fc8445c6f52ea54e';
+const RECEIPT_BACKED_SOURCE_TREE_SHA256 =
+  '8a473cca03f5c9b8b464faee102091c8967ac08a2b97ed7a1418177dc9f17f58';
 const generatorTransportMode =
   lifecycleDryRun || process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
 const displayMode =
@@ -1313,6 +1317,9 @@ async function prewriteLocalCanonicalPreflight() {
     provenIDs: placeholderIds,
     expectedRouterSha256: routerHash,
     expectedServiceSha256: serviceHash,
+    expectedSourceCommit: RECEIPT_BACKED_SOURCE_COMMIT,
+    expectedSourceGitTree: RECEIPT_BACKED_SOURCE_GIT_TREE,
+    expectedSourceTreeSha256: RECEIPT_BACKED_SOURCE_TREE_SHA256,
     sourceRoot,
   });
   assert(
@@ -1324,13 +1331,51 @@ async function prewriteLocalCanonicalPreflight() {
 async function verifyPinnedLocalCanonicalSource() {
   if (!localCanonicalCleanupArmed) return null;
   const sourceRoot = await resolveLocalSourceRoot();
-  const routerSource = path.join(sourceRoot, LOCAL_ROUTER_RELATIVE);
-  const serviceSource = path.join(sourceRoot, LOCAL_SERVICE_RELATIVE);
   const routerHash = required('MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256');
   const serviceHash = required('MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256');
-  assert((await sha256(routerSource)) === routerHash, 'local_cleanup_router_hash_mismatch');
-  assert((await sha256(serviceSource)) === serviceHash, 'local_cleanup_service_hash_mismatch');
-  return { sourceRoot, routerHash, serviceHash };
+  const adapter = path.join(__dirname, 'cleanup-vault-canary.py');
+  let stdout = '';
+  try {
+    ({ stdout } = await execFileAsync(
+      '/Users/armanisadeghi/code/aidream/.venv/bin/python',
+      [
+        adapter,
+        '--verify-source-root',
+        sourceRoot,
+        routerHash,
+        serviceHash,
+        RECEIPT_BACKED_SOURCE_TREE_SHA256,
+        RECEIPT_BACKED_SOURCE_GIT_TREE,
+        RECEIPT_BACKED_SOURCE_COMMIT,
+      ],
+      { cwd: sourceRoot, timeout: 30000, maxBuffer: 32768 },
+    ));
+  } catch (error) {
+    stdout = typeof error?.stdout === 'string' ? error.stdout : '';
+  }
+  let result;
+  try {
+    result = JSON.parse(stdout);
+  } catch {
+    throw new Error('local_cleanup_source_verify_output_refused');
+  }
+  assert(result?.ok === true, `local_cleanup_${result?.code || 'source_verify_refused'}`);
+  assert(
+    result?.source?.router === routerHash &&
+      result?.source?.service === serviceHash &&
+      result?.source?.sourceCommit === RECEIPT_BACKED_SOURCE_COMMIT &&
+      result?.source?.sourceGitTree === RECEIPT_BACKED_SOURCE_GIT_TREE &&
+      result?.source?.sourceTreeSha256 === RECEIPT_BACKED_SOURCE_TREE_SHA256,
+    'local_cleanup_source_verify_result_refused',
+  );
+  return {
+    sourceRoot,
+    routerHash,
+    serviceHash,
+    sourceCommit: RECEIPT_BACKED_SOURCE_COMMIT,
+    sourceGitTree: RECEIPT_BACKED_SOURCE_GIT_TREE,
+    sourceTreeSha256: RECEIPT_BACKED_SOURCE_TREE_SHA256,
+  };
 }
 async function verifyArtifact() {
   const manifestPath = required('MATRX_VAULT_CANARY_MANIFEST');
@@ -1647,6 +1692,7 @@ async function localCanonicalCleanup(proven) {
   const sourceRoot = await resolveLocalSourceRoot();
   const routerHash = required('MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256');
   const serviceHash = required('MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256');
+  const pinnedSource = await verifyPinnedLocalCanonicalSource();
   assert(
     /^[a-f0-9]{64}$/.test(routerHash) && /^[a-f0-9]{64}$/.test(serviceHash),
     'local_cleanup_hash_shape',
@@ -1662,6 +1708,9 @@ async function localCanonicalCleanup(proven) {
     provenIDs: [...proven],
     expectedRouterSha256: routerHash,
     expectedServiceSha256: serviceHash,
+    expectedSourceCommit: pinnedSource.sourceCommit,
+    expectedSourceGitTree: pinnedSource.sourceGitTree,
+    expectedSourceTreeSha256: pinnedSource.sourceTreeSha256,
     sourceRoot,
   });
   assert(
@@ -3440,6 +3489,10 @@ async function materializedPassword(id) {
   // successful unlocked-session probe, before any artifact/browser/auth work.
   let generatorFocusPreflightRefused = generatorTransportMode && headedMode;
   try {
+    // Receipt cleanup is admitted only from the complete sealed source archive.
+    // This has no credential or browser side effect and therefore belongs before
+    // artifact admission, persistence, and every possible Vault write.
+    if (localCanonicalCleanupArmed) await verifyPinnedLocalCanonicalSource();
     // This must precede artifact admission and persistence. A locked desktop
     // cannot produce compositor focus, so recording it as an acceptance run
     // would create a false durable cleanup obligation without any browser or

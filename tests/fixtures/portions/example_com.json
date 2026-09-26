@@ -1,39 +1,38 @@
 {
-  "_source": "aidream aa298925b8 packages/matrx-scraper/tests/fixtures/portions/example_com.json — copied verbatim below this key; regenerate from the server, never edit by hand.",
-  "name": "example_com",
-  "url": "https://example.com/",
-  "fetched": "2026-09-25",
-  "region": "body",
-  "note": "Real page, fetched once, attributes/comments/script/style removed (neither portioner reads them). Expected outputs are the extension's (matrx-extend/src/lib/sources/portions.ts), equal to the server's.",
-  "html": "<div><h1>Example Domain</h1><p>This domain is for use in documentation examples without needing permission. Avoid use in operations.</p><p><a>Learn more</a></p></div>",
-  "markdown": "# Example Domain\n\nThis domain is for use in documentation examples without needing permission. Avoid use in operations.\n\nLearn more",
-  "canonical_url": "https://example.com/",
-  "html_portions": [
-    {
-      "ordinal": 1,
-      "kind": "section",
-      "text": "Example Domain\nThis domain is for use in documentation examples without needing permission. Avoid use in operations.\nLearn more",
-      "locator": {
-        "heading_path": [
-          "Example Domain"
-        ],
-        "text_fragment": "Example Domain This domain is for use in documentation examples without needing "
-      },
-      "method": "native"
-    }
-  ],
-  "markdown_portions": [
-    {
-      "ordinal": 1,
-      "kind": "section",
-      "text": "# Example Domain\n\nThis domain is for use in documentation examples without needing permission. Avoid use in operations.\n\nLearn more",
-      "locator": {
-        "heading_path": [
-          "Example Domain"
-        ],
-        "text_fragment": "# Example Domain This domain is for use in documentation examples without needin"
-      },
-      "method": "native"
-    }
-  ]
+ "name": "example_com",
+ "url": "https://example.com/",
+ "fetched": "2026-09-25",
+ "region": "body",
+ "note": "Real page, fetched once, attributes/comments/script/style removed (neither portioner reads them). Expected outputs are the extension's (matrx-extend/src/lib/sources/portions.ts), equal to the server's.",
+ "html": "<div><h1>Example Domain</h1><p>This domain is for use in documentation examples without needing permission. Avoid use in operations.</p><p><a>Learn more</a></p></div>",
+ "markdown": "# Example Domain\n\nThis domain is for use in documentation examples without needing permission. Avoid use in operations.\n\nLearn more",
+ "canonical_url": "https://example.com/",
+ "html_portions": [
+  {
+   "ordinal": 1,
+   "kind": "section",
+   "text": "Example Domain\nThis domain is for use in documentation examples without needing permission. Avoid use in operations.\nLearn more",
+   "locator": {
+    "heading_path": [
+     "Example Domain"
+    ],
+    "text_fragment": "Example Domain This domain is for use in documentation examples without needing "
+   },
+   "method": "native"
+  }
+ ],
+ "markdown_portions": [
+  {
+   "ordinal": 1,
+   "kind": "section",
+   "text": "Example Domain\nThis domain is for use in documentation examples without needing permission. Avoid use in operations.\nLearn more",
+   "locator": {
+    "heading_path": [
+     "Example Domain"
+    ],
+    "text_fragment": "Example Domain This domain is for use in documentation examples without needing "
+   },
+   "method": "native"
+  }
+ ]
 }

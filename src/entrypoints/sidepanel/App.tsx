@@ -148,6 +148,7 @@ export function App() {
   const [assistance, setAssistance] = useState<
     'none' | 'saved_login' | 'save_pending' | 'capture_unavailable'
   >('none');
+  const [popupCaptureClaimFailed, setPopupCaptureClaimFailed] = useState(false);
 
   const signedIn = user !== null;
   // The capture-ladder badge. Subscribed at App level so the count is right the
@@ -184,8 +185,10 @@ export function App() {
             const windowId = window.id;
             void waitForSidePanelContextId(windowId).then((contextId) => {
               if (mounted && contextId) {
-                void takePopupLaunchTarget(windowId, contextId).then((target) => {
-                  if (mounted && target) setTab(target);
+                void takePopupLaunchTarget(windowId, contextId).then((claim) => {
+                  if (!mounted) return;
+                  if (claim.status === 'claimed') setTab(claim.target);
+                  if (claim.status === 'claim_failed') setPopupCaptureClaimFailed(true);
                 });
               }
             });
@@ -357,6 +360,24 @@ export function App() {
         <div className="flex h-full flex-col bg-background text-foreground">
           <AuthGate>
             <LocalBrowserApprovalHost signedIn={signedIn} />
+            {popupCaptureClaimFailed && (
+              <div
+                role="alert"
+                className="flex shrink-0 items-center justify-between gap-3 border-b border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive"
+              >
+                <span>Capture did not open. Open Scrape to continue.</span>
+                <button
+                  type="button"
+                  className="shrink-0 rounded px-2 py-1 font-medium text-destructive hover:bg-destructive/10"
+                  onClick={() => {
+                    setTab('scrape');
+                    setPopupCaptureClaimFailed(false);
+                  }}
+                >
+                  Open Scrape
+                </button>
+              </div>
+            )}
             <Tabs
               value={tab}
               onValueChange={(v) => setTab(v as typeof tab)}

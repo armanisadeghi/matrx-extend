@@ -28,12 +28,13 @@ import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAuth } from '@/hooks/use-auth';
 import type {
+  VaultCallFailure,
   VaultFieldInput,
   VaultFieldSummary,
   VaultItemMetadataPatch,
   VaultItemSummary,
 } from '@/lib/api/routes/vault';
-import { WEBSITE_LOGIN_DEFINITION_KEY } from '@/lib/api/routes/vault';
+import { WEBSITE_LOGIN_DEFINITION_KEY, describeVaultFailure } from '@/lib/api/routes/vault';
 import { copyToClipboard } from '@/lib/clipboard/copy';
 import { captureUpdateTargetLabel } from '@/lib/credentials/capture-update-targets';
 import {
@@ -223,6 +224,7 @@ function VaultSession({
           matchesLoading={
             panel.status === 'loading' || (panel.status !== 'ready' && vault.matchesLoading)
           }
+          matchesError={panel.status === 'ready' ? null : vault.matchesError}
           running={login.running}
           outcome={!panelUnavailable && !childOffer ? login.outcome : null}
           panelStatus={panel.status}
@@ -234,6 +236,7 @@ function VaultSession({
           onUseHere={(id) => void login.useHere(id, tab.id)}
           onDismissOutcome={login.dismiss}
           onCreateFromPage={() => setCreating(true)}
+          onRetryMatches={() => void vault.retryMatches()}
         />
         <PasswordGenerator tabId={tab.id} actor={actor} admission={admission} />
 
@@ -391,6 +394,7 @@ interface SiteSectionProps {
   pageUrl: string | null;
   matches: { item_id: string; display_name: string }[];
   matchesLoading: boolean;
+  matchesError: VaultCallFailure | null;
   running: string | null;
   outcome: { status: string; message: string } | null;
   panelStatus: PanelSavedLoginSnapshot['status'];
@@ -403,10 +407,11 @@ interface SiteSectionProps {
   onUseHere: (itemId: string) => void;
   onDismissOutcome: () => void;
   onCreateFromPage: () => void;
+  onRetryMatches: () => void;
 }
 
-function SiteSection(props: SiteSectionProps) {
-  const { host, blockedReason, matches, matchesLoading, running, outcome } = props;
+export function SiteSection(props: SiteSectionProps) {
+  const { host, blockedReason, matches, matchesLoading, matchesError, running, outcome } = props;
   const good = outcome?.status === 'authenticated' || outcome?.status === 'needs_mfa';
 
   return (
@@ -417,7 +422,25 @@ function SiteSection(props: SiteSectionProps) {
         {matchesLoading && <Loader2 className="size-3 animate-spin text-muted-foreground" />}
       </div>
 
-      {blockedReason !== null ? (
+      {matchesError ? (
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-[11px] text-muted-foreground">{describeVaultFailure(matchesError)}</p>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-6 gap-1 px-2 text-[11px]"
+            disabled={matchesLoading}
+            onClick={props.onRetryMatches}
+          >
+            {matchesLoading ? (
+              <Loader2 className="size-3 animate-spin" />
+            ) : (
+              <RefreshCw className="size-3" />
+            )}
+            Retry
+          </Button>
+        </div>
+      ) : blockedReason !== null ? (
         <p className="text-[11px] text-muted-foreground">{blockedReason}</p>
       ) : matches.length === 0 ? (
         <div className="flex items-center justify-between gap-2">

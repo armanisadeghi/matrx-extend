@@ -39,6 +39,8 @@ import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { onActiveOrganizationChange } from '@/lib/org/active-org';
 import {
+  type AdmittedExecutionStage,
+  type CredentialLoginStatus,
   runAdmittedAuthenticatorAttempt,
   runAdmittedCredentialAttempt,
 } from '@/lib/tools/handlers/credential-login';
@@ -977,6 +979,38 @@ export class LocalBrowserController {
     let filled = false;
     let submitted = false;
     let observation: EvaluatedObservation | null = null;
+    let lastStage: AdmittedExecutionStage | null = null;
+    const executionTerminal = async (
+      status: CredentialLoginStatus,
+    ): Promise<LocalCommandResult> => {
+      const reason =
+        !isCurrent() || !(await assertCurrentDocument())
+          ? 'binding_changed'
+          : Date.now() >= claimed.deadline_ms
+            ? 'deadline_exceeded'
+            : status === 'unsafe_destination'
+              ? 'unsafe_destination'
+              : lastStage === 'initial_probe'
+                ? 'form_changed'
+                : lastStage === 'selector_check' || lastStage === 'materialize'
+                  ? 'field_unavailable'
+                  : lastStage === 'wait'
+                    ? 'deadline_exceeded'
+                    : lastStage === 'post_submit_document'
+                      ? 'tab_lost'
+                      : lastStage === 'before_evidence' ||
+                          lastStage === 'step_probe' ||
+                          lastStage === 'fill' ||
+                          lastStage === 'submit' ||
+                          lastStage === 'classification'
+                        ? 'form_changed'
+                        : 'configuration_error';
+      log.warn(
+        'desktop',
+        `local_browser_terminal:${command.operation}:${lastStage ?? 'none'}:filled=${filled}:submitted=${submitted}`,
+      );
+      return terminal(reason);
+    };
     const frozenVerification = parseVerificationFields(command);
     if (!frozenVerification) return terminal('configuration_error');
     const observePostSubmitDocument = postSubmitDocumentObserver({
@@ -998,6 +1032,9 @@ export class LocalBrowserController {
             onProgress: (event) => {
               if (event === 'filled') filled = true;
               else submitted = true;
+            },
+            onStage: (stage) => {
+              lastStage = stage;
             },
             observePostSubmitDocument,
             assertCurrent: async () => {
@@ -1029,6 +1066,9 @@ export class LocalBrowserController {
             onProgress: (event) => {
               if (event === 'filled') filled = true;
               else submitted = true;
+            },
+            onStage: (stage) => {
+              lastStage = stage;
             },
             observePostSubmitDocument,
             assertCurrent: async () => {
@@ -1063,7 +1103,7 @@ export class LocalBrowserController {
             : result.status === 'captcha_or_takeover'
               ? 'captcha_or_takeover'
               : 'unverified';
-    if (!observation) return terminal('configuration_error');
+    if (!observation) return await executionTerminal(result.status);
     return command.operation === 'vault_login'
       ? {
           command_id: claimed.command_id,

@@ -1,12 +1,14 @@
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+// @ts-expect-error — plain .mjs script, no declaration file
+import { SERVER_DIR, portionFixtureDrift } from '../../../scripts/sync-portion-fixtures.mjs';
 import { canonicalUrl } from './canonical';
 import { buildCapturePortions, portionsFromArticleHtml, portionsFromMarkdown } from './portions';
 
-// Expected outputs are the SERVER's (aidream matrx_scraper portioner, real
-// pages), copied under tests/fixtures/portions with their source commit. Both
-// portioners are pinned to one output; never hand-edit an expected value here.
+// Expected outputs are the SERVER's (aidream matrx_scraper portioner — the single
+// truth — on real pages), copied byte-for-byte under tests/fixtures/portions by
+// scripts/sync-portion-fixtures.mjs. Never hand-edit an expected value here.
 const DIR = resolve(__dirname, '../../../tests/fixtures/portions');
 interface Fixture {
   name: string;
@@ -20,6 +22,14 @@ interface Fixture {
 const fixtures: Fixture[] = readdirSync(DIR)
   .filter((f) => f.endsWith('.json'))
   .map((f) => JSON.parse(readFileSync(resolve(DIR, f), 'utf8')) as Fixture);
+
+describe("the copied fixtures are the server's, byte for byte", () => {
+  // Without the sibling aidream checkout (a clean CI box) this is reported as
+  // skipped by name — the copies are still exercised below.
+  it.skipIf(!existsSync(SERVER_DIR))(`no drift from ${SERVER_DIR}`, () => {
+    expect(portionFixtureDrift().drift).toEqual([]);
+  });
+});
 
 describe('portioner matches the server fixtures', () => {
   it('has the three pinned pages', () => {

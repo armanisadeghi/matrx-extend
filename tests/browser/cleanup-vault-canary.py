@@ -10,10 +10,12 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import hashlib
+import importlib.machinery
 import importlib.util
 import io
 import json
 import os
+import stat
 import sys
 import tempfile
 import uuid
@@ -30,6 +32,15 @@ ROUTER_RELATIVE = Path("aidream/api/routers/vault.py")
 SERVICE_RELATIVE = Path("aidream/services/user_secrets/vault.py")
 ADMIN_EMAIL = "admin@admin.com"
 LOCAL_APP_BOOTSTRAP_TYPE_ERROR_STAGE = "build_local_app_bootstrap"
+SOURCE_TREE_DIGEST_VERSION = b"vault-canary-source-tree-v1\0"
+REQUIRED_ARCHIVE_MODULES = (
+    "aidream.api.routers.vault",
+    "aidream.services.user_secrets.vault",
+    "aidream.api.middleware.auth",
+    "matrx_orm",
+    "matrx_orm.secrets_battery",
+    "matrx_connect",
+)
 
 
 class Refused(Exception):
@@ -48,6 +59,126 @@ def refuse(condition: bool, code: str) -> None:
 
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _archive_relative(root: Path, path: Path) -> str:
+    try:
+        return path.relative_to(root).as_posix()
+    except ValueError:
+        raise Refused("source_tree_path_refused") from None
+
+
+def _record_tree_part(digest: "hashlib._Hash", *parts: bytes) -> None:
+    for part in parts:
+        digest.update(str(len(part)).encode("ascii"))
+        digest.update(b":")
+        digest.update(part)
+
+
+def _symlink_target_is_internal(root: Path, link: Path, target: str) -> bool:
+    if os.path.isabs(target):
+        return False
+    candidate = Path(os.path.normpath(str(link.parent / target)))
+    try:
+        candidate.relative_to(root)
+    except ValueError:
+        return False
+    return True
+
+
+def source_tree_sha256(source_root: Path) -> str:
+    """Digest every archive entry without following links or accepting escapes."""
+    root = source_root.resolve()
+    refuse(root.is_dir(), "source_root_refused")
+    digest = hashlib.sha256(SOURCE_TREE_DIGEST_VERSION)
+
+    def visit(directory: Path) -> None:
+        for entry in sorted(directory.iterdir(), key=lambda candidate: candidate.name):
+            relative = _archive_relative(root, entry).encode("utf-8")
+            try:
+                entry_stat = entry.lstat()
+            except OSError:
+                raise Refused("source_tree_entry_refused") from None
+            mode = format(stat.S_IMODE(entry_stat.st_mode), "04o").encode("ascii")
+            if stat.S_ISDIR(entry_stat.st_mode):
+                _record_tree_part(digest, b"directory", relative, mode)
+                visit(entry)
+            elif stat.S_ISREG(entry_stat.st_mode):
+                _record_tree_part(digest, b"file", relative, mode)
+                with entry.open("rb") as handle:
+                    for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                        digest.update(chunk)
+            elif stat.S_ISLNK(entry_stat.st_mode):
+                try:
+                    target = os.readlink(entry)
+                except OSError:
+                    raise Refused("source_tree_link_refused") from None
+                refuse(_symlink_target_is_internal(root, entry, target), "source_tree_link_escape")
+                _record_tree_part(digest, b"symlink", relative, mode, target.encode("utf-8"))
+            else:
+                raise Refused("source_tree_entry_refused")
+
+    visit(root)
+    return digest.hexdigest()
+
+
+def _archive_package_dirs(source_root: Path) -> list[Path]:
+    packages_root = source_root / "packages"
+    refuse(packages_root.is_dir(), "archive_packages_refused")
+    package_dirs: list[Path] = []
+    for package in sorted(packages_root.iterdir(), key=lambda candidate: candidate.name):
+        if not package.is_dir() or package.is_symlink():
+            continue
+        if any(
+            child.is_dir() and not child.is_symlink() and (child / "__init__.py").is_file()
+            for child in package.iterdir()
+        ):
+            package_dirs.append(package)
+    refuse(bool(package_dirs), "archive_packages_refused")
+    return package_dirs
+
+
+def _path_is_inside(path: str | None, source_root: Path) -> bool:
+    if not path:
+        return False
+    try:
+        Path(path).resolve().relative_to(source_root.resolve())
+    except (OSError, ValueError):
+        return False
+    return True
+
+
+def prepare_archive_imports(source_root: Path) -> None:
+    archive_paths = [str(source_root), *(str(path) for path in _archive_package_dirs(source_root))]
+    sys.path[:0] = [entry for entry in archive_paths if entry not in sys.path]
+
+
+def _verify_required_module_specs(source_root: Path) -> None:
+    prepare_archive_imports(source_root)
+    for module_name in REQUIRED_ARCHIVE_MODULES:
+        search_paths = list(sys.path)
+        parts = module_name.split(".")
+        spec = None
+        for index in range(len(parts)):
+            partial_name = ".".join(parts[: index + 1])
+            spec = importlib.machinery.PathFinder.find_spec(partial_name, search_paths)
+            refuse(spec is not None, "required_import_origin_refused")
+            refuse(_path_is_inside(spec.origin, source_root), "required_import_origin_refused")
+            search_paths = list(spec.submodule_search_locations or ())
+
+
+def verify_archive_import_closure(source_root: Path) -> None:
+    _verify_required_module_specs(source_root)
+    for module_name in REQUIRED_ARCHIVE_MODULES:
+        module = sys.modules.get(module_name)
+        refuse(module is not None, "required_import_origin_refused")
+        refuse(_path_is_inside(getattr(module, "__file__", None), source_root), "required_import_origin_refused")
+    for name, module in tuple(sys.modules.items()):
+        if not (name == "aidream" or name.startswith(("aidream.", "matrx_orm", "matrx_connect"))):
+            continue
+        origin = getattr(module, "__file__", None)
+        if origin is not None:
+            refuse(_path_is_inside(origin, source_root), "loaded_import_origin_refused")
 
 
 def uuid_text(value: Any, code: str) -> str:
@@ -84,6 +215,9 @@ def parse_stdin() -> dict[str, Any]:
             "provenIDs",
             "expectedRouterSha256",
             "expectedServiceSha256",
+            "expectedSourceCommit",
+            "expectedSourceGitTree",
+            "expectedSourceTreeSha256",
             "sourceRoot",
         },
         "input_shape_refused",
@@ -108,13 +242,25 @@ def parse_stdin() -> dict[str, Any]:
         not set(data["baselineIds"]).intersection(data["provenIDs"]),
         "baseline_target_refused",
     )
-    for key in ("expectedRouterSha256", "expectedServiceSha256"):
+    for key in (
+        "expectedRouterSha256",
+        "expectedServiceSha256",
+        "expectedSourceTreeSha256",
+    ):
         value = data[key]
         refuse(
             isinstance(value, str)
             and len(value) == 64
             and all(char in "0123456789abcdef" for char in value),
             "source_hash_refused",
+        )
+    for key in ("expectedSourceCommit", "expectedSourceGitTree"):
+        value = data[key]
+        refuse(
+            isinstance(value, str)
+            and len(value) == 40
+            and all(char in "0123456789abcdef" for char in value),
+            "source_commit_refused",
         )
     source_root = data["sourceRoot"]
     refuse(isinstance(source_root, str), "source_root_refused")
@@ -130,7 +276,15 @@ def verify_sources(data: dict[str, Any]) -> dict[str, str]:
     service_hash = sha256(source_root / SERVICE_RELATIVE)
     refuse(router_hash == data["expectedRouterSha256"], "router_hash_mismatch")
     refuse(service_hash == data["expectedServiceSha256"], "service_hash_mismatch")
-    return {"router": router_hash, "service": service_hash}
+    tree_hash = source_tree_sha256(source_root)
+    refuse(tree_hash == data["expectedSourceTreeSha256"], "source_tree_hash_mismatch")
+    return {
+        "router": router_hash,
+        "service": service_hash,
+        "sourceCommit": data["expectedSourceCommit"],
+        "sourceGitTree": data["expectedSourceGitTree"],
+        "sourceTreeSha256": tree_hash,
+    }
 
 
 def load_reconciler():
@@ -158,7 +312,7 @@ def build_local_app(data: dict[str, Any]):
         # The source root takes precedence before the first aidream import;
         # the runtime and secrets deliberately remain the existing checkout.
         source_root = Path(data["sourceRoot"])
-        sys.path.insert(0, str(source_root))
+        prepare_archive_imports(source_root)
         load_dotenv(AIDREAM_ENV_ROOT / ".env")
         from matrx_orm import register_platform_db
 
@@ -186,6 +340,7 @@ def build_local_app(data: dict[str, Any]):
             == (source_root / SERVICE_RELATIVE).resolve(),
             "service_import_refused",
         )
+        verify_archive_import_closure(source_root)
         app = FastAPI()
         register_error_handlers(app, capture_system_errors=False)
         app.include_router(vault_router.router, prefix="/api/vault")
@@ -297,7 +452,60 @@ async def run(data: dict[str, Any], hashes: dict[str, str]) -> dict[str, Any]:
     return result
 
 
+def _verify_source_root_args(args: list[str], *, import_closure: bool) -> int:
+    if len(args) != 6:
+        result = {"ok": False, "code": "source_verify_args_refused"}
+    else:
+        source_root, router_hash, service_hash, tree_hash, source_git_tree, source_commit = args
+        data = {
+            "sourceRoot": source_root,
+            "expectedRouterSha256": router_hash,
+            "expectedServiceSha256": service_hash,
+            "expectedSourceTreeSha256": tree_hash,
+            "expectedSourceGitTree": source_git_tree,
+            "expectedSourceCommit": source_commit,
+        }
+        try:
+            source_path = Path(source_root)
+            refuse(source_path.is_absolute() and source_path.is_dir(), "source_root_refused")
+            data["sourceRoot"] = str(source_path.resolve())
+            hashes = verify_sources(data)
+            if import_closure:
+                _verify_required_module_specs(Path(data["sourceRoot"]))
+            result = {"ok": True, "source": hashes}
+        except Refused as exc:
+            result = {"ok": False, "code": exc.code}
+        except Exception as exc:
+            result = {"ok": False, "code": "internal_refused", "errorType": type(exc).__name__}
+    sys.stdout.write(json.dumps(result, separators=(",", ":")) + "\n")
+    return 0 if result["ok"] else 1
+
+
+def _source_tree_digest_args(args: list[str]) -> int:
+    try:
+        refuse(len(args) == 1, "source_verify_args_refused")
+        source_root = Path(args[0])
+        refuse(source_root.is_absolute() and source_root.is_dir(), "source_root_refused")
+        result = {"ok": True, "sourceTreeSha256": source_tree_sha256(source_root)}
+    except Refused as exc:
+        result = {"ok": False, "code": exc.code}
+    except Exception as exc:
+        result = {"ok": False, "code": "internal_refused", "errorType": type(exc).__name__}
+    sys.stdout.write(json.dumps(result, separators=(",", ":")) + "\n")
+    return 0 if result["ok"] else 1
+
+
 def main() -> int:
+    if len(sys.argv) > 1:
+        command, *args = sys.argv[1:]
+        if command == "--verify-source-root":
+            return _verify_source_root_args(args, import_closure=False)
+        if command == "--verify-import-closure":
+            return _verify_source_root_args(args, import_closure=True)
+        if command == "--source-tree-digest":
+            return _source_tree_digest_args(args)
+        sys.stdout.write('{"ok":false,"code":"source_verify_args_refused"}\n')
+        return 1
     try:
         data = parse_stdin()
         # Runtime request handlers can emit console output after bootstrap.

@@ -21,7 +21,8 @@
       "scripts/byte-size-shape.mjs",
       "scripts/duration-shape.mjs",
       "scripts/format-input-shape.mjs",
-      "scripts/package-twins.json"
+      "scripts/package-twins.json",
+      "tests/fixtures/portions/**"
     ]
   },
   "formatter": {
