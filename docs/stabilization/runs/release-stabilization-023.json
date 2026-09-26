@@ -1,0 +1,309 @@
+{
+  "id": "release-stabilization-023",
+  "feature_id": "EXT-F-0003",
+  "defect_ids": [
+    "EXT-D-0017",
+    "EXT-D-0018"
+  ],
+  "status": "pass",
+  "exit_code": 0,
+  "release": {
+    "sourceSha": "a86e15da662cddb60029b480c340e2ccfef40c1f",
+    "version": "0.2.68",
+    "publishState": "pushed",
+    "storeZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.68-store.zip",
+      "sha256": "fc4fe2163212f6cef3880b8223a1634291948cbba793cc8d6472114c96815960"
+    },
+    "localZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.68-local.zip",
+      "sha256": "0a56cbc389f8287c4653f4e816b4dd64437d6497e6d558245c686dcf2c970c57"
+    },
+    "sourcePath": "/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/matrx-extend-release.MqC7PY/matrx-extend/.output/chrome-mv3",
+    "destinationPath": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "destinationPaths": [
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3"
+    ],
+    "treeSha256": "7d799987698fbbd727eff27593a4969438d8d0701044ccac776cb29c9148e887",
+    "fileCount": 532
+  },
+  "raw_log": "tmp/release-logs/release-2026-09-26_08-38-24.log",
+  "check_results": [
+    {
+      "name": "matrx-packages",
+      "exit_code": 0
+    },
+    {
+      "name": "typecheck",
+      "exit_code": 0
+    },
+    {
+      "name": "lint",
+      "exit_code": 0
+    },
+    {
+      "name": "unit-tests",
+      "exit_code": 0
+    },
+    {
+      "name": "schema-routing",
+      "exit_code": 0
+    },
+    {
+      "name": "package-twins",
+      "exit_code": 0
+    },
+    {
+      "name": "canonical-pickers",
+      "exit_code": 0
+    },
+    {
+      "name": "archived-items",
+      "exit_code": 0
+    },
+    {
+      "name": "archived-items-self-test",
+      "exit_code": 0
+    },
+    {
+      "name": "org-default-ban",
+      "exit_code": 0
+    },
+    {
+      "name": "org-default-ban-self-test",
+      "exit_code": 0
+    },
+    {
+      "name": "swallowed-refusals",
+      "exit_code": 0
+    },
+    {
+      "name": "migrations",
+      "exit_code": 0
+    },
+    {
+      "name": "tool-drift",
+      "exit_code": 0
+    },
+    {
+      "name": "mandate-references",
+      "exit_code": 0
+    }
+  ],
+  "unit_tests": {
+    "passed": 1442,
+    "skipped": 3,
+    "failed": 0,
+    "test_files_passed": 179,
+    "test_files_skipped": 1
+  },
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:38:24.498Z",
+      "runId": "release-stabilization-023",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.99,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.32180000000000003,
+        "swapUsedMiB": 2389.69,
+        "repoFreeGiB": 1675.6053924560547,
+        "profileFreeGiB": 21.933162689208984
+      },
+      "cpuBusySamples": [
+        0.09230000000000005,
+        0.43399999999999994,
+        0.3081999999999999,
+        0.17159999999999997,
+        0.5838000000000001,
+        0.3437,
+        0.31900000000000006
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:38:40.787Z",
+      "runId": "release-stabilization-023",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.51,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.6531,
+        "swapUsedMiB": 2389.69,
+        "repoFreeGiB": 1675.6047439575195,
+        "profileFreeGiB": 22.021587371826172
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:38:57.112Z",
+      "runId": "release-stabilization-023",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 4.61,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.4072,
+        "swapUsedMiB": 2389.69,
+        "repoFreeGiB": 1675.6045227050781,
+        "profileFreeGiB": 22.01055908203125
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:39:13.470Z",
+      "runId": "release-stabilization-023",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 4.39,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.3218000000000001,
+        "swapUsedMiB": 2389.69,
+        "repoFreeGiB": 1675.6049003601074,
+        "profileFreeGiB": 22.00749969482422
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:39:29.755Z",
+      "runId": "release-stabilization-023",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.84,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 4.35,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.2772,
+        "swapUsedMiB": 2389.69,
+        "repoFreeGiB": 1675.6049003601074,
+        "profileFreeGiB": 22.03372573852539
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:39:46.053Z",
+      "runId": "release-stabilization-023",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.84,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.89,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.20440000000000003,
+        "swapUsedMiB": 2389.69,
+        "repoFreeGiB": 1675.6052551269531,
+        "profileFreeGiB": 22.011966705322266
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:40:02.347Z",
+      "runId": "release-stabilization-023",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.84,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.39,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.20310000000000006,
+        "swapUsedMiB": 2389.69,
+        "repoFreeGiB": 1675.6052551269531,
+        "profileFreeGiB": 22.009292602539062
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:40:18.661Z",
+      "runId": "release-stabilization-023",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.17,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.10599999999999998,
+        "swapUsedMiB": 2389.69,
+        "repoFreeGiB": 1675.605224609375,
+        "profileFreeGiB": 22.0198974609375
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:40:35.006Z",
+      "runId": "release-stabilization-023",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.84,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.2,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.19669999999999999,
+        "swapUsedMiB": 2389.69,
+        "repoFreeGiB": 1675.6050491333008,
+        "profileFreeGiB": 21.951087951660156
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:40:36.134Z",
+      "runId": "release-stabilization-023",
+      "childExitCode": 0,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ],
+  "verification": {
+    "source_tag_local_main_origin_main": "verified_equal",
+    "tag": "v0.2.68",
+    "store_zip_sha256_recomputed": "fc4fe2163212f6cef3880b8223a1634291948cbba793cc8d6472114c96815960",
+    "local_zip_sha256_recomputed": "0a56cbc389f8287c4653f4e816b4dd64437d6497e6d558245c686dcf2c970c57",
+    "unpacked_tree_sha256_recomputed": "7d799987698fbbd727eff27593a4969438d8d0701044ccac776cb29c9148e887",
+    "unpacked_file_count": 532,
+    "root_guard_exit_code": 0,
+    "store_upload": "not_performed",
+    "ci_run": {
+      "id": "36252765496",
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "a86e15da662cddb60029b480c340e2ccfef40c1f",
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/36252765496"
+    },
+    "limits": [
+      "Unit tests report 3 skipped tests across 1 skipped test file.",
+      "Mandate scan was not submitted to the database because credentials were absent; its release check returned exit 0 under documented non-blocking behavior.",
+      "Build warning listed credential-frame as a skipped entrypoint; generated bundle nevertheless contains content-scripts/credential-frame.js."
+    ],
+    "D19_remote_closure": "met: CI run 36252765496 completed successfully against the exact release source SHA.",
+    "historical_cause_limits": "Prior attempt 022 refused before tests/build/publication: freshness guard found @ai-matrx/design-system 0.44.6 installed while npm latest was 0.46.0. This evidence closes the remote CI criterion only; the current run still records the three skipped unit tests and the mandate scan submission limitation."
+  }
+}

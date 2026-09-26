@@ -1,0 +1,39 @@
+{
+  "id": "release023-peer",
+  "release": "0.2.68",
+  "source_sha": "a86e15da662cddb60029b480c340e2ccfef40c1f",
+  "tag": "v0.2.68",
+  "A_acceptance": {
+    "result": "pass",
+    "evidence": [
+      "Tag, local main, origin/main, and release receipt source SHA match.",
+      "Both ZIP SHA-256 values independently match the receipt.",
+      "Both unpacked release directories independently match the receipt tree hash and 532-file count.",
+      "Release process exited 0 and root guard exited 0."
+    ],
+    "store_upload": "not_performed"
+  },
+  "B_quality": {
+    "result": "pass",
+    "release_checks_passed": 15,
+    "unit_tests": {
+      "passed": 1442,
+      "skipped": 3,
+      "failed": 0,
+      "test_files_passed": 179,
+      "test_files_skipped": 1
+    },
+    "limitations": [
+      "Mandate scan was not submitted to the database because credentials were absent; its release check returned exit 0 under documented non-blocking behavior.",
+      "Build warning listed credential-frame as a skipped entrypoint; generated bundle nevertheless contains content-scripts/credential-frame.js."
+    ],
+    "CI": {
+      "run_id": "36252765496",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "a86e15da662cddb60029b480c340e2ccfef40c1f",
+      "D19_remote_closure_criterion": "met"
+    },
+    "historical_cause_limits": "Release-stabilization-022 was refused before tests/build/publication because the freshness guard found @ai-matrx/design-system 0.44.6 installed vs npm latest 0.46.0. Current green CI closes the remote criterion; it does not erase current skip or database-submission limits."
+  }
+}
