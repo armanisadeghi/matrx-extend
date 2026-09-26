@@ -28,7 +28,7 @@
   "reproducibility_count": "1/1 observed real strict release candidate; post-fix rerun pending",
   "severity": "S1: strict release blocked despite safe resource arithmetic",
   "priority": "P0: blocks publication of verified stabilization work",
-  "state": "retest-pass",
+  "state": "closed",
   "owner": "/root",
   "root_cause": "The byte-size shape detector also matches numeric conversion expressions; its formatFileSize register had no documented distinction for resource-admission arithmetic.",
   "sibling_census": "All four reported expressions are in the same resource sample: available/required memory and repository/profile disk. Swap conversion is also numeric but was not reported; no display formatter is involved in this file.",
@@ -68,10 +68,17 @@
       "from": "fixed",
       "to": "retest-pass",
       "reason": "Real strict release003 package-twins gate passed; numeric telemetry exception independently reviewed. Integration awaits separate D4 live schema correction."
+    },
+    {
+      "at": "2026-09-26T03:52:09.279Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Guarded release005 passed mandatory checks and published validated760c7a1 main/tag; artifact hashes independently verified."
     }
   ],
   "limitations": [
-    "No post-fix check was run by this source-only worker.",
-    "The coordinator must rerun the strict gate on the exact release candidate and transition the defect only with evidence."
-  ]
+    "Closure scope is this release defect; no whole-product, loaded Chrome runtime or public Store verification claimed."
+  ],
+  "integration_commit": "760c7a1c5dba504b894dd5450b83e9fee060d065",
+  "integration_run": "release-real-005"
 }
