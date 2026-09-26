@@ -215,9 +215,18 @@ async function avatar(panel, role, title) {
           `(() => {
         ${NAVIGATION_SCOPE}
         const text = pane?.innerText ?? '';
+        const identitySection = [...(pane?.querySelectorAll('button[aria-expanded][aria-controls]') ?? [])]
+          .some((button) => {
+            const controlledId = button.getAttribute('aria-controls');
+            const controlled = controlledId ? document.getElementById(controlledId) : null;
+            return button.textContent.trim() === 'Identity'
+              && button.getAttribute('aria-expanded') === 'true'
+              && !!controlled && pane.contains(controlled)
+              && controlled.getAttribute('aria-hidden') === 'false';
+          });
         return { profileHeader: [...(pane?.querySelectorAll('span') ?? [])]
             .some((el) => el.textContent.trim() === 'Profile'),
-          identitySection: text.includes('Identity'), firstNameField: text.includes('First name'),
+          identitySection, firstNameField: text.includes('First name'),
           backControl: !!pane?.querySelector('button[title="Back"]') };
       })()`,
         );
