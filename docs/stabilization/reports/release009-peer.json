@@ -1,0 +1,48 @@
+{
+  "task_id": "release-stabilization-009-peer",
+  "lane": "structured independent evidence review",
+  "model": "GPT-6 Luna / medium",
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Read-only review of release-stabilization-009 integration, release claims, and retained raw release/resource logs. No build, tests, install, or browser work was run by this reviewer.",
+  "verdicts": {
+    "A_claim_and_evidence": {
+      "verdict": "PASS",
+      "findings": [
+        "Confirmed: the v0.2.60 tag resolves to fde1a11b054c04d7be1a4904441be9838f568633; its release commit has parents 49241fada29aa10e4ba945488160a0449394646b and 4b15a0324320bfdc50cbbb419eafb84e862f3ce4, so the release includes the named contributor change and reconciled main history.",
+        "Confirmed: live `git ls-remote origin` returned main=e8e3d87dbdd99c212607bd2f0b2c47beb5a0d85c and v0.2.60=fde1a11b054c04d7be1a4904441be9838f568633. Local HEAD and origin/main equal e8e3d87; working tree was clean before this report update.",
+        "Confirmed: both saved ZIPs exist and their SHA-256 values match docs/stabilization/runs/release-stabilization-009.json.",
+        "Raw release log tmp/release-logs/release-2026-09-26_04-14-01.log corroborates the run: unit tests report 1,430 passed/3 skipped, 177 test files passed/1 skipped; typecheck exits 0; all 14 logged release steps/checks exit 0; release ends exit 0 at 2026-09-26T11:16:14Z. The three skips are the explicitly identified live DB tests. Resource log /tmp/matrx-release-stabilization-009.log records admission, healthy watch events, child exit 0, and publication of candidate fde1a11."
+      ]
+    },
+    "B_quality_and_limitations": {
+      "verdict": "PASS_WITH_LIMITATIONS",
+      "findings": [
+        "The receipt explicitly preserves the material limits: runtime UI verification on 0.2.60 remains pending, and the three DB skips remain unverified. Passing tests do not establish UI health.",
+        "The release artifact hashes independently match the receipt, improving provenance for the packaged outputs; no independent unpack/rebuild comparison was performed.",
+        "No Store submission is claimed; `store_submission` is false.",
+        "The raw log shows the mandate-reference scan exited 0 as designed but reported 11 findings (2 UNMEASURED and 9 UNRESOLVED_KEY), and its report was NOT SUBMITTED because DB credentials were unavailable. This is explicitly non-blocking in the scan output, but mandate coverage was not measured in the database; do not describe the scan as clean or submitted.",
+        "The raw log shows `check:package-twins` exited 0 while listing five pre-existing censused debt items. Its output explicitly says the result is not a claim that nothing is duplicated."
+      ]
+    }
+  },
+  "evidence": [
+    "docs/stabilization/runs/release-stabilization-009.json",
+    "docs/stabilization/COORDINATOR.md",
+    "tmp/release-logs/release-2026-09-26_04-14-01.log",
+    "/tmp/matrx-release-stabilization-009.log",
+    "git show -s fde1a11; git rev-parse v0.2.60; git ls-remote origin refs/heads/main refs/tags/v0.2.60",
+    "shasum -a 256 .output/matrx-extend-0.2.60-store.zip .output/matrx-extend-0.2.60-local.zip",
+    "git status --short --branch"
+  ],
+  "changed_files": [
+    "docs/stabilization/reports/release009-peer.json"
+  ],
+  "commit_shas": [],
+  "limitations": [
+    "No browser/UI health claim is made; new-build runtime proof remains pending.",
+    "The three explicit DB skips remain unverified.",
+    "Mandate scan produced 11 findings and could not submit its report to the database; the scan is non-blocking by design.",
+    "Package-twins gate reported five known censused debt items while passing its census ratchet."
+  ],
+  "next_action": "Root may accept release/tag/remote synchronization and gate/test counts as independently corroborated by Git, raw logs, resource events, and artifact hashes. Keep UI proof, three DB skips, mandate-report submission/findings, and known censused package-twin debt visible."
+}

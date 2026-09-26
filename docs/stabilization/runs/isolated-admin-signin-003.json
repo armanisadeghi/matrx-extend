@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned Chrome profile; real Matrx web login and extension Settings sign-in",
+  "status": "unverified",
+  "web": {
+    "signedIn": true,
+    "location": "https://www.aimatrx.com/dashboard"
+  },
+  "extension": null,
+  "failureCategory": "stage_operation_failed",
+  "limitations": [
+    "OAuth callback origin is not directly observed by this runner."
+  ],
+  "failureStage": "extension_admin_wait",
+  "id": "isolated-admin-signin-003",
+  "guard_exit_code": 1,
+  "candidate": "42f0565",
+  "source_peer": "b42a563",
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:54:32.632Z",
+      "runId": "isolated-admin-signin-003",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.32,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.41,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1450428571428571,
+        "swapUsedMiB": 1761.56,
+        "repoFreeGiB": 1676.0858840942383,
+        "profileFreeGiB": 23.558570861816406
+      },
+      "cpuBusySamples": [
+        0.20900000000000007,
+        0.08129999999999993,
+        0.08109999999999995,
+        0.08430000000000004,
+        0.16599999999999993,
+        0.2208,
+        0.17280000000000006
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:54:49.043Z",
+      "runId": "isolated-admin-signin-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.73,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.18819999999999992,
+        "swapUsedMiB": 1761.56,
+        "repoFreeGiB": 1676.0855712890625,
+        "profileFreeGiB": 23.45482635498047
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:55:05.457Z",
+      "runId": "isolated-admin-signin-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.12,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.18790000000000007,
+        "swapUsedMiB": 1761.56,
+        "repoFreeGiB": 1676.0858001708984,
+        "profileFreeGiB": 23.357616424560547
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:55:21.911Z",
+      "runId": "isolated-admin-signin-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.11,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.3255,
+        "swapUsedMiB": 1761.56,
+        "repoFreeGiB": 1676.0858001708984,
+        "profileFreeGiB": 23.432071685791016
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:55:38.318Z",
+      "runId": "isolated-admin-signin-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.32,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.20879999999999999,
+        "swapUsedMiB": 1761.56,
+        "repoFreeGiB": 1676.0858001708984,
+        "profileFreeGiB": 23.411598205566406
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:55:54.743Z",
+      "runId": "isolated-admin-signin-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.2759999999999999,
+        "swapUsedMiB": 1761.56,
+        "repoFreeGiB": 1676.0858001708984,
+        "profileFreeGiB": 23.402305603027344
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:56:11.165Z",
+      "runId": "isolated-admin-signin-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.94,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1663,
+        "swapUsedMiB": 1761.56,
+        "repoFreeGiB": 1676.0865058898926,
+        "profileFreeGiB": 23.39698028564453
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:56:12.256Z",
+      "runId": "isolated-admin-signin-003",
+      "childExitCode": 1,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ]
+}
