@@ -1,0 +1,15 @@
+{
+  "run_id": "source-org-refusal-green-001",
+  "defect_id": "EXT-D-0022",
+  "source_commit": "f6161e26",
+  "wrapper_session": 88657,
+  "wrapper_exit_code": 0,
+  "child_exit_code": 0,
+  "completed_at": "2026-09-26T20:06:49.864Z",
+  "test_files_passed": 3,
+  "tests_passed": 11,
+  "log_path": "/tmp/matrx-source-org-refusal-green-001.log",
+  "log_sha256": "0dad41a93b5fabc4eddf50a47fff1862ee0d44a528d95acab2525260212cb008",
+  "result": "Real transport local actor refusal and actual server denial remain distinct; focused tests pass.",
+  "limits": "Full integration and native UI remain pending; source peer in progress."
+}
