@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "lane": "latest design-system consumer check",
+  "observed_at": "2026-09-26T14:44:00Z",
+  "release_attempt": "release-stabilization-020",
+  "release_log": "tmp/release-logs/release-2026-09-26_07-39-41.log",
+  "result": "Release candidate v0.2.67 was refused before unit tests and build because @ai-matrx/design-system 0.44.5 was installed while npm latest had advanced to 0.44.6. This is a fresh publication, not the prior installed-lock mismatch.",
+  "package_evidence": {
+    "registry_version": "@ai-matrx/design-system@0.44.6",
+    "published_at_utc": "2026-09-26T14:33:14.463Z",
+    "source": "CHANGELOG.md inside the published npm tarball https://registry.npmjs.org/@ai-matrx/design-system/-/design-system-0.44.6.tgz",
+    "change": "Automatic changed-only republish for docs/metadata drift since 0.44.5; no source changes intended.",
+    "consumer_action": "None. No extension code migration is required by this package release.",
+    "local_source_note": "The aidream checkout changelog still starts at 0.44.5 at inspection time; the published tarball supplied the 0.44.6 entry."
+  },
+  "next_step": "The root owns the guarded @ai-matrx package refresh and release retry; preserve latest and keep the freshness gate enabled.",
+  "ui_test_dependency": {
+    "observed_fact": "The native sidepanel QA harness refuses an absent release receipt and verifies the released extension tree, manifest version, and Store ZIP hash before browser launch. Repeated package-freshness refusals therefore delay EXT-D-0018's native UI check even after the unit suite passes.",
+    "source": "tests/browser/native-sidepanel-qa-harness.mjs requireReleaseReceipt and verifyReleasedArtifact",
+    "followup_after_D18": "Assess a separately attested local-build path for native extension QA so source-change UI tests can run before publication while retaining tree hash, manifest, extension identity, and owned-profile checks. Do not weaken the release-receipt path used for release verification.",
+    "status": "Observation and proposed follow-up only; no harness change in this lane."
+  },
+  "limitations": "Read-only npm metadata and published tarball inspection. No install, test, build, or harness run was performed in this lane."
+}

@@ -126,6 +126,125 @@ describe('normalizeSemanticMarkup — highlighted code blocks', () => {
 });
 
 describe('scrape pipeline — inline SVG figures', () => {
+  it('keeps an inline chart caption and HTML label with the graphic', async () => {
+    const doc = new DOMParser().parseFromString(
+      `<!doctype html><html><head><title>Chart lesson</title></head><body><article>
+        <h1>Chart lesson</h1><p>${'Context before the graph. '.repeat(40)}</p>
+        <figure>
+          <svg aria-label="Growth curve" width="100" height="100" viewBox="0 0 100 100">
+            <path d="M0 90 L100 10" stroke="blue" />
+          </svg>
+          <figcaption>Revenue grew from January to March.</figcaption>
+          <span>Measured in thousands of dollars.</span>
+        </figure>
+        <p>${'Context after the graph. '.repeat(40)}</p>
+      </article></body></html>`,
+      'text/html',
+    );
+
+    const result = await runScrape(doc, {
+      includeImages: false,
+      includeVideos: false,
+      includeAudio: false,
+      includeLinks: false,
+      includeStructured: false,
+    });
+    const markdown = result.article.content_markdown ?? '';
+
+    expect(result.article.extractor).toBe('defuddle');
+    expect(markdown).toContain('![Growth curve](data:image/svg+xml;base64,');
+    expect(markdown).toContain('Revenue grew from January to March.');
+    expect(markdown).toContain('Measured in thousands of dollars.');
+  });
+
+  it('keeps two captioned SVG figures in article order without duplicating either', async () => {
+    const doc = new DOMParser().parseFromString(
+      `<!doctype html><html><head><title>Quarterly report</title></head><body><article>
+        <h1>Quarterly report</h1><p>${'The financial report introduces both measures. '.repeat(20)}</p>
+        <figure><svg aria-label="Revenue chart" width="120" height="80" viewBox="0 0 120 80">
+          <path d="M0 70 L120 10" /></svg><figcaption>Revenue rose through March.</figcaption></figure>
+        <p>The first measure leads into the second measure.</p>
+        <figure><svg aria-label="Expense chart" width="120" height="80" viewBox="0 0 120 80">
+          <path d="M0 10 L120 60" /></svg><figcaption>Expenses eased after February.</figcaption></figure>
+        <p>${'The report closes with the margin outlook. '.repeat(20)}</p>
+      </article></body></html>`,
+      'text/html',
+    );
+
+    const result = await runScrape(doc, {
+      includeImages: false,
+      includeVideos: false,
+      includeAudio: false,
+      includeLinks: false,
+      includeStructured: false,
+    });
+    const markdown = result.article.content_markdown ?? '';
+    const markers = [
+      '![Revenue chart](data:image/svg+xml;base64,',
+      'Revenue rose through March.',
+      'The first measure leads into the second measure.',
+      '![Expense chart](data:image/svg+xml;base64,',
+      'Expenses eased after February.',
+    ];
+
+    expect(result.article.extractor).toBe('defuddle');
+    expect(markdown.match(/data:image\/svg\+xml;base64,/g)).toHaveLength(2);
+    expect(markdown.match(/Revenue rose through March\./g)).toHaveLength(1);
+    expect(markdown.match(/Expenses eased after February\./g)).toHaveLength(1);
+    for (const [index, marker] of markers.entries()) {
+      const position = markdown.indexOf(marker);
+      expect(position, marker).toBeGreaterThan(
+        index === 0 ? -1 : markdown.indexOf(markers[index - 1] ?? ''),
+      );
+    }
+  });
+
+  it('keeps a layered SVG caption and a regular image in surrounding article text', async () => {
+    const doc = new DOMParser().parseFromString(
+      `<!doctype html><html><head><title>Geometry field notes</title></head><body><article>
+        <h1>Geometry field notes</h1><p>${'The plotted coordinates explain the measured route. '.repeat(20)}</p>
+        <figure><svg width="120" height="80" viewBox="0 0 120 80"><line x1="0" y1="40" x2="120" y2="40" /></svg>
+          <svg width="120" height="80" viewBox="0 0 120 80"><path d="M0 70 L120 10" /></svg>
+          <figcaption>Route crosses the central axis.</figcaption><span>Scale: ten meters per unit.</span>
+        </figure>
+        <p>A field photograph documents the same route.</p>
+        <img src="https://images.example.org/route-photo.png" alt="Survey route photograph" width="320" height="180" />
+        <p>${'The observations continue after the photograph. '.repeat(20)}</p>
+      </article></body></html>`,
+      'text/html',
+    );
+
+    const result = await runScrape(doc, {
+      includeImages: false,
+      includeVideos: false,
+      includeAudio: false,
+      includeLinks: false,
+      includeStructured: false,
+    });
+    const markdown = result.article.content_markdown ?? '';
+    const encoded = markdown.match(/data:image\/svg\+xml;base64,([\w+/=]+)/)?.[1] ?? '';
+    const plottedSvg = atob(encoded);
+
+    expect(result.article.extractor).toBe('defuddle');
+    expect(markdown.match(/data:image\/svg\+xml;base64,/g)).toHaveLength(1);
+    expect(plottedSvg).toContain('<line');
+    expect(plottedSvg).toContain('<path');
+    expect(markdown).toContain('Route crosses the central axis.');
+    expect(markdown).toContain('Scale: ten meters per unit.');
+    expect(markdown).toContain(
+      '![Survey route photograph](https://images.example.org/route-photo.png)',
+    );
+    expect(markdown.indexOf('Route crosses the central axis.')).toBeLessThan(
+      markdown.indexOf('A field photograph documents the same route.'),
+    );
+    expect(markdown.indexOf('A field photograph documents the same route.')).toBeLessThan(
+      markdown.indexOf('Survey route photograph'),
+    );
+    expect(markdown.indexOf('Survey route photograph')).toBeLessThan(
+      markdown.indexOf('The observations continue after the photograph.'),
+    );
+  });
+
   it.each([
     {
       name: 'a labelled standalone chart',

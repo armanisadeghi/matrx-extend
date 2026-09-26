@@ -1,0 +1,51 @@
+{
+  "reviewer": "/root/svg_native_source_peer",
+  "reviewed_commit": "50066135",
+  "scope": "Independent source-only review of tests/browser/svg-caption-native-acceptance.mjs against ScrapeView, useScrape, MarkdownView, the panel driver, and the native side-panel harness. No browser, build, or runtime test was launched in this lane.",
+  "verdict_a_runtime": {
+    "status": "UNVERIFIED",
+    "reason": "The owner controls the guarded native browser launch. This review establishes what the runner would and would not prove; it does not claim an observed capture."
+  },
+  "verdict_b_source_quality": {
+    "status": "CHANGES_REQUESTED_BEFORE_RUNTIME",
+    "positive_evidence": [
+      "The runner serves a distinct two-figure HTML article from an owned 127.0.0.1 server, navigates a real tab, checks source figure and caption counts, and clicks the actual Scrape UI for Fast and Deep capture.",
+      "The native harness verifies a released extension artifact, creates a fresh profile, derives CDP from that profile, checks Chrome process ownership and the native side-panel context, and stops only its spawned child.",
+      "The runner explicitly marks fixture_pass and public_production_proof=false; the batch report also calls this engineering-fixture evidence, not a public-production claim."
+    ],
+    "findings": [
+      {
+        "severity": "P1",
+        "location": "tests/browser/svg-caption-native-acceptance.mjs:118-152",
+        "finding": "The assertions independently check SVG image order and caption/label text order. They do not check image-caption-label interleaving in the rendered article. A pipeline that moves both images before the captions, while retaining their image order and the captions' text order, passes despite detaching each chart from its explanation.",
+        "remedy": "Read the rendered Article's ordered content nodes or DOM positions and assert each SVG image precedes its own caption and label and follows its own section heading, before the next section/image. Keep the oracle in literal expected values independent of the scraper."
+      },
+      {
+        "severity": "P1",
+        "location": "tests/browser/svg-caption-native-acceptance.mjs:120-136",
+        "finding": "An img whose src merely starts with data:image/svg+xml;base64 and whose layout width is positive counts as a rendered figure. An empty or invalid data SVG, an unloaded image, or a graphic stripped of its path/rect geometry can therefore pass.",
+        "remedy": "Require complete image load and nonzero natural dimensions, decode and inspect the sanitized SVG payload for expected path/rect geometry, or verify the two images visually through an independent screenshot. The current verdict should be phrased as image elements present, not intact graphics."
+      },
+      {
+        "severity": "P2",
+        "location": "tests/browser/svg-caption-native-acceptance.mjs:192-207",
+        "finding": "Deep-mode start is accepted only while the button text begins Scrolling. A fast completion between click and the 100 ms polling sample can make a correct capture fail after 10 seconds. The settled condition observes idle button labels, not a capture generation or source URL; it cannot independently prove a second capture replaced the first.",
+        "remedy": "Observe a capture generation or mode-specific effect from the real UI/capture output, or capture the running state without a polling race. Check the source URL and a fresh completion signal before accepting Deep."
+      },
+      {
+        "severity": "P2",
+        "location": "tests/browser/svg-caption-native-acceptance.mjs:243-249",
+        "finding": "The harness creates test-results only after release verification and runtime resolution. If those preflight steps fail on a clean tree, the runner's finally writeFile can fail with ENOENT, replacing the intended structured unverified verdict with an unhandled error.",
+        "remedy": "Create the report directory independently before the harness call or immediately before writeFile. Preserve the original failure code/stage in the final report."
+      },
+      {
+        "severity": "P3",
+        "location": "tests/browser/svg-caption-native-acceptance.mjs:238-242",
+        "finding": "Failure reporting stores error.name for ordinary assertion and timeout failures, so the JSON says AssertionError or Error without the assertion/timeout label that identifies the missing step. last_stage remains generic for several waits.",
+        "remedy": "Record a bounded error message and precise wait label/stage in the local report, avoiding page content or secrets."
+      }
+    ],
+    "selector_assessment": "The outer Scrape tab selector matches App.tsx's title=Scrape and the nested Article selector matches ScrapeView's Article tab. aria-controls/aria-labelledby and active-state checks scope the article to the selected pane. The generic click helper uses a unique visible button and trusted CDP mouse input. These are sound for this current UI, though renderedArticle should apply the same closest-tablist equality used by scrapePane to avoid a future nested Scrape title collision.",
+    "provenance_limit": "Passing the repaired runner would prove an owned localhost HTML fixture through Fast and Deep in the released unpacked extension. It would not verify an unrelated public production article or full EXT-F-1007-T28 breadth."
+  }
+}

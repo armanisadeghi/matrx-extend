@@ -888,6 +888,9 @@ Every entry follows this shape:
   ordinary page chrome does not appear as extra images. Copied Markdown has
   one `data:image/svg+xml` image per inline figure, and the encoded payload
   contains no scripts, event handlers, or `javascript:` URLs.
+- **Caption check:** On an article with a chart that has a visible caption or
+  adjacent HTML label, capture it and copy the Article Markdown. The chart
+  image, caption, and label must all appear in their original order.
 - **Edge cases worth poking:** A standalone labelled SVG keeps its
   `aria-label` as alt text; a layered SVG with no label uses `Inline figure
   graphic`; an empty Mathspace `foreignObject` overlay does not block a graph;
