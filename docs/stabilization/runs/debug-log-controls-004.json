@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "run_id": "debug-log-controls-004",
+  "feature_id": "EXT-F-1005",
+  "source": {
+    "guard_log_path": "/tmp/matrx-debug-log-controls-004.log",
+    "guard_log_sha256": "99006287d5ddb4df236aa384f48cdcf69a1351cd5c5d6ebfd39f1896ce0e60a9",
+    "acceptance_result_path": "test-results/debug-log-controls-acceptance.json",
+    "acceptance_result_sha256": "29b382b99b2e37f9ccac2dc4729dcb29eba6d7c0ec2e3005f1d0b705f653c14c",
+    "runner_path": "tests/browser/debug-log-controls-acceptance.mjs",
+    "runner_sha256": "255e7d85fb5b7629ab45b6231176905fb96897aaf235b01ab034918fe3c2dfad",
+    "release_receipt_sha256": "17abd491f49295df5eb6e262ae7710e9dbf70cb4904af54d598e26040b8277d3",
+    "manifest_sha256": "e088c1689d542df9b12222e6feb2ff45c4102f95fedf057ba8b2553dbcd1b77b"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T23:02:27.298Z",
+    "healthy_watch_at": "2026-09-26T23:02:43.719Z",
+    "child_exit_at": "2026-09-26T23:02:43.719Z",
+    "child_exit_code": 0,
+    "child_signal": null,
+    "wrapper_stdout": "PARTIAL debug_log_controls_acceptance"
+  },
+  "build": {
+    "version": "0.2.79",
+    "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0",
+    "identity_cross_check": "Acceptance result matches local release receipt version/tree and generated manifest version; runner verifies identity before and after the scenario."
+  },
+  "runtime": {
+    "scenario": "post_real_panel_reload",
+    "real_admin_ui": true,
+    "admin_identity_restored_after_reload": true,
+    "owned_profile": true,
+    "natural_event_rows_before": 10,
+    "natural_event_rows_after": 21,
+    "top_level_status": "partial",
+    "case_count": 4,
+    "case_results": {
+      "EXT-F-1005-T14": {
+        "status": "partial",
+        "reload": "partial in raw output; assertions observed trusted message search, natural detail-only primitive search, no-match and reset",
+        "service_error": "unverified"
+      },
+      "EXT-F-1005-T15": {
+        "status": "partial",
+        "reload": "pass",
+        "visible_rows_before_held_resumed": [21, 21, 31],
+        "total_rows_before_held": [21, 31],
+        "service_error": "unverified"
+      },
+      "EXT-F-1005-T17": {
+        "status": "partial",
+        "reload": "partial in raw output; runner observed no-events, zero rows/total and badge cleared",
+        "service_error": "unverified"
+      },
+      "EXT-F-1005-T22": {
+        "status": "partial",
+        "reload": "pass",
+        "observations": [
+          "detail expanded",
+          "detail collapsed",
+          "no-detail row inert",
+          "no-match and no-events states distinct"
+        ],
+        "service_error": "unverified"
+      }
+    },
+    "counts_only": true
+  },
+  "interpretation": "The admitted child exited 0 with PARTIAL. The actual panel document reloaded, admin identity was restored, and all observed subtargets are tied to the exact 0.2.79 tree. Each case remains partial because service-error behavior is unverified; T14 detail/message search criteria and T17 clear criteria are further adjudicated with run 003 and runner assertions. No feature/case status is promoted here."
+}

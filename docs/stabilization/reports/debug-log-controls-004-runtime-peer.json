@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "report_id": "debug-log-controls-004-runtime-peer",
+  "run_receipt": "docs/stabilization/runs/debug-log-controls-004.json",
+  "A_runtime": {
+    "status": "PARTIAL_POST_RELOAD_ACCEPTANCE",
+    "verified": [
+      "Guard admitted the task and reports child exit 0 with explicit PARTIAL output, matching the raw counts-only result.",
+      "The result is bound to release 0.2.79 tree be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0; release receipt and generated manifest were cross-checked.",
+      "The harness observed a new panel document loader after Page.reload and restored the real admin identity before exercising Debug controls.",
+      "T14 after reload: trusted message search, natural detail-only primitive search, no-match, and search reset assertions passed.",
+      "T15 after reload: visible rows stayed 21 while total rose to 31; Resume displayed 31.",
+      "T17 after reload: clear reached no-events/zero rows and total; runner's error-badge positive-clear predicate passed.",
+      "T22 after reload: detail expansion/collapse, inert no-detail row, and distinct no-match/no-events assertions passed."
+    ]
+  },
+  "B_evidence_quality": {
+    "status": "INDEPENDENTLY_CORROBORATED",
+    "checks": [
+      "Recomputed guard, sanitized result, runner, release receipt, and manifest hashes match the receipt.",
+      "Runner gates reload evidence on changed panel loader ID plus restored admin identity; it verifies build identity before and after the run.",
+      "Combined run 003 adds the corresponding warm-only coverage on the same build. Per-case service-error remains untested; cases/cell stay unverified."
+    ],
+    "limits": [
+      "Raw case status remains partial for every case; T14 and T17 encode reload dimension as partial while their required observable behavior passed. Inventory dimension mapping is independently scoped to those assertions and does not change case status.",
+      "No service-error dimension was exercised; no full EXT-F-1005 or whole-case pass is claimed."
+    ]
+  }
+}

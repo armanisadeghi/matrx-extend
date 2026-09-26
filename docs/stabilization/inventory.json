@@ -6719,16 +6719,25 @@
               "run_id": "admin-debug-filters-001",
               "evidence": [
                 "docs/stabilization/runs/admin-debug-filters-001.json",
-                "docs/stabilization/reports/debug-acceptance-peer.json"
+                "docs/stabilization/reports/debug-acceptance-peer.json",
+                "docs/stabilization/runs/debug-log-controls-003.json",
+                "docs/stabilization/runs/debug-log-controls-004.json",
+                "docs/stabilization/reports/debug-log-controls-003-runtime-peer.json",
+                "docs/stabilization/reports/debug-log-controls-004-runtime-peer.json"
               ],
               "dimension_results": {
                 "warm": "pass",
-                "reload": "unverified",
+                "reload": "pass",
                 "service-error": "unverified"
               },
-              "detail": "Search for existing message text \u2018engine not found\u2019 returned 2 rows. Search for the existing detail value \u20181.4.204\u2019 returned 14 rows, demonstrating serialized details are searched. Clearing search restored the unfiltered set (114 rows after naturally arriving events).",
+              "detail": "Warm message/detail search and clearing to the prior set were previously observed. Run 004 repeated trusted message search after a real panel reload, found a natural detail-only primitive absent from messages, observed the no-match state, and restored search. Service-error remains open.",
               "remaining_criteria": [
-                "Reload and service-error observations required for the declared dimensions."
+                "Service-error behavior remains unverified."
+              ],
+              "run_ids": [
+                "admin-debug-filters-001",
+                "debug-log-controls-003",
+                "debug-log-controls-004"
               ]
             }
           }
@@ -6762,16 +6771,25 @@
               "run_id": "admin-debug-filters-001",
               "evidence": [
                 "docs/stabilization/runs/admin-debug-filters-001.json",
-                "docs/stabilization/reports/debug-acceptance-peer.json"
+                "docs/stabilization/reports/debug-acceptance-peer.json",
+                "docs/stabilization/runs/debug-log-controls-003.json",
+                "docs/stabilization/runs/debug-log-controls-004.json",
+                "docs/stabilization/reports/debug-log-controls-003-runtime-peer.json",
+                "docs/stabilization/reports/debug-log-controls-004-runtime-peer.json"
               ],
               "dimension_results": {
                 "warm": "pass",
-                "reload": "unverified",
+                "reload": "pass",
                 "service-error": "unverified"
               },
-              "detail": "Paused at 114 displayed rows. After a 35-second wait the feed total advanced to 115 while the displayed count stayed at 114. Resume changed the displayed count to 115 and showed the newly arrived row.",
+              "detail": "Warm pause/resume evidence is retained from earlier runs. Run 004, after the actual panel reload, held displayed rows at 21 while total rose to 31; Resume displayed 31. Service-error remains open.",
               "remaining_criteria": [
-                "Reload and service-error observations required for the declared dimensions."
+                "Service-error behavior remains unverified."
+              ],
+              "run_ids": [
+                "admin-debug-filters-001",
+                "debug-log-controls-003",
+                "debug-log-controls-004"
               ]
             }
           }
@@ -6822,7 +6840,31 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "pass",
+                "service-error": "unverified"
+              },
+              "evidence": [
+                "docs/stabilization/runs/debug-log-controls-003.json",
+                "docs/stabilization/runs/debug-log-controls-004.json",
+                "docs/stabilization/reports/debug-log-controls-003-runtime-peer.json",
+                "docs/stabilization/reports/debug-log-controls-004-runtime-peer.json"
+              ],
+              "run_ids": [
+                "debug-log-controls-003",
+                "debug-log-controls-004"
+              ],
+              "detail": "Runs 003 and 004 observed Clear produce the no-events state and zero displayed/total rows; both record the error-badge clearing predicate as pass. Run 004 exercised this after a real panel reload. Service-error remains open.",
+              "remaining_criteria": [
+                "Service-error behavior remains unverified."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T18",
@@ -6920,16 +6962,24 @@
               "run_id": "admin-debug-filters-001",
               "evidence": [
                 "docs/stabilization/runs/admin-debug-filters-001.json",
-                "docs/stabilization/reports/debug-acceptance-peer.json"
+                "docs/stabilization/reports/debug-acceptance-peer.json",
+                "docs/stabilization/runs/debug-log-controls-003.json",
+                "docs/stabilization/runs/debug-log-controls-004.json",
+                "docs/stabilization/reports/debug-log-controls-003-runtime-peer.json",
+                "docs/stabilization/reports/debug-log-controls-004-runtime-peer.json"
               ],
               "dimension_results": {
-                "warm": "unverified",
-                "reload": "unverified",
+                "warm": "pass",
+                "reload": "pass",
                 "service-error": "unverified"
               },
-              "detail": "Expanded and collapsed an existing event with details. Clicking a row without details left the accessibility tree unchanged. Source=none showed \u2018No events match the current filter.\u2019 The distinct \u2018No events yet\u2019 state was not exercised because clearing logs is excluded.",
+              "detail": "Runs 003 and 004 verified detail expand/collapse, no-detail row inertness, and distinct no-match/no-events states; run 004 exercised these after a real panel reload. Service-error remains open.",
               "remaining_criteria": [
-                "Reload and service-error observations required for the declared dimensions."
+                "Service-error behavior remains unverified."
+              ],
+              "run_ids": [
+                "debug-log-controls-003",
+                "debug-log-controls-004"
               ]
             }
           }
@@ -8282,7 +8332,8 @@
             "admin-debug-filters-001",
             "admin-debug-filter-matrix-001",
             "debug-log-controls-002",
-            "debug-log-controls-003"
+            "debug-log-controls-003",
+            "debug-log-controls-004"
           ],
           "retest_status": "not-run"
         }
@@ -8359,6 +8410,45 @@
             }
           ],
           "limits": "T14 detail-only search remains unverified. Reload and service-error dimensions remain unverified for all four cases. The acceptance result is partial; feature/case statuses and retest status are unchanged."
+        },
+        {
+          "run_id": "debug-log-controls-004",
+          "combined_run_ids": [
+            "debug-log-controls-003",
+            "debug-log-controls-004"
+          ],
+          "mode": "admin",
+          "build": "0.2.79",
+          "status": "partial",
+          "receipt": "docs/stabilization/runs/debug-log-controls-004.json",
+          "independent_review": "docs/stabilization/reports/debug-log-controls-004-runtime-peer.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1005-T14",
+              "subtarget": "warm_and_reload_message_detail_search_no_match_reset",
+              "status": "partial",
+              "observation": "Warm evidence from 003 plus post-reload evidence from 004 covers message search, a natural detail-only primitive, no-match, and search reset."
+            },
+            {
+              "case_id": "EXT-F-1005-T15",
+              "subtarget": "warm_and_reload_pause_resume",
+              "status": "partial",
+              "observation": "Warm and actual post-reload runs both held displayed rows while total increased, then caught up on resume."
+            },
+            {
+              "case_id": "EXT-F-1005-T17",
+              "subtarget": "warm_and_reload_clear_error_badge",
+              "status": "partial",
+              "observation": "Warm and post-reload clear reached no-events/zero rows and total; runner marks the positive error-badge clear assertion pass."
+            },
+            {
+              "case_id": "EXT-F-1005-T22",
+              "subtarget": "warm_and_reload_details_and_empty_states",
+              "status": "partial",
+              "observation": "Warm and actual post-reload runs observed detail expand/collapse, inert no-detail rows, no-match and no-events states."
+            }
+          ],
+          "limits": "Service-error dimension remains unverified for every linked case. T14/T15/T17/T22 result status remains unverified at case level; EXT-F-1005 admin feature cell remains unverified and retest not-run."
         }
       ]
     },
