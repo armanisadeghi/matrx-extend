@@ -66,6 +66,12 @@
       "from": "in-fix",
       "to": "in-fix",
       "reason": "Final repair resolves both second-review findings. Canonical bundle membership proven by readonly MCP; actual helper/checker commands and discovered guards remain root verification pending."
+    },
+    {
+      "at": "2026-09-26T03:26:22.193638+00:00",
+      "from": "in-fix",
+      "to": "in-fix",
+      "reason": "Final peer confirmed public-success transport bypass of private row validators. Same predicates now validate public bindings, definitions, surfaces, and ledger before acceptance; new public positive/negative command guards require root execution."
     }
   ],
   "limitations": [

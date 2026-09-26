@@ -71,3 +71,14 @@ export interface DbBundleMemberRow {
 export function isDbBundleMemberRow(value: unknown): value is DbBundleMemberRow {
   return isRecord(value) && typeof value.bundle_name === 'string' && stringOrNull(value.tool_name);
 }
+
+export interface DbBindingRow {
+  tool_id: string;
+  executor_name: string;
+  is_active: boolean;
+}
+
+export function isDbBindingRow(value: unknown): value is DbBindingRow {
+  return isRecord(value) && typeof value.tool_id === 'string' &&
+    typeof value.executor_name === 'string' && typeof value.is_active === 'boolean';
+}

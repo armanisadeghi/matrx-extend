@@ -6,9 +6,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { writeFileSync } from 'node:fs';
 import { main as drift } from '../../scripts/check-tool-db-drift';
 import { main as generateDocs } from '../../scripts/dump-tools-from-db';
+import { loadSupabaseEnv } from '../../scripts/_supabase-rest';
 import type { DbToolRow } from '../../scripts/_tool-db-row-validation';
 
-vi.mock('../../scripts/_supabase-rest', () => ({ loadSupabaseEnv: () => null, fetchPublicJson: vi.fn() }));
+vi.mock('../../scripts/_supabase-rest', async (original) => ({
+  ...await original<typeof import('../../scripts/_supabase-rest')>(),
+  loadSupabaseEnv: vi.fn(() => null),
+}));
 vi.mock('../../src/lib/tools/catalog', () => ({
   buildToolCatalogManifest: () => ({ tools: [{
     name: 'google_workspace', tier: 'read', category: 'google', admin_only: false,
@@ -33,6 +37,7 @@ let read: ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   process.argv = [...argv, '--strict'];
+  vi.mocked(loadSupabaseEnv).mockReturnValue(null);
   vi.stubEnv('MATRX_SUPABASE_PROJECT_REF', 'brsgrqvjdzwihsvnfqkf');
   vi.stubEnv('SUPABASE_ACCESS_TOKEN', 'operator-fixture-token');
   definitions = [tool]; direct = ['google_workspace']; bundles = []; membership = []; membershipStatus = 201;
@@ -139,5 +144,50 @@ describe('private catalog commands through the real Management reader', () => {
     expect(writeFileSync).not.toHaveBeenCalled();
     definitions = [{ ...tool, is_active: false }];
     expect(await drift()).toBe(1);
+  });
+});
+
+
+describe('public catalog response validation through the real REST reader', () => {
+  function publicRead(patch: { bindings?: unknown; definitions?: unknown; surfaces?: unknown } = {}) {
+    vi.mocked(loadSupabaseEnv).mockReturnValue({ url: 'https://db.matrxserver.com', key: 'publishable-fixture-key' });
+    // Disable operator fallback: malformed public data cannot hide behind it.
+    vi.stubEnv('SUPABASE_ACCESS_TOKEN', '');
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => {
+      if (!url.includes('/rest/v1/')) throw new Error('Unexpected private request');
+      const value = url.includes('/binding?')
+        ? (patch.bindings ?? [{ tool_id: tool.id, executor_name: 'chrome-extension', is_active: true }])
+        : url.includes('/definition?') ? (patch.definitions ?? [tool])
+        : (patch.surfaces ?? [{ surface_name: 'chrome-extension/assistant', always_include_tools: ['google_workspace'], always_include_bundles: [], never_include_tools: [] }]);
+      return new Response(JSON.stringify(value), { status: 200 });
+    }));
+  }
+
+  it('accepts validated public catalog rows without operator authorization', async () => {
+    publicRead();
+    expect(await drift()).toBe(0);
+    await generateDocs();
+    expect(writeFileSync).toHaveBeenCalledOnce();
+  });
+
+  it.each([
+    { definitions: [{ ...tool, parameters: null }] },
+    { definitions: [tool, { name: 'google_email_send' }] },
+    { definitions: { rows: [tool] } },
+    { bindings: [{ tool_id: tool.id, executor_name: 'chrome-extension', is_active: 'true' }] },
+    { bindings: { rows: [] } },
+  ])('refuses malformed public catalog rows and preserves docs: %j', async (patch) => {
+    publicRead(patch);
+    expect(await drift()).toBe(3);
+    await generateDocs();
+    expect(writeFileSync).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { surfaces: [{ surface_name: 'chrome-extension/assistant', always_include_tools: ['google_workspace'], always_include_bundles: 3, never_include_tools: [] }] },
+    { surfaces: { rows: [] } },
+  ])('refuses malformed public surface rows: %j', async ({ surfaces }) => {
+    publicRead({ surfaces });
+    expect(await drift()).toBe(3);
   });
 });

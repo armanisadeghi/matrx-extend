@@ -70,16 +70,15 @@ interface LedgerRow {
   checksum: string;
 }
 
+function isLedgerRow(row: unknown): row is LedgerRow {
+  return typeof row === 'object' && row !== null && !Array.isArray(row) &&
+    typeof (row as Record<string, unknown>).filename === 'string' &&
+    typeof (row as Record<string, unknown>).checksum === 'string';
+}
+
 async function fetchLedgerViaManagementApi(): Promise<LedgerRow[]> {
   const sql = `select filename, checksum from public._schema_migrations where source = '${SOURCE}' order by filename`;
-  return selectRowsViaManagementApi(
-    sql,
-    (row): row is LedgerRow =>
-      typeof row === 'object' &&
-      row !== null &&
-      typeof (row as Record<string, unknown>).filename === 'string' &&
-      typeof (row as Record<string, unknown>).checksum === 'string',
-  );
+  return selectRowsViaManagementApi(sql, isLedgerRow);
 }
 
 function loudBox(title: string): void {
@@ -116,11 +115,13 @@ export async function main(): Promise<number> {
   let publicError: unknown = new Error('publishable credentials absent');
   if (env) {
     try {
-      ledgerRows = await fetchPublicJson<LedgerRow[]>(
+      const rows = await fetchPublicJson<LedgerRow[]>(
         env.url,
         env.key,
         `_schema_migrations?source=eq.${encodeURIComponent(SOURCE)}&select=filename,checksum`,
       );
+      if (!Array.isArray(rows) || !rows.every(isLedgerRow)) throw new Error('Invalid public ledger rows');
+      ledgerRows = rows;
     } catch (error) {
       publicError = error;
     }

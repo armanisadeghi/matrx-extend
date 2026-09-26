@@ -23,17 +23,11 @@ import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import process from 'node:process';
-import { isDbToolRow, type DbToolRow } from './_tool-db-row-validation';
+import { isDbBindingRow, type DbBindingRow, isDbToolRow, type DbToolRow } from './_tool-db-row-validation';
 import { selectRowsViaManagementApi } from './_supabase-management';
 import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
 
 const EXECUTOR_NAME = 'chrome-extension';
-
-interface DbBindingRow {
-  tool_id: string;
-  executor_name: string;
-  is_active: boolean;
-}
 
 async function fetchToolsViaManagementApi(): Promise<DbToolRow[]> {
   return selectRowsViaManagementApi(
@@ -69,6 +63,7 @@ export async function main(): Promise<void> {
       `binding?or=(executor_name.eq.${EXECUTOR_NAME},executor_name.like.${EXECUTOR_NAME}.*)&select=tool_id,executor_name,is_active`,
       'tool',
     );
+    if (!Array.isArray(bindings) || !bindings.every(isDbBindingRow)) throw new Error('Invalid public binding rows');
     const ids = [...new Set(bindings.filter((b) => b.is_active).map((b) => b.tool_id))];
     if (ids.length === 0) {
       console.warn(

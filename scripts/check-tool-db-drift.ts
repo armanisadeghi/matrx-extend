@@ -53,7 +53,7 @@ import { fileURLToPath } from 'node:url';
 import { buildToolCatalogManifest } from '../src/lib/tools/catalog';
 import { CANONICAL_SURFACE } from '../src/lib/tools/categories';
 import { selectRowsViaManagementApi } from './_supabase-management';
-import { isDbBundleMemberRow, type DbBundleMemberRow, isDbSurfaceDefaultsRow, isDbToolRow, type DbSurfaceDefaultsRow, type DbToolRow } from './_tool-db-row-validation';
+import { isDbBindingRow, type DbBindingRow, isDbBundleMemberRow, type DbBundleMemberRow, isDbSurfaceDefaultsRow, isDbToolRow, type DbSurfaceDefaultsRow, type DbToolRow } from './_tool-db-row-validation';
 import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
 
 interface LocalTool {
@@ -69,12 +69,6 @@ interface LocalTool {
     >;
     required?: string[];
   };
-}
-
-interface DbBindingRow {
-  tool_id: string;
-  executor_name: string;
-  is_active: boolean;
 }
 
 interface Drift {
@@ -106,6 +100,7 @@ async function fetchOwnedTools(
     `binding?or=(executor_name.eq.${EXECUTOR_NAME},executor_name.like.${EXECUTOR_NAME}.*)&select=tool_id,executor_name,is_active`,
     'tool',
   );
+  if (!Array.isArray(bindings) || !bindings.every(isDbBindingRow)) throw new Error('Invalid public binding rows');
   const ids = [...new Set(bindings.filter((b) => b.is_active).map((b) => b.tool_id))];
   if (ids.length === 0) return { defs: [], bindings };
   const inList = `(${ids.map((i) => `"${i}"`).join(',')})`;
@@ -115,11 +110,8 @@ async function fetchOwnedTools(
     `definition?id=in.${inList}&select=id,name,description,parameters,tier,admin_only,is_active,category,source_kind&order=name.asc`,
     'tool',
   );
+  if (!Array.isArray(defs) || !defs.every(isDbToolRow)) throw new Error('Invalid tool definition rows');
   return { defs, bindings };
-}
-
-function isRecord(row: unknown): row is Record<string, unknown> {
-  return typeof row === 'object' && row !== null;
 }
 
 async function fetchOwnedToolsViaManagementApi(): Promise<{
@@ -128,11 +120,7 @@ async function fetchOwnedToolsViaManagementApi(): Promise<{
 }> {
   const bindings = await selectRowsViaManagementApi(
     `select tool_id, executor_name, is_active from tool.binding where executor_name = '${EXECUTOR_NAME}' or executor_name like '${EXECUTOR_NAME}.%'`,
-    (row): row is DbBindingRow =>
-      isRecord(row) &&
-      typeof row.tool_id === 'string' &&
-      typeof row.executor_name === 'string' &&
-      typeof row.is_active === 'boolean',
+    isDbBindingRow,
   );
   const defs = await selectRowsViaManagementApi(
     `select distinct d.id, d.name, d.description, d.parameters, d.tier, d.admin_only, d.is_active, d.category, d.source_kind from tool.definition d join tool.binding b on b.tool_id = d.id where b.is_active and (b.executor_name = '${EXECUTOR_NAME}' or b.executor_name like '${EXECUTOR_NAME}.%') order by d.name`,
@@ -149,12 +137,14 @@ async function fetchOwnedToolsViaManagementApi(): Promise<{
  */
 async function fetchSurfaceDefaults(url: string, key: string): Promise<DbSurfaceDefaultsRow[]> {
   // Post 2026-06 canonicalization: tool_surface_defaults → tool.surface_defaults
-  return fetchPublicJson<DbSurfaceDefaultsRow[]>(
+  const rows = await fetchPublicJson<DbSurfaceDefaultsRow[]>(
     url,
     key,
     `surface_defaults?or=(surface_name.eq.${encodeURIComponent(ASSISTANT_SURFACE)},surface_name.eq.${encodeURIComponent(PILOT_SURFACE)})&select=surface_name,always_include_tools,always_include_bundles,never_include_tools`,
     'tool',
   );
+  if (!Array.isArray(rows) || !rows.every(isDbSurfaceDefaultsRow)) throw new Error('Invalid public surface rows');
+  return rows;
 }
 
 async function fetchSurfaceDefaultsViaManagementApi(): Promise<DbSurfaceDefaultsRow[]> {
