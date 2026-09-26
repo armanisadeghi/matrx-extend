@@ -1,0 +1,13 @@
+{
+  "run_id": "source-org-local-green-001",
+  "defect_id": "EXT-D-0022",
+  "source_commit": "e36bf683",
+  "command": "pnpm exec vitest run tests/unit/save-never-loses-input.test.tsx tests/unit/not-yet-a-source.test.tsx src/lib/supabase/queries.recognition.test.ts src/hooks/use-page-recognition.test.tsx src/lib/chat/context/page-source.test.ts tests/unit/wbx-explicit-organization-writes.test.ts --maxWorkers=1",
+  "guarded_wrapper": "resource guard 7234",
+  "completed_at": "2026-09-26T19:42:04.664Z",
+  "child_exit_code": 0,
+  "log_path": "/tmp/matrx-source-org-local-green-001.log",
+  "log_sha256": "cfcfd37bbd9ac3dbcb36a62f3542e01a45a0bd4072e744b5f8b0d9bf611d3832",
+  "result": "6 test files passed; 39 tests passed, including same-URL workspace switch, late old-workspace Save, new-workspace positive control, pending retry preservation, shared query, hook, chat context, and explicit SEO organization writes",
+  "limits": "Focused local tests; authenticated multi-organization browser and independent post-repair review remain pending."
+}

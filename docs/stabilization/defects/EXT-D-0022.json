@@ -20,11 +20,12 @@
     "src/lib/supabase/queries.recognition.test.ts",
     "docs/stabilization/reports/d22-source-peer.json",
     "docs/stabilization/runs/source-org-local-red-001.json",
-    "docs/stabilization/runs/source-org-green-002.json"
+    "docs/stabilization/runs/source-org-green-002.json",
+    "docs/stabilization/runs/source-org-local-green-001.json"
   ],
   "severity": "S2: wrong-workspace Saved claim may reveal another RLS-visible organization's Source identity and misstate capture status",
   "priority": "P1: close the organization boundary before claiming workspace-correct recognition",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "/root/source_recognition_org_fix",
   "transition_history": [
     {
@@ -50,6 +51,12 @@
       "from": "fixed",
       "to": "in-fix",
       "reason": "Same-class late PAGE_ALREADY_CAPTURED broadcast found without organization identity; the hook now rechecks through the scoped query and needs another focused green run."
+    },
+    {
+      "at": "2026-09-26T19:42:04.664Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Scrape local Saved/link and pending retry repair e36bf683 passed guarded 6-file/39-test red-to-green focused run. Typecheck, fresh independent review, and authenticated multi-organization UI verification remain pending."
     }
   ],
   "fix_commits": ["deb577e8", "e36bf683"],

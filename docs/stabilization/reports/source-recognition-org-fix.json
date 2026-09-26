@@ -3,8 +3,8 @@
   "task_id": "source-recognition-org-fix",
   "defect_id": "EXT-D-0022",
   "lane": "shared Source recognition organization boundary",
-  "source_verdict": "SCRAPE_REPAIR_COMMITTED_FINAL_VERIFICATION_PENDING",
-  "runtime_verdict": "QUERY_HOOK_RED_GREEN_CONFIRMED_SCRAPE_RED_CONFIRMED_SCRAPE_GREEN_PENDING_UI_PENDING",
+  "source_verdict": "SCRAPE_REPAIR_COMMITTED_FOCUSED_GREEN_PASSED",
+  "runtime_verdict": "QUERY_HOOK_AND_SCRAPE_RED_GREEN_CONFIRMED_UI_PENDING",
   "root_cause": "Authenticated lookupCapturedByUrl treated a missing or failed organization resolution as null, then omitted the organization_id predicate. RLS can expose rows from multiple memberships, so an unscoped query can claim another workspace's Source. The Scrape hook also did not recheck when the selected workspace changed while the tab URL stayed the same.",
   "siblings_census": [
     "Scrape recognition hook maps unknown to a truthful check-failed state; it now distinguishes the specific missing-workspace remedy without rendering backend error text and rechecks when the device's selected organization changes.",
@@ -21,13 +21,13 @@
     "The missing-workspace Scrape banner directs the person to choose an organization; generic database/network failures keep generic text."
   ],
   "red_evidence": "docs/stabilization/runs/source-org-red-001.json: guarded focused test failed 2 missing/unreadable-organization assertions, with 2 guest/selected-organization controls passing",
-  "green_evidence": "docs/stabilization/runs/source-org-green-002.json: guarded query, hook and chat tests passed 3 files and 14 tests including late-broadcast guard; final expanded Scrape/save rerun pending",
+  "green_evidence": "docs/stabilization/runs/source-org-green-002.json: query, hook and chat passed 14/14; docs/stabilization/runs/source-org-local-green-001.json: expanded real Scrape/save and related checks passed 39/39 across six files",
   "scrape_red_evidence": "docs/stabilization/runs/source-org-local-red-001.json: guarded real ScrapeView/save flow failed two stale local Saved UI cases with seven earlier controls passing",
   "typecheck": "pending",
   "independent_review": "pending",
   "ui_verification": "pending: signed-in multi-organization page recognition, same-page workspace switch, and two-member Saved captures procedure",
   "open": [
-    "Expanded focused Scrape/save rerun and typecheck are pending after e36bf683.",
+    "Typecheck is pending after e36bf683.",
     "Independent fresh review and live UI checks are pending before D22 closure."
   ]
 }
