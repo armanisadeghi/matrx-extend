@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "report_id": "package-catchup-007-peer",
+  "scope": "Published-package consumer review after release-stabilization-036 stopped on @ai-matrx/content-ir freshness. The stop saw 0.19.13 versus npm 0.19.14; the guarded refresh installed 0.19.15 before review ended. No install, build, tests, or browser run in this lane.",
+  "published_tarballs": {
+    "0.19.13": "476e23165d363fa9fdeddd5377d619eec0f010e837e244b57dac7a44ce3abbd2",
+    "0.19.14": "cb6fa6b8bfe11b329144028c47183c66b5e07bd3347bf531988b8fe4da987e02",
+    "0.19.15": "5163eef40bcf1555ec0267f83995d66981530711c244bc98d09741d74032efff"
+  },
+  "actual_deltas": {
+    "0.19.13_to_0.19.14": "Published /source JS and declarations add normalizeLinkLabel, collectLinkDefinitions, resolveReferenceLinks, and LinkDefinition for reference links in split document fragments. Table opening now excludes lines inside an HTML block; BLOCK_START includes footnote definitions. The main and /source bundles change. The 0.19.14 changelog's metadata-only wording is inaccurate, though it states no consumer action.",
+    "0.19.14_to_0.19.15": "Published tarball member hashes show only CHANGELOG.md and package.json changed; dist/source.js and dist/source.d.ts are byte-identical. No additional source adoption."
+  },
+  "extension_applicability": {
+    "imports": "Extension source imports @ai-matrx/content-ir/core and /wire for envelope, partial-kind, and inbound metadata handling. It has no @ai-matrx/content-ir/source import or calls to the new link helpers or table detectors.",
+    "consumer_action": "No required extension source migration. The /source behavior is real package behavior for any transitive consumer; root's release checks and browser verification remain necessary."
+  },
+  "refresh_observed": {
+    "wrapperLog": "/tmp/matrx-package-catchup-007.log",
+    "childExitCode": 0,
+    "finishedAt": "2026-09-26T21:39:57.392Z",
+    "installedVersion": "0.19.15",
+    "lockfileSha256AtReview": "026a5950d37a16cbfcc2fa1fa0f077eb832cd1aa0e3e03595419cadc945fb258",
+    "lockfileDelta": "Only content-ir 0.19.13 to 0.19.15 and the two transitive references to it; package.json already declares latest."
+  },
+  "verdict": "NO_REQUIRED_EXTENSION_SOURCE_ADOPTION. Runtime behavior and release retry are not verified by this lane."
+}
