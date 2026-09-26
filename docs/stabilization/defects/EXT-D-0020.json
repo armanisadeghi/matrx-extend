@@ -16,11 +16,14 @@
     "/tmp/matrx-ci-36253562084.log",
     "docs/stabilization/runs/popup-teardown-red-001.json",
     "docs/stabilization/reports/popup-teardown-peer.json",
-    "docs/stabilization/runs/popup-teardown-green-001.json"
+    "docs/stabilization/runs/popup-teardown-green-001.json",
+    "docs/stabilization/runs/popup-teardown-suite-001.json",
+    "docs/stabilization/reports/d20-ci-closure-peer.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/36254397373"
   ],
   "severity": "S3: unreliable integration gate; no product impact established",
   "priority": "P1: restore trustworthy main",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/ci_teardown_repair",
   "transition_history": [
     {
@@ -46,6 +49,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Minimal import settlement repair9a3cdb9c, independent source reviewe29fcc88 and focused1/1 pass. Full/remote CI retest remains pending."
+    },
+    {
+      "at": "2026-09-26T16:13:25.236558+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Local full1442pass/3skip and actual merged-source CI36254397373 success1441pass/4skip; focused recovery test279ms."
+    },
+    {
+      "at": "2026-09-26T16:13:25.236558+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Fresh independent peer1e323cbd accepts bounded original CI symptom closure. No deterministic local red or future-flake guarantee claimed."
     }
   ],
   "closure_requirement": "Independent no-weakening review, local focused/full suite and remote CI pass containing repair.",

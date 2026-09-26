@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T16:03:25.533582+00:00",
+  "updated_at": "2026-09-26T16:13:25.236558+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -1290,7 +1290,7 @@
       ],
       "cells": {
         "guest": {
-          "test_status": "fail",
+          "test_status": "pass",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
@@ -1317,12 +1317,13 @@
             "release-stabilization-017",
             "release-stabilization-018",
             "release-stabilization-021",
-            "release-stabilization-023"
+            "release-stabilization-023",
+            "popup-teardown-suite-001"
           ],
-          "retest_status": "pending"
+          "retest_status": "pass"
         },
         "member": {
-          "test_status": "fail",
+          "test_status": "pass",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
@@ -1349,12 +1350,13 @@
             "release-stabilization-017",
             "release-stabilization-018",
             "release-stabilization-021",
-            "release-stabilization-023"
+            "release-stabilization-023",
+            "popup-teardown-suite-001"
           ],
-          "retest_status": "pending"
+          "retest_status": "pass"
         },
         "admin": {
-          "test_status": "fail",
+          "test_status": "pass",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
@@ -1381,9 +1383,10 @@
             "release-stabilization-017",
             "release-stabilization-018",
             "release-stabilization-021",
-            "release-stabilization-023"
+            "release-stabilization-023",
+            "popup-teardown-suite-001"
           ],
-          "retest_status": "pending"
+          "retest_status": "pass"
         }
       },
       "readiness_gaps": [

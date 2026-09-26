@@ -3,6 +3,12 @@
 ## Resume contract
 User authorizes autonomous test → capture → fix → independent retest → green integration. Read PLAN.md, inventory.json, defects and runs. Inventory is sole coverage register; campaign remains largely unverified. Chat/Pilot systematic testing stays last. Shared main only; preserve concurrent edits, fetch before push, never publish red trunk. Root alone launches one resource-guarded heavy test/build OR native browser lease. Flat root+3 max: Luna medium narrow execution, Sol medium coding/moderate diagnosis, fresh independent reviews with separate acceptance/quality verdicts.
 
+## Current verified checkpoint — 2026-09-26 16:14 UTC
+- Main79f5cdeb merged remote89ed14ac and pushed16:09UTC; CI36254397373 SUCCESS on exact merge, including content-ir0.19.6.1441remote tests pass/4skip, productionbuildpass, popuprecovery279ms. Root local frozeninstall021 and typecheck021 exit0 confirmed. Consumerpeer20c6ac06 no extension action. Earlier local full1442/3skip used0.19.5; never conflate graphs.
+- D20 CLOSED after repair9a3cdb9c, sourcepeere29fcc88, focused1pass, full1442pass/3skip and fresh actualCIpeer1e323cbd. Original intermittent CI failure proven; unchanged local attempt passed, no deterministic-red claim. F0003 cells restoredpass.693cases; most product coverage remains unverified.
+- Sol medium /root/member_vault_runtime_prepare prepares isolated member Vault-access probe, no runtime launches. Existing test@test.com non-admin and memberorgs verified; saved credential availability and real sign-in remain unverified. Root sole runtime guard, currently no workload. Primary/devartifact still verified0.2.68 release023, built before latest content-ir lock update; don't claim rebuilt runtime.
+- Root next fetch/push remaining receipts after peer; hourly deadline17:09UTC. Reviewqueue port handoff outstanding. All Chat/Pilot systematic work stays last. Awakeassertion expires18:46UTC. User requests continuous campaign; stale goal metadata blocked cannot be programmatically resumed, not a work blocker.
+
 ## Latest synchronization — 2026-09-26 16:09 UTC
 - Pushed main79f5cdeb after fetching and merging remote89ed14ac. Clean local/remote main; next hourly deadline17:09UTC. Remote CI36254397373 pending.
 - D20 repaired9a3cdb9c, independentpeere29fcc88, focused1pass and full1442pass/3skip/zero unhandled errors (popup-teardown-suite-001, guard91249 exit0 confirmed). Defect fixed, not closed pending remote CI.
