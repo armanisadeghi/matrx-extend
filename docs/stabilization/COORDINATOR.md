@@ -1,11 +1,12 @@
 # Matrx Extend stabilization: resume here
 
-Updated 2026-09-26 20:12 UTC. Campaign remains incomplete; `inventory.json` is the coverage authority. The prior coordinator is preserved verbatim at `diagnostics/coordinator-history-20260926-1832.md`; earlier history remains in `coordinator-history-20260926-1800.md` and `coordinator-history-20260926-1632.md`.
+Updated 2026-09-26 20:18 UTC. Campaign remains incomplete; `inventory.json` is the coverage authority. The prior coordinator is preserved verbatim at `diagnostics/coordinator-history-20260926-1832.md`; earlier history remains in `coordinator-history-20260926-1800.md` and `coordinator-history-20260926-1632.md`.
 
 ## Current truth and next actions
 
 ### Latest recovery checkpoint (supersedes older run-next wording below)
 
+- CURRENT: release031 ACTIVE PTY90442 log/tmp/matrx-release-stabilization-031.log. Release030 wrapper90450 confirmed1 at20:14:20: lint7errors in evidence JSON, no push byrelease. Concurrent sync had independently advanced origin/main23996d76; CI36268704298 FAILED on same7lint errors. Local formatting249f8447+f9dc7be6 now fixes all stabilizationJSON errors (598files checked zeroerrors, inventory untouched). Release031 will verify fullcandidate thenpush; do not claim CIgreen until exactSHA succeeds.
 - Release029 wrapper18601 confirmed1 at20:09:32.571: stale agents.14.0/design-system.46.2 gate, nothing published. Guarded package-catchup004 wrapper28833 confirmed0 at20:11:22.030; lock23996d76 updates agents.14.3/design-system.46.3 only. Consumerpeer /root/package_catchup_004_peer found no required caller adoption, final report pending. Release030 now ACTIVE PTY90450, log/tmp/matrx-release-stabilization-030.log; supersedes029 running statement below. Confirm exit before browser.
 - Remote .76 b30af3e9/c6a86dd4 merged a02f8a87; fetch20:08 found no further incoming. Root last push18:48; publication delayed by confirmed D22 races, now full guarded release-stabilization-029 RUNNING PTY18601, log/tmp/matrx-release-stabilization-029.log. Expected .77 or newer. Confirm wrapper exit before any other heavy/browser work. Script validates exact candidate and reconciles remote before push.
 - D22 escalation fixed request body/header binding, durable terminal revisions and honest storage failure (560efb66). Boundarygreen001 wrapper74516 confirmed0,7files47tests. Fresh peer2bada139 accepted mechanisms, requested honest not-sent wording. f6161e26 fixes local -4 actor error distinction, refusalgreen001 wrapper88657 confirmed0,3files11tests. Fresh peerd162957a ACCEPT_WITH_DOCUMENTATION_CAVEAT (status comment describes HTTP only; minor pending), runtimeunverified. D22 notclosed; native test stillrequired. Reports/runs preserve earlier red and invalidfixture findings.
