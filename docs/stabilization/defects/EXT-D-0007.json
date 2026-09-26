@@ -54,6 +54,15 @@
       "live_acceptance": "unverified",
       "findings": "Cached profile accepted despite session restore false; admin flag accepted without authenticated profile. Source-confirmed; runtime regression reproduction and repair assigned to original implementer.",
       "report": "docs/stabilization/reports/auth-hydration-peer.json"
+    },
+    {
+      "round": 2,
+      "commit": "553bad3",
+      "engineering": "fail",
+      "live_acceptance": "unverified",
+      "previous_findings": "Addressed",
+      "findings": "Broadcast and interactive sign-in bypass truthful hydration; role lookup error silently maps to nonadmin. Source confirmed, next regression proof required.",
+      "report": "docs/stabilization/reports/auth-classification-peer.json"
     }
   ]
 }
