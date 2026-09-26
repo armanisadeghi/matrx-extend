@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "report_id": "settings-interaction-peer",
+  "reviewed_commit": "b8df3778d672d926b0577242ab80a71e6027358b",
+  "reproduction": "docs/stabilization/runs/guest-settings-local-001.json",
+  "engineering_review": {
+    "status": "ready_for_native_retest",
+    "findings": [],
+    "evidence": [
+      "Port replacement first observes focus, then sends platform-appropriate Meta+A on macOS (Ctrl+A elsewhere) and verifies the input selection bounds before Backspace or insertion.",
+      "Selection and clearing waits are deadline-bounded; an unsuccessful select-all assertion stops before destructive replacement input.",
+      "Offscreen target handling uses at most eight CDP mouse-wheel events and waits for observed movement; pointer actions follow only after viewport, hit-target, animation, and stability checks.",
+      "DOM reads are observational; no product state or storage is injected. No polling loop is unbounded."
+    ],
+    "syntax": "node --check passed for both changed browser modules"
+  },
+  "acceptance_readiness": {
+    "status": "runtime_unverified",
+    "reason": "The fix is runner-only and addresses both recorded interaction failures, but this peer review did not execute the genuine native Chrome panel retest. T46 worker rediscovery and T70 unavailable-API/alternate update outcomes remain explicitly unverified."
+  }
+}
