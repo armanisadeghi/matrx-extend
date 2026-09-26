@@ -331,8 +331,11 @@ describe('Save never loses input', () => {
     });
     render(<ScrapeView />);
     fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await waitFor(async () => expect(await listUnsavedCaptures()).toHaveLength(1));
+    expect((await listUnsavedCaptures())[0]?.lastRefusal.message).toContain(
+      'does not say where it is',
+    );
     expect(await screen.findByText(/does not say where it is/)).toBeTruthy();
-    expect(await listUnsavedCaptures()).toHaveLength(1);
     expect(useScrapeStore.getState().edited).toBe(true);
   });
 
