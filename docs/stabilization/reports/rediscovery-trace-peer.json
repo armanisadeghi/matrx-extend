@@ -1,0 +1,47 @@
+{
+  "reviewer": "independent source reviewer",
+  "commits_reviewed": ["47e9004c8cce39a79bf54231cecf1d8a4eb2bfaf", "f15e907"],
+  "method": "Read-only source review of candidate commits against docs/stabilization/inventory.json EXT-F-1003-T46 and forcing-function-tests. No tests, build, browser, or process was run.",
+  "A_runtime_acceptance": {
+    "verdict": "PENDING; no browser execution or runtime evidence reviewed",
+    "candidate_capability": "The runner installs entry and post-probe CDP breakpoints in the spawned profile's service worker script, saves the real port using trusted panel input, then observes the handler and its later availability broadcast.",
+    "acceptance_blocker": "The acceptance does not establish that either pause was caused by this Save. It accepts the first entry and postProbe pauses without comparing observedAt to a Save timestamp; those pauses can predate the input. It also does not require a matching /health request, so the listener is diagnostic context, not proof that the configured port was probed. Entry and postProbe can be drawn from different handler invocations.",
+    "native_vs_http": "Breakpoint-based completion is transport-independent: bootstrap.ts:957 probes and :960 broadcasts after either result, so healthy native-host success need not issue HTTP. The disposable listener can observe HTTP /health, but this runner never asserts that event or records an explicit native/HTTP classification.",
+    "false_pass_risk": "Pre-save or unrelated rediscover invocation(s) can satisfy both pause predicates; separate calls can be paired. Therefore current source can pass without attributable Save-triggered rediscovery.",
+    "false_fail_risks": "Unminified-shape regex and tight breakpoint location assertions may reject a behaviorally correct changed bundle; worker target replacement or debugger attach/resume failures can also fail the runner. These are explicit failures, not acceptance passes."
+  },
+  "B_quality_verdict": {
+    "verdict": "CHANGES REQUIRED before runtime admission",
+    "prior_findings": [
+      {
+        "title": "Removed VALID_PORT still used in persistence assertion",
+        "status": "ADDRESSED",
+        "evidence": "f15e907 replaces that use with observedPort.port in the save/reload path (tests/browser/settings-local-controls-acceptance.mjs:292-308)."
+      },
+      {
+        "title": "Probe before next alarm is not attributable to Save rediscovery",
+        "status": "NOT ADDRESSED",
+        "evidence": "The alarm timing check is replaced by worker breakpoints, but observations remain uncorrelated to Save time or invocation (tests/browser/settings-local-controls-acceptance.mjs:108-115, 288-303)."
+      },
+      {
+        "title": "HTTP observer marks working native rediscovery as failure",
+        "status": "ADDRESSED IN DESIGN",
+        "evidence": "Acceptance now watches the worker handler/post-probe broadcast instead of requiring GET /health; the dead-port listener returns 503 and cannot fake native health (tests/browser/settings-local-controls-acceptance.mjs:17-41, 101-151)."
+      }
+    ],
+    "additional_findings": [
+      {
+        "priority": "P1",
+        "title": "CDP resume is not awaited before success",
+        "evidence": "The paused-event listener fires Debugger.resume without awaiting it; waitFor can return as soon as pauses are recorded and assert a still-null resumeError before the promise settles (tests/browser/settings-local-controls-acceptance.mjs:108-115, 296-299). A later resume rejection can be missed."
+      },
+      {
+        "priority": "P2",
+        "title": "Cleanup is fail-fast and can skip override cleanup",
+        "evidence": "In finally, watcher.close() and worker.detach() precede the saved-port cleanup without independent try/finally guards (tests/browser/settings-local-controls-acceptance.mjs:322-329). A debugger cleanup error skips clearing the override; outer harness eventually terminates its owned browser/profile (native-sidepanel-qa-harness.mjs:423 onward), while the top-level listener closes in its own finally."
+      }
+    ],
+    "forcing_function_assessment": "The test reads real released-worker code and observes real handler statements, a stronger seam than storage or broadcast-only evidence. It still lacks the forcing condition that makes a no-op or unrelated invocation fail: the Save event and matching handler execution need a shared temporal/correlation key, and completion needs to belong to that same invocation. The current listener count is captured but not asserted after Save."
+  },
+  "required_next": "Correlate one handler entry and its post-probe completion strictly after the trusted Save action (and ensure both belong to the same invocation); await each debugger resume and preserve cleanup even if debugger teardown fails. Then run the guarded native acceptance and obtain fresh independent evidence review."
+}
