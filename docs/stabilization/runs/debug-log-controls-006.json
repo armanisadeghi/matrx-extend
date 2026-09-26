@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "run_id": "debug-log-controls-006",
+  "feature_id": "EXT-F-1005",
+  "source": {
+    "guard_log_path": "/tmp/matrx-debug-log-controls-006.log",
+    "guard_log_sha256": "6888a4e6ae63f1c77d516dd8df468e5993d135e628cbb8684de0b037a80b2215",
+    "acceptance_result_path": "test-results/debug-log-controls-acceptance.json",
+    "acceptance_result_sha256": "d9daebe1de5cd012075efe289e4001a941c3a622d1140a7958024fb27abbd362",
+    "runner_path": "tests/browser/debug-log-controls-acceptance.mjs",
+    "runner_sha256": "f31ceb72753a601a2c3f1bef2acfaf4bcd837ee250e7c490dd867166b8d4e49b",
+    "release_receipt_sha256": "17abd491f49295df5eb6e262ae7710e9dbf70cb4904af54d598e26040b8277d3",
+    "manifest_sha256": "e088c1689d542df9b12222e6feb2ff45c4102f95fedf057ba8b2553dbcd1b77b"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T23:24:47.765Z",
+    "healthy_watch_at": "2026-09-26T23:25:04.193Z",
+    "child_exit_at": "2026-09-26T23:25:16.852Z",
+    "child_exit_code": 0,
+    "child_signal": null,
+    "stdout": "PARTIAL debug_log_controls_acceptance"
+  },
+  "build": {
+    "version": "0.2.79",
+    "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0",
+    "identity_cross_check": "Acceptance result matches local release receipt version/tree and generated manifest version; runner checks build identity at start and end."
+  },
+  "runtime": {
+    "scenario": "real_panel_service_error",
+    "real_admin_ui": true,
+    "owned_profile": true,
+    "top_level_status": "partial",
+    "case_count": 4,
+    "natural_event_rows_before": 53,
+    "natural_event_rows_after": 71,
+    "service_error_observation": {
+      "online_positive_control": false,
+      "actual_failed_request": false,
+      "visible_failure": false,
+      "outage_persisted_through_controls": false,
+      "offline_set_applied": false,
+      "offline_ping_click_dispatched": false,
+      "network_restored": true,
+      "status": "unverified",
+      "failure_stage": "service_error_online_control"
+    },
+    "case_statuses": {
+      "EXT-F-1005-T14": "partial; service-error unverified",
+      "EXT-F-1005-T15": "partial; service-error unverified",
+      "EXT-F-1005-T17": "partial; service-error unverified",
+      "EXT-F-1005-T22": "partial; service-error unverified"
+    }
+  },
+  "interpretation": "This admitted child exited 0 with PARTIAL. The online positive control did not succeed, and failureStage is service_error_online_control. The run did not apply offline conditions or dispatch an offline ping, so it provides no evidence of an actual failed request, visible failure state, or outage persistence. The four ordinary Debug observations remain partial only; no case or feature pass is established."
+}

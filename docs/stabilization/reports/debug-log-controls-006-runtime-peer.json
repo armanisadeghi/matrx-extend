@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "report_id": "debug-log-controls-006-runtime-peer",
+  "run_receipt": "docs/stabilization/runs/debug-log-controls-006.json",
+  "A_runtime": {
+    "status": "PARTIAL; SERVICE_ERROR_UNVERIFIED",
+    "verified": [
+      "Resource guard admitted the run; healthy watch and child exit 0 agree with explicit PARTIAL stdout and the raw result.",
+      "The result is bound to version 0.2.79/tree be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0; release receipt and manifest hashes were cross-checked.",
+      "A real admin UI and owned profile were recorded; the ordinary run produced natural log rows and four partial case outputs."
+    ],
+    "service_error": [
+      "onlinePositiveControl=false and failureStage=service_error_online_control.",
+      "actualFailedRequest=false, visibleFailure=false, offlineSetApplied=false, and offlinePingClickDispatched=false; no offline attempt was proven.",
+      "networkRestored=true records cleanup, not an observed outage/recovery cycle."
+    ]
+  },
+  "B_evidence_quality": {
+    "status": "INDEPENDENTLY_CORROBORATED",
+    "checks": [
+      "Raw guard/result, runner, release receipt, and manifest hashes match the receipt.",
+      "Runner requires one completed HTTP 200 online request with visible OK before applying offline conditions; it sets offlineSetApplied and offlinePingClickDispatched only after that setup. The raw failure stage precedes those steps.",
+      "The run cannot establish a failure cause from the sanitized output; none is inferred."
+    ],
+    "limits": [
+      "No service-error behavior was observed; every linked case remains incomplete and the full service-error dimension remains unverified.",
+      "This run is distinct from Debug 005, which reported onlinePositiveControl=true and failed later during service_error_offline_control; neither proves the offline error oracle.",
+      "No feature cell or case status is promoted by this review."
+    ]
+  }
+}

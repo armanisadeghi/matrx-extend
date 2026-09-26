@@ -8333,7 +8333,8 @@
             "admin-debug-filter-matrix-001",
             "debug-log-controls-002",
             "debug-log-controls-003",
-            "debug-log-controls-004"
+            "debug-log-controls-004",
+            "debug-log-controls-006"
           ],
           "retest_status": "not-run"
         }
@@ -8449,6 +8450,15 @@
             }
           ],
           "limits": "Service-error dimension remains unverified for every linked case. T14/T15/T17/T22 result status remains unverified at case level; EXT-F-1005 admin feature cell remains unverified and retest not-run."
+        },
+        {
+          "run_id": "debug-log-controls-006",
+          "mode": "admin",
+          "build": "0.2.79",
+          "status": "partial",
+          "receipt": "docs/stabilization/runs/debug-log-controls-006.json",
+          "independent_review": "docs/stabilization/reports/debug-log-controls-006-runtime-peer.json",
+          "limits": "Online health positive control failed during service_error_online_control. No offline conditions were applied and no offline ping was dispatched; service-error behavior remains unverified. Four ordinary case outputs remain partial; case and feature-cell statuses are unchanged."
         }
       ]
     },
