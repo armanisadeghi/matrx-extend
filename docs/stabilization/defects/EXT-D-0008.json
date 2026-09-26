@@ -14,7 +14,8 @@
   "actual": "Guard finds clearCapturePagePanel and nested claim in src/lib/panel/launch-intent.ts unregistered. Fullsuite1failed/1374passed/3existingdevcloneDBskips.",
   "evidence": [
     "docs/stabilization/runs/auth-integrated-suite-001.json",
-    "docs/stabilization/reports/remote-popup-about-reconciliation.json"
+    "docs/stabilization/reports/remote-popup-about-reconciliation.json",
+    "docs/stabilization/runs/popup-cleanup-green-001.json"
   ],
   "severity": "S2: integrated release validation blocked; no evidence of user-data deletion or broken native Capture UI.",
   "priority": "P1: repair before next green integration",
@@ -39,6 +40,16 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol narrow exact-function registry repair assigned; existing popup lifecycle tests retained."
+    }
+  ],
+  "review_rounds": [
+    {
+      "commit": "8fbff5e",
+      "source_peer": "docs/stabilization/reports/popup-cleanup-peer.json",
+      "source_verdict": "pass-overturned-by-runtime",
+      "runtime": "fail",
+      "reason": "Guard discovers nestedcallbackclaim, registry mistakenlynames outertakePopupLaunchTarget",
+      "action": "Originalimplementerrepairround1, freshSolpeeraftercommit; no genericfunction globalexemption."
     }
   ]
 }
