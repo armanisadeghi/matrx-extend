@@ -25,6 +25,10 @@ import {
 } from '@/lib/agenda/queries';
 import { isTaskRunning, runTask } from '@/lib/agenda/runner';
 import { log } from '@/lib/debug/log';
+import {
+  isOrganizationNoMembershipsError,
+  isOrganizationNotSelectedError,
+} from '@/lib/org/active-org';
 import { cn } from '@/lib/utils';
 import { ConfirmDialog } from '@ai-matrx/design-system';
 import {
@@ -306,6 +310,9 @@ function NewTaskForm({ onCancel, onCreated }: { onCancel: () => void; onCreated:
   const [authMode, setAuthMode] = useState<AuthMode>('ask');
   const [surface, setSurface] = useState<SurfaceTarget>('any');
   const [submitting, setSubmitting] = useState(false);
+  // A failed create says why, with the remedy when there is one — it used to
+  // go to the debug log only, so the form just sat there (law 4).
+  const [createError, setCreateError] = useState<string | null>(null);
 
   // A cron task needs a parseable expression; a context-match task needs at
   // least one condition — otherwise it would be created but could never fire.
@@ -319,6 +326,7 @@ function NewTaskForm({ onCancel, onCreated }: { onCancel: () => void; onCreated:
   const submit = async () => {
     if (!title.trim() || !prompt.trim() || !triggerValid) return;
     setSubmitting(true);
+    setCreateError(null);
     try {
       const triggerConfig =
         triggerType === 'one-shot'
@@ -345,6 +353,11 @@ function NewTaskForm({ onCancel, onCreated }: { onCancel: () => void; onCreated:
       onCreated();
     } catch (err) {
       log.error('sys', 'agenda: createTask failed', err);
+      setCreateError(
+        isOrganizationNotSelectedError(err) || isOrganizationNoMembershipsError(err)
+          ? err.remedy
+          : `The task was not created: ${(err as Error).message}`,
+      );
     } finally {
       setSubmitting(false);
     }
@@ -505,6 +518,11 @@ function NewTaskForm({ onCancel, onCreated }: { onCancel: () => void; onCreated:
           </SelectContent>
         </Select>
       </div>
+      {createError && (
+        <p role="alert" className="text-xs text-destructive">
+          {createError}
+        </p>
+      )}
       <div className="flex items-center justify-end gap-2 pt-1">
         <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={onCancel}>
           Cancel

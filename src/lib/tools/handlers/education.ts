@@ -30,6 +30,11 @@
  */
 
 import { getAccessToken } from '@/lib/auth/flow';
+import {
+  isOrganizationNoMembershipsError,
+  isOrganizationNotSelectedError,
+  requireActiveOrganizationId,
+} from '@/lib/org/active-org';
 import { getAgentAuthoredSupabase } from '@/lib/supabase/client';
 import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler, ToolTier } from '@/lib/tools/types';
@@ -257,7 +262,21 @@ export const capture_study_set: ToolHandler<CaptureStudySetArgs, unknown> = {
     // so the RPC rides the agent-authored client and declares
     // `x-matrx-actor-tier: ai`. (RPCs are plain PostgREST requests — the header
     // reaches SQL the same way a table write's does.)
+    // A new deck has no parent row to inherit an organization from, so the
+    // RPC refuses a NULL `p_organization_id` (organization_required). The id
+    // comes from the ONE resolver — this device's choice or the sole
+    // membership; with nothing set the save is HELD on the picker.
+    let organizationId: string;
+    try {
+      organizationId = await requireActiveOrganizationId();
+    } catch (err) {
+      if (isOrganizationNotSelectedError(err) || isOrganizationNoMembershipsError(err)) {
+        return { ok: false, error: 'organization_required', message: err.remedy };
+      }
+      throw err;
+    }
     const { data, error } = await getAgentAuthoredSupabase().rpc('edu_import_deck', {
+      p_organization_id: organizationId,
       p_deck: {
         name: deckName,
         description: `Captured from ${tab.url}`,

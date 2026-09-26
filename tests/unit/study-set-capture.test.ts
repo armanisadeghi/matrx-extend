@@ -26,6 +26,17 @@ vi.mock('@/lib/auth/flow', () => ({
   getAccessToken: async () => accessToken,
 }));
 
+// The deck is filed in the organization the person set on this device —
+// `edu_import_deck` refuses a NULL p_organization_id (organization_required).
+let organization: string | Error = 'org-chosen-on-this-device';
+vi.mock('@/lib/org/active-org', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/org/active-org')>()),
+  requireActiveOrganizationId: async () => {
+    if (organization instanceof Error) throw organization;
+    return organization;
+  },
+}));
+
 const rpcCalls: { fn: string; args: unknown }[] = [];
 let rpcResult: { data: unknown; error: { message: string } | null } = {
   data: { set_id: 'set-1', name: 'Spanish 101', card_count: 2 },
@@ -82,6 +93,7 @@ function ctx(): ToolContext {
 beforeEach(() => {
   rpcCalls.length = 0;
   accessToken = 'jwt';
+  organization = 'org-chosen-on-this-device';
   rpcResult = {
     data: { set_id: 'set-1', name: 'Spanish 101', card_count: 2 },
     error: null,
@@ -139,6 +151,22 @@ describe('capture', () => {
     const deck = (call.args as { p_deck: { cards: unknown[]; source: string } }).p_deck;
     expect(deck.cards).toHaveLength(2);
     expect(deck.source).toBe('extension:capture_study_set');
+    expect((call.args as { p_organization_id?: string }).p_organization_id).toBe(
+      'org-chosen-on-this-device',
+    );
+  });
+
+  it('writes nothing and names the remedy when no organization is set', async () => {
+    const { OrganizationNotSelectedError } = await import('@/lib/org/active-org');
+    organization = new OrganizationNotSelectedError();
+    const res = (await capture_study_set.run({ action: 'capture' }, ctx())) as Record<
+      string,
+      unknown
+    >;
+    expect(res.ok).toBe(false);
+    expect(res.error).toBe('organization_required');
+    expect(String(res.message)).toMatch(/choose your organization/i);
+    expect(rpcCalls).toHaveLength(0);
   });
 });
 

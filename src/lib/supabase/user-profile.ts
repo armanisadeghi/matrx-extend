@@ -8,6 +8,11 @@
  *   - direct upsert on users.user_form_profile (RLS owner-only)
  */
 
+import {
+  isOrganizationNoMembershipsError,
+  isOrganizationNotSelectedError,
+  requireActiveOrganizationId,
+} from '@/lib/org/active-org';
 import { getSupabase } from '@/lib/supabase/client';
 import { usersDb } from '@/lib/supabase/schemas';
 import { z } from 'zod';
@@ -123,9 +128,38 @@ export async function upsertUserFormProfile(
   userId: string,
   patch: UserFormProfilePatch,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
+  // THE WRITE CARRIES ITS ORGANIZATION EXPLICITLY — the same contract as the
+  // web app's /api/user/form-profile. `organization_id` is NOT NULL here and
+  // no default may choose one. An existing profile keeps the organization it
+  // is filed in (a save never MOVES it); a first save names the organization
+  // the person is acting in, from the ONE resolver — held on the picker when
+  // this device has none.
+  const { data: existing, error: existingError } = await usersDb()
+    .from('user_form_profile')
+    .select('organization_id')
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (existingError) {
+    console.warn('[matrx-extend] upsertUserFormProfile select error', existingError.message);
+    return { ok: false, error: existingError.message };
+  }
+  let organizationId = (existing as { organization_id?: string } | null)?.organization_id;
+  if (!organizationId) {
+    try {
+      organizationId = await requireActiveOrganizationId();
+    } catch (err) {
+      if (isOrganizationNotSelectedError(err) || isOrganizationNoMembershipsError(err)) {
+        return { ok: false, error: err.remedy };
+      }
+      throw err;
+    }
+  }
   const { error } = await usersDb()
     .from('user_form_profile')
-    .upsert({ user_id: userId, ...patch }, { onConflict: 'user_id' });
+    .upsert(
+      { user_id: userId, ...patch, organization_id: organizationId },
+      { onConflict: 'user_id' },
+    );
   if (error) {
     console.warn('[matrx-extend] upsertUserFormProfile error', error.message);
     return { ok: false, error: error.message };
