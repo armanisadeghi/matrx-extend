@@ -41,7 +41,7 @@ export async function openSection(panel, label) {
 }
 
 export async function click(panel, kind, label) {
-  const pointerSample = (scroll) => evaluate(panel, `(() => {
+  const pointerSample = () => evaluate(panel, `(() => {
     const kind = ${JSON.stringify(kind)}, label = ${JSON.stringify(label)};
     const visible = (el) => {
       const style = getComputedStyle(el), rect = el.getBoundingClientRect();
@@ -70,11 +70,22 @@ export async function click(panel, kind, label) {
     candidates = candidates.filter(visible);
     if (candidates.length !== 1) return { count: candidates.length };
     const target = candidates[0];
-    if (${scroll}) target.scrollIntoView({ block: 'center', inline: 'center' });
     const rect = target.getBoundingClientRect();
     const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2;
     const hit = document.elementFromPoint(x, y);
     const hitTarget = hit === target || target.contains(hit);
+    const scroller = [target, ...(() => {
+      const ancestors = []; for (let el = target.parentElement; el; el = el.parentElement) ancestors.push(el);
+      return ancestors;
+    })()].find((el) => {
+      const style = getComputedStyle(el);
+      return /auto|scroll/.test(style.overflowY) && el.scrollHeight > el.clientHeight + 1;
+    });
+    const scrollRect = scroller?.getBoundingClientRect();
+    const scrollPoint = scrollRect ? {
+      x: Math.max(1, Math.min(innerWidth - 1, scrollRect.x + scrollRect.width / 2)),
+      y: Math.max(1, Math.min(innerHeight - 1, scrollRect.y + scrollRect.height / 2)),
+    } : { x: innerWidth / 2, y: innerHeight / 2 };
     let animating = false;
     for (let ancestor = target; ancestor; ancestor = ancestor.parentElement) {
       if (ancestor.getAnimations({ subtree: false }).some((animation) => animation.playState === 'running')) {
@@ -84,10 +95,24 @@ export async function click(panel, kind, label) {
     }
     return { count: 1, x, y, hitTarget, animating,
       viewport: { width: innerWidth, height: innerHeight },
-      hitTag: hit?.tagName ?? null };
+      scrollPoint, hitTag: hit?.tagName ?? null };
   })()`);
-  let location = await pointerSample(true);
+  let location = await pointerSample();
   assert.equal(location?.count, 1, `unique visible ${kind} ${label}`);
+  // Browser input must move the real scroll container. DOM scrollIntoView was
+  // insufficient in the native panel and left About's update button below it.
+  for (let wheel = 0; wheel < 8 && (location.y < 0 || location.y >= location.viewport.height); wheel += 1) {
+    const previousY = location.y;
+    const distance = location.y - location.scrollPoint.y;
+    await panel.send('Input.dispatchMouseEvent', {
+      type: 'mouseWheel', x: location.scrollPoint.x, y: location.scrollPoint.y,
+      deltaX: 0, deltaY: Math.sign(distance) * Math.min(320, Math.max(60, Math.abs(distance))),
+    });
+    location = await waitFor(`trusted_wheel_moved_${kind}_${label}`, pointerSample,
+      (sample) => sample?.count === 1 && (sample.hitTarget || Math.abs(sample.y - previousY) > 2), 800);
+  }
+  assert.equal(location.y >= 0 && location.y < location.viewport.height, true,
+    `target remained outside native panel viewport for ${kind} ${label}: ${JSON.stringify(location)}`);
   // Poll outside the page: a paused requestAnimationFrame must not strand
   // Runtime.evaluate(awaitPromise) or hide the last pointer diagnostic.
   const deadline = Date.now() + 3000;
@@ -95,7 +120,7 @@ export async function click(panel, kind, label) {
   do {
     await new Promise((resolveWait) => setTimeout(resolveWait, 50));
     try {
-      location = await pointerSample(false);
+      location = await pointerSample();
     } catch (error) {
       throw new Error(`pointer_sample_failed for ${kind} ${label}: ${String(error?.message ?? error)}; last=${JSON.stringify(location)}`);
     }

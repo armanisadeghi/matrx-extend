@@ -72,15 +72,35 @@ async function port(panel) {
   })()`);
 }
 
+async function portSelection(panel) {
+  return evaluate(panel, `(() => {
+    const input = document.querySelector('input[placeholder="auto"]');
+    return input && { value: input.value, start: input.selectionStart,
+      end: input.selectionEnd, focused: document.activeElement === input };
+  })()`);
+}
+
 async function replacePort(panel, value) {
   await click(panel, 'port', 'Local engine port');
-  await panel.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: 'a', code: 'KeyA', modifiers: 2, windowsVirtualKeyCode: 65 });
-  await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'a', code: 'KeyA', modifiers: 2, windowsVirtualKeyCode: 65 });
-  if (value) await panel.send('Input.insertText', { text: value });
-  else {
+  const initial = await portSelection(panel);
+  assert.equal(initial?.focused, true, 'real pointer must focus port input');
+  if (initial.value) {
+    // Ctrl+A did not select the existing value in Chrome-for-Testing on macOS.
+    // Observe the selection before allowing any replacement keystroke.
+    let selected = false;
+    for (const modifiers of process.platform === 'darwin' ? [4, 2] : [2, 4]) {
+      await panel.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: 'a', code: 'KeyA', modifiers, windowsVirtualKeyCode: 65 });
+      await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'a', code: 'KeyA', modifiers, windowsVirtualKeyCode: 65 });
+      const selection = await portSelection(panel);
+      selected = selection?.focused && selection.start === 0 && selection.end === initial.value.length;
+      if (selected) break;
+    }
+    assert.equal(selected, true, `trusted select-all did not cover port input: ${JSON.stringify(await portSelection(panel))}`);
     await panel.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: 'Backspace', code: 'Backspace', windowsVirtualKeyCode: 8 });
     await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Backspace', code: 'Backspace', windowsVirtualKeyCode: 8 });
+    await waitFor('port_input_cleared_by_keyboard', () => portSelection(panel), (s) => s?.value === '' && s.focused);
   }
+  if (value) await panel.send('Input.insertText', { text: value });
   await waitFor('port_input', () => port(panel), (s) => s?.value === value);
   await click(panel, 'button', (await port(panel)).button.includes('Save') ? 'Save' : 'Set');
 }
