@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "report_id": "seo-015-geometry-peer",
+  "reviewed_source_commit": "9e7e042ed303b1e556e360ca3a3e48e5993655b3",
+  "source_review": {
+    "verdict": "NEEDS_CORRECTION",
+    "findings": [
+      {
+        "severity": "medium",
+        "finding": "The screenshot write does not guarantee mode 0600 when the fixed output already exists. Node's writeFile mode option only sets permissions when creating a file; an existing permissive file keeps its old mode, and a symlink at that path is followed.",
+        "evidence": "The anchor-sample catch calls writeFile(test-results/seo-guest-door-failure.png, ..., { mode: 0o600 }) without exclusive creation, lstat validation, or chmod. `test-results/` is ignored by Git, but ignore status does not enforce filesystem privacy.",
+        "remedy": "Use exclusive creation of a regular file with mode 0600, or validate/chmod an existing regular file before writing; fail closed on symlinks or unsafe permissions."
+      },
+      {
+        "severity": "low",
+        "finding": "The categorized sampleFailure covers later hit/area/position checks but remains null when the first anchor sample fails uniqueness, destination, or target assertions, leaving those anchor-sample failures without an explicit failure-predicate category.",
+        "evidence": "sampleFailure is assigned only inside the two-iteration stability loop, after the first sample's count, href, and target assertions.",
+        "remedy": "Assign fixed failure categories for the initial assertions too, while retaining the existing assertions."
+      }
+    ],
+    "verified": [
+      "The diagnostic geometry consists of rounded coordinates/dimensions, viewport dimensions, scroll position, booleans, candidate count, and a fixed occluder category; it does not emit arbitrary element text, selectors, or page URLs.",
+      "The existing exact destination/target checks, hit tests, positive-area checks, two 50 ms stability samples, pointer sequence, and navigation timeout remain intact; this change adds no retry and does not turn a failure into a pass.",
+      "The screenshot path is beneath test-results/, which is ignored by the repository's .gitignore."
+    ],
+    "limits": [
+      "Source inspection only; no browser or heavy test was run.",
+      "Run 015 remains unverified and predates this new instrumentation; its result does not validate screenshot mode or diagnostic behavior."
+    ]
+  },
+  "runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "No runtime or browser verification was performed in this source-review lane."
+  }
+}
