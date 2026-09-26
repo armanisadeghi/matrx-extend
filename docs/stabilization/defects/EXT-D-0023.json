@@ -30,11 +30,13 @@
     "docs/stabilization/reports/d23-runtime-peer.json",
     "docs/stabilization/runs/release-stabilization-037.json",
     "docs/stabilization/reports/d23-notice-operation-census.json",
-    "docs/stabilization/runs/notice-write-retention-red-001.json"
+    "docs/stabilization/runs/notice-write-retention-red-001.json",
+    "docs/stabilization/runs/notice-write-retention-green-001.json",
+    "docs/stabilization/reports/d23-write-retention-peer.json"
   ],
   "severity": "S2: a resolved read notice can obstruct controls; an unperformed write notice can disappear after workspace selection, leaving an unsaved highlight or undeleted capture without its failure announcement",
   "priority": "P1: make notice retirement depend on whether the operation's remedy is actually complete; keep unperformed write failures visible until a real retry or explicit dismissal",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "/root/d22_ci_refusal_timing",
   "transition_history": [
     {
@@ -84,9 +86,15 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Narrowing automatic retirement to an explicitly opted-in subscribed read that refreshes on organization selection; write operations remain visible because their actions are not replayed."
+    },
+    {
+      "at": "2026-09-26T22:30:36.827Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "The independent source review accepted the operation-aware read-only resolution boundary. Guarded notice-write-retention-green-001 passed 26 tests across two files, preserving existing/late read retirement and proving an unperformed highlight insert and late saved-capture update remain visible. Native retest on the corrected build and release typecheck remain pending; the prior read-side source-workspace-007 proof is preserved but does not verify write retention."
     }
   ],
-  "fix_commits": ["9b64e44e"],
-  "ui_retest": "passed: source-workspace-007 native read-only D23 notice-retirement and Save hit-testability acceptance at 2026-09-26T21:59:09.585Z; no Save input was sent. This closes EXT-D-0023 only, not EXT-F-2010-T02 or EXT-D-0022.",
-  "closure_requirement": "Preserve the previously verified read-notice retirement and native D23 evidence; add guarded failing-then-passing write-notice tests proving unperformed inserts and updates remain visible after selection, including late arrival. Complete typecheck and independent source review. No second Source Save input is needed."
+  "fix_commits": ["9b64e44e", "e210a626"],
+  "ui_retest": "pending on the corrected write-retention build. Prior source-workspace-007 verified only read-notice retirement and Save hit-testability; it remains historical evidence and is not a retest of this write-retention correction. No second Source Save input is authorized or needed.",
+  "closure_requirement": "Preserve the previously verified read-side retirement and source-workspace-007 evidence; retain the guarded read and unperformed-write notice tests and unrelated-error preservation. Complete typecheck and a native read-only panel retest on the corrected write-retention build showing the no-workspace read notice retires after organization selection while an unperformed write notice remains until actual retry or explicit dismissal. No second Source Save input is needed."
 }

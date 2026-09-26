@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T22:16:26+00:00",
+  "updated_at": "2026-09-26T22:33:28+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -21416,7 +21416,9 @@
           ],
           "run_ids": [
             "notice-resolution-red-001",
-            "notice-resolution-green-001"
+            "notice-resolution-green-001",
+            "notice-write-retention-red-001",
+            "notice-write-retention-green-001"
           ],
           "retest_status": "not-run"
         },
@@ -21430,7 +21432,9 @@
             "notice-resolution-green-001",
             "source-workspace-005",
             "source-workspace-006",
-            "source-workspace-007"
+            "source-workspace-007",
+            "notice-write-retention-red-001",
+            "notice-write-retention-green-001"
           ],
           "retest_status": "not-run"
         }
@@ -21508,6 +21512,26 @@
             }
           ],
           "limits": "Admin-mode D23 read-only subset only. Pending handoff queue semantics in T02 remain unverified. No Save input or Source creation/open result; D22 remains ambiguous."
+        },
+        {
+          "run_ids": [
+            "notice-write-retention-red-001",
+            "notice-write-retention-green-001"
+          ],
+          "mode": "focused-unit-guard",
+          "status": "bounded-guard-pass",
+          "receipt": "docs/stabilization/runs/notice-write-retention-green-001.json",
+          "independent_review": "docs/stabilization/reports/d23-write-retention-peer.json",
+          "defect_id": "EXT-D-0023",
+          "case_links": [
+            {
+              "case_id": "EXT-F-2010-T02",
+              "subtarget": "failed_write_notices_remain_after_workspace_selection",
+              "status": "bounded-guard-pass",
+              "observation": "Red run failed the two intended unperformed-write notice assertions while both read-retirement guards passed; guarded green run passed 26 tests across two files."
+            }
+          ],
+          "limits": "Focused behavior guard only; does not exercise full member/admin pending-handoff queue semantics or real Chrome relay. Native UI retest on the corrected build and release typecheck remain pending. Feature/case statuses stay unverified/not-run; EXT-D-0022 remains open."
         }
       ]
     },
