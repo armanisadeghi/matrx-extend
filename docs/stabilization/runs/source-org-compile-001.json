@@ -1,0 +1,14 @@
+{
+  "run_id": "source-org-compile-001",
+  "defect_id": "EXT-D-0022",
+  "source_commit": "e36bf683",
+  "command": "pnpm compile",
+  "wrapper_session": 77864,
+  "completed_at": "2026-09-26T19:45:47.136Z",
+  "child_exit_code": 0,
+  "wrapper_exit_code": 0,
+  "log_path": "/tmp/matrx-source-org-compile-001.log",
+  "log_sha256": "1b49fb22baddceb48c12db5937e1221ca28684a9a52716888a39a62c5a48b8f9",
+  "result": "Typecheck passed on candidate before queue-refusal repair.",
+  "limits": "Superseded by later independent queue-race finding; not live acceptance or final candidate verification."
+}
