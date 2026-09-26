@@ -41,6 +41,7 @@ import { onActiveOrganizationChange } from '@/lib/org/active-org';
 import {
   type AdmittedExecutionStage,
   type CredentialLoginStatus,
+  POLL_INTERVAL_MS,
   runAdmittedAuthenticatorAttempt,
   runAdmittedCredentialAttempt,
 } from '@/lib/tools/handlers/credential-login';
@@ -158,7 +159,21 @@ export function postSubmitDocumentObserver({
   let replacement: BrowserDocument | null = null;
   return async () => {
     if (!isSubmitted() || !isCurrent() || Date.now() >= deadlineMs) return null;
-    const current = await currentDocument();
+    // Chrome can briefly report no document while a submitted form replaces
+    // the page. Keep the original authority fence and wait for the document
+    // read to settle; a permanently lost tab still fails closed.
+    let current: BrowserDocument | null = null;
+    while (isCurrent() && Date.now() < deadlineMs) {
+      try {
+        current = await currentDocument();
+      } catch {
+        current = null;
+      }
+      if (current || !isCurrent() || Date.now() >= deadlineMs) break;
+      await new Promise((resolve) =>
+        setTimeout(resolve, Math.min(POLL_INTERVAL_MS, Math.max(0, deadlineMs - Date.now()))),
+      );
+    }
     if (!current || !isCurrent() || Date.now() >= deadlineMs) return null;
     try {
       const originalUrl = new URL(original.url);

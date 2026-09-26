@@ -380,7 +380,7 @@ const FEEDBACK = {
 } as const;
 
 // ── Timing ──────────────────────────────────────────────────────────────────
-const POLL_INTERVAL_MS = 400;
+export const POLL_INTERVAL_MS = 400;
 /** Two-step flows: how long to wait for the password field after step one. */
 const WAIT_FOR_PASSWORD_MS = 12_000;
 /** How long to watch for navigation / page-state change after submitting. */

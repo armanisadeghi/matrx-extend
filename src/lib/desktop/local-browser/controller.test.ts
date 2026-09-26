@@ -946,6 +946,45 @@ describe('owned local-browser tab controller', () => {
     expect(await expired()).toBeNull();
   });
 
+  it('waits through a transient missing document after submit without changing the owned tab', async () => {
+    let reads = 0;
+    const replacement = { documentId: 'replacement', url: 'https://example.test/home' };
+    const observe = postSubmitDocumentObserver({
+      original: { documentId: 'original', url: 'https://example.test/login' },
+      deadlineMs: Date.now() + 5_000,
+      isCurrent: () => true,
+      isSubmitted: () => true,
+      currentDocument: async () => (++reads === 1 ? null : replacement),
+    });
+    expect(await observe()).toEqual(replacement);
+    expect(reads).toBe(2);
+  });
+
+  it('stops retrying a missing document at the configured command deadline', async () => {
+    vi.useFakeTimers();
+    try {
+      let reads = 0;
+      const observe = postSubmitDocumentObserver({
+        original: { documentId: 'original', url: 'https://example.test/login' },
+        deadlineMs: Date.now() + 800,
+        isCurrent: () => true,
+        isSubmitted: () => true,
+        currentDocument: async () => {
+          reads += 1;
+          return null;
+        },
+      });
+      const pending = observe();
+      await vi.advanceTimersByTimeAsync(800);
+      expect(await pending).toBeNull();
+      const readsAtDeadline = reads;
+      await vi.advanceTimersByTimeAsync(1_000);
+      expect(reads).toBe(readsAtDeadline);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('canonicalizes server millisecond projections to the grant expiry second', () => {
     // The server's projection is millisecond precision; the signed `exp` claim is seconds.
     expect(canonicalGrantDeadlineMs(1_700_000_000_999)).toBe(1_700_000_000_000);
