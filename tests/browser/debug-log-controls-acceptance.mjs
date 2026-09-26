@@ -20,8 +20,14 @@ const WEB_ORIGIN = 'https://www.aimatrx.com';
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const ADMIN_EMAIL = 'admin@admin.com';
 const RELOAD_BEFORE_CONTROLS = process.env.DEBUG_RELOAD_BEFORE_CONTROLS === '1';
-const SCENARIO = RELOAD_BEFORE_CONTROLS ? 'post_real_panel_reload' : 'warm';
+const SERVICE_ERROR_BEFORE_CONTROLS = process.env.DEBUG_SERVICE_ERROR_BEFORE_CONTROLS === '1';
+const SCENARIO = SERVICE_ERROR_BEFORE_CONTROLS
+  ? 'real_panel_service_error'
+  : RELOAD_BEFORE_CONTROLS
+    ? 'post_real_panel_reload'
+    : 'warm';
 let stage = 'startup';
+let serviceErrorProved = false;
 const result = {
   schema: 1,
   feature: 'EXT-F-1005',
@@ -33,9 +39,9 @@ const result = {
 const add = (id, status, expected, actual, evidence) =>
   result.cases.push({ id, status, scenario: SCENARIO, expected, actual, evidence });
 const scenarioEvidence = (value) => ({
-  warm: RELOAD_BEFORE_CONTROLS ? 'unverified' : value,
+  warm: RELOAD_BEFORE_CONTROLS || SERVICE_ERROR_BEFORE_CONTROLS ? 'unverified' : value,
   reload: RELOAD_BEFORE_CONTROLS ? value : 'unverified',
-  serviceError: 'unverified',
+  serviceError: SERVICE_ERROR_BEFORE_CONTROLS && serviceErrorProved ? value : 'unverified',
 });
 
 async function readBuildIdentity() {
@@ -310,6 +316,153 @@ async function detailOnlySearchTerm(panel, rowText) {
   );
 }
 
+function observeHealthRequests(panel) {
+  const requests = new Map();
+  const isHealth = (url) => {
+    try {
+      return new URL(url).pathname === '/health';
+    } catch {
+      return false;
+    }
+  };
+  const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
+    if (request?.method === 'GET' && isHealth(request.url))
+      requests.set(requestId, { url: request.url, status: null, finished: false, failed: false });
+  });
+  const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
+    const request = requests.get(requestId);
+    if (request) request.status = response?.status ?? null;
+  });
+  const offFinished = panel.on('Network.loadingFinished', ({ requestId }) => {
+    const request = requests.get(requestId);
+    if (request) request.finished = true;
+  });
+  const offFailed = panel.on('Network.loadingFailed', ({ requestId }) => {
+    const request = requests.get(requestId);
+    if (request) request.failed = true;
+  });
+  return {
+    read: () => [...requests.values()],
+    stop: () => {
+      offRequest();
+      offResponse();
+      offFinished();
+      offFailed();
+    },
+  };
+}
+
+async function bridgePingUi(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+      const buttons=[...document.querySelectorAll('button')]
+        .filter(button=>button.textContent.trim()==='Send test ping');
+      if(buttons.length!==1)return {buttonCount:buttons.length,status:null};
+      const siblings=[...(buttons[0].parentElement?.children??[])];
+      const status=siblings.find(element=>/^(OK|FAIL) · [0-9]+ms$/.test(element.textContent.trim()));
+      return {buttonCount:1,status:status?.textContent.trim().startsWith('OK')?'ok':
+        status?.textContent.trim().startsWith('FAIL')?'fail':null};
+    })()`,
+  );
+}
+
+// The Debug Bridges button calls pingHealth('debug bridges panel') in this
+// side-panel document. Its /health GET is read-only and its OK/FAIL label is
+// real product UI; CDP only observes the request and toggles this owned target.
+async function exerciseServiceError(panel) {
+  const observed = {
+    onlinePositiveControl: false,
+    actualFailedRequest: false,
+    visibleFailure: false,
+    networkRestored: false,
+    status: 'unverified',
+  };
+  result.serviceErrorObservation = observed;
+  let networkEnabled = false;
+  let cacheDisabled = false;
+  let offlineAttempted = false;
+  let probe;
+  try {
+    stage = 'service_error_bridges';
+    await click(panel, 'button', 'Bridges');
+    await waitFor(
+      'bridge_ping_ready',
+      () => bridgePingUi(panel),
+      (ui) => ui?.buttonCount === 1,
+    );
+    stage = 'service_error_online_control';
+    await panel.send('Network.enable');
+    networkEnabled = true;
+    await panel.send('Network.setCacheDisabled', { cacheDisabled: true });
+    cacheDisabled = true;
+    probe = observeHealthRequests(panel);
+    await click(panel, 'button', 'Send test ping');
+    const online = await waitFor(
+      'real_online_health_ping',
+      async () => ({ requests: probe.read(), ui: await bridgePingUi(panel) }),
+      (sample) =>
+        sample.requests.length === 1 &&
+        sample.requests[0].status === 200 &&
+        sample.requests[0].finished &&
+        sample.ui?.status === 'ok',
+      15_000,
+    );
+    observed.onlinePositiveControl = true;
+    const onlineUrl = online.requests[0].url;
+    probe.stop();
+    probe = observeHealthRequests(panel);
+    stage = 'service_error_offline_control';
+    offlineAttempted = true;
+    await panel.send('Network.emulateNetworkConditions', {
+      offline: true,
+      latency: 0,
+      downloadThroughput: 0,
+      uploadThroughput: 0,
+    });
+    await click(panel, 'button', 'Send test ping');
+    const failed = await waitFor(
+      'real_offline_health_ping',
+      async () => ({ requests: probe.read(), ui: await bridgePingUi(panel) }),
+      (sample) =>
+        sample.requests.length === 1 &&
+        sample.requests[0].url === onlineUrl &&
+        sample.requests[0].failed &&
+        sample.ui?.status === 'fail',
+      15_000,
+    );
+    observed.actualFailedRequest = failed.requests[0].failed;
+    observed.visibleFailure = failed.ui.status === 'fail';
+    observed.status = 'verified_precondition';
+    serviceErrorProved = true;
+  } catch {
+    // The scenario remains unverified; no raw URL, payload, or transport error
+    // enters the receipt. The normal read-only Debug battery may still run.
+    observed.status = 'unverified';
+    observed.failureStage = stage;
+  } finally {
+    probe?.stop();
+    if (offlineAttempted) {
+      await panel.send('Network.emulateNetworkConditions', {
+        offline: false,
+        latency: 0,
+        downloadThroughput: -1,
+        uploadThroughput: -1,
+      });
+    }
+    if (cacheDisabled) await panel.send('Network.setCacheDisabled', { cacheDisabled: false });
+    if (networkEnabled) await panel.send('Network.disable');
+    observed.networkRestored = true;
+  }
+  stage = 'service_error_return_to_log';
+  await click(panel, 'button', 'Log');
+  await waitFor(
+    'debug_log_after_service_ping',
+    () => snapshot(panel),
+    (state) => state?.searchPresent && state.counterMatchesRows,
+  );
+}
+
 async function exercise({ page, panel, artifacts }) {
   let preClearCount = 0;
   let noMatchObserved = false;
@@ -348,6 +501,7 @@ async function exercise({ page, panel, artifacts }) {
       () => snapshot(panel),
       (state) => state?.searchPresent && state.counterMatchesRows,
     );
+    if (SERVICE_ERROR_BEFORE_CONTROLS) await exerciseServiceError(panel);
     stage = 'natural_event_generation';
     await page.goto(PUBLIC_URL, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.locator('body').click({ position: { x: 5, y: 5 } });
@@ -459,11 +613,13 @@ async function exercise({ page, panel, artifacts }) {
           },
         );
         await setSearch(panel, '');
-        await waitFor(
+        const restored = await waitFor(
           'search_reset',
           () => snapshot(panel),
           (s) => s?.counterMatchesRows && s.searchLength === 0 && s.rowCount === preClearCount,
         );
+        result.cases.find((item) => item.id === 'EXT-F-1005-T14').evidence.searchReset =
+          restored.rowCount === preClearCount ? 'pass_exact_prior_count' : 'fail';
       } else {
         add(
           'EXT-F-1005-T14',
@@ -663,6 +819,8 @@ function safeDriverFailure(error) {
 }
 
 try {
+  if (RELOAD_BEFORE_CONTROLS && SERVICE_ERROR_BEFORE_CONTROLS)
+    throw new Error('debug_scenarios_must_be_run_separately');
   stage = 'release_identity_start';
   const buildAtStart = await readBuildIdentity();
   result.build = buildAtStart;
