@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "report_id": "vault-org-prerequisite-peer",
+  "reviewed_commit": "6974350e5da022a07a5462e6037b74768f9f5310",
+  "scope": "Independent source and built-artifact review. No browser, runtime probe, tests, or build launched.",
+  "acceptance": {
+    "verdict": "PENDING_REAL_RUN",
+    "reason": "Run 004 proves the linked Vault panel remained on a pre-content spinner after real admin web and extension sign-in, but did not observe or choose a device organization. Neither a missing organization nor a product defect is established. The amended probe has not yet produced a run receipt.",
+    "required_evidence": "Root-guarded run must record beforeOrganizationChoice and, if the exact approved choice appears, afterOrganizationChoice plus settled Mine and Shared inventory. A persisted selection by itself is not proof that the Vault content settled or that member access works."
+  },
+  "quality": {
+    "verdict": "READY_FOR_ROOT_GUARDED_DIAGNOSTIC_RUN",
+    "findings": [
+      {
+        "severity": "limit",
+        "finding": "A pending storage flag without a visible picker or Vault heading times out at vault_prerequisite_observation. The last fixed booleans preserve that clue, but the runner cannot call the cause confirmed until the picker and explicit choice are observed."
+      },
+      {
+        "severity": "limit",
+        "finding": "The probe treats a stored organization ID as selection present; it does not read membership identity into evidence. If a different pre-existing device selection is present, the runner performs no organization switch and the run must be interpreted in that context."
+      }
+    ],
+    "evidence": [
+      "The only new selection path requires a visible global organization dialog, waits for loading to finish, requires exactly one row whose name equals the approved ZZZ APPROVAL-TAIL fixture, and refuses a selection-already-present state. There is no first, default, or personal fallback.",
+      "The shared click driver scopes the target to button[role=option] inside that dialog, requires one visible hit-tested target, and dispatches trusted CDP mouse input. The picker itself verifies membership before persisting the chosen organization.",
+      "The before and after observations contain fixed booleans and masked Vault counts. No organization ID, token, Vault title, value, or raw URL is returned; the probe contains no role, organization-data, Vault item, Fill, or Reveal mutation.",
+      "The native harness verifies the release receipt and loaded unpacked tree. That tree and the 0.2.68 ZIP contain the dialog title, loading marker, option button, and name span selectors used by the probe. git diff a86e15da -- src is empty."
+    ]
+  },
+  "seo_clipboard_followup": {
+    "reviewed_commit": "caf48ab2722a01458172dd8a3fa7acc541c9b44b",
+    "acceptance_verdict": "PENDING_REAL_RUN",
+    "quality_verdict": "CLIPBOARD_SAFETY_FINDING_RESOLVED",
+    "reason": "The guest SEO runner no longer writes, reads, clears, or requests access to the host clipboard. It explicitly leaves actual text and AI clipboard output unverified and keeps the reload oracle partial T01 coverage. This resolves the first peer's host-clipboard mutation block without claiming T07 clipboard acceptance."
+  },
+  "checks": [
+    "node --check tests/browser/member-vault-access-probe.mjs: pass",
+    "node --check tests/browser/settings-panel-driver.mjs: pass",
+    "node --check tests/browser/seo-guest-acceptance.mjs: pass"
+  ]
+}
