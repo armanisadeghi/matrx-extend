@@ -234,8 +234,8 @@ export function ScrapeView() {
         <HighlightRegionsBanner />
         {recognition.checkFailed && !saved && (
           <div className="mt-2 rounded-xl bg-secondary/60 px-3 py-1.5 text-xs text-muted-foreground">
-            Couldn&apos;t check whether you saved this page before. Saving again is safe — the same
-            page is kept as one Source.
+            Couldn&apos;t check whether this page is already a Source in your workspace. Saving
+            again is safe — the same page is kept as one Source.
           </div>
         )}
         <UnsavedCapturesCard

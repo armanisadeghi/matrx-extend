@@ -44,7 +44,7 @@ import {
   supabaseForActor,
 } from '@/lib/supabase/client';
 import { type DbCallSite, failDbCall } from '@/lib/supabase/db-failure';
-import { adminDb, aiDb, docprocDb, extendDb } from '@/lib/supabase/schemas';
+import { adminDb, aiDb, docprocDb, extendDb, usersDb } from '@/lib/supabase/schemas';
 import type { ChatMessage, MessagePart } from '@/state/chat';
 import { requireOrganizationContext } from '@ai-matrx/agents/matrx';
 import { z } from 'zod';
@@ -618,8 +618,8 @@ export type CaptureLookup =
  * identity (the same canonicalizer the server applies — `canonical.ts`).
  */
 export async function lookupCapturedByUrl(url: string): Promise<CaptureLookup> {
-  // A Source belongs to a person in an organization, so a device with no
-  // session can have none: answer "no record" without a round trip.
+  // A Source belongs to an organization, so a device with no session can
+  // see none: answer "no record" without a round trip.
   if (!(await hasSupabaseAccessToken())) return { status: 'none' };
   const identity = canonicalUrl(url);
   if (!identity) return { status: 'none' };
@@ -670,6 +670,10 @@ export const SavedCaptureSummarySchema = z.object({
   title: z.string().nullable(),
   description: z.string().nullable(),
   kept_at: z.string().nullable(),
+  /** The member who captured it (`created_by`) — the tab lists the whole organization's. */
+  captured_by: z.string().uuid().nullable(),
+  /** Their display name from `users.profiles`; null when it could not be read. */
+  captured_by_name: z.string().nullable().default(null),
 });
 export type SavedCaptureSummary = z.infer<typeof SavedCaptureSummarySchema>;
 
@@ -687,7 +691,7 @@ export const SavedCaptureSchema = SavedCaptureSummarySchema.extend({
 export type SavedCapture = z.infer<typeof SavedCaptureSchema>;
 
 const SOURCE_SUMMARY_COLUMNS =
-  'id, url:canonical_identity, captured_at:created_at, updated_at, title:name, description:structured_json->metadata->>description, kept_at';
+  'id, url:canonical_identity, captured_at:created_at, updated_at, title:name, description:structured_json->metadata->>description, kept_at, captured_by:created_by';
 const SOURCE_DETAIL_COLUMNS = `${SOURCE_SUMMARY_COLUMNS}, structured:structured_json, content, canonical_clean_id, original_file_id, visibility`;
 
 export interface SavedCapturePage {
@@ -696,6 +700,37 @@ export interface SavedCapturePage {
   unreadable: number;
   /** How many rows the database returned (drives "Load more"). */
   fetched: number;
+}
+
+/**
+ * Display names for the members who captured Sources (`users.profiles`). A name
+ * that cannot be read is simply absent — the tab then says "another member",
+ * never a wrong name; a failed lookup is logged, not thrown (the list itself
+ * already loaded).
+ */
+export async function capturedByNames(
+  ids: (string | null | undefined)[],
+): Promise<Map<string, string>> {
+  const names = new Map<string, string>();
+  const unique = [...new Set(ids.filter((id): id is string => typeof id === 'string'))];
+  if (unique.length === 0) return names;
+  try {
+    const { data, error } = await usersDb()
+      .from('profiles')
+      .select('id, display_name')
+      .in('id', unique);
+    if (error) {
+      log.warn('supabase', 'capturedByNames failed', { message: error.message });
+      return names;
+    }
+    for (const row of (data ?? []) as { id: string; display_name: string | null }[]) {
+      const label = row.display_name?.trim();
+      if (label) names.set(row.id, label);
+    }
+  } catch (err) {
+    log.warn('supabase', 'capturedByNames failed', { message: String(err) });
+  }
+  return names;
 }
 
 export async function listSavedCaptures(
@@ -738,8 +773,13 @@ export async function listSavedCaptures(
     'listSavedCaptures',
   );
   const superseded = await supersededSourceIds(parsed.rows.map((r) => r.id));
+  const live = parsed.rows.filter((r) => !superseded.has(r.id));
+  const names = await capturedByNames(live.map((r) => r.captured_by));
   return {
-    rows: parsed.rows.filter((r) => !superseded.has(r.id)),
+    rows: live.map((r) => ({
+      ...r,
+      captured_by_name: (r.captured_by && names.get(r.captured_by)) ?? null,
+    })),
     unreadable: parsed.badCount,
     fetched: (data ?? []).length,
   };

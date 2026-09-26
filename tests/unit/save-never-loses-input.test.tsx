@@ -189,7 +189,7 @@ describe('Save never loses input', () => {
       source_kind: 'scrape_parsed_page',
       canonical_identity: soup.url,
       keep: true,
-      visibility: 'personal',
+      visibility: 'internal',
       organization_id: '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f',
       provenance: { origin_client: 'extension', capture_method: 'own_browser' },
     });

@@ -26,6 +26,7 @@ vi.mock('@/components/MarkdownView', () => ({
 }));
 vi.mock('@/components/CopyMenu', () => ({ CopyMenu: () => <button type="button">Copy</button> }));
 
+import { useAuthStore } from '@/state/auth';
 import { SavedCapturesView } from './SavedCapturesView';
 
 const firstSummary = {
@@ -36,6 +37,8 @@ const firstSummary = {
   title: 'Alpha guide',
   description: 'The first saved guide',
   kept_at: '2026-09-20T12:00:00.000Z',
+  captured_by: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+  captured_by_name: null,
 };
 
 const secondSummary = {
@@ -46,6 +49,8 @@ const secondSummary = {
   title: 'Beta report',
   description: null,
   kept_at: null,
+  captured_by: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+  captured_by_name: 'Dana Colleague',
 };
 
 const soup = {
@@ -89,7 +94,7 @@ const fullCapture = {
   content: 'Original alpha',
   edited_content: null,
   original_file_id: '99999999-9999-4999-8999-999999999999',
-  visibility: 'personal',
+  visibility: 'internal',
 };
 
 beforeEach(() => {
@@ -209,6 +214,23 @@ describe('SavedCapturesView', () => {
     expect(await screen.findByText('You cannot edit this Source.')).toBeTruthy();
   });
 
+  it("lists the organization's Sources with who captured each — you, a colleague, or another member", async () => {
+    useAuthStore.setState({ user: { id: firstSummary.captured_by } as never });
+    const unnamed = {
+      ...secondSummary,
+      id: '33333333-3333-4333-8333-333333333333',
+      title: 'Gamma notes',
+      captured_by: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+      captured_by_name: null,
+    };
+    mocks.list.mockResolvedValue(page([firstSummary, secondSummary, unnamed]));
+    render(<SavedCapturesView />);
+    expect(await screen.findByText('Captured by you')).toBeTruthy();
+    expect(screen.getByText('Captured by Dana Colleague')).toBeTruthy();
+    expect(screen.getByText('Captured by another member')).toBeTruthy();
+    useAuthStore.setState({ user: null });
+  });
+
   it('counts rows that could not be read instead of dropping them silently', async () => {
     mocks.list.mockResolvedValueOnce(page([firstSummary], 2));
     render(<SavedCapturesView />);
@@ -220,7 +242,7 @@ describe('SavedCapturesView', () => {
     ).toBeTruthy();
   });
 
-  it('never says "no Sources saved from this browser yet" when every row was unreadable', async () => {
+  it('never says "no Sources captured … yet" when every row was unreadable', async () => {
     mocks.list.mockResolvedValueOnce(page([], 1));
     render(<SavedCapturesView />);
     expect(
@@ -228,7 +250,9 @@ describe('SavedCapturesView', () => {
         '1 saved Source could not be read, so it is not shown. Refresh to try again.',
       ),
     ).toBeTruthy();
-    expect(screen.queryByText('No Sources saved from this browser yet')).toBeNull();
+    expect(
+      screen.queryByText('No Sources captured with the extension in this workspace yet'),
+    ).toBeNull();
   });
 
   it('shows a load failure without also claiming the library is empty', async () => {
@@ -236,7 +260,9 @@ describe('SavedCapturesView', () => {
     render(<SavedCapturesView />);
 
     expect(await screen.findByText('Saved captures are unavailable.')).toBeTruthy();
-    expect(screen.queryByText('No Sources saved from this browser yet')).toBeNull();
+    expect(
+      screen.queryByText('No Sources captured with the extension in this workspace yet'),
+    ).toBeNull();
   });
 
   it('soft-deletes a capture only after the consequence dialog is confirmed', async () => {
