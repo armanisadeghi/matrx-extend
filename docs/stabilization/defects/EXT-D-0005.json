@@ -13,19 +13,38 @@
   "expected": "Active advertised extension tools and required surface inclusion agree with the canonical DB policy; the strict release passes only when they agree.",
   "actual": "One records surface inclusion mismatch prevents a green release.",
   "evidence": [
-    "docs/stabilization/runs/release-real-004.json"
+    "docs/stabilization/runs/release-real-004.json",
+    "docs/stabilization/reports/records-drift-diagnosis.json"
   ],
   "severity": "S1: blocks strict release",
   "priority": "P0: universal integration blocker",
-  "state": "open",
-  "owner": "/root",
-  "root_cause": "Under diagnosis; no assumption that DB or checker is wrong.",
+  "state": "fixed",
+  "owner": "/root/records_drift_diagnosis",
+  "root_cause": "The records definition and active Chrome binding existed, but neither chrome-extension/assistant nor chrome-extension/pilot included records directly or through its declared bundle. Both surface arrays were missing the registration required by the shared tool contract.",
   "transition_history": [
     {
       "at": "2026-09-26T03:44:04.533Z",
       "from": null,
       "to": "open",
       "reason": "Observed real strict catalog comparison failure"
+    },
+    {
+      "at": "2026-09-26T03:46:20Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Live read confirmed active records definition and Chrome binding, both surface inclusions absent, no explicit exclusions, and no declared bundle membership."
+    },
+    {
+      "at": "2026-09-26T03:46:40Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Selected direct additive registration on both existing Chrome surface arrays; preserved unrelated entries and policies."
+    },
+    {
+      "at": "2026-09-26T03:47:09Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Supabase execute_sql appended records once to each live surface; independent read confirmed both now have 83 entries, records exactly once, unchanged exclusions/bundles and active definition/bindings. Strict release rerun is owned by integration coordinator."
     }
   ]
 }

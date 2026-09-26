@@ -1,0 +1,109 @@
+{
+  "defect_id": "EXT-D-0005",
+  "status": "database registration repaired and independently reread; strict release rerun pending integration owner",
+  "summary": "The strict release gate correctly found that the registered Chrome-extension records tool has no inclusion path from either chrome-extension/assistant or chrome-extension/pilot surface defaults. Its definition, local handler schema, and active executor binding matched; the sole release failure was surface inclusion.",
+  "root_cause": "The records tool was added to the local canonical surface and given an active chrome-extension binding, but its tool.definition name was not added to either surface's always_include_tools and was not a verified member of a declared always_include_bundles bundle. The release checker now verifies bundle membership and reports the gap. This is incomplete database registration under common-docs/systems/agents/agent-tools/STATE.md, What match means and The two gates.",
+  "evidence": [
+    "tmp/release-logs/latest.log: release-real-004 strict drift read 82 advertised local tools, 82 Chrome-owned tool.definition rows, 82 active bindings, and 2 surface defaults; it reported only records as missing surface inclusion and stopped publication.",
+    "scripts/check-tool-db-drift.ts:375-405 unions both always_include_tools arrays with verified tool.bundle members; records was absent after both paths. The checker distinguishes unverified bundle membership from verified absence.",
+    "src/lib/tools/categories.ts:222-227,426-427,556-557 declares the records category and canonical advertised tool; src/lib/tools/registry.ts:61,122 registers the live handler.",
+    "common-docs/systems/agents/agent-tools/STATE.md:168-176 and 273-277 explicitly require both active executor binding and surface inclusion. DECISIONS.md S5 calls always_include_tools an override and prefers a system bundle for large sets, but does not remove the current shared drift contract.",
+    "aidream/packages/matrx-ai/matrx_ai/capabilities/browser_dom.py:215-273 currently builds specs from every chrome-extension binding, and tools/implementations/browser_discovery.py:85-155,463-535 discovers category tools by binding. Thus the gate's wording that records can never reach the model is overbroad for this runtime; it does not make the canonical registration gap or strict drift result false."
+  ],
+  "proposed_repair": {
+    "preferred": "Through the authorized operator database path, add the existing records tool name to the same surface inclusion mechanism used by peer Chrome tools for both chrome-extension/assistant and chrome-extension/pilot. If a relevant declared system bundle is the canonical mechanism, add records as a real member of that bundle instead; verify the two surface defaults declare it and the bundle is system-owned. Preserve all existing entries, exclusions, bindings, and definitions.",
+    "why": "This is a registry data omission; changing the local handler or suppressing the strict gate would conceal it. The current surfaces already carry large explicit inclusion sets, so adding one entry per surface is the smallest immediate repair unless a records-bearing system bundle is confirmed.",
+    "verification": "Reread the two live surface rows and any affected bundle membership; run pnpm -s catalog:tools:drift:strict under the integration owner's resource lease; require zero drift and then rerun the guarded release candidate. Add a focused guard only if the repair includes changing checker logic."
+  },
+  "live_repair": {
+    "project_id": "brsgrqvjdzwihsvnfqkf",
+    "tool": "Supabase execute_sql",
+    "before": [
+      {
+        "surface_name": "chrome-extension/assistant",
+        "always_include_tools_count": 82,
+        "records_in_always_include_tools": false,
+        "always_include_bundles": ["google"],
+        "never_include_tools": []
+      },
+      {
+        "surface_name": "chrome-extension/pilot",
+        "always_include_tools_count": 82,
+        "records_in_always_include_tools": false,
+        "always_include_bundles": ["google"],
+        "never_include_tools": []
+      }
+    ],
+    "before_definition_and_binding": {
+      "name": "records",
+      "category": "records",
+      "tier": "action",
+      "admin_only": false,
+      "is_active": true,
+      "source_kind": "native",
+      "active_executors": ["aidream", "chrome-extension"],
+      "declared_google_bundle_is_system": false,
+      "declared_google_bundle_contains_records": false
+    },
+    "query": "update tool.surface_defaults\nset always_include_tools = array_append(coalesce(always_include_tools, array[]::text[]), 'records')\nwhere surface_name in ('chrome-extension/assistant', 'chrome-extension/pilot')\n  and not ('records' = any(coalesce(always_include_tools, array[]::text[])))\n  and not ('records' = any(coalesce(never_include_tools, array[]::text[])))\nreturning surface_name, cardinality(always_include_tools) as tools_after,\n  (select count(*) from unnest(always_include_tools) as x(name) where x.name = 'records') as records_count,\n  always_include_bundles, never_include_tools",
+    "mutation_returned": [
+      {
+        "surface_name": "chrome-extension/assistant",
+        "tools_after": 83,
+        "records_count": 1,
+        "always_include_bundles": ["google"],
+        "never_include_tools": []
+      },
+      {
+        "surface_name": "chrome-extension/pilot",
+        "tools_after": 83,
+        "records_count": 1,
+        "always_include_bundles": ["google"],
+        "never_include_tools": []
+      }
+    ],
+    "independent_read_after": [
+      {
+        "surface_name": "chrome-extension/assistant",
+        "always_include_tools_count": 83,
+        "records_occurrences": 1,
+        "always_include_bundles": ["google"],
+        "never_include_tools": [],
+        "definition_active": true,
+        "active_executors": ["aidream", "chrome-extension"]
+      },
+      {
+        "surface_name": "chrome-extension/pilot",
+        "always_include_tools_count": 83,
+        "records_occurrences": 1,
+        "always_include_bundles": ["google"],
+        "never_include_tools": [],
+        "definition_active": true,
+        "active_executors": ["aidream", "chrome-extension"]
+      }
+    ],
+    "concurrency": "The single UPDATE appends against each current row value under PostgreSQL row locking and skips rows where records is already present or explicitly excluded; it did not replace either array.",
+    "next_gate": "Integration owner reruns pnpm -s catalog:tools:drift:strict and the guarded release candidate."
+  },
+  "risks": [
+    "Adding records only to one surface can make assistant and pilot differ. Check intended parity and both rows.",
+    "The tool.definition advertises more actions than the Chrome executor currently implements; those actions return an explicit unavailable result. Surface inclusion should not be mistaken for completed Chrome coverage.",
+    "browser_dom.py already loads every active Chrome binding, so the release blocker is registry contract compliance rather than proof of user-visible invisibility. Its behavior and the broad gate message should be reconciled in a separate cross-repo contract review, not during this narrow release repair."
+  ],
+  "files": [
+    "tmp/release-logs/latest.log",
+    "scripts/check-tool-db-drift.ts",
+    "src/lib/tools/categories.ts",
+    "src/lib/tools/registry.ts",
+    "src/lib/tools/handlers/records.ts",
+    "/Users/armanisadeghi/code/common-docs/systems/agents/agent-tools/STATE.md",
+    "/Users/armanisadeghi/code/common-docs/systems/agents/agent-tools/DECISIONS.md",
+    "/Users/armanisadeghi/code/aidream/packages/matrx-ai/matrx_ai/capabilities/browser_dom.py",
+    "/Users/armanisadeghi/code/aidream/packages/matrx-ai/matrx_ai/tools/implementations/browser_discovery.py"
+  ],
+  "open_questions": [
+    "The existing google bundle declared on both surfaces is marked is_system=false, contrary to agent-tools DECISIONS.md R14. It was not changed for this narrow release repair; evaluate separately.",
+    "The server auto-loads Chrome bindings despite the canonical surface-inclusion contract. Reconcile code and contract separately after the release."
+  ],
+  "scope_note": "Live data-only repair and independent read verification. No grants, auth, RLS, schema, build, test, browser, or release process was started in this lane."
+}
