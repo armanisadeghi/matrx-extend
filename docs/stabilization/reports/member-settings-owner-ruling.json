@@ -1,0 +1,6 @@
+{
+  "review": "docs/stabilization/reports/member-settings-peer.json",
+  "ruling": "Existing authorization retained: exact known stale Capture no-workspace notice may be dismissed after actual approved org selection using trustedclick, per dced501c/a5b24499. Zero other mutations refers to Vault items/accounts/roles/auth state; this explicitly scoped UI dismissal was already approved, not an unreviewed additional action.",
+  "verdict": "source_ready_for_guarded_probe",
+  "limits": "Unknown alerts untouched; no membercredential/signin claim; no broad error suppression."
+}
