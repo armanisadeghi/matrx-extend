@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "report_id": "d23-notice-operation-census",
+  "reviewed_implementation_commit": "9b64e44ef4bd4177238956547c70f288221b98a7",
+  "source_census": {
+    "verdict": "ACTUAL_REACHABLE_WRITE_NOTICE_RETIREMENT",
+    "callers": [
+      {
+        "file": "src/lib/capture-ladder/queue.ts",
+        "line": 74,
+        "function": "listNeedsYou",
+        "operation": "select",
+        "table": "media.capture_handoff",
+        "workspace_failure_source": "synthetic uppercase NO_ORGANIZATION"
+      },
+      {
+        "file": "src/lib/highlights/queries.ts",
+        "line": 177,
+        "function": "createHighlight",
+        "operation": "insert",
+        "table": "extend.wbx_highlight",
+        "workspace_failure_source": "synthetic lowercase no_organization, uppercased by classifyDbFailure"
+      },
+      {
+        "file": "src/lib/supabase/queries.ts",
+        "line": 854,
+        "function": "deleteSavedCapture",
+        "operation": "update",
+        "table": "docproc.processed_documents",
+        "workspace_failure_source": "synthetic lowercase no_organization, uppercased by classifyDbFailure"
+      }
+    ],
+    "reproduction_and_impact": "When a highlight insert is invoked with no selected organization, requireRequestOrganizationId can settle with OrganizationNotSelectedError after its hold timeout or OrganizationNoMembershipsError immediately. createHighlight catches it, calls failDbCall with code `no_organization`, and the classifier uppercases the code to NO_ORGANIZATION/no_workspace. failDbCall adds resolvesWhen=active_organization_available. If the user later selects or joins an organization, NoticeHost retires that notice without retrying the insert. createHighlight has already failed; useHighlightBridge returns the error and the highlighter's persist handler does not set an id or retry, so the painted local highlight can remain while no database row exists. deleteSavedCapture has the same resolution marker on a never-sent update; its caller clears the confirmation target and does not retry automatically. This is a reachable stale-success/rerun problem, not merely a hypothetical DbCallSite API possibility.",
+    "mechanism": "classifyDbFailure uppercases error.code before comparing with `NO_ORGANIZATION`; failDbCall attaches active_organization_available resolution based only on failure kind, and NoticeHost retires every tagged notice as soon as active organization becomes non-null.",
+    "scope": "The capture-handoff select is also affected and is a legitimate resolved read prerequisite. The Sources save path returns its own local unsaved-queue refusal rather than using failDbCall, so it is outside this retirement path. The write callers above are the concrete affected operations; no rpc callsite passing this workspace failure code was found."
+  },
+  "runtime": {
+    "verdict": "SOURCE_CENSUS_ONLY",
+    "reason": "Read-only source inspection; no product edits, tests, browser, or heavy verification were performed."
+  }
+}
