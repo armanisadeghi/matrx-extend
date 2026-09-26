@@ -1,0 +1,12 @@
+{
+  "id": "remote-vault-suite-001",
+  "defect_id": "EXT-D-0019",
+  "feature_id": "EXT-F-0003",
+  "status": "pass_did_not_reproduce",
+  "tested_commit": "3a01a4502e432b2d3422fa5b8052159ee785bff4",
+  "scope": "Pre-edit full Vitest suite on local macOS with one worker; original remote CI run 36251603459 remains the red evidence.",
+  "command": "vitest run --maxWorkers=1",
+  "result": "1442 passed, 3 skipped, 0 failed; exit 0",
+  "duration": "84.72s",
+  "source_log": "/tmp/matrx-remote-vault-suite-001.log"
+}

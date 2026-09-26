@@ -17,11 +17,15 @@
     "docs/stabilization/runs/svg-caption-red-001.json",
     "docs/stabilization/runs/svg-caption-green-001.json",
     "docs/stabilization/reports/remote-stack-fix-peer.json",
-    "docs/stabilization/runs/remote-stack-tests-001.json"
+    "docs/stabilization/runs/remote-stack-tests-001.json",
+    "docs/stabilization/runs/svg-caption-siblings-001.json",
+    "docs/stabilization/runs/release-stabilization-021.json",
+    "docs/stabilization/runs/svg-caption-native-003.json",
+    "docs/stabilization/reports/svg003-runtime-peer.json"
   ],
   "severity": "S2: captured article silently loses meaningful chart context",
   "priority": "P1: confirmed source regression in incoming scrape changes",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/remote_stack_integration",
   "transition_history": [
     {
@@ -47,7 +51,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Minimalcaptionpreservationrepair committed7dbd32d8, focusedred\u2192green and1434unitpass. Siblingcasesfaab76c1 and fullrelease019 nowpending; independentnativeUIproof requiredbeforeclosure."
+    },
+    {
+      "at": "2026-09-26T15:26:00Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original focused red/green and sibling17pass plus actual0.2.67 Fast/Deep native003 fixture pass; realwheel lazyimagesload, bothSVG geometries/captions/labels/order andDeepchangedsource verified. Independentd82a8f8b accepts boundedclosure."
+    },
+    {
+      "at": "2026-09-26T15:26:00Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original caption-loss class verified fixed; fullfeature/mode/publicarticle coverage remains explicitlyunverified, not implied by closure."
     }
   ],
-  "fix_commits": ["7dbd32d8", "faab76c1"]
+  "fix_commits": ["7dbd32d8", "faab76c1"],
+  "closure_limits": "Native proof is guest on ownedlocalhostarticle, not publicproduction or member/admin coverage. Full EXT-F-1007-T28 and broaderfeature remain unverified."
 }

@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "reviewed_commit": "b406d347d75c6a35021837a3a9b1bce93fd27dd4",
+  "lane": "independent source review",
+  "A_acceptance": {
+    "result": "UNVERIFIED",
+    "evidence": "External CI run 36251603459 on b525a7c2 failed at the focused-frame selector assertion because it observed null. This review did not run the test or observe the root lane's post-fix local run; post-fix CI is also not established here."
+  },
+  "B_quality": {
+    "result": "PASS",
+    "finding": "The one-line waitFor retries until the rendered UI exposes exactly three accessible Fill buttons before invoking selectEligibleFillSelector. The surrounding Vault rendering creates labels and Fill buttons from the same matches map; this waits on the asynchronous readiness that previously let the browser selector run too early. The selector and its expected labels are unchanged: it still requires exactly three eligible rows, unique exact labels including stable ID suffixes, one enabled Fill per row, and a unique chosen row; the test still checks the selected row, duplicate and mutated-label rejection, and submitted itemId. The change is test synchronization only; no product files changed. This follows Testing Library's ordinary async query pattern; no VaultView source introduced an alternative UI readiness mechanism that needs changing."
+  },
+  "limits": [
+    "Source review only: no tests, build, or browser run were launched in this lane.",
+    "The reported pre-fix CI failure does not establish whether the fix passes CI; root owns post-fix local execution and CI status."
+  ]
+}

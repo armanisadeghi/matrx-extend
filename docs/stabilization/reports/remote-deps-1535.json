@@ -1,0 +1,11 @@
+{
+  "lane": "design-system 0.46.0 consumer check",
+  "release_attempt": "release-stabilization-022",
+  "published_source": "https://registry.npmjs.org/@ai-matrx/design-system/-/design-system-0.46.0.tgz, package/CHANGELOG.md",
+  "release_refusal": "Installed and tracked 0.44.6 were current together, but npm latest advanced to 0.46.0; freshness gate refused candidate v0.2.68 before tests/build.",
+  "versions": "No 0.44.7 entry in published changelog. 0.45.0 changes spreadsheet editing focus, selection and paste; 0.46.0 adds optional toolbar overflow, chip styles and number filter operators.",
+  "consumer_action": "0.45.0 asks only hosts with their own spreadsheet cell editors to provide spreadsheet.controllerRef and call endEdit. 0.46.0 states no consumer action.",
+  "extension_census": "No MatrxDataTable, spreadsheet/controllerRef, onRowOpen or custom cell editor use in src/tests; no mandatory extension code change identified.",
+  "next": "Root owns guarded latest package update, frozen graph reconciliation, required checks and release retry; keep latest and the freshness gate.",
+  "limits": "Read-only npm tarball/source census. No install, build, test, browser run or source edit in this lane."
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T15:13:00Z",
+  "updated_at": "2026-09-26T15:31:51.780715+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -1233,18 +1233,47 @@
               "detail": "Auth-independent engineering behavior shared by every mode; actual lint-red refusal and exact-candidate green publication, independently verified by ci-gate-runtime-peer and release018-peer."
             }
           }
+        },
+        {
+          "id": "EXT-F-0003-T09",
+          "title": "Await asynchronous UI readiness in integration assertions",
+          "control_ids": [
+            "EXT-F-0003-C03"
+          ],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Frozen candidate and dependencies; preserve actual CI run/SHA and distinguish intermittent failures."
+          ],
+          "steps": [
+            "Run Vault exact Fill selector guard after panel status resolves.",
+            "Run full configured CI with exact suffix and item-id assertions retained."
+          ],
+          "expected": [
+            "Readiness is awaited and the exact three eligible choices remain enforced.",
+            "No intermittent null selector caused by testing before async readiness."
+          ],
+          "dimensions": [
+            "local-focused",
+            "full-suite",
+            "remote-CI"
+          ]
         }
       ],
       "cells": {
         "guest": {
-          "test_status": "pass",
+          "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
             "EXT-D-0004",
             "EXT-D-0005",
             "EXT-D-0016",
-            "EXT-D-0017"
+            "EXT-D-0017",
+            "EXT-D-0019"
           ],
           "run_ids": [
             "release-red-001",
@@ -1263,17 +1292,18 @@
             "release-stabilization-018",
             "release-stabilization-021"
           ],
-          "retest_status": "pass"
+          "retest_status": "not-run"
         },
         "member": {
-          "test_status": "pass",
+          "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
             "EXT-D-0004",
             "EXT-D-0005",
             "EXT-D-0016",
-            "EXT-D-0017"
+            "EXT-D-0017",
+            "EXT-D-0019"
           ],
           "run_ids": [
             "release-red-001",
@@ -1292,17 +1322,18 @@
             "release-stabilization-018",
             "release-stabilization-021"
           ],
-          "retest_status": "pass"
+          "retest_status": "not-run"
         },
         "admin": {
-          "test_status": "pass",
+          "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
             "EXT-D-0004",
             "EXT-D-0005",
             "EXT-D-0016",
-            "EXT-D-0017"
+            "EXT-D-0017",
+            "EXT-D-0019"
           ],
           "run_ids": [
             "release-red-001",
@@ -1321,7 +1352,7 @@
             "release-stabilization-018",
             "release-stabilization-021"
           ],
-          "retest_status": "pass"
+          "retest_status": "not-run"
         }
       },
       "readiness_gaps": [
@@ -5096,7 +5127,8 @@
             "permissions-auth-native-sol",
             "release-native-verification",
             "native-0258-port-verification",
-            "isolated-permission-denial-005"
+            "isolated-permission-denial-005",
+            "native-0267-reload-001"
           ],
           "retest_status": "not-run"
         }
@@ -5133,6 +5165,32 @@
           "wave": "A",
           "resolution": "guest-reset005 real pointer settles target and focuses input; typed port65001 and Set persist successfully. Earlier failures were test input mechanics, not a demonstrated product save failure.",
           "retest_evidence": "docs/stabilization/runs/guest-reset-005.json"
+        }
+      ],
+      "runtime_evidence": [
+        {
+          "run_id": "native-0267-reload-001",
+          "mode": "admin",
+          "build": "0.2.67",
+          "status": "partial",
+          "report": "docs/stabilization/reports/native-0267-reload.json",
+          "preserved": [
+            "account",
+            "organization",
+            "automatic engine port",
+            "four optional permission switches OFF",
+            "required DevTools informational row"
+          ],
+          "unresolved_observation": {
+            "case_ids": [
+              "EXT-F-1003-T45",
+              "EXT-F-1003-T48"
+            ],
+            "expected": "Observe bridge lifecycle and eventual connection state after extension reload.",
+            "actual": "Connected (http) before reload, Not connected immediately after. No reconnection or settings change attempted.",
+            "state": "unverified-lead",
+            "next_action": "Reobserve after settled reload with actual engine availability, distinguish expected transient discovery from persistent failure before triage. No healthy connection claim."
+          }
         }
       ]
     },
@@ -5223,6 +5281,11 @@
           "id": "EXT-F-1004-C16",
           "label": "Backend profile field constraints",
           "action": "Save malformed email/date and boundary values on disposable profile; inspect database/API rejection and retained draft."
+        },
+        {
+          "id": "EXT-F-1004-C17",
+          "label": "First profile save organization",
+          "action": "For a profile with no existing row, resolve and explicitly persist the device's active organization; for an existing row, retain its stored organization."
         }
       ],
       "source_anchors": [
@@ -5899,6 +5962,38 @@
             "reload",
             "backend-error"
           ]
+        },
+        {
+          "id": "EXT-F-1004-T28",
+          "title": "First profile save names active organization and existing profile stays filed",
+          "control_ids": [
+            "EXT-F-1004-C02",
+            "EXT-F-1004-C17"
+          ],
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Use a disposable profile with no existing row and a principal belonging to two organizations; then use a separate existing profile filed in the other organization."
+          ],
+          "steps": [
+            "Set organization A on this device and save the new profile.",
+            "Inspect the saved row's organization_id.",
+            "Switch this device to organization B and save an existing profile filed under A.",
+            "Repeat a new-profile save with no active device organization."
+          ],
+          "expected": [
+            "First save explicitly uses A.",
+            "Saving the existing row retains A and does not move it to B.",
+            "Without an active organization, no profile write occurs and the user receives the resolver remedy."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "organization-unset",
+            "organization-switch"
+          ]
         }
       ],
       "cells": {
@@ -5923,7 +6018,14 @@
       },
       "inventory_status": "complete",
       "missing_items": [],
-      "source_complete": true
+      "source_complete": true,
+      "source_review": [
+        {
+          "source_sha": "b525a7c2d1b1c2012c71234919f40310faeef532",
+          "report": "docs/stabilization/reports/remote1524-scope.json",
+          "status": "source-only-runtime-unverified"
+        }
+      ]
     },
     {
       "id": "EXT-F-1005",
@@ -10164,9 +10266,10 @@
             "guest-local-001",
             "render-retest-001",
             "svg-caption-native-001",
-            "svg-caption-native-002"
+            "svg-caption-native-002",
+            "svg-caption-native-003"
           ],
-          "retest_status": "not-run"
+          "retest_status": "pass"
         },
         "member": {
           "test_status": "unverified",
@@ -10192,6 +10295,18 @@
       "source_complete": true,
       "readiness_gaps": [
         "Source landing, refusal/retry, organization authorization, and server persistence require live member/admin evidence; guest Save must show sign-in remedy while retaining the device-local capture. Endpoint/RLS behavior is a runtime readiness gap, not a source-census blocker."
+      ],
+      "runtime_evidence": [
+        {
+          "run_id": "svg-caption-native-003",
+          "mode": "guest",
+          "build": "0.2.67",
+          "defect_id": "EXT-D-0018",
+          "status": "bounded-retest-pass",
+          "review": "docs/stabilization/reports/svg003-runtime-peer.json",
+          "proven": "Fast/Deep:2loadedSVGs,2captions,2HTMLlabels,interleavedorder,exactgeometry; Deepchangedsource observed.",
+          "limits": "Ownedlocalhostfixture, no publicproduction/member/admin/fullT28 pass."
+        }
       ]
     },
     {
@@ -17928,6 +18043,16 @@
           "source_anchor": "src/features/agenda/AgendaView.tsx",
           "test_design_status": "unverified",
           "test_design_item": "Verify Observe new task loading/empty state (Show list status honestly) on Agenda side-panel in source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2004-C47",
+          "label": "Visible task-creation failure",
+          "action": "Show an alert with the resolver remedy or specific creation error; retain the open form for recovery."
+        },
+        {
+          "id": "EXT-F-2004-C48",
+          "label": "Task creation organization resolution",
+          "action": "Resolve and pass the active organization to the atomic create RPC; do not write if resolution fails."
         }
       ],
       "source_anchors": [
@@ -18157,6 +18282,38 @@
             "auth-role-org",
             "backend-error-retry"
           ]
+        },
+        {
+          "id": "EXT-F-2004-T07",
+          "title": "Task create carries selected organization or shows recovery remedy",
+          "control_ids": [
+            "EXT-F-2004-C07",
+            "EXT-F-2004-C47",
+            "EXT-F-2004-C48"
+          ],
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Use a disposable task and a principal belonging to two organizations."
+          ],
+          "steps": [
+            "Set organization A on this device and create a task; inspect its organization and reload Agenda.",
+            "Clear the device organization or use a principal with no memberships and submit the form.",
+            "Restore an organization and retry from the retained form."
+          ],
+          "expected": [
+            "The atomic RPC receives organization A and the created task persists in A.",
+            "A resolver refusal creates no task and displays a clear remedy while retaining the form.",
+            "A subsequent valid retry creates the task once."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "organization-unset",
+            "organization-switch"
+          ]
         }
       ],
       "cells": {
@@ -18183,6 +18340,13 @@
       "missing_items": [],
       "readiness_gaps": [
         "No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel."
+      ],
+      "source_review": [
+        {
+          "source_sha": "b525a7c2d1b1c2012c71234919f40310faeef532",
+          "report": "docs/stabilization/reports/remote1524-scope.json",
+          "status": "source-only-runtime-unverified"
+        }
       ]
     },
     {
@@ -36155,6 +36319,11 @@
           "id": "EXT-F-4091-C03",
           "label": "action: capture",
           "action": "Exercise the action=capture branch through the real executor"
+        },
+        {
+          "id": "EXT-F-4091-C04",
+          "label": "Capture organization resolution",
+          "action": "Resolve and pass active organization to edu_import_deck for capture; refuse before RPC if unavailable."
         }
       ],
       "source_anchors": [
@@ -36226,28 +36395,40 @@
       "cases": [
         {
           "id": "EXT-F-4091-T01",
-          "title": "Controlled manual execution: capture_study_set",
+          "title": "Controlled manual execution: capture_study_set with organization handling",
           "control_ids": [
             "EXT-F-4091-C01",
             "EXT-F-4091-C02",
-            "EXT-F-4091-C03"
+            "EXT-F-4091-C03",
+            "EXT-F-4091-C04"
           ],
           "modes": [
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "ready",
           "preconditions": [
             "Resource permit and current build receipt",
             "Controlled owned target and no unauthorized external effects"
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Preview a controlled public study set and confirm preview writes nothing.",
+            "With organization A selected, capture and inspect the import request and resulting deck organization.",
+            "With no selected organization or membership, attempt capture and inspect the result and write count."
+          ],
+          "expected": [
+            "Preview remains read-only.",
+            "Capture calls only edu_import_deck with p_organization_id equal to A.",
+            "Unavailable organization returns organization_required with a remedy and makes no RPC/write."
+          ],
           "dimensions": [
             "valid-input",
             "invalid-input",
             "permissions",
-            "reload"
+            "reload",
+            "preview-no-write",
+            "organization-binding",
+            "missing-organization"
           ]
         }
       ],
@@ -36270,7 +36451,14 @@
           "run_ids": [],
           "retest_status": "not-run"
         }
-      }
+      },
+      "source_review": [
+        {
+          "source_sha": "b525a7c2d1b1c2012c71234919f40310faeef532",
+          "report": "docs/stabilization/reports/remote1524-scope.json",
+          "status": "source-only-runtime-unverified"
+        }
+      ]
     },
     {
       "id": "EXT-F-4092",
