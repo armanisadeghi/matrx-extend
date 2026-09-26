@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "reviewedCommit": "541179de6eafecd87974e7763cefef24845f0d49",
+  "lane": "EXT-D-0009 guest pointer final peer",
+  "engineering": "PASS",
+  "runtime": "UNVERIFIED",
+  "priorFinding": "ADDRESSED",
+  "basis": "Pointer sampling is synchronous; no in-page requestAnimationFrame promise remains. Node's 3-second sampling deadline can be exceeded by its in-flight CDP call, but tests/browser/vault-owned-cdp.cjs rejects every command after 5 seconds. Initial sample plus deadline and final in-flight command therefore remain finitely bounded (about 13 seconds), including transport.",
+  "input": "Unique visible target and center hit-target are checked; a real CDP mouse press/release clicks the port input, focus is asserted, then Input.insertText is checked against DOM value and focus before Set. No DOM focus/value assignment or port-storage seeding.",
+  "reset": "Cancel asserts theme, port, and exact guest session fixture persist. Confirm asserts prior local/session keys are cleared; reload asserts guest controls and System default with theme, port, and fixture absent.",
+  "scope": "Independent source and transport review only; no browser, tests, build, install, or runtime acceptance executed."
+}
