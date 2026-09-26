@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from '@/config/env';
 /**
  * Release guard (SOURCE-CONVERGENCE §7, Phase 1b): Save with the server
  * unreachable
@@ -16,6 +17,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   apiPost: vi.fn(),
   saveSeoAudit: vi.fn(),
+  organizationId: '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f',
 }));
 
 vi.mock('@/lib/api/client', () => ({ apiPost: mocks.apiPost }));
@@ -23,7 +25,7 @@ vi.mock('@/lib/auth/flow', () => ({
   getCurrentUser: vi.fn(async () => ({ id: '87a6e699-3622-4869-8843-d0867456c0dd' })),
 }));
 vi.mock('@/lib/api/routes/auth', () => ({
-  requireRequestOrganizationId: vi.fn(async () => '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f'),
+  requireRequestOrganizationId: vi.fn(async () => mocks.organizationId),
 }));
 vi.mock('@/lib/supabase/queries', () => ({ saveSeoAudit: mocks.saveSeoAudit }));
 vi.mock('@/hooks/use-active-tab', () => ({
@@ -86,6 +88,7 @@ const listeners = new Set<Listener>();
 beforeEach(async () => {
   mocks.apiPost.mockReset();
   mocks.saveSeoAudit.mockReset().mockResolvedValue({ id: 'audit-1' });
+  mocks.organizationId = '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f';
   await chrome.storage.local.remove(UNSAVED_CAPTURES_KEY);
   listeners.clear();
   const local = chrome.storage.local as unknown as {
@@ -134,6 +137,25 @@ const landedResponse = {
     notices: [],
   },
 };
+
+const OTHER_ORGANIZATION_ID = '8e530f1e-a236-4bca-8131-f15327796301';
+
+async function switchWorkspace(organizationId: string) {
+  mocks.organizationId = organizationId;
+  await act(async () => {
+    await chrome.storage.local.set({
+      [STORAGE_KEYS.ACTIVE_ORGANIZATION]: { id: organizationId, name: 'New workspace' },
+    });
+  });
+}
+
+function deferredApiResponse() {
+  let resolve!: (value: unknown) => void;
+  const promise = new Promise<unknown>((done) => {
+    resolve = done;
+  });
+  return { promise, resolve };
+}
 
 describe('Save never loses input', () => {
   it('server unreachable → retry card, capture kept, unsaved-edits guard armed; retry lands', async () => {
@@ -354,5 +376,53 @@ describe('Save never loses input', () => {
     expect(await listUnsavedCaptures()).toHaveLength(0);
     const [, body] = mocks.apiPost.mock.calls[0] as [string, { portions: { text: string }[] }];
     expect(body.portions.map((p) => p.text).join('\n')).toContain('Intro, edited.');
+  });
+
+  it('switching workspaces clears the local Saved button and Source link without dropping the capture', async () => {
+    mocks.apiPost.mockResolvedValue(landedResponse);
+    render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    expect(await screen.findByRole('button', { name: /^Saved$/ })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Open this Source/ })).toBeTruthy();
+
+    await switchWorkspace(OTHER_ORGANIZATION_ID);
+
+    expect(screen.queryByRole('button', { name: /^Saved$/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Open this Source/ })).toBeNull();
+    expect(screen.getByRole('button', { name: /^Save$/ })).toBeTruthy();
+    expect(useScrapeStore.getState().current?.article.content_markdown).toContain('Intro, edited.');
+  });
+
+  it('a save started in the old workspace cannot restore its Saved claim after a switch', async () => {
+    const pending = deferredApiResponse();
+    mocks.apiPost.mockReturnValueOnce(pending.promise);
+    render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
+    expect(mocks.apiPost.mock.calls[0]?.[1]).toMatchObject({
+      organization_id: '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f',
+    });
+
+    await switchWorkspace(OTHER_ORGANIZATION_ID);
+    await act(async () => pending.resolve(landedResponse));
+
+    expect(screen.queryByRole('button', { name: /^Saved$/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /Open this Source/ })).toBeNull();
+    expect(screen.getByRole('button', { name: /^Save$/ })).toBeTruthy();
+    expect(useScrapeStore.getState().current?.article.content_markdown).toContain('Intro, edited.');
+
+    mocks.apiPost.mockResolvedValue({
+      ...landedResponse,
+      data: {
+        ...landedResponse.data,
+        processed_document_id: 'c8a1cd55-3f22-44d1-bda6-1bb2d2777aae',
+      },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(2));
+    expect(mocks.apiPost.mock.calls[1]?.[1]).toMatchObject({
+      organization_id: OTHER_ORGANIZATION_ID,
+    });
+    expect(await screen.findByRole('button', { name: /^Saved$/ })).toBeTruthy();
   });
 });
