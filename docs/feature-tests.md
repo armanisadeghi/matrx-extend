@@ -754,6 +754,10 @@ Every entry follows this shape:
      have no switches because those permissions are absent from those manifests.
      If a permission status read fails, confirm **Retry permission check**
      recovers the controls after Chrome responds again.
+  7. In Tools, confirm DevTools Protocol and recently closed tabs tools show
+     **req-perm**, while Cookies tools show **opt-perm**. A missing required
+     permission must direct the user to Chrome or a supported build, not to a
+     Settings switch.
 - **Expected:** Optional switch state matches `chrome.permissions.contains`;
   only permissions declared by that build appear as switches, and required
   DevTools Protocol remains informational. If DevTools Protocol is unavailable,

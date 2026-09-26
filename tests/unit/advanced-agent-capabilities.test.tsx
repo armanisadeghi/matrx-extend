@@ -1,5 +1,5 @@
 import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapabilities';
-import { missingPermissionRemedy } from '@/lib/permissions/optional';
+import { missingPermissionRemedy, permissionRequirementLabel } from '@/lib/permissions/optional';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -39,7 +39,12 @@ beforeEach(() => {
     return true;
   });
   vi.stubGlobal('chrome', {
-    runtime: { getManifest: () => ({ optional_permissions: declared }) },
+    runtime: {
+      getManifest: () => ({
+        permissions: ['debugger', 'sessions'],
+        optional_permissions: declared,
+      }),
+    },
     permissions: {
       contains,
       request,
@@ -65,7 +70,7 @@ describe('Advanced agent capabilities', () => {
     );
     expect(within(debuggerRow).queryByRole('switch')).toBeNull();
 
-    const clipboardRow = screen.getByText('Clipboard read').closest('label');
+    const clipboardRow = (await screen.findByText('Clipboard read')).closest('label');
     expect(clipboardRow).not.toBeNull();
     const clipboardSwitch = within(clipboardRow as HTMLElement).getByRole('switch');
     await waitFor(() => expect(clipboardSwitch.getAttribute('data-state')).toBe('checked'));
@@ -81,7 +86,7 @@ describe('Advanced agent capabilities', () => {
     remove.mockResolvedValueOnce(false);
     render(<AdvancedAgentCapabilities />);
 
-    const clipboardRow = screen.getByText('Clipboard read').closest('label');
+    const clipboardRow = (await screen.findByText('Clipboard read')).closest('label');
     const clipboardSwitch = within(clipboardRow as HTMLElement).getByRole('switch');
     await waitFor(() => expect(clipboardSwitch.getAttribute('data-state')).toBe('checked'));
     fireEvent.click(clipboardSwitch);
@@ -152,14 +157,26 @@ describe('Advanced agent capabilities', () => {
     expect(clipboardSwitch.getAttribute('data-state')).toBe('unchecked');
   });
 
-  it('gives a reachable remedy for required debugger and optional grants', () => {
-    expect(missingPermissionRemedy(['debugger'])).toContain('cannot be enabled in Settings');
+  it('uses the manifest to distinguish required, optional, and unavailable remedies', () => {
+    expect(missingPermissionRemedy(['debugger', 'sessions'])).toContain(
+      'cannot be enabled in Settings',
+    );
+    expect(missingPermissionRemedy(['debugger', 'sessions'])).toContain('sessions');
+    expect(permissionRequirementLabel(['debugger'])).toBe('req-perm');
+    expect(permissionRequirementLabel(['sessions'])).toBe('req-perm');
     expect(missingPermissionRemedy(['cookies'])).toContain(
-      'enable the optional permission in Settings',
+      'enable optional permission(s) [cookies] in Settings',
     );
+    expect(permissionRequirementLabel(['cookies'])).toBe('opt-perm');
     expect(missingPermissionRemedy(['debugger', 'cookies'])).toContain(
-      'enable the optional permission in Settings',
+      'enable optional permission(s) [cookies] in Settings',
     );
+    expect(permissionRequirementLabel(['debugger', 'cookies'])).toBe('mixed perms');
+    declared = ['cookies', 'clipboardRead'];
+    expect(missingPermissionRemedy(['pageCapture'])).toContain(
+      'not declared by this browser build',
+    );
+    expect(permissionRequirementLabel(['pageCapture'])).toBe('unavailable');
   });
 
   it('reports a thrown Chrome request and permits a retry', async () => {

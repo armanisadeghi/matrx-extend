@@ -24,6 +24,7 @@ import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { permissionRequirementLabel } from '@/lib/permissions/optional';
 import {
   ALL_CATEGORIES,
   CATEGORIES,
@@ -278,7 +279,7 @@ function ToolRow({
                 className="h-4 border-purple-300 bg-purple-50 px-1 py-0 text-[9px] font-medium uppercase tracking-wide text-purple-700 dark:border-purple-700/50 dark:bg-purple-950/30 dark:text-purple-400"
                 title={`Requires: ${handler.required_optional_permissions.join(', ')}`}
               >
-                opt-perm
+                {permissionRequirementLabel(handler.required_optional_permissions)}
               </Badge>
             ) : null}
           </div>

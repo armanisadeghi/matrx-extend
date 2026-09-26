@@ -99,17 +99,50 @@ export function declaredRuntimeOptionalPermissions(): RuntimeOptionalPermission[
   return ALL_OPTIONAL.filter((permission) => declared.has(permission));
 }
 
-/** A missing required grant cannot be repaired through Settings. */
+/** Tool messaging and roster badges use this build's manifest as one source. */
+export function classifyDeclaredPermissions(perms: string[]): {
+  required: string[];
+  optional: string[];
+  unavailable: string[];
+} {
+  const manifest = chrome.runtime.getManifest();
+  const required = new Set(manifest.permissions ?? []);
+  const optional = new Set(manifest.optional_permissions ?? []);
+  return {
+    required: perms.filter((permission) => required.has(permission)),
+    optional: perms.filter((permission) => optional.has(permission)),
+    unavailable: perms.filter(
+      (permission) => !required.has(permission) && !optional.has(permission),
+    ),
+  };
+}
+
+/** A concise badge that never calls an installation grant optional. */
+export function permissionRequirementLabel(perms: string[]): string {
+  const { required, optional, unavailable } = classifyDeclaredPermissions(perms);
+  if (unavailable.length) return 'unavailable';
+  if (required.length && optional.length) return 'mixed perms';
+  if (required.length) return 'req-perm';
+  return 'opt-perm';
+}
+
+/** Remediation follows the permission declarations in this browser build. */
 export function missingPermissionRemedy(perms: string[]): string {
+  const { required, optional, unavailable } = classifyDeclaredPermissions(perms);
   const remedies: string[] = [];
-  if (perms.includes('debugger')) {
+  if (required.length) {
     remedies.push(
-      'DevTools Protocol is required at installation and cannot be enabled in Settings. Use a Chrome extension build that includes the debugger permission.',
+      `Required Chrome permission(s) [${required.join(', ')}] cannot be enabled in Settings. Check this extension's access in Chrome or use a browser build that includes them.`,
     );
   }
-  if (perms.some((permission) => permission !== 'debugger')) {
+  if (optional.length) {
     remedies.push(
-      'Ask the user to enable the optional permission in Settings → Advanced agent capabilities, then retry.',
+      `Ask the user to enable optional permission(s) [${optional.join(', ')}] in Settings → Advanced agent capabilities, then retry.`,
+    );
+  }
+  if (unavailable.length) {
+    remedies.push(
+      `Permission(s) [${unavailable.join(', ')}] are not declared by this browser build. Use a build that supports them.`,
     );
   }
   return remedies.join(' ');
