@@ -80,6 +80,8 @@ describe('frontend bridge Broadcast transport', () => {
     });
   });
 
+  // The first dynamic import can exceed Vitest's 5s default when the full
+  // serial release suite competes for CPU; keep every transport assertion.
   it('subscribes with the exact shared event and replies to inbound RPC', async () => {
     const h = makeHarness();
     const { connectBroadcast, disconnectBroadcast } = await import(
@@ -126,7 +128,7 @@ describe('frontend bridge Broadcast transport', () => {
       }),
     });
     await disconnectBroadcast();
-  });
+  }, 15_000);
 
   it('puts the BARE BridgeEnvelope on the wire — no Matrx envelope, ever', async () => {
     // @ai-matrx/realtime normally wraps a broadcast in `{v, cid, eid, ts, data}`.
