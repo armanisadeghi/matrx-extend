@@ -1,7 +1,7 @@
 {
   "id": "reload-auth-diagnosis",
-  "status": "probable_ui_hydration_defect_unconfirmed_session_state",
-  "scope": "Read-only diagnosis of the 0.2.53 native Chrome sign-in gate after full Reload; no browser action, token read, or credential value inspection in this lane.",
+  "status": "lifecycle_cause_confirmed_local_fix_green_native_unverified",
+  "scope": "Diagnosis and local engineering repair of the 0.2.53 native Chrome sign-in gate after full Reload; this lane made no browser action, token read, or credential value inspection.",
   "observed": [
     "docs/stabilization/runs/admin-signin-001.json records admin@admin.com visible after sign-in and full Reload in the same dev extension ID at 0.2.51, using the prior release artifact.",
     "docs/stabilization/runs/permission-native-retest.json records the same extension ID and path at 0.2.53, then Email — and Sign in to choose across approximately 5, 12, 20, and 30 seconds after Reload. It does not establish that storage was cleared or that refresh failed.",
@@ -37,8 +37,31 @@
       "smallest_proof": "Already weakened by matching native extension ID/path and equal selected build env values; compare manifest identity and public origin in loaded artifact only if the first two tests do not decide the case."
     }
   ],
-  "verdict": "The source and bundle provide a concrete, deterministic mechanism for a false signed-out UI in the 0.2.53 development artifact. The native observation has not yet distinguished it from genuinely missing storage, so no code change is authorized by this diagnosis alone.",
-  "next_action": "With the UI owner controlling Chrome, capture presence-only storage evidence if available. The smallest red-capable loop is a useAuth mount under React.StrictMode with a stored fixture USER_PROFILE and async restore/storage read, asserting that user hydrates without calling Sign in; the current boot guard should fail that assertion in development React. Then repair the shared boot guard, re-run the loop, and census other one-time effect guards using the same pattern. Investigate the OAuth 400 separately if it persists after UI hydration is fixed.",
+  "causal_reproduction": {
+    "receipt": "docs/stabilization/runs/auth-strict-red-003.json",
+    "test": "src/hooks/use-auth.strict-mode.test.tsx",
+    "result_before_fix": "The same persisted admin fixture hydrated without StrictMode, while two StrictMode cases failed at the user-ID hydration assertion. This isolates effect replay rather than malformed profile, storage, or restore fixture.",
+    "separate_baseline_issue": "The older use-auth-race test mock omitted chrome.storage.session.get after a concurrent Safari auth change. Its two assertions passed but produced two unhandled TypeErrors. The fixture was aligned to the real session API before GREEN verification."
+  },
+  "repair": {
+    "commit": "064af8e",
+    "source": "src/hooks/use-auth.ts",
+    "behavior": "Count mounted useAuth consumers; invalidate an in-flight boot only when the last consumer unmounts, so development StrictMode replay starts a fresh boot and another mounted consumer can receive hydration. A boot and its later admin lookup must still match the current boot and auth generation before updating state.",
+    "guards": [
+      "src/hooks/use-auth.strict-mode.test.tsx: persisted admin and regular profiles survive StrictMode replay, the positive control hydrates without replay, a remaining consumer hydrates after first-owner unmount, and an old admin lookup cannot restore admin state after sign-out.",
+      "tests/unit/use-auth-race.test.tsx: existing overlapping sign-in and cross-consumer sign-out guards retain their assertions with the current Chrome session API mocked."
+    ],
+    "manual_recipe": "docs/feature-tests.md: signed-in identity survives a development build reload"
+  },
+  "verification": {
+    "reported_by": "root coordinator",
+    "run_id": "auth-permission-green-001",
+    "result": "15 of 15 focused tests passed across StrictMode hydration (5), auth races (2), and permissions (8), with zero unhandled errors and exit code 0.",
+    "limits": "The green run is reported by the coordinator; this lane did not launch tests or independently inspect its output. Typecheck, fresh peer review, and native Chrome verification were not reported complete at this point."
+  },
+  "census": "A targeted search for module-wide bootRan/started/initialized guards under src/hooks, src/features, and src/entrypoints found this use-auth.ts guard as the only matching sibling in that source area.",
+  "verdict": "The StrictMode effect replay bug is causally reproduced and the focused local guard is green. The 06:09 native observation did not record storage-key presence, so that particular session's stored state remains unknown. The later OAuth 400 belongs to a separate sign-in attempt and is not claimed fixed here.",
+  "next_action": "Obtain fresh independent source review and native Chrome reload proof on the repaired build. If OAuth Sign in still returns Auth session missing after identity hydration works, diagnose that separate provider flow from its first error.",
   "files": [
     "src/hooks/use-auth.ts",
     "src/entrypoints/sidepanel/main.tsx",
@@ -46,6 +69,10 @@
     "src/features/settings/SettingsView.tsx",
     "src/lib/auth/flow.ts",
     "src/lib/auth/identity-transport.ts",
+    "src/hooks/use-auth.strict-mode.test.tsx",
+    "tests/unit/use-auth-race.test.tsx",
+    "docs/feature-tests.md",
+    "docs/stabilization/runs/auth-strict-red-003.json",
     "docs/stabilization/runs/admin-signin-001.json",
     "docs/stabilization/runs/permission-native-retest.json",
     "docs/stabilization/reports/permission-native-retest.json",
