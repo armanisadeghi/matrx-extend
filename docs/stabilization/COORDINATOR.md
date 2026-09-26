@@ -38,3 +38,5 @@ User resumed04:46UTC. Remote main unchanged and resourcepressure normal. guest-s
 05:10UTC: admin-default-agent001T09 staysunverified pending independentLuna agent_label_diagnosis of AXrow QuickTestAgent2 vs selectedQuickTestAgent; originalMatrxBrowserAgent restored. L0007 linkedinventory. UIworker continues admin-settings-local001T06/T15/T30 only. Samelease76318 resourcehealthy.
 
 05:18UTC: admin-settings-local001 completedT06/T15/T30 fullcriteria; System/Fast/groups restored. TwoLuna interpretationcorrections triggeredfreshSolmedium default_agent_precision forT09/L7,10minbound. Samelease76318 healthy; no otheractiveworkers.
+
+05:21UTC: freshSol default-agent-precision confirmed2 is separateorchestramemberbadge for exactdetailID. T09fullpass afteridentity/reload/originalrestoration; L0007refuted. Source-onlyRPCno-row results werenotproofmissing. FreshLuna admin_permission_controls ownsT56/T57/T58 realChromepermissionUI, restoresinitialstates, neverreadsprotectedcontents. Samehealthy lease76318.

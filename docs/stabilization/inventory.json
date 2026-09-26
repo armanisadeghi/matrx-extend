@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T05:18:07.280670+00:00",
+  "updated_at": "2026-09-26T05:21:13.372331+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
@@ -2528,10 +2528,10 @@
           ],
           "results": {
             "admin": {
-              "status": "unverified",
-              "run_id": "admin-default-agent-001",
-              "evidence": "docs/stabilization/runs/admin-default-agent-001.json",
-              "detail": "Selection/persistence observed but row label and selected name differ; independent source diagnosis pending. OriginalMatrxBrowserAgent restored."
+              "status": "pass",
+              "run_id": "admin-default-agent-002",
+              "evidence": "docs/stabilization/runs/admin-default-agent-002.json",
+              "detail": "FreshSol visual+AX/detail reconciled sameQuickTestAgent plus2memberbadge; actualchosenidentity persisted afterfullreload, originalMatrxBrowserAgent restored."
             }
           }
         },
@@ -4128,7 +4128,8 @@
           "run_ids": [
             "admin-org-001",
             "admin-default-agent-001",
-            "admin-settings-local-001"
+            "admin-settings-local-001",
+            "admin-default-agent-002"
           ],
           "retest_status": "not-run"
         }
@@ -4148,8 +4149,9 @@
           "id": "EXT-L-0007",
           "summary": "Agent picker row AX Quick Test Agent 2 vs detail/selection Quick Test Agent; determine composite label versus identity mismatch before defect triage.",
           "source": "docs/stabilization/runs/admin-default-agent-001.json",
-          "state": "source-diagnosis",
-          "wave": "A"
+          "state": "refuted",
+          "wave": "A",
+          "resolution": "Native visual/detail evidence shows separate2memberorchestrabadge; AX concatenates. No wrongagentselection defect. See default-agent-precision report."
         }
       ]
     },
