@@ -1,0 +1,52 @@
+{
+  "id": "seo-guest-002",
+  "feature_id": "EXT-F-1008",
+  "at": "2026-09-26T14:58:43.911Z",
+  "status": "unverified",
+  "mode": "guest",
+  "scope": "Read-only warm-page SEO actions in an owned native side panel",
+  "runtime_output": "test-results/seo-guest-acceptance.json",
+  "runtime_output_sha256": "17a043d0d049ee6402b81ccabf92013b3c583c74f99e4bbc1aa1d49628d418a4",
+  "resource_log": "/tmp/matrx-seo-guest-002.log",
+  "resource_log_sha256": "ee60c977792586c55d46d3604f6336aacdc6183b4224f613115435c7c3420cfd",
+  "resource": {
+    "run_id": "seo-guest-002",
+    "admission_code": "RESOURCE_ADMITTED",
+    "last_watch_code": "RESOURCE_WATCH_HEALTHY",
+    "child_exit_code": 1,
+    "child_signal": null
+  },
+  "release_receipt": {
+    "path": ".output/release-receipt.json",
+    "source_sha": "79d1dba35ea1157a6dbf7a8ce23942a0a2a8f271",
+    "version": "0.2.67",
+    "publish_state": "pushed",
+    "unpacked_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "tree_sha256": "ce7a1faadd3a7ba45ceb90f6754b26a6be8f6573ec8b660e995e4f5c4bd8a82a",
+    "store_zip_sha256": "2e48fb724ab5af1bd17bbec25fd3b4b251309b6c58a12af27b75f85beef7cfc3",
+    "local_zip_sha256": "40d318d5df6c8227348b630827f0382d427ecbc8977bf41d3d75b68eb239afea"
+  },
+  "observed": {
+    "failure_stage": "seo_page_0_audit_wait",
+    "last_safe_stage": "seo_page_0_audit_wait_sample",
+    "last_safe_observable": {
+      "scopeValid": true,
+      "title": null,
+      "headings": true,
+      "reAudit": true,
+      "error": false
+    },
+    "targets_recorded": 0
+  },
+  "diagnosis": {
+    "classification": "acceptance_runner_title_locator_defect",
+    "evidence": "The linked SEO panel rendered the Headings group and an enabled Re-audit button without a visible audit error, but the runner read no Title. SeoDetails renders the Title row inside SeoGroup's card and its inner divider. The runner iterated the card's direct children, which contains only the divider, so its Title-row search could not match. The locator has been corrected to read the divider's children.",
+    "product_verdict": "No product SEO failure established by this run. A new native run is required to verify the corrected runner and the product subtargets."
+  },
+  "limitations": [
+    "The run stopped before any SEO acceptance target was recorded; T01, T02, T07, and T09 remain unverified at runtime.",
+    "No post-correction browser run was performed in this diagnosis lane.",
+    "The report does not retain the panel DOM or a screenshot at the failure instant; the classification combines the recorded safe sample with the current renderer and runner source."
+  ],
+  "next_action": "Independent source review of the locator correction, then a root-owned guarded native rerun against the release receipt."
+}

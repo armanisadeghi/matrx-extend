@@ -127,7 +127,9 @@ async function seoContent(panel) {
         return { scopeValid: false, title: null, headings: false, reAudit: false, error: false };
       const group = [...(pane?.querySelectorAll('span') ?? [])]
         .find((node) => node.textContent.trim() === 'Title & description');
-      const rows = group?.parentElement?.nextElementSibling;
+      // SeoGroup places its SeoRow children inside the card's inner divider.
+      // The card itself has only that divider as a child, not the Title row.
+      const rows = group?.parentElement?.nextElementSibling?.firstElementChild;
       const titleRow = [...(rows?.children ?? [])]
         .find((node) => node.firstElementChild?.textContent.trim() === 'Title');
       const title = titleRow?.lastElementChild?.lastElementChild?.textContent.trim() ?? null;
