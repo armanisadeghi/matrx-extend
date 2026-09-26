@@ -1,0 +1,195 @@
+{
+  "run_id": "isolated-permission-denial-006",
+  "status": "native-denial-and-reload-pass",
+  "result": {
+    "schema_version": 1,
+    "case_id": "EXT-F-1003-T58",
+    "permission": "clipboardRead",
+    "status": "postconditions_verified_requires_operator_evidence",
+    "profile": "new owned disposable headed Chrome profile",
+    "login": "real web form and extension Settings Sign in",
+    "native_choice": "independent CUA operator must observe and click Deny",
+    "evidence_boundary": "ACK is coordination only; native UI evidence is recorded separately",
+    "response_interception": false,
+    "injected_auth_session": false,
+    "auth_readiness": {
+      "stage": "complete",
+      "guest": {
+        "account_present": true,
+        "account_expanded": true,
+        "email_row_present": true,
+        "expected_email_match": false,
+        "role_row_present": false,
+        "admin_role_match": false,
+        "sign_in_present": true,
+        "sign_in_disabled": false,
+        "sign_out_present": false,
+        "advanced_present": false,
+        "auth_alert_present": false,
+        "retry_present": false,
+        "loading_present": false
+      },
+      "before_click": {
+        "account_present": true,
+        "account_expanded": true,
+        "email_row_present": true,
+        "expected_email_match": false,
+        "role_row_present": false,
+        "admin_role_match": false,
+        "sign_in_present": true,
+        "sign_in_disabled": false,
+        "sign_out_present": false,
+        "advanced_present": false,
+        "auth_alert_present": false,
+        "retry_present": false,
+        "loading_present": false
+      },
+      "click_completed": true,
+      "last_observed": {
+        "account_present": true,
+        "account_expanded": true,
+        "email_row_present": true,
+        "expected_email_match": true,
+        "role_row_present": true,
+        "admin_role_match": true,
+        "sign_in_present": false,
+        "sign_in_disabled": false,
+        "sign_out_present": true,
+        "advanced_present": true,
+        "auth_alert_present": false,
+        "retry_present": false,
+        "loading_present": false
+      },
+      "observation_read_failed": false,
+      "web_origin_match": true,
+      "web_login_path_match": true,
+      "credentials_available": true
+    },
+    "build": {
+      "version": "0.2.68",
+      "source_sha": "a86e15da662cddb60029b480c340e2ccfef40c1f",
+      "tree_sha256": "7d799987698fbbd727eff27593a4969438d8d0701044ccac776cb29c9148e887"
+    },
+    "web_login_reached_dashboard": true,
+    "before": {
+      "admin": true,
+      "declared": true,
+      "row_count": 1,
+      "switch_on": false,
+      "contains": false,
+      "get_all": false,
+      "refusal_alert": false
+    },
+    "native_decision_ack_received": true,
+    "after": {
+      "admin": true,
+      "declared": true,
+      "row_count": 1,
+      "switch_on": false,
+      "contains": false,
+      "get_all": false,
+      "refusal_alert": true
+    },
+    "after_reload": {
+      "admin": true,
+      "declared": true,
+      "row_count": 1,
+      "switch_on": false,
+      "contains": false,
+      "get_all": false,
+      "refusal_alert": false
+    },
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:48:38.059Z",
+      "runId": "isolated-permission-denial-006",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.49,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1015142857142857,
+        "swapUsedMiB": 2381.69,
+        "repoFreeGiB": 1675.5733833312988,
+        "profileFreeGiB": 22.106189727783203
+      },
+      "cpuBusySamples": [
+        0.10799999999999998, 0.09849999999999992, 0.09060000000000001, 0.08599999999999997,
+        0.08530000000000004, 0.10120000000000007, 0.1409999999999999
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:48:54.468Z",
+      "runId": "isolated-permission-denial-006",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.84,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.25,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.10560000000000003,
+        "swapUsedMiB": 2373.69,
+        "repoFreeGiB": 1675.5733108520508,
+        "profileFreeGiB": 22.051578521728516
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:49:10.840Z",
+      "runId": "isolated-permission-denial-006",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.52,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.52,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.4273,
+        "swapUsedMiB": 2365.69,
+        "repoFreeGiB": 1675.5733184814453,
+        "profileFreeGiB": 22.020488739013672
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:49:27.265Z",
+      "runId": "isolated-permission-denial-006",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.36,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.21,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.3044,
+        "swapUsedMiB": 2365.69,
+        "repoFreeGiB": 1675.5733184814453,
+        "profileFreeGiB": 21.988788604736328
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:49:27.279Z",
+      "runId": "isolated-permission-denial-006",
+      "childExitCode": 0,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ],
+  "operator_report": "docs/stabilization/reports/native-denial-operator-006.json",
+  "limits": "Denial/refusal/OFF and permissionabsence afterreload only; currentbuildgrant/removal/busyoutcomes not exercised. ACKcoordination alone isnotnativeproof; independentoperator witnessedpromptandDeny."
+}
