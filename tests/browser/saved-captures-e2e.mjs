@@ -227,7 +227,8 @@ async function main() {
     landed.push(source.id);
     if (!source.original_file_id) fail('The Source has no original (the soup JSON was not kept).');
     if (!source.kept_at) fail('The Source was not kept.');
-    if (source.visibility !== 'personal') fail(`Visibility is ${source.visibility}, not personal.`);
+    if (source.visibility !== 'internal')
+      fail(`Visibility is ${source.visibility}, not internal (a scrape is organization data).`);
     if ((source.total_pages ?? 0) < 2) fail(`Expected H1–H3 portions, got ${source.total_pages}.`);
     for (const k of ['images', 'links', 'metadata', 'ld_json', 'videos', 'audio', 'pattern_id']) {
       if (!(k in (source.structured_json ?? {}))) fail(`structured_json is missing ${k}.`);
@@ -242,7 +243,7 @@ async function main() {
       `processed_document_pages?processed_document_id=eq.${source.id}&select=page_number,portion_kind,locator&order=page_number`,
     );
     console.log(
-      `✓ independent read: Source ${source.id} — ${portions.length} portions ${JSON.stringify(portions.map((p) => [p.portion_kind, p.locator?.heading_path]))}, original ${source.original_file_id}, kept, personal`,
+      `✓ independent read: Source ${source.id} — ${portions.length} portions ${JSON.stringify(portions.map((p) => [p.portion_kind, p.locator?.heading_path]))}, original ${source.original_file_id}, kept, internal`,
     );
 
     // Saved captures tab — reads the new table.

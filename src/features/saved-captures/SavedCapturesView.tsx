@@ -14,6 +14,7 @@ import {
   getSavedCapture,
   listSavedCaptures,
 } from '@/lib/supabase/queries';
+import { useAuthStore } from '@/state/auth';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import {
   Button,
@@ -49,6 +50,12 @@ function captureTitle(capture: Pick<SavedCaptureSummary, 'title' | 'url'>): stri
   }
 }
 
+/** Who captured it, as the list says it: "you", their name, or "another member" when unreadable. */
+function capturedByLabel(capture: SavedCaptureSummary, userId: string | null): string {
+  if (capture.captured_by && capture.captured_by === userId) return 'you';
+  return capture.captured_by_name ?? 'another member';
+}
+
 function captureHost(url: string): string {
   try {
     return new URL(url).hostname;
@@ -58,6 +65,7 @@ function captureHost(url: string): string {
 }
 
 export function SavedCapturesView() {
+  const userId = useAuthStore((s) => s.user?.id ?? null);
   const [captures, setCaptures] = useState<SavedCaptureSummary[]>([]);
   const [selected, setSelected] = useState<SavedCapture | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,7 +95,11 @@ export function SavedCapturesView() {
       setCaptures([]);
       setUnreadable(0);
       setHasMore(false);
-      setError(cause instanceof Error ? cause.message : 'Your saved Sources could not be loaded.');
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "The workspace's saved Sources could not be loaded.",
+      );
     } finally {
       if (generation === requestGeneration.current) setLoading(false);
     }
@@ -179,7 +191,7 @@ export function SavedCapturesView() {
             if (!open) setDeleteTarget(null);
           }}
           title="Delete this Source?"
-          description="It is removed from your Sources everywhere in AI Matrx, not just this list. The web page itself is not affected."
+          description="It is removed from your organization's Sources everywhere in AI Matrx, for every member, not just this list. The web page itself is not affected."
           confirmLabel="Delete"
           variant="destructive"
           onConfirm={() => void confirmDelete()}
@@ -233,7 +245,9 @@ export function SavedCapturesView() {
             <Library className="size-8 text-muted-foreground/50" />
             <div>
               <p className="text-sm font-medium">
-                {query ? 'No Sources match your search' : 'No Sources saved from this browser yet'}
+                {query
+                  ? 'No Sources match your search'
+                  : 'No Sources captured with the extension in this workspace yet'}
               </p>
               {!query && (
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -262,6 +276,9 @@ export function SavedCapturesView() {
                   <div className="truncate text-sm font-medium">{captureTitle(capture)}</div>
                   <div className="mt-0.5 truncate text-xs text-muted-foreground">
                     {captureHost(capture.url)} · {new Date(capture.captured_at).toLocaleString()}
+                  </div>
+                  <div className="mt-0.5 truncate text-[11px] text-muted-foreground">
+                    Captured by {capturedByLabel(capture, userId)}
                   </div>
                   {capture.description && (
                     <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
@@ -308,7 +325,7 @@ export function SavedCapturesView() {
           if (!open) setDeleteTarget(null);
         }}
         title="Delete this Source?"
-        description="It is removed from your Sources everywhere in AI Matrx, not just this list. The web page itself is not affected."
+        description="It is removed from your organization's Sources everywhere in AI Matrx, for every member, not just this list. The web page itself is not affected."
         confirmLabel="Delete"
         variant="destructive"
         onConfirm={() => void confirmDelete()}

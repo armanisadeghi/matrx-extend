@@ -146,7 +146,7 @@ describe('Scrape panel names a page by whether it is a Source', () => {
   it('a failed check says it could not check, never "not yet a Source"', () => {
     state.recognition = { ...state.recognition, checkFailed: true };
     render(<ScrapeView />);
-    expect(screen.getByText(/Couldn.t check whether you saved this page/)).toBeTruthy();
+    expect(screen.getByText(/Couldn.t check whether this page is already a Source/)).toBeTruthy();
     expect(banner()).toBeNull();
   });
 
