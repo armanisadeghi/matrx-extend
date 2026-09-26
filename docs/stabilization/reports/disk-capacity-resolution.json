@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "date": "2026-09-25",
+  "scope": "Read-only capacity resolution for authorized Matrx Extend localhost QA",
+  "result": "Boot free space recovered without agent cleanup during inspection; the 20 GiB resource floor is currently clear but free space is volatile. Recheck admission immediately before any build or browser lease because the cause of the free-space change is unverified.",
+  "observations": {
+    "boot_available_initial": "19 GiB (rounded df -h output; exact KiB unavailable at that observation)",
+    "boot_available_repeat_kib": 27915360,
+    "boot_available_repeat_gib": 26.62,
+    "boot_available_final_kib": 24223668,
+    "boot_available_final_gib": 23.10,
+    "external_available_repeat_kib": 1763410664,
+    "external_available_repeat_tib": 1.64,
+    "minimum_free_disk_gib": 20,
+    "read_only_commands": ["df -h / /Volumes/Samsung2TB", "df -k / /System/Volumes/Data /Volumes/Samsung2TB", "du -sk <exact Xcode cache path>", "lsof +D <exact Xcode cache path>", "xcrun simctl list devices booted"],
+    "mutation": "No files deleted or moved; no build, test, or browser launched. xcrun simctl activated CoreSimulator services, so the reason for the free-space change cannot be attributed with confidence."
+  },
+  "fallback_cache_candidate": {
+    "path": "/Users/armanisadeghi/Library/Developer/Xcode/iOS DeviceSupport/iPhone16,2 26.2 (23C55)",
+    "allocated_kib": 5532452,
+    "allocated_gib": 5.28,
+    "contents": "Symbols/System and Symbols/usr only at inspected directory depth; Xcode device support symbols, which can be recreated when needed from the connected device.",
+    "directory_modified": "2026-02-06 19:20 local",
+    "owner": "armanisadeghi",
+    "open_references": "lsof +D returned no rows during inspection",
+    "action": "If boot free space drops below the floor again, verify no Xcode/device-symbol work is active, then remove this exact cache directory only with owner authorization; confirm df before proceeding. Estimated reclaim is up to 5.28 GiB, subject to APFS accounting.",
+    "status": "Identified, not removed"
+  },
+  "isolated_browser_option": {
+    "status": "Ready setup proposal; not launched",
+    "installed_app": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "profile_parent": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+    "proposed_owned_profile": "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-extend-qa-profile",
+    "method": "Start a separate native Chrome instance with --user-data-dir pointing to the proposed external profile; load the existing development unpacked extension through chrome://extensions, then hold the existing stabilization-resource browser lease with --profile-dir set to that exact profile for the full manual session. Keep primary Chrome windows/profile untouched and stop only the owned Chrome process on exit.",
+    "prerequisites": "Create the proposed profile directory only when starting the QA session; verify the unpacked extension ID matches the stable development ID before sign-in. This does not relax the 20 GiB repo/profile filesystem guard, so boot recovery is still needed if the repo or other prerequisite uses the boot volume."
+  },
+  "policy_sources": [
+    "/Volumes/Samsung2TB/code/matrx-extend/.claude/skills/disk-groom/SKILL.md",
+    "/Volumes/Samsung2TB/code/common-docs/operations/disk-grooming.md",
+    "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-policy.json",
+    "/Volumes/Samsung2TB/code/matrx-extend/scripts/stabilization-resource.mjs"
+  ]
+}
