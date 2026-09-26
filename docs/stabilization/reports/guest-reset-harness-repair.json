@@ -2,7 +2,7 @@
   "schema": 1,
   "defect": "EXT-D-0009",
   "case": "EXT-F-1003-T49",
-  "status": "native_ui_reached_port_setup_diagnostic_pending",
+  "status": "native_ui_port_click_repair_pending_reverify",
   "rootCause": "native-sidepanel-qa-harness.mjs loaded Playwright at module import through /Users/armanisadeghi/code/matrx-frontend/package.json, a different checkout absent on this host. The acceptance runner failed with MODULE_NOT_FOUND before its receipt or UI checks.",
   "originalRedEvidence": {
     "log": "/tmp/matrx-guest-reset-001.log",
@@ -38,6 +38,13 @@
     "result": "port_override_persisted_not_observed",
     "observed": "Dark theme persisted, but chrome.storage.local had no matrxLocalEnginePortOverride key after typing 65001 and clicking Set",
     "diagnosticChange": "Wait for actual focused input value 65001 before Set, then include visible input, button label, inline error, and storage in bounded persistence failure evidence. No storage is seeded or bypassed."
+  },
+  "thirdRun": {
+    "log": "/tmp/matrx-guest-reset-003.log",
+    "result": "port_input_typed_not_observed",
+    "observed": "After the test's CDP click and Input.insertText, the port input remained empty and unfocused; the Set button remained visible. No product write failure was demonstrated.",
+    "sourceFinding": "Desktop bridge uses a 200 ms grid-template-rows transition. The test previously used a single coordinate captured immediately after expanding and scrolling, so the input could move before CDP dispatched the click.",
+    "repair": "The test waits for real animation completion, stable target bounds, and a matching document.elementFromPoint before its mouse click. It asserts that the real click focused the input before typing. The wait is bounded and returns hit target and viewport evidence on failure."
   },
   "acceptanceCommand": "MATRX_PLAYWRIGHT_MODULE='/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs' MATRX_CHROME_PATH='/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing' node tests/browser/settings-local-reset-acceptance.mjs",
   "preservedGates": [

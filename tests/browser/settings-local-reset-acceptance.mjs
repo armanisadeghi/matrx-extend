@@ -60,7 +60,7 @@ async function openSection(panel, label) {
 }
 
 async function click(panel, kind, label) {
-  const location = await evaluate(panel, `(() => {
+  const location = await evaluate(panel, `(async () => {
     const kind = ${JSON.stringify(kind)}, label = ${JSON.stringify(label)};
     const visible = (el) => {
       const style = getComputedStyle(el), rect = el.getBoundingClientRect();
@@ -84,17 +84,46 @@ async function click(panel, kind, label) {
       .filter((el) => el.textContent.trim() === label);
     candidates = candidates.filter(visible);
     if (candidates.length !== 1) return { count: candidates.length };
-    candidates[0].scrollIntoView({ block: 'center', inline: 'center' });
-    const r = candidates[0].getBoundingClientRect();
-    return { count: 1, x: r.x + r.width / 2, y: r.y + r.height / 2 };
+    const target = candidates[0];
+    target.scrollIntoView({ block: 'center', inline: 'center' });
+    let previous, stableFrames = 0, last;
+    for (let frame = 0; frame < 120; frame += 1) {
+      await new Promise(requestAnimationFrame);
+      const rect = target.getBoundingClientRect();
+      const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2;
+      const hit = document.elementFromPoint(x, y);
+      const hitTarget = hit === target || target.contains(hit);
+      let animating = false;
+      for (let ancestor = target; ancestor; ancestor = ancestor.parentElement) {
+        if (ancestor.getAnimations({ subtree: false }).some((animation) => animation.playState === 'running')) {
+          animating = true;
+          break;
+        }
+      }
+      stableFrames = hitTarget && !animating && previous &&
+        Math.abs(previous.x - x) < 0.25 && Math.abs(previous.y - y) < 0.25
+        ? stableFrames + 1 : 0;
+      last = { count: 1, x, y, hitTarget, animating, stableFrames,
+        viewport: { width: innerWidth, height: innerHeight },
+        hitTag: hit?.tagName ?? null };
+      if (stableFrames >= 2) return { ...last, settled: true };
+      previous = { x, y };
+    }
+    return { ...last, settled: false };
   })()`);
   assert.equal(location?.count, 1, `unique visible ${kind} ${label}`);
+  assert.equal(location.settled, true, `stable hit target for ${kind} ${label}: ${JSON.stringify(location)}`);
   await panel.send('Input.dispatchMouseEvent', {
     type: 'mousePressed', x: location.x, y: location.y, button: 'left', clickCount: 1,
   });
   await panel.send('Input.dispatchMouseEvent', {
     type: 'mouseReleased', x: location.x, y: location.y, button: 'left', clickCount: 1,
   });
+  if (kind === 'port') {
+    const control = await portControlState(panel);
+    assert.equal(control?.focused, true,
+      `real mouse click focused port input: ${JSON.stringify({ location, control })}`);
+  }
 }
 
 async function setEnginePort(panel) {
