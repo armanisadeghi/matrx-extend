@@ -34,12 +34,12 @@
     {
       "id": "EXT-F-1005-T13",
       "status": "pass",
-      "evidence": "Switched Log → Bridges → Log. Both selected subviews rendered their intended content; Logs retained its current 113-row state when revisited, while Bridges showed its existing channel and health state. No bridge action was invoked."
+      "evidence": "Switched Log \u2192 Bridges \u2192 Log. Both selected subviews rendered their intended content; Logs retained its current 113-row state when revisited, while Bridges showed its existing channel and health state. No bridge action was invoked."
     },
     {
       "id": "EXT-F-1005-T14",
       "status": "pass",
-      "evidence": "Search for existing message text ‘engine not found’ returned 2 rows. Search for the existing detail value ‘1.4.204’ returned 14 rows, demonstrating serialized details are searched. Clearing search restored the unfiltered set (114 rows after naturally arriving events)."
+      "evidence": "Search for existing message text \u2018engine not found\u2019 returned 2 rows. Search for the existing detail value \u20181.4.204\u2019 returned 14 rows, demonstrating serialized details are searched. Clearing search restored the unfiltered set (114 rows after naturally arriving events)."
     },
     {
       "id": "EXT-F-1005-T15",
@@ -60,7 +60,7 @@
         "no_filter_matches_state": "pass",
         "no_events_state": "unverified"
       },
-      "evidence": "Expanded and collapsed an existing event with details. Clicking a row without details left the accessibility tree unchanged. Source=none showed ‘No events match the current filter.’ The distinct ‘No events yet’ state was not exercised because clearing logs is excluded."
+      "evidence": "Expanded and collapsed an existing event with details. Clicking a row without details left the accessibility tree unchanged. Source=none showed \u2018No events match the current filter.\u2019 The distinct \u2018No events yet\u2019 state was not exercised because clearing logs is excluded."
     },
     {
       "id": "EXT-F-1005-T39",
@@ -70,7 +70,7 @@
     {
       "id": "EXT-F-1005-T40",
       "status": "pass",
-      "evidence": "Source=none deselected all source pills, reduced the row count to 0, and showed ‘No events match the current filter.’"
+      "evidence": "Source=none deselected all source pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019"
     },
     {
       "id": "EXT-F-1005-T44",
@@ -80,7 +80,7 @@
     {
       "id": "EXT-F-1005-T45",
       "status": "pass",
-      "evidence": "Level=none deselected all four level pills, reduced the row count to 0, and showed ‘No events match the current filter.’"
+      "evidence": "Level=none deselected all four level pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019"
     }
   ],
   "cleanup": {
@@ -93,5 +93,443 @@
     "admin_identity_and_organization": "unchanged",
     "restricted_actions": "No clear, export, copy, clipboard, environment/model/flag/override changes, or Chat/Pilot actions.",
     "ui_stop": true
+  },
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:20:44.460Z",
+      "runId": "admin-debug-filters-001",
+      "mode": "browser",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.32,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.7999999999999998,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.13579999999999998,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0853271484375,
+        "profileFreeGiB": 23.668827056884766
+      },
+      "cpuBusySamples": [
+        0.11569999999999991,
+        0.09140000000000004,
+        0.11099999999999999,
+        0.11269999999999991,
+        0.21109999999999995,
+        0.2048000000000001,
+        0.10389999999999999
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:21:00.805Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.4,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.11569999999999991,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0853271484375,
+        "profileFreeGiB": 23.668655395507812
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:21:17.146Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.22,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1048,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0850524902344,
+        "profileFreeGiB": 23.668476104736328
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:21:33.476Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.1,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.12879999999999991,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0854148864746,
+        "profileFreeGiB": 23.667469024658203
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:21:49.828Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.32,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 0.93,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.11290000000000011,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0853538513184,
+        "profileFreeGiB": 23.666603088378906
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:22:06.150Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 0.95,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.0929000000000001,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0854110717773,
+        "profileFreeGiB": 23.66527557373047
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:22:22.469Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 0.89,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.17420000000000002,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0854110717773,
+        "profileFreeGiB": 23.66272735595703
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:22:38.802Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.32,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 0.92,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.10120000000000007,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0852165222168,
+        "profileFreeGiB": 23.659778594970703
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:22:55.107Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.32,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.09,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1262000000000001,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0852165222168,
+        "profileFreeGiB": 23.6632080078125
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:23:11.442Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.2,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.12129999999999996,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0852165222168,
+        "profileFreeGiB": 23.66126251220703
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:23:27.773Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.10199999999999998,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0852165222168,
+        "profileFreeGiB": 23.65987777709961
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:23:44.102Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.01,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1029000000000001,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0852127075195,
+        "profileFreeGiB": 23.65842056274414
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:24:00.436Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.02,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.09900000000000009,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0852127075195,
+        "profileFreeGiB": 23.65734100341797
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:24:16.761Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 0.94,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.10439999999999994,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0852127075195,
+        "profileFreeGiB": 23.65549087524414
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:24:33.092Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.31,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.09299999999999997,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0852127075195,
+        "profileFreeGiB": 23.655670166015625
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:24:49.422Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.13,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.09030000000000005,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.085189819336,
+        "profileFreeGiB": 23.655498504638672
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:25:05.754Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.19,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.08790000000000009,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0852165222168,
+        "profileFreeGiB": 23.654579162597656
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:25:22.089Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.92,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.08900000000000008,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0852165222168,
+        "profileFreeGiB": 23.654430389404297
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:25:38.394Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.65,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.10599999999999998,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.065143585205,
+        "profileFreeGiB": 23.65426254272461
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:25:54.727Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.76,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.13780000000000003,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.065143585205,
+        "profileFreeGiB": 23.656475067138672
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:26:11.063Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.32,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.37,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.08599999999999997,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0651473999023,
+        "profileFreeGiB": 23.658313751220703
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:26:27.402Z",
+      "runId": "admin-debug-filters-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.91,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.09900000000000009,
+        "swapUsedMiB": 1769.56,
+        "repoFreeGiB": 1676.0651321411133,
+        "profileFreeGiB": 23.657798767089844
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:26:28.608Z",
+      "runId": "admin-debug-filters-001",
+      "signal": "SIGINT",
+      "code": "RESOURCE_STOP_REQUESTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T10:26:28.608Z",
+      "runId": "admin-debug-filters-001",
+      "resourceInvalid": false,
+      "code": "RESOURCE_BROWSER_STOP_CONFIRMED"
+    }
+  ],
+  "guard_exit_code": 0,
+  "root_review": {
+    "accepted_case_ids": [
+      "EXT-F-1005-T13",
+      "EXT-F-1005-T14",
+      "EXT-F-1005-T15",
+      "EXT-F-1005-T39",
+      "EXT-F-1005-T40",
+      "EXT-F-1005-T44",
+      "EXT-F-1005-T45"
+    ],
+    "scope": "Observed native controls only; no additional coverage inferred. Source and dependencies match validated d665898; prior native0258 reload established active build.",
+    "prior_reload_evidence": "docs/stabilization/runs/native-0258-port-verification.json"
   }
 }

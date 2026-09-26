@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T10:22:21.360407+00:00",
+  "updated_at": "2026-09-26T10:27:37.933390+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -6216,7 +6216,15 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-debug-filters-001",
+              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
+              "detail": "Switched Log \u2192 Bridges \u2192 Log. Both selected subviews rendered their intended content; Logs retained its current 113-row state when revisited, while Bridges showed its existing channel and health state. No bridge action was invoked."
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T14",
@@ -6240,7 +6248,15 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-debug-filters-001",
+              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
+              "detail": "Search for existing message text \u2018engine not found\u2019 returned 2 rows. Search for the existing detail value \u20181.4.204\u2019 returned 14 rows, demonstrating serialized details are searched. Clearing search restored the unfiltered set (114 rows after naturally arriving events)."
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T15",
@@ -6264,7 +6280,15 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-debug-filters-001",
+              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
+              "detail": "Paused at 114 displayed rows. After a 35-second wait the feed total advanced to 115 while the displayed count stayed at 114. Resume changed the displayed count to 115 and showed the newly arrived row."
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T16",
@@ -6360,7 +6384,15 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filters-001",
+              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
+              "detail": "The current event set exposed no event-tag filter row or dynamic tag pills, so all/none and newly observed tag behavior could not be exercised. No event was created to manufacture a tag."
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T22",
@@ -6384,7 +6416,15 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filters-001",
+              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
+              "detail": "Expanded and collapsed an existing event with details. Clicking a row without details left the accessibility tree unchanged. Source=none showed \u2018No events match the current filter.\u2019 The distinct \u2018No events yet\u2019 state was not exercised because clearing logs is excluded."
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T23",
@@ -6818,7 +6858,15 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-debug-filters-001",
+              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
+              "detail": "Source=all restored all source pills and the 113-row filtered set after the source=none check."
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T40",
@@ -6842,7 +6890,15 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-debug-filters-001",
+              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
+              "detail": "Source=none deselected all source pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019"
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T55",
@@ -6962,7 +7018,15 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-debug-filters-001",
+              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
+              "detail": "Level=all showed all four level pills selected and restored the 113-row set."
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T45",
@@ -6986,7 +7050,15 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-debug-filters-001",
+              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
+              "detail": "Level=none deselected all four level pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019"
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T56",
@@ -7293,7 +7365,9 @@
         "admin": {
           "test_status": "unverified",
           "defect_ids": [],
-          "run_ids": [],
+          "run_ids": [
+            "admin-debug-filters-001"
+          ],
           "retest_status": "not-run"
         }
       },
