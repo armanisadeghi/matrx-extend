@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "b42c5f5c0db92d1e68606d9ff1678f542c5266bf",
+  "feature_id": "EXT-F-1008",
+  "mode": "admin",
+  "source_quality_verdict": "pass",
+  "runtime_pending_verdict": "unverified",
+  "source_quality": {
+    "reload_gate": "The new-document time origin is combined with exactly one outer tablist, one SEO tab, and one visible SEO button identical to that tab before a reselect click can occur. This matches the owned panel document and excludes nested feature tablists or ambiguous SEO click targets.",
+    "selected_path": "When the unique SEO tab is already selected, no click is sent. Otherwise the existing trusted pointer driver clicks the uniquely observed main SEO control. The subsequent linked-pane predicate requires aria-selected=true, so a wrong or unmounted view cannot satisfy readiness.",
+    "persistence_assertions": "After reload, the live audit must be linked, match the real pre-reload IANA page title, offer Re-audit, expose exactly one history toggle, and show no audit error. Reopened history must match its badge count and contain the exact real Save response ID; the selected row label must be unique, and its snapshot must expose that same ID.",
+    "privacy_and_mutation": "The reviewed change adds only bounded DOM counts/booleans. Run receipts omit the raw URL and audit payload; the real response ID remains in the existing mode-0600 checkpoint. The read-only rerun path recognizes that checkpoint and does not click Save again.",
+    "limits": [
+      "The current-page oracle is the captured real IANA title plus linked active pane and Re-audit state; it does not independently compare the browser tab URL after reload.",
+      "No code change was needed for this review. No browser, build, or heavy test was run."
+    ]
+  },
+  "runtime_pending": {
+    "prior_evidence": "seo-admin-004 observed history badge count equal to the single rendered row, the exact saved response ID in that row, selection of the matching snapshot, and return to Live. It then failed at panel_reload before the new readiness gate existed.",
+    "bounded_d21_assessment": "The corrected count oracle and exact saved-row/snapshot identity path have bounded runtime support through the pre-reload portion of seo-admin-004. This supports the EXT-D-0021 history-count false-negative regression as fixed within that exercised path; it does not close the required post-reload verification.",
+    "required_evidence": "A root-guarded read-only native rerun on the existing checkpoint must reach the post-reload branch and confirm the same exact ID in current-URL history and selected snapshot. Do not create another Save row."
+  },
+  "evidence": [
+    "tests/browser/seo-admin-acceptance.mjs at reviewed commit",
+    "tests/browser/seo-guest-acceptance.mjs reload readiness pattern",
+    "tests/browser/settings-panel-driver.mjs trusted pointer target resolution",
+    "src/features/seo/SeoView.tsx stable row and snapshot data-audit-id attributes",
+    "docs/stabilization/runs/seo-admin-004.json"
+  ]
+}
