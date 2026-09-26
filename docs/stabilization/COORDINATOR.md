@@ -1,11 +1,13 @@
 # Matrx Extend stabilization: resume here
 
-Updated 2026-09-26 20:32 UTC. Campaign remains incomplete; `inventory.json` is the coverage authority. The prior coordinator is preserved verbatim at `diagnostics/coordinator-history-20260926-1832.md`; earlier history remains in `coordinator-history-20260926-1800.md` and `coordinator-history-20260926-1632.md`.
+Updated 2026-09-26 20:38 UTC. Campaign remains incomplete; `inventory.json` is the coverage authority. The prior coordinator is preserved verbatim at `diagnostics/coordinator-history-20260926-1832.md`; earlier history remains in `coordinator-history-20260926-1800.md` and `coordinator-history-20260926-1632.md`.
 
 ## Current truth and next actions
 
 ### Latest recovery checkpoint (supersedes older run-next wording below)
 
+- NOW: root pushed676dc950 at20:38 exactremoteverified. CI36270168550 inprogress. Mockregression9022e59a fixedclientpartialmock missing newlyimportedconstant; diagnostic0329ef6d preservedqueue+UI assertions. Redrepro002 wrapper45627 confirmed1 queue0; green001 wrapper6441 confirmed0 at20:35:06.20716/16tests. Peervault_shared_click_peer676dc950 zeroSourceauthorship acceptedmockfidelity; newseat unavailable(threadcap), documentedzeroauthorshipreuse. Reportecae57df, greenreceipta34f7751. FullrepoerrorlevelBiomezeroerrorsbeforepush.
+- Guarded release033 ACTIVE PTY69768 log/tmp/matrx-release-stabilization-033.log with actual externalTMPDIR andsameprofiledir. Confirmexit before nextheavy/browser. Nootherfleetworkload. Expected .77 unlessincomingremoteadvanced. D22 stillnotclosed: freshbuild/nativeworkspaceUIacceptance andexactCI remain.
 - CURRENT: source-ci-refusal-repro-002 ACTIVE PTY45627 log/tmp/matrx-source-ci-refusal-repro-002.log, diagnostic test0329ef6d; no other heavy/browser. /root/d22_ci_refusal_timing Sol owns diagnosis. Root pushedc9d40965 at20:23; CI36269359553 passeslint but1unitfail1465pass4skip: save-never-loses-input server422sentence absent. Repro001 wrapper4674 confirmed1 samefailure15pass at20:30:29.939. Earlier47pass predates f6161e26 refusal mapping; investigate mapping AND queue/lifetime. Currentdiagnostic checks queued sentence before unchanged UI assertion; awaitresultbeforeedits.
 - Builds/tests now use actual external TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032 (0700) AND same --profile-dir. Guardthreshold unchanged20GiB; externalactualtempfree1.6TiB. Diskworker6de06ff2 found no safe2GiB bootcleanup; deletednothing. Native primaryChrome remainsbootprofilebound, mustpassactualprofilecheck. Release032 wrapper6861 confirmed2 refuseddisk beforelaunch20:25:14.711; release033 unused and mustwaitunitrepair.
 - Fullrepository errorlevelBiomecheck nowzeroerrors; c9d40965 pureformat repair includes3source/testfiles omitted by earlierdoc-onlycleanup. ExactCIlateststillredunit, donotclaimmainhealthy. Receipt/statenotesd61e5a08 were concurrentlypushed; latestremoteverifiedc9d40965.
