@@ -13,7 +13,7 @@
   ],
   "acceptance": [
     "Before the request, real Settings shows admin@admin.com and a declared Page archive switch OFF; Chrome permissions.contains and getAll both show pageCapture absent.",
-    "The runner sends a trusted mouse click to that actual Settings switch, then pauses. An independent UI operator uses CUA on the owned Chrome for Testing app to record the native prompt and Deny action, then writes only the word denied to the displayed acknowledgement file to resume the runner.",
+    "The runner pauses at real admin Settings before the permission request. An independent UI operator uses CUA on the owned Chrome for Testing app to click the actual Page archive switch, record the native prompt and Deny action, then writes only the word denied to the displayed acknowledgement file to resume the runner.",
     "After the acknowledgement, the runner requires the real Settings refusal alert, switch OFF, permissions.contains false, and getAll absence. Its terminal status is postconditions_verified_requires_operator_evidence, never a standalone pass. Root combines the independent CUA evidence with those postconditions to adjudicate the case. The runner never mocks permissions.request, seeds grant state, or calls a Chrome permission override."
   ],
   "command_after_root_resource_admission": "node tests/browser/isolated-permission-denial-acceptance.mjs",
@@ -29,5 +29,7 @@
     "The plaintext acknowledgement is coordination only and proves no native UI observation by itself. Root must retain independent CUA screenshot or accessibility evidence of the native prompt and Deny action before marking this case passed; the runner verifies only subsequent Chrome permission state and visible product feedback.",
     "This first run covers pageCapture denial only. tabCapture may differ and remains separately unverified until exercised.",
     "Current CUA inventory showed Google Chrome but no running Chrome for Testing; binding to the newly launched owned window remains to be confirmed in the admitted run."
-  ]
+  ],
+  "runtime_attempt_001": "Real web and extension admin sign-in passed. Page archive was declared, unique, OFF, and absent from Chrome contains/getAll. The runner stopped before a permission request with permission_switch_not_hittable from its bespoke coordinate target; no native prompt or Deny was reached. This is a harness interaction gap, not evidence of a product defect.",
+  "next_action": "Root admits a fresh headed run after source review. At PAUSED, the CUA operator identifies the owned Chrome window and uses native UI to click the actual Page archive switch and Deny. Root combines the independent UI evidence with the runner's postconditions; the ACK alone never establishes a pass."
 }

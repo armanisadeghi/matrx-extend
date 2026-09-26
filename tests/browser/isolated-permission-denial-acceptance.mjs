@@ -3,9 +3,10 @@
  * EXT-F-1003-T57: fresh Chrome optional-permission denial in the real admin
  * Settings side panel. Root admits this headed, disposable-profile run.
  *
- * On PAUSED, an independent UI operator observes Chrome's native permission
- * prompt, clicks Deny through CUA, then writes only "denied" to the ack file
- * named in stdout. The ACK only resumes the runner; it is not native UI proof.
+ * On PAUSED, an independent UI operator clicks the real Settings switch,
+ * observes Chrome's native permission prompt, clicks Deny through CUA, then
+ * writes only "denied" to the ack file named in stdout. The ACK only resumes
+ * the runner; it is not native UI proof.
  * Root must combine separate CUA evidence with this runner's postconditions.
  */
 import assert from 'node:assert/strict';
@@ -122,46 +123,10 @@ async function state(panel) {
   );
 }
 
-async function clickPermission(panel) {
-  const target = await evaluate(
-    panel,
-    `(() => {
-    const title = ${JSON.stringify(TITLE)};
-    const rows = [...document.querySelectorAll('label')]
-      .filter((el) => el.textContent.includes(title) && el.textContent.includes('pageCapture'));
-    if (rows.length !== 1) return { count: rows.length };
-    const sw = rows[0].querySelector('[role="switch"]');
-    if (!sw || sw.disabled) return { count: rows.length, ready: false };
-    sw.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' });
-    const rect = sw.getBoundingClientRect();
-    const x = rect.left + rect.width / 2, y = rect.top + rect.height / 2;
-    const hit = document.elementFromPoint(x, y);
-    return { count: rows.length, ready: rect.width > 0 && rect.height > 0 &&
-      x >= 0 && x < innerWidth && y >= 0 && y < innerHeight &&
-      (hit === sw || sw.contains(hit)), x, y };
-  })()`,
-  );
-  if (target?.count !== 1 || !target.ready) fail('permission_switch_not_hittable');
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mousePressed',
-    x: target.x,
-    y: target.y,
-    button: 'left',
-    clickCount: 1,
-  });
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mouseReleased',
-    x: target.x,
-    y: target.y,
-    button: 'left',
-    clickCount: 1,
-  });
-}
-
 async function waitForNativeDeny() {
   stage = 'native_deny';
   process.stdout.write(
-    `PAUSED for native Chrome observation: CUA operator records prompt and Deny evidence, then writes denied to ${ACK}\n`,
+    `PAUSED at real admin Settings: CUA operator clicks Page archive switch, records native prompt and Deny evidence, then writes denied to ${ACK}\n`,
   );
   const deadline = Date.now() + 120_000;
   while (Date.now() < deadline) {
@@ -217,8 +182,6 @@ try {
             !before.get_all,
           true,
         );
-        stage = 'permission_request_click';
-        await clickPermission(panel);
         await waitForNativeDeny();
         stage = 'denial_result';
         const after = await waitFor(
