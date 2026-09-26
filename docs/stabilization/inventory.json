@@ -3775,7 +3775,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-permissions-001",
+              "evidence": "docs/stabilization/runs/admin-permissions-001.json",
+              "detail": "All three initialoff restored; on/off and reload verified. Chrome offeredno Cookiesdenialdialog; denialcriterion unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T57",
@@ -3798,7 +3806,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-permissions-001",
+              "evidence": "docs/stabilization/runs/admin-permissions-001.json",
+              "detail": "All three initialoff restored; on/off and reload verified. RealChrome deny leftoff andaccept turnedon; allcasecriteria observed."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T58",
@@ -3821,7 +3837,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-permissions-001",
+              "evidence": "docs/stabilization/runs/admin-permissions-001.json",
+              "detail": "All three initialoff restored; on/off and reload verified. RealChrome deny leftoff andaccept turnedon; allcasecriteria observed."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T59",
@@ -4129,7 +4153,8 @@
             "admin-org-001",
             "admin-default-agent-001",
             "admin-settings-local-001",
-            "admin-default-agent-002"
+            "admin-default-agent-002",
+            "admin-permissions-001"
           ],
           "retest_status": "not-run"
         }
