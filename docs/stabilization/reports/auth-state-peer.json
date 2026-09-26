@@ -1,0 +1,9 @@
+{
+  "verdict": "needs_small_sanitization",
+  "scope": "tests/browser/isolated-admin-signin-acceptance.mjs source review only",
+  "oracle": "preserved: real web /dashboard check and extension expected email + admin role + sign-out + advanced capability checks",
+  "lastObserved": "mostly fixed booleans, but accountExpanded stores an unconstrained DOM attribute string; map it to true/false/null before evidence write",
+  "cleanup": "web page closes in finally; harness detaches CDP, stops its owned child, and removes profile in finally",
+  "other": "errors are reduced to fixed categories/stages; no product mutation found",
+  "runtime": "not assessed"
+}
