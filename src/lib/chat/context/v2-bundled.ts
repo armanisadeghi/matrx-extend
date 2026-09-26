@@ -585,7 +585,8 @@ export async function buildContextV2Bundled(
   // ── Capture history (recognition row from Supabase) ──────────────────
   if (activeUrl) {
     try {
-      const captured = await lookupCapturedByUrl(activeUrl);
+      const lookup = await lookupCapturedByUrl(activeUrl);
+      const captured = lookup.status === 'found' ? lookup.page : null;
       if (captured) {
         ctx.prior_capture = {
           captured_at: captured.captured_at,

@@ -595,15 +595,25 @@ async function supersededSourceIds(ids: string[]): Promise<Set<string>> {
 }
 
 /**
+ * What a recognition lookup found. `unknown` is NOT "never saved": the lookup
+ * failed (database refused, network down, a row that could not be read), and a
+ * surface must say it could not check rather than imply the page is new.
+ */
+export type CaptureLookup =
+  | { status: 'found'; page: CapturedPage }
+  | { status: 'none' }
+  | { status: 'unknown'; reason: string };
+
+/**
  * The newest saved Source for this page, looked up by the door's canonical
  * identity (the same canonicalizer the server applies — `canonical.ts`).
  */
-export async function lookupCapturedByUrl(url: string): Promise<CapturedPage | null> {
+export async function lookupCapturedByUrl(url: string): Promise<CaptureLookup> {
   // A Source belongs to a person in an organization, so a device with no
   // session can have none: answer "no record" without a round trip.
-  if (!(await hasSupabaseAccessToken())) return null;
+  if (!(await hasSupabaseAccessToken())) return { status: 'none' };
   const identity = canonicalUrl(url);
-  if (!identity) return null;
+  if (!identity) return { status: 'none' };
   // Read-only recognition never raises the workspace picker; with no workspace
   // chosen on this device RLS still scopes the read to what the person can see.
   const organizationId = await getActiveOrganizationId().catch(() => null);
@@ -615,15 +625,21 @@ export async function lookupCapturedByUrl(url: string): Promise<CapturedPage | n
     .in('derivation_kind', CAPTURE_DERIVATIONS)
     .is('deleted_at', null);
   if (organizationId) query = query.eq('organization_id', organizationId);
-  const { data, error } = await query.order('created_at', { ascending: false }).limit(1);
-  if (error) {
-    console.warn('[matrx-extend] lookupCapturedByUrl error', error.message);
-    return null;
+  let data: unknown[] | null;
+  try {
+    const res = await query.order('created_at', { ascending: false }).limit(1);
+    if (res.error) {
+      log.warn('supabase', 'lookupCapturedByUrl failed', { message: res.error.message });
+      return { status: 'unknown', reason: res.error.message };
+    }
+    data = res.data as unknown[] | null;
+  } catch (err) {
+    return { status: 'unknown', reason: err instanceof Error ? err.message : String(err) };
   }
   const row = (data ?? [])[0] as
     | { id: string; canonical_identity: string; created_at: string; name: string | null }
     | undefined;
-  if (!row) return null;
+  if (!row) return { status: 'none' };
   const parsed = CapturedPageSchema.safeParse({
     id: row.id,
     url: row.canonical_identity,
@@ -632,9 +648,9 @@ export async function lookupCapturedByUrl(url: string): Promise<CapturedPage | n
   });
   if (!parsed.success) {
     log.error('supabase', 'lookupCapturedByUrl: row failed validation', parsed.error.issues);
-    return null;
+    return { status: 'unknown', reason: 'the saved record could not be read' };
   }
-  return parsed.data;
+  return { status: 'found', page: parsed.data };
 }
 
 export const SavedCaptureSummarySchema = z.object({
@@ -665,13 +681,21 @@ const SOURCE_SUMMARY_COLUMNS =
   'id, url:canonical_identity, captured_at:created_at, updated_at, title:name, description:structured_json->metadata->>description, kept_at';
 const SOURCE_DETAIL_COLUMNS = `${SOURCE_SUMMARY_COLUMNS}, structured:structured_json, content, canonical_clean_id, original_file_id, visibility`;
 
+export interface SavedCapturePage {
+  rows: SavedCaptureSummary[];
+  /** Rows the database returned that could not be read — counted and shown, never silently dropped. */
+  unreadable: number;
+  /** How many rows the database returned (drives "Load more"). */
+  fetched: number;
+}
+
 export async function listSavedCaptures(
   options: {
     limit?: number;
     search?: string;
     before?: Pick<SavedCaptureSummary, 'captured_at' | 'id'>;
   } = {},
-): Promise<SavedCaptureSummary[]> {
+): Promise<SavedCapturePage> {
   const limit = options.limit ?? 40;
   const organizationId = await requireRequestOrganizationId();
   let query = docprocDb()
@@ -704,13 +728,12 @@ export async function listSavedCaptures(
     (data ?? []) as unknown[],
     'listSavedCaptures',
   );
-  if (parsed.badCount > 0) {
-    throw new Error(
-      `${parsed.badCount} saved capture${parsed.badCount === 1 ? '' : 's'} could not be read. Refresh to try again.`,
-    );
-  }
   const superseded = await supersededSourceIds(parsed.rows.map((r) => r.id));
-  return parsed.rows.filter((r) => !superseded.has(r.id));
+  return {
+    rows: parsed.rows.filter((r) => !superseded.has(r.id)),
+    unreadable: parsed.badCount,
+    fetched: (data ?? []).length,
+  };
 }
 
 export async function getSavedCapture(sourceId: string): Promise<SavedCapture | null> {

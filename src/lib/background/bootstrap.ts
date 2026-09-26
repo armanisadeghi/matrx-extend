@@ -23,6 +23,7 @@ import {
 import { startAudibleLog } from '@/lib/audio/audible-log';
 import { refreshAccessToken } from '@/lib/auth/flow';
 import { logExtensionIdentityOnce } from '@/lib/auth/identity';
+import { registerSafariAuthorizationBackground } from '@/lib/auth/safari-background';
 import { reconcileOnBoot as reconcileCdpOnBoot } from '@/lib/cdp/client';
 import { hydrateBridgeTrafficEnabled, recordBridgeTraffic } from '@/lib/debug/bridge-traffic';
 import { log, startDebugRelay } from '@/lib/debug/log';
@@ -111,6 +112,7 @@ export function bootstrapBackground(): void {
 
   // ── 1. Register message handlers SYNCHRONOUSLY so they're ready immediately.
   registerHandlers();
+  registerSafariAuthorizationBackground();
   // The WS router belongs in this synchronous block for the same reason: a
   // retained offscreen document can wake this worker with an epoch
   // handshake or a URL re-resolve before any async boot step has run.
@@ -489,12 +491,12 @@ function registerHandlers(): void {
   // {__matrx, kind: PAGE_NAVIGATED, payload} envelope (see src/lib/content/bridge.ts).
   on<{ url: string }, { ack: true }>(CHANNELS.PAGE_NAVIGATED, async (payload) => {
     if (!payload?.url) return { ack: true };
-    const captured = await lookupCapturedByUrl(payload.url);
-    if (captured) {
+    const lookup = await lookupCapturedByUrl(payload.url);
+    if (lookup.status === 'found') {
       broadcast(CHANNELS.PAGE_ALREADY_CAPTURED, {
         url: payload.url,
-        capturedAt: captured.captured_at,
-        id: captured.id,
+        capturedAt: lookup.page.captured_at,
+        id: lookup.page.id,
       });
     }
     return { ack: true };

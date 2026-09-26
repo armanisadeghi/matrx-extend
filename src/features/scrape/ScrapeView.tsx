@@ -208,6 +208,12 @@ export function ScrapeView() {
           {current && <CopyMenu title="Copy capture" options={fullCaptureCopyOptions(current)} />}
         </div>
         <HighlightRegionsBanner />
+        {recognition.checkFailed && !saved && (
+          <div className="mt-2 rounded-xl bg-secondary/60 px-3 py-1.5 text-xs text-muted-foreground">
+            Couldn&apos;t check whether you saved this page before. Saving again is safe — the same
+            page is kept as one Source.
+          </div>
+        )}
         <UnsavedCapturesCard
           onLanded={(url, id) => {
             if (current && url === current.url) {

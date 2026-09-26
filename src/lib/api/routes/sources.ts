@@ -118,23 +118,48 @@ export function refusalFromResult(result: { status: number; error: string }): La
       retryable: true,
     };
   }
-  let detail: unknown = null;
+  // aidream's error envelope puts the refusal at the TOP level:
+  //   { error, code, message, user_message, remedy, request_id }
+  // A bare FastAPI HTTPException (no envelope in front) nests it under `detail`.
+  // Read the top level first and fall back to `detail`.
+  let body: Record<string, unknown> | null = null;
   try {
-    detail = (JSON.parse(result.error) as { detail?: unknown }).detail;
-  } catch {
-    detail = null;
-  }
-  if (detail && typeof detail === 'object' && !Array.isArray(detail)) {
-    const d = detail as Record<string, unknown>;
-    if (typeof d.message === 'string' && d.message.trim()) {
-      return {
-        status: result.status,
-        code: typeof d.code === 'string' ? d.code : 'refused',
-        message: sentence(d.message),
-        remedy: typeof d.remedy === 'string' ? d.remedy : '',
-        retryable: d.retryable === true || result.status >= 500,
-      };
+    const parsed = JSON.parse(result.error) as unknown;
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+      body = parsed as Record<string, unknown>;
     }
+  } catch {
+    body = null;
+  }
+  const candidates: Record<string, unknown>[] = [];
+  if (body) {
+    candidates.push(body);
+    const nested = body.detail;
+    if (nested && typeof nested === 'object' && !Array.isArray(nested)) {
+      candidates.push(nested as Record<string, unknown>);
+    }
+  }
+  for (const d of candidates) {
+    const text =
+      typeof d.user_message === 'string' && d.user_message.trim()
+        ? d.user_message
+        : typeof d.message === 'string' && d.message.trim()
+          ? d.message
+          : null;
+    if (!text) continue;
+    const code =
+      typeof d.code === 'string' && d.code
+        ? d.code
+        : typeof d.error === 'string' && d.error
+          ? d.error
+          : 'refused';
+    return {
+      status: result.status,
+      code,
+      message: sentence(text),
+      remedy: typeof d.remedy === 'string' ? d.remedy : '',
+      retryable: d.retryable === true || result.status >= 500,
+    };
   }
   const retryable = result.status >= 500 || result.status === 408 || result.status === 429;
   return {
