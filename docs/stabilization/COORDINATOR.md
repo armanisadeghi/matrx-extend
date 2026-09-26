@@ -18,8 +18,9 @@ User authorized autonomous test → capture → fix → independent retest → g
 
 ## Next actions and active ownership — resumed04:09UTC
 User unlocked and requested prevention. Host AC sleep/display already0; screensaver idle3600→0 readback verified. Temporary caffeinate -di -t14400 session85503/PID736 verified; expires around08:08UTC, screen saver setting persistent. Password behavior unchanged. See environment-awake-001 receipt; no claim sole historical cause proven.
-Root admitted guest-settings-005 browser lease session51616; Luna settings_unlocked_retest owns native Chrome and five Settings cases. Verify actual0.2.51 devID/path before case evidence. Stop UI on unsafe guard, then root stops lease. No heavy runs concurrently.
-Remote main fast-forwarded0826d6f (Source save edits/queue/viewer changes). Luna remote_source_census owns inventory relevant Source features and delta report; no tests. Disk0.2.51/760c7a1 does NOT include new remote Source changes. Rebuild before testing those surfaces. No stale-build defect claims.
+guest-settings-005 native Chrome verified actual unpacked0.2.51 correctID/path and warm guest guidance. Resource watchdog memorypressure+swap stopped batch; root interrupted worker to enforce halt, then confirmed lease exit3 at04:11:18.709UTC. No whole case passes. Heavy unrelated node in ai-matrx exited; threehealthy samples and new60s admission passed.
+Root admitted guest-settings-006 browser lease session5402 at04:14:53UTC. Same Luna resumes remaining Settings criteria. Root watches resource; no heavy runs concurrently. Caffeinate remains active.
+Remote source census completed7c0b305: F1007 C25/C26,T24/T25 added for edited-text save and queue reopen, all unverified. Disk0.2.51/760c7a1 does NOT include remote0826d6f Source changes; rebuild before their tests. Source and tracking synchronized through503fc5d.
 All broader scope remains active, Chat/Pilot last. Three liveDBtests explicitly skipped, member signin still unverified. No public Store submission.
 
 ## Resource and quality rules
