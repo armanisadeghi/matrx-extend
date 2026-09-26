@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "content1911-consumer-peer",
+  "lane": "incoming @ai-matrx/content-ir 0.19.11 consumer review",
+  "source_verdict": "PUBLISHED_RUNTIME_DELTA_FOUND_CHANGELOG_PARTLY_MISLEADING",
+  "runtime_verdict": "NO_EXTENSION_CALLSITE_IMPACT_IDENTIFIED",
+  "dependency_delta": {
+    "from": "@ai-matrx/content-ir 0.19.8",
+    "to": "@ai-matrx/content-ir 0.19.11",
+    "other_delta": "None in this review lane; @ai-matrx/content-ir-react remains 0.11.11."
+  },
+  "published_evidence": [
+    "npm pack @ai-matrx/content-ir@0.19.8, @ai-matrx/content-ir@0.19.9, and @ai-matrx/content-ir@0.19.11 retrieved the published tarballs; their integrity/shasums were printed by npm.",
+    "The 0.19.11 tarball CHANGELOG says 0.19.10 and 0.19.11 are changed-only repubs with no source changes. Its 0.19.9 entry documents GFM table parsing changes, including HTML/indented-code table termination and opening-table rules.",
+    "Comparing extracted published dist directories shows 0.19.8 to 0.19.11 changes index and source artifacts. Comparing 0.19.9 to 0.19.11 also shows runtime changes in dist/source.js, dist/source.cjs and declarations. The 0.19.11 implementation adds isTableDelimiter, strengthens startsPipelessTable and tableStartsAt, rejects width-mismatched pipe-led headers, list-item delimiters, and headers in indented code, and accepts one-column pipeless headers. These behaviors correspond to the third GFM table-opening bullet now present under 0.19.9 in the 0.19.11 changelog, but absent from the published 0.19.9 changelog. Therefore the later republish notes do not fully account for the runtime artifact delta; do not characterize the entire 0.19.8 to 0.19.11 update as metadata-only."
+  ],
+  "extension_census": {
+    "method": "Searched src and tests for direct imports of @ai-matrx/content-ir and all affected table APIs (continuesTable, findTableEnd, opensTable, tableStartsAt, startsPipelessTable, rowCells, startsHtmlBlock, lineIndent, tableContainerIndent).",
+    "findings": [
+      "The extension imports package types, envelope/wire helpers, and content-ir-react rendering ports. No source/table helper imports or calls exist in src or tests.",
+      "No extension call site uses the changed GFM table parsing behavior. No adaptation is indicated for the extension's current package usage."
+    ]
+  },
+  "consumer_actions": [
+    "Root-owned dependency refresh must still adopt 0.19.11 under the repo's latest-package rule and reconcile the package CHANGELOG. Do not leave 0.19.8 installed.",
+    "No extension source change is indicated by this review. If extension code later imports /source table parsing APIs, treat 0.19.11 as behaviorally changed: GFM table boundaries and openings are stricter/more accurate, not metadata-only."
+  ],
+  "open": [
+    "Root owns package installation, compile/build/tests, UI verification, and final acceptance; those were intentionally not performed in this review lane."
+  ]
+}
