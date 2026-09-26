@@ -1,0 +1,42 @@
+{
+  "run_id": "native-0264-reload-001",
+  "status": "completed",
+  "started_at": "2026-09-26",
+  "finished_at": "2026-09-26",
+  "profile": "primary Chrome profile; unpacked development extension",
+  "resource_admission": {
+    "owner_session": "96007",
+    "admitted_at_utc": "2026-09-26T13:38:40Z",
+    "resource_guard": "admitted and healthy; native UI stopped before report/commit"
+  },
+  "acceptance_A": {
+    "verdict": "PASS for observed native reload criteria",
+    "build": {
+      "version": "0.2.64",
+      "chrome_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "loaded_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "actual_side_panel_path": "chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html"
+    },
+    "checks": {
+      "reload_and_identity": "PASS: clicked Reload on chrome://extensions. Chrome then showed unpacked extension version 0.2.64 and ID cihdmkcdjjckfhjpgoedmgfpoljebaml. Details showed source path /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev. Reopened the actual side panel.",
+      "admin_account_and_org": "PASS: Settings after reload showed admin@admin.com with role ADMIN. Expanding Organization showed ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete. No sign-in, sign-out, account, or organization change occurred.",
+      "port_override": "PASS: Settings > Desktop Bridge showed Local engine port auto; no explicit port override was present.",
+      "debugger_and_optional_permissions": "PASS: DevTools Protocol debugger was described as included and not switchable in this UI. Cookies, Page archive (MHTML), Clipboard read, and Tab video capture were all OFF. No permission toggles were changed.",
+      "about_identity": "PASS: About showed Browser Chrome, installed version 0.2.64, and extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml.",
+      "store_copy": "PASS: chrome://extensions showed the separate Matrx Extend Store copy at version 0.2.23 with its toggle Off. It was not changed."
+    },
+    "method": "Direct native Chrome accessibility-tree observations through CUA; primary Chrome profile and actual side panel were used.",
+    "limitations": [
+      "This verifies the requested build identity, retained account and organization, port field, permission states, and preserved Store copy. It does not exercise broader permission-denial/grant/removal scenarios or other product behavior."
+    ]
+  },
+  "state_preservation": {
+    "account_and_organization": "preserved",
+    "optional_permissions": "preserved; all four observed OFF",
+    "port_override": "absent; Local engine port displayed auto",
+    "store_copy": "preserved; version 0.2.23 and Off",
+    "sign_out_reset_chat_or_pilot": "not used"
+  },
+  "ui_stop": "Sent to root after all observations and before report creation/commit.",
+  "engineering_review": "Outside this lane."
+}

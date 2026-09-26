@@ -1,0 +1,20 @@
+{
+  "task_id": "EXT-D-0016-runtime-peer",
+  "reviewer": "runtime peer",
+  "verdict_a": "PASS_WITH_LIMITS",
+  "verdict_b": "PASS_WITH_LIMITS",
+  "evidence": [
+    "Independently checked both receipts and raw logs; run IDs, timestamps, exits agree.",
+    "RED uses a8966b9^:release.sh; lint assertion fails as expected because old source lacks the gate.",
+    "GREEN uses a8966b9:release.sh; raw log ends PASS, child exits 0; failed lint stops before tests/publication.",
+    "GREEN proves post-race checked SHA equals published main SHA; foreign and local commits survive; tag and ZIPs follow checks.",
+    "Fixture uses a disposable local bare origin/checkout; release.sh checks candidate and atomically pushes/retries."
+  ],
+  "limits": [
+    "Lint failure is stub-injected: proves exit handling, not Biome detection of a real defect.",
+    "Packages and gates are partly simulated; no GitHub or live Store publication proven.",
+    "Merge preservation is only shown against the fixture's local origin."
+  ],
+  "finding": "None; RED is a correct expected failure detecting the missing old-source gate.",
+  "scope": "Independent evidence review; no fixture launched."
+}

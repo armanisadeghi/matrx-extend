@@ -14,11 +14,15 @@
   "actual": "The interactive DevTools Protocol switch remains on after clicks and reload without feedback.",
   "evidence": [
     "docs/stabilization/runs/admin-permissions-002.json",
-    "docs/stabilization/runs/permissions-auth-native-sol.json"
+    "docs/stabilization/runs/permissions-auth-native-sol.json",
+    "docs/stabilization/runs/native-0264-reload-001.json",
+    "docs/stabilization/reports/permission-closure-peer.json",
+    "docs/stabilization/runs/isolated-permission-denial-002.json",
+    "docs/stabilization/runs/isolated-permission-denial-004.json"
   ],
   "severity": "S2: misleading nonfunctional permission control",
   "priority": "P1: current Settings stabilization",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/debugger_permission_fix",
   "transition_history": [
     {
@@ -44,12 +48,24 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Fresh final source peer PASS and8focused tests pass; rebuild/native original reproduction retest remains pending."
+    },
+    {
+      "at": "2026-09-26T13:54:53.145926+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original required DevTools row is informational without a false switch on actual 0.2.64; native-0264-reload-001 plus independent permission-closure-peer review. Neighbor denial evidence 002 and 004 is explicitly scoped."
+    },
+    {
+      "at": "2026-09-26T13:54:53.145926+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original reproduction and reviewed surrounding evidence accepted. Broader T55\u2013T59 cases remain partial/unverified; closure does not assert exhaustive permission coverage."
     }
   ],
   "fix_commits": ["9c2a3a3", "77ce8f0", "ba5a9ed"],
   "partial_retest": {
     "status": "original-repro-pass-neighbor-denial-unverified",
     "run_id": "permissions-auth-native-sol",
-    "detail": "Actualsidepanel requireddebugger rowaccurate andno switch. pageCapture/tabCapturegrant/removal/reloadpass, alloptionalrestoredOFF. Chromeoffersno denialdialog, so currentnative denialcriterion unverified; no defectclosure yet."
+    "detail": "Actualsidepanel requireddebugger rowaccurate andno switch. pageCapture/tabCapturegrant/removal/reloadpass, alloptionalrestoredOFF. Chromeoffersno denialdialog, so currentnative denialcriterion unverified; no defectclosure yet. Superseded original-defect closure by current independent review; broader case gaps remain tracked in inventory."
   }
 }

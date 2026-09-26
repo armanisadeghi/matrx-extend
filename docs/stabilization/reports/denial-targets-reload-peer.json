@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "task_id": "denial-targets-reload-peer",
+  "reviewed_commit": "98be8cb1dc0381eb10607ed263183509a464f716",
+  "lane": "fresh peer Luna medium; zero authorship; source review",
+  "status": "DONE_WITH_CONCERNS",
+  "runtime": "PENDING: reviewer did not launch headed Chrome; no native prompt, Deny action, or post-reload UI state observed at runtime.",
+  "verdict_a_acceptance": {
+    "result": "PARTIAL",
+    "evidence": [
+      "The allowlist maps only cookies/T56, pageCapture/T57, clipboardRead/T58, and tabCapture/T59 to their displayed titles. Unknown values yield target_not_allowlisted before any browser launch, and the environment value is JSON-encoded before insertion into the page evaluation.",
+      "Before interaction, the oracle requires signed-in admin identity, declared permission, exactly one matching label row, switch off, and absence in both chrome.permissions.contains and getAll.",
+      "The operator instruction identifies the selected title, asks for native prompt and Deny evidence, and describes ACK as coordination. The script's successful terminal status is explicitly postconditions_verified_requires_operator_evidence.",
+      "After ACK the oracle requires the matching refusal alert, switch off, and both permission APIs absent. It then reloads the actual side-panel target, waits for readiness, reopens Settings, Account, and Advanced capabilities, and again requires admin identity, declared/unique row, off, and both API checks absent."
+    ],
+    "missing": [
+      "No runtime evidence was collected for the requested prompt, Deny, or after-reload state; those remain unverified until the admitted run is observed.",
+      "Source cannot prove that the operator clicked the selected row or saw/clicked Deny. Any process can write the fixed plaintext ACK; the runner treats it solely as a resume signal, so independent contemporaneous CUA evidence remains required.",
+      "The initial state does not explicitly assert refusal_alert is false. Fresh Settings UI normally initializes without that transient alert, but the oracle does not itself establish that the later alert was newly produced by this request."
+    ],
+    "runtime_evidence": "Not collected. Acceptance is PARTIAL pending independent CUA observation plus this runner's evidence, especially after_reload."
+  },
+  "verdict_b_quality": {
+    "result": "IMPORTANT",
+    "findings": [
+      {
+        "severity": "Important",
+        "finding": "The target selection and post-reload state checks are well scoped, but a stale refusal alert is not excluded before the operator step. Since success only checks that the alert is present afterward, a prior alert could satisfy this part of the oracle if the expected denial never happened and ACK were supplied.",
+        "evidence": "tests/browser/isolated-permission-denial-acceptance.mjs: state() reports refusal_alert; the before assertion checks admin/declared/row_count/switch_on/contains/get_all but omits refusal_alert; the after predicate requires refusal_alert.",
+        "recommendation": "Clear or explicitly assert absence of the refusal alert before the request boundary, then require it after the boundary. Keep ACK described and treated as coordination only; retain independent native UI evidence as the proof of the human action."
+      }
+    ],
+    "positive_quality": [
+      "No permissions.request/remove override, grant seeding, response interception, auth injection, or credential output path found in the reviewed runner.",
+      "Credential handling reads only AI_ADMIN_USERNAME and AI_ADMIN_PASSWORD from the authorized file; browser and auth exceptions are suppressed, and report output stores state booleans and build receipt metadata rather than secrets.",
+      "ACK is deleted before the run and after completion; malformed nonempty ACK fails closed, and terminal output never labels the case a standalone pass.",
+      "The reload oracle checks both UI representation and independent Chrome permission APIs, alongside continued real admin sign-in."
+    ]
+  },
+  "checks": {
+    "source_review": "completed",
+    "runtime": "not run; pending root resource admission and native UI observation",
+    "tests": "not run; source-only peer review",
+    "commit": "none; report-only change is owned by this reviewer"
+  }
+}

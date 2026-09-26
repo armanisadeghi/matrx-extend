@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "review_target": [
+    "243f39d8217c5de56ca5954a9e5f442ab23fc518",
+    "eabc15bd8d33a2506d47bea0a1205cd23554f6ca"
+  ],
+  "scope": "independent source review of native navigation fixture and current sidepanel tab semantics; no runner, build, or browser launched",
+  "verdict_a_acceptance": {
+    "status": "PARTIAL",
+    "findings": [
+      {
+        "severity": "important",
+        "finding": "Current guest and admin exact-roster expectations match the source visibility switchboard and direct trigger titles. Capture is a signed-in direct tab, has a dynamic title, and its aria-controls identity is checked independently; Profile is correctly excluded from direct roster because it is reached through the user menu. However, the fixture does not select Chat in either role or Pilot for admin, although inventory control C01 says to select every source-authorized tab. Its batch mapping honestly marks those targets partial/deferred, so it cannot establish full C01 acceptance.",
+        "evidence": [
+          "src/config/sidepanel-visibility.ts:15-39",
+          "src/entrypoints/sidepanel/App.tsx:371-470, 589-746",
+          "docs/stabilization/inventory.json:1331-1379",
+          "tests/browser/contained-navigation-acceptance.mjs:17-32, 350-378",
+          "docs/stabilization/reports/contained-navigation-batch.json:7-24"
+        ]
+      },
+      {
+        "severity": "important",
+        "finding": "eabc15b resolves both prior roster concerns: blank-title tab triggers remain represented as empty titles and break the exact expected roster, and guest Chat is explicitly required. Admin extra, missing, duplicate, and titleless controls also fail the exact roster comparison.",
+        "evidence": ["tests/browser/contained-navigation-acceptance.mjs:142-149, 320-327, 352-368"]
+      },
+      {
+        "severity": "minor",
+        "finding": "The copied isCaptureTitle grammar currently matches all three outputs from captureTabLabel, including singular/plural and elsewhere wording. It is duplicated acceptance knowledge and could drift; today the admin inventory assertion fails closed on an unknown Capture title, while the guest absence check uses identity from inventory and is backed by the source visibility gate.",
+        "evidence": [
+          "tests/browser/contained-navigation-acceptance.mjs:34-42, 324-327, 359-362",
+          "src/features/capture-ladder/queue-sentences.ts:102-112",
+          "src/config/sidepanel-visibility.ts:21-24"
+        ]
+      }
+    ],
+    "resolved_prior_findings": [
+      "No longer filters titleless tabs out of the roster.",
+      "Guest roster now asserts Chat is present."
+    ],
+    "runtime_limitation": "No live roster, rendered selection, or role transition evidence gathered; this verdict is source-only."
+  },
+  "verdict_b_quality": {
+    "status": "PARTIAL",
+    "findings": [
+      {
+        "severity": "minor",
+        "finding": "Roster validation is strict and uses a product-level tab identity for dynamic Capture, avoiding a second navigation implementation. The copied Capture label grammar is a small maintenance coupling, and the control remains unselected in this batch. No shim, dead code, or hidden failure path was found in the reviewed fixture changes."
+      }
+    ],
+    "verification": "Source inspection only; no tests, typecheck, build, or browser were run."
+  },
+  "limitations": [
+    "Root owns the sole runtime guard; product acceptance remains unverified until native execution.",
+    "This review covers only the navigation fixture, its two named commits, and current tab visibility/title semantics."
+  ]
+}

@@ -64,6 +64,7 @@ case " \$* " in
   *" update-api-types "*) [ -f "$SANDBOX/fail-generation" ] && exit 1 ;;
   *" catalog:tools:md "*) mkdir -p types; echo "regenerated catalog" > types/tool-catalog.md ;;
   *" check:matrx-packages "*) [ -f "$SANDBOX/fail-matrx-packages" ] && exit 1 ;;
+  *" lint "*) [ -f "$SANDBOX/fail-lint" ] && exit 1 ;;
   *" exec vitest run --maxWorkers=1 --minWorkers=1 "*)
     git rev-parse HEAD >> "$SANDBOX/checked-shas"
     if [ -f "$SANDBOX/fail-tests" ]; then
@@ -109,6 +110,24 @@ if [[ $STALE_PACKAGES_STATUS -ne 0 ]] \
   echo '  ok    stale packages stop before unit tests and publication'
 else
   echo '  FAIL  stale packages stop before unit tests and publication'
+  exit 1
+fi
+# CI runs `pnpm lint`; a released candidate with Biome errors must stop here.
+touch "$SANDBOX/fail-lint"
+set +e
+PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/lint-out" 2>&1
+LINT_STATUS=$?
+set -e
+rm "$SANDBOX/fail-lint"
+if [[ $LINT_STATUS -ne 0 ]] \
+    && grep -q 'lint failed' "$SANDBOX/lint-out" \
+    && grep -q ' lint' "$SANDBOX/pnpm-calls" \
+    && ! grep -q 'exec vitest run' "$SANDBOX/pnpm-calls" \
+    && [[ "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] \
+    && ! git ls-remote --tags origin | grep -q 'refs/tags/v0.1.2$'; then
+  echo '  ok    CI lint failure stops before unit tests and publication'
+else
+  echo '  FAIL  CI lint failure stops before unit tests and publication'
   exit 1
 fi
 touch "$SANDBOX/fail-tests"

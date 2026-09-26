@@ -20,7 +20,6 @@ const ADMIN = [
   'Tasks',
   'Agenda',
   'Saved captures',
-  'Capture',
   'Highlights',
   'Guidance',
   'Notes',
@@ -32,6 +31,15 @@ const ADMIN = [
   'Token broker (admin only)',
   'Debug (admin only)',
 ];
+// The Capture trigger's title is a queue sentence, not the static tab name.
+// Keep this narrow to the three forms in captureTabLabel().
+function isCaptureTitle(title) {
+  return (
+    title === 'Pages that need your browser' ||
+    /^\d+ pages? need your browser(?: — \d+ more waiting in another workspace)?$/.test(title) ||
+    /^Nothing needs your browser here — \d+ waiting in another workspace$/.test(title)
+  );
+}
 const LAZY_VIEW_MARKERS = {
   Data: 'Structured data',
   SEO: 'SEO audit',
@@ -59,6 +67,32 @@ const report = {
       reason: 'requires naturally active credential assistance',
     },
   ],
+  admin_prerequisite: {
+    stage: 'not_started',
+    web: {
+      expectedOrigin: null,
+      loginPath: null,
+      credentialFileReadable: null,
+      credentialVariablesAvailable: null,
+      formAvailable: null,
+      submitClickCompleted: false,
+      dashboardReached: false,
+    },
+    extension: {
+      accountReady: null,
+      signInAvailable: null,
+      beforeClick: null,
+      signInClickCompleted: false,
+      lastObserved: null,
+      observationReadFailed: false,
+    },
+  },
+  admin_tab_inventory: null,
+};
+let stage = 'owned_profile';
+const advance = (next) => {
+  stage = next;
+  report.admin_prerequisite.stage = next;
 };
 
 const target = (id, role, control, detail) =>
@@ -108,7 +142,8 @@ async function inventory(panel) {
   return evaluate(
     panel,
     `(() => [...document.querySelectorAll('[role="tab"]')]
-    .map((el) => el.title).filter(Boolean))()`,
+    .map((el) => ({ title: el.getAttribute('title') ?? '',
+      captureIdentity: el.getAttribute('aria-controls')?.endsWith('-content-capture') === true })))()`,
   );
 }
 
@@ -164,7 +199,15 @@ async function avatar(panel, role, title) {
 }
 
 async function adminCredentials() {
-  const source = await readFile(ADMIN_ENV, 'utf8');
+  advance('credential_file_read');
+  let source;
+  try {
+    source = await readFile(ADMIN_ENV, 'utf8');
+    report.admin_prerequisite.web.credentialFileReadable = true;
+  } catch {
+    report.admin_prerequisite.web.credentialFileReadable = false;
+    throw new Error('credential_file_unreadable');
+  }
   const values = {};
   for (const line of source.split(/\r?\n/)) {
     const match = /^\s*(AI_ADMIN_USERNAME|AI_ADMIN_PASSWORD)\s*=\s*(.*?)\s*$/.exec(line);
@@ -172,43 +215,97 @@ async function adminCredentials() {
     const raw = match[2];
     values[match[1]] = /^(['"]).*\1$/.test(raw) ? raw.slice(1, -1) : raw;
   }
-  assert.equal(values.AI_ADMIN_USERNAME, 'admin@admin.com');
-  assert.ok(values.AI_ADMIN_PASSWORD);
+  report.admin_prerequisite.web.credentialVariablesAvailable =
+    values.AI_ADMIN_USERNAME === 'admin@admin.com' && Boolean(values.AI_ADMIN_PASSWORD);
+  assert.equal(report.admin_prerequisite.web.credentialVariablesAvailable, true);
   return { email: values.AI_ADMIN_USERNAME, password: values.AI_ADMIN_PASSWORD };
 }
 
+async function safeAdminState(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+    const section = [...document.querySelectorAll('button[aria-expanded]')]
+      .find((el) => el.textContent.trim() === 'Account');
+    const content = section?.parentElement?.nextElementSibling;
+    const row = (label) => [...(content?.querySelectorAll('span') ?? [])]
+      .find((el) => el.textContent.trim() === label)?.parentElement?.textContent.trim() ?? null;
+    const buttons = [...document.querySelectorAll('button')].map((el) => el.textContent.trim());
+    return { accountPresent: !!section, accountExpanded: section?.getAttribute('aria-expanded') === 'true',
+      emailRowPresent: row('Email') !== null, expectedEmailMatch: row('Email') === 'Emailadmin@admin.com',
+      roleRowPresent: row('Role') !== null, adminRoleMatch: row('Role')?.toLowerCase() === 'roleadmin',
+      signInAvailable: buttons.includes('Sign in'), signOutPresent: buttons.includes('Sign out'),
+      advancedPresent: buttons.includes('Advanced agent capabilities'),
+      authAlertPresent: !!document.querySelector('[role="alert"]') };
+  })()`,
+  );
+}
+
 async function realAdminSignin(page, panel) {
+  advance('web_page_open');
   const web = await page.context().newPage();
   try {
+    advance('web_login_navigation');
     await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-    assert.equal(new URL(web.url()).origin, WEB_ORIGIN);
-    assert.equal(new URL(web.url()).pathname, '/login');
+    advance('web_login_location_check');
+    report.admin_prerequisite.web.expectedOrigin = new URL(web.url()).origin === WEB_ORIGIN;
+    report.admin_prerequisite.web.loginPath = new URL(web.url()).pathname === '/login';
+    assert.equal(report.admin_prerequisite.web.expectedOrigin, true);
+    assert.equal(report.admin_prerequisite.web.loginPath, true);
     const { email, password } = await adminCredentials();
+    advance('web_form_ready');
+    report.admin_prerequisite.web.formAvailable =
+      (await web.locator('input[name="email"]').count()) === 1 &&
+      (await web.locator('input[name="password"]').count()) === 1 &&
+      (await web.getByRole('button', { name: 'Sign in', exact: true }).count()) === 1;
+    assert.equal(report.admin_prerequisite.web.formAvailable, true);
+    advance('web_form_fill');
     await web.locator('input[name="email"]').fill(email);
     await web.locator('input[name="password"]').fill(password);
+    advance('web_submit_dashboard_wait');
     await Promise.all([
       web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname === '/dashboard', {
         timeout: 90_000,
       }),
-      web.getByRole('button', { name: 'Sign in', exact: true }).click(),
+      web
+        .getByRole('button', { name: 'Sign in', exact: true })
+        .click()
+        .then(() => {
+          report.admin_prerequisite.web.submitClickCompleted = true;
+        }),
     ]);
+    report.admin_prerequisite.web.dashboardReached = true;
+    advance('extension_settings_open');
     await click(panel, 'title', 'Settings');
+    advance('extension_account_open');
     await openSection(panel, 'Account');
+    const before = await safeAdminState(panel);
+    report.admin_prerequisite.extension.beforeClick = before;
+    report.admin_prerequisite.extension.accountReady =
+      before.accountPresent && before.accountExpanded;
+    report.admin_prerequisite.extension.signInAvailable = before.signInAvailable;
+    assert.equal(report.admin_prerequisite.extension.accountReady, true);
+    assert.equal(report.admin_prerequisite.extension.signInAvailable, true);
+    advance('extension_signin_click');
     await click(panel, 'button', 'Sign in');
+    report.admin_prerequisite.extension.signInClickCompleted = true;
+    advance('extension_admin_wait');
     await waitFor(
       'real_admin_state',
-      () =>
-        evaluate(
-          panel,
-          `(() => {
-      const text = document.body?.innerText ?? '';
-      return text.includes('admin@admin.com') && text.includes('Advanced agent capabilities')
-        && [...document.querySelectorAll('button')].some((el) => el.textContent.trim() === 'Sign out');
-    })()`,
-        ),
-      (v) => v === true,
+      async () => {
+        try {
+          const observed = await safeAdminState(panel);
+          report.admin_prerequisite.extension.lastObserved = observed;
+          return observed;
+        } catch {
+          report.admin_prerequisite.extension.observationReadFailed = true;
+          throw new Error('safe_admin_observation_failed');
+        }
+      },
+      (v) => v?.expectedEmailMatch && v.adminRoleMatch && v.signOutPresent && v.advancedPresent,
       90_000,
     );
+    advance('extension_admin_observed');
     target('real-admin-signin', 'admin', 'prerequisite', {
       webDashboard: true,
       extensionAccount: true,
@@ -221,17 +318,28 @@ async function realAdminSignin(page, panel) {
 try {
   const harness = await runNativeSidepanelQa({
     exercisePanel: async ({ page, panel }) => {
+      advance('guest_tab_inventory');
       const guestTabs = await inventory(panel);
-      assert.deepEqual(guestTabs.filter((title) => title !== 'Chat').sort(), [...GUEST].sort());
-      target('guest-tab-inventory', 'guest', 'EXT-F-1001-C01', { titles: guestTabs });
+      const guestTitles = guestTabs.map((tab) => tab.title);
+      assert.deepEqual(guestTitles.sort(), ['Chat', ...GUEST].sort());
+      assert.equal(
+        guestTabs.some((tab) => tab.captureIdentity),
+        false,
+      );
+      target('guest-tab-inventory', 'guest', 'EXT-F-1001-C01', { titles: guestTitles });
       const guestAvatar = await evaluate(
         panel,
         `(() => !!document.querySelector('button[title="Account"]'))()`,
       );
       assert.equal(guestAvatar, true);
+      advance('guest_avatar');
       await avatar(panel, 'guest', 'Account');
+      advance('guest_navigation');
       for (const title of GUEST) await navigate(panel, title, 'guest');
-      assert.equal(guestTabs.includes('Capture'), false);
+      assert.equal(
+        guestTabs.some((tab) => isCaptureTitle(tab.title)),
+        false,
+      );
       target('capture-absent:guest', 'guest', 'EXT-F-1001-C02', { triggerAbsent: true });
       const vaultShortcutAbsent = await evaluate(
         panel,
@@ -241,23 +349,40 @@ try {
       target('vault-shortcut-absent:guest', 'guest', 'EXT-F-1001-C03', { shortcutAbsent: true });
 
       await realAdminSignin(page, panel);
+      advance('admin_tab_inventory');
       const adminTabs = await inventory(panel);
+      const adminTitles = adminTabs.map((tab) => tab.title);
+      const captureTabs = adminTabs.filter((tab) => tab.captureIdentity);
+      report.admin_tab_inventory = {
+        titles: adminTitles,
+        capture_identity_count: captureTabs.length,
+        capture_title: captureTabs[0]?.title ?? null,
+      };
+      assert.equal(captureTabs.length, 1);
+      assert.equal(isCaptureTitle(captureTabs[0].title), true);
       const expected = [...GUEST, ...ADMIN, 'Chat', 'Pilot (admin only — sandboxed tab group)'];
-      assert.deepEqual(adminTabs.sort(), expected.sort());
-      target('admin-tab-inventory', 'admin', 'EXT-F-1001-C01', { titles: adminTabs });
+      assert.deepEqual(
+        adminTabs.map((tab) => (tab.captureIdentity ? 'Capture' : tab.title)).sort(),
+        expected.concat('Capture').sort(),
+      );
+      target('admin-tab-inventory', 'admin', 'EXT-F-1001-C01', { titles: adminTitles });
+      advance('admin_avatar');
       await avatar(panel, 'admin', 'admin@admin.com');
+      advance('admin_navigation');
       for (const title of [...GUEST, ...ADMIN]) await navigate(panel, title, 'admin');
       // The badge is state-dependent; preserve observed accessible label and
       // visible count without inventing pending work or mutating server data.
       const capture = await evaluate(
         panel,
         `(() => {
-        const tab = [...document.querySelectorAll('[role="tab"]')].find((el) => el.title?.startsWith('Capture'));
+        const tab = [...document.querySelectorAll('[role="tab"]')]
+          .find((el) => el.getAttribute('aria-controls')?.endsWith('-content-capture'));
         return { present: !!tab, label: tab?.getAttribute('aria-label') ?? null,
           badge: tab?.querySelector('.rounded-full')?.textContent?.trim() ?? null };
       })()`,
       );
       assert.equal(capture.present, true);
+      assert.equal(isCaptureTitle(capture.label), true);
       report.targets.push({
         id: 'capture-observed:admin',
         role: 'admin',
@@ -265,13 +390,16 @@ try {
         status: 'partial',
         detail: capture,
       });
+      advance('complete');
     },
   });
   report.extension_id = harness.extensionId;
   report.status = 'partial';
 } catch {
   report.status = 'unverified';
-  report.failure_category = 'native_or_stage_unverified';
+  report.failure_stage = stage;
+  report.failure_category =
+    stage === 'owned_profile' ? 'native_profile_unverified' : `${stage}_unverified`;
   process.exitCode = 1;
 }
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
