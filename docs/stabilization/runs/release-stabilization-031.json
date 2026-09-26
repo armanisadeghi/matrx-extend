@@ -1,0 +1,16 @@
+{
+  "run_id": "release-stabilization-031",
+  "wrapper_session": 90442,
+  "wrapper_exit_code": 2,
+  "status": "resource_refused",
+  "refused_at": "2026-09-26T20:19:22.068Z",
+  "reason": "RESOURCE_PRESSURE_UNSAFE",
+  "pressure_level": 2,
+  "available_memory_gib": 6.24,
+  "child_started": false,
+  "release_started": false,
+  "push_by_this_run": false,
+  "log_path": "/tmp/matrx-release-stabilization-031.log",
+  "log_sha256": "886516826be30cf1c2efe5a9fc22548cc2ae5ce639f6230b841ac1ab9791553d",
+  "next_action": "Wait for healthy resource preflight; do not weaken guard or stop another contributor workload."
+}
