@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-guest-002-peer",
+  "run_id": "screenshot-guest-002",
+  "raw_result_path": "test-results/screenshot-guest-acceptance-5b1d654a-3794-4ffc-be2f-dd17bf4f7e1d.json",
+  "guard_log_path": "/tmp/matrx-screenshot-guest-002.log",
+  "A_runtime": {
+    "status": "PARTIAL_GUEST_DENIAL_WITH_RELOAD_SETTLEMENT_GAP",
+    "observed": [
+      "The guard log directly records admission at 23:43:05.596Z, PARTIAL stdout, and child exit 0 at 23:43:17.730Z; the root confirmed wrapper exit 0. The raw result is top-level partial even though four case rows are labeled pass.",
+      "The result binds the owned profile and expected extension ID to release 0.2.79 tree be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0. Before and after identities match, and the runner reports an after-run unpacked-tree match.",
+      "Fresh guest state and trusted Settings then SEO navigation show five public tabs, no Screenshots trigger or pane, and no screenshot capture controls. Settings and SEO each have a uniquely selected trigger, linked visible active pane, and mounted target marker.",
+      "The real role transition is source-grounded: the runner uses the web login form and extension Sign in, verifies exact admin identity, selects the mounted Screenshots pane, then clicks the actual avatar Sign out in the same owned profile. The raw result records adminScreenshotsSelected=true and guest recovery to a uniquely selected linked Chat pane with guest avatar, no admin avatar, and no Screenshots trigger/pane/content. Its recorded suspenseFallback=false supports that the loading fallback was gone at this recovery sample."
+    ],
+    "reload_boundary": "The raw guest_real_reload row records a changed panel document loader and a selected linked Chat pane with guest avatar and no Screenshots trigger/pane/content, but suspenseFallback=true. The runner explicitly exempts Chat from a mounted content marker and from the no-fallback predicate. This sample proves denial in the guest shell during lazy loading, not a settled post-reload public view or protected-content absence after mount; its pass label is wider than the evidence."
+  },
+  "B_evidence_quality": {
+    "status": "BOUNDED_EVIDENCE_ACCEPTED_FULL_T09_WITHHELD",
+    "checks": [
+      "The raw UUID-named result and guard log were read directly; the generated immutable run receipt was pending when this peer wrote its report. This peer does not fabricate or copy an unverified receipt digest.",
+      "The source requires real admin email/role/avatar, selected mounted Screenshots, actual Sign out, and selected guest Chat with protected Screenshots absence. No auth storage injection or screenshot capture/save/delete action supplies the role-change result.",
+      "The inventory requires warm, reload, and role-change dimensions for EXT-F-1009-T09. Warm absence and the real sign-out denial/recovery route have bounded support. Reload should stay unverified pending a post-fallback mounted public-view observation. The role-recovery oracle does not assert a Chat content marker, so it proves redirect and access gating rather than full Chat usability."
+    ],
+    "limits": [
+      "Top-level partial is the honest run status. Four row-level pass labels must not be aggregated into full T09 or EXT-F-1009 acceptance.",
+      "Guest T01–T08 screenshot capture/gallery cases are not applicable in the inventory and were not exercised here."
+    ]
+  }
+}
