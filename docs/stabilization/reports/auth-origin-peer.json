@@ -1,7 +1,14 @@
 {
   "reviewed_commit": "42f0565",
   "method": "Independent source-only review; no tests, builds, browser/process launches, or credential reads.",
-  "A_runtime": {"status": "pending", "owner": "root lane"},
-  "B_source_verdict": {"status": "PASS", "observations": ["Run 002 records the real redirect at https://www.aimatrx.com/login before credential_file_read; canonical extension architecture names the exact www callback origin.", "The single WEB_ORIGIN constant now drives initial navigation, exact pre-credential origin check, and exact-origin /dashboard wait.", "The exact origin and /login path guard remain; no broad host allowance or credential exposure was introduced."]},
+  "A_runtime": { "status": "pending", "owner": "root lane" },
+  "B_source_verdict": {
+    "status": "PASS",
+    "observations": [
+      "Run 002 records the real redirect at https://www.aimatrx.com/login before credential_file_read; canonical extension architecture names the exact www callback origin.",
+      "The single WEB_ORIGIN constant now drives initial navigation, exact pre-credential origin check, and exact-origin /dashboard wait.",
+      "The exact origin and /login path guard remain; no broad host allowance or credential exposure was introduced."
+    ]
+  },
   "limits": ["This review does not establish runtime success."]
 }

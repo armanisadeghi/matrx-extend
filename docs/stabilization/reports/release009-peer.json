@@ -34,9 +34,7 @@
     "shasum -a 256 .output/matrx-extend-0.2.60-store.zip .output/matrx-extend-0.2.60-local.zip",
     "git status --short --branch"
   ],
-  "changed_files": [
-    "docs/stabilization/reports/release009-peer.json"
-  ],
+  "changed_files": ["docs/stabilization/reports/release009-peer.json"],
   "commit_shas": [],
   "limitations": [
     "No browser/UI health claim is made; new-build runtime proof remains pending.",

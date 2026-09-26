@@ -4,9 +4,7 @@
   "status": "unverified",
   "web": null,
   "extension": null,
-  "limitations": [
-    "OAuth callback origin is not directly observed by this runner."
-  ],
+  "limitations": ["OAuth callback origin is not directly observed by this runner."],
   "failureStage": "web_login_page",
   "id": "isolated-admin-signin-001",
   "guard_exit_code": 1,
@@ -31,12 +29,7 @@
         "profileFreeGiB": 23.59902572631836
       },
       "cpuBusySamples": [
-        0.10140000000000005,
-        0.1513,
-        0.11510000000000009,
-        0.0847,
-        0.0837,
-        0.17010000000000003,
+        0.10140000000000005, 0.1513, 0.11510000000000009, 0.0847, 0.0837, 0.17010000000000003,
         0.18079999999999996
       ],
       "reasons": [],

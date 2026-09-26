@@ -39,9 +39,7 @@
       "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
     },
     "failureCategory": null,
-    "limitations": [
-      "OAuth callback origin is not directly observed by this runner."
-    ]
+    "limitations": ["OAuth callback origin is not directly observed by this runner."]
   },
   "resource_events": [
     {
@@ -62,12 +60,7 @@
         "profileFreeGiB": 23.561370849609375
       },
       "cpuBusySamples": [
-        0.19999999999999996,
-        0.366,
-        0.2136,
-        0.26370000000000005,
-        0.08840000000000003,
-        0.2158,
+        0.19999999999999996, 0.366, 0.2136, 0.26370000000000005, 0.08840000000000003, 0.2158,
         0.2843000000000001
       ],
       "reasons": [],
