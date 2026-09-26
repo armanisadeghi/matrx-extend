@@ -1,0 +1,27 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Independent source/evidence review of guest-settings-local-006 for EXT-F-1003-T46 only; no tests, build, browser, or process launched.",
+  "A_acceptance": {
+    "verdict": "PASS — full T46 is deserved",
+    "evidence": "The recorded T46 case passes valid save, worker rediscovery, valid persistence after reload, invalid-range retention, blank clearing including stale-error removal, and cleared-state persistence. The rediscovery observation has one entry-breakpoint hit and one post-probe completion-breakpoint hit, both after saveStartedAt, with resumeError null. Current runner arms immediately before trusted Save, rejects any pre-Save pause, requires exactly those two ordered hits, and closes the observer before reload/other edits. Inventory T46 requires rediscovery to run; successful connectivity/status change and HTTP health are not required. T70 remains unverified and does not alter the T46 verdict.",
+    "inventory_recommendation": "Update only the guest result for EXT-F-1003-T46 to pass against guest-settings-local-006; retain T70 as unverified and overall run status as unverified."
+  },
+  "B_evidence_source_integrity": {
+    "verdict": "PASS with bounded limits",
+    "evidence": "The run records the released 0.2.58 build sourceSha d66589855aafacfb9a9cfa521b80561b36f8e8b3 and tree hash 7458afebc20194398c31288d355fa6f9cb42b4baadd1ddba3a29fa419b28144b; both agree with .output/release-receipt.json. The harness source verifies receipt/version/tree/store ZIP, requires the spawned Chrome process and owned profile/CDP endpoint, and cleanup stops only its child. Run metadata records guard_exit_code 0, childExitCode 0, and syntax checks 0. The test candidate is a14d4a7, matching the runner change that adds Save-bounded tracing; the extension under test remains the receipt-bound release.",
+    "limits": [
+      "This lane reviewed the saved run and source; it did not rerun the browser evidence or independently recalculate artifact hashes.",
+      "The separate forcing-function negative proof against a no-op/missing rediscovery handler remains outstanding and was explicitly outside this runtime record.",
+      "The report JSON and its trace are repository evidence, not a separately signed event log; the existing screenshots do not independently show debugger events."
+    ]
+  },
+  "sources": [
+    "docs/stabilization/runs/guest-settings-local-006.json",
+    "docs/stabilization/inventory.json:3888-3925",
+    "tests/browser/settings-local-controls-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    ".output/release-receipt.json",
+    "docs/stabilization/reports/rediscovery-trace-escalation.json"
+  ],
+  "commit": "882fcd3"
+}
