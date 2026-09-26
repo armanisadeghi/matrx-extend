@@ -177,6 +177,14 @@ async function main() {
     await scrapeTab.click();
     await panel.getByRole('button', { name: /^Capture$/ }).click();
     await panel.getByRole('button', { name: /^Save$/ }).waitFor({ timeout: 30_000 });
+    // Edit the article in Scrape BEFORE saving: the Source must carry the edit.
+    const editedLine = `Edited in Scrape before saving ${stamp}.`;
+    await panel.getByTitle('Edit article markdown').click();
+    const draft = panel.getByPlaceholder(/^Article markdown/);
+    await draft.fill(
+      `# Source convergence walk online ${stamp}\n\n${editedLine}\n\n## First section\n\nKept.`,
+    );
+    await panel.getByRole('button', { name: 'Apply' }).click();
     await panel.getByRole('button', { name: /^Save$/ }).click();
     await panel.getByText('Open this Source (opens in the web app)').waitFor({ timeout: 30_000 });
     await panel.screenshot({ path: join(shots, '1-saved-in-scrape.png') });
@@ -193,6 +201,12 @@ async function main() {
     for (const k of ['images', 'links', 'metadata', 'ld_json', 'videos', 'audio', 'pattern_id']) {
       if (!(k in (source.structured_json ?? {}))) fail(`structured_json is missing ${k}.`);
     }
+    const withText = await rest(`processed_documents?id=eq.${source.id}&select=content`);
+    if (!withText?.[0]?.content?.includes(editedLine))
+      fail('The Source does not carry the edit made in Scrape before saving.');
+    if (withText[0].content.includes('It has enough words for the reader extractor'))
+      fail('The Source carries the pre-edit article text.');
+    console.log('✓ the edit made in Scrape before saving is the text the Source landed with');
     const portions = await rest(
       `processed_document_pages?processed_document_id=eq.${source.id}&select=page_number,portion_kind,locator&order=page_number`,
     );
