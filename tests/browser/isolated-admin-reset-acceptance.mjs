@@ -208,19 +208,68 @@ try {
         'Cancel must not remove any preexisting session key');
       evidence.steps.push('Cancel preserved admin UI, auth, preference, fixture, and prior storage keys');
 
-      stage = 'reset_confirm';
+      evidence.reset_confirm = {
+        dialog_reopened: false,
+        confirm_click_completed: false,
+        storage_read_attempts: 0,
+        storage_read_successes: 0,
+      };
+      stage = 'reset_confirm_open_action';
       await click(panel, 'button', 'Clear local data on this device');
+      stage = 'reset_confirm_dialog_wait';
       await waitFor('admin_reset_dialog_reopened', () => panelState(panel), (s) => s?.dialog);
+      evidence.reset_confirm.dialog_reopened = true;
+      stage = 'reset_confirm_click';
       await click(panel, 'dialog', 'Clear & sign out');
-      await waitFor('admin_extension_storage_cleared', () => storageState(panel), (s) =>
+      evidence.reset_confirm.confirm_click_completed = true;
+      stage = 'reset_confirm_storage_wait';
+      await waitFor('admin_extension_storage_cleared', async () => {
+        evidence.reset_confirm.storage_read_attempts += 1;
+        const observed = await storageState(panel);
+        evidence.reset_confirm.storage_read_successes += 1;
+        evidence.reset_confirm.last_storage = {
+          local_count: observed.localKeys.length,
+          session_count: observed.sessionKeys.length,
+          prior_local_overlap_count: before.localKeys.filter((key) => observed.localKeys.includes(key)).length,
+          prior_session_overlap_count: before.sessionKeys.filter((key) => observed.sessionKeys.includes(key)).length,
+          auth_present: observed.hasAccessToken || observed.hasUserProfile || observed.hasAdminFlag,
+          settings_present: observed.hasSettings,
+          local_fixture_present: observed.hasLocalFixture,
+          session_fixture_present: observed.hasSessionFixture,
+        };
+        return observed;
+      }, (s) =>
         !s?.hasSettings && !s.hasAccessToken && !s.hasUserProfile && !s.hasAdminFlag &&
           !s.hasLocalFixture && !s.hasSessionFixture);
+      stage = 'reset_confirm_storage_snapshot';
       const after = await storageState(panel);
+      evidence.reset_confirm.last_storage = {
+        local_count: after.localKeys.length,
+        session_count: after.sessionKeys.length,
+        prior_local_overlap_count: before.localKeys.filter((key) => after.localKeys.includes(key)).length,
+        prior_session_overlap_count: before.sessionKeys.filter((key) => after.sessionKeys.includes(key)).length,
+        auth_present: after.hasAccessToken || after.hasUserProfile || after.hasAdminFlag,
+        settings_present: after.hasSettings,
+        local_fixture_present: after.hasLocalFixture,
+        session_fixture_present: after.hasSessionFixture,
+      };
+      stage = 'reset_confirm_prior_key_check';
       assert.deepEqual(before.localKeys.filter((key) => after.localKeys.includes(key)), [],
         'Confirm must clear every preexisting local key');
       assert.deepEqual(before.sessionKeys.filter((key) => after.sessionKeys.includes(key)), [],
         'Confirm must clear every preexisting session key');
-      await waitFor('admin_signed_out', () => panelState(panel), (s) =>
+      stage = 'reset_confirm_signout_wait';
+      await waitFor('admin_signed_out', async () => {
+        const observed = await panelState(panel);
+        evidence.reset_confirm.last_panel = {
+          sign_in_visible: observed.signIn,
+          sign_out_visible: observed.signOut,
+          advanced_visible: observed.advanced,
+          admin_email_visible: observed.emailIsAdmin,
+          admin_role_visible: observed.roleIsAdmin,
+        };
+        return observed;
+      }, (s) =>
         s?.signIn && !s.signOut && !s.advanced && !s.emailIsAdmin && !s.roleIsAdmin);
       evidence.steps.push('Confirm removed prior extension local/session keys and signed out in Settings');
 
