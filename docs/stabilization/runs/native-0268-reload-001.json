@@ -1,0 +1,25 @@
+{
+  "run_id": "native-0268-reload-001",
+  "status": "pass-bounded-reload",
+  "operator_report": "docs/stabilization/reports/native-0268-reload.json",
+  "source_sha": "a86e15da662cddb60029b480c340e2ccfef40c1f",
+  "version": "0.2.68",
+  "exit_code": 0,
+  "resource_events": [
+    {
+      "at": "2026-09-26T15:42:56.961Z",
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "at": "2026-09-26T15:44:44.378Z",
+      "code": "RESOURCE_STOP_REQUESTED",
+      "signal": "SIGINT"
+    },
+    {
+      "at": "2026-09-26T15:44:44.378Z",
+      "code": "RESOURCE_BROWSER_STOP_CONFIRMED",
+      "resourceInvalid": false
+    }
+  ],
+  "provenance": "Root observed exact guard events via session3161; actual exit0 confirmed after UI_STOP."
+}

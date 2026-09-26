@@ -17,11 +17,14 @@
     "docs/stabilization/runs/remote-vault-red-001.json",
     "docs/stabilization/runs/remote-vault-suite-001.json",
     "docs/stabilization/reports/vault-readiness-peer.json",
-    "docs/stabilization/runs/remote-vault-green-001.json"
+    "docs/stabilization/runs/remote-vault-green-001.json",
+    "docs/stabilization/runs/release-stabilization-023.json",
+    "docs/stabilization/reports/release023-peer.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/36252765496"
   ],
   "severity": "S3: intermittent false-red integration check; no demonstrated user data impact",
   "priority": "P1: restore trustworthy green main before publication",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/remote_ci_vault_diagnose",
   "transition_history": [
     {
@@ -47,6 +50,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "b406d347 adds readinesswait without weakening exactselectors; independentvault-readiness-peer accepts source, localfocused16pass. ExternalCI stillrequired; historicaltimingcause inferred, notdirectlyobserved."
+    },
+    {
+      "at": "2026-09-26T15:46:13.793976+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Release02315gates1442localpass/3skip; actualexternalCI36252765496 exacta86e15da SUCCESS, Vaultfocused16testspassed609ms. CIwhole1441pass/4skip distinctfromlocal."
+    },
+    {
+      "at": "2026-09-26T15:46:13.793976+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Reviewed readiness-only repair, focusedlocalpass and originalexternalCIenvironmentgreen meetclosure. Historicalracecause remainsinference; no productVaulthealthclaim."
     }
   ],
   "fix_commits": ["b406d347"],

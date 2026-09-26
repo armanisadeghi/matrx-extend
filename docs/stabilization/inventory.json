@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T15:31:51.780715+00:00",
+  "updated_at": "2026-09-26T15:46:13.793976+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -1265,7 +1265,7 @@
       ],
       "cells": {
         "guest": {
-          "test_status": "unverified",
+          "test_status": "pass",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
@@ -1290,12 +1290,13 @@
             "release-ci-green-001",
             "release-stabilization-017",
             "release-stabilization-018",
-            "release-stabilization-021"
+            "release-stabilization-021",
+            "release-stabilization-023"
           ],
-          "retest_status": "not-run"
+          "retest_status": "pass"
         },
         "member": {
-          "test_status": "unverified",
+          "test_status": "pass",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
@@ -1320,12 +1321,13 @@
             "release-ci-green-001",
             "release-stabilization-017",
             "release-stabilization-018",
-            "release-stabilization-021"
+            "release-stabilization-021",
+            "release-stabilization-023"
           ],
-          "retest_status": "not-run"
+          "retest_status": "pass"
         },
         "admin": {
-          "test_status": "unverified",
+          "test_status": "pass",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
@@ -1350,9 +1352,10 @@
             "release-ci-green-001",
             "release-stabilization-017",
             "release-stabilization-018",
-            "release-stabilization-021"
+            "release-stabilization-021",
+            "release-stabilization-023"
           ],
-          "retest_status": "not-run"
+          "retest_status": "pass"
         }
       },
       "readiness_gaps": [
@@ -5128,7 +5131,8 @@
             "release-native-verification",
             "native-0258-port-verification",
             "isolated-permission-denial-005",
-            "native-0267-reload-001"
+            "native-0267-reload-001",
+            "native-0268-reload-001"
           ],
           "retest_status": "not-run"
         }
@@ -5188,9 +5192,19 @@
             ],
             "expected": "Observe bridge lifecycle and eventual connection state after extension reload.",
             "actual": "Connected (http) before reload, Not connected immediately after. No reconnection or settings change attempted.",
-            "state": "unverified-lead",
-            "next_action": "Reobserve after settled reload with actual engine availability, distinguish expected transient discovery from persistent failure before triage. No healthy connection claim."
+            "state": "resolved-transient",
+            "next_action": "Reobserve after settled reload with actual engine availability, distinguish expected transient discovery from persistent failure before triage. No healthy connection claim.",
+            "resolution": "Native0268: prior0.2.67 connectedbefore reload; 0.2.68 brieflydisconnectedthenConnected(http)after30seconds withoutintervention. No persistentfailure observed; widerbridgefunctionalitystillunverified."
           }
+        },
+        {
+          "run_id": "native-0268-reload-001",
+          "mode": "admin",
+          "build": "0.2.68",
+          "status": "partial",
+          "report": "docs/stabilization/reports/native-0268-reload.json",
+          "proven": "Nativebuild/ID/path; account/org/autoport/4OFF/informationalDevTools anddisabledStore retained; bridgeautomaticallyconnectedwithin30secondsafterreload.",
+          "limits": "No desktopend-to-endfunctionality, member/guest orfullSettings claim."
         }
       ]
     },
