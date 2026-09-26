@@ -114,8 +114,105 @@ async function signInAsAdmin(page, panel) {
 }
 
 async function setSearch(panel, value) {
-  const expression = `(() => { const e=[...document.querySelectorAll('input')].find(x=>x.placeholder==='Search…'); if(!e)return false; e.focus(); const setter=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set; setter.call(e,${JSON.stringify(value)}); e.dispatchEvent(new InputEvent('input',{bubbles:true})); e.dispatchEvent(new Event('change',{bubbles:true})); return true; })()`;
-  return evaluate(panel, expression);
+  const sample = () =>
+    evaluate(
+      panel,
+      `(() => {
+        const inputs=[...document.querySelectorAll('input[placeholder="Search…"]')];
+        if(inputs.length!==1)return {count:inputs.length};
+        const input=inputs[0];
+        input.scrollIntoView({block:'center',inline:'center',behavior:'instant'});
+        const rect=input.getBoundingClientRect();
+        const x=rect.x+rect.width/2,y=rect.y+rect.height/2;
+        const hit=document.elementFromPoint(x,y);
+        return {count:1,x,y,area:rect.width>0&&rect.height>0,
+          hit:hit===input||input.contains(hit)};
+      })()`,
+    );
+  const deadline = Date.now() + 3000;
+  let previous;
+  let stable = 0;
+  do {
+    const current = await sample();
+    assert.equal(current?.count, 1, 'unique visible Debug search input');
+    assert.equal(current.hit && current.area, true, 'Debug search input accepts pointer');
+    stable =
+      previous && Math.abs(previous.x - current.x) < 0.25 && Math.abs(previous.y - current.y) < 0.25
+        ? stable + 1
+        : 0;
+    previous = current;
+    if (stable >= 2) break;
+    await new Promise((done) => setTimeout(done, 50));
+  } while (Date.now() < deadline);
+  assert.equal(stable >= 2, true, 'Debug search input remained stable');
+  await panel.send('Input.dispatchMouseEvent', {
+    type: 'mousePressed',
+    x: previous.x,
+    y: previous.y,
+    button: 'left',
+    clickCount: 1,
+  });
+  await panel.send('Input.dispatchMouseEvent', {
+    type: 'mouseReleased',
+    x: previous.x,
+    y: previous.y,
+    button: 'left',
+    clickCount: 1,
+  });
+  const selection = () =>
+    evaluate(
+      panel,
+      `(() => {
+        const e=document.querySelector('input[placeholder="Search…"]');
+        return e&&{focused:document.activeElement===e,length:e.value.length,
+          start:e.selectionStart,end:e.selectionEnd,value:e.value};
+      })()`,
+    );
+  const initial = await selection();
+  assert.equal(initial?.focused, true, 'trusted pointer focused Debug search');
+  const modifiers = process.platform === 'darwin' ? 4 : 2;
+  await panel.send('Input.dispatchKeyEvent', {
+    type: 'keyDown',
+    key: 'a',
+    code: 'KeyA',
+    modifiers,
+    windowsVirtualKeyCode: 65,
+    commands: ['selectAll'],
+  });
+  await panel.send('Input.dispatchKeyEvent', {
+    type: 'keyUp',
+    key: 'a',
+    code: 'KeyA',
+    modifiers,
+    windowsVirtualKeyCode: 65,
+  });
+  const selected = await selection();
+  assert.equal(
+    selected?.focused && selected.start === 0 && selected.end === initial.length,
+    true,
+    'trusted select-all covered Debug search',
+  );
+  if (value) await panel.send('Input.insertText', { text: value });
+  else {
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'rawKeyDown',
+      key: 'Backspace',
+      code: 'Backspace',
+      windowsVirtualKeyCode: 8,
+    });
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      key: 'Backspace',
+      code: 'Backspace',
+      windowsVirtualKeyCode: 8,
+    });
+  }
+  await waitFor(
+    'trusted_search_input',
+    selection,
+    (state) => state?.focused && state.value === value,
+  );
+  return true;
 }
 
 async function exercise({ page, panel, artifacts }) {
@@ -187,37 +284,52 @@ async function exercise({ page, panel, artifacts }) {
         `(() => {
         const search=[...document.querySelectorAll('input')].find(e=>e.placeholder==='Search…');
         const list=search?.closest('div.flex.h-full.flex-col')?.lastElementChild;
-        const row=[...(list?.children??[])].find(e=>e.firstElementChild?.matches('button'));
+        const row=[...(list?.children??[])].find(e=>
+          e.firstElementChild?.matches('button') &&
+          !e.firstElementChild.firstElementChild?.querySelector('svg'));
         return row?.firstElementChild?.querySelector('span.truncate')?.textContent.trim().slice(0,24) ?? null;
       })()`,
       );
-      if (!positive) throw new Error('natural_search_control_missing');
-      assert.equal(await setSearch(panel, positive), true);
-      const matched = await waitFor(
-        'search_positive',
-        () => snapshot(panel),
-        (s) => s?.counterMatchesRows && s.searchLength > 0 && s.rowCount > 0,
-      );
-      assert.ok(matched.rowCount > 0);
-      await setSearch(panel, 'zzzz-no-match-acceptance');
-      state = await waitFor(
-        'search_empty',
-        () => snapshot(panel),
-        (s) => s?.counterMatchesRows && s?.noMatches === true && s.rowCount === 0,
-      );
-      add(
-        'EXT-F-1005-T14',
-        'pass',
-        'Search matches existing row text and unmatched text shows no-match state.',
-        `Positive count=${matched.rowCount}; unmatched count=${state.rowCount}.`,
-        'DOM labels and counts only',
-      );
-      await setSearch(panel, '');
-      await waitFor(
-        'search_reset',
-        () => snapshot(panel),
-        (s) => s?.counterMatchesRows && s.searchLength === 0 && s.rowCount === preClearCount,
-      );
+      if (positive) {
+        assert.equal(await setSearch(panel, positive), true);
+        const matched = await waitFor(
+          'search_positive',
+          () => snapshot(panel),
+          (s) => s?.counterMatchesRows && s.searchLength > 0 && s.rowCount > 0,
+        );
+        assert.ok(matched.rowCount > 0);
+        await setSearch(panel, 'zzzz-no-match-acceptance');
+        state = await waitFor(
+          'search_empty',
+          () => snapshot(panel),
+          (s) => s?.counterMatchesRows && s?.noMatches === true && s.rowCount === 0,
+        );
+        add(
+          'EXT-F-1005-T14',
+          'partial',
+          'Search matches message and detail values; unmatched text shows no-match state.',
+          `Positive count=${matched.rowCount}; unmatched count=${state.rowCount}.`,
+          {
+            messageSearch: 'pass_via_trusted_input_on_row_without_detail',
+            unmatchedState: 'pass',
+            detailSearch: 'unverified_no_natural_detail_only_term',
+          },
+        );
+        await setSearch(panel, '');
+        await waitFor(
+          'search_reset',
+          () => snapshot(panel),
+          (s) => s?.counterMatchesRows && s.searchLength === 0 && s.rowCount === preClearCount,
+        );
+      } else {
+        add(
+          'EXT-F-1005-T14',
+          'unverified',
+          'Search matches message and detail values; unmatched text shows no-match state.',
+          'Natural rows existed, but no message-only row supplied a safe positive search term.',
+          'No event values retained or fabricated.',
+        );
+      }
       stage = 'pause_resume';
       await click(panel, 'title', 'Pause');
       const paused = await snapshot(panel);
@@ -312,7 +424,11 @@ try {
   stage = 'owned_profile_harness';
   const native = await runNativeSidepanelQa({ headed: true, exercisePanel: exercise });
   result.profileOwned = native.verified === true;
-  result.status = result.cases.some((c) => c.status === 'fail') ? 'fail' : 'partial';
+  result.status = result.cases.some((c) => c.status === 'fail')
+    ? 'fail'
+    : result.cases.length > 0 && result.cases.every((c) => c.status === 'unverified')
+      ? 'unverified'
+      : 'partial';
 } catch {
   result.status = 'unverified';
   result.failure ??= { stage, driverFailure: { present: false } };

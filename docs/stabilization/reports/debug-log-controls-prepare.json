@@ -1,15 +1,16 @@
 {
   "feature_id": "EXT-F-1005",
   "scope": ["T14 search", "T15 pause/resume", "T17 clear", "T22 details and empty states"],
-  "status": "admin_ui_source_ready_for_independent_review",
+  "status": "peer_corrections_prepared_for_independent_review",
   "runner": "tests/browser/debug-log-controls-acceptance.mjs",
   "execution": "Not run in this lane; independent source review and the root-owned admitted native browser run remain required. Runtime output is ignored test-results/debug-log-controls-acceptance.json.",
   "profile": "The existing owned-profile harness creates a disposable profile and removes it after execution; clear is scoped to that run only.",
   "event_source": "Runner compares actual scoped debug-event rows before and after natural public-page navigation/click. It does not write to the debug store or inject events. A missing positive event set keeps event-dependent targets unverified.",
   "credentials": "The runner mirrors the proven isolated-admin-signin-acceptance.mjs real UI sequence because that script is an executable entrypoint: open Settings Account, navigate the real web login form, read AI_ADMIN_USERNAME/AI_ADMIN_PASSWORD from the aidream env only when the form is ready, submit through the web UI, click extension Sign in, and verify exact account email, admin role, and Sign out in the real Settings UI. No auth storage injection, credential logging, or raw auth error reporting is used.",
-  "evidence": "The debug list is scoped from the visible Search control and counted only from event-row wrappers, cross-checked against the rendered filtered/total counter. Search must show a real row and a zero-row no-match state; clear can pass only when a natural positive event set existed and both row and total counts reach zero. Pause/resume passes only when the total event count increases during the pause while visible rows remain frozen, then resumed rows increase. Output records counts, booleans, fixed failure stage, and allowlisted driver fields; failure screenshot uses exclusive 0600 creation in the owned artifact directory. A stage failure exits nonzero rather than appearing green.",
+  "evidence": "The debug list is scoped from the visible Search control and counted only from event-row wrappers, cross-checked against the rendered filtered/total counter. Search focuses the real input with a hit-tested pointer, selects its contents through trusted keyboard input, and enters text through CDP Input.insertText. A natural row without a detail affordance supplies the message-only positive term; a real zero-row no-match state is also required. This is only partial T14 evidence, with detail search explicitly unverified. Clear can pass only when natural rows existed and both row and total counts reach zero. Pause/resume passes only when the total event count increases during the pause while visible rows remain frozen, then resumed rows increase. Output records counts, booleans, fixed failure stage, and allowlisted driver fields; failure screenshot uses exclusive 0600 creation in the owned artifact directory. A stage failure or an all-unverified batch exits nonzero.",
   "limitations": [
     "Source-only checks cannot establish that public-page interaction emits a debug event or that the runner's UI selectors remain stable in the built extension.",
+    "T14's detail-search branch stays unverified until a naturally observed detail-only search term can be safely identified and exercised.",
     "T22 detail expansion remains unverified by the automated runner pending a naturally observed detail-bearing row and safe real pointer target."
   ]
 }
