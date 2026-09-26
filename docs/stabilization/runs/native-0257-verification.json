@@ -1,0 +1,17 @@
+{
+  "id": "native-0257-verification",
+  "status": "completed",
+  "acceptance_report": "docs/stabilization/reports/native-0257-verification.json",
+  "profile": "primary Chrome profile; unpacked development extension",
+  "resource_lease": "final-release-native-002; ADMITTED",
+  "ui_stop": true,
+  "actions": [
+    "Full extension Reload; waited 30 seconds before opening actual side panel.",
+    "Observed admin account and expanded the organization section read-only.",
+    "Observed debugger informational state and four optional permissions OFF.",
+    "Observed About version, extension ID, and saved-login API readiness.",
+    "Saved native screenshot at docs/stabilization/evidence/native0257/native-chrome-after-reload.png."
+  ],
+  "state_changed": false,
+  "resource_invalid": false
+}
