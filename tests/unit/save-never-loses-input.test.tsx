@@ -54,6 +54,7 @@ import type { SoupResult } from '@/lib/scrape/pipeline';
 import {
   UNSAVED_CAPTURES_KEY,
   listUnsavedCaptures,
+  retryUnsavedCapture,
   saveCaptureAsSource,
 } from '@/lib/sources/save-capture';
 import { useScrapeStore } from '@/state/scrape';
@@ -455,5 +456,71 @@ describe('Save never loses input', () => {
     expect(queued[0]).toMatchObject({ url: soup.url, organizationId: OTHER_ORGANIZATION_ID });
     expect(screen.getByRole('button', { name: /Retry save/ })).toBeTruthy();
     expect(useScrapeStore.getState().current?.article.content_markdown).toContain('Intro, edited.');
+  });
+
+  it('an older A refusal cannot replace B’s newer edited capture in the retry card', async () => {
+    const oldSave = deferredApiResponse();
+    mocks.apiPost
+      .mockReturnValueOnce(oldSave.promise)
+      .mockResolvedValueOnce({ ok: false, status: 0, error: 'Failed to fetch' });
+    render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
+
+    await switchWorkspace(OTHER_ORGANIZATION_ID);
+    act(() =>
+      useScrapeStore
+        .getState()
+        .editArticleMarkdown('# Guide\n\nB changed the intake checklist.\n\n## Install\n\nRun it.'),
+    );
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await waitFor(async () => expect(await listUnsavedCaptures()).toHaveLength(1));
+    const before = (await listUnsavedCaptures())[0];
+    expect(before?.organizationId).toBe(OTHER_ORGANIZATION_ID);
+    expect(before?.prepared.portions.map((p) => p.text).join('\n')).toContain(
+      'B changed the intake checklist.',
+    );
+
+    await act(async () => oldSave.resolve({ ok: false, status: 0, error: 'Failed to fetch' }));
+    const after = (await listUnsavedCaptures())[0];
+    expect(after?.organizationId).toBe(OTHER_ORGANIZATION_ID);
+    expect(after?.prepared.portions.map((p) => p.text).join('\n')).toContain(
+      'B changed the intake checklist.',
+    );
+    expect(after?.prepared.portions.map((p) => p.text).join('\n')).not.toContain('Intro, edited.');
+    expect(screen.getByRole('button', { name: /Retry save/ })).toBeTruthy();
+  });
+
+  it('an older retry refusal cannot replace a newer queued edit for the same URL', async () => {
+    mocks.apiPost.mockResolvedValueOnce({ ok: false, status: 0, error: 'Failed to fetch' });
+    const first = await saveCaptureAsSource(soup);
+    expect(first.status).toBe('unsaved');
+    if (first.status !== 'unsaved') return;
+
+    const retry = deferredApiResponse();
+    mocks.apiPost.mockReturnValueOnce(retry.promise);
+    const oldRetry = retryUnsavedCapture(first.unsaved.id);
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(2));
+
+    mocks.organizationId = OTHER_ORGANIZATION_ID;
+    mocks.apiPost.mockResolvedValueOnce({ ok: false, status: 0, error: 'Failed to fetch' });
+    const revised = {
+      ...soup,
+      article: {
+        ...soup.article,
+        content_markdown: '# Guide\n\nB revised the checklist after the first refusal.',
+      },
+    } as SoupResult;
+    expect((await saveCaptureAsSource(revised)).status).toBe('unsaved');
+    const before = (await listUnsavedCaptures())[0];
+    expect(before?.organizationId).toBe(OTHER_ORGANIZATION_ID);
+
+    retry.resolve({ ok: false, status: 0, error: 'Failed to fetch' });
+    await oldRetry;
+    const after = (await listUnsavedCaptures())[0];
+    expect(after?.organizationId).toBe(OTHER_ORGANIZATION_ID);
+    expect(after?.prepared.portions.map((p) => p.text).join('\n')).toContain(
+      'B revised the checklist',
+    );
   });
 });
