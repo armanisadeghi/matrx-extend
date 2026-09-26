@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "e20b781bb959a4ab7802c7e1f73d8c884c3e3511",
+  "feature_id": "EXT-F-1008",
+  "mode": "admin",
+  "verdict": "blocked_before_runtime",
+  "runtime": "Pending. This reviewer did not launch a browser, build, test, or backend request. The earlier seo-admin-001 run proved only the admin/organization prerequisite and bounded T07/T09 observations; it predates the Save path.",
+  "source_quality": {
+    "accepted": [
+      "The script uses the owned native panel and a trusted pointer click; the test account signs in through the real web page and selects the named existing organization through Settings.",
+      "The Save path is confined to the live audit of the public IANA reserved-domains URL. It does not invoke clipboard, provider recommendations, Chat, or row alteration/deletion.",
+      "The Save button state and history badge are observed after the product's real save and history-refresh path; the panel reload gate observes a new document time origin. T06 and T08 are explicitly left unverified."
+    ],
+    "blocking_findings": [
+      {
+        "id": "one_row_rerun_guard",
+        "severity": "blocking",
+        "source": "tests/browser/seo-admin-acceptance.mjs:280-405",
+        "finding": "The runner has no durable one-shot guard or recovery path after the Save click. If Save succeeds but a later history, snapshot, or reload assertion fails, the catch marks the run unverified. Repeating the runner executes Save again and can create a second row in the selected organization, exceeding the authorized one new row.",
+        "required_action": "Before runtime, add a durable mutation receipt or equivalent guard keyed to this run/URL/organization. On a post-Save failure, resume read-only verification of the existing saved row or stop for explicit coordination; never click Save again merely because a prior run was unverified."
+      },
+      {
+        "id": "saved_row_attribution",
+        "severity": "blocking",
+        "source": "tests/browser/seo-admin-acceptance.mjs:290-398; src/features/seo/SeoView.tsx:145-160,402-443",
+        "finding": "The test accepts a larger history count, a unique newest visible label, and a snapshot title equal to the public page. It never associates the selected history row with the ID returned by this Save. An older or concurrently created row for the same URL can have the same title, so T05 and the post-reload persistence claim can pass for the wrong row.",
+        "required_action": "Capture a stable identity for the newly saved row through a read-only production surface or backend query and assert that this exact row is the one opened before and after reload. Keep the UI interaction real and do not intercept or synthesize network responses."
+      }
+    ],
+    "bounded_limitations": [
+      "The history query returns at most 25 rows, so a full list may not show a badge increase after a real Save; the current >= baseline+1 assertion can fail despite persistence.",
+      "T04 failure/retry, T05 second snapshot and saved-row diff, T06 empty/loading/error, and T08 changed-page diff/verdict remain unverified by this script."
+    ]
+  },
+  "action": "Hold first Save runtime until both blocking source findings are repaired and reviewed. Then run once under the existing real-admin prerequisite and record sanitized backend/row identity evidence separately from UI assertions."
+}
