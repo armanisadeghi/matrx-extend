@@ -23,9 +23,31 @@ describe('private catalog response validation', () => {
     })).toBe(true);
   });
 
+  it('accepts the live screenshot_region nested rect contract', () => {
+    expect(isDbToolRow({
+      ...tool,
+      name: 'screenshot_region',
+      parameters: {
+        rect: {
+          type: 'object',
+          required: ['x', 'y', 'w', 'h'],
+          properties: {
+            x: { type: 'number' },
+            y: { type: 'number' },
+            w: { type: 'number', exclusiveMinimum: 0 },
+            h: { type: 'number', exclusiveMinimum: 0 },
+          },
+          additionalProperties: false,
+        },
+      },
+    })).toBe(true);
+  });
+
   it('rejects missing or malformed fields that would otherwise compare clean', () => {
     expect(isDbToolRow({ ...tool, parameters: null })).toBe(false);
     expect(isDbToolRow({ ...tool, parameters: { url: { required: 'yes' } } })).toBe(false);
+    expect(isDbToolRow({ ...tool, parameters: { rect: { type: 'object', required: ['x', 7] } } })).toBe(false);
+    expect(isDbToolRow({ ...tool, parameters: { rect: { type: 'object', required: { x: true } } } })).toBe(false);
     expect(isDbToolRow({ ...tool, tier: { value: 'read' } })).toBe(false);
     expect(isDbToolRow({ ...tool, is_active: 'true' })).toBe(false);
   });

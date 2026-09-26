@@ -1,7 +1,13 @@
 {
-  "status": "DIAGNOSED_SOURCE_ONLY",
+  "status": "SOURCE_CORRECTED_RETEST_PENDING",
   "summary": "The private Management API catalog read rejects a valid nested JSON Schema required array on screenshot_region.parameters.rect. The new validator permits only a boolean required flag, so docs:tools reports invalid rows despite valid database data.",
   "changed_files": [
+    "scripts/_tool-db-row-validation.ts",
+    "scripts/dump-tools-from-db.ts",
+    "tests/unit/tool-db-row-validation.test.ts",
+    "tests/unit/private-catalog-commands.test.ts",
+    "docs/stabilization/defects/EXT-D-0004.json",
+    "docs/stabilization/reports/management-read-fix.json",
     "docs/stabilization/reports/live-catalog-shape-diagnosis.json"
   ],
   "verification": [
@@ -34,5 +40,6 @@
     "No tests, builds, release gates, browser actions, or database mutations were run in this lane.",
     "The release log's generic invalid rows error does not identify a row; the active-bound SQL shape census isolates the only current predicate mismatch, subject to root's guarded rerun."
   ],
-  "next_action": "Root routes the minimal validator and fixture correction to the source owner, then runs focused validation and the real strict release gate under its resource guard."
+  "source_correction": "The shared row type and predicate now accept required as boolean or string[] and reject mixed arrays or objects. A regression fixture reproduces the exact live screenshot_region rect object shape. The drift comparator and generated-doc parameter summary treat only required === true as top-level parameter presence.",
+  "next_action": "Root runs the focused validator test and real strict release gate under its resource guard, then records the retest result."
 }

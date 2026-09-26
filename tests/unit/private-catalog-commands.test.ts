@@ -83,6 +83,19 @@ describe('private catalog commands through the real Management reader', () => {
     expect(vi.mocked(writeFileSync).mock.calls[0]?.[1]).toContain('Work with Google Workspace.');
   });
 
+  it('documents nested required object members without marking the parameter required', async () => {
+    definitions = [{ ...tool, parameters: {
+      rect: { type: 'object', required: ['x', 'y', 'w', 'h'], properties: {
+        x: { type: 'number' }, y: { type: 'number' },
+        w: { type: 'number' }, h: { type: 'number' },
+      } },
+    } }];
+    await generateDocs();
+    expect(writeFileSync).toHaveBeenCalledOnce();
+    expect(vi.mocked(writeFileSync).mock.calls[0]?.[1]).toContain('**Parameters:** `rect` (object)');
+    expect(vi.mocked(writeFileSync).mock.calls[0]?.[1]).not.toContain('`rect` (object, required)');
+  });
+
   it('refuses absent operator authorization in strict mode and preserves docs', async () => {
     vi.stubEnv('SUPABASE_ACCESS_TOKEN', '');
     expect(await drift()).toBe(3);
@@ -93,6 +106,7 @@ describe('private catalog commands through the real Management reader', () => {
 
   it.each([
     { description: 42 }, { parameters: null }, { parameters: { action: { required: 'yes' } } },
+    { parameters: { rect: { type: 'object', required: ['x', 7] } } },
     { tier: [] }, { category: 3 }, { admin_only: 'false' }, { is_active: 'true' },
   ])('rejects malformed selected fields before comparison or document writes: %j', async (patch) => {
     definitions = [{ ...tool, ...patch }];

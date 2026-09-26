@@ -6,7 +6,7 @@ export interface DbToolRow {
   description: string | null;
   parameters: Record<
     string,
-    { type?: string | string[]; enum?: unknown[]; required?: boolean; [k: string]: unknown }
+    { type?: string | string[]; enum?: unknown[]; required?: boolean | string[]; [k: string]: unknown }
   >;
   tier: string | null;
   admin_only: boolean | null;
@@ -51,7 +51,10 @@ export function isDbToolRow(value: unknown): value is DbToolRow {
     if (param.type !== undefined && typeof param.type !== 'string' &&
         !(Array.isArray(param.type) && param.type.every((item) => typeof item === 'string'))) return false;
     if (param.enum !== undefined && !Array.isArray(param.enum)) return false;
-    if (param.required !== undefined && typeof param.required !== 'boolean') return false;
+    // A parameter's presence uses boolean required; an object parameter's
+    // nested JSON Schema uses an array naming its required child properties.
+    if (param.required !== undefined && typeof param.required !== 'boolean' &&
+        !(Array.isArray(param.required) && param.required.every((item) => typeof item === 'string'))) return false;
     return true;
   });
 }

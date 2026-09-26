@@ -41,7 +41,7 @@ function paramSummary(params: DbToolRow['parameters']): string {
   const parts = Object.entries(params).map(([name, def]) => {
     const t = def?.type;
     const type = Array.isArray(t) ? t.join('|') : (t ?? 'any');
-    const req = def?.required ? ', required' : '';
+    const req = def?.required === true ? ', required' : '';
     const en = def?.enum ? ` = ${JSON.stringify(def.enum)}` : '';
     return `\`${name}\` (${type}${req})${en}`;
   });
