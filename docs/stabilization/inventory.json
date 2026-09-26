@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T16:13:25.236558+00:00",
+  "updated_at": "2026-09-26T16:57:57.074318+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -10846,7 +10846,8 @@
           "run_ids": [
             "seo-guest-001",
             "seo-guest-002",
-            "seo-guest-003"
+            "seo-guest-003",
+            "seo-guest-004"
           ],
           "retest_status": "not-run"
         },
@@ -10922,6 +10923,38 @@
           ],
           "independent_review": "docs/stabilization/reports/seo003-evidence-peer.json",
           "limits": "Titles, heading-section presence, URL-title replacement, manual button return state and menu choices only; clipboard, reload, race/freshness, remaining details, member/admin unverified. Full cases and feature remain unverified."
+        },
+        {
+          "run_id": "seo-guest-004",
+          "mode": "guest",
+          "build": "0.2.68",
+          "status": "partial",
+          "accepted_subtargets": [
+            {
+              "case_id": "EXT-F-1008-T01",
+              "subtarget": "reload_audits_current_url",
+              "status": "pass",
+              "evidence": {
+                "currentUrl": "https://www.iana.org/domains/reserved",
+                "currentTitleMatched": true,
+                "headingsPresenceMatched": true,
+                "reselectedAfterReload": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_role_gate_after_reload",
+              "status": "pass",
+              "evidence": {
+                "textChoice": true,
+                "agentChoice": true,
+                "jsonAbsent": true
+              }
+            }
+          ],
+          "rechecked_prior_subtargets": 5,
+          "independent_review": "docs/stabilization/reports/seo004-runtime-peer.json",
+          "limits": "Actual panel document reload and current page title/heading presence plus guest menu gates only. No full T01/T07, audit-count/race, clipboard output, member/admin or full-feature claim."
         }
       ]
     },
