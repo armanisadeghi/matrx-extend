@@ -14,7 +14,7 @@ import { click, evaluate, openSection, waitFor } from './settings-panel-driver.m
 
 const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'isolated-admin-signin-acceptance.json');
-const WEB_ORIGIN = 'https://aimatrx.com';
+const WEB_ORIGIN = 'https://www.aimatrx.com';
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const EXPECTED_ADMIN = 'admin@admin.com';
 
