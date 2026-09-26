@@ -10,7 +10,7 @@
  * Root must combine separate CUA evidence with this runner's postconditions.
  */
 import assert from 'node:assert/strict';
-import { readFile, writeFile, rm } from 'node:fs/promises';
+import { readFile, rm, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';

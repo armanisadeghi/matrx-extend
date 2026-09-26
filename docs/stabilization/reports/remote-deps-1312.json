@@ -2,9 +2,7 @@
   "schema_version": 1,
   "task_id": "remote-deps-1312",
   "source_sha": "b469cfe",
-  "commits_reviewed": [
-    "b469cfeee28e9b1fc1d36a7dd2c58bf4b39051a2"
-  ],
+  "commits_reviewed": ["b469cfeee28e9b1fc1d36a7dd2c58bf4b39051a2"],
   "status": "consumer-action review complete; installed package bytes not yet refreshed",
   "packages": [
     {

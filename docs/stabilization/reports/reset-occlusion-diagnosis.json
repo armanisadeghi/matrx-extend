@@ -4,12 +4,8 @@
   "lane": "exceptional diagnosis",
   "model": "Astra medium",
   "status": "cause_verified_setup_repair_handoff",
-  "feature_ids": [
-    "EXT-F-1003"
-  ],
-  "defect_ids": [
-    "EXT-D-0015"
-  ],
+  "feature_ids": ["EXT-F-1003"],
+  "defect_ids": ["EXT-D-0015"],
   "summary": "Run 008 and its Settings-only screenshot identify a real fixed NoticeHost card covering the reset target. Its Capture list unavailable notice says no workspace is selected and the capture request was never sent. This is a missing test precondition followed by an undismissed specific notice; native hit-testing correctly refuses the covered button. No further shared pointer algorithm change is justified.",
   "evidence": [
     "docs/stabilization/runs/isolated-admin-reset-007.json",
