@@ -149,9 +149,39 @@ async function main() {
     const panel = await context.newPage();
     await panel.goto(`chrome-extension://${extensionId}/sidepanel.html`);
     await panel.evaluate(
-      async ([accessToken, expiresIn, user, org]) => {
+      async ([accessToken, refreshToken, expiresIn, user, org]) => {
+        // The panel restores a session only with the refresh token encrypted
+        // the way src/lib/auth/crypto.ts does it (PBKDF2 over the runtime id →
+        // AES-GCM); an access token alone reads as "could not restore".
+        const enc = new TextEncoder();
+        const base = await crypto.subtle.importKey(
+          'raw',
+          enc.encode('matrx-extend.refresh-token.v1'),
+          { name: 'PBKDF2' },
+          false,
+          ['deriveKey'],
+        );
+        const key = await crypto.subtle.deriveKey(
+          {
+            name: 'PBKDF2',
+            salt: enc.encode(chrome.runtime.id),
+            iterations: 100_000,
+            hash: 'SHA-256',
+          },
+          base,
+          { name: 'AES-GCM', length: 256 },
+          false,
+          ['encrypt'],
+        );
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const ct = new Uint8Array(
+          await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(refreshToken)),
+        );
+        const b64 = (bytes) => btoa(String.fromCharCode(...bytes));
         await chrome.storage.local.set({
           'matrx.auth.accessToken': accessToken,
+          'matrx.auth.refreshTokenEnc': b64(ct),
+          'matrx.auth.refreshTokenIv': b64(iv),
           'matrx.auth.expiresAt': Date.now() + expiresIn * 1000,
           'matrx.user.profile': user,
           'matrx.org.active': org,
@@ -159,6 +189,7 @@ async function main() {
       },
       [
         session.access_token,
+        session.refresh_token,
         session.expires_in ?? 3600,
         session.user,
         { id: organizationId, name: "Admin's Workspace" },
