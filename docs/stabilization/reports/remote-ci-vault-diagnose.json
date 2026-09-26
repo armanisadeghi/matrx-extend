@@ -11,8 +11,7 @@
     "assertion": "VaultView.focused-frame.test.tsx:363 expected typeof selector string, received object (null)",
     "summary": "1 failed, 1440 passed, 4 skipped"
   },
-  "root_cause": "The focused test called selectEligibleFillSelector immediately after render. VaultView's usePanelFill initializes its snapshot as loading and sets the ready snapshot only after an asynchronous panel-status message. The selector correctly returns null while its three enabled Fill rows are absent. A dynamic import between render and assertion accidentally supplied enough time in local runs; it is not a readiness contract.",
-  "classification": "test readiness race; no observed product selector defect",
+  "classification": "Confirmed missing readiness wait; timing race is source-supported explanation for CI failure, not directly observed remote DOM state; no product selector defect established",
   "local_before_edit": [
     "remote-vault-red-001: focused test passed 16/16, so the original CI red did not reproduce locally",
     "remote-vault-suite-001: full suite passed 1442 tests, 3 skipped"
@@ -26,6 +25,8 @@
     "remote-vault-green-001: post-edit focused test passed 16/16, exit 0"
   ],
   "remaining": [
-    "Rerun external CI on the published repair commit; local green alone does not close the original remote failure."
-  ]
+    "Rerun external CI on the published repair commit; local green alone does not close the original remote failure.",
+    "CI did not capture row count/state at failure; a green rerun cannot prove the precise historical timing cause."
+  ],
+  "source_supported_cause": "The focused test called selectEligibleFillSelector immediately after render. VaultView's usePanelFill initializes its snapshot as loading and sets the ready snapshot only after an asynchronous panel-status message. The selector correctly returns null while its three enabled Fill rows are absent. A dynamic import between render and assertion accidentally supplied enough time in local runs; it is not a readiness contract."
 }
