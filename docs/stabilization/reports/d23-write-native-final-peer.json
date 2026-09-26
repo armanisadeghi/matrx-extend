@@ -1,11 +1,7 @@
 {
   "schema_version": 1,
   "report_id": "d23-write-native-final-peer",
-  "reviewed_source_commits": [
-    "1211b540",
-    "5b7e587b",
-    "9014a7b2"
-  ],
+  "reviewed_source_commits": ["1211b540", "5b7e587b", "9014a7b2"],
   "source_review": {
     "verdict": "ACCEPT",
     "reason": "The runner creates a real text selection on a public page with the extension highlighter active while the real Settings UI shows no selected workspace. It arms transport observation immediately before mouseup, waits for the exact terminal no-workspace write notice before selecting the workspace, and requires both a completed membership RPC positive control and zero highlight-table POSTs. It then selects the approved existing workspace through the real picker and verifies the same failure notice remains visibly rendered with no later highlight POST. No Source-save or D22 checkpoint path is present.",
