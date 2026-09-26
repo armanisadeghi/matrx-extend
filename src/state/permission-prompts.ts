@@ -33,6 +33,7 @@
  * Chrome capability is available at all.
  */
 
+import type { RuntimeOptionalPermission } from '@/lib/permissions/optional';
 import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -42,7 +43,7 @@ export type PermissionVerdict = 'deny' | 'allow' | 'always' | 'autonomous';
 /** Permissions we know how to gate. Mirrors lib/permissions/optional.ts. */
 export type GatedPermission = {
   kind: 'api';
-  name: 'cookies' | 'pageCapture' | 'clipboardRead' | 'tabCapture' | 'debugger';
+  name: RuntimeOptionalPermission;
 };
 
 export interface PermissionPromptRequest {

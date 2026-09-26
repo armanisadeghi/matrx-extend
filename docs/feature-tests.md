@@ -561,8 +561,9 @@ Every entry follows this shape:
   and export an animated GIF, optionally dropping it onto a page
   element.
 - **Where to test:** Tools tab → `record_gif`.
-- **Prereq:** Settings → **Advanced agent capabilities** → toggle on
-  **DevTools Protocol** (the `debugger` permission).
+- **Prereq:** In Chrome, Settings → **Advanced agent capabilities** shows
+  **DevTools Protocol** as included with this extension (the required
+  `debugger` permission).
 - **Steps:**
   1. Open a page; run `record_gif` with `{ "action": "start_recording", "tabId": "<active tab id>" }`.
      Chrome shows the "is being debugged" banner.
@@ -732,19 +733,25 @@ Every entry follows this shape:
 
 ### Side panel — Settings → Advanced agent capabilities
 - **What it does:** Toggle runtime grants for optional Chrome
-  permissions (`debugger`, `cookies`, `pageCapture`, `clipboardRead`).
-  Each toggle calls `chrome.permissions.request` on flip-on and
-  `chrome.permissions.remove` on flip-off.
+  permissions (`cookies`, `pageCapture`, `clipboardRead`, `tabCapture`).
+  Each switch calls `chrome.permissions.request` on flip-on and
+  `chrome.permissions.remove` on flip-off. DevTools Protocol (`debugger`)
+  is displayed as an installation-granted capability because Chrome forbids
+  making it optional or removing it at runtime.
 - **Where to test:** Side panel → Settings → Advanced agent
   capabilities.
 - **Steps:**
-  1. Flip on a toggle. Chrome prompts to grant.
-  2. Verify by running a tool that needs the permission (e.g.
+  1. Confirm DevTools Protocol has no switch and explains how its access is
+     managed. Reload; it must still have no switch.
+  2. Flip on an optional permission switch. Chrome prompts to grant.
+  3. Verify by running a tool that needs the permission (e.g.
      `get_clipboard` for `clipboardRead`).
-  3. Flip off → tool returns
+  4. Flip off → tool returns
      `{ ok: false, reason: "required optional permission(s) not granted: ..." }`.
-- **Expected:** Toggle state matches what `chrome.permissions.contains`
-  reports.
+  5. If Chrome refuses a grant or removal, confirm Settings shows a clear
+     error and leaves the switch matched to the actual Chrome grant.
+- **Expected:** Optional switch state matches `chrome.permissions.contains`;
+  required DevTools Protocol remains informational.
 
 ### Side panel — Debug tab → event-type (stream) filtering
 - **What it does:** The Debug tab tails every cross-context log event live.
