@@ -2,9 +2,18 @@
   "schema_version": 1,
   "lane": "independent runtime evidence review Luna medium",
   "scope": "EXT-D-0015 causal retest; no runtime/browser/build/install run by reviewer",
-  "A_original_cause": {"verdict": "RESOLVED", "evidence": "run008 records no organization precondition and the covered reset target; reset-occlusion-diagnosis identifies the specific no-workspace notice. run009 records real Settings selection with displayed_match=true and stored_match=true, then successful native dismiss/reopen and Confirm."},
-  "A_reset_behavior": {"verdict": "CONFIRMED_THROUGH_CONFIRM", "evidence": "run009 Cancel preserved all 17 overlapping local values and all 3 session values; Confirm completed, prior local/session overlap became zero, and Settings showed signed-out state."},
-  "B_full_T51": {"verdict": "UNVERIFIED", "reason": "After reload, run009 retains chat_preferences (one identical overlap matching the initial guest); runner fails reset_reload_storage_assert. This remains a real unresolved oracle outcome; do not waive or whitelist it."},
+  "A_original_cause": {
+    "verdict": "RESOLVED",
+    "evidence": "run008 records no organization precondition and the covered reset target; reset-occlusion-diagnosis identifies the specific no-workspace notice. run009 records real Settings selection with displayed_match=true and stored_match=true, then successful native dismiss/reopen and Confirm."
+  },
+  "A_reset_behavior": {
+    "verdict": "CONFIRMED_THROUGH_CONFIRM",
+    "evidence": "run009 Cancel preserved all 17 overlapping local values and all 3 session values; Confirm completed, prior local/session overlap became zero, and Settings showed signed-out state."
+  },
+  "B_full_T51": {
+    "verdict": "UNVERIFIED",
+    "reason": "After reload, run009 retains chat_preferences (one identical overlap matching the initial guest); runner fails reset_reload_storage_assert. This remains a real unresolved oracle outcome; do not waive or whitelist it."
+  },
   "scope_control": "This resolves EXT-D-0015's original causal interaction blocker only; it does not pass full T51 or the overall reset acceptance.",
   "surrounding_guest_evidence": "guest-settings-local-007 / guest-local-evidence-peer independently accept T22, T37, and T46 to their recorded criteria; these do not change the T51 verdict.",
   "recommendation": "Close D-0015 as the original no-organization/notice obstruction resolved, while keeping T51 and reset acceptance unverified pending adjudication of post-reset chat_preferences.",

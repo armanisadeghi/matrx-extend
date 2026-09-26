@@ -3,12 +3,24 @@
   "defect_id": "EXT-D-0015",
   "lane": "implementation Sol medium",
   "status": "source_repair_complete_runtime_unverified",
-  "changed_files": ["tests/browser/isolated-admin-reset-acceptance.mjs", "tests/browser/settings-panel-driver.mjs"],
+  "changed_files": [
+    "tests/browser/isolated-admin-reset-acceptance.mjs",
+    "tests/browser/settings-panel-driver.mjs"
+  ],
   "summary": "The reset runner selects the exact existing owned organization through Settings Acting as, proves displayed and stored selection with booleans, then natively dismisses only the matching no-workspace Capture list unavailable notice if already present.",
   "fixture_constraint": "The fixture label is identification only; no deletion, first/default selection, auth injection, or organization storage injection occurs.",
   "preserved_oracles": "Cancel value identity, native reopen, Confirm empty storage, reload guest defaults, diagnostics, and unknown post-reset chat_preferences verdict remain unchanged.",
-  "source_evidence": ["src/features/settings/SettingsView.tsx ControlRow/PillSelect", "src/components/NoticeHost.tsx matching alert and Dismiss button", "src/lib/org/active-org.ts persistSelection", "src/lib/supabase/db-failure.ts no-workspace message"],
-  "verification": ["node --check both changed MJS files: pass", "installed Biome check/write: pass with one preexisting suggested warning", "git diff --check: pass"],
+  "source_evidence": [
+    "src/features/settings/SettingsView.tsx ControlRow/PillSelect",
+    "src/components/NoticeHost.tsx matching alert and Dismiss button",
+    "src/lib/org/active-org.ts persistSelection",
+    "src/lib/supabase/db-failure.ts no-workspace message"
+  ],
+  "verification": [
+    "node --check both changed MJS files: pass",
+    "installed Biome check/write: pass with one preexisting suggested warning",
+    "git diff --check: pass"
+  ],
   "runtime": "Not run in this lane; root owns the guarded browser run.",
   "next_action": "Root runs the original guarded reset acceptance path and investigates any remaining post-reset chat_preferences overlap."
 }
