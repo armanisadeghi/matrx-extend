@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "report_id": "source-workspace-008-peer",
+  "run_receipt": "docs/stabilization/runs/source-workspace-008.json",
+  "A_runtime": {
+    "status": "BOUNDED_PASS",
+    "verified": [
+      "Actual real-admin UI run against build 0.2.79; result hash and tree identity were checked against the guarded build receipt and manifest.",
+      "With no active workspace, Capture presented choose_workspace_unknown and emitted zero processed-documents or unscoped GETs.",
+      "After an approved existing workspace was selected through Settings, the exact workspace-scoped lookup returned 200 empty and Scrape showed not_saved.",
+      "The read-only branch did not reserve or send a Save attempt; saveResult remained not_attempted."
+    ],
+    "unverified": [
+      "D23 notice presence before or after workspace selection and Save pointer behavior; all three fields are explicitly unverified in this read-only scope.",
+      "Source landing, saved/open recognition, and any write/refusal behavior."
+    ]
+  },
+  "B_evidence_quality": {
+    "status": "INDEPENDENTLY_CORROBORATED",
+    "checks": [
+      "Guard admission and child exit metadata agree with the raw log; child exit 0 corresponds to the bounded-pass result.",
+      "Sanitized result SHA256, runner SHA256, guarded build tree SHA256, release receipt, and manifest version were cross-checked.",
+      "Runner branch for SOURCE_READONLY_SCOPE returns after runReadOnlyScope and before the D23 recovery/save branch; existing checkpoint remained reserved and untouched by this run."
+    ],
+    "limits": [
+      "This is a bounded read-only observation, not a full EXT-D-0022, EXT-F-1007, or EXT-F-2010 pass.",
+      "No case status, feature cell, D22 closure, or D23 retest status is promoted."
+    ]
+  }
+}

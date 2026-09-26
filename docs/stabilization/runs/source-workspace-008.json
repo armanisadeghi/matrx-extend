@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "run_id": "source-workspace-008",
+  "defect_id": "EXT-D-0022",
+  "source": {
+    "result_path": "test-results/source-workspace-readonly-scope.json",
+    "result_sha256": "af1158ccddef44aedb6242366483f80f7ee565de24e6de27342db6e57c4c05ad",
+    "runner_path": "tests/browser/source-workspace-acceptance.mjs",
+    "runner_sha256": "15a28c2350e69f51f3bcad69c9de0f598f8f72627adad093689d10774baab901",
+    "guard_log_path": "/tmp/matrx-source-workspace-008.log",
+    "guard_log_sha256": "dde7d49086d6051e91dba10984dcfd41fedc25951a4342121bd4d355ed2692b8"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T22:43:19.957Z",
+    "child_exit_at": "2026-09-26T22:43:34.093Z",
+    "child_exit_code": 0,
+    "wrapper_stdout": "BOUNDED_PASS d22_source_workspace_native",
+    "semantics": "The admitted read-only scope completed with bounded_pass. This is a scoped runtime result, not a full feature/case pass."
+  },
+  "build": {
+    "version": "0.2.79",
+    "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0",
+    "identity_cross_check": "Read-only runner output matches .output/release-receipt.json version/treeSha256 and the generated manifest version."
+  },
+  "scope": {
+    "mode": "read_only_scope",
+    "real_admin_ui": true,
+    "approved_existing_organization_selected_by_ui": true,
+    "page_fixture": "https://example.com/",
+    "operation": "read-only UI and scoped lookup observation; no Source Save"
+  },
+  "observations": {
+    "without_workspace": {
+      "ui": "choose_workspace_unknown",
+      "processed_documents_gets": 0,
+      "unscoped_gets": 0
+    },
+    "after_approved_workspace_selection": {
+      "scoped_lookup": "exact_workspace_200_empty",
+      "ui": "not_saved",
+      "scoped_lookup_confirmed": true
+    },
+    "save_attempt_reserved_by_this_run": false,
+    "pointer_dispatch": "not_attempted",
+    "save_result": "not_attempted",
+    "checkpoint_durable_before_save": false,
+    "prior_checkpoint": "reserved; runner's read_only_scope branch returns before D23 recovery/save path; checkpoint file predated this run and its private values are omitted",
+    "d23_notice_before_selection": "unverified",
+    "d23_notice_after_selection": "unverified",
+    "d23_save_pointer": "unverified",
+    "private_screenshot": "not_needed",
+    "protected_settings_at_entry": true
+  },
+  "interpretation": "Bounded D22 read-only scope acceptance: with no workspace selected, the panel showed the choose-workspace unknown state and issued no unscoped/processed-documents lookup; after UI selection, an exact workspace-scoped lookup returned HTTP 200 with no saved result and the panel showed not_saved. No Save input or Source creation/open behavior was tested. D22 remains open; D23 initial/after-selection notice behavior is unverified in this run."
+}

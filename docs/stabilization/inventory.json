@@ -10395,7 +10395,8 @@
             "source-workspace-001",
             "source-workspace-002",
             "source-workspace-003",
-            "source-workspace-004"
+            "source-workspace-004",
+            "source-workspace-008"
           ],
           "retest_status": "not-run"
         }
@@ -10493,6 +10494,17 @@
             }
           ],
           "limits": "Read-only diagnosis links the D23 notice defect to the D22 Save obstruction. Source recognition remained none; checkpoint remained reserved; D22 Save outcome stays ambiguous and unverified."
+        },
+        {
+          "run_id": "source-workspace-008",
+          "mode": "admin",
+          "build": "0.2.79",
+          "defect_id": "EXT-D-0022",
+          "status": "bounded-pass",
+          "receipt": "docs/stabilization/runs/source-workspace-008.json",
+          "independent_review": "docs/stabilization/reports/source-workspace-008-peer.json",
+          "proven": "Read-only: no-workspace state emitted no unscoped or processed-documents lookup; after UI workspace selection, exact scoped lookup was HTTP 200 empty and UI showed not_saved.",
+          "limits": "No Save input, checkpoint creation, Source creation/open, or D23 notice observation. D22 remains open; feature/case statuses and retest status are unchanged."
         }
       ]
     },
