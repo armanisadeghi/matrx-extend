@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T15:11:00Z",
+  "updated_at": "2026-09-26T15:13:00Z",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -1896,6 +1896,20 @@
           "status": "partial",
           "verified": "Guest nav actual selected linked panels; Guest avatar identity; Data/SEO/Settings distinct rendered headings; Capture and Vault-assistance absent.",
           "remaining": "Admin prerequisite failed before admin cases; failure stage/cause insufficiently diagnosed. Reload/stale/member/assistance and natural chunk failure unverified. Chat/Pilot deferred."
+        },
+        {
+          "run_id": "contained-navigation-006",
+          "modes": [
+            "guest",
+            "admin"
+          ],
+          "build": "0.2.67",
+          "status": "partial",
+          "passed_subtargets": 37,
+          "partial_subtargets": 1,
+          "independent_review": "docs/stabilization/reports/navigation006-evidence-peer.json",
+          "evidence": "docs/stabilization/runs/contained-navigation-006.json",
+          "limits": "Selected main trigger and linked visible panel are not inner feature health. Data/SEO/Settings markers and Profile visible fields are narrow evidence. Member, reload/stale selection, chunk retry, active Vault assistance remain unverified; Capture partial. Chat/Pilot actions deferred."
         }
       ]
     },
