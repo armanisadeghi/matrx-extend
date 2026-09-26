@@ -4,7 +4,7 @@
   "lane": "incoming-change integration review",
   "target_commit": "6644d3ed37f0840f060dced4a9bcc41292938ac1",
   "source_verdict": "PASS_WITH_OPEN_GAPS",
-  "runtime_verdict": "PENDING_ROOT_VALIDATION",
+  "runtime_verdict": "FOCUSED_UNIT_PASS_UI_PENDING",
   "scope": "Read-only review of the nine changed files, current extension contracts, live schema metadata and RLS policies. No browser, build, or test launched by this peer.",
   "confirmed": [
     "prepareLanding now sends visibility=internal; SourceLandingBody prevents a personal scrape value, while send still resolves the organization through requireRequestOrganizationId() and preserves failed input locally.",
@@ -27,21 +27,23 @@
     },
     {
       "severity": "low",
-      "kind": "inventory_gap",
-      "location": "docs/stabilization/reports/inventory-local.json",
-      "finding": "Scrape EXT-F-1007-T04 covers Save/retry, but the inventory has no Saved captures surface or cases for cross-member listing, attribution, detail, and delete consequence. Add those cases before marking this user-visible behavior covered."
+      "kind": "inventory_case_specificity_gap",
+      "location": "docs/stabilization/inventory.json:20023-20550",
+      "finding": "The authoritative inventory already has Saved captures EXT-F-2009 with list/search/detail T02 and delete T04, plus Scrape Save EXT-F-1007-T04/T21. Those cases do not explicitly assert the new Captured by label, a second organization member seeing the Source, or the organization-wide delete consequence. Extend their expected behaviors and add an attribution control or case before marking these new behaviors covered."
     }
   ],
   "focused_verification_needed": [
-    "Root's guarded focused source tests: SavedCapturesView.test.tsx, not-yet-a-source.test.tsx, save-never-loses-input.test.tsx; distinguish these from this peer's source verdict.",
+    "Root's guarded focused source tests passed 3 files and 23 tests in incoming-sources-001. This peer independently read and hashed the log, but did not execute the tests. Receipt: docs/stabilization/runs/incoming-sources-001.json.",
     "A real signed-in two-member organization check: member A saves, member B sees the same Source and A's name when profile RLS permits; B opens Details and observes the organization-wide delete warning. Check null/unreadable profile label separately.",
     "A multi-organization check: same URL in org A only, switch to org B and verify recognition and Saved captures do not claim B already has it; repeat with no selected organization to resolve the open recognition edge.",
     "Re-run saved-captures-e2e.mjs under the guarded browser admission when feasible; its current assertion checks internal visibility but does not prove a second member can read the row."
   ],
   "inventory_cases_impacted": [
-    "EXT-F-1007-T04",
-    "EXT-F-1007-T20",
-    "Saved captures cases absent from inventory"
+    "EXT-F-1007-T04/T21 (Save as Source)",
+    "EXT-F-1007-T26 (recognition failure)",
+    "EXT-F-2009-T02 (list/search/detail)",
+    "EXT-F-2009-T04 (delete)",
+    "EXT-F-2009 attribution and cross-member assertions still need explicit coverage"
   ],
-  "release_advice": "Integrate the source change after root's focused gate, but update the feature test procedure and preserve the open recognition and member-runtime gaps; do not promote them to full pass from source evidence."
+  "release_advice": "The root's focused test gate passed. Update the feature test procedure and preserve the open recognition and member UI gaps; do not promote them to full pass from source or focused-unit evidence."
 }
