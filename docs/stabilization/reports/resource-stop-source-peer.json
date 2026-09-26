@@ -1,0 +1,9 @@
+{
+  "review": "resource-stop-source-peer",
+  "candidate": "f0e9646a7dda17881df62f6765e027595dcf4b21",
+  "current_head": "547ac4974537929ced204e172180385a38570594",
+  "gate_facts": {"strict_checks": "14/14 exit 0", "unit_tests": "1430 passed, 3 skipped; 177 files passed, 1 skipped", "candidate_version": "0.2.63", "release_result": "resource-stopped; exit 3; unpublished"},
+  "equality_facts": {"tree_diff_paths": ["docs/TOOLS.generated.md", "docs/stabilization/COORDINATOR.md", "docs/stabilization/runs/release-stabilization-013.json", "package.json", "types/tool-catalog.json", "types/tool-catalog.md"], "source_dependencies_scripts_tests_equal": true, "package_version_current": "0.2.62"},
+  "limitations": ["Packaging was terminated by watchdog after two pressure-level-2 samples; no validated full artifact exists.", "package-twins reported 5 censused debt items; mandate scan reported 11 nonblocking findings and could not submit its report.", "No fresh build, browser, install, or artifact verification was performed; this review is based on preserved log and Git trees."],
+  "recommendation": "Current HEAD may be published as a source checkpoint after separately deciding whether to retain the candidate version/generated metadata differences; do not call release 013 a full release pass or publish a partial artifact."
+}
