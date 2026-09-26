@@ -4,15 +4,19 @@
  * Execution is deliberately deferred to the admitted native-browser owner.
  */
 import assert from 'node:assert/strict';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, open, readFile, writeFile } from 'node:fs/promises';
+import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
+import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const OUTPUT = join(REPO, 'docs/stabilization/runs/debug-log-controls-acceptance.json');
+const OUTPUT = join(REPO, 'test-results/debug-log-controls-acceptance.json');
 const PUBLIC_URL = 'https://www.aimatrx.com/';
+const WEB_ORIGIN = 'https://www.aimatrx.com';
+const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
+const ADMIN_EMAIL = 'admin@admin.com';
 let stage = 'startup';
 const result = {
   schema: 1,
@@ -28,13 +32,85 @@ async function snapshot(panel) {
   return evaluate(
     panel,
     `(() => {
-    const text = document.body?.innerText ?? '';
-    const rows = [...document.querySelectorAll('button')].filter((e) => e.querySelector('svg'));
-    return { rowCount: rows.length, noEvents: text.includes("No events yet. Use the extension and they'll show up here."),
-      noMatches: text.includes('No events match the current filter.'), expandedDetails: document.querySelectorAll('pre').length,
-      searchPresent: [...document.querySelectorAll('input')].some((e) => e.placeholder === 'Search…') };
+    const search = [...document.querySelectorAll('input')].find((e) => e.placeholder === 'Search…');
+    const view = search?.closest('div.flex.h-full.flex-col');
+    const list = view?.lastElementChild;
+    const rows = [...(list?.children ?? [])].filter((e) => e.firstElementChild?.matches('button'));
+    const countText = search?.nextElementSibling?.textContent.trim() ?? '';
+    const count = /^(\\d+)\\/(\\d+)$/.exec(countText);
+    const text = list?.innerText ?? '';
+    return { rowCount: rows.length, totalCount: count ? Number(count[2]) : null,
+      counterMatchesRows: count ? Number(count[1]) === rows.length : false,
+      noEvents: text.includes("No events yet. Use the extension and they'll show up here."),
+      noMatches: text.includes('No events match the current filter.'),
+      expandedDetails: list?.querySelectorAll('pre').length ?? 0,
+      searchPresent: !!search, searchLength: search?.value.length ?? null };
   })()`,
   );
+}
+
+// Mirrors the proven real UI flow in isolated-admin-signin-acceptance.mjs.
+// Its executable entrypoint cannot be imported without launching another browser.
+async function signInAsAdmin(page, panel) {
+  stage = 'guest_account';
+  await click(panel, 'title', 'Settings');
+  await openSection(panel, 'Account');
+  const web = await page.context().newPage();
+  try {
+    stage = 'web_login';
+    await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    const route = new URL(web.url());
+    if (route.origin !== WEB_ORIGIN || route.pathname !== '/login')
+      throw new Error('web_login_route_unverified');
+    const source = await readFile(ADMIN_ENV, 'utf8');
+    const variables = {};
+    for (const line of source.split(/\r?\n/)) {
+      const found = /^\s*(AI_ADMIN_USERNAME|AI_ADMIN_PASSWORD)\s*=\s*(.*?)\s*$/.exec(line);
+      if (!found) continue;
+      let value = found[2];
+      if (
+        (value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))
+      )
+        value = value.slice(1, -1);
+      variables[found[1]] = value;
+    }
+    if (variables.AI_ADMIN_USERNAME !== ADMIN_EMAIL || !variables.AI_ADMIN_PASSWORD)
+      throw new Error('admin_credentials_unavailable');
+    await web.locator('input[name="email"]').fill(ADMIN_EMAIL);
+    await web.locator('input[name="password"]').fill(variables.AI_ADMIN_PASSWORD);
+    await Promise.all([
+      web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname === '/dashboard', {
+        timeout: 90_000,
+      }),
+      web.getByRole('button', { name: 'Sign in', exact: true }).click(),
+    ]);
+    stage = 'extension_signin';
+    await click(panel, 'button', 'Sign in');
+    await waitFor(
+      'real_admin_identity',
+      () =>
+        evaluate(
+          panel,
+          `(() => {
+            const account = [...document.querySelectorAll('button[aria-expanded]')]
+              .find((button) => button.textContent.trim() === 'Account');
+            const section = account?.parentElement?.nextElementSibling;
+            const row = (label) => [...(section?.querySelectorAll('span') ?? [])]
+              .find((span) => span.textContent.trim() === label)?.parentElement?.textContent.trim() ?? null;
+            return { emailMatch: row('Email') === 'Email${ADMIN_EMAIL}',
+              adminRole: row('Role')?.toLowerCase() === 'roleadmin',
+              signOut: [...document.querySelectorAll('button')]
+                .some((button) => button.textContent.trim() === 'Sign out') };
+          })()`,
+        ),
+      (state) => state?.emailMatch && state.adminRole && state.signOut,
+      90_000,
+    );
+    result.realAdminUi = true;
+  } finally {
+    await web.close();
+  }
 }
 
 async function setSearch(panel, value) {
@@ -45,21 +121,28 @@ async function setSearch(panel, value) {
 async function exercise({ page, panel, artifacts }) {
   let preClearCount = 0;
   try {
+    await signInAsAdmin(page, panel);
     stage = 'open_debug';
-    await click(panel, 'button', 'Debug');
+    await click(panel, 'title', 'Debug (admin only)');
     await click(panel, 'button', 'Log');
-    stage = 'admin_gate';
-    const identity = await evaluate(
-      panel,
-      `(() => document.body.innerText.includes('admin@admin.com'))()`,
+    const baseline = await waitFor(
+      'debug_log_counter_ready',
+      () => snapshot(panel),
+      (state) => state?.searchPresent && state.counterMatchesRows,
     );
-    if (!identity) throw new Error('admin_identity_not_observed');
     stage = 'natural_event_generation';
     await page.goto(PUBLIC_URL, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.locator('body').click({ position: { x: 5, y: 5 } });
     stage = 'natural_event_observation';
     await new Promise((r) => setTimeout(r, 2500));
     let state = await snapshot(panel);
+    if (!state.searchPresent || !state.counterMatchesRows)
+      throw new Error('debug_log_counter_unverified');
+    result.naturalEventObservation = {
+      before: baseline.rowCount,
+      after: state.rowCount,
+      increased: state.rowCount > baseline.rowCount,
+    };
     preClearCount = state.rowCount;
     if (state.rowCount === 0) {
       add(
@@ -92,18 +175,20 @@ async function exercise({ page, panel, artifacts }) {
       );
       add(
         'EXT-F-1005-T17',
-        state.noEvents ? 'pass' : 'fail',
+        'unverified',
         'Clear removes local events and shows the no-events state.',
         `No-events state=${state.noEvents}; row count=${state.rowCount}.`,
-        'fresh owned disposable profile only',
+        'No natural event rows existed before Clear; positive control unavailable.',
       );
     } else {
       stage = 'search_control';
       const positive = await evaluate(
         panel,
         `(() => {
-        const row=[...document.querySelectorAll('button')].find(b=>b.querySelector('svg') && b.textContent.trim().length>0);
-        return row?.textContent.trim().slice(0,24) ?? null;
+        const search=[...document.querySelectorAll('input')].find(e=>e.placeholder==='Search…');
+        const list=search?.closest('div.flex.h-full.flex-col')?.lastElementChild;
+        const row=[...(list?.children??[])].find(e=>e.firstElementChild?.matches('button'));
+        return row?.firstElementChild?.querySelector('span.truncate')?.textContent.trim().slice(0,24) ?? null;
       })()`,
       );
       if (!positive) throw new Error('natural_search_control_missing');
@@ -111,14 +196,14 @@ async function exercise({ page, panel, artifacts }) {
       const matched = await waitFor(
         'search_positive',
         () => snapshot(panel),
-        (s) => s?.rowCount > 0,
+        (s) => s?.counterMatchesRows && s.searchLength > 0 && s.rowCount > 0,
       );
       assert.ok(matched.rowCount > 0);
       await setSearch(panel, 'zzzz-no-match-acceptance');
       state = await waitFor(
         'search_empty',
         () => snapshot(panel),
-        (s) => s?.noMatches === true,
+        (s) => s?.counterMatchesRows && s?.noMatches === true && s.rowCount === 0,
       );
       add(
         'EXT-F-1005-T14',
@@ -128,32 +213,37 @@ async function exercise({ page, panel, artifacts }) {
         'DOM labels and counts only',
       );
       await setSearch(panel, '');
+      await waitFor(
+        'search_reset',
+        () => snapshot(panel),
+        (s) => s?.counterMatchesRows && s.searchLength === 0 && s.rowCount === preClearCount,
+      );
       stage = 'pause_resume';
       await click(panel, 'title', 'Pause');
       const paused = await snapshot(panel);
-      await page
-        .goto(`${PUBLIC_URL}about/`, { waitUntil: 'domcontentloaded', timeout: 60000 })
-        .catch(() => {});
+      await page.goto(`${PUBLIC_URL}about/`, { waitUntil: 'domcontentloaded', timeout: 60000 });
       await new Promise((r) => setTimeout(r, 1500));
       const held = await snapshot(panel);
       await click(panel, 'title', 'Resume');
       const resumed = await snapshot(panel);
-      const pauseProved = held.rowCount === paused.rowCount && resumed.rowCount > held.rowCount;
+      const pauseProved =
+        paused.counterMatchesRows &&
+        held.counterMatchesRows &&
+        resumed.counterMatchesRows &&
+        held.rowCount === paused.rowCount &&
+        held.totalCount > paused.totalCount &&
+        resumed.rowCount > held.rowCount;
       add(
         'EXT-F-1005-T15',
         pauseProved ? 'pass' : 'unverified',
         'Paused view stays frozen; resume displays naturally arriving events.',
-        `Counts before=${paused.rowCount}, held=${held.rowCount}, resumed=${resumed.rowCount}.`,
+        `Visible counts before=${paused.rowCount}, held=${held.rowCount}, resumed=${resumed.rowCount}; total before=${paused.totalCount}, held=${held.totalCount}.`,
         'counts only; no log values retained',
       );
       stage = 'details';
-      const details = await evaluate(
-        panel,
-        `(() => [...document.querySelectorAll('button')].filter(b=>b.querySelector('svg')).length)`,
-      );
       add(
         'EXT-F-1005-T22',
-        details > 0 ? 'unverified' : 'unverified',
+        'unverified',
         'A details row expands/collapses; empty and no-match states differ.',
         'Detail-bearing row identification requires visual review in the admitted run.',
         'runner records no payload; manual positive detail control pending',
@@ -167,7 +257,7 @@ async function exercise({ page, panel, artifacts }) {
       );
       add(
         'EXT-F-1005-T17',
-        state.noEvents ? 'pass' : 'fail',
+        state.noEvents && state.rowCount === 0 && state.totalCount === 0 ? 'pass' : 'fail',
         'Clear removes local events and shows the no-events state.',
         `No-events state=${state.noEvents}; row count=${state.rowCount}.`,
         'fresh owned disposable profile only',
@@ -181,11 +271,13 @@ async function exercise({ page, panel, artifacts }) {
     };
     try {
       const png = await panel.send('Page.captureScreenshot', { format: 'png' });
-      await writeFile(
-        join(artifacts, 'debug-log-controls-failure.png'),
-        Buffer.from(png.data, 'base64'),
-        { mode: 0o600 },
-      );
+      const screenshot = await open(join(artifacts, 'debug-log-controls-failure.png'), 'wx', 0o600);
+      try {
+        await screenshot.writeFile(Buffer.from(png.data, 'base64'));
+        await screenshot.sync();
+      } finally {
+        await screenshot.close();
+      }
       result.failure.privateScreenshot = true;
     } catch {
       result.failure.privateScreenshot = false;
@@ -197,10 +289,18 @@ async function exercise({ page, panel, artifacts }) {
 function safeDriverFailure(error) {
   const d = error?.driverFailure;
   if (!d || typeof d !== 'object') return { present: false };
+  const codes = new Set([
+    'pointer_initial_evaluation_failed',
+    'pointer_page_sample_failed',
+    'pointer_target_not_unique',
+    'pointer_followup_evaluation_failed',
+    'pointer_stable_hit_not_observed',
+    'pointer_press_dispatch_failed',
+    'pointer_release_dispatch_failed',
+  ]);
   return {
     present: true,
-    code: typeof d.code === 'string' ? d.code : 'unknown',
-    sampleStage: typeof d.sampleStage === 'string' ? d.sampleStage : null,
+    code: codes.has(d.code) ? d.code : 'unknown',
     matchedTargetCount: Number.isInteger(d.matchedTargetCount) ? d.matchedTargetCount : null,
     visibleMatchCount: Number.isInteger(d.visibleMatchCount) ? d.visibleMatchCount : null,
     uniqueVisibleTarget: d.uniqueVisibleTarget === true,
@@ -220,4 +320,4 @@ try {
 await mkdir(dirname(OUTPUT), { recursive: true });
 await writeFile(OUTPUT, `${JSON.stringify(result, null, 2)}\n`, { mode: 0o600 });
 process.stdout.write(`${result.status.toUpperCase()} debug_log_controls_acceptance\n`);
-if (result.status === 'fail') process.exitCode = 1;
+if (result.status === 'fail' || result.status === 'unverified') process.exitCode = 1;
