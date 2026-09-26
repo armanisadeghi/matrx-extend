@@ -43,6 +43,10 @@ const {
   hasPreBaselineAuthenticatedCleanup,
 } = require('./vault-readonly-cleanup.cjs');
 const {
+  cleanupReceiptOwnedFallback,
+  isKnownLocalAdapterBootTypeError,
+} = require('./vault-receipt-cleanup-fallback.cjs');
+const {
   runSavedLoginChecks,
   renderSavedLoginFixtureHTML,
 } = require('./vault-saved-login-acceptance.cjs');
@@ -1650,6 +1654,21 @@ async function localCanonicalCleanup(proven) {
       ),
     'local_cleanup_proof_refused',
   );
+  return result;
+}
+async function distributedReceiptCleanupFallback(proven) {
+  const result = await cleanupReceiptOwnedFallback({
+    receiptIds: proven,
+    request: async (id, method) => {
+      const headers = { Authorization: `Bearer ${token}` };
+      if (organizationId) headers['X-Organization-Id'] = organizationId;
+      const url = `${API}/api/vault/items/${encodeURIComponent(id)}`;
+      journalVaultMutationRequest(url, method, headers);
+      const response = await fetch(url, { method, headers });
+      return { status: response.status };
+    },
+  });
+  proof.cleanup.distributedFallback = result;
   return result;
 }
 async function attachPanelSession(cdp, targetId) {
@@ -4506,14 +4525,22 @@ async function materializedPassword(id) {
         }
         if (localCanonicalCleanupArmed) {
           proof.cleanup.stage = 'canonical_adapter';
-          const localCleanup = await localCanonicalCleanup(proven);
-          proof.cleanup.localCanonical = {
-            route: localCleanup.route,
-            provenance: localCleanup.provenance,
-            sourceSha256: localCleanup.sourceSha256,
-            receiptCount: localCleanup.receiptCount,
-            attempts: localCleanup.attempts,
-          };
+          try {
+            const localCleanup = await localCanonicalCleanup(proven);
+            proof.cleanup.localCanonical = {
+              route: localCleanup.route,
+              provenance: localCleanup.provenance,
+              sourceSha256: localCleanup.sourceSha256,
+              receiptCount: localCleanup.receiptCount,
+              attempts: localCleanup.attempts,
+            };
+          } catch (error) {
+            // Only the observed broad-package boot TypeError can use the
+            // distributed route, and it stays restricted to receipt-owned IDs.
+            if (!isKnownLocalAdapterBootTypeError(proof.cleanup.canonicalAdapterFailure)) throw error;
+            proof.cleanup.stage = 'canonical_distributed_fallback';
+            await distributedReceiptCleanupFallback(proven);
+          }
           proof.cleanup.receiptReconciled = proven.size === createdIds.size;
           const baselineAfter = await items();
           const remaining = new Set(baselineAfter.map((entry) => entry.id));
