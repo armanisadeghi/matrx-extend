@@ -235,6 +235,7 @@ afterEach(async () => {
   const host = await import('@/lib/credentials/capture-candidates');
   host._resetCaptureCandidates();
   cleanup();
+  vi.restoreAllMocks();
   vi.useRealTimers();
 });
 
