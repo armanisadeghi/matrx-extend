@@ -104,7 +104,12 @@ async function waitForReplacementExtensionWorkerTarget({
 // Arm this before chrome.runtime.reload(). Target discovery is event-based so
 // the replacement cannot be missed in the gap between reload and polling.
 // The returned waiter accepts only a new MV3 worker for this extension URL.
-async function armReplacementExtensionWorkerTargetWatcher({ cdp, workerUrl, previousTargetId }) {
+async function armReplacementExtensionWorkerTargetWatcher({
+  cdp,
+  workerUrl,
+  previousTargetId,
+  timeoutMs = 15000,
+}) {
   assert(cdp && typeof cdp.send === 'function', 'lifecycle_reload_cdp_missing');
   assert(typeof cdp.on === 'function', 'lifecycle_reload_target_watcher_missing');
   assert(typeof workerUrl === 'string' && workerUrl.length > 0, 'lifecycle_worker_url_missing');
@@ -114,31 +119,79 @@ async function armReplacementExtensionWorkerTargetWatcher({ cdp, workerUrl, prev
   );
 
   let resolveReplacement;
-  const replacementTarget = new Promise((resolve) => {
+  let rejectReplacement;
+  let attachment;
+  let timeout = undefined;
+  let candidateTargetId;
+  let candidateDestroyed = false;
+  const replacementTarget = new Promise((resolve, reject) => {
     resolveReplacement = resolve;
+    rejectReplacement = reject;
   });
-  const onTargetCreated = ({ targetInfo } = {}) => {
+  // Avoid an unhandled rejection before the reload sequence starts awaiting
+  // the watcher, while preserving the original rejection for the caller.
+  const reject = (error) => rejectReplacement(error);
+  const onTargetCreated = async ({ targetInfo } = {}) => {
     if (
       targetInfo?.type === 'service_worker' &&
       targetInfo.url === workerUrl &&
       targetInfo.targetId !== previousTargetId
     ) {
-      resolveReplacement(targetInfo);
+      candidateTargetId = targetInfo.targetId;
+      try {
+        attachment = await cdp.send('Target.attachToTarget', {
+          targetId: targetInfo.targetId,
+          flatten: false,
+        });
+        assert(typeof attachment?.sessionId === 'string', 'lifecycle_reload_worker_attach_missing');
+        if (candidateDestroyed) {
+          await cdp
+            .send('Target.detachFromTarget', { sessionId: attachment.sessionId })
+            .catch(() => {});
+          return;
+        }
+        clearTimeout(timeout);
+        resolveReplacement({ ...targetInfo, attachment });
+      } catch {
+        clearTimeout(timeout);
+        reject(new Error('lifecycle_reload_replacement_worker_attach_refused'));
+      }
+    }
+  };
+  const onTargetDestroyed = ({ targetId } = {}) => {
+    if (targetId && targetId === candidateTargetId) {
+      candidateDestroyed = true;
+      clearTimeout(timeout);
+      reject(new Error('lifecycle_reload_replacement_worker_destroyed_before_attach'));
     }
   };
   cdp.on('Target.targetCreated', onTargetCreated);
+  cdp.on('Target.targetDestroyed', onTargetDestroyed);
   try {
     await cdp.send('Target.setDiscoverTargets', { discover: true });
   } catch (error) {
     if (typeof cdp.off === 'function') cdp.off('Target.targetCreated', onTargetCreated);
     else if (typeof cdp.removeListener === 'function')
       cdp.removeListener('Target.targetCreated', onTargetCreated);
+    if (typeof cdp.off === 'function') cdp.off('Target.targetDestroyed', onTargetDestroyed);
+    else if (typeof cdp.removeListener === 'function')
+      cdp.removeListener('Target.targetDestroyed', onTargetDestroyed);
     throw error;
   }
+  timeout = setTimeout(
+    () => reject(new Error('lifecycle_reload_replacement_worker_target_timeout')),
+    timeoutMs,
+  );
   const dispose = () => {
+    clearTimeout(timeout);
     if (typeof cdp.off === 'function') cdp.off('Target.targetCreated', onTargetCreated);
     else if (typeof cdp.removeListener === 'function')
       cdp.removeListener('Target.targetCreated', onTargetCreated);
+    if (typeof cdp.off === 'function') cdp.off('Target.targetDestroyed', onTargetDestroyed);
+    else if (typeof cdp.removeListener === 'function')
+      cdp.removeListener('Target.targetDestroyed', onTargetDestroyed);
+    if (attachment?.sessionId)
+      cdp.send('Target.detachFromTarget', { sessionId: attachment.sessionId }).catch(() => {});
   };
   return { replacementTarget, dispose };
 }
@@ -181,6 +234,7 @@ async function runExtensionReload({
   worker,
   cdp,
   workerUrl,
+  extensionId,
   previousWorkerTargetId,
   previousPanelTargetId,
   assertPreviousTargetsGone,
@@ -189,6 +243,7 @@ async function runExtensionReload({
   verifySettingsIdentity,
   checkpoint,
   proof,
+  wait,
 }) {
   assert(
     typeof previousWorkerTargetId === 'string' && previousWorkerTargetId.length > 0,
@@ -205,6 +260,11 @@ async function runExtensionReload({
   assert(typeof reopenPanel === 'function', 'lifecycle_reload_panel_reopen_missing');
   assert(typeof refreshWorker === 'function', 'lifecycle_reload_worker_refresh_missing');
   assert(typeof verifySettingsIdentity === 'function', 'lifecycle_settings_verify_missing');
+  assert(
+    typeof extensionId === 'string' && /^[a-p]{32}$/.test(extensionId),
+    'lifecycle_extension_id_invalid',
+  );
+  assert(typeof wait === 'function', 'lifecycle_wait_missing');
   const before = await inspectIdentity(worker);
   const watcher = await armReplacementExtensionWorkerTargetWatcher({
     cdp,
@@ -226,7 +286,12 @@ async function runExtensionReload({
     );
     const replacementTarget = await watcher.replacementTarget;
     checkpoint('lifecycle_extension_reload_replacement_target_observed');
-    const replacement = await refreshWorker(replacementTarget);
+    const replacement = await refreshReadyExtensionWorker({
+      replacementTarget,
+      refreshWorker,
+      extensionId,
+      wait,
+    });
     assert(replacement && replacement !== worker, 'lifecycle_reload_worker_target_not_replaced');
     const after = await inspectIdentity(replacement);
 

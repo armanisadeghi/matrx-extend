@@ -31,7 +31,6 @@ const {
   sameLifecycleIdentity,
   runExtensionDisableEnable,
   runExtensionReload,
-  waitForReplacementExtensionWorkerTarget,
   runSettingsSignOut,
   visibleSettingsControl,
   visibleVaultControl,
@@ -3232,6 +3231,9 @@ async function materializedPassword(id) {
       const enabledPanelTargetId = realPanel.targetId;
       worker = await runExtensionReload({
         worker,
+        cdp: rawCdp,
+        workerUrl,
+        extensionId,
         previousWorkerTargetId: enabledTarget.targetId,
         previousPanelTargetId: enabledPanelTargetId,
         assertPreviousTargetsGone: async () => {
@@ -3248,72 +3250,42 @@ async function materializedPassword(id) {
           }
           throw new Error('lifecycle_reload_previous_target_retirement_timeout');
         },
-        reopenPanel: async () => {
+        reopenPanel: async (replacement) => {
           await realPanel?.dispose();
           realPanel = undefined;
-          // Reload destroys the old side-panel target. An idle extension does
-          // not recreate it on its own, so use the extension's actual Open
-          // chat control in a new owned popup page to supply a browser gesture.
-          const reloadPopup = await context.newPage();
-          let reopened;
+          // A fresh owned page supplies the focused window for the extension's
+          // real action.openPopup -> Open chat path. Never navigate directly
+          // to popup.html: Chrome blocks that during an extension reload.
+          const reloadFixture = await context.newPage();
           try {
-            let popupNavigated = false;
-            for (let attempt = 0; attempt < 30; attempt += 1) {
-              try {
-                await reloadPopup.goto(`chrome-extension://${extensionId}/popup.html`, {
-                  waitUntil: 'domcontentloaded',
-                  timeout: 3000,
-                });
-                popupNavigated = true;
-                break;
-              } catch (error) {
-                // Chrome can refuse an extension page during the short reload
-                // gap. Keep only a fixed protocol category, never the URL or
-                // browser error text, and still require a real panel below.
-                const code = String(error?.message ?? '').match(/net::(ERR_[A-Z_]+)/)?.[1];
-                proof.lifecycle ||= {};
-                proof.lifecycle.reloadPopupNavigation = {
-                  attempts: attempt + 1,
-                  errorClass: ['ERR_BLOCKED_BY_CLIENT', 'ERR_ABORTED', 'ERR_FAILED'].includes(code)
-                    ? code
-                    : 'other',
-                };
-                if (attempt < 29) await wait(250);
-              }
-            }
-            assert(popupNavigated, 'lifecycle_reload_popup_navigation_unavailable');
-            reopened = await openGenuineSidePanel(extensionId, reloadPopup, {
-              previousTargetId: enabledPanelTargetId,
+            await reloadFixture.bringToFront();
+            const active = await replacement.evaluate(async () => {
+              const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+              return Number.isInteger(tab?.windowId) ? { windowId: tab.windowId } : null;
             });
+            assert(active?.windowId, 'lifecycle_reload_window_missing');
+            const reopened = await openSidePanelFromActionPopup(
+              extensionId,
+              reloadFixture,
+              active.windowId,
+              replacement,
+            );
+            assert(reopened.opened && reopened.panel, 'lifecycle_reload_panel_missing');
+            realPanel = reopened.panel;
+            await networkJournal.bindPanelTarget(realPanel.targetId);
+            return realPanel;
           } finally {
-            if (!reloadPopup.isClosed()) await reloadPopup.close();
+            if (!reloadFixture.isClosed()) await reloadFixture.close();
           }
-          assert(
-            reopened.targetId !== enabledPanelTargetId,
-            'lifecycle_reload_panel_target_not_replaced',
-          );
-          realPanel = reopened;
-          await networkJournal.bindPanelTarget(realPanel.targetId);
-          return realPanel;
         },
-        refreshWorker: async () => {
-          const replacementTarget = await waitForReplacementExtensionWorkerTarget({
-            cdp: rawCdp,
-            workerUrl,
-            previousTargetId: enabledTarget.targetId,
-            wait,
-          });
+        refreshWorker: async (replacementTarget) => {
           proof.lifecycle ||= {};
           proof.lifecycle.extensionReloadCdp = {
             initialTargetId: enabledTarget.targetId,
             replacementTargetId: replacementTarget.targetId,
             replacementTargetObserved: true,
           };
-          return {
-            worker: exactCdpWorkerFacade(rawCdp, replacementTarget.targetId),
-            replacementWorkerTargetObserved: true,
-            replacementWorkerTargetId: replacementTarget.targetId,
-          };
+          return exactCdpWorkerFacade(rawCdp, replacementTarget.targetId);
         },
         verifySettingsIdentity: async (panel) => {
           await panel.click(visibleSettingsControl);
@@ -3324,6 +3296,7 @@ async function materializedPassword(id) {
         },
         checkpoint,
         proof,
+        wait,
       });
       // A browser restart must start a distinct owned Chrome process from the
       // same disposable profile. The helper closes the initial browser and its
