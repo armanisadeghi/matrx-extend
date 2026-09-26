@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "task_id": "remote-delta-e17e070-reconcile",
+  "reviewed_source_range": {
+    "baseline": "75cfb09bc6f3fa08dc50616bb76f7da4ad899cee",
+    "first_candidate": "e17e0700b425f93841589a52670ff7799d54095a",
+    "included_followup": "ab5d151cdd6e2b668c8d71386f068e2e88301da0"
+  },
+  "inventory_snapshot": {
+    "path": "docs/stabilization/inventory.json",
+    "recorded_source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
+    "blob_sha_at_review": "a3312df9480fbe2240d0476b5a6d5caeadf2d89d",
+    "checkout_head_at_review": "9c6365bfa7da4fbe5b2f74b2a948c6a869814c5c"
+  },
+  "scope": "Source-only reconciliation of extension product changes from 75cfb09 through e17e070, including the subsequent offscreen acquisition barrier at ab5d151. This maps changed behavior to inventory feature/case IDs and identifies missing controls; it makes no runtime or pass claims. Chat/Pilot systematic testing remains deferred.",
+  "changes": [
+    {
+      "area": "Chat account-default model selection",
+      "behavior_delta": "General chat now resolves the person's platform account default when the extension model menu has no explicit selection; the existing chip describes that choice as Your default. Agent-specific models remain untouched by the helper.",
+      "affected_feature_ids": ["EXT-F-2013"],
+      "existing_case_ids": ["EXT-F-2013-T01", "EXT-F-2013-T02"],
+      "existing_control_ids": ["EXT-F-2013-C25"],
+      "control_reconciliation": "EXT-F-2013-C25 is still labeled Choose Agent Official model and is stale against the current UI copy. Its case coverage does not explicitly verify that the account default is used only when no extension override is selected.",
+      "missing_controls": [
+        {
+          "proposed_id": "EXT-F-2013-C136",
+          "label": "Apply account default model when no extension model is selected",
+          "case_proposal": "EXT-F-2013-T08",
+          "expected_scope": "Verify general chat sends the account default with no local choice, an explicit extension model takes precedence, and an agent-specific model is unchanged."
+        }
+      ],
+      "evidence": [
+        "src/features/chat/ChatView.tsx:ComposerSettingsChip",
+        "src/hooks/use-chat-stream.ts:send request configOverrides",
+        "src/hooks/use-pilot-chat-stream.ts:send request configOverrides",
+        "src/lib/settings/default-chat-model.ts:defaultChatModelFor",
+        "src/lib/settings/platform-knobs.ts:resolvePlatformKnobString"
+      ]
+    },
+    {
+      "area": "Typed decision-answer rendering and history hydration",
+      "behavior_delta": "Chat and Pilot stream listeners now turn decision_answers data events into readable render blocks; saved decision_answers parts are converted into text during message hydration.",
+      "affected_feature_ids": ["EXT-F-2013", "EXT-F-2014"],
+      "existing_case_ids": ["EXT-F-2013-T02", "EXT-F-2013-T04", "EXT-F-2014-T02"],
+      "existing_control_ids": [],
+      "control_reconciliation": "The broad conversation cases do not name typed decision answers or their live-versus-reloaded rendering path.",
+      "missing_controls": [
+        {
+          "proposed_id": "EXT-F-2013-C135",
+          "label": "Render typed decision answer in Chat live stream and conversation history",
+          "case_proposal": "EXT-F-2013-T09",
+          "expected_scope": "The verdict appears as readable assistant content during the stream and after reopening the conversation, without an empty assistant bubble."
+        },
+        {
+          "proposed_id": "EXT-F-2014-C61",
+          "label": "Render typed decision answer in Pilot live stream and conversation history",
+          "case_proposal": "EXT-F-2014-T04",
+          "expected_scope": "The verdict appears as readable assistant content during the Pilot stream and after history reload, without an empty assistant bubble."
+        }
+      ],
+      "evidence": [
+        "src/lib/chat/decision-answers.ts:decisionAnswersText and decisionRenderBlock",
+        "src/hooks/use-chat-stream.ts:decision_answers event handling",
+        "src/hooks/use-pilot-chat-stream.ts:decision_answers event handling",
+        "src/lib/supabase/queries.ts:dbMessagesToChatMessages"
+      ]
+    },
+    {
+      "area": "Scrape Source action terminology",
+      "behavior_delta": "The capture and save buttons now say Capture this page and Save as a Source.",
+      "affected_feature_ids": ["EXT-F-1007"],
+      "existing_case_ids": ["EXT-F-1007-T21", "EXT-F-1007-T27"],
+      "existing_control_ids": ["EXT-F-1007-C04", "EXT-F-1007-C28"],
+      "control_reconciliation": "Existing Save and not-yet-a-Source cases cover the action and state; update the expected button wording when those cases are next reconciled. No additional control is required by this copy delta.",
+      "missing_controls": [],
+      "evidence": ["src/features/scrape/ScrapeView.tsx:Capture and Save buttons"]
+    },
+    {
+      "area": "Vault current-page match admission",
+      "behavior_delta": "When the page-fill panel is ready, Vault resolves against its page URL and displays only candidates shared by the page-fill panel and the current Vault lookup. The blocked panel reason no longer coexists with the ordinary no-outcome guidance.",
+      "affected_feature_ids": ["EXT-F-2011"],
+      "existing_case_ids": ["EXT-F-2011-T02", "EXT-F-2011-T06", "EXT-F-2011-T08"],
+      "existing_control_ids": ["EXT-F-2011-C45", "EXT-F-2011-C49", "EXT-F-2011-C50", "EXT-F-2011-C51"],
+      "control_reconciliation": "T02 covers current-page credential use and T08 covers stale candidates, retry, and binding. T06 covers organization changes. No distinct missing control identified from this delta; these cases need to retain the page/tab and intersection expectations.",
+      "missing_controls": [],
+      "evidence": ["src/features/vault/VaultView.tsx:matchPageUrl, siteMatches, blockedReason"]
+    },
+    {
+      "area": "Local-browser credential terminal classification",
+      "behavior_delta": "Failed or missing top-frame reads no longer validate a navigation target; post-submit document changes are not reclassified using a check intended for pre-submit binding, and an expired wait is reported as form_changed.",
+      "affected_feature_ids": ["EXT-F-2014", "EXT-F-4089"],
+      "existing_case_ids": ["EXT-F-2014-T03", "EXT-F-4089-T01"],
+      "existing_control_ids": ["EXT-F-2014-C60", "EXT-F-4089-C01", "EXT-F-4089-C05"],
+      "control_reconciliation": "T03 broadly names truthful local-browser terminal outcomes and T01 covers controlled credential_login execution. The inventory does not explicitly name Chrome error-document rejection as a failed navigation observation.",
+      "missing_controls": [
+        {
+          "proposed_id": "EXT-F-4089-C10",
+          "label": "Reject failed or missing navigation document during credential execution",
+          "case_proposal": "EXT-F-4089-T02",
+          "expected_scope": "A Chrome error document or unavailable frame cannot be treated as a successful login-page navigation; terminal classification follows the actual stage."
+        }
+      ],
+      "evidence": [
+        "src/lib/desktop/local-browser/controller.ts:productionDeps.currentDocument",
+        "src/lib/desktop/local-browser/controller.ts:terminal reason selection"
+      ]
+    },
+    {
+      "area": "Extension identity diagnostic safety",
+      "behavior_delta": "Optional environment reads and the outer identity diagnostic now catch unavailable Chrome/environment state and warn/skip instead of throwing through the caller.",
+      "affected_feature_ids": ["EXT-F-0001", "EXT-F-1005"],
+      "existing_case_ids": ["EXT-F-0001-T01", "EXT-F-0001-T05", "EXT-F-1005-T01"],
+      "existing_control_ids": ["EXT-F-0001-C01", "EXT-F-0001-C05", "EXT-F-1005-C01"],
+      "control_reconciliation": "This is diagnostic hardening with no distinct user action. Existing identity/build cases are the nearest source-level references; no user-facing control is proposed.",
+      "missing_controls": [],
+      "evidence": ["src/lib/auth/identity.ts:optionalEnv, readExtensionIdentity, logExtensionIdentityOnce"]
+    },
+    {
+      "area": "Offscreen cleanup and acquisition barrier",
+      "behavior_delta": "The e17e070 startup sequence waits for stale offscreen cleanup before reconnect probing. Follow-up ab5d151 also installs the cleanup promise at the shared offscreen acquisition boundary so streams, media, and bridge reconnects cannot race cleanup; timeout/failure continues with a warning.",
+      "affected_feature_ids": ["EXT-F-0001", "EXT-F-1006"],
+      "existing_case_ids": ["EXT-F-0001-T04", "EXT-F-1006-T20", "EXT-F-1006-T26", "EXT-F-1006-T27"],
+      "existing_control_ids": ["EXT-F-0001-C04", "EXT-F-1006-C19", "EXT-F-1006-C25", "EXT-F-1006-C26"],
+      "control_reconciliation": "Worker/offscreen lifecycle and bridge reconnect cases already exist. No additional control is identified, but their expected recovery must exercise the common acquisition path and not only the bootstrap reconnect caller.",
+      "missing_controls": [],
+      "evidence": [
+        "src/lib/background/bootstrap.ts:staleOffscreenCleanup and deferOffscreenAcquisitionUntil",
+        "src/lib/stream/offscreen-proxy.ts:deferOffscreenAcquisitionUntil and createOffscreenIfMissing"
+      ]
+    },
+    {
+      "area": "Shared platform setting reader and read-aloud voice",
+      "behavior_delta": "Read-aloud voice resolution now uses a shared, short-lived platform-knob snapshot reader. The snapshot is also used for account-default model resolution and reports read failures before falling back.",
+      "affected_feature_ids": ["EXT-F-2013"],
+      "existing_case_ids": ["EXT-F-2013-T06"],
+      "existing_control_ids": ["EXT-F-2013-C102", "EXT-F-2013-C103"],
+      "control_reconciliation": "The existing read-aloud case covers preference and canonical default; the proposed account-default model case covers the additional consumer. Shared cache and unreadable-setting behavior are implementation details, not a separate user control.",
+      "missing_controls": [],
+      "evidence": [
+        "src/lib/tts/read-aloud-voice.ts:resolveReadAloudVoice",
+        "src/lib/settings/platform-knobs.ts:snapshot",
+        "src/lib/settings/default-chat-model.ts:defaultChatModelFor"
+      ]
+    }
+  ],
+  "evidence_reviewed": [
+    "git diff 75cfb09..e17e070 -- changed source paths",
+    "git diff e17e070..ab5d151 -- src/lib/background/bootstrap.ts src/lib/stream/offscreen-proxy.ts",
+    "docs/stabilization/inventory.json at checkout HEAD 9c6365b",
+    "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json"
+  ],
+  "non_product_delta_excluded": [
+    "Test-only updates and fixture changes; no runtime claim is inferred from them.",
+    "Dependency lockfile churn; package freshness and release gates belong to the parent integration lane."
+  ],
+  "summary": {
+    "status": "proposed_source_mapping_only",
+    "affected_feature_ids": ["EXT-F-0001", "EXT-F-1005", "EXT-F-1006", "EXT-F-1007", "EXT-F-2011", "EXT-F-2013", "EXT-F-2014", "EXT-F-4089"],
+    "missing_control_proposals": ["EXT-F-2013-C135", "EXT-F-2013-C136", "EXT-F-2014-C61", "EXT-F-4089-C10"],
+    "runtime_verification": "not_performed",
+    "inventory_modified": false,
+    "source_delta_end": "ab5d151cdd6e2b668c8d71386f068e2e88301da0"
+  }
+}
