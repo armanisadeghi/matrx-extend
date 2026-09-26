@@ -1,0 +1,14 @@
+{
+  "run_id": "evidence-generator-types-001",
+  "command": "pnpm compile",
+  "wrapper_session": 65570,
+  "wrapper_exit_code": 0,
+  "child_exit_at": "2026-09-26T23:55:45.674Z",
+  "child_exit_code": 0,
+  "guard_log": "/tmp/matrx-evidence-generator-types-001.log",
+  "guard_log_sha256": "024a337df2fed1b8097fb3db5a4f15ae7bf91d7f063fc33351c971927c7454dd",
+  "fix_commit": "74f7c996",
+  "peer_commit": "1768e363",
+  "result": "pass",
+  "scope": "Full repository TypeScript compile; repairs TS7016 in CI36280768692. Browser acceptance is not implied."
+}
