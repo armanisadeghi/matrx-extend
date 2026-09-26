@@ -521,6 +521,19 @@ const reason = z.enum([
   'tab_lost',
   'configuration_error',
 ]);
+const mfaSelector = z
+  .string()
+  .min(1)
+  .max(512)
+  .refine(
+    (value) =>
+      value === value.trim() &&
+      !Array.from(value).some((character) => {
+        const code = character.charCodeAt(0);
+        return code < 32 || code === 127;
+      }),
+    'MFA selector must be trimmed printable text',
+  );
 const terminalResult = z
   .object({
     command_id: uuid,
@@ -550,7 +563,7 @@ const completedResults = z.discriminatedUnion('operation', [
           origin: canonicalOrigin,
           form: z.enum(['login', 'username_first', 'password_change', 'none', 'ambiguous']),
           challenge: z.enum(['none', 'mfa', 'captcha', 'unknown']),
-          mfa_selector: z.string().min(1).max(512).optional(),
+          mfa_selector: mfaSelector.optional(),
         })
         .strict(),
     })
