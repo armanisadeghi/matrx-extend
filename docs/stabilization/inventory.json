@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T05:37:12.284800+00:00",
+  "updated_at": "2026-09-26T05:42:10.277609+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
@@ -3733,7 +3733,7 @@
         },
         {
           "id": "EXT-F-1003-T55",
-          "title": "Optional permission: DevTools Protocol",
+          "title": "Required capability: DevTools Protocol",
           "modes": [
             "admin"
           ],
@@ -3744,10 +3744,13 @@
             "Signed in as admin; Settings > Advanced agent capabilities is visible."
           ],
           "steps": [
-            "As admin, toggle debugger on and off; verify Chrome grant/removal result, busy state, and reflected current permission. Also deny the grant request."
+            "Complete development build and full extension Reload; record source/build identity. As admin open Settings > Advanced agent capabilities.",
+            "Verify DevTools Protocol truthfully identifies its installation-required permission state, offers no unsupported on/off action, and explains its availability.",
+            "Reload extension and verify status remains accurate; exercise adjacent optional permission grant, denial, removal and persistence to check no regression."
           ],
           "expected": [
-            "Granted state updates; dependent CDP tools become available. Denial leaves the switch off and is recoverable."
+            "Chrome debugger is correctly described as an installation-required capability without a nonfunctional switch; unavailable states have truthful remediation.",
+            "Neighbor optional controls remain usable and reflect actual Chrome grants."
           ],
           "dimensions": [
             "warm",
@@ -3759,7 +3762,8 @@
               "run_id": "admin-permissions-002",
               "evidence": "docs/stabilization/runs/admin-permissions-002.json"
             }
-          }
+          },
+          "scope_note": "Chrome permissions API forbids optional debugger and removal of required grants. Original generated optional-toggle expectation corrected after native failure EXT-D-0006; original evidence retained in admin-permissions-002. Actual CDP tool behavior is independently covered by tool-feature inventory, not claimed by this permission UI case."
         },
         {
           "id": "EXT-F-1003-T56",
