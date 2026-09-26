@@ -32,6 +32,7 @@
   ],
   "runtime_attempt_001": "Real web and extension admin sign-in passed. Page archive was declared, unique, OFF, and absent from Chrome contains/getAll. The runner stopped before a permission request with permission_switch_not_hittable from its bespoke coordinate target; no native prompt or Deny was reached. This is a harness interaction gap, not evidence of a product defect.",
   "runtime_attempt_002": "Root reports that native CUA Page archive Deny succeeded and the runner verified its pre-reload refusal postconditions on build 0.2.64. The separate native UI evidence and run receipt are owned by root; this source lane did not perform or independently review that run.",
+  "source_peer_repair": "denial-targets-reload-peer found that an existing refusal alert was not excluded in the pre-request state. The runner now requires refusal_alert false before the native interaction, so its later alert observation cannot pass from stale feedback. Runtime remains pending.",
   "target_mapping": {
     "cookies": "Cookies / EXT-F-1003-T56",
     "pageCapture": "Page archive (MHTML) / EXT-F-1003-T57",

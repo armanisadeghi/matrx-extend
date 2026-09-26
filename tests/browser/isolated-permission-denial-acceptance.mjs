@@ -188,7 +188,8 @@ try {
             before.row_count === 1 &&
             !before.switch_on &&
             !before.contains &&
-            !before.get_all,
+            !before.get_all &&
+            !before.refusal_alert,
           true,
         );
         await waitForNativeDeny();
