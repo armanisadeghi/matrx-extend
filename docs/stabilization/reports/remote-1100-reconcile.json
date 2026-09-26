@@ -1,0 +1,60 @@
+{
+  "report_id": "remote-1100-reconcile",
+  "commits": [
+    {
+      "commit": "c6e8af173618ac8608037016e22ab3c00b7986d8",
+      "summary": "After credential submit, tolerate a transient missing/throwing owned-tab document read by polling until the existing deadline; continue enforcing the current-run authority fence, HTTPS same-origin check, and fail-closed timeout behavior.",
+      "affected_features": [
+        {
+          "id": "EXT-F-2014",
+          "case": "EXT-F-2014-T03",
+          "impact": "Existing case already exercises an admitted credential attempt with a lost post-submit document. Refine its procedure and expected result to cover transient null/throwing reads that recover to a valid same-origin document before deadline, plus persistent loss that times out without accepting an observation. The behavior is in local-browser credential execution, not a new Vault UI action."
+        },
+        {
+          "id": "EXT-F-4089",
+          "case": "EXT-F-4089-T01",
+          "impact": "Generic credential_login manual-execution case may exercise this path, but its existing source status is design-needed and it is not a substitute for the concrete deferred Pilot T03 case."
+        }
+      ],
+      "inventory_control_needed": false,
+      "inventory_case_action": "Update EXT-F-2014-T03. No new control is warranted: the change adds recovery behavior inside the existing admitted credential operation and creates no user-facing control.",
+      "runtime_status": "Source-only. No test/build/browser execution was performed; this report does not establish runtime behavior."
+    },
+    {
+      "commit": "f390aa0 chore(deps): refresh AI Matrx package locks",
+      "summary": "Lock refresh adopts @ai-matrx/agents 0.14.0, @ai-matrx/content-ir 0.19.3, and @ai-matrx/kit 0.16.7 (each declared latest).",
+      "package_consumer_actions": [
+        {
+          "package": "@ai-matrx/agents",
+          "from": "0.13.16",
+          "to": "0.14.0",
+          "upstream_action": "0.14.0 adds the canonical decision-answers reader; changelog names matrx-frontend and Workflow Studio as consumers, but the extension also has a local reader.",
+          "extension_census": "src/lib/chat/decision-answers.ts implements decisionAnswersText/isDecisionAnswers/decisionRenderBlock. Callers: src/lib/supabase/queries.ts, src/hooks/use-chat-stream.ts, src/hooks/use-pilot-chat-stream.ts.",
+          "required_follow_up": "Reconcile the local decision-answers parsing/presentation helper against @ai-matrx/agents/presentation/decision-answers and migrate its duplicated reading behavior to the package where the API covers it; preserve only extension-specific render-block adaptation. This is a package consumer action discovered by caller census, not a control/inventory delta."
+        },
+        {
+          "package": "@ai-matrx/content-ir",
+          "from": "0.19.1",
+          "to": "0.19.3",
+          "upstream_action": "0.19.3 is the RC-B3 round 4 close-out for /source streaming and isSingleDollarMath; changelog explicitly says no consumer action required.",
+          "extension_census": "No extension-owned direct call to the changed source-streaming/math APIs was identified in the current source search. The extension imports the package for Content IR wire/core/rendering paths, but those are outside this release's stated changes.",
+          "required_follow_up": "None for the extension based on this release's changelog."
+        },
+        {
+          "package": "@ai-matrx/kit",
+          "from": "0.16.6",
+          "to": "0.16.7",
+          "upstream_action": "0.16.7 moves /content-transfer implementation to @ai-matrx/alchemy/operate while retaining a compatibility entry with the same behavior; renderMarkdownHtml/serializeMarkdownRich are deprecated.",
+          "extension_census": "No extension source import of @ai-matrx/kit/content-transfer or the deprecated markdown helpers was identified. Existing extension imports use other kit entries (format, credential-generator, html-escape, base64, confirm-opener).",
+          "required_follow_up": "None for the extension based on current caller census."
+        }
+      ],
+      "package_evidence": "Consumer actions and release notes were read from node_modules/@ai-matrx/{agents,content-ir,kit}/CHANGELOG.md at the locked target versions. The sibling source changelogs had not yet reflected all locked release versions.",
+      "runtime_status": "Source-only consumer census plus installed package metadata/changelog inspection. Package APIs were not executed and no product regression, build, or browser behavior is verified by this report."
+    }
+  ],
+  "remaining_actions": [
+    "Coordinator: incorporate the EXT-F-2014-T03 scenario refinement into inventory under the campaign's coordinator-only integration rule.",
+    "Coordinator/package catch-up: assess and adopt the agents 0.14.0 canonical decision-answers reader in this extension, reconciling the local helper and all three callers in one same-session change if the API preserves behavior."
+  ]
+}
