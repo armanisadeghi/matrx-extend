@@ -20,6 +20,7 @@ import { getHighlightsByIds } from '@/lib/highlights/queries';
 import { newId } from '@/lib/id';
 import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { defaultChatModelFor } from '@/lib/settings/default-chat-model';
 import {
   deadlineFor,
   isTerminal,
@@ -916,6 +917,11 @@ export function useChatStream() {
       let configOverrides: Record<string, unknown> | undefined;
       if (modelOverrideId) {
         configOverrides = { model: modelOverrideId };
+      } else {
+        // No pick in the extension's own model menu: the person's account
+        // default for everyday chat applies — on the general chat door only.
+        const accountDefault = await defaultChatModelFor(opts.mandateKey);
+        if (accountDefault) configOverrides = { model: accountDefault };
       }
       // adminOverrides may already contain a config_overrides field from the
       // raw JSON path. Merge so admin JSON keys win on conflict, but if only

@@ -30,8 +30,10 @@ import { progressFromWire } from '@/lib/chat/tool-progress';
 import { readInboundRenderBlock } from '@/lib/content-ir/inbound';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
+import { mandateKeyFromAgentRef } from '@/lib/mandates';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { defaultChatModelFor } from '@/lib/settings/default-chat-model';
 import { deadlineFor, parseProviderRetry } from '@/lib/stream/provider-retry';
 import { attemptResume } from '@/lib/stream/resume';
 import { createStreamWatchdog } from '@/lib/stream/watchdog';
@@ -465,6 +467,11 @@ export function usePilotChatStream() {
       let configOverrides: Record<string, unknown> | undefined;
       if (modelOverrideId) {
         configOverrides = { model: modelOverrideId };
+      } else {
+        // No pick in the extension's own model menu: the person's account
+        // default for everyday chat applies — on the general chat door only.
+        const accountDefault = await defaultChatModelFor(mandateKeyFromAgentRef(opts.agentId));
+        if (accountDefault) configOverrides = { model: accountDefault };
       }
       if (adminOverrides.config_overrides && typeof adminOverrides.config_overrides === 'object') {
         configOverrides = {

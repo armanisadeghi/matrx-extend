@@ -1697,8 +1697,8 @@ function ComposerSettingsChip() {
         </div>
         <ModelPresetRow
           active={modelOverrideId === null}
-          label="Agent Official"
-          hint="Typically the best results for the task"
+          label="Your default"
+          hint="Your account's default model for chat (set on aimatrx.com); other agents keep their own"
           onClick={() => setModelOverrideId(null)}
         />
         {USER_MODEL_PRESETS.map((p) => (
