@@ -1,0 +1,41 @@
+{
+  "task_id": "EXT-D-0016-release-018-peer",
+  "reviewer": "independent engineering evidence reviewer",
+  "run_id": "release-stabilization-018",
+  "verdict_a_release_0_2_66": "PASS_WITH_LIMITS",
+  "verdict_b_d16_publication_lint_closure": "PASS_WITH_LIMITS",
+  "evidence": [
+    "Run 018 record and raw log agree: release.sh exited 0; all 15 named release gates report exit 0, including lint, typecheck, schema-routing, migrations, tool-drift, mandate-references, and the self-test gates.",
+    "Raw unit-test summary: 1433 passed, 3 skipped (the three live dev-clone DB tests); this does not establish database-wide health.",
+    "Tag v0.2.66 resolves to 52517fdbda128ba1fc9445b8357cef86dbdc128d, matches the run source SHA, and is present on origin; remote main 81725924632a0c91f9c923f7e8deb30ff2dacf59 descends from the tag.",
+    "Run 018 raw log records successful push of main and v0.2.66 tag, followed by ZIP and unpacked-tree receipt. Local independent SHA-256 recomputation matches both ZIP receipts: Store 1a9c2ab349fb40f335f2147bbb3c417137cbcbd3451a8c44ae499a6f817e612f; local fad223caa1e704032dd5d54384dca03a1695f89217e71af6afc9f7836ea1c5bc.",
+    "Independent recomputation with the release tree hashing function produced 89853021710c0705dfb1bf679f01d8b6b5ebb8ee4d2be790ad17f2a30e508860 for both installed unpacked directories; each contains manifest version 0.2.66. The release receipt reports 524 files and matching source/destination hashes.",
+    "Run 017 raw log is an actual candidate release attempt: pnpm lint exited 1 with 2 errors (including Biome errors in the reviewer JSON reports), and release.sh explicitly refused publication before unit tests/publication. This is real lint detection, not a stub-injected fixture.",
+    "Commit 2f78fa4f fixes formatting in both implicated reviewer reports; the green 018 candidate is sourced from descendant 52517fdb. Its actual release log records check lint exit 0 and proceeded through checks, ZIP generation and Git publication. Remaining Biome diagnostics are warnings; lint's process exit is 0.",
+    "Release log explicitly instructs a Chrome Web Store upload and says the Store ZIP was generated only; no upload, Store review, or production verification is evidenced."
+  ],
+  "release_gates": [
+    { "name": "matrx-packages", "exit_code": 0 },
+    { "name": "typecheck", "exit_code": 0 },
+    { "name": "lint", "exit_code": 0 },
+    { "name": "unit-tests", "exit_code": 0 },
+    { "name": "schema-routing", "exit_code": 0 },
+    { "name": "package-twins", "exit_code": 0 },
+    { "name": "canonical-pickers", "exit_code": 0 },
+    { "name": "archived-items", "exit_code": 0 },
+    { "name": "archived-items-self-test", "exit_code": 0 },
+    { "name": "org-default-ban", "exit_code": 0 },
+    { "name": "org-default-ban-self-test", "exit_code": 0 },
+    { "name": "swallowed-refusals", "exit_code": 0 },
+    { "name": "migrations", "exit_code": 0 },
+    { "name": "tool-drift", "exit_code": 0 },
+    { "name": "mandate-references", "exit_code": 0 }
+  ],
+  "limits": [
+    "No browser/UI session or live data workflow was exercised as part of this read-only review.",
+    "The three live dev-clone DB tests were skipped; their skip is not evidence of database-wide health.",
+    "The Store ZIP was built and hashed, but no Chrome Web Store upload, review, or production verification is claimed.",
+    "The source temporary build directory was cleaned after release; tree-hash recomputation was therefore against both retained destinations, with the raw release log providing the source hash and file count."
+  ],
+  "scope": "Read-only independent evidence review of run 018, run 017, raw release logs, local release artifacts, Git refs/ancestry, and retained unpacked output. No build, test, browser, or Store action performed."
+}
