@@ -85,17 +85,19 @@ async function replacePort(panel, value) {
   const initial = await portSelection(panel);
   assert.equal(initial?.focused, true, 'real pointer must focus port input');
   if (initial.value) {
-    // Ctrl+A did not select the existing value in Chrome-for-Testing on macOS.
-    // Observe the selection before allowing any replacement keystroke.
-    let selected = false;
-    for (const modifiers of process.platform === 'darwin' ? [4, 2] : [2, 4]) {
-      await panel.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: 'a', code: 'KeyA', modifiers, windowsVirtualKeyCode: 65 });
-      await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'a', code: 'KeyA', modifiers, windowsVirtualKeyCode: 65 });
-      const selection = await portSelection(panel);
-      selected = selection?.focused && selection.start === 0 && selection.end === initial.value.length;
-      if (selected) break;
-    }
-    assert.equal(selected, true, `trusted select-all did not cover port input: ${JSON.stringify(await portSelection(panel))}`);
+    // Chromium's CDP test requires the selectAll editing command for an
+    // emulated Meta+A on macOS. Observe the result before any deletion.
+    const modifiers = process.platform === 'darwin' ? 4 : 2;
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyDown', key: 'a', code: 'KeyA', modifiers,
+      windowsVirtualKeyCode: 65, commands: ['selectAll'],
+    });
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyUp', key: 'a', code: 'KeyA', modifiers, windowsVirtualKeyCode: 65,
+    });
+    const selection = await portSelection(panel);
+    assert.equal(selection?.focused && selection.start === 0 && selection.end === initial.value.length,
+      true, `trusted select-all did not cover port input: ${JSON.stringify(selection)}`);
     await panel.send('Input.dispatchKeyEvent', { type: 'rawKeyDown', key: 'Backspace', code: 'Backspace', windowsVirtualKeyCode: 8 });
     await panel.send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Backspace', code: 'Backspace', windowsVirtualKeyCode: 8 });
     await waitFor('port_input_cleared_by_keyboard', () => portSelection(panel), (s) => s?.value === '' && s.focused);

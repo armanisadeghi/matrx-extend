@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_id": "guest-settings-local-batch",
-  "status": "interaction_repair_prepared_retest_pending",
+  "status": "keyboard_command_repair_prepared_retest_pending",
   "scope": "Isolated native Chrome sidepanel guest acceptance runner for EXT-F-1003-T22, T37, T46, and T70",
   "runner": "tests/browser/settings-local-controls-acceptance.mjs",
   "runtime_output": "test-results/settings-local-controls-acceptance.json",
@@ -15,8 +15,8 @@
   "case_results": [
     { "id": "EXT-F-1003-T22", "status": "pass", "reason": "Observed absent admin section warm and after reload in guest-settings-local-001 on 0.2.57." },
     { "id": "EXT-F-1003-T37", "status": "pass", "reason": "Observed coming-soon hint, toggle persistence after reload, and restoration in guest-settings-local-001 on 0.2.57." },
-    { "id": "EXT-F-1003-T46", "status": "unverified", "reason": "Valid save observed; later keyboard shortcut failed to select the old value and inserted into it. Runner interaction repaired pending retest. Worker rediscovery still needs separate observable evidence for a full pass." },
-    { "id": "EXT-F-1003-T70", "status": "unverified", "reason": "Identity/readiness observed; update button remained below viewport because the prior click helper did not scroll it. Runner interaction repaired pending retest. Unavailable API and alternate update outcomes remain unverified." }
+    { "id": "EXT-F-1003-T46", "status": "unverified", "reason": "Valid save observed in two native runs. guest-settings-local-002 confirmed raw modifier key events did not select the old value on macOS. Runner now sends Chromium's documented selectAll editing command; retest pending. Worker rediscovery still needs separate observable evidence for a full pass." },
+    { "id": "EXT-F-1003-T70", "status": "unverified", "reason": "guest-settings-local-002 observed matching identity and readiness, trusted scrolling to the update control, and a real no-update result. Browser API unavailable and alternate update outcomes remain unverified." }
   ],
   "defect_provenance": {
     "id": "EXT-D-0011",
@@ -29,6 +29,17 @@
       "T70 stable hit target failed: update button center y=573 was below the 421px native panel viewport."
     ],
     "classification": "Runner interaction failures; neither result establishes a product behavior defect."
+  },
+  "second_run_provenance": {
+    "run_id": "guest-settings-local-002",
+    "evidence": "test-results/settings-local-controls-acceptance.json",
+    "build_version": "0.2.57",
+    "result": "T22 and T37 passed; T70 update button was reached by trusted wheel and the real browser returned no_update; T46 remained stopped at trusted select-all verification with value 65001 and selectionStart=selectionEnd=1.",
+    "repair_basis": "Chromium DevTools Protocol Input.dispatchKeyEvent documents commands:['selectAll']; Chromium commit 3d3ee67f6904 says this command is needed for emulated Meta+A on Mac, and its protocol test proves selected text before Backspace.",
+    "primary_sources": [
+      "https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-dispatchKeyEvent",
+      "https://chromium.googlesource.com/chromium/src/+/3d3ee67f6904c527aca96b54588cb1008a17b23e/third_party/blink/web_tests/inspector-protocol/input/dispatchKeyEvent-commands.js"
+    ]
   },
   "source_leads_for_owner": [
     "T46 blank-port save does not clear a prior invalid-range error in SettingsView.tsx; the native runner checks for a stale error after clearing."
