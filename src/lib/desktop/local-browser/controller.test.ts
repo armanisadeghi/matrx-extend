@@ -317,6 +317,32 @@ async function frozenDigest(spec: string): Promise<string> {
 }
 
 describe('owned local-browser tab controller', () => {
+  it('does not treat a Chrome network-error document as a completed navigation', async () => {
+    const originalChrome = globalThis.chrome;
+    const getFrame = vi.fn(async () => ({
+      documentId: 'network-error-document',
+      url: 'https://unreachable.example.test/login',
+      errorOccurred: true,
+    }));
+    Object.assign(globalThis, { chrome: { webNavigation: { getFrame } } });
+    try {
+      const controller = new LocalBrowserController();
+      const deps = (controller as unknown as { deps: LocalBrowserControllerDeps }).deps;
+      expect(await deps.command?.currentDocument(42)).toBeNull();
+      getFrame.mockResolvedValue({
+        documentId: 'loaded-document',
+        url: 'https://unreachable.example.test/login',
+        errorOccurred: false,
+      });
+      expect(await deps.command?.currentDocument(42)).toEqual({
+        documentId: 'loaded-document',
+        url: 'https://unreachable.example.test/login',
+      });
+    } finally {
+      Object.assign(globalThis, { chrome: originalChrome });
+    }
+  });
+
   it('reports a fixed delivery diagnostic after a completed command result is not sent', async () => {
     const happyWindow = window as typeof window & { happyDOM: DetachedWindowAPI };
     happyWindow.happyDOM.setURL('https://example.test/login');

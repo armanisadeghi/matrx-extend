@@ -220,8 +220,13 @@ function productionDeps(): LocalBrowserControllerDeps {
         const frame = (await chrome.webNavigation.getFrame({ tabId, frameId: 0 })) as unknown as {
           documentId?: unknown;
           url?: unknown;
+          errorOccurred?: unknown;
         } | null;
-        return typeof frame?.documentId === 'string' && typeof frame.url === 'string'
+        // Chrome can keep the requested HTTPS URL on an error document. It is
+        // not evidence that navigation succeeded or that a login page exists.
+        return frame?.errorOccurred !== true &&
+          typeof frame?.documentId === 'string' &&
+          typeof frame.url === 'string'
           ? { documentId: frame.documentId, url: frame.url }
           : null;
       },
