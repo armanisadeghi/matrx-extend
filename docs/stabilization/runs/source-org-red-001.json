@@ -1,0 +1,13 @@
+{
+  "run_id": "source-org-red-001",
+  "defect_id": "EXT-D-0022",
+  "source_commit": "f6280e23",
+  "command": "pnpm exec vitest run src/lib/supabase/queries.recognition.test.ts --maxWorkers=1",
+  "guarded_wrapper": "resource guard 17957",
+  "completed_at": "2026-09-26T19:19:11.656Z",
+  "child_exit_code": 1,
+  "log_path": "/tmp/matrx-source-org-red-001.log",
+  "log_sha256": "0c65ab9c039d3ee4353df0ff55871fdce1549c9ae6340145b54d4a6c71dac719",
+  "result": "2 failed, 2 passed: authenticated missing and unreadable organization incorrectly returned a Source from an unscoped RLS-visible organization; guest and selected-organization controls passed",
+  "interpretation": "Deterministic assertion red at the shared query seam, before the production repair. No browser or live multi-member observation was made."
+}

@@ -611,7 +611,7 @@ async function supersededSourceIds(ids: string[]): Promise<Set<string>> {
 export type CaptureLookup =
   | { status: 'found'; page: CapturedPage }
   | { status: 'none' }
-  | { status: 'unknown'; reason: string };
+  | { status: 'unknown'; reason: string; cause?: 'organization_unselected' };
 
 /**
  * The newest saved Source for this page, looked up by the door's canonical
@@ -623,17 +623,37 @@ export async function lookupCapturedByUrl(url: string): Promise<CaptureLookup> {
   if (!(await hasSupabaseAccessToken())) return { status: 'none' };
   const identity = canonicalUrl(url);
   if (!identity) return { status: 'none' };
-  // Read-only recognition never raises the workspace picker; with no workspace
-  // chosen on this device RLS still scopes the read to what the person can see.
-  const organizationId = await getActiveOrganizationId().catch(() => null);
-  let query = docprocDb()
+  // Recognition does not raise the picker. A signed-in person's RLS-visible
+  // Sources may span several organizations, so a read without this device's
+  // selected organization cannot answer whether THIS workspace saved the page.
+  let organizationId: string | null;
+  try {
+    organizationId = await getActiveOrganizationId();
+  } catch (err) {
+    log.warn('supabase', 'lookupCapturedByUrl could not read active organization', {
+      message: err instanceof Error ? err.message : String(err),
+    });
+    return {
+      status: 'unknown',
+      reason: 'Could not read your selected organization. Check your connection and try again.',
+    };
+  }
+  if (!organizationId) {
+    return {
+      status: 'unknown',
+      cause: 'organization_unselected',
+      reason:
+        'Choose your organization in the AI Matrx panel to check whether this page is a Source there.',
+    };
+  }
+  const query = docprocDb()
     .from('processed_documents')
     .select('id, canonical_identity, created_at, name')
     .eq('canonical_identity', identity)
     .eq('origin_client', SOURCE_ORIGIN_EXTENSION)
+    .eq('organization_id', organizationId)
     .in('derivation_kind', CAPTURE_DERIVATIONS)
     .is('deleted_at', null);
-  if (organizationId) query = query.eq('organization_id', organizationId);
   let data: unknown[] | null;
   try {
     const res = await query.order('created_at', { ascending: false }).limit(1);

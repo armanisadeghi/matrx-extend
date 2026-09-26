@@ -98,6 +98,7 @@ describe('lookupCapturedByUrl organization boundary', () => {
     state.organizationId = null;
     expect(await lookupCapturedByUrl(URL)).toMatchObject({
       status: 'unknown',
+      cause: 'organization_unselected',
       reason: expect.stringMatching(/organization|workspace/i),
     });
     expect(state.reads).toBe(0);

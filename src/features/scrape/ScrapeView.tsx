@@ -234,8 +234,17 @@ export function ScrapeView() {
         <HighlightRegionsBanner />
         {recognition.checkFailed && !saved && (
           <div className="mt-2 rounded-xl bg-secondary/60 px-3 py-1.5 text-xs text-muted-foreground">
-            Couldn&apos;t check whether this page is already a Source in your workspace. Saving
-            again is safe — the same page is kept as one Source.
+            {recognition.checkNeedsOrganization ? (
+              <>
+                Choose your organization in the AI Matrx panel to check whether this page is a
+                Source there.
+              </>
+            ) : (
+              <>
+                Couldn&apos;t check whether this page is already a Source in your workspace. Saving
+                again is safe — the same page is kept as one Source.
+              </>
+            )}
           </div>
         )}
         <UnsavedCapturesCard
@@ -1050,6 +1059,7 @@ function HighlightRegionsBanner() {
         <div className="flex items-center gap-1">
           <CopyButton text={combined} title="Copy regions" />
           <button
+            type="button"
             onClick={() => setItems(null)}
             className="rounded-md p-0.5 text-amber-600/70 hover:bg-amber-400/20 hover:text-amber-700 dark:text-amber-400/70"
             title="Dismiss"

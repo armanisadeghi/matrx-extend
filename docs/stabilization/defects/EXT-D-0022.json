@@ -1,0 +1,54 @@
+{
+  "id": "EXT-D-0022",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T26"],
+  "surface": "Shared Source recognition in Scrape and chat page context",
+  "auth_mode": "guest and authenticated member across multiple organizations",
+  "reproduction": [
+    "With a valid session but no selected organization on this device, look up a URL that is saved in one of multiple RLS-visible organizations.",
+    "The prior lookup catches an organization-resolution error as null, conditionally omits organization_id from the docproc read, and may claim the other organization's Source as saved in the current workspace.",
+    "The Scrape recognition hook also watches only the tab URL, so a workspace switch on the same page can leave the prior workspace's saved claim visible.",
+    "The background saved-page broadcast carries no organization, so a late event from the prior workspace can overwrite a new workspace's recognition state."
+  ],
+  "expected": "Guest recognition returns none without a read. Authenticated recognition reads only the selected organization; missing or unreadable selection returns an honest unknown without a docproc read. Switching organization clears stale recognition, starts a scoped recheck, and ignores an older lookup or background broadcast that finishes late.",
+  "actual": "The shared query can read without an organization predicate, and the hook can retain a prior organization's claim after selection changes.",
+  "evidence": [
+    "src/lib/supabase/queries.ts:620",
+    "src/hooks/use-page-recognition.ts:26",
+    "docs/stabilization/reports/incoming-sources6644-peer.json",
+    "src/lib/supabase/queries.recognition.test.ts"
+  ],
+  "severity": "S2: wrong-workspace Saved claim may reveal another RLS-visible organization's Source identity and misstate capture status",
+  "priority": "P1: close the organization boundary before claiming workspace-correct recognition",
+  "state": "in-fix",
+  "owner": "/root/source_recognition_org_fix",
+  "transition_history": [
+    {
+      "at": "2026-09-26",
+      "from": null,
+      "to": "open",
+      "reason": "Independent incoming Source review identified the optional organization filter on authenticated recognition."
+    },
+    {
+      "at": "2026-09-26",
+      "from": "open",
+      "to": "in-fix",
+      "reason": "Shared query and same-page organization-change sibling traced; focused regression guard prepared for root's guarded red/green run."
+    },
+    {
+      "at": "2026-09-26T19:23:15.045Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Guarded shared query, hook and chat tests passed 13/13 after deterministic unscoped-read red; typecheck, independent review, and multi-organization UI verification remain pending."
+    },
+    {
+      "at": "2026-09-26",
+      "from": "fixed",
+      "to": "in-fix",
+      "reason": "Same-class late PAGE_ALREADY_CAPTURED broadcast found without organization identity; the hook now rechecks through the scoped query and needs another focused green run."
+    }
+  ],
+  "fix_commits": [],
+  "ui_retest": "pending",
+  "closure_requirement": "Focused red/green shared-query and hook guards, typecheck, independent source review, and authenticated multi-organization UI verification."
+}

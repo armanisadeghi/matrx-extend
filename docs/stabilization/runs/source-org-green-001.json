@@ -1,0 +1,12 @@
+{
+  "run_id": "source-org-green-001",
+  "defect_id": "EXT-D-0022",
+  "command": "pnpm exec vitest run src/lib/supabase/queries.recognition.test.ts src/hooks/use-page-recognition.test.tsx src/lib/chat/context/page-source.test.ts --maxWorkers=1",
+  "guarded_wrapper": "resource guard 17957",
+  "completed_at": "2026-09-26T19:23:15.045Z",
+  "child_exit_code": 0,
+  "log_path": "/tmp/matrx-source-org-green-001.log",
+  "log_sha256": "5e90d234419b1efee0ba8f3764d22dbec0a90cee008dd869a81701214a01dc71",
+  "result": "3 test files passed; 13 tests passed; query, same-page workspace-switch hook, and chat unknown propagation covered",
+  "limits": "Focused unit guards only; no live multi-member or multi-organization UI observation."
+}

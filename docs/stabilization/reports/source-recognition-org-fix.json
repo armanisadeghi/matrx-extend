@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "source-recognition-org-fix",
+  "defect_id": "EXT-D-0022",
+  "lane": "shared Source recognition organization boundary",
+  "source_verdict": "FIX_PREPARED_BROADCAST_RETEST_PENDING",
+  "runtime_verdict": "INITIAL_FOCUSED_RED_GREEN_CONFIRMED_FINAL_GREEN_PENDING_UI_PENDING",
+  "root_cause": "Authenticated lookupCapturedByUrl treated a missing or failed organization resolution as null, then omitted the organization_id predicate. RLS can expose rows from multiple memberships, so an unscoped query can claim another workspace's Source. The Scrape hook also did not recheck when the selected workspace changed while the tab URL stayed the same.",
+  "siblings_census": [
+    "Scrape recognition hook maps unknown to a truthful check-failed state; it now distinguishes the specific missing-workspace remedy without rendering backend error text and rechecks when the device's selected organization changes.",
+    "Chat pageSourceStatus already propagates the shared lookup's unknown status and safe reason, so no separate chat change is needed.",
+    "Background PAGE_NAVIGATED broadcasts a saved state only when shared recognition says found; because its event carries no organization and may arrive late, the Scrape hook treats it as a trigger for a fresh scoped lookup rather than trusting its id/date.",
+    "Saved captures list and detail queries already require an organization and use exact organization_id predicates."
+  ],
+  "change": [
+    "Guest recognition retains none with no database read.",
+    "Authenticated recognition returns unknown and sends no docproc query if the device's organization is absent or unreadable; selected-organization reads always filter organization_id exactly.",
+    "Organization changes clear the old recognition immediately, start a new lookup, and prevent a late old response from winning.",
+    "A late background Saved broadcast also triggers a fresh scoped lookup, so its unscoped payload cannot overwrite the current workspace's claim.",
+    "The missing-workspace Scrape banner directs the person to choose an organization; generic database/network failures keep generic text."
+  ],
+  "red_evidence": "docs/stabilization/runs/source-org-red-001.json: guarded focused test failed 2 missing/unreadable-organization assertions, with 2 guest/selected-organization controls passing",
+  "green_evidence": "docs/stabilization/runs/source-org-green-001.json: guarded focused query, hook and chat tests passed 3 files and 13 tests before the late-broadcast guard was added; final rerun pending",
+  "typecheck": "pending",
+  "independent_review": "pending",
+  "ui_verification": "pending: signed-in multi-organization page recognition, same-page workspace switch, and two-member Saved captures procedure",
+  "open": [
+    "Focused rerun with late-broadcast guard and typecheck are pending.",
+    "Independent fresh review and live UI checks are pending before D22 closure."
+  ]
+}
