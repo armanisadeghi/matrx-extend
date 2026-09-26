@@ -2788,7 +2788,7 @@ Every entry follows this shape:
   3. The popover shows the refusal sentence; the dataset list shows an error,
      not "no datasets".
   4. As an admin, each notice carries a technical tail (`insert
-     extend.wbx_capture · 42501: …`). Non-admins never see the code.
+     extend.wbx_highlight · 42501: …`). Non-admins never see the code.
   5. The refusals appear in the platform error store: `errors` MCP tool, kind
      `chrome-extension` (they land under `source_app='matrx-frontend'` — a
      known limitation of the shared RPC, tracked in the B-13 report).

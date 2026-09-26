@@ -60,7 +60,6 @@ export const TABLE_SCHEMA = {
   // extend — this extension's own tables
   wbx_pattern: 'extend',
   wbx_recipe: 'extend',
-  wbx_capture: 'extend',
   wbx_guidance: 'extend',
   wbx_demo: 'extend',
   wbx_screenshot: 'extend',

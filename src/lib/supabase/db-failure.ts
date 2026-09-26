@@ -43,9 +43,9 @@
  *
  * ## Usage
  *
- *     const { data, error } = await extendDb().from('wbx_capture').insert(row).select('id').single();
+ *     const { data, error } = await extendDb().from('wbx_highlight').insert(row).select('id').single();
  *     if (error || !data) {
- *       await failDbCall({ table: 'extend.wbx_capture', operation: 'insert', what: 'save this page capture' }, error);
+ *       await failDbCall({ table: 'extend.wbx_highlight', operation: 'insert', what: 'save this highlight' }, error);
  *     }
  *
  * `failDbCall` NEVER returns — it throws `DbFailureError` after showing the
@@ -196,7 +196,6 @@ export function userMessageFor(kind: DbFailureKind, site: DbCallSite): string {
  */
 export function sourceFeatureForTable(table: string): string {
   switch (table) {
-    case 'extend.wbx_capture':
     case 'docproc.processed_documents':
     case 'capture_handoff':
     case 'media.capture_handoff':

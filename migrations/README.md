@@ -11,8 +11,8 @@ Parallel platform prefixes (NOT owned by this repo): `cx_` (chat), `agx_` (agent
 
 | Order | File | What it creates |
 |---|---|---|
-| 1 | `2026_04_30_wbx_capture.sql` | `public.wbx_capture` — page captures from the Scrape tab |
-| 2 | `2026_04_30_wbx_pattern.sql` | `public.wbx_pattern` + FK on `wbx_capture.pattern_id` |
+| 1 | ~~`2026_04_30_wbx_capture.sql`~~ | Removed 2026-09-26: page captures are Sources (`docproc.processed_documents`, landed by `POST /sources/land`); the table is dropped by aidream migration 1066. Its ledger row stays as a harmless orphan. |
+| 2 | `2026_04_30_wbx_pattern.sql` | `public.wbx_pattern` (+ an FK onto the retired capture table, removed with it) |
 | 3 | `2026_04_30_wbx_seo_audit.sql` | `public.wbx_seo_audit` — SEO audits from the SEO tab |
 | 4 | `2026_04_30_wbx_pattern_modes.sql` | Adds `kind`, `config`, `target_user_table_id`, and rolling health columns to `wbx_pattern` for multi-mode extraction |
 | 5 | `2026_05_03_agenda_v0.sql` | `public.agenda_task` + `public.agenda_run` — scheduled agent runs (**superseded by `sch_*`; dropped in step 7**) |

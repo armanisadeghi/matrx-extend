@@ -41,6 +41,7 @@ import {
   assertOutcomeReported,
   assertRungMatches,
   isLadderViolation,
+  withLandingNotices,
 } from '@/lib/capture-ladder/types';
 import { log } from '@/lib/debug/log';
 import { formatCount } from '@ai-matrx/kit/format';
@@ -411,7 +412,11 @@ export async function captureCaptions(
     }
     outcome.posted = 'result';
     outcome.ok = true;
-    outcome.note = `Captions read and saved — ${formatCount(track.segments.length)} lines.`;
+    outcome.notices = posted.data.notices;
+    outcome.note = withLandingNotices(
+      `Captions read and saved — ${formatCount(track.segments.length)} lines.`,
+      posted.data.notices,
+    );
     return outcome;
   } catch (err) {
     if (isLadderViolation(err)) {

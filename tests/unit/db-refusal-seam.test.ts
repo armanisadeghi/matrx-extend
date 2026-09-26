@@ -334,7 +334,7 @@ describe('classification', () => {
 
   it('every failure kind produces a sentence with a remedy', () => {
     const site = {
-      table: 'extend.wbx_capture',
+      table: 'extend.wbx_highlight',
       operation: 'insert' as const,
       what: 'save this page capture',
       title: 'Page capture not saved',
@@ -357,7 +357,7 @@ describe('classification', () => {
 
   it('never claims a failure was automatically reported before consent is known', () => {
     const site = {
-      table: 'extend.wbx_capture',
+      table: 'extend.wbx_highlight',
       operation: 'insert' as const,
       what: 'save this page capture',
       title: 'Page capture not saved',

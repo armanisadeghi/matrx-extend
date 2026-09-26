@@ -35,6 +35,7 @@ import {
   assertOutcomeReported,
   assertRungMatches,
   isLadderViolation,
+  withLandingNotices,
 } from '@/lib/capture-ladder/types';
 import { log } from '@/lib/debug/log';
 import { getOuterHtml } from '@/lib/scrape/capture-html';
@@ -311,7 +312,12 @@ export async function runOne(
 
       outcome.posted = 'result';
       outcome.ok = true;
-      outcome.note = `Read and saved — ${formatCount(chars)} characters.`;
+      outcome.processedDocumentId = posted.data.processed_document_id;
+      outcome.notices = posted.data.notices;
+      outcome.note = withLandingNotices(
+        `Read and saved — ${formatCount(chars)} characters.`,
+        posted.data.notices,
+      );
       report('done', outcome.note);
       return outcome;
     } finally {
@@ -429,7 +435,12 @@ export async function captureDrivenTab(
     }
     outcome.posted = 'result';
     outcome.ok = true;
-    outcome.note = `Saved — ${formatCount(text.length)} characters.`;
+    outcome.processedDocumentId = posted.data.processed_document_id;
+    outcome.notices = posted.data.notices;
+    outcome.note = withLandingNotices(
+      `Saved — ${formatCount(text.length)} characters.`,
+      posted.data.notices,
+    );
     return outcome;
   } catch (err) {
     if (isLadderViolation(err)) {
