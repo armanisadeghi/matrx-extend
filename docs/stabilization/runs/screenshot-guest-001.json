@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "run_id": "screenshot-guest-001",
+  "feature_id": "EXT-F-1009",
+  "source": {
+    "guard_log_path": "/tmp/matrx-screenshot-guest-001.log",
+    "guard_log_sha256": "6888a4e6ae63f1c77d516dd8df468e5993d135e628cbb8684de0b037a80b2215",
+    "acceptance_result_path": "test-results/screenshot-guest-acceptance-617a4dc0-297b-4e54-98f8-d74e58c0bb58.json",
+    "acceptance_result_sha256": "2d49581a7da5ac2f54a44071931b6f3aabe1db78618a3279ccba3497e0841d83",
+    "runner_path": "tests/browser/screenshot-guest-acceptance.mjs",
+    "runner_sha256": "17d12f5fbd4fd9f1b37227341d61ad398c0e6ba7af00ab4f524d0707663b4a6d",
+    "release_receipt_sha256": "17abd491f49295df5eb6e262ae7710e9dbf70cb4904af54d598e26040b8277d3",
+    "manifest_sha256": "e088c1689d542df9b12222e6feb2ff45c4102f95fedf057ba8b2553dbcd1b77b"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T23:30:50.404Z",
+    "child_exit_at": "2026-09-26T23:30:54.094Z",
+    "child_exit_code": 0,
+    "wrapper_session": "3402",
+    "wrapper_exit_code": 0,
+    "stdout": "PARTIAL screenshot_guest_gate"
+  },
+  "build": {
+    "version": "0.2.79",
+    "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0",
+    "identity_before_after_matches": true,
+    "artifact_tree_matched_after": true,
+    "cross_check": "Acceptance result tree matches local release receipt; generated manifest version is 0.2.79."
+  },
+  "runtime": {
+    "mode": "guest",
+    "profile_owned": true,
+    "status": "partial",
+    "case_count": 3,
+    "case_status_counts": {
+      "pass": 2,
+      "unverified": 1
+    }
+  },
+  "interpretation": "The resource guard admitted the run, the child completed with exit 0, and the wrapper returned exit 0. The acceptance result is partial: two of three case rows passed and one remains unverified. This receipt records counts and provenance only; it does not promote any inventory case or feature status. Private screenshot/image contents and payload text were not accessed or copied."
+}
