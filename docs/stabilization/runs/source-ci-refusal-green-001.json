@@ -1,0 +1,16 @@
+{
+  "run_id": "source-ci-refusal-green-001",
+  "source_commit": "9022e59a",
+  "wrapper_session": 6441,
+  "wrapper_exit_code": 0,
+  "child_exit_code": 0,
+  "completed_at": "2026-09-26T20:35:06.207Z",
+  "test_files_passed": 1,
+  "tests_passed": 16,
+  "actual_temp_directory": "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032",
+  "guard_disk_floor_gib": 20,
+  "log_path": "/tmp/matrx-source-ci-refusal-green-001.log",
+  "log_sha256": "b5e92be73b478204cd7bdda2466d14d18196a569f18832bb529ae6a1fc1c5f34",
+  "result": "Original server refusal UI and queue assertions pass after preserving real client exports in network mock.",
+  "limits": "Focused harness repair; full suite and exact-SHA CI pending. No production/browser claim."
+}
