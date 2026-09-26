@@ -3864,6 +3864,9 @@ async function materializedPassword(id) {
           passwordChange: await sha256(
             path.join(__dirname, 'vault-password-change-acceptance.cjs'),
           ),
+          browserRestart: await sha256(
+            path.join(__dirname, 'vault-extension-browser-restart-acceptance.cjs'),
+          ),
         };
         assert(
           JSON.stringify(helperHashesAfterCapture) === JSON.stringify(proof.helperSha256),
