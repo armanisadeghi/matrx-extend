@@ -60,7 +60,7 @@ async function openSection(panel, label) {
 }
 
 async function click(panel, kind, label) {
-  const location = await evaluate(panel, `(async () => {
+  const pointerSample = (scroll) => evaluate(panel, `(() => {
     const kind = ${JSON.stringify(kind)}, label = ${JSON.stringify(label)};
     const visible = (el) => {
       const style = getComputedStyle(el), rect = el.getBoundingClientRect();
@@ -85,34 +85,44 @@ async function click(panel, kind, label) {
     candidates = candidates.filter(visible);
     if (candidates.length !== 1) return { count: candidates.length };
     const target = candidates[0];
-    target.scrollIntoView({ block: 'center', inline: 'center' });
-    let previous, stableFrames = 0, last;
-    for (let frame = 0; frame < 120; frame += 1) {
-      await new Promise(requestAnimationFrame);
-      const rect = target.getBoundingClientRect();
-      const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2;
-      const hit = document.elementFromPoint(x, y);
-      const hitTarget = hit === target || target.contains(hit);
-      let animating = false;
-      for (let ancestor = target; ancestor; ancestor = ancestor.parentElement) {
-        if (ancestor.getAnimations({ subtree: false }).some((animation) => animation.playState === 'running')) {
-          animating = true;
-          break;
-        }
+    if (${scroll}) target.scrollIntoView({ block: 'center', inline: 'center' });
+    const rect = target.getBoundingClientRect();
+    const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2;
+    const hit = document.elementFromPoint(x, y);
+    const hitTarget = hit === target || target.contains(hit);
+    let animating = false;
+    for (let ancestor = target; ancestor; ancestor = ancestor.parentElement) {
+      if (ancestor.getAnimations({ subtree: false }).some((animation) => animation.playState === 'running')) {
+        animating = true;
+        break;
       }
-      stableFrames = hitTarget && !animating && previous &&
-        Math.abs(previous.x - x) < 0.25 && Math.abs(previous.y - y) < 0.25
-        ? stableFrames + 1 : 0;
-      last = { count: 1, x, y, hitTarget, animating, stableFrames,
-        viewport: { width: innerWidth, height: innerHeight },
-        hitTag: hit?.tagName ?? null };
-      if (stableFrames >= 2) return { ...last, settled: true };
-      previous = { x, y };
     }
-    return { ...last, settled: false };
+    return { count: 1, x, y, hitTarget, animating,
+      viewport: { width: innerWidth, height: innerHeight },
+      hitTag: hit?.tagName ?? null };
   })()`);
+  let location = await pointerSample(true);
   assert.equal(location?.count, 1, `unique visible ${kind} ${label}`);
-  assert.equal(location.settled, true, `stable hit target for ${kind} ${label}: ${JSON.stringify(location)}`);
+  // Poll outside the page: a paused requestAnimationFrame must not strand
+  // Runtime.evaluate(awaitPromise) or hide the last pointer diagnostic.
+  const deadline = Date.now() + 3000;
+  let previous, stableSamples = 0;
+  do {
+    await new Promise((resolveWait) => setTimeout(resolveWait, 50));
+    try {
+      location = await pointerSample(false);
+    } catch (error) {
+      throw new Error(`pointer_sample_failed for ${kind} ${label}: ${String(error?.message ?? error)}; last=${JSON.stringify(location)}`);
+    }
+    stableSamples = location?.count === 1 && location.hitTarget && !location.animating &&
+      previous !== undefined && Math.abs(previous.x - location.x) < 0.25 &&
+      Math.abs(previous.y - location.y) < 0.25 ? stableSamples + 1 : 0;
+    location = { ...location, stableSamples };
+    if (stableSamples >= 2) break;
+    previous = location?.count === 1 ? { x: location.x, y: location.y } : undefined;
+  } while (Date.now() < deadline);
+  assert.equal(stableSamples >= 2, true,
+    `stable hit target for ${kind} ${label}: ${JSON.stringify(location)}`);
   await panel.send('Input.dispatchMouseEvent', {
     type: 'mousePressed', x: location.x, y: location.y, button: 'left', clickCount: 1,
   });
