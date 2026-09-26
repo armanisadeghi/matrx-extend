@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "run_id": "debug-log-controls-003",
+  "feature_id": "EXT-F-1005",
+  "source": {
+    "guard_log_path": "/tmp/matrx-debug-log-controls-003.log",
+    "guard_log_sha256": "a502b075115feb685f1198b6544f2e29e4922c08e251e26c032a2e8f7168ba14",
+    "acceptance_result_path": "test-results/debug-log-controls-acceptance.json",
+    "acceptance_result_sha256": "9ece7636a445988b4388b5b80bdaf176b8d71ec115ca00320c029fa2e26801f4",
+    "runner_path": "tests/browser/debug-log-controls-acceptance.mjs",
+    "runner_sha256": "aabee67f127cf2f5b7cb22a13e510c8ad84b189380582cc7b27046e7943548c2",
+    "release_receipt_sha256": "17abd491f49295df5eb6e262ae7710e9dbf70cb4904af54d598e26040b8277d3",
+    "manifest_sha256": "e088c1689d542df9b12222e6feb2ff45c4102f95fedf057ba8b2553dbcd1b77b"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T22:53:41.549Z",
+    "child_exit_at": "2026-09-26T22:53:55.420Z",
+    "child_exit_code": 0,
+    "child_signal": null,
+    "wrapper_stdout": "PARTIAL debug_log_controls_acceptance"
+  },
+  "build": {
+    "version": "0.2.79",
+    "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0",
+    "identity_cross_check": "The acceptance result's version/tree match .output/release-receipt.json and the generated manifest version; runner checks identity at both start and end."
+  },
+  "runtime": {
+    "real_admin_ui": true,
+    "owned_profile": true,
+    "natural_event_rows_before": 51,
+    "natural_event_rows_after": 64,
+    "case_count": 4,
+    "top_level_status": "partial",
+    "case_results": {
+      "EXT-F-1005-T14": {
+        "status": "partial",
+        "message_search": "pass via trusted input on natural row without detail",
+        "no_match": "pass",
+        "detail_search": "unverified; no natural detail-only term"
+      },
+      "EXT-F-1005-T15": {
+        "status": "partial",
+        "warm": "pass; visible rows 64 before and held while total rose to 75, then 75 displayed after resume",
+        "reload": "unverified",
+        "service_error": "unverified"
+      },
+      "EXT-F-1005-T17": {
+        "status": "partial",
+        "warm_event_list": "pass; no-events state and row/total counts zero",
+        "error_badge": "pass; runner requires it to be absent after clear and the observed result marks pass",
+        "reload": "unverified",
+        "service_error": "unverified"
+      },
+      "EXT-F-1005-T22": {
+        "status": "partial",
+        "warm": "pass; detail expanded and collapsed, no-detail row inert, no-match and no-events states observed",
+        "reload": "unverified",
+        "service_error": "unverified"
+      }
+    }
+  },
+  "interpretation": "The admitted child exited successfully with a PARTIAL result. The observations are bound to build 0.2.79 and support the stated warm subtargets only. Reload/service-error dimensions remain unverified across the cases; detail search remains unverified for T14. No case or feature is fully passed."
+}

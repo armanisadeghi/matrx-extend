@@ -8281,7 +8281,8 @@
           "run_ids": [
             "admin-debug-filters-001",
             "admin-debug-filter-matrix-001",
-            "debug-log-controls-002"
+            "debug-log-controls-002",
+            "debug-log-controls-003"
           ],
           "retest_status": "not-run"
         }
@@ -8323,6 +8324,41 @@
             }
           ],
           "limits": "Top-level run status is partial. T14 detail search, T15 reload/service-error, T17 error-badge/reload/service-error, and T22 remain open. Result does not bind observations to an exact release artifact; feature/case statuses remain unchanged."
+        },
+        {
+          "run_id": "debug-log-controls-003",
+          "mode": "admin",
+          "build": "0.2.79",
+          "status": "partial",
+          "receipt": "docs/stabilization/runs/debug-log-controls-003.json",
+          "independent_review": "docs/stabilization/reports/debug-log-controls-003-runtime-peer.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1005-T14",
+              "subtarget": "trusted_message_search_and_no_match",
+              "status": "partial",
+              "observation": "Natural message-only row remained visible under trusted search and distinct no-match state appeared; natural detail-only search term was unavailable."
+            },
+            {
+              "case_id": "EXT-F-1005-T15",
+              "subtarget": "warm_pause_resume",
+              "status": "partial",
+              "observation": "Displayed rows stayed at 64 while total rose to 75; resumed display reached 75."
+            },
+            {
+              "case_id": "EXT-F-1005-T17",
+              "subtarget": "warm_clear_and_error_badge",
+              "status": "partial",
+              "observation": "Clear produced zero rows/total and no-events state; result records the error-badge clearing predicate as pass."
+            },
+            {
+              "case_id": "EXT-F-1005-T22",
+              "subtarget": "warm_detail_and_empty_states",
+              "status": "partial",
+              "observation": "Detail expand/collapse, inert no-detail row, no-match and no-events states passed warm assertions."
+            }
+          ],
+          "limits": "T14 detail-only search remains unverified. Reload and service-error dimensions remain unverified for all four cases. The acceptance result is partial; feature/case statuses and retest status are unchanged."
         }
       ]
     },
