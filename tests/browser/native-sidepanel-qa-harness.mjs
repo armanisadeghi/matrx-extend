@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdir, mkdtemp, readFile, readlink, rm, writeFile } from 'node:fs/promises';
+import { access, mkdir, mkdtemp, readFile, readlink, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 /**
  * Isolated, native-side-panel browser QA harness.
@@ -14,27 +14,52 @@ import { createServer } from 'node:http';
  *
  * Run after `pnpm build`:
  *   node tests/browser/native-sidepanel-qa-harness.mjs
+ * If Playwright or Chrome-for-Testing is supplied by the host runtime, set
+ * MATRX_PLAYWRIGHT_MODULE and MATRX_CHROME_PATH to their installed absolute paths.
  */
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 
 const require = createRequire(import.meta.url);
 const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs');
-const { chromium } = createRequire('/Users/armanisadeghi/code/matrx-frontend/package.json')(
-  'playwright',
-);
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
 const RELEASED_EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
 const RELEASE_RECEIPT = join(REPO, '.output', 'release-receipt.json');
 const EXPECTED_EXTENSION_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
-const DEFAULT_CHROME = chromium.executablePath();
 const WAIT_MS = 100;
 const ATTEMPTS = 150;
+
+async function resolveBrowserRuntime(chromeExecutable) {
+  let chromium;
+  if (process.env.MATRX_PLAYWRIGHT_MODULE) {
+    ({ chromium } = await import(pathToFileURL(resolve(process.env.MATRX_PLAYWRIGHT_MODULE))));
+  } else {
+    try {
+      ({ chromium } = require('playwright'));
+    } catch (error) {
+      if (error?.code !== 'MODULE_NOT_FOUND' || !String(error.message).includes("'playwright'"))
+        throw error;
+      throw new Error(
+        'native_sidepanel_playwright_missing: set MATRX_PLAYWRIGHT_MODULE to an installed playwright/index.mjs',
+      );
+    }
+  }
+  if (typeof chromium?.connectOverCDP !== 'function') throw new Error('native_sidepanel_playwright_invalid');
+  const executable = chromeExecutable ?? process.env.MATRX_CHROME_PATH ?? chromium.executablePath();
+  try {
+    await access(executable);
+  } catch {
+    throw new Error(
+      'native_sidepanel_chrome_missing: set MATRX_CHROME_PATH to an installed Chrome-for-Testing executable',
+    );
+  }
+  return { chromium, chromeExecutable: executable };
+}
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -300,7 +325,7 @@ export async function runNativeSidepanelQa({
   extensionDir,
   expectedRelease,
   releaseReceiptPath = RELEASE_RECEIPT,
-  chromeExecutable = DEFAULT_CHROME,
+  chromeExecutable,
   expectedExtensionId = EXPECTED_EXTENSION_ID,
   artifactRoot = join(REPO, 'test-results'),
   exercisePanel,
@@ -313,6 +338,8 @@ export async function runNativeSidepanelQa({
   }
   const expected = resolveExpectedRelease({ receipt, extensionDir, expectedRelease });
   await verifyReleasedArtifact(expected);
+  const browserRuntime = await resolveBrowserRuntime(chromeExecutable);
+  chromeExecutable = browserRuntime.chromeExecutable;
   const verifiedExtensionDir = expected.extensionDir;
   const root = await mkdtemp(join(tmpdir(), 'matrx-native-sidepanel-qa-'));
   const profile = join(root, 'profile');
@@ -375,7 +402,9 @@ export async function runNativeSidepanelQa({
 
     // This attach is derived exclusively from this profile's DevToolsActivePort,
     // after the process/profile/extension checks above. It is never a shared port.
-    playwrightBrowser = await chromium.connectOverCDP(`http://127.0.0.1:${endpoint.port}`);
+    playwrightBrowser = await browserRuntime.chromium.connectOverCDP(
+      `http://127.0.0.1:${endpoint.port}`,
+    );
     const context = playwrightBrowser.contexts()[0];
     const page = await context.newPage();
     await page.goto(`http://localhost:${serverPort}/`);

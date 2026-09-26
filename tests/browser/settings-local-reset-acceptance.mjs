@@ -60,7 +60,7 @@ async function openSection(panel, label) {
 }
 
 async function click(panel, kind, label) {
-  const location = await evaluate(panel, `(() => {
+  const pointerSample = (scroll) => evaluate(panel, `(() => {
     const kind = ${JSON.stringify(kind)}, label = ${JSON.stringify(label)};
     const visible = (el) => {
       const style = getComputedStyle(el), rect = el.getBoundingClientRect();
@@ -84,24 +84,79 @@ async function click(panel, kind, label) {
       .filter((el) => el.textContent.trim() === label);
     candidates = candidates.filter(visible);
     if (candidates.length !== 1) return { count: candidates.length };
-    candidates[0].scrollIntoView({ block: 'center', inline: 'center' });
-    const r = candidates[0].getBoundingClientRect();
-    return { count: 1, x: r.x + r.width / 2, y: r.y + r.height / 2 };
+    const target = candidates[0];
+    if (${scroll}) target.scrollIntoView({ block: 'center', inline: 'center' });
+    const rect = target.getBoundingClientRect();
+    const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2;
+    const hit = document.elementFromPoint(x, y);
+    const hitTarget = hit === target || target.contains(hit);
+    let animating = false;
+    for (let ancestor = target; ancestor; ancestor = ancestor.parentElement) {
+      if (ancestor.getAnimations({ subtree: false }).some((animation) => animation.playState === 'running')) {
+        animating = true;
+        break;
+      }
+    }
+    return { count: 1, x, y, hitTarget, animating,
+      viewport: { width: innerWidth, height: innerHeight },
+      hitTag: hit?.tagName ?? null };
   })()`);
+  let location = await pointerSample(true);
   assert.equal(location?.count, 1, `unique visible ${kind} ${label}`);
+  // Poll outside the page: a paused requestAnimationFrame must not strand
+  // Runtime.evaluate(awaitPromise) or hide the last pointer diagnostic.
+  const deadline = Date.now() + 3000;
+  let previous, stableSamples = 0;
+  do {
+    await new Promise((resolveWait) => setTimeout(resolveWait, 50));
+    try {
+      location = await pointerSample(false);
+    } catch (error) {
+      throw new Error(`pointer_sample_failed for ${kind} ${label}: ${String(error?.message ?? error)}; last=${JSON.stringify(location)}`);
+    }
+    stableSamples = location?.count === 1 && location.hitTarget && !location.animating &&
+      previous !== undefined && Math.abs(previous.x - location.x) < 0.25 &&
+      Math.abs(previous.y - location.y) < 0.25 ? stableSamples + 1 : 0;
+    location = { ...location, stableSamples };
+    if (stableSamples >= 2) break;
+    previous = location?.count === 1 ? { x: location.x, y: location.y } : undefined;
+  } while (Date.now() < deadline);
+  assert.equal(stableSamples >= 2, true,
+    `stable hit target for ${kind} ${label}: ${JSON.stringify(location)}`);
   await panel.send('Input.dispatchMouseEvent', {
     type: 'mousePressed', x: location.x, y: location.y, button: 'left', clickCount: 1,
   });
   await panel.send('Input.dispatchMouseEvent', {
     type: 'mouseReleased', x: location.x, y: location.y, button: 'left', clickCount: 1,
   });
+  if (kind === 'port') {
+    const control = await portControlState(panel);
+    assert.equal(control?.focused, true,
+      `real mouse click focused port input: ${JSON.stringify({ location, control })}`);
+  }
 }
 
 async function setEnginePort(panel) {
   await click(panel, 'port', 'Local engine port');
   await panel.send('Input.insertText', { text: String(PORT) });
+  await waitFor('port_input_typed', () => portControlState(panel),
+    (state) => state?.value === String(PORT) && state.focused);
   await click(panel, 'button', 'Set');
-  await waitFor('port_override_persisted', () => storageState(panel), (s) => s.port === PORT);
+  await waitFor('port_override_persisted', async () => ({
+    control: await portControlState(panel), storage: await storageState(panel),
+  }), (state) => state.storage?.port === PORT);
+}
+
+async function portControlState(panel) {
+  return evaluate(panel, `(() => {
+    const input = document.querySelector('input[placeholder="auto"]');
+    if (!input) return null;
+    const button = [...input.parentElement.querySelectorAll('button')]
+      .find((el) => /^(Set|Save)$/.test(el.textContent.trim()));
+    return { value: input.value, focused: document.activeElement === input,
+      button: button?.textContent.trim() ?? null,
+      error: input.parentElement.nextElementSibling?.textContent.trim() ?? null };
+  })()`);
 }
 
 async function seedDisposableSession(panel) {

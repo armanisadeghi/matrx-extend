@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "lane": "EXT-D-0009 guest pointer bounded repair",
+  "sourceRun": "docs/stabilization/runs/guest-reset-003.json",
+  "peerFinding": "docs/stabilization/reports/guest-pointer-peer.json",
+  "engineering": "READY_FOR_INDEPENDENT_REVIEW",
+  "runtime": "UNVERIFIED",
+  "cause": "The port remained empty and unfocused in guest-reset-003. The later hit and animation checks used requestAnimationFrame inside Runtime.evaluate(awaitPromise), so a paused panel could strand the evaluation until the CDP transport timeout, without its last pointer sample.",
+  "repair": "The test scrolls the unique visible target, samples hit target, ancestor animation and center position through synchronous CDP evaluations, and requires three stable samples before a real CDP mouse press/release. Node enforces a three-second stability deadline; the existing CDP transport has a five-second per-command timeout. Failures retain the latest sampled geometry and hit state.",
+  "inputMechanics": "SettingsView renders a controlled numeric Input with onChange. The test still requires a real pointer click to focus that Input, then CDP Input.insertText, and checks both the DOM value and focus before clicking Set. It does not assign DOM value/focus or seed port storage.",
+  "sourceChecks": [
+    "node --check tests/browser/settings-local-reset-acceptance.mjs",
+    "git diff --check -- tests/browser/settings-local-reset-acceptance.mjs"
+  ],
+  "next": "Fresh peer source review, then resource-admitted native panel acceptance against frozen released artifact 0.2.56 by the root lane."
+}

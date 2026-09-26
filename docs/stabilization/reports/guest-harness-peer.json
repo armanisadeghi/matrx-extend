@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "defect": "EXT-D-0009",
+  "reviewedCommit": "8d8af3e8db6ee24d8ac36bdf80d04b5d4bf4fdcd",
+  "runtime": "UNVERIFIED",
+  "engineering": "PASS",
+  "findings": [
+    "Lazy local/explicit Playwright resolution removes the sibling checkout dependency; missing Playwright/Chrome paths give named actionable errors before profile creation.",
+    "Receipt/tree/zip verification still precedes runtime resolution; fresh profile, port 0, profile-derived CDP, process/profile ownership, and extension identity checks precede automation attach.",
+    "Trusted Playwright panel-open click and distinct native sidepanel target/context checks remain. Cleanup detaches and terminates only the spawned child; no Browser.close.",
+    "No source defect found in scope; real browser acceptance and configured host paths remain unverified."
+  ],
+  "checks": ["node --check: PASS", "module import without launch: PASS", "reviewed diff --check: PASS"]
+}

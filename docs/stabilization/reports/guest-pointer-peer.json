@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "reviewedCommit": "e01d24286b6a3facb9112fe868b18ce7f02de47d",
+  "runtime": "UNVERIFIED",
+  "engineering": "FAIL",
+  "findings": [
+    "The target fix is well aimed: port input coordinates are sampled only after the 200 ms ancestor grid transition is no longer running, the target center remains stable for three animation frames, and elementFromPoint confirms the real target is under the pointer. The center is then clicked through CDP and focus is asserted before trusted Input.insertText; value plus focus must appear before Set.",
+    "No DOM focus/value assignment or storage seeding is used for port entry; selector uniqueness and existing persistence assertions remain intact. ScrollIntoView precedes measurement, and viewport-relative CSS coordinates are suitable for CDP mouse dispatch.",
+    "Engineering gap: the 120-frame bound is not a wall-clock bound. If requestAnimationFrame is paused/throttled (for example, a hidden or suspended panel), Runtime.evaluate(awaitPromise) can remain pending indefinitely, bypassing the harness's wall-clock waitFor and preventing its promised bounded diagnostic failure. Add an elapsed-time deadline inside the RAF loop or a CDP evaluation timeout, with last sampled bounds/hit/animation evidence.",
+    "No browser, test, build, or runtime acceptance was run; source inspection cannot establish that the input accepted text or the reset flow passed."
+  ],
+  "scope": "Independent source review of e01d242 only; no UI execution, tests, builds, installs, or source edits."
+}
