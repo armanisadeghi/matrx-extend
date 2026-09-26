@@ -287,17 +287,37 @@ async function exercise({ page, panel, artifacts }) {
         const row=[...(list?.children??[])].find(e=>
           e.firstElementChild?.matches('button') &&
           !e.firstElementChild.firstElementChild?.querySelector('svg'));
-        return row?.firstElementChild?.querySelector('span.truncate')?.textContent.trim().slice(0,24) ?? null;
+        const button=row?.firstElementChild;
+        const message=button?.querySelector('span.truncate')?.textContent.trim() ?? '';
+        return message ? {term:message.slice(0,24),rowText:button.textContent.trim(),message} : null;
       })()`,
       );
       if (positive) {
-        assert.equal(await setSearch(panel, positive), true);
+        assert.equal(await setSearch(panel, positive.term), true);
         const matched = await waitFor(
           'search_positive',
-          () => snapshot(panel),
-          (s) => s?.counterMatchesRows && s.searchLength > 0 && s.rowCount > 0,
+          async () => {
+            const observed = await snapshot(panel);
+            const sourceRowVisible = await evaluate(
+              panel,
+              `(() => {
+                const search=document.querySelector('input[placeholder="Search…"]');
+                const list=search?.closest('div.flex.h-full.flex-col')?.lastElementChild;
+                return [...(list?.children??[])].some(e=>{
+                  const button=e.firstElementChild;
+                  return button?.matches('button') &&
+                    !button.firstElementChild?.querySelector('svg') &&
+                    button.textContent.trim()===${JSON.stringify(positive.rowText)} &&
+                    button.querySelector('span.truncate')?.textContent.trim()===${JSON.stringify(positive.message)};
+                });
+              })()`,
+            );
+            return { ...observed, sourceRowVisible };
+          },
+          (s) =>
+            s?.counterMatchesRows && s.searchLength > 0 && s.rowCount > 0 && s.sourceRowVisible,
         );
-        assert.ok(matched.rowCount > 0);
+        assert.equal(matched.sourceRowVisible, true);
         await setSearch(panel, 'zzzz-no-match-acceptance');
         state = await waitFor(
           'search_empty',
@@ -308,7 +328,7 @@ async function exercise({ page, panel, artifacts }) {
           'EXT-F-1005-T14',
           'partial',
           'Search matches message and detail values; unmatched text shows no-match state.',
-          `Positive count=${matched.rowCount}; unmatched count=${state.rowCount}.`,
+          `Positive count=${matched.rowCount}; original message-only row visible=${matched.sourceRowVisible}; unmatched count=${state.rowCount}.`,
           {
             messageSearch: 'pass_via_trusted_input_on_row_without_detail',
             unmatchedState: 'pass',

@@ -32,7 +32,7 @@
   "builder_response": {
     "status": "source_corrections_prepared_for_rereview",
     "trusted_search": "The runner now hit-tests and clicks the actual Search input, uses trusted select-all keyboard commands, and types through CDP Input.insertText. Synthetic DOM input/change dispatch was removed.",
-    "T14_scope": "A message from a natural row without a detail affordance supplies the positive term. The case is partial only when message search and the distinct no-match state are observed; detail-only search remains unverified. With no safe message-only row, T14 is unverified.",
+    "T14_scope": "A message from a natural row without a detail affordance supplies the positive term. The case is partial only when that same private row identity and message remain rendered after trusted filtering and the distinct no-match state is observed; detail-only search remains unverified. With no safe message-only row, T14 is unverified. No event text is emitted in results.",
     "empty_evidence_exit": "A run whose cases are all unverified now receives top-level unverified and exits nonzero. Per-case evidence remains explicit.",
     "runtime": "Unverified until independent source rereview and a root-owned admitted native run."
   }
