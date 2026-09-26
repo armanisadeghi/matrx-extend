@@ -10,6 +10,7 @@ import { randomBytes } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { MANDATE_KEYS } from '@ai-matrx/agents/mandates';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
@@ -19,6 +20,7 @@ const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const EXPECTED_ADMIN = 'admin@admin.com';
 const OWNED_ORGANIZATION = 'ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete';
+const FRESH_CHAT_TARGET = `mandate:${MANDATE_KEYS.extend__browser_chat}`;
 const LOCAL_KEY = 'matrx.qa.adminReset.local';
 const LOCAL_VALUE = 'disposable-admin-reset-local-fixture';
 const SESSION_KEY = 'matrx.qa.adminReset.session';
@@ -180,7 +182,7 @@ async function captureNoWorkspaceNoticeState(panel) {
   );
 }
 
-async function storageState(panel) {
+async function storageState(panel, afterConfirmedEmpty = false) {
   // Only opaque per-run fingerprints and aggregate observations leave Chrome.
   return evaluate(
     panel,
@@ -189,6 +191,8 @@ async function storageState(panel) {
     const session = await chrome.storage.session.get(null);
     const baseline = ${JSON.stringify(storageBaseline)};
     const initialGuest = ${JSON.stringify(initialGuestBaseline)};
+    const afterConfirmedEmpty = ${JSON.stringify(afterConfirmedEmpty)};
+    const freshChatTarget = ${JSON.stringify(FRESH_CHAT_TARGET)};
     // Fixed source-declared store classes only: observations, never exemptions.
     // Source census: config/env.ts, state/*.ts, lib/audit/{log,device-key}.ts,
     // lib/{guidance,demos,lists}/storage.ts and lib/desktop/ws-invoke.ts.
@@ -236,6 +240,22 @@ async function storageState(panel) {
       return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)),
         (byte) => byte.toString(16).padStart(2, '0')).join('');
     };
+    const chatKeyFingerprint = await fingerprint(['local', 'matrx.chat.v1']);
+    const isFreshChatDefault = (raw) => {
+      if (typeof raw !== 'string') return false;
+      try {
+        const parsed = JSON.parse(raw), state = parsed?.state;
+        return parsed.version === 1 && state && typeof state === 'object' &&
+          Object.keys(state).sort().join(',') ===
+            'boundComputeTarget,draft,permissionMode,selectedAgentId,variableValues' &&
+          state.selectedAgentId === freshChatTarget && state.draft === '' &&
+          state.boundComputeTarget === null &&
+          state.variableValues && typeof state.variableValues === 'object' &&
+          !Array.isArray(state.variableValues) && Object.keys(state.variableValues).length === 0 &&
+          state.permissionMode && typeof state.permissionMode === 'object' &&
+          !Array.isArray(state.permissionMode) && Object.keys(state.permissionMode).length === 0;
+      } catch { return false; }
+    };
     const category = (area, key) => {
       if (area === 'session') return key === 'matrx.crossComponent.instanceId' ? 'instance' : 'other';
       if (['matrx.guest.signature', 'matrx.guest.nonce', 'matrx.guest.createdAt'].includes(key)) return 'guest';
@@ -260,6 +280,7 @@ async function storageState(panel) {
     const identities = { local: await describe('local', local), session: await describe('session', session) };
     const compare = (area) => {
       const result = { overlap: 0, identical: 0, changed: 0, missing: 0, unexplained: 0,
+        fresh_chat_default: 0,
         fresh_guest: 0, stale_guest: 0, fresh_instance: 0, stale_instance: 0,
         fresh_discovery_cache: 0, stale_discovery_cache: 0, rediscovered_port: 0,
         account_overlap: 0, settings_overlap: 0, other_overlap: 0, other_identical: 0, other_changed: 0 };
@@ -280,17 +301,21 @@ async function storageState(panel) {
           result.rediscovered_port++;
         } else {
           result[(kind === 'account' || kind === 'settings' ? kind : 'other') + '_overlap']++;
+          const guest = initialGuest?.[area]?.find((entry) => entry.key === current.key);
           if (kind !== 'account' && kind !== 'settings') {
             result[same ? 'other_identical' : 'other_changed']++;
             const group = result.other_sources[current.sourceClass];
             group.overlap++;
             group[same ? 'identical' : 'changed']++;
-            const guest = initialGuest?.[area]?.find((entry) => entry.key === current.key);
             if (!guest) group.absent_initial_guest++;
             else if (guest.value === current.value) group.matches_initial_guest++;
             result.other_shapes[current.shape]++;
           }
-          result.unexplained++;
+          const freshChatDefault = afterConfirmedEmpty && area === 'local' &&
+            prior.key === chatKeyFingerprint && current.sourceClass === 'chat_preferences' &&
+            guest?.value === current.value && isFreshChatDefault(local['matrx.chat.v1']);
+          if (freshChatDefault) result.fresh_chat_default++;
+          else result.unexplained++;
         }
       }
       result.other_sources = Object.fromEntries(Object.entries(result.other_sources).filter(([, counts]) => counts.overlap > 0));
@@ -795,6 +820,8 @@ try {
           session_fixture_present: after.hasSessionFixture,
         };
         stage = 'reset_confirm_prior_key_check';
+        const confirmWasEmpty = after.localKeys.length === 0 && after.sessionKeys.length === 0;
+        assert.equal(confirmWasEmpty, true, 'Confirm must leave local and session storage empty');
         assert.deepEqual(
           before.localKeys.filter((key) => after.localKeys.includes(key)),
           [],
@@ -894,7 +921,7 @@ try {
             s.theme === 'System',
         );
         stage = 'reset_reload_storage_read';
-        const reloaded = await storageState(panel);
+        const reloaded = await storageState(panel, confirmWasEmpty);
         evidence.reset_reload.storage_read_completed = true;
         evidence.reset_reload.storage_snapshot = {
           auth_present: reloaded.hasAccessToken || reloaded.hasUserProfile || reloaded.hasAdminFlag,

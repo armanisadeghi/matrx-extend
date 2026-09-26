@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0015",
+  "lane": "implementation Sol medium",
+  "status": "source_oracle_repair_complete_runtime_unverified",
+  "run_evidence": "isolated-admin-reset-009 observed empty local/session immediately after Confirm; after reload one prior key returned: chat_preferences, identical to the initial guest value; all other unexplained overlaps were zero.",
+  "source_census": ["src/features/settings/SettingsView.tsx:145-149 clears both storage areas before sign-out", "src/entrypoints/sidepanel/App.tsx:562-575 force-mounts ChatView on fresh panel load", "src/features/chat/ChatView.tsx:228-234 selects the fresh settings default", "src/state/settings.ts:120-124 defines that default as the browser-chat Mandate ref", "src/state/chat.ts:270-283,551-565 defines and persists only the default chat preference fields under matrx.chat.v1", "src/lib/storage/zustand-adapter.ts:12-19 writes the serialized value to chrome.storage.local"],
+  "oracle": "Only after an asserted empty Confirm snapshot, the exact matrx.chat.v1 local key may be counted as a fresh default when its value matches the initial guest fingerprint and parses as the source-defined version-1 empty state with the generated browser-chat Mandate ref.",
+  "custom_retention_fails": "A retained custom draft, variables, permission mode, bound target, or agent differs from the fresh default shape or initial guest fingerprint and remains unexplained. Any other key, stale guest identity, account/settings value, or session overlap remains a failure.",
+  "changed_files": ["tests/browser/isolated-admin-reset-acceptance.mjs"],
+  "verification": ["node --check: pass", "installed Biome check: pass with one preexisting suggested warning", "git diff --check: pass"],
+  "runtime": "Not run in this lane; root owns the guarded browser run.",
+  "next_action": "Root reruns the original guarded reset acceptance path and verifies the fresh_chat_default count is one with zero unexplained overlaps."
+}
