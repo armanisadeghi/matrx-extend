@@ -5,10 +5,7 @@
   "status": "pass",
   "source_sha": "6f87da0",
   "at": "2026-09-26T03:24:03.092Z",
-  "command": [
-    "pnpm",
-    "compile"
-  ],
+  "command": ["pnpm", "compile"],
   "exit_code": 0,
   "resource_invalid": false,
   "log_sha256": "77ae3bca47979cc8aeeabcacab160e23a102cd276ed147d3b0817978f122bf12",

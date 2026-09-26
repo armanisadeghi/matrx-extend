@@ -34,11 +34,7 @@
   "owner": "/root",
   "root_cause": "release.sh treats post-push checks as advisory findings and decouples candidate artifact promotion from their result.",
   "sibling_census": "Generation failures, merge conflicts, Store package failures, and race-rebuilt candidates share the same publication boundary and are included in the repair.",
-  "fix_commits": [
-    "d9350b4",
-    "88b1f59",
-    "4dbf7db"
-  ],
+  "fix_commits": ["d9350b4", "88b1f59", "4dbf7db"],
   "original_reproduction_retest_run": "release-green-001",
   "surrounding_case_runs": [
     "release-recovery-001",
@@ -46,10 +42,7 @@
     "integrated-regression-001",
     "release-real-002"
   ],
-  "reviewer_identity": [
-    "/root/release_final_peer",
-    "/root/coverage_evidence_audit"
-  ],
+  "reviewer_identity": ["/root/release_final_peer", "/root/coverage_evidence_audit"],
   "transition_history": [
     {
       "at": "2026-09-26T02:15:00Z",

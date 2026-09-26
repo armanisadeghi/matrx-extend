@@ -7,7 +7,12 @@
   "browser": "Google Chrome native app; AI (aimatrx.com) profile",
   "resource_lease": "root-admitted render-retest-001, exec session 46435",
   "resource_warning_seen": false,
-  "fixture": {"url": "https://example.com/", "visible_title": "Example Domain", "verified": true, "cleanup": "Temporary markdown edits discarded by Re-capture; restored 16-word capture with no EDITED marker; fixture tab closed."},
+  "fixture": {
+    "url": "https://example.com/",
+    "visible_title": "Example Domain",
+    "verified": true,
+    "cleanup": "Temporary markdown edits discarded by Re-capture; restored 16-word capture with no EDITED marker; fixture tab closed."
+  },
   "extension": {
     "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
     "enabled": true,
@@ -21,18 +26,66 @@
     "recovery": "Chrome Load unpacked using the exact receipt bundle path updated the existing matching extension ID; Chrome confirmed Extension loaded, version 0.2.47. Then extension Reload confirmed Reloaded. No removal or data deletion."
   },
   "observations": [
-    {"at": "2026-09-26T01:51:45Z", "action": "Initial panel on Example Domain", "result": "Installed 0.2.44 displayed EXT-D-0001 .custom browser-compatibility render error."},
-    {"at": "2026-09-26T01:52:16Z", "action": "Reload stale extension", "result": "Still 0.2.44 and same error; candidate verification blocked at this point."},
-    {"at": "2026-09-26T01:54Z", "action": "Load unpacked exact receipt path and verify", "result": "Native Chrome confirmed extension loaded; matching ID showed 0.2.47 from expected .output/chrome-mv3-dev path; extension Reload confirmed."},
-    {"at": "2026-09-26T01:55Z", "action": "Open actual sidepanel twice on Example Domain", "result": "Both opens showed Chat, Settings, Scrape controls and no EXT-D-0001 render error. Account UI visibly showed guest state (Sign in; choose an agent)."},
-    {"at": "2026-09-26T01:56Z", "action": "EXT-F-1003-T04 Theme", "result": "System→Light→Dark→System; selection controls reflected each choice; restored System."},
-    {"at": "2026-09-26T01:57Z", "action": "EXT-F-1003-T10 Default mode", "result": "Ask before acting→Act without asking; persisted across Chat/Settings navigation; restored Ask before acting; no backend action invoked."},
-    {"at": "2026-09-26T01:58Z", "action": "EXT-F-1003-T13 Default speed", "result": "Fast→Thinking; persisted across Chat/Settings navigation; restored Fast."},
-    {"at": "2026-09-26T01:59Z", "action": "EXT-F-1003-T40 Auto-scrape", "result": "Off→On; persisted after navigation and extension Reload; then restored Off and verified."},
-    {"at": "2026-09-26T02:00Z", "action": "EXT-F-1007-T01 Fast Capture", "result": "Capture produced Example Domain article, 16 words; Links tab count 1 and result tabs visible."},
-    {"at": "2026-09-26T02:00Z", "action": "EXT-F-1007-T02 Scroll & capture", "result": "Clicked twice; output remained the same 16-word article on this short static fixture. This does not establish failure; progressive busy behavior was not measured."},
-    {"at": "2026-09-26T02:00Z", "action": "EXT-F-1007-T05 Markdown Apply", "result": "Added FIRST-TEST-EDIT; preview showed EDITED and marker; reopening editor retained marker. Did not Save."},
-    {"at": "2026-09-26T02:01Z", "action": "EXT-F-1007-T06 Cancel and cleanup", "result": "Added CANCEL-ME then Cancel; preview returned to FIRST-TEST-EDIT without CANCEL-ME. Re-capture confirmed discard prompt; confirmed and restored original 16-word capture without EDITED marker; closed fixture tab."}
+    {
+      "at": "2026-09-26T01:51:45Z",
+      "action": "Initial panel on Example Domain",
+      "result": "Installed 0.2.44 displayed EXT-D-0001 .custom browser-compatibility render error."
+    },
+    {
+      "at": "2026-09-26T01:52:16Z",
+      "action": "Reload stale extension",
+      "result": "Still 0.2.44 and same error; candidate verification blocked at this point."
+    },
+    {
+      "at": "2026-09-26T01:54Z",
+      "action": "Load unpacked exact receipt path and verify",
+      "result": "Native Chrome confirmed extension loaded; matching ID showed 0.2.47 from expected .output/chrome-mv3-dev path; extension Reload confirmed."
+    },
+    {
+      "at": "2026-09-26T01:55Z",
+      "action": "Open actual sidepanel twice on Example Domain",
+      "result": "Both opens showed Chat, Settings, Scrape controls and no EXT-D-0001 render error. Account UI visibly showed guest state (Sign in; choose an agent)."
+    },
+    {
+      "at": "2026-09-26T01:56Z",
+      "action": "EXT-F-1003-T04 Theme",
+      "result": "System→Light→Dark→System; selection controls reflected each choice; restored System."
+    },
+    {
+      "at": "2026-09-26T01:57Z",
+      "action": "EXT-F-1003-T10 Default mode",
+      "result": "Ask before acting→Act without asking; persisted across Chat/Settings navigation; restored Ask before acting; no backend action invoked."
+    },
+    {
+      "at": "2026-09-26T01:58Z",
+      "action": "EXT-F-1003-T13 Default speed",
+      "result": "Fast→Thinking; persisted across Chat/Settings navigation; restored Fast."
+    },
+    {
+      "at": "2026-09-26T01:59Z",
+      "action": "EXT-F-1003-T40 Auto-scrape",
+      "result": "Off→On; persisted after navigation and extension Reload; then restored Off and verified."
+    },
+    {
+      "at": "2026-09-26T02:00Z",
+      "action": "EXT-F-1007-T01 Fast Capture",
+      "result": "Capture produced Example Domain article, 16 words; Links tab count 1 and result tabs visible."
+    },
+    {
+      "at": "2026-09-26T02:00Z",
+      "action": "EXT-F-1007-T02 Scroll & capture",
+      "result": "Clicked twice; output remained the same 16-word article on this short static fixture. This does not establish failure; progressive busy behavior was not measured."
+    },
+    {
+      "at": "2026-09-26T02:00Z",
+      "action": "EXT-F-1007-T05 Markdown Apply",
+      "result": "Added FIRST-TEST-EDIT; preview showed EDITED and marker; reopening editor retained marker. Did not Save."
+    },
+    {
+      "at": "2026-09-26T02:01Z",
+      "action": "EXT-F-1007-T06 Cancel and cleanup",
+      "result": "Added CANCEL-ME then Cancel; preview returned to FIRST-TEST-EDIT without CANCEL-ME. Re-capture confirmed discard prompt; confirmed and restored original 16-word capture without EDITED marker; closed fixture tab."
+    }
   ],
   "case_results": {
     "EXT-D-0001-original-repro": "pass_candidate: original .custom render error absent on two actual sidepanel opens with verified 0.2.47 candidate; guest mode",

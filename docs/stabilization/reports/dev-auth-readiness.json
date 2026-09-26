@@ -9,8 +9,20 @@
     "development_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
     "expected_development_callback": "https://cihdmkcdjjckfhjpgoedmgfpoljebaml.chromiumapp.org/",
     "oauth_flow": "Supabase OAuth 2.1 public PKCE client; chrome.identity.getRedirectURL() is sent as redirect_uri",
-    "manifest_dev_frontend_origins": ["http://localhost/*", "http://*.localhost/*", "http://127.0.0.1/*"],
-    "runtime_frontend_origin_families": ["https://*.aimatrx.com/*", "https://aimatrx.com/*", "https://*.mymatrx.com/*", "https://*-armani-sadeghis-projects.vercel.app/*", "http://localhost/*", "http://*.localhost/*", "http://127.0.0.1/*"]
+    "manifest_dev_frontend_origins": [
+      "http://localhost/*",
+      "http://*.localhost/*",
+      "http://127.0.0.1/*"
+    ],
+    "runtime_frontend_origin_families": [
+      "https://*.aimatrx.com/*",
+      "https://aimatrx.com/*",
+      "https://*.mymatrx.com/*",
+      "https://*-armani-sadeghis-projects.vercel.app/*",
+      "http://localhost/*",
+      "http://*.localhost/*",
+      "http://127.0.0.1/*"
+    ]
   },
   "observed_live_auth_config": {
     "project_ref": "brsgrqvjdzwihsvnfqkf",

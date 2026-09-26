@@ -7,11 +7,7 @@
       "id": "EXT-F-0001",
       "name": "Development build, reload and runtime identity",
       "surface": "Development installation",
-      "entry_points": [
-        "docs/DEVELOPMENT.md",
-        "wxt.config.ts",
-        "src/config/identity.ts"
-      ],
+      "entry_points": ["docs/DEVELOPMENT.md", "wxt.config.ts", "src/config/identity.ts"],
       "controls": [
         {
           "id": "EXT-F-0001-C01",
@@ -39,11 +35,7 @@
           "action": "Dev identity auth redirect and origin compatibility"
         }
       ],
-      "source_anchors": [
-        "docs/DEVELOPMENT.md",
-        "wxt.config.ts",
-        "src/config/identity.ts"
-      ],
+      "source_anchors": ["docs/DEVELOPMENT.md", "wxt.config.ts", "src/config/identity.ts"],
       "dependency_class": "local",
       "wave": "A",
       "inventory_status": "source-complete",
@@ -82,9 +74,7 @@
           "retest_status": "not-run"
         }
       },
-      "readiness_gaps": [
-        "Concrete procedure and evidence required before executing each control."
-      ]
+      "readiness_gaps": ["Concrete procedure and evidence required before executing each control."]
     },
     {
       "id": "EXT-F-0002",
@@ -163,18 +153,13 @@
           "retest_status": "not-run"
         }
       },
-      "readiness_gaps": [
-        "Concrete procedure and evidence required before executing each control."
-      ]
+      "readiness_gaps": ["Concrete procedure and evidence required before executing each control."]
     },
     {
       "id": "EXT-F-0003",
       "name": "Validate and publish exact release candidate",
       "surface": "Release infrastructure",
-      "entry_points": [
-        "release.sh",
-        "scripts/test-release-ship-path.sh"
-      ],
+      "entry_points": ["release.sh", "scripts/test-release-ship-path.sh"],
       "controls": [
         {
           "id": "EXT-F-0003-C01",
@@ -213,10 +198,7 @@
           "basis": "Campaign acceptance requirement; verify against actual release behavior, not a claim it is implemented."
         }
       ],
-      "source_anchors": [
-        "release.sh",
-        "scripts/test-release-ship-path.sh"
-      ],
+      "source_anchors": ["release.sh", "scripts/test-release-ship-path.sh"],
       "dependency_class": "local",
       "wave": "A",
       "inventory_status": "source-complete",

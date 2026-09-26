@@ -17,115 +17,25 @@
   "normalMacPressureLevel": 1,
   "cpuAdmissionRationale": "Admission samples a full 60-second window: refuse average CPU busy >=75%, or average busy >=60% if ANY sample has normalized one-minute load >=0.75. Missing samples refuse. The reported admission load is the window maximum normalized to the final CPU count.",
   "allowedCommands": [
-    [
-      "pnpm",
-      "install",
-      "--frozen-lockfile",
-      "--ignore-scripts"
-    ],
-    [
-      "pnpm",
-      "exec",
-      "wxt",
-      "prepare"
-    ],
-    [
-      "pnpm",
-      "exec",
-      "wxt",
-      "build",
-      "--mode",
-      "development"
-    ],
-    [
-      "pnpm",
-      "exec",
-      "wxt",
-      "build"
-    ],
-    [
-      "pnpm",
-      "exec",
-      "wxt"
-    ],
-    [
-      "pnpm",
-      "compile"
-    ],
-    [
-      "pnpm",
-      "exec",
-      "tsc",
-      "--noEmit"
-    ],
-    [
-      "pnpm",
-      "exec",
-      "vitest",
-      "run",
-      "--maxWorkers=1",
-      "--minWorkers=1"
-    ],
-    [
-      "bash",
-      "scripts/test-release-ship-path.sh"
-    ],
-    [
-      "bash",
-      "scripts/test-release-ship-path.sh",
-      "/tmp/matrx-release-before/release.sh"
-    ],
-    [
-      "node",
-      "--test",
-      "scripts/test-release-recovery.mjs"
-    ],
-    [
-      "node",
-      "tests/browser/settings-local-reset-acceptance.mjs"
-    ],
-    [
-      "bash",
-      "release.sh",
-      "--message",
-      "EXT-D-0002 validated release integration"
-    ],
-    [
-      "bash",
-      "release.sh",
-      "--message",
-      "EXT-D-0006 validated permission controls"
-    ],
-    [
-      "bash",
-      "release.sh",
-      "--message",
-      "EXT-D-0006 EXT-D-0007 EXT-D-0008 verified stabilization"
-    ],
-    [
-      "pnpm",
-      "update",
-      "-r",
-      "@ai-matrx/*",
-      "--latest",
-      "--ignore-scripts"
-    ],
-    [
-      "bash",
-      "release.sh",
-      "--message",
-      "EXT-D-0009 browser acceptance and synchronized fixes"
-    ],
-    [
-      "node",
-      "tests/browser/settings-local-controls-acceptance.mjs"
-    ],
-    [
-      "bash",
-      "release.sh",
-      "--message",
-      "EXT-D-0012 clear stale port validation"
-    ]
+    ["pnpm", "install", "--frozen-lockfile", "--ignore-scripts"],
+    ["pnpm", "exec", "wxt", "prepare"],
+    ["pnpm", "exec", "wxt", "build", "--mode", "development"],
+    ["pnpm", "exec", "wxt", "build"],
+    ["pnpm", "exec", "wxt"],
+    ["pnpm", "compile"],
+    ["pnpm", "exec", "tsc", "--noEmit"],
+    ["pnpm", "exec", "vitest", "run", "--maxWorkers=1", "--minWorkers=1"],
+    ["bash", "scripts/test-release-ship-path.sh"],
+    ["bash", "scripts/test-release-ship-path.sh", "/tmp/matrx-release-before/release.sh"],
+    ["node", "--test", "scripts/test-release-recovery.mjs"],
+    ["node", "tests/browser/settings-local-reset-acceptance.mjs"],
+    ["bash", "release.sh", "--message", "EXT-D-0002 validated release integration"],
+    ["bash", "release.sh", "--message", "EXT-D-0006 validated permission controls"],
+    ["bash", "release.sh", "--message", "EXT-D-0006 EXT-D-0007 EXT-D-0008 verified stabilization"],
+    ["pnpm", "update", "-r", "@ai-matrx/*", "--latest", "--ignore-scripts"],
+    ["bash", "release.sh", "--message", "EXT-D-0009 browser acceptance and synchronized fixes"],
+    ["node", "tests/browser/settings-local-controls-acceptance.mjs"],
+    ["bash", "release.sh", "--message", "EXT-D-0012 clear stale port validation"]
   ],
   "launchContract": "Only the listed trusted foreground tool invocations are admitted (plus positional test-file filters for the single-worker vitest invocation). Every descendant must inherit MATRX_RESOURCE_OWNER unchanged. New sessions/detached children are discovered and stopped by token census. Environment scrubbing, remote process brokers, external daemon handoff and arbitrary shell/script launchers are outside this contract and forbidden. Install skips lifecycle scripts; run required preparation separately through its listed command. WXT server occupies the sole permit until stopped, including while idle; stop it before manual browser testing, using a completed unpacked build. This is cooperative process ownership, not an OS security sandbox. Daemonizing commands are prohibited. macOS can hide protected system-binary environments: such binaries must remain in the owned foreground process group; detached protected system binaries are explicitly unsupported. This guard does not claim to contain arbitrary hostile descendants.",
   "processSnapshotMaxBytes": 33554432

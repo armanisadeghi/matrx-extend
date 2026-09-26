@@ -4,10 +4,35 @@
   "status": "blocked",
   "run_record": "docs/stabilization/runs/guest-settings-004.json",
   "summary": "No UI cases were exercised: native Chrome access was blocked because the Mac was locked. The admitted browser lease was not used beyond its preflight.",
-  "counts": {"cases_total": 5, "passed": 0, "failed": 0, "blocked": 5, "unverifiable": 0},
-  "feature_controls_cases": [{"feature_id":"EXT-F-1003","control_ids":["EXT-F-1003-C01","EXT-F-1003-C03","EXT-F-1003-C08","EXT-F-1003-C02","EXT-F-1003-C19"],"case_ids":["EXT-F-1003-T01","EXT-F-1003-T07","EXT-F-1003-T22","EXT-F-1003-T04","EXT-F-1003-T52"],"status":"blocked"}],
-  "evidence": ["First CUA call targeting native Google Chrome returned: ‘The Mac is locked and automatic unlock could not unlock it. Ask the user to unlock the Mac manually before continuing.’"],
+  "counts": { "cases_total": 5, "passed": 0, "failed": 0, "blocked": 5, "unverifiable": 0 },
+  "feature_controls_cases": [
+    {
+      "feature_id": "EXT-F-1003",
+      "control_ids": [
+        "EXT-F-1003-C01",
+        "EXT-F-1003-C03",
+        "EXT-F-1003-C08",
+        "EXT-F-1003-C02",
+        "EXT-F-1003-C19"
+      ],
+      "case_ids": [
+        "EXT-F-1003-T01",
+        "EXT-F-1003-T07",
+        "EXT-F-1003-T22",
+        "EXT-F-1003-T04",
+        "EXT-F-1003-T52"
+      ],
+      "status": "blocked"
+    }
+  ],
+  "evidence": [
+    "First CUA call targeting native Google Chrome returned: ‘The Mac is locked and automatic unlock could not unlock it. Ask the user to unlock the Mac manually before continuing.’"
+  ],
   "resource_lease": "guest-settings-004, coordinator-held session 29385",
-  "limitations": ["Installed extension ID/path/version and build receipt were not inspected.", "Guest warm/reload states, appearance visuals/persistence and admin sign-in outcome remain unverified.", "No screenshots or case observations exist because UI access did not start."],
+  "limitations": [
+    "Installed extension ID/path/version and build receipt were not inspected.",
+    "Guest warm/reload states, appearance visuals/persistence and admin sign-in outcome remain unverified.",
+    "No screenshots or case observations exist because UI access did not start."
+  ],
   "next_action": "After manual Mac unlock, rerun the required fresh build receipt and installed-ID/path/version gate before any case."
 }

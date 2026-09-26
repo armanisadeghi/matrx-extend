@@ -77,7 +77,9 @@ function cleanupCommittedPath(path, options) {
   try {
     rmSync(path, options);
   } catch (error) {
-    console.error(`WARNING: Release committed; cleanup failed at ${path}: ${error.message}. Inspect and remove this retained path when safe.`);
+    console.error(
+      `WARNING: Release committed; cleanup failed at ${path}: ${error.message}. Inspect and remove this retained path when safe.`,
+    );
   }
 }
 
@@ -86,7 +88,12 @@ export function promoteUnpackedRelease({ sourceDir, destinationDir, version }) {
 }
 
 /** Keep every already-installed unpacked path on the same release bytes. */
-export function promoteUnpackedReleaseToMany({ sourceDir, destinationDirs, version, beforeCommit }) {
+export function promoteUnpackedReleaseToMany({
+  sourceDir,
+  destinationDirs,
+  version,
+  beforeCommit,
+}) {
   const source = resolve(sourceDir);
   const destinations = destinationDirs.map((dir) => resolve(dir));
   if (destinations.length === 0 || new Set(destinations).size !== destinations.length) {
@@ -149,7 +156,9 @@ export function promoteUnpackedReleaseToMany({ sourceDir, destinationDirs, versi
         if (entry.promoted) rmSync(entry.destination, { recursive: true, force: true });
         if (entry.movedExisting) renameSync(entry.backup, entry.destination);
       } catch (recoveryError) {
-        recoveryErrors.push(`${entry.destination}: ${recoveryError.message}; prior bundle retained at ${entry.backup}`);
+        recoveryErrors.push(
+          `${entry.destination}: ${recoveryError.message}; prior bundle retained at ${entry.backup}`,
+        );
       }
       try {
         rmSync(entry.staging, { recursive: true, force: true });
@@ -158,9 +167,14 @@ export function promoteUnpackedReleaseToMany({ sourceDir, destinationDirs, versi
       }
     }
     if (recoveryErrors.length) {
-      throw new Error(`Promotion failed: ${error.message}. Recovery incomplete: ${recoveryErrors.join('; ')}`, { cause: error });
+      throw new Error(
+        `Promotion failed: ${error.message}. Recovery incomplete: ${recoveryErrors.join('; ')}`,
+        { cause: error },
+      );
     }
-    throw new Error(`Promotion failed; prior unpacked paths restored: ${error.message}`, { cause: error });
+    throw new Error(`Promotion failed; prior unpacked paths restored: ${error.message}`, {
+      cause: error,
+    });
   }
   // Receipt and all destinations are now committed. Cleanup errors are warnings.
   for (const entry of entries) {
@@ -206,8 +220,11 @@ export function writeReleaseReceipt({
   } finally {
     if (committed) cleanupCommittedPath(stagedReceipt, { force: true });
     else {
-      try { rmSync(stagedReceipt, { force: true }); }
-      catch (error) { console.error(`WARNING: Receipt staging retained at ${stagedReceipt}: ${error.message}`); }
+      try {
+        rmSync(stagedReceipt, { force: true });
+      } catch (error) {
+        console.error(`WARNING: Receipt staging retained at ${stagedReceipt}: ${error.message}`);
+      }
     }
   }
   return receipt;
@@ -239,15 +256,16 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(new URL(import.meta.
     destinationDirs: alsoDestination ? [destination, alsoDestination] : [destination],
     version,
     beforeCommit: receipt
-      ? (result) => writeReleaseReceipt({
-          receiptPath: receipt,
-          sourceSha,
-          version,
-          storeZip,
-          localZip,
-          promotion: result,
-          publishState: option('publish-state') ?? 'pushed',
-        })
+      ? (result) =>
+          writeReleaseReceipt({
+            receiptPath: receipt,
+            sourceSha,
+            version,
+            storeZip,
+            localZip,
+            promotion: result,
+            publishState: option('publish-state') ?? 'pushed',
+          })
       : undefined,
   });
   process.stdout.write(`${JSON.stringify(promotion)}\n`);

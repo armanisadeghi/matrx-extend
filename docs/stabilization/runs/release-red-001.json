@@ -4,11 +4,7 @@
   "defect_id": "EXT-D-0002",
   "status": "expected-fail-red-proof",
   "at": "2026-09-26T02:15:00.895Z",
-  "command": [
-    "bash",
-    "scripts/test-release-ship-path.sh",
-    "/tmp/matrx-release-before/release.sh"
-  ],
+  "command": ["bash", "scripts/test-release-ship-path.sh", "/tmp/matrx-release-before/release.sh"],
   "exit_code": 1,
   "tested_script_git_source": "53fd39f:release.sh",
   "tested_script_sha256": "b927f5f394d70e5c9be91678777ca1ade0e0eefd657a9a45f4dd859158e66b7a",

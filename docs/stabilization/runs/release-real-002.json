@@ -6,12 +6,7 @@
   "source_sha": "29085b6",
   "candidate_sha": "d777348d2bebf9ae5778b500fc9168020df67a91",
   "candidate_version": "0.2.51",
-  "command": [
-    "bash",
-    "release.sh",
-    "--message",
-    "EXT-D-0002 validated release integration"
-  ],
+  "command": ["bash", "release.sh", "--message", "EXT-D-0002 validated release integration"],
   "exit_code": 1,
   "resource_invalid": false,
   "reason": "Strict package-twins check rejected resource guard numeric GiB arithmetic; candidate not published",

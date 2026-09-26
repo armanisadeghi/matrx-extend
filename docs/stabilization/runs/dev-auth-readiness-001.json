@@ -16,5 +16,8 @@
     "all_source_expected_callbacks_exact_match": true
   },
   "actual_sign_in_proof": false,
-  "limitations": ["Mac locked; no UI sign-in or callback observation.", "OAuth client-specific exact redirect URI registration was not obtained through this authorized read path."]
+  "limitations": [
+    "Mac locked; no UI sign-in or callback observation.",
+    "OAuth client-specific exact redirect URI registration was not obtained through this authorized read path."
+  ]
 }

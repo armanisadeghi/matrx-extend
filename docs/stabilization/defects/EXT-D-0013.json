@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0013",
   "feature_id": "EXT-F-0003",
-  "case_ids": [
-    "EXT-F-0003-T07"
-  ],
+  "case_ids": ["EXT-F-0003-T07"],
   "surface": "Release validation ordering",
   "auth_mode": "auth-independent engineering infrastructure",
   "reproduction": [

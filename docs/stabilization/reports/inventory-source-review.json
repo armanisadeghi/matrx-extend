@@ -31,7 +31,11 @@
       "kind": "omitted_controls",
       "feature_ids": ["EXT-F-1003"],
       "missing_scope": "Settings Privacy > Never ask on these sites contains a per-origin Ask again action; Settings Scrape > Auto-scrape mode has Capture and Scroll & capture choices. Neither appears among the 27 Settings controls or their generated cases.",
-      "source_anchors": ["src/features/settings/SettingsView.tsx:294", "src/features/settings/SettingsView.tsx:322", "src/features/settings/SettingsView.tsx:649"],
+      "source_anchors": [
+        "src/features/settings/SettingsView.tsx:294",
+        "src/features/settings/SettingsView.tsx:322",
+        "src/features/settings/SettingsView.tsx:649"
+      ],
       "applicability": "Settings is visible to guest, member, and admin; the Never ask list appears when origins exist. Test data/state preconditions are needed, not a new access gate."
     },
     {
@@ -39,7 +43,11 @@
       "kind": "omitted_controls",
       "feature_ids": ["EXT-F-2013"],
       "missing_scope": "Chat's guest banner has Sign in and Sign up free actions. The 131 Chat controls include neither guest action; Sign up free opens the frontend in a new browser tab. Add guest-only control cases while keeping Chat execution in wave D.",
-      "source_anchors": ["src/features/chat/ChatView.tsx:525", "src/components/GuestBanner.tsx:25", "src/components/GuestBanner.tsx:31"],
+      "source_anchors": [
+        "src/features/chat/ChatView.tsx:525",
+        "src/components/GuestBanner.tsx:25",
+        "src/components/GuestBanner.tsx:31"
+      ],
       "applicability": "Guest only after auth hydration; banner disappears when signed in."
     },
     {
@@ -47,7 +55,12 @@
       "kind": "invented_control_and_build_gate",
       "feature_ids": ["EXT-F-1002"],
       "missing_scope": "The popup inventory calls its second action 'Open side panel in a new tab', but popup/main.tsx renders 'Open chat' and 'Capture page'; both call the same openSidePanel function and neither opens a new tab or selects a destination. The popup entrypoint is excluded from Chrome Web Store builds by filterEntrypoints, while the inventory marks all popup cases applicable to all personas without a build variant. Model the two actual local/unpacked buttons and Store action-click flow separately.",
-      "source_anchors": ["src/entrypoints/popup/main.tsx:54", "src/entrypoints/popup/main.tsx:63", "wxt.config.ts:9", "wxt.config.ts:33"],
+      "source_anchors": [
+        "src/entrypoints/popup/main.tsx:54",
+        "src/entrypoints/popup/main.tsx:63",
+        "wxt.config.ts:9",
+        "wxt.config.ts:33"
+      ],
       "applicability": "Local/unpacked popup: guest gets Sign in, signed-in member/admin get both buttons. Store build: no popup page. Mic grant and options are separate entrypoints."
     },
     {
@@ -55,7 +68,11 @@
       "kind": "invented_control",
       "feature_ids": ["EXT-F-2013", "EXT-F-2014"],
       "missing_scope": "Both Chat and Pilot list 'Agent picker detail sneak peek'. The package renders Sneak Peek only when the host supplies openPeek, and sidepanel App supplies no such port; its own comment says the affordance is hidden. Remove the impossible test cases or classify them explicitly as non-applicable.",
-      "source_anchors": ["src/entrypoints/sidepanel/App.tsx:279", "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/AgentDetailCard.tsx:216", "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/context.tsx:47"],
+      "source_anchors": [
+        "src/entrypoints/sidepanel/App.tsx:279",
+        "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/AgentDetailCard.tsx:216",
+        "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/context.tsx:47"
+      ],
       "applicability": "Neither Chat nor Pilot in this extension, all personas. The shared package code and lockfile agree on 0.13.10."
     },
     {
@@ -63,7 +80,11 @@
       "kind": "incorrect_role_expectation",
       "feature_ids": ["EXT-F-2013", "EXT-F-2014"],
       "missing_scope": "The inventory calls the agent picker's fourth ownership tab 'System' for Chat and Pilot. These hosts do not pass systemTabLabel or includeSystemInAll. Package AgentListTabs uses its public label by default; System is only an admin-surface override. Test the actual public/builtin tab label and avoid asserting a System tab in these pickers.",
-      "source_anchors": ["src/features/chat/ChatView.tsx:819", "src/features/chat/PilotView.tsx:487", "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/AgentListTabs.tsx:46"],
+      "source_anchors": [
+        "src/features/chat/ChatView.tsx:819",
+        "src/features/chat/PilotView.tsx:487",
+        "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/AgentListTabs.tsx:46"
+      ],
       "applicability": "Chat signed-in member/admin picker and Pilot admin picker; Chat guest has no picker."
     },
     {
@@ -79,7 +100,10 @@
       "kind": "omitted_navigation_controls",
       "feature_ids": ["EXT-F-1001"],
       "missing_scope": "The shell's Tab triggers control names only nine tabs; App renders 22 tab triggers. Other feature records cover their contents, but shell navigation and stale-selection cases lack explicit triggers for Chat, Pilot, Tasks, Lists, Agenda, Saved captures, Capture, Data, Notes, Files, Vault and Tools. Record the full trigger roster and its audience table once.",
-      "source_anchors": ["src/entrypoints/sidepanel/App.tsx:307", "src/config/sidepanel-visibility.ts:13"],
+      "source_anchors": [
+        "src/entrypoints/sidepanel/App.tsx:307",
+        "src/config/sidepanel-visibility.ts:13"
+      ],
       "applicability": "Five public tabs: Chat, Scrape, Data, SEO, Settings. Signed-in additions: Tasks, Agenda, Lists, Saved captures, Capture, Highlights, Guidance, Notes, Files, Screenshots, Vault, Tools, Profile via User menu. Admin additions: Pilot, Showcase, Broker, Debug."
     }
   ],

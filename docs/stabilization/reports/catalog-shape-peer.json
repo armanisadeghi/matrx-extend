@@ -19,9 +19,7 @@
       "The new tests appear to target both regression directions, but their execution and the real release retest are root-owned and remain unverified here."
     ]
   },
-  "files_touched": [
-    "docs/stabilization/reports/catalog-shape-peer.json"
-  ],
+  "files_touched": ["docs/stabilization/reports/catalog-shape-peer.json"],
   "open_questions": [
     "Did the root-owned focused tests and strict release retest pass against the live catalog?",
     "Does the DB contract permit arbitrary nested JSON Schema keywords, or should recursive validation be in scope?"

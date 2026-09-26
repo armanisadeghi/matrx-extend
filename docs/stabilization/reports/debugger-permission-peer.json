@@ -45,5 +45,7 @@
     ],
     "positive_evidence": "RuntimeOptionalPermission excludes debugger from request/remove signatures; Chrome documentation forbids debugger as optional and says removing required permissions returns false. The tests do exercise the key no-switch and false-removal behaviors."
   },
-  "open_questions": ["Retest actual Chrome Settings grant, removal, refusal, and reload behavior before acceptance closure."]
+  "open_questions": [
+    "Retest actual Chrome Settings grant, removal, refusal, and reload behavior before acceptance closure."
+  ]
 }

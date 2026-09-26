@@ -3,12 +3,7 @@
   "feature_id": "EXT-F-0001",
   "at": "2026-09-25T22:23:56.538Z",
   "status": "invalid-resource",
-  "command": [
-    "pnpm",
-    "install",
-    "--frozen-lockfile",
-    "--ignore-scripts"
-  ],
+  "command": ["pnpm", "install", "--frozen-lockfile", "--ignore-scripts"],
   "command_started": false,
   "reason": "RESOURCE_CPU_HIGH_LOAD_BUSY",
   "cpu_busy_fraction": 0.6024571428571429,

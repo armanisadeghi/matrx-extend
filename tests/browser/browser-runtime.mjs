@@ -31,9 +31,11 @@ export async function resolveBrowserRuntime({ chromeExecutable } = {}) {
     }
     ({ chromium } = require(installed));
   }
-  if (typeof chromium?.connectOverCDP !== 'function' ||
-      typeof chromium?.launchPersistentContext !== 'function' ||
-      typeof chromium?.executablePath !== 'function')
+  if (
+    typeof chromium?.connectOverCDP !== 'function' ||
+    typeof chromium?.launchPersistentContext !== 'function' ||
+    typeof chromium?.executablePath !== 'function'
+  )
     throw new Error('browser_runtime_playwright_invalid: expected Playwright chromium');
 
   const candidate = chromeExecutable ?? process.env.MATRX_CHROME_PATH ?? chromium.executablePath();

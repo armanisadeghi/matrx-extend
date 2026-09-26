@@ -23,13 +23,8 @@
         "profileFreeGiB": 1681.737190246582
       },
       "cpuBusySamples": [
-        0.21700000000000008,
-        0.09050000000000002,
-        0.10499999999999998,
-        0.10109999999999997,
-        0.11109999999999998,
-        0.13359999999999994,
-        0.10140000000000005
+        0.21700000000000008, 0.09050000000000002, 0.10499999999999998, 0.10109999999999997,
+        0.11109999999999998, 0.13359999999999994, 0.10140000000000005
       ],
       "reasons": [],
       "swapWindowSeconds": 60,
@@ -44,7 +39,5 @@
       "code": "RESOURCE_JOB_EXIT"
     }
   ],
-  "limitations": [
-    "Before final scoped permission-remedy repair; no live UI proof."
-  ]
+  "limitations": ["Before final scoped permission-remedy repair; no live UI proof."]
 }

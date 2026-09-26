@@ -15,7 +15,9 @@ export async function waitFor(label, read, accept, timeoutMs = 10000) {
   const deadline = Date.now() + timeoutMs;
   let last;
   do {
-    try { last = await read(); } catch (error) {
+    try {
+      last = await read();
+    } catch (error) {
       // A panel reload briefly destroys its JavaScript execution context.
       last = { transient: String(error?.message ?? error) };
     }
@@ -26,22 +28,40 @@ export async function waitFor(label, read, accept, timeoutMs = 10000) {
 }
 
 export async function openSection(panel, label) {
-  const section = await waitFor(`${label}_section_ready`, () => evaluate(panel, `(() => {
+  const section = await waitFor(
+    `${label}_section_ready`,
+    () =>
+      evaluate(
+        panel,
+        `(() => {
     const buttons = [...document.querySelectorAll('button[aria-expanded]')]
       .filter((el) => el.textContent.trim() === ${JSON.stringify(label)});
     return { count: buttons.length, expanded: buttons[0]?.getAttribute('aria-expanded') ?? null };
-  })()`), (state) => state?.count === 1 &&
-    (state.expanded === 'true' || state.expanded === 'false'));
+  })()`,
+      ),
+    (state) => state?.count === 1 && (state.expanded === 'true' || state.expanded === 'false'),
+  );
   const expanded = section.expanded;
   if (expanded === 'false') await click(panel, 'section', label);
-  await waitFor(`${label}_expanded`, () => evaluate(panel, `(() =>
+  await waitFor(
+    `${label}_expanded`,
+    () =>
+      evaluate(
+        panel,
+        `(() =>
     [...document.querySelectorAll('button[aria-expanded]')]
       .find((el) => el.textContent.trim() === ${JSON.stringify(label)})
-      ?.getAttribute('aria-expanded'))()`), (value) => value === 'true');
+      ?.getAttribute('aria-expanded'))()`,
+      ),
+    (value) => value === 'true',
+  );
 }
 
 export async function click(panel, kind, label) {
-  const pointerSample = () => evaluate(panel, `(() => {
+  const pointerSample = () =>
+    evaluate(
+      panel,
+      `(() => {
     const kind = ${JSON.stringify(kind)}, label = ${JSON.stringify(label)};
     const visible = (el) => {
       const style = getComputedStyle(el), rect = el.getBoundingClientRect();
@@ -107,41 +127,68 @@ export async function click(panel, kind, label) {
     return { count: 1, x, y, hitTarget, animating,
       viewport: { width: innerWidth, height: innerHeight },
       scrollState, hitTag: hit?.tagName ?? null };
-  })()`);
+  })()`,
+    );
   let location = await pointerSample();
   assert.equal(location?.count, 1, `unique visible ${kind} ${label}`);
   // Poll outside the page: a paused requestAnimationFrame must not strand
   // Runtime.evaluate(awaitPromise) or hide the last pointer diagnostic.
   const deadline = Date.now() + 3000;
-  let previous, stableSamples = 0;
+  let previous;
+  let stableSamples = 0;
   do {
     await new Promise((resolveWait) => setTimeout(resolveWait, 50));
     try {
       location = await pointerSample();
     } catch (error) {
-      throw new Error(`pointer_sample_failed for ${kind} ${label}: ${String(error?.message ?? error)}; last=${JSON.stringify(location)}`);
+      throw new Error(
+        `pointer_sample_failed for ${kind} ${label}: ${String(error?.message ?? error)}; last=${JSON.stringify(location)}`,
+      );
     }
-    stableSamples = location?.count === 1 && location.hitTarget && !location.animating &&
-      previous !== undefined && Math.abs(previous.x - location.x) < 0.25 &&
-      Math.abs(previous.y - location.y) < 0.25 ? stableSamples + 1 : 0;
+    stableSamples =
+      location?.count === 1 &&
+      location.hitTarget &&
+      !location.animating &&
+      previous !== undefined &&
+      Math.abs(previous.x - location.x) < 0.25 &&
+      Math.abs(previous.y - location.y) < 0.25
+        ? stableSamples + 1
+        : 0;
     location = { ...location, stableSamples };
     if (stableSamples >= 2) break;
     previous = location?.count === 1 ? { x: location.x, y: location.y } : undefined;
   } while (Date.now() < deadline);
-  assert.equal(stableSamples >= 2, true,
-    `stable hit target for ${kind} ${label}: ${JSON.stringify(location)}`);
+  assert.equal(
+    stableSamples >= 2,
+    true,
+    `stable hit target for ${kind} ${label}: ${JSON.stringify(location)}`,
+  );
   await panel.send('Input.dispatchMouseEvent', {
-    type: 'mousePressed', x: location.x, y: location.y, button: 'left', clickCount: 1,
+    type: 'mousePressed',
+    x: location.x,
+    y: location.y,
+    button: 'left',
+    clickCount: 1,
   });
   await panel.send('Input.dispatchMouseEvent', {
-    type: 'mouseReleased', x: location.x, y: location.y, button: 'left', clickCount: 1,
+    type: 'mouseReleased',
+    x: location.x,
+    y: location.y,
+    button: 'left',
+    clickCount: 1,
   });
   if (kind === 'port') {
-    const focused = await evaluate(panel, `(() => {
+    const focused = await evaluate(
+      panel,
+      `(() => {
       const input = document.querySelector('input[placeholder="auto"]');
       return input !== null && document.activeElement === input;
-    })()`);
-    assert.equal(focused, true,
-      `real mouse click focused port input: ${JSON.stringify({ location, focused })}`);
+    })()`,
+    );
+    assert.equal(
+      focused,
+      true,
+      `real mouse click focused port input: ${JSON.stringify({ location, focused })}`,
+    );
   }
 }

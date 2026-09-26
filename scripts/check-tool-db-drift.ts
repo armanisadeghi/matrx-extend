@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+import { resolve } from 'node:path';
 /**
  * Tool-drift reporter — the matrx-extend half of the unified code↔DB system
  * (one shared spec across aidream, matrx-extend, matrx-frontend; see
@@ -48,13 +49,21 @@
  * then match code. Never push code→DB silently (Rule 7).
  */
 import process from 'node:process';
-import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildToolCatalogManifest } from '../src/lib/tools/catalog';
 import { CANONICAL_SURFACE } from '../src/lib/tools/categories';
 import { selectRowsViaManagementApi } from './_supabase-management';
-import { isDbBindingRow, type DbBindingRow, isDbBundleMemberRow, type DbBundleMemberRow, isDbSurfaceDefaultsRow, isDbToolRow, type DbSurfaceDefaultsRow, type DbToolRow } from './_tool-db-row-validation';
 import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
+import {
+  type DbBindingRow,
+  type DbBundleMemberRow,
+  type DbSurfaceDefaultsRow,
+  type DbToolRow,
+  isDbBindingRow,
+  isDbBundleMemberRow,
+  isDbSurfaceDefaultsRow,
+  isDbToolRow,
+} from './_tool-db-row-validation';
 
 interface LocalTool {
   name: string;
@@ -100,7 +109,8 @@ async function fetchOwnedTools(
     `binding?or=(executor_name.eq.${EXECUTOR_NAME},executor_name.like.${EXECUTOR_NAME}.*)&select=tool_id,executor_name,is_active`,
     'tool',
   );
-  if (!Array.isArray(bindings) || !bindings.every(isDbBindingRow)) throw new Error('Invalid public binding rows');
+  if (!Array.isArray(bindings) || !bindings.every(isDbBindingRow))
+    throw new Error('Invalid public binding rows');
   const ids = [...new Set(bindings.filter((b) => b.is_active).map((b) => b.tool_id))];
   if (ids.length === 0) return { defs: [], bindings };
   const inList = `(${ids.map((i) => `"${i}"`).join(',')})`;
@@ -110,7 +120,8 @@ async function fetchOwnedTools(
     `definition?id=in.${inList}&select=id,name,description,parameters,tier,admin_only,is_active,category,source_kind&order=name.asc`,
     'tool',
   );
-  if (!Array.isArray(defs) || !defs.every(isDbToolRow)) throw new Error('Invalid tool definition rows');
+  if (!Array.isArray(defs) || !defs.every(isDbToolRow))
+    throw new Error('Invalid tool definition rows');
   return { defs, bindings };
 }
 
@@ -143,7 +154,8 @@ async function fetchSurfaceDefaults(url: string, key: string): Promise<DbSurface
     `surface_defaults?or=(surface_name.eq.${encodeURIComponent(ASSISTANT_SURFACE)},surface_name.eq.${encodeURIComponent(PILOT_SURFACE)})&select=surface_name,always_include_tools,always_include_bundles,never_include_tools`,
     'tool',
   );
-  if (!Array.isArray(rows) || !rows.every(isDbSurfaceDefaultsRow)) throw new Error('Invalid public surface rows');
+  if (!Array.isArray(rows) || !rows.every(isDbSurfaceDefaultsRow))
+    throw new Error('Invalid public surface rows');
   return rows;
 }
 
@@ -493,7 +505,9 @@ export async function main(): Promise<number> {
   // Keep development non-blocking for unavailable evidence, but never label it
   // clean or permit a strict release until membership is actually verified.
   if (unverifiedSurface.length) {
-    console.warn(`Surface inclusion UNVERIFIED for ${unverifiedSurface.join(', ')}; declared bundles: ${[...declaredBundles].join(', ')}. Verify tool.bundle membership through platform.associations or declare direct inclusion.`);
+    console.warn(
+      `Surface inclusion UNVERIFIED for ${unverifiedSurface.join(', ')}; declared bundles: ${[...declaredBundles].join(', ')}. Verify tool.bundle membership through platform.associations or declare direct inclusion.`,
+    );
   }
   if (totalProblems === 0 && unverifiedSurface.length) return strict ? 3 : 0;
 

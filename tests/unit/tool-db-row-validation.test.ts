@@ -17,37 +17,45 @@ const tool = {
 describe('private catalog response validation', () => {
   it('accepts complete no-argument and typed-argument definitions', () => {
     expect(isDbToolRow(tool)).toBe(true);
-    expect(isDbToolRow({
-      ...tool,
-      parameters: { url: { type: 'string', required: true } },
-    })).toBe(true);
+    expect(
+      isDbToolRow({
+        ...tool,
+        parameters: { url: { type: 'string', required: true } },
+      }),
+    ).toBe(true);
   });
 
   it('accepts the live screenshot_region nested rect contract', () => {
-    expect(isDbToolRow({
-      ...tool,
-      name: 'screenshot_region',
-      parameters: {
-        rect: {
-          type: 'object',
-          required: ['x', 'y', 'w', 'h'],
-          properties: {
-            x: { type: 'number' },
-            y: { type: 'number' },
-            w: { type: 'number', exclusiveMinimum: 0 },
-            h: { type: 'number', exclusiveMinimum: 0 },
+    expect(
+      isDbToolRow({
+        ...tool,
+        name: 'screenshot_region',
+        parameters: {
+          rect: {
+            type: 'object',
+            required: ['x', 'y', 'w', 'h'],
+            properties: {
+              x: { type: 'number' },
+              y: { type: 'number' },
+              w: { type: 'number', exclusiveMinimum: 0 },
+              h: { type: 'number', exclusiveMinimum: 0 },
+            },
+            additionalProperties: false,
           },
-          additionalProperties: false,
         },
-      },
-    })).toBe(true);
+      }),
+    ).toBe(true);
   });
 
   it('rejects missing or malformed fields that would otherwise compare clean', () => {
     expect(isDbToolRow({ ...tool, parameters: null })).toBe(false);
     expect(isDbToolRow({ ...tool, parameters: { url: { required: 'yes' } } })).toBe(false);
-    expect(isDbToolRow({ ...tool, parameters: { rect: { type: 'object', required: ['x', 7] } } })).toBe(false);
-    expect(isDbToolRow({ ...tool, parameters: { rect: { type: 'object', required: { x: true } } } })).toBe(false);
+    expect(
+      isDbToolRow({ ...tool, parameters: { rect: { type: 'object', required: ['x', 7] } } }),
+    ).toBe(false);
+    expect(
+      isDbToolRow({ ...tool, parameters: { rect: { type: 'object', required: { x: true } } } }),
+    ).toBe(false);
     expect(isDbToolRow({ ...tool, tier: { value: 'read' } })).toBe(false);
     expect(isDbToolRow({ ...tool, is_active: 'true' })).toBe(false);
   });
@@ -60,7 +68,9 @@ describe('private catalog response validation', () => {
       never_include_tools: [],
     };
     expect(isDbSurfaceDefaultsRow(surface)).toBe(true);
-    expect(isDbSurfaceDefaultsRow({ ...surface, always_include_tools: { 0: 'capture_page' } })).toBe(false);
+    expect(
+      isDbSurfaceDefaultsRow({ ...surface, always_include_tools: { 0: 'capture_page' } }),
+    ).toBe(false);
     expect(isDbSurfaceDefaultsRow({ ...surface, never_include_tools: [3] })).toBe(false);
   });
 });

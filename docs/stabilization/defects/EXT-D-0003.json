@@ -32,9 +32,7 @@
   "owner": "/root",
   "root_cause": "The byte-size shape detector also matches numeric conversion expressions; its formatFileSize register had no documented distinction for resource-admission arithmetic.",
   "sibling_census": "All four reported expressions are in the same resource sample: available/required memory and repository/profile disk. Swap conversion is also numeric but was not reported; no display formatter is involved in this file.",
-  "fix_commits": [
-    "555bc25"
-  ],
+  "fix_commits": ["555bc25"],
   "original_reproduction_retest_run": "release-real-003",
   "surrounding_case_runs": [],
   "reviewer_identity": "/root/coverage_evidence_audit",

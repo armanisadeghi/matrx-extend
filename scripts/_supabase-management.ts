@@ -24,8 +24,15 @@ function readEnvFileValue(path: string, name: string): string | null {
 }
 
 function loadProjectRef(): string {
-  const projectRef = process.env.MATRX_SUPABASE_PROJECT_REF ??
-    ['.env.production.local', '.env.production', '.env.development.local', '.env.development', '.env']
+  const projectRef =
+    process.env.MATRX_SUPABASE_PROJECT_REF ??
+    [
+      '.env.production.local',
+      '.env.production',
+      '.env.development.local',
+      '.env.development',
+      '.env',
+    ]
       .map((name) => readEnvFileValue(resolve(ROOT, name), 'MATRX_SUPABASE_PROJECT_REF'))
       .find((value) => value !== null);
   if (!projectRef || !/^[a-z]{20}$/.test(projectRef)) {
@@ -35,7 +42,8 @@ function loadProjectRef(): string {
 }
 
 function loadOperatorToken(): string {
-  const token = process.env.SUPABASE_ACCESS_TOKEN ??
+  const token =
+    process.env.SUPABASE_ACCESS_TOKEN ??
     readEnvFileValue(ACCESS_TOKEN_FILE, 'SUPABASE_ACCESS_TOKEN');
   if (!token) throw new Error('SUPABASE_ACCESS_TOKEN is missing from operator configuration');
   return token;
@@ -49,7 +57,10 @@ function readTimeoutMs(): number {
   return value;
 }
 
-export async function selectRowsViaManagementApi<T>(sql: string, isRow: (row: unknown) => row is T): Promise<T[]> {
+export async function selectRowsViaManagementApi<T>(
+  sql: string,
+  isRow: (row: unknown) => row is T,
+): Promise<T[]> {
   const statement = sql.trim().replace(/;$/, '');
   if (!/^select\b/i.test(statement) || statement.includes(';')) {
     throw new Error('Management API helper only permits a single SELECT statement');

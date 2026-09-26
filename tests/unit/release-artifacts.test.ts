@@ -187,7 +187,6 @@ describe('release.sh ship path', () => {
   }, 270_000);
 });
 
-
 describe('release filesystem recovery', () => {
   it('keeps committed artifacts coherent and retains failed rollback backups', () => {
     const guard = spawnSync(process.execPath, ['--test', 'scripts/test-release-recovery.mjs'], {

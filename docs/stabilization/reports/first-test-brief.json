@@ -12,7 +12,10 @@
       "control_id": "EXT-F-1003-C02",
       "feature": "Review and change extension settings",
       "control": "Theme",
-      "steps": ["Open Settings > Appearance.", "Select Light, verify the extension appearance changes; select Dark and verify; select System, close/reopen Settings and verify System remains selected."],
+      "steps": [
+        "Open Settings > Appearance.",
+        "Select Light, verify the extension appearance changes; select Dark and verify; select System, close/reopen Settings and verify System remains selected."
+      ],
       "expected": "Each selection applies its named appearance and the final choice persists after reopening the view.",
       "dependencies": "Extension local settings only; no sign-in or organization required."
     },
@@ -22,7 +25,10 @@
       "control_id": "EXT-F-1003-C04",
       "feature": "Review and change extension settings",
       "control": "Default mode",
-      "steps": ["Open Settings > Chat.", "Select Act, leave Settings and reopen it; select Ask and reopen again."],
+      "steps": [
+        "Open Settings > Chat.",
+        "Select Act, leave Settings and reopen it; select Ask and reopen again."
+      ],
       "expected": "Ask/Act choice remains selected after navigating away and returning; no backend action is triggered by changing the preference.",
       "dependencies": "Local preference only."
     },
@@ -32,7 +38,10 @@
       "control_id": "EXT-F-1003-C05",
       "feature": "Review and change extension settings",
       "control": "Default speed",
-      "steps": ["Open Settings > Chat.", "Select Thinking, leave/reopen Settings; select Fast and leave/reopen once more."],
+      "steps": [
+        "Open Settings > Chat.",
+        "Select Thinking, leave/reopen Settings; select Fast and leave/reopen once more."
+      ],
       "expected": "Fast/Thinking choice remains selected after navigating away and returning.",
       "dependencies": "Local preference only."
     },
@@ -42,7 +51,10 @@
       "control_id": "EXT-F-1003-C14",
       "feature": "Review and change extension settings",
       "control": "Auto-scrape on load",
-      "steps": ["Open Settings > Scraping.", "Record initial toggle state, flip it, navigate away and return; reload the extension and check it again; restore the initial state."],
+      "steps": [
+        "Open Settings > Scraping.",
+        "Record initial toggle state, flip it, navigate away and return; reload the extension and check it again; restore the initial state."
+      ],
       "expected": "Toggle state persists through view navigation and extension reload; the selected state is visibly represented.",
       "dependencies": "Local preference only. Do not infer background capture behavior from this setting-only check."
     },
@@ -52,7 +64,11 @@
       "control_id": "EXT-F-1007-C01",
       "feature": "Capture and manage current page scrape",
       "control": "Fast capture",
-      "steps": ["Open https://example.com/ in the active tab and wait for load.", "Open the extension Scrape view and click Capture.", "Observe busy/progress state, then inspect Article and other result tabs."],
+      "steps": [
+        "Open https://example.com/ in the active tab and wait for load.",
+        "Open the extension Scrape view and click Capture.",
+        "Observe busy/progress state, then inspect Article and other result tabs."
+      ],
       "expected": "The active example.com page is captured in fast mode; capture control is busy/disabled while running, then result tabs appear with the page title and readable article content. Any capture failure displays recovery actions.",
       "dependencies": "Browser active-tab/content-script access and public static fixture only; no sign-in, organization, DB write, or site login."
     },
@@ -62,7 +78,10 @@
       "control_id": "EXT-F-1007-C02",
       "feature": "Capture and manage current page scrape",
       "control": "Deep capture",
-      "steps": ["With https://example.com/ active, click Scroll & capture.", "Observe capture progress and inspect the resulting Article."],
+      "steps": [
+        "With https://example.com/ active, click Scroll & capture.",
+        "Observe capture progress and inspect the resulting Article."
+      ],
       "expected": "Deep capture completes against the active page, yields result tabs and readable content, and the operation is visibly in progress while running. The fixture may have no additional lazy content; do not require a larger result than fast capture.",
       "dependencies": "Same browser/local dependencies as fast capture; no external account or data write."
     },
@@ -72,7 +91,11 @@
       "control_id": "EXT-F-1007-C05",
       "feature": "Capture and manage current page scrape",
       "control": "Article markdown edit/apply",
-      "steps": ["After a successful capture, open Article and enter edit mode.", "Append a unique text marker such as FIRST-TEST-EDIT to the end of the markdown and click Apply.", "Reopen edit mode and inspect the displayed markdown."],
+      "steps": [
+        "After a successful capture, open Article and enter edit mode.",
+        "Append a unique text marker such as FIRST-TEST-EDIT to the end of the markdown and click Apply.",
+        "Reopen edit mode and inspect the displayed markdown."
+      ],
       "expected": "Applied markdown appears in the article preview and is still present when edit mode is reopened; the UI explains that Apply changes the in-memory capture and Save persists it.",
       "dependencies": "Existing in-memory capture only; do not click Save, which writes to the database."
     },
@@ -82,7 +105,11 @@
       "control_id": "EXT-F-1007-C06",
       "feature": "Capture and manage current page scrape",
       "control": "Article markdown cancel",
-      "steps": ["After a successful capture, note a distinctive existing phrase in Article and enter edit mode.", "Append CANCEL-ME to the draft and click Cancel.", "Reopen edit mode and inspect the markdown."],
+      "steps": [
+        "After a successful capture, note a distinctive existing phrase in Article and enter edit mode.",
+        "Append CANCEL-ME to the draft and click Cancel.",
+        "Reopen edit mode and inspect the markdown."
+      ],
       "expected": "The draft is discarded; CANCEL-ME is absent and the pre-edit markdown remains unchanged.",
       "dependencies": "Existing in-memory capture only; no database write."
     }

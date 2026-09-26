@@ -264,9 +264,7 @@
           "observation": {
             "value": "",
             "saved": null,
-            "button": [
-              "Set"
-            ],
+            "button": ["Set"],
             "override": false,
             "error": null
           }
@@ -277,9 +275,7 @@
           "observation": {
             "value": "57032",
             "saved": 57032,
-            "button": [
-              "Save"
-            ],
+            "button": ["Save"],
             "override": true,
             "error": null
           }
@@ -292,9 +288,7 @@
             "pauses": [
               {
                 "reason": "other",
-                "hitBreakpoints": [
-                  "4:1:119342:5"
-                ],
+                "hitBreakpoints": ["4:1:119342:5"],
                 "callFrames": [
                   {
                     "functionName": "",
@@ -319,9 +313,7 @@
               },
               {
                 "reason": "other",
-                "hitBreakpoints": [
-                  "4:1:119418:5"
-                ],
+                "hitBreakpoints": ["4:1:119418:5"],
                 "callFrames": [
                   {
                     "functionName": "",
@@ -355,9 +347,7 @@
           "observation": {
             "value": "57032",
             "saved": 57032,
-            "button": [
-              "Save"
-            ],
+            "button": ["Save"],
             "override": true,
             "error": null
           }
@@ -368,9 +358,7 @@
           "observation": {
             "value": "65536",
             "saved": 57032,
-            "button": [
-              "Save"
-            ],
+            "button": ["Save"],
             "override": true,
             "error": "Port must be 1\u201365535."
           }
@@ -381,9 +369,7 @@
           "observation": {
             "value": "",
             "saved": null,
-            "button": [
-              "Set"
-            ],
+            "button": ["Set"],
             "override": false,
             "error": null
           }
@@ -394,9 +380,7 @@
           "observation": {
             "value": "",
             "saved": null,
-            "button": [
-              "Set"
-            ],
+            "button": ["Set"],
             "override": false,
             "error": null
           }
@@ -409,9 +393,7 @@
           "evidence": {
             "value": "57032",
             "saved": 57032,
-            "button": [
-              "Save"
-            ],
+            "button": ["Save"],
             "override": true,
             "error": null
           }
@@ -424,9 +406,7 @@
             "pauses": [
               {
                 "reason": "other",
-                "hitBreakpoints": [
-                  "4:1:119342:5"
-                ],
+                "hitBreakpoints": ["4:1:119342:5"],
                 "callFrames": [
                   {
                     "functionName": "",
@@ -451,9 +431,7 @@
               },
               {
                 "reason": "other",
-                "hitBreakpoints": [
-                  "4:1:119418:5"
-                ],
+                "hitBreakpoints": ["4:1:119418:5"],
                 "callFrames": [
                   {
                     "functionName": "",
@@ -479,9 +457,7 @@
           "evidence": {
             "value": "57032",
             "saved": 57032,
-            "button": [
-              "Save"
-            ],
+            "button": ["Save"],
             "override": true,
             "error": null
           }
@@ -492,9 +468,7 @@
           "evidence": {
             "value": "65536",
             "saved": 57032,
-            "button": [
-              "Save"
-            ],
+            "button": ["Save"],
             "override": true,
             "error": "Port must be 1\u201365535."
           }
@@ -505,9 +479,7 @@
           "evidence": {
             "value": "",
             "saved": null,
-            "button": [
-              "Set"
-            ],
+            "button": ["Set"],
             "override": false,
             "error": null
           }
@@ -518,9 +490,7 @@
           "evidence": {
             "value": "",
             "saved": null,
-            "button": [
-              "Set"
-            ],
+            "button": ["Set"],
             "override": false,
             "error": null
           }
@@ -762,13 +732,8 @@
         "profileFreeGiB": 23.67431640625
       },
       "cpuBusySamples": [
-        0.23170000000000002,
-        0.28269999999999995,
-        0.20019999999999993,
-        0.09849999999999992,
-        0.10159999999999991,
-        0.09900000000000009,
-        0.1977
+        0.23170000000000002, 0.28269999999999995, 0.20019999999999993, 0.09849999999999992,
+        0.10159999999999991, 0.09900000000000009, 0.1977
       ],
       "reasons": [],
       "swapWindowSeconds": 60,

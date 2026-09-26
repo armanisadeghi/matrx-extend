@@ -54,12 +54,7 @@
       "EXT-F-1015-C16",
       "EXT-F-1015-C17"
     ],
-    "added_cases": [
-      "EXT-F-1007-T26",
-      "EXT-F-2009-T06",
-      "EXT-F-1015-T36",
-      "EXT-F-1015-T37"
-    ],
+    "added_cases": ["EXT-F-1007-T26", "EXT-F-2009-T06", "EXT-F-1015-T36", "EXT-F-1015-T37"],
     "revised_cases": [],
     "retired_ids": [],
     "preserved_ids": [

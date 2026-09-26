@@ -17,11 +17,11 @@
     "role": "admin",
     "email": "admin@admin.com",
     "organizationRetained": "ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete",
-    "original": {"value": "auto", "saved": null},
-    "valid65001": {"saved": true, "error": null},
-    "invalid65536": {"savedOverrideRetained": true, "error": "Port must be 1–65535."},
-    "blankInSameView": {"overrideRemoved": true, "input": "auto", "errorCleared": true},
-    "afterPanelReopen": {"overrideRemoved": true, "input": "auto", "error": null},
+    "original": { "value": "auto", "saved": null },
+    "valid65001": { "saved": true, "error": null },
+    "invalid65536": { "savedOverrideRetained": true, "error": "Port must be 1–65535." },
+    "blankInSameView": { "overrideRemoved": true, "input": "auto", "errorCleared": true },
+    "afterPanelReopen": { "overrideRemoved": true, "input": "auto", "error": null },
     "restoredOriginal": true
   },
   "evidenceReview": {
@@ -31,10 +31,21 @@
   },
   "screenshots": {
     "directory": "docs/stabilization/evidence/native0258",
-    "inlineNativeCaptures": ["original auto state", "valid 65001 saved", "invalid 65536 error", "blank clear", "after panel reopen"],
+    "inlineNativeCaptures": [
+      "original auto state",
+      "valid 65001 saved",
+      "invalid 65536 error",
+      "blank clear",
+      "after panel reopen"
+    ],
     "localImageFiles": [],
     "note": "CUA exposed screenshot display but no local-file export API; captures are present inline in the native verification tool transcript."
   },
-  "limitations": ["This admin UI run is independent native acceptance evidence; it does not convert the guest run's unverified rediscovery check to verified."],
-  "artifacts": ["docs/stabilization/reports/native-0258-port-verification.json", "docs/stabilization/evidence/native0258/"]
+  "limitations": [
+    "This admin UI run is independent native acceptance evidence; it does not convert the guest run's unverified rediscovery check to verified."
+  ],
+  "artifacts": [
+    "docs/stabilization/reports/native-0258-port-verification.json",
+    "docs/stabilization/evidence/native0258/"
+  ]
 }

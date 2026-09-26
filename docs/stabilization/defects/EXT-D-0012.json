@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0012",
   "feature_id": "EXT-F-1003",
-  "case_ids": [
-    "EXT-F-1003-T46"
-  ],
+  "case_ids": ["EXT-F-1003-T46"],
   "surface": "Settings > Desktop bridge > Local engine port",
   "auth_mode": "guest reproduced; guest and admin retested; member unverified",
   "reproduction": [

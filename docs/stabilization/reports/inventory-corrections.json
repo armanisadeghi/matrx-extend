@@ -50,11 +50,7 @@
   "runtime_status": "unverified",
   "operations_source_census": {
     "artifact": "docs/stabilization/reports/inventory-operations.json",
-    "feature_ids": [
-      "EXT-F-0001",
-      "EXT-F-0002",
-      "EXT-F-0003"
-    ],
+    "feature_ids": ["EXT-F-0001", "EXT-F-0002", "EXT-F-0003"],
     "verdict": "0001 and 0002 have source anchors and control scope; 0003 contains desired pre-push/red-candidate assertions contradicted by release.sh current ship-first behavior. Source completeness cannot be certified for 0003 as written.",
     "source_evidence": [
       "release.sh:15-17 says tests/typecheck do not deny release",

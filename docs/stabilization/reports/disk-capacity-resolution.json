@@ -8,11 +8,17 @@
     "boot_available_repeat_kib": 27915360,
     "boot_available_repeat_gib": 26.62,
     "boot_available_final_kib": 24223668,
-    "boot_available_final_gib": 23.10,
+    "boot_available_final_gib": 23.1,
     "external_available_repeat_kib": 1763410664,
     "external_available_repeat_tib": 1.64,
     "minimum_free_disk_gib": 20,
-    "read_only_commands": ["df -h / /Volumes/Samsung2TB", "df -k / /System/Volumes/Data /Volumes/Samsung2TB", "du -sk <exact Xcode cache path>", "lsof +D <exact Xcode cache path>", "xcrun simctl list devices booted"],
+    "read_only_commands": [
+      "df -h / /Volumes/Samsung2TB",
+      "df -k / /System/Volumes/Data /Volumes/Samsung2TB",
+      "du -sk <exact Xcode cache path>",
+      "lsof +D <exact Xcode cache path>",
+      "xcrun simctl list devices booted"
+    ],
     "mutation": "Only the exact Xcode device-symbol cache was copied to the external volume, byte-verified, linked from its original path, and its old local allocation removed. No other cache, profile, worktree, user file, build, test, or browser was touched. Earlier xcrun simctl activated CoreSimulator services; the reason for the preceding free-space fluctuation remains unknown."
   },
   "relocation": {

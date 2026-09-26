@@ -9,12 +9,25 @@
     {
       "area": "Scrape / Sources",
       "delta": "Signed-in HTTP(S) pages with no known landed Source now show a 'Not yet a Source' notice with Capture or Save action. Lookup-in-progress, lookup-failed, saving, non-web, and already-saved states suppress that notice. Unsaved capture wording now explains local retention and Source landing. Markdown portions are normalized to plain text (links retain labels, images/fences/separators drop, list markers drop, table cells split) to match server semantics.",
-      "existing_coverage": ["EXT-F-1007-C04", "EXT-F-1007-C22", "EXT-F-1007-C27", "EXT-F-1007-T21", "EXT-F-1007-T22", "EXT-F-1007-T26"]
+      "existing_coverage": [
+        "EXT-F-1007-C04",
+        "EXT-F-1007-C22",
+        "EXT-F-1007-C27",
+        "EXT-F-1007-T21",
+        "EXT-F-1007-T22",
+        "EXT-F-1007-T26"
+      ]
     },
     {
       "area": "Saved Captures",
       "delta": "Visible terminology clarifies that rows are Sources and deletion removes the Source across AI Matrx; behavior remains covered by existing Source list/detail/delete cases.",
-      "existing_coverage": ["EXT-F-2009-C07", "EXT-F-2009-C31", "EXT-F-2009-T02", "EXT-F-2009-T05", "EXT-F-2009-T06"]
+      "existing_coverage": [
+        "EXT-F-2009-C07",
+        "EXT-F-2009-C31",
+        "EXT-F-2009-T02",
+        "EXT-F-2009-T05",
+        "EXT-F-2009-T06"
+      ]
     },
     {
       "area": "Vault site-login matching",
@@ -38,13 +51,31 @@
     }
   ],
   "affectedcases": [
-    {"id": "EXT-F-1007-T21", "impact": "Add assertions for the signed-in not-yet-a-Source notice/action and ensure a failed lookup displays unknown rather than this notice."},
-    {"id": "EXT-F-1007-T26", "impact": "Already covers failed prior-save lookup; retain and extend to ensure the new notice is suppressed while lookup is unknown."},
-    {"id": "EXT-F-1002-T19", "impact": "Already covers Capture claim failure; confirm the sidepanel's Open Scrape alert is visible and actionable."},
-    {"id": "EXT-F-1002-T20", "impact": "Same claim-failure behavior for admin."},
-    {"id": "EXT-F-2011-T02", "impact": "Generic Vault case should include match-lookup refusal, truthful error versus empty result, no stale candidate action, and successful retry."},
-    {"id": "EXT-F-2013-T02", "impact": "Composer send now carries page_source context in place of prior_capture; verify all three statuses reach the request."},
-    {"id": "EXT-F-2014-T02", "impact": "Pilot inherits the page_source context and also exercises more specific local-browser terminal outcomes."}
+    {
+      "id": "EXT-F-1007-T21",
+      "impact": "Add assertions for the signed-in not-yet-a-Source notice/action and ensure a failed lookup displays unknown rather than this notice."
+    },
+    {
+      "id": "EXT-F-1007-T26",
+      "impact": "Already covers failed prior-save lookup; retain and extend to ensure the new notice is suppressed while lookup is unknown."
+    },
+    {
+      "id": "EXT-F-1002-T19",
+      "impact": "Already covers Capture claim failure; confirm the sidepanel's Open Scrape alert is visible and actionable."
+    },
+    { "id": "EXT-F-1002-T20", "impact": "Same claim-failure behavior for admin." },
+    {
+      "id": "EXT-F-2011-T02",
+      "impact": "Generic Vault case should include match-lookup refusal, truthful error versus empty result, no stale candidate action, and successful retry."
+    },
+    {
+      "id": "EXT-F-2013-T02",
+      "impact": "Composer send now carries page_source context in place of prior_capture; verify all three statuses reach the request."
+    },
+    {
+      "id": "EXT-F-2014-T02",
+      "impact": "Pilot inherits the page_source context and also exercises more specific local-browser terminal outcomes."
+    }
   ],
   "newcaseproposals": [
     {
@@ -53,8 +84,14 @@
       "title": "Show not-yet-a-Source state with its next action",
       "control_ids_proposed": ["EXT-F-1007-C28"],
       "modes": ["member", "admin"],
-      "steps": ["Open Scrape on a signed-in HTTP(S) page not present in Sources.", "Check the notice and choose Capture; after capture, choose Save.", "Repeat with an existing Source and with a failed lookup."],
-      "expected": ["An absent Source is described as not yet a Source with the correct next action; a known Source shows saved status; unknown lookup state is explicit and never presented as not-yet-saved."],
+      "steps": [
+        "Open Scrape on a signed-in HTTP(S) page not present in Sources.",
+        "Check the notice and choose Capture; after capture, choose Save.",
+        "Repeat with an existing Source and with a failed lookup."
+      ],
+      "expected": [
+        "An absent Source is described as not yet a Source with the correct next action; a known Source shows saved status; unknown lookup state is explicit and never presented as not-yet-saved."
+      ],
       "dimensions": ["warm", "backend-available", "lookup-failure", "source-status"]
     },
     {
@@ -63,8 +100,14 @@
       "title": "Distinguish failed site-login lookup from no matches and retry",
       "control_ids_proposed": ["EXT-F-2011-C51"],
       "modes": ["member", "admin"],
-      "steps": ["On a supported login page, force the browser-login match request to fail.", "Confirm the error and Retry control appear and prior candidates are not actionable.", "Restore service and retry."],
-      "expected": ["Failure is not shown as an empty successful result; candidates from an earlier page or actor are cleared; retry runs for the same current tab, page, and actor and then displays the returned result."],
+      "steps": [
+        "On a supported login page, force the browser-login match request to fail.",
+        "Confirm the error and Retry control appear and prior candidates are not actionable.",
+        "Restore service and retry."
+      ],
+      "expected": [
+        "Failure is not shown as an empty successful result; candidates from an earlier page or actor are cleared; retry runs for the same current tab, page, and actor and then displays the returned result."
+      ],
       "dimensions": ["backend-refusal", "retry", "tab-binding", "organization-binding"]
     },
     {
@@ -73,8 +116,12 @@
       "title": "Send explicit page Source status in Chat context",
       "control_ids_proposed": ["EXT-F-2013-C134"],
       "modes": ["member", "admin"],
-      "steps": ["Send from a known Source page, a page without a landed Source, and while Source lookup fails."],
-      "expected": ["The outgoing context carries exactly the corresponding source, not_yet_a_source, or unknown status; the not-yet state includes the Scrape Save action and unknown never claims absence."],
+      "steps": [
+        "Send from a known Source page, a page without a landed Source, and while Source lookup fails."
+      ],
+      "expected": [
+        "The outgoing context carries exactly the corresponding source, not_yet_a_source, or unknown status; the not-yet state includes the Scrape Save action and unknown never claims absence."
+      ],
       "dimensions": ["context-contract", "backend-available", "lookup-failure"]
     },
     {
@@ -83,8 +130,12 @@
       "title": "Pilot receives page Source status and truthful local-browser terminal outcomes",
       "control_ids_proposed": ["EXT-F-2014-C60"],
       "modes": ["admin"],
-      "steps": ["Send Pilot work from source, not-yet, and unknown pages; exercise an admitted credential operation with a controlled changed binding, unavailable field, or lost post-submit document."],
-      "expected": ["Pilot context carries the explicit page Source state; a terminal operation reports a reason matching its actual failed stage and never mislabels an unavailable observation as configuration_error."],
+      "steps": [
+        "Send Pilot work from source, not-yet, and unknown pages; exercise an admitted credential operation with a controlled changed binding, unavailable field, or lost post-submit document."
+      ],
+      "expected": [
+        "Pilot context carries the explicit page Source state; a terminal operation reports a reason matching its actual failed stage and never mislabels an unavailable observation as configuration_error."
+      ],
       "dimensions": ["context-contract", "local-browser", "terminal-reason", "failure-recovery"]
     }
   ],

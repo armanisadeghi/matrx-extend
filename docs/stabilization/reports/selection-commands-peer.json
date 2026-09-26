@@ -11,7 +11,10 @@
     "status": "PASS_STATIC",
     "evidence": "Chromium's protocol addition describes commands as editing commands and specifically identifies Meta+A/SelectAll on Mac; its protocol test observes selected text before Backspace. The runner uses no DOM value/selection mutation or mocked browser API; failed selection assertion prevents deletion/replacement. Replacement input proceeds only after observed clearing and waits for the exact entered value before Save/Set. The T70 trusted-wheel scrolling implementation is unchanged by this commit.",
     "validation": ["node --check tests/browser/settings-local-controls-acceptance.mjs passed"],
-    "limits": ["No native browser execution or product behavior verified.", "The Chromium primary source supports the command mechanism; only the pending native retest can prove it works in this runner/browser build."]
+    "limits": [
+      "No native browser execution or product behavior verified.",
+      "The Chromium primary source supports the command mechanism; only the pending native retest can prove it works in this runner/browser build."
+    ]
   },
   "findings": []
 }

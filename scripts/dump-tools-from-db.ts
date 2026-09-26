@@ -21,11 +21,16 @@
  */
 import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import process from 'node:process';
-import { isDbBindingRow, type DbBindingRow, isDbToolRow, type DbToolRow } from './_tool-db-row-validation';
+import { fileURLToPath } from 'node:url';
 import { selectRowsViaManagementApi } from './_supabase-management';
 import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
+import {
+  type DbBindingRow,
+  type DbToolRow,
+  isDbBindingRow,
+  isDbToolRow,
+} from './_tool-db-row-validation';
 
 const EXECUTOR_NAME = 'chrome-extension';
 
@@ -63,7 +68,8 @@ export async function main(): Promise<void> {
       `binding?or=(executor_name.eq.${EXECUTOR_NAME},executor_name.like.${EXECUTOR_NAME}.*)&select=tool_id,executor_name,is_active`,
       'tool',
     );
-    if (!Array.isArray(bindings) || !bindings.every(isDbBindingRow)) throw new Error('Invalid public binding rows');
+    if (!Array.isArray(bindings) || !bindings.every(isDbBindingRow))
+      throw new Error('Invalid public binding rows');
     const ids = [...new Set(bindings.filter((b) => b.is_active).map((b) => b.tool_id))];
     if (ids.length === 0) {
       console.warn(
@@ -78,7 +84,8 @@ export async function main(): Promise<void> {
       `definition?id=in.${inList}&select=id,source_kind,name,description,tier,category,admin_only,parameters,is_active&order=category.asc,name.asc`,
       'tool',
     );
-    if (!Array.isArray(rows) || !rows.every(isDbToolRow)) throw new Error('Invalid public tool definition rows');
+    if (!Array.isArray(rows) || !rows.every(isDbToolRow))
+      throw new Error('Invalid public tool definition rows');
   } catch (err) {
     try {
       rows = await fetchToolsViaManagementApi();
@@ -92,7 +99,9 @@ export async function main(): Promise<void> {
   }
 
   if (rows.length === 0) {
-    console.warn('docs:tools — no verified tool definitions; leaving docs/TOOLS.generated.md untouched.');
+    console.warn(
+      'docs:tools — no verified tool definitions; leaving docs/TOOLS.generated.md untouched.',
+    );
     return;
   }
 

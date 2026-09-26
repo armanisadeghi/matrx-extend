@@ -8,10 +8,7 @@
   "scope": "Source-only delta for Scrape Save, Unsaved Captures, and Saved Captures. Proposed inventory changes; no runtime result is claimed.",
   "provenance": {
     "prior_inventory": "docs/stabilization/inventory.json at 53fd39f",
-    "prior_feature_ids": [
-      "EXT-F-1007",
-      "EXT-F-2009"
-    ],
+    "prior_feature_ids": ["EXT-F-1007", "EXT-F-2009"],
     "prior_case_ids": [
       "EXT-F-1007-T04",
       "EXT-F-2009-T01",
@@ -23,26 +20,18 @@
       "EXT-F-1007": {
         "guest": {
           "test_status": "unverified",
-          "run_ids": [
-            "guest-local-001"
-          ],
-          "defect_ids": [
-            "EXT-D-0001"
-          ]
+          "run_ids": ["guest-local-001"],
+          "defect_ids": ["EXT-D-0001"]
         },
         "member": {
           "test_status": "unverified",
           "run_ids": [],
-          "defect_ids": [
-            "EXT-D-0001"
-          ]
+          "defect_ids": ["EXT-D-0001"]
         },
         "admin": {
           "test_status": "unverified",
           "run_ids": [],
-          "defect_ids": [
-            "EXT-D-0001"
-          ]
+          "defect_ids": ["EXT-D-0001"]
         },
         "handling": "Existing run evidence predates this source change. Preserve history; it does not verify the changed Save behavior or added retry controls."
       },
@@ -90,17 +79,13 @@
           "id": "EXT-F-1007-C21",
           "label": "Open landed Source in web app",
           "action": "Open the newly landed Source from the Save success state.",
-          "evidence": [
-            "src/features/scrape/ScrapeView.tsx:608"
-          ]
+          "evidence": ["src/features/scrape/ScrapeView.tsx:608"]
         },
         {
           "id": "EXT-F-1007-C22",
           "label": "Review unsaved captures and refusal remedy",
           "action": "Show each device-local capture, its refusal sentence, and available retry/discard actions.",
-          "evidence": [
-            "src/features/scrape/UnsavedCapturesCard.tsx:43"
-          ]
+          "evidence": ["src/features/scrape/UnsavedCapturesCard.tsx:43"]
         },
         {
           "id": "EXT-F-1007-C23",
@@ -125,14 +110,8 @@
         {
           "id": "EXT-F-1007-T21",
           "title": "Save a capture as a Source and follow its success state",
-          "control_ids": [
-            "EXT-F-1007-C04",
-            "EXT-F-1007-C21"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-1007-C04", "EXT-F-1007-C21"],
+          "modes": ["member", "admin"],
           "preconditions": [
             "Authenticated user with a device-selected organization; capture contains article text."
           ],
@@ -144,25 +123,13 @@
           "expected": [
             "A confirmed landing is identified as saved, server notices are visible, and the linked Source opens."
           ],
-          "dimensions": [
-            "warm",
-            "valid-input",
-            "backend-available"
-          ]
+          "dimensions": ["warm", "valid-input", "backend-available"]
         },
         {
           "id": "EXT-F-1007-T22",
           "title": "Retain and retry a refused or unreachable save",
-          "control_ids": [
-            "EXT-F-1007-C04",
-            "EXT-F-1007-C22",
-            "EXT-F-1007-C23"
-          ],
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
+          "control_ids": ["EXT-F-1007-C04", "EXT-F-1007-C22", "EXT-F-1007-C23"],
+          "modes": ["guest", "member", "admin"],
           "preconditions": [
             "Capture contains article text; use a controlled server refusal or offline condition. Guest mode should receive the sign-in remedy."
           ],
@@ -174,28 +141,14 @@
           "expected": [
             "The item remains visible and retryable on this device after failure; it leaves the queue only after a confirmed landing. A guest is told to sign in."
           ],
-          "dimensions": [
-            "offline",
-            "refusal",
-            "retry",
-            "guest-auth"
-          ]
+          "dimensions": ["offline", "refusal", "retry", "guest-auth"]
         },
         {
           "id": "EXT-F-1007-T23",
           "title": "Discard an unsaved capture only after confirmation",
-          "control_ids": [
-            "EXT-F-1007-C22",
-            "EXT-F-1007-C24"
-          ],
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
-          "preconditions": [
-            "At least one capture remains in the device-local unsaved queue."
-          ],
+          "control_ids": ["EXT-F-1007-C22", "EXT-F-1007-C24"],
+          "modes": ["guest", "member", "admin"],
+          "preconditions": ["At least one capture remains in the device-local unsaved queue."],
           "steps": [
             "Choose Discard and cancel once.",
             "Reopen the confirmation, confirm discard, and inspect the queue."
@@ -203,11 +156,7 @@
           "expected": [
             "Cancel preserves the item; confirmation removes it and communicates permanent local deletion."
           ],
-          "dimensions": [
-            "warm",
-            "confirmation",
-            "local-persistence"
-          ]
+          "dimensions": ["warm", "confirmation", "local-persistence"]
         }
       ],
       "applicability_notes": {
@@ -237,17 +186,13 @@
           "id": "EXT-F-2009-C12",
           "label": "Edit title",
           "change": "This former standalone field is no longer editable; note that title and description edits were replaced by an Article text edit. Retire this control ID or map it to the unified edit case without claiming a title-edit action exists.",
-          "evidence": [
-            "src/features/saved-captures/SavedCapturesView.tsx:454"
-          ]
+          "evidence": ["src/features/saved-captures/SavedCapturesView.tsx:454"]
         },
         {
           "id": "EXT-F-2009-C13",
           "label": "Edit description",
           "change": "This former standalone field is no longer editable; fold its removal into the unified Article text edit case and retire this control ID.",
-          "evidence": [
-            "src/features/saved-captures/SavedCapturesView.tsx:454"
-          ]
+          "evidence": ["src/features/saved-captures/SavedCapturesView.tsx:454"]
         },
         {
           "id": "EXT-F-2009-C14",
@@ -262,25 +207,19 @@
           "id": "EXT-F-2009-C15",
           "label": "Save capture edits",
           "change": "Retain stable ID and verify source edit success, empty-edit refusal, and visible error/retry behavior. The original capture remains unchanged.",
-          "evidence": [
-            "src/features/saved-captures/SavedCapturesView.tsx:365"
-          ]
+          "evidence": ["src/features/saved-captures/SavedCapturesView.tsx:365"]
         },
         {
           "id": "EXT-F-2009-C18",
           "label": "Show Data tab",
           "change": "Data now shows original SoupResult when it loads, otherwise Source structured data; verify data remains available when original is absent or fails to load.",
-          "evidence": [
-            "src/features/saved-captures/SavedCapturesView.tsx:547"
-          ]
+          "evidence": ["src/features/saved-captures/SavedCapturesView.tsx:547"]
         },
         {
           "id": "EXT-F-2009-C19",
           "label": "Copy capture formats",
           "change": "Retain the control ID; validate available copy formats against Source content and the edited text representation.",
-          "evidence": [
-            "src/features/saved-captures/SavedCapturesView.tsx:358"
-          ]
+          "evidence": ["src/features/saved-captures/SavedCapturesView.tsx:358"]
         }
       ],
       "controls_to_add": [
@@ -288,9 +227,7 @@
           "id": "EXT-F-2009-C31",
           "label": "Open Source in web app",
           "action": "Open the selected Source in the AI Matrx web app.",
-          "evidence": [
-            "src/features/saved-captures/SavedCapturesView.tsx:431"
-          ]
+          "evidence": ["src/features/saved-captures/SavedCapturesView.tsx:431"]
         },
         {
           "id": "EXT-F-2009-C32",
@@ -340,10 +277,7 @@
             "EXT-F-2009-C32",
             "EXT-F-2009-C33"
           ],
-          "modes": [
-            "member",
-            "admin"
-          ],
+          "modes": ["member", "admin"],
           "expected": [
             "The reader-facing edited text is reflected after save; the original remains intact; structured data remains inspectable even when the original is missing or unavailable."
           ],
@@ -358,17 +292,9 @@
         {
           "id": "EXT-F-2009-T05",
           "title": "Open Source in web app and inspect keep state",
-          "control_ids": [
-            "EXT-F-2009-C31",
-            "EXT-F-2009-C34"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
-          "preconditions": [
-            "A listed Source is available to the active organization."
-          ],
+          "control_ids": ["EXT-F-2009-C31", "EXT-F-2009-C34"],
+          "modes": ["member", "admin"],
+          "preconditions": ["A listed Source is available to the active organization."],
           "steps": [
             "Inspect saved/kept status in list and detail.",
             "Open the Source in the web app."
@@ -376,11 +302,7 @@
           "expected": [
             "Kept state is represented accurately and the web-app link opens the corresponding Source."
           ],
-          "dimensions": [
-            "warm",
-            "organization",
-            "backend-available"
-          ]
+          "dimensions": ["warm", "organization", "backend-available"]
         }
       ],
       "applicability_notes": {
@@ -413,10 +335,7 @@
   "summary": {
     "status": "proposed_source_delta_only",
     "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
-    "affected_feature_ids": [
-      "EXT-F-1007",
-      "EXT-F-2009"
-    ],
+    "affected_feature_ids": ["EXT-F-1007", "EXT-F-2009"],
     "new_control_count": 8,
     "changed_control_count": 8,
     "added_case_count": 4,

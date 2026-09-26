@@ -71,9 +71,13 @@ interface LedgerRow {
 }
 
 function isLedgerRow(row: unknown): row is LedgerRow {
-  return typeof row === 'object' && row !== null && !Array.isArray(row) &&
+  return (
+    typeof row === 'object' &&
+    row !== null &&
+    !Array.isArray(row) &&
     typeof (row as Record<string, unknown>).filename === 'string' &&
-    typeof (row as Record<string, unknown>).checksum === 'string';
+    typeof (row as Record<string, unknown>).checksum === 'string'
+  );
 }
 
 async function fetchLedgerViaManagementApi(): Promise<LedgerRow[]> {
@@ -120,7 +124,8 @@ export async function main(): Promise<number> {
         env.key,
         `_schema_migrations?source=eq.${encodeURIComponent(SOURCE)}&select=filename,checksum`,
       );
-      if (!Array.isArray(rows) || !rows.every(isLedgerRow)) throw new Error('Invalid public ledger rows');
+      if (!Array.isArray(rows) || !rows.every(isLedgerRow))
+        throw new Error('Invalid public ledger rows');
       ledgerRows = rows;
     } catch (error) {
       publicError = error;

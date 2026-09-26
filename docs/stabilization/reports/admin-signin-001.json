@@ -19,8 +19,5 @@
   ],
   "next_action": null,
   "run_id": "admin-signin-001",
-  "case_ids": [
-    "EXT-F-1003-T52",
-    "EXT-F-0001-T05"
-  ]
+  "case_ids": ["EXT-F-1003-T52", "EXT-F-0001-T05"]
 }

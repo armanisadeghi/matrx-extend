@@ -8,6 +8,18 @@
   "native_input_evidence": "The native-run receipt and zero exit are runtime evidence; inspected source uses the isolated harness, distinct SIDE_PANEL context, trusted pointer events, and storage assertions. Prior independent source peers passed harness and exact-value review.",
   "screenshots": "native-side-panel.png shows initial signed-out guest panel only; normal-target-after-open.png shows the helper page and open-panel result. Neither shows the reset dialog, post-Cancel state, nor post-reset reload; screenshots do not prove those outcomes.",
   "limits": "No scratch mutation/red proof in this lane. Only guest T49 was exercised; member/admin reset and sign-out behavior remain unverified. Primary profile untouched is recorded by the run wrapper. Sibling runtimes were source-repaired/reviewed, not executed here.",
-  "prior_reports": ["isolated-settings-reset-peer.json", "isolated-settings-reset-reverify.json", "isolated-settings-reset-final-source-peer.json", "guest-harness-peer.json", "guest-pointer-final-peer.json", "guest-readiness-peer.json"],
-  "evidence": ["docs/stabilization/runs/guest-reset-007.json", "test-results/settings-local-reset-acceptance.json", "test-results/native-sidepanel-qa-ZZXOgU/native-side-panel.png", "test-results/native-sidepanel-qa-ZZXOgU/normal-target-after-open.png"]
+  "prior_reports": [
+    "isolated-settings-reset-peer.json",
+    "isolated-settings-reset-reverify.json",
+    "isolated-settings-reset-final-source-peer.json",
+    "guest-harness-peer.json",
+    "guest-pointer-final-peer.json",
+    "guest-readiness-peer.json"
+  ],
+  "evidence": [
+    "docs/stabilization/runs/guest-reset-007.json",
+    "test-results/settings-local-reset-acceptance.json",
+    "test-results/native-sidepanel-qa-ZZXOgU/native-side-panel.png",
+    "test-results/native-sidepanel-qa-ZZXOgU/normal-target-after-open.png"
+  ]
 }

@@ -1353,13 +1353,7 @@ async function verifyPinnedLocalCanonicalSource() {
   try {
     ({ stdout } = await execFileAsync(
       '/Users/armanisadeghi/code/aidream/.venv/bin/python',
-      [
-        adapter,
-        '--verify-source-root',
-        sourceRoot,
-        routerHash,
-        serviceHash,
-      ],
+      [adapter, '--verify-source-root', sourceRoot, routerHash, serviceHash],
       {
         cwd: sourceRoot,
         env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' },
@@ -1380,7 +1374,7 @@ async function verifyPinnedLocalCanonicalSource() {
   }
   assert(result?.ok === true, `local_cleanup_${result?.code || 'source_verify_refused'}`);
   assert(
-      result?.source?.router === routerHash &&
+    result?.source?.router === routerHash &&
       result?.source?.service === serviceHash &&
       result?.source?.sourceCommit === RECEIPT_BACKED_SOURCE_COMMIT &&
       result?.source?.sourceGitTree === RECEIPT_BACKED_SOURCE_GIT_TREE &&
@@ -2599,7 +2593,8 @@ async function provePopupCaptureRoute({ extensionId }) {
     persist();
   } catch (error) {
     route.disposition = 'failed';
-    route.failureCode = error instanceof Error ? error.message : 'popup_capture_route_unknown_failure';
+    route.failureCode =
+      error instanceof Error ? error.message : 'popup_capture_route_unknown_failure';
     try {
       persist();
     } catch {

@@ -1,7 +1,11 @@
 {
   "schema_version": 1,
   "reviewed_commit": "6b79a5d3b8b9c681193aaea5796631d19a731948",
-  "scope": ["EXT-D-0013", "mandatory release validation ordering", "stale dependency and push-race fixtures"],
+  "scope": [
+    "EXT-D-0013",
+    "mandatory release validation ordering",
+    "stale dependency and push-race fixtures"
+  ],
   "lane": "independent source review; Luna medium; no runtime commands",
   "verdict_a_acceptance_readiness": {
     "status": "PARTIAL_READY_RUNTIME_UNVERIFIED",
@@ -13,7 +17,11 @@
     "evidence": "The freshness gate is unconditionally first in CHECKS, ahead of typecheck and unit tests, with no skip flag. run_checks evaluates the ordered list against CHECK_SNAP exported from RELEASE_SHA on each pass through the retry loop; a failed mandatory gate returns before zip building and atomic publication. Existing typecheck, unit, schema, package-twin, picker, archived-item, organization, refusal, migration, tool-drift, and package/build/publication gates remain present. The stale fixture's call-log test starts before any pnpm validation calls, making its no-Vitest assertion effective. The race fixture checks at least two package-gate calls after its own baseline and still checks the final validated SHA against published main."
   },
   "findings": [],
-  "validation": ["Source inspection of commit 6b79a5d; no commands, tests, compilation, build, browser, or release run."],
-  "limits": ["Negative and positive fixture behavior remains runtime-unverified in this lane; root owner must run the admitted fixture and its broader validation."],
+  "validation": [
+    "Source inspection of commit 6b79a5d; no commands, tests, compilation, build, browser, or release run."
+  ],
+  "limits": [
+    "Negative and positive fixture behavior remains runtime-unverified in this lane; root owner must run the admitted fixture and its broader validation."
+  ],
   "recommendation": "Accept source engineering; retain readiness as partial until the root owner's admitted fixture run succeeds."
 }

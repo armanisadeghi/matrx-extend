@@ -264,9 +264,7 @@
           "observation": {
             "value": "",
             "saved": null,
-            "button": [
-              "Set"
-            ],
+            "button": ["Set"],
             "override": false,
             "error": null
           }
@@ -277,9 +275,7 @@
           "observation": {
             "value": "65001",
             "saved": 65001,
-            "button": [
-              "Save"
-            ],
+            "button": ["Save"],
             "override": true,
             "error": null
           }
@@ -290,9 +286,7 @@
           "observation": {
             "value": "65001",
             "saved": 65001,
-            "button": [
-              "Save"
-            ],
+            "button": ["Save"],
             "override": true,
             "error": null
           }
@@ -303,9 +297,7 @@
           "observation": {
             "value": "65536",
             "saved": 65001,
-            "button": [
-              "Save"
-            ],
+            "button": ["Save"],
             "override": true,
             "error": "Port must be 1\u201365535."
           }
@@ -316,9 +308,7 @@
           "observation": {
             "value": "",
             "saved": null,
-            "button": [
-              "Set"
-            ],
+            "button": ["Set"],
             "override": false,
             "error": null
           }
@@ -329,9 +319,7 @@
           "observation": {
             "value": "",
             "saved": null,
-            "button": [
-              "Set"
-            ],
+            "button": ["Set"],
             "override": false,
             "error": null
           }
@@ -344,9 +332,7 @@
           "evidence": {
             "value": "65001",
             "saved": 65001,
-            "button": [
-              "Save"
-            ],
+            "button": ["Save"],
             "override": true,
             "error": null
           }
@@ -362,9 +348,7 @@
           "evidence": {
             "value": "65001",
             "saved": 65001,
-            "button": [
-              "Save"
-            ],
+            "button": ["Save"],
             "override": true,
             "error": null
           }
@@ -375,9 +359,7 @@
           "evidence": {
             "value": "65536",
             "saved": 65001,
-            "button": [
-              "Save"
-            ],
+            "button": ["Save"],
             "override": true,
             "error": "Port must be 1\u201365535."
           }
@@ -388,9 +370,7 @@
           "evidence": {
             "value": "",
             "saved": null,
-            "button": [
-              "Set"
-            ],
+            "button": ["Set"],
             "override": false,
             "error": null
           }
@@ -401,9 +381,7 @@
           "evidence": {
             "value": "",
             "saved": null,
-            "button": [
-              "Set"
-            ],
+            "button": ["Set"],
             "override": false,
             "error": null
           }
@@ -645,13 +623,8 @@
         "profileFreeGiB": 23.76095962524414
       },
       "cpuBusySamples": [
-        0.19799999999999995,
-        0.1076999999999999,
-        0.0887,
-        0.2523000000000001,
-        0.1854,
-        0.11659999999999993,
-        0.10599999999999998
+        0.19799999999999995, 0.1076999999999999, 0.0887, 0.2523000000000001, 0.1854,
+        0.11659999999999993, 0.10599999999999998
       ],
       "reasons": [],
       "swapWindowSeconds": 60,

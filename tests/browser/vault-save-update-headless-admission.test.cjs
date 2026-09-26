@@ -70,20 +70,18 @@ try {
   const verifySource = (command, sourceRoot) => {
     const result = spawnSync(
       '/Users/armanisadeghi/code/aidream/.venv/bin/python',
-      [
-        cleanupAdapter,
-        command,
-        sourceRoot,
-        routerHash,
-        serviceHash,
-      ],
+      [cleanupAdapter, command, sourceRoot, routerHash, serviceHash],
       {
         encoding: 'utf8',
         env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' },
         timeout: 180000,
       },
     );
-    assert.equal(result.error, undefined, `source verifier subprocess error: ${result.error?.code || 'unknown'}`);
+    assert.equal(
+      result.error,
+      undefined,
+      `source verifier subprocess error: ${result.error?.code || 'unknown'}`,
+    );
     return { result, body: JSON.parse(result.stdout) };
   };
   const proveArchivePreflightAndPackageClosure = () => {
@@ -382,7 +380,10 @@ try {
     assert.equal(manifest.manifestVersion, reviewedLocalSourceArtifact.version);
     assert.equal(manifest.kind, reviewedLocalSourceArtifact.kind);
     assert.equal(
-      crypto.createHash('sha256').update(fs.readFileSync(reviewedLocalSourceArtifact.path)).digest('hex'),
+      crypto
+        .createHash('sha256')
+        .update(fs.readFileSync(reviewedLocalSourceArtifact.path))
+        .digest('hex'),
       reviewedLocalSourceArtifact.manifestSha256,
     );
     assert.match(
