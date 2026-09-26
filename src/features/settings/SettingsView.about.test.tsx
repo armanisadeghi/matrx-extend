@@ -1,9 +1,11 @@
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   requestUpdateCheck: vi.fn(),
   getEnginePortOverride: vi.fn(),
+  setEnginePortOverride: vi.fn(),
+  send: vi.fn(),
 }));
 
 vi.mock('@/components/ui/collapsible', () => ({
@@ -32,7 +34,7 @@ vi.mock('@/hooks/use-desktop', () => ({
 }));
 vi.mock('@/lib/desktop/discovery', () => ({
   getEnginePortOverride: mocks.getEnginePortOverride,
-  setEnginePortOverride: vi.fn(),
+  setEnginePortOverride: mocks.setEnginePortOverride,
 }));
 vi.mock('@/lib/desktop/http', () => ({ clearPairToken: vi.fn(), setPairToken: vi.fn() }));
 vi.mock('@/lib/desktop/types', () => ({
@@ -42,7 +44,7 @@ vi.mock('@/lib/desktop/types', () => ({
 }));
 vi.mock('@/lib/destructive/confirm', () => ({ confirmDestructive: vi.fn() }));
 vi.mock('@/lib/mandates', () => ({ DEFAULT_CHAT_MANDATE_KEY: 'test' }));
-vi.mock('@/lib/messaging/native', () => ({ send: vi.fn() }));
+vi.mock('@/lib/messaging/native', () => ({ send: mocks.send }));
 vi.mock('@/lib/messaging/schemas', () => ({ CHANNELS: { DESKTOP_REDISCOVER: 'rediscover' } }));
 vi.mock('@/state/settings', () => ({
   useSettingsStore: () => ({
@@ -126,6 +128,8 @@ function setUserAgent(value: string) {
 describe('SettingsView About', () => {
   beforeEach(() => {
     mocks.getEnginePortOverride.mockReset().mockResolvedValue(null);
+    mocks.setEnginePortOverride.mockReset().mockResolvedValue(undefined);
+    mocks.send.mockReset().mockResolvedValue(undefined);
     mocks.requestUpdateCheck.mockReset();
   });
 
@@ -223,5 +227,48 @@ describe('SettingsView About', () => {
     fireEvent.click(about().getByRole('button', { name: 'Check for extension update' }));
 
     expect(about().getByText(expected)).toBeTruthy();
+  });
+});
+
+describe('SettingsView local engine port', () => {
+  beforeEach(() => {
+    mocks.getEnginePortOverride.mockReset().mockResolvedValue(65001);
+    mocks.setEnginePortOverride.mockReset().mockResolvedValue(undefined);
+    mocks.send.mockReset().mockResolvedValue(undefined);
+    setChromeRuntime({});
+  });
+
+  afterEach(cleanup);
+
+  it('clears the stale range error when a blank save removes an override', async () => {
+    render(<SettingsView />);
+    const section = within(screen.getByRole('region', { name: 'Desktop bridge' }));
+    const input = await section.findByDisplayValue('65001');
+
+    fireEvent.change(input, { target: { value: '65536' } });
+    fireEvent.click(section.getByRole('button', { name: 'Save' }));
+    expect(section.getByText('Port must be 1–65535.')).toBeTruthy();
+    expect(mocks.setEnginePortOverride).not.toHaveBeenCalled();
+
+    fireEvent.change(input, { target: { value: '' } });
+    fireEvent.click(section.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(mocks.setEnginePortOverride).toHaveBeenCalledWith(null));
+    await waitFor(() => expect(section.getByRole('button', { name: 'Set' })).toBeTruthy());
+    expect(section.queryByText('Port must be 1–65535.')).toBeNull();
+  });
+
+  it('clears the range error when a valid port replaces the invalid input', async () => {
+    render(<SettingsView />);
+    const section = within(screen.getByRole('region', { name: 'Desktop bridge' }));
+    const input = await section.findByDisplayValue('65001');
+
+    fireEvent.change(input, { target: { value: '65536' } });
+    fireEvent.click(section.getByRole('button', { name: 'Save' }));
+    expect(section.getByText('Port must be 1–65535.')).toBeTruthy();
+
+    fireEvent.change(input, { target: { value: '65002' } });
+    fireEvent.click(section.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(mocks.setEnginePortOverride).toHaveBeenCalledWith(65002));
+    expect(section.queryByText('Port must be 1–65535.')).toBeNull();
   });
 });

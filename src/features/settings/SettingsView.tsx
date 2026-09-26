@@ -127,6 +127,7 @@ export function SettingsView() {
       // state and the socket. Clearing this context's copies changed nothing.
       await send(CHANNELS.DESKTOP_REDISCOVER, {}).catch(() => undefined);
       setEnginePortSaved(null);
+      setEnginePortError(null);
       return;
     }
     const n = Number(trimmed);

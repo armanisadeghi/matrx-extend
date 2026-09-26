@@ -1,0 +1,17 @@
+{
+  "defect_id": "EXT-D-0012",
+  "status": "source-fixed-awaiting-root-browser-verification",
+  "owner_lane": "port_error_repair",
+  "captured_failure": "Real native 0.2.57 guest Settings run guest-settings-local-004, test-results/settings-local-controls-acceptance.json: after an invalid 65536 entry, clearing the local engine port override removes the saved port but leaves the range error visible.",
+  "root_cause": "SettingsView.handleSaveEnginePort clears enginePortError on the valid numeric save branch, but the successful blank-input branch returns after clearing the override without clearing the prior error state.",
+  "sibling_census": "The handler has two successful save branches: valid numeric save already clears the range error; blank override removal was the only missing branch. The invalid branch intentionally retains the saved override and displays the error. No other enginePortError setters or clear actions exist in SettingsView.",
+  "fix": "The blank-input success branch now clears enginePortError when it clears enginePortSaved. A real SettingsView component test covers invalid-to-blank and invalid-to-valid sequences through the rendered control.",
+  "red_green": "pnpm exec vitest run src/features/settings/SettingsView.about.test.tsx --maxWorkers=1 --minWorkers=1: before fix, one failing test observed the stale Port must be 1–65535. message after the override was removed; after fix, 8 tests passed.",
+  "browser_verification_pending": "Root lane should rerun tests/browser/settings-local-controls-acceptance.mjs T46 on the updated installed extension in a guest profile and verify blank clears both the override and error in the same view, then persists after reload.",
+  "files_changed_by_lane": [
+    "src/features/settings/SettingsView.tsx",
+    "src/features/settings/SettingsView.about.test.tsx",
+    "docs/feature-tests.md",
+    "docs/stabilization/reports/port-error-repair.json"
+  ]
+}
