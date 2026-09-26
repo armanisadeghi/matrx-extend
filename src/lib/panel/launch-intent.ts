@@ -11,48 +11,88 @@ export const POPUP_LAUNCH_INTENT_KEY = 'matrx.sidepanel.popup_launch_intent';
 const CAPTURE_PAGE_INTENT_TTL_MS = 15_000;
 
 type CapturePageIntent = {
+  id: string;
   kind: 'capture-page';
+  windowId: number;
   expiresAt: number;
 };
+
+export interface CapturePagePanelRequest {
+  intent: CapturePageIntent;
+  write: Promise<void>;
+}
 
 function isCapturePageIntent(value: unknown): value is CapturePageIntent {
   if (!value || typeof value !== 'object') return false;
   const candidate = value as Partial<CapturePageIntent>;
-  return candidate.kind === 'capture-page' && typeof candidate.expiresAt === 'number';
+  return (
+    typeof candidate.id === 'string' &&
+    candidate.kind === 'capture-page' &&
+    typeof candidate.windowId === 'number' &&
+    typeof candidate.expiresAt === 'number'
+  );
 }
 
 /** Start the durable handoff before requesting the native side panel. */
-export function requestCapturePagePanel(): Promise<void> {
-  return chrome.storage.session.set({
-    [POPUP_LAUNCH_INTENT_KEY]: {
-      kind: 'capture-page',
-      expiresAt: Date.now() + CAPTURE_PAGE_INTENT_TTL_MS,
-    } satisfies CapturePageIntent,
-  });
+export function requestCapturePagePanel(windowId: number): CapturePagePanelRequest {
+  const intent: CapturePageIntent = {
+    id: crypto.randomUUID(),
+    kind: 'capture-page',
+    windowId,
+    expiresAt: Date.now() + CAPTURE_PAGE_INTENT_TTL_MS,
+  };
+  return {
+    intent,
+    write: chrome.storage.session.set({ [POPUP_LAUNCH_INTENT_KEY]: intent }),
+  };
 }
 
-/**
- * Takes the popup intent exactly once. Expired and malformed records are also
- * removed so a later panel open cannot be redirected by an old click.
- */
-export async function takePopupLaunchTarget(): Promise<SidepanelTab | null> {
-  let row: Record<string, unknown>;
+/** Remove only the request created by this popup click, never a newer click. */
+export async function clearCapturePagePanel(request: CapturePagePanelRequest): Promise<boolean> {
   try {
-    row = await chrome.storage.session.get([POPUP_LAUNCH_INTENT_KEY]);
-  } catch {
-    return null;
-  }
-
-  const intent = row[POPUP_LAUNCH_INTENT_KEY];
-  if (intent === undefined) return null;
-
-  try {
+    await request.write;
+    const row = await chrome.storage.session.get([POPUP_LAUNCH_INTENT_KEY]);
+    const current = row[POPUP_LAUNCH_INTENT_KEY];
+    if (!isCapturePageIntent(current) || current.id !== request.intent.id) return false;
     await chrome.storage.session.remove(POPUP_LAUNCH_INTENT_KEY);
+    return true;
   } catch {
-    // The record is only a navigation hint. A failed cleanup must not turn it
-    // into a capture request or prevent the person from reaching Scrape.
+    return false;
   }
+}
 
-  if (!isCapturePageIntent(intent) || intent.expiresAt < Date.now()) return null;
-  return 'scrape';
+let claimQueue = Promise.resolve();
+
+/**
+ * Takes the current window's popup intent exactly once. Claims are serialized
+ * in the side-panel realm, and a failed removal is a refusal: routing while
+ * leaving the intent behind would let a later Open chat be redirected.
+ */
+export function takePopupLaunchTarget(windowId: number): Promise<SidepanelTab | null> {
+  const claim = claimQueue.then(async () => {
+    let row: Record<string, unknown>;
+    try {
+      row = await chrome.storage.session.get([POPUP_LAUNCH_INTENT_KEY]);
+    } catch {
+      return null;
+    }
+
+    const intent = row[POPUP_LAUNCH_INTENT_KEY];
+    if (intent === undefined) return null;
+    if (isCapturePageIntent(intent) && intent.windowId !== windowId) return null;
+
+    try {
+      await chrome.storage.session.remove(POPUP_LAUNCH_INTENT_KEY);
+    } catch {
+      return null;
+    }
+
+    if (!isCapturePageIntent(intent) || intent.expiresAt < Date.now()) return null;
+    return 'scrape';
+  });
+  claimQueue = claim.then(
+    () => undefined,
+    () => undefined,
+  );
+  return claim;
 }

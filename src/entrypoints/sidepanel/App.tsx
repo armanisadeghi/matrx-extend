@@ -173,9 +173,16 @@ export function App() {
   useEffect(() => {
     let mounted = true;
     const applyPopupIntent = () => {
-      void takePopupLaunchTarget().then((target) => {
-        if (mounted && target) setTab(target);
-      });
+      void chrome.windows
+        .getCurrent()
+        .then((window) => {
+          if (mounted && window.id != null) {
+            void takePopupLaunchTarget(window.id).then((target) => {
+              if (mounted && target) setTab(target);
+            });
+          }
+        })
+        .catch(() => undefined);
     };
     const onStorageChanged = (
       changes: Record<string, chrome.storage.StorageChange>,

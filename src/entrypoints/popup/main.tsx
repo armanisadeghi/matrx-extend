@@ -1,15 +1,20 @@
 import { useAuth } from '@/hooks/use-auth';
 import { openFirefoxSidebarFromGesture, openPanel, panelOpenRemedy } from '@/lib/panel/adapter';
-import { requestCapturePagePanel } from '@/lib/panel/launch-intent';
+import {
+  clearCapturePagePanel,
+  requestCapturePagePanel,
+  type CapturePagePanelRequest,
+} from '@/lib/panel/launch-intent';
 import { Button } from '@ai-matrx/design-system';
 import { ExternalLink, MessageSquare, ScanLine } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@/styles/globals.css';
 
 export function Popup() {
   const { error, signIn, status, user } = useAuth();
   const [panelError, setPanelError] = useState<string | null>(null);
+  const pendingCaptureRequest = useRef<CapturePagePanelRequest | null>(null);
   const openSidePanel = async () => {
     setPanelError(null);
     // Firefox must receive sidebarAction.open() while this toolbar click is
@@ -46,14 +51,86 @@ export function Popup() {
     }
   };
 
-  const openCapturePage = () => {
-    // Do not await before opening the native panel: Chromium treats this
-    // toolbar click as the required user gesture. The side panel also watches
-    // storage changes, covering a session write that settles after it mounts.
-    void requestCapturePagePanel().catch(() => {
+  const reportCaptureWriteFailure = (request: CapturePagePanelRequest) => {
+    void request.write.catch(() => {
       setPanelError("Couldn't prepare Capture page. Open Matrx and select Scrape.");
     });
-    void openSidePanel();
+  };
+
+  const discardCaptureIntent = (request: CapturePagePanelRequest | null) => {
+    if (!request) return Promise.resolve();
+    return clearCapturePagePanel(request).finally(() => {
+      if (pendingCaptureRequest.current?.intent.id === request.intent.id) {
+        pendingCaptureRequest.current = null;
+      }
+    });
+  };
+
+  const openChat = async () => {
+    // If Capture page just failed, wait for its exact write/remove sequence
+    // before opening normally. An Open chat click must never inherit that
+    // failed navigation request.
+    await discardCaptureIntent(pendingCaptureRequest.current);
+    await openSidePanel();
+  };
+
+  const openCapturePage = async () => {
+    setPanelError(null);
+    // Firefox must receive sidebarAction.open() before the first await. Its
+    // window id arrives asynchronously afterwards, and the mounted panel's
+    // storage listener picks up the window-bound intent when it is written.
+    const firefoxAttempt = openFirefoxSidebarFromGesture();
+    if (firefoxAttempt) {
+      let request: CapturePagePanelRequest | null = null;
+      const requestPromise = chrome.tabs
+        .query({ active: true, currentWindow: true })
+        .then(([tab]) => {
+          if (tab?.windowId == null) throw new Error('Matrx could not find this browser window.');
+          request = requestCapturePagePanel(tab.windowId);
+          pendingCaptureRequest.current = request;
+          reportCaptureWriteFailure(request);
+          return request;
+        })
+        .catch((err) => {
+          setPanelError(panelOpenRemedy((err as Error)?.message ?? 'open-failed'));
+          return null;
+        });
+      if (!firefoxAttempt.promise) {
+        await discardCaptureIntent(await requestPromise);
+        setPanelError(panelOpenRemedy(firefoxAttempt.reason));
+        return;
+      }
+      try {
+        await firefoxAttempt.promise;
+        window.close();
+      } catch (err) {
+        await discardCaptureIntent(await requestPromise);
+        setPanelError(panelOpenRemedy((err as Error)?.message ?? 'open-failed'));
+      }
+      return;
+    }
+
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab?.windowId == null) {
+      setPanelError(panelOpenRemedy('Matrx could not find this browser window.'));
+      return;
+    }
+    const request = requestCapturePagePanel(tab.windowId);
+    pendingCaptureRequest.current = request;
+    reportCaptureWriteFailure(request);
+    const attempt = openPanel({ windowId: tab.windowId });
+    if (!attempt.promise) {
+      await discardCaptureIntent(request);
+      setPanelError(panelOpenRemedy(attempt.reason));
+      return;
+    }
+    try {
+      await attempt.promise;
+      window.close();
+    } catch (err) {
+      await discardCaptureIntent(request);
+      setPanelError(panelOpenRemedy((err as Error)?.message ?? 'open-failed'));
+    }
   };
 
   return (
@@ -63,10 +140,14 @@ export function Popup() {
         <>
           <div className="text-xs text-muted-foreground">{user.email}</div>
           <div className="grid gap-2">
-            <Button onClick={() => void openSidePanel()} className="justify-start">
+            <Button onClick={() => void openChat()} className="justify-start">
               <MessageSquare className="size-4" /> Open chat
             </Button>
-            <Button onClick={openCapturePage} variant="secondary" className="justify-start">
+            <Button
+              onClick={() => void openCapturePage()}
+              variant="secondary"
+              className="justify-start"
+            >
               <ScanLine className="size-4" /> Capture page
             </Button>
           </div>
