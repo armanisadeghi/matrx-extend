@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1001",
+  "status": "prepared_not_run",
+  "runner": "tests/browser/contained-navigation-acceptance.mjs",
+  "runtime_output": "test-results/contained-navigation-acceptance.json",
+  "scope": "Narrow guest/admin native sidepanel navigation, avatar, and lazy-view batch using the owned disposable Chrome profile and released-artifact receipt. The root guard owns launch and runtime review.",
+  "case_mapping": {
+    "EXT-F-1001-T01": "partial: guest direct tabs except Chat; no reload or role-transition proof",
+    "EXT-F-1001-T03": "partial: admin direct tabs except Chat and Pilot; Profile via menu; no reload or role-transition proof",
+    "EXT-F-1001-T04": "guest Capture trigger absent",
+    "EXT-F-1001-T06": "partial: admin Capture trigger, accessible label and badge observed; pending-count source agreement unproven",
+    "EXT-F-1001-T07": "guest Vault shortcut absent",
+    "EXT-F-1001-T09": "unverified: active assistance precondition unavailable",
+    "EXT-F-1001-T10": "guest avatar menu identity and desktop state",
+    "EXT-F-1001-T12": "admin avatar menu identity and desktop state",
+    "EXT-F-1001-T13": "partial: guest selected-view load; natural chunk failure and retry unproven",
+    "EXT-F-1001-T15": "partial: admin selected-view load; natural chunk failure and retry unproven"
+  },
+  "deferred": [
+    "Chat and Pilot systematic actions are separate targets.",
+    "Member role has no credential in this batch.",
+    "Reload dimensions and stale-selection transition need a separate natural-state flow.",
+    "No synthetic chunk failure or backend mutation is used."
+  ],
+  "static_verification": {
+    "node_check": "pass",
+    "biome_check": "pass",
+    "diff_check": "pass"
+  },
+  "runtime_verdict": "unverified",
+  "source_peer": "pending before root runtime"
+}
