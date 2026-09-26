@@ -113,5 +113,9 @@
     "result_sha256": "1fe2a43d1a7018dd6ca1e6ce9d89eca90b3ba5e90e93716b81ed56930c6bfcab",
     "log_sha256": "5dac73f72062eefbd1c7518593bd48c5c3ed92b5503bf81a1ec053e469d5aa29"
   },
+  "artifacts": {
+    "result_path": "test-results/member-vault-access-probe.json",
+    "log_path": "/tmp/matrx-member-vault-access-011.log"
+  },
   "limits": "Zero titlematchedcandidate in inspectedsettledscopes is not globalcredentialabsence or authenticatedmemberproof."
 }
