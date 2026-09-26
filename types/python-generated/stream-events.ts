@@ -4298,6 +4298,13 @@ export interface WebSearchPart {
   status?: string;
 }
 
+export interface HostedToolPart {
+  metadata?: Record<string, unknown>;
+  type: "hosted_tool";
+  provider?: string;
+  block?: Record<string, unknown>;
+}
+
 export interface PreFetchedUrl {
   [key: string]: unknown;
   url: string;
@@ -4665,6 +4672,7 @@ export type MessagePart =
   | CodeExecPart
   | CodeResultPart
   | WebSearchPart
+  | HostedToolPart
   | WebpageInputPart
   | NotesInputPart
   | TaskInputPart
@@ -6068,6 +6076,38 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
         "table_id"
       ],
       "title": "FullTableBookmark",
+      "type": "object"
+    },
+    "HostedToolPart": {
+      "additionalProperties": false,
+      "description": "A provider-hosted tool block (Anthropic ``server_tool_use`` /\n``web_search_tool_result``) stored verbatim so a resumed tool loop can\nreplay the assistant turn block-for-block. Provider state, never a call.",
+      "properties": {
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "type": {
+          "const": "hosted_tool",
+          "default": "hosted_tool",
+          "title": "Type",
+          "type": "string"
+        },
+        "provider": {
+          "default": "",
+          "title": "Provider",
+          "type": "string"
+        },
+        "block": {
+          "additionalProperties": true,
+          "title": "Block",
+          "type": "object"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "title": "HostedToolPart",
       "type": "object"
     },
     "ImageMediaPart": {
@@ -8253,6 +8293,9 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
       "$ref": "#/$defs/WebSearchPart"
     },
     {
+      "$ref": "#/$defs/HostedToolPart"
+    },
+    {
       "$ref": "#/$defs/WebpageInputPart"
     },
     {
@@ -8403,6 +8446,29 @@ export function parseMessageContent(content: unknown[]): MessagePart[] {
     return part;
   });
 }
+
+// --- Message wrapper (matrx_ai.config.message_flags) ---
+
+/** The translator flags a message can carry. */
+export const MESSAGE_FLAG_KEYS = ["prefill", "cache_boundary", "example"] as const;
+export type MessageFlagKey = (typeof MESSAGE_FLAG_KEYS)[number];
+/** Stored form (`MessageFlags.as_dict`): only `true` means anything; absence is false. */
+export type MessageFlags = Partial<Record<MessageFlagKey, true>>;
+/** Where a runtime message keeps its flags: `cx_message.metadata[MESSAGE_FLAGS_METADATA_KEY]`. */
+export const MESSAGE_FLAGS_METADATA_KEY = "flags";
+/** What a flag the model cannot honour becomes (org knob agents.messages / flag_compatibility_mode). */
+export const FLAG_COMPATIBILITY_MODES = ["refuse", "convert", "drop"] as const;
+export type FlagCompatibilityMode = (typeof FLAG_COMPATIBILITY_MODES)[number];
+export const DEFAULT_FLAG_COMPATIBILITY_MODE: FlagCompatibilityMode = "refuse";
+
+/** One message: its role, its parts, and its translator flags (top level on an
+ *  agent-definition message; `metadata.flags` on a runtime cx_message). */
+export interface MessageWrapper {
+  role: string;
+  content: MessagePart[];
+  flags?: MessageFlags | null;
+}
+
 
 export interface ChunkEvent {
   event: "chunk";
