@@ -173,6 +173,16 @@ export const DESTRUCTIVE_OPERATIONS: DestructiveOperation[] = [
  */
 export const INTERNAL_ONLY: { fn: string; module: string; why: string }[] = [
   {
+    fn: 'clearCapturePagePanel',
+    module: 'src/lib/panel/launch-intent.ts',
+    why: 'After a popup Capture page launch fails, removes only that click\'s extension-owned, short-lived session route request. It cannot erase a newer click or saved user content.',
+  },
+  {
+    fn: 'takePopupLaunchTarget',
+    module: 'src/lib/panel/launch-intent.ts',
+    why: 'Consumes valid extension-owned, short-lived popup route requests for the current browser window after selecting the newest. This one-shot handoff changes panel routing only; it removes no saved user content.',
+  },
+  {
     fn: 'AgendaView',
     module: 'src/features/agenda/AgendaView.tsx',
     why: 'Consumes a one-shot "focus this task" key that the background wrote for it. Reading it is what spends it.',

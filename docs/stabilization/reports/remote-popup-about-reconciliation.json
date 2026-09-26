@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "task_id": "remote-popup-about-reconciliation",
+  "source_sha": "c8046192f22db3dab3233e20a77a3a7317c4e642",
+  "status": "source-reconciled-runtime-unverified",
+  "summary": "Reconciled the remote popup Capture route, Settings About readiness controls, and Vault browser acceptance scenarios with canonical feature controls and concrete cases. Source inspection only; no product tests, build, browser, or network writes were performed.",
+  "changes": [
+    {
+      "feature_id": "EXT-F-1002",
+      "controls": [
+        "EXT-F-1002-C02"
+      ],
+      "cases_updated": [
+        "EXT-F-1002-T05",
+        "EXT-F-1002-T06"
+      ],
+      "cases_added": [
+        "EXT-F-1002-T19",
+        "EXT-F-1002-T20"
+      ],
+      "reason": "Capture page now writes a short-lived per-window launch intent, opens the sidepanel, and routes to Scrape. Failure remains visible and retryable.",
+      "engineering_defect_link": "EXT-D-0008 in member/admin cells; release-guard classification only, no observed user-facing failure and no behavior pass implied."
+    },
+    {
+      "feature_id": "EXT-F-1003",
+      "controls_added": [
+        "EXT-F-1003-C30",
+        "EXT-F-1003-C31"
+      ],
+      "cases_added": [
+        "EXT-F-1003-T70",
+        "EXT-F-1003-T71",
+        "EXT-F-1003-T72"
+      ],
+      "reason": "Settings About now exposes browser/build identity, saved-login API readiness and remedy, and browser update-check outcomes or managed-update instructions. Applicability is guest/member/admin because the section is not auth gated."
+    },
+    {
+      "feature_id": "EXT-F-2011",
+      "cases_added": [
+        "EXT-F-2011-T06",
+        "EXT-F-2011-T07"
+      ],
+      "reason": "Vault acceptance source now checks stale pending-offer invalidation after active-organization switch and a fresh Vault read after replacement browser/sidepanel binding. These remain execution procedures, not product-test results."
+    }
+  ],
+  "preserved_history": "No existing result, run link, defect link, or feature identity was removed or overwritten. All new/changed cases remain unverified.",
+  "diagnostic_assessment": {
+    "path": "docs/stabilization/diagnostics/EXT-D-0007.strict-mode-hydration.test.tsx",
+    "intentionally_red_historical_artifact": true,
+    "normal_vitest_discovery": "excluded: configured include roots are tests/unit/**/*.test.ts(x) and src/**/*.test.ts(x); docs/stabilization/diagnostics is outside them.",
+    "duplication": "historical copy duplicates the original two persisted-profile Strict Mode assertions; current canonical active regression is src/hooks/use-auth.strict-mode.test.tsx and contains those profiles plus additional verification/race cases.",
+    "action": "Preserved the archived test artifact and replaced stale instructions in the neighboring markdown. Do not delete or run the archived artifact as a release check."
+  },
+  "dependency_refresh": {
+    "agents": {
+      "version": "0.13.14",
+      "consumer_action": "0.13.14 says no source changes and no consumer action required."
+    },
+    "content_ir": {
+      "version": "0.19.0",
+      "consumer_action": "0.19.0's SchemaSourcePort/createKindValidator migration is directed at matrx-frontend. No extension consumer action is required by that entry; extension does not consume this new validator API."
+    },
+    "status": "inspected after dependency refresh; no mandatory extension adoption identified"
+  },
+  "source_files_reviewed": [
+    "src/entrypoints/popup/main.tsx",
+    "src/lib/panel/launch-intent.ts",
+    "src/entrypoints/sidepanel/App.tsx",
+    "src/features/settings/SettingsView.tsx",
+    "src/features/settings/SettingsView.about.test.tsx",
+    "tests/browser/vault-extension-browser-restart-acceptance.cjs",
+    "tests/browser/vault-extension-browser-restart-acceptance.test.cjs",
+    "tests/browser/vault-extension-lifecycle-verdict.cjs",
+    "tests/browser/vault-extension-lifecycle-verdict.test.cjs",
+    "tests/browser/vault-organization-switch-offer.cjs",
+    "tests/browser/vault-organization-switch-offer.test.cjs",
+    "vitest.config.ts",
+    "src/hooks/use-auth.strict-mode.test.tsx",
+    "node_modules/@ai-matrx/agents/CHANGELOG.md",
+    "node_modules/@ai-matrx/content-ir/CHANGELOG.md"
+  ],
+  "unresolved": [
+    "All reconciled product behavior remains runtime-unverified in this lane.",
+    "D7 final native acceptance is pending; the current active unit regression exists and the archived diagnostic remains non-discovered.",
+    "EXT-D-0008 release-guard finding is linked to signed-in popup Capture cells; source repair/release integration remains owned by the root task."
+  ],
+  "source_sha_before_inventory_reconciliation": "74be9f2c10ad4a440971960aa5bd9edb94aa5de5"
+}
