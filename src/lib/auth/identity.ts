@@ -91,7 +91,17 @@ let logged = false;
 export function logExtensionIdentityOnce(): void {
   if (logged) return;
   logged = true;
-  const id = readExtensionIdentity();
+  // A diagnostic never takes its caller down: outside a real extension
+  // context (a test, a torn-down page) the chrome/env reads can throw.
+  let id: ReturnType<typeof readExtensionIdentity>;
+  try {
+    id = readExtensionIdentity();
+  } catch (error) {
+    log.warn('auth', 'extension identity could not be read — identity check skipped', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return;
+  }
   if (!id.matches_expected) {
     log.warn(
       'auth',
