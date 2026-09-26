@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "run_id": "release-stabilization-040",
+  "release_version": "0.2.79",
+  "source_sha": "377742c0ff4422c1972fd616b98d222eab1f58c6",
+  "resource_guard": {
+    "wrapper_log": "/tmp/matrx-release-stabilization-040.log",
+    "wrapper_log_sha256": "20bcbc11111451e24880d376937c4337c9c3d92609a3a8cfc7d88172e3b47911",
+    "admitted_at": "2026-09-26T22:38:54.074Z",
+    "child_exit_at": "2026-09-26T22:41:11.922Z",
+    "child_exit_code": 0
+  },
+  "release_log": {
+    "path": "tmp/release-logs/latest.log",
+    "sha256": "53efbb7ee2fdda79d4ce0a7ceabb81f20b8c90389ce75cc808a3ca7fbceb6140",
+    "checks": "All 15 named check stages exited 0. The unit suite reported 182 files passed, one skipped; 1471 tests passed, three skipped.",
+    "nonblocking_diagnostics": "The mandate-reference scan reported 11 findings and was unmeasured for database submission because the scratch release tree lacked repo identity and credentials. Package-twins reported five censused debt items. Neither was presented as a blocking gate failure."
+  },
+  "artifacts": {
+    "receipt_path": ".output/release-receipt.json",
+    "receipt_publish_state": "pushed",
+    "manifest_version": "0.2.79",
+    "unpacked_tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0",
+    "unpacked_paths_verified": [".output/chrome-mv3-dev", ".output/chrome-mv3"],
+    "file_count": 532,
+    "store_zip_sha256": "1500d2cd5a64a55ef9c9c99675442a13660d7574ef1dec69093a1f2c9e80d174",
+    "local_zip_sha256": "e7cbac793258fa5e29373771029706ad969f7ef075764086bdeb6f31c4327a58"
+  },
+  "git": {
+    "local_tag": "v0.2.79",
+    "remote_tag_sha": "377742c0ff4422c1972fd616b98d222eab1f58c6",
+    "remote_main_at_review": "f56eca9c80ce5f8d50f0556e154906a094941009",
+    "tag_is_ancestor_of_remote_main": true,
+    "release_log_warning": "The release scratch checkout could not fast-forward after pushing because concurrent local commits diverged. Root subsequently merged remote main; this is not a release-gate failure."
+  },
+  "ci_at_review": {
+    "tag_source_run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/36277077710",
+    "tag_source_status": "completed_cancelled",
+    "merged_main_run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/36277113728",
+    "merged_main_status": "in_progress"
+  },
+  "scope_limit": "No Chrome Web Store upload or primary-Chrome reload is evidenced by this release run."
+}
