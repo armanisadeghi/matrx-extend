@@ -22,9 +22,7 @@
       {
         "severity": "important",
         "finding": "eabc15b resolves both prior roster concerns: blank-title tab triggers remain represented as empty titles and break the exact expected roster, and guest Chat is explicitly required. Admin extra, missing, duplicate, and titleless controls also fail the exact roster comparison.",
-        "evidence": [
-          "tests/browser/contained-navigation-acceptance.mjs:142-149, 320-327, 352-368"
-        ]
+        "evidence": ["tests/browser/contained-navigation-acceptance.mjs:142-149, 320-327, 352-368"]
       },
       {
         "severity": "minor",
