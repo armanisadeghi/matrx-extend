@@ -97,12 +97,16 @@ describe('popup capture claim recovery', () => {
     useSidepanelTabStore.getState().setTab('chat');
     const { App } = await import('@/entrypoints/sidepanel/App');
     render(<App />);
+    // App pre-warms the active view without awaiting its dynamic import.
+    // Let that import finish before this test can tear down its environment.
+    await import('@/features/chat/ChatView');
 
     const alert = await screen.findByRole('alert');
     expect(alert.textContent).toContain('Capture did not open');
     expect(useSidepanelTabStore.getState().tab).toBe('chat');
 
     await userEvent.click(screen.getByRole('button', { name: 'Open Scrape' }));
+    await import('@/features/scrape/ScrapeView');
     expect(useSidepanelTabStore.getState().tab).toBe('scrape');
     expect(screen.queryByRole('alert')).toBeNull();
 

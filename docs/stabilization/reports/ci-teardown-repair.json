@@ -1,0 +1,23 @@
+{
+  "defect_id": "EXT-D-0020",
+  "status": "test-lifecycle-repair-awaiting-post-edit-run",
+  "owner_lane": "ci_teardown_repair",
+  "original_remote_failure": {
+    "run_id": "36253562084",
+    "commit": "ca8c023c",
+    "log": "/tmp/matrx-ci-36253562084.log",
+    "summary": "1441 tests passed, 4 skipped; one EnvironmentTeardownError after the suite",
+    "import_chain": "popup-claim-recovery.test.tsx -> sidepanel/App.tsx -> ChatView.tsx -> CopyMenu.tsx -> utils.ts -> clsx"
+  },
+  "unchanged_local_reproduction": {
+    "log": "/tmp/matrx-popup-teardown-red-001.log",
+    "result": "Focused test passed locally (1 test, 506 ms); the CI-only teardown race did not reproduce."
+  },
+  "source_supported_cause": "The sidepanel App pre-warms its selected view with a fire-and-forget dynamic import. The test mounted App, switched from Chat to Scrape, and ended after routing assertions without waiting for either view import. The CI stack proves the Chat import was still in flight when Vitest tore down this test environment.",
+  "repair": "The test now awaits the Chat view import after mounting App and the Scrape view import after the recovery click, before teardown. Its alert, route, and consumed-intent assertions remain unchanged.",
+  "sibling_census": "This is the only unit test that renders sidepanel App. Popup route and remedy tests import popup/main and do not start the sidepanel view loaders.",
+  "verification": ["Biome check on the changed test passed."],
+  "remaining": [
+    "Run the repaired focused test and full CI suite; local green alone cannot prove this timing race is closed in CI."
+  ]
+}
