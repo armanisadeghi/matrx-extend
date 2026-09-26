@@ -1,0 +1,62 @@
+{
+  "reviewer": "/root/release_code_review",
+  "method": "Independent source inspection only; no tests, builds, UI actions, Git mutations, or release execution.",
+  "scope": [
+    "release.sh",
+    "ship.sh",
+    "scripts/sync-main.py",
+    "scripts/test-release-ship-path.sh",
+    "scripts/sync-unpacked-release.mjs"
+  ],
+  "A_requirement_alignment": {
+    "positive": "release.sh:384-405 regenerates, bumps, checks, and builds the merged candidate before its main push; release.sh:412-419 retries from a new fetched base after a rejected push; release.sh:109-111 retains mandatory checks despite deprecated skip flags.",
+    "findings": [
+      {
+        "severity": "P0",
+        "title": "ship.sh still pushes unvalidated main",
+        "evidence": "ship.sh:38-49 calls scripts/sync-main.py before release.sh, and scripts/sync-main.py:827 pushes HEAD:main. ship.sh:45-48 proceeds to release even when sync fails. ship.sh:30-31 recognizes only --dry-run, so ship.sh --no-push also syncs and pushes before release.sh interprets --no-push as dry-run at release.sh:113-114.",
+        "action": "Make every shipping entrypoint preserve the validation-before-publication boundary and ensure --no-push never pushes."
+      },
+      {
+        "severity": "P0",
+        "title": "Unresolved conflicts can be shipped with local behavior omitted",
+        "evidence": "scripts/sync-main.py:519-553 saves the local side in a .held file but puts the remote side live; scripts/sync-main.py:804-827 then commits and pushes the result. ship.sh:62-74 reports held conflicts only after running release.sh. release.sh contains no check-conflict-markers gate.",
+        "action": "Block publication while held conflicts remain; preserve both versions for resolution without silently treating the remote side as the finished candidate."
+      },
+      {
+        "severity": "P1",
+        "title": "Main and tag are published separately",
+        "evidence": "release.sh:408 pushes the validated SHA to main, then release.sh:424-425 creates and pushes its tag. A concurrent tag claim or failed tag push leaves main advanced without the corresponding release tag. release.sh:381 suppresses failure of remote tag discovery.",
+        "action": "Fail closed on tag discovery and publish the validated main and tag refs atomically, including race retry handling."
+      },
+      {
+        "severity": "P1",
+        "title": "Direct release silently omits dirty checkout work",
+        "evidence": "release.sh:240-260 derives the candidate from committed LOCAL_HEAD plus remote main; it neither includes nor refuses uncommitted edits. scripts/test-release-ship-path.sh:39-40 creates dirty tracked content and :103,:123 assert only that it remains, not that it was included or explicitly excluded before publication.",
+        "action": "Require a clean intended input or make omitted work explicit before publication."
+      }
+    ]
+  },
+  "B_code_quality": {
+    "findings": [
+      {
+        "severity": "P1",
+        "title": "Snapshot Git setup failure is nonfatal",
+        "evidence": "release.sh:168-172 logs a failed git init/update-ref/read-tree/update-index chain and continues. Later checks may observe a missing or wrong HEAD, undermining the exact-candidate claim.",
+        "action": "Return failure from export_snapshot when its Git setup fails."
+      },
+      {
+        "severity": "P2",
+        "title": "Local ZIP promotion is not pairwise atomic",
+        "evidence": "release.sh:429-432 stages two ZIPs, then moves Store ZIP before local ZIP. Failure of the second move leaves the first replaced despite the release reporting a local installation error. scripts/sync-unpacked-release.mjs:120-189 does stage and rollback unpacked destinations, but does not cover ZIPs.",
+        "action": "Stage and verify both ZIPs, then provide rollback for partial promotion."
+      },
+      {
+        "severity": "P1",
+        "title": "Fixture does not force all release gates",
+        "evidence": "scripts/test-release-ship-path.sh:48-53 makes Store package and CWS risk checks unconditional successes; :60-66 injects only unit-test failure; :119-120 counts test calls and compares only the final tested SHA. It does not inject regeneration failure, another mandatory-check failure, build failure, tag collision, merge conflict, or a second-candidate failure after the remote race. :100-101 verifies an unpacked sentinel and absence of one new ZIP, but not preservation of prior upload ZIPs.",
+        "action": "Add branch-specific fault injection and assertions on remote refs, all prior installed artifacts, and rerunning every required check and build for the raced candidate."
+      }
+    ]
+  }
+}

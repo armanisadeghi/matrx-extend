@@ -1,64 +1,22 @@
 #!/usr/bin/env bash
-# release.sh — Ship matrx-extend: bump, tag, push; then check and package it.
+# release.sh — Validate, package, then ship the exact matrx-extend candidate.
 #
 # Usage (./ship.sh calls it as: bash release.sh --message "<note>" <flags>):
 #   ./release.sh                        # patch bump (default)
 #   ./release.sh --minor | --major
 #   ./release.sh --message "note"       # commit "release: vX.Y.Z - note"
-#   ./release.sh --skip-types           # do not regenerate types/python-generated
-#   ./release.sh --skip-catalog         # do not regenerate the tool catalog / check its drift
-#   ./release.sh --skip-typecheck       # do not run tsc after the push
+#   ./release.sh --skip-types           # deprecated; required generation still runs
+#   ./release.sh --skip-catalog         # deprecated; required generation still runs
+#   ./release.sh --skip-typecheck       # deprecated; required typecheck still runs
 #   ./release.sh --dry-run              # say what would ship; change nothing
 #   ./release.sh --no-push              # same as --dry-run (a WARNING says so)
 #
-# ══ THE RULES (Arman, 2026-09-24) ════════════════════════════════════════════
-# A release script NEVER denies a release. Not a failing test, a typecheck, a
-# dirty tree, a diverged branch, a taken tag or a bad flag. It runs fast,
-# reports WARNINGS and ERRORS only (never INFO), releases, and shuts up.
-# The ONLY hard stops: GitHub unreachable after retries, the current version
-# cannot be read, or the push loses the race five times in a row.
-#
-# ══ BEFORE THE PUSH — only what makes the pushed code better ═════════════════
-#   1. fetch origin/main (3 tries)                         ← hard stop #1
-#   2. assemble the release tree on origin/main with git plumbing (temp index,
-#      no worktree, no stash, no rebase, no reset). This checkout's unpushed
-#      commits are merged in with `git merge-tree`; a conflict ships origin/main
-#      plus an ERROR finding. The working tree is never read or touched, so a
-#      dirty tree is irrelevant.
-#   3. regenerate the committed artifacts in a throwaway export of that tree:
-#      types/python-generated (update-api-types), types/tool-catalog.{json,md}
-#      (catalog:tools:md), docs/TOOLS.generated.md (docs:tools). A failure is a
-#      finding; the release carries whatever did regenerate.
-#   4. bump package.json (a taken tag, local or remote, bumps past it — a tag
-#      is never moved), commit-tree, `git push origin <sha>:refs/heads/main`.
-#      A lost race refetches, rebuilds on the new main and retries (5x) ← #3;
-#      network blips are retried separately.
-#   5. push the tag; fast-forward this checkout (WARNING if it cannot).
-#   6. print ONE line:   vX.Y.Z  pushed  (Ns)
-#
-# ══ AFTER THE PUSH — everything we would complain about ══════════════════════
-# In throwaway exports of the released commit (never this checkout, so the
-# zips are exactly the tagged bytes), in parallel:
-#   checks: typecheck, unit tests, schema routing, @ai-matrx package currency,
-#     package twins, canonical pickers, archived-items law, org-default ban,
-#     swallowed refusals, tool-catalog ↔ DB drift, migration ledger, mandate
-#     references (WARNING only).
-#   build: STORE zip (MATRX_CWS_BUILD=1: no dev key) + store-package and
-#     Chrome Web Store policy-surface checks → .output/matrx-extend-<v>-store.zip;
-#     LOCAL zip (dev key kept, stable ID cihdmkcdjjckfhjpgoedmgfpoljebaml) →
-#     .output/matrx-extend-<v>-local.zip; promote the keyed bundle into both
-#     installed unpacked paths (.output/chrome-mv3-dev/ and .output/chrome-mv3/)
-#     and write .output/release-receipt.json.
-# Each failure is an ERROR finding naming what failed and the command to
-# re-run. Findings print as one opened-and-closed section per category; with
-# no findings nothing prints. The last line is where the store zip is.
-#
-# The full detail of every run: tmp/release-logs/release-<stamp>.log
-# (+ latest.log, + release-vX.Y.Z.log). Gitignored (*.log).
-#
-# Guard: scripts/test-release-ship-path.sh — a dirty tree, a diverged branch,
-# a foreign push mid-release, a taken tag, a bad flag and failing unit tests
-# must still end with the tag on origin, exit 0, and an ERROR in Checks.
+# The current release contract: fetch and merge remote main with local commits;
+# refuse conflicts; regenerate generated files; bump; validate the exact tree;
+# build Store and local candidates; only then push main and its tag. A foreign
+# push restarts generation, checks and packaging against the new merged tree.
+# A failed check or build leaves main, tags and installed bundles untouched.
+# The full detail of every run: tmp/release-logs/release-<stamp>.log.
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -106,8 +64,17 @@ log()     { printf '[%4ss] %s\n' "$((SECONDS - SHIP_START))" "$*" >> "$RELEASE_L
 quiet()   { "$@" >> "$RELEASE_LOG_FILE" 2>&1; }
 hard_stop() {
     echo "RELEASE STOPPED: $* — see tmp/release-logs/latest.log" >&2
+    report_excluded_dirty
     print_findings
     exit 1
+}
+report_excluded_dirty() {
+    local dirty
+    dirty="$(git status --short --untracked-files=all 2>/dev/null)"
+    [[ -z "$dirty" ]] && return 0
+    log "Uncommitted checkout paths excluded from candidate ${RELEASE_SHA:-not-yet-built}: $dirty"
+    echo "Uncommitted checkout paths excluded from candidate ${RELEASE_SHA:-not-yet-built}:"
+    printf '%s\n' "$dirty"
 }
 # One section per category, opened and closed. Nothing prints when clean.
 print_findings() {
@@ -137,7 +104,7 @@ bounded() {  # seconds cmd... — a hung tool becomes a finding, never an endles
     else "$@"; fi
 }
 
-# ── Flags: a bad one is a WARNING, never a refusal ───────────────────────────
+# ── Flags ─────────────────────────────────────────────────────────────────────
 BUMP_TYPE="patch"; CUSTOM_MESSAGE=""; DRY_RUN=false
 SKIP_TYPES=false; SKIP_TYPECHECK=false; SKIP_CATALOG=false
 while [[ $# -gt 0 ]]; do
@@ -148,9 +115,9 @@ while [[ $# -gt 0 ]]; do
         --message|-m)
             if [[ -n "${2:-}" && "${2:-}" != --* ]]; then CUSTOM_MESSAGE="$2"; shift 2
             else finding "WARNING" "Invocation" "--message had no text — released without a note"; shift; fi ;;
-        --skip-types) SKIP_TYPES=true; shift ;;
-        --skip-typecheck) SKIP_TYPECHECK=true; shift ;;
-        --skip-catalog) SKIP_CATALOG=true; shift ;;
+        --skip-types) finding "WARNING" "Invocation" "--skip-types is deprecated; release generation still runs"; shift ;;
+        --skip-typecheck) finding "WARNING" "Invocation" "--skip-typecheck is deprecated; release typecheck still runs"; shift ;;
+        --skip-catalog) finding "WARNING" "Invocation" "--skip-catalog is deprecated; catalog generation and drift check still run"; shift ;;
         --dry-run) DRY_RUN=true; shift ;;
         --no-push) DRY_RUN=true
             finding "WARNING" "Invocation" "--no-push ran as --dry-run: nothing was built, tagged or pushed" "./release.sh"; shift ;;
@@ -211,18 +178,20 @@ export_snapshot() {  # treeish head-commit [prepare] → sets SNAP_DIR (never ca
         && echo "$GIT_ABS_DIR/objects" > .git/objects/info/alternates \
         && printf 'node_modules\n' >> .git/info/exclude \
         && git update-ref HEAD "$2" && git read-tree "$1" && git update-index -q --refresh ) >> "$RELEASE_LOG_FILE" 2>&1 \
-        || log "snapshot git setup failed for ${1:0:9} (checks that read git may fail)"
+        || return 1
     [[ -d "$REPO_ROOT/node_modules" ]] && ln -s "$REPO_ROOT/node_modules" "$dir/node_modules"
     [[ -d "$REPO_ROOT/../aidream" ]] && ln -s "$(cd "$REPO_ROOT/../aidream" && pwd)" "$root/aidream"
     for f in "$REPO_ROOT"/.env*; do
         [[ -f "$f" && ! -e "$dir/$(basename "$f")" ]] && cp "$f" "$dir/"
     done
     # tsconfig extends .wxt/tsconfig.json (the @/ path alias): generate it.
-    [[ "${3:-}" == prepare ]] && ( cd "$dir" && bounded 120 pnpm -s exec wxt prepare ) >> "$RELEASE_LOG_FILE" 2>&1
+    if [[ "${3:-}" == prepare ]]; then
+        ( cd "$dir" && bounded 120 pnpm -s exec wxt prepare ) >> "$RELEASE_LOG_FILE" 2>&1 || return 1
+    fi
     SNAP_DIR="$dir"
 }
 
-# ── One release at a time (atomic mkdir; a dead or stuck owner is taken over) ─
+# ── One release at a time; ownership never expires during checks/builds ──────
 RELEASE_LOCK_DIR="$(git rev-parse --git-path matrx-release-ship.lock 2>/dev/null || echo "$REPO_ROOT/.git/matrx-release-ship.lock")"
 RELEASE_LOCK_HELD=false
 release_lock_cleanup() {
@@ -232,19 +201,17 @@ release_lock_cleanup() {
     RELEASE_LOCK_HELD=false
 }
 acquire_release_lock() {
-    local owner waited=0
-    while true; do
-        if mkdir "$RELEASE_LOCK_DIR" 2>/dev/null; then
-            echo "$$" > "$RELEASE_LOCK_DIR/pid"; RELEASE_LOCK_HELD=true; return 0
-        fi
-        owner="$(cat "$RELEASE_LOCK_DIR/pid" 2>/dev/null)"
-        if [[ "$owner" =~ ^[0-9]+$ ]] && kill -0 "$owner" 2>/dev/null && (( waited < 60 )); then
-            sleep 1; waited=$((waited + 1)); continue
-        fi
-        [[ "$owner" =~ ^[0-9]+$ ]] && kill -0 "$owner" 2>/dev/null \
-            && finding "WARNING" "Git" "Release lock held by PID $owner for 60s — taken over so this release could ship"
-        rm -f -- "$RELEASE_LOCK_DIR/pid"; rmdir -- "$RELEASE_LOCK_DIR" 2>/dev/null
-    done
+    local owner
+    if mkdir "$RELEASE_LOCK_DIR" 2>/dev/null; then
+        RELEASE_LOCK_HELD=true
+        echo "$$" > "$RELEASE_LOCK_DIR/pid" || hard_stop "could not record release lock ownership at $RELEASE_LOCK_DIR"
+        return 0
+    fi
+    owner="$(cat "$RELEASE_LOCK_DIR/pid" 2>/dev/null)"
+    # A missing PID can be an owner between mkdir and writing its PID. Never
+    # delete an unowned lock here, including one believed stale: two contenders
+    # reclaiming a stale directory can otherwise delete a newly acquired lock.
+    hard_stop "release lock already exists at $RELEASE_LOCK_DIR (owner PID ${owner:-not yet recorded}); retry after its owner finishes; if abandoned, verify no release is running before removing that lock"
 }
 trap cleanup EXIT
 
@@ -279,10 +246,8 @@ log "fetched $REMOTE/$BRANCH"
 
 LOCAL_HEAD="$(git rev-parse HEAD)"
 if [[ "$(git rev-parse --abbrev-ref HEAD)" != "$BRANCH" ]]; then
-    finding "WARNING" "Git" "This checkout is on '$(git rev-parse --abbrev-ref HEAD)', not $BRANCH — its commits were not merged into the release" "git checkout main"
-    LOCAL_HEAD="$(git rev-parse "$REMOTE/$BRANCH")"
+    hard_stop "checkout is not on $BRANCH; local commits were preserved and nothing was published"
 fi
-MERGE_CONFLICT_REPORTED=false
 base_tree() {  # sets BASE, BASE_TREE, PARENTS
     BASE="$(git rev-parse "$REMOTE/$BRANCH")"
     PARENTS=(-p "$BASE")
@@ -294,37 +259,25 @@ base_tree() {  # sets BASE, BASE_TREE, PARENTS
         BASE_TREE="$merged"
         PARENTS=(-p "$BASE" -p "$LOCAL_HEAD")
     else
-        BASE_TREE="$(git rev-parse "$BASE^{tree}")"
-        $MERGE_CONFLICT_REPORTED || finding "ERROR" "Git" "Local commits conflict with $REMOTE/$BRANCH — shipped $BRANCH without ${LOCAL_HEAD:0:9}" "git pull --no-rebase origin main"
-        MERGE_CONFLICT_REPORTED=true
+        hard_stop "local commits conflict with $REMOTE/$BRANCH — resolve the conflict before release; no commits were discarded or pushed"
     fi
 }
-base_tree
-log "release tree assembled on ${BASE:0:9}"
-
-# ── Regenerate the committed artifacts (a failure is a finding) ─────────────
+# ── Regenerate the committed artifacts ──────────────────────────────────────
 REGEN_INFO=""   # `git update-index --index-info` lines for the regenerated paths
 regen_artifacts() {
     local snap jobs=() name rc idx tree paths=() p
-    export_snapshot "$BASE_TREE" "$BASE" prepare && snap="$SNAP_DIR" || { finding "ERROR" "Generate" "Could not export the release tree to regenerate artifacts" ""; return; }
+    export_snapshot "$BASE_TREE" "$BASE" prepare && snap="$SNAP_DIR" || hard_stop "could not export the release tree to regenerate artifacts"
     local jd; jd="$(dirname "$snap")/jobs"; mkdir -p "$jd"
-    $SKIP_TYPES   || { ( cd "$snap" && bounded 180 pnpm -s update-api-types --skip-typecheck ) > "$jd/api-types.out" 2>&1; echo $? > "$jd/api-types.rc"; } &
-    $SKIP_CATALOG || { ( cd "$snap" && bounded 180 pnpm -s catalog:tools:md ) > "$jd/catalog.out" 2>&1; echo $? > "$jd/catalog.rc"; } &
-    { ( cd "$snap" && bounded 120 pnpm -s docs:tools ) > "$jd/docs.out" 2>&1; echo $? > "$jd/docs.rc"; } &
-    wait
+    $SKIP_TYPES   || { ( cd "$snap" && bounded 180 pnpm -s update-api-types --skip-typecheck ) > "$jd/api-types.out" 2>&1; echo $? > "$jd/api-types.rc"; }
+    $SKIP_CATALOG || { ( cd "$snap" && bounded 180 pnpm -s catalog:tools:md ) > "$jd/catalog.out" 2>&1; echo $? > "$jd/catalog.rc"; }
+    { ( cd "$snap" && bounded 120 pnpm -s docs:tools ) > "$jd/docs.out" 2>&1; echo $? > "$jd/docs.rc"; }
     for name in api-types catalog docs; do
         [[ -f "$jd/$name.rc" ]] || continue
         rc="$(cat "$jd/$name.rc")"
         { echo "--- regen $name (exit $rc) ---"; cat "$jd/$name.out"; } >> "$RELEASE_LOG_FILE"
         [[ "$rc" == 0 ]] && continue
-        case "$name" in
-            api-types) finding "ERROR" "Generate" "Server API types did not regenerate (exit $rc) — types/python-generated shipped as it was" "pnpm update-api-types" ;;
-            catalog)   finding "WARNING" "Generate" "Tool catalog did not regenerate (exit $rc) — types/tool-catalog.* shipped as they were" "pnpm catalog:tools:md" ;;
-            docs)      finding "WARNING" "Generate" "docs/TOOLS.generated.md did not regenerate (exit $rc)" "pnpm docs:tools" ;;
-        esac
+        hard_stop "artifact regeneration $name failed (exit $rc); no release was pushed"
     done
-    $SKIP_TYPES && finding "WARNING" "Generate" "--skip-types: types/python-generated was not regenerated" "pnpm update-api-types"
-    $SKIP_CATALOG && finding "WARNING" "Generate" "--skip-catalog: the tool catalog was not regenerated or drift-checked" "pnpm catalog:tools:md && pnpm catalog:tools:drift:strict"
     for p in "${GENERATED_PATHS[@]}"; do
         if [[ -e "$snap/$p" ]] || git cat-file -e "$BASE_TREE:$p" 2>/dev/null; then paths+=("$p"); fi
     done
@@ -338,11 +291,10 @@ regen_artifacts() {
             else printf "%s %s\t%s\n", m[2], m[4], $2 }')"
         log "regenerated: $(grep -c . <<< "$REGEN_INFO") path(s) changed"
     else
-        finding "ERROR" "Generate" "Regenerated artifacts could not be staged into the release commit" ""
+        hard_stop "regenerated artifacts could not be staged into the release commit"
     fi
     rm -f "$idx"
 }
-regen_artifacts
 
 build_commit() {  # CURRENT_VERSION NEW_VERSION COMMIT_MSG → RELEASE_SHA
     local idx blob tree
@@ -360,50 +312,6 @@ build_commit() {  # CURRENT_VERSION NEW_VERSION COMMIT_MSG → RELEASE_SHA
     rm -f "$idx"
     RELEASE_SHA="$(git commit-tree "$tree" "${PARENTS[@]}" -m "$COMMIT_MSG")" || return 1
 }
-
-# ── Bump, commit, push (a lost race rebuilds on the new main) ───────────────
-REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*' 2>/dev/null)"
-PUSHED=false; RACES=0; BLIPS=0
-while (( RACES < SHIP_PUSH_ATTEMPTS && BLIPS < 10 )); do
-    CURRENT_VERSION="$(read_version_at "$BASE_TREE")"
-    [[ -n "$CURRENT_VERSION" ]] || hard_stop "cannot read the version from $VERSION_FILE on $REMOTE/$BRANCH — nothing was pushed"
-    bump_version "$CURRENT_VERSION"
-    COMMIT_MSG="$(commit_message "$NEW_TAG")"
-    build_commit || hard_stop "could not assemble the release commit for $NEW_VERSION — nothing was pushed"
-    # Test hook: the ship-path guard lands a foreign push here to prove the race retry.
-    [[ -n "${RELEASE_TEST_BEFORE_PUSH:-}" ]] && bash -c "$RELEASE_TEST_BEFORE_PUSH" >/dev/null 2>&1
-    if quiet git push "$REMOTE" "${RELEASE_SHA}:refs/heads/$BRANCH"; then PUSHED=true; break; fi
-    SEEN="$(git rev-parse "$REMOTE/$BRANCH")"
-    if quiet git fetch --quiet "$REMOTE" "$BRANCH" && [[ "$(git rev-parse "$REMOTE/$BRANCH")" != "$SEEN" ]]; then
-        RACES=$((RACES + 1)); log "lost push race $RACES — rebuilding on the new $BRANCH"
-    else
-        BLIPS=$((BLIPS + 1)); log "push failed without $BRANCH moving (network?) — retry $BLIPS"; sleep $((BLIPS * 3))
-    fi
-    REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*' 2>/dev/null || echo "$REMOTE_TAGS")"
-    base_tree
-done
-if ! $PUSHED; then
-    (( RACES >= SHIP_PUSH_ATTEMPTS )) && hard_stop "lost the push race $SHIP_PUSH_ATTEMPTS times in a row — nothing was released; run it again"
-    hard_stop "cannot push to GitHub ($REMOTE/$BRANCH) — nothing was released"
-fi
-log "pushed ${RELEASE_SHA:0:9} as $COMMIT_MSG"
-
-if ! quiet git tag "$NEW_TAG" "$RELEASE_SHA" || ! quiet git push "$REMOTE" "refs/tags/$NEW_TAG"; then
-    finding "ERROR" "Git" "Tag $NEW_TAG did not reach $REMOTE" "git tag $NEW_TAG ${RELEASE_SHA:0:9} && git push origin $NEW_TAG"
-fi
-[[ -n "${RELEASE_LOG_DIR:-}" ]] && ln -sfn "$(basename "$RELEASE_LOG_FILE")" "$RELEASE_LOG_DIR/release-${NEW_TAG}.log"
-if [[ "$(git rev-parse --abbrev-ref HEAD)" == "$BRANCH" ]]; then
-    quiet git merge --ff-only "$REMOTE/$BRANCH" \
-        || finding "WARNING" "Git" "This checkout could not fast-forward to $NEW_TAG — pull when convenient" "git pull --no-rebase origin main"
-fi
-release_lock_cleanup
-echo "${NEW_TAG}  pushed  ($((SECONDS - SHIP_START))s)"
-
-# ══ AFTER THE PUSH: checks and packaging (findings only, never a stop) ══════
-CHECK_SNAP=""; BUILD_SNAP=""
-export_snapshot "$RELEASE_SHA" "$RELEASE_SHA" prepare && CHECK_SNAP="$SNAP_DIR"
-export_snapshot "$RELEASE_SHA" "$RELEASE_SHA" && BUILD_SNAP="$SNAP_DIR"
-JOBS="$(mktemp -d "${TMPDIR:-/tmp}/matrx-extend-release-jobs.XXXXXX")"; SNAP_ROOTS+=("$JOBS")
 
 # name|seconds|level|what failed|remedy|command
 CHECKS=()
@@ -427,12 +335,17 @@ command -v uvx >/dev/null 2>&1 \
     || finding "WARNING" "Checks" "uvx is missing, so no mandate references were reported" "install uv (https://astral.sh/uv)"
 
 run_checks() {
-    local row name secs
+    local row name secs rc
     for row in "${CHECKS[@]}"; do
         IFS='|' read -r name secs _ _ _ cmd <<< "$row"
-        { ( cd "$CHECK_SNAP" && eval "bounded $secs $cmd" ) > "$JOBS/check-$name.out" 2>&1; echo $? > "$JOBS/check-$name.rc"; } &
+        ( cd "$CHECK_SNAP" && eval "bounded $secs $cmd" ) > "$JOBS/check-$name.out" 2>&1
+        rc=$?
+        { echo "--- check $name (exit $rc) ---"; cat "$JOBS/check-$name.out"; } >> "$RELEASE_LOG_FILE"
+        if [[ "$rc" != 0 ]]; then
+            finding "ERROR" "Checks" "$name failed (exit $rc); candidate $NEW_TAG was not published" "$cmd"
+            return 1
+        fi
     done
-    wait
 }
 
 # Store FIRST, local SECOND: the last build owns .output/chrome-mv3, and the
@@ -440,80 +353,154 @@ run_checks() {
 # (stable dev ID; the Supabase OAuth redirect is registered against it).
 # The Store rejects any
 # upload that carries the dev key (incident: .research/v0.1.4-auth-incident.md).
+build_zips() (
+    local wxt_zip=".output/${PROJECT_NAME}-${NEW_VERSION}-chrome.zip"
+    cd "$BUILD_SNAP" || return 1
+    MATRX_CWS_BUILD=1 bounded 600 pnpm -s exec wxt zip || return 1
+    [[ -f "$wxt_zip" ]] || return 1
+    node scripts/check-store-package.mjs || return 1
+    node scripts/check-cws-release-risk.mjs || return 1
+    if unzip -p "$wxt_zip" manifest.json 2>/dev/null | grep -q '"key"'; then return 1; fi
+    cp "$wxt_zip" "$STORE_CANDIDATE" || return 1
+    rm -f "$wxt_zip"
+    bounded 600 pnpm -s exec wxt zip || return 1
+    [[ -f "$wxt_zip" ]] || return 1
+    cp "$wxt_zip" "$LOCAL_CANDIDATE" || return 1
+    unzip -p "$LOCAL_CANDIDATE" manifest.json 2>/dev/null | grep -q '"key"' || return 1
+    [[ -f .output/chrome-mv3/manifest.json ]] || return 1
+)
+
+
+# ── Validate the exact candidate before any remote publication ──────────────
+REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*')" \
+    || hard_stop "cannot read remote tags — nothing was pushed"
+RACES=0
+PUSHED=false
+while (( RACES < SHIP_PUSH_ATTEMPTS )); do
+    # A foreign main advance changes the candidate. Re-merge, regenerate,
+    # bump, check and build from the beginning; old verdicts never transfer.
+    base_tree
+    log "release tree assembled on ${BASE:0:9}"
+    REGEN_INFO=""
+    regen_artifacts
+    CURRENT_VERSION="$(read_version_at "$BASE_TREE")"
+    [[ -n "$CURRENT_VERSION" ]] || hard_stop "cannot read the version from $VERSION_FILE — nothing was pushed"
+    bump_version "$CURRENT_VERSION"
+    COMMIT_MSG="$(commit_message "$NEW_TAG")"
+    build_commit || hard_stop "could not assemble $NEW_TAG — nothing was pushed"
+    log "candidate $NEW_TAG is $RELEASE_SHA; only committed paths are included"
+    CHECK_SNAP=""; BUILD_SNAP=""
+    export_snapshot "$RELEASE_SHA" "$RELEASE_SHA" prepare && CHECK_SNAP="$SNAP_DIR"         || hard_stop "could not prepare check export for $NEW_TAG — nothing was pushed"
+    export_snapshot "$RELEASE_SHA" "$RELEASE_SHA" && BUILD_SNAP="$SNAP_DIR"         || hard_stop "could not export build candidate for $NEW_TAG — nothing was pushed"
+    JOBS="$(mktemp -d "${TMPDIR:-/tmp}/matrx-extend-release-jobs.XXXXXX")"
+    SNAP_ROOTS+=("$JOBS")
+    run_checks || hard_stop "mandatory checks failed for $NEW_TAG — nothing was pushed"
+    STORE_CANDIDATE="$BUILD_SNAP/.output/${PROJECT_NAME}-${NEW_VERSION}-store.zip"
+    LOCAL_CANDIDATE="$BUILD_SNAP/.output/${PROJECT_NAME}-${NEW_VERSION}-local.zip"
+    if ! build_zips >> "$RELEASE_LOG_FILE" 2>&1; then
+        hard_stop "candidate package validation failed for $NEW_TAG — nothing was pushed"
+    fi
+    report_excluded_dirty
+    # Local fixture hook: a foreign commit can land at the last possible point.
+    [[ -n "${RELEASE_TEST_BEFORE_PUSH:-}" ]] && bash -c "$RELEASE_TEST_BEFORE_PUSH" >/dev/null 2>&1
+    if quiet git push --atomic "$REMOTE" \
+        "${RELEASE_SHA}:refs/heads/$BRANCH" "${RELEASE_SHA}:refs/tags/$NEW_TAG"; then
+        PUSHED=true
+        break
+    fi
+    previous_base="$BASE"
+    fetch_main || hard_stop "cannot reach $REMOTE/$BRANCH after push rejection — nothing was published"
+    REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*')" \
+        || hard_stop "cannot read remote tags after push rejection — nothing was published"
+    if [[ "$(git rev-parse "$REMOTE/$BRANCH")" == "$previous_base" ]] && ! tag_taken "$NEW_TAG"; then
+        hard_stop "atomic push rejected without a branch or tag race — nothing was published"
+    fi
+    RACES=$((RACES + 1))
+    log "lost push race $RACES — revalidating the new candidate"
+done
+$PUSHED || hard_stop "lost the branch/tag race $SHIP_PUSH_ATTEMPTS times — nothing was published"
+
+# Publication uses only the already validated SHA and its candidate artifacts.
+quiet git update-ref "refs/tags/$NEW_TAG" "$RELEASE_SHA" \
+    || finding "WARNING" "Git" "Remote $NEW_TAG is published, but local tag could not be recorded" "git fetch --tags origin"
 STORE_ZIP="$OUTPUT_DIR/${PROJECT_NAME}-${NEW_VERSION}-store.zip"
 LOCAL_ZIP="$OUTPUT_DIR/${PROJECT_NAME}-${NEW_VERSION}-local.zip"
-build_zips() {  # writes $JOBS/build.findings (level|text|remedy per line)
-    local out="$JOBS/build.findings" wxt_zip=".output/${PROJECT_NAME}-${NEW_VERSION}-chrome.zip"
-    : > "$out"
-    bf() { printf '%s|%s|%s\n' "$1" "$2" "${3:-}" >> "$out"; }
-    cd "$BUILD_SNAP" || { bf ERROR "could not enter the build export" ""; return; }
-    # Only this version's zips stay in .output/, so the Store upload picker
-    # cannot offer a stale one (v0.1.14 was rejected exactly that way).
-    mkdir -p "$OUTPUT_DIR"
-    find "$OUTPUT_DIR" -maxdepth 1 -type f \( -name "${PROJECT_NAME}-*-store.zip" -o -name "${PROJECT_NAME}-*-local.zip" -o -name "${PROJECT_NAME}-*-chrome.zip" \) -delete
-    if ! MATRX_CWS_BUILD=1 bounded 600 pnpm -s exec wxt zip || [[ ! -f "$wxt_zip" ]]; then
-        bf ERROR "STORE zip was not built for $NEW_TAG" "git checkout $NEW_TAG && pnpm zip:store"
-    else
-        node scripts/check-store-package.mjs \
-            || bf ERROR "STORE package check failed (side panel / permissions / popup / key) — do not upload" "pnpm zip:store"
-        node scripts/check-cws-release-risk.mjs \
-            || bf ERROR "STORE manifest policy surface differs from the Google-approved baseline — expect a new review" "pnpm check:cws-risk"
-        if unzip -p "$wxt_zip" manifest.json 2>/dev/null | grep -q '"key"'; then
-            bf ERROR "STORE zip contains the dev key — the Store will reject it; not copied" "pnpm zip:store"
-        else
-            cp "$wxt_zip" "$STORE_ZIP" || bf ERROR "could not copy the STORE zip to $STORE_ZIP" ""
-        fi
-        rm -f "$wxt_zip"
+mkdir -p "$OUTPUT_DIR"
+OUTPUT_STAGE="$(mktemp -d "$OUTPUT_DIR/.release-artifacts.XXXXXX")" \
+    || hard_stop "could not stage local release artifacts; remote release is $RELEASE_SHA"
+# Recovery backups must survive EXIT cleanup, including failed restoration.
+cp "$STORE_CANDIDATE" "$OUTPUT_STAGE/store.zip" \
+    || hard_stop "could not stage Store zip; remote release is $RELEASE_SHA"
+cp "$LOCAL_CANDIDATE" "$OUTPUT_STAGE/local.zip" \
+    || hard_stop "could not stage local zip; remote release is $RELEASE_SHA"
+cmp -s "$STORE_CANDIDATE" "$OUTPUT_STAGE/store.zip" \
+    || hard_stop "staged Store zip differs from validated candidate; remote release is $RELEASE_SHA"
+cmp -s "$LOCAL_CANDIDATE" "$OUTPUT_STAGE/local.zip" \
+    || hard_stop "staged local zip differs from validated candidate; remote release is $RELEASE_SHA"
+STORE_BACKED=false; LOCAL_BACKED=false; STORE_INSTALLED=false; LOCAL_INSTALLED=false
+restore_output_zips() {
+    local failed=false
+    if $STORE_BACKED; then
+        mv -f "$OUTPUT_STAGE/old-store.zip" "$STORE_ZIP" || failed=true
+    elif $STORE_INSTALLED; then
+        rm -f -- "$STORE_ZIP" || failed=true
     fi
-    if ! bounded 600 pnpm -s exec wxt zip || [[ ! -f "$wxt_zip" ]]; then
-        bf ERROR "LOCAL zip was not built for $NEW_TAG — .output/chrome-mv3-dev/ was not refreshed" "git checkout $NEW_TAG && pnpm zip"
-        return
+    if $LOCAL_BACKED; then
+        mv -f "$OUTPUT_STAGE/old-local.zip" "$LOCAL_ZIP" || failed=true
+    elif $LOCAL_INSTALLED; then
+        rm -f -- "$LOCAL_ZIP" || failed=true
     fi
-    cp "$wxt_zip" "$LOCAL_ZIP" || { bf ERROR "could not copy the LOCAL zip to $LOCAL_ZIP" ""; return; }
-    unzip -p "$LOCAL_ZIP" manifest.json 2>/dev/null | grep -q '"key"' \
-        || bf ERROR "LOCAL zip is missing the dev key — unpacked installs lose the stable ID and OAuth" "pnpm zip"
-    if [[ -f "$STORE_ZIP" ]]; then
-        node scripts/sync-unpacked-release.mjs --root "$REPO_ROOT" --version "$NEW_VERSION" \
-            --source-sha "$RELEASE_SHA" --source "$BUILD_SNAP/.output/chrome-mv3" \
-            --destination "$OUTPUT_DIR/chrome-mv3-dev" --also-destination "$OUTPUT_DIR/chrome-mv3" \
-            --store-zip "$STORE_ZIP" --local-zip "$LOCAL_ZIP" \
-            --receipt "$OUTPUT_DIR/release-receipt.json" --publish-state pushed \
-            || bf ERROR "the keyed local bundle was not promoted to both installed unpacked paths (no receipt written)" "node scripts/sync-unpacked-release.mjs --root . --version $NEW_VERSION --source-sha $RELEASE_SHA"
-    else
-        bf ERROR "no STORE zip, so the local bundle was not promoted and no receipt was written" "pnpm zip:store"
+    if $failed; then
+        finding "ERROR" "Recovery" "ZIP rollback incomplete; recovery files retained at $OUTPUT_STAGE; inspect installed ZIPs before retrying" ""
+        return 1
     fi
+    log "Prior ZIP state restored; staging retained at $OUTPUT_STAGE"
 }
 
-if [[ -z "$CHECK_SNAP" || -z "$BUILD_SNAP" ]]; then
-    finding "ERROR" "Checks" "Could not export $NEW_TAG to run checks or build the zips — nothing was checked or packaged" "git checkout $NEW_TAG && pnpm test && pnpm zip:store"
-else
-    run_checks &
-    CHECKS_PID=$!
-    ( build_zips ) > "$JOBS/build.out" 2>&1 &
-    BUILD_PID=$!
-    wait "$CHECKS_PID"; wait "$BUILD_PID"
-    for row in "${CHECKS[@]}"; do
-        IFS='|' read -r name _ level what remedy _ <<< "$row"
-        rc="$(cat "$JOBS/check-$name.rc" 2>/dev/null || echo 1)"
-        { echo "--- check $name (exit $rc) ---"; cat "$JOBS/check-$name.out" 2>/dev/null; } >> "$RELEASE_LOG_FILE"
-        [[ "$rc" == 0 ]] && continue
-        detail=""
-        [[ "$rc" == 124 ]] && detail=" (timed out)"
-        if [[ "$name" == unit-tests ]]; then
-            n="$(grep -E '^[[:space:]]*Tests[[:space:]]' "$JOBS/check-$name.out" | grep -oE '[0-9]+ failed' | head -1 | cut -d' ' -f1)"
-            [[ -n "$n" ]] && detail=" ($n failing)"
-        fi
-        finding "$level" "Checks" "${what}${detail} — see the release log" "$remedy"
-    done
-    { echo "--- build (store + local zips) ---"; cat "$JOBS/build.out"; } >> "$RELEASE_LOG_FILE"
-    while IFS='|' read -r level text remedy; do
-        [[ -n "$level" ]] && finding "$level" "Build" "$text" "$remedy"
-    done < <(cat "$JOBS/build.findings" 2>/dev/null)
+if [[ -e "$STORE_ZIP" ]]; then
+    mv "$STORE_ZIP" "$OUTPUT_STAGE/old-store.zip" \
+        || hard_stop "could not preserve prior Store zip; remote release is $RELEASE_SHA"
+    STORE_BACKED=true
 fi
-
+if [[ -e "$LOCAL_ZIP" ]]; then
+    mv "$LOCAL_ZIP" "$OUTPUT_STAGE/old-local.zip" \
+        || { restore_output_zips; hard_stop "could not preserve prior local zip; remote release is $RELEASE_SHA"; }
+    LOCAL_BACKED=true
+fi
+mv "$OUTPUT_STAGE/store.zip" "$STORE_ZIP" \
+    || { restore_output_zips; hard_stop "could not install Store zip; remote release is $RELEASE_SHA"; }
+STORE_INSTALLED=true
+mv "$OUTPUT_STAGE/local.zip" "$LOCAL_ZIP" \
+    || { restore_output_zips; hard_stop "could not install local zip; remote release is $RELEASE_SHA"; }
+LOCAL_INSTALLED=true
+PROMOTION_LOG="$JOBS/promotion.out"
+if ! node scripts/sync-unpacked-release.mjs --root "$REPO_ROOT" --version "$NEW_VERSION" \
+    --source-sha "$RELEASE_SHA" --source "$BUILD_SNAP/.output/chrome-mv3" \
+    --destination "$OUTPUT_DIR/chrome-mv3-dev" --also-destination "$OUTPUT_DIR/chrome-mv3" \
+    --store-zip "$STORE_ZIP" --local-zip "$LOCAL_ZIP" \
+    --receipt "$OUTPUT_DIR/release-receipt.json" --publish-state pushed \
+    > "$PROMOTION_LOG" 2>&1; then
+    cat "$PROMOTION_LOG" >> "$RELEASE_LOG_FILE"
+    restore_output_zips
+    hard_stop "validated bundle could not be installed locally; remote release is $RELEASE_SHA; ZIP rollback was attempted; inspect Recovery findings and latest.log for unpacked restoration details; recovery staging is $OUTPUT_STAGE"
+fi
+cat "$PROMOTION_LOG" >> "$RELEASE_LOG_FILE"
+while IFS= read -r cleanup_warning; do
+    finding "WARNING" "Cleanup" "$cleanup_warning" ""
+done < <(grep '^WARNING:' "$PROMOTION_LOG")
+rm -rf -- "$OUTPUT_STAGE" \
+    || finding "WARNING" "Cleanup" "Release installed; could not remove staging at $OUTPUT_STAGE" "remove the retained staging after inspection"
+find "$OUTPUT_DIR" -maxdepth 1 -type f \( -name "${PROJECT_NAME}-*-store.zip" -o -name "${PROJECT_NAME}-*-local.zip" \) \
+    ! -name "$(basename "$STORE_ZIP")" ! -name "$(basename "$LOCAL_ZIP")" -delete
+[[ -n "${RELEASE_LOG_DIR:-}" ]] && ln -sfn "$(basename "$RELEASE_LOG_FILE")" "$RELEASE_LOG_DIR/release-${NEW_TAG}.log"
+if [[ "$(git rev-parse --abbrev-ref HEAD)" == "$BRANCH" ]]; then
+    quiet git merge --ff-only "$REMOTE/$BRANCH"         || finding "WARNING" "Git" "This checkout could not fast-forward to $NEW_TAG" "git pull --no-rebase origin main"
+fi
+release_lock_cleanup
+echo "${NEW_TAG}  pushed  ($((SECONDS - SHIP_START))s)"
+echo "Validated candidate: $RELEASE_SHA"
+report_excluded_dirty
 print_findings
-if [[ -f "$STORE_ZIP" ]]; then
-    echo ""
-    echo "Chrome Web Store upload ($WEBSTORE_UPLOAD_URL → Package → Upload new package): $STORE_ZIP"
-fi
+echo ""
+echo "Chrome Web Store upload ($WEBSTORE_UPLOAD_URL → Package → Upload new package): $STORE_ZIP"
 exit 0

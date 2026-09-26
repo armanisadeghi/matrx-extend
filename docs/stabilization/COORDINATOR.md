@@ -24,3 +24,9 @@ User approved autonomous test→capture→fix→independent retest→green integ
 
 ## Quality, performance and efficiency
 Reject generic evidence and invalid fixtures; keep reports compact and batches narrow. Two failed lower-tier attempts trigger decomposition/escalation. Resource preflight failures are environment events, not product defects. Preserve raw timing evidence with overhead caveats; no invented latency. First product fix validation complete; full-system health remains far from proven. Follow PLAN thresholds, no management layers or dashboard work.
+
+## Active work after first fix
+EXT-D-0002 guarded old-script red proof: runs/release-red-001.json confirms failedchecks stillpublish/replacebundle. First candidate peer review found ship.sh sync prepush bypass, conflict handling, non-atomic tag/main publication, snapshot setup and insufficientfaultfixtures. Sol fix_release_gate is in correctionround2; no worker mayexecute rawtests. Its exploratory rawfixture run is invalid and notaccepted. Root alone launches approved commands throughguard.
+Luna next_guest_batch is executing nine Settings cases under ROOT-held guest-settings-002 browserpermit session94455; watchdog log /tmp/matrx-guest-settings-002-resource.log. Root must stopUI then releasepermit; no otherheavyjoballowed. Code/buildsnapshot unchanged; v0.2.47 UI. Resourcepolicy has exact isolated release fixture commands added, pendingcommit.
+
+Release round2 peer review still failed on live-lock takeover and artifactcleanup/rollback dishonesty. Objective two-failurethreshold triggered /root/release_final_repair Astra medium, bounded15min. Solimplementation/review agentscomplete. No greenfixture accepted yet; firstrawfixture invalid, oldscriptguardedredproofvalid. UIguest-settings-002 stillactive asabove.

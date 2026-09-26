@@ -17,6 +17,7 @@ export function promoteUnpackedReleaseToMany(input: {
   sourceDir: string;
   destinationDirs: string[];
   version: string;
+  beforeCommit?: (promotion: Promotion & { destinations: string[] }) => unknown;
 }): Promotion & { destinations: string[] };
 export function writeReleaseReceipt(input: {
   receiptPath: string;

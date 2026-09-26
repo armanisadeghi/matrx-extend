@@ -3055,3 +3055,16 @@ Every entry follows this shape:
      not just the context you toggled it in.
 - **Expected:** off by default; nothing is ever hidden from the Debug tab.
 - **Covered by:** `tests/unit/debug-console-firehose.test.ts`.
+### A release publishes only a validated candidate
+
+- **What it does:** `./ship.sh` and `./release.sh` fetch `origin/main`, merge committed local work, regenerate files, bump the version, run mandatory checks, and build both ZIPs before publishing the same commit as `main` and its version tag. Uncommitted checkout paths are listed as excluded.
+- **Where to test:** the isolated local Git fixture in `scripts/test-release-ship-path.sh`. It creates a temporary bare origin and never contacts GitHub.
+- **Steps:** Run the fixture through the campaign resource wrapper. Check its failing-test, generation, package, race, tag-collision, and conflict cases. For a real release, inspect the printed validated SHA against the tag, receipt, and Store ZIP.
+- **Expected:** any failed check, failed build, or unresolved merge conflict exits nonzero without changing remote `main` or a tag or replacing an installed bundle. A remote race restarts all checks and both builds on the new candidate. Successful publication puts `main` and the tag at the validated SHA, then promotes matching ZIPs and unpacked files with a receipt.
+
+
+### Release lock and local recovery (EXT-D-0002)
+
+The release validates its exact candidate before atomic main/tag publication. Dirty checkout paths are listed before publication and remain untouched. An existing release lock refuses another run without taking ownership, regardless of age; abandoned locks require checking that no release is running before removing them.
+
+Test with the root-admitted isolated commands `bash scripts/test-release-ship-path.sh` and `node --test scripts/test-release-recovery.mjs`. They use temporary bare Git origins and local files, never the production remote. Expected: a competing live owner keeps its lock; failed checks publish nothing; filesystem cleanup errors keep new bundles and receipt coherent with a warning; receipt failure restores previous bundles; a failed restoration preserves and names its backup, restores independent paths, and exits nonzero. ZIP rollback errors leave their recovery directory after exit. Main/tag may already be published when local promotion fails; diagnostics say so and never claim all artifacts were restored.

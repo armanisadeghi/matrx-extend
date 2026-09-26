@@ -1,0 +1,70 @@
+{
+  "id": "EXT-D-0002",
+  "feature_id": "EXT-F-0003",
+  "control_id": "EXT-F-0003-C03",
+  "case_id": "EXT-F-0003-T01",
+  "surface": "Release infrastructure",
+  "auth_mode": "N/A: operational release path applies to guest, member, and admin builds",
+  "role": "release operator",
+  "organization": "N/A",
+  "permissions": "Local isolated Git fixture only; no GitHub publication authorized for reproduction.",
+  "preconditions": [
+    "Original committed release.sh at bb9f18f was copied with git show to /tmp/matrx-release-before/release.sh.",
+    "scripts/test-release-ship-path.sh creates a temporary bare origin and two temporary checkouts; pnpm and node external checks are controlled in fixture PATH.",
+    "No real remote URL is configured in the fixture checkout."
+  ],
+  "reproduction": [
+    "Run the isolated fixture against the original release.sh copy after resource admission.",
+    "Make pnpm test return nonzero for the release candidate.",
+    "Inspect the fixture origin main and tags, the script exit code, and the installed-bundle sentinel."
+  ],
+  "expected": "A failing mandatory check exits nonzero before any main or tag push; the installed unpacked bundle and prior upload artifacts remain intact. A remote race must cause the merged candidate to be regenerated, checked, and built again before publication.",
+  "actual": "Original release.sh pushes main and the tag before checks, runs checks and build concurrently, reports failed unit tests as an ERROR finding, and exits zero. Build can delete prior ZIPs and promote the new unpacked bundle even when checks fail.",
+  "evidence": [
+    "Original release.sh source: git push and tag precede the AFTER THE PUSH check/build phase; final exit is zero.",
+    "Original scripts/test-release-ship-path.sh asserted that failing unit tests still leave the new tag on origin and exit zero.",
+    "Root-owned isolated red run release-red-001 exited 1: original release.sh published after failing unit tests; log /tmp/matrx-release-red-001.log.",
+    "An earlier direct exploratory revised-script run is invalid for campaign resource verification."
+  ],
+  "build_receipt": null,
+  "reproducibility_count": "1/1 isolated old-script run reproduced publication after failing tests",
+  "severity": "S0: red code can be published as main/tag and installed locally",
+  "priority": "P0: blocks safe release of stabilization work",
+  "state": "in-fix",
+  "owner": "/root/release_final_repair",
+  "root_cause": "release.sh treats post-push checks as advisory findings and decouples candidate artifact promotion from their result.",
+  "sibling_census": "Generation failures, merge conflicts, Store package failures, and race-rebuilt candidates share the same publication boundary and are included in the repair.",
+  "fix_commits": [],
+  "original_reproduction_retest_run": null,
+  "surrounding_case_runs": [],
+  "reviewer_identity": null,
+  "transition_history": [
+    {
+      "at": "2026-09-26T02:15:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Source and original guard explicitly publish failed mandatory checks; isolated red reproduction queued under resource policy."
+    },
+    {
+      "at": "2026-09-26T02:18:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Root-admitted red fixture release-red-001 proved the original script pushed a failed candidate and old assertions endorsed that behavior."
+    },
+    {
+      "at": "2026-09-26T02:18:01Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Release path repair includes ship.sh bypass, atomic main/tag publication, race revalidation, and artifact rollback."
+    }
+  ],
+  "resource_note": "Only root launches admitted fixture/check/build commands. An earlier direct exploratory fixture run exited zero but is invalid as campaign verification.",
+  "fix_summary": "Final bounded source repair addresses live/unknown lock ownership, pre-push dirty exclusions, committed cleanup warnings, and retained independent ZIP/unpacked rollback recovery. Root-admitted fixture and independent review remain pending.",
+  "candidate_receipts": [],
+  "limitations": [
+    "Source-only final repair: no test/build/release/commit/push executed by repair lane.",
+    "Root must admit scripts/test-release-ship-path.sh and scripts/test-release-recovery.mjs and obtain fresh independent review."
+  ],
+  "verification_receipts": [],
+  "integration_status": "Uncommitted candidate; no release or push"
+}

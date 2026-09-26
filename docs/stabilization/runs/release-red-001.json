@@ -1,0 +1,28 @@
+{
+  "id": "release-red-001",
+  "feature_id": "EXT-F-0003",
+  "defect_id": "EXT-D-0002",
+  "status": "expected-fail-red-proof",
+  "at": "2026-09-26T02:15:00.895Z",
+  "command": [
+    "bash",
+    "scripts/test-release-ship-path.sh",
+    "/tmp/matrx-release-before/release.sh"
+  ],
+  "exit_code": 1,
+  "tested_script_git_source": "53fd39f:release.sh",
+  "tested_script_sha256": "b927f5f394d70e5c9be91678777ca1ade0e0eefd657a9a45f4dd859158e66b7a",
+  "resource_admitted": true,
+  "resource_invalid": false,
+  "reproduction": "Materialize release.sh and scripts/sync-unpacked-release.mjs from Git53fd39f preserving relative layout, then execute revised isolated harness against that release.sh through resource wrapper. Harness creates local bareorigin+checkout andstubs productcommands.",
+  "confirmed_failures": [
+    "Failed mandatory tests nevertheless returned release exit0",
+    "Local fixture remote main advanced",
+    "Local fixture release tag published",
+    "Prior unpacked sentinel replaced",
+    "Failed candidate produced upload artifact",
+    "Checks did not run before publication or for both race candidates"
+  ],
+  "real_remote_touched": false,
+  "log_sha256": "3a1d6ae642403cbd76a0250679ac53e05e07e6d831ade1dae70fbe58477b7ff3"
+}

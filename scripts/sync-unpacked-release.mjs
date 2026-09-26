@@ -71,54 +71,22 @@ function assertKeyedManifest(dir, version) {
   }
 }
 
-export function promoteUnpackedRelease({ sourceDir, destinationDir, version }) {
-  const source = resolve(sourceDir);
-  const destination = resolve(destinationDir);
-  if (source === destination) throw new Error('Source and destination must differ');
-  assertKeyedManifest(source, version);
-  const sourceHash = hashReleaseTree(source);
-  const parent = dirname(destination);
-  mkdirSync(parent, { recursive: true });
-  const nonce = `${process.pid}-${Date.now()}`;
-  const staging = join(parent, `.${basename(destination)}.release-stage-${nonce}`);
-  const backup = join(parent, `.${basename(destination)}.release-backup-${nonce}`);
-  let movedExisting = false;
+// Cleanup is after the commit point. It must never turn a committed promotion
+// into a failure that tells the caller to restore only its ZIPs.
+function cleanupCommittedPath(path, options) {
   try {
-    cpSync(source, staging, { recursive: true, dereference: false, errorOnExist: true });
-    assertKeyedManifest(staging, version);
-    const stagedHash = hashReleaseTree(staging);
-    if (stagedHash !== sourceHash) throw new Error('Staged release tree hash differs from source');
-    if (existsSync(destination)) {
-      renameSync(destination, backup);
-      movedExisting = true;
-    }
-    renameSync(staging, destination);
-    assertKeyedManifest(destination, version);
-    const destinationHash = hashReleaseTree(destination);
-    if (destinationHash !== sourceHash)
-      throw new Error('Promoted release tree hash differs from source');
-    if (hashReleaseTree(source) !== sourceHash)
-      throw new Error('Source release tree changed during promotion');
-    if (movedExisting) rmSync(backup, { recursive: true, force: true });
-    return {
-      source,
-      destination,
-      sourceHash,
-      destinationHash,
-      fileCount: fileEntries(source).length,
-    };
+    rmSync(path, options);
   } catch (error) {
-    rmSync(staging, { recursive: true, force: true });
-    if (movedExisting && existsSync(backup)) {
-      if (existsSync(destination)) rmSync(destination, { recursive: true, force: true });
-      renameSync(backup, destination);
-    }
-    throw error;
+    console.error(`WARNING: Release committed; cleanup failed at ${path}: ${error.message}. Inspect and remove this retained path when safe.`);
   }
 }
 
+export function promoteUnpackedRelease({ sourceDir, destinationDir, version }) {
+  return promoteUnpackedReleaseToMany({ sourceDir, destinationDirs: [destinationDir], version });
+}
+
 /** Keep every already-installed unpacked path on the same release bytes. */
-export function promoteUnpackedReleaseToMany({ sourceDir, destinationDirs, version }) {
+export function promoteUnpackedReleaseToMany({ sourceDir, destinationDirs, version, beforeCommit }) {
   const source = resolve(sourceDir);
   const destinations = destinationDirs.map((dir) => resolve(dir));
   if (destinations.length === 0 || new Set(destinations).size !== destinations.length) {
@@ -165,19 +133,38 @@ export function promoteUnpackedReleaseToMany({ sourceDir, destinationDirs, versi
     }
     if (hashReleaseTree(source) !== sourceHash)
       throw new Error('Source release tree changed during promotion');
+    beforeCommit?.({
+      source,
+      destination: entries[0].destination,
+      destinations,
+      sourceHash,
+      destinationHash: sourceHash,
+      fileCount,
+    });
   } catch (error) {
+    const recoveryErrors = [];
     for (const entry of [...entries].reverse()) {
-      rmSync(entry.staging, { recursive: true, force: true });
-      if (entry.promoted) rmSync(entry.destination, { recursive: true, force: true });
-      if (entry.movedExisting && existsSync(entry.backup))
-        renameSync(entry.backup, entry.destination);
+      // Independent destinations must still be restored if one restore fails.
+      try {
+        if (entry.promoted) rmSync(entry.destination, { recursive: true, force: true });
+        if (entry.movedExisting) renameSync(entry.backup, entry.destination);
+      } catch (recoveryError) {
+        recoveryErrors.push(`${entry.destination}: ${recoveryError.message}; prior bundle retained at ${entry.backup}`);
+      }
+      try {
+        rmSync(entry.staging, { recursive: true, force: true });
+      } catch (cleanupError) {
+        recoveryErrors.push(`staging retained at ${entry.staging}: ${cleanupError.message}`);
+      }
     }
-    throw error;
+    if (recoveryErrors.length) {
+      throw new Error(`Promotion failed: ${error.message}. Recovery incomplete: ${recoveryErrors.join('; ')}`, { cause: error });
+    }
+    throw new Error(`Promotion failed; prior unpacked paths restored: ${error.message}`, { cause: error });
   }
-  // Both replacements are committed and verified. Cleanup failure must not
-  // attempt to roll back a destination whose old backup was already removed.
+  // Receipt and all destinations are now committed. Cleanup errors are warnings.
   for (const entry of entries) {
-    if (entry.movedExisting) rmSync(entry.backup, { recursive: true, force: true });
+    if (entry.movedExisting) cleanupCommittedPath(entry.backup, { recursive: true, force: true });
   }
   return {
     source,
@@ -210,7 +197,19 @@ export function writeReleaseReceipt({
     treeSha256: promotion.sourceHash,
     fileCount: promotion.fileCount,
   };
-  writeFileSync(receiptPath, `${JSON.stringify(receipt, null, 2)}\n`);
+  const stagedReceipt = `${receiptPath}.stage-${process.pid}-${Date.now()}`;
+  let committed = false;
+  try {
+    writeFileSync(stagedReceipt, `${JSON.stringify(receipt, null, 2)}\n`);
+    renameSync(stagedReceipt, receiptPath);
+    committed = true;
+  } finally {
+    if (committed) cleanupCommittedPath(stagedReceipt, { force: true });
+    else {
+      try { rmSync(stagedReceipt, { force: true }); }
+      catch (error) { console.error(`WARNING: Receipt staging retained at ${stagedReceipt}: ${error.message}`); }
+    }
+  }
   return receipt;
 }
 
@@ -230,27 +229,26 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(new URL(import.meta.
   const source = option('source') ?? join(root, '.output/chrome-mv3');
   const destination = option('destination') ?? join(root, '.output/chrome-mv3-dev');
   const alsoDestination = option('also-destination');
-  const promotion = alsoDestination
-    ? promoteUnpackedReleaseToMany({
-        sourceDir: source,
-        destinationDirs: [destination, alsoDestination],
-        version,
-      })
-    : promoteUnpackedRelease({ sourceDir: source, destinationDir: destination, version });
   const receipt = option('receipt');
-  if (receipt) {
-    const storeZip = option('store-zip');
-    const localZip = option('local-zip');
-    if (!storeZip || !localZip) throw new Error('--receipt requires --store-zip and --local-zip');
-    writeReleaseReceipt({
-      receiptPath: receipt,
-      sourceSha,
-      version,
-      storeZip,
-      localZip,
-      promotion,
-      publishState: option('publish-state') ?? 'pushed',
-    });
-  }
+  const storeZip = option('store-zip');
+  const localZip = option('local-zip');
+  if (receipt && (!storeZip || !localZip))
+    throw new Error('--receipt requires --store-zip and --local-zip');
+  const promotion = promoteUnpackedReleaseToMany({
+    sourceDir: source,
+    destinationDirs: alsoDestination ? [destination, alsoDestination] : [destination],
+    version,
+    beforeCommit: receipt
+      ? (result) => writeReleaseReceipt({
+          receiptPath: receipt,
+          sourceSha,
+          version,
+          storeZip,
+          localZip,
+          promotion: result,
+          publishState: option('publish-state') ?? 'pushed',
+        })
+      : undefined,
+  });
   process.stdout.write(`${JSON.stringify(promotion)}\n`);
 }

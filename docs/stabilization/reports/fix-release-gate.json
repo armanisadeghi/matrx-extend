@@ -1,0 +1,33 @@
+{
+  "defect_id": "EXT-D-0002",
+  "feature_id": "EXT-F-0003",
+  "status": "candidate-frozen-awaiting-root-wrapped-verification",
+  "owner_lane": "fix_release_gate",
+  "root_cause": "The old release entrypoint pushed through sync-main before release validation, and release.sh pushed main and a tag before running mandatory checks. Check failures were advisory and packaging could replace installed artifacts while checks failed.",
+  "red_evidence": [
+    "Root-owned isolated red fixture release-red-001 exited 1 because the original release.sh published despite failing unit tests; /tmp/matrx-release-red-001.log.",
+    "The original test explicitly expected failed tests to leave a tag on origin and exit zero.",
+    "An earlier direct fixture run by this lane lacked root resource admission and is excluded from verification evidence."
+  ],
+  "change": [
+    "ship.sh now delegates directly to release.sh, including --no-push preview, without sync-main's prevalidation commit or push.",
+    "release.sh merges committed local work with fetched main, refuses conflicts or non-main checkout, regenerates and checks the exact bumped candidate serially, builds and validates both ZIPs, then atomically pushes main and tag.",
+    "A branch or tag race refreshes remote state and repeats generation, checks, and builds. Failed snapshot setup, generation, checks, package gates, or merge conflict exits nonzero before publication.",
+    "Installed ZIPs retain backups until unpacked promotion and receipt creation succeed; the unpacked promoter writes the receipt within its rollback boundary. Dirty checkout paths are printed as excluded from the candidate SHA.",
+    "The local bare-origin fixture injects check, generation, build, Store gate, race, second-candidate, tag claim, and conflict failures and verifies preservation of earlier artifacts."
+  ],
+  "files": [
+    "ship.sh",
+    "release.sh",
+    "scripts/sync-unpacked-release.mjs",
+    "scripts/test-release-ship-path.sh",
+    "docs/feature-tests.md",
+    "docs/stabilization/defects/EXT-D-0002.json"
+  ],
+  "verification_needed": [
+    "Root resource wrapper: run bash scripts/test-release-ship-path.sh and retain the receipt.",
+    "Independent source review of final code and fixture.",
+    "Appropriate type and regression checks under the campaign resource policy."
+  ],
+  "release_state": "No real release, GitHub push, tag, or commit performed by this lane."
+}

@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
-# Guard for release.sh: a release script never denies a release.
+# Guard for release.sh: a candidate must pass before publication.
 #
-# Builds a throwaway bare origin + checkout, then releases under the conditions
-# that used to stop release.sh cold: uncommitted edits in the checkout, a branch
-# diverged from origin, a foreign push landing mid-release, the next tag already
-# taken on origin, an unknown flag, and FAILING unit tests (pnpm is a stub on
-# PATH). It passes only if the release still lands (tag on origin, exit 0), the
-# regenerated catalog rides in the release commit, the failing tests surface as
-# an ERROR inside an opened-and-closed Checks section, and nothing is chattered.
+# Builds a throwaway bare origin and checkout. Failed mandatory tests must exit
+# nonzero without advancing main, pushing a tag, or replacing an installed
+# bundle. A second run verifies that a foreign push after validation makes the
+# script rebuild and revalidate the merged candidate before publication.
 #
 #   scripts/test-release-ship-path.sh                  # test ./release.sh
 #   scripts/test-release-ship-path.sh <path-to-script> # test another copy (e.g. an old one)
@@ -17,6 +14,7 @@ set -euo pipefail
 
 SCRIPT_UNDER_TEST="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/release.sh}"
 SCRIPT_UNDER_TEST="$(cd "$(dirname "$SCRIPT_UNDER_TEST")" && pwd)/$(basename "$SCRIPT_UNDER_TEST")"
+HARNESS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SANDBOX="$(mktemp -d)"
 trap 'rm -rf "$SANDBOX"' EXIT
 
@@ -28,6 +26,7 @@ git_q clone "$SANDBOX/origin.git" "$SANDBOX/checkout"
 cd "$SANDBOX/checkout"
 git config user.name test; git config user.email test@test; git config core.hooksPath /dev/null
 cp "$SCRIPT_UNDER_TEST" release.sh
+cp "$HARNESS_ROOT/ship.sh" ship.sh
 printf '{\n  "name": "matrx-extend",\n  "version": "0.1.0",\n  "private": true\n}\n' > package.json
 mkdir -p types; echo "old catalog" > types/tool-catalog.md
 echo "shared" > shared.txt
@@ -42,73 +41,248 @@ echo "mine" > mine.txt; git_q add mine.txt; git_q commit -m "mine"
 # Dirty: a tracked file with uncommitted edits, as the shared checkout always has.
 echo "uncommitted work" >> shared.txt
 
-# ── stubs: pnpm (unit tests fail; the catalog regenerates), supabase ─────────
+# ── Controlled commands in the local checkout only ──────────────────────────
 mkdir -p "$SANDBOX/bin"
+mkdir -p scripts
+cp "$HARNESS_ROOT/scripts/sync-unpacked-release.mjs" scripts/sync-unpacked-release.mjs
+git_q add scripts/sync-unpacked-release.mjs; git_q commit -m "fixture sync helper"
+REAL_NODE="$(command -v node)"
+cat > "$SANDBOX/bin/node" <<STUB
+#!/usr/bin/env bash
+case "\$1" in
+  scripts/check-store-package.mjs|scripts/check-cws-release-risk.mjs)
+    echo "\$1" >> "$SANDBOX/node-gates"
+    if [ -f "$SANDBOX/fail-store-package" ] && [ "\$1" = scripts/check-store-package.mjs ]; then exit 1; fi
+    exit 0 ;;
+esac
+exec "$REAL_NODE" "\$@"
+STUB
 cat > "$SANDBOX/bin/pnpm" <<STUB
 #!/usr/bin/env bash
 echo "\$*" >> "$SANDBOX/pnpm-calls"
-args=" \$* "
-case "\$args" in
-    *" test "*) git --git-dir="$SANDBOX/origin.git" show main:package.json > "$SANDBOX/origin-at-test" 2>/dev/null
-                echo " FAIL  tests/unit/a.test.ts"; echo "      Tests  2 failed | 10 passed (12)"; exit 1 ;;
-    *" catalog:tools:md "*) mkdir -p types; echo "regenerated catalog" > types/tool-catalog.md; exit 0 ;;
+case " \$* " in
+  *" update-api-types "*) [ -f "$SANDBOX/fail-generation" ] && exit 1 ;;
+  *" catalog:tools:md "*) mkdir -p types; echo "regenerated catalog" > types/tool-catalog.md ;;
+  *" test "*)
+    git rev-parse HEAD >> "$SANDBOX/checked-shas"
+    if [ -f "$SANDBOX/fail-tests" ]; then
+      echo " FAIL  tests/unit/release-contract.test.ts"
+      echo "      Tests  2 failed | 10 passed (12)"
+      exit 1
+    fi ;;
+  *" exec wxt zip "*)
+    [ -f "$SANDBOX/fail-build" ] && exit 1
+    mkdir -p .output/chrome-mv3
+    version=\$(sed -n 's/^  "version": "\([^"]*\)".*/\1/p' package.json)
+    if [ "\${MATRX_CWS_BUILD:-}" = 1 ]; then
+      printf '{"version":"%s"}\\n' "\$version" > .output/chrome-mv3/manifest.json
+    else
+      printf '{"version":"%s","key":"fixture-dev-key"}\\n' "\$version" > .output/chrome-mv3/manifest.json
+    fi
+    ( cd .output/chrome-mv3 && zip -q ../matrx-extend-\$version-chrome.zip manifest.json )
+    ;;
 esac
 exit 0
 STUB
+chmod +x "$SANDBOX/bin/node" "$SANDBOX/bin/pnpm"
 printf '#!/usr/bin/env bash\nexit 0\n' > "$SANDBOX/bin/supabase"
-chmod +x "$SANDBOX/bin/pnpm" "$SANDBOX/bin/supabase"
+chmod +x "$SANDBOX/bin/supabase"
 
-# ── release ──────────────────────────────────────────────────────────────────
-RACE_CMD="[ -f '$SANDBOX/raced' ] || { touch '$SANDBOX/raced'; cd '$SANDBOX/other' && git pull -q origin main && echo race > race.txt && git add -A && git -c user.name=t -c user.email=t@t commit -qm race && git push -q origin main; }"
+# Failure: tests must stop publication and preserve the installed bundle.
+mkdir -p .output/chrome-mv3-dev
+echo "installed prior release" > .output/chrome-mv3-dev/sentinel.txt
+printf 'prior Store zip\n' > .output/matrx-extend-0.1.0-store.zip
+printf 'prior local zip\n' > .output/matrx-extend-0.1.0-local.zip
+touch "$SANDBOX/fail-tests"
+REMOTE_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
 set +e
-PATH="$SANDBOX/bin:$PATH" RELEASE_TEST_BEFORE_PUSH="$RACE_CMD" \
-    bash release.sh --message "guard run" --bogus-flag > "$SANDBOX/out" 2>&1
-STATUS=$?
+PATH="$SANDBOX/bin:$PATH" bash ship.sh "guard run" > "$SANDBOX/failed-out" 2>&1
+FAILED_STATUS=$?
 set -e
-
 FAILED=0
 check() { if eval "$2"; then echo "  ok    $1"; else echo "  FAIL  $1"; FAILED=1; fi; }
-git fetch -q origin 2>/dev/null || true
-echo "release ship path — dirty tree + diverged branch + mid-release push + taken tag + bad flag + failing tests"
-check "release exited 0"                              '[[ $STATUS -eq 0 ]]'
-check "tag v0.1.2 is on origin (taken v0.1.1 skipped)" 'git ls-remote --tags origin | grep -q "refs/tags/v0.1.2$"'
-check "the taken tag v0.1.1 was never moved"          '[[ "$(git ls-remote --tags origin refs/tags/v0.1.1 | cut -f1)" == "$(git rev-list -n1 origin/main~0 --grep=seed)" ]]'
-check "origin/main carries version 0.1.2"             'git show origin/main:package.json | grep -q "\"version\": \"0.1.2\""'
-check "the release commit is named"                   '[[ "$(git log -1 --format=%s origin/main)" == "release: v0.1.2 - guard run" ]]'
-check "the push race really happened"                 '[[ -f "$SANDBOX/raced" ]]'
-check "the foreign mid-release push survived"         'git cat-file -e origin/main:race.txt 2>/dev/null'
-check "the local commit shipped"                      'git cat-file -e origin/main:mine.txt 2>/dev/null'
-check "the regenerated catalog rode in the release"   'git show origin/main:types/tool-catalog.md | grep -q "regenerated catalog"'
-check "uncommitted work was never touched"            'grep -q "uncommitted work" shared.txt'
-check "nothing was stashed"                           '[[ -z "$(git stash list)" ]]'
-check "no worktree or branch was created"             '[[ $(git worktree list | wc -l) -eq 1 && $(git branch | wc -l) -eq 1 ]]'
-check "unit tests ran only AFTER the push"            'grep -q "\"version\": \"0.1.2\"" "$SANDBOX/origin-at-test" 2>/dev/null'
-check "the first line is the ship line"               '[[ "$(head -1 "$SANDBOX/out")" =~ ^v0\.1\.2\ \ pushed\ \ \([0-9]+s\)$ ]]'
-check "the Checks section opens"                      'grep -qx "==================== Checks ====================" "$SANDBOX/out"'
-check "failing tests are an ERROR in Checks"          'grep -qE "^ERROR +Checks +unit tests failed \(2 failing\)" "$SANDBOX/out"'
-check "the Checks section closes"                     'grep -qx "==================== End of Checks ====================" "$SANDBOX/out"'
-check "the bad flag is a WARNING, not a refusal"      'grep -qE "^WARNING +Invocation +Unknown flag .--bogus-flag." "$SANDBOX/out"'
-check "no INFO/OK chatter on the terminal"            '! grep -qE "\[(INFO|OK)\]" "$SANDBOX/out"'
-check "a dated release log was written"               '[[ -s tmp/release-logs/latest.log ]]'
-
-# ── second release: everything clean except a still-dirty tree ───────────────
-cat > "$SANDBOX/bin/pnpm" <<'STUB'
+# Contention uses a real live owner; fake only sleeping so the old 60s steal
+# fails this guard quickly. Neither missing PID nor stale metadata grants ownership.
+REAL_SLEEP="$(command -v sleep)"
+cat > "$SANDBOX/bin/sleep" <<STUB
 #!/usr/bin/env bash
-exit 0
+[ -f "$SANDBOX/lock-contention" ] && exit 0
+exec "$REAL_SLEEP" "\$@"
 STUB
-chmod +x "$SANDBOX/bin/pnpm"
+chmod +x "$SANDBOX/bin/sleep"
+mkdir .git/matrx-release-ship.lock
+printf '%s\n' "$$" > .git/matrx-release-ship.lock/pid
+touch "$SANDBOX/lock-contention"
+CALLS_BEFORE_LOCK="$(wc -l < "$SANDBOX/pnpm-calls")"
 set +e
-PATH="$SANDBOX/bin:$PATH" bash release.sh --minor > "$SANDBOX/out2" 2>&1
-STATUS2=$?
+PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/lock-out" 2>&1
+LOCK_STATUS=$?
 set -e
-echo "release ship path — a second, minor release"
-check "second release exited 0"                       '[[ $STATUS2 -eq 0 ]]'
-check "tag v0.2.0 is on origin"                       'git ls-remote --tags origin | grep -q "refs/tags/v0.2.0$"'
-check "the checkout fast-forwarded to the release"    'git fetch -q origin; [[ "$(git rev-parse HEAD)" == "$(git rev-parse origin/main)" ]]'
+check "live owner's lock survives contention" '[[ $LOCK_STATUS -ne 0 && "$(cat .git/matrx-release-ship.lock/pid 2>/dev/null)" == "$$" ]]'
+check "contender starts no validation or build" '[[ "$(wc -l < "$SANDBOX/pnpm-calls")" == "$CALLS_BEFORE_LOCK" ]]'
+rm -f .git/matrx-release-ship.lock/pid
+set +e
+PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/unknown-owner-out" 2>&1
+UNKNOWN_OWNER_STATUS=$?
+set -e
+check "unknown owner lock is preserved without running gates" '[[ $UNKNOWN_OWNER_STATUS -ne 0 && -d .git/matrx-release-ship.lock && "$(wc -l < "$SANDBOX/pnpm-calls")" == "$CALLS_BEFORE_LOCK" ]]'
+rm -rf .git/matrx-release-ship.lock
+rm "$SANDBOX/lock-contention"
+git fetch -q origin 2>/dev/null || true
+echo "release guard — failing mandatory tests"
+check "failure exits nonzero"                         '[[ $FAILED_STATUS -ne 0 ]]'
+check "remote main did not advance"                   '[[ "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+check "no new tag reached origin"                     '! git ls-remote --tags origin | grep -q "refs/tags/v0.1.2$"'
+check "the old unpacked bundle is intact"             'grep -q "installed prior release" .output/chrome-mv3-dev/sentinel.txt'
+check "prior Store zip is intact"                     'grep -q "prior Store zip" .output/matrx-extend-0.1.0-store.zip'
+check "prior local zip is intact"                     'grep -q "prior local zip" .output/matrx-extend-0.1.0-local.zip'
+check "failed candidate created no upload zip"        '[[ ! -e .output/matrx-extend-0.1.2-store.zip ]]'
+check "candidate was checked before any publication"  '[[ -s "$SANDBOX/checked-shas" ]] && grep -q "nothing was pushed" "$SANDBOX/failed-out"'
+check "local uncommitted work remains"                 'grep -q "uncommitted work" shared.txt'
 
+# Failed generation and failed package build are equally publication-blocking.
+rm "$SANDBOX/fail-tests"
+touch "$SANDBOX/fail-generation"
+set +e
+PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/generation-out" 2>&1
+GEN_STATUS=$?
+set -e
+rm "$SANDBOX/fail-generation"
+check "generation failure exits nonzero"              '[[ $GEN_STATUS -ne 0 ]]'
+check "generation failure leaves main untouched"      '[[ "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+touch "$SANDBOX/fail-build"
+set +e
+PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/build-out" 2>&1
+BUILD_STATUS=$?
+set -e
+rm "$SANDBOX/fail-build"
+check "package failure exits nonzero"                 '[[ $BUILD_STATUS -ne 0 ]]'
+check "package failure leaves main untouched"         '[[ "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+touch "$SANDBOX/fail-store-package"
+set +e
+PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/store-check-out" 2>&1
+STORE_CHECK_STATUS=$?
+set -e
+rm "$SANDBOX/fail-store-package"
+check "Store package gate exits nonzero"             '[[ $STORE_CHECK_STATUS -ne 0 ]]'
+check "Store package gate leaves main untouched"     '[[ "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+check "failed prep preserved prior zips"              'grep -q "prior Store zip" .output/matrx-extend-0.1.0-store.zip && grep -q "prior local zip" .output/matrx-extend-0.1.0-local.zip'
+
+# --no-push must reach the release preview without the old sync-main pre-push.
+set +e
+PATH="$SANDBOX/bin:$PATH" bash ship.sh --no-push > "$SANDBOX/no-push-out" 2>&1
+NO_PUSH_STATUS=$?
+set -e
+check "ship --no-push only previews"                   '[[ $NO_PUSH_STATUS -eq 0 && "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+
+# A foreign branch push invalidates the checked first candidate. If the new
+# candidate fails, its tag and main update must both be refused.
+RACE_FAIL_CMD="[ -f '$SANDBOX/race-failed' ] || { touch '$SANDBOX/race-failed'; cd '$SANDBOX/other' && git pull -q origin main && echo race-failed > race-failed.txt && git add -A && git -c user.name=t -c user.email=t@t commit -qm race-failed && git push -q origin main && touch '$SANDBOX/fail-tests'; }"
+set +e
+PATH="$SANDBOX/bin:$PATH" RELEASE_TEST_BEFORE_PUSH="$RACE_FAIL_CMD" bash release.sh > "$SANDBOX/race-failed-out" 2>&1
+RACE_FAIL_STATUS=$?
+set -e
+git fetch -q origin 2>/dev/null || true
+check "failed second candidate exits nonzero"         '[[ -f "$SANDBOX/race-failed" && $RACE_FAIL_STATUS -ne 0 ]]'
+check "foreign branch commit survived"                'git cat-file -e origin/main:race-failed.txt'
+check "failed second candidate did not publish a tag" '! git ls-remote --tags origin | grep -q "refs/tags/v0.1.2$"'
+check "failed second candidate kept remote version"   'git show origin/main:package.json | grep -q "\"version\": \"0.1.0\""'
+rm "$SANDBOX/fail-tests"
+
+# Pass: remote race forces a new candidate and a second complete validation.
+RACE_CMD="grep -q 'Uncommitted checkout paths excluded' tmp/release-logs/latest.log && touch '$SANDBOX/exclusions-before-push'; [ -f '$SANDBOX/raced' ] || { touch '$SANDBOX/raced'; cd '$SANDBOX/other' && git pull -q origin main && echo race > race.txt && git add -A && git -c user.name=t -c user.email=t@t commit -qm race && git push -q origin main; }"
+set +e
+PATH="$SANDBOX/bin:$PATH" RELEASE_TEST_BEFORE_PUSH="$RACE_CMD" bash release.sh --message "guard run" > "$SANDBOX/passed-out" 2>&1
+PASSED_STATUS=$?
+set -e
+git fetch -q origin 2>/dev/null || true
+echo "release guard — validated candidate after a remote race"
+check "dirty exclusions announced before push"        '[[ -f "$SANDBOX/exclusions-before-push" ]]'
+check "successful release exits zero"                 '[[ $PASSED_STATUS -eq 0 ]]'
+check "tag v0.1.2 reached origin"                      'git ls-remote --tags origin | grep -q "refs/tags/v0.1.2$"'
+check "foreign push survived"                          'git cat-file -e origin/main:race.txt'
+check "local commit survived"                          'git cat-file -e origin/main:mine.txt'
+check "generated catalog shipped"                      'git show origin/main:types/tool-catalog.md | grep -q "regenerated catalog"'
+check "checks ran for both candidates"                 '[[ $(wc -l < "$SANDBOX/checked-shas") -ge 3 ]]'
+check "schema gate reran after race"                   '[[ $(grep -c "check:schema-routing:strict" "$SANDBOX/pnpm-calls") -ge 2 ]]'
+check "Store package gate reran after race"           '[[ $(grep -c "scripts/check-store-package.mjs" "$SANDBOX/node-gates") -ge 2 ]]'
+check "Store risk gate reran after race"              '[[ $(grep -c "scripts/check-cws-release-risk.mjs" "$SANDBOX/node-gates") -ge 2 ]]'
+check "final checked SHA equals published SHA"         '[[ "$(tail -1 "$SANDBOX/checked-shas")" == "$(git rev-parse origin/main)" ]]'
+check "local bundle was promoted after validation"     '[[ -f .output/chrome-mv3-dev/manifest.json && -f .output/release-receipt.json ]]'
+check "both release zips exist"                         '[[ -f .output/matrx-extend-0.1.2-store.zip && -f .output/matrx-extend-0.1.2-local.zip ]]'
+check "uncommitted work remained"                       'grep -q "uncommitted work" shared.txt'
+
+# A simultaneous claim of the candidate tag must reject the entire atomic
+# push; rebuilding selects the next free version and repeats the checks.
+TAG_CMD="[ -f '$SANDBOX/tagged' ] || { touch '$SANDBOX/tagged'; git --git-dir='$SANDBOX/origin.git' tag v0.1.3 main; }"
+set +e
+PATH="$SANDBOX/bin:$PATH" RELEASE_TEST_BEFORE_PUSH="$TAG_CMD" bash release.sh > "$SANDBOX/tag-race-out" 2>&1
+TAG_STATUS=$?
+set -e
+git fetch -q origin 2>/dev/null || true
+check "tag claim forced candidate rebuild"             '[[ -f "$SANDBOX/tagged" && $TAG_STATUS -eq 0 ]]'
+check "claimed tag kept its original target"            '[[ "$(git --git-dir="$SANDBOX/origin.git" rev-parse v0.1.3)" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main^)" ]]'
+check "next free tag and main share commit"             '[[ "$(git --git-dir="$SANDBOX/origin.git" rev-parse v0.1.4)" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+check "tag collision caused a second Store build"       '[[ $(grep -c "scripts/check-store-package.mjs" "$SANDBOX/node-gates") -ge 5 ]]'
+
+# ZIP installation and restoration faults are filesystem dependency failures;
+# the real release owns backup, rollback and EXIT cleanup decisions.
+REAL_MV="$(command -v mv)"
+cat > "$SANDBOX/bin/mv" <<STUB
+#!/usr/bin/env bash
+case "\$*" in
+  *"/.release-artifacts."*"/local.zip "*)
+    [ -f "$SANDBOX/fail-zip-install" ] && exit 1 ;;
+  *"/.release-artifacts."*"/old-store.zip "*)
+    [ -f "$SANDBOX/fail-zip-restore" ] && exit 1 ;;
+esac
+exec "$REAL_MV" "\$@"
+STUB
+chmod +x "$SANDBOX/bin/mv"
+for failure in install restore; do
+  version="0.1.5"
+  [[ "$failure" == restore ]] && version="0.1.6"
+  printf 'previous Store bytes\n' > ".output/matrx-extend-$version-store.zip"
+  printf 'previous local bytes\n' > ".output/matrx-extend-$version-local.zip"
+  cp .output/release-receipt.json "$SANDBOX/receipt-before-$failure"
+  touch "$SANDBOX/fail-zip-install"
+  [[ "$failure" == restore ]] && touch "$SANDBOX/fail-zip-restore"
+  set +e
+  PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/zip-$failure-out" 2>&1
+  ZIP_STATUS=$?
+  set -e
+  check "ZIP $failure failure is reported" '[[ $ZIP_STATUS -ne 0 ]]'
+  check "ZIP $failure leaves installed receipt untouched" 'cmp -s .output/release-receipt.json "$SANDBOX/receipt-before-$failure"'
+  check "ZIP $failure restores old local ZIP" 'grep -q "previous local bytes" ".output/matrx-extend-$version-local.zip"'
+  if [[ "$failure" == install ]]; then
+    check "ordinary rollback restores old Store ZIP" 'grep -q "previous Store bytes" ".output/matrx-extend-$version-store.zip"'
+  else
+    check "failed restoration preserves backup beyond EXIT" 'find .output -path "*/.release-artifacts.*/old-store.zip" -exec grep -l "previous Store bytes" {} \; | grep -q .'
+    check "failed restoration names recovery path" 'grep -q "ZIP rollback incomplete; recovery files retained at" "$SANDBOX/zip-restore-out"'
+  fi
+  rm -f "$SANDBOX/fail-zip-install" "$SANDBOX/fail-zip-restore"
+done
+
+# A real content conflict must leave both commits and remote refs untouched.
+git_q clone "$SANDBOX/origin.git" "$SANDBOX/conflict"
+( cd "$SANDBOX/conflict" && git config user.name test && git config user.email test@test \
+  && echo "local version" > shared.txt && git_q add shared.txt && git_q commit -m "local conflict" )
+( cd "$SANDBOX/other" && git pull -q origin main && echo "remote version" > shared.txt \
+  && git_q add shared.txt && git_q commit -m "remote conflict" && git_q push origin main )
+CONFLICT_REMOTE_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+set +e
+( cd "$SANDBOX/conflict" && PATH="$SANDBOX/bin:$PATH" bash release.sh ) > "$SANDBOX/conflict-out" 2>&1
+CONFLICT_STATUS=$?
+set -e
+check "merge conflict refused publication"             '[[ $CONFLICT_STATUS -ne 0 && "$CONFLICT_REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+check "local conflicting commit was preserved"         'git -C "$SANDBOX/conflict" show HEAD:shared.txt | grep -q "local version"'
+check "remote conflicting commit was preserved"        'git --git-dir="$SANDBOX/origin.git" show main:shared.txt | grep -q "remote version"'
 if [[ $FAILED -ne 0 ]]; then
-    echo "--- first run output ---"; tail -40 "$SANDBOX/out"; echo "--- second run ---"; tail -25 "$SANDBOX/out2" 2>/dev/null
-    exit 1
+  echo "--- failed release output ---"; tail -30 "$SANDBOX/failed-out"
+  echo "--- passed release output ---"; tail -30 "$SANDBOX/passed-out"
+  echo "--- failed second candidate output ---"; tail -20 "$SANDBOX/race-failed-out" 2>/dev/null
+  echo "--- tag race output ---"; tail -20 "$SANDBOX/tag-race-out" 2>/dev/null
+  echo "--- merge conflict output ---"; tail -20 "$SANDBOX/conflict-out" 2>/dev/null
+  exit 1
 fi
-[[ -n "${SHOW_OUTPUT:-}" ]] && { echo "--- first run output ---"; cat "$SANDBOX/out"; }
 echo "PASS"

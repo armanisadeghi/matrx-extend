@@ -164,13 +164,9 @@ describe('release unpacked promotion', () => {
   });
 });
 
-// THE RELEASE NEVER REFUSES (Arman, 2026-09-24). The old cases here asserted the opposite
-// contract (refuse a dirty tree, refuse a push race, keep a --no-push candidate tag). The
-// behavioural guard for the new contract is scripts/test-release-ship-path.sh: a dirty tree, a
-// diverged branch, a foreign push mid-release, a taken tag, a bad flag and failing tests must
-// still end with the tag on origin, and the failures reported after the push.
+// The local bare-origin guard proves pre-publication validation and recovery.
 describe('release.sh ship path', () => {
-  it('never refuses a release (scripts/test-release-ship-path.sh passes)', () => {
+  it('publishes only validated candidates and preserves recovery state on failure', () => {
     const repoRoot = join(__dirname, '..', '..');
     // A real release runs this test from inside its own captured log. The
     // nested sandbox release must start a fresh log instead of inheriting it.
@@ -186,4 +182,15 @@ describe('release.sh ship path', () => {
     });
     expect(guard.status, `${guard.stdout}\n${guard.stderr}`).toBe(0);
   }, 150_000);
+});
+
+
+describe('release filesystem recovery', () => {
+  it('keeps committed artifacts coherent and retains failed rollback backups', () => {
+    const guard = spawnSync(process.execPath, ['--test', 'scripts/test-release-recovery.mjs'], {
+      cwd: join(__dirname, '..', '..'),
+      encoding: 'utf8',
+    });
+    expect(guard.status, `${guard.stdout}\n${guard.stderr}`).toBe(0);
+  });
 });

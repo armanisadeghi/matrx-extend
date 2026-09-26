@@ -1,0 +1,29 @@
+{
+  "reviewer": "/root/release_gate_reverify",
+  "method": "Independent source-only review of the frozen uncommitted candidate; no tests, builds, browser activity, Git mutation, or remote operation.",
+  "A_requirement_alignment": {
+    "verdict": "Core pre-publication gate addressed in source; one exclusion-notice gap remains.",
+    "original_findings": [
+      {"title": "ship.sh pushes unvalidated main", "status": "ADDRESSED", "evidence": "ship.sh:16-29 execs release.sh directly and no longer calls sync-main.py."},
+      {"title": "Conflicts silently omit local behavior", "status": "ADDRESSED", "evidence": "release.sh:252-265 stops on merge-tree conflict before publication; ship.sh no longer uses sync-main.py's held-conflict path."},
+      {"title": "Main and tag published separately", "status": "ADDRESSED", "evidence": "release.sh:376-421 discovers remote tags, validates the candidate, publishes main and tag through git push --atomic, and rebuilds after a branch or tag race."},
+      {"title": "Dirty checkout work silently omitted", "status": "PARTIALLY_ADDRESSED", "evidence": "release.sh:71-77 reports excluded dirty paths, but the successful path prints them at :482, after publication at :406-410.", "action": "Announce excluded paths before publication so the operator can see what will be omitted."}
+    ],
+    "contract_evidence": "release.sh:383-403 regenerates, bumps, checks, and builds both ZIPs from the candidate SHA before the atomic push. :411-419 restarts after a race. :230-241 exits dry-run before build or push. ship.sh passes --no-push through.",
+    "fixture_safety": "scripts/test-release-ship-path.sh:18-36 creates a temporary bare origin and local clones; :49-90 stubs node and pnpm. No real origin is configured in the fixture. It was not executed in this review."
+  },
+  "B_code_quality": {
+    "verdict": "Ordinary snapshot and ZIP promotion failures are handled; concurrency and late cleanup remain unsafe.",
+    "original_findings": [
+      {"title": "Snapshot Git setup failure nonfatal", "status": "ADDRESSED", "evidence": "release.sh:176-190 returns failure on Git setup or prepare failure; callers at :270 and :394-395 stop before publication."},
+      {"title": "Local ZIP promotion not pairwise atomic", "status": "ADDRESSED_FOR_ORDINARY_FAILURES", "evidence": "release.sh:429-471 stages, compares, backs up, and restores both ZIPs on install or unpacked promotion failure; restore command failures are not checked."},
+      {"title": "Fixture does not force all gates", "status": "PARTIALLY_ADDRESSED", "evidence": "Fixture now forces generation, unit tests, build, Store check, a failed second candidate after branch race, tag collision, and merge conflict. It does not force each mandatory check, ZIP rollback, or unpacked/receipt failure. Aggregate rerun counts at :200-203 include earlier attempts."}
+    ],
+    "new_findings": [
+      {"severity": "P1", "title": "Live release lock stolen after 60 seconds", "evidence": "release.sh:203-215 removes a lock held by a live PID after 60 seconds; checks and builds can run longer. Two release processes could then interleave publication and local artifact promotion.", "action": "Wait for or refuse a live lock owner; never take over a live release."},
+      {"severity": "P1", "title": "Unpacked cleanup failure leaves inconsistent artifacts", "evidence": "scripts/sync-unpacked-release.mjs:168-175 writes the new receipt before backup deletion at :185-189, outside the rollback catch. If deletion throws, release.sh:463-470 restores only ZIPs and claims prior artifacts were restored while new unpacked bundles and receipt can remain.", "action": "Make cleanup failure separately recoverable and report the actual installed state."},
+      {"severity": "P2", "title": "Failed ZIP restore can lose its backup", "evidence": "release.sh:441-470 does not check restore_output_zips rm/mv results; the EXIT trap at :159-164 deletes the staging directory containing a backup that failed to move home.", "action": "Check each restore, preserve failed backups, and report their recovery path."}
+    ],
+    "runtime_status": "Root-owned admitted green fixture run and real build/UI verification pending; this is source review, not runtime pass."
+  }
+}
