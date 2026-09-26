@@ -558,6 +558,13 @@ const RECEIPT_BACKED_LOCAL_SOURCE_ARTIFACTS = new Map([
       version: '0.2.53',
     },
   ],
+  [
+    'dee5e6bb047f2ef3d3d726183faba5b7a21b7593',
+    {
+      manifestSha256: 'b8fc7872dd88dc79a7137d68b0d76743a6944d2fc72ed449ca1816e900652130',
+      version: '0.2.54',
+    },
+  ],
 ]);
 const RECEIPT_BACKED_SAVE_UPDATE_COMMITS = new Set([
   RECEIPT_BACKED_FROZEN_SOURCE_COMMIT,

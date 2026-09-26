@@ -15,9 +15,19 @@ const localReleaseZipManifestSha256 =
   'c395a10b2b8d6dfc42dc045f553a9098781eab3d33634e5a0a1a947f0bec8b9b';
 const localReleaseZipKind = 'local-release-zip-artifact';
 const localReleaseZipVersion = '0.2.38';
-const localSourceCommit = '41bf5be59dc5a279b5a6c1f4e91cebdade34bf51';
+const localSourceCommit = 'dee5e6bb047f2ef3d3d726183faba5b7a21b7593';
 const localSourceManifestSha256 =
-  '510d508d9d3e75ad581a956a3c89b00e63465e4a99198ddc5d144da70b34132a';
+  'b8fc7872dd88dc79a7137d68b0d76743a6944d2fc72ed449ca1816e900652130';
+const reviewedLocalSourceArtifact = {
+  path: path.join(
+    __dirname,
+    '../../.matrx/realbrowser-vault/2026-09-26T07-27-29-927Z-6a4d7bdc-c2f8-46e2-9e55-3b90d62eb3d1/artifact-manifest.json',
+  ),
+  sourceCommit: 'dee5e6bb047f2ef3d3d726183faba5b7a21b7593',
+  manifestSha256: 'b8fc7872dd88dc79a7137d68b0d76743a6944d2fc72ed449ca1816e900652130',
+  version: '0.2.54',
+  kind: 'local-multi-repo-source-artifact',
+};
 const routerHash = '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
 const serviceHash = 'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
 
@@ -205,7 +215,7 @@ try {
         schema: 2,
         extensionDirectory: 'extension',
         kind: 'local-multi-repo-source-artifact',
-        manifestVersion: '0.2.53',
+        manifestVersion: '0.2.54',
         sourceCommit: localSourceCommit,
         extensionFiles: [
           {
@@ -250,6 +260,68 @@ try {
       'near-match local source created durable run state',
     );
   };
+  const assertReviewedLocalSourceArtifactAdmission = () => {
+    const manifest = JSON.parse(fs.readFileSync(reviewedLocalSourceArtifact.path, 'utf8'));
+    assert.equal(manifest.sourceCommit, reviewedLocalSourceArtifact.sourceCommit);
+    assert.equal(manifest.manifestVersion, reviewedLocalSourceArtifact.version);
+    assert.equal(manifest.kind, reviewedLocalSourceArtifact.kind);
+    assert.equal(
+      crypto.createHash('sha256').update(fs.readFileSync(reviewedLocalSourceArtifact.path)).digest('hex'),
+      reviewedLocalSourceArtifact.manifestSha256,
+    );
+    assert.match(
+      fs.readFileSync(runner, 'utf8'),
+      new RegExp(
+        `${reviewedLocalSourceArtifact.sourceCommit}[\\s\\S]*?manifestSha256: '${reviewedLocalSourceArtifact.manifestSha256}'[\\s\\S]*?version: '${reviewedLocalSourceArtifact.version}'`,
+      ),
+    );
+  };
+  const rejectWrongSourceBeforeCustody = () => {
+    const fixtureRoot = path.join(root, 'wrong-source');
+    const extension = path.join(fixtureRoot, 'artifact', 'extension');
+    fs.mkdirSync(extension, { recursive: true });
+    const extensionManifest = JSON.stringify({ manifest_version: 3 });
+    fs.writeFileSync(path.join(extension, 'manifest.json'), extensionManifest);
+    const manifestPath = path.join(fixtureRoot, 'artifact', 'manifest.json');
+    fs.writeFileSync(
+      manifestPath,
+      JSON.stringify({
+        schema: 2,
+        extensionDirectory: 'extension',
+        kind: reviewedLocalSourceArtifact.kind,
+        manifestVersion: reviewedLocalSourceArtifact.version,
+        sourceCommit: frozenCommit,
+        extensionFiles: [
+          {
+            path: 'manifest.json',
+            sha256: crypto.createHash('sha256').update(extensionManifest).digest('hex'),
+          },
+        ],
+      }),
+    );
+    const stateRoot = path.join(fixtureRoot, 'state');
+    const result = spawnSync(process.execPath, [runner], {
+      env: {
+        PATH: process.env.PATH,
+        HOME: process.env.HOME,
+        MATRX_REALBROWSER_VAULT_CANARY: 'RUN_UNDER_REVIEW',
+        MATRX_VAULT_CANARY_STATE_ROOT: stateRoot,
+        MATRX_VAULT_CANARY_ADMISSION: 'RUN_RECEIPT_BACKED_SAVE_UPDATE',
+        MATRX_VAULT_CANARY_DISPLAY: 'HEADLESS_NO_CLIPBOARD',
+        MATRX_VAULT_CANARY_LOCAL_CANONICAL_CLEANUP: 'RUN_LOCAL_CANONICAL_CLEANUP',
+        MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256: routerHash,
+        MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256: serviceHash,
+        MATRX_VAULT_CANARY_EXPECTED_COMMIT: reviewedLocalSourceArtifact.sourceCommit,
+        MATRX_VAULT_CANARY_MANIFEST: manifestPath,
+        MATRX_VAULT_CANARY_ARTIFACT_KIND: reviewedLocalSourceArtifact.kind,
+      },
+      encoding: 'utf8',
+      timeout: 10000,
+    });
+    assert.notEqual(result.status, 0, 'wrong source unexpectedly ran');
+    assert.match(`${result.stderr}${result.stdout}`, /artifact_commit_mismatch/);
+    assert.equal(fs.existsSync(stateRoot), false, 'wrong source created durable run state');
+  };
 
   rejectBeforeCustody('headed', 'receipt_backed_requires_headless_no_clipboard', {
     MATRX_VAULT_CANARY_DISPLAY: 'HEADED',
@@ -289,6 +361,8 @@ try {
   rejectSourceDriftBeforeCustody();
   rejectNearMatchLocalReleaseManifestBeforeCustody();
   rejectNearMatchLocalSourceManifestBeforeCustody();
+  assertReviewedLocalSourceArtifactAdmission();
+  rejectWrongSourceBeforeCustody();
   checkPriorRun(
     'receipt-generic-ok-is-not-a-shortcut',
     {
