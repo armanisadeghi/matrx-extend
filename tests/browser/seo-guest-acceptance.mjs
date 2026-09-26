@@ -37,6 +37,18 @@ const advance = (stage, observable = null) => {
   report.last_safe_stage = stage;
   report.last_safe_observable = observable;
 };
+async function observe(stage, read) {
+  const previous = report.last_safe_observable;
+  advance(`${stage}_pending`, previous);
+  try {
+    const value = await read();
+    advance(stage, value);
+    return value;
+  } catch {
+    advance(stage, { observationFailed: true, previous });
+    throw new Error(`${stage}_observation_failed`);
+  }
+}
 const target = (caseId, subtarget, evidence) =>
   report.targets.push({ case_id: `EXT-F-1008-${caseId}`, subtarget, status: 'pass', evidence });
 
@@ -44,15 +56,28 @@ async function selectedSeo(panel) {
   return evaluate(
     panel,
     `(() => {
-      const tab = [...document.querySelectorAll('[role="tab"]')]
-        .find((node) => node.title === 'SEO');
-      const pane = document.querySelector('[role="tabpanel"][data-state="active"]');
+      const lists = [...document.querySelectorAll('[role="tablist"]')]
+        .filter((node) => !node.closest('[role="tabpanel"]'));
+      const tabs = lists.length === 1
+        ? [...lists[0].querySelectorAll('[role="tab"]')]
+          .filter((node) => node.closest('[role="tablist"]') === lists[0]
+            && node.title === 'SEO')
+        : [];
+      const tab = tabs.length === 1 ? tabs[0] : null;
+      const pane = tab ? document.getElementById(tab.getAttribute('aria-controls')) : null;
       const heading = [...(pane?.querySelectorAll('span') ?? [])]
         .some((node) => node.textContent.trim() === 'SEO audit');
-      return { selected: tab?.getAttribute('aria-selected') === 'true',
+      const text = pane?.innerText ?? '';
+      return { mainTablists: lists.length, seoTabs: tabs.length,
+        selected: tab?.getAttribute('aria-selected') === 'true',
         linked: !!pane && pane.id === tab?.getAttribute('aria-controls')
-          && pane.getAttribute('aria-labelledby') === tab?.id,
-        heading };
+          && pane.getAttribute('aria-labelledby') === tab?.id
+          && pane.getAttribute('data-state') === 'active'
+          && pane.getBoundingClientRect().height > 0,
+        heading, fallback: !!pane?.querySelector('svg.animate-spin') && !text.trim(),
+        auditButtonCount: [...(pane?.querySelectorAll('button') ?? [])]
+          .filter((node) => /^(Audit this page|Re-audit)$/.test(node.textContent.trim())).length,
+        auditError: /Audit failed:|This page cannot be audited/.test(text) };
     })()`,
   );
 }
@@ -92,19 +117,28 @@ try {
     exercisePanel: async ({ page, panel }) => {
       advance('owned_guest_panel_ready', { nativePanel: true });
       for (const [index, url] of PAGES.entries()) {
+        advance(`public_page_${index}_navigation_pending`, { nativePanel: true });
         await page.goto(url, { waitUntil: 'domcontentloaded' });
-        const observedPage = await pageEvidence(page);
+        advance(`public_page_${index}_loaded`, { reachedExpectedPage: page.url() === url });
+        const observedPage = await observe(`public_page_${index}_inspected`, () =>
+          pageEvidence(page),
+        );
         assert.ok(observedPage.title, 'public page has a real title');
         advance(`public_page_${index}_ready`, { title: observedPage.title });
-        if (index === 0) await click(panel, 'title', 'SEO');
+        if (index === 0) {
+          const beforeClick = await observe('seo_click_preflight', () => selectedSeo(panel));
+          advance('seo_click_pending', beforeClick);
+          await click(panel, 'title', 'SEO');
+          await observe('seo_click_completed', () => selectedSeo(panel));
+        }
         await waitFor(
           'SEO selected and linked',
-          () => selectedSeo(panel),
-          (state) => state?.selected && state.linked && state.heading,
+          () => observe(`seo_page_${index}_readiness_sample`, () => selectedSeo(panel)),
+          (state) => state?.selected && state.linked && state.heading && !state.fallback,
         );
         const content = await waitFor(
           `SEO audit reflects public page ${index}`,
-          () => seoContent(panel),
+          () => observe(`seo_page_${index}_audit_sample`, () => seoContent(panel)),
           (state) => state?.title === observedPage.title && state.reAudit && !state.error,
           30000,
         );
@@ -127,15 +161,20 @@ try {
       );
       target('T01', 'new_url_replaces_visible_title', { twoDistinctPublicTitles: true });
 
+      advance(
+        'manual_reaudit_click_pending',
+        await observe('manual_reaudit_preflight', () => seoContent(panel)),
+      );
       await click(panel, 'button', 'Re-audit');
+      await observe('manual_reaudit_click_completed', () => seoContent(panel));
       await waitFor(
         're-audit enters running state',
-        () => seoContent(panel),
+        () => observe('manual_reaudit_running_sample', () => seoContent(panel)),
         (state) => state?.reAudit === false,
       );
       await waitFor(
         're-audit settles on second page',
-        () => seoContent(panel),
+        () => observe('manual_reaudit_settle_sample', () => seoContent(panel)),
         (state) =>
           state?.title === report.targets[1].evidence.publicTitle && state.reAudit && !state.error,
         30000,
@@ -143,13 +182,22 @@ try {
       target('T02', 'manual_button_returns_to_current_page', { currentTitlePreserved: true });
       advance('manual_reaudit_settled', { currentTitlePreserved: true });
 
+      advance(
+        'copy_menu_click_pending',
+        await observe('copy_menu_preflight', () => selectedSeo(panel)),
+      );
       await click(panel, 'title', 'Copy audit');
+      advance(
+        'copy_menu_click_completed',
+        await observe('copy_menu_post_click', () => selectedSeo(panel)),
+      );
       const menu = await waitFor(
         'guest copy choices visible',
         () =>
-          evaluate(
-            panel,
-            `(() => {
+          observe('copy_menu_sample', () =>
+            evaluate(
+              panel,
+              `(() => {
           const popover = [...document.querySelectorAll('[data-state="open"]')]
             .find((node) => node.textContent?.includes('Summary (text)')
               && node.textContent?.includes('For AI agent'));
@@ -157,6 +205,7 @@ try {
             .map((node) => node.textContent.trim());
           return { open: !!popover, choices };
         })()`,
+            ),
           ),
         (state) =>
           state?.open &&

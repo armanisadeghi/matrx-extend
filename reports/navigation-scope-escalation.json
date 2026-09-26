@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "status": "IMPLEMENTED_RUNTIME_UNVERIFIED",
+  "lane": "exceptional escalation; Astra medium; source diagnosis and fixture repair only",
+  "scope": [
+    "tests/browser/contained-navigation-acceptance.mjs",
+    "reports/navigation-scope-escalation.json"
+  ],
+  "captured_red": {
+    "artifact": "test-results/contained-navigation-acceptance.json",
+    "stage": "admin_tab_inventory",
+    "prerequisites_passed": ["guest inventory and navigation", "real-admin-signin"],
+    "observed_top_level_titles": 21,
+    "additional_blank_titles": 12,
+    "capture_identity_count": 1
+  },
+  "root_cause": "The document-wide role=tab selector merged the application navigation with nested feature tabs. App force-mounts Showcase for admins even while Settings is selected; Showcase renders twelve text-labeled triggers with no title attributes. Those legitimate nested tabs polluted the main-navigation exact roster. Global active-tabpanel lookup had the same ownership error once a preceding feature pane contained an active nested panel.",
+  "source_evidence": [
+    {
+      "path": "src/entrypoints/sidepanel/App.tsx",
+      "lines": "381-549",
+      "fact": "One main TabsList containing the 21 admin top-level navigation triggers."
+    },
+    {
+      "path": "src/entrypoints/sidepanel/App.tsx",
+      "lines": "719-733",
+      "fact": "Showcase TabsContent is force-mounted and hidden when inactive."
+    },
+    {
+      "path": "src/features/showcase/ShowcaseView.tsx",
+      "lines": "56-80,142-150",
+      "fact": "Nested TabsList contains twelve text-labeled ShowcaseTab triggers; trigger wrapper does not set title."
+    }
+  ],
+  "hypotheses": [
+    {
+      "cause": "Authorization has not settled",
+      "prediction": "Admin navigation controls or confirmed account role would be missing",
+      "verdict": "Contradicted by captured admin identity and complete 21-control main roster."
+    },
+    {
+      "cause": "Capture title grammar mismatch",
+      "prediction": "Capture identity/title assertion would reject the observed queue sentence",
+      "verdict": "Contradicted: exactly one Capture identity with allowed Pages that need your browser label."
+    },
+    {
+      "cause": "Nested force-mounted tabs contaminate document census",
+      "prediction": "Source contains a mounted admin feature with exactly twelve untitled tab triggers",
+      "verdict": "Confirmed by App and Showcase source, consistent with captured twelve blanks. Runtime attribution is pending root execution."
+    }
+  ],
+  "repair": [
+    "Use the unique tablist outside all tabpanels as the main navigation owner; fail if zero or multiple owners exist.",
+    "Census every role=tab whose nearest tablist is that owner, with no title or visibility filter. Exact guest/admin roster assertions remain unchanged.",
+    "Reject top-level role=tab controls outside the owning list and retain counts of all, nested, and unowned tabs in navigation_surfaces before assertions.",
+    "Scope active-panel observation to nonnested tabpanels; require unique title matches and one active outer panel for reciprocal aria linkage.",
+    "Apply ownership consistently to selected(), profile observation, inventory(), and Capture identity observation.",
+    "Exercise Capture navigation in addition to the existing authorized non-Chat/Pilot controls. Keep state-dependent badge acceptance partial.",
+    "Record navigation_attempt with role, title, and click/selection/lazy_view/complete stage to make a later failure actionable."
+  ],
+  "verification": {
+    "node_syntax": "PASS",
+    "biome_runner_and_report": "PASS",
+    "browser": "NOT RUN: root owns sole runtime permit",
+    "build": "NOT RUN: prohibited by assignment",
+    "tests": "NOT RUN: prohibited by assignment",
+    "runtime_green": "UNVERIFIED; root must run the native acceptance fixture and obtain fresh independent review"
+  },
+  "limitations": [
+    "Source and captured failure establish the scope error; no new rendered hierarchy evidence is claimed.",
+    "No full navigation acceptance claim: Chat/Pilot remain explicitly deferred until last; existing member-role, stale-selection, chunk-failure, and active Vault-assistance gaps remain.",
+    "Trusted clicks still use the existing driver; a duplicate visible title in a nested surface fails its uniqueness check rather than silently choosing another control."
+  ]
+}

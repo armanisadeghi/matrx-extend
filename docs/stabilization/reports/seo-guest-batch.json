@@ -19,5 +19,12 @@
     "T10-T14 AI recommendations, Chat staging, and social snippet",
     "All reload dimensions and member/admin modes"
   ],
-  "runtime_verdict": "unverified"
+  "runtime_verdict": "unverified",
+  "runtime_attempt_001": {
+    "result": "The owned native browser reached example.org and read its real title, Example Domain, then exited before any SEO subtarget was recorded.",
+    "last_safe_stage": "public_page_0_ready",
+    "diagnosis_limit": "The original runner suppressed the failing error and had no stage between public-page readiness, the SEO click, and the SEO selected/content waits. The failure cannot yet be attributed to the extension.",
+    "source_scope_check": "Showcase's nested tablist is admin gated, so it does not explain this guest run. The runner now resolves the SEO trigger from the sole top-level tablist and links the panel by aria-controls, preventing the same selector class from affecting later modes.",
+    "instrumentation": "Before every click or wait in this batch, the runner records a fixed stage and safe observable. SEO readiness records counts and booleans for main tablists, SEO triggers, selection, linked panel, view heading, fallback, audit button, and error presence. No raw error, page body, authentication data, or browser storage is retained."
+  }
 }
