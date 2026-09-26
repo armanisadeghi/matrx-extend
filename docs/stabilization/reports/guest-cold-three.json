@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "report_id": "guest-cold-three",
+  "status": "DONE",
+  "summary": "Native Chrome UI confirmed all three guest Settings cases across warm and full extension reload states. The signed-out guest guidance persisted and the admin-only section stayed absent.",
+  "changed_files": [
+    "docs/stabilization/runs/guest-settings-007.json",
+    "docs/stabilization/reports/guest-cold-three.json"
+  ],
+  "verification": [
+    "T01: warm and post-reload Organization showed 'Sign in to choose' with no selector/action.",
+    "T07: warm and post-reload Chat showed 'Default agent Choose an organization above' with no picker/action.",
+    "T22: Advanced agent capabilities was absent from both warm and post-reload Settings section trees.",
+    "After full extension Reload, Chrome and Settings About both showed version 0.2.51 and extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml; Chrome showed the unpacked dev path /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev.",
+    "The separate Matrx Extend 0.2.23 copy was visibly Off and left untouched. Guest remained signed out, Theme remained System, and no settings were mutated."
+  ],
+  "limitations": [],
+  "next_action": null,
+  "run_id": "guest-settings-007",
+  "cases": [
+    "EXT-F-1003-T01",
+    "EXT-F-1003-T07",
+    "EXT-F-1003-T22"
+  ]
+}
