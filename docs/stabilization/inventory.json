@@ -10858,7 +10858,8 @@
             "seo-guest-002",
             "seo-guest-003",
             "seo-guest-004",
-            "seo-guest-005"
+            "seo-guest-005",
+            "seo-guest-006"
           ],
           "retest_status": "not-run"
         },
@@ -10999,6 +11000,47 @@
           "rechecked_prior_subtargets": 7,
           "independent_review": "docs/stabilization/reports/seo005-runtime-peer.json",
           "limits": "Two bounded restricted-page/recovery predicates only. No full T03 or feature pass; unreachable HTTP(S), other restricted schemes, reload, fresh recapture and all other outstanding dimensions remain unverified."
+        },
+        {
+          "run_id": "seo-guest-006",
+          "mode": "guest",
+          "build": "0.2.70",
+          "status": "partial",
+          "accepted_subtargets": [
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "sparse_public_detail_groups",
+              "status": "pass",
+              "evidence": {
+                "descriptionAbsent": true,
+                "canonicalAbsent": true,
+                "groupsMatchPublicDom": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "rich_public_detail_groups_and_canonical_door",
+              "status": "pass",
+              "evidence": {
+                "descriptionMatchesPublicDom": true,
+                "canonicalMatchesPublicDom": true,
+                "groupsMatchPublicDom": true,
+                "outboundAnchorSafe": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "canonical_outbound_opens_expected_public_tab",
+              "status": "pass",
+              "evidence": {
+                "trustedInput": true,
+                "destinationMatchesPublicDom": true
+              }
+            }
+          ],
+          "rechecked_prior_subtargets": 9,
+          "independent_review": "docs/stabilization/reports/seo006-runtime-peer.json",
+          "limits": "Sparse/rich public detail predicates and actual canonical outbound tab only; remaining detail values/schema/hreflang/performance and all member/admin/fullfeature coverage unverified."
         }
       ]
     },
