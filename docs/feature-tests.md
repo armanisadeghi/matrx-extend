@@ -750,8 +750,14 @@ Every entry follows this shape:
      `{ ok: false, reason: "required optional permission(s) not granted: ..." }`.
   5. If Chrome refuses a grant or removal, confirm Settings shows a clear
      error and leaves the switch matched to the actual Chrome grant.
+  6. On Firefox or Safari builds, confirm Page archive and Tab video capture
+     have no switches because those permissions are absent from those manifests.
+     If a permission status read fails, confirm **Retry permission check**
+     recovers the controls after Chrome responds again.
 - **Expected:** Optional switch state matches `chrome.permissions.contains`;
-  required DevTools Protocol remains informational.
+  only permissions declared by that build appear as switches, and required
+  DevTools Protocol remains informational. If DevTools Protocol is unavailable,
+  its remedy points to a Chrome build that includes it.
 
 ### Side panel — Debug tab → event-type (stream) filtering
 - **What it does:** The Debug tab tails every cross-context log event live.

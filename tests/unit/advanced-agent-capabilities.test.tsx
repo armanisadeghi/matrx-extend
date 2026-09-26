@@ -1,10 +1,12 @@
 import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapabilities';
+import { missingPermissionRemedy } from '@/lib/permissions/optional';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/features/settings/AuditKeyCard', () => ({ AuditKeyCard: () => null }));
 
 const granted = new Set(['debugger', 'clipboardRead']);
+let declared = ['cookies', 'pageCapture', 'clipboardRead', 'tabCapture'];
 const contains = vi.fn(async ({ permissions }: { permissions: string[] }) =>
   permissions.every((permission) => granted.has(permission)),
 );
@@ -18,13 +20,26 @@ const remove = vi.fn(async ({ permissions }: { permissions: string[] }) => {
 });
 
 beforeEach(() => {
+  declared = ['cookies', 'pageCapture', 'clipboardRead', 'tabCapture'];
   granted.clear();
   granted.add('debugger');
   granted.add('clipboardRead');
-  contains.mockClear();
-  request.mockClear();
-  remove.mockClear();
+  contains.mockReset();
+  contains.mockImplementation(async ({ permissions }) =>
+    permissions.every((permission) => granted.has(permission)),
+  );
+  request.mockReset();
+  request.mockImplementation(async ({ permissions }) => {
+    for (const permission of permissions) granted.add(permission);
+    return true;
+  });
+  remove.mockReset();
+  remove.mockImplementation(async ({ permissions }) => {
+    for (const permission of permissions) granted.delete(permission);
+    return true;
+  });
   vi.stubGlobal('chrome', {
+    runtime: { getManifest: () => ({ optional_permissions: declared }) },
     permissions: {
       contains,
       request,
@@ -88,5 +103,78 @@ describe('Advanced agent capabilities', () => {
       expect(debuggerRow.textContent).toContain('Unavailable in this browser or extension build'),
     );
     expect(within(debuggerRow).queryByRole('switch')).toBeNull();
+  });
+
+  it('does not offer switches absent from this browser build manifest', async () => {
+    declared = ['cookies', 'clipboardRead'];
+    render(<AdvancedAgentCapabilities />);
+
+    await waitFor(() => expect(screen.getByText('Cookies')).toBeTruthy());
+    expect(screen.queryByText('Page archive (MHTML)')).toBeNull();
+    expect(screen.queryByText('Tab video capture')).toBeNull();
+    expect(screen.getAllByRole('switch')).toHaveLength(2);
+  });
+
+  it('reports a denied optional grant and leaves the switch off', async () => {
+    request.mockResolvedValueOnce(false);
+    render(<AdvancedAgentCapabilities />);
+
+    const cookiesSwitch = within(
+      (await screen.findByText('Cookies')).closest('label') as HTMLElement,
+    ).getByRole('switch');
+    await waitFor(() => expect(cookiesSwitch.getAttribute('data-state')).toBe('unchecked'));
+    fireEvent.click(cookiesSwitch);
+
+    await waitFor(() =>
+      expect(screen.getByRole('alert').textContent).toContain('Chrome did not grant Cookies'),
+    );
+    expect(cookiesSwitch.getAttribute('data-state')).toBe('unchecked');
+  });
+
+  it('recovers from a rejected status read without leaving controls busy', async () => {
+    render(<AdvancedAgentCapabilities />);
+    const clipboardSwitch = within(
+      (await screen.findByText('Clipboard read')).closest('label') as HTMLElement,
+    ).getByRole('switch');
+    await waitFor(() => expect(clipboardSwitch.getAttribute('data-state')).toBe('checked'));
+    contains.mockRejectedValueOnce(new Error('permissions service unavailable'));
+    fireEvent.click(clipboardSwitch);
+
+    await waitFor(() =>
+      expect(screen.getByRole('alert').textContent).toContain(
+        'could not read extension permissions',
+      ),
+    );
+    expect(clipboardSwitch.hasAttribute('disabled')).toBe(true);
+    fireEvent.click(screen.getByRole('button', { name: 'Retry permission check' }));
+    await waitFor(() => expect(screen.queryByRole('alert')).toBeNull());
+    await waitFor(() => expect(clipboardSwitch.hasAttribute('disabled')).toBe(false));
+    expect(clipboardSwitch.getAttribute('data-state')).toBe('unchecked');
+  });
+
+  it('gives a reachable remedy for required debugger and optional grants', () => {
+    expect(missingPermissionRemedy(['debugger'])).toContain('cannot be enabled in Settings');
+    expect(missingPermissionRemedy(['cookies'])).toContain(
+      'enable the optional permission in Settings',
+    );
+    expect(missingPermissionRemedy(['debugger', 'cookies'])).toContain(
+      'enable the optional permission in Settings',
+    );
+  });
+
+  it('reports a thrown Chrome request and permits a retry', async () => {
+    request.mockRejectedValueOnce(new Error('Chrome API unavailable'));
+    render(<AdvancedAgentCapabilities />);
+    const cookiesSwitch = within(
+      (await screen.findByText('Cookies')).closest('label') as HTMLElement,
+    ).getByRole('switch');
+    fireEvent.click(cookiesSwitch);
+
+    await waitFor(() =>
+      expect(screen.getByRole('alert').textContent).toContain('Chrome could not change Cookies'),
+    );
+    expect(cookiesSwitch.getAttribute('data-state')).toBe('unchecked');
+    fireEvent.click(cookiesSwitch);
+    await waitFor(() => expect(cookiesSwitch.getAttribute('data-state')).toBe('checked'));
   });
 });

@@ -13,9 +13,9 @@
 
 import { AuditKeyCard } from '@/features/settings/AuditKeyCard';
 import {
-  ALL_OPTIONAL,
   OPTIONAL_PERMISSION_LABELS,
   type RuntimeOptionalPermission,
+  declaredRuntimeOptionalPermissions,
   hasOptionalPermissions,
   removeOptionalPermission,
   requestOptionalPermission,
@@ -24,10 +24,12 @@ import { Switch } from '@ai-matrx/design-system';
 import { useEffect, useState } from 'react';
 
 export function AdvancedAgentCapabilities() {
+  const [available, setAvailable] = useState<RuntimeOptionalPermission[]>([]);
   const [granted, setGranted] = useState<Set<RuntimeOptionalPermission>>(new Set());
-  const [debuggerGranted, setDebuggerGranted] = useState(false);
+  const [debuggerGranted, setDebuggerGranted] = useState<boolean | null>(null);
   const [busy, setBusy] = useState<RuntimeOptionalPermission | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [readFailed, setReadFailed] = useState(false);
 
   useEffect(() => {
     void refresh();
@@ -42,12 +44,23 @@ export function AdvancedAgentCapabilities() {
   }, []);
 
   async function refresh() {
-    const next = new Set<RuntimeOptionalPermission>();
-    for (const p of ALL_OPTIONAL) {
-      if (await hasOptionalPermissions([p])) next.add(p);
+    try {
+      const declared = declaredRuntimeOptionalPermissions();
+      const next = new Set<RuntimeOptionalPermission>();
+      for (const p of declared) {
+        if (await hasOptionalPermissions([p])) next.add(p);
+      }
+      const hasDebugger = await hasOptionalPermissions(['debugger']);
+      setAvailable(declared);
+      setGranted(next);
+      setDebuggerGranted(hasDebugger);
+      setReadFailed(false);
+    } catch {
+      setReadFailed(true);
+      setError(
+        'Chrome could not read extension permissions. Check the extension in Chrome, then retry the permission check.',
+      );
     }
-    setGranted(next);
-    setDebuggerGranted(await hasOptionalPermissions(['debugger']));
   }
 
   async function toggle(perm: RuntimeOptionalPermission, on: boolean) {
@@ -65,8 +78,11 @@ export function AdvancedAgentCapabilities() {
         `Chrome could not change ${OPTIONAL_PERMISSION_LABELS[perm].title}. Check this extension's permissions in Chrome, then try again.`,
       );
     } finally {
-      await refresh();
-      setBusy(null);
+      try {
+        await refresh();
+      } finally {
+        setBusy(null);
+      }
     }
   }
 
@@ -86,9 +102,11 @@ export function AdvancedAgentCapabilities() {
             <span className="font-mono text-[10px] text-muted-foreground">debugger</span>
           </div>
           <div className="text-[11px] leading-snug text-muted-foreground">
-            {debuggerGranted
-              ? 'Included with this Chrome extension. Chrome cannot turn this permission off here; manage the extension in Chrome to change its access.'
-              : 'Unavailable in this browser or extension build.'}
+            {debuggerGranted === null
+              ? 'Checking Chrome permission status.'
+              : debuggerGranted
+                ? 'Included with this Chrome extension. Chrome cannot turn this permission off here; manage the extension in Chrome to change its access.'
+                : 'Unavailable in this browser or extension build. Use a Chrome build of the extension with DevTools Protocol access.'}
           </div>
         </div>
         {error && (
@@ -96,8 +114,20 @@ export function AdvancedAgentCapabilities() {
             {error}
           </div>
         )}
+        {readFailed && (
+          <button
+            type="button"
+            className="text-xs underline"
+            onClick={() => {
+              setError(null);
+              void refresh();
+            }}
+          >
+            Retry permission check
+          </button>
+        )}
         <div className="space-y-1.5 pt-1">
-          {ALL_OPTIONAL.map((p) => {
+          {available.map((p) => {
             const meta = OPTIONAL_PERMISSION_LABELS[p];
             const isOn = granted.has(p);
             return (
@@ -108,7 +138,7 @@ export function AdvancedAgentCapabilities() {
                 <Switch
                   checked={isOn}
                   onCheckedChange={(v) => void toggle(p, v)}
-                  disabled={busy === p}
+                  disabled={readFailed || busy === p}
                   className="mt-0.5"
                 />
                 <div className="flex-1 min-w-0">

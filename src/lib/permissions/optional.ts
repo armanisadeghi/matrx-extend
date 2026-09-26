@@ -93,6 +93,28 @@ export const ALL_OPTIONAL: RuntimeOptionalPermission[] = Object.keys(
   OPTIONAL_PERMISSION_LABELS,
 ) as RuntimeOptionalPermission[];
 
+/** Only permissions declared by this browser build may be offered as switches. */
+export function declaredRuntimeOptionalPermissions(): RuntimeOptionalPermission[] {
+  const declared = new Set(chrome.runtime.getManifest().optional_permissions ?? []);
+  return ALL_OPTIONAL.filter((permission) => declared.has(permission));
+}
+
+/** A missing required grant cannot be repaired through Settings. */
+export function missingPermissionRemedy(perms: string[]): string {
+  const remedies: string[] = [];
+  if (perms.includes('debugger')) {
+    remedies.push(
+      'DevTools Protocol is required at installation and cannot be enabled in Settings. Use a Chrome extension build that includes the debugger permission.',
+    );
+  }
+  if (perms.some((permission) => permission !== 'debugger')) {
+    remedies.push(
+      'Ask the user to enable the optional permission in Settings → Advanced agent capabilities, then retry.',
+    );
+  }
+  return remedies.join(' ');
+}
+
 /**
  * Is this specific URL covered by any of our currently-granted host
  * permissions?
