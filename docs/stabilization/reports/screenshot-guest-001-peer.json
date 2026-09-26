@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-guest-001-peer",
+  "run_receipt": "docs/stabilization/runs/screenshot-guest-001.json",
+  "A_runtime": {
+    "status": "BOUNDED_FRESH_GUEST_PARTIAL_WITH_RECEIPT_HASH_DEFECT",
+    "observed": [
+      "The raw result is partial in a fresh owned guest profile: two EXT-F-1009-T09 subcase rows pass and stale_selection remains explicitly unverified. The guard log directly records admission at 23:30:50.404Z, PARTIAL stdout, and child exit 0 at 23:30:54.094Z; the root confirmed wrapper exit 0.",
+      "The result records release 0.2.79, tree be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0, matching before/after identities, artifactTreeMatchedAfter=true, the expected owned extension ID, and profileOwned=true. The receipt and manifest currently agree with those identity fields.",
+      "Initial guest navigation had one tablist with five tabs, one active non-Screenshots pane, no Screenshots trigger or pane, and no screenshot capture controls. After trusted Settings and SEO clicks, each named trigger was uniquely selected with its linked visible active pane and mounted view marker; Screenshots trigger, pane, and capture controls remained absent at both transitions."
+    ],
+    "not_observed": [
+      "No authenticated-to-guest role transition or persisted/direct stale Screenshots selection was exercised.",
+      "No side-panel reload dimension was exercised. Guest screenshot capture/gallery T01–T08 are not applicable to this guest-only run."
+    ]
+  },
+  "B_evidence_quality": {
+    "status": "RAW_RESULT_CORROBORATED_RECEIPT_LOG_HASH_MISMATCH",
+    "checks": [
+      "The raw UUID-named result SHA-256 is 2d49581a7da5ac2f54a44071931b6f3aabe1db78618a3279ccba3497e0841d83 and matches the receipt. The runner, release receipt, and generated manifest hashes also match their receipt entries.",
+      "The current three-line guard log SHA-256 is 98f6fb5377fc4d14774cdade43fbfdc88a942627791b078eeb8c0d1d4b074cb6, independently confirmed by shasum and Python hashlib. The committed receipt instead records 6888a4e6ae63f1c77d516dd8df468e5993d135e628cbb8684de0b037a80b2215. Direct log content matches the stated admission, stdout, and exit timestamps, but its saved digest is incorrect; correct or supersede that receipt before treating it as fully hash-verified immutable evidence.",
+      "The source-reviewed runner checks the exact Settings/SEO selected linked panes and markers before recording Screenshots absence, and checks the released unpacked artifact before and after the owned native run. No Screenshot capture/save/delete input or Chat/Pilot interaction occurs."
+    ],
+    "limits": [
+      "This is a bounded fresh-guest navigation observation, not full EXT-F-1009-T09 acceptance. The inventory also requires reload and role-change dimensions, which remain unverified.",
+      "The receipt hash mismatch is an evidence bookkeeping defect, not a demonstrated product failure; this peer does not edit the root-owned run receipt or promote inventory status."
+    ]
+  }
+}
