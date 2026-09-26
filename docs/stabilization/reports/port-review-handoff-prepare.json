@@ -6,16 +6,16 @@
   "row": {
     "title": "Settings clears the stale local engine port error after a successful clear",
     "url": "chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html",
-    "instructions": "Open the Matrx Extend development extension in an isolated Chrome profile and use the side panel route above; choose Settings → Desktop bridge → Local engine port. Begin with a disposable profile whose port is set to auto, save 65001, reload Settings, and confirm the override persists. Enter 65536 and save; confirm the range error appears and the prior override remains, then clear the input and save without reloading or leaving Settings; confirm the input returns to auto, the override is removed, and the error disappears. Close and reopen the side panel to confirm the cleared state persists, restore the profile's original port value, and report any mismatch.",
+    "instructions": "In the Matrx Extend development side panel, open Settings and find Local engine port. Save 65001, then try 65536 and confirm a range error appears. Clear the field and save: the setting should return to auto and the error should disappear immediately. Reopen the side panel and confirm it still shows auto.",
     "source": "matrx-extend",
     "repo_slug": "matrx-extend",
     "domain": {
-      "slug": "platform",
-      "id": "210ab588-6285-461a-bcfe-f1e9ac97351e"
+      "slug": "clients",
+      "id": "f48e973e-a251-47e0-832c-14886a7e36f0"
     },
     "feature": {
-      "slug": "settings",
-      "id": "3b3009db-8b76-4646-9435-3e77ab87eecb"
+      "slug": "extension",
+      "id": "961ec4c9-2807-45a8-9f92-25f316f05902"
     },
     "metadata": {
       "origin": {
@@ -51,5 +51,6 @@
         ]
       }
     }
-  }
+  },
+  "owner_ruling": "Registry re-read confirms clients/extension is the owning surface; platform/settings is a separate generic platform feature. Use clients/extension for this extension-specific fix."
 }
