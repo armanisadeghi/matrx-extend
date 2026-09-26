@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "lane": "fresh independent final acceptance peer Luna medium",
+  "case_id": "EXT-F-1003-T51",
+  "verdict_a": {
+    "overall": "PASS",
+    "criteria": {
+      "admin_identity_and_device_org_recorded": "PASS: run010 records real admin identity, existing owned org selected through Settings, displayed/stored match, and dismissed matching notice; no auth injection.",
+      "cancel_preserves_session_and_data": "PASS: run010 reports admin UI/auth/preference and fixtures preserved; all 17 local and 3 session prior key/value overlaps are identical, with zero changed or missing.",
+      "confirm_clears_extension_state_and_signs_out": "PASS: immediate post-confirm snapshot has zero local/session keys and no auth/settings/fixtures; Settings shows signed-in controls absent.",
+      "reload_remains_signed_out_with_default_theme": "PASS: Settings remains visible as guest, sign-in visible, sign-out/admin absent, System theme.",
+      "reload_has_no_retained_prior_data": "PASS: 13 local prior keys and all 3 session keys missing; sole overlap is one source-classified fresh matrx.chat.v1 default, fingerprint-equal to initial guest, zero unexplained overlaps."
+    },
+    "evidence": "docs/stabilization/runs/isolated-admin-reset-010.json plus /tmp/matrx-isolated-admin-reset-010.log (PASS isolated_admin_reset_real_ui, child exit 0); criteria from inventory-local.json."
+  },
+  "verdict_b_quality_limits": {
+    "status": "PASS_WITH_LIMITS",
+    "basis": "Run artifact/log report native real-UI flow, real web-form plus extension Settings login, isolated owned profile, response_interception=false and injected_auth_session=false. Chat-default-oracle-peer source review accepts the narrowly shaped fresh default exception; org-setup-peer accepts the exact Settings selector and matching-notice-only dismissal. Run010 supersedes those peers' runtime-pending state. Release-014 source SHA/tree hash match run010 version 0.2.63 provenance.",
+    "limits": "This is artifact/log review, not an independently replayed browser session. Cancel's warm storage report labels prior unchanged overlaps unexplained, but exact equality supports preservation; reload has zero unexplained overlaps. Does not establish production health or other modes/features."
+  }
+}
