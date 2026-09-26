@@ -2517,7 +2517,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-default-agent-001",
+              "evidence": "docs/stabilization/runs/admin-default-agent-001.json",
+              "detail": "Selection/persistence observed but row label and selected name differ; independent source diagnosis pending. OriginalMatrxBrowserAgent restored."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T10",
@@ -4094,7 +4102,8 @@
             "EXT-D-0001"
           ],
           "run_ids": [
-            "admin-org-001"
+            "admin-org-001",
+            "admin-default-agent-001"
           ],
           "retest_status": "not-run"
         }
@@ -4108,6 +4117,13 @@
           "summary": "Capture list no-workspace notice appears immediately after signin and reload before explicit org selection. Determine intended unset-state UX before labeling defect; authentication succeeded.",
           "source": "docs/stabilization/runs/admin-signin-001.json",
           "state": "needs-expected-behavior-review",
+          "wave": "A"
+        },
+        {
+          "id": "EXT-L-0007",
+          "summary": "Agent picker row AX Quick Test Agent 2 vs detail/selection Quick Test Agent; determine composite label versus identity mismatch before defect triage.",
+          "source": "docs/stabilization/runs/admin-default-agent-001.json",
+          "state": "source-diagnosis",
           "wave": "A"
         }
       ]

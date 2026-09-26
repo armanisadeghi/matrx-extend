@@ -34,3 +34,5 @@ User resumed04:46UTC. Remote main unchanged and resourcepressure normal. guest-s
 05:02UTC: admin-signin001 T52 fullpass; admin@admin.com ADMIN persists afterreload. F0001T05 remainspartial(callbacknotobserved). Noorgselected. L0006 capturelist-noorgnotice tracked without claimingauthfailure. Samelease76318 healthy; Luna guest_cold_three now owns admin-org001T03 existingexplicit-test-org selection/persistence, no datawrites.
 
 05:06UTC: adminorg001 initialunset+explicitfixtureselection+fullreload passed correctedT03. Generated clearstep removed T02/T03 basedon source/UI; workerpartial retained with adjudication. Fixture ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete remainsselected; no orgdata/membershipchanges. Samehealthy lease76318; Luna now admin-default-agent001T09 (pickeronly, noagentexecution).
+
+05:10UTC: admin-default-agent001T09 staysunverified pending independentLuna agent_label_diagnosis of AXrow QuickTestAgent2 vs selectedQuickTestAgent; originalMatrxBrowserAgent restored. L0007 linkedinventory. UIworker continues admin-settings-local001T06/T15/T30 only. Samelease76318 resourcehealthy.
