@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "date": "2026-09-25",
-  "scope": "Read-only capacity resolution for authorized Matrx Extend localhost QA",
-  "result": "Boot free space recovered without agent cleanup during inspection; the 20 GiB resource floor is currently clear but free space is volatile. Recheck admission immediately before any build or browser lease because the cause of the free-space change is unverified.",
+  "scope": "Reversible Xcode device-symbol cache relocation for authorized Matrx Extend localhost QA",
+  "result": "The exact Chrome profile filesystem increased from 18.615345 to 23.897610 GiB available by relocating one inactive Xcode device-symbol cache to the external volume and preserving its original path as a symlink. The 20 GiB floor is currently clear; the resource runner must still perform its own fresh admission before a build or browser lease.",
   "observations": {
     "boot_available_initial": "19 GiB (rounded df -h output; exact KiB unavailable at that observation)",
     "boot_available_repeat_kib": 27915360,
@@ -13,18 +13,26 @@
     "external_available_repeat_tib": 1.64,
     "minimum_free_disk_gib": 20,
     "read_only_commands": ["df -h / /Volumes/Samsung2TB", "df -k / /System/Volumes/Data /Volumes/Samsung2TB", "du -sk <exact Xcode cache path>", "lsof +D <exact Xcode cache path>", "xcrun simctl list devices booted"],
-    "mutation": "No files deleted or moved; no build, test, or browser launched. xcrun simctl activated CoreSimulator services, so the reason for the free-space change cannot be attributed with confidence."
+    "mutation": "Only the exact Xcode device-symbol cache was copied to the external volume, byte-verified, linked from its original path, and its old local allocation removed. No other cache, profile, worktree, user file, build, test, or browser was touched. Earlier xcrun simctl activated CoreSimulator services; the reason for the preceding free-space fluctuation remains unknown."
   },
-  "fallback_cache_candidate": {
-    "path": "/Users/armanisadeghi/Library/Developer/Xcode/iOS DeviceSupport/iPhone16,2 26.2 (23C55)",
+  "relocation": {
+    "original_path": "/Users/armanisadeghi/Library/Developer/Xcode/iOS DeviceSupport/iPhone16,2 26.2 (23C55)",
+    "destination_path": "/Volumes/Samsung2TB/DeveloperData/xcode-device-support/iPhone16,2 26.2 (23C55)",
+    "staging_path": "/Volumes/Samsung2TB/DeveloperData/xcode-device-support/.iPhone16,2 26.2 (23C55).staging",
     "allocated_kib": 5532452,
     "allocated_gib": 5.28,
-    "contents": "Symbols/System and Symbols/usr only at inspected directory depth; Xcode device support symbols, which can be recreated when needed from the connected device.",
+    "contents": "Xcode device support symbols under Symbols/System and Symbols/usr; 4264 regular files and zero symlinks at source before copying.",
     "directory_modified": "2026-02-06 19:20 local",
     "owner": "armanisadeghi",
-    "open_references": "lsof +D returned no rows during inspection",
-    "action": "If boot free space drops below the floor again, verify no Xcode/device-symbol work is active, then remove this exact cache directory only with owner authorization; confirm df before proceeding. Estimated reclaim is up to 5.28 GiB, subject to APFS accounting.",
-    "status": "Identified, not removed"
+    "preflight": "No source lsof references, no Xcode/debugserver/symbolicate/resource-runner process, no destination collision. Source inode 2869675 and original directory mtime were checked before switch; exact Chrome profile Node statfs reported 18.615345001220703 GiB available immediately before switch.",
+    "copy_and_verify": "ditto --rsrc --extattr copied into the staging path. diff -rq returned zero with no differences both before and after the source rename; source and destination each occupied 5532452 KiB, contained 4264 regular files, and had matching directory mtime/ownership/mode. A fresh lsof found no references before removing the old local copy.",
+    "switch": "Renamed staging to final destination, renamed original directory to same-parent .relocation-old, created an absolute symlink at the original path, verified readlink and realpath resolved to the final destination, then removed only the verified .relocation-old directory. The old copy is absent and the external destination remains intact.",
+    "profile_statfs_before_gib": 18.615345001220703,
+    "profile_statfs_after_gib": 23.89760971069336,
+    "profile_statfs_gain_gib": 5.282264709472656,
+    "profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "rollback": "When no Xcode work is active and boot space permits, copy the external destination to a temporary sibling of the original path with ditto --rsrc --extattr, byte-compare it to the external destination, remove only the original-path symlink, rename the verified temporary directory to the original path, and then remove the external copy only after confirming Xcode resolves the restored directory. The external copy itself remains the durable rollback source until that final step.",
+    "status": "Completed and verified"
   },
   "isolated_browser_option": {
     "status": "Ready setup proposal; not launched",
