@@ -1,0 +1,19 @@
+{
+  "defect_id": "EXT-D-0010",
+  "status": "upstream-fixed-awaiting-root-merged-verification",
+  "owner_lane": "popup_async_error_repair",
+  "captured_failure": "release-2026-09-26_01-36-22.log: 1417 passing tests, three existing skips, and one Vitest unhandled rejection attributed to popup-claim-recovery.test.tsx after teardown; identity diagnostics read missing WXT_SUPABASE_URL in the unit environment.",
+  "root_cause": "The popup recovery test mounts the real sidepanel App. Its unrelated identity-log effect dynamically imports auth/identity and invokes logExtensionIdentityOnce without awaiting that promise. The ENV.SUPABASE_URL getter throws when the test environment lacks the required build variable; the old nullish fallback never runs, leaving a rejected effect promise after the test finishes.",
+  "upstream_fixes_reviewed": [
+    "70bb6d3 isolates the unrelated identity-log dependency with a module mock in the popup recovery test; the real launch-intent recovery assertions remain intact.",
+    "8745413 makes the diagnostic-only Supabase URL read return (unset) when the required getter throws. The ENV getter itself and authenticated request requirements remain unchanged."
+  ],
+  "sibling_census": "The other direct logExtensionIdentityOnce caller is background/bootstrap.ts; it uses the same diagnostic-only read. No other unit test mounts sidepanel App. Extension identity has separate behavior tests for valid and drifted IDs and redirects.",
+  "remaining_risks": [
+    "The popup test's mock prevents this specific rejection but does not await the App's dynamic import, so it alone does not prove all startup work settles before teardown.",
+    "The production optionalEnv helper catches any exception from the diagnostic getter, not only missing configuration; the diagnostic displays (unset) for those cases. The sidepanel's dynamic import chain still lacks an explicit rejection handler for unrelated import or logger failures.",
+    "No regression test in extension-identity.test.ts currently exercises the absent WXT_SUPABASE_URL diagnostic case."
+  ],
+  "verification": "Source review only. Root owns focused tests and combined release validation after merging origin/main. Original failing release log is premerge evidence.",
+  "files_changed_by_lane": ["docs/stabilization/reports/popup-async-error-repair.json"]
+}
