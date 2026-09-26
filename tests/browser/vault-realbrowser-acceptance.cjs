@@ -2166,12 +2166,14 @@ async function openSidePanelFromActionPopup(
     if (!(contexts.length === 1 && contexts[0].tabId === -1))
       return { opened: false, reason: 'reopened_side_panel_context_missing' };
     const targets = await cdp.send('Target.getTargets');
-    const target = targets.targetInfos.find(
+    const matchingPanels = targets.targetInfos.filter(
       (candidate) =>
         candidate.url === `chrome-extension://${extensionId}/sidepanel.html` &&
         candidate.type === 'page',
     );
-    if (!target) return { opened: false, reason: 'reopened_side_panel_target_missing' };
+    if (matchingPanels.length !== 1)
+      return { opened: false, reason: 'reopened_side_panel_target_not_unique' };
+    const target = matchingPanels[0];
     panel = await attachPanelSession(cdp, target.targetId);
     try {
       await panel.send('Network.enable');
@@ -3499,6 +3501,10 @@ async function materializedPassword(id) {
           }
         },
         verifyPostBindVaultRead: async ({ panel: replacementPanel, journal }) => {
+          // Leave the startup route after binding: any startup GET predates the
+          // journal epoch and cannot prove this replacement panel can read.
+          await replacementPanel.click(visibleSettingsControl);
+          await replacementPanel.waitFor(`document.body.innerText.includes('Settings')`);
           await replacementPanel.click(visibleVaultControl);
           await replacementPanel.waitFor(`(() => {
             const control = (${visibleVaultControl});
