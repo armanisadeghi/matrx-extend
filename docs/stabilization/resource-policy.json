@@ -27,6 +27,7 @@
     ["pnpm", "exec", "vitest", "run", "--maxWorkers=1", "--minWorkers=1"],
     ["bash", "scripts/test-release-ship-path.sh"],
     ["bash", "scripts/test-release-ship-path.sh", "/tmp/matrx-release-before/release.sh"],
+    ["bash", "scripts/test-release-ship-path.sh", "/tmp/matrx-release-ci-before/release.sh"],
     ["node", "--test", "scripts/test-release-recovery.mjs"],
     ["node", "tests/browser/settings-local-reset-acceptance.mjs"],
     ["bash", "release.sh", "--message", "EXT-D-0002 validated release integration"],
@@ -40,7 +41,9 @@
     ["bash", "release.sh", "--message", "EXT-D-0014 synchronized stabilization and remote fixes"],
     ["node", "tests/browser/isolated-admin-reset-acceptance.mjs"],
     ["bash", "release.sh", "--message", "chore: synchronized stabilization integration"],
-    ["node", "tests/browser/isolated-permission-denial-acceptance.mjs"]
+    ["node", "tests/browser/isolated-permission-denial-acceptance.mjs"],
+    ["node", "tests/browser/contained-navigation-acceptance.mjs"],
+    ["node", "tests/browser/seo-guest-acceptance.mjs"]
   ],
   "launchContract": "Only the listed trusted foreground tool invocations are admitted (plus positional test-file filters for the single-worker vitest invocation). Every descendant must inherit MATRX_RESOURCE_OWNER unchanged. New sessions/detached children are discovered and stopped by token census. Environment scrubbing, remote process brokers, external daemon handoff and arbitrary shell/script launchers are outside this contract and forbidden. Install skips lifecycle scripts; run required preparation separately through its listed command. WXT server occupies the sole permit until stopped, including while idle; stop it before manual browser testing, using a completed unpacked build. This is cooperative process ownership, not an OS security sandbox. Daemonizing commands are prohibited. macOS can hide protected system-binary environments: such binaries must remain in the owned foreground process group; detached protected system binaries are explicitly unsupported. This guard does not claim to contain arbitrary hostile descendants.",
   "processSnapshotMaxBytes": 33554432

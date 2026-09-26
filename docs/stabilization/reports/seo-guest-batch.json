@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "prepared_not_run",
+  "runner": "tests/browser/seo-guest-acceptance.mjs",
+  "runtime_output": "test-results/seo-guest-acceptance.json",
+  "scope": "One bounded, read-only native side-panel batch on two real public pages. The owned-profile harness checks the released unpacked artifact and native side-panel identity. Root owns launch and runtime review.",
+  "subtargets": {
+    "EXT-F-1008-T01": "Partial: after navigating the active tab, the visible SEO title matches the second public page and differs from the first.",
+    "EXT-F-1008-T02": "Partial: Re-audit is clicked with trusted native input and settles on the current page title without a visible audit error.",
+    "EXT-F-1008-T07": "Partial: guest Copy audit menu offers Summary (text) and For AI agent while JSON is absent. Clipboard content remains unverified.",
+    "EXT-F-1008-T09": "Partial: on each public page, the SEO title and headings presence agree with the live page DOM. Other groups and outbound links remain unverified."
+  },
+  "deferred": [
+    "T01 audit count and out-of-order race; T02 new capture and stale-advice replacement; T03 restricted/unreachable page",
+    "T04-T06 and T08 database save, history, empty/error states, and diff",
+    "T07 actual clipboard content; T09 remaining detail groups and links",
+    "T10-T14 AI recommendations, Chat staging, and social snippet",
+    "All reload dimensions and member/admin modes"
+  ],
+  "runtime_verdict": "unverified"
+}

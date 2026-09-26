@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "remote-deps-1400",
+  "status": "consumer action review complete; target package bytes refreshed",
+  "packages": [
+    {
+      "name": "@ai-matrx/design-system",
+      "previous_version": "0.44.3",
+      "target_version": "0.44.4",
+      "consumer_action": "None. 0.44.4 replaces the stale npm SheetJS 0.18.5 dependency with official SheetJS 0.20.3 for XLSX export and content-transfer workbook generation; its changelog explicitly says none. The extension imports design-system broadly but does not import its data-table XLSX APIs or implement workbook generation, so no call-site change applies.",
+      "evidence": "node_modules/@ai-matrx/design-system/CHANGELOG.md:3-9; node_modules/@ai-matrx/design-system/package.json:415; extension source search for data-table/xlsx, MatrXDataTable, and xlsx"
+    },
+    {
+      "name": "@ai-matrx/records",
+      "previous_version": "0.58.22",
+      "target_version": "0.58.23",
+      "consumer_action": "None. 0.58.23 replaces the stale npm SheetJS 0.18.5 dependency with official SheetJS 0.20.3 for untrusted workbook import and XLSX export; its changelog explicitly says none. This extension imports only @ai-matrx/records/core through its records seam and has no useTable() or workbook import/export call sites, so no call-site change applies.",
+      "evidence": "node_modules/@ai-matrx/records/CHANGELOG.md:3-7; node_modules/@ai-matrx/records/package.json:86; src/lib/records/store.ts:1-17; extension search for useTable( and xlsx"
+    }
+  ],
+  "verification": [
+    "Read the refreshed installed 0.44.4 and 0.58.23 changelogs and package metadata, then inspected extension package API use.",
+    "The extension has no records React-hook usage and no SheetJS workbook import/export call sites. No tests, builds, or runtime checks performed; those remain with root."
+  ],
+  "open_actions": [
+    "None for consumer adoption; root owns the package lock commit and release verification."
+  ]
+}

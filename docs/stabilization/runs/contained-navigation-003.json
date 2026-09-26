@@ -1,0 +1,327 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1001",
+  "status": "unverified",
+  "scope": "owned disposable Chrome profile, released artifact, real native sidepanel",
+  "targets": [
+    {
+      "id": "guest-tab-inventory",
+      "role": "guest",
+      "control": "EXT-F-1001-C01",
+      "status": "pass",
+      "detail": {
+        "titles": ["Chat", "Data", "SEO", "Scrape", "Settings"]
+      }
+    },
+    {
+      "id": "avatar:guest",
+      "role": "guest",
+      "control": "EXT-F-1001-C04",
+      "status": "pass",
+      "detail": {
+        "open": true,
+        "desktop": true,
+        "identityMatches": true,
+        "profile": false
+      }
+    },
+    {
+      "id": "navigation:guest:Scrape",
+      "role": "guest",
+      "control": "EXT-F-1001-C01",
+      "status": "pass",
+      "detail": {
+        "count": 1,
+        "selected": true,
+        "linkedPaneVisible": true,
+        "markerPresent": null,
+        "fallback": true
+      }
+    },
+    {
+      "id": "navigation:guest:Data",
+      "role": "guest",
+      "control": "EXT-F-1001-C01",
+      "status": "pass",
+      "detail": {
+        "count": 1,
+        "selected": true,
+        "linkedPaneVisible": true,
+        "markerPresent": null,
+        "fallback": true
+      }
+    },
+    {
+      "id": "lazy-load:guest:Data",
+      "role": "guest",
+      "control": "EXT-F-1001-C05",
+      "status": "pass",
+      "detail": {
+        "viewMarker": "Structured data",
+        "markerPresent": true,
+        "linkedPaneVisible": true,
+        "suspenseFallbackAbsent": true
+      }
+    },
+    {
+      "id": "navigation:guest:SEO",
+      "role": "guest",
+      "control": "EXT-F-1001-C01",
+      "status": "pass",
+      "detail": {
+        "count": 1,
+        "selected": true,
+        "linkedPaneVisible": true,
+        "markerPresent": null,
+        "fallback": true
+      }
+    },
+    {
+      "id": "lazy-load:guest:SEO",
+      "role": "guest",
+      "control": "EXT-F-1001-C05",
+      "status": "pass",
+      "detail": {
+        "viewMarker": "SEO audit",
+        "markerPresent": true,
+        "linkedPaneVisible": true,
+        "suspenseFallbackAbsent": true
+      }
+    },
+    {
+      "id": "navigation:guest:Settings",
+      "role": "guest",
+      "control": "EXT-F-1001-C01",
+      "status": "pass",
+      "detail": {
+        "count": 1,
+        "selected": true,
+        "linkedPaneVisible": true,
+        "markerPresent": null,
+        "fallback": true
+      }
+    },
+    {
+      "id": "lazy-load:guest:Settings",
+      "role": "guest",
+      "control": "EXT-F-1001-C05",
+      "status": "pass",
+      "detail": {
+        "viewMarker": "Settings",
+        "markerPresent": true,
+        "linkedPaneVisible": true,
+        "suspenseFallbackAbsent": true
+      }
+    },
+    {
+      "id": "capture-absent:guest",
+      "role": "guest",
+      "control": "EXT-F-1001-C02",
+      "status": "pass",
+      "detail": {
+        "triggerAbsent": true
+      }
+    },
+    {
+      "id": "vault-shortcut-absent:guest",
+      "role": "guest",
+      "control": "EXT-F-1001-C03",
+      "status": "pass",
+      "detail": {
+        "shortcutAbsent": true
+      }
+    },
+    {
+      "id": "real-admin-signin",
+      "role": "admin",
+      "control": "prerequisite",
+      "status": "pass",
+      "detail": {
+        "webDashboard": true,
+        "extensionAccount": true
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "target": "Chat and Pilot systematic actions",
+      "reason": "separate ownership"
+    },
+    {
+      "target": "member role",
+      "reason": "no member credential in this batch"
+    },
+    {
+      "target": "stale persisted selection",
+      "reason": "requires a real role transition with selection preserved"
+    },
+    {
+      "target": "lazy chunk failure and retry",
+      "reason": "no natural chunk failure observed; no response interception"
+    },
+    {
+      "target": "Vault assistance active",
+      "reason": "requires naturally active credential assistance"
+    }
+  ],
+  "admin_prerequisite": {
+    "stage": "admin_tab_inventory",
+    "web": {
+      "expectedOrigin": true,
+      "loginPath": true,
+      "credentialFileReadable": true,
+      "credentialVariablesAvailable": true,
+      "formAvailable": true,
+      "submitClickCompleted": true,
+      "dashboardReached": true
+    },
+    "extension": {
+      "accountReady": true,
+      "signInAvailable": true,
+      "beforeClick": {
+        "accountPresent": true,
+        "accountExpanded": true,
+        "emailRowPresent": true,
+        "expectedEmailMatch": false,
+        "roleRowPresent": false,
+        "adminRoleMatch": false,
+        "signInAvailable": true,
+        "signOutPresent": false,
+        "advancedPresent": false,
+        "authAlertPresent": false
+      },
+      "signInClickCompleted": true,
+      "lastObserved": {
+        "accountPresent": true,
+        "accountExpanded": true,
+        "emailRowPresent": true,
+        "expectedEmailMatch": true,
+        "roleRowPresent": true,
+        "adminRoleMatch": true,
+        "signInAvailable": false,
+        "signOutPresent": true,
+        "advancedPresent": true,
+        "authAlertPresent": false
+      },
+      "observationReadFailed": false
+    }
+  },
+  "admin_tab_inventory": {
+    "titles": [
+      "Chat",
+      "Pilot (admin only \u2014 sandboxed tab group)",
+      "Plan & tasks",
+      "Tasks",
+      "Agenda",
+      "Scrape",
+      "Saved captures",
+      "Pages that need your browser",
+      "Data",
+      "SEO",
+      "Highlights",
+      "Guidance",
+      "Notes",
+      "Files",
+      "Screenshots",
+      "Vault",
+      "Tools",
+      "Settings",
+      "Showcase (admin only)",
+      "Token broker (admin only)",
+      "Debug (admin only)",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "capture_identity_count": 1,
+    "capture_title": "Pages that need your browser"
+  },
+  "failure_stage": "admin_tab_inventory",
+  "failure_category": "admin_tab_inventory_unverified",
+  "id": "contained-navigation-003",
+  "exit_code": 1,
+  "build": {
+    "sourceSha": "52517fdbda128ba1fc9445b8357cef86dbdc128d",
+    "version": "0.2.66",
+    "publishState": "pushed",
+    "storeZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.66-store.zip",
+      "sha256": "1a9c2ab349fb40f335f2147bbb3c417137cbcbd3451a8c44ae499a6f817e612f"
+    },
+    "localZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.66-local.zip",
+      "sha256": "fad223caa1e704032dd5d54384dca03a1695f89217e71af6afc9f7836ea1c5bc"
+    },
+    "sourcePath": "/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/matrx-extend-release.89ntTO/matrx-extend/.output/chrome-mv3",
+    "destinationPath": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "destinationPaths": [
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3"
+    ],
+    "treeSha256": "89853021710c0705dfb1bf679f01d8b6b5ebb8ee4d2be790ad17f2a30e508860",
+    "fileCount": 524
+  },
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T14:11:39.650Z",
+      "runId": "contained-navigation-003",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.64,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.55,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.12528571428571425,
+        "swapUsedMiB": 2437.69,
+        "repoFreeGiB": 1675.9913368225098,
+        "profileFreeGiB": 22.280345916748047
+      },
+      "cpuBusySamples": [
+        0.14359999999999995, 0.17189999999999994, 0.1056999999999999, 0.09999999999999998,
+        0.10709999999999997, 0.12370000000000003, 0.125
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T14:11:56.050Z",
+      "runId": "contained-navigation-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.32,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.72,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.31799999999999995,
+        "swapUsedMiB": 2437.69,
+        "repoFreeGiB": 1675.9912109375,
+        "profileFreeGiB": 22.237598419189453
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T14:11:56.082Z",
+      "runId": "contained-navigation-003",
+      "childExitCode": 1,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ],
+  "adjudication": "Guest subtargets and realadminsignin pass; admin roster fails with nested blank-title tabs counted. Fresh escalation owns hierarchy/census repair, no productauth cause established."
+}

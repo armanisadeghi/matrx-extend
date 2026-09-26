@@ -1,0 +1,74 @@
+{
+  "id": "EXT-D-0016",
+  "feature_id": "EXT-F-0003",
+  "case_ids": ["EXT-F-0003-T08"],
+  "surface": "Release candidate validation before publication",
+  "auth_mode": "auth-independent engineering infrastructure",
+  "reproduction": [
+    "Inspect .github/workflows/ci.yml: CI runs pnpm lint, which executes biome check .",
+    "Inspect the pre-fix release.sh mandatory CHECKS: the exported release candidate had no lint or format check.",
+    "The later ba0a4e3 main CI run 36245123204 failed at Lint with eight Biome errors; this run does not prove that the earlier v0.2.64 tagged candidate was lint-red."
+  ],
+  "expected": "The exact exported release candidate passes the same blocking lint check as CI before atomic main/tag publication; a lint-red candidate exits without changing main, tags or installed bundles.",
+  "actual": "Before a8966b9, release.sh could pass all its mandatory checks and publish a candidate that CI would reject for Biome lint or format errors.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/36245123204",
+    "docs/stabilization/reports/release-ci-parity.json",
+    "docs/stabilization/reports/ci-gate-source-peer.json",
+    "release.sh",
+    "scripts/test-release-ship-path.sh",
+    "docs/stabilization/runs/release-ci-red-001.json",
+    "docs/stabilization/runs/release-ci-green-001.json",
+    "docs/stabilization/runs/release-stabilization-017.json",
+    "docs/stabilization/runs/release-stabilization-018.json",
+    "docs/stabilization/reports/ci-gate-runtime-peer.json",
+    "docs/stabilization/reports/release018-peer.json"
+  ],
+  "severity": "S2: missing prepublication validation can publish CI-red main; exact v0.2.64 candidate failure is unproven",
+  "priority": "P1: enforce CI lint parity before publication",
+  "state": "closed",
+  "owner": "/root/release_ci_parity",
+  "transition_history": [
+    {
+      "at": "2026-09-26T13:54:48+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "CI-required pnpm lint was absent from release.sh mandatory candidate checks."
+    },
+    {
+      "at": "2026-09-26T13:54:48+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source and CI log prove the missing gate class; later failed CI SHA is distinct from the v0.2.64 release candidate."
+    },
+    {
+      "at": "2026-09-26T13:54:48+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Add mandatory lint on the exported candidate and a publication-refusal fixture."
+    },
+    {
+      "at": "2026-09-26T13:54:48+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "a8966b9 adds lint gate and fixture; 3f853c0 corrects evidence scope; independent source peer 1c1f053 passes with runtime fixture pending."
+    },
+    {
+      "at": "2026-09-26T14:12:10.844836+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Guarded old-source red/current green fixtures independently accepted; actual release017 refused lint-red candidate and018 passed all15 gates before publication. Fresh independent release018-peer verifies hashes, identity and gate outcomes."
+    },
+    {
+      "at": "2026-09-26T14:12:10.844836+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original gate omission fixed, refusal and validated publication proven, published0.2.66 source52517fdb; no Storeupload or skippedDB health claim."
+    }
+  ],
+  "limitations": [
+    "No claim exact v0.2.64 candidate was lint-red; actual later release017 demonstrates refusal.",
+    "Local release engineering verification, no Store submission or full product health claim."
+  ],
+  "fix_commits": ["a8966b9", "2f78fa4f"]
+}

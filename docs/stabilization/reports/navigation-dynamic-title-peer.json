@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "review_target": "243f39d8217c5de56ca5954a9e5f442ab23fc518",
+  "scope": "independent source review of contained-navigation-acceptance.mjs against current sidepanel navigation source; no runner, build, browser, or tests executed",
+  "verdict_a_acceptance": {
+    "status": "PARTIAL",
+    "findings": [
+      {
+        "severity": "important",
+        "finding": "The dynamic Capture matching accurately represents all three current captureTabLabel() outputs, including singular/plural, count wording, and the empty/elsewhere cases. Admin inventory requires exactly one matching Capture control, and selected-panel verification uses the same matcher to locate it. This resolves the specific literal-title mismatch in 243f39d.",
+        "evidence": [
+          "tests/browser/contained-navigation-acceptance.mjs:34-42,345-352,360-370",
+          "src/features/capture-ladder/queue-sentences.ts:102-112",
+          "src/entrypoints/sidepanel/App.tsx:432-467"
+        ]
+      },
+      {
+        "severity": "important",
+        "finding": "The inventory is not fully strict: inventory() removes every tab with an empty title. A newly added or regressed titleless role=tab can disappear from the observed roster and the expected roster assertion will still pass. The guest roster also filters Chat without asserting Chat exists, so a missing Chat control is invisible in the guest check.",
+        "evidence": [
+          "tests/browser/contained-navigation-acceptance.mjs:95-99",
+          "tests/browser/contained-navigation-acceptance.mjs:321-324"
+        ]
+      },
+      {
+        "severity": "minor",
+        "finding": "The Capture matcher is a copied encoding of queueSentences.captureTabLabel() rather than using a shared matcher/contract. A future legitimate label change will produce an admin inventory failure (good detection), but the guest absence assertion can silently miss an unrecognized Capture label and report absence. Current source is aligned today.",
+        "evidence": [
+          "tests/browser/contained-navigation-acceptance.mjs:34-42,333-334",
+          "src/features/capture-ladder/queue-sentences.ts:102-112"
+        ]
+      }
+    ],
+    "unresolved": [
+      "No runtime evidence was gathered, by instruction; native rendered inventory and selection behavior remain unverified."
+    ]
+  },
+  "verdict_b_quality": {
+    "status": "PARTIAL",
+    "findings": [
+      {
+        "severity": "important",
+        "finding": "There is no second product implementation, compatibility shim, or dead code in the reviewed change. The narrow matcher is readable and mirrors the actual product outputs. The filter(Boolean) inventory behavior weakens the stated strict-roster guarantee and should preserve/count untitled controls or fail explicitly."
+      },
+      {
+        "severity": "minor",
+        "finding": "The copied title grammar creates a small maintenance coupling. Prefer a shared exported predicate or derive the match from a stable tab value/aria identity, while retaining independent assertion that the observed label belongs to the product's allowed set."
+      }
+    ],
+    "verification": "Source inspection only. No commands that execute the acceptance runner, tests, typecheck, build, or browser were run."
+  },
+  "limitations": [
+    "The assignment prohibited tests/build/browser launches and root reserved the sole runtime permit.",
+    "Review is limited to navigation fixture source and current product source; no live panel evidence."
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T13:05:00Z",
+  "updated_at": "2026-09-26T14:12:10.844836+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -1172,6 +1172,67 @@
               "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             }
           }
+        },
+        {
+          "id": "EXT-F-0003-T08",
+          "title": "Refuse a CI lint-red release candidate",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0003-C03"
+          ],
+          "preconditions": [
+            "Use the resource-guarded isolated release fixture with its temporary bare origin and controlled pnpm lint failure; no real remote is configured.",
+            "For the red proof, pass the pre-fix release.sh scratch copy to scripts/test-release-ship-path.sh; use current release.sh for the green proof."
+          ],
+          "steps": [
+            "Run the fixture against the pre-fix release script and observe its lint-publication assertion fail.",
+            "Run the fixture against current release.sh and inspect lint invocation, exit status, fixture main/tag and prior installed artifacts."
+          ],
+          "expected": [
+            "The pre-fix script fails the lint-publication fixture for the missing gate.",
+            "The current script runs pnpm lint against the exact candidate and refuses publication on lint failure before unit tests or packaging; fixture main/tag and installed artifacts remain unchanged."
+          ],
+          "dimensions": [
+            "isolated-fixture",
+            "red-candidate",
+            "CI-parity"
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_ids": [
+                "release-ci-red-001",
+                "release-ci-green-001",
+                "release-stabilization-017",
+                "release-stabilization-018"
+              ],
+              "detail": "Auth-independent engineering behavior shared by every mode; actual lint-red refusal and exact-candidate green publication, independently verified by ci-gate-runtime-peer and release018-peer."
+            },
+            "member": {
+              "status": "pass",
+              "run_ids": [
+                "release-ci-red-001",
+                "release-ci-green-001",
+                "release-stabilization-017",
+                "release-stabilization-018"
+              ],
+              "detail": "Auth-independent engineering behavior shared by every mode; actual lint-red refusal and exact-candidate green publication, independently verified by ci-gate-runtime-peer and release018-peer."
+            },
+            "admin": {
+              "status": "pass",
+              "run_ids": [
+                "release-ci-red-001",
+                "release-ci-green-001",
+                "release-stabilization-017",
+                "release-stabilization-018"
+              ],
+              "detail": "Auth-independent engineering behavior shared by every mode; actual lint-red refusal and exact-candidate green publication, independently verified by ci-gate-runtime-peer and release018-peer."
+            }
+          }
         }
       ],
       "cells": {
@@ -1181,7 +1242,8 @@
             "EXT-D-0002",
             "EXT-D-0003",
             "EXT-D-0004",
-            "EXT-D-0005"
+            "EXT-D-0005",
+            "EXT-D-0016"
           ],
           "run_ids": [
             "release-red-001",
@@ -1193,7 +1255,11 @@
             "release-real-003",
             "release-real-004",
             "release-real-005",
-            "release-stabilization-008"
+            "release-stabilization-008",
+            "release-ci-red-001",
+            "release-ci-green-001",
+            "release-stabilization-017",
+            "release-stabilization-018"
           ],
           "retest_status": "pass"
         },
@@ -1203,7 +1269,8 @@
             "EXT-D-0002",
             "EXT-D-0003",
             "EXT-D-0004",
-            "EXT-D-0005"
+            "EXT-D-0005",
+            "EXT-D-0016"
           ],
           "run_ids": [
             "release-red-001",
@@ -1215,7 +1282,11 @@
             "release-real-003",
             "release-real-004",
             "release-real-005",
-            "release-stabilization-008"
+            "release-stabilization-008",
+            "release-ci-red-001",
+            "release-ci-green-001",
+            "release-stabilization-017",
+            "release-stabilization-018"
           ],
           "retest_status": "pass"
         },
@@ -1225,7 +1296,8 @@
             "EXT-D-0002",
             "EXT-D-0003",
             "EXT-D-0004",
-            "EXT-D-0005"
+            "EXT-D-0005",
+            "EXT-D-0016"
           ],
           "run_ids": [
             "release-red-001",
@@ -1237,13 +1309,18 @@
             "release-real-003",
             "release-real-004",
             "release-real-005",
-            "release-stabilization-008"
+            "release-stabilization-008",
+            "release-ci-red-001",
+            "release-ci-green-001",
+            "release-stabilization-017",
+            "release-stabilization-018"
           ],
           "retest_status": "pass"
         }
       },
       "readiness_gaps": [
-        "Real successful release proven; exhaustive operational feature acceptance still needs per-case evidence reconciliation."
+        "Real successful release proven; exhaustive operational feature acceptance still needs per-case evidence reconciliation.",
+        "T08 CI lint parity requires the root-owned guarded red/green release fixture before full feature cells can pass."
       ],
       "current_source_behavior": "Release005 green, main/tag760c7a1 published, both zip and unpacked tree hashes verified. No Store upload or loaded runtime proof.",
       "unverified_leads": [
@@ -1770,7 +1847,9 @@
           ],
           "run_ids": [
             "guest-local-001",
-            "render-retest-001"
+            "render-retest-001",
+            "contained-navigation-001",
+            "contained-navigation-002"
           ],
           "retest_status": "pass"
         },
@@ -1787,13 +1866,24 @@
           "defect_ids": [
             "EXT-D-0001"
           ],
-          "run_ids": [],
+          "run_ids": [
+            "contained-navigation-001",
+            "contained-navigation-002"
+          ],
           "retest_status": "not-run"
         }
       },
       "inventory_status": "complete",
       "missing_items": [],
-      "source_complete": true
+      "source_complete": true,
+      "runtime_evidence": [
+        {
+          "run": "contained-navigation-001",
+          "status": "partial",
+          "verified": "Guest nav actual selected linked panels; Guest avatar identity; Data/SEO/Settings distinct rendered headings; Capture and Vault-assistance absent.",
+          "remaining": "Admin prerequisite failed before admin cases; failure stage/cause insufficiently diagnosed. Reload/stale/member/assistance and natural chunk failure unverified. Chat/Pilot deferred."
+        }
+      ]
     },
     {
       "id": "EXT-F-1002",
@@ -4394,7 +4484,7 @@
                 "PageCaptureandtabCaptureeachgrantON,persistONafterReload,removeOFF,persistOFFafterReload; all4optionalOFFatend"
               ],
               "remaining_criteria": [
-                "Chromeofferednorequestdialog; native denialpath oncurrentcandidate remainsunverified. T55 includesadjacentdenialcriterion; no broadpassclaimed."
+                "Native denial now passes on0.2.64; current denial reload remains unverified. Prior grant/removal/reload evidence is retained with original build provenance."
               ]
             }
           },
@@ -4412,6 +4502,17 @@
               "run": "isolated-permission-denial-001",
               "status": "unverified",
               "detail": "Real admin sign-in and fresh absent pageCapture proven on0.2.64; native switch click not hittable, no permission request or denial occurred. Root delegates actual native click to CUA operator; product cause unproven."
+            },
+            {
+              "run": "isolated-permission-denial-002",
+              "status": "partial",
+              "operator": "docs/stabilization/reports/native-denial-operator-001.json",
+              "verified": [
+                "Native Chrome prompt observed and Deny clicked",
+                "Actual Settings refusal alert and switchOFF",
+                "Chrome contains/getAll absent"
+              ],
+              "remaining": "Current0.2.64 denial reload not exercised; prior grant/removal/reload evidence remains version-specific."
             }
           ]
         },
@@ -4488,6 +4589,24 @@
               "status": "pass",
               "run_id": "admin-permissions-002",
               "evidence": "docs/stabilization/runs/admin-permissions-002.json"
+            }
+          ],
+          "runtime_evidence": [
+            {
+              "run": "isolated-permission-denial-003",
+              "status": "unverified",
+              "detail": "Real webdashboard reached; extension_signin fixture stage failed beforepermissionrequest/operatorhandoff. No productauthcause proven; freshSol commonfixturediagnosis assigned."
+            },
+            {
+              "run": "isolated-permission-denial-004",
+              "status": "partial",
+              "operator": "docs/stabilization/reports/native-denial-operator-004.json",
+              "verified": [
+                "Native Tab video capture prompt and Deny",
+                "Fresh refusal alert with switchOFF and bothAPIs absent",
+                "Real panelreload retainsadmin/OFF/absent"
+              ],
+              "remaining": "Full-case/defect closure adjudication pending; prior grant/removal evidence retains actual build provenance. Run003 intermittentfixturefailurecause notproven."
             }
           ]
         },

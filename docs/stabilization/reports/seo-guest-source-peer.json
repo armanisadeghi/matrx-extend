@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "review": "seo-guest-source-peer",
+  "target_commit": "0414d19b38b3ea6f7eb732e0568ca2b2c1e3e5e5",
+  "inventory": "docs/stabilization/reports/inventory-local.json / EXT-F-1008",
+  "runtime_executed": false,
+  "verdict_a": {
+    "result": "PASS_WITH_LIMITS",
+    "evidence": [
+      "The runner opens the native guest SEO tab and requires the selected tab to be linked to its active tabpanel, with the actual SEO audit heading present.",
+      "It visits two real public HTTPS pages, reads each page's document.title and h1 presence from the live page DOM, then requires the visible SEO Title value to equal the current document title and the rendered Headings-group presence to agree with h1 presence. It also requires the Re-audit control and no visible audit error; distinct titles prevent the first page's stale title from satisfying the second-page check.",
+      "The manual Re-audit control is activated through the shared trusted-input driver and the runner requires the running-disabled transition followed by the current page title and enabled control.",
+      "The Copy audit popover is exercised and the guest options Summary (text) and For AI agent must be present while JSON is absent. This is menu/role-gate evidence only; clipboard content is not checked.",
+      "These are partial observations for T01, T02, T07 and T09 only. The committed batch explicitly defers the remaining T01/T02 behaviors, T03-T06, T08, the rest of T09, T10-T14, reloads, and member/admin modes."
+    ],
+    "limits": [
+      "T01 does not count audits or expose a deliberately delayed old request, so the one-audit-per-URL and out-of-order completion requirements remain unverified.",
+      "The T09 label says title_and_headings, but the heading oracle checks only section presence against h1 presence; it does not compare heading text, level, or count. The batch report's narrower wording (headings presence) is accurate.",
+      "Runtime was not executed by this peer; no live browser or extension behavior is attested here."
+    ]
+  },
+  "verdict_b": {
+    "result": "PASS_WITH_LIMITS",
+    "evidence": [
+      "Source review shows no response/auth mocking, secret reads, sign-in flow, database save, clipboard write, destructive action, or synthetic page content in the new runner.",
+      "The URLs are public HTTPS pages (example.org and IANA reserved domains), and expected audit title values come from each loaded page's own document.title rather than hardcoded expected titles.",
+      "The owned native-sidepanel harness is reused, and the report begins unverified, marks runtime partial only after the callback returns, records staged progress, and lists unexercised targets as deferred. The prepared batch remains prepared_not_run/unverified.",
+      "Internal runtime target records use status pass for assertions that actually ran; their subtarget descriptions are bounded observations. The committed batch maps these observations to Partial rather than claiming full case acceptance."
+    ],
+    "limits": [
+      "The runner's broad catch discards the thrown error text and reports only the last safe stage. This protects output from accidental detail leakage but makes failures less diagnosable; its exit code still fails the run.",
+      "This is source review only. Runtime report creation, native profile ownership, network reachability, and visible interaction were not independently observed."
+    ]
+  },
+  "follow_up": [
+    "Preserve T01/T02/T07/T09 as partial and keep all listed deferred cases unverified.",
+    "If the T09 case label is reused as a claim, narrow the runner's subtarget name to headings_presence or compare actual rendered heading text/levels with the page DOM."
+  ]
+}

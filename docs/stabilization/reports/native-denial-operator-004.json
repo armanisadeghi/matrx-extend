@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "task_id": "native-denial-operator-004",
+  "case_id": "EXT-F-1003-T59",
+  "status": "native_prompt_observed_and_denied",
+  "operator": "independent CUA operator",
+  "owned_browser": {
+    "app": "Google Chrome for Testing",
+    "executable": "/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+    "pid": 83982,
+    "profile": "/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/matrx-native-sidepanel-qa-FYqhXs/profile",
+    "window": "Dashboard — AI Matrx",
+    "extension": "Matrx Extend",
+    "identity_evidence": "CUA bound by the exact Chrome for Testing app path. Window showed aimatrx.com/dashboard and chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html. Real extension Settings showed admin@admin.com, ADMIN, and Tab video capture switch off before request. Root launch evidence identifies this as the owned window for PID 83982 and the fresh profile above."
+  },
+  "native_prompt": {
+    "observed": true,
+    "accessibility_evidence": "Native Chrome sheet: heading 'Matrx Extend has requested additional permissions.'; warning 'It could: Read and change all your data on all websites'; buttons Deny and Allow.",
+    "screenshot_evidence": "CUA captured and displayed the native prompt screenshot before acting; it showed the Matrx Extend permission request and Deny/Allow buttons.",
+    "action": "Clicked the native Deny button using its fresh accessibility element index.",
+    "result": "Prompt closed. Real Settings displayed 'Chrome did not grant Tab video capture. Check this extension's permissions in Chrome, then try again.' The Tab video capture switch remained off."
+  },
+  "coordination_acknowledgement": "Wrote exactly 'denied' to test-results/isolated-permission-denial-native-ack.txt after observing and clicking native Deny. ACK is coordination only; runner postconditions remain required.",
+  "runner_corroboration": {
+    "source": "test-results/isolated-permission-denial-acceptance.json from guarded run 004; root reported runner exit code 0",
+    "status": "postconditions_verified_requires_operator_evidence",
+    "build_version": "0.2.64",
+    "permission": "tabCapture",
+    "before": {
+      "admin": true,
+      "declared": true,
+      "row_count": 1,
+      "switch_on": false,
+      "contains": false,
+      "get_all": false,
+      "refusal_alert": false
+    },
+    "after_deny": {
+      "admin": true,
+      "declared": true,
+      "row_count": 1,
+      "switch_on": false,
+      "contains": false,
+      "get_all": false,
+      "refusal_alert": true
+    },
+    "after_reload": {
+      "admin": true,
+      "declared": true,
+      "row_count": 1,
+      "switch_on": false,
+      "contains": false,
+      "get_all": false,
+      "refusal_alert": false
+    },
+    "attribution": "Runner-produced corroboration, separate from this operator's direct CUA observations. The refusal alert was visible immediately after denial and cleared after the runner reloaded the real side panel; tabCapture remained absent and off."
+  },
+  "limits": [
+    "No screenshot file was saved by this operator; CUA captured and surfaced the native prompt screenshot in the task evidence stream.",
+    "Chrome's native wording is broad and does not name tabCapture; association with Tab video capture is established by the immediate sequence from its real Settings switch to the prompt and the subsequent refusal alert.",
+    "Runner post-denial and reload checks are corroborated by its result artifact and root's exit-code report; this operator did not independently inspect runner internals or permission APIs."
+  ]
+}
