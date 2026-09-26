@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot003-inventory",
+  "source_run": "docs/stabilization/runs/screenshot-guest-003.json",
+  "independent_peer": "docs/stabilization/reports/screenshot-guest-003-peer.json",
+  "feature_id": "EXT-F-1009",
+  "case_id": "EXT-F-1009-T09",
+  "mode": "guest",
+  "build": {
+    "version": "0.2.79",
+    "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0"
+  },
+  "dimension_results": {
+    "warm": "pass",
+    "reload": "pass",
+    "role-change": "pass",
+    "arbitrary-direct-state": "unverified"
+  },
+  "inventory_action": "Linked screenshot-guest-003 to the guest cell and recorded the bounded dimension results. The cell remains unverified and retest_status remains not-run because arbitrary direct-state behavior is outside the observed path.",
+  "limits": [
+    "No full EXT-F-1009 acceptance or signed-in member/admin screenshot capture, gallery, save, or deletion claim.",
+    "Raw acceptance top-level status remains partial; peer acceptance is limited to bounded guest T09 behavior.",
+    "No browser or test execution was performed for this inventory update."
+  ]
+}
