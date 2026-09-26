@@ -36,6 +36,7 @@ const report = {
     failedWriteNoticeBeforeSelection: false,
     approvedWorkspaceSelectedThroughUi: false,
     failedWriteNoticeRetained: false,
+    failedWriteNoticeVisibility: null,
     lateNoticeAfterSelection: 'not_observed',
     highlightInsertRequests: 0,
     membershipRpcCompleted200: 0,
@@ -137,15 +138,42 @@ async function workspaceState(panel, approvedName) {
   );
 }
 
-async function failedHighlightNoticeCount(panel) {
+async function failedHighlightNoticeState(panel) {
   return evaluate(
     panel,
-    `(() => [...document.querySelectorAll('[role="alert"]')]
-      .filter((alert) => alert.querySelector('.font-medium')?.textContent.trim() === 'Highlight not saved' &&
+    `(() => {
+      const matches = [...document.querySelectorAll('[role="alert"]')]
+        .filter((alert) => alert.querySelector('.font-medium')?.textContent.trim() === 'Highlight not saved' &&
         alert.querySelector('p')?.textContent.includes('no workspace is selected, so the request was never sent') &&
         alert.querySelector('p')?.textContent.includes('Nothing was saved.') &&
-        alert.querySelector('p')?.textContent.includes('Pick a workspace from the account menu and try again.'))
-      .length)()`,
+        alert.querySelector('p')?.textContent.includes('Pick a workspace from the account menu and try again.'));
+      const alert = matches.length === 1 ? matches[0] : null;
+      const rect = alert?.getBoundingClientRect();
+      let displayVisible = Boolean(alert), visibilityVisible = Boolean(alert), opacityVisible = Boolean(alert);
+      for (let node = alert; node; node = node.parentElement) {
+        const style = getComputedStyle(node);
+        if (style.display === 'none') displayVisible = false;
+        if (style.visibility === 'hidden' || style.visibility === 'collapse') visibilityVisible = false;
+        if (Number(style.opacity) <= 0) opacityVisible = false;
+      }
+      const left = rect ? Math.max(0, rect.left) : 0;
+      const right = rect ? Math.min(innerWidth, rect.right) : 0;
+      const top = rect ? Math.max(0, rect.top) : 0;
+      const bottom = rect ? Math.min(innerHeight, rect.bottom) : 0;
+      const visibleWidth = Math.max(0, right - left);
+      const visibleHeight = Math.max(0, bottom - top);
+      const nonZeroArea = Boolean(rect && rect.width > 0 && rect.height > 0);
+      const intersectsViewport = visibleWidth > 0 && visibleHeight > 0;
+      const hit = intersectsViewport
+        ? document.elementFromPoint(left + visibleWidth / 2, top + visibleHeight / 2) : null;
+      const hitpointNotOccluded = Boolean(alert && hit && (hit === alert || alert.contains(hit)));
+      return {
+        count: matches.length,
+        displayVisible, visibilityVisible, opacityVisible, nonZeroArea,
+        intersectsViewport, hitpointNotOccluded,
+        visibleWidth: Math.round(visibleWidth), visibleHeight: Math.round(visibleHeight),
+      };
+    })()`,
   );
 }
 
@@ -308,8 +336,8 @@ try {
           // runner never advances on the picker alone or an unrelated alert.
           await waitFor(
             'highlight_insert_failed_before_selection',
-            () => failedHighlightNoticeCount(panel),
-            (count) => count === 1,
+            () => failedHighlightNoticeState(panel),
+            (state) => state?.count === 1,
             150_000,
           );
           const beforeSelection = transport.read();
@@ -339,9 +367,19 @@ try {
           // Observe the completed transition, including naturally late notices.
           // This is a bounded absence check for an automatic insert retry.
           await new Promise((resolveWait) => setTimeout(resolveWait, 2_000));
-          const retained = await failedHighlightNoticeCount(panel);
+          const retained = await failedHighlightNoticeState(panel);
+          report.observations.failedWriteNoticeVisibility = retained;
           report.observations.highlightInsertRequests = transport.read().insertRequests;
-          if (retained !== 1) fail('failed_write_notice_retired_without_retry');
+          if (retained.count !== 1) fail('failed_write_notice_retired_without_retry');
+          if (
+            !retained.displayVisible ||
+            !retained.visibilityVisible ||
+            !retained.opacityVisible ||
+            !retained.nonZeroArea ||
+            !retained.intersectsViewport ||
+            !retained.hitpointNotOccluded
+          )
+            fail('failed_write_notice_not_visibly_rendered');
           if (transport.read().insertRequests !== 0)
             fail('highlight_insert_retried_after_workspace_selection');
           report.observations.failedWriteNoticeRetained = true;
