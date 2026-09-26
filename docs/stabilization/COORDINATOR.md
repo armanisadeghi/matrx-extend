@@ -1,17 +1,16 @@
 # Matrx Extend stabilization: resume here
 
-Updated 2026-09-26 19:45 UTC. Campaign remains incomplete; `inventory.json` is the coverage authority. The prior coordinator is preserved verbatim at `diagnostics/coordinator-history-20260926-1832.md`; earlier history remains in `coordinator-history-20260926-1800.md` and `coordinator-history-20260926-1632.md`.
+Updated 2026-09-26 19:56 UTC. Campaign remains incomplete; `inventory.json` is the coverage authority. The prior coordinator is preserved verbatim at `diagnostics/coordinator-history-20260926-1832.md`; earlier history remains in `coordinator-history-20260926-1800.md` and `coordinator-history-20260926-1632.md`.
 
 ## Current truth and next actions
 
 ### Latest recovery checkpoint (supersedes older run-next wording below)
 
-- Remote .75 commit598b2332 merged cleanly after fetch at19:44. Earlier overlapping recognition fixes reconciled in8f554e64, preserving both contributors' intent. Root last push18:48; publish next green integration promptly.
-- D22 second red a2c072de: local Scrape Saved/link and late save completion failed2/passed7 (source-org-local-red-001). Repair e36bf683 binds SaveOutcome to actual request organization, protects local capture/edits/retry, and carries request org to companion SEO metadata. Final focused source-org-local-green-001 passed39/39 across6files; wrapper90433 confirmed0. Receipt08131629. D22 fixed, NOT closed.
-- Guarded source-org-compile-001 active PTY77864, log /tmp/matrx-source-org-compile-001.log; confirm exit before any heavy workload. Fresh Sol /root/d22_final_source_peer reviewing source. Full release029 then rebuilt native acceptance remain. Current primary unpacked remains .73.
-- Fresh Luna /root/seo_timing_diagnostic_peer reviewing diagnostic ce23ba5e before future guest011. Guest010 actually failed auto snapshot count, immutable receipt exists; do not call diagnostic execution a product fix or discard original failure.
-- No native browser lease active. Native D22 prepared worker waits explicit rootGO after rebuild+lease; reserve private checkpoint before its one allowed new public Source Save.
-
+- Remote .76 b30af3e9/c6a86dd4 fetched and clean-merged a02f8a87 at19:53; incoming scope docs/access-ladder wording and version artifacts, no dependency graph delta. Root last push18:48; hourly publication overdue because independent D22 review found confirmed races. Do not push red; keep fetching.
+- D22 local state remains in-fix. e36bf683 local UI fix passed39tests/typecheck, but c4a55ff8 found late refusal overwrites newer queue. Test fecb39b8 reproduced2fail10pass (queue-red001, wrapper51249 confirmed1). Repair8c0e8a19 durable queue revision; expanded queue-green001 wrapper92311 confirmed1 at19:52:31.595,40pass1fail. Fresh peer9186e63d found failing fixture omitted articleEdited, plus genuine transport body/header organization race and old refusal resurrection after newer success/discard. Escalated to fresh /root/d22_queue_escalation Astra medium after two repair rounds; await test-only READY_RED. No heavy/browser active.
+- Last compile001 wrapper77864 confirmed0 at19:45:47.136, receiptbc4b2bb0, predates queue revision. Full release029 NOT launched. Current primary unpacked remains .73; remote source .76 does not imply local bundle.
+- SEO diagnostic ce23ba5e peer61496b9e source accepted with limits. Actual guest011 wrapper41952 confirmed1 at19:49:58.764; immutable a6d648de. Stable links1785/410 and browser navigation702ms; automatic UI duration absent, manual re-audit702ms with matchinglinks. Original automatic assertion remains failed,12old+3newboundedtargets passed. Automatic collector runs on URL event before necessarily completedload; exact capture timing not observed. Need deliberately distinguish automatic snapshot availability from completed-page manual detail assertions; no product defect established, run010 earlier link mismatch unresolved.
+- No native browser lease active. Native D22 prepared worker waits rootGO after rebuild+lease; reserve private checkpoint before one allowed new public Source Save. Missingorg/lateinflight live cases remainunverified if not safely reachable.
 
 - Release 0.2.73 (`v0.2.73`, source `6acf1801`) is published. Run 028 records wrapper exit 0, 15 local gates, 1446 passed / 3 skipped tests, and independent artifact verification. Exact-SHA GitHub CI run 36262295396 completed successfully. Primary Chrome now verified0.2.73 by independent operator055df088; Store remainsOFF, no Storeupload.
 - Admin SEO002 saved exactly one real public audit on .73. Preserve ignored `test-results/seo-admin-save-attempt.json` (0600); NEVER reset/delete/reinitialize it or issue another Save. Subsequent runs reuse its actual response ID read-only.
