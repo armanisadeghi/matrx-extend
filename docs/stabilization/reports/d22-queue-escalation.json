@@ -1,10 +1,7 @@
 {
   "lane": "Astra medium D22 queue escalation",
   "status": "READY_GREEN",
-  "commits": [
-    "7c3cf5eb",
-    "560efb66"
-  ],
+  "commits": ["7c3cf5eb", "560efb66"],
   "hypotheses": [
     {
       "cause": "Body actor resolved before independent transport actor",
