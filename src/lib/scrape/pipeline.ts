@@ -616,8 +616,10 @@ async function defuddleExtract(doc: Document): Promise<SoupResult['article'] | n
     const placeholder = doc.createElement('p');
     placeholder.textContent = token;
     const figure = image.closest('figure');
-    if (figure) figure.replaceWith(placeholder);
-    else image.replaceWith(placeholder);
+    image.replaceWith(placeholder);
+    // Defuddle prunes a figure containing only an image. Unwrap it after
+    // replacing the image so captions and HTML labels keep their positions.
+    if (figure) figure.replaceWith(...Array.from(figure.childNodes));
     return { token, html };
   });
   const inst = new DefuddleCtor(doc);

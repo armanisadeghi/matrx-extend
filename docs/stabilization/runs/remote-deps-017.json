@@ -1,0 +1,48 @@
+{
+  "id": "remote-deps-017",
+  "feature_id": "EXT-F-0003",
+  "status": "pass",
+  "exit_code": 0,
+  "command": ["pnpm", "install", "--frozen-lockfile", "--ignore-scripts"],
+  "lock_sha256_before_and_after": "7d81662b933fd86f0eca0a7fa838718deefcc2e79f1ec84a796a219c9f50514d",
+  "installed_versions": {
+    "@ai-matrx/design-system": "0.44.5",
+    "@ai-matrx/records": "0.58.24"
+  },
+  "verification": "Root package symlinks and node_modules/.pnpm/lock.yaml now agree with the unchanged tracked lock. Full release checks remain pending.",
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T14:37:45.621Z",
+      "runId": "remote-deps-017",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.48,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.77,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.12975714285714285,
+        "swapUsedMiB": 2421.69,
+        "repoFreeGiB": 1675.8328018188477,
+        "profileFreeGiB": 22.253734588623047
+      },
+      "cpuBusySamples": [
+        0.12659999999999993, 0.09549999999999992, 0.19840000000000002, 0.0837, 0.10209999999999997,
+        0.19579999999999997, 0.10620000000000007
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T14:37:48.065Z",
+      "runId": "remote-deps-017",
+      "childExitCode": 0,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ]
+}

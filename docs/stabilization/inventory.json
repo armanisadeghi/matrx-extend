@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T14:23:22.042436+00:00",
+  "updated_at": "2026-09-26T14:25:30.034875+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -4439,7 +4439,8 @@
             "Signed in as admin; Settings > Advanced agent capabilities is visible."
           ],
           "steps": [
-            "As admin, toggle cookies on and off; verify Chrome grant/removal result, busy state, and reflected current permission. Also deny the grant request."
+            "As admin, toggle cookies on and off; verify Chrome grant/removal result, busy state and reflected permission; reload after each change.",
+            "If Chrome presents a native permission prompt, deny it and verify refusal. Current 0.2.66 manifest yields no documented cookies warning delta; native prompt/Deny is conditionally not applicable, with explicit source-backed ruling."
           ],
           "expected": [
             "Granted state updates; denied requests leave it off and surface no false grant."
@@ -4453,7 +4454,22 @@
               "status": "unverified",
               "run_id": "admin-permissions-001",
               "evidence": "docs/stabilization/runs/admin-permissions-001.json",
-              "detail": "All three initialoff restored; on/off and reload verified. Chrome offeredno Cookiesdenialdialog; denialcriterion unverified."
+              "detail": "All three initialoff restored; on/off and reload verified. Chrome offeredno Cookiesdenialdialog; denialcriterion unverified.",
+              "dimension_results": {
+                "native-prompt-denial": {
+                  "status": "not-applicable",
+                  "build": "0.2.66",
+                  "evidence": [
+                    "docs/stabilization/reports/cookies-prompt-semantics.json",
+                    "docs/stabilization/reports/native-denial-operator-005.json"
+                  ],
+                  "detail": "Ruling inferred from official Chrome warning semantics and current broad-host manifest, corroborated by actual no-prompt OFF\u2192ON observation. Not a denial pass. Re-evaluate on browser/manifest warning-policy change."
+                },
+                "current-grant-removal-reload": {
+                  "status": "unverified",
+                  "detail": "Current005 only observed UI OFF\u2192ON; prior build grant/removal/reload remains historical."
+                }
+              }
             }
           }
         },

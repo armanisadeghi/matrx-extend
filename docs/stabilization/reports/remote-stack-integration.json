@@ -1,0 +1,33 @@
+{
+  "lane": "remote dependency stack integration",
+  "as_of": "2026-09-26T14:25:27Z",
+  "upstream_commit": "1e846d73b0ed650051a38d2bd8c197af05fbfa6c",
+  "ci_run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/36247836227",
+  "ci_result": "Install, typecheck, and schema checks passed. Lint failed on package.json onlyBuiltDependencies formatting; CI skipped unit tests and build after that failure.",
+  "vitest_integration": {
+    "defect": "EXT-D-0017",
+    "installed_version": "4.1.11",
+    "cause": "Vitest 4 removed minWorkers; release and resource guard still invoked the removed CLI option.",
+    "fix": "Keep maxWorkers=1 in release, resource-policy allowlist, resource guard, and release fixture; remove minWorkers and restore Biome package formatting.",
+    "commit": "cb6b85e6",
+    "checks": [
+      "Biome check on edited JSON and resource guard passed",
+      "bash -n on release and release fixture passed",
+      "git diff --check passed"
+    ]
+  },
+  "scrape_integration": {
+    "defect": "EXT-D-0018",
+    "cause": "The Defuddle 0.19 SVG-data preservation token replaced an entire figure, dropping its figcaption and HTML labels.",
+    "fix": "Replace the protected image with its token and unwrap the figure while retaining its child nodes in order.",
+    "red": "svg-caption-red-001: 1 failed, 14 passed; SVG image survived, but article Markdown omitted Revenue grew from January to March.",
+    "green": "svg-caption-green-001: 15 passed on the changed source.",
+    "sibling_guards": "Added real runScrape cases for ordered distinct captioned SVG figures and a layered SVG with caption, HTML label, ordinary image, and surrounding article text. Execution pending the root's guarded run; do not count these cases as passed yet.",
+    "checks": [
+      "Biome check of edited TypeScript passed with one pre-existing warning",
+      "git diff --check passed"
+    ],
+    "ui_verification": "Pending independent extension UI check on a real or clearly labeled owned local article page containing an inline SVG figure, caption, and HTML label. Existing Mathspace reference does not establish a caption case."
+  },
+  "remote_intent_preserved": "All upgraded dependency ranges, lockfile versions, Source deep link, SVG composite-root restoration, and Vitest mock repairs remain intact. No dependency was downgraded or pinned."
+}
