@@ -17,8 +17,18 @@ const OUTPUT = join(REPO, 'test-results', 'isolated-admin-reset-acceptance.json'
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const EXPECTED_ADMIN = 'admin@admin.com';
+const LOCAL_KEY = 'matrx.qa.adminReset.local';
+const LOCAL_VALUE = 'disposable-admin-reset-local-fixture';
 const SESSION_KEY = 'matrx.qa.adminReset.session';
 const SESSION_VALUE = 'disposable-admin-reset-fixture';
+// These keys can be created by a fresh guest panel or live desktop discovery
+// after the reset. Their names alone cannot distinguish new state from a
+// restored old value; immediate post-Confirm absence still covers every key.
+const REGENERATED_LOCAL_KEYS = new Set([
+  'matrx.guest.signature', 'matrx.guest.nonce', 'matrx.guest.createdAt',
+  'matrxLocalEnginePort', 'matrxLocalEngineLastGoodPort',
+]);
+const REGENERATED_SESSION_KEYS = new Set(['matrx.crossComponent.instanceId']);
 let stage = 'not_started';
 const evidence = {
   schema_version: 1,
@@ -28,7 +38,7 @@ const evidence = {
   login_method: 'real web form followed by extension Settings Sign in',
   response_interception: false,
   injected_auth_session: false,
-  fixture: 'Dark theme through Settings and one inert chrome.storage.session value',
+  fixture: 'Dark theme through Settings and inert local/session values',
   steps: [],
 };
 
@@ -132,6 +142,8 @@ async function storageState(panel) {
       hasAccessToken: Object.hasOwn(local, 'matrx.auth.accessToken'),
       hasUserProfile: Object.hasOwn(local, 'matrx.user.profile'),
       hasAdminFlag: local['matrx.user.isAdmin'] === true,
+      localFixtureMatches: local[${JSON.stringify(LOCAL_KEY)}] === ${JSON.stringify(LOCAL_VALUE)},
+      hasLocalFixture: Object.hasOwn(local, ${JSON.stringify(LOCAL_KEY)}),
       sessionFixtureMatches: session[${JSON.stringify(SESSION_KEY)}] === ${JSON.stringify(SESSION_VALUE)},
       hasSessionFixture: Object.hasOwn(session, ${JSON.stringify(SESSION_KEY)}),
       localKeys: Object.keys(local).sort(), sessionKeys: Object.keys(session).sort(),
@@ -167,14 +179,16 @@ try {
       await click(panel, 'option', 'Dark');
       await waitFor('dark_theme_visible', () => panelState(panel), (s) => s?.theme === 'Dark');
       await waitFor('dark_theme_persisted', () => storageState(panel), (s) => s?.theme === 'dark');
-      await evaluate(panel, `(async () => chrome.storage.session.set({
-        [${JSON.stringify(SESSION_KEY)}]: ${JSON.stringify(SESSION_VALUE)}
-      }))()`);
+      await evaluate(panel, `(async () => {
+        await chrome.storage.local.set({ [${JSON.stringify(LOCAL_KEY)}]: ${JSON.stringify(LOCAL_VALUE)} });
+        await chrome.storage.session.set({ [${JSON.stringify(SESSION_KEY)}]: ${JSON.stringify(SESSION_VALUE)} });
+      })()`);
       stage = 'admin_fixture_ready';
       const before = await waitFor('admin_storage_ready', () => storageState(panel),
         (s) => s?.hasAccessToken && s.hasUserProfile && s.hasAdminFlag &&
-          s.hasSettings && s.theme === 'dark' && s.sessionFixtureMatches);
-      evidence.steps.push('Real admin identity, Dark preference, and disposable session fixture observed');
+          s.hasSettings && s.theme === 'dark' && s.localFixtureMatches &&
+          s.sessionFixtureMatches);
+      evidence.steps.push('Real admin identity, Dark preference, and disposable local/session fixtures observed');
 
       stage = 'reset_cancel';
       await openSection(panel, 'Data & reset');
@@ -186,7 +200,8 @@ try {
       const afterCancel = await storageState(panel);
       assert.equal(afterCancel.hasAccessToken && afterCancel.hasUserProfile &&
         afterCancel.hasAdminFlag && afterCancel.theme === 'dark' &&
-        afterCancel.sessionFixtureMatches, true, 'Cancel must preserve auth and fixture values');
+        afterCancel.localFixtureMatches && afterCancel.sessionFixtureMatches,
+        true, 'Cancel must preserve auth and fixture values');
       assert.deepEqual(before.localKeys.filter((key) => !afterCancel.localKeys.includes(key)), [],
         'Cancel must not remove any preexisting local key');
       assert.deepEqual(before.sessionKeys.filter((key) => !afterCancel.sessionKeys.includes(key)), [],
@@ -199,7 +214,7 @@ try {
       await click(panel, 'dialog', 'Clear & sign out');
       await waitFor('admin_extension_storage_cleared', () => storageState(panel), (s) =>
         !s?.hasSettings && !s.hasAccessToken && !s.hasUserProfile && !s.hasAdminFlag &&
-          !s.hasSessionFixture);
+          !s.hasLocalFixture && !s.hasSessionFixture);
       const after = await storageState(panel);
       assert.deepEqual(before.localKeys.filter((key) => after.localKeys.includes(key)), [],
         'Confirm must clear every preexisting local key');
@@ -220,8 +235,14 @@ try {
           !s.emailIsAdmin && s.theme === 'System');
       const reloaded = await storageState(panel);
       assert.equal(reloaded.hasAccessToken || reloaded.hasUserProfile || reloaded.hasAdminFlag ||
-        reloaded.hasSettings || reloaded.hasSessionFixture, false);
-      evidence.steps.push('Panel reload remained guest and showed System theme with no prior auth or fixture');
+        reloaded.hasSettings || reloaded.hasLocalFixture || reloaded.hasSessionFixture, false);
+      assert.deepEqual(before.localKeys.filter((key) =>
+        !REGENERATED_LOCAL_KEYS.has(key) && reloaded.localKeys.includes(key)), [],
+      'Reload must not restore any prior non-regenerated local key');
+      assert.deepEqual(before.sessionKeys.filter((key) =>
+        !REGENERATED_SESSION_KEYS.has(key) && reloaded.sessionKeys.includes(key)), [],
+      'Reload must not restore any prior non-regenerated session key');
+      evidence.steps.push('Panel reload remained guest and showed System theme; prior non-regenerated keys stayed absent');
     } finally {
       await web.close();
     }
