@@ -1,0 +1,71 @@
+{
+  "lane": "Astra medium D22 queue escalation",
+  "status": "READY_GREEN",
+  "commits": [
+    "7c3cf5eb",
+    "560efb66"
+  ],
+  "hypotheses": [
+    {
+      "cause": "Body actor resolved before independent transport actor",
+      "prediction": "Binding expectedActor causes pre-dispatch workspace-switch guard to refuse before fetch",
+      "result": "Confirmed RED: mixed workspace request reached fetch."
+    },
+    {
+      "cause": "Queue removal erases ordering evidence",
+      "prediction": "Durable terminal boundary blocks old refusal after successful save/discard",
+      "result": "Confirmed RED: both terminal cases resurrected old capture."
+    },
+    {
+      "cause": "Revision reservation bypasses recovery handling",
+      "prediction": "Storage rejection returns retained editable capture and visible remedy",
+      "result": "Confirmed RED: reservation rejection escaped save."
+    },
+    {
+      "cause": "Edited fixture only changed markdown without articleEdited",
+      "prediction": "Consistent edit option restores intended newer queue content assertion",
+      "result": "Corrected test fixture; baseline failure was not a production defect."
+    }
+  ],
+  "evidence": {
+    "red": {
+      "runner": "root resource guard",
+      "run_id": "source-org-boundary-red-001",
+      "log": "/tmp/matrx-source-org-boundary-red-001.log",
+      "exit_code": 1,
+      "passed": 12,
+      "failed": 5,
+      "interpretation": "Four production failures; one incidental positive transport fixture failure because Response lacked JSON Content-Type. Fixture corrected."
+    },
+    "green": "Pending root run",
+    "types": "Pending root run",
+    "browser": "Not run by this lane, root sole browser/test owner",
+    "mutation": "Not executed by this lane; root sole test owner"
+  },
+  "changes": [
+    "Source landing carries expectedActor derived from its body through the existing verified transport primitive.",
+    "Terminal revisions persist by canonical page URL; queue removal and tombstone are written together under existing cross-context queue lock.",
+    "Late refusals older than terminal state cannot resurrect a queue row; fresh explicit saves may queue again.",
+    "Reservation failure refuses before sending, announces not saved on device, retains editable capture; UI recovery control added.",
+    "No silent success cleanup rejection; discard storage errors surface in card."
+  ],
+  "rulings": [
+    "One row per canonical page remains the queue contract; newer terminal action suppresses older outcomes regardless of workspace.",
+    "Root accepted refusal before dispatch when durable order cannot be reserved: no mixed ordering, clear remedy, intact edits."
+  ],
+  "limits": [
+    "No push, release, browser or test commands run by lane.",
+    "Terminal tombstones intentionally have no time expiry, since an older request may still complete in another extension context.",
+    "Storage failure after remote success is announced; queue cleanup requires device storage to recover."
+  ],
+  "files": [
+    "src/lib/api/routes/sources.ts",
+    "src/lib/sources/save-capture.ts",
+    "src/features/scrape/ScrapeView.tsx",
+    "src/features/scrape/UnsavedCapturesCard.tsx",
+    "tests/unit/source-landing-transport.test.ts",
+    "tests/unit/save-never-loses-input.test.tsx",
+    "docs/feature-tests.md"
+  ],
+  "open_questions": []
+}
