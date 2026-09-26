@@ -1,0 +1,38 @@
+{
+  "runId": "contained-navigation-006",
+  "review": "independent source/evidence comparison; no runtime changes",
+  "acceptance": {
+    "verdict": "PARTIAL EVIDENCE ACCEPTED",
+    "sourceSha": "79d1dba35ea1157a6dbf7a8ce23942a0a2a8f271",
+    "releasedVersion": "0.2.67",
+    "targetCounts": { "pass": 37, "partial": 1 },
+    "resourceGate": "admitted; child exit 0"
+  },
+  "coverage": {
+    "guest": "5 top-level tabs inventoried; Scrape/Data/SEO/Settings clicked; Data/SEO/Settings marker-based lazy views loaded; avatar identity; Capture and Vault shortcut absent",
+    "admin": "21 top-level tabs inventoried (33 total includes 12 nested Showcase tabs); 20 top-level targets clicked except Chat; Data/SEO/Settings marker-based lazy views loaded; real admin identity; Profile opened and identity section/first-name field/back control present; Capture trigger observed"
+  },
+  "predicate_limits": [
+    "navigation pass only proves unique trigger selected and aria-controls/labelledby-linked active panel has height > 0; no marker for most tabs, so feature readiness/functionality is not proven",
+    "lazy pass proves exact heading/label, linked panel and fallback absent only; does not prove workflows",
+    "Profile evidence proves visible field presence, not editing, persistence or reload"
+  ],
+  "open_gaps": [
+    "target itself marks Chat/Pilot systematic actions as separately owned and deferred",
+    "member persona and stale-selection transition not exercised",
+    "lazy chunk failure/retry not exercised",
+    "Vault assistance active not exercised",
+    "Capture is partial: trigger present, badge null; no queue workflow proof"
+  ],
+  "quality": {
+    "verdict": "NOT A PRODUCT-QUALITY VERDICT",
+    "note": "No malformed/missing navigation IDs observed in inventory; sparse interaction evidence cannot establish overall feature quality or end-user workflows."
+  },
+  "provenance": [
+    "test-results/contained-navigation-acceptance.json",
+    ".output/release-receipt.json",
+    "/tmp/matrx-contained-navigation-006.log",
+    "tests/browser/contained-navigation-acceptance.mjs",
+    "src/entrypoints/sidepanel/App.tsx"
+  ]
+}
