@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "task_id": "remote-sources-1300",
+  "source_sha": "557e6a0",
+  "commits_reviewed": [
+    "b1e9a820fa5ddbc8865c5dd49e42af77b2caa46f",
+    "557e6a035b0dcc1947b61f45642b7aba182caa22"
+  ],
+  "status": "source-reviewed; runtime coverage remains unverified",
+  "features": [
+    {
+      "id": "EXT-F-1007",
+      "name": "Capture and manage current page scrape",
+      "affected_controls": [
+        "EXT-F-1007-C04",
+        "EXT-F-1007-C22",
+        "EXT-F-1007-C23",
+        "EXT-F-1007-C25",
+        "EXT-F-1007-C26"
+      ],
+      "affected_cases": [
+        "EXT-F-1007-T04",
+        "EXT-F-1007-T05",
+        "EXT-F-1007-T21",
+        "EXT-F-1007-T22",
+        "EXT-F-1007-T24",
+        "EXT-F-1007-T25"
+      ],
+      "delta": "b1e9a82 makes the device-local retry queue canonical-URL unique: a failed re-save replaces that page's queued payload while retaining its queue identity and incrementing attempts; successful landing removes any queued entry for that URL. The Scrape view hides its ordinary Save control while the active page is queued. 557e6a0 routes retry of the active queued URL through the current panel capture, so edits made after the prior failure are submitted; retries for other URLs continue using their queued payload.",
+      "missing_acceptance_coverage": [
+        "Add a case proving two failed saves whose URLs canonicalize to the same page produce one queue card with stable id/creation time, incremented attempts, and the newest capture payload.",
+        "Add a case proving successful landing from any save path removes the matching canonical-URL queue item, including when a legacy or preexisting duplicate is present.",
+        "Add a case proving an active queued page exposes exactly one Save action (Retry), and retry submits the current edited panel capture; on another failure the single queued entry contains those latest edits, while a different queued page still retries its own queued content."
+      ],
+      "existing_case_fit": "T22 covers failure retention/retry/removal after landing, T24 covers edited article text and original preservation, and T25 covers persistence across panel reopen. They do not specify URL-keyed deduplication, stable queue identity/attempt accounting, cross-path cleanup of the queued URL, one-save-control behavior, or active-page retry freshness. Extend T22/T24/T25 acceptance or add focused cases; do not mark existing evidence as covering these deltas.",
+      "source_evidence": [
+        "src/lib/sources/save-capture.ts: upsertUnsaved matches by id or canonical URL, retains prior id/createdAt and adds attempts, and dropUnsavedForUrl removes the landed URL.",
+        "src/features/scrape/ScrapeView.tsx: cardHoldsPage suppresses both not-yet-a-Source Save state and the normal Save button; currentPage passes current.url and handleSave.",
+        "src/features/scrape/UnsavedCapturesCard.tsx: retry dispatches to currentPage.save when canonical URLs match; otherwise it invokes retryUnsavedCapture for the queued payload."
+      ]
+    }
+  ],
+  "verification": [
+    "Inspected the two commit diffs and matched affected behavior to EXT-F-1007 controls/cases in docs/stabilization/inventory.json.",
+    "Source inspection only. No tests, build, browser, or product runtime verification was performed; no coverage verdict is PASS."
+  ],
+  "open_questions": [
+    "Runtime evidence is still needed for member/admin failure and successful landing, active-page retry after edits, another-page retry, panel reopen, and guest sign-in remedy under the campaign's real-data conditions."
+  ],
+  "source_files_reviewed": [
+    "src/features/scrape/ScrapeView.tsx",
+    "src/features/scrape/UnsavedCapturesCard.tsx",
+    "src/lib/sources/save-capture.ts",
+    "tests/unit/save-never-loses-input.test.tsx",
+    "docs/stabilization/inventory.json"
+  ]
+}
