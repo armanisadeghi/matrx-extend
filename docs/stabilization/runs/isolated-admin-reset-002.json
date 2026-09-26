@@ -1,0 +1,72 @@
+{
+  "id": "isolated-admin-reset-002",
+  "status": "unverified",
+  "acceptance": {
+    "schema_version": 1,
+    "case_id": "EXT-F-1003-T51",
+    "scope": "real native Settings side panel in an owned disposable Chrome profile",
+    "status": "unverified",
+    "login_method": "real web form followed by extension Settings Sign in",
+    "response_interception": false,
+    "injected_auth_session": false,
+    "fixture": "Dark theme through Settings and inert local/session values",
+    "steps": [
+      "Real web login reached the dashboard",
+      "Real admin identity, Dark preference, and disposable local/session fixtures observed",
+      "Cancel preserved admin UI, auth, preference, fixture, and prior storage keys"
+    ],
+    "build": {
+      "version": "0.2.60",
+      "source_sha": "fde1a11b054c04d7be1a4904441be9838f568633",
+      "tree_sha256": "7e657067b97bad0f49fb265d65f67b4783944118f2a19a4836c9a6724f9c4e24"
+    },
+    "reset_confirm": {
+      "dialog_reopened": false,
+      "confirm_click_completed": false,
+      "storage_read_attempts": 0,
+      "storage_read_successes": 0
+    },
+    "failure_stage": "reset_confirm_open_action",
+    "failure_category": "stage_operation_failed"
+  },
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T11:35:41.762Z",
+      "runId": "isolated-admin-reset-002",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.8500000000000005,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.18238571428571432,
+        "swapUsedMiB": 1745.56,
+        "repoFreeGiB": 1676.0293159484863,
+        "profileFreeGiB": 23.558040618896484
+      },
+      "cpuBusySamples": [
+        0.1149,
+        0.38450000000000006,
+        0.08730000000000004,
+        0.14,
+        0.08799999999999997,
+        0.262,
+        0.19999999999999996
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T11:35:52.260Z",
+      "runId": "isolated-admin-reset-002",
+      "childExitCode": 1,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ]
+}
