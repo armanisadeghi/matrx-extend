@@ -274,7 +274,7 @@ export function ScrapeView() {
                 className="shrink-0 font-medium text-primary underline-offset-2 hover:underline"
                 onClick={() => void handleSave()}
               >
-                Save
+                Save as a Source
               </button>
             ) : (
               <button
@@ -282,7 +282,7 @@ export function ScrapeView() {
                 className="shrink-0 font-medium text-primary underline-offset-2 hover:underline"
                 onClick={() => guardedCapture('fast')}
               >
-                Capture
+                Capture this page
               </button>
             )}
           </div>

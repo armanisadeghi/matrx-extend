@@ -1,7 +1,8 @@
 /**
  * SOURCE-CONVERGENCE §1 rule 6 on the Scrape panel: a web page whose content
  * has not landed reads "Not yet a Source" WITH the action that makes it one
- * (Capture, then Save); a landed page reads "This page is a Source"; a failed
+ * ("Capture this page", then "Save as a Source" — names distinct from the main
+ * Capture/Save buttons so no two controls share one name); a landed page reads "This page is a Source"; a failed
  * check, a signed-out panel and a page that cannot be a Source never claim
  * either. Real ScrapeView; the scrape hook and recognition are faked.
  */
@@ -85,22 +86,24 @@ afterEach(cleanup);
 const banner = () => screen.queryByTestId('not-yet-a-source');
 
 describe('Scrape panel names a page by whether it is a Source', () => {
-  it('uncaptured page: "Not yet a Source" with Capture, which captures', () => {
+  it('uncaptured page: "Not yet a Source" with "Capture this page", which captures', () => {
     render(<ScrapeView />);
     expect(banner()?.textContent).toMatch(/Not yet a Source — capture this page, then Save/);
     const inBanner = banner()?.querySelector('button') as HTMLButtonElement;
-    expect(inBanner.textContent).toBe('Capture');
+    expect(inBanner.textContent).toBe('Capture this page');
+    expect(screen.getAllByRole('button', { name: /^Capture$/ })).toHaveLength(1);
     expect(inBanner.disabled).toBe(false);
     fireEvent.click(inBanner);
     expect(state.captureActiveTab).toHaveBeenCalledWith({ mode: 'fast' });
   });
 
-  it('captured but not saved: the banner action is Save, and it saves', () => {
+  it('captured but not saved: the banner action is "Save as a Source", and it saves', () => {
     state.current = soup;
     render(<ScrapeView />);
     const inBanner = banner()?.querySelector('button') as HTMLButtonElement;
     expect(banner()?.textContent).toMatch(/Not yet a Source — Save to keep its content/);
-    expect(inBanner.textContent).toBe('Save');
+    expect(inBanner.textContent).toBe('Save as a Source');
+    expect(screen.getAllByRole('button', { name: /^Save$/ })).toHaveLength(1);
     fireEvent.click(inBanner);
     expect(state.save).toHaveBeenCalledTimes(1);
   });
