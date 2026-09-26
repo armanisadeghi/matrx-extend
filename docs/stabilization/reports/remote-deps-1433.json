@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "lane": "stale installed Matrx package graph diagnosis",
+  "observed_at": "2026-09-26T14:33:00Z",
+  "release_attempt": "release-stabilization-019",
+  "status": "release refused before unit tests or build",
+  "evidence": {
+    "release_log": "tmp/release-logs/release-2026-09-26_07-33-08.log",
+    "tracked_lock": "pnpm-lock.yaml resolves @ai-matrx/design-system 0.44.5 and @ai-matrx/records 0.58.24, both direct and transitive.",
+    "installed_lock": "node_modules/.pnpm/lock.yaml still resolves design-system 0.44.3 and records 0.58.22.",
+    "root_links": "node_modules/@ai-matrx/design-system points to the 0.44.3 React 19.3 store copy; node_modules/@ai-matrx/records points to the 0.58.22 React 19.3 store copy.",
+    "store": "The active 0.44.5 and 0.58.24 package copies are absent from node_modules/.pnpm. Older copies are cache residue; the old root links and installed lock are the actual mismatch.",
+    "history": "f683e363 advanced the tracked lock from 0.44.3/0.58.22 to 0.44.5/0.58.24; the tracked lock was subsequently merged after the guarded frozen install that populated node_modules at 07:20."
+  },
+  "cause": "The frozen install and later merged lockfile describe different package graphs. The scanner correctly sees old packages linked in the installed graph alongside current versions declared by the tracked lock.",
+  "repair": {
+    "next_command": "pnpm install --frozen-lockfile --ignore-scripts",
+    "execution": "Run through the repository resource guard on current HEAD; the root owns the sole permit. If WXT preparation is required afterward, run the separately allowed pnpm exec wxt prepare command through the same guard.",
+    "why": "A fresh frozen install reconciles node_modules/.pnpm/lock.yaml and root symlinks to the already resolved tracked lock without changing package versions or deleting shared files. The release log's generic pnpm update remedy would mutate an already correct lockfile and is unnecessary for this mismatch.",
+    "verify": "Confirm node_modules/.pnpm/lock.yaml and root symlinks resolve 0.44.5/0.58.24, then rerun pnpm check:matrx-packages before the release attempt."
+  },
+  "consumer_actions": {
+    "design_system_0_44_4": "SheetJS 0.20.3 security replacement; changelog says none.",
+    "design_system_0_44_5": "SheetJS bundled into registry-safe XLSX artifact; changelog says none.",
+    "records_0_58_23": "SheetJS 0.20.3 security replacement; changelog says none.",
+    "records_0_58_24": "SheetJS bundled for registry-safe package install; changelog says none."
+  },
+  "limitations": "Read-only diagnosis. No install, deletion, test, build, or package update was run in this lane."
+}
