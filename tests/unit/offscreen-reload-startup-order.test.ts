@@ -147,4 +147,24 @@ describe('reload startup ordering', () => {
     expect(mocks.probe).toHaveBeenCalledOnce();
     expect(mocks.connect).toHaveBeenCalledOnce();
   });
+
+  it('fails open only when the read-only stale-offscreen preflight times out', async () => {
+    vi.useFakeTimers();
+    mocks.close.mockReturnValue(new Promise<boolean>(() => undefined));
+    vi.stubGlobal('chrome', {
+      alarms: { onAlarm: { addListener: vi.fn() } },
+      runtime: { onMessage: { addListener: vi.fn() } },
+      storage: { local: { get: vi.fn(async () => ({})) }, onChanged: { addListener: vi.fn() } },
+      tabs: { onUpdated: { addListener: vi.fn() } },
+    });
+    const { bootstrapBackground } = await import('@/lib/background/bootstrap');
+
+    bootstrapBackground();
+    await vi.advanceTimersByTimeAsync(5_000);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(mocks.probe).toHaveBeenCalledOnce();
+    expect(mocks.connect).toHaveBeenCalledOnce();
+    vi.useRealTimers();
+  });
 });

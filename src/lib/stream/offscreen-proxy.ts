@@ -15,7 +15,6 @@ import { getActiveOrganizationId, requireActiveOrganizationId } from '@/lib/org/
 import { markStreamActive, markStreamInactive } from '@/lib/stream/active-runs';
 
 const OFFSCREEN_PATH = 'offscreen.html';
-const STARTUP_CLEANUP_TIMEOUT_MS = 5_000;
 
 let creating: Promise<void> | null = null;
 let startupAcquisitionBarrier: Promise<void> = Promise.resolve();
@@ -26,22 +25,11 @@ let startupAcquisitionBarrier: Promise<void> = Promise.resolve();
  * at the acquisition boundary rather than at one reconnect caller.
  */
 export function deferOffscreenAcquisitionUntil(cleanup: Promise<void>): void {
-  startupAcquisitionBarrier = new Promise((resolve) => {
-    const timeout = setTimeout(() => {
-      log.warn('stream', 'stale offscreen cleanup timed out; continuing acquisition');
-      resolve();
-    }, STARTUP_CLEANUP_TIMEOUT_MS);
-    void cleanup.then(
-      () => {
-        clearTimeout(timeout);
-        resolve();
-      },
-      () => {
-        clearTimeout(timeout);
-        log.warn('stream', 'stale offscreen cleanup failed; continuing acquisition');
-        resolve();
-      },
-    );
+  // Once cleanup has issued closeDocument(), only its terminal completion
+  // makes a new acquisition safe. The cleanup implementation bounds its
+  // read-only preflight instead, before it can issue that destructive call.
+  startupAcquisitionBarrier = cleanup.catch(() => {
+    log.warn('stream', 'stale offscreen preflight failed; continuing acquisition');
   });
 }
 
