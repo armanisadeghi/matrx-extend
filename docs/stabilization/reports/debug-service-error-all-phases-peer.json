@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "report_id": "debug-service-error-all-phases-peer",
+  "feature_id": "EXT-F-1005",
+  "reviewed_source_commit": "3a13c79d",
+  "scope": ["EXT-F-1005-T14", "EXT-F-1005-T15", "EXT-F-1005-T17", "EXT-F-1005-T22"],
+  "A_runtime": {
+    "verdict": "UNVERIFIED_FOR_SERVICE_ERROR",
+    "evidence": "docs/stabilization/runs/debug-log-controls-006.json",
+    "reason": "Run 006 never established its online /health positive control and did not apply offline conditions. Its ordinary Debug controls therefore carry no service-error evidence. The all-phase diagnostic revision has not yet run; this peer launched no browser, build, or test."
+  },
+  "B_source": {
+    "verdict": "ACCEPT_DIAGNOSTIC_SOURCE",
+    "finding": "The observer now records safe request and UI predicates before each ping, after accepted proofs, and on online, offline, return-to-Log, or final persistence failures. Numeric counts and status codes, fixed method/error categories, cache/service-worker/redirect/CORS/blocked/canceled booleans, and allowlisted driver failures can locate a failed phase without choosing a speculative cause.",
+    "oracle_preserved": "The online gate still requires exactly one observed GET /health with HTTP 200, loadingFinished, and visible OK. Initial and final offline gates still require exactly one same-URL GET with net::ERR_INTERNET_DISCONNECTED and visible FAIL. Diagnostic fields never satisfy these gates; failure leaves serviceError unverified or downgrades it after controls.",
+    "restoration_and_scope": "Only the owned side-panel CDP target receives offline conditions. The outage remains active through the control battery after initial proof, and the outer finally restores network/cache/observation after success or failure. A restoration command failure is recorded as failure, not success. The public page is a separate target, and the native harness owns the disposable profile.",
+    "privacy_and_binding": "The endpoint URL and request IDs stay in memory for exact matching. Receipts contain no URL, header, body, initiator stack, raw error, event message, or credential. The native harness hashes the released artifact before launch; the runner compares release receipt and manifest identity before and after the owned run. No mock, injected log, database write, Chat/Pilot action, or Source Save input was added.",
+    "remaining_limit": "Source review does not establish why run 006 missed the online control, whether the new diagnostics isolate it, or whether the four controls pass during a proved outage. A silent health failure also does not prove an error row or badge; T17 keeps its separate positive-badge condition."
+  },
+  "reviewed_paths": [
+    "tests/browser/debug-log-controls-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "docs/stabilization/runs/debug-log-controls-006.json",
+    "docs/stabilization/reports/debug-service-error-escalation.json"
+  ]
+}
