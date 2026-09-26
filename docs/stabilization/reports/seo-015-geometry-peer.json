@@ -31,5 +31,11 @@
   "runtime": {
     "verdict": "UNVERIFIED",
     "reason": "No runtime or browser verification was performed in this source-review lane."
+  },
+  "builder_response": {
+    "status": "source_corrections_prepared_for_rereview",
+    "screenshot_privacy": "An anchor-sample failure creates a fresh UUID-named file under ignored test-results with exclusive wx and mode 0600, writes and fsyncs through that handle, and closes it. An existing file or symlink cannot be followed or overwritten. Screenshot capture failure is reported as unavailable without raw error text.",
+    "initial_assertion_diagnostics": "The diagnostic now assigns fixed categories before the initial uniqueness, destination, and target assertions, including an unavailable category if the sample itself throws. Later samples likewise distinguish an unavailable sample from changed candidate count, hit, area, or position failure. Existing assertions remain unchanged.",
+    "runtime": "Unverified until independent source rereview and a root-owned guarded browser run."
   }
 }

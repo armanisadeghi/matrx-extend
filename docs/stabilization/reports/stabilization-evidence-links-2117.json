@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "report_id": "stabilization-evidence-links-2117",
+  "updated_at": "2026-09-26",
+  "purpose": "Link Source workspace runs 001-003 and guest SEO runs 013-014 to the authoritative stabilization inventory without promoting any full case or feature to passed.",
+  "mappings": [
+    {
+      "feature_id": "EXT-F-1007",
+      "defect_id": "EXT-D-0022",
+      "cell": "admin",
+      "run_ids": ["source-workspace-001", "source-workspace-002", "source-workspace-003"],
+      "receipts": [
+        "docs/stabilization/runs/source-workspace-001.json",
+        "docs/stabilization/runs/source-workspace-002.json",
+        "docs/stabilization/runs/source-workspace-003.json"
+      ],
+      "case_ids": ["EXT-F-1007-T21", "EXT-F-1007-T26"],
+      "summary": "Run 001 Save outcome is ambiguous and no retry was made; run 002 read-only scoped lookup found none; run 003 is an observation-time hit-test diagnostic with no Save input. None establishes saved/open Source success or diagnoses the cause of run 001."
+    },
+    {
+      "feature_id": "EXT-F-1008",
+      "cell": "guest",
+      "run_ids": ["seo-guest-013", "seo-guest-014"],
+      "receipts": [
+        "docs/stabilization/runs/seo-guest-013.json",
+        "docs/stabilization/runs/seo-guest-014.json"
+      ],
+      "case_ids": [
+        "EXT-F-1008-T01",
+        "EXT-F-1008-T02",
+        "EXT-F-1008-T03",
+        "EXT-F-1008-T07",
+        "EXT-F-1008-T09"
+      ],
+      "summary": "Both receipts preserve bounded 16-subtarget results with one unverified metadata door. Run 013 schema activation has no target diagnostic; run 014 failed at metadata_fixture_audit_wait with insufficient observation to determine cause. Automatic exact-data correctness, readability metric correctness, and hreflang/schema remain unverified."
+    }
+  ],
+  "status_policy": "Feature and case statuses, including all mode retest statuses, were left unchanged. Inventory links distinguish bounded partial evidence, unverified results, and diagnostic-only observations; no full EXT-F-1007/EXT-F-1008 case or feature is marked passed.",
+  "validation": {
+    "inventory_json_parse": "pass",
+    "report_json_parse": "pass",
+    "biome_report": "pass",
+    "diff_check": "pass"
+  }
+}

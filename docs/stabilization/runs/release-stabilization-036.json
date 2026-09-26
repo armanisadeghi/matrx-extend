@@ -1,0 +1,22 @@
+{
+  "id": "release-stabilization-036",
+  "status": "stopped-before-push",
+  "candidateVersion": "0.2.78",
+  "wrapper": {
+    "source": "/tmp/matrx-release-stabilization-036.log",
+    "sha256": "355070f477c15b61c11bdf0ebae72a473efad7e9703396ec6a26e29c9e4d1e58",
+    "childExitCode": 1,
+    "finishedAt": "2026-09-26T21:37:48.578Z"
+  },
+  "fullLogAtReview": {
+    "source": "tmp/release-logs/latest.log",
+    "sha256": "54232d09827f7cf2c87e8799ba69f8bdf46a0a49ce2c63c294587da99679d6ae"
+  },
+  "failureReceipt": [
+    "RELEASE STOPPED: mandatory checks failed for v0.2.78 — nothing was pushed.",
+    "matrx-packages failed (exit 1); candidate v0.2.78 was not published.",
+    "STALE: @ai-matrx/content-ir@0.19.13 in this repo and its transitive graph; npm latest 0.19.14.",
+    "All other checked @ai-matrx packages were npm latest."
+  ],
+  "remedy": "Root's guarded refresh installed content-ir 0.19.15. The consumer review is docs/stabilization/reports/package-catchup-007-peer.json; root owns package gate and release retry."
+}

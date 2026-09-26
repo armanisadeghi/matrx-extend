@@ -5,7 +5,8 @@
  * Two real public pages have distinct document titles; no response or auth is mocked.
  */
 import assert from 'node:assert/strict';
-import { writeFile } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
+import { open, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
@@ -623,6 +624,9 @@ async function activateSeoLink(panel, page, groupName, expectedHref) {
     expectedPageReached: false,
     sourcePageStillOpen: null,
     sourceUrlUnchanged: null,
+    samples: [],
+    sampleFailure: null,
+    privateScreenshot: null,
   };
   const sourceUrl = page.url();
   let opened;
@@ -642,23 +646,67 @@ async function activateSeoLink(panel, page, groupName, expectedHref) {
     anchor.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' });
     const rect = anchor.getBoundingClientRect();
     const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2;
+    const top = document.elementFromPoint(x, y);
+    const hit = top === anchor || anchor.contains(top);
+    const topCategory = hit ? 'target'
+      : !top ? 'none'
+      : top.closest('[data-sonner-toast], [role="status"], [role="alert"]') ? 'notification'
+      : top.closest('[role="dialog"], [role="alertdialog"]') ? 'dialog'
+      : top.closest('header, [role="tablist"]') ? 'header_or_tabs'
+      : pane?.contains(top) ? 'same_pane_other_element' : 'outside_pane';
     return { count: 1, href: anchor.href, target: anchor.target,
       x, y, width: rect.width, height: rect.height,
-      hit: anchor.contains(document.elementFromPoint(x, y)) };
+      viewportWidth: innerWidth, viewportHeight: innerHeight,
+      paneScrollTop: pane?.scrollTop ?? null,
+      hit, topCategory };
   })()`,
     );
   try {
+    diagnostic.sampleFailure = 'initial_sample_unavailable';
     const first = await sample();
+    const safeSample = (value) => ({
+      candidateCount: Number.isInteger(value?.count) ? value.count : null,
+      hit: value?.hit === true,
+      topCategory: value?.topCategory ?? 'unavailable',
+      x: Number.isFinite(value?.x) ? Math.round(value.x) : null,
+      y: Number.isFinite(value?.y) ? Math.round(value.y) : null,
+      width: Number.isFinite(value?.width) ? Math.round(value.width) : null,
+      height: Number.isFinite(value?.height) ? Math.round(value.height) : null,
+      viewportWidth: Number.isFinite(value?.viewportWidth) ? value.viewportWidth : null,
+      viewportHeight: Number.isFinite(value?.viewportHeight) ? value.viewportHeight : null,
+      paneScrollTop: Number.isFinite(value?.paneScrollTop) ? value.paneScrollTop : null,
+    });
+    diagnostic.samples.push(safeSample(first));
     diagnostic.candidateCount = Number.isInteger(first?.count) ? first.count : null;
     diagnostic.destinationMatched = first?.href === expectedHref;
     diagnostic.opensNewTab = first?.target === '_blank';
+    diagnostic.sampleFailure =
+      first?.count !== 1
+        ? 'initial_candidate_count'
+        : first.href !== expectedHref
+          ? 'initial_destination'
+          : first.target !== '_blank'
+            ? 'initial_target'
+            : null;
     assert.equal(first?.count, 1, `unique ${groupName} outbound anchor`);
     assert.equal(first.href, expectedHref, `${groupName} anchor points to public DOM destination`);
     assert.equal(first.target, '_blank', `${groupName} opens in a new tab`);
     let previous = first;
     for (let index = 0; index < 2; index += 1) {
       await new Promise((resolveWait) => setTimeout(resolveWait, 50));
+      diagnostic.sampleFailure = 'followup_sample_unavailable';
       const current = await sample();
+      diagnostic.samples.push(safeSample(current));
+      diagnostic.sampleFailure =
+        current?.count !== 1
+          ? 'followup_candidate_count'
+          : current?.hit !== true
+            ? 'hit'
+            : !(current.width > 0 && current.height > 0)
+              ? 'area'
+              : Math.abs(previous.x - current.x) >= 0.25 || Math.abs(previous.y - current.y) >= 0.25
+                ? 'position_stability'
+                : null;
       assert.equal(current?.hit, true, `${groupName} link is unobstructed for real pointer`);
       assert.ok(current.width > 0 && current.height > 0, `${groupName} link has a click area`);
       assert.ok(
@@ -696,6 +744,25 @@ async function activateSeoLink(panel, page, groupName, expectedHref) {
     assert.equal(opened.url(), expectedHref, 'new tab reaches the observed outbound URL');
     diagnostic.step = 'source_page_restoration';
   } catch (error) {
+    if (diagnostic.step === 'anchor_sample') {
+      try {
+        const shot = await panel.send('Page.captureScreenshot', {
+          format: 'png',
+          captureBeyondViewport: false,
+        });
+        const relativePath = `test-results/seo-guest-door-failure-${randomUUID()}.png`;
+        const handle = await open(join(REPO, relativePath), 'wx', 0o600);
+        try {
+          await handle.writeFile(Buffer.from(shot.data, 'base64'));
+          await handle.sync();
+        } finally {
+          await handle.close();
+        }
+        diagnostic.privateScreenshot = relativePath;
+      } catch {
+        diagnostic.privateScreenshot = 'capture_unavailable';
+      }
+    }
     if (error && typeof error === 'object') error.seoDoorDiagnostic = diagnostic;
     throw error;
   } finally {
@@ -1152,7 +1219,17 @@ try {
         assert.equal(page.url(), METADATA_FIXTURE_PAGE, 'owned tab reached public fixture URL');
         await waitObserved(
           'metadata_fixture_audit_wait',
-          () => seoContent(panel),
+          async () => {
+            const state = await seoContent(panel);
+            const publicDomTitleAtSample = await page.evaluate(() => document.title.trim());
+            return {
+              ...state,
+              expectedPublicTitleAtNavigation: fixtureExpected.title,
+              publicDomTitleAtSample,
+              publicTitleStable: publicDomTitleAtSample === fixtureExpected.title,
+              seoTitleMatchesExpected: state.title === fixtureExpected.title,
+            };
+          },
           (state) =>
             state?.scopeValid &&
             state.title === fixtureExpected.title &&

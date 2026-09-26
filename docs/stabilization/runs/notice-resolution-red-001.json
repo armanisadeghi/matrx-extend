@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "run_id": "notice-resolution-red-001",
+  "defect_id": "EXT-D-0023",
+  "source_commit": "ca6a5c95",
+  "command": "pnpm exec vitest run tests/unit/notice-resolution.test.tsx --maxWorkers=1",
+  "guard_log_path": "/tmp/matrx-notice-resolution-red-001.log",
+  "guard_log_sha256": "93c70fbd57805393f9574a97109ed169786f5c4e2361be897892a8dcaab30585",
+  "guard": {
+    "admitted_at": "2026-09-26T21:23:01.112Z",
+    "child_exit_at": "2026-09-26T21:23:03.990Z",
+    "child_exit_code": 1
+  },
+  "result": "Two tests failed on the intended assertion: the no-workspace notice remained after organization selection and after a late no-workspace refusal. No import error or timeout caused the red result."
+}

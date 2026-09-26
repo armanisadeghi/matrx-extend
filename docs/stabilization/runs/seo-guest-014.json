@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "run_id": "seo-guest-014",
+  "feature_id": "EXT-F-1008",
+  "status": "unverified",
+  "source": {
+    "result_path": "test-results/seo-guest-acceptance.json",
+    "result_sha256": "93627f3a076c2a29e8435ac2ec3ba761496c80eec8b0c3927b2029ed141b294d",
+    "guard_log_path": "/tmp/matrx-seo-guest-014.log",
+    "guard_log_sha256": "3ec273535efa07f0910ee4f59796a27f9ed6907f079413173e1253fbef5af765"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T21:14:33.096Z",
+    "healthy_watch_samples": 2,
+    "child_exit_at": "2026-09-26T21:15:11.904Z",
+    "child_exit_code": 1
+  },
+  "acceptance": {
+    "passing_subtargets_before_failure": 16,
+    "unverified_subtargets_before_failure": 1,
+    "failure_stage": "metadata_fixture_audit_wait",
+    "last_safe_stage": "metadata_fixture_audit_wait_sample",
+    "last_safe_observable": {
+      "scopeValid": true,
+      "title": "Airbnb: Vacation Rentals, Cabins, Beach Houses, Unique Homes & Experiences",
+      "headings": true,
+      "reAudit": true,
+      "error": false
+    }
+  },
+  "interpretation": "The SEO pane was linked, displayed an Airbnb title and headings, offered Re-audit, and had no audit error. The saved result does not include the public DOM title captured immediately before the wait, so it cannot distinguish a title mismatch from another transient wait condition. Run 013 reached later metadata stages; run 014 failed before manual re-audit. No product defect or fixture stability conclusion is established by run 014 alone."
+}

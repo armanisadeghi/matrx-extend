@@ -1,0 +1,51 @@
+{
+  "id": "EXT-D-0023",
+  "feature_id": "EXT-F-2010",
+  "case_ids": ["EXT-F-2010-T02", "EXT-F-1007-T04"],
+  "surface": "Global side-panel notices over Capture, Scrape, Settings and Vault",
+  "auth_mode": "signed-in member selecting an organization on this device",
+  "reproduction": [
+    "Open the side panel before selecting an organization. The Capture list read raises a no-workspace refusal and NoticeHost renders a fixed bottom notice.",
+    "Select an existing organization in Settings. Capture refreshes, but the original no-workspace notice persists until manually dismissed.",
+    "On a 360 by 421 panel, the stale notice overlaps the enabled Scrape Save button. The trusted pointer driver finds zero hit-tested points within that button."
+  ],
+  "expected": "The no-workspace notice remains visible while no organization is selected, then retires when an active organization becomes available, including a delayed refusal that arrives after selection. Unrelated refusals remain visible.",
+  "actual": "The notice store retains all notices until explicit dismissal or eviction. The selected-workspace event refreshes Capture but does not retire the resolved notice, which can cover unrelated controls.",
+  "evidence": [
+    "docs/stabilization/runs/source-workspace-004.json",
+    "docs/stabilization/reports/d22-click-diagnosis.json",
+    "docs/stabilization/reports/reset-occlusion-diagnosis.json",
+    "src/components/NoticeHost.tsx",
+    "src/lib/capture-ladder/queue.ts",
+    "src/state/notices.ts",
+    "tests/unit/notice-resolution.test.tsx",
+    "/tmp/matrx-notice-resolution-red-001.log"
+  ],
+  "severity": "S2: a resolved notice can obstruct Save, Reset and other visible controls after ordinary workspace selection; no Source data loss is demonstrated",
+  "priority": "P1: retire resolved no-workspace notices in the shared notice layer so core controls remain usable, while preserving unrelated errors",
+  "state": "fixed",
+  "owner": "/root/d22_ci_refusal_timing",
+  "transition_history": [
+    {
+      "at": "2026-09-26T21:17:51.727Z",
+      "from": null,
+      "to": "open",
+      "reason": "Read-only native Source diagnostic identified the fixed no-workspace notice covering Save after organization selection."
+    },
+    {
+      "at": "2026-09-26T21:23:03.990Z",
+      "from": "open",
+      "to": "in-fix",
+      "reason": "Guarded two-case regression run failed on the intended stale-notice assertions for both an existing notice and a late arrival."
+    },
+    {
+      "at": "2026-09-26T21:29:11.393Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "The typed notice-resolution repair passed the guarded two-file, 24-test run. Independent source review and native UI retest remain pending."
+    }
+  ],
+  "fix_commits": ["9b64e44e"],
+  "ui_retest": "pending; the original D22 Save attempt remains ambiguous and its private checkpoint must not be reset or retried",
+  "closure_requirement": "Guarded red-to-green notice-resolution tests, typecheck, independent source review, and a read-only native panel rerun showing that selecting a workspace removes only the resolved no-workspace notice so Save is hit-testable. No second Save input is needed."
+}

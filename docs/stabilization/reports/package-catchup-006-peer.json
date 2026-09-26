@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "report_id": "package-catchup-006-peer",
+  "scope": "Independent consumer review of @ai-matrx/content-ir 0.19.11 to 0.19.13 and @ai-matrx/records 0.58.25 to 0.58.26 after release-stabilization-035 stopped at package freshness. No install, build, tests, or browser run in this lane.",
+  "source_basis": "The aidream checkout's package.json files name 0.19.13 and 0.58.26; its newer release tags were not present locally. Compared the available older tags to aidream HEAD 808a5873bb04b84f60676d5a7f913966f3cb11d5 and checked key changes in the installed packages.",
+  "packages": {
+    "contentIr": {
+      "installedVersion": "0.19.13",
+      "installedChangelogSha256": "783324dd4b625a05440552455a70d381d5bedd85f54944f5f192abed3864ef0d",
+      "installedSourceBundleSha256": "c691d4dfb56d348b99073071680a0782793257cc5ba086f4f699b7da16498f86",
+      "actualChange": "The /source API adds and exports isHtmlBlockTagName(name), a CommonMark block-tag name classifier. GFM and source-island test vectors expand. The installed source bundle and declaration export the helper. Existing callable signatures in the source diff are unchanged.",
+      "changelogAccuracy": "Both 0.19.12 and 0.19.13 claim metadata-only republish. The older tag-to-matching-source diff has a real additive implementation/export change; no required consumer action is stated.",
+      "extensionUse": "Extension source imports @ai-matrx/content-ir/core and /wire for envelope, partial-kind, and metadata validation. It has no /source import or call to isHtmlBlockTagName or the table helpers. Content-ir-react and kit resolve the updated content-ir transitively in the lockfile.",
+      "consumerAction": "None required for current extension call sites."
+    },
+    "records": {
+      "installedVersion": "0.58.26",
+      "installedChangelogSha256": "a06c3d74b922b7e450294b3d407915d7694be1f90a7724565aa9886f135170f2",
+      "installedCoreBundleSha256": "2ccad14a1a838da7f37c565e2ecd36376ee1a8a0e3d7fe281be350239b1735fe",
+      "actualChange": "Regenerated store.generated.ts reflects seven additional live door names, updated refusal-source lists, and entity-token changes. Installed /core includes entries such as dashboard_restore and where_lists_live. No hand-written core client API changed in the source diff.",
+      "changelogAccuracy": "0.58.26 claims docs/metadata drift. The generated runtime store catalog changed; it is read by the package's door availability gate, so this is a real data/behavior update, though it does not alter extension call signatures.",
+      "extensionUse": "Extension constructs a RecordsClient through @ai-matrx/records/core and calls existing table/record operations. It does not import STORE_DOORS, STORE_REFUSAL_CODES, ENTITY_TOKENS, or the new door names directly.",
+      "consumerAction": "None required for current extension call sites. Existing door checks should continue to resolve; root verification still owns runtime evidence."
+    }
+  },
+  "refresh_observed": {
+    "wrapperLog": "/tmp/matrx-package-catchup-006.log",
+    "wrapperSha256": "fc427695a209ee246ff2ad97d4c76c510e35a64a3e21858446c10d7713e97ae9",
+    "childExitCode": 0,
+    "finishedAt": "2026-09-26T21:34:29.837Z",
+    "observedLockfileSha256": "201e0a1bc0ef77d797c9d3075333f00cdfe7f29c24ab0e3070f4b979660d9baf",
+    "lockfileDelta": "Content-ir 0.19.11 to 0.19.13 and records 0.58.25 to 0.58.26, including content-ir transitive references. package.json already declares latest."
+  },
+  "verdict": "NO_REQUIRED_EXTENSION_SOURCE_ADOPTION. Installed packages and source were inspected, but package gate, compile, tests, browser behavior, and release retry are root-owned and not verified in this lane."
+}

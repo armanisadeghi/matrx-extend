@@ -25,6 +25,9 @@ const SOURCE_ORIGINS = new Set(['https://aimatrx.com', WEB_ORIGIN]);
 const EMAIL = 'admin@admin.com';
 const FIXTURES = ['https://example.com/', 'https://www.iana.org/domains/reserved'];
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+// The existing D22 Save attempt is reserved. This acceptance can only observe
+// the D23 notice remedy and the public capture's pointer geometry.
+const D23_READ_ONLY = true;
 
 let stage = 'before_owned_profile';
 const report = {
@@ -49,6 +52,12 @@ const report = {
     approvedOrganizationRestored: 'unverified',
     missingOrganization: 'unverified',
     lateInflightSave: 'unverified',
+    d23: {
+      noWorkspaceNoticeBeforeSelection: 'unverified',
+      noWorkspaceNoticeAfterSelection: 'unverified',
+      savePointerAfterPublicCapture: 'unverified',
+      readOnlyAcceptance: 'unverified',
+    },
   },
 };
 const fail = (code) => {
@@ -186,6 +195,18 @@ async function chooseOrganization(panel, name, approvedName) {
       state?.displayed === name &&
       Boolean(state.storedId) &&
       state.storedApproved === (name === approvedName),
+  );
+}
+
+// Return only a count for the known, typed no-workspace failure UI. The
+// private report must not contain any organization name or notice text.
+async function noWorkspaceCaptureNoticeCount(panel) {
+  return evaluate(
+    panel,
+    `(() => [...document.querySelectorAll('[role="alert"]')]
+      .filter((alert) => alert.querySelector('.font-medium')?.textContent.trim() === 'Capture list unavailable'
+        && alert.querySelector('p')?.textContent.includes('no workspace is selected, so the request was never sent'))
+      .length)()`,
   );
 }
 
@@ -564,6 +585,18 @@ try {
         fail('isolated_settings_baseline_not_intact');
       report.observations.protectedSettingsAtEntry = true;
 
+      stage = 'd23_notice_before_organization_selection';
+      // The initial Capture queue is read-only. A bounded condition wait
+      // allows its honest refusal to arrive without manufacturing it.
+      const initialNotice = await waitFor(
+        'initial_no_workspace_capture_notice',
+        () => noWorkspaceCaptureNoticeCount(panel),
+        (count) => count > 0,
+        5_000,
+      ).catch(() => noWorkspaceCaptureNoticeCount(panel));
+      report.observations.d23.noWorkspaceNoticeBeforeSelection =
+        initialNotice === 1 ? 'observed' : initialNotice === 0 ? 'not_observed' : 'ambiguous';
+
       const approvedName = await privateApprovedOrganization();
       stage = 'approved_organization_selection';
       const approved = await chooseOrganization(panel, approvedName, approvedName);
@@ -571,7 +604,18 @@ try {
       if (!approvedId) fail('approved_org_id_unavailable');
       report.observations.approvedExistingOrganizationSelectedByUi = true;
 
+      stage = 'd23_notice_after_organization_selection';
+      const noticeAfterSelection = await waitFor(
+        'no_workspace_capture_notice_retired',
+        () => noWorkspaceCaptureNoticeCount(panel),
+        (count) => count === 0,
+        10_000,
+      ).catch(() => noWorkspaceCaptureNoticeCount(panel));
+      report.observations.d23.noWorkspaceNoticeAfterSelection =
+        noticeAfterSelection === 0 ? 'absent' : 'still_present';
+
       const checkpoint = await existingSaveAttempt(approvedId);
+      if (D23_READ_ONLY && !checkpoint) fail('d23_existing_save_checkpoint_required');
       report.mode = checkpoint ? 'read_only_recovery' : 'single_save_attempt';
       let sourceId;
       if (checkpoint) {
@@ -599,6 +643,21 @@ try {
               60_000,
             );
             report.observations.readOnlySavePointer = await inspectSavePointerWithoutInput(panel);
+            const pointer = report.observations.readOnlySavePointer;
+            report.observations.d23.savePointerAfterPublicCapture =
+              pointer.activeScrapePane &&
+              pointer.uniqueTargetInActiveScrapePane &&
+              pointer.targetDisabled === false &&
+              pointer.clippedTargetHasArea &&
+              pointer.selectedPointAvailable
+                ? 'hit_testable'
+                : 'not_hit_testable';
+            report.observations.d23.readOnlyAcceptance =
+              report.observations.d23.noWorkspaceNoticeBeforeSelection === 'observed' &&
+              report.observations.d23.noWorkspaceNoticeAfterSelection === 'absent' &&
+              report.observations.d23.savePointerAfterPublicCapture === 'hit_testable'
+                ? 'observed'
+                : 'unverified';
             try {
               const shot = await panel.send('Page.captureScreenshot', {
                 format: 'png',

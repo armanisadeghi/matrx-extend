@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "report_id": "d23-inventory-link",
+  "updated_at": "2026-09-26",
+  "purpose": "Link bounded EXT-D-0023 notice-resolution evidence, Source workspace run 004, and guest SEO run 015 to their existing authoritative feature/case records without promoting any whole case or feature.",
+  "mappings": [
+    {
+      "defect_id": "EXT-D-0023",
+      "feature_id": "EXT-F-2010",
+      "case_id": "EXT-F-2010-T02",
+      "modes": ["member", "admin"],
+      "runs": [
+        "docs/stabilization/runs/notice-resolution-red-001.json",
+        "docs/stabilization/runs/notice-resolution-green-001.json"
+      ],
+      "summary": "Red guard confirmed the stale notice assertions fail; green guard passed 24 tests across two focused test files. This is focused unit evidence only; independent source review and native read-only UI retest are pending, so T02 and EXT-F-2010 remain unverified. D22 remains open and its original Save outcome stays ambiguous."
+    },
+    {
+      "defect_id": "EXT-D-0022",
+      "related_defect_id": "EXT-D-0023",
+      "feature_id": "EXT-F-1007",
+      "cases": ["EXT-F-1007-T04", "EXT-F-1007-T21"],
+      "mode": "admin",
+      "run": "docs/stabilization/runs/source-workspace-004.json",
+      "summary": "Read-only diagnosis observed a persistent no-workspace notice covering the enabled Save target after org selection. No Save input was sent, recognition lookup found none, and the existing reserved checkpoint remains unchanged. This links the obstruction to D23 but does not prove the earlier Save result or any Source save/open success."
+    },
+    {
+      "feature_id": "EXT-F-1008",
+      "case_id": "EXT-F-1008-T09",
+      "mode": "guest",
+      "run": "docs/stabilization/runs/seo-guest-015.json",
+      "summary": "The structured-data anchor candidate matched its expected destination, but trusted activation did not return from pointer press/release and no new page appeared. Receipt remains unverified and does not identify whether the cause was obstruction, zero area, or moving geometry."
+    }
+  ],
+  "status_boundary": "Only run IDs and bounded runtime-evidence links were added. Feature test_status and retest_status remain unchanged; case verification statuses remain unchanged. No full case/feature pass is claimed. D22 remains open; D23 UI retest is pending.",
+  "validation": {
+    "inventory_json_parse": "pass",
+    "report_json_parse": "pass",
+    "ascii_escaping": "pass",
+    "diff_check": "pass"
+  }
+}

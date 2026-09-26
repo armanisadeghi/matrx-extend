@@ -1,0 +1,22 @@
+{
+  "id": "release-stabilization-035",
+  "status": "stopped-before-push",
+  "candidateVersion": "0.2.78",
+  "wrapper": {
+    "source": "/tmp/matrx-release-stabilization-035.log",
+    "sha256": "6baa02547d561969d2d6320c2612a0fbe0283b5347bb7111800c13a1cab21225",
+    "childExitCode": 1,
+    "finishedAt": "2026-09-26T21:32:49.129Z"
+  },
+  "fullLogAtReview": {
+    "source": "tmp/release-logs/latest.log",
+    "sha256": "a915da9702390212f0878f7aa8e86e45fa9bcd5ab570e98b3dd73b752a60b210"
+  },
+  "failureReceipt": [
+    "RELEASE STOPPED: mandatory checks failed for v0.2.78 — nothing was pushed.",
+    "matrx-packages failed (exit 1); candidate v0.2.78 was not published.",
+    "STALE: @ai-matrx/content-ir@0.19.11 in this repo and transitive graph; npm latest 0.19.13.",
+    "STALE: @ai-matrx/records@0.58.25 in this repo; npm latest 0.58.26."
+  ],
+  "remedy": "Guarded package catch-up completed separately; consumer review is docs/stabilization/reports/package-catchup-006-peer.json. Root owns package gate and full release retry."
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "report_id": "d23-implementation-peer",
+  "reviewed_commits": [
+    "ca6a5c9590e76ede72bc6608a8b5f8e894e6b229",
+    "9b64e44ef4bd4177238956547c70f288221b98a7"
+  ],
+  "scope": "Independent source review of D23 red guard and notice-resolution fix, including notice producers, relay contexts, organization lifecycle, and unrelated refusal preservation. No tests or browser run in this lane.",
+  "A_live_ui": {
+    "verdict": "PENDING_READ_ONLY_NATIVE_RETEST",
+    "reason": "The fix can retire the notice in source, but no live panel observation in this review establishes the overlay disappears or that Save becomes hit-testable. The original Save attempt remains ambiguous and must not be retried."
+  },
+  "B_source_quality": {
+    "verdict": "READY_FOR_READ_ONLY_NATIVE_RETEST",
+    "blockers": [],
+    "findings": [
+      "The producer census finds NO_ORGANIZATION only at capture-ladder queue.listNeedsYou; failDbCall marks a resolution condition only when classifyDbFailure returns no_workspace. Other database failure kinds and manually pushed notices receive no condition and survive retireResolved.",
+      "The cross-context path preserves the whole Notice object: non-sidepanel pushNotice sends it through DB_FAILURE_NOTICE and the sidepanel NoticeHost adds the received object without reconstruction, including resolvesWhen. Sidepanel-local failures add directly to the same store.",
+      "NoticeHost resolves in both timing orders: the storage-change listener retires tagged notices when a non-null organization arrives, and a notice-list effect rereads the current organization so a delayed refusal arriving after selection is retired. The pending read is canceled with an alive guard on effect cleanup. Sign-out/null changes do not retire notices.",
+      "retireResolved filters only notices with the requested condition. The test covers an existing tagged refusal plus an unrelated error, and a late tagged refusal after selection; recorded red receipt attributes both failures to the intended stale-notice assertions rather than an import or timeout failure."
+    ],
+    "limits": [
+      "The focused unit guard is root-reported green, not run by this peer. Its mocked organization listener does not exercise Chrome's real cross-context storage event or runtime message relay; those paths are supported by source inspection and remain part of the native read-only retest."
+    ]
+  },
+  "checks": ["Independent source review only; no tests, browser, or build launched."]
+}

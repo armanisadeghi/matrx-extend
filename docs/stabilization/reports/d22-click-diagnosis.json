@@ -2,14 +2,16 @@
   "schema_version": 1,
   "report_id": "d22-click-diagnosis",
   "defect_id": "EXT-D-0022",
-  "verdict": "Save pointer cause not yet established; a blocked hit target is confirmed",
+  "verdict": "A stale no-workspace notice covers the Save button after workspace selection; original click dispatch remains ambiguous",
   "evidence": [
     "Run 001 reached one_save_click after capture and a durable one-attempt reservation, then the trusted driver threw. That run did not retain the pointer phase or error category, so a Save dispatch cannot be inferred or ruled out.",
     "Run 002 used the existing checkpoint and real admin UI to obtain one scoped recognition lookup with result none. It stopped before Save. The checkpoint was neither reset nor deleted.",
     "Run 003 captured the same public page and found one visible, enabled Save button in the active Scrape pane, with nonzero target and clipped area. Its center and all nine interior points failed the hit test. No Save input was sent.",
-    "The trusted driver resolves exact visible button text globally, scrolls the unique target, requires a hit-tested interior point, and dispatches press and release only after stable samples. Run 003 identifies a blocked hit target at observation time; run 001 did not record enough detail to prove the same cause."
+    "Run 004 reports a 360 by 421 viewport and Save at x12 y365 with width336 and height36. Its center occluder is a paragraph outside the active Scrape pane at y365. Root's ignored private screenshot identifies the covering element as the persistent Capture list unavailable notice saying no workspace was selected, despite the approved workspace already being selected.",
+    "The notice originates when the capture queue checks before workspace selection. NoticeHost renders notices fixed at the bottom with pointer events enabled; notices persist until manual dismissal. Other browser acceptance runners explicitly dismiss this same no-workspace notice after selecting an organization. The capture queue refreshes on organization change, but its resolved notice remains over unrelated controls.",
+    "The trusted driver requires a stable hit-tested point before dispatch. Run 004 proves the stale notice blocks that condition now; run 001 did not record enough detail to prove the same cause then or whether that earlier click dispatched."
   ],
-  "change": "The read-only probe now adds only viewport and target geometry, the covering element's allowlisted tag, role, position and rectangle, and an ignored private 0600 screenshot. It still exits diagnostic_only without Save input or checkpoint changes.",
-  "next_step": "Root runs the guarded diagnostic branch once more and inspects the structural occluder and private screenshot to identify the covering layer. Do not retry Save or call the absence of a Source proof that the original click was never dispatched.",
-  "runtime": "Root ran the first read-only diagnostic as source-workspace-003. The geometry/occluder extension has not been run. This lane launched no browser, test, or build."
+  "change": "No product fix has been made in this report. The existing read-only probe and immutable run receipts preserve the click boundary without sending another Save.",
+  "next_step": "Treat stale notices as a separate product defect: attach a typed resolution condition to no-workspace notices and retire them when a workspace becomes selected, with a guard proving other failure notices remain. Do not retry the original Save or reset its checkpoint.",
+  "runtime": "Root ran read-only diagnostics through source-workspace-004. This lane launched no browser, test, or build."
 }

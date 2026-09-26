@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "report_id": "d23-native-peer",
+  "reviewed_source_commit": "f05a6b1e7e4b3f1baa6b144e6aa51092a8df240a",
+  "source_review": {
+    "verdict": "ACCEPT",
+    "reason": "The runner observes the real typed no-workspace alert before and after UI organization selection without creating or injecting state. Missing, duplicate, and persistent notice outcomes cannot satisfy readOnlyAcceptance. The existing D22 checkpoint is required before recovery; when recognition returns none, only a local Capture action and non-input hit-test run, followed by a diagnostic-only stop. The existing Save click remains in the source for the non-D23 path, but is unreachable in this run while D23_READ_ONLY is true and the checkpoint guard succeeds.",
+    "evidence": [
+      "noWorkspaceCaptureNoticeCount reads the known alert's fixed title and sentence, returns only a count, and performs no state mutation.",
+      "Before selection, only exactly one naturally observed alert is classified observed; after selection, the bounded wait must yield zero. D23 acceptance also requires all pointer checks, so absent initial evidence remains unverified.",
+      "The checkpoint is checked before choosing the recovery branch; D23_READ_ONLY && !checkpoint fails closed. A valid checkpoint selects read_only_recovery, and the none branch performs no Save click before failing with a no-retry diagnostic.",
+      "The read-only pointer acceptance requires active Scrape pane, unique in-pane enabled Save button, positive clipped area, and at least one hit-tested interior point. The helper inspects DOM geometry only and sends no pointer input.",
+      "The failure screenshot is created exclusively with `wx` and mode 0600; failures leave the screenshot unavailable rather than overwriting an existing file. The result remains diagnostic_only/unverified, not a top-level acceptance pass."
+    ],
+    "limits": [
+      "No browser, build, or test was run by this peer; runtime is unverified.",
+      "Source review confirms the no-Save path as written but does not establish that the native notice naturally appears or retires in a real session."
+    ]
+  },
+  "runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "No runtime or browser verification was performed in this source-review lane."
+  }
+}
