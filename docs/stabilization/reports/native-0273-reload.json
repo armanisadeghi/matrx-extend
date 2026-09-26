@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "id": "native-0273-reload",
+  "status": "pass_with_runtime_limitations",
+  "observed_at": "2026-09-26",
+  "actual_runtime": {
+    "browser": "Google Chrome primary profile",
+    "extensions_page": "chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "dev_extension": {
+      "name": "Matrx Extend",
+      "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "source": ".output/chrome-mv3-dev",
+      "version_before": "0.2.72",
+      "reload_result": "Reloaded",
+      "version_after": "0.2.73",
+      "panel_about_version": "0.2.73"
+    },
+    "store_extension": {
+      "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+      "state_after": "off"
+    },
+    "resource_lease": {
+      "run_id": "native-0273-reload",
+      "wrapper_session": 10731,
+      "admission": "2026-09-26T18:53:12.840Z",
+      "stop_confirmed": "2026-09-26T18:54:27.216Z",
+      "wrapper_exit": 0,
+      "receipt_log": "/tmp/matrx-native-0273-reload.log",
+      "receipt_log_sha256": "8b432dc36ca882fc64a2351f60b72604dddd1d9aec131a70ba350259da136e7f"
+    },
+    "identity_and_settings": {
+      "account": "admin@admin.com",
+      "role": "ADMIN",
+      "organization_selection": "same selection observed before and after reload; label omitted",
+      "optional_permissions": {
+        "cookies": "off",
+        "pageCapture": "off",
+        "clipboardRead": "off",
+        "tabCapture": "off"
+      },
+      "local_engine_port": {
+        "before_reload": "auto",
+        "after_reload": "auto",
+        "verified": true,
+        "saved_override": "not inspected"
+      },
+      "other_settings": "No settings were changed."
+    },
+    "desktop_bridge": {
+      "ui_status": "Not connected",
+      "interpretation": "The panel reports disconnected. Engine absence was provided as known task context and was not independently inspected."
+    },
+    "scope": "Reloaded the unpacked dev extension and inspected its Details and Settings/About views. No chat, Pilot, provider, database, extension permission, organization, sign-in, or settings action was performed."
+  },
+  "limits": [
+    "This records the live Chrome UI and extension panel only; it does not establish release provenance, source commit, package contents, backend health, or behavior outside the inspected views.",
+    "The disconnected Desktop Bridge UI state does not by itself prove why the engine is absent or whether any engine process is running.",
+    "No screenshots or private organization values were saved in this report."
+  ]
+}
