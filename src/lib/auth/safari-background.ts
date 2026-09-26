@@ -49,14 +49,19 @@ async function clearAttempt(attempt: SafariAttempt, failure?: string): Promise<v
   }
 }
 
-async function failAttempt(attempt: SafariAttempt, message: string, closeTab = false): Promise<void> {
+async function failAttempt(
+  attempt: SafariAttempt,
+  message: string,
+  closeTab = false,
+): Promise<void> {
   await clearAttempt(attempt, message);
   if (closeTab) await chrome.tabs.remove(attempt.tabId).catch(() => undefined);
 }
 
 export async function startSafariAuthorization(): Promise<{ pending: true }> {
   if (BROWSER !== 'safari') throw new Error('Safari authorization is unavailable in this browser');
-  if (!ENV.SAFARI_OAUTH_CLIENT_ID) throw new Error('Safari OAuth client configuration is unavailable');
+  if (!ENV.SAFARI_OAUTH_CLIENT_ID)
+    throw new Error('Safari OAuth client configuration is unavailable');
 
   const previous = await readAttempt();
   if (previous) await clearAttempt(previous);
@@ -67,12 +72,30 @@ export async function startSafariAuthorization(): Promise<{ pending: true }> {
     const state = generateNonce();
     const attemptId = `oauth:${state}`;
     const redirectUri = getSafariRedirectUri();
-    const attempt: SafariAttempt = { attemptId, state, tabId: tab.id, redirectUri, createdAt: Date.now() };
+    const attempt: SafariAttempt = {
+      attemptId,
+      state,
+      tabId: tab.id,
+      redirectUri,
+      createdAt: Date.now(),
+    };
     const challenge = await generateCodeChallenge(verifier);
-    await chrome.storage.session.set({ [verifierKey(state)]: verifier, [ACTIVE_AUTH_ATTEMPT_KEY]: attemptId, [STORAGE_KEYS.SAFARI_AUTH_ATTEMPT]: attempt });
+    await chrome.storage.session.set({
+      [verifierKey(state)]: verifier,
+      [ACTIVE_AUTH_ATTEMPT_KEY]: attemptId,
+      [STORAGE_KEYS.SAFARI_AUTH_ATTEMPT]: attempt,
+    });
     await chrome.storage.session.remove([STORAGE_KEYS.SAFARI_AUTH_FAILURE]);
     chrome.alarms.create(ALARMS.SAFARI_AUTH_TIMEOUT, { when: attempt.createdAt + AUTH_TIMEOUT_MS });
-    const params = new URLSearchParams({ response_type: 'code', client_id: ENV.SAFARI_OAUTH_CLIENT_ID, redirect_uri: redirectUri, state, code_challenge: challenge, code_challenge_method: 'S256', scope: 'email profile' });
+    const params = new URLSearchParams({
+      response_type: 'code',
+      client_id: ENV.SAFARI_OAUTH_CLIENT_ID,
+      redirect_uri: redirectUri,
+      state,
+      code_challenge: challenge,
+      code_challenge_method: 'S256',
+      scope: 'email profile',
+    });
     await chrome.tabs.update(attempt.tabId, { url: `${authorizeUrl()}?${params.toString()}` });
     log.info('auth', 'Safari OAuth sign-in tab opened', { callbackOrigin: redirectUri });
   } catch (error) {
@@ -100,7 +123,7 @@ async function handleCallback(tabId: number, callbackUrl: string): Promise<void>
   if (received.origin !== expected.origin || received.pathname !== expected.pathname) return;
   const state = received.searchParams.get('state');
   const code = received.searchParams.get('code');
-  if (received.searchParams.has('error')) {
+  if (received.searchParams.has('error') && state === attempt.state) {
     await failAttempt(attempt, 'Sign-in was cancelled or rejected. Please try again.');
     return;
   }
@@ -109,7 +132,9 @@ async function handleCallback(tabId: number, callbackUrl: string): Promise<void>
     return;
   }
   try {
-    await chrome.storage.session.set({ [STORAGE_KEYS.SAFARI_AUTH_ATTEMPT]: { ...attempt, claimed: true } });
+    await chrome.storage.session.set({
+      [STORAGE_KEYS.SAFARI_AUTH_ATTEMPT]: { ...attempt, claimed: true },
+    });
     const user = await completeBackgroundAuthorizationCode(
       attempt.attemptId,
       state,
