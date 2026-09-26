@@ -1,0 +1,195 @@
+{
+  "id": "release-stabilization-013",
+  "status": "resource-stopped",
+  "published": false,
+  "exit_code": 3,
+  "reason": "Two consecutive macOS pressure level2 samples; watchdog stopped owned process group during packaging. Do not classify product failure or publish partial artifact.",
+  "raw_log": "tmp/release-logs/release-2026-09-26_05-10-03.log",
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:10:03.447Z",
+      "runId": "release-stabilization-013",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.08,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.20402857142857145,
+        "swapUsedMiB": 1745.56,
+        "repoFreeGiB": 1675.9054260253906,
+        "profileFreeGiB": 23.480693817138672
+      },
+      "cpuBusySamples": [
+        0.15670000000000006, 0.10340000000000005, 0.18900000000000006, 0.16349999999999998,
+        0.08760000000000001, 0.20540000000000003, 0.5226
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:10:19.765Z",
+      "runId": "release-stabilization-013",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.84,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.43,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.6340999999999999,
+        "swapUsedMiB": 1745.56,
+        "repoFreeGiB": 1675.9056777954102,
+        "profileFreeGiB": 23.3897705078125
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:10:36.208Z",
+      "runId": "release-stabilization-013",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.84,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.4,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.2023999999999999,
+        "swapUsedMiB": 1737.56,
+        "repoFreeGiB": 1675.9187393188477,
+        "profileFreeGiB": 23.37884521484375
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:10:52.583Z",
+      "runId": "release-stabilization-013",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 8.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.65,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.509,
+        "swapUsedMiB": 1737.56,
+        "repoFreeGiB": 1675.9157829284668,
+        "profileFreeGiB": 23.376697540283203
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:11:08.936Z",
+      "runId": "release-stabilization-013",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 7.2,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.61,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.374,
+        "swapUsedMiB": 1737.56,
+        "repoFreeGiB": 1675.9194717407227,
+        "profileFreeGiB": 23.374008178710938
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:11:25.320Z",
+      "runId": "release-stabilization-013",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 7.36,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.63,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.5038,
+        "swapUsedMiB": 1737.56,
+        "repoFreeGiB": 1675.9192657470703,
+        "profileFreeGiB": 23.370365142822266
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:11:41.700Z",
+      "runId": "release-stabilization-013",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 6.88,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.47,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.5271,
+        "swapUsedMiB": 1737.56,
+        "repoFreeGiB": 1675.9193115234375,
+        "profileFreeGiB": 23.37417984008789
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:11:58.076Z",
+      "runId": "release-stabilization-013",
+      "reasons": ["RESOURCE_PRESSURE_UNSAFE"],
+      "sample": {
+        "pressureLevel": 2,
+        "availableMemoryGiB": 7.04,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.47,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.37429999999999997,
+        "swapUsedMiB": 1737.56,
+        "repoFreeGiB": 1675.9192657470703,
+        "profileFreeGiB": 23.387161254882812
+      },
+      "code": "RESOURCE_WATCH_UNSAFE"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:12:14.441Z",
+      "runId": "release-stabilization-013",
+      "reasons": ["RESOURCE_PRESSURE_UNSAFE"],
+      "sample": {
+        "pressureLevel": 2,
+        "availableMemoryGiB": 5.76,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.43,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.388,
+        "swapUsedMiB": 1737.56,
+        "repoFreeGiB": 1675.9192008972168,
+        "profileFreeGiB": 23.389232635498047
+      },
+      "code": "RESOURCE_WATCH_UNSAFE"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:12:14.442Z",
+      "runId": "release-stabilization-013",
+      "reasons": ["RESOURCE_PRESSURE_UNSAFE"],
+      "code": "RESOURCE_STOP_AT_SAFE_BOUNDARY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:12:14.471Z",
+      "runId": "release-stabilization-013",
+      "groupId": 45129,
+      "reason": "watchdog",
+      "signal": "SIGTERM",
+      "code": "RESOURCE_GROUP_STOP_REQUESTED"
+    }
+  ]
+}
