@@ -95,6 +95,10 @@ async function scrapePane(panel) {
       capture: linked ? [...pane.querySelectorAll('button')].filter(el => el.textContent.trim() === 'Capture').length : 0,
       recapture: linked ? [...pane.querySelectorAll('button')].filter(el => el.textContent.trim() === 'Re-capture').length : 0,
       deep: linked ? [...pane.querySelectorAll('button')].filter(el => el.textContent.trim() === 'Scroll & capture').length : 0,
+      recaptureEnabled: linked ? [...pane.querySelectorAll('button')]
+        .filter(el => el.textContent.trim() === 'Re-capture').some(el => !el.disabled) : false,
+      deepEnabled: linked ? [...pane.querySelectorAll('button')]
+        .filter(el => el.textContent.trim() === 'Scroll & capture').some(el => !el.disabled) : false,
       busy: linked ? [...pane.querySelectorAll('button')].some(el => /Capturing|Scrolling/.test(el.textContent.trim())) : false,
       error: linked ? !!pane.querySelector('[role="alert"]') : false,
       errorCard: linked ? [...pane.querySelectorAll('button')]
@@ -180,15 +184,30 @@ async function chartScrollState(panel, alt) {
       && /^(auto|scroll)$/.test(getComputedStyle(scroller).overflowY))) scroller = scroller.parentElement;
     if (!scroller) return { scope: 'scroller_missing' };
     const box = scroller.getBoundingClientRect(), target = image.getBoundingClientRect();
-    const x = Math.max(box.left + 1, Math.min(box.right - 1, box.left + box.width / 2));
-    const y = Math.max(box.top + 1, Math.min(box.bottom - 1, box.top + box.height / 2));
+    const bounds = { left: Math.max(0, box.left), top: Math.max(0, box.top),
+      right: Math.min(innerWidth, box.right), bottom: Math.min(innerHeight, box.bottom) };
+    for (let ancestor = scroller.parentElement; ancestor; ancestor = ancestor.parentElement) {
+      const style = getComputedStyle(ancestor), clip = ancestor.getBoundingClientRect();
+      if (/^(auto|scroll|hidden|clip)$/.test(style.overflowX)) {
+        bounds.left = Math.max(bounds.left, clip.left + ancestor.clientLeft);
+        bounds.right = Math.min(bounds.right, clip.left + ancestor.clientLeft + ancestor.clientWidth);
+      }
+      if (/^(auto|scroll|hidden|clip)$/.test(style.overflowY)) {
+        bounds.top = Math.max(bounds.top, clip.top + ancestor.clientTop);
+        bounds.bottom = Math.min(bounds.bottom, clip.top + ancestor.clientTop + ancestor.clientHeight);
+      }
+    }
+    if (bounds.right <= bounds.left || bounds.bottom <= bounds.top)
+      return { scope: 'scroller_clipped', bounds };
+    const x = (bounds.left + bounds.right) / 2;
+    const y = (bounds.top + bounds.bottom) / 2;
     const hit = document.elementFromPoint(x, y);
     const distance = target.top - (box.top + box.height / 2);
     return { scope: 'chart_scroller', imageCount: images.length, x, y,
       hitScroller: hit === scroller || scroller.contains(hit),
       scrollTop: scroller.scrollTop, maxScroll: scroller.scrollHeight - scroller.clientHeight,
       targetTop: target.top, scrollerTop: box.top, scrollerBottom: box.bottom,
-      inScroller: target.top >= box.top && target.top < box.bottom,
+      inScroller: target.top >= bounds.top && target.top < bounds.bottom,
       nearViewport: target.top >= 0 && target.top < innerHeight,
       loaded: image.complete && image.naturalWidth > 0 && image.naturalHeight > 0,
       deltaY: Math.sign(distance) * Math.min(Math.max(Math.abs(distance), 80), box.height * 0.8) };
@@ -206,8 +225,13 @@ async function loadChartByNativeScroll(panel, alt, mode) {
     if (state.inScroller && !state.loaded) {
       await waitFor(
         `${mode}_${alt}_image_load`,
-        () => chartScrollState(panel),
-        (next) => next?.loaded,
+        () => chartScrollState(panel, alt),
+        (next) =>
+          next?.scope === 'chart_scroller' &&
+          next.imageCount === 1 &&
+          next.inScroller &&
+          next.nearViewport &&
+          next.loaded,
         10000,
       );
       return;
@@ -221,10 +245,11 @@ async function loadChartByNativeScroll(panel, alt, mode) {
     });
     await waitFor(
       `${mode}_${alt}_wheel_progress`,
-      () => chartScrollState(panel),
+      () => chartScrollState(panel, alt),
       (next) =>
         next?.scope === 'chart_scroller' &&
-        (next.scrollTop !== state.scrollTop || next.inScroller || next.loaded),
+        next.imageCount === 1 &&
+        (next.scrollTop !== state.scrollTop || (next.inScroller && next.nearViewport)),
       3000,
     );
   }
@@ -275,6 +300,8 @@ function safeObservation(article, pane) {
     capture: pane?.capture ?? null,
     recapture: pane?.recapture ?? null,
     deep: pane?.deep ?? null,
+    recaptureEnabled: pane?.recaptureEnabled ?? null,
+    deepEnabled: pane?.deepEnabled ?? null,
     busy: pane?.busy ?? null,
     error: pane?.error ?? null,
     errorCard: pane?.errorCard ?? null,
@@ -499,6 +526,10 @@ try {
           const settled = await scrapePane(panel);
           report.last_observation = safeObservation(loadedArticle, settled);
           assert.equal(settled.recapture, 1, `${mode}: capture completed`);
+          assert.equal(settled.recaptureEnabled, true, `${mode}: Re-capture is usable`);
+          assert.equal(settled.deep, 1, `${mode}: Scroll & capture is restored`);
+          assert.equal(settled.deepEnabled, true, `${mode}: Scroll & capture is usable`);
+          assert.equal(settled.busy, false, `${mode}: capture is idle`);
           assert.equal(settled.error, false, `${mode}: no visible capture error`);
           report.modes.push({
             mode,
