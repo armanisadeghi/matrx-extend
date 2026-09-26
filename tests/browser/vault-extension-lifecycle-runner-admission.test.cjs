@@ -49,6 +49,21 @@ assert.match(
   /networkJournal = restarted\.journal[\s\S]*?realPanel = restarted\.panel[\s\S]*?worker = restarted\.worker/,
   'successful restart must transfer replacement journal, panel, and worker to final cleanup',
 );
+assert.match(
+  runner,
+  /route\.initialLogoutObserverDetached = unbindLifecycleLogoutObserver\(\);[\s\S]*?await closeOwnedSidePanelForPopupRoute\(\{ panel: realPanel, windowId: activeWindow\.windowId \}\);[\s\S]*?route\.finalLogoutObserverPanelTargetId = bindLifecycleLogoutObserver\(realPanel\);/,
+  'popup capture must detach the observer before destroying its panel and rebind it only to the final panel',
+);
+assert.match(
+  runner,
+  /if \(extensionLifecycleMode \|\| setupIdentityOnlyMode \|\| identityOnlyMode\)\s*await provePopupCaptureRoute\(\{ extensionId \}\);/,
+  'every setup or identity lifecycle path must run the popup route before the later Settings sign-out',
+);
+assert.match(
+  runner,
+  /waitForLogout204:[\s\S]*?observed\[0\]\.status === 204[\s\S]*?observed\[0\]\.panelTargetId === proof\.lifecycleLogoutObserverTargetId/,
+  'Settings sign-out must accept its 204 only from the currently bound final panel observer',
+);
 
 process.stdout.write(
   'PASS: lifecycle runner fails closed until every required observation exists\n',

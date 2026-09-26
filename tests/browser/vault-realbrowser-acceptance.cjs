@@ -2386,6 +2386,37 @@ async function closeOwnedSidePanelForPopupRoute({ panel, windowId }) {
   throw new Error('popup_capture_side_panel_destruction_unproven');
 }
 
+function unbindLifecycleLogoutObserver() {
+  const detached = typeof lifecycleLogoutObserver === 'function';
+  lifecycleLogoutObserver?.();
+  lifecycleLogoutObserver = undefined;
+  proof.lifecycleLogoutObserverTargetId = null;
+  return detached;
+}
+
+function bindLifecycleLogoutObserver(panel) {
+  unbindLifecycleLogoutObserver();
+  const panelTargetId = panel.targetId;
+  lifecycleLogoutObserver = observeOwnedPanelLogout({
+    panel,
+    extensionId,
+    onResponse: ({ status }) => {
+      const observed = proof.lifecycleSettingsLogoutResponses || [];
+      proof.lifecycleSettingsLogoutResponses = observed;
+      observed.push({
+        status,
+        phase: proof.phase,
+        observer: 'raw_cdp_owned_sidepanel',
+        panelTargetId,
+      });
+      persist();
+    },
+  });
+  proof.lifecycleSettingsLogoutObserver = 'raw_cdp_owned_sidepanel';
+  proof.lifecycleLogoutObserverTargetId = panelTargetId;
+  return panelTargetId;
+}
+
 async function provePopupCaptureRoute({ extensionId }) {
   const route = (proof.popupCaptureRoute = {
     disposition: 'in_progress',
@@ -2411,6 +2442,8 @@ async function provePopupCaptureRoute({ extensionId }) {
       `document.querySelector('button[title="Chat"]')?.getAttribute('aria-selected') === 'true'`,
     );
     route.initialChatSelected = true;
+    route.initialLogoutObserverDetached = unbindLifecycleLogoutObserver();
+    assert(route.initialLogoutObserverDetached, 'popup_capture_logout_observer_missing');
     await closeOwnedSidePanelForPopupRoute({ panel: realPanel, windowId: activeWindow.windowId });
     realPanel = undefined;
 
@@ -2449,6 +2482,11 @@ async function provePopupCaptureRoute({ extensionId }) {
     assert(chatOpened.opened && chatOpened.panel, 'popup_capture_open_chat_panel_missing');
     realPanel = chatOpened.panel;
     await networkJournal.bindPanelTarget(realPanel.targetId);
+    route.finalLogoutObserverPanelTargetId = bindLifecycleLogoutObserver(realPanel);
+    route.finalLogoutObserverBound =
+      proof.lifecycleLogoutObserverTargetId === realPanel.targetId &&
+      route.finalLogoutObserverPanelTargetId === realPanel.targetId;
+    assert(route.finalLogoutObserverBound, 'popup_capture_logout_observer_rebind_refused');
     await realPanel.waitFor(
       `document.querySelector('button[title="Chat"]')?.getAttribute('aria-selected') === 'true'`,
     );
@@ -2974,21 +3012,8 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
   persist();
   realPanel = await openGenuineSidePanel(extensionId, popup);
   await networkJournal.bindPanelTarget(realPanel.targetId);
-  if (
-    (extensionLifecycleMode || setupIdentityOnlyMode || identityOnlyMode) &&
-    !lifecycleLogoutObserver
-  ) {
-    lifecycleLogoutObserver = observeOwnedPanelLogout({
-      panel: realPanel,
-      extensionId,
-      onResponse: ({ status }) => {
-        const observed = (proof.lifecycleSettingsLogoutResponses ||= []);
-        observed.push({ status, phase: proof.phase, observer: 'raw_cdp_owned_sidepanel' });
-        persist();
-      },
-    });
-    proof.lifecycleSettingsLogoutObserver = 'raw_cdp_owned_sidepanel';
-  }
+  if (extensionLifecycleMode || setupIdentityOnlyMode || identityOnlyMode)
+    bindLifecycleLogoutObserver(realPanel);
   // The initial auth popup was an ordinary setup tab. It must not remain as a
   // same-URL target when a lifecycle probe later opens the declared action popup.
   await popup.close();
@@ -3649,8 +3674,7 @@ async function materializedPassword(id) {
       };
       proof.lifecycle.browserRestartCustody = restartCustody;
       assert(restartCustody.initial.cdpOwnerVerified, 'browser_restart_initial_cdp_unowned');
-      lifecycleLogoutObserver?.();
-      lifecycleLogoutObserver = undefined;
+      unbindLifecycleLogoutObserver();
       let replacementPreparedProfile;
       const restarted = await runOwnedBrowserRestart({
         profile,
@@ -3835,17 +3859,7 @@ async function materializedPassword(id) {
         restartCustody.replacement.cdpOwnerVerified,
         'browser_restart_replacement_cdp_unowned',
       );
-      lifecycleLogoutObserver = observeOwnedPanelLogout({
-        panel: realPanel,
-        extensionId,
-        onResponse: ({ status }) => {
-          const observed = proof.lifecycleSettingsLogoutResponses || [];
-          proof.lifecycleSettingsLogoutResponses = observed;
-          observed.push({ status, phase: proof.phase, observer: 'raw_cdp_owned_sidepanel' });
-          persist();
-        },
-      });
-      proof.lifecycleSettingsLogoutObserver = 'raw_cdp_owned_sidepanel';
+      bindLifecycleLogoutObserver(realPanel);
       proof.lifecycle.partialDisposition =
         'disable_enable_reload_browser_restart_observed_organization_switch_pending';
       persist();
@@ -3937,7 +3951,12 @@ async function materializedPassword(id) {
         waitForLogout204: async () => {
           for (let attempt = 0; attempt < 60; attempt += 1) {
             const observed = proof.lifecycleSettingsLogoutResponses;
-            if (Array.isArray(observed) && observed.length === 1 && observed[0].status === 204)
+            if (
+              Array.isArray(observed) &&
+              observed.length === 1 &&
+              observed[0].status === 204 &&
+              observed[0].panelTargetId === proof.lifecycleLogoutObserverTargetId
+            )
               return true;
             if (Array.isArray(observed) && observed.length > 1) return false;
             await wait(250);
@@ -3962,8 +3981,7 @@ async function materializedPassword(id) {
       });
       // Only the Settings sign-out response belongs to this observation.
       // Final teardown uses a separate client and must never satisfy it.
-      lifecycleLogoutObserver?.();
-      lifecycleLogoutObserver = undefined;
+      unbindLifecycleLogoutObserver();
       // Reuse the same disposable profile and the production OAuth UI. This
       // proves recovery is a fresh interactive session, never retained panel state.
       await realPanel.dispose();
@@ -5083,8 +5101,7 @@ async function materializedPassword(id) {
         proof.failureCode ||= 'vault_network_cleanup_failed';
       }
     }
-    lifecycleLogoutObserver?.();
-    lifecycleLogoutObserver = undefined;
+    unbindLifecycleLogoutObserver();
     await realPanel?.dispose();
     try {
       if (context) await context.close();
