@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "report_id": "seo-014-title-diagnostic-peer",
+  "reviewed_source_commit": "db24c884a3dedce6c9b444422caf00901e39dcaa",
+  "source_review": {
+    "verdict": "ACCEPT",
+    "reason": "The added sample fields are limited to the fixed public fixture's expected title captured by the existing public DOM oracle, the current public document.title, and derived equality booleans. The wait still requires the active SEO pane, exact match to the original fixtureExpected.title, enabled Re-audit, and no error, with the same 30000 ms bound. None of the new diagnostic fields relaxes or replaces acceptance, so they cannot turn the previously timing-out predicate into a pass.",
+    "evidence": [
+      "fixtureExpected is obtained from publicNextDetailEvidence(page, fixtureResponse) immediately after page.goto; the oracle reads document.title from the public page only.",
+      "Each wait sample records expectedPublicTitleAtNavigation, publicDomTitleAtSample, publicTitleStable, and seoTitleMatchesExpected alongside existing seoContent output.",
+      "The predicate remains scopeValid && state.title === fixtureExpected.title && reAudit && !error, and timeout remains 30000 ms.",
+      "The new diagnostics are scalar/title evidence from the public Airbnb fixture and its matching SEO pane; no auth, account, or private data is read or added."
+    ],
+    "limits": [
+      "These fields distinguish expected-title drift from pane lag only in a subsequent captured run; the existing 014 receipt remains unverified.",
+      "The public page title can vary over time or by request, so this source change does not establish fixture stability or a product defect."
+    ]
+  },
+  "runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "No browser, test, or heavy runtime verification was performed in this source-review lane."
+  }
+}
