@@ -3,6 +3,7 @@
   "review": "seo-snapshot-timing-diagnosis",
   "runs": ["seo-guest-008", "seo-guest-009", "seo-guest-010", "seo-guest-011"],
   "runtime_verdict": "UNVERIFIED",
+  "prepared_runner_status": "READY_REVIEW",
   "observed": [
     "Run 010 was resource-admitted and the child exited 1 at 2026-09-26T19:21:05.944Z. The 12 earlier subtargets passed; the first new assertion failed on internal links: panel 1782, public DOM 1785. The same panel showed external 409 while the public DOM read showed 410.",
     "Run 009's new link and image assertions passed with public internal links 1785, external links 410, and 28 images. It then failed at the performance predicate; the panel's load-duration row was absent, but the expected navigation duration was not retained.",
@@ -19,6 +20,8 @@
     "The product contract requires an automatic audit to wait for full page load or refresh its metrics later"
   ],
   "source_contract": "SeoView auto-runs when useActiveTab reports a new URL; useActiveTab refreshes on tabs.onUpdated without a status=complete gate. captureWithFallback sends SCRAPE_CAPTURE immediately and does not wait for page load. The collector maps navigation duration 0 or absent to null, and SeoDetails omits the Load duration row when null. docs/feature-tests.md says Performance shows whichever values the browser exposed. No source contract found that promises post-load timing for an automatic audit.",
-  "focused_next_step": "Keep the run 011 failure as evidence of the runner's post-load oracle being later than the automatic snapshot. For acceptance, compare auto-audit fields that are available at its capture point, then trigger a trusted manual Re-audit after load and assert link counts and all exposed navigation fields against stable public DOM/timing samples. Retain a separate failing check only if the product's automatic audit is explicitly required to represent the fully loaded page. For the run 010 link mismatch, a focused run must still capture source counts around that specific mismatch; run 011 does not prove its cause.",
-  "execution": "Run 011 was executed by the owning root lane and preserved separately at docs/stabilization/runs/seo-guest-011.json. This lane launched no additional browser or heavy test."
+  "root_ruling": "The automatic URL audit is a point-in-time snapshot; there is no requirement that it expose post-load timing before the browser makes timing available. Exact detail acceptance belongs to an explicit manual Re-audit after page load.",
+  "prepared_runner_change": "The runner still requires the automatic audit to settle on the selected URL/title and records its observed counts and performance as diagnostics without marking exact-data passes. It then reads the public DOM and navigation timing before a trusted manual Re-audit, observes the disabled-running and settled transitions, reads the public DOM/timing again, and fails if the independent before/after source snapshots differ. All exact link, image, readability, performance, and outbound-door predicates now use the manual audit and stable public source. No broad catch, count-matching retry, or product change was added.",
+  "next_action": "Independent source peer review of the prepared runner, then a separately admitted root-owned native browser run. Preserve runs 008-011 and their failures. Run 010's automatic link discrepancy remains unexplained and is not an exact-data pass claim.",
+  "execution": "Run 011 was executed by the owning root lane and preserved separately at docs/stabilization/runs/seo-guest-011.json. The revised runner is prepared only. This lane launched no additional browser or heavy test."
 }

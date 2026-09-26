@@ -973,105 +973,77 @@ try {
           state?.scopeValid && state.title === nextExpected.title && state.reAudit && !state.error,
         30000,
       );
-      const nextDetails = await observe('next_seo_details_inspected', () =>
+      const autoDetails = await observe('next_auto_seo_details_inspected', () =>
         seoNextDetailState(panel),
       );
-      // If the auto-audit and the post-load source disagree, retain the auto
-      // assertion but sample the live source around an explicit re-audit. This
-      // distinguishes a changed public DOM from a collector/display mismatch
-      // without waiting for, or substituting, an expected count.
-      let autoLinksMatch = true;
-      let autoPerformanceMatch = true;
-      try {
-        assertNextLinks(nextDetails, nextExpected);
-      } catch {
-        autoLinksMatch = false;
-      }
-      try {
-        assertNextPerformance(nextDetails, nextExpected);
-      } catch {
-        autoPerformanceMatch = false;
-      }
-      if (!autoLinksMatch || !autoPerformanceMatch) {
-        report.next_detail_capture_diagnostic = {
-          autoLinksMatch,
-          autoPerformanceMatch,
-          status: 'unverified',
-        };
-        try {
-          const before = await publicNextDetailEvidence(page, nextResponse);
-          await click(panel, 'button', 'Re-audit');
-          await waitFor(
-            'next_detail_manual_reaudit_running',
-            () => seoContent(panel),
-            (state) => state?.scopeValid && !state.reAudit,
-          );
-          await waitFor(
-            'next_detail_manual_reaudit_settled',
-            () => seoContent(panel),
-            (state) =>
-              state?.scopeValid &&
-              state.title === nextExpected.title &&
-              state.reAudit &&
-              !state.error,
-            30000,
-          );
-          const after = await publicNextDetailEvidence(page, nextResponse);
-          const refreshed = await seoNextDetailState(panel);
-          let refreshedLinksMatch = true;
-          let refreshedPerformanceMatch = true;
-          try {
-            assertNextLinks(refreshed, after);
-          } catch {
-            refreshedLinksMatch = false;
-          }
-          try {
-            assertNextPerformance(refreshed, after);
-          } catch {
-            refreshedPerformanceMatch = false;
-          }
-          report.next_detail_capture_diagnostic = {
-            autoLinksMatch,
-            autoPerformanceMatch,
-            status: 'observed',
-            publicLinks: {
-              postLoad: nextExpected.links,
-              beforeRefresh: before.links,
-              afterRefresh: after.links,
-            },
-            publicNavigationDurationMs: {
-              postLoad: nextExpected.navigation?.durationMs ?? null,
-              beforeRefresh: before.navigation?.durationMs ?? null,
-              afterRefresh: after.navigation?.durationMs ?? null,
-            },
-            panelLinks: {
-              auto: nextDetails.links,
-              refreshed: refreshed.links,
-            },
-            panelDuration: {
-              auto: nextDetails.performance?.duration ?? null,
-              refreshed: refreshed.performance?.duration ?? null,
-            },
-            refreshedLinksMatch,
-            refreshedPerformanceMatch,
-          };
-        } catch {
-          report.next_detail_capture_diagnostic.status = 'observation_failed';
-        }
-      }
-      assertNext('links', () => assertNextLinks(nextDetails, nextExpected));
-      target('T09', 'guest_link_counts_match_live_dom', {
-        url: NEXT_DETAIL_PAGE,
-        ...nextExpected.links,
+      // Auto-run is a point-in-time snapshot on URL change, which may precede
+      // load completion. Record it, but measure exact details after a trusted
+      // re-audit against stable public DOM and navigation timing samples.
+      report.next_detail_auto_observed = {
+        links: autoDetails.links,
+        images: autoDetails.images,
+        performance: autoDetails.performance,
+        exactDataStatus: 'unverified',
+      };
+      const manualBefore = await observe('next_manual_public_before_inspected', () =>
+        publicNextDetailEvidence(page, nextResponse),
+      );
+      assert.equal(page.url(), NEXT_DETAIL_PAGE, 'manual audit starts on the selected public URL');
+      enter('next_manual_reaudit_click');
+      await click(panel, 'button', 'Re-audit');
+      advance('next_manual_reaudit_click_dispatched', { trustedInput: true });
+      await waitObserved(
+        'next_manual_reaudit_running_wait',
+        () => seoContent(panel),
+        (state) => state?.scopeValid && !state.reAudit,
+      );
+      await waitObserved(
+        'next_manual_reaudit_settle_wait',
+        () => seoContent(panel),
+        (state) =>
+          state?.scopeValid && state.title === manualBefore.title && state.reAudit && !state.error,
+        30000,
+      );
+      const manualAfter = await observe('next_manual_public_after_inspected', () =>
+        publicNextDetailEvidence(page, nextResponse),
+      );
+      assert.equal(page.url(), NEXT_DETAIL_PAGE, 'manual audit ends on the selected public URL');
+      const publicScalars = (value) => ({
+        links: value.links,
+        images: value.images,
+        bodyHasText: value.bodyHasText,
+        alternateCount: value.alternates.length,
+        schemaTypeCount: value.schemaTypes.length,
+        navigation: value.navigation,
+        responseStatus: value.responseStatus,
       });
-      assertNext('images', () => assertNextImages(nextDetails, nextExpected));
-      target('T09', 'guest_image_alt_counts_match_live_dom', {
+      report.next_detail_manual_public = {
+        before: publicScalars(manualBefore),
+        after: publicScalars(manualAfter),
+      };
+      assertNext('manual_source_stability', () =>
+        assert.deepEqual(
+          manualAfter,
+          manualBefore,
+          'public DOM and navigation timing remain stable around manual re-audit',
+        ),
+      );
+      const nextDetails = await observe('next_manual_seo_details_inspected', () =>
+        seoNextDetailState(panel),
+      );
+      assertNext('manual_links', () => assertNextLinks(nextDetails, manualAfter));
+      target('T09', 'guest_manual_link_counts_match_live_dom', {
         url: NEXT_DETAIL_PAGE,
-        ...nextExpected.images,
+        ...manualAfter.links,
       });
-      assertNext('readability', () => assertNextReadability(nextDetails, nextExpected));
-      if (nextExpected.bodyHasText)
-        target('T09', 'guest_readability_display_is_populated_and_explained', {
+      assertNext('manual_images', () => assertNextImages(nextDetails, manualAfter));
+      target('T09', 'guest_manual_image_alt_counts_match_live_dom', {
+        url: NEXT_DETAIL_PAGE,
+        ...manualAfter.images,
+      });
+      assertNext('manual_readability', () => assertNextReadability(nextDetails, manualAfter));
+      if (manualAfter.bodyHasText)
+        target('T09', 'guest_manual_readability_display_is_populated_and_explained', {
           publicBodyHasText: true,
           displayed: nextDetails.readability,
           metricValueCorrectness: 'unverified',
@@ -1079,33 +1051,33 @@ try {
       else
         unverifiedTarget(
           'T09',
-          'guest_readability_display_is_populated_and_explained',
+          'guest_manual_readability_display_is_populated_and_explained',
           'The public body had no text, so populated readability fields could not be exercised.',
         );
-      report.next_detail_public_navigation = nextExpected.navigation
+      report.next_detail_public_navigation = manualAfter.navigation
         ? {
-            type: nextExpected.navigation.type,
-            durationMs: nextExpected.navigation.durationMs,
-            transferSizeBytes: nextExpected.navigation.transferSizeBytes,
-            responseStatus: nextExpected.navigation.responseStatus,
-            pageResponseStatus: nextExpected.responseStatus,
+            type: manualAfter.navigation.type,
+            durationMs: manualAfter.navigation.durationMs,
+            transferSizeBytes: manualAfter.navigation.transferSizeBytes,
+            responseStatus: manualAfter.navigation.responseStatus,
+            pageResponseStatus: manualAfter.responseStatus,
           }
         : null;
-      assertNext('performance', () => assertNextPerformance(nextDetails, nextExpected));
-      target('T09', 'guest_performance_reflects_current_navigation', {
-        pageResponseStatus: nextExpected.responseStatus,
-        exposedNavigation: nextExpected.navigation,
+      assertNext('manual_performance', () => assertNextPerformance(nextDetails, manualAfter));
+      target('T09', 'guest_manual_performance_reflects_current_navigation', {
+        pageResponseStatus: manualAfter.responseStatus,
+        exposedNavigation: manualAfter.navigation,
         displayed: nextDetails.performance,
       });
 
       // A missing public datum makes the door action unverified; no assumed
       // Wikipedia hreflang or JSON-LD is allowed to turn it green.
-      const uniqueAlternate = nextExpected.alternates.find(
-        (item) => nextExpected.alternates.filter((other) => other.href === item.href).length === 1,
+      const uniqueAlternate = manualAfter.alternates.find(
+        (item) => manualAfter.alternates.filter((other) => other.href === item.href).length === 1,
       );
       let schemaLinks;
-      assertNext('doors', () => {
-        schemaLinks = assertNextDoors(nextDetails, nextExpected);
+      assertNext('manual_doors', () => {
+        schemaLinks = assertNextDoors(nextDetails, manualAfter);
       });
       const uniqueSchema = schemaLinks.find(
         (item) => schemaLinks.filter((other) => other.href === item.href).length === 1,
@@ -1115,7 +1087,7 @@ try {
         await activateSeoLink(panel, page, 'International', uniqueAlternate.href);
         enter('schema_outbound_activation');
         await activateSeoLink(panel, page, 'Structured data', uniqueSchema.href);
-        target('T09', 'guest_hreflang_and_schema_doors_match_page', {
+        target('T09', 'guest_manual_hreflang_and_schema_doors_match_page', {
           hreflang: uniqueAlternate,
           schemaType: uniqueSchema.type,
           schemaUrl: uniqueSchema.href,
@@ -1124,11 +1096,11 @@ try {
       } else {
         unverifiedTarget(
           'T09',
-          'guest_hreflang_and_schema_doors_match_page',
+          'guest_manual_hreflang_and_schema_doors_match_page',
           'The public DOM did not expose unique hreflang and openable schema door candidates.',
         );
       }
-      advance('next_detail_batch_observed', {
+      advance('next_manual_detail_batch_observed', {
         sourceUrl: NEXT_DETAIL_PAGE,
         doorStatus: report.targets.at(-1).status,
       });
