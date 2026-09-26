@@ -1,0 +1,29 @@
+{
+  "id": "release-real-002",
+  "feature_id": "EXT-F-0003",
+  "defect_id": "EXT-D-0002",
+  "status": "fail",
+  "source_sha": "29085b6",
+  "candidate_sha": "d777348d2bebf9ae5778b500fc9168020df67a91",
+  "candidate_version": "0.2.51",
+  "command": [
+    "bash",
+    "release.sh",
+    "--message",
+    "EXT-D-0002 validated release integration"
+  ],
+  "exit_code": 1,
+  "resource_invalid": false,
+  "reason": "Strict package-twins check rejected resource guard numeric GiB arithmetic; candidate not published",
+  "failed_gate": "package-twins",
+  "related_defect": "EXT-D-0003",
+  "observed_completed_checks": [
+    "typecheck",
+    "unit-tests:1257 pass,3 explicit skips",
+    "schema-routing",
+    "matrx-packages"
+  ],
+  "publication": "Release stopped before atomic push; main/tag publication phase not reached.",
+  "log_sha256": "f3a7d17adce6ecd6fd51d2406cd226ca6fda3709ccdd0bfcb64b136ca469a333",
+  "at": "2026-09-26T02:57:54.628135+00:00"
+}

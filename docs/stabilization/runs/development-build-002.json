@@ -1,0 +1,20 @@
+{
+  "id": "development-build-002",
+  "feature_id": "EXT-F-0001",
+  "status": "pass",
+  "at": "2026-09-26T03:05:57.896Z",
+  "source_sha": "f654369ec65ea225bb0d8fcd0f30f90ab86f64b1",
+  "source_note": "Runtime source unchanged by concurrent 2042903 build-time helper/script/test/docs-only commit.",
+  "lockfile_sha256": "23ddcc65bcd21855ee8fd3fbdd248461d6b85061c4ab2a9c81ed8ff2567235a8",
+  "bundle_sha256": "6610f35e6a03ebc5331bad830497692ea8c727ffb8f112157ace14e589e57310",
+  "bundle_hash_method": "Sorted relative UTF-8 path + NUL + file bytes + NUL for every file",
+  "output": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+  "mode": "development",
+  "manifest_version": "0.2.50",
+  "expected_runtime_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "exit_code": 0,
+  "build_duration_seconds": 2.489,
+  "resource_admitted": true,
+  "resource_invalid": false,
+  "scope": "Fresh development bundle; actual loaded browser runtime not yet verified"
+}

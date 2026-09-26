@@ -1,0 +1,14 @@
+{
+  "id": "management-read-probe-001",
+  "feature_id": "EXT-F-0003",
+  "case_id": "EXT-F-0003-T02",
+  "status": "pass",
+  "at": "2026-09-26T03:02:25.984158+00:00",
+  "method": "Official Management API read_only SELECT 1 using existing operator credential loaded only at query point",
+  "project_ref": "brsgrqvjdzwihsvnfqkf",
+  "http_status": 201,
+  "rows": 1,
+  "probe_ok": true,
+  "credential_handling": "No credential value in output, args, tracking, extension environment, or committed artifacts; existing secret file left unchanged",
+  "scope": "Access availability only; does not verify repaired helper or strict schema/catalog/migration gates"
+}

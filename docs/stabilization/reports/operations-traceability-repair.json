@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "task_id": "operations-traceability-repair",
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Added stable operational cases for all controls in EXT-F-0001, EXT-F-0002 and EXT-F-0003; linked existing evidence and defects, corrected stale release source behavior, and retained all feature cells as unverified.",
+  "changed_files": [
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/reports/operations-traceability-repair.json"
+  ],
+  "verification": [
+    "All 16 operational controls now have stable cases: F1 five, F2 five, F3 six.",
+    "EXT-D-0002 and EXT-D-0003 foreign keys resolve to EXT-F-0003/C03/T01; states remain distinct (D2 retest-pass; D3 in-fix). EXT-D-0001 and F1001/T13 links already existed and were left intact.",
+    "F1/F3 cells reference existing runs; F2 cases point to scratch reports. All three ops features remain unverified. Targeted passes are scoped to observed guest UI or isolated fixtures.",
+    "Replaced stale push-first release description with current committed-candidate behavior and the real-release limitation."
+  ],
+  "limitations": [
+    "EXT-F-0001 T01 has only a fresh-build receipt; unpacked installation/runtime identity remain incomplete. T03–T05 remain unverified.",
+    "EXT-F-0002 evidence is from scratch fixtures, not a current production-policy execution across modes.",
+    "EXT-F-0003 fixture evidence does not prove successful real strict release/external checks/final integration; release-real-002 stopped before publication at D3."
+  ],
+  "next_action": "Resolve the separate D3 shape-guard issue and rerun strict release on the exact candidate; finish F1 lifecycle/auth and real integration proof before changing feature cells.",
+  "feature_case_ids": {
+    "EXT-F-0001": [
+      "EXT-F-0001-T01",
+      "EXT-F-0001-T02",
+      "EXT-F-0001-T03",
+      "EXT-F-0001-T04",
+      "EXT-F-0001-T05"
+    ],
+    "EXT-F-0002": [
+      "EXT-F-0002-T01",
+      "EXT-F-0002-T02",
+      "EXT-F-0002-T03",
+      "EXT-F-0002-T04",
+      "EXT-F-0002-T05"
+    ],
+    "EXT-F-0003": [
+      "EXT-F-0003-T01",
+      "EXT-F-0003-T02",
+      "EXT-F-0003-T03",
+      "EXT-F-0003-T04",
+      "EXT-F-0003-T05",
+      "EXT-F-0003-T06"
+    ]
+  },
+  "unresolved_proof": [
+    "F1: installation identity, content-script reload, worker/offscreen lifecycle, auth redirect.",
+    "F2: production-policy live operations; current evidence is limited to injected scratch scenarios.",
+    "F3: successful real strict release and final integration."
+  ],
+  "EXT-D-0003_independent_review": {
+    "verdict_a_behavior_contract": {
+      "verdict": "PASS",
+      "finding": "The four flagged expressions compute available/required memory and repo/profile free disk as numeric GiB. Consumers compare numbers against policy thresholds; no value becomes a unit display string, so this is distinct from formatFileSize."
+    },
+    "verdict_b_code_quality": {
+      "verdict": "PASS",
+      "finding": "The exception is restricted to one named infrastructure file and the reason matches all four current flagged expressions. The byte-size guard records file-level shapeAllow entries by design; inspection of the current file confirms these consumers produce numeric resource telemetry for numeric threshold decisions, with no formatting/string output. No current broader drift or display-formatter bypass was found. Revisit the census if display formatting is later added to this file."
+    },
+    "evidence": [
+      "scripts/stabilization-resource.mjs numeric GiB derivations and numeric comparisons in reasons().",
+      "scripts/package-twins.json formatFileSize.shapeAllow one-file rationale.",
+      "scripts/check-package-twins.mjs shapeAllow path-set construction."
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Corrected the three guest Settings cases to specify guest-only negative visibility/guidance checks across warm and reload states. Their guest results remain unverified pending cold/reload UI evidence; existing authenticated positive and member-denial requirements remain in member/admin cases.",
+  "changed_files": [
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/reports/guest-case-spec-correction.json"
+  ],
+  "verification": [
+    "Inspected SettingsView.tsx and use-active-organization.ts: signed-out users receive Organization “Sign in to choose”; no user clears active/organization lists; Default agent renders “Choose an organization above” without an active organization.",
+    "Inspected SettingsView.tsx admin conditional: Advanced agent capabilities renders only when isAdmin is true.",
+    "Confirmed the three cases still have status unverified and retained their original run IDs, evidence references, and verified_substeps. No runtime verification was performed."
+  ],
+  "limitations": [
+    "The cases remain unverified until actual UI cold/reload evidence confirms the guest guidance and negative visibility. Source inspection supports expected behavior but is not runtime proof."
+  ],
+  "next_action": "Run the three guest cases in actual UI through warm and cold/reload states; keep admin positive and member-denial checks in their existing case IDs.",
+  "cases_corrected": [
+    "EXT-F-1003-T01",
+    "EXT-F-1003-T07",
+    "EXT-F-1003-T22"
+  ],
+  "spec_change_reason": "A case scoped to guest mode cannot require the person to remain signed out while performing admin-only or authenticated organization/agent actions. Correct the guest acceptance criteria to the guest-visible guidance and access denial; preserve and execute authenticated positive/admin and member-denial acceptance criteria under existing member/admin cases.",
+  "source_files_reviewed": [
+    "src/features/settings/SettingsView.tsx",
+    "src/hooks/use-active-organization.ts"
+  ]
+}

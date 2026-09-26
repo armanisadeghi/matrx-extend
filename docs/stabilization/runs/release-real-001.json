@@ -1,0 +1,28 @@
+{
+  "id": "release-real-001",
+  "feature_id": "EXT-F-0003",
+  "defect_id": "EXT-D-0002",
+  "status": "invalid-resource",
+  "source_sha": "29085b6",
+  "candidate_sha": "dd9c782af49cbef591db501c598c7b6ddaa027e0",
+  "candidate_version": "0.2.51",
+  "command": [
+    "bash",
+    "release.sh",
+    "--message",
+    "EXT-D-0002 validated release integration"
+  ],
+  "exit_code": 3,
+  "resource_invalid": true,
+  "reason": "Two sustained high-load CPU samples; watchdog terminated owned foreground process group before publication",
+  "observed_completed_checks": [
+    "typecheck",
+    "unit-tests:1257 pass,3 explicit skips",
+    "schema-routing",
+    "matrx-packages"
+  ],
+  "verification_use": "Incomplete environment-interrupted run; not a release pass or a product failure",
+  "lock_recovery": "Exact recorded owner PID73065 and owned group73055 confirmed absent; removed only this run abandoned pid file and empty release lock directory.",
+  "log_sha256": "617d2b26136397d74384e96ad3315ef74bb973407f1b580314341cfdd7ec8806",
+  "at": "2026-09-26T02:53:18.332129+00:00"
+}

@@ -75,24 +75,196 @@
           "reason": "Infrastructure supports all authentication modes; shared job evidence can apply to each mode with runtime identity verified."
         }
       },
-      "cases": [],
+      "cases": [
+        {
+          "id": "EXT-F-0001-T01",
+          "title": "Fresh development build and unpacked identity",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0001-C01"
+          ],
+          "preconditions": [
+            "Resource permit admitted; record source/lock hashes, build channel, output path and runtime ID."
+          ],
+          "steps": "Build from current source; load the generated development bundle unpacked; compare Chrome extension ID/version with the receipt.",
+          "expected": [
+            "Fresh bundle builds and the loaded unpacked extension matches the expected development identity."
+          ],
+          "dimensions": [
+            "fresh-build",
+            "unpacked-load",
+            "identity"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": "baseline-build-001",
+              "verified_substeps": [
+                "Fresh development build exited 0 and recorded bundle hash/output path."
+              ],
+              "remaining_criteria": [
+                "Unpacked installation and actual loaded extension identity were not verified in this run."
+              ],
+              "evidence": "docs/stabilization/runs/baseline-build-001.json"
+            }
+          }
+        },
+        {
+          "id": "EXT-F-0001-T02",
+          "title": "Extension reload and sidepanel recovery",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0001-C02"
+          ],
+          "preconditions": [
+            "Candidate unpacked extension is loaded and its identity/build receipt is recorded."
+          ],
+          "steps": "Reload the extension in Chrome, reopen the actual sidepanel, and confirm the initial view renders.",
+          "expected": [
+            "Chrome confirms extension reload and the actual sidepanel opens without the original startup render error."
+          ],
+          "dimensions": [
+            "warm",
+            "extension-reload"
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "render-retest-001",
+              "detail": "Candidate identity was verified after reload and actual sidepanel opened twice; guest session only.",
+              "evidence": "docs/stabilization/runs/render-retest-001.json"
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "No member-mode session evidence; the operational behavior is intended to be auth-independent."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "No admin-mode session evidence; the operational behavior is intended to be auth-independent."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-0001-T03",
+          "title": "Content-script page reload",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0001-C03"
+          ],
+          "preconditions": [
+            "Candidate extension is loaded; a controlled permitted page is open and its initial state is recorded."
+          ],
+          "steps": "Reload the extension when required, reload the controlled page, then exercise the content-script-backed entry point.",
+          "expected": [
+            "The reloaded page uses the current content script and the entry point returns a visible success or truthful recovery state."
+          ],
+          "dimensions": [
+            "warm",
+            "extension-reload",
+            "page-reload"
+          ]
+        },
+        {
+          "id": "EXT-F-0001-T04",
+          "title": "Service-worker and offscreen restart",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0001-C04"
+          ],
+          "preconditions": [
+            "Candidate extension and controlled page are loaded; inspectable worker/offscreen contexts are identified."
+          ],
+          "steps": "Close DevTools; allow the service worker to terminate; invoke the relevant long-running operation and observe worker/offscreen recreation and message routing.",
+          "expected": [
+            "The worker restarts and required offscreen context/message routing recovers without a false hang or lost operation."
+          ],
+          "dimensions": [
+            "warm",
+            "idle-restart",
+            "page-navigation"
+          ]
+        },
+        {
+          "id": "EXT-F-0001-T05",
+          "title": "Development identity auth redirect",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0001-C05"
+          ],
+          "preconditions": [
+            "Development extension identity and configured auth origin are recorded; use the real sign-in flow without copying credentials into fixtures."
+          ],
+          "steps": "Start sign-in from the extension and observe the redirect/callback origin and return to the extension.",
+          "expected": [
+            "The development identity is accepted by the configured redirect allowlist and auth returns to the extension with a truthful signed-in or recoverable error state."
+          ],
+          "dimensions": [
+            "warm",
+            "auth-redirect"
+          ]
+        }
+      ],
       "cells": {
         "guest": {
           "test_status": "unverified",
           "defect_ids": [],
-          "run_ids": [],
+          "run_ids": [
+            "baseline-build-001",
+            "render-retest-001",
+            "render-build-001",
+            "render-compile-001",
+            "integrated-compile-001",
+            "integrated-install-002",
+            "integrated-regression-001"
+          ],
           "retest_status": "not-run"
         },
         "member": {
           "test_status": "unverified",
           "defect_ids": [],
-          "run_ids": [],
+          "run_ids": [
+            "baseline-build-001",
+            "render-retest-001",
+            "render-build-001",
+            "render-compile-001",
+            "integrated-compile-001",
+            "integrated-install-002",
+            "integrated-regression-001"
+          ],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
           "defect_ids": [],
-          "run_ids": [],
+          "run_ids": [
+            "baseline-build-001",
+            "render-retest-001",
+            "render-build-001",
+            "render-compile-001",
+            "integrated-compile-001",
+            "integrated-install-002",
+            "integrated-regression-001"
+          ],
           "retest_status": "not-run"
         }
       },
@@ -156,7 +328,225 @@
           "reason": "Infrastructure supports all authentication modes; shared job evidence can apply to each mode with runtime identity verified."
         }
       },
-      "cases": [],
+      "cases": [
+        {
+          "id": "EXT-F-0002-T01",
+          "title": "Unsafe preflight refusal",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0002-C01"
+          ],
+          "preconditions": [
+            "Use an isolated scratch policy/lease root with a deliberately unsafe measurement; do not lower production thresholds."
+          ],
+          "steps": "Request admission with the unsafe resource sample and inspect exit and emitted reason.",
+          "expected": [
+            "Admission is refused with an explicit resource reason and no workload starts."
+          ],
+          "dimensions": [
+            "unsafe-resource",
+            "scratch-policy"
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "scope": "isolated scratch fixture only; resource controls are auth-independent",
+              "detail": "Unsafe admission is refused by the isolated scratch fixture when the resource sample crosses a configured safety boundary. Production thresholds are unchanged.",
+              "evidence": "docs/stabilization/reports/resource-scope-review.json"
+            },
+            "member": {
+              "status": "pass",
+              "scope": "isolated scratch fixture only; resource controls are auth-independent",
+              "detail": "Unsafe admission is refused by the isolated scratch fixture when the resource sample crosses a configured safety boundary. Production thresholds are unchanged.",
+              "evidence": "docs/stabilization/reports/resource-scope-review.json"
+            },
+            "admin": {
+              "status": "pass",
+              "scope": "isolated scratch fixture only; resource controls are auth-independent",
+              "detail": "Unsafe admission is refused by the isolated scratch fixture when the resource sample crosses a configured safety boundary. Production thresholds are unchanged.",
+              "evidence": "docs/stabilization/reports/resource-scope-review.json"
+            }
+          }
+        },
+        {
+          "id": "EXT-F-0002-T02",
+          "title": "Single-heavy-job contention",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0002-C02"
+          ],
+          "preconditions": [
+            "Start one admitted scratch workload holding the lease."
+          ],
+          "steps": "Request a second heavy job while the first lease is live; inspect refusal and confirm first owner remains intact.",
+          "expected": [
+            "Second job is refused while the live owner retains its lease; no unrelated process is stopped."
+          ],
+          "dimensions": [
+            "contention",
+            "scratch-policy"
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "scope": "isolated scratch fixture only; resource controls are auth-independent",
+              "detail": "Concurrent second runner received RESOURCE_HEAVY_BUSY while the first scratch owner held the permit.",
+              "evidence": "docs/stabilization/reports/resource-scope-review.json"
+            },
+            "member": {
+              "status": "pass",
+              "scope": "isolated scratch fixture only; resource controls are auth-independent",
+              "detail": "Concurrent second runner received RESOURCE_HEAVY_BUSY while the first scratch owner held the permit.",
+              "evidence": "docs/stabilization/reports/resource-scope-review.json"
+            },
+            "admin": {
+              "status": "pass",
+              "scope": "isolated scratch fixture only; resource controls are auth-independent",
+              "detail": "Concurrent second runner received RESOURCE_HEAVY_BUSY while the first scratch owner held the permit.",
+              "evidence": "docs/stabilization/reports/resource-scope-review.json"
+            }
+          }
+        },
+        {
+          "id": "EXT-F-0002-T03",
+          "title": "Watchdog stops owned workload",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0002-C03"
+          ],
+          "preconditions": [
+            "Use isolated scratch runner with injected unsafe samples and a known child process group."
+          ],
+          "steps": "Trigger two unsafe watchdog samples; observe safe-boundary signal, shutdown and process census.",
+          "expected": [
+            "Only the owned group is stopped, no owned child remains, and run is marked resource-invalid."
+          ],
+          "dimensions": [
+            "watchdog",
+            "unsafe-resource",
+            "scratch-policy"
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "scope": "isolated scratch fixture only; resource controls are auth-independent",
+              "detail": "Injected unsafe watchdog samples stopped only the owned process group; the descendant was confirmed gone.",
+              "evidence": "docs/stabilization/reports/resource-admission.json"
+            },
+            "member": {
+              "status": "pass",
+              "scope": "isolated scratch fixture only; resource controls are auth-independent",
+              "detail": "Injected unsafe watchdog samples stopped only the owned process group; the descendant was confirmed gone.",
+              "evidence": "docs/stabilization/reports/resource-admission.json"
+            },
+            "admin": {
+              "status": "pass",
+              "scope": "isolated scratch fixture only; resource controls are auth-independent",
+              "detail": "Injected unsafe watchdog samples stopped only the owned process group; the descendant was confirmed gone.",
+              "evidence": "docs/stabilization/reports/resource-admission.json"
+            }
+          }
+        },
+        {
+          "id": "EXT-F-0002-T04",
+          "title": "Lease held through owned-work cleanup",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0002-C04"
+          ],
+          "preconditions": [
+            "Use isolated scratch workload that starts a child and records lease ownership."
+          ],
+          "steps": "Request stop while child remains; observe that lease is not released until process-group/token cleanup succeeds.",
+          "expected": [
+            "Lease remains held until owned work is confirmed gone; cleanup failure retains the lease."
+          ],
+          "dimensions": [
+            "process-lifecycle",
+            "scratch-policy"
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "scope": "isolated scratch fixture only; resource controls are auth-independent",
+              "detail": "Scratch evidence confirmed owned descendant cleanup before release; browser lease remained held until explicit operator stop confirmation.",
+              "evidence": "docs/stabilization/reports/resource-admission.json"
+            },
+            "member": {
+              "status": "pass",
+              "scope": "isolated scratch fixture only; resource controls are auth-independent",
+              "detail": "Scratch evidence confirmed owned descendant cleanup before release; browser lease remained held until explicit operator stop confirmation.",
+              "evidence": "docs/stabilization/reports/resource-admission.json"
+            },
+            "admin": {
+              "status": "pass",
+              "scope": "isolated scratch fixture only; resource controls are auth-independent",
+              "detail": "Scratch evidence confirmed owned descendant cleanup before release; browser lease remained held until explicit operator stop confirmation.",
+              "evidence": "docs/stabilization/reports/resource-admission.json"
+            }
+          }
+        },
+        {
+          "id": "EXT-F-0002-T05",
+          "title": "Manual browser stop confirmation",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0002-C05"
+          ],
+          "preconditions": [
+            "Acquire manual browser permit in isolated scratch mode and begin a controlled UI session."
+          ],
+          "steps": "Trigger unsafe hold; stop UI actions, then explicitly confirm stop using the documented operator action.",
+          "expected": [
+            "Unsafe browser lease remains held until the operator confirms UI work stopped; then it exits resource-invalid."
+          ],
+          "dimensions": [
+            "browser",
+            "unsafe-resource",
+            "scratch-policy"
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "scope": "isolated scratch fixture only; resource controls are auth-independent",
+              "detail": "Manual-browser scratch run retained the lease after unsafe samples until explicit SIGINT confirmation.",
+              "evidence": "docs/stabilization/reports/resource-admission.json"
+            },
+            "member": {
+              "status": "pass",
+              "scope": "isolated scratch fixture only; resource controls are auth-independent",
+              "detail": "Manual-browser scratch run retained the lease after unsafe samples until explicit SIGINT confirmation.",
+              "evidence": "docs/stabilization/reports/resource-admission.json"
+            },
+            "admin": {
+              "status": "pass",
+              "scope": "isolated scratch fixture only; resource controls are auth-independent",
+              "detail": "Manual-browser scratch run retained the lease after unsafe samples until explicit SIGINT confirmation.",
+              "evidence": "docs/stabilization/reports/resource-admission.json"
+            }
+          }
+        }
+      ],
       "cells": {
         "guest": {
           "test_status": "unverified",
@@ -248,31 +638,342 @@
           "reason": "Infrastructure supports all authentication modes; shared job evidence can apply to each mode with runtime identity verified."
         }
       },
-      "cases": [],
+      "cases": [
+        {
+          "id": "EXT-F-0003-T01",
+          "title": "Refuse red candidate publication",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0003-C03"
+          ],
+          "preconditions": [
+            "Use scripts/test-release-ship-path.sh with an isolated temporary bare origin and controlled failing mandatory-test stub; no real remote is configured."
+          ],
+          "steps": "Run the guard against the repaired release script with the failure sentinel; inspect exit, fixture main/tag, installed bundle and prior zips.",
+          "expected": [
+            "A failing mandatory test exits nonzero before main/tag publication; prior installed bundle and upload artifacts remain intact."
+          ],
+          "dimensions": [
+            "isolated-fixture",
+            "red-candidate"
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "detail": "Red mandatory-test refusal, prior artifacts retained, and no fixture publication. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            },
+            "member": {
+              "status": "pass",
+              "detail": "Red mandatory-test refusal, prior artifacts retained, and no fixture publication. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            },
+            "admin": {
+              "status": "pass",
+              "detail": "Red mandatory-test refusal, prior artifacts retained, and no fixture publication. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-0003-T02",
+          "title": "Validate final generated candidate before push",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0003-C02"
+          ],
+          "preconditions": [
+            "Use the isolated release fixture with generated version/catalog changes and controlled check commands."
+          ],
+          "steps": "Run a successful candidate through checks; compare final checked candidate SHA with the published fixture main SHA.",
+          "expected": [
+            "The exact generated/bumped candidate is checked before publication and its final checked SHA matches published main."
+          ],
+          "dimensions": [
+            "isolated-fixture",
+            "generated-candidate"
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            },
+            "member": {
+              "status": "pass",
+              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            },
+            "admin": {
+              "status": "pass",
+              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-0003-T03",
+          "title": "Reconcile concurrent main before candidate assembly",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0003-C01"
+          ],
+          "preconditions": [
+            "Use isolated fixture origin with divergent local and remote commits."
+          ],
+          "steps": "Run the release path and inspect the assembled/published candidate tree.",
+          "expected": [
+            "Remote and local commits are preserved in the candidate; conflicting trees refuse publication without discarding either side."
+          ],
+          "dimensions": [
+            "isolated-fixture",
+            "remote-race"
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            },
+            "member": {
+              "status": "pass",
+              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            },
+            "admin": {
+              "status": "pass",
+              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-0003-T04",
+          "title": "Revalidate after remote race",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0003-C04"
+          ],
+          "preconditions": [
+            "Use isolated fixture with a foreign main advance between candidate validation and push."
+          ],
+          "steps": "Inject remote advance; inspect validation count and outcome of the rebuilt candidate.",
+          "expected": [
+            "The raced candidate is rebuilt and all checks rerun; only the final checked candidate may publish."
+          ],
+          "dimensions": [
+            "isolated-fixture",
+            "remote-race"
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            },
+            "member": {
+              "status": "pass",
+              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            },
+            "admin": {
+              "status": "pass",
+              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-0003-T05",
+          "title": "Serialize checks/build and promote unpacked output",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0003-C05"
+          ],
+          "preconditions": [
+            "Use isolated fixture with command logging and a prior installed bundle."
+          ],
+          "steps": "Run release fixture; inspect command ordering and local output promotion.",
+          "expected": [
+            "Checks/build do not race over shared output; installed bundle promotion happens only after validation succeeds."
+          ],
+          "dimensions": [
+            "isolated-fixture",
+            "publication-order"
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            },
+            "member": {
+              "status": "pass",
+              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            },
+            "admin": {
+              "status": "pass",
+              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-0003-T06",
+          "title": "Match commit, tag, zips and bundle receipt",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0003-C06"
+          ],
+          "preconditions": [
+            "Use successful isolated fixture release with local and Store packages."
+          ],
+          "steps": "Inspect remote main/tag targets, produced zips, installed bundle and receipt after release.",
+          "expected": [
+            "Published commit and tag agree; both packages and installed bundle correspond to the validated candidate and receipt."
+          ],
+          "dimensions": [
+            "isolated-fixture",
+            "artifact-identity"
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            },
+            "member": {
+              "status": "pass",
+              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            },
+            "admin": {
+              "status": "pass",
+              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
+              "run_id": "release-green-001",
+              "evidence": "docs/stabilization/runs/release-green-001.json",
+              "scope": "Isolated local fixture; no real remote publication."
+            }
+          }
+        }
+      ],
       "cells": {
         "guest": {
           "test_status": "unverified",
-          "defect_ids": [],
-          "run_ids": [],
+          "defect_ids": [
+            "EXT-D-0002",
+            "EXT-D-0003",
+            "EXT-D-0004"
+          ],
+          "run_ids": [
+            "release-red-001",
+            "release-green-001",
+            "release-recovery-001",
+            "release-worker-guard-001",
+            "integrated-regression-001",
+            "release-real-002"
+          ],
           "retest_status": "not-run"
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
-          "run_ids": [],
+          "defect_ids": [
+            "EXT-D-0002",
+            "EXT-D-0003",
+            "EXT-D-0004"
+          ],
+          "run_ids": [
+            "release-red-001",
+            "release-green-001",
+            "release-recovery-001",
+            "release-worker-guard-001",
+            "integrated-regression-001",
+            "release-real-002"
+          ],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
-          "run_ids": [],
+          "defect_ids": [
+            "EXT-D-0002",
+            "EXT-D-0003",
+            "EXT-D-0004"
+          ],
+          "run_ids": [
+            "release-red-001",
+            "release-green-001",
+            "release-recovery-001",
+            "release-worker-guard-001",
+            "integrated-regression-001",
+            "release-real-002"
+          ],
           "retest_status": "not-run"
         }
       },
       "readiness_gaps": [
-        "Current release implementation violates pre-push green requirement. Reproduce safely with isolated fixture before repair; never invoke actual release until corrected."
+        "Real strict release and final integration remain unverified: release-real-002 stopped before publication when package-twins reported numeric resource telemetry as a formatter (EXT-D-0003).",
+        "Isolated fixture evidence validates targeted release ordering/recovery controls but does not prove external service gates or a completed real push."
       ],
-      "current_source_behavior": "release.sh pushes before validation, tolerates failed checks and parallelizes checks/builds. This conflicts with current campaign requirements; no acceptance claim is made.",
+      "current_source_behavior": "Committed release path assembles a generated candidate, runs mandatory gates and builds before atomic main/tag publication, refuses failed candidates, rebuilds and revalidates after a remote race, and stages/promotes artifacts transactionally. Isolated release-green-001 and recovery/guard runs cover those targeted behaviors. A real strict release remains incomplete: release-real-002 stopped before publication at package-twins due the separate numeric-arithmetic false positive EXT-D-0003; no successful real release/integration is claimed.",
       "unverified_leads": [
         {
           "id": "EXT-L-0003",
@@ -282,7 +983,8 @@
           "state": "needs-reproduction",
           "wave": "A"
         }
-      ]
+      ],
+      "integration_status": "Pending a strict green real release and final integration; latest real attempt stopped before publication on EXT-D-0003."
     },
     {
       "id": "EXT-F-1001",
@@ -1537,11 +2239,11 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Choose/clear device active organization and handle errors."
+            "Open Settings > Organization in the actual extension as a signed-out guest; inspect the organization guidance and confirm no organization selector or guest choice action is offered.",
+            "Reload/reopen Settings in the still-signed-out guest session; confirm the same guidance and absence of the selector."
           ],
           "expected": [
-            "Selected organization is reflected as Acting as after reload; unset state requires explicit selection and does not choose an implicit default."
+            "The guest sees \u201cSign in to choose\u201d; no organization selector or guest organization-choice action is exposed, and the guest guidance remains after reload."
           ],
           "dimensions": [
             "warm",
@@ -1556,8 +2258,9 @@
                 "Guest Organization view showed sign-in to choose; no organization selection or post-reload Acting as result was observed."
               ],
               "remaining_criteria": [
-                "Guest cold/reload verification remains open: confirm the guest sees the sign-in/choose-organization remedy and no organization selector, with no implicit org selected. The expected text also includes authenticated selection and Acting as behavior that a guest case cannot perform; record this as an acceptance-spec mode-mixing defect. Preserve that expected text pending explicit mode-specific correction; authenticated positive selection belongs to existing member/admin cases."
-              ]
+                "Run the guest negative-visibility/guidance check in warm and cold/reloaded UI state, confirming signed-out state throughout."
+              ],
+              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases."
             }
           }
         },
@@ -1707,11 +2410,11 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Choose active agent when org is set; inspect empty/unavailable states."
+            "With the guest signed out and no active organization, open Settings > Chat; inspect the Default agent row and confirm no agent picker or selection action is offered.",
+            "Reload/reopen Settings in the same guest state; confirm the unavailable-state guidance remains."
           ],
           "expected": [
-            "Selected agent is shown in the picker and persists; without org the UI instructs the user to choose one."
+            "The guest sees \u201cChoose an organization above\u201d and no agent picker or selection action; this unavailable-state guidance remains after reload."
           ],
           "dimensions": [
             "warm",
@@ -1723,11 +2426,12 @@
               "run_id": "guest-settings-002",
               "evidence": "docs/stabilization/runs/guest-settings-002.json",
               "verified_substeps": [
-                "Without an organization, Default agent displayed “Choose an organization above.”"
+                "Without an organization, Default agent displayed \u201cChoose an organization above.\u201d"
               ],
               "remaining_criteria": [
-                "Guest cold/reload verification remains open for the no-organization instruction and unavailable picker. The expected text also includes selecting/persisting an agent when an organization is set, which a guest case cannot perform; record this as an acceptance-spec mode-mixing defect. Preserve that expected text pending explicit mode-specific correction; authenticated positive behavior belongs to existing member/admin cases."
-              ]
+                "Run the guest negative-visibility/guidance check in warm and cold/reloaded UI state, confirming signed-out state throughout."
+              ],
+              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases."
             }
           }
         },
@@ -2109,11 +2813,11 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Expand and operate each capability control."
+            "Open Settings as a signed-out guest; inspect the section list for Advanced agent capabilities and its permission/audit-key controls.",
+            "Reload/reopen Settings while still signed out; confirm the admin-only section and controls remain absent."
           ],
           "expected": [
-            "Admin can open controls; ordinary member cannot access the admin-only section."
+            "Advanced agent capabilities and its controls are not exposed to a guest before or after reload. Admin operation remains covered by EXT-F-1003-T24; ordinary-member denial remains covered by EXT-F-1003-T23 and EXT-F-1003-T63."
           ],
           "dimensions": [
             "warm",
@@ -2128,8 +2832,9 @@
                 "Advanced agent capabilities was absent from guest Settings AX tree."
               ],
               "remaining_criteria": [
-                "Guest cold/reload verification remains open: confirm the admin-only section and its controls remain absent/inaccessible to a guest. The expected text also requires admin-positive behavior and ordinary-member denial, which do not belong to a guest case; record this as an acceptance-spec mode-mixing defect. Preserve that expected text pending explicit mode-specific correction; authenticated positive/denial checks belong to existing admin/member cases."
-              ]
+                "Run the guest negative-visibility/guidance check in warm and cold/reloaded UI state, confirming signed-out state throughout."
+              ],
+              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases."
             }
           }
         },
@@ -3133,7 +3838,7 @@
             "Select all, agent, pilot, parallel and webmcp receipt filters."
           ],
           "expected": [
-            "Visible receipt rows and counts match selected origin; empty filter shows “No receipts with origin=…”; all restores every row."
+            "Visible receipt rows and counts match selected origin; empty filter shows \u201cNo receipts with origin=\u2026\u201d; all restores every row."
           ],
           "dimensions": [
             "warm",
@@ -5795,7 +6500,7 @@
         {
           "id": "EXT-F-1006-C07",
           "label": "Desktop port override validation",
-          "action": "Enter blank, valid 1–65535, 0, >65535, fractional and nonnumeric values; Save."
+          "action": "Enter blank, valid 1\u201365535, 0, >65535, fractional and nonnumeric values; Save."
         },
         {
           "id": "EXT-F-1006-C09",
@@ -6096,7 +6801,7 @@
             "Signed in as an admin; open Debug > Bridges; use local test services and harmless requests."
           ],
           "steps": [
-            "Enter blank, valid 1–65535, 0, >65535, fractional and nonnumeric values; Save."
+            "Enter blank, valid 1\u201365535, 0, >65535, fractional and nonnumeric values; Save."
           ],
           "expected": [
             "Blank clears; valid integer persists and discovery reruns; invalid values are rejected and existing override remains."
@@ -7435,7 +8140,7 @@
             "Open Scrape before capturing, then navigate active tab to another URL."
           ],
           "expected": [
-            "Empty state invites capture; previous page’s content and Saved badge clear after navigation."
+            "Empty state invites capture; previous page\u2019s content and Saved badge clear after navigation."
           ],
           "dimensions": [
             "warm",
@@ -7752,7 +8457,7 @@
             "Run/auto-run on browser-internal or restricted URL."
           ],
           "expected": [
-            "No fabricated partial audit is shown; clear “cannot be audited” or capture failure appears."
+            "No fabricated partial audit is shown; clear \u201ccannot be audited\u201d or capture failure appears."
           ],
           "dimensions": [
             "warm",
@@ -7977,7 +8682,7 @@
             "Choose Ask the agent to fix this for a finding."
           ],
           "expected": [
-            "The finding’s section and message are staged in Chat composer; user can review before sending."
+            "The finding\u2019s section and message are staged in Chat composer; user can review before sending."
           ],
           "dimensions": [
             "warm",
@@ -8436,7 +9141,7 @@
         {
           "id": "EXT-F-1010-C08",
           "label": "Overlay stop toolbar control",
-          "action": "Click ✕ in injected highlighter toolbar."
+          "action": "Click \u2715 in injected highlighter toolbar."
         },
         {
           "id": "EXT-F-1010-C09",
@@ -8740,7 +9445,7 @@
             "Sign in; open Highlights on a controlled page with test text and selectable elements."
           ],
           "steps": [
-            "Click ✕ in injected highlighter toolbar."
+            "Click \u2715 in injected highlighter toolbar."
           ],
           "expected": [
             "Overlay sends inactive state and unmounts all page listeners/host."
@@ -14646,7 +15351,7 @@
             "On a conversation with disposable plan/task/todo rows, click Wipe all and cancel; verify rows remain. Reopen, confirm, then refresh."
           ],
           "expected": [
-            "Cancel preserves all rows; confirm removes that conversation’s plan, tasks and todos; dialog names permanent consequence."
+            "Cancel preserves all rows; confirm removes that conversation\u2019s plan, tasks and todos; dialog names permanent consequence."
           ],
           "dimensions": [
             "warm",
@@ -17532,7 +18237,7 @@
             "Signed-in member who belongs to two organizations; other membership has a controlled waiting handoff."
           ],
           "steps": [
-            "Open Capture with active organization A; use “waiting elsewhere” control to switch to organization B; wait for subscription refresh."
+            "Open Capture with active organization A; use \u201cwaiting elsewhere\u201d control to switch to organization B; wait for subscription refresh."
           ],
           "expected": [
             "Only a membership-listed organization can be selected; device org switches and queue refreshes; pointer clears after successful switch; membership loss yields explicit explanation."
@@ -17589,7 +18294,7 @@
             "Signed-in member with controlled needs_drive handoff and safe test page."
           ],
           "steps": [
-            "Open it; perform page sign-in/navigation manually; enter page-specific note and capture. Repeat with another handoff and choose This one won’t work with a reason. Follow a valid pickup pointer."
+            "Open it; perform page sign-in/navigation manually; enter page-specific note and capture. Repeat with another handoff and choose This one won\u2019t work with a reason. Follow a valid pickup pointer."
           ],
           "expected": [
             "Extension leaves page actions to user until explicit capture; capture completes and updates status; skip removes only selected handoff and records note; pickup opens matching item/tab."
@@ -20475,7 +21180,7 @@
       "name": "Run built-in browser AI scenarios",
       "surface": "Tools Smart tests",
       "entry_points": [
-        "Tools tab → Tools Smart tests"
+        "Tools tab \u2192 Tools Smart tests"
       ],
       "controls": [
         {
@@ -20843,7 +21548,7 @@
       "name": "Record active browser tab",
       "surface": "Tools Recorder",
       "entry_points": [
-        "Tools tab → Tools Recorder"
+        "Tools tab \u2192 Tools Recorder"
       ],
       "controls": [
         {
@@ -21152,7 +21857,7 @@
       "name": "Generate and use credentials",
       "surface": "Vault password generator",
       "entry_points": [
-        "Tools tab → Vault password generator"
+        "Tools tab \u2192 Vault password generator"
       ],
       "controls": [
         {

@@ -1,0 +1,56 @@
+{
+  "reviewed_commit": "2042903c2fb34daaca2ce531043a3ea0373231f1",
+  "scope": "Independent source-only review of build-time private database reads; no tests, build, SQL, browser, or network writes run.",
+  "verdict_a_behavior_acceptance": {
+    "status": "PARTIAL",
+    "passing_source_evidence": [
+      "The shared helper sends a fixed caller-provided SELECT to POST /v1/projects/{ref}/database/query with read_only: true and the operator token only in the Authorization header.",
+      "All three build-time callers await the new Promise-returning reader before using rows.",
+      "HTTP refusal, invalid JSON, non-array responses, and predicate-rejected rows throw sanitized errors; strict drift and migration checks return failure when their Management API fallback throws."
+    ],
+    "findings": [
+      {
+        "severity": "important",
+        "file": "scripts/check-migrations.ts",
+        "line": 114,
+        "issue": "The strict migration check returns exit 0 when loadSupabaseEnv() is null, before attempting the operator Management API read. A release with the private operator credential but absent public configuration, or with neither credential, claims success without checking the ledger. This violates fail-closed strict verification."
+      },
+      {
+        "severity": "important",
+        "file": "scripts/check-tool-db-drift.ts",
+        "line": 164,
+        "issue": "The Management API predicates accept definition rows with only string id/name and surface rows with only string surface_name. Malformed parameters, tier, active state, or inclusion arrays are then treated as usable catalog data. For example a definition with null parameters for a no-argument tool can compare clean, and a surface row with malformed but unused arrays can reach the green result. The helper's validation is only as complete as these predicates, so malformed private rows do not reliably fail closed."
+      }
+    ],
+    "cannot_verify": [
+      "No post-fix Management API request or strict release result was observed in this lane.",
+      "Root's earlier SELECT 1 HTTP 201 probe proves access and response shape for that probe only."
+    ]
+  },
+  "verdict_b_quality_security": {
+    "status": "PARTIAL",
+    "passing_source_evidence": [
+      "The helper reads the operator credential at call time from process configuration or the sibling private aidream environment file; no token literal, CLI argument, shell command, or extension WXT_ variable is introduced.",
+      "The new Management API failure messages include only generic text or an HTTP status, not request headers or response bodies.",
+      "No database grant, browser role, service key, or browser-bundle import is changed in the reviewed commit."
+    ],
+    "findings": [
+      {
+        "severity": "important",
+        "file": "scripts/_supabase-management.test.ts",
+        "line": 47,
+        "issue": "The focused tests cover 403 and one malformed name-only row, but do not exercise missing operator auth, malformed JSON/top-level payload, or the real caller predicates and strict exit paths. A hardcoded or incomplete validator can pass these tests. The test suite was not executed in this source-only lane."
+      },
+      {
+        "severity": "minor",
+        "file": "scripts/check-migrations.ts",
+        "line": 15,
+        "issue": "The script header still tells operators that the fallback uses the Supabase CLI, while the implementation now calls the Management API directly."
+      }
+    ],
+    "security_limitations": [
+      "No emitted bundle or log artifacts were inspected, so absence of credential leakage is supported by changed-source tracing only.",
+      "The SELECT text guard is not a general SQL safety parser, but all current caller statements are fixed strings and the request asks the server to enforce read_only."
+    ]
+  }
+}
