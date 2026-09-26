@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "date": "2026-09-26",
+  "scope": "Owned temporary disk recovery and release resource admission for stabilization run 032",
+  "result": "No safe task-owned boot-volume cleanup target of at least 2 GiB exists in the inspected temporary locations. The 20 GiB boot-volume floor remains blocked. A private external temporary directory is ready for a release-only run whose candidate exports and build intermediates use TMPDIR on that same filesystem; the resource guard must still perform a fresh admission.",
+  "policy_sources": [
+    ".claude/skills/disk-groom/SKILL.md",
+    "/Users/armanisadeghi/code/common-docs/operations/disk-grooming.md",
+    "docs/stabilization/resource-policy.json",
+    "scripts/stabilization-resource.mjs",
+    "release.sh",
+    "tests/browser/native-sidepanel-qa-harness.mjs"
+  ],
+  "run_032_refusal": {
+    "source": "/private/tmp/matrx-release-stabilization-032.log",
+    "source_at_utc": "2026-09-26T20:25:14.711Z",
+    "code": "RESOURCE_PREFLIGHT_REFUSED",
+    "reason": "RESOURCE_DISK_LOW",
+    "sample_profile_free_gib": 19.163650512695312,
+    "sample_repo_free_gib": 1674.6745491027832,
+    "sample_available_memory_gib": 12.64,
+    "required_memory_gib": 4,
+    "interpretation": "The refusal is from the filesystem supplied as --profile-dir. It did not run release.sh."
+  },
+  "read_only_scan": {
+    "inspected_paths": [
+      "/private/tmp",
+      "/private/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T",
+      "/Users/armanisadeghi/Library/Application Support/Google",
+      "/Users/armanisadeghi/Library/Caches"
+    ],
+    "private_tmp_allocated_kib": 25328,
+    "user_temp_allocated_kib": 422312,
+    "owned_browser_profile_in_inspected_temporary_locations": false,
+    "browser_harness_behavior": "tests/browser/native-sidepanel-qa-harness.mjs creates a profile beneath os.tmpdir() and removes its owned root in finally after closing the child. No surviving matrx-native-sidepanel-qa-* directory appeared in the inspected user TEMP root.",
+    "excluded_material": "Primary Chrome profile and cache, Codex and other app caches, test-results checkpoints, logs, credentials, contributor worktrees, and active process data were not removed or moved.",
+    "reclaimed_boot_gib": 0
+  },
+  "release_path": {
+    "release_logs": "The repository tmp/release-logs directory is on the external volume.",
+    "release_output": "The repository .output directory is on the external volume.",
+    "candidate_exports": "release.sh creates candidate snapshot directories beneath ${TMPDIR:-/tmp} at line 169.",
+    "check_jobs": "release.sh creates the concurrent check-job directory beneath ${TMPDIR:-/tmp} at line 398.",
+    "guard_behavior": "scripts/stabilization-resource.mjs samples the repo filesystem and the filesystem of --profile-dir. The latter can truthfully be the release's explicit TMPDIR for a release-only invocation, with the original 20 GiB floor unchanged.",
+    "prepared_external_tmpdir": "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032",
+    "prepared_mode": "0700",
+    "prepared_owner": "armanisadeghi",
+    "prepared_tmpdir_free_gib": 1674.67178,
+    "boot_free_gib_at_same_measurement": 18.16317,
+    "next_step": "For the release-only guarded invocation, export TMPDIR to the prepared directory for both the guard and its child, and pass that exact directory as --profile-dir. Let the guard take a fresh sample; use a separate check of the actual browser profile filesystem before any native browser run."
+  },
+  "mutations": [
+    "Created only the empty private external directory /Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032. No boot-volume files were deleted or relocated."
+  ]
+}
