@@ -1,0 +1,63 @@
+{
+  "id": "EXT-D-0003",
+  "feature_id": "EXT-F-0003",
+  "control_id": "EXT-F-0003-C03",
+  "case_id": "EXT-F-0003-T01",
+  "surface": "Release package-twins gate",
+  "auth_mode": "N/A: operational release path applies to all build modes",
+  "role": "release operator",
+  "organization": "N/A",
+  "permissions": "Read-only source diagnosis; no database grant or production permission change.",
+  "preconditions": [
+    "Real release-real-002 validates the generated candidate through release.sh strict checks.",
+    "scripts/package-twins.json has a shape rule for byte counts becoming display strings."
+  ],
+  "reproduction": [
+    "Run the real release candidate's mandatory package-twins check under the coordinator's resource guard.",
+    "Observe four SHAPE/byte-size findings at scripts/stabilization-resource.mjs lines 179, 180, 185, and 186 and a nonzero check exit.",
+    "Inspect the values' consumers in reasons(): each remains numeric and is compared to a resource policy threshold."
+  ],
+  "expected": "The twin guard rejects local byte-to-display-string formatters while accepting numeric unit conversion used to decide whether memory or disk is safe for a heavy run.",
+  "actual": "The twin guard classifies four numeric bytes-to-GiB resource measurements as formatFileSize display strings, so the strict release stops before publication.",
+  "evidence": [
+    "tmp/release-logs/latest.log:516-538 records the four findings and publication refusal.",
+    "scripts/stabilization-resource.mjs:179-186 calculates numeric GiB; :193 and :197 compare those numbers with policy thresholds.",
+    "scripts/package-twins.json formatFileSize shapeWhy defines the guarded capability as a byte count becoming a unit string."
+  ],
+  "build_receipt": null,
+  "reproducibility_count": "1/1 observed real strict release candidate; post-fix rerun pending",
+  "severity": "S1: strict release blocked despite safe resource arithmetic",
+  "priority": "P0: blocks publication of verified stabilization work",
+  "state": "in-fix",
+  "owner": "/root",
+  "root_cause": "The byte-size shape detector also matches numeric conversion expressions; its formatFileSize register had no documented distinction for resource-admission arithmetic.",
+  "sibling_census": "All four reported expressions are in the same resource sample: available/required memory and repository/profile disk. Swap conversion is also numeric but was not reported; no display formatter is involved in this file.",
+  "fix_commits": [],
+  "original_reproduction_retest_run": null,
+  "surrounding_case_runs": [],
+  "reviewer_identity": null,
+  "transition_history": [
+    {
+      "at": "2026-09-26T02:56:57Z",
+      "from": null,
+      "to": "open",
+      "reason": "Real strict release stopped on four package-twins byte-size shape findings before publication."
+    },
+    {
+      "at": "2026-09-26T02:58:28Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source confirms all four findings are numeric resource safety calculations, outside the display-string capability."
+    },
+    {
+      "at": "2026-09-26T02:58:28Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Add a reasoned file-level shapeAllow to formatFileSize; coordinator will run the affected guard and obtain independent review."
+    }
+  ],
+  "limitations": [
+    "No post-fix check was run by this source-only worker.",
+    "The coordinator must rerun the strict gate on the exact release candidate and transition the defect only with evidence."
+  ]
+}
