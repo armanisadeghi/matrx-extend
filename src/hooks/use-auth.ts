@@ -55,11 +55,14 @@ export function useAuth() {
         STORAGE_KEYS.USER_PROFILE,
         STORAGE_KEYS.IS_ADMIN,
       ]);
+      const session = await chrome.storage.session.get([STORAGE_KEYS.SAFARI_AUTH_FAILURE]);
       if (cancelled) return;
       const profile = result[STORAGE_KEYS.USER_PROFILE] as UserProfile | undefined;
       const cachedAdmin = result[STORAGE_KEYS.IS_ADMIN] as boolean | undefined;
       setUser(profile ?? null);
       setIsAdmin(!!cachedAdmin);
+      const safariFailure = session[STORAGE_KEYS.SAFARI_AUTH_FAILURE];
+      if (typeof safariFailure === 'string') setError(safariFailure);
 
       // Refresh admin flag in the background — guards against role changes.
       if (profile?.id) {
@@ -75,7 +78,7 @@ export function useAuth() {
     return () => {
       cancelled = true;
     };
-  }, [setUser, setIsAdmin]);
+  }, [setUser, setIsAdmin, setError]);
 
   useEffect(() => {
     return on<{ user: UserProfile | null; isAdmin?: boolean }, { ack: true }>(
@@ -88,19 +91,35 @@ export function useAuth() {
         // carried by a stale broadcast payload.
         void restoreSupabaseSession();
         setUser(payload.user);
-        if (payload.user) setError(null);
+        if (payload.user) {
+          setError(null);
+          setStatus('signed-in');
+        } else {
+          setStatus('signed-out');
+        }
         if (typeof payload.isAdmin === 'boolean') setIsAdmin(payload.isAdmin);
         return { ack: true };
       },
     );
-  }, [setUser, setIsAdmin, setError]);
+  }, [setUser, setIsAdmin, setError, setStatus]);
+
+  useEffect(() => {
+    return on<{ message: string }, { ack: true }>(CHANNELS.AUTH_SAFARI_FAILED, ({ message }) => {
+      signInGeneration += 1;
+      setError(message);
+      setStatus('signed-out');
+      return { ack: true };
+    });
+  }, [setError, setStatus]);
 
   const signIn = useCallback(async () => {
     const attempt = ++signInGeneration;
     setStatus('signing-in');
     setError(null);
     try {
-      const { user: profile } = await runSignIn();
+      const result = await runSignIn();
+      if ('pending' in result) return;
+      const { user: profile } = result;
       if (attempt !== signInGeneration) return;
       // signIn committed storage under the auth lock. Re-read that canonical
       // session rather than installing this attempt's supplied token.

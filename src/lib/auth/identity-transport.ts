@@ -1,28 +1,21 @@
 /**
- * Cross-browser transport for extension-managed OAuth redirects.
+ * Redirect transport selection for extension-managed OAuth.
  *
- * Safari exposes the standards-shaped promise API as `browser.identity`, while
- * Chrome keeps callback-oriented `chrome.identity`. Keep that distinction at
- * this boundary so sign-in and identity diagnostics observe the same callback.
+ * Safari has no identity API. Its callback is a public frontend route observed
+ * by the extension background page. Chrome retains its managed identity flow.
  */
 
-type BrowserIdentityApi = {
-  getRedirectURL?: () => string;
-  launchWebAuthFlow?: (details: { url: string; interactive: boolean }) => Promise<
-    string | undefined
-  >;
-};
+import { ENV } from '@/config/env';
+import { BROWSER } from '@/lib/browser/detect';
 
-function getBrowserIdentity(): BrowserIdentityApi | undefined {
-  // Identity is unavailable in content/offscreen contexts, so resolve lazily.
-  return (globalThis as unknown as { browser?: { identity?: BrowserIdentityApi } }).browser
-    ?.identity;
+const SAFARI_CALLBACK_PATH = '/auth/extension-callback';
+
+export function getSafariRedirectUri(): string {
+  return new URL(SAFARI_CALLBACK_PATH, ENV.FRONTEND_URL).toString();
 }
 
 export function getRedirectUri(): string {
-  const browserIdentity = getBrowserIdentity();
-  if (browserIdentity?.getRedirectURL) return browserIdentity.getRedirectURL();
-
+  if (BROWSER === 'safari') return getSafariRedirectUri();
   if (chrome.identity?.getRedirectURL) return chrome.identity.getRedirectURL();
   throw new Error(
     'OAuth sign-in is unavailable because this browser does not provide an identity API',
@@ -30,14 +23,6 @@ export function getRedirectUri(): string {
 }
 
 export function launchWebAuthFlow(url: string): Promise<string> {
-  const browserIdentity = getBrowserIdentity();
-  if (browserIdentity?.launchWebAuthFlow) {
-    return browserIdentity.launchWebAuthFlow({ url, interactive: true }).then((callbackUrl) => {
-      if (!callbackUrl) throw new Error('OAuth flow cancelled or returned no URL');
-      return callbackUrl;
-    });
-  }
-
   if (!chrome.identity?.launchWebAuthFlow) {
     return Promise.reject(
       new Error(

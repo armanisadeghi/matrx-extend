@@ -83,25 +83,6 @@ describe('extension identity diagnostics', () => {
     });
   });
 
-  it('displays Safari browser.identity callback URI without chrome.identity', async () => {
-    vi.stubGlobal('browser', {
-      identity: { getRedirectURL: () => 'https://com.example.matrx.safariwebext.apple/' },
-    });
-    vi.stubGlobal('chrome', {
-      runtime: {
-        id: 'safari-extension',
-        getManifest: () => ({ version: '0.0.0-test', name: 'Matrx Extend' }),
-      },
-    });
-    const { readExtensionIdentity } = await import('@/lib/auth/identity');
-
-    expect(readExtensionIdentity()).toMatchObject({
-      redirect_uri: 'https://com.example.matrx.safariwebext.apple/',
-      known_id: false,
-      matches_expected: false,
-    });
-  });
-
   it('rejects an unknown runtime with a valid hash-style Firefox URI', async () => {
     setExtensionRuntime('unknown-addon@example.com', UNKNOWN_FIREFOX_REDIRECT_URI);
     const { readExtensionIdentity } = await import('@/lib/auth/identity');
