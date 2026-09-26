@@ -195,14 +195,15 @@ const {
 
   const unobservedProof = {};
   await assert.rejects(
-    () => runExtensionReload({
-      worker,
-      ...reloadBoundary,
-      refreshWorker: async () => replacement,
-      verifySettingsIdentity: async () => true,
-      checkpoint: () => {},
-      proof: unobservedProof,
-    }),
+    () =>
+      runExtensionReload({
+        worker,
+        ...reloadBoundary,
+        refreshWorker: async () => replacement,
+        verifySettingsIdentity: async () => true,
+        checkpoint: () => {},
+        proof: unobservedProof,
+      }),
     /lifecycle_reload_worker_target_not_replaced/,
   );
 
