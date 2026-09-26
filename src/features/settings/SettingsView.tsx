@@ -51,7 +51,7 @@ type ExtensionUpdateStatus =
   | { kind: 'throttled' }
   | { kind: 'error' };
 
-type BrowserLoginReadiness = 'ready' | 'unavailable';
+type BrowserLoginApiAvailability = 'available' | 'unavailable';
 
 function installedBrowserLabel(): string {
   const userAgent = navigator.userAgent;
@@ -63,14 +63,14 @@ function installedBrowserLabel(): string {
   return 'This browser';
 }
 
-function browserLoginReadiness(): BrowserLoginReadiness {
+function browserLoginApiAvailability(): BrowserLoginApiAvailability {
   const runtime = chrome.runtime;
   const canUsePasswordFlow =
     typeof runtime?.sendMessage === 'function' &&
     typeof chrome.tabs?.get === 'function' &&
     typeof chrome.scripting?.executeScript === 'function' &&
     typeof chrome.storage?.local?.get === 'function';
-  return canUsePasswordFlow ? 'ready' : 'unavailable';
+  return canUsePasswordFlow ? 'available' : 'unavailable';
 }
 
 function updateStatusCopy(status: ExtensionUpdateStatus): string | null {
@@ -79,8 +79,8 @@ function updateStatusCopy(status: ExtensionUpdateStatus): string | null {
       return 'Your browser did not find an update right now.';
     case 'update_available':
       return status.version
-        ? `Version ${status.version} is available. Your browser will install it when its update finishes.`
-        : 'An update is available. Your browser will install it when its update finishes.';
+        ? `Version ${status.version} is available. Open your browser’s Extensions page, find Matrx Extend, and use its update controls to finish the update.`
+        : 'An update is available. Open your browser’s Extensions page, find Matrx Extend, and use its update controls to finish the update.';
     case 'throttled':
       return 'Your browser limited update checks. Try again later, or use its Extensions page to review updates.';
     case 'error':
@@ -151,7 +151,7 @@ export function SettingsView() {
   const desktopColor = desktopStatusTextClass(desktop.transport, desktop.health);
   const engineHealth = engineHealthState(desktop.health);
   const canCheckForUpdate = typeof chrome.runtime.requestUpdateCheck === 'function';
-  const loginReadiness = browserLoginReadiness();
+  const loginApiAvailability = browserLoginApiAvailability();
 
   const checkForExtensionUpdate = () => {
     if (typeof chrome.runtime.requestUpdateCheck !== 'function') return;
@@ -573,16 +573,21 @@ export function SettingsView() {
               <Row label="Installed version" value={chrome.runtime.getManifest().version} mono />
               <Row label="Extension ID" value={chrome.runtime.id} mono />
               <Row
-                label="Saved-login browser support"
+                label="Browser APIs for saved logins"
                 value={
-                  loginReadiness === 'ready' ? (
-                    <span className="text-emerald-600 dark:text-emerald-400">Ready</span>
+                  loginApiAvailability === 'available' ? (
+                    <span className="text-emerald-600 dark:text-emerald-400">Available</span>
                   ) : (
                     <span className="text-destructive">Unavailable</span>
                   )
                 }
               />
-              {loginReadiness === 'unavailable' && (
+              {loginApiAvailability === 'available' ? (
+                <p className="px-3.5 pb-2 text-xs text-muted-foreground">
+                  Vault checks whether saved logins can be used for this browser and site when you
+                  choose one.
+                </p>
+              ) : (
                 <p className="px-3.5 pb-2 text-xs text-muted-foreground">
                   Reload or reinstall Matrx Extend in a supported browser to use saved logins.
                 </p>

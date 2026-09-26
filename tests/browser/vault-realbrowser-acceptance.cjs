@@ -2088,6 +2088,7 @@ async function openSidePanelFromActionPopup(
   fixtureWindowId,
   workerFacade = worker,
   browserContext = context,
+  popupControlLabel = 'Open chat',
 ) {
   // This is intentionally not a normal popup.html tab. The action popup is
   // opened for the already-focused fixture window, then its existing product
@@ -2133,7 +2134,7 @@ async function openSidePanelFromActionPopup(
       let attempts = 0;
       for (; attempts < 30; attempts += 1) {
         const response = await popup.send('Runtime.evaluate', {
-          expression: `(() => { const control = Array.from(document.querySelectorAll('button')).find((button) => button.textContent.trim() === 'Open chat'); if (!control) return { control: false }; control.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const rect = control.getBoundingClientRect(); const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2; const hit = document.elementFromPoint(x, y); return { control: true, x, y, width: rect.width, height: rect.height, visible: x >= 0 && y >= 0 && x <= innerWidth && y <= innerHeight, hit: !!hit && (hit === control || control.contains(hit)) }; })()`,
+          expression: `(() => { const control = Array.from(document.querySelectorAll('button')).find((button) => button.textContent.trim() === ${JSON.stringify(popupControlLabel)}); if (!control) return { control: false }; control.scrollIntoView({ block: 'nearest', inline: 'nearest' }); const rect = control.getBoundingClientRect(); const x = rect.x + rect.width / 2, y = rect.y + rect.height / 2; const hit = document.elementFromPoint(x, y); return { control: true, x, y, width: rect.width, height: rect.height, visible: x >= 0 && y >= 0 && x <= innerWidth && y <= innerHeight, hit: !!hit && (hit === control || control.contains(hit)) }; })()`,
           returnByValue: true,
         });
         box = response.result?.value;
@@ -2143,7 +2144,8 @@ async function openSidePanelFromActionPopup(
       if (!(box?.control && box.width > 0 && box.height > 0 && box.visible && box.hit)) {
         return {
           opened: false,
-          reason: 'action_popup_open_chat_not_actionable',
+          reason: 'action_popup_control_not_actionable',
+          popupControlLabel,
           readiness: {
             attempts,
             controlPresent: box?.control === true,
@@ -2303,6 +2305,7 @@ async function openSidePanelFromActionPopup(
     handedOff = true;
     return {
       opened: true,
+      popupControlLabel,
       panel: {
         targetId: target.targetId,
         send: (method, params) => panel.send(method, params),
@@ -2352,6 +2355,130 @@ async function settingsIdentityFailureState(panel) {
     signInVisible: observed?.signInVisible === true,
     signOutVisible: observed?.signOutVisible === true,
   };
+}
+
+async function closeOwnedSidePanelForPopupRoute({ panel, windowId }) {
+  const supportsClose = await worker.evaluate(() => typeof chrome.sidePanel?.close === 'function');
+  assert(supportsClose, 'popup_capture_side_panel_close_unavailable');
+  const closeResult = await worker.evaluate(async (targetWindowId) => {
+    try {
+      await chrome.sidePanel.close({ windowId: targetWindowId });
+      return 'requested';
+    } catch {
+      return 'refused';
+    }
+  }, windowId);
+  assert(closeResult === 'requested', 'popup_capture_side_panel_close_refused');
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    const [contexts, targets] = await Promise.all([
+      worker.evaluate(() => chrome.runtime.getContexts({ contextTypes: ['SIDE_PANEL'] })),
+      rawCdp.send('Target.getTargets'),
+    ]);
+    if (
+      contexts.length === 0 &&
+      !targets.targetInfos.some((target) => target.targetId === panel.targetId)
+    ) {
+      panel.dispose();
+      return;
+    }
+    await wait(100);
+  }
+  throw new Error('popup_capture_side_panel_destruction_unproven');
+}
+
+async function provePopupCaptureRoute({ extensionId }) {
+  const route = (proof.popupCaptureRoute = {
+    disposition: 'in_progress',
+    popupOrigin: 'chrome.action.openPopup',
+    vaultWritesBefore: proof.vaultMutationRequests,
+    captureActionInvoked: false,
+  });
+  let fixturePage;
+  try {
+    fixturePage = await context.newPage();
+    await fixturePage.bringToFront();
+    const activeWindow = await worker.evaluate(async () => {
+      const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+      return Number.isInteger(tab?.windowId) ? { windowId: tab.windowId } : null;
+    });
+    assert(activeWindow?.windowId, 'popup_capture_fixture_window_missing');
+
+    // Fix the known persisted tab before the route begins. A later Scrape
+    // selection can therefore be attributed only to Capture page, and the
+    // second fresh panel proves that its one-shot intent was consumed.
+    await realPanel.click(`document.querySelector('button[title="Chat"]')`);
+    await realPanel.waitFor(
+      `document.querySelector('button[title="Chat"]')?.getAttribute('aria-selected') === 'true'`,
+    );
+    route.initialChatSelected = true;
+    await closeOwnedSidePanelForPopupRoute({ panel: realPanel, windowId: activeWindow.windowId });
+    realPanel = undefined;
+
+    const captureOpened = await openSidePanelFromActionPopup(
+      extensionId,
+      fixturePage,
+      activeWindow.windowId,
+      worker,
+      context,
+      'Capture page',
+    );
+    assert(captureOpened.opened && captureOpened.panel, 'popup_capture_panel_missing');
+    realPanel = captureOpened.panel;
+    await networkJournal.bindPanelTarget(realPanel.targetId);
+    await realPanel.waitFor(
+      `document.querySelector('button[title="Scrape"]')?.getAttribute('aria-selected') === 'true' && !!document.querySelector('button[title="Capture the page exactly as it is right now"]')`,
+    );
+    route.capturePopupOpened = captureOpened.popupControlLabel === 'Capture page';
+    route.scrapeSelectedAfterCapture = await realPanel.evaluate(
+      `document.querySelector('button[title="Scrape"]')?.getAttribute('aria-selected') === 'true'`,
+    );
+    route.pageCaptureActionVisible = await realPanel.evaluate(
+      `!!document.querySelector('button[title="Capture the page exactly as it is right now"]')`,
+    );
+    assert(route.scrapeSelectedAfterCapture, 'popup_capture_scrape_not_selected');
+    assert(route.pageCaptureActionVisible, 'popup_capture_page_action_missing');
+
+    await fixturePage.bringToFront();
+    await closeOwnedSidePanelForPopupRoute({ panel: realPanel, windowId: activeWindow.windowId });
+    realPanel = undefined;
+    const chatOpened = await openSidePanelFromActionPopup(
+      extensionId,
+      fixturePage,
+      activeWindow.windowId,
+    );
+    assert(chatOpened.opened && chatOpened.panel, 'popup_capture_open_chat_panel_missing');
+    realPanel = chatOpened.panel;
+    await networkJournal.bindPanelTarget(realPanel.targetId);
+    await realPanel.waitFor(
+      `document.querySelector('button[title="Chat"]')?.getAttribute('aria-selected') === 'true'`,
+    );
+    route.openChatPopupOpened = chatOpened.popupControlLabel === 'Open chat';
+    route.chatSelectedAfterOpenChat = await realPanel.evaluate(
+      `document.querySelector('button[title="Chat"]')?.getAttribute('aria-selected') === 'true'`,
+    );
+    route.scrapeSelectedAfterOpenChat = await realPanel.evaluate(
+      `document.querySelector('button[title="Scrape"]')?.getAttribute('aria-selected') === 'true'`,
+    );
+    route.noStaleCaptureRedirect =
+      route.chatSelectedAfterOpenChat === true && route.scrapeSelectedAfterOpenChat === false;
+    route.vaultWritesAfter = proof.vaultMutationRequests;
+    route.noVaultWrites = route.vaultWritesAfter === route.vaultWritesBefore;
+    assert(route.noStaleCaptureRedirect, 'popup_capture_intent_stale_after_open_chat');
+    assert(route.noVaultWrites, 'popup_capture_route_mutated_vault');
+    route.disposition = 'passed';
+    persist();
+  } catch (error) {
+    route.disposition = 'failed';
+    route.failureCode = error instanceof Error ? error.message : 'popup_capture_route_unknown_failure';
+    try {
+      persist();
+    } catch {
+      /* Preserve the route failure. */
+    }
+    throw error;
+  } finally {
+    if (fixturePage && !fixturePage.isClosed()) await fixturePage.close();
+  }
 }
 async function chooseAuthorizedOrganization(extensionId) {
   const settingsPage = await context.newPage();
@@ -2880,6 +3007,8 @@ async function authenticate(extension, { reuseBrowser = false } = {}) {
   proof.organizationProof = { label: 'AI Matrx', activeStorageObserved: true };
   // Both identity and organization evidence exist before the first fixture.
   persist();
+  if (extensionLifecycleMode || setupIdentityOnlyMode || identityOnlyMode)
+    await provePopupCaptureRoute({ extensionId });
   assert(!(await hasPendingCapture()), 'admin_password_pending_before_writes');
 }
 async function focusOwnedBrowser(expectedTabId) {

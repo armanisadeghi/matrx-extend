@@ -4,6 +4,7 @@ export const POPUP_LAUNCH_INTENT_KEY = 'matrx.sidepanel.popup_launch_intent';
 const CAPTURE_PAGE_INTENT_TTL_MS = 15_000;
 
 type CapturePageIntent = {
+  phase: 'pending' | 'armed';
   kind: 'capture-page';
   windowId: number;
   requestId: string;
@@ -17,11 +18,19 @@ export interface CapturePagePanelRequest {
   write: Promise<void>;
 }
 
+export function armCapturePagePanel(request: CapturePagePanelRequest): Promise<void> {
+  const armed = { ...request.intent, phase: 'armed' as const };
+  return chrome.storage.session.set({ [request.key]: armed }).then(() => {
+    request.intent = armed;
+  });
+}
+
 function isCapturePageIntent(value: unknown): value is CapturePageIntent {
   if (!value || typeof value !== 'object') return false;
   const candidate = value as Partial<CapturePageIntent>;
   return (
     candidate.kind === 'capture-page' &&
+    (candidate.phase === 'pending' || candidate.phase === 'armed') &&
     typeof candidate.windowId === 'number' &&
     typeof candidate.requestId === 'string' &&
     typeof candidate.createdAt === 'number' &&
@@ -37,6 +46,7 @@ export function requestCapturePagePanel(windowId: number): CapturePagePanelReque
   const requestId = crypto.randomUUID();
   const createdAt = Date.now();
   const intent: CapturePageIntent = {
+    phase: 'pending',
     kind: 'capture-page',
     windowId,
     requestId,
@@ -78,6 +88,7 @@ export function takePopupLaunchTarget(windowId: number): Promise<SidepanelTab | 
         key.startsWith(`${POPUP_LAUNCH_INTENT_KEY}.${windowId}.`) &&
         isCapturePageIntent(value) &&
         value.windowId === windowId &&
+        value.phase === 'armed' &&
         value.expiresAt >= now
       ) {
         candidates.push([key, value]);

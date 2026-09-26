@@ -119,15 +119,22 @@ function about() {
   return within(screen.getByRole('region', { name: 'About' }));
 }
 
+function setUserAgent(value: string) {
+  Object.defineProperty(navigator, 'userAgent', { configurable: true, value });
+}
+
 describe('SettingsView About', () => {
   beforeEach(() => {
     mocks.getEnginePortOverride.mockReset().mockResolvedValue(null);
     mocks.requestUpdateCheck.mockReset();
   });
 
-  afterEach(cleanup);
+  afterEach(() => {
+    cleanup();
+    setUserAgent('Mozilla/5.0 Chrome/130.0.0.0 Safari/537.36');
+  });
 
-  it('shows installed details, password-flow readiness, and a browser-scoped no-update result', () => {
+  it('shows installed details, local API availability, and a browser-scoped no-update result', () => {
     mocks.requestUpdateCheck.mockImplementation((callback) => callback('no_update'));
     setChromeRuntime({ requestUpdateCheck: mocks.requestUpdateCheck });
 
@@ -135,10 +142,31 @@ describe('SettingsView About', () => {
 
     expect(about().getByText('0.2.54')).toBeTruthy();
     expect(about().getByText('extension-id')).toBeTruthy();
-    expect(about().getByText('Ready')).toBeTruthy();
+    expect(about().getByText('Available')).toBeTruthy();
+    expect(
+      about().getByText(
+        'Vault checks whether saved logins can be used for this browser and site when you choose one.',
+      ),
+    ).toBeTruthy();
     fireEvent.click(about().getByRole('button', { name: 'Check for extension update' }));
     expect(mocks.requestUpdateCheck).toHaveBeenCalledTimes(1);
     expect(about().getByText('Your browser did not find an update right now.')).toBeTruthy();
+  });
+
+  it('labels Firefox-like local APIs as available without claiming saved-logins are ready', () => {
+    setUserAgent('Mozilla/5.0 Firefox/130.0');
+    setChromeRuntime({ requestUpdateCheck: mocks.requestUpdateCheck });
+
+    render(<SettingsView />);
+
+    expect(about().getByText('Firefox')).toBeTruthy();
+    expect(about().getByText('Available')).toBeTruthy();
+    expect(about().queryByText('Ready')).toBeNull();
+    expect(
+      about().getByText(
+        'Vault checks whether saved logins can be used for this browser and site when you choose one.',
+      ),
+    ).toBeTruthy();
   });
 
   it('gives a browser-managed update path and an honest unavailable cue when APIs are absent', () => {
@@ -158,7 +186,7 @@ describe('SettingsView About', () => {
     ).toBeTruthy();
   });
 
-  it('reports an available update without claiming it has been installed', () => {
+  it('reports an available update and directs the user to browser update controls', () => {
     mocks.requestUpdateCheck.mockImplementation((callback) =>
       callback('update_available', { version: '0.2.55' }),
     );
@@ -169,7 +197,7 @@ describe('SettingsView About', () => {
 
     expect(
       about().getByText(
-        'Version 0.2.55 is available. Your browser will install it when its update finishes.',
+        'Version 0.2.55 is available. Open your browser’s Extensions page, find Matrx Extend, and use its update controls to finish the update.',
       ),
     ).toBeTruthy();
   });
