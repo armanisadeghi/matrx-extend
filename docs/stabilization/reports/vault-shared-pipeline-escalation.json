@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "report_id": "vault-shared-pipeline-escalation",
+  "status": "instrumentation_prepared_runtime_pending",
+  "receipt": "docs/stabilization/runs/member-vault-access-006.json",
+  "terminal_truth": {
+    "admin_web_and_extension_signin": true,
+    "approved_device_organization_selected": true,
+    "mine_inventory_ready": true,
+    "shared_tab_observed_available": true,
+    "shared_click_completed": false,
+    "shared_product_defect_proven": false
+  },
+  "confirmed_cause_of_original_loading": "Missing explicit device organization prerequisite: before choice no selected org and picker pending/visible; after authorized choice picker clears and Mine heading/inventory settle.",
+  "current_shared_click_cause": "Unknown. Run006 catches and discards the driver error; it proves failure inside click() but cannot locate its boundary. The scoped selector changes did not resolve the actual failure.",
+  "pipeline_census": [
+    "Resolve kind-specific targets, including exact linked active Vault panel.",
+    "Filter target visibility and require uniqueness.",
+    "Scroll target then compute viewport and nested overflow clipping bounds.",
+    "Sample nine points and require actual elementFromPoint hit with target enabled.",
+    "Reject running target/ancestor animation; require two stable point observations.",
+    "Dispatch trusted CDP mouse press and release."
+  ],
+  "hypotheses": [
+    {
+      "cause": "Selector/visibility mismatch",
+      "prediction": "pointer_target_not_unique with raw matchedTargetCount and visibleMatchCount distinguishing match failure from hidden target.",
+      "falsifier": "Unique visible target recorded."
+    },
+    {
+      "cause": "Clipping or obstruction",
+      "prediction": "pointer_stable_hit_not_observed with clippedTargetHasArea false or selectedPointAvailable false and a fixed centerHitCategory.",
+      "falsifier": "Hit target true with usable clipped area and selected point."
+    },
+    {
+      "cause": "Continuous motion/animation",
+      "prediction": "Unique target and valid hit but animating true or positionStable false; stableSamples never reaches2.",
+      "falsifier": "StableSamples2 and no animation."
+    },
+    {
+      "cause": "Page sample or CDP failure",
+      "prediction": "Fixed page sample stage or initial/followup evaluation / press/release dispatch enum.",
+      "falsifier": "Pointer geometry samples and both dispatch calls complete."
+    }
+  ],
+  "change": {
+    "files": [
+      "tests/browser/settings-panel-driver.mjs",
+      "tests/browser/member-vault-access-probe.mjs"
+    ],
+    "behavior": "No selectors, scroll operations, hit requirements, animation requirements, deadlines or click semantics changed. Add fixed failure enums and allowlisted counts/geometry booleans at existing boundaries. Probe preserves driverFailure object only; never raw exception message.",
+    "sibling_consideration": "Existing contained-navigation and isolated-admin-reset classify known message prefixes; preserved stable-hit, unique-target and followup-sample prefixes without raw target text or exception content.",
+    "privacy": "No coordinates in new driverFailure receipt; only positional booleans, fixed categories, counts. Existing pointerDiagnostic geometry remains available to existing non-Vault callers."
+  },
+  "verification": [
+    "Node syntax checks and Biome are source-only checks; no browser/build/runtime/tests launched."
+  ],
+  "next_step": "Root-owned independent review then one guarded actual probe. Read driverFailure to choose a boundary-specific repair. No further selector guess or timeout increase justified."
+}

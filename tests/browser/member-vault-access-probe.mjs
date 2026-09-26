@@ -317,9 +317,10 @@ try {
   evidence.status = 'inventory_observed_member_auth_unverified';
   stage = 'complete';
   process.stdout.write('OBSERVED member_vault_masked_inventory; member auth unverified\n');
-} catch {
+} catch (error) {
   evidence.status = 'unverified';
   evidence.failureStage = stage;
+  if (error?.driverFailure) evidence.driverFailure = error.driverFailure;
   evidence.failureCategory ??= 'stage_operation_failed';
   process.stderr.write(`UNVERIFIED member_vault_access_probe at ${stage}\n`);
   process.exitCode = 1;
