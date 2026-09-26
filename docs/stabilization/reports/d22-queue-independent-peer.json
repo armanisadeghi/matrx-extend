@@ -1,0 +1,39 @@
+{
+  "lane": "d22_queue_independent_peer",
+  "reviewed_commit": "8c0e8a19",
+  "scope": "Independent source review of Source Save and Retry across organization switches, overlapping outcomes, edits, queue reload, and errors.",
+  "source_verdict": "changes_required",
+  "runtime_verdict": "unverified_by_this_lane",
+  "findings": [
+    {
+      "severity": "high",
+      "title": "The landing body and authorization header can use different organizations",
+      "evidence": "src/lib/sources/save-capture.ts:174-195 resolves the organization for organization_id, then src/lib/api/routes/sources.ts:205-207 calls apiPost. src/lib/api/client.ts:700-707 and :263 independently resolve the organization for X-Organization-Id. A switch between those resolutions can produce body A with header B. Existing tests mock apiPost, so they cannot exercise this transport race.",
+      "implication": "The request can be refused or evaluated under a different organization from its payload; the Save outcome alone does not prove the request used one identity.",
+      "recommendation": "Bind the actor and organization once for this request at the transport boundary, or fail closed if either changes before dispatch; prove body and header agree in a transport-level guard."
+    },
+    {
+      "severity": "medium",
+      "title": "An older refusal can reappear after a newer successful save or discard",
+      "evidence": "src/lib/sources/save-capture.ts:251-269 compares revisions only with a row that currently exists. A newer success in :273-294, or discard in :296-301, removes the row without recording a per-URL completed revision. An older in-flight refusal then reaches upsertUnsaved with no prior row and is inserted.",
+      "implication": "A retry card can reappear with stale content after the page has landed or a capture has been discarded, especially across panel reloads or contexts.",
+      "recommendation": "Keep a durable per-page completion/discard boundary or otherwise reject results whose operation predates the latest terminal action. Preserve older refusals for a genuinely different workspace if the product promises recovery there."
+    },
+    {
+      "severity": "medium",
+      "title": "The failed expanded guard used an inconsistent edited capture fixture",
+      "evidence": "tests/unit/save-never-loses-input.test.tsx:507-514 changes only content_markdown, then calls saveCaptureAsSource without articleEdited. prepareLanding in src/lib/sources/save-capture.ts:127-129 prefers HTML in this case, and tests/unit/save-never-loses-input.test.tsx:69 leaves the HTML unchanged. The root's expanded run reported 1 failed, 40 passed; the failing body contained the original Guide text rather than the B revision.",
+      "implication": "This failure does not establish a queue revision defect. It also does not validate the intended edited-content race.",
+      "recommendation": "Pass articleEdited: true for this edited-markdown scenario, or update the fixture HTML too, then rerun the guard."
+    }
+  ],
+  "positive_evidence": [
+    "src/lib/sources/save-capture.ts:233-269 reserves a durable order before network I/O and compares it while the queued row exists, protecting a newer pending refusal from an older refusal.",
+    "src/lib/sources/save-capture.ts:273-294 checks revision and request organization before removing an existing queued row; src/features/scrape/ScrapeView.tsx:215-255 guards late local Save completion against a changed capture or newer run.",
+    "src/features/scrape/UnsavedCapturesCard.tsx:58-76 uses the current panel capture for the current page and announces retry failures."
+  ],
+  "limits": [
+    "No tests, browser actions, network writes, or production code edits were performed in this review lane.",
+    "The reported expanded test result is root-provided; this lane independently inspected the fixture and code path."
+  ]
+}
