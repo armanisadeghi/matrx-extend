@@ -3130,7 +3130,17 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "not-applicable",
+              "detail": "Audit key is admin-only: source isAdmin gate and actual guest T22 evidence confirm absence. Negative access remains covered byT22/T63; this does not waive member/direct-state checks.",
+              "evidence": [
+                "docs/stabilization/reports/guest-settings-applicability.json",
+                "docs/stabilization/runs/guest-settings-local-003.json"
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T26",
