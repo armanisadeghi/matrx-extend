@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "run_id": "incoming-sources-001",
+  "target_source_commit": "6644d3ed37f0840f060dced4a9bcc41292938ac1",
+  "status": "focused_unit_pass",
+  "resource_admission": "RESOURCE_ADMITTED at 2026-09-26T19:12:47.196Z",
+  "exit": "RESOURCE_JOB_EXIT childExitCode=0 childSignal=null at 2026-09-26T19:12:49.909Z",
+  "result": "Vitest log reports 3 test files passed and 23 tests passed. Root executed the guarded workload; this peer only read and hashed its completed log.",
+  "log_path": "/tmp/matrx-incoming-sources-001.log",
+  "log_sha256": "b91b1eb9dd900d57411a2477702cf980188823237d4bce3184298fe62bfeb21c",
+  "test_files": [
+    "src/features/saved-captures/SavedCapturesView.test.tsx",
+    "tests/unit/not-yet-a-source.test.tsx",
+    "tests/unit/save-never-loses-input.test.tsx"
+  ],
+  "limits": [
+    "Log summary gives counts rather than each test name; file identities are from the owning root's run scope, not independently enumerated in the log.",
+    "No browser or multi-member runtime verification was performed by this run.",
+    "No release or deployed-artifact verdict follows from these unit tests."
+  ]
+}

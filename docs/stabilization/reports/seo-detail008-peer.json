@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "review": "seo-detail008-peer",
+  "target_commit": "e3eab0f1edfe5b69d45d45577a984ddeb2ecb7f8",
+  "scope": "Independent source review of the five prepared guest SEO detail predicates, their public-page oracle, and rendered SEO UI contract. No browser, heavy test, implementation change, clipboard/Save/provider/database action, or child agent was used.",
+  "runtime_verdict": {
+    "result": "PENDING",
+    "reason": "No native-panel run or runtime artifact was examined in this lane. Source validity cannot establish live-page timing, page data, browser navigation, or displayed values."
+  },
+  "source_quality_verdict": {
+    "result": "REPAIR_BEFORE_RUN",
+    "predicate_review": [
+      {
+        "id": "guest_link_counts_match_live_dom",
+        "result": "PARTIAL",
+        "evidence": "The oracle samples anchors from the owned public document and the active panel is scoped through the linked selected SEO tab. Its HTTP(S), host, and count logic closely duplicates src/lib/seo/audit.ts, so it is independent data but not an independent counting oracle."
+      },
+      {
+        "id": "guest_image_alt_counts_match_live_dom",
+        "result": "PARTIAL",
+        "evidence": "document.images and absent/blank alt checks sample the real public DOM and align with the UI's conditional Images group. The same product counting rule is reproduced, leaving common-mode false-pass risk."
+      },
+      {
+        "id": "guest_readability_is_measured_and_explained",
+        "result": "PARTIAL",
+        "evidence": "The panel's word/sentence counts are compared with body.innerText from the owned tab, and the score must be numeric with a recognized band. The sentence split is copied from the production algorithm; the oracle also treats empty innerText as no content although production falls back to body.textContent. The numeric score itself is not independently recomputed, consistent with the bounded prepared claim."
+      },
+      {
+        "id": "guest_performance_reflects_current_navigation",
+        "result": "SOURCE_COHERENT",
+        "evidence": "Navigation fields are read from the owned page's PerformanceNavigationTiming, status also has the page.goto response as a second observation, unavailable fields stay null, and UI presence follows SeoDetails' conditional Performance group."
+      },
+      {
+        "id": "guest_hreflang_and_schema_doors_match_page",
+        "result": "PARTIAL",
+        "evidence": "The public DOM supplies alternate/schema values, and actual anchors are checked for destination, target, noopener/noreferrer and trusted pointer activation. Schema collection and schemaDestination reproduce production logic. The anchor-only observation never verifies the visible labels for non-openable plain schema chips. A microdata-only page is also marked unverified because the activation gate requires jsonLdTypeCount > 0."
+      }
+    ],
+    "findings": [
+      {
+        "severity": "important",
+        "location": "tests/browser/seo-guest-acceptance.mjs: publicNextDetailEvidence, assertNextDetailCounts, assertNextReadability, assertNextDoors",
+        "finding": "The expected values are read independently from the public tab, but the oracle repeats the production selectors and algorithms: HTTP(S)/host link classification, img/alt counting, whitespace word count, the exact sentence regex, hreflang selector, JSON-LD traversal, microdata collection, and schema-name resolution. A defect shared by the collector and its copied oracle can therefore pass these predicates. This is source-quality risk, not runtime proof.",
+        "repair": "Use an independently derived oracle for the claimed values (for example, compare against the public DOM using a distinct implementation/representation and explicit known page invariants), or narrow claims to properties the independent observations can establish. Do not treat matching duplicated algorithms as independent truth."
+      },
+      {
+        "severity": "important",
+        "location": "tests/browser/seo-guest-acceptance.mjs: assertNextDoors and guest_hreflang_and_schema_doors_match_page",
+        "finding": "The schema comparison collects only anchors from the rendered Structured data card. Non-openable schema types intentionally render as plain text chips in SchemaTypeChip, so their visible names are never compared with the public DOM. The hint checks only the total count; a wrong plain-chip type with the same count can pass while the target claims displayed schema values match the page.",
+        "repair": "Observe every rendered schema chip's visible text, including non-anchor spans, and compare the full displayed type set to the public DOM set; continue checking outbound destinations separately for openable types."
+      }
+    ],
+    "strengths": [
+      "The new observations are scoped to the selected, active SEO pane and a separately owned public page; they do not consume the audit object as expected data.",
+      "The performance check preserves absent timing/status as absent and compares available response status against page.goto's response.",
+      "Missing unique hreflang/schema candidates result in an unverified door target rather than a pass, and the path performs no Save, clipboard, provider, authentication, or database action."
+    ],
+    "limits": [
+      "No browser or runtime was launched, so all five predicates remain runtime-pending.",
+      "The expected metrics are tied to the current public page; no assertions establish that Wikipedia will continue exposing sufficient text, anchors, images, or timing data.",
+      "The door target can remain unverified on a page with no usable unique candidates; this is safe accounting but does not demonstrate those doors."
+    ]
+  },
+  "verification": {
+    "command": "pnpm exec biome check tests/browser/seo-guest-acceptance.mjs docs/stabilization/reports/seo-detail008-peer.json",
+    "result": "pass"
+  },
+  "next_action": "Resolve the important source-quality findings before the root-owned guarded native run. Keep runtime evidence and source review as separate verdicts."
+}

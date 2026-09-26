@@ -14,6 +14,7 @@ const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'seo-guest-acceptance.json');
 const PAGES = ['https://example.org/', 'https://www.iana.org/domains/reserved'];
 const DETAIL_PAGE = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link';
+const NEXT_DETAIL_PAGE = 'https://en.wikipedia.org/wiki/HTML';
 const report = {
   schema_version: 1,
   feature_id: 'EXT-F-1008',
@@ -29,7 +30,7 @@ const report = {
     { case: 'T07', part: 'actual clipboard output, member/admin role gates, and JSON contents' },
     {
       case: 'T09',
-      part: 'schema chips, hreflang, broken social preview image, readability, performance values, and other URL doors',
+      part: 'broken social preview image and detail controls beyond the bounded next batch; optional hreflang/schema doors remain unverified when their live source data is absent',
     },
     { case: 'T10-T14', part: 'recommendations, Chat staging, and social snippet actions' },
     { case: 'all', part: 'member and admin modes' },
@@ -74,6 +75,36 @@ async function waitObserved(operation, read, accept, timeoutMs) {
 }
 const target = (caseId, subtarget, evidence) =>
   report.targets.push({ case_id: `EXT-F-1008-${caseId}`, subtarget, status: 'pass', evidence });
+const unverifiedTarget = (caseId, subtarget, reason) =>
+  report.targets.push({ case_id: `EXT-F-1008-${caseId}`, subtarget, status: 'unverified', reason });
+
+// New-batch failures retain only our fixed assertion label and scalar values.
+// Public page text, arbitrary DOM strings, transport errors, and URLs never
+// enter this diagnostic; the run receipt can identify the failed predicate.
+function assertNext(predicate, verify) {
+  enter(`next_detail_${predicate}_assertion`);
+  try {
+    verify();
+  } catch (error) {
+    // Node appends a multiline actual/expected diff to strict equality
+    // messages. The first line is our fixed label; never retain the diff.
+    const firstLine = typeof error?.message === 'string' ? error.message.split('\n', 1)[0] : '';
+    const scalar = (value) =>
+      typeof value === 'boolean' || (typeof value === 'number' && Number.isFinite(value))
+        ? value
+        : null;
+    report.failure = {
+      predicate,
+      assertion_label:
+        error?.code === 'ERR_ASSERTION' && firstLine.length > 0 && firstLine.length <= 100
+          ? firstLine
+          : 'predicate_evaluation_failed',
+      actual_scalar: scalar(error?.actual),
+      expected_scalar: scalar(error?.expected),
+    };
+    throw error;
+  }
+}
 
 // One scoped relationship for all SEO observations. The outer tablist is the
 // app navigation; mounted feature panels may contain their own nested tabs.
@@ -256,6 +287,149 @@ async function seoDetailState(panel) {
   );
 }
 
+// This oracle reads the public tab only. It never receives the extension's
+// audit object, and absent browser timing stays absent rather than becoming 0.
+async function publicNextDetailEvidence(page, response) {
+  const dom = await page.evaluate(() => {
+    const host = location.host.toLowerCase();
+    const links = { internal: 0, external: 0 };
+    for (const anchor of document.querySelectorAll('a[href]')) {
+      try {
+        const url = new URL(anchor.getAttribute('href'), location.href);
+        if (url.protocol !== 'http:' && url.protocol !== 'https:') continue;
+        if (url.host.toLowerCase() === host) links.internal += 1;
+        else links.external += 1;
+      } catch {
+        // An invalid public href cannot be counted as a destination.
+      }
+    }
+    const images = [...document.images];
+    const bodyText = document.body?.innerText || document.body?.textContent || '';
+    const alternates = [...document.querySelectorAll('link[rel~="alternate"][hreflang]')]
+      .map((node) => ({ lang: node.getAttribute('hreflang')?.trim() ?? '', href: node.href }))
+      .filter((item) => item.lang && /^https?:/.test(item.href));
+    const schemaTypes = new Set();
+    for (const script of document.querySelectorAll('script[type="application/ld+json"]')) {
+      try {
+        JSON.parse(script.textContent, (key, value) => {
+          if (key === '@type') {
+            for (const type of Array.isArray(value) ? value : [value]) {
+              if (typeof type === 'string' && type.trim()) {
+                schemaTypes.add(type);
+              }
+            }
+          }
+          return value;
+        });
+      } catch {
+        // Malformed public JSON-LD cannot support a schema assertion.
+      }
+    }
+    for (const node of document.querySelectorAll('[itemtype]')) {
+      const type = node.getAttribute('itemtype');
+      if (type) schemaTypes.add(type);
+    }
+    const nav = performance.getEntriesByType('navigation')[0];
+    return {
+      title: document.title.trim(),
+      links,
+      images: {
+        total: images.length,
+        missingAlt: images.filter((image) => !image.getAttribute('alt')?.trim()).length,
+      },
+      bodyHasText: Boolean(bodyText.trim()),
+      alternates,
+      schemaTypes: [...schemaTypes],
+      navigation: nav
+        ? {
+            type: nav.type,
+            durationMs: nav.duration > 0 ? Math.round(nav.duration) : null,
+            transferSizeBytes: nav.transferSize,
+            responseStatus: nav.responseStatus || null,
+          }
+        : null,
+    };
+  });
+  return { ...dom, responseStatus: response?.status() ?? null };
+}
+
+async function seoNextDetailState(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+      ${SEO_SCOPE}
+      if (!linked || tab?.getAttribute('aria-selected') !== 'true') return { scopeValid: false };
+      const header = (label) => [...pane.querySelectorAll('span')]
+        .find((node) => node.textContent.trim() === label &&
+          node.parentElement?.nextElementSibling?.matches('div'));
+      const card = (label) => header(label)?.parentElement?.nextElementSibling ?? null;
+      const hint = (label) => header(label)?.nextElementSibling?.textContent.trim() ?? null;
+      const stat = (group, label) => {
+        const labels = [...(card(group)?.querySelectorAll('div') ?? [])]
+          .filter((node) => node.textContent.trim() === label && node.children.length === 0);
+        return labels.length === 1 ? labels[0].previousElementSibling?.textContent.trim() ?? null : null;
+      };
+      const row = (group, label) => [...(card(group)?.querySelectorAll('span') ?? [])]
+        .find((node) => node.textContent.trim() === label)?.parentElement ?? null;
+      const rowText = (group, label) =>
+        row(group, label)?.lastElementChild?.lastElementChild?.textContent.trim() ?? null;
+      const readabilityCard = card('Readability');
+      const fleschLabel = [...(readabilityCard?.querySelectorAll('span') ?? [])]
+        .find((node) => node.textContent.trim() === 'Flesch reading ease');
+      const hreflang = [...(card('International')?.querySelectorAll('a[href]') ?? [])]
+        .map((anchor) => ({ lang: anchor.parentElement?.firstElementChild?.textContent.trim() ?? '',
+          href: anchor.href, target: anchor.target,
+          noopener: anchor.relList.contains('noopener'),
+          noreferrer: anchor.relList.contains('noreferrer') }));
+      const schema = [...(card('Structured data')?.querySelectorAll('a[href]') ?? [])]
+        .map((anchor) => ({ label: anchor.textContent.trim(), href: anchor.href,
+          title: anchor.title, target: anchor.target,
+          noopener: anchor.relList.contains('noopener'),
+          noreferrer: anchor.relList.contains('noreferrer') }));
+      const schemaChips = [...(card('Structured data')?.firstElementChild?.firstElementChild?.children ?? [])]
+        .map((node) => node.textContent.trim());
+      return {
+        scopeValid: true,
+        title: rowText('Title & description', 'Title'),
+        links: card('Links') ? { internal: stat('Links', 'Internal'),
+          external: stat('Links', 'External'), hint: hint('Links') } : null,
+        images: card('Images') ? { total: stat('Images', 'Total'),
+          missingAlt: stat('Images', 'Missing alt'), hint: hint('Images') } : null,
+        readability: readabilityCard ? { words: stat('Readability', 'Words'),
+          sentences: stat('Readability', 'Sentences'),
+          score: fleschLabel?.previousElementSibling?.textContent.trim() ?? null,
+          summary: fleschLabel?.parentElement?.nextElementSibling?.textContent.trim() ?? null } : null,
+        performance: card('Performance') ? { status: rowText('Performance', 'HTTP status'),
+          navigation: rowText('Performance', 'Navigation'),
+          duration: rowText('Performance', 'Load duration'),
+          transfer: rowText('Performance', 'Transfer size') } : null,
+        internationalHint: hint('International'), hreflang,
+        schemaHint: hint('Structured data'), schema, schemaChips,
+      };
+    })()`,
+  );
+}
+
+function displayedCount(value) {
+  return value === null || !/^[0-9][0-9,]*$/.test(value) ? null : Number(value.replaceAll(',', ''));
+}
+
+function schemaDestination(type) {
+  if (/^https?:\/\//i.test(type)) return type;
+  return /^[A-Za-z][A-Za-z0-9_]*$/.test(type) ? `https://schema.org/${type}` : null;
+}
+
+function schemaChipLabel(type) {
+  try {
+    const url = new URL(type);
+    return /^www[.]schema[.]org$|^schema[.]org$/i.test(url.hostname)
+      ? `${url.pathname.slice(1)}${url.search}${url.hash}`
+      : type;
+  } catch {
+    return type;
+  }
+}
+
 function assertPublicDetails(actual, expected) {
   assert.equal(actual.scopeValid, true, 'active SEO pane is linked to its tab');
   assert.equal(actual.title, expected.title, 'detail title comes from public document');
@@ -291,8 +465,148 @@ function assertPublicDetails(actual, expected) {
     );
 }
 
-async function activateCanonicalLink(panel, page, expectedHref) {
-  // A real mouse press reaches only the scoped, hit-tested canonical anchor.
+function assertNextLinks(actual, expected) {
+  assert.equal(actual.scopeValid, true, 'next detail observation uses the active SEO pane');
+  assert.equal(actual.title, expected.title, 'next detail audit belongs to the owned public tab');
+  const totalLinks = expected.links.internal + expected.links.external;
+  assert.equal(Boolean(actual.links), totalLinks > 0, 'Links group follows counted public anchors');
+  if (totalLinks > 0) {
+    assert.equal(
+      displayedCount(actual.links.internal),
+      expected.links.internal,
+      'internal link count',
+    );
+    assert.equal(
+      displayedCount(actual.links.external),
+      expected.links.external,
+      'external link count',
+    );
+    assert.equal(displayedCount(actual.links.hint), totalLinks, 'Links group total');
+  }
+}
+
+function assertNextImages(actual, expected) {
+  assert.equal(
+    Boolean(actual.images),
+    expected.images.total > 0,
+    'Images group follows public img tags',
+  );
+  if (expected.images.total > 0) {
+    assert.equal(displayedCount(actual.images.total), expected.images.total, 'image total');
+    assert.equal(
+      displayedCount(actual.images.missingAlt),
+      expected.images.missingAlt,
+      'missing alt count',
+    );
+    assert.equal(displayedCount(actual.images.hint), expected.images.total, 'Images group total');
+  }
+}
+
+function assertNextReadability(actual, expected) {
+  assert.equal(
+    Boolean(actual.readability),
+    expected.bodyHasText,
+    'readability follows public text',
+  );
+  if (!expected.bodyHasText) return;
+  assert.ok(displayedCount(actual.readability.words) > 0, 'word count is populated');
+  assert.ok(displayedCount(actual.readability.sentences) > 0, 'sentence count is populated');
+  assert.ok(
+    actual.readability.score !== null && Number.isFinite(Number(actual.readability.score)),
+    'Flesch score is numeric',
+  );
+  assert.match(
+    actual.readability.summary ?? '',
+    /^(Very easy|Easy|Fairly easy|Plain English|Fairly difficult|Difficult|Very difficult|Extremely difficult) — .+$/,
+    'Flesch score has a named reading band and grade',
+  );
+}
+
+function assertNextPerformance(actual, expected) {
+  const nav = expected.navigation;
+  assert.equal(Boolean(actual.performance), Boolean(nav), 'performance follows navigation entry');
+  if (!nav) return;
+  assert.equal(actual.performance.navigation, nav.type, 'navigation type comes from owned page');
+  assert.equal(
+    actual.performance.status,
+    nav.responseStatus === null ? null : String(nav.responseStatus),
+    'unavailable HTTP status is omitted; exposed status matches navigation',
+  );
+  if (nav.responseStatus !== null && expected.responseStatus !== null)
+    assert.equal(
+      nav.responseStatus,
+      expected.responseStatus,
+      'browser status matches page response',
+    );
+  assert.equal(
+    actual.performance.duration,
+    nav.durationMs === null ? null : `${nav.durationMs.toLocaleString('en-US')} ms`,
+    'load duration follows available browser timing',
+  );
+  assert.equal(
+    actual.performance.transfer !== null,
+    nav.transferSizeBytes !== null,
+    'transfer row is present only when navigation timing exposes it',
+  );
+  if (actual.performance.transfer !== null) {
+    const match = /^([0-9]+(?:[.][0-9]+)?) (B|KB|MB|GB|TB|PB)$/.exec(actual.performance.transfer);
+    assert.ok(match, 'transfer is a numeric size');
+    const scale = 1024 ** ['B', 'KB', 'MB', 'GB', 'TB', 'PB'].indexOf(match[2]);
+    const precision = match[1].includes('.') ? 0.05 : 0.5;
+    assert.ok(
+      Math.abs(Number(match[1]) * scale - nav.transferSizeBytes) <= precision * scale + 1,
+      'displayed transfer size quantifies owned navigation bytes',
+    );
+  }
+}
+
+function assertNextDoors(actual, expected) {
+  assert.equal(
+    displayedCount(actual.internationalHint?.replace(' alternates', '') ?? null),
+    expected.alternates.length > 0 ? expected.alternates.length : null,
+    'alternate count follows public hreflang links',
+  );
+  assert.deepEqual(
+    actual.hreflang
+      .map(({ lang, href }) => ({ lang, href }))
+      .sort((a, b) => `${a.lang}:${a.href}`.localeCompare(`${b.lang}:${b.href}`)),
+    [...expected.alternates].sort((a, b) =>
+      `${a.lang}:${a.href}`.localeCompare(`${b.lang}:${b.href}`),
+    ),
+    'visible hreflang values follow public alternate links',
+  );
+  assert.equal(
+    displayedCount(actual.schemaHint),
+    expected.schemaTypes.length > 0 ? expected.schemaTypes.length : null,
+    'schema group count follows public structured data',
+  );
+  assert.deepEqual(
+    [...actual.schemaChips].sort(),
+    expected.schemaTypes.map(schemaChipLabel).sort(),
+    'all visible schema chips, including plain text chips, follow public types',
+  );
+  const expectedSchemaLinks = expected.schemaTypes
+    .map((type) => ({ type, href: schemaDestination(type) }))
+    .filter(({ href }) => href !== null);
+  assert.deepEqual(
+    actual.schema
+      .map(({ title, href }) => ({ title, href }))
+      .sort((a, b) => a.title.localeCompare(b.title)),
+    expectedSchemaLinks
+      .map(({ type, href }) => ({ title: `Open ${type} on schema.org`, href }))
+      .sort((a, b) => a.title.localeCompare(b.title)),
+    'schema chips link to the matching type documentation',
+  );
+  for (const link of [...actual.hreflang, ...actual.schema]) {
+    assert.equal(link.target, '_blank', 'detail door opens a new tab');
+    assert.equal(link.noopener, true, 'detail door omits opener');
+    assert.equal(link.noreferrer, true, 'detail door omits referrer');
+  }
+  return expectedSchemaLinks;
+}
+
+async function activateSeoLink(panel, page, groupName, expectedHref) {
+  // A real mouse press reaches only the scoped, hit-tested outbound anchor.
   // The anchor's href and target are asserted before any outbound navigation.
   const sample = () =>
     evaluate(
@@ -301,11 +615,10 @@ async function activateCanonicalLink(panel, page, expectedHref) {
     ${SEO_SCOPE}
     if (!linked || tab?.getAttribute('aria-selected') !== 'true') return null;
     const group = [...pane.querySelectorAll('span')]
-      .find((node) => node.textContent.trim() === 'Title & description');
+      .find((node) => node.textContent.trim() === ${JSON.stringify(groupName)});
     const card = group?.parentElement?.nextElementSibling;
-    const label = [...(card?.querySelectorAll('span') ?? [])]
-      .find((node) => node.textContent.trim() === 'Canonical');
-    const anchors = [...(label?.parentElement?.querySelectorAll('a') ?? [])];
+    const anchors = [...(card?.querySelectorAll('a[href]') ?? [])]
+      .filter((anchor) => anchor.href === ${JSON.stringify(expectedHref)});
     if (anchors.length !== 1) return { count: anchors.length };
     const anchor = anchors[0];
     anchor.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' });
@@ -317,18 +630,18 @@ async function activateCanonicalLink(panel, page, expectedHref) {
   })()`,
     );
   const first = await sample();
-  assert.equal(first?.count, 1, 'unique canonical anchor');
-  assert.equal(first.href, expectedHref, 'canonical anchor points to public DOM destination');
-  assert.equal(first.target, '_blank', 'canonical opens in a new tab');
+  assert.equal(first?.count, 1, `unique ${groupName} outbound anchor`);
+  assert.equal(first.href, expectedHref, `${groupName} anchor points to public DOM destination`);
+  assert.equal(first.target, '_blank', `${groupName} opens in a new tab`);
   let previous = first;
   for (let index = 0; index < 2; index += 1) {
     await new Promise((resolveWait) => setTimeout(resolveWait, 50));
     const current = await sample();
-    assert.equal(current?.hit, true, 'canonical link is unobstructed for real pointer');
-    assert.ok(current.width > 0 && current.height > 0, 'canonical link has a click area');
+    assert.equal(current?.hit, true, `${groupName} link is unobstructed for real pointer`);
+    assert.ok(current.width > 0 && current.height > 0, `${groupName} link has a click area`);
     assert.ok(
       Math.abs(previous.x - current.x) < 0.25 && Math.abs(previous.y - current.y) < 0.25,
-      'canonical link remains stable',
+      `${groupName} link remains stable`,
     );
     previous = current;
   }
@@ -350,7 +663,7 @@ async function activateCanonicalLink(panel, page, expectedHref) {
   const opened = await openedPromise;
   try {
     await opened.waitForURL((url) => url.href === expectedHref, { timeout: 20000 });
-    assert.equal(opened.url(), expectedHref, 'new tab reaches the public canonical URL');
+    assert.equal(opened.url(), expectedHref, 'new tab reaches the observed outbound URL');
   } finally {
     await opened.close();
   }
@@ -630,12 +943,112 @@ try {
         outboundAnchorSafe: true,
       });
       enter('canonical_outbound_activation');
-      await activateCanonicalLink(panel, page, richExpected.canonical);
+      await activateSeoLink(panel, page, 'Title & description', richExpected.canonical);
       target('T09', 'canonical_outbound_opens_expected_public_tab', {
         trustedInput: true,
         destinationMatchesPublicDom: true,
       });
       advance('canonical_outbound_verified', { destinationMatchesPublicDom: true });
+
+      // A second rich page supplies an independent live DOM and browser
+      // navigation entry. The collector's values are never used as the oracle.
+      enter('next_detail_page_navigation');
+      const nextResponse = await page.goto(NEXT_DETAIL_PAGE, { waitUntil: 'load' });
+      const nextExpected = await observe('next_public_details_inspected', () =>
+        publicNextDetailEvidence(page, nextResponse),
+      );
+      report.next_detail_public_counts = {
+        links: nextExpected.links,
+        images: nextExpected.images,
+        bodyHasText: nextExpected.bodyHasText,
+        alternateCount: nextExpected.alternates.length,
+        schemaTypeCount: nextExpected.schemaTypes.length,
+      };
+      assert.equal(page.url(), NEXT_DETAIL_PAGE, 'owned tab reached the selected public URL');
+      assert.ok(nextExpected.title, 'selected public page has a title');
+      await waitObserved(
+        'next_detail_audit_wait',
+        () => seoContent(panel),
+        (state) =>
+          state?.scopeValid && state.title === nextExpected.title && state.reAudit && !state.error,
+        30000,
+      );
+      const nextDetails = await observe('next_seo_details_inspected', () =>
+        seoNextDetailState(panel),
+      );
+      assertNext('links', () => assertNextLinks(nextDetails, nextExpected));
+      target('T09', 'guest_link_counts_match_live_dom', {
+        url: NEXT_DETAIL_PAGE,
+        ...nextExpected.links,
+      });
+      assertNext('images', () => assertNextImages(nextDetails, nextExpected));
+      target('T09', 'guest_image_alt_counts_match_live_dom', {
+        url: NEXT_DETAIL_PAGE,
+        ...nextExpected.images,
+      });
+      assertNext('readability', () => assertNextReadability(nextDetails, nextExpected));
+      if (nextExpected.bodyHasText)
+        target('T09', 'guest_readability_display_is_populated_and_explained', {
+          publicBodyHasText: true,
+          displayed: nextDetails.readability,
+          metricValueCorrectness: 'unverified',
+        });
+      else
+        unverifiedTarget(
+          'T09',
+          'guest_readability_display_is_populated_and_explained',
+          'The public body had no text, so populated readability fields could not be exercised.',
+        );
+      report.next_detail_public_navigation = nextExpected.navigation
+        ? {
+            type: nextExpected.navigation.type,
+            durationMs: nextExpected.navigation.durationMs,
+            transferSizeBytes: nextExpected.navigation.transferSizeBytes,
+            responseStatus: nextExpected.navigation.responseStatus,
+            pageResponseStatus: nextExpected.responseStatus,
+          }
+        : null;
+      assertNext('performance', () => assertNextPerformance(nextDetails, nextExpected));
+      target('T09', 'guest_performance_reflects_current_navigation', {
+        pageResponseStatus: nextExpected.responseStatus,
+        exposedNavigation: nextExpected.navigation,
+        displayed: nextDetails.performance,
+      });
+
+      // A missing public datum makes the door action unverified; no assumed
+      // Wikipedia hreflang or JSON-LD is allowed to turn it green.
+      const uniqueAlternate = nextExpected.alternates.find(
+        (item) => nextExpected.alternates.filter((other) => other.href === item.href).length === 1,
+      );
+      let schemaLinks;
+      assertNext('doors', () => {
+        schemaLinks = assertNextDoors(nextDetails, nextExpected);
+      });
+      const uniqueSchema = schemaLinks.find(
+        (item) => schemaLinks.filter((other) => other.href === item.href).length === 1,
+      );
+      if (uniqueAlternate && uniqueSchema) {
+        enter('hreflang_outbound_activation');
+        await activateSeoLink(panel, page, 'International', uniqueAlternate.href);
+        enter('schema_outbound_activation');
+        await activateSeoLink(panel, page, 'Structured data', uniqueSchema.href);
+        target('T09', 'guest_hreflang_and_schema_doors_match_page', {
+          hreflang: uniqueAlternate,
+          schemaType: uniqueSchema.type,
+          schemaUrl: uniqueSchema.href,
+          trustedInput: true,
+        });
+      } else {
+        unverifiedTarget(
+          'T09',
+          'guest_hreflang_and_schema_doors_match_page',
+          'The public DOM did not expose unique hreflang and openable schema door candidates.',
+        );
+      }
+      advance('next_detail_batch_observed', {
+        sourceUrl: NEXT_DETAIL_PAGE,
+        doorStatus: report.targets.at(-1).status,
+      });
     },
   });
   report.extension_id = harness.extensionId;

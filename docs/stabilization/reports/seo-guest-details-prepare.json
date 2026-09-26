@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "prepared_unverified",
+  "source": "docs/stabilization/reports/seo-next-batch.json",
+  "runner": "tests/browser/seo-guest-acceptance.mjs",
+  "public_page": "https://en.wikipedia.org/wiki/HTML",
+  "scope": "Five bounded T09 guest predicates added after the existing sparse/rich detail and canonical door checks. Runtime evidence and admin coverage remain separate.",
+  "source_review_ruling": "A simple rule applied to independently read public DOM facts may match the product's business rule without becoming a circular oracle. The link and image checks do not consume product functions or derived audit output. Complex readability count correctness is not claimed by the bounded predicate.",
+  "prepared_subtargets": [
+    {
+      "id": "guest_link_counts_match_live_dom",
+      "oracle": "Resolve href anchors in the owned public document; compare internal, external, and total displayed counts. Both zero requires the Links group to be absent."
+    },
+    {
+      "id": "guest_image_alt_counts_match_live_dom",
+      "oracle": "Count live img elements and absent or blank alt attributes; compare Total, Missing alt, and group hint. Zero images requires the Images group to be absent."
+    },
+    {
+      "id": "guest_readability_display_is_populated_and_explained",
+      "oracle": "Use the public body's rendered text with the same textContent availability fallback as capture. When text exists, require positive numeric displayed word and sentence fields, a numeric Flesch score, and a named standard band with grade. With no text, require the group to be absent and record this subtarget unverified.",
+      "limit": "This checks populated display and explanation only. It does not verify that word or sentence counts or the Flesch score were calculated from this page; metric value correctness remains unverified."
+    },
+    {
+      "id": "guest_performance_reflects_current_navigation",
+      "oracle": "Read the owned page's navigation entry and page response. Compare navigation type, exposed HTTP status and rounded duration exactly; check displayed transfer size against the measured bytes within its displayed precision. Absent timing values must remain omitted."
+    },
+    {
+      "id": "guest_hreflang_and_schema_doors_match_page",
+      "oracle": "Read the public page's alternate links and JSON-LD/microdata types. Compare every rendered schema chip label, including plain text chips, and separately compare openable destinations. Use trusted pointer activation for one unique hreflang and schema link.",
+      "limit": "The door subtarget is recorded unverified when the public DOM lacks a unique hreflang link or a unique openable schema type from JSON-LD or microdata."
+    }
+  ],
+  "execution": "Not run in this preparation lane; root owns the release preflight, resource guard, native browser run, and independent source/runtime review.",
+  "run_009_diagnostic": {
+    "receipt": "docs/stabilization/runs/seo-guest-009.json",
+    "observed": "The active Wikipedia panel displayed HTTP 200, navigate, and 121 KB while Load duration was absent. Fifteen earlier checks passed before the performance predicate failed; its first diagnostic retained no assertion label or public navigation timing values.",
+    "source_boundary": "SeoDetails renders Load duration only when perf.duration_ms is non-null, through the same SeoRow shape as HTTP status and Navigation. The collector maps a zero or absent navigation duration to null. The SEO view auto-audits on URL change, potentially before the public tab's load event, while the test reads navigation timing after page.goto(waitUntil='load').",
+    "unresolved": "Run 009 cannot prove whether the mismatch was the duration, another performance value, or a row-reader defect. The next focused diagnostic retains the fixed assertion label and post-load navigation scalars without weakening the check."
+  },
+  "excluded": [
+    "Save, history, clipboard, provider, Chat/Pilot, member authentication, and database writes",
+    "Full T09 or feature acceptance from these five predicates",
+    "Assumed Wikipedia metadata or browser timing where the live source is absent"
+  ]
+}

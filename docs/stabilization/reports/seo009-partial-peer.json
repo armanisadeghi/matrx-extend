@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "review": "seo009-partial-peer",
+  "target_source_commit": "a8d24200e1f6f98425dea956e801ca7ebc353f22",
+  "runtime_evidence": {
+    "run_id": "seo-guest-009",
+    "receipt": "/tmp/matrx-seo-guest-009.log",
+    "acceptance_report": "test-results/seo-guest-acceptance.json",
+    "runtime_verdict": "PARTIAL_WITH_FAILURE",
+    "evidence": [
+      "The resource log records RESOURCE_ADMITTED, followed by childExitCode 1 and RESOURCE_JOB_EXIT. The acceptance JSON itself has status unverified and failure_stage next_detail_performance_assertion; it does not contain a child exit code.",
+      "The acceptance JSON contains 15 pass targets: 12 preceding bounded observations, followed by live-DOM link counts (1,785 internal and 410 external), image counts (28 total and 10 missing alt), and a populated readability display. The report records page titles, heading-presence matches, detail-group comparisons, canonical destination and safe outbound activation.",
+      "The saved last_safe_observable records performance status 200, navigation type navigate, duration null, and transfer 121 KB. next_detail_public_counts records link/image/body/alternate/schema counts, but no expected navigation duration. The failure object records predicate performance, assertion_label predicate_evaluation_failed, and null actual_scalar and expected_scalar. Those fields do not establish the expected duration or the cause of the assertion failure."
+    ],
+    "failure": "The acceptance report identifies the failed predicate as performance at next_detail_performance_assertion and does not emit the performance target. It does not preserve the compared expected duration or actual/expected scalar values; the reason for the mismatch is unknown.",
+    "limits": [
+      "This run is not a full feature pass and the report status is unverified.",
+      "Readability evidence proves populated numeric fields and a named explanation while public body text exists; metricValueCorrectness is explicitly unverified, so calculation accuracy and page-specific correctness are not established.",
+      "The guest link, image, readability, and performance extension checks stop at the failed performance assertion. Schema/hreflang door assertions and actions later in the runner were not reached in this run.",
+      "All listed deferred T01-T14 portions and member/admin modes remain outside this evidence."
+    ]
+  },
+  "source_quality_verdict": {
+    "result": "PASS_WITH_LIMITS",
+    "evidence": [
+      "At a8d24200, assertNext wraps only fixed links, images, readability, performance, and doors predicates. It records a predicate name, a bounded one-line assertion label or a fixed fallback, and only boolean/finite-number actual and expected values. In this run the label is predicate_evaluation_failed and both scalar fields are null; the diagnostic does not identify which comparison failed. The diagnostic does not put page text, URLs, transport errors, or arbitrary DOM values into the failure object.",
+      "The staged report is initialized as unverified; the top-level catch retains failure_stage and leaves status unverified. Individual pass targets are appended only after the corresponding assertion succeeds. The performance target is appended after its assertion, so it is correctly absent after this failure.",
+      "The public oracle and extension renderer observations are separate code paths. The source keeps the prior bounded assertions and only adds diagnostic capture around them."
+    ],
+    "limits": [
+      "Assertion labels are screened for length and newlines rather than selected from a fixed allowlist. Current wrapped assertions use static source-authored labels, so this run is bounded; future dynamic assertion messages could weaken that guarantee.",
+      "The runtime report is a persisted acceptance artifact, not an independent live replay by this reviewer. The receipt and source corroborate its scope and failure stage, but do not establish native behavior beyond the recorded run.",
+      "This peer review does not diagnose the performance mismatch or verify a fix."
+    ]
+  },
+  "review_scope": "Independent review of saved run 009 artifacts and source commit a8d24200e1f6f98425dea956e801ca7ebc353f22. No browser, heavy test, feature code change, child agent, or push."
+}
