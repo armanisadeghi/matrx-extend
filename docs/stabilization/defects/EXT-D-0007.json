@@ -22,11 +22,13 @@
     "docs/stabilization/runs/auth-broadcast-outcome-red-001.json",
     "docs/stabilization/runs/auth-broadcast-green-001.json",
     "docs/stabilization/reports/auth-broadcast-peer.json",
-    "docs/stabilization/runs/permissions-auth-native-sol.json"
+    "docs/stabilization/runs/permissions-auth-native-sol.json",
+    "docs/stabilization/runs/release-stabilization-002.json",
+    "docs/stabilization/runs/release-native-verification.json"
   ],
   "severity": "S1: authenticated development testing blocked by missing identity",
   "priority": "P0: baseline authentication blocker",
-  "state": "retest-pass",
+  "state": "closed",
   "owner": "/root/auth_broadcast_order_repair",
   "hypothesis": "StrictMode lifecycle cause proven by RED003 positive control; repair remains in-fix after independent surrounding authentication classification findings.",
   "transition_history": [
@@ -59,6 +61,12 @@
       "from": "fixed",
       "to": "retest-pass",
       "reason": "FreshSol native actualsidepanel0.2.54 restoresadmin/ADMIN/sameorg afterfullReload and30seconds, repeatedthroughpermissionreloads; latestd623f64 included. Await strictintegration/finalartifactcheck."
+    },
+    {
+      "at": "2026-09-26T07:59:46.133282+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent source review and original reproduction retests passed; strict v0.2.56 integration passed all14 gates/1380 tests, remote main/tag verified. Final actual sidepanel artifact smoke passed; popup user workflow remains separately unverified."
     }
   ],
   "separate_observation": "A later manual OAuth SignIn attempt returned Authorization error400/Auth session missing; not assumed to have the same cause.",

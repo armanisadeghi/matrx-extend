@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "release-native-verification",
+  "source_sha": "45f73ae86f07477a46dd29025df5fcf2df866954",
+  "status": "native-acceptance-observed-engineering-unreviewed",
+  "summary": "Independent native Chrome acceptance confirmed the exact 0.2.56 unpacked artifact in the primary profile, successful actual sidepanel.html admin/account/organization persistence after full extension Reload, truthful DevTools Protocol permission text, all four optional permissions OFF, and About no-update response. Acceptance is limited to these observed outcomes; the broader T55/T72 matrices remain partial.",
+  "acceptance_A": {
+    "verdict": "PASS for observed final-build native criteria",
+    "run_id": "release-native-verification",
+    "evidence": "docs/stabilization/runs/release-native-verification.json",
+    "passed": [
+      "Receipt build version 0.2.56 and extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml match the live unpacked extension path.",
+      "Recomputed 524-file unpacked tree hash matches the receipt: 7d82517d090137d940095a74d67efa045509b550e40bd9a0d7bdecc40e041be6.",
+      "Actual sidepanel.html, opened after a 30-second wait following full extension Reload, shows admin@admin.com / ADMIN; expanding Organization about 5 seconds later shows the previously selected organization.",
+      "DevTools Protocol is explained as installation-required with no switch; cookies, pageCapture, clipboardRead, and tabCapture show OFF.",
+      "Subsequent About inspection reports Chrome / 0.2.56 / expected extension ID, saved-login browser APIs Available, and the read-only update check says no update was found."
+    ],
+    "partial_inventory_cases": {
+      "EXT-F-1003-T55": "The required permission row and OFF states pass on this build; denial/grant/removal/persistence paths remain unverified.",
+      "EXT-F-1003-T72": "Admin About identity, readiness, and no-update outcome pass on this build; unavailable API and other update outcomes remain unverified."
+    }
+  },
+  "engineering_B": {
+    "verdict": "UNREVIEWED",
+    "detail": "No independent engineering review or release-gate rerun was part of this lane. Current HEAD 45f73ae86f07477a46dd29025df5fcf2df866954 differs from receipt source 1cd0a3f7d51842c09cec2610548b836a7d7a6d4d only by two documentation-only stabilization files."
+  },
+  "limitations": [
+    "This proves the loaded unpacked development artifact, not Web Store or production behavior.",
+    "Broad T55/T72 matrices are not closed by these observed subchecks."
+  ],
+  "files_touched": [
+    "docs/stabilization/runs/release-native-verification.json",
+    "docs/stabilization/reports/release-native-verification.json"
+  ]
+}

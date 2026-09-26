@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T07:40:16.687680+00:00",
+  "updated_at": "2026-09-26T07:59:46.133282+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -148,9 +148,9 @@
             },
             "admin": {
               "status": "pass",
-              "run_id": "permissions-auth-native-sol",
-              "evidence": "docs/stabilization/runs/permissions-auth-native-sol.json",
-              "detail": "Actualsidepanel0.2.54 adminidentity/ADMIN/sameorg survivesfullReload+30s andrecurringpermissionreloads; no newsignin."
+              "run_id": "release-native-verification",
+              "evidence": "docs/stabilization/runs/release-native-verification.json",
+              "detail": "Final shipped0.2.56 full extension Reload,30s before opening actual sidepanel: admin/ADMIN restored; selected org visible about5s later. Original development30s-settle proof retained in permissions-auth-native-sol."
             }
           },
           "previous_results": [
@@ -160,6 +160,13 @@
               "run_id": "permission-native-retest",
               "evidence": "docs/stabilization/runs/permission-native-retest.json",
               "detail": "Freshdevelopment reload settledguest instead of restoring observedadminidentity; D7 diagnosis pending."
+            },
+            {
+              "mode": "admin",
+              "status": "pass",
+              "run_id": "permissions-auth-native-sol",
+              "evidence": "docs/stabilization/runs/permissions-auth-native-sol.json",
+              "detail": "Actualsidepanel0.2.54 adminidentity/ADMIN/sameorg survivesfullReload+30s andrecurringpermissionreloads; no newsignin."
             }
           ]
         },
@@ -3723,7 +3730,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": "guest-reset-001",
+              "detail": "Infrastructure failed before browser launch; EXT-D-0009 repair in progress.",
+              "evidence": "docs/stabilization/runs/guest-reset-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T50",
@@ -4419,14 +4434,32 @@
             "no-update",
             "throttled",
             "error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "release-native-verification",
+              "evidence": "docs/stabilization/runs/release-native-verification.json",
+              "verified_substeps": [
+                "Chrome/version/extensionID correct on0.2.56",
+                "Saved-login APIs Available",
+                "Read-only update check reports no update"
+              ],
+              "remaining_criteria": [
+                "API-unavailable remedy",
+                "update-available/throttled/error outcomes",
+                "readiness reload persistence"
+              ]
+            }
+          }
         }
       ],
       "cells": {
         "guest": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0001"
+            "EXT-D-0001",
+            "EXT-D-0009"
           ],
           "run_ids": [
             "guest-local-001",
@@ -4465,7 +4498,8 @@
             "admin-default-agent-002",
             "admin-permissions-001",
             "admin-permissions-002",
-            "permissions-auth-native-sol"
+            "permissions-auth-native-sol",
+            "release-native-verification"
           ],
           "retest_status": "not-run"
         }

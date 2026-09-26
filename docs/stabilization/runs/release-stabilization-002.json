@@ -1,0 +1,215 @@
+{
+  "id": "release-stabilization-002",
+  "status": "pass",
+  "release": {
+    "sourceSha": "1cd0a3f7d51842c09cec2610548b836a7d7a6d4d",
+    "version": "0.2.56",
+    "publishState": "pushed",
+    "storeZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.56-store.zip",
+      "sha256": "dbb931b5903cfc4573f727cd161da86850193cb53a9c54c5652adf48bffc5b0d"
+    },
+    "localZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.56-local.zip",
+      "sha256": "59cb764fc23d113365f811cc451bd05dc9cedce59b6e0bf6f624262c07486fb9"
+    },
+    "sourcePath": "/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/matrx-extend-release.VLeRz0/matrx-extend/.output/chrome-mv3",
+    "destinationPath": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "destinationPaths": [
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3"
+    ],
+    "treeSha256": "7d82517d090137d940095a74d67efa045509b550e40bd9a0d7bdecc40e041be6",
+    "fileCount": 524
+  },
+  "remote_verification": "git ls-remote origin main and v0.2.56 both equal receipt sourceSha",
+  "checks": [
+    "typecheck",
+    "unit-tests",
+    "schema-routing",
+    "matrx-packages",
+    "package-twins",
+    "canonical-pickers",
+    "archived-items",
+    "archived-items-self-test",
+    "org-default-ban",
+    "org-default-ban-self-test",
+    "swallowed-refusals",
+    "migrations",
+    "tool-drift",
+    "mandate-references"
+  ],
+  "unit_tests": {
+    "passed": 1380,
+    "skipped": 3,
+    "skip_reason": "existing explicit dev-clone DB skips"
+  },
+  "store_submission": "not performed",
+  "native_final_verification": "pending",
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:50:23.126Z",
+      "runId": "release-stabilization-002",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.84,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.39,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1420857142857143,
+        "swapUsedMiB": 1725.12,
+        "repoFreeGiB": 1676.2556533813477,
+        "profileFreeGiB": 1676.2556533813477
+      },
+      "cpuBusySamples": [
+        0.122,
+        0.10099999999999998,
+        0.19019999999999992,
+        0.23340000000000005,
+        0.1362000000000001,
+        0.10799999999999998,
+        0.1038
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:50:39.499Z",
+      "runId": "release-stabilization-002",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.68,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.24,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1470999999999999,
+        "swapUsedMiB": 1725.12,
+        "repoFreeGiB": 1676.2553977966309,
+        "profileFreeGiB": 1676.2553977966309
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:50:55.860Z",
+      "runId": "release-stabilization-002",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.68,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.9,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.12760000000000005,
+        "swapUsedMiB": 1725.12,
+        "repoFreeGiB": 1676.2553977966309,
+        "profileFreeGiB": 1676.2553977966309
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:51:12.215Z",
+      "runId": "release-stabilization-002",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 10.08,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.14,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.41100000000000003,
+        "swapUsedMiB": 1725.12,
+        "repoFreeGiB": 1676.2555313110352,
+        "profileFreeGiB": 1676.2555313110352
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:51:28.531Z",
+      "runId": "release-stabilization-002",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.84,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.34,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.2106,
+        "swapUsedMiB": 1725.12,
+        "repoFreeGiB": 1676.2555313110352,
+        "profileFreeGiB": 1676.2555313110352
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:51:44.850Z",
+      "runId": "release-stabilization-002",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.84,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.18,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.38780000000000003,
+        "swapUsedMiB": 1725.12,
+        "repoFreeGiB": 1676.2555313110352,
+        "profileFreeGiB": 1676.2555313110352
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:52:01.153Z",
+      "runId": "release-stabilization-002",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.84,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.14,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.22030000000000005,
+        "swapUsedMiB": 1725.12,
+        "repoFreeGiB": 1676.2554092407227,
+        "profileFreeGiB": 1676.2554092407227
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:52:17.546Z",
+      "runId": "release-stabilization-002",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.52,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.05,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.4129999999999999,
+        "swapUsedMiB": 1725.12,
+        "repoFreeGiB": 1676.2552337646484,
+        "profileFreeGiB": 1676.2552337646484
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:52:32.205Z",
+      "runId": "release-stabilization-002",
+      "childExitCode": 0,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ]
+}

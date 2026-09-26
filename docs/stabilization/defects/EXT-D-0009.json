@@ -1,0 +1,41 @@
+{
+  "id": "EXT-D-0009",
+  "feature_id": "EXT-F-1003",
+  "case_id": "EXT-F-1003-T49",
+  "surface": "Isolated native sidepanel test infrastructure",
+  "auth_mode": "guest intended; pre-browser failure",
+  "reproduction": [
+    "Use relocated checkout /Volumes/Samsung2TB/code/matrx-extend with valid0.2.56 release receipt.",
+    "Run resource-admitted node tests/browser/settings-local-reset-acceptance.mjs."
+  ],
+  "expected": "Harness resolves supported browser automation dependency and launches only its disposable Chrome profile.",
+  "actual": "Module import fails for playwright through hardcoded /Users/armanisadeghi/code/matrx-frontend/package.json before browser launch.",
+  "evidence": [
+    "docs/stabilization/runs/guest-reset-001.json",
+    "tests/browser/native-sidepanel-qa-harness.mjs:26"
+  ],
+  "severity": "S2 test infrastructure: guest reset acceptance unavailable; no product failure demonstrated",
+  "priority": "P1 restore contained Settings verification",
+  "state": "in-fix",
+  "owner": "/root/guest_reset_harness_repair",
+  "transition_history": [
+    {
+      "at": "2026-09-26T07:59:02.905591+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Guarded runner exits MODULE_NOT_FOUND before launch."
+    },
+    {
+      "at": "2026-09-26T07:59:02.905591+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source hardcoded sibling path matches import stack."
+    },
+    {
+      "at": "2026-09-26T07:59:02.905591+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol assigned portable dependency resolution and sibling census; independent review then guarded runtime required."
+    }
+  ]
+}

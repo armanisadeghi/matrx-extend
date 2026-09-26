@@ -1,0 +1,55 @@
+{
+  "run_id": "release-native-verification",
+  "status": "partial",
+  "started_at": "2026-09-26T07:53:55Z",
+  "finished_at": "2026-09-26T07:56:45Z",
+  "resource_admission": {
+    "code": "RESOURCE_ADMITTED",
+    "at": "2026-09-26T07:53:55Z",
+    "profile": "primary Chrome profile",
+    "exclusive_ui_lease": true,
+    "stop_announced": true
+  },
+  "acceptance_A": {
+    "verdict": "PASS for observed final-build native criteria; broader T55 and T72 scenarios remain partial",
+    "build": {
+      "version": "0.2.56",
+      "receipt_source_sha": "1cd0a3f7d51842c09cec2610548b836a7d7a6d4d",
+      "receipt_tree_sha256": "7d82517d090137d940095a74d67efa045509b550e40bd9a0d7bdecc40e041be6",
+      "actual_unpacked_tree_sha256": "7d82517d090137d940095a74d67efa045509b550e40bd9a0d7bdecc40e041be6",
+      "tree_hash_matches_receipt": true,
+      "file_count": 524,
+      "chrome_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "loaded_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "actual_side_panel_path": "chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html"
+    },
+    "checks": {
+      "release_artifact_identity": "PASS: Chrome extensions details page initially showed stale 0.2.54; after clicking the extension Reload control, it showed 0.2.56, expected ID, and exact unpacked path. Independently recomputed unpacked tree hash matched release-receipt.json.",
+      "admin_account_and_org_after_reload": "PASS: Chrome's full extension Reload was followed by a 30-second wait before opening actual sidepanel.html. Settings showed admin@admin.com / ADMIN immediately. The organization section was expanded in a separate observation about 5 seconds later and showed ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete selected. No sign-in or account/organization mutation occurred.",
+      "devtools_protocol_row": "PASS: Advanced agent capabilities showed DevTools Protocol (debugger) as included with the extension and explained Chrome cannot turn it off in Settings; there was no interactive switch.",
+      "optional_permission_states": "PASS: Cookies, Page archive (MHTML), Clipboard read, and Tab video capture were all OFF in the actual side panel. No permission toggles were changed.",
+      "about_identity_and_saved_login_readiness": "PASS: after the account/organization observation, About showed Browser Chrome, Installed version 0.2.56, expected extension ID, and Browser APIs for saved logins Available.",
+      "about_update_check": "PASS for the observed no-update outcome: afterward, the read-only Check for extension update returned ‘Your browser did not find an update right now.’"
+    },
+    "inventory_case_effect": {
+      "EXT-F-1003-T55": "Observed required DevTools Protocol row and all four optional permissions OFF on 0.2.56. Denial, grant/removal, and persistence paths were not exercised, so the broad case remains partial/unverified.",
+      "EXT-F-1003-T72": "Observed admin About identity, saved-login readiness, and no-update result on 0.2.56. API-unavailable and update-available/throttled/error outcomes were not exercised, so the broad case remains partial/unverified."
+    },
+    "evidence_method": "Direct native Chrome accessibility-tree observations from CUA; no screenshot or raw browser transcript was saved. Exact visible outcomes are recorded above."
+  },
+  "engineering_B": {
+    "verdict": "UNREVIEWED in this lane",
+    "source_state": {
+      "current_head": "45f73ae86f07477a46dd29025df5fcf2df866954",
+      "current_working_tree": "clean",
+      "delta_after_receipt_source": "Two documentation-only stabilization files; no product source changes after the 0.2.56 release source SHA."
+    },
+    "scope_note": "This lane independently checked the shipped artifact and native acceptance only; it did not conduct an engineering code review or rerun release gates."
+  },
+  "limitations": [
+    "The full scenario matrix for EXT-F-1003-T55 and EXT-F-1003-T72 remains unverified; only the final-build criteria listed above passed.",
+    "The currently inspected Chrome extension is the unpacked 0.2.56 candidate; this run does not independently verify Web Store installation or production behavior.",
+    "No account, organization, permission, chat, or protected-capture state was changed."
+  ],
+  "source_sha_at_run": "45f73ae86f07477a46dd29025df5fcf2df866954"
+}
