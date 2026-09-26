@@ -1,8 +1,9 @@
 /**
- * Voice / TTS preferences (TASK-002).
+ * Voice / TTS preferences (TASK-002): language and speed.
  *
- * Mirrors the `userPreferences.voice` Redux slice in matrx-frontend so the
- * Cartesia speaker hook reads the same shape across both products.
+ * The VOICE is not stored here: read-aloud follows the person's platform
+ * "Read-aloud voice" (see src/lib/tts/read-aloud-voice.ts), the same setting
+ * aimatrx.com uses.
  *
  * Persisted to chrome.storage.local for now. Cross-install sync would happen
  * server-side (linked to the user's account), not via chrome.storage.sync —
@@ -13,13 +14,9 @@ import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-const DEFAULT_VOICE_ID = '156fb8d2-335b-4950-9cb3-a2d33befec77';
-
 interface VoicePrefsState {
-  voice: string;
   language: string;
   speed: number;
-  setVoice: (id: string) => void;
   setLanguage: (lang: string) => void;
   setSpeed: (speed: number) => void;
 }
@@ -27,10 +24,8 @@ interface VoicePrefsState {
 export const useVoicePrefsStore = create<VoicePrefsState>()(
   persist(
     (set) => ({
-      voice: DEFAULT_VOICE_ID,
       language: 'en',
       speed: 0,
-      setVoice: (voice) => set({ voice }),
       setLanguage: (language) => set({ language }),
       setSpeed: (speed) => set({ speed }),
     }),
