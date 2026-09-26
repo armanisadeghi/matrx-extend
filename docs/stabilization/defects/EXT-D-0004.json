@@ -1,0 +1,63 @@
+{
+  "id": "EXT-D-0004",
+  "feature_id": "EXT-F-0003",
+  "control_id": "EXT-F-0003-C03",
+  "case_id": "EXT-F-0003-T01",
+  "surface": "Release private catalog and migration verification",
+  "auth_mode": "N/A: operational release path applies to all build modes",
+  "role": "release operator",
+  "organization": "N/A",
+  "permissions": "Operator Management API read with server-enforced read_only; no browser-role grant change.",
+  "preconditions": [
+    "The publishable key correctly lacks SELECT on private tool.binding and the migration ledger.",
+    "The build-time reader falls back to an authenticated operator path after publishable access is refused."
+  ],
+  "reproduction": [
+    "Run the release candidate's docs:tools regeneration under the resource guard.",
+    "Observe the publishable read return permission denied 42501 and the fallback report spawnSync supabase ENOENT because the CLI is absent.",
+    "Inspect the strict tool-drift and migration checks: both rely on the same fallback and must fail closed if it cannot verify private data."
+  ],
+  "expected": "Build-time catalog and ledger readers use the existing operator's authenticated, read-only Management API access, validate returned rows, and let strict release checks fail closed on refusal or malformed data.",
+  "actual": "The shared helper invokes a nonexistent Supabase CLI binary. docs:tools warns and leaves its output untouched; strict catalog and migration checks cannot prove private database state through that path.",
+  "evidence": [
+    "tmp/release-logs/latest.log records docs:tools publishable read 401/42501 and fallback spawnSync supabase ENOENT.",
+    "scripts/_supabase-management.ts before this fix invoked the supabase binary for all three build-time readers.",
+    "docs/stabilization/runs/management-read-probe-001.json records coordinator's authenticated Management API SELECT 1 read_only probe: HTTP 201 and one validated row."
+  ],
+  "build_receipt": null,
+  "reproducibility_count": "1/1 observed real release regeneration; strict post-fix run pending",
+  "severity": "S1: strict release cannot verify private catalog and migration state on this host",
+  "priority": "P0: blocks a truthful strict release",
+  "state": "in-fix",
+  "owner": "/root",
+  "root_cause": "The build-time shared reader assumed an installed, authenticated Supabase CLI instead of consuming the existing operator Management API credential at the read point.",
+  "sibling_census": "The docs:tools generator, strict tool-drift checker, and strict migration ledger checker share this helper; all three callers are converted to await the same authenticated read path.",
+  "fix_commits": [],
+  "original_reproduction_retest_run": null,
+  "surrounding_case_runs": [],
+  "reviewer_identity": null,
+  "transition_history": [
+    {
+      "at": "2026-09-26T02:56:57Z",
+      "from": null,
+      "to": "open",
+      "reason": "Real release regeneration warned that private catalog read failed and the authenticated CLI fallback was missing."
+    },
+    {
+      "at": "2026-09-26T03:04:27Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Coordinator proved the existing operator token can read one row through the official read_only Management API query; the CLI dependency is unnecessary."
+    },
+    {
+      "at": "2026-09-26T03:04:27Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Replace shared CLI fallback with fixed-SELECT read_only API request, sanitizing errors and preserving row validation; root owns guarded strict retest."
+    }
+  ],
+  "limitations": [
+    "No post-fix DB request, tests, build, or release was run by this source-only worker.",
+    "The strict gate remains unverified until root's guarded candidate run and independent peer review."
+  ]
+}

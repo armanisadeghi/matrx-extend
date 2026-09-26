@@ -50,7 +50,7 @@ function isRecord(row: unknown): row is Record<string, unknown> {
   return typeof row === 'object' && row !== null;
 }
 
-function fetchToolsViaManagementApi(): DbToolRow[] {
+async function fetchToolsViaManagementApi(): Promise<DbToolRow[]> {
   return selectRowsViaManagementApi(
     `select distinct d.name, d.description, d.tier, d.category, d.admin_only, d.parameters, d.is_active from tool.definition d join tool.binding b on b.tool_id = d.id where b.is_active and (b.executor_name = '${EXECUTOR_NAME}' or b.executor_name like '${EXECUTOR_NAME}.%') order by d.category, d.name`,
     (row): row is DbToolRow => isRecord(row) && typeof row.name === 'string',
@@ -107,7 +107,7 @@ async function main(): Promise<void> {
     );
   } catch (err) {
     try {
-      rows = fetchToolsViaManagementApi();
+      rows = await fetchToolsViaManagementApi();
       console.log('docs:tools — private tool catalog read through Supabase Management API');
     } catch (managementError) {
       console.warn(

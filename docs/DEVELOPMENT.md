@@ -8,6 +8,15 @@ pnpm install           # installs deps; postinstall runs `wxt prepare` + husky
 
 `.env.development` and `.env.production` are committed (the values they hold — Supabase URL, publishable key, OAuth client ID — are public). `.env` and `.env.*.local` are gitignored if you need personal overrides.
 
+Strict release checks read the private tool catalog and migration ledger through
+Supabase's read-only Management API query. The build-time reader uses
+`MATRX_SUPABASE_PROJECT_REF` from this repo's environment and
+`SUPABASE_ACCESS_TOKEN` from the operator process or sibling `../aidream/.env`.
+Keep that token in the approved private runtime environment; never put it in a
+`WXT_*` variable or an extension env file. `MATRX_MANAGEMENT_READ_TIMEOUT_MS`
+optionally sets the query timeout (default 30000 ms). A missing or refused
+operator credential causes strict verification to fail.
+
 ## Daily commands
 
 | Command | Effect |

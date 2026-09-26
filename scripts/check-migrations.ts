@@ -70,7 +70,7 @@ interface LedgerRow {
   checksum: string;
 }
 
-function fetchLedgerViaManagementApi(): LedgerRow[] {
+async function fetchLedgerViaManagementApi(): Promise<LedgerRow[]> {
   const sql = `select filename, checksum from public._schema_migrations where source = '${SOURCE}' order by filename`;
   return selectRowsViaManagementApi(
     sql,
@@ -128,7 +128,7 @@ async function main(): Promise<number> {
     );
   } catch (publicError) {
     try {
-      ledgerRows = fetchLedgerViaManagementApi();
+      ledgerRows = await fetchLedgerViaManagementApi();
       console.log(
         `${C.dim}check:migrations — private ledger verified through Supabase Management API${C.reset}`,
       );

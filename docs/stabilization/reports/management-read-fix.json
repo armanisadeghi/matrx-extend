@@ -1,0 +1,34 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Replaced the missing Supabase CLI fallback with a shared build-time Management API reader. It obtains operator auth at the query point, sends one fixed SELECT with read_only=true, accepts only HTTP 201 with a top-level row array, validates every row, and reports sanitized failures. All three catalog/ledger callers now await that reader.",
+  "changed_files": [
+    "scripts/_supabase-management.ts",
+    "scripts/_supabase-management.test.ts",
+    "scripts/dump-tools-from-db.ts",
+    "scripts/check-tool-db-drift.ts",
+    "scripts/check-migrations.ts",
+    "docs/DEVELOPMENT.md",
+    "docs/stabilization/defects/EXT-D-0004.json",
+    "docs/stabilization/reports/management-read-fix.json"
+  ],
+  "verification": [
+    {
+      "check": "source inspection of shared helper and all callers",
+      "result": "No CLI invocation remains; fixed SELECT queries flow through one async authenticated read; strict drift and migration checks retain their fail-closed branches."
+    },
+    {
+      "check": "focused test source review",
+      "result": "Added fetch-boundary tests for distinct rows, read_only request, second-statement refusal, sanitized 403, and malformed-row refusal; execution is reserved for root's guarded run."
+    },
+    {
+      "check": "JSON parse and git diff --check",
+      "result": "pass"
+    }
+  ],
+  "limitations": [
+    "No tests, compile, build, SQL, or release were run by this worker under the active single-heavy-job lease.",
+    "The operator token is read only from process configuration or sibling aidream/.env; its value is never copied into extension env files or emitted in error messages.",
+    "Live strict gate result and independent peer review are pending; EXT-D-0004 remains in-fix."
+  ],
+  "next_action": "After the UI resource lease ends, root runs the focused helper test, compile, and real strict release candidate under the guard, then obtains fresh source peer review."
+}

@@ -149,11 +149,11 @@ function isRecord(row: unknown): row is Record<string, unknown> {
   return typeof row === 'object' && row !== null;
 }
 
-function fetchOwnedToolsViaManagementApi(): {
+async function fetchOwnedToolsViaManagementApi(): Promise<{
   defs: DbToolRow[];
   bindings: DbBindingRow[];
-} {
-  const bindings = selectRowsViaManagementApi(
+}> {
+  const bindings = await selectRowsViaManagementApi(
     `select tool_id, executor_name, is_active from tool.binding where executor_name = '${EXECUTOR_NAME}' or executor_name like '${EXECUTOR_NAME}.%'`,
     (row): row is DbBindingRow =>
       isRecord(row) &&
@@ -161,7 +161,7 @@ function fetchOwnedToolsViaManagementApi(): {
       typeof row.executor_name === 'string' &&
       typeof row.is_active === 'boolean',
   );
-  const defs = selectRowsViaManagementApi(
+  const defs = await selectRowsViaManagementApi(
     `select distinct d.id, d.name, d.description, d.parameters, d.tier, d.admin_only, d.is_active, d.category, d.source_kind from tool.definition d join tool.binding b on b.tool_id = d.id where b.is_active and (b.executor_name = '${EXECUTOR_NAME}' or b.executor_name like '${EXECUTOR_NAME}.%') order by d.name`,
     (row): row is DbToolRow =>
       isRecord(row) && typeof row.id === 'string' && typeof row.name === 'string',
@@ -185,7 +185,7 @@ async function fetchSurfaceDefaults(url: string, key: string): Promise<DbSurface
   );
 }
 
-function fetchSurfaceDefaultsViaManagementApi(): DbSurfaceDefaultsRow[] {
+async function fetchSurfaceDefaultsViaManagementApi(): Promise<DbSurfaceDefaultsRow[]> {
   return selectRowsViaManagementApi(
     `select surface_name, always_include_tools, always_include_bundles, never_include_tools from tool.surface_defaults where surface_name in ('${ASSISTANT_SURFACE}', '${PILOT_SURFACE}')`,
     (row): row is DbSurfaceDefaultsRow => isRecord(row) && typeof row.surface_name === 'string',
@@ -375,10 +375,10 @@ async function main(): Promise<void> {
     // block a dev build. Strict (release) mode fails: an unverified release
     // is exactly what the gate exists to prevent.
     try {
-      const owned = fetchOwnedToolsViaManagementApi();
+      const owned = await fetchOwnedToolsViaManagementApi();
       dbDefs = owned.defs;
       dbBindings = owned.bindings;
-      dbSurfaces = fetchSurfaceDefaultsViaManagementApi();
+      dbSurfaces = await fetchSurfaceDefaultsViaManagementApi();
       console.log('drift-check: private tool catalog verified through Supabase Management API');
     } catch (managementError) {
       if (STRICT) {
