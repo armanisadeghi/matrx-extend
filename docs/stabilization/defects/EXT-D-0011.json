@@ -3,7 +3,8 @@
   "feature_id": "EXT-F-1003",
   "case_ids": [
     "EXT-F-1003-T46",
-    "EXT-F-1003-T70"
+    "EXT-F-1003-T70",
+    "EXT-F-1003-T49"
   ],
   "surface": "Native Settings acceptance driver",
   "auth_mode": "guest; test infrastructure failure",
@@ -15,12 +16,14 @@
   "expected": "Trusted replacement selects existing input; offscreen target is scrolled into view before a stable trusted pointer click.",
   "actual": "Replacement produced665365001; update button center y573 outside421 viewport, hitTargetfalse.",
   "evidence": [
-    "docs/stabilization/runs/guest-settings-local-001.json"
+    "docs/stabilization/runs/guest-settings-local-001.json",
+    "docs/stabilization/runs/guest-settings-local-002.json",
+    "docs/stabilization/runs/guest-reset-008.json"
   ],
   "severity": "S2: blocks two acceptance cases; product failure not established",
   "priority": "P1: restore trustworthy test execution",
   "state": "in-fix",
-  "owner": "/root/guest_settings_local_batch",
+  "owner": "/root/native_driver_escalation",
   "transition_history": [
     {
       "at": "2026-09-26T09:02:34.959379+00:00",
@@ -40,5 +43,11 @@
       "to": "in-fix",
       "reason": "Original implementation lane repairing shared interaction class."
     }
-  ]
+  ],
+  "escalation": {
+    "at": "2026-09-26T09:12:10.897199+00:00",
+    "lane": "GPT6Astra medium",
+    "trigger": "Repeated interaction failures and shared-driver regression on previously passing reset; fresh implementer after Sol rounds.",
+    "budget": "15 minutes to source artifact or precise escalation"
+  }
 }
