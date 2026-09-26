@@ -1,3 +1,4 @@
+import { canonicalUrl } from '@/lib/sources/canonical';
 import {
   type UnsavedCapture,
   discardUnsavedCapture,
@@ -18,11 +19,18 @@ import { useCallback, useEffect, useState } from 'react';
 export function UnsavedCapturesCard({
   onLanded,
   onUrlsChange,
+  currentPage,
 }: {
   /** Called with the capture's URL and the Source id when a retry lands. */
   onLanded?: (url: string, processedDocumentId: string) => void;
   /** The URLs this card currently owns — while a URL is here, the card is its only save action. */
   onUrlsChange?: (urls: string[]) => void;
+  /**
+   * The page open in the panel. Retry for THAT page saves the panel's current
+   * capture — edits made after the failed save included — which replaces the
+   * queued content on the way (never lose input). Other pages retry what was queued.
+   */
+  currentPage?: { url: string; save: () => Promise<void> } | null;
 }) {
   const [rows, setRows] = useState<UnsavedCapture[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
@@ -50,14 +58,19 @@ export function UnsavedCapturesCard({
     async (row: UnsavedCapture) => {
       setBusy(row.id);
       try {
-        const outcome = await retryUnsavedCapture(row.id);
-        if (outcome.status === 'landed') onLanded?.(row.url, outcome.landed.processed_document_id);
+        if (currentPage && canonicalUrl(currentPage.url) === canonicalUrl(row.url)) {
+          await currentPage.save();
+        } else {
+          const outcome = await retryUnsavedCapture(row.id);
+          if (outcome.status === 'landed')
+            onLanded?.(row.url, outcome.landed.processed_document_id);
+        }
         setRows(await listUnsavedCaptures());
       } finally {
         setBusy(null);
       }
     },
-    [onLanded],
+    [onLanded, currentPage],
   );
 
   if (rows.length === 0) return null;

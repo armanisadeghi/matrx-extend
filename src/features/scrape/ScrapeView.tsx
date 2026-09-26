@@ -240,6 +240,7 @@ export function ScrapeView() {
         )}
         <UnsavedCapturesCard
           onUrlsChange={setUnsavedUrls}
+          currentPage={current ? { url: current.url, save: handleSave } : null}
           onLanded={(url, id) => {
             if (current && url === current.url) {
               setSaved(true);
