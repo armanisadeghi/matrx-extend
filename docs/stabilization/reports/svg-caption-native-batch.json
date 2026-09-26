@@ -8,6 +8,12 @@
   "scope": "Owned localhost HTML article in a real Chrome tab with the released unpacked extension and native side panel. The fixture contains two inline SVG figures, each with a distinct caption and adjacent HTML label. Fast Capture and Scroll & capture must preserve each loaded graphic's decoded SVG geometry and interleave it with its own caption and label in rendered Article order. Before Deep capture the owned page changes a caption and bar geometry, so the visible result must prove a new capture generation.",
   "fixture_classification": "engineering_fixture_not_public_production_proof",
   "runtime_verdict": "unverified",
+  "runtime_attempt_001": {
+    "result": "The owned native browser reached Fast capture but the Article readiness wait timed out after 30 seconds; no mode was accepted.",
+    "last_stage": "fast_article_wait",
+    "diagnosis_limit": "The first runner recorded no Article or Scrape pane sample. Source inspection shows rendered images use lazy loading, but the run does not establish whether image loading, capture, a visible error, or panel selection caused the timeout.",
+    "instrumentation_for_rerun": "Each Article wait sample now preserves bounded pane state, error-card text, image load and viewport flags, and fixture text markers. On failure, the runner captures its owned panel before harness cleanup. No extension behavior or acceptance expectation was changed."
+  },
   "execution_owner": "root guarded browser/build launch",
   "deferred": [
     "An independent public production article with inline SVG, caption, and HTML label has not been identified.",

@@ -95,7 +95,12 @@ async function scrapePane(panel) {
       capture: linked ? [...pane.querySelectorAll('button')].filter(el => el.textContent.trim() === 'Capture').length : 0,
       recapture: linked ? [...pane.querySelectorAll('button')].filter(el => el.textContent.trim() === 'Re-capture').length : 0,
       deep: linked ? [...pane.querySelectorAll('button')].filter(el => el.textContent.trim() === 'Scroll & capture').length : 0,
-      error: linked ? !!pane.querySelector('[role="alert"]') : false };
+      busy: linked ? [...pane.querySelectorAll('button')].some(el => /Capturing|Scrolling/.test(el.textContent.trim())) : false,
+      error: linked ? !!pane.querySelector('[role="alert"]') : false,
+      errorCard: linked ? [...pane.querySelectorAll('button')]
+        .filter(el => ['Try again', 'Reload page'].includes(el.textContent.trim()))
+        .map(el => el.closest('.rounded-xl.border')?.innerText.slice(0, 240) ?? null).filter(Boolean)[0] ?? null : null,
+      paneTail: linked ? pane.innerText.slice(-260) : null };
   })()`,
   );
 }
@@ -111,13 +116,20 @@ async function renderedArticle(panel) {
         .filter(el => el.closest('[role="tablist"]') === mainLists[0] && el.title === 'Scrape') : [];
     const scrape = scrapeTabs.length === 1 ? scrapeTabs[0] : null;
     const pane = scrape && document.getElementById(scrape.getAttribute('aria-controls'));
-    if (!pane || scrape.getAttribute('aria-selected') !== 'true'
-      || pane.getAttribute('data-state') !== 'active') return { linked: false };
-    const articleTab = [...pane.querySelectorAll('[role="tab"]')]
-      .find(el => el.textContent.trim() === 'Article');
+    if (!pane) return { linked: false, scope: 'scrape_pane_missing', scrapeTabCount: scrapeTabs.length };
+    if (scrape.getAttribute('aria-selected') !== 'true'
+      || pane.getAttribute('data-state') !== 'active') return {
+        linked: false, scope: 'scrape_inactive', scrapeSelected: scrape.getAttribute('aria-selected'),
+        scrapeState: pane.getAttribute('data-state') };
+    const articleTabs = [...pane.querySelectorAll('[role="tab"]')]
+      .filter(el => el.textContent.trim() === 'Article');
+    const articleTab = articleTabs.length === 1 ? articleTabs[0] : null;
     const article = articleTab && document.getElementById(articleTab.getAttribute('aria-controls'));
     if (!article || article.getAttribute('aria-labelledby') !== articleTab.id
-      || article.getAttribute('data-state') !== 'active') return { linked: false };
+      || article.getAttribute('data-state') !== 'active') return { linked: false,
+        scope: 'article_inactive', articleTabCount: articleTabs.length,
+        articleSelected: articleTab?.getAttribute('aria-selected') ?? null,
+        articleState: article?.getAttribute('data-state') ?? null };
     const sequence = [];
     const walk = document.createTreeWalker(article, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
     while (walk.nextNode()) {
@@ -130,13 +142,82 @@ async function renderedArticle(panel) {
     }
     const text = article.innerText;
     return { linked: true, text, sequence,
+      scope: 'article_active', articleTabCount: articleTabs.length,
+      allImageCount: article.querySelectorAll('img').length,
       images: [...article.querySelectorAll('img')]
         .filter(el => el.getAttribute('src')?.startsWith('data:image/svg+xml;base64,'))
         .map(el => ({ alt: el.alt, src: el.getAttribute('src'),
           visible: el.getBoundingClientRect().width > 0,
-          loaded: el.complete && el.naturalWidth > 0 && el.naturalHeight > 0 })) };
+          loaded: el.complete && el.naturalWidth > 0 && el.naturalHeight > 0,
+          complete: el.complete, loading: el.loading,
+          nearViewport: el.getBoundingClientRect().top < innerHeight && el.getBoundingClientRect().bottom > 0 })) };
   })()`,
   );
+}
+
+function safeObservation(article, pane) {
+  const svgImages =
+    article?.images?.map((image, index) => {
+      const svg = Buffer.from(image.src.split(',')[1] ?? '', 'base64').toString('utf8');
+      return {
+        alt: image.alt,
+        visible: image.visible,
+        loaded: image.loaded,
+        complete: image.complete,
+        loading: image.loading,
+        nearViewport: image.nearViewport,
+        hasSvgRoot: /<svg\b/.test(svg),
+        expectedGeometry:
+          index === 0
+            ? /<path\b[^>]*d="M15 115 L125 70 L245 20"/.test(svg)
+            : [...svg.matchAll(/<rect\b/g)].length === 3,
+      };
+    }) ?? [];
+  return {
+    articleScope: article?.scope ?? 'read_failed',
+    linked: article?.linked ?? false,
+    articleTabCount: article?.articleTabCount ?? null,
+    articleState: article?.articleState ?? null,
+    scrapeSelected: pane?.selected ?? null,
+    capture: pane?.capture ?? null,
+    recapture: pane?.recapture ?? null,
+    deep: pane?.deep ?? null,
+    busy: pane?.busy ?? null,
+    error: pane?.error ?? null,
+    errorCard: pane?.errorCard ?? null,
+    paneTail: pane?.paneTail ?? null,
+    allImageCount: article?.allImageCount ?? null,
+    svgImages,
+    textMarkers: article?.linked
+      ? {
+          heading: article.text.includes('Appointments booked'),
+          firstCaption: article.text.includes(expected[0].caption),
+          firstLabel: article.text.includes(expected[0].label),
+          secondCaption: article.text.includes(expected[1].caption),
+          secondLabel: article.text.includes(expected[1].label),
+          deepCaption: article.text.includes(deepCaption),
+          deepRevision: article.text.includes(deepRevision),
+        }
+      : null,
+  };
+}
+
+async function captureFailureScreenshot(panel, artifacts) {
+  try {
+    await panel.send('Page.enable');
+    const { data } = await panel.send('Page.captureScreenshot', {
+      format: 'png',
+      captureBeyondViewport: false,
+    });
+    if (typeof data !== 'string' || data.length < 100) throw new Error('png_missing');
+    const path = join(artifacts, 'svg-caption-failure-panel.png');
+    await writeFile(path, Buffer.from(data, 'base64'), { mode: 0o600 });
+    report.failure_screenshot = path;
+  } catch (error) {
+    report.failure_screenshot_error = String(error?.message ?? 'unknown')
+      .split(':')[0]
+      .slice(0, 100);
+  }
 }
 
 function attributeOf(tag, name) {
@@ -216,95 +297,106 @@ let server;
 try {
   await mkdir(dirname(OUTPUT), { recursive: true, mode: 0o700 });
   const harness = await runNativeSidepanelQa({
-    exercisePanel: async ({ page, panel }) => {
-      server = serveArticle();
-      await new Promise((resolveListen, rejectListen) => {
-        server.once('error', rejectListen);
-        server.listen(0, '127.0.0.1', resolveListen);
-      });
-      const url = `http://127.0.0.1:${server.address().port}/article`;
-      report.last_stage = 'localhost_article_navigation';
-      await page.goto(url, { waitUntil: 'domcontentloaded' });
-      const source = await page.evaluate(() => ({
-        title: document.title,
-        figures: document.querySelectorAll('article figure').length,
-        captions: document.querySelectorAll('article figcaption').length,
-      }));
-      assert.equal(source.title, 'Harbor Dental quarterly operations review');
-      assert.equal(source.figures, 2);
-      assert.equal(source.captions, 2);
-      report.last_stage = 'source_article_confirmed';
-
-      const beforeClick = await scrapePane(panel);
-      assert.equal(beforeClick.navLists, 1);
-      assert.equal(beforeClick.scrapeTabs, 1);
-      await click(panel, 'title', 'Scrape');
-      await waitFor(
-        'scrape_view_ready',
-        () => scrapePane(panel),
-        (state) => state?.selected && state.linked && state.capture === 1 && state.deep === 1,
-      );
-      report.last_stage = 'scrape_view_ready';
-
-      for (const mode of ['fast', 'deep']) {
-        if (mode === 'deep') {
-          report.last_stage = 'deep_source_revision';
-          const revised = await page.evaluate(
-            ({ caption, revision }) => {
-              const figures = document.querySelectorAll('article figure');
-              const second = figures[1];
-              const text = second?.querySelector('figcaption');
-              const bar = second?.querySelector('rect[x="185"]');
-              const tail = document.querySelector('article p:last-child');
-              if (!text || !bar || !tail) return false;
-              text.textContent = caption;
-              bar.setAttribute('y', '10');
-              bar.setAttribute('height', '120');
-              const paragraph = document.createElement('p');
-              paragraph.textContent = revision;
-              tail.before(paragraph);
-              return true;
-            },
-            { caption: deepCaption, revision: deepRevision },
-          );
-          assert.equal(revised, true, 'deep: article revision reached the real source DOM');
-          report.last_stage = 'deep_source_revised';
-        }
-        const action = mode === 'fast' ? 'Capture' : 'Scroll & capture';
-        report.last_stage = `${mode}_click`;
-        await click(panel, 'button', action);
-        report.last_stage = `${mode}_article_wait`;
-        const observed = await waitFor(
-          `${mode}_article_rendered`,
-          () => renderedArticle(panel),
-          (value) =>
-            value?.linked &&
-            value.images?.length === 2 &&
-            value.images.every((image) => image.loaded) &&
-            (mode === 'fast' ||
-              (value.text.includes(deepCaption) && value.text.includes(deepRevision))) &&
-            expected.every(
-              (item, index) =>
-                value.text.includes(index === 1 && mode === 'deep' ? deepCaption : item.caption) &&
-                value.text.includes(item.label),
-            ),
-          mode === 'deep' ? 60000 : 30000,
-        );
-        assertArticle(observed, mode);
-        const settled = await scrapePane(panel);
-        assert.equal(settled.recapture, 1, `${mode}: capture completed`);
-        assert.equal(settled.error, false, `${mode}: no visible capture error`);
-        report.modes.push({
-          mode,
-          result: 'pass',
-          svg_images: 2,
-          captions: 2,
-          html_labels: 2,
-          ordered_article: true,
-          svg_geometry_verified: true,
-          ...(mode === 'deep' && { source_revision_observed: true }),
+    exercisePanel: async ({ page, panel, artifacts }) => {
+      try {
+        server = serveArticle();
+        await new Promise((resolveListen, rejectListen) => {
+          server.once('error', rejectListen);
+          server.listen(0, '127.0.0.1', resolveListen);
         });
-        report.last_stage = `${mode}_rendered_article_confirmed`;
+        const url = `http://127.0.0.1:${server.address().port}/article`;
+        report.last_stage = 'localhost_article_navigation';
+        await page.goto(url, { waitUntil: 'domcontentloaded' });
+        const source = await page.evaluate(() => ({
+          title: document.title,
+          figures: document.querySelectorAll('article figure').length,
+          captions: document.querySelectorAll('article figcaption').length,
+        }));
+        assert.equal(source.title, 'Harbor Dental quarterly operations review');
+        assert.equal(source.figures, 2);
+        assert.equal(source.captions, 2);
+        report.last_stage = 'source_article_confirmed';
+
+        const beforeClick = await scrapePane(panel);
+        assert.equal(beforeClick.navLists, 1);
+        assert.equal(beforeClick.scrapeTabs, 1);
+        await click(panel, 'title', 'Scrape');
+        await waitFor(
+          'scrape_view_ready',
+          () => scrapePane(panel),
+          (state) => state?.selected && state.linked && state.capture === 1 && state.deep === 1,
+        );
+        report.last_stage = 'scrape_view_ready';
+
+        for (const mode of ['fast', 'deep']) {
+          if (mode === 'deep') {
+            report.last_stage = 'deep_source_revision';
+            const revised = await page.evaluate(
+              ({ caption, revision }) => {
+                const figures = document.querySelectorAll('article figure');
+                const second = figures[1];
+                const text = second?.querySelector('figcaption');
+                const bar = second?.querySelector('rect[x="185"]');
+                const tail = document.querySelector('article p:last-child');
+                if (!text || !bar || !tail) return false;
+                text.textContent = caption;
+                bar.setAttribute('y', '10');
+                bar.setAttribute('height', '120');
+                const paragraph = document.createElement('p');
+                paragraph.textContent = revision;
+                tail.before(paragraph);
+                return true;
+              },
+              { caption: deepCaption, revision: deepRevision },
+            );
+            assert.equal(revised, true, 'deep: article revision reached the real source DOM');
+            report.last_stage = 'deep_source_revised';
+          }
+          const action = mode === 'fast' ? 'Capture' : 'Scroll & capture';
+          report.last_stage = `${mode}_click`;
+          await click(panel, 'button', action);
+          report.last_stage = `${mode}_article_wait`;
+          const observed = await waitFor(
+            `${mode}_article_rendered`,
+            async () => {
+              const article = await renderedArticle(panel);
+              const pane = await scrapePane(panel);
+              report.last_observation = safeObservation(article, pane);
+              return article;
+            },
+            (value) =>
+              value?.linked &&
+              value.images?.length === 2 &&
+              value.images.every((image) => image.loaded) &&
+              (mode === 'fast' ||
+                (value.text.includes(deepCaption) && value.text.includes(deepRevision))) &&
+              expected.every(
+                (item, index) =>
+                  value.text.includes(
+                    index === 1 && mode === 'deep' ? deepCaption : item.caption,
+                  ) && value.text.includes(item.label),
+              ),
+            mode === 'deep' ? 60000 : 30000,
+          );
+          assertArticle(observed, mode);
+          const settled = await scrapePane(panel);
+          assert.equal(settled.recapture, 1, `${mode}: capture completed`);
+          assert.equal(settled.error, false, `${mode}: no visible capture error`);
+          report.modes.push({
+            mode,
+            result: 'pass',
+            svg_images: 2,
+            captions: 2,
+            html_labels: 2,
+            ordered_article: true,
+            svg_geometry_verified: true,
+            ...(mode === 'deep' && { source_revision_observed: true }),
+          });
+          report.last_stage = `${mode}_rendered_article_confirmed`;
+        }
+      } catch (error) {
+        await captureFailureScreenshot(panel, artifacts);
+        throw error;
       }
     },
   });
