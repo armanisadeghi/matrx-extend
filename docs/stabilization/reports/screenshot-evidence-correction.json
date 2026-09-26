@@ -1,0 +1,27 @@
+{
+  "status": "corrected_metadata_only",
+  "original_receipt": "docs/stabilization/runs/screenshot-guest-001.json",
+  "correction": "docs/stabilization/runs/screenshot-guest-001-corrected-evidence.json",
+  "audit": "docs/stabilization/reports/screenshot-guest-001-receipt-audit.json",
+  "interpretation": "Original receipt is preserved. Its guard-log digest was incorrect; use the generated correction for digest provenance. No coverage is promoted by this correction.",
+  "screenshot_002": "docs/stabilization/runs/screenshot-guest-002.json",
+  "screenshot_002_review": "docs/stabilization/reports/screenshot-guest-002-peer.json",
+  "wrapper_observations": {
+    "screenshot-guest-001": {
+      "session": 3402,
+      "exit_code": 0
+    },
+    "screenshot-guest-002": {
+      "session": 89527,
+      "exit_code": 0
+    }
+  },
+  "generator_verification": {
+    "run_id": "evidence-integrity-generator-001",
+    "session": 7179,
+    "wrapper_exit_code": 0,
+    "child_exit_at": "2026-09-26T23:45:29.027Z",
+    "tests_passed": 5
+  },
+  "limits": "Generated metadata does not adjudicate acceptance. Screenshot002 reload sampled Suspense and does not prove settled recovery; full guest T09 remains unverified pending a new reviewed run."
+}
