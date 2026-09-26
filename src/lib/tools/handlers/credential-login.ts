@@ -742,6 +742,7 @@ async function classifyExplicitAttempt(
   let after: PageStateProbe | null = null;
   while (Date.now() < deadline) {
     await sleep(POLL_INTERVAL_MS);
+    if (observingPostSubmit) stageAdmitted(execution, 'post_submit_document');
     const candidateDocument = observingPostSubmit
       ? ((await execution.observePostSubmitDocument?.()) ?? null)
       : null;
@@ -1031,6 +1032,8 @@ export interface AdmittedExecutionBinding {
   isCurrent: () => boolean;
   /** Value-free, process-local progress for the owning command receipt. */
   onProgress?: (event: 'filled' | 'submitted') => void;
+  /** Closed, value-free stage receipt for a claimed local execution. */
+  onStage?: (stage: AdmittedExecutionStage) => void;
   /**
    * Read-only document observation after an approved submit. The controller
    * owns the one-transition and current-binding fences; this is never a
@@ -1040,6 +1043,25 @@ export interface AdmittedExecutionBinding {
   /** Closed, value-free receipt emitted only by admitted local commands. */
   recordObservation?: (observation: EvaluatedObservation) => void;
   verificationSpec?: FrozenVerificationSpec;
+}
+
+export type AdmittedExecutionStage =
+  | 'initial_probe'
+  | 'selector_check'
+  | 'materialize'
+  | 'before_evidence'
+  | 'step_probe'
+  | 'fill'
+  | 'submit'
+  | 'wait'
+  | 'classification'
+  | 'post_submit_document';
+
+function stageAdmitted(
+  execution: AdmittedExecutionBinding | undefined,
+  stage: AdmittedExecutionStage,
+): void {
+  execution?.onStage?.(stage);
 }
 
 export interface AdmittedCredentialExecution extends AdmittedExecutionBinding {
@@ -1239,6 +1261,7 @@ async function runCompleteAttempt(
     return safeResult('spec_incomplete', { reason: 'attempt_has_no_steps' });
   }
   const firstControl = firstStep.submit.kind === 'none' ? null : firstStep.submit.selector;
+  stageAdmitted(execution, 'initial_probe');
   const firstProbe = await injectCredentialDom(
     tabId,
     {
@@ -1251,6 +1274,7 @@ async function runCompleteAttempt(
   if (!firstProbe || !firstProbe.is_top_frame || firstProbe.origin !== pageUrl.origin) {
     return safeResult('unsafe_destination', { reason: 'origin_changed_before_attempt' });
   }
+  stageAdmitted(execution, 'selector_check');
   const firstMissing = firstStep.fields.filter((selector) => !firstProbe.fields[selector]?.exists);
   if (firstControl && !firstProbe.controls[firstControl]) firstMissing.push(firstControl);
   if (firstMissing.length > 0) {
@@ -1268,6 +1292,7 @@ async function runCompleteAttempt(
   // Resolve every named field as one atomic authorization request BEFORE any
   // page mutation. A missing/inactive/sealed field refuses the whole attempt.
   await fenceAdmitted(execution);
+  stageAdmitted(execution, 'materialize');
   const materialized = execution
     ? await execution.materialize(itemId, fieldKeys)
     : await materializeBrowserLogin(itemId, {
@@ -1290,6 +1315,7 @@ async function runCompleteAttempt(
       return safeResult('unsafe_destination', { reason: 'origin_or_field_map_mismatch' });
     }
 
+    stageAdmitted(execution, 'before_evidence');
     const before = await injectTopFrame<PageStateProbe>(
       tabId,
       pageStateSource,
@@ -1358,6 +1384,7 @@ async function runCompleteAttempt(
         );
       }
       const controlSelector = step.submit.kind === 'none' ? null : step.submit.selector;
+      stageAdmitted(execution, 'step_probe');
       const probe = await injectCredentialDom(
         tabId,
         {
@@ -1404,6 +1431,7 @@ async function runCompleteAttempt(
           rememberSensitiveFields(tabId, [spec.selector]);
           filledSelectors.push(spec.selector);
         }
+        stageAdmitted(execution, 'fill');
         const filled = await injectCredentialDom(
           tabId,
           {
@@ -1424,6 +1452,7 @@ async function runCompleteAttempt(
         execution?.onProgress?.('filled');
       }
 
+      stageAdmitted(execution, 'submit');
       const submitted = await injectCredentialDom(
         tabId,
         {
@@ -1446,6 +1475,7 @@ async function runCompleteAttempt(
         execution?.onProgress?.('submitted');
       }
       if (step.wait_for) {
+        stageAdmitted(execution, 'wait');
         const appeared = await waitForSelector(
           tabId,
           step.wait_for.selector,
@@ -1463,11 +1493,13 @@ async function runCompleteAttempt(
     }
 
     if (submittedForObservation && execution) {
+      stageAdmitted(execution, 'post_submit_document');
       if (!(await execution.observePostSubmitDocument?.()))
         throw new Error('admitted_document_lost');
     } else {
       await fenceAdmitted(execution);
     }
+    stageAdmitted(execution, 'classification');
     const classified = await classifyExplicitAttempt(
       tabId,
       pageUrl,
@@ -1508,6 +1540,7 @@ async function runAuthenticatorAttempt(
     return safeResult('unknown', { reason: 'conversation_binding_missing' });
   }
   const controlSelector = args.submit.kind === 'none' ? null : args.submit.selector;
+  stageAdmitted(execution, 'initial_probe');
   const probe = await injectCredentialDom(
     tabId,
     {
@@ -1520,6 +1553,7 @@ async function runAuthenticatorAttempt(
   if (!probe || !probe.is_top_frame || probe.origin !== pageUrl.origin) {
     return safeResult('unsafe_destination', { reason: 'origin_changed_before_authenticator' });
   }
+  stageAdmitted(execution, 'selector_check');
   if (
     !probe.fields[args.code_selector]?.exists ||
     (controlSelector && !probe.controls[controlSelector])
@@ -1533,6 +1567,7 @@ async function runAuthenticatorAttempt(
     return safeResult('unsafe_destination', { reason: 'unsafe_get_form' });
   }
 
+  stageAdmitted(execution, 'before_evidence');
   const before = await injectTopFrame<PageStateProbe>(
     tabId,
     pageStateSource,
@@ -1543,6 +1578,7 @@ async function runAuthenticatorAttempt(
   const startedAt = Date.now();
 
   await fenceAdmitted(execution);
+  stageAdmitted(execution, 'materialize');
   const materialized = execution
     ? await execution.materialize()
     : await materializeBrowserAuthenticator(args.credential_item_id, {
@@ -1569,6 +1605,7 @@ async function runAuthenticatorAttempt(
     rememberSensitiveFields(tabId, [args.code_selector]);
     code = transient.code;
     transient.code = '';
+    stageAdmitted(execution, 'fill');
     const filled = await injectCredentialDom(
       tabId,
       {
@@ -1587,6 +1624,7 @@ async function runAuthenticatorAttempt(
     if (!filled?.ok) return safeResult('unknown', { reason: 'authenticator_fill_failed' });
     execution?.onProgress?.('filled');
 
+    stageAdmitted(execution, 'submit');
     const submitted = await injectCredentialDom(
       tabId,
       {
@@ -1610,6 +1648,8 @@ async function runAuthenticatorAttempt(
     const submittedForObservation = args.submit.kind !== 'none';
     if (submittedForObservation) execution?.onProgress?.('submitted');
 
+    if (submittedForObservation) stageAdmitted(execution, 'post_submit_document');
+    stageAdmitted(execution, 'classification');
     const classified = await classifyExplicitAttempt(
       tabId,
       pageUrl,

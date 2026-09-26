@@ -512,6 +512,145 @@ describe('owned local-browser tab controller', () => {
     Object.assign(globalThis, { chrome: originalChrome });
     HTMLElement.prototype.getBoundingClientRect = originalRect;
   });
+  it('returns field_unavailable when an admitted vault selector is missing before observation', async () => {
+    const happyWindow = window as typeof window & { happyDOM: DetachedWindowAPI };
+    happyWindow.happyDOM.setURL('https://example.test/login');
+    document.body.innerHTML = '<form><input id="username"></form>';
+    const originalChrome = globalThis.chrome;
+    const originalRect = HTMLElement.prototype.getBoundingClientRect;
+    HTMLElement.prototype.getBoundingClientRect = () => ({ width: 10, height: 10 }) as DOMRect;
+    Object.assign(globalThis.chrome as object, {
+      tabs: { get: async () => ({ id: 42, url: window.location.href }) },
+      scripting: {
+        executeScript: async (request: { func: (...args: never[]) => unknown; args?: never[] }) => [
+          { result: await request.func(...(request.args ?? [])) },
+        ],
+      },
+    });
+    const spec = JSON.stringify({
+      version: 1,
+      expect: { timeout_ms: 1000 },
+      url_vocabulary: { version: 1, challenge: ['challenge'], sign_in: ['login'] },
+      recipe_id: '00000000-0000-4000-8000-000000000099',
+      recipe_version: 1,
+      descriptors: [],
+    });
+    const commandJson = JSON.stringify({
+      operation: 'vault_login',
+      credential_item_id: ids.call,
+      fields: [
+        { selector: '#username', field_key: 'username', clear_first: true },
+        { selector: '#password', field_key: 'password', clear_first: true },
+      ],
+      submit: { kind: 'click', selector: '#submit' },
+      expect: { timeout_ms: 1000 },
+      verification_spec_json: spec,
+      verification_digest: await frozenDigest(spec),
+    });
+    const h = harness();
+    const registration = await register(h);
+    const expiresAtSecond = Math.floor(Date.now() / 1000) + 30;
+    const deadlineMs = expiresAtSecond * 1000;
+    await h.emit({
+      type: 'local_browser.execute',
+      version: 1,
+      call_id: ids.call,
+      operation: 'admit',
+      grant: opaqueAdmitGrant(registration.generation, registration.connection),
+    });
+    const complete = vi.fn<NonNullable<LocalBrowserControllerDeps['command']>['complete']>(
+      async (request) => ({
+        ok: true as const,
+        data: { status: 'completed' as const, result: request.result },
+      }),
+    );
+    h.deps.command = {
+      verify: vi.fn(
+        async () =>
+          ({
+            ok: true,
+            data: {
+              status: 'accepted',
+              operation: 'approve',
+              actor_id: ids.user,
+              organization_id: ids.org,
+              profile_id: ids.profile,
+              admission_id: ids.admission,
+              command_id: ids.call,
+              sequence: 1,
+              command_digest: 'a'.repeat(64),
+              approval_id: ids.jti,
+              deadline_ms: deadlineMs,
+              expires_at_ms: deadlineMs,
+              extension_generation: registration.generation,
+              connection_id: registration.connection,
+              run_id: ids.run,
+              app_instance_id: ids.app,
+              controller_revision: 0,
+              jti: ids.jti,
+            },
+          }) as never,
+      ),
+      approve: vi.fn(async () => ({
+        ok: true as const,
+        data: {
+          status: 'allowed' as const,
+          approval_id: ids.jti,
+          command_id: ids.call,
+          claim_grant: 'claim',
+          deadline_ms: deadlineMs,
+        },
+      })),
+      claim: vi.fn(async () => ({
+        ok: true as const,
+        data: {
+          status: 'claimed' as const,
+          command_id: ids.call,
+          deadline_ms: deadlineMs,
+          completion_grant: 'complete',
+          injection: {
+            origin: 'https://example.test',
+            expires_at_ms: deadlineMs - 1000,
+            fields: { username: 'portal-user', password: 'private-password' },
+          },
+        },
+      })),
+      complete,
+      currentDocument: vi.fn(async () => ({
+        documentId: ids.challenge,
+        url: 'https://example.test/login',
+      })),
+    } satisfies NonNullable<LocalBrowserControllerDeps['command']>;
+    await h.emit(
+      {
+        type: 'local_browser.execute',
+        version: 1,
+        call_id: ids.call,
+        operation: 'approve',
+        grant: opaqueApproveGrant(
+          registration.generation,
+          registration.connection,
+          expiresAtSecond,
+        ),
+        command_json: commandJson,
+      },
+      false,
+    );
+    await vi.waitFor(() => expect(complete).toHaveBeenCalledOnce());
+    const result = complete.mock.calls[0]?.[0].result;
+    expect(result).toMatchObject({
+      operation: 'vault_login',
+      outcome: 'outcome_unknown',
+      reason: 'field_unavailable',
+    });
+    expect(JSON.stringify({ result, logs: vi.mocked(log.warn).mock.calls })).not.toContain(
+      'private-password',
+    );
+    h.controller.stop();
+    Object.assign(globalThis, { chrome: originalChrome });
+    HTMLElement.prototype.getBoundingClientRect = originalRect;
+  });
+
   it('freezes one same-origin post-submit transition for readonly observation and rejects further transitions', async () => {
     let submitted = false;
     let current = { documentId: 'original', url: 'https://example.test/login' };
