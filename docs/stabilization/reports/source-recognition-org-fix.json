@@ -3,8 +3,8 @@
   "task_id": "source-recognition-org-fix",
   "defect_id": "EXT-D-0022",
   "lane": "shared Source recognition organization boundary",
-  "source_verdict": "SCRAPE_REPAIR_COMMITTED_FOCUSED_GREEN_PASSED",
-  "runtime_verdict": "QUERY_HOOK_AND_SCRAPE_RED_GREEN_CONFIRMED_UI_PENDING",
+  "source_verdict": "LATE_REFUSAL_QUEUE_REPAIR_COMMITTED_GREEN_PENDING",
+  "runtime_verdict": "LATE_REFUSAL_RED_CONFIRMED_GREEN_PENDING_UI_PENDING",
   "root_cause": "Authenticated lookupCapturedByUrl treated a missing or failed organization resolution as null, then omitted the organization_id predicate. RLS can expose rows from multiple memberships, so an unscoped query can claim another workspace's Source. The Scrape hook also did not recheck when the selected workspace changed while the tab URL stayed the same.",
   "siblings_census": [
     "Scrape recognition hook maps unknown to a truthful check-failed state; it now distinguishes the specific missing-workspace remedy without rendering backend error text and rechecks when the device's selected organization changes.",
@@ -23,11 +23,13 @@
   "red_evidence": "docs/stabilization/runs/source-org-red-001.json: guarded focused test failed 2 missing/unreadable-organization assertions, with 2 guest/selected-organization controls passing",
   "green_evidence": "docs/stabilization/runs/source-org-green-002.json: query, hook and chat passed 14/14; docs/stabilization/runs/source-org-local-green-001.json: expanded real Scrape/save and related checks passed 39/39 across six files",
   "scrape_red_evidence": "docs/stabilization/runs/source-org-local-red-001.json: guarded real ScrapeView/save flow failed two stale local Saved UI cases with seven earlier controls passing",
+  "fresh_peer_finding": "docs/stabilization/reports/d22-final-source-peer.json: older A refusal or retry refusal can overwrite a newer B pending capture because upsertUnsaved accepts last completion for the same canonical URL",
+  "queue_red_evidence": "docs/stabilization/runs/source-org-queue-red-001.json: guarded Save/Retry test failed two old-refusal-overwrites-new-queue assertions, with ten controls passing",
   "typecheck": "pending",
   "independent_review": "pending",
   "ui_verification": "pending: signed-in multi-organization page recognition, same-page workspace switch, and two-member Saved captures procedure",
   "open": [
-    "Typecheck is pending after e36bf683.",
+    "Late-refusal queue focused green, typecheck, and fresh independent review are pending after 8c0e8a19.",
     "Independent fresh review and live UI checks are pending before D22 closure."
   ]
 }

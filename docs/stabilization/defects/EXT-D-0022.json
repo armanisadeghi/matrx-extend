@@ -21,11 +21,13 @@
     "docs/stabilization/reports/d22-source-peer.json",
     "docs/stabilization/runs/source-org-local-red-001.json",
     "docs/stabilization/runs/source-org-green-002.json",
-    "docs/stabilization/runs/source-org-local-green-001.json"
+    "docs/stabilization/runs/source-org-local-green-001.json",
+    "docs/stabilization/reports/d22-final-source-peer.json",
+    "docs/stabilization/runs/source-org-queue-red-001.json"
   ],
   "severity": "S2: wrong-workspace Saved claim may reveal another RLS-visible organization's Source identity and misstate capture status",
   "priority": "P1: close the organization boundary before claiming workspace-correct recognition",
-  "state": "fixed",
+  "state": "in-fix",
   "owner": "/root/source_recognition_org_fix",
   "transition_history": [
     {
@@ -57,9 +59,15 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Scrape local Saved/link and pending retry repair e36bf683 passed guarded 6-file/39-test red-to-green focused run. Typecheck, fresh independent review, and authenticated multi-organization UI verification remain pending."
+    },
+    {
+      "at": "2026-09-26",
+      "from": "fixed",
+      "to": "in-fix",
+      "reason": "Fresh independent source review c4a55ff8 found a late A refusal or retry refusal can replace a newer B pending capture because the queue keeps whichever same-URL refusal finishes last. Regression tests were added before the queue repair."
     }
   ],
-  "fix_commits": ["deb577e8", "e36bf683"],
+  "fix_commits": ["deb577e8", "e36bf683", "8c0e8a19"],
   "ui_retest": "pending",
   "closure_requirement": "Focused red/green shared-query, hook, and real Scrape Save UI guards; typecheck; independent source review; and authenticated multi-organization UI verification."
 }
