@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/svg_final_diagnostics_peer",
+  "reviewed_commit": "8139988e",
+  "method": "Independent source-only verification of the four prior diagnostic-quality findings. No browser, build, tests, or product execution was performed.",
+  "verdict_a_runtime_acceptance": {
+    "status": "UNVERIFIED",
+    "evidence": [
+      "The capture flow retains Fast and Deep UI actions and asserts rendered article content, SVG loading, captions, labels, ordering, geometry, and settled capture state in source.",
+      "This review did not launch Chrome or inspect rendered output; the runner's acceptance remains unverified at runtime."
+    ]
+  },
+  "verdict_b_diagnostic_quality": {
+    "status": "ADDRESSED_WITH_LIMITS",
+    "findings": [
+      {
+        "title": "Failure screenshot persists outside harness cleanup",
+        "status": "ADDRESSED",
+        "evidence": "captureFailureScreenshot writes beside the runner's OUTPUT under the repository test-results directory. The harness removes its own temporary root, so it does not delete this screenshot."
+      },
+      {
+        "title": "Failure observation records actual bounded geometry and order",
+        "status": "ADDRESSED",
+        "evidence": "safeObservation records the first path's d value and each bar's x, y, width, and height; orderMarkers records each expected marker's offset. assertArticle compares all bar coordinates and checks ordered sequence progression. The raw SVG payload is not included in the observation."
+      },
+      {
+        "title": "Assertion labels retain the specific failure",
+        "status": "ADDRESSED",
+        "evidence": "Assertion messages include mode and element/condition context; catch preserves the full first assertion line up to 220 characters instead of truncating at the first colon."
+      },
+      {
+        "title": "Failure stage identifies assertion and settled-state failures",
+        "status": "ADDRESSED",
+        "evidence": "The runner sets mode_article_assertions after waitFor resolves and mode_settled_state before querying settled state. Wait/predicate failures remain mode_article_wait, distinguishing them from subsequent assertions."
+      }
+    ],
+    "acceptance_integrity": "The source still requires two loaded inline SVGs, expected accessible image labels, captions and adjacent HTML labels, exact first-path data, exact three-bar coordinates including the Deep source revision, and ordered article markers. The waiting predicate does not replace the later exact geometry and sequence assertions.",
+    "limits": [
+      "Order diagnostics are offsets of expected markers in a joined stream; full order acceptance is enforced separately by assertArticle's forward sequence walk.",
+      "The failure screenshot is written to a deterministic repository path, so a later failure run can overwrite the previous screenshot. This does not reintroduce the harness-cleanup loss."
+    ]
+  },
+  "files_reviewed": [
+    "tests/browser/svg-caption-native-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/svg_scroll_peer",
+  "reviewed_commit": "b9e8e5ed9b800c32094276facc1757547e3826d1",
+  "method": "Independent source and supplied run-002 evidence review; no browser, build, or runner edit.",
+  "verdict_a_runtime_acceptance": {
+    "status": "UNVERIFIED",
+    "evidence": "Run-002 stopped at fast_article_wait before either mode passed. It observed both SVG payloads, captions, labels, and order, but the second lazy image was below the viewport and unloaded. The screenshot shows the Article pane at its top, not the charts. This commit has no post-scroll native run evidence.",
+    "provenance": "The fixture is an owned localhost HTML article; a future pass would establish that fixture in the released extension, not an unrelated public production page."
+  },
+  "verdict_b_source_quality": {
+    "status": "CHANGES_REQUESTED",
+    "positive_evidence": [
+      "The helper locates the active Article pane and its nearest actual overflow-y scroll ancestor; ScrapeView renders the Article in an h-full overflow-y-auto div.",
+      "It uses CDP mouseWheel at a hit-tested point inside that scroller and retains loaded-image, SVG geometry, caption, label, order, and Fast/Deep assertions without forcing image attributes."
+    ],
+    "findings": [
+      {
+        "severity": "P1",
+        "location": "tests/browser/svg-caption-native-acceptance.mjs:209,224",
+        "finding": "Both waitFor readers call chartScrollState(panel) without alt. The generated page expression compares el.alt === undefined, yielding image_missing for every SVG. A chart requiring either the load wait or a wheel-progress wait deterministically times out, so run-002's lazy second chart cannot pass.",
+        "remedy": "Pass alt in both polling readers and require the returned state to remain scoped to the same chart."
+      },
+      {
+        "severity": "P2",
+        "location": "tests/browser/svg-caption-native-acceptance.mjs:183-205,222-228",
+        "finding": "The wheel point is clamped only to the scroller's rectangle, not the viewport or all clipping ancestors. hitScroller checks elementFromPoint, but a point outside the viewport returns null and fails before native scrolling. The progress predicate also accepts next.loaded without scroll movement or target visibility, so it can report wheel progress without proof the wheel affected the Article scroller.",
+        "remedy": "Intersect the point with viewport and clipping bounds, keep hit-testing, and require observed scrollTop movement or the target to enter the scroller."
+      },
+      {
+        "severity": "P2",
+        "location": "tests/browser/svg-caption-native-acceptance.mjs:499-505",
+        "finding": "After scrolling, settled state checks Re-capture count and no alert but does not assert busy=false or that Scroll & capture is restored. A capture that remains in progress or has dead controls can be recorded as passed once content exists.",
+        "remedy": "Assert idle state and usable capture controls after each mode."
+      }
+    ],
+    "limit": "Source inspection supports the scroll-container choice but cannot prove actual CDP wheel delivery or lazy image load; the owner must rerun the guarded native path after repair."
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "review": "navigation004-peer",
+  "target_commit": "bc73418b5845088837a1ee2b7853c3bc207b3db4",
+  "scope": "independent source review of run 004, diagnosis, and contained navigation runner repair; no browser/build/heavy runner launched",
+  "verdict_a_acceptance": {
+    "status": "PARTIAL",
+    "findings": [
+      {
+        "severity": "important",
+        "finding": "The repair does not weaken the existing acceptance predicate: Profile still requires the same header, Identity, First name, and Back observations. It now records separate click and view-wait stages, allowing a failed click to be distinguished from a click whose view did not become ready.",
+        "evidence": [
+          "The saved run 004 has failure_stage admin_avatar, no profile_attempt, and no raw error; it cannot establish whether Profile was clicked.",
+          "tests/browser/contained-navigation-acceptance.mjs advances to admin_profile_click before click(), then admin_profile_wait before the unchanged profile readiness predicate.",
+          "docs/stabilization/reports/navigation004-diagnosis.json identifies the prior catch as the confirmed harness defect and leaves the product result unclassified."
+        ]
+      },
+      {
+        "severity": "important",
+        "finding": "This bounded run still cannot establish all navigation modes or a complete feature pass. The runner defers Chat/Pilot actions, member role, stale-selection transition, lazy chunk failure/retry, and active Vault assistance; Capture is reported partial. Its top-level result remains partial after the exercise callback completes.",
+        "evidence": [
+          "tests/browser/contained-navigation-acceptance.mjs report.deferred, expected admin inventory loop, Capture target status, and final report.status assignment.",
+          "docs/stabilization/runs/contained-navigation-004.json records only partial guest observations before the admin avatar failure."
+        ]
+      },
+      {
+        "severity": "minor",
+        "finding": "Profile readiness reads the active pane's text and Back button but does not explicitly assert that a Profile tab is selected and linked to that pane. This predicate is unchanged by bc73418; source and the next native run should not be described as proving the selected tab relationship unless that assertion is added in a later authorized change.",
+        "evidence": [
+          "tests/browser/contained-navigation-acceptance.mjs Profile observation checks pane content only, unlike selected(), which checks unique tab, aria-selected, and aria-controls/aria-labelledby linkage."
+        ]
+      }
+    ],
+    "runtime_limit": "No fresh native run was performed. Run 004 remains unverified and no product defect is established."
+  },
+  "verdict_b_quality": {
+    "status": "PASS_WITH_LIMITS",
+    "findings": [
+      {
+        "severity": "important",
+        "finding": "Failure artifacts avoid raw browser exception text and retain a fixed failure code. Click target instability can additionally preserve geometry-only pointer diagnostics. The stage identifies Profile click versus view wait without relying on the error payload.",
+        "evidence": [
+          "The catch branch writes only fixed codes and includes pointerDiagnostic only at admin_profile_click.",
+          "settings-panel-driver.mjs attaches pointerDiagnostic to stable-hit-target failures; diagnostics contain geometry and fixed hit categories rather than text or form values."
+        ]
+      },
+      {
+        "severity": "minor",
+        "finding": "If every Profile observation throws during waitFor polling, the helper catches those errors internally and the wrapper never updates profile_attempt.lastObserved, so the artifact may contain null rather than a safe final observation. The stage and fixed code remain useful, but safe-state evidence is weaker for context-loss failures.",
+        "evidence": [
+          "settings-panel-driver.mjs waitFor catches read errors and later throws a labeled timeout; the Profile wrapper assigns lastObserved only after evaluate resolves."
+        ]
+      },
+      {
+        "severity": "minor",
+        "finding": "Failure classification intentionally coarsens view-wait timeout details to profile_view_not_observed and unexpected click failures to unclassified. It preserves the operation boundary but not every underlying cause; this is consistent with the no-raw-error privacy constraint.",
+        "evidence": [
+          "The catch branch maps fixed message prefixes to a bounded code set and omits the raw message from report.failure_detail."
+        ]
+      }
+    ],
+    "verification": "Source and persisted-artifact inspection only. No tests, build, browser, or runner were executed."
+  },
+  "limitations": [
+    "No runtime behavior of the repaired diagnostic or Profile navigation was verified.",
+    "Run 004 itself is unverified: its failure was recorded after the admin avatar target and before any Profile operation evidence.",
+    "The repository had an unrelated pre-existing modification at docs/stabilization/inventory.json; it was left untouched."
+  ],
+  "recommendation": "Keep acceptance and product verdict unverified until the root-controlled admitted rerun. Preserve the current stage split and safe fixed-code reporting; consider recording a bounded observation-read-failed boolean for Profile wait errors and explicitly asserting Profile tab-to-pane linkage if the acceptance contract requires selected-tab proof."
+}

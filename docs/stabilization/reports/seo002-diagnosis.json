@@ -1,0 +1,24 @@
+{
+  "id": "seo002-diagnosis",
+  "run": "docs/stabilization/runs/seo-guest-002.json",
+  "status": "harness_correction_pending_independent_review_and_rerun",
+  "observed_failure": "The guest native run exited 1 at seo_page_0_audit_wait. Its final sample had a valid linked SEO scope, an enabled Re-audit button, a Headings group, no visible audit error, and a null title.",
+  "boundary": "The acceptance runner's DOM read of the rendered SEO Title row.",
+  "cause": "SeoDetails > SeoGroup renders a header, then a card, then an inner divider containing SeoRow elements. The old runner treated the card's direct child as a SeoRow. Its Title label search could never find the row in that structure, regardless of whether the product rendered the title correctly.",
+  "correction": "tests/browser/seo-guest-acceptance.mjs now descends into the card's inner divider before searching the Title row. The existing title equality, headings, re-audit, and error acceptance conditions remain unchanged.",
+  "evidence": [
+    "test-results/seo-guest-acceptance.json: failure_stage seo_page_0_audit_wait and last_safe_observable title null, headings true, reAudit true, error false",
+    "src/features/seo/SeoDetails.tsx: SeoGroup wraps children in a card and inner divide-y element; SeoRow is a child of that inner element",
+    "/tmp/matrx-seo-guest-002.log: resource admitted, healthy watches, child exit 1"
+  ],
+  "ruled_out_at_this_boundary": [
+    "Resource admission failure: the log records RESOURCE_ADMITTED and RESOURCE_WATCH_HEALTHY.",
+    "SEO panel selection failure: the final sample reports scopeValid true.",
+    "Audit still running: the final sample reports an enabled Re-audit button."
+  ],
+  "unresolved": [
+    "The actual title text at the failure instant was not retained, so the product's title value cannot be independently assessed from run 002 alone.",
+    "No runtime acceptance target passed in run 002; the corrected runner has not been exercised in a browser.",
+    "Independent source review and a guarded native rerun remain required."
+  ]
+}

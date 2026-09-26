@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "review": "seo002-peer",
+  "target_commit": "f65ae9ed614caf9e70aaf317aa621e6b1aa0b0be",
+  "runtime_executed": false,
+  "verdict_a": {
+    "result": "SOURCE_LOCATOR_VALID_RUNTIME_UNVERIFIED",
+    "evidence": [
+      "At src/features/seo/SeoDetails.tsx:77-88, SeoGroup emits a wrapper containing a header (with the Title & description span) followed by a card whose sole direct child is the inner divide-y container; the Title SeoRow is a child of that container.",
+      "The corrected runner at tests/browser/seo-guest-acceptance.mjs:127-139 follows span -> header -> adjacent card -> first child inner divider -> Title row. Its nested value extraction matches SeoRow's label span and value wrapper at SeoDetails.tsx:392-419.",
+      "The run-002 runtime JSON and resource log match the recorded SHA-256 values. The report records a valid SEO scope, enabled Re-audit, visible Headings group, no audit error, null title, zero targets, and child exit 1.",
+      "The release receipt is present and internally agrees with run 002: source SHA 79d1dba35ea1157a6dbf7a8ce23942a0a2a8f271, version 0.2.67, pushed state, unpacked path, and tree/store/local archive digests match. It predates the corrected acceptance runner; it identifies the extension bundle for a future rerun, not runtime proof of the correction."
+    ],
+    "limits": [
+      "No browser or extension runtime was launched. The current rendered title text was not retained in run 002, so the product title itself remains unverified.",
+      "The correction uses first-match lookups for both the group label and Title row. Current component source makes each unique, but the runner does not assert uniqueness; duplicate matches could silently select the first. Record this as a harness robustness follow-up, not a product defect.",
+      "The T09 title check compares the page title to the visible SEO title. Its heading oracle checks only whether the Headings group is present against whether the page has an h1; it does not compare heading text, level, or count. Keep the recorded claim limited to heading presence."
+    ]
+  },
+  "verdict_b": {
+    "result": "ACCEPTANCE_NOT_WEAKENED",
+    "evidence": [
+      "The source change only descends one level farther into the component's actual DOM. Title equality, valid linked/selected scope, enabled Re-audit, no-error condition, headings-presence assertion, two distinct page titles, and manual re-audit transitions remain required.",
+      "No production component or acceptance predicate was changed in this review. The only runner change present is the already committed f65ae9ed correction."
+    ],
+    "limits": [
+      "This establishes source locator alignment, not a passing acceptance run. T01, T02, T07, and T09 remain unverified at runtime; deferred targets remain deferred."
+    ]
+  },
+  "changed_files": ["docs/stabilization/reports/seo002-peer.json"],
+  "verification": {
+    "command": "pnpm exec biome check tests/browser/seo-guest-acceptance.mjs docs/stabilization/reports/seo002-peer.json",
+    "result": "pass"
+  },
+  "next_action": "Root-owned guarded native rerun using the recorded 0.2.67 release receipt; report runtime results separately and preserve partial or unverified status unless every claimed predicate is observed."
+}

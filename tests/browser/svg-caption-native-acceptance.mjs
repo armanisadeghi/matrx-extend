@@ -95,6 +95,10 @@ async function scrapePane(panel) {
       capture: linked ? [...pane.querySelectorAll('button')].filter(el => el.textContent.trim() === 'Capture').length : 0,
       recapture: linked ? [...pane.querySelectorAll('button')].filter(el => el.textContent.trim() === 'Re-capture').length : 0,
       deep: linked ? [...pane.querySelectorAll('button')].filter(el => el.textContent.trim() === 'Scroll & capture').length : 0,
+      recaptureEnabled: linked ? [...pane.querySelectorAll('button')]
+        .filter(el => el.textContent.trim() === 'Re-capture').some(el => !el.disabled) : false,
+      deepEnabled: linked ? [...pane.querySelectorAll('button')]
+        .filter(el => el.textContent.trim() === 'Scroll & capture').some(el => !el.disabled) : false,
       busy: linked ? [...pane.querySelectorAll('button')].some(el => /Capturing|Scrolling/.test(el.textContent.trim())) : false,
       error: linked ? !!pane.querySelector('[role="alert"]') : false,
       errorCard: linked ? [...pane.querySelectorAll('button')]
@@ -155,10 +159,114 @@ async function renderedArticle(panel) {
   );
 }
 
+async function chartScrollState(panel, alt) {
+  return evaluate(
+    panel,
+    `(() => {
+    const mainLists = [...document.querySelectorAll('[role="tablist"]')]
+      .filter(el => !el.closest('[role="tabpanel"]'));
+    const scrape = mainLists.length === 1
+      ? [...mainLists[0].querySelectorAll('[role="tab"]')]
+        .find(el => el.closest('[role="tablist"]') === mainLists[0] && el.title === 'Scrape') : null;
+    const pane = scrape && document.getElementById(scrape.getAttribute('aria-controls'));
+    const articleTab = pane && [...pane.querySelectorAll('[role="tab"]')]
+      .find(el => el.textContent.trim() === 'Article');
+    const article = articleTab && document.getElementById(articleTab.getAttribute('aria-controls'));
+    if (!article || article.getAttribute('data-state') !== 'active')
+      return { scope: 'article_inactive' };
+    const images = [...article.querySelectorAll('img')]
+      .filter(el => el.getAttribute('src')?.startsWith('data:image/svg+xml;base64,')
+        && el.alt === ${JSON.stringify(alt)});
+    const image = images.length === 1 ? images[0] : null;
+    if (!image) return { scope: 'image_missing', imageCount: images.length };
+    let scroller = image.parentElement;
+    while (scroller && !(scroller.scrollHeight > scroller.clientHeight
+      && /^(auto|scroll)$/.test(getComputedStyle(scroller).overflowY))) scroller = scroller.parentElement;
+    if (!scroller) return { scope: 'scroller_missing' };
+    const box = scroller.getBoundingClientRect(), target = image.getBoundingClientRect();
+    const bounds = { left: Math.max(0, box.left), top: Math.max(0, box.top),
+      right: Math.min(innerWidth, box.right), bottom: Math.min(innerHeight, box.bottom) };
+    for (let ancestor = scroller.parentElement; ancestor; ancestor = ancestor.parentElement) {
+      const style = getComputedStyle(ancestor), clip = ancestor.getBoundingClientRect();
+      if (/^(auto|scroll|hidden|clip)$/.test(style.overflowX)) {
+        bounds.left = Math.max(bounds.left, clip.left + ancestor.clientLeft);
+        bounds.right = Math.min(bounds.right, clip.left + ancestor.clientLeft + ancestor.clientWidth);
+      }
+      if (/^(auto|scroll|hidden|clip)$/.test(style.overflowY)) {
+        bounds.top = Math.max(bounds.top, clip.top + ancestor.clientTop);
+        bounds.bottom = Math.min(bounds.bottom, clip.top + ancestor.clientTop + ancestor.clientHeight);
+      }
+    }
+    if (bounds.right <= bounds.left || bounds.bottom <= bounds.top)
+      return { scope: 'scroller_clipped', bounds };
+    const x = (bounds.left + bounds.right) / 2;
+    const y = (bounds.top + bounds.bottom) / 2;
+    const hit = document.elementFromPoint(x, y);
+    const distance = target.top - (box.top + box.height / 2);
+    return { scope: 'chart_scroller', imageCount: images.length, x, y,
+      hitScroller: hit === scroller || scroller.contains(hit),
+      scrollTop: scroller.scrollTop, maxScroll: scroller.scrollHeight - scroller.clientHeight,
+      targetTop: target.top, scrollerTop: box.top, scrollerBottom: box.bottom,
+      inScroller: target.top >= bounds.top && target.top < bounds.bottom,
+      nearViewport: target.top >= 0 && target.top < innerHeight,
+      loaded: image.complete && image.naturalWidth > 0 && image.naturalHeight > 0,
+      deltaY: Math.sign(distance) * Math.min(Math.max(Math.abs(distance), 80), box.height * 0.8) };
+  })()`,
+  );
+}
+
+async function loadChartByNativeScroll(panel, alt, mode) {
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    const state = await chartScrollState(panel, alt);
+    report.scroll_observation = { chart: alt, attempt, ...state };
+    assert.equal(state.scope, 'chart_scroller', `${mode}: chart scroll surface exists for ${alt}`);
+    if (state.loaded && state.inScroller && state.nearViewport) return;
+    assert.equal(state.hitScroller, true, `${mode}: wheel point belongs to article scroller`);
+    if (state.inScroller && !state.loaded) {
+      await waitFor(
+        `${mode}_${alt}_image_load`,
+        () => chartScrollState(panel, alt),
+        (next) =>
+          next?.scope === 'chart_scroller' &&
+          next.imageCount === 1 &&
+          next.inScroller &&
+          next.nearViewport &&
+          next.loaded,
+        10000,
+      );
+      return;
+    }
+    await panel.send('Input.dispatchMouseEvent', {
+      type: 'mouseWheel',
+      x: state.x,
+      y: state.y,
+      deltaX: 0,
+      deltaY: state.deltaY,
+    });
+    await waitFor(
+      `${mode}_${alt}_wheel_progress`,
+      () => chartScrollState(panel, alt),
+      (next) =>
+        next?.scope === 'chart_scroller' &&
+        next.imageCount === 1 &&
+        (next.scrollTop !== state.scrollTop || (next.inScroller && next.nearViewport)),
+      3000,
+    );
+  }
+  throw new Error(`${mode}_chart_scroll_exhausted:${alt}`);
+}
+
 function safeObservation(article, pane) {
   const svgImages =
     article?.images?.map((image, index) => {
       const svg = Buffer.from(image.src.split(',')[1] ?? '', 'base64').toString('utf8');
+      const path = svg.match(/<path\b[^>]*>/)?.[0] ?? '';
+      const bars = [...svg.matchAll(/<rect\b[^>]*>/g)].map(([tag]) => ({
+        x: attributeOf(tag, 'x'),
+        y: attributeOf(tag, 'y'),
+        width: attributeOf(tag, 'width'),
+        height: attributeOf(tag, 'height'),
+      }));
       return {
         alt: image.alt,
         visible: image.visible,
@@ -167,12 +275,22 @@ function safeObservation(article, pane) {
         loading: image.loading,
         nearViewport: image.nearViewport,
         hasSvgRoot: /<svg\b/.test(svg),
+        ...(index === 0 ? { pathD: attributeOf(path, 'd') } : { bars }),
         expectedGeometry:
-          index === 0
-            ? /<path\b[^>]*d="M15 115 L125 70 L245 20"/.test(svg)
-            : [...svg.matchAll(/<rect\b/g)].length === 3,
+          index === 0 ? /<path\b[^>]*d="M15 115 L125 70 L245 20"/.test(svg) : bars.length === 3,
       };
     }) ?? [];
+  const orderStream = article?.linked
+    ? article.sequence
+        .map((node) => (node.kind === 'image' ? `\u0001${node.value}\u0002` : node.value))
+        .join(' ')
+    : '';
+  const orderMarkers = article?.linked
+    ? expectedSequence(report.active_mode ?? 'fast').map((item) => {
+        const marker = item.kind === 'image' ? `\u0001${item.value}\u0002` : item.value;
+        return { marker: item.value, offset: orderStream.indexOf(marker) };
+      })
+    : [];
   return {
     articleScope: article?.scope ?? 'read_failed',
     linked: article?.linked ?? false,
@@ -182,12 +300,15 @@ function safeObservation(article, pane) {
     capture: pane?.capture ?? null,
     recapture: pane?.recapture ?? null,
     deep: pane?.deep ?? null,
+    recaptureEnabled: pane?.recaptureEnabled ?? null,
+    deepEnabled: pane?.deepEnabled ?? null,
     busy: pane?.busy ?? null,
     error: pane?.error ?? null,
     errorCard: pane?.errorCard ?? null,
     paneTail: pane?.paneTail ?? null,
     allImageCount: article?.allImageCount ?? null,
     svgImages,
+    orderMarkers,
     textMarkers: article?.linked
       ? {
           heading: article.text.includes('Appointments booked'),
@@ -202,7 +323,7 @@ function safeObservation(article, pane) {
   };
 }
 
-async function captureFailureScreenshot(panel, artifacts) {
+async function captureFailureScreenshot(panel) {
   try {
     await panel.send('Page.enable');
     const { data } = await panel.send('Page.captureScreenshot', {
@@ -210,7 +331,7 @@ async function captureFailureScreenshot(panel, artifacts) {
       captureBeyondViewport: false,
     });
     if (typeof data !== 'string' || data.length < 100) throw new Error('png_missing');
-    const path = join(artifacts, 'svg-caption-failure-panel.png');
+    const path = join(dirname(OUTPUT), 'svg-caption-failure-panel.png');
     await writeFile(path, Buffer.from(data, 'base64'), { mode: 0o600 });
     report.failure_screenshot = path;
   } catch (error) {
@@ -222,6 +343,21 @@ async function captureFailureScreenshot(panel, artifacts) {
 
 function attributeOf(tag, name) {
   return new RegExp(`\\b${name}="([^"]+)"`).exec(tag)?.[1] ?? null;
+}
+
+function expectedSequence(mode) {
+  return [
+    { kind: 'text', value: 'Appointments booked' },
+    { kind: 'image', value: expected[0].image },
+    { kind: 'text', value: expected[0].caption },
+    { kind: 'text', value: expected[0].label },
+    { kind: 'text', value: 'Follow-up visits' },
+    { kind: 'image', value: expected[1].image },
+    { kind: 'text', value: mode === 'deep' ? deepCaption : expected[1].caption },
+    { kind: 'text', value: expected[1].label },
+    ...(mode === 'deep' ? [{ kind: 'text', value: deepRevision }] : []),
+    { kind: 'text', value: 'The operations team used both trends' },
+  ];
 }
 
 function assertArticle(observed, mode) {
@@ -263,18 +399,7 @@ function assertArticle(observed, mode) {
     `${mode}: three real bars survive with the expected revision`,
   );
 
-  const ordered = [
-    { kind: 'text', value: 'Appointments booked' },
-    { kind: 'image', value: expected[0].image },
-    { kind: 'text', value: expected[0].caption },
-    { kind: 'text', value: expected[0].label },
-    { kind: 'text', value: 'Follow-up visits' },
-    { kind: 'image', value: expected[1].image },
-    { kind: 'text', value: mode === 'deep' ? deepCaption : expected[1].caption },
-    { kind: 'text', value: expected[1].label },
-    ...(mode === 'deep' ? [{ kind: 'text', value: deepRevision }] : []),
-    { kind: 'text', value: 'The operations team used both trends' },
-  ];
+  const ordered = expectedSequence(mode);
   const stream = observed.sequence
     .map((node) => (node.kind === 'image' ? `\u0001${node.value}\u0002` : node.value))
     .join(' ');
@@ -297,7 +422,7 @@ let server;
 try {
   await mkdir(dirname(OUTPUT), { recursive: true, mode: 0o700 });
   const harness = await runNativeSidepanelQa({
-    exercisePanel: async ({ page, panel, artifacts }) => {
+    exercisePanel: async ({ page, panel }) => {
       try {
         server = serveArticle();
         await new Promise((resolveListen, rejectListen) => {
@@ -329,6 +454,7 @@ try {
         report.last_stage = 'scrape_view_ready';
 
         for (const mode of ['fast', 'deep']) {
+          report.active_mode = mode;
           if (mode === 'deep') {
             report.last_stage = 'deep_source_revision';
             const revised = await page.evaluate(
@@ -356,8 +482,8 @@ try {
           report.last_stage = `${mode}_click`;
           await click(panel, 'button', action);
           report.last_stage = `${mode}_article_wait`;
-          const observed = await waitFor(
-            `${mode}_article_rendered`,
+          await waitFor(
+            `${mode}_article_content_rendered`,
             async () => {
               const article = await renderedArticle(panel);
               const pane = await scrapePane(panel);
@@ -367,7 +493,6 @@ try {
             (value) =>
               value?.linked &&
               value.images?.length === 2 &&
-              value.images.every((image) => image.loaded) &&
               (mode === 'fast' ||
                 (value.text.includes(deepCaption) && value.text.includes(deepRevision))) &&
               expected.every(
@@ -378,9 +503,33 @@ try {
               ),
             mode === 'deep' ? 60000 : 30000,
           );
-          assertArticle(observed, mode);
+          report.last_stage = `${mode}_native_chart_scroll`;
+          for (const item of expected) await loadChartByNativeScroll(panel, item.image, mode);
+          report.last_stage = `${mode}_loaded_article_wait`;
+          const loadedArticle = await waitFor(
+            `${mode}_loaded_article`,
+            async () => {
+              const article = await renderedArticle(panel);
+              const pane = await scrapePane(panel);
+              report.last_observation = safeObservation(article, pane);
+              return article;
+            },
+            (value) =>
+              value?.linked &&
+              value.images?.length === 2 &&
+              value.images.every((image) => image.loaded),
+            10000,
+          );
+          report.last_stage = `${mode}_article_assertions`;
+          assertArticle(loadedArticle, mode);
+          report.last_stage = `${mode}_settled_state`;
           const settled = await scrapePane(panel);
+          report.last_observation = safeObservation(loadedArticle, settled);
           assert.equal(settled.recapture, 1, `${mode}: capture completed`);
+          assert.equal(settled.recaptureEnabled, true, `${mode}: Re-capture is usable`);
+          assert.equal(settled.deep, 1, `${mode}: Scroll & capture is restored`);
+          assert.equal(settled.deepEnabled, true, `${mode}: Scroll & capture is usable`);
+          assert.equal(settled.busy, false, `${mode}: capture is idle`);
           assert.equal(settled.error, false, `${mode}: no visible capture error`);
           report.modes.push({
             mode,
@@ -395,7 +544,7 @@ try {
           report.last_stage = `${mode}_rendered_article_confirmed`;
         }
       } catch (error) {
-        await captureFailureScreenshot(panel, artifacts);
+        await captureFailureScreenshot(panel);
         throw error;
       }
     },
@@ -406,9 +555,10 @@ try {
   report.status = 'unverified';
   report.failure_stage = report.last_stage;
   report.failure_code = error?.code ?? error?.name ?? 'unknown_error';
-  report.failure_detail = String(error?.message ?? '')
-    .split(':')[0]
-    .slice(0, 180);
+  const firstLine = String(error?.message ?? '').split('\n')[0];
+  report.failure_detail = (
+    error?.name === 'AssertionError' ? firstLine : firstLine.split(':')[0]
+  ).slice(0, 220);
   process.exitCode = 1;
 } finally {
   if (server?.listening) {

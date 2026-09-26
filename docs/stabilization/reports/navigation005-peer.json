@@ -1,0 +1,15 @@
+{
+  "reviewer": "navigation005_peer",
+  "method": "Source-only review; no browser run, implementation edit, or runner launch.",
+  "A_acceptance": "UNVERIFIED; this lane adds no runtime evidence.",
+  "B_quality": "PASS",
+  "evidence": [
+    "ProfileView renders Profile as a span in the active outer tab panel; Back is button[title=Back].",
+    "Identity Collapsible defaults open and emits a button with aria-expanded/aria-controls; its controlled div is aria-hidden=false.",
+    "The oracle scopes header, disclosure, first-name text, and Back to the unique active outer pane; controlled content must be in that pane.",
+    "waitFor catches transient observation failures and rejects absent/ambiguous markers until timeout; runner records unverified failure, not pass.",
+    "Subsequent Capture observation remains scoped to the owning outer tablist; no obvious dependent Profile DOM assumption found."
+  ],
+  "finding": "No likely false-selected-region pass: Profile content markers must coexist inside the unique active outer tabpanel, and Identity must expose its actual expanded controlled region.",
+  "limit": "Oracle does not explicitly cross-check the selected outer tab's aria-controls against the Profile pane; content markers currently establish Profile identity, so this is a minor future-proofing gap, not a source blocker."
+}

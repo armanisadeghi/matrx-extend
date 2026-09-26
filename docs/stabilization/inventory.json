@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T14:52:11.284598+00:00",
+  "updated_at": "2026-09-26T15:13:00Z",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -1856,7 +1856,10 @@
             "render-retest-001",
             "contained-navigation-001",
             "contained-navigation-002",
-            "contained-navigation-003"
+            "contained-navigation-003",
+            "contained-navigation-004",
+            "contained-navigation-005",
+            "contained-navigation-006"
           ],
           "retest_status": "pass"
         },
@@ -1876,7 +1879,10 @@
           "run_ids": [
             "contained-navigation-001",
             "contained-navigation-002",
-            "contained-navigation-003"
+            "contained-navigation-003",
+            "contained-navigation-004",
+            "contained-navigation-005",
+            "contained-navigation-006"
           ],
           "retest_status": "not-run"
         }
@@ -1890,6 +1896,20 @@
           "status": "partial",
           "verified": "Guest nav actual selected linked panels; Guest avatar identity; Data/SEO/Settings distinct rendered headings; Capture and Vault-assistance absent.",
           "remaining": "Admin prerequisite failed before admin cases; failure stage/cause insufficiently diagnosed. Reload/stale/member/assistance and natural chunk failure unverified. Chat/Pilot deferred."
+        },
+        {
+          "run_id": "contained-navigation-006",
+          "modes": [
+            "guest",
+            "admin"
+          ],
+          "build": "0.2.67",
+          "status": "partial",
+          "passed_subtargets": 37,
+          "partial_subtargets": 1,
+          "independent_review": "docs/stabilization/reports/navigation006-evidence-peer.json",
+          "evidence": "docs/stabilization/runs/contained-navigation-006.json",
+          "limits": "Selected main trigger and linked visible panel are not inner feature health. Data/SEO/Settings markers and Profile visible fields are narrow evidence. Member, reload/stale selection, chunk retry, active Vault assistance remain unverified; Capture partial. Chat/Pilot actions deferred."
         }
       ]
     },
@@ -10143,7 +10163,8 @@
           "run_ids": [
             "guest-local-001",
             "render-retest-001",
-            "svg-caption-native-001"
+            "svg-caption-native-001",
+            "svg-caption-native-002"
           ],
           "retest_status": "not-run"
         },
@@ -10644,7 +10665,9 @@
           "test_status": "unverified",
           "defect_ids": [],
           "run_ids": [
-            "seo-guest-001"
+            "seo-guest-001",
+            "seo-guest-002",
+            "seo-guest-003"
           ],
           "retest_status": "not-run"
         },
@@ -10663,7 +10686,65 @@
       },
       "inventory_status": "complete",
       "missing_items": [],
-      "source_complete": true
+      "source_complete": true,
+      "runtime_evidence": [
+        {
+          "run_id": "seo-guest-003",
+          "mode": "guest",
+          "build": "0.2.67",
+          "status": "partial",
+          "accepted_subtargets": [
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "page_0_title_and_headings",
+              "status": "pass",
+              "evidence": {
+                "publicTitle": "Example Domain",
+                "titleMatches": true,
+                "headingsPresenceMatches": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "page_1_title_and_headings",
+              "status": "pass",
+              "evidence": {
+                "publicTitle": "IANA-managed Reserved Domains",
+                "titleMatches": true,
+                "headingsPresenceMatches": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T01",
+              "subtarget": "new_url_replaces_visible_title",
+              "status": "pass",
+              "evidence": {
+                "twoDistinctPublicTitles": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T02",
+              "subtarget": "manual_button_returns_to_current_page",
+              "status": "pass",
+              "evidence": {
+                "currentTitlePreserved": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+              "status": "pass",
+              "evidence": {
+                "textChoice": true,
+                "agentChoice": true,
+                "jsonAbsent": true
+              }
+            }
+          ],
+          "independent_review": "docs/stabilization/reports/seo003-evidence-peer.json",
+          "limits": "Titles, heading-section presence, URL-title replacement, manual button return state and menu choices only; clipboard, reload, race/freshness, remaining details, member/admin unverified. Full cases and feature remain unverified."
+        }
+      ]
     },
     {
       "id": "EXT-F-1009",
