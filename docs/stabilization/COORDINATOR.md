@@ -1,20 +1,19 @@
 # Matrx Extend stabilization: resume here
 
-Updated 2026-09-26 22:33 UTC. Campaign remains incomplete. `inventory.json` is the coverage authority (205 features, 693 cases).
+Updated 2026-09-26 22:42 UTC. Campaign incomplete; inventory.json remains coverage authority (205 features, 693 cases).
 
 ## Current truth and next actions
 
-- Engineering release 0.2.78 (df4c51ef) passed release037, 15 gates and 1469 tests; exact CI36273958725 succeeded. No Store upload. Primary Chrome last actually verified .73; isolated browser .78.
-- D23 REOPENED: read-side remedy works (Source007 actual UI), but independent caller census b7c7d104 proved failed highlight insert and saved-capture update notices disappear without retrying writes. Red run notice-write-retention-red-001 wrapper76798 confirmed exit1, child22:24:27.535Z: two intended failures, two prior read passes. Correction e210a626 independently accepted by 0cc06995; guarded green001 wrapper83185 confirmed0 at22:30:36.827Z,26tests passed. New-build native retest remains pending.
-- Remote main3a81ebee already contains intentionally red tests1d259f5a through another sync. CI36276184201 failed exactly those two assertions. Root discovered this at22:28; restore green promptly. Going forward preserve red evidence in receipts and commit regression test WITH green fix, never an intermediate red commit in this shared auto-synced checkout.
-- Root fetched22:28 with no incoming divergence. Last root push3b20024b22:06 had greenCI36275168163. Next root maximum sync23:06; push earlier after correction. Never reset/switch/checkout or discard concurrent edits.
-- D22 remains open: original Save checkpoint remains reserved/ambiguous. Never reset/delete/reinitialize/retry Save. Source read-only scope branch30adb5b4, reviewer3a81ebee requested exact filter values, corrected a3967980. Needs independent recheck then guarded SOURCE_READONLY_SCOPE=1 run. This proves only missing-org/scoped empty lookup, not Save/link/late-inflight.
-- SEO guest019 wrapper65204 confirmed exit0 at22:12:19.066, .78:17 bounded passes/1 unverified. Independent receipt4e613268, inventory8d905147. Full feature and automatic title correctness remain unverified. SEO admin saved-audit checkpoint is permanently read-only.
-- Debug controls runner7b0fdf77 now includes real admin UI authentication. /root/package_catchup_004_peer independently reviewing before guarded runtime. Targets F1005 T14/T15/T17; T22 remains unverified. No browser launched yet.
-- Next workload release-stabilization-038 to validate/build corrected source. One guarded workload only. Use actual external temp/profile /Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032; boot free below20GiB. Do not weaken resource thresholds or misrepresent primary profile.
-- Owned keepalive PID62804/session71168 expires approximately2026-09-27 01:55UTC; password/manual-lock unchanged.
-- Canonical common-docs STATE .78 evidence pushed via ca6040a96 after preserving both sides of log conflict. Its D23 closure is superseded by this reopened boundary; update with correction evidence next.
-- Ordinary member credential access remains unresolved. Chat/Pilot and cross-repo bridges stay deferred. D12 review queue filing remains prepared, not inserted.
+- Release0.2.79 pushed/tagged at377742c0ff4422c1972fd616b98d222eab1f58c6. Release040 wrapper87556 confirmed0 child22:41:11.922Z:15gates,1471tests passed/3skipped. ExactCI36277077710 in progress atlastcheck. Newbuild native verification pending; primaryChrome lastactuallyverified.73, no Storeupload.
+- Concurrent local artifact commits reconciled with release by non-destructive merge f56eca9c, pushed22:42. Check exactCI and origin after artifacts. Nextmaximumsync23:42, fetch/push earlier. Previous redremote test incident fixed by e210a626; never again commit intentionally red intermediate tests to shared auto-syncedmain. Preserve red evidence in receipts, commit test+greenfix together.
+- ACTIVE heavy source-workspace-008 wrapper10712, log /tmp/matrx-source-workspace-008.log, SOURCE_READONLY_SCOPE=1. New.79 ownedbrowser checks no unscoped processed_documents GET without workspace, then actual picker selection/exactscoped200empty/notSavedUI. Independent sourcepeer4d22e138. NoCapture/Save/privatecheckpoint access. Root mustconfirmwrapperexit before another workload.
+- D23 fixed, notclosed. e210a626 explicit retriesOnOrganizationSelection opt-in only for Capturequeue subscribed read; real failed highlight insert and saved-capture update notices persist. Red001 two failures/two prior passes; green00126passed2files at22:30:36.827Z, wrapper83185exit0. Independent sourcepeer0cc06995. Tracking2a1208dc. Previous .78 Source007 read remedy proof preserved; corrected-build native proof pending.
+- D22 remainsopen. Original Save checkpoint reserved/ambiguous. Never reset/delete/reinitialize/retrySave. Readonlyscope008 cannot close saved-link/late-inflight cases.
+- Debug001 wrapper21987exit1 child22:37:11.878Z, no cases, open_debug0targets. Immutable receiptb5db5077. Actualprivate screenshot proves selectedDebugtab pluslazyspinner. Fixadbd6d70 waits actualSearch+counter; peer aaaa2596 accepted. Search input/originalmessage-row oracle previously correctedccfb365b/peer5ad1a655. Next unusedDebug002 afterSource008; T14boundedmessageonlypartial, detailsearch/T22unverified.
+- Package008 guardedupdateexit0 child22:35:20.258Z:records.58.26→.58.27, lock/reportd947b081, independentpeer836efd6d; actualgeneratedgraveyardtoken removal unusedbyhost. Noothergraphdelta. Release039 preservedstalegatefailure;038preflightcommandrefusal wasrootmessageallowlistmismatch, noappfailure; bothreceipts2a1208dc.
+- SEOguest019 .78 rootexit0:17boundedpass/1unverified. Receipt4e613268/inventory8d905147; nofullF1008pass. AdminSEOprivateSavecheckpoint remainspermanentlyreadonly.
+- Ownedkeepalive62804/session71168 expires2026-09-27~01:55UTC. Bootfreebelow20GiB; use actual external temp/profile /Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032. Oneguardedworkload, unchangedthresholds, nootherprocesskills.
+- Canonicalcommon-docs STATE reopenedD23 and boundedproof updated50fd29881, pushed22:35; .79 update pendingrelease/runtime evidence. Ordinarymemberaccessunresolved; D12queuepreparednotinserted; Chat/Pilot/crossrepo systematicworklast.
 
 ## Operating constraints
 
