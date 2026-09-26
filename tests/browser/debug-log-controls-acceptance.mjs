@@ -13,6 +13,8 @@ import { click, evaluate, openSection, waitFor } from './settings-panel-driver.m
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const OUTPUT = join(REPO, 'test-results/debug-log-controls-acceptance.json');
+const RELEASE_RECEIPT = join(REPO, '.output', 'release-receipt.json');
+const MANIFEST = join(REPO, '.output', 'chrome-mv3-dev', 'manifest.json');
 const PUBLIC_URL = 'https://www.aimatrx.com/';
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
@@ -27,6 +29,16 @@ const result = {
 };
 const add = (id, status, expected, actual, evidence) =>
   result.cases.push({ id, status, expected, actual, evidence });
+
+async function readBuildIdentity() {
+  const [receipt, manifest] = await Promise.all([
+    readFile(RELEASE_RECEIPT, 'utf8').then(JSON.parse),
+    readFile(MANIFEST, 'utf8').then(JSON.parse),
+  ]);
+  if (receipt.version !== manifest.version || !/^[a-f0-9]{64}$/.test(receipt.treeSha256 ?? ''))
+    throw new Error('release_manifest_identity_mismatch');
+  return { version: manifest.version, treeSha256: receipt.treeSha256 };
+}
 
 async function snapshot(panel) {
   return evaluate(
@@ -44,6 +56,7 @@ async function snapshot(panel) {
       noEvents: text.includes("No events yet. Use the extension and they'll show up here."),
       noMatches: text.includes('No events match the current filter.'),
       expandedDetails: list?.querySelectorAll('pre').length ?? 0,
+      errorBadge: !!document.querySelector('button[title="Debug (admin only)"] span.bg-red-500'),
       searchPresent: !!search, searchLength: search?.value.length ?? null };
   })()`,
   );
@@ -215,8 +228,61 @@ async function setSearch(panel, value) {
   return true;
 }
 
+async function naturalDetailRows(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+      const search=document.querySelector('input[placeholder="Search…"]');
+      const list=search?.closest('div.flex.h-full.flex-col')?.lastElementChild;
+      const buttons=[...(list?.children??[])].map(e=>e.firstElementChild)
+        .filter(e=>e?.matches('button'));
+      const unique=(hasDetail)=>buttons.find(button=>
+        Boolean(button.firstElementChild?.querySelector('svg'))===hasDetail &&
+        buttons.filter(other=>other.textContent.trim()===button.textContent.trim()).length===1);
+      return {detailRowText:unique(true)?.textContent.trim()??null,
+        noDetailRowText:unique(false)?.textContent.trim()??null};
+    })()`,
+  );
+}
+
+async function detailRowState(panel, rowText) {
+  return evaluate(
+    panel,
+    `(() => {
+      const search=document.querySelector('input[placeholder="Search…"]');
+      const list=search?.closest('div.flex.h-full.flex-col')?.lastElementChild;
+      const rows=[...(list?.children??[])].filter(e=>
+        e.firstElementChild?.matches('button') &&
+        e.firstElementChild.textContent.trim()===${JSON.stringify(rowText)});
+      return {count:rows.length,detailIcon:!!rows[0]?.firstElementChild?.firstElementChild?.querySelector('svg'),
+        preCount:rows[0]?.querySelectorAll('pre').length??0};
+    })()`,
+  );
+}
+
+async function detailOnlySearchTerm(panel, rowText) {
+  return evaluate(
+    panel,
+    `(() => {
+      const search=document.querySelector('input[placeholder="Search…"]');
+      const list=search?.closest('div.flex.h-full.flex-col')?.lastElementChild;
+      const rows=[...(list?.children??[])].filter(e=>
+        e.firstElementChild?.matches('button') &&
+        e.firstElementChild.textContent.trim()===${JSON.stringify(rowText)});
+      if(rows.length!==1)return null;
+      const detail=rows[0].querySelector('pre')?.textContent??'';
+      const messages=[...(list?.children??[])].map(e=>
+        e.firstElementChild?.querySelector('span.truncate')?.textContent.toLowerCase()??'');
+      const keys=[...detail.matchAll(/"([A-Za-z_][A-Za-z0-9_]{5,})"\\s*:/g)]
+        .map(match=>match[1]);
+      return keys.find(key=>!messages.some(message=>message.includes(key.toLowerCase())))??null;
+    })()`,
+  );
+}
+
 async function exercise({ page, panel, artifacts }) {
   let preClearCount = 0;
+  let noMatchObserved = false;
   try {
     await signInAsAdmin(page, panel);
     stage = 'debug_tab_click';
@@ -326,6 +392,7 @@ async function exercise({ page, panel, artifacts }) {
           () => snapshot(panel),
           (s) => s?.counterMatchesRows && s?.noMatches === true && s.rowCount === 0,
         );
+        noMatchObserved = true;
         add(
           'EXT-F-1005-T14',
           'partial',
@@ -351,6 +418,19 @@ async function exercise({ page, panel, artifacts }) {
           'Natural rows existed, but no message-only row supplied a safe positive search term.',
           'No event values retained or fabricated.',
         );
+        await setSearch(panel, 'zzzz-no-match-acceptance');
+        await waitFor(
+          'search_empty_without_positive',
+          () => snapshot(panel),
+          (s) => s?.counterMatchesRows && s.noMatches && s.rowCount === 0,
+        );
+        noMatchObserved = true;
+        await setSearch(panel, '');
+        await waitFor(
+          'search_reset_without_positive',
+          () => snapshot(panel),
+          (s) => s?.counterMatchesRows && s.searchLength === 0 && s.rowCount === preClearCount,
+        );
       }
       stage = 'pause_resume';
       await click(panel, 'title', 'Pause');
@@ -369,20 +449,78 @@ async function exercise({ page, panel, artifacts }) {
         resumed.rowCount > held.rowCount;
       add(
         'EXT-F-1005-T15',
-        pauseProved ? 'pass' : 'unverified',
+        pauseProved ? 'partial' : 'unverified',
         'Paused view stays frozen; resume displays naturally arriving events.',
         `Visible counts before=${paused.rowCount}, held=${held.rowCount}, resumed=${resumed.rowCount}; total before=${paused.totalCount}, held=${held.totalCount}.`,
-        'counts only; no log values retained',
+        {
+          warm: pauseProved ? 'pass' : 'unverified',
+          reload: 'unverified',
+          serviceError: 'unverified',
+        },
       );
       stage = 'details';
-      add(
-        'EXT-F-1005-T22',
-        'unverified',
-        'A details row expands/collapses; empty and no-match states differ.',
-        'Detail-bearing row identification requires visual review in the admitted run.',
-        'runner records no payload; manual positive detail control pending',
-      );
+      const detailRows = await naturalDetailRows(panel);
+      let detailExpanded = false;
+      let detailCollapsed = false;
+      let noDetailNonActionable = false;
+      if (detailRows.detailRowText) {
+        const before = await detailRowState(panel, detailRows.detailRowText);
+        if (before.count !== 1 || !before.detailIcon || before.preCount !== 0)
+          throw new Error('natural_detail_row_precondition_unverified');
+        await click(panel, 'button', detailRows.detailRowText);
+        await waitFor(
+          'natural_detail_expanded',
+          () => detailRowState(panel, detailRows.detailRowText),
+          (row) => row?.count === 1 && row.detailIcon && row.preCount === 1,
+        );
+        detailExpanded = true;
+        const detailTerm = await detailOnlySearchTerm(panel, detailRows.detailRowText);
+        await click(panel, 'button', detailRows.detailRowText);
+        await waitFor(
+          'natural_detail_collapsed',
+          () => detailRowState(panel, detailRows.detailRowText),
+          (row) => row?.count === 1 && row.detailIcon && row.preCount === 0,
+        );
+        detailCollapsed = true;
+        const t14 = result.cases.find((item) => item.id === 'EXT-F-1005-T14');
+        if (detailTerm && t14?.status === 'partial') {
+          await setSearch(panel, detailTerm);
+          await waitFor(
+            'detail_only_search_positive',
+            async () => ({
+              list: await snapshot(panel),
+              row: await detailRowState(panel, detailRows.detailRowText),
+            }),
+            (observed) =>
+              observed?.list?.counterMatchesRows &&
+              observed.list.searchLength > 0 &&
+              observed.row?.count === 1 &&
+              observed.row.detailIcon,
+          );
+          t14.evidence.detailSearch = 'pass_via_natural_detail_key_absent_from_messages';
+          await setSearch(panel, '');
+          await waitFor(
+            'detail_search_reset',
+            () => snapshot(panel),
+            (observed) => observed?.counterMatchesRows && observed.searchLength === 0,
+          );
+        }
+      }
+      if (detailRows.noDetailRowText) {
+        const before = await snapshot(panel);
+        await click(panel, 'button', detailRows.noDetailRowText);
+        const after = await snapshot(panel);
+        const row = await detailRowState(panel, detailRows.noDetailRowText);
+        noDetailNonActionable =
+          before.counterMatchesRows &&
+          after.counterMatchesRows &&
+          before.expandedDetails === after.expandedDetails &&
+          row.count === 1 &&
+          !row.detailIcon &&
+          row.preCount === 0;
+      }
       stage = 'clear_disposable_profile';
+      const beforeClear = await snapshot(panel);
       await click(panel, 'title', 'Clear');
       state = await waitFor(
         'clear_empty_state',
@@ -391,10 +529,42 @@ async function exercise({ page, panel, artifacts }) {
       );
       add(
         'EXT-F-1005-T17',
-        state.noEvents && state.rowCount === 0 && state.totalCount === 0 ? 'pass' : 'fail',
+        state.noEvents && state.rowCount === 0 && state.totalCount === 0 && !state.errorBadge
+          ? 'partial'
+          : 'fail',
         'Clear removes local events and shows the no-events state.',
         `No-events state=${state.noEvents}; row count=${state.rowCount}.`,
-        'fresh owned disposable profile only',
+        {
+          warmEventList:
+            state.noEvents && state.rowCount === 0 && state.totalCount === 0 ? 'pass' : 'fail',
+          errorBadge: beforeClear.errorBadge
+            ? state.errorBadge
+              ? 'fail'
+              : 'pass'
+            : state.errorBadge
+              ? 'fail'
+              : 'unverified_no_positive_badge',
+          reload: 'unverified',
+          serviceError: 'unverified',
+          ownedDisposableProfile: true,
+        },
+      );
+      const warmDetails =
+        detailExpanded &&
+        detailCollapsed &&
+        noDetailNonActionable &&
+        noMatchObserved &&
+        state.noEvents;
+      add(
+        'EXT-F-1005-T22',
+        warmDetails ? 'partial' : 'unverified',
+        'Detail JSON expands/collapses; no-detail row is non-actionable; no-match and no-events states differ.',
+        `Expanded=${detailExpanded}; collapsed=${detailCollapsed}; no-detail inert=${noDetailNonActionable}; no-match=${noMatchObserved}; no-events=${state.noEvents}.`,
+        {
+          warm: warmDetails ? 'pass' : 'unverified',
+          reload: 'unverified',
+          serviceError: 'unverified',
+        },
       );
     }
   } catch (error) {
@@ -443,8 +613,19 @@ function safeDriverFailure(error) {
 }
 
 try {
+  stage = 'release_identity_start';
+  const buildAtStart = await readBuildIdentity();
+  result.build = buildAtStart;
   stage = 'owned_profile_harness';
   const native = await runNativeSidepanelQa({ headed: true, exercisePanel: exercise });
+  stage = 'release_identity_end';
+  const buildAtEnd = await readBuildIdentity();
+  if (
+    buildAtStart.version !== buildAtEnd.version ||
+    buildAtStart.treeSha256 !== buildAtEnd.treeSha256
+  )
+    throw new Error('release_build_changed_during_run');
+  result.build = { ...buildAtEnd, extensionId: native.extensionId };
   result.profileOwned = native.verified === true;
   result.status = result.cases.some((c) => c.status === 'fail')
     ? 'fail'
