@@ -6,7 +6,7 @@ import { createServer } from 'node:http';
  * (SOURCE-CONVERGENCE §4.2): built unpacked extension → live server
  * `POST /sources/land` → docproc.processed_documents, read back independently
  * through PostgREST as the same person. Also proves "never lose input": with
- * `/sources/land` unreachable the capture waits under "Unsaved — retry" and a
+ * `/sources/land` unreachable the capture waits under the "Not yet a Source" retry card and a
  * retry lands it. Only disposable pages served by this run are captured; every
  * Source it lands is soft-deleted before it exits.
  *
@@ -149,9 +149,39 @@ async function main() {
     const panel = await context.newPage();
     await panel.goto(`chrome-extension://${extensionId}/sidepanel.html`);
     await panel.evaluate(
-      async ([accessToken, expiresIn, user, org]) => {
+      async ([accessToken, refreshToken, expiresIn, user, org]) => {
+        // The panel restores a session only with the refresh token encrypted
+        // the way src/lib/auth/crypto.ts does it (PBKDF2 over the runtime id →
+        // AES-GCM); an access token alone reads as "could not restore".
+        const enc = new TextEncoder();
+        const base = await crypto.subtle.importKey(
+          'raw',
+          enc.encode('matrx-extend.refresh-token.v1'),
+          { name: 'PBKDF2' },
+          false,
+          ['deriveKey'],
+        );
+        const key = await crypto.subtle.deriveKey(
+          {
+            name: 'PBKDF2',
+            salt: enc.encode(chrome.runtime.id),
+            iterations: 100_000,
+            hash: 'SHA-256',
+          },
+          base,
+          { name: 'AES-GCM', length: 256 },
+          false,
+          ['encrypt'],
+        );
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+        const ct = new Uint8Array(
+          await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(refreshToken)),
+        );
+        const b64 = (bytes) => btoa(String.fromCharCode(...bytes));
         await chrome.storage.local.set({
           'matrx.auth.accessToken': accessToken,
+          'matrx.auth.refreshTokenEnc': b64(ct),
+          'matrx.auth.refreshTokenIv': b64(iv),
           'matrx.auth.expiresAt': Date.now() + expiresIn * 1000,
           'matrx.user.profile': user,
           'matrx.org.active': org,
@@ -159,6 +189,7 @@ async function main() {
       },
       [
         session.access_token,
+        session.refresh_token,
         session.expires_in ?? 3600,
         session.user,
         { id: organizationId, name: "Admin's Workspace" },
@@ -265,7 +296,7 @@ async function main() {
     await panel.getByRole('button', { name: /^(Capture|Re-capture)$/ }).click();
     await panel.getByRole('button', { name: /^Save$/ }).waitFor({ timeout: 30_000 });
     await panel.getByRole('button', { name: /^Save$/ }).click();
-    await panel.getByText(/Unsaved — retry/).waitFor({ timeout: 30_000 });
+    await panel.getByText(/Not yet a Source — kept on this device/).waitFor({ timeout: 30_000 });
     await panel.screenshot({ path: join(shots, '4-unsaved-retry-card.png') });
     const stored = await panel.evaluate(async () => {
       const got = await chrome.storage.local.get('matrx.sources.unsaved');
@@ -275,12 +306,14 @@ async function main() {
     if ((await sourcesFor(offlineUrl)).length !== 0)
       fail('A Source landed while the door was down.');
     console.log(
-      '✓ door unreachable: "Unsaved — retry" card shown, capture kept in chrome.storage.local',
+      '✓ door unreachable: "Not yet a Source" retry card shown, capture kept in chrome.storage.local',
     );
 
     await panel.unroute('**/sources/land');
     await panel.getByRole('button', { name: /Retry save/ }).click();
-    await panel.getByText(/Unsaved — retry/).waitFor({ state: 'detached', timeout: 30_000 });
+    await panel
+      .getByText(/Not yet a Source — kept on this device/)
+      .waitFor({ state: 'detached', timeout: 30_000 });
     const retried = await sourcesFor(offlineUrl);
     if (retried.length !== 1) fail('The retry did not land the capture.');
     landed.push(retried[0].id);
