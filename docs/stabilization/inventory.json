@@ -1290,7 +1290,7 @@
       ],
       "cells": {
         "guest": {
-          "test_status": "fail",
+          "test_status": "pass",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
@@ -1318,12 +1318,14 @@
             "release-stabilization-018",
             "release-stabilization-021",
             "release-stabilization-023",
-            "popup-teardown-suite-001"
+            "popup-teardown-suite-001",
+            "popup-teardown-green-002",
+            "release-stabilization-027"
           ],
-          "retest_status": "fail"
+          "retest_status": "pass"
         },
         "member": {
-          "test_status": "fail",
+          "test_status": "pass",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
@@ -1351,12 +1353,14 @@
             "release-stabilization-018",
             "release-stabilization-021",
             "release-stabilization-023",
-            "popup-teardown-suite-001"
+            "popup-teardown-suite-001",
+            "popup-teardown-green-002",
+            "release-stabilization-027"
           ],
-          "retest_status": "fail"
+          "retest_status": "pass"
         },
         "admin": {
-          "test_status": "fail",
+          "test_status": "pass",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
@@ -1384,9 +1388,11 @@
             "release-stabilization-018",
             "release-stabilization-021",
             "release-stabilization-023",
-            "popup-teardown-suite-001"
+            "popup-teardown-suite-001",
+            "popup-teardown-green-002",
+            "release-stabilization-027"
           ],
-          "retest_status": "fail"
+          "retest_status": "pass"
         }
       },
       "readiness_gaps": [
@@ -1427,6 +1433,14 @@
           "source_sha": "e1cd63d629d501993bc4188468ea84970568bc7e",
           "evidence": "https://github.com/armanisadeghi/matrx-extend/actions/runs/36259193096",
           "detail": "Previously fixed popup-claim-recovery teardown regression recurred with explicit imports still present:1445 assertions pass/4skip, one EnvironmentTeardownError. Reopened; no passing retry substitutes for repair."
+        },
+        {
+          "run_id": "release-stabilization-027",
+          "status": "pass",
+          "defect_id": "EXT-D-0020",
+          "source_sha": "4a57aa4af4e7260665d166f6aba4a5371d948b6d",
+          "independent_review": "docs/stabilization/reports/release027-peer.json",
+          "detail": "Reopened regression repaired with explicit cleanup+dynamic import settlement, actualmergedCI36260569407 success. Historicalfailedrunretained; no deterministicredclaim."
         }
       ]
     },

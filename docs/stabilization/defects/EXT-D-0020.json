@@ -23,11 +23,15 @@
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/36254397373",
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/36259193096",
     "docs/stabilization/reports/d20-ci-36259193096.txt",
-    "docs/stabilization/reports/d20-regression-repair.json"
+    "docs/stabilization/reports/d20-regression-repair.json",
+    "docs/stabilization/runs/popup-teardown-green-002.json",
+    "docs/stabilization/runs/release-stabilization-027.json",
+    "docs/stabilization/reports/release027-peer.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/36260569407"
   ],
   "severity": "S3: unreliable integration gate; no product impact established",
   "priority": "P1: restore trustworthy main",
-  "state": "in-fix",
+  "state": "closed",
   "owner": "/root/d20_teardown_regression",
   "transition_history": [
     {
@@ -83,6 +87,24 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Replace body-only waits with unconditional unmount then Vitest dynamic-import settlement in afterEach. Owner must run focused/full tests and independent review; implementation remains unverified."
+    },
+    {
+      "at": "2026-09-26T17:56:54.115250+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Lifecycle repair bff8ecea independently source-reviewed0a152cf6."
+    },
+    {
+      "at": "2026-09-26T17:56:54.115250+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Focused1pass; release0271446pass3skip; exact4a57aa4 CI36260569407 success1445pass4skip including popup1554ms with no unhandled teardown error. Independent382400a0 accepts scopedclosure."
+    },
+    {
+      "at": "2026-09-26T17:56:54.115250+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original observed CI symptom absent on repaired merged candidate and surrounding suite passes. Historical recurrence retained; no guarantee of futureflakeelimination."
     }
   ],
   "closure_requirement": "Independent no-weakening review, local focused/full suite and remote CI pass containing repair.",
