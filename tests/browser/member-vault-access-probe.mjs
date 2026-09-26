@@ -120,6 +120,31 @@ async function adminSettingsState(panel) {
   );
 }
 
+async function approvedOrganizationState(panel) {
+  // The real Settings control and the device's persisted selection must both
+  // name the one approved test organization. No ID or option text leaves the
+  // page realm; the receipt records only fixed booleans and counts.
+  return evaluate(
+    panel,
+    `(async () => {
+    const label = ${JSON.stringify(APPROVED_ORGANIZATION)};
+    const rows = [...document.querySelectorAll('span')]
+      .filter((span) => span.textContent.trim() === 'Acting as');
+    const controls = rows.flatMap((span) =>
+      [...span.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
+    const options = [...document.querySelectorAll('[role="option"]')]
+      .filter((option) => option.textContent.trim() === label);
+    const stored = (await chrome.storage.local.get('matrx.org.active'))['matrx.org.active'];
+    return {
+      controlCount: controls.length,
+      approvedOptionCount: options.length,
+      approvedDisplayed: controls.length === 1 && controls[0].textContent.trim() === label,
+      approvedStored: typeof stored?.id === 'string' && stored.id.length > 0 && stored.name === label,
+    };
+  })()`,
+  );
+}
+
 async function maskedInventory(panel) {
   // The page realm computes the summary. Item IDs, titles, field names, URLs,
   // notes, values, and page text never cross into Node or the evidence file.
@@ -253,41 +278,42 @@ try {
         );
         evidence.adminExtensionSignedIn = true;
 
+        stage = 'settings_organization_control';
+        await openSection(panel, 'Organization');
+        await waitFor(
+          'settings_organization_control',
+          () => approvedOrganizationState(panel),
+          (state) => state?.controlCount === 1,
+        );
+        stage = 'settings_organization_choice';
+        await click(panel, 'organization', 'Acting as');
+        const offered = await approvedOrganizationState(panel);
+        evidence.beforeOrganizationChoice = {
+          organizationControlFound: offered.controlCount === 1,
+          approvedOrganizationOffered: offered.approvedOptionCount === 1,
+          approvedOrganizationAlreadySelected: offered.approvedDisplayed && offered.approvedStored,
+        };
+        if (offered.approvedOptionCount !== 1)
+          fail('approved_organization_prerequisite_unavailable');
+        await click(panel, 'option', APPROVED_ORGANIZATION);
+        const selected = await waitFor(
+          'approved_organization_selected_on_device',
+          () => approvedOrganizationState(panel),
+          (state) => state?.approvedDisplayed && state.approvedStored,
+        );
+        evidence.afterOrganizationChoice = {
+          approvedOrganizationDisplayed: selected.approvedDisplayed,
+          approvedOrganizationStored: selected.approvedStored,
+        };
+
         stage = 'vault_tab_click';
         await click(panel, 'title', 'Vault');
-        stage = 'vault_prerequisite_observation';
-        const prerequisite = await waitFor(
-          'vault_prerequisite_or_content',
-          () => observeInventory(panel),
-          (state) => state?.vaultHeadingVisible || state?.organizationPickerVisible,
-          30_000,
-        );
-        evidence.beforeOrganizationChoice = { ...evidence.lastVaultObservation };
-        if (prerequisite.organizationPickerVisible) {
-          stage = 'vault_organization_prerequisite';
-          const offered = await waitFor(
-            'organization_choices_loaded',
-            () => observeInventory(panel),
-            (state) => state?.organizationPickerVisible && !state.organizationPickerLoading,
-            30_000,
-          );
-          if (!offered.approvedOrganizationOffered)
-            fail('approved_organization_prerequisite_unavailable');
-          if (offered.organizationSelected) fail('organization_prerequisite_state_inconsistent');
-          await click(panel, 'organization-picker-choice', APPROVED_ORGANIZATION);
-          await waitFor(
-            'explicit_organization_selected',
-            () => observeInventory(panel),
-            (state) => state?.organizationSelected && !state.organizationPickerVisible,
-            30_000,
-          );
-          evidence.afterOrganizationChoice = { ...evidence.lastVaultObservation };
-        }
         stage = 'mine_inventory_wait';
         await waitFor(
           'masked_vault_inventory',
           () => observeInventory(panel),
           (state) =>
+            state?.vaultTabActive &&
             state?.vaultPanelActive &&
             state?.vaultHeadingVisible &&
             !state.inventorySpinner &&
@@ -324,6 +350,7 @@ try {
           'shared_vault_inventory',
           () => observeInventory(panel),
           (state) =>
+            state?.vaultTabActive &&
             state?.vaultPanelActive &&
             state?.vaultHeadingVisible &&
             !state.inventorySpinner &&

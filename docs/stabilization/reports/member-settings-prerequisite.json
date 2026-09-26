@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "report_id": "member-settings-prerequisite",
+  "status": "source_ready_runtime_unverified",
+  "scope": "Bounded member Vault probe setup; no browser, runtime, build, or authenticated screenshot in this lane.",
+  "known_runtime_truth": {
+    "member_run_010": "Real admin web and extension sign-in succeeded; Vault tab was inactive, no organization was selected, and no global organization picker appeared. The run stopped before inventory.",
+    "working_sibling": "seo-admin-001 on release 0.2.72 selected the approved organization through Settings before opening its target tab.",
+    "member_inventory": "Mine and Shared inventory and member access remain unverified."
+  },
+  "change": [
+    "After real admin extension sign-in, open the Settings Organization section and use its real Acting as control to choose exactly the approved test organization.",
+    "Require the chosen name to appear in Settings and in the device's persisted active organization before clicking Vault; the evidence contains only fixed booleans and counts.",
+    "Wait for the actual Vault trigger and linked panel to be active when reading both Mine and Shared; retain masked candidate counts and failure observations."
+  ],
+  "limits": [
+    "The Settings prerequisite is copied from a working sibling, but this member probe has not been run against it.",
+    "A selected organization alone does not establish settled Vault inventory, credential identity, or member access.",
+    "No Vault item contents, credentials, IDs, URLs, or organization IDs are written to the receipt."
+  ],
+  "validation": [
+    "node --check tests/browser/member-vault-access-probe.mjs: pass",
+    "pnpm exec biome check tests/browser/member-vault-access-probe.mjs docs/stabilization/reports/member-settings-prerequisite.json: pass"
+  ],
+  "next_owner_action": "Root-owned guarded native run and independent verification of the actual Settings choice, Vault Mine and Shared observations, and any remaining failure boundary."
+}
