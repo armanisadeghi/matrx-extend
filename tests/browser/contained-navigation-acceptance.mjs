@@ -103,6 +103,7 @@ const report = {
     },
   },
   admin_tab_inventory: null,
+  profile_attempt: null,
   navigation_surfaces: {},
 };
 let stage = 'owned_profile';
@@ -201,11 +202,15 @@ async function avatar(panel, role, title) {
   assert.equal(state.profile, role === 'admin');
   target(`avatar:${role}`, role, 'EXT-F-1001-C04', state);
   if (role === 'admin') {
+    advance('admin_profile_click');
+    report.profile_attempt = { stage: 'click', lastObserved: null };
     await click(panel, 'button', 'Profile');
+    advance('admin_profile_wait');
+    report.profile_attempt.stage = 'view_wait';
     await waitFor(
       'profile_selected',
-      () =>
-        evaluate(
+      async () => {
+        const observed = await evaluate(
           panel,
           `(() => {
         ${NAVIGATION_SCOPE}
@@ -215,7 +220,10 @@ async function avatar(panel, role, title) {
           identitySection: text.includes('Identity'), firstNameField: text.includes('First name'),
           backControl: !!pane?.querySelector('button[title="Back"]') };
       })()`,
-        ),
+        );
+        report.profile_attempt.lastObserved = observed;
+        return observed;
+      },
       (v) => v?.profileHeader && v.identitySection && v.firstNameField && v.backControl,
     );
     target('profile:admin', role, 'EXT-F-1001-C01', {
@@ -225,6 +233,7 @@ async function avatar(panel, role, title) {
       firstNameField: true,
       backControl: true,
     });
+    report.profile_attempt.stage = 'complete';
   }
 }
 
@@ -428,11 +437,32 @@ try {
   });
   report.extension_id = harness.extensionId;
   report.status = 'partial';
-} catch {
+} catch (error) {
   report.status = 'unverified';
   report.failure_stage = stage;
   report.failure_category =
     stage === 'owned_profile' ? 'native_profile_unverified' : `${stage}_unverified`;
+  // Never persist a raw browser error: CDP and assertion messages can include
+  // page content, URLs, or auth material. These fixed codes and the click
+  // driver's geometry-only diagnostic identify the failed operation safely.
+  const message = String(error?.message ?? '');
+  report.failure_detail = {
+    code: message.startsWith('stable hit target for ')
+      ? 'target_not_stable'
+      : message.startsWith('unique visible ')
+        ? 'target_not_unique'
+        : message.startsWith('pointer_sample_failed for ')
+          ? 'pointer_sample_failed'
+          : message.startsWith('profile_selected_not_observed:')
+            ? 'profile_view_not_observed'
+            : message === 'panel_runtime_exception'
+              ? 'panel_runtime_exception'
+              : 'unclassified',
+    ...(stage === 'admin_profile_click' &&
+      error?.pointerDiagnostic && {
+        pointerDiagnostic: error.pointerDiagnostic,
+      }),
+  };
   process.exitCode = 1;
 }
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });

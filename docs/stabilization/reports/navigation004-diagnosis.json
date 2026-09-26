@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "task_id": "navigation004-diagnosis",
+  "lane": "implementation diagnostic",
+  "status": "diagnostic_capture_prepared_peer_required",
+  "feature_ids": [
+    "EXT-F-1001"
+  ],
+  "run_id": "contained-navigation-004",
+  "build_version": "0.2.67",
+  "evidence": [
+    "docs/stabilization/runs/contained-navigation-004.json preserves the exact result, release receipt, resource policy and admission/watch/exit events before runner edits.",
+    "The saved target avatar:admin passed; profile:admin and all admin navigation targets are absent. The saved failure_stage admin_avatar therefore locates the failure after the avatar target and before the Profile target, but not its failing operation.",
+    "The runner called click(Profile) then waitFor(profile_selected) with no stage advance or last observation; its catch discarded the error. This reporting defect is proven by the runner source and persisted result.",
+    "UserMenu closes the popover and selects profile on Profile click. App renders ProfileView in TabsContent value profile; ProfileView contains the expected header, Identity, First name, and Back control. Source alone does not prove what happened in run 004."
+  ],
+  "diagnosis": "The exact runtime failure remains unclassified between the Profile click and Profile view readiness. No product defect is established. The confirmed harness defect was loss of the operation and safe observation at this boundary.",
+  "hypotheses_for_fresh_runtime": [
+    {
+      "cause": "The Profile target was not reachable by a stable real pointer click.",
+      "prediction": "The next run ends at admin_profile_click with target_not_stable or pointer_sample_failed and geometry-only pointerDiagnostic; no Profile view observation is recorded."
+    },
+    {
+      "cause": "The Profile click dispatched but the view did not reach the expected content.",
+      "prediction": "The next run ends at admin_profile_wait with profile_view_not_observed and safe lastObserved booleans identifying the missing condition."
+    },
+    {
+      "cause": "The CDP execution context was lost during transition.",
+      "prediction": "The next run ends at admin_profile_click or admin_profile_wait with panel_runtime_exception, pointer_sample_failed, or unclassified, and lastObserved distinguishes whether any Profile DOM was observed."
+    }
+  ],
+  "change": "The runner now advances from passed admin avatar to admin_profile_click and admin_profile_wait, stores Profile view booleans, and records a fixed safe error code and geometry-only pointer diagnostic when available. Acceptance predicates are unchanged.",
+  "verification": {
+    "node_check": "pass",
+    "biome_check": "pass",
+    "diff_check": "pass",
+    "native_rerun": "not_run_by_this_lane",
+    "product_verdict": "unverified"
+  },
+  "limitations": [
+    "No raw exception from run 004 was persisted, so the original failure cannot be classified more precisely.",
+    "No browser/build/heavy run was authorized for this lane; fresh peer review is required before the root-controlled rerun."
+  ],
+  "next_action": "Fresh independent peer checks the runner diagnostic and receipt, then root controls one resource-admitted native rerun against the exact reviewed build."
+}

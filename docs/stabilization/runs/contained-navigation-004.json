@@ -1,0 +1,532 @@
+{
+  "schema_version": 1,
+  "id": "contained-navigation-004",
+  "scope": "owned disposable Chrome profile, released artifact, real native sidepanel",
+  "status": "unverified",
+  "exit_code": 1,
+  "build": {
+    "sourceSha": "79d1dba35ea1157a6dbf7a8ce23942a0a2a8f271",
+    "version": "0.2.67",
+    "publishState": "pushed",
+    "storeZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.67-store.zip",
+      "sha256": "2e48fb724ab5af1bd17bbec25fd3b4b251309b6c58a12af27b75f85beef7cfc3"
+    },
+    "localZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.67-local.zip",
+      "sha256": "40d318d5df6c8227348b630827f0382d427ecbc8977bf41d3d75b68eb239afea"
+    },
+    "sourcePath": "/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/matrx-extend-release.o8ZiGi/matrx-extend/.output/chrome-mv3",
+    "destinationPath": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "destinationPaths": [
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3"
+    ],
+    "treeSha256": "ce7a1faadd3a7ba45ceb90f6754b26a6be8f6573ec8b660e995e4f5c4bd8a82a",
+    "fileCount": 526
+  },
+  "resource_policy": {
+    "schema": 1,
+    "watchIntervalSeconds": 15,
+    "swapWindowSeconds": 60,
+    "unsafeSamplesToStop": 2,
+    "healthySamplesToResume": 3,
+    "minimumAvailableMemoryGiB": 4,
+    "minimumAvailableMemoryFraction": 0.2,
+    "maximumOneMinuteLoadPerLogicalCpu": 0.75,
+    "maximumSustainedCpuBusyFraction": 0.75,
+    "maximumBusyFractionAtHighLoad": 0.6,
+    "cpuSampleIntervalSeconds": 10,
+    "ownedGroupGraceSeconds": 10,
+    "ownedGroupKillWaitSeconds": 5,
+    "minimumFreeDiskGiB": 20,
+    "maximumSwapGrowthMiB": 256,
+    "normalMacPressureLevel": 1,
+    "cpuAdmissionRationale": "Admission samples a full 60-second window: refuse average CPU busy >=75%, or average busy >=60% if ANY sample has normalized one-minute load >=0.75. Missing samples refuse. The reported admission load is the window maximum normalized to the final CPU count.",
+    "processSnapshotMaxBytes": 33554432
+  },
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T14:53:21.061Z",
+      "runId": "contained-navigation-004",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.48,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.32,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1419,
+        "swapUsedMiB": 2421.69,
+        "repoFreeGiB": 1675.7144737243652,
+        "profileFreeGiB": 22.254291534423828
+      },
+      "cpuBusySamples": [
+        0.3545999999999999,
+        0.11580000000000001,
+        0.09450000000000003,
+        0.08400000000000007,
+        0.10239999999999994,
+        0.127,
+        0.11499999999999999
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T14:53:37.449Z",
+      "runId": "contained-navigation-004",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.48,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.16,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.09689999999999999,
+        "swapUsedMiB": 2421.69,
+        "repoFreeGiB": 1675.7144241333008,
+        "profileFreeGiB": 22.204814910888672
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T14:53:39.437Z",
+      "runId": "contained-navigation-004",
+      "childExitCode": 1,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ],
+  "resource_log_source": "/tmp/matrx-contained-navigation-004.log",
+  "runtime_result_source": "test-results/contained-navigation-acceptance.json",
+  "runtime_result": {
+    "schema_version": 1,
+    "feature_id": "EXT-F-1001",
+    "status": "unverified",
+    "scope": "owned disposable Chrome profile, released artifact, real native sidepanel",
+    "targets": [
+      {
+        "id": "guest-tab-inventory",
+        "role": "guest",
+        "control": "EXT-F-1001-C01",
+        "status": "pass",
+        "detail": {
+          "titles": [
+            "Chat",
+            "Data",
+            "SEO",
+            "Scrape",
+            "Settings"
+          ]
+        }
+      },
+      {
+        "id": "avatar:guest",
+        "role": "guest",
+        "control": "EXT-F-1001-C04",
+        "status": "pass",
+        "detail": {
+          "open": true,
+          "desktop": true,
+          "identityMatches": true,
+          "profile": false
+        }
+      },
+      {
+        "id": "navigation:guest:Scrape",
+        "role": "guest",
+        "control": "EXT-F-1001-C01",
+        "status": "pass",
+        "detail": {
+          "count": 1,
+          "navigationLists": 1,
+          "activePanels": 1,
+          "selected": true,
+          "linkedPaneVisible": true,
+          "markerPresent": null,
+          "fallback": true
+        }
+      },
+      {
+        "id": "navigation:guest:Data",
+        "role": "guest",
+        "control": "EXT-F-1001-C01",
+        "status": "pass",
+        "detail": {
+          "count": 1,
+          "navigationLists": 1,
+          "activePanels": 1,
+          "selected": true,
+          "linkedPaneVisible": true,
+          "markerPresent": null,
+          "fallback": true
+        }
+      },
+      {
+        "id": "lazy-load:guest:Data",
+        "role": "guest",
+        "control": "EXT-F-1001-C05",
+        "status": "pass",
+        "detail": {
+          "viewMarker": "Structured data",
+          "markerPresent": true,
+          "linkedPaneVisible": true,
+          "suspenseFallbackAbsent": true
+        }
+      },
+      {
+        "id": "navigation:guest:SEO",
+        "role": "guest",
+        "control": "EXT-F-1001-C01",
+        "status": "pass",
+        "detail": {
+          "count": 1,
+          "navigationLists": 1,
+          "activePanels": 1,
+          "selected": true,
+          "linkedPaneVisible": true,
+          "markerPresent": null,
+          "fallback": true
+        }
+      },
+      {
+        "id": "lazy-load:guest:SEO",
+        "role": "guest",
+        "control": "EXT-F-1001-C05",
+        "status": "pass",
+        "detail": {
+          "viewMarker": "SEO audit",
+          "markerPresent": true,
+          "linkedPaneVisible": true,
+          "suspenseFallbackAbsent": true
+        }
+      },
+      {
+        "id": "navigation:guest:Settings",
+        "role": "guest",
+        "control": "EXT-F-1001-C01",
+        "status": "pass",
+        "detail": {
+          "count": 1,
+          "navigationLists": 1,
+          "activePanels": 1,
+          "selected": true,
+          "linkedPaneVisible": true,
+          "markerPresent": null,
+          "fallback": true
+        }
+      },
+      {
+        "id": "lazy-load:guest:Settings",
+        "role": "guest",
+        "control": "EXT-F-1001-C05",
+        "status": "pass",
+        "detail": {
+          "viewMarker": "Settings",
+          "markerPresent": true,
+          "linkedPaneVisible": true,
+          "suspenseFallbackAbsent": true
+        }
+      },
+      {
+        "id": "capture-absent:guest",
+        "role": "guest",
+        "control": "EXT-F-1001-C02",
+        "status": "pass",
+        "detail": {
+          "triggerAbsent": true
+        }
+      },
+      {
+        "id": "vault-shortcut-absent:guest",
+        "role": "guest",
+        "control": "EXT-F-1001-C03",
+        "status": "pass",
+        "detail": {
+          "shortcutAbsent": true
+        }
+      },
+      {
+        "id": "real-admin-signin",
+        "role": "admin",
+        "control": "prerequisite",
+        "status": "pass",
+        "detail": {
+          "webDashboard": true,
+          "extensionAccount": true
+        }
+      },
+      {
+        "id": "admin-tab-inventory",
+        "role": "admin",
+        "control": "EXT-F-1001-C01",
+        "status": "pass",
+        "detail": {
+          "titles": [
+            "Chat",
+            "Pilot (admin only — sandboxed tab group)",
+            "Plan & tasks",
+            "Tasks",
+            "Agenda",
+            "Scrape",
+            "Saved captures",
+            "Pages that need your browser",
+            "Data",
+            "SEO",
+            "Highlights",
+            "Guidance",
+            "Notes",
+            "Files",
+            "Screenshots",
+            "Vault",
+            "Tools",
+            "Settings",
+            "Showcase (admin only)",
+            "Token broker (admin only)",
+            "Debug (admin only)"
+          ]
+        }
+      },
+      {
+        "id": "avatar:admin",
+        "role": "admin",
+        "control": "EXT-F-1001-C04",
+        "status": "pass",
+        "detail": {
+          "open": true,
+          "desktop": true,
+          "identityMatches": true,
+          "profile": true
+        }
+      }
+    ],
+    "deferred": [
+      {
+        "target": "Chat and Pilot systematic actions",
+        "reason": "separate ownership"
+      },
+      {
+        "target": "member role",
+        "reason": "no member credential in this batch"
+      },
+      {
+        "target": "stale persisted selection",
+        "reason": "requires a real role transition with selection preserved"
+      },
+      {
+        "target": "lazy chunk failure and retry",
+        "reason": "no natural chunk failure observed; no response interception"
+      },
+      {
+        "target": "Vault assistance active",
+        "reason": "requires naturally active credential assistance"
+      }
+    ],
+    "admin_prerequisite": {
+      "stage": "admin_avatar",
+      "web": {
+        "expectedOrigin": true,
+        "loginPath": true,
+        "credentialFileReadable": true,
+        "credentialVariablesAvailable": true,
+        "formAvailable": true,
+        "submitClickCompleted": true,
+        "dashboardReached": true
+      },
+      "extension": {
+        "accountReady": true,
+        "signInAvailable": true,
+        "beforeClick": {
+          "accountPresent": true,
+          "accountExpanded": true,
+          "emailRowPresent": true,
+          "expectedEmailMatch": false,
+          "roleRowPresent": false,
+          "adminRoleMatch": false,
+          "signInAvailable": true,
+          "signOutPresent": false,
+          "advancedPresent": false,
+          "authAlertPresent": false
+        },
+        "signInClickCompleted": true,
+        "lastObserved": {
+          "accountPresent": true,
+          "accountExpanded": true,
+          "emailRowPresent": true,
+          "expectedEmailMatch": true,
+          "roleRowPresent": true,
+          "adminRoleMatch": true,
+          "signInAvailable": false,
+          "signOutPresent": true,
+          "advancedPresent": true,
+          "authAlertPresent": false
+        },
+        "observationReadFailed": false
+      }
+    },
+    "admin_tab_inventory": {
+      "titles": [
+        "Chat",
+        "Pilot (admin only — sandboxed tab group)",
+        "Plan & tasks",
+        "Tasks",
+        "Agenda",
+        "Scrape",
+        "Saved captures",
+        "Pages that need your browser",
+        "Data",
+        "SEO",
+        "Highlights",
+        "Guidance",
+        "Notes",
+        "Files",
+        "Screenshots",
+        "Vault",
+        "Tools",
+        "Settings",
+        "Showcase (admin only)",
+        "Token broker (admin only)",
+        "Debug (admin only)"
+      ],
+      "capture_identity_count": 1,
+      "capture_title": "Pages that need your browser"
+    },
+    "navigation_surfaces": {
+      "guest": {
+        "navigationLists": 1,
+        "allTabCount": 5,
+        "nestedTabCount": 0,
+        "unownedTabCount": 0,
+        "tabs": [
+          {
+            "title": "Chat",
+            "captureIdentity": false
+          },
+          {
+            "title": "Scrape",
+            "captureIdentity": false
+          },
+          {
+            "title": "Data",
+            "captureIdentity": false
+          },
+          {
+            "title": "SEO",
+            "captureIdentity": false
+          },
+          {
+            "title": "Settings",
+            "captureIdentity": false
+          }
+        ]
+      },
+      "admin": {
+        "navigationLists": 1,
+        "allTabCount": 33,
+        "nestedTabCount": 12,
+        "unownedTabCount": 0,
+        "tabs": [
+          {
+            "title": "Chat",
+            "captureIdentity": false
+          },
+          {
+            "title": "Pilot (admin only — sandboxed tab group)",
+            "captureIdentity": false
+          },
+          {
+            "title": "Plan & tasks",
+            "captureIdentity": false
+          },
+          {
+            "title": "Tasks",
+            "captureIdentity": false
+          },
+          {
+            "title": "Agenda",
+            "captureIdentity": false
+          },
+          {
+            "title": "Scrape",
+            "captureIdentity": false
+          },
+          {
+            "title": "Saved captures",
+            "captureIdentity": false
+          },
+          {
+            "title": "Pages that need your browser",
+            "captureIdentity": true
+          },
+          {
+            "title": "Data",
+            "captureIdentity": false
+          },
+          {
+            "title": "SEO",
+            "captureIdentity": false
+          },
+          {
+            "title": "Highlights",
+            "captureIdentity": false
+          },
+          {
+            "title": "Guidance",
+            "captureIdentity": false
+          },
+          {
+            "title": "Notes",
+            "captureIdentity": false
+          },
+          {
+            "title": "Files",
+            "captureIdentity": false
+          },
+          {
+            "title": "Screenshots",
+            "captureIdentity": false
+          },
+          {
+            "title": "Vault",
+            "captureIdentity": false
+          },
+          {
+            "title": "Tools",
+            "captureIdentity": false
+          },
+          {
+            "title": "Settings",
+            "captureIdentity": false
+          },
+          {
+            "title": "Showcase (admin only)",
+            "captureIdentity": false
+          },
+          {
+            "title": "Token broker (admin only)",
+            "captureIdentity": false
+          },
+          {
+            "title": "Debug (admin only)",
+            "captureIdentity": false
+          }
+        ]
+      }
+    },
+    "navigation_attempt": {
+      "role": "guest",
+      "title": "Settings",
+      "stage": "complete"
+    },
+    "failure_stage": "admin_avatar",
+    "failure_category": "admin_avatar_unverified"
+  },
+  "runtime_limits": "The persisted JSON contains no thrown error or failing operation state; the catch block only recorded stage and category. No product-defect verdict follows from this run.",
+  "rerun_gate": "Fresh peer review of diagnostic changes before root-controlled admitted browser rerun."
+}
