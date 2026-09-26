@@ -1,0 +1,43 @@
+{
+  "id": "EXT-D-0013",
+  "feature_id": "EXT-F-0003",
+  "case_ids": [
+    "EXT-F-0003-T07"
+  ],
+  "surface": "Release validation ordering",
+  "auth_mode": "auth-independent engineering infrastructure",
+  "reproduction": [
+    "Run release with installed shared package older than published latest.",
+    "Observe full unit suite runs before mandatory package-freshness check."
+  ],
+  "expected": "Known-invalid dependency graph fails before expensive checks, while all mandatory validation remains required for publication.",
+  "actual": "Repeated runs spend ~85seconds on full unit suite before deterministically rejecting already-stale graph; increases reconciliation cost under concurrent publishing.",
+  "evidence": [
+    "docs/stabilization/runs/release-stabilization-006.json",
+    "docs/stabilization/runs/release-stabilization-007.json"
+  ],
+  "severity": "S3: unnecessary integration time/resource expenditure; publication stays safely blocked",
+  "priority": "P2: reduce recurring integration cost",
+  "state": "in-fix",
+  "owner": "/root/release_freshness_failfast",
+  "transition_history": [
+    {
+      "at": "2026-09-26T09:39:43.823358+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Repeated measured late freshness refusal after full suite."
+    },
+    {
+      "at": "2026-09-26T09:39:43.823358+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Failure classification performance, not unsafe publication; no gate weakening permitted."
+    },
+    {
+      "at": "2026-09-26T09:39:43.823358+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol narrow gate ordering and regression repair."
+    }
+  ]
+}

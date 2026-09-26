@@ -1,0 +1,164 @@
+{
+  "id": "release-stabilization-006",
+  "status": "failed_closed",
+  "candidate": "15defbb757da507830cbbbb51ea4379b57182e68",
+  "version": "0.2.58",
+  "published": false,
+  "typecheck": "pass",
+  "unit_tests": {
+    "passed": 1428,
+    "skipped": 3,
+    "unhandled_errors": 0
+  },
+  "failure": "New Records0.58.20 published while installed0.58.19; mandatory freshness gate refused publication.",
+  "defect_id": "EXT-D-0012",
+  "native_retest": "pending fresh builtartifact",
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:29:14.849Z",
+      "runId": "release-stabilization-006",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.55,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.10642857142857144,
+        "swapUsedMiB": 1817.56,
+        "repoFreeGiB": 1676.1529159545898,
+        "profileFreeGiB": 1676.1529159545898
+      },
+      "cpuBusySamples": [
+        0.17510000000000003,
+        0.10010000000000008,
+        0.09050000000000002,
+        0.08760000000000001,
+        0.09319999999999995,
+        0.09699999999999998,
+        0.10150000000000003
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:29:31.187Z",
+      "runId": "release-stabilization-006",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.84,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.65,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1169,
+        "swapUsedMiB": 1817.56,
+        "repoFreeGiB": 1676.1624450683594,
+        "profileFreeGiB": 1676.1624450683594
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:29:47.529Z",
+      "runId": "release-stabilization-006",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.5,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.08860000000000001,
+        "swapUsedMiB": 1817.56,
+        "repoFreeGiB": 1676.163818359375,
+        "profileFreeGiB": 1676.163818359375
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:30:03.808Z",
+      "runId": "release-stabilization-006",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.54,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.259,
+        "swapUsedMiB": 1817.56,
+        "repoFreeGiB": 1676.163818359375,
+        "profileFreeGiB": 1676.163818359375
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:30:20.097Z",
+      "runId": "release-stabilization-006",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.84,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.65,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.21099999999999997,
+        "swapUsedMiB": 1817.56,
+        "repoFreeGiB": 1676.1636581420898,
+        "profileFreeGiB": 1676.1636581420898
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:30:36.384Z",
+      "runId": "release-stabilization-006",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.84,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.46,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.21760000000000002,
+        "swapUsedMiB": 1817.56,
+        "repoFreeGiB": 1676.1637840270996,
+        "profileFreeGiB": 1676.1637840270996
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:30:52.670Z",
+      "runId": "release-stabilization-006",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.36,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.14590000000000003,
+        "swapUsedMiB": 1817.56,
+        "repoFreeGiB": 1676.1637229919434,
+        "profileFreeGiB": 1676.1637229919434
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:30:58.166Z",
+      "runId": "release-stabilization-006",
+      "childExitCode": 1,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ]
+}

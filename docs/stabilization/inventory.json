@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T09:04:27.849193+00:00",
+  "updated_at": "2026-09-26T09:39:43.823358+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -973,6 +973,53 @@
               "run_id": "release-green-001",
               "evidence": "docs/stabilization/runs/release-green-001.json",
               "scope": "Isolated local fixture; no real remote publication."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-0003-T07",
+          "title": "Refuse stale dependency graph before expensive validation",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Auth-independent release test; disposable candidate and remote fixture; resource guard admitted."
+          ],
+          "steps": [
+            "Use known-stale shared dependency graph and attempt release.",
+            "Use current graph and attempt complete release validation."
+          ],
+          "expected": [
+            "Stale candidate fails before unit/build work with no publication.",
+            "Current candidate still executes every mandatory gate and publishes only validated exact tree."
+          ],
+          "dimensions": [
+            "negative-path",
+            "positive-control"
+          ],
+          "results": {
+            "guest": {
+              "status": "fail",
+              "defect_ids": [
+                "EXT-D-0013"
+              ],
+              "detail": "Shared role-independent pipeline runs expensive tests before known-stale refusal."
+            },
+            "member": {
+              "status": "fail",
+              "defect_ids": [
+                "EXT-D-0013"
+              ],
+              "detail": "Shared role-independent pipeline runs expensive tests before known-stale refusal."
+            },
+            "admin": {
+              "status": "fail",
+              "defect_ids": [
+                "EXT-D-0013"
+              ],
+              "detail": "Shared role-independent pipeline runs expensive tests before known-stale refusal."
             }
           }
         }
@@ -3130,7 +3177,17 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "not-applicable",
+              "detail": "Audit key is admin-only: source isAdmin gate and actual guest T22 evidence confirm absence. Negative access remains covered byT22/T63; this does not waive member/direct-state checks.",
+              "evidence": [
+                "docs/stabilization/reports/guest-settings-applicability.json",
+                "docs/stabilization/runs/guest-settings-local-003.json"
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T26",
@@ -3711,12 +3768,15 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "guest-settings-local-001",
+              "status": "fail",
+              "run_id": "guest-settings-local-004",
               "defect_ids": [
-                "EXT-D-0011"
+                "EXT-D-0012"
               ],
-              "detail": "Native runner failed trusted interaction; product verdict withheld pending harness repair. Partial evidence in run receipt."
+              "evidence": [
+                "docs/stabilization/runs/guest-settings-local-004.json"
+              ],
+              "detail": "Successful blank clear leaves previous invalid-port error. Worker rediscovery separately unverified."
             }
           }
         },
@@ -3794,9 +3854,20 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "guest-reset-007",
-              "evidence": "docs/stabilization/runs/guest-reset-007.json",
-              "detail": "Frozen0.2.56 actual native guest sidepanel: Cancel preserves exact theme/port/session fixtures; Confirm clears all prior local/session keys; Reload shows guest/System and no prior overrides. Primary profile untouched."
+              "run_id": "guest-reset-009",
+              "evidence": [
+                "docs/stabilization/runs/guest-reset-009.json",
+                "docs/stabilization/reports/native-driver-final-peer.json"
+              ],
+              "detail": "Real native0.2.57 isolated guest Cancel/Confirm/reload acceptance after shared driver repair.",
+              "prior_evidence": [
+                {
+                  "status": "pass",
+                  "run_id": "guest-reset-007",
+                  "evidence": "docs/stabilization/runs/guest-reset-007.json",
+                  "detail": "Frozen0.2.56 actual native guest sidepanel: Cancel preserves exact theme/port/session fixtures; Confirm clears all prior local/session keys; Reload shows guest/System and no prior overrides. Primary profile untouched."
+                }
+              ]
             }
           },
           "previous_results": [
@@ -4456,11 +4527,12 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "guest-settings-local-001",
-              "defect_ids": [
-                "EXT-D-0011"
+              "run_id": "guest-settings-local-003",
+              "evidence": [
+                "docs/stabilization/runs/guest-settings-local-003.json",
+                "docs/stabilization/reports/native-driver-final-peer.json"
               ],
-              "detail": "Native runner failed trusted interaction; product verdict withheld pending harness repair. Partial evidence in run receipt."
+              "detail": "Trusted interactions pass; T46 rediscovery and same-render invalid-to-blank remain unverified. T70 alternate API/update branches remain unverified. EXT-D-0011 infrastructure repair closed."
             }
           }
         },
@@ -4560,10 +4632,11 @@
       ],
       "cells": {
         "guest": {
-          "test_status": "unverified",
+          "test_status": "fail",
           "defect_ids": [
             "EXT-D-0001",
-            "EXT-D-0009"
+            "EXT-D-0009",
+            "EXT-D-0012"
           ],
           "run_ids": [
             "guest-local-001",
