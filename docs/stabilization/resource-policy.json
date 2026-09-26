@@ -24,7 +24,7 @@
     ["pnpm", "exec", "wxt"],
     ["pnpm", "compile"],
     ["pnpm", "exec", "tsc", "--noEmit"],
-    ["pnpm", "exec", "vitest", "run", "--maxWorkers=1", "--minWorkers=1"],
+    ["pnpm", "exec", "vitest", "run", "--maxWorkers=1"],
     ["bash", "scripts/test-release-ship-path.sh"],
     ["bash", "scripts/test-release-ship-path.sh", "/tmp/matrx-release-before/release.sh"],
     ["bash", "scripts/test-release-ship-path.sh", "/tmp/matrx-release-ci-before/release.sh"],
