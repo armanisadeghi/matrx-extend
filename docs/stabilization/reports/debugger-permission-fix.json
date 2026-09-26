@@ -1,0 +1,29 @@
+{
+  "defect_id": "EXT-D-0006",
+  "status": "implemented_pending_root_test_and_live_retest",
+  "root_cause": "Chrome forbids debugger in optional_permissions and permissions.remove returns false for required permissions. The manifest correctly declared debugger as required, but the shared optional-permission Settings roster offered it as a removable switch and ignored a false removal result.",
+  "official_contract": "https://developer.chrome.com/docs/extensions/reference/api/permissions",
+  "census": "The four actual runtime grants are cookies, pageCapture, clipboardRead, and tabCapture. The same roster also fed optional-grant context and the inert prompt type; both now exclude debugger from runtime controls. The manifest and debugger tool permission checks were preserved.",
+  "changed_files": [
+    "src/lib/permissions/optional.ts",
+    "src/state/permission-prompts.ts",
+    "src/features/settings/AdvancedAgentCapabilities.tsx",
+    "tests/unit/advanced-agent-capabilities.test.tsx",
+    "docs/feature-tests.md"
+  ],
+  "evidence": [
+    "Chrome documentation explicitly lists debugger among permissions that cannot be optional and says permissions.remove returns false for required permissions.",
+    "Source census confirmed debugger was required in wxt.config.ts yet included in ALL_OPTIONAL and rendered as a switch.",
+    "git diff --check passed before commit; targeted Biome check fixed formatting, with only the preexisting design-system Switch label warning remaining."
+  ],
+  "commands_for_root_scheduler": [
+    "pnpm exec vitest run tests/unit/advanced-agent-capabilities.test.tsx --maxWorkers=1 --minWorkers=1",
+    "pnpm compile"
+  ],
+  "open_questions": [
+    "The fresh peer must inspect the implementation and test independently.",
+    "The original Chrome reproduction requires a live retest before defect closure."
+  ],
+  "commit": "9c2a3a3",
+  "push": "withheld_pending_root_green_gate"
+}
