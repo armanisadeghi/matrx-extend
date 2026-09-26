@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "report_id": "guest-theme-001",
+  "status": "DONE",
+  "summary": "Guest theme T04 passed: Light, Dark, and System each changed the visible side panel to the expected appearance and persisted through a real extension Reload. The original System setting was restored and verified after reload.",
+  "changed_files": [
+    "docs/stabilization/runs/guest-theme-001.json",
+    "docs/stabilization/reports/guest-theme-001.json"
+  ],
+  "verification": [
+    "System baseline: Theme control showed System and the side panel was dark.",
+    "Light: panel visibly changed to white, then remained white with Light selected after extension Reload and reopening Settings.",
+    "Dark: panel visibly changed to dark, then remained dark with Dark selected after extension Reload and reopening Settings.",
+    "System restoration: panel returned to the original dark system appearance, then remained dark with System selected after extension Reload and reopening Settings.",
+    "User remained signed out with no device organization selected; no permission prompts or changes occurred; no other settings changed."
+  ],
+  "limitations": [],
+  "next_action": null,
+  "run_id": "guest-theme-001",
+  "case_id": "EXT-F-1003-T04"
+}
