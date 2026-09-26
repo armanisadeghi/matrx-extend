@@ -28,7 +28,7 @@
   "reproducibility_count": "1/1 observed real release regeneration; strict post-fix run pending",
   "severity": "S1: strict release cannot verify private catalog and migration state on this host",
   "priority": "P0: blocks a truthful strict release",
-  "state": "retest-pass",
+  "state": "closed",
   "owner": "/root",
   "root_cause": "The build-time shared reader assumed an installed, authenticated Supabase CLI instead of consuming the existing operator Management API credential at the read point.",
   "sibling_census": "The docs:tools generator, strict tool-drift checker, and strict migration ledger checker share this helper. Review round 1 found all three had an early public-credential branch; each now attempts the operator read when public configuration is absent. The catalog checker also validates full private definition and surface shapes before comparison. Final repair adds complete docs row validation, canonical private bundle-member reads, strict unknown-membership failure, and discovered command-level guards in tests/unit. Release-real-003 isolated one legitimate nested JSON Schema required array; the shared definition validator now accepts boolean top-level presence or string-array nested object members without accepting malformed arrays.",
@@ -117,10 +117,17 @@
       "from": "fixed",
       "to": "retest-pass",
       "reason": "Live docs regenerated, migrations verified, and drift comparison completed; a separate records inclusion mismatch stopped publication."
+    },
+    {
+      "at": "2026-09-26T03:52:09.279Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Guarded release005 passed mandatory checks and published validated760c7a1 main/tag; artifact hashes independently verified."
     }
   ],
   "limitations": [
-    "Integration pending: separate EXT-D-0005 stops release.",
-    "Row validation covers consumed fields, not recursive JSON Schema certification."
-  ]
+    "Closure scope is this release defect; no whole-product, loaded Chrome runtime or public Store verification claimed."
+  ],
+  "integration_commit": "760c7a1c5dba504b894dd5450b83e9fee060d065",
+  "integration_run": "release-real-005"
 }
