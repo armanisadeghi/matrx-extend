@@ -1,6 +1,6 @@
 {
   "id": "reload-auth-diagnosis",
-  "status": "lifecycle_cause_confirmed_local_fix_green_native_unverified",
+  "status": "lifecycle_fixed_classification_repair_under_verification_native_unverified",
   "scope": "Diagnosis and local engineering repair of the 0.2.53 native Chrome sign-in gate after full Reload; this lane made no browser action, token read, or credential value inspection.",
   "observed": [
     "docs/stabilization/runs/admin-signin-001.json records admin@admin.com visible after sign-in and full Reload in the same dev extension ID at 0.2.51, using the prior release artifact.",
@@ -53,15 +53,25 @@
     ],
     "manual_recipe": "docs/feature-tests.md: signed-in identity survives a development build reload"
   },
+  "independent_review_and_classification_repair": {
+    "peer_report": "docs/stabilization/reports/auth-hydration-peer.json",
+    "peer_verdict": "Engineering FAIL after lifecycle repair: a cached profile appeared signed in when restoreSupabaseSession returned false, and a cached admin flag appeared in guest UI without a profile. The peer explicitly did not claim a backend authorization bypass.",
+    "canonical_identity_evidence": "src/lib/auth/flow.ts getVerifiedCurrentUser obtains the current or refreshed bearer and verifies its claims locally through verifyBearerClaims; it returns null for invalid or temporarily unverifiable claims without a per-request Auth server user lookup or clearing the saved profile. restoreSupabaseSession alone only installs the token in the Supabase Realtime client and does not verify its identity.",
+    "red_receipt": "docs/stabilization/runs/auth-classification-red-001.json: five classification assertions failed and eleven existing assertions passed with no unhandled errors before the repair.",
+    "repair_commit": "553bad3",
+    "repair_behavior": "Boot shows signed-in UI only after session restore and a locally verified bearer whose subject matches the cached profile. Missing, unverifiable, or mismatched identity shows guest with a recoverable error while preserving the saved account material. Admin UI waits for the current account's check; a guest cannot access admin tabs from a stale admin flag, and Settings never shows an admin role without a user. A null auth broadcast clears UI admin state.",
+    "visible_recovery": "src/entrypoints/sidepanel/App.tsx wraps SettingsView in AuthGate; AuthGate displays useAuth error above Settings with a Try again action. The browser recipe in docs/feature-tests.md now covers this recovery state.",
+    "verification_state": "Root coordinator started run 64208 over auth classification, auth races, permissions, AuthGate, popup error, and Safari auth tests. Its result and fresh independent classification review were pending when this report update was written."
+  },
   "verification": {
     "reported_by": "root coordinator",
     "run_id": "auth-permission-green-001",
     "result": "15 of 15 focused tests passed across StrictMode hydration (5), auth races (2), and permissions (8), with zero unhandled errors and exit code 0.",
-    "limits": "The green run is reported by the coordinator; this lane did not launch tests or independently inspect its output. Typecheck, fresh peer review, and native Chrome verification were not reported complete at this point."
+    "limits": "This result predates the peer's classification findings and repair commit 553bad3. The coordinator separately reported typecheck passing before the merge. This lane did not launch tests or independently inspect their output. Native Chrome verification remains outstanding."
   },
   "census": "A targeted search for module-wide bootRan/started/initialized guards under src/hooks, src/features, and src/entrypoints found this use-auth.ts guard as the only matching sibling in that source area.",
-  "verdict": "The StrictMode effect replay bug is causally reproduced and the focused local guard is green. The 06:09 native observation did not record storage-key presence, so that particular session's stored state remains unknown. The later OAuth 400 belongs to a separate sign-in attempt and is not claimed fixed here.",
-  "next_action": "Obtain fresh independent source review and native Chrome reload proof on the repaired build. If OAuth Sign in still returns Auth session missing after identity hydration works, diagnose that separate provider flow from its first error.",
+  "verdict": "StrictMode effect replay and the adjacent cached-profile/admin UI defects are each reproduced with focused assertions and repaired in source. The second repair's green result and independent review are pending. The 06:09 native observation did not record storage-key presence, so that particular session's stored state remains unknown. The later OAuth 400 belongs to a separate sign-in attempt and is not claimed fixed here.",
+  "next_action": "Finish the coordinator's focused green run and fresh independent review, then verify the repaired build in native Chrome: saved admin identity after full Reload and a visible recoverable guest state for failed restore. If OAuth Sign in still returns Auth session missing, diagnose that separate provider flow from its first error.",
   "files": [
     "src/hooks/use-auth.ts",
     "src/entrypoints/sidepanel/main.tsx",
@@ -71,8 +81,14 @@
     "src/lib/auth/identity-transport.ts",
     "src/hooks/use-auth.strict-mode.test.tsx",
     "tests/unit/use-auth-race.test.tsx",
+    "tests/unit/sidepanel-visibility.test.ts",
+    "src/config/sidepanel-visibility.ts",
+    "src/components/AuthGate.tsx",
+    "src/entrypoints/sidepanel/App.tsx",
     "docs/feature-tests.md",
     "docs/stabilization/runs/auth-strict-red-003.json",
+    "docs/stabilization/runs/auth-classification-red-001.json",
+    "docs/stabilization/reports/auth-hydration-peer.json",
     "docs/stabilization/runs/admin-signin-001.json",
     "docs/stabilization/runs/permission-native-retest.json",
     "docs/stabilization/reports/permission-native-retest.json",
