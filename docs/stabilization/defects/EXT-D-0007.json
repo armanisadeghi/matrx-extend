@@ -15,20 +15,80 @@
   "evidence": [
     "docs/stabilization/runs/permission-native-retest.json",
     "docs/stabilization/reports/reload-auth-diagnosis.json",
-    "docs/stabilization/runs/debugger-build-002.json"
+    "docs/stabilization/runs/debugger-build-002.json",
+    "docs/stabilization/runs/auth-permission-green-001.json",
+    "docs/stabilization/reports/auth-hydration-peer.json",
+    "docs/stabilization/runs/auth-native-observation.json",
+    "docs/stabilization/runs/auth-broadcast-outcome-red-001.json",
+    "docs/stabilization/runs/auth-broadcast-green-001.json",
+    "docs/stabilization/reports/auth-broadcast-peer.json"
   ],
   "severity": "S1: authenticated development testing blocked by missing identity",
   "priority": "P0: baseline authentication blocker",
-  "state": "open",
-  "owner": "/root/reload_auth_diagnosis",
-  "hypothesis": "React development StrictMode cancels first async boot while module bootRan suppresses replacement effect; focused RED proof required before fix.",
+  "state": "fixed",
+  "owner": "/root/auth_broadcast_order_repair",
+  "hypothesis": "StrictMode lifecycle cause proven by RED003 positive control; repair remains in-fix after independent surrounding authentication classification findings.",
   "transition_history": [
     {
       "at": "2026-09-26T06:16:57.606993+00:00",
       "from": null,
       "to": "open",
       "reason": "Settled native reproduction after verified fresh development build; source mechanism identified, validation pending."
+    },
+    {
+      "at": "2026-09-26T06:26:33.614161+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "FocusedStrictMode regression produces2expected hydration failures; codeeffectcancellation/globalbootguard mechanism traced. Positivecontrol pending before sourcefix."
+    },
+    {
+      "at": "2026-09-26T06:29:17.251348+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "RED003 positivecontrol isolates lifecyclecause; minimalsharedboot repair assigned with cross-hookauth race protection and accuratebrowserfixtures."
+    },
+    {
+      "at": "2026-09-26T07:12:01.411041+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "d623f64 completes shared canonical hydration; fresh peer7f375a0 engineeringPASS and45regressionspass. Final types/build/native/release remain."
     }
   ],
-  "separate_observation": "A later manual OAuth SignIn attempt returned Authorization error400/Auth session missing; not assumed to have the same cause."
+  "separate_observation": "A later manual OAuth SignIn attempt returned Authorization error400/Auth session missing; not assumed to have the same cause.",
+  "root_cause": "Component-owned cancellation aborts asynchronous module-once auth bootstrap during React developmentStrictMode replay; globalbootRan prevents replacement hydration. Positivecontrol withoutreplay hydrates samefixture.",
+  "review_rounds": [
+    {
+      "round": 1,
+      "commit": "064af8e",
+      "engineering": "fail",
+      "live_acceptance": "unverified",
+      "findings": "Cached profile accepted despite session restore false; admin flag accepted without authenticated profile. Source-confirmed; runtime regression reproduction and repair assigned to original implementer.",
+      "report": "docs/stabilization/reports/auth-hydration-peer.json"
+    },
+    {
+      "round": 2,
+      "commit": "553bad3",
+      "engineering": "fail",
+      "live_acceptance": "unverified",
+      "previous_findings": "Addressed",
+      "findings": "Broadcast and interactive sign-in bypass truthful hydration; role lookup error silently maps to nonadmin. Source confirmed, next regression proof required.",
+      "report": "docs/stabilization/reports/auth-classification-peer.json"
+    },
+    {
+      "round": 3,
+      "commit": "824a4b4",
+      "engineering": "fail",
+      "live_acceptance": "latest-build-unverified",
+      "previous_findings": "All three addressed",
+      "findings": "Negative broadcast still trusts stale payload; possible delayed signout after newer canonical signIn misclassifies guest. Source-ordering lead; freshworker must prove regression.",
+      "report": "docs/stabilization/reports/auth-final-peer.json"
+    }
+  ],
+  "partial_retest": {
+    "status": "original-repro-pass",
+    "source_implementation": "553bad3",
+    "run_id": "auth-native-observation",
+    "result": "Actual unpacked development extension recovered admin identity and same explicitly selected organization after full Reload, stable30seconds, then retained both after second full Reload; no new sign-in or account-data mutation.",
+    "closure_hold": "Remaining source-peer entrypoint and role-failure findings still in repair; final-build recheck/integration pending."
+  }
 }

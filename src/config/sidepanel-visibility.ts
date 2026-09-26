@@ -44,7 +44,7 @@ export interface SidepanelViewer {
 export function canAccessSidepanelTab(tab: SidepanelTab, viewer: SidepanelViewer): boolean {
   const audience = SIDEPANEL_TAB_AUDIENCE[tab];
   if (audience === 'everyone') return true;
-  if (audience === 'admin') return viewer.isAdmin;
+  if (audience === 'admin') return viewer.signedIn && viewer.isAdmin;
   return viewer.signedIn;
 }
 

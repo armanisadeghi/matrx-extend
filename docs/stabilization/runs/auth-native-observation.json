@@ -1,0 +1,55 @@
+{
+  "id": "auth-native-observation-001",
+  "status": "observed",
+  "defect_id": "EXT-D-0007",
+  "build_receipt": "auth-build-001",
+  "observed_at": "2026-09-26T06:52:51Z",
+  "source_sha": "522390c7a2c789d2a0afa822fd62410d53a0468a",
+  "implementation_commit": "553bad3",
+  "build_tree_sha256": "61f7ab0a3f8d09ec461bbb65f9b4b1625965b6c99a3409bb5c23b82639568f32",
+  "extension": {
+    "name": "Matrx Extend",
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.53",
+    "source": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "proof": "Chrome Extensions details page visibly showed name, exact ID, version, and Loaded from path."
+  },
+  "method": {
+    "surface": "Native Google Chrome, actual unpacked development extension sidepanel Settings",
+    "actions": [
+      "Closed the visibly failed Matrx OAuth window to reach the already-open Chrome Extensions details page for the exact development extension ID.",
+      "Recorded initial sidepanel Settings identity and error.",
+      "Clicked the extension's full Chrome Extensions Reload control, reopened the Matrx sidepanel and Settings, expanded Organization, and observed for 30 seconds.",
+      "Because admin identity returned, performed one additional full Chrome Extensions Reload, reopened Settings, and expanded Organization to verify persistence again."
+    ],
+    "constraints": "No sign-in or sign-out, no storage/devtools/token inspection, no organization or settings changes, no other tabs touched. No screenshots retained because they could contain private data."
+  },
+  "observations": {
+    "initial": {
+      "account": "Email —",
+      "organization": "Sign in to choose",
+      "error": "Sign-in failed: The user did not approve access.",
+      "observed_on_first_settings_view": true,
+      "oauth_window": "Authorization error (400): Failed to load authorization details: Auth session missing!"
+    },
+    "after_first_full_reload": {
+      "account": "admin@admin.com",
+      "role": "ADMIN",
+      "organization": "ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete",
+      "settled_after_seconds": 30,
+      "result": "Identity and organization remained visible throughout the 30-second observation."
+    },
+    "after_second_full_reload": {
+      "account": "admin@admin.com",
+      "role": "ADMIN",
+      "organization": "ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete",
+      "result": "Account, role, and organization were visible again after the second full reload."
+    }
+  },
+  "limitations": [
+    "Provisional native UI observation only; it does not establish whether stored tokens were deleted or explain the initial state.",
+    "The prior OAuth error window reported Auth session missing; this observation does not attribute it to the reload defect.",
+    "EXT-D-0007 remains open: source findings and independent verification are unresolved."
+  ],
+  "cleanup": "Closed only the confidently identified failed Matrx OAuth error window. No settings or organization state changed."
+}

@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   restore: vi.fn(),
+  verifiedUser: vi.fn(),
   signIn: vi.fn(),
   signOut: vi.fn(),
   setSupabaseSession: vi.fn(),
@@ -13,6 +14,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@/lib/auth/flow', () => ({
   restoreSupabaseSession: mocks.restore,
+  getVerifiedCurrentUser: mocks.verifiedUser,
   signIn: mocks.signIn,
   signOut: mocks.signOut,
 }));
@@ -58,7 +60,8 @@ describe('useAuth overlapping sign-in attempts', () => {
   beforeEach(() => {
     resetAuthBootGuard();
     useAuthStore.setState({ user: null, isAdmin: false, status: 'signed-out', error: null });
-    mocks.restore.mockReset().mockResolvedValue(false);
+    mocks.restore.mockReset().mockResolvedValue(true);
+    mocks.verifiedUser.mockReset().mockResolvedValue(null);
     mocks.signIn.mockReset();
     mocks.signOut.mockReset().mockResolvedValue(undefined);
     mocks.setSupabaseSession.mockReset().mockResolvedValue(undefined);
@@ -72,6 +75,7 @@ describe('useAuth overlapping sign-in attempts', () => {
           set: vi.fn().mockResolvedValue(undefined),
           remove: vi.fn().mockResolvedValue(undefined),
         },
+        session: { get: vi.fn().mockResolvedValue({}) },
       },
     });
   });
@@ -96,6 +100,13 @@ describe('useAuth overlapping sign-in attempts', () => {
     mocks.signIn
       .mockImplementationOnce(() => first.promise)
       .mockImplementationOnce(() => second.promise);
+    mocks.verifiedUser.mockResolvedValue({
+      id: 'new-user',
+      email: 'new@example.com',
+      email_verified: true,
+      full_name: null,
+      avatar_url: null,
+    });
 
     render(<Probe name="one" />);
     const signIn = screen.getByRole('button', { name: 'Sign in' });
@@ -147,6 +158,13 @@ describe('useAuth overlapping sign-in attempts', () => {
     }>();
     const adminLookup = deferred<boolean>();
     mocks.signIn.mockImplementationOnce(() => login.promise);
+    mocks.verifiedUser.mockResolvedValue({
+      id: 'old-user',
+      email: 'old@example.com',
+      email_verified: true,
+      full_name: null,
+      avatar_url: null,
+    });
     mocks.checkIsAdmin.mockImplementationOnce(() => adminLookup.promise);
 
     render(

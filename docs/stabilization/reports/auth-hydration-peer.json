@@ -1,0 +1,31 @@
+{
+  "defect_id": "EXT-D-0007",
+  "reviewer": "/root/auth_hydration_peer",
+  "reviewed_commit": "064af8e92b9255e4d561a0bcef87c255f5944d30",
+  "scope": "Independent source-only review of saved-session hydration, hook lifecycle, auth store, and guest/member/admin sidepanel consumers. No browser, build, or test was run in this lane.",
+  "verdict_a_live_acceptance": {
+    "status": "UNVERIFIED",
+    "reason": "No native unpacked development-extension reload was observed after the fix, and no real guest, member, or admin session was exercised by this reviewer. The original 30-second Settings repro remains the required live acceptance check."
+  },
+  "verdict_b_engineering": {
+    "status": "FAIL",
+    "replay_repair": "Source logic now invalidates the abandoned boot when the final consumer unmounts and permits Strict Mode's replacement effect to start hydration. An unmounted first consumer cannot cancel a still-mounted consumer's boot. The owner reports 15 focused auth and permission tests passing after a defect-specific red Strict Mode repro and a green non-Strict control; this lane did not rerun them.",
+    "findings": [
+      {
+        "priority": "P1",
+        "title": "A cached profile is presented as authenticated when session restoration failed",
+        "evidence": "restoreSupabaseSession returns false when credentials are absent or cannot be restored (src/lib/auth/flow.ts:607-631), but useAuth ignores that result and calls setUser(profile) from chrome.storage.local (src/hooks/use-auth.ts:70-81). The new tests always mock restore to true and seed only USER_PROFILE/IS_ADMIN, with no token fixture (src/hooks/use-auth.strict-mode.test.tsx:49-86). App treats any non-null user as signed in and exposes signed-in tabs (src/entrypoints/sidepanel/App.tsx:138-147; src/config/sidepanel-visibility.ts:44-48). Thus a profile left behind after failed/missing credentials gives a signed-in UI and user-facing organization state even though authenticated requests have no session. This is an existing surrounding flaw exercised by the repaired hydration path and leaves the requested real guest/member behavior unproven.",
+        "requested_repair": "Tie hydrated signed-in state to a successful, identity-matching restored session; show a truthful recoverable failure when restoration cannot authenticate. Add a test with cached profile but absent/broken credentials, then exercise it in the unpacked extension."
+      },
+      {
+        "priority": "P1",
+        "title": "Cached admin flag can expose admin UI without a signed-in user",
+        "evidence": "Boot applies cached IS_ADMIN regardless of whether USER_PROFILE exists (src/hooks/use-auth.ts:78-81). The sidepanel admin gate checks isAdmin alone (src/config/sidepanel-visibility.ts:44-48), and Settings renders the admin role from the same flag (src/features/settings/SettingsView.tsx:115-120). A stale IS_ADMIN=true with no profile therefore displays admin tabs and role to a guest until a later event. checkIsAdmin is skipped when profile is absent, so this state is not corrected by the boot. This is UI exposure, not evidence that backend authorization is bypassed.",
+        "requested_repair": "Keep admin false whenever there is no authenticated user, and make the admin tab gate require both signed-in identity and admin status. Cover guest with stale admin cache and an actual admin result; the present 'admin' fixture forces checkIsAdmin=false and asserts only identity (src/hooks/use-auth.strict-mode.test.tsx:62-86)."
+      }
+    ],
+    "regression_evidence_limit": "The new Strict Mode assertions force the replay path for two profile IDs, and the cross-consumer test covers unmount ordering. They do not force real credential restoration, guest classification, or admin authorization. The sign-out race test resolves checkIsAdmin only after signOut, so it does not cover a storage write that begins before signOut and completes afterward."
+  },
+  "questions": [],
+  "changed_files": ["docs/stabilization/reports/auth-hydration-peer.json"]
+}

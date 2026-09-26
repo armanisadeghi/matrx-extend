@@ -1,0 +1,55 @@
+{
+  "id": "auth-negative-broadcast-red-001",
+  "status": "expected-fail",
+  "defect_id": "EXT-D-0007",
+  "test_commits": [
+    "553b45b",
+    "296bc2f"
+  ],
+  "results": {
+    "failed": 1,
+    "passed": 5,
+    "unhandled_errors": 0
+  },
+  "failure": "Delayed negative broadcast clears currently valid verified admin identity; genuine canonical signout control passes.",
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:04:00.488Z",
+      "runId": "auth-negative-broadcast-red-001",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.48,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.13932857142857147,
+        "swapUsedMiB": 1765.12,
+        "repoFreeGiB": 1676.3731269836426,
+        "profileFreeGiB": 1676.3731269836426
+      },
+      "cpuBusySamples": [
+        0.1201000000000001,
+        0.14280000000000004,
+        0.25,
+        0.16689999999999994,
+        0.10400000000000009,
+        0.09510000000000007,
+        0.09640000000000004
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:04:01.805Z",
+      "runId": "auth-negative-broadcast-red-001",
+      "childExitCode": 1,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ]
+}

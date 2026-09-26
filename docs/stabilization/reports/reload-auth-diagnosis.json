@@ -1,7 +1,7 @@
 {
   "id": "reload-auth-diagnosis",
-  "status": "probable_ui_hydration_defect_unconfirmed_session_state",
-  "scope": "Read-only diagnosis of the 0.2.53 native Chrome sign-in gate after full Reload; no browser action, token read, or credential value inspection in this lane.",
+  "status": "round_two_green_independent_race_finding_handed_off",
+  "scope": "Diagnosis and local engineering repair of the 0.2.53 native Chrome sign-in gate after full Reload; this lane made no browser action, token read, or credential value inspection.",
   "observed": [
     "docs/stabilization/runs/admin-signin-001.json records admin@admin.com visible after sign-in and full Reload in the same dev extension ID at 0.2.51, using the prior release artifact.",
     "docs/stabilization/runs/permission-native-retest.json records the same extension ID and path at 0.2.53, then Email — and Sign in to choose across approximately 5, 12, 20, and 30 seconds after Reload. It does not establish that storage was cleared or that refresh failed.",
@@ -37,8 +37,72 @@
       "smallest_proof": "Already weakened by matching native extension ID/path and equal selected build env values; compare manifest identity and public origin in loaded artifact only if the first two tests do not decide the case."
     }
   ],
-  "verdict": "The source and bundle provide a concrete, deterministic mechanism for a false signed-out UI in the 0.2.53 development artifact. The native observation has not yet distinguished it from genuinely missing storage, so no code change is authorized by this diagnosis alone.",
-  "next_action": "With the UI owner controlling Chrome, capture presence-only storage evidence if available. The smallest red-capable loop is a useAuth mount under React.StrictMode with a stored fixture USER_PROFILE and async restore/storage read, asserting that user hydrates without calling Sign in; the current boot guard should fail that assertion in development React. Then repair the shared boot guard, re-run the loop, and census other one-time effect guards using the same pattern. Investigate the OAuth 400 separately if it persists after UI hydration is fixed.",
+  "causal_reproduction": {
+    "receipt": "docs/stabilization/runs/auth-strict-red-003.json",
+    "test": "src/hooks/use-auth.strict-mode.test.tsx",
+    "result_before_fix": "The same persisted admin fixture hydrated without StrictMode, while two StrictMode cases failed at the user-ID hydration assertion. This isolates effect replay rather than malformed profile, storage, or restore fixture.",
+    "separate_baseline_issue": "The older use-auth-race test mock omitted chrome.storage.session.get after a concurrent Safari auth change. Its two assertions passed but produced two unhandled TypeErrors. The fixture was aligned to the real session API before GREEN verification."
+  },
+  "repair": {
+    "commit": "064af8e",
+    "source": "src/hooks/use-auth.ts",
+    "behavior": "Count mounted useAuth consumers; invalidate an in-flight boot only when the last consumer unmounts, so development StrictMode replay starts a fresh boot and another mounted consumer can receive hydration. A boot and its later admin lookup must still match the current boot and auth generation before updating state.",
+    "guards": [
+      "src/hooks/use-auth.strict-mode.test.tsx: persisted admin and regular profiles survive StrictMode replay, the positive control hydrates without replay, a remaining consumer hydrates after first-owner unmount, and an old admin lookup cannot restore admin state after sign-out.",
+      "tests/unit/use-auth-race.test.tsx: existing overlapping sign-in and cross-consumer sign-out guards retain their assertions with the current Chrome session API mocked."
+    ],
+    "manual_recipe": "docs/feature-tests.md: signed-in identity survives a development build reload"
+  },
+  "independent_review_and_classification_repair": {
+    "peer_report": "docs/stabilization/reports/auth-hydration-peer.json",
+    "peer_verdict": "Engineering FAIL after lifecycle repair: a cached profile appeared signed in when restoreSupabaseSession returned false, and a cached admin flag appeared in guest UI without a profile. The peer explicitly did not claim a backend authorization bypass.",
+    "canonical_identity_evidence": "src/lib/auth/flow.ts getVerifiedCurrentUser obtains the current or refreshed bearer and verifies its claims locally through verifyBearerClaims; it returns null for invalid or temporarily unverifiable claims without a per-request Auth server user lookup or clearing the saved profile. restoreSupabaseSession alone only installs the token in the Supabase Realtime client and does not verify its identity.",
+    "red_receipt": "docs/stabilization/runs/auth-classification-red-001.json: five classification assertions failed and eleven existing assertions passed with no unhandled errors before the repair.",
+    "repair_commit": "553bad3",
+    "repair_behavior": "Boot shows signed-in UI only after session restore and a locally verified bearer whose subject matches the cached profile. Missing, unverifiable, or mismatched identity shows guest with a recoverable error while preserving the saved account material. Admin UI waits for the current account's check; a guest cannot access admin tabs from a stale admin flag, and Settings never shows an admin role without a user. A null auth broadcast clears UI admin state.",
+    "visible_recovery": "src/entrypoints/sidepanel/App.tsx wraps SettingsView in AuthGate; AuthGate displays useAuth error above Settings with a Try again action. The browser recipe in docs/feature-tests.md now covers this recovery state.",
+    "verification_state": "docs/stabilization/runs/auth-classification-green-001.json records 37 of 37 focused tests passing over seven files with no unhandled errors after commit 553bad3. The fresh peer confirmed the two previous findings addressed and identified three new entrypoint/role-result findings. Native Chrome later showed the stored admin and organization after two full Reload actions using this provisional build."
+  },
+  "round_two_entrypoint_repair": {
+    "peer_report": "docs/stabilization/reports/auth-classification-peer.json",
+    "peer_verdict": "Earlier cached-profile/admin findings addressed; three remaining entrypoint findings: incoming auth broadcasts trust their payload before canonical storage validation, interactive sign-in ignores restore false, and an admin lookup error is reported as confirmed non-admin.",
+    "red_tests_commit": "a11cbd2",
+    "red_test_paths": ["src/hooks/use-auth.entrypoints.test.tsx", "tests/unit/admin-role-query.test.ts"],
+    "caller_census": [
+      "src/hooks/use-auth.ts boot checks checkIsAdmin after verified hydration; a failed read needs a visible role warning and same-session retry without overwriting the cached admin decision as false.",
+      "src/hooks/use-auth.ts interactive sign-in checks checkIsAdmin after OAuth completion; a failed read must keep verified identity while marking role unavailable, rather than claiming non-admin or silently exiting.",
+      "src/lib/auth/safari-background.ts checks checkIsAdmin after OAuth completion and broadcasts user/isAdmin; on a failed read it must not broadcast an unverified admin claim, while the receiver must independently rehydrate and show the role warning.",
+      "src/lib/supabase/queries.ts checkIsAdmin is the sole role query function; its current error-to-false mapping collapses unavailable and confirmed non-admin. The three callers above are its complete source-call census."
+    ],
+    "red_receipt": "docs/stabilization/runs/auth-entrypoints-red-001.json records five expected behavior failures, no import/render/fixture or unhandled errors, and exit code 1 before production repair.",
+    "repair_commit": "824a4b4",
+    "shared_boundary": "src/hooks/use-auth.ts readCanonicalSession is the common decision for boot, interactive sign-in after committed tokens, and positive auth broadcasts. It awaits restoreSupabaseSession, uses existing getVerifiedCurrentUser to validate the current bearer, compares the verified subject with any saved or expected profile, and reports a recoverable guest state without deleting credentials when unavailable. A positive broadcast is only an invalidation notice, never identity or role evidence. Auth generation guards prevent older async decisions from overwriting newer sign-out or sign-in state.",
+    "role_result": "src/lib/supabase/queries.ts checkIsAdmin now returns true, false, or null for read failure. All three call sites handle null: the hook keeps a verified user visible, leaves admin-only UI closed until a confirmed true result, shows a truthful role-check warning, and offers a same-session Try again action; it does not cache false for an unavailable read. Safari background emits a non-admin payload on null, while the receiving hook verifies its own canonical identity and role.",
+    "user_visible_recovery": "src/components/AuthGate.tsx shows an authenticated role-check warning without a misleading Sign-in failed prefix and binds Try again to useAuth retry. With a saved profile or visible user, retry re-reads the canonical session and role without starting OAuth; a genuinely new guest with no saved profile can initiate normal sign-in.",
+    "test_and_recipe_paths": ["src/hooks/use-auth.entrypoints.test.tsx", "tests/unit/admin-role-query.test.ts", "tests/unit/auth-gate.test.tsx", "tests/unit/use-auth-race.test.tsx", "docs/feature-tests.md"],
+    "verification": "Root coordinator reports 42 of 42 focused tests passing after commit 824a4b4, with zero unhandled errors. The warning for the intentionally failed role read was expected. Type compilation was still in progress at report handoff. This lane did not launch the run.",
+    "state": "The three round-two peer findings are addressed in source and the focused suite is green. Fresh independent review identified a further sign-out broadcast race; ownership passed to a new narrow implementer."
+  },
+  "remaining_independent_finding": {
+    "report": "docs/stabilization/reports/auth-final-peer.json",
+    "verdict": "Independent engineering review failed despite 42 of 42 focused tests passing. It found a source-confirmed, not native-reproduced race: a delayed null-user sign-out broadcast can demote a newer valid signed-in session to guest because src/hooks/use-auth.ts applies the negative payload without a canonical reread.",
+    "scope": "The same report confirms that positive broadcast validation, interactive restore/identity validation, and unavailable admin-role handling from round two are addressed. The remaining race has been assigned to a fresh implementer; this lane makes no further source changes."
+  },
+  "native_reload_replay": {
+    "receipts": ["docs/stabilization/runs/auth-build-001.json", "docs/stabilization/runs/auth-native-001.json", "docs/stabilization/runs/auth-native-observation.json"],
+    "source_scope": "The loaded 0.2.53 dev artifact contained classification repair 553bad3 but preceded round-two repair 824a4b4; native replay therefore proves the original persisted-admin reload path, not the later entrypoint and role-error changes.",
+    "observation": "Native Chrome Extensions details showed the same development extension ID and loaded path. After one full Reload, the sidepanel Settings showed admin@admin.com, ADMIN, and the prior organization throughout a 30-second observation; a second full Reload returned the same account, role, and organization. No sign-in, sign-out, storage inspection, or organization change was performed.",
+    "limits": "The initial Settings view showed the prior guest/error state and the failed OAuth window still reported Auth session missing. The observation cannot establish the earlier stored-token state or resolve that separate OAuth error."
+  },
+  "verification": {
+    "reported_by": "root coordinator",
+    "run_id": "auth-permission-green-001",
+    "result": "15 of 15 focused tests passed across StrictMode hydration (5), auth races (2), and permissions (8), with zero unhandled errors and exit code 0.",
+    "limits": "This result predates both classification repairs. The coordinator separately reported typecheck passing before the merge and 42 of 42 focused tests passing after 824a4b4; a later type compilation was still in progress at handoff. This lane did not launch tests. Native Chrome replayed the original admin reload on the provisional 553bad3 build. Independent review found a further negative-broadcast race in final 824a4b4 code."
+  },
+  "census": "A targeted search for module-wide bootRan/started/initialized guards under src/hooks, src/features, and src/entrypoints found this use-auth.ts guard as the only matching sibling in that source area.",
+  "verdict": "StrictMode effect replay, cached-profile/admin UI classification, and related auth entrypoint and role-read failures were reproduced with focused failing assertions and repaired in source. The provisional build restored the same admin and organization after two native full Reload actions, and the final focused suite passed 42 of 42. Independent review still fails on a source-confirmed delayed sign-out broadcast race, assigned to another implementer. The 06:09 session did not record storage-key presence, so its stored state remains unknown. The OAuth 400 belongs to a separate sign-in attempt and is not claimed fixed here.",
+  "next_action": "The new implementer should prove the delayed negative-broadcast race failing then passing through a canonical reread with generation protection. After peer review and compilation pass, verify the final repaired build in native Chrome, including visible recovery for a failed restore or role check when safely reproducible. If OAuth Sign in still returns Auth session missing, diagnose that separate provider flow from its first error.",
   "files": [
     "src/hooks/use-auth.ts",
     "src/entrypoints/sidepanel/main.tsx",
@@ -46,6 +110,25 @@
     "src/features/settings/SettingsView.tsx",
     "src/lib/auth/flow.ts",
     "src/lib/auth/identity-transport.ts",
+    "src/hooks/use-auth.strict-mode.test.tsx",
+    "tests/unit/use-auth-race.test.tsx",
+    "tests/unit/sidepanel-visibility.test.ts",
+    "src/config/sidepanel-visibility.ts",
+    "src/components/AuthGate.tsx",
+    "src/entrypoints/sidepanel/App.tsx",
+    "docs/feature-tests.md",
+    "docs/stabilization/runs/auth-strict-red-003.json",
+    "docs/stabilization/runs/auth-classification-red-001.json",
+    "docs/stabilization/runs/auth-classification-green-001.json",
+    "docs/stabilization/runs/auth-entrypoints-red-001.json",
+    "docs/stabilization/runs/auth-build-001.json",
+    "docs/stabilization/runs/auth-native-001.json",
+    "docs/stabilization/runs/auth-native-observation.json",
+    "docs/stabilization/reports/auth-hydration-peer.json",
+    "docs/stabilization/reports/auth-classification-peer.json",
+    "docs/stabilization/reports/auth-final-peer.json",
+    "src/hooks/use-auth.entrypoints.test.tsx",
+    "tests/unit/admin-role-query.test.ts",
     "docs/stabilization/runs/admin-signin-001.json",
     "docs/stabilization/runs/permission-native-retest.json",
     "docs/stabilization/reports/permission-native-retest.json",

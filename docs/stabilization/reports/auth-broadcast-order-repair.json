@@ -1,0 +1,19 @@
+{
+  "defect_id": "EXT-D-0007",
+  "lane": "/root/auth_broadcast_order_repair",
+  "scope": "AUTH_STATE_CHANGED receiver ordering in useAuth; no auth transport, verifier, token, or role contract change",
+  "confirmed_cause": "The receiver treated a null-user broadcast as authoritative and cleared its account synchronously. A delayed sign-out notice could therefore replace a newer verified session already committed in storage.",
+  "class_census": {
+    "delayed_negative_after_newer_sign_in": "RED on pre-fix source: settled account became guest; repaired by rehydrating from canonical storage",
+    "delayed_positive_from_prior_account": "Pre-fix positive control passed: receiver already ignored payload identity and loaded the newer canonical account",
+    "genuine_sign_out": "Pre-fix positive control passed: cleared canonical session produced guest; retained in repaired path"
+  },
+  "repair": "Both positive and negative auth broadcasts now serve only as invalidation notices. The shared generation guard rejects superseded async reads, and applyCanonicalSession installs only the currently restored and locally verified session and role.",
+  "test_commits": ["553b45b", "296bc2f", "1b143df", "6bf1c72", "dd269ad"],
+  "repair_commit": "d623f64",
+  "red_evidence": "Owner's outcome-red001: one expected delayed-negative identity assertion failure, six passes, no unhandled errors, before production repair.",
+  "green_evidence": "Owner auth-broadcast-green001: 45/45 tests passed across nine auth files, zero unhandled errors, exit 0. The expected injected role warning and Node localstorage-file warning were the only warnings. Compile004 was still running when this report was finalized.",
+  "independent_review": "Fresh peer /root/auth_final_peer reported engineering PASS on commit d623f64; latest native acceptance remains UNVERIFIED.",
+  "native_acceptance": "Pending owner-run unpacked development extension observation after final build; this lane did not run a browser.",
+  "remaining_risks": "Async canonical hydration may briefly retain the prior view until verified storage is read; the receiver never trusts a broadcast payload as identity or role proof. Chrome delivery timing and real session storage still require native acceptance."
+}

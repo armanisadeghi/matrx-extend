@@ -165,7 +165,10 @@ async function handleCallback(tabId: number, callbackUrl: string): Promise<void>
       ENV.SAFARI_OAUTH_CLIENT_ID,
     );
     await clearAttempt(attempt);
-    const isAdmin = await checkIsAdmin(user.id);
+    // A failed role read is unknown, never a confirmed non-admin result. The
+    // receiving UI rechecks from canonical storage and shows a retryable role
+    // warning if the read is still unavailable.
+    const isAdmin = (await checkIsAdmin(user.id)) === true;
     broadcast(CHANNELS.AUTH_STATE_CHANGED, { user, isAdmin, reason: 'safari_sign_in' });
     await chrome.tabs.remove(attempt.tabId).catch(() => undefined);
   } catch (error) {

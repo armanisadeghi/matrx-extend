@@ -1,0 +1,53 @@
+{
+  "id": "auth-build-001",
+  "status": "pass",
+  "defect_id": "EXT-D-0007",
+  "source_sha": "522390c7a2c789d2a0afa822fd62410d53a0468a",
+  "implementation_commit": "553bad3",
+  "version": "0.2.53",
+  "tree_sha256": "61f7ab0a3f8d09ec461bbb65f9b4b1625965b6c99a3409bb5c23b82639568f32",
+  "command": "pnpm exec wxt build --mode development",
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T06:48:49.222Z",
+      "runId": "auth-build-001",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.4,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.11802857142857144,
+        "swapUsedMiB": 1781.12,
+        "repoFreeGiB": 1676.3740577697754,
+        "profileFreeGiB": 1676.3740577697754
+      },
+      "cpuBusySamples": [
+        0.11159999999999992,
+        0.09560000000000002,
+        0.10260000000000002,
+        0.09260000000000002,
+        0.10189999999999999,
+        0.11150000000000004,
+        0.21040000000000003
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T06:48:52.572Z",
+      "runId": "auth-build-001",
+      "childExitCode": 0,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ],
+  "limitations": [
+    "Provisional original-repro observation; open second-peer findings prevent closure. Requires actual Chrome Reload. No matching strict release receipt yet."
+  ]
+}
