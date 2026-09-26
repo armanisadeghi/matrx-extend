@@ -4514,6 +4514,17 @@
               "run": "isolated-permission-denial-003",
               "status": "unverified",
               "detail": "Real webdashboard reached; extension_signin fixture stage failed beforepermissionrequest/operatorhandoff. No productauthcause proven; freshSol commonfixturediagnosis assigned."
+            },
+            {
+              "run": "isolated-permission-denial-004",
+              "status": "partial",
+              "operator": "docs/stabilization/reports/native-denial-operator-004.json",
+              "verified": [
+                "Native Tab video capture prompt and Deny",
+                "Fresh refusal alert with switchOFF and bothAPIs absent",
+                "Real panelreload retainsadmin/OFF/absent"
+              ],
+              "remaining": "Full-case/defect closure adjudication pending; prior grant/removal evidence retains actual build provenance. Run003 intermittentfixturefailurecause notproven."
             }
           ]
         },
