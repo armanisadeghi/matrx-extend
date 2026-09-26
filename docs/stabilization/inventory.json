@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T05:21:13.372331+00:00",
+  "updated_at": "2026-09-26T05:33:37.760391+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
@@ -3752,7 +3752,14 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "fail",
+              "run_id": "admin-permissions-002",
+              "evidence": "docs/stabilization/runs/admin-permissions-002.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T56",
@@ -3868,7 +3875,14 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-permissions-002",
+              "evidence": "docs/stabilization/runs/admin-permissions-002.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T60",
@@ -4147,14 +4161,16 @@
         "admin": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0001"
+            "EXT-D-0001",
+            "EXT-D-0006"
           ],
           "run_ids": [
             "admin-org-001",
             "admin-default-agent-001",
             "admin-settings-local-001",
             "admin-default-agent-002",
-            "admin-permissions-001"
+            "admin-permissions-001",
+            "admin-permissions-002"
           ],
           "retest_status": "not-run"
         }
