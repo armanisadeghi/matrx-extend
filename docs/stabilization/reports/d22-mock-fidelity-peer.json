@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-mock-fidelity-peer",
+  "reviewed_commits": ["0329ef6d0104257c6816a86bf59ec7205982dc7c", "9022e59a"],
+  "scope": "Independent source-only review of the Source refusal integration-test mock and assertions, including the recorded red evidence. No production code changes, tests, browser, or build run.",
+  "source_quality": {
+    "verdict": "PASS_SOURCE_REVIEW",
+    "findings": [
+      "The client mock uses importOriginal to retain the real @/lib/api/client exports, then overrides only apiPost with the hoisted network mock. Runtime constants consumed by the production refusal parser therefore remain available during the 422 path.",
+      "The 0329ef6d change added an explicit device-queue assertion before the existing UI assertion. The 9022e59a repair retained that queue wait and checks the queued lastRefusal message contains the server sentence; screen.findByText still requires the same sentence to render in the UI.",
+      "The refusal scenario still sends a 422 payload with the original code, message, remedy, and retryable fields, and still checks edited state. No timeout was lengthened, no assertion was removed or relaxed, and the real queue/UI path remains under test.",
+      "The recorded red evidence is consistent with the repair: 0329ef6d isolated failure at zero queued captures after 422, before retry-card rendering; the original earlier red had the server-sentence UI assertion fail. The report does not claim either red run proves the repaired green behavior."
+    ]
+  },
+  "runtime": {
+    "verdict": "UNVERIFIED_IN_PEER_LANE",
+    "reason": "This peer lane did not execute tests, build, or browser. Root separately reported guarded receipt a34f7751 with 16/16 tests passing; that run is outside this source-only review and is not independently verified here."
+  },
+  "checks": [
+    "Biome write on tests/unit/save-never-loses-input.test.tsx: passed; no fixes applied",
+    "Biome check on tests/unit/save-never-loses-input.test.tsx: passed"
+  ]
+}
