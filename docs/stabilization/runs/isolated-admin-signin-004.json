@@ -1,0 +1,90 @@
+{
+  "id": "isolated-admin-signin-004",
+  "status": "pass",
+  "artifact": {
+    "sourceSha": "fde1a11b054c04d7be1a4904441be9838f568633",
+    "version": "0.2.60",
+    "publishState": "pushed",
+    "storeZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.60-store.zip",
+      "sha256": "5a468dce58547bdf1582d6968783ee4f043e862ff2954e16a8819f3ab3aeb4ff"
+    },
+    "localZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.60-local.zip",
+      "sha256": "15cc3e988f68143580fa2902200dd7bd9e29f2c6c2b683178553f288d4991c5f"
+    },
+    "sourcePath": "/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/matrx-extend-release.NgwkXW/matrx-extend/.output/chrome-mv3",
+    "destinationPath": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "destinationPaths": [
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3"
+    ],
+    "treeSha256": "7e657067b97bad0f49fb265d65f67b4783944118f2a19a4836c9a6724f9c4e24",
+    "fileCount": 524
+  },
+  "acceptance": {
+    "schema_version": 1,
+    "scope": "fresh owned Chrome profile; real Matrx web login and extension Settings sign-in",
+    "status": "pass",
+    "web": {
+      "signedIn": true,
+      "location": "https://www.aimatrx.com/dashboard"
+    },
+    "extension": {
+      "guestBefore": true,
+      "signedInAs": "admin@admin.com",
+      "adminRoleVisible": true,
+      "advancedCapabilitiesVisible": true,
+      "signOutVisible": true,
+      "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+    },
+    "failureCategory": null,
+    "limitations": [
+      "OAuth callback origin is not directly observed by this runner."
+    ]
+  },
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T11:18:05.438Z",
+      "runId": "isolated-admin-signin-004",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.51,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.23311428571428575,
+        "swapUsedMiB": 1753.56,
+        "repoFreeGiB": 1676.0428886413574,
+        "profileFreeGiB": 23.561370849609375
+      },
+      "cpuBusySamples": [
+        0.19999999999999996,
+        0.366,
+        0.2136,
+        0.26370000000000005,
+        0.08840000000000003,
+        0.2158,
+        0.2843000000000001
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T11:18:19.519Z",
+      "runId": "isolated-admin-signin-004",
+      "childExitCode": 0,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ],
+  "limitations": [
+    "Prior003 extension timeout did not recur; root cause unproven.",
+    "Fresh profile destroyed by owned cleanup; no primary profile mutation."
+  ]
+}
