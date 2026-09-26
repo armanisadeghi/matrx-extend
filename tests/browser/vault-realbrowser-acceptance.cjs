@@ -863,12 +863,16 @@ async function verifyNoBrowserProcessForProfile(candidateProfile) {
   const profileArgument = new RegExp(
     `(?:^|[\\s\\0])--user-data-dir=${escapeRegExp(candidateProfile)}(?=$|[\\s\\0])`,
   );
+  let consecutiveAbsent = 0;
   for (let attempt = 0; attempt < 30; attempt += 1) {
     const { stdout } = await execFileAsync('ps', ['-axo', 'args='], {
       timeout: 5000,
       maxBuffer: 4 * 1024 * 1024,
     });
-    if (!stdout.split('\n').some((line) => profileArgument.test(line))) return true;
+    consecutiveAbsent = stdout.split('\n').some((line) => profileArgument.test(line))
+      ? 0
+      : consecutiveAbsent + 1;
+    if (consecutiveAbsent >= 3) return true;
     await wait(100);
   }
   return false;
