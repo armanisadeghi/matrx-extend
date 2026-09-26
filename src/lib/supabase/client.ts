@@ -196,9 +196,9 @@ export function supabaseForActor(actor: WriteActor): SupabaseClient {
  * DEAD-KEYS, 2026-09-22). Without a token `getSupabase()` sends the publishable key alone, so
  * PostgREST answers as `anon` — and on an organization-scoped table `anon` reaches no rows, so the
  * request spends a round trip to be told nothing, forever. It is not free and it is not harmless:
- * `extend.wbx_capture` carried an `anon` column grant for exactly this read, which made the table
+ * the old page-capture table carried an `anon` column grant for exactly this read, which made it
  * look world-readable to everyone auditing it while no policy reached `anon` at all, and the
- * generator has now withdrawn that key (the same read would start answering 42501).
+ * generator has since withdrawn that key (the same read would answer 42501).
  *
  * This reads the one place the token actually lives — the same `chrome.storage.local` key the
  * `accessToken` hook above reads — so it cannot disagree with what the next request will send.

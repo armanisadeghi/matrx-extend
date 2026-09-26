@@ -107,7 +107,20 @@ beforeEach(() => {
   claimHandoff.mockResolvedValue({ ok: true, data: row({ status: 'claimed' }) });
   postCaptureResult.mockResolvedValue({
     ok: true,
-    data: { handoff: {}, library_item_id: 'item', library_id: 'lib' },
+    data: {
+      handoff: {},
+      processed_document_id: '6b8c38dd-6d68-4824-b664-a380b7611627',
+      source_id: 'spp-1',
+      transcript_id: null,
+      library_id: 'lib',
+      notices: [
+        {
+          code: 'intelligence_deferred',
+          message: 'Saved as a Source, not processed by AI yet.',
+          remedy: 'keep_it_to_process_it',
+        },
+      ],
+    },
   });
   postNeedsDrive.mockResolvedValue({ ok: true, data: row({ status: 'needs_drive' }) });
 });
@@ -131,6 +144,10 @@ describe('rung 3 — the unattended run', () => {
     expect(body.captured_by_rung).toBe('own_browser');
     expect(body.chars).toBe(5_000);
     expect(outcome).toMatchObject({ posted: 'result', ok: true, claimed: true });
+    // The landing's Source and its notices reach the outcome and the tray sentence.
+    expect(outcome.processedDocumentId).toBe('6b8c38dd-6d68-4824-b664-a380b7611627');
+    expect(outcome.notices?.[0]?.code).toBe('intelligence_deferred');
+    expect(outcome.note).toContain('Saved as a Source, not processed by AI yet.');
   });
 
   it('hands a thin read to the person instead of filing a near-empty Source', async () => {

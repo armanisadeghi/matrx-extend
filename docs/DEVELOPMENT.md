@@ -85,7 +85,6 @@ The `@gen/*` import alias maps to this directory.
 
 Hand-applied to the Matrx Supabase project (no Supabase CLI workflow set up yet). See [migrations/README.md](../migrations/README.md). Files:
 
-- `2026_04_30_wbx_capture.sql` — Scrape tab captures
 - `2026_04_30_wbx_pattern.sql` — Data tab extraction patterns
 - `2026_04_30_wbx_seo_audit.sql` — SEO tab audits
 
