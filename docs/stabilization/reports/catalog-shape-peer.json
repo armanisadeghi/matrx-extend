@@ -19,9 +19,17 @@
       "The new tests appear to target both regression directions, but their execution and the real release retest are root-owned and remain unverified here."
     ]
   },
-  "files_touched": ["docs/stabilization/reports/catalog-shape-peer.json"],
+  "files_touched": [
+    "docs/stabilization/reports/catalog-shape-peer.json"
+  ],
   "open_questions": [
     "Did the root-owned focused tests and strict release retest pass against the live catalog?",
     "Does the DB contract permit arbitrary nested JSON Schema keywords, or should recursive validation be in scope?"
-  ]
+  ],
+  "coordinator_adjudication": {
+    "finding": "CONFIRMED limitation; not a blocker for this row-reader contract",
+    "reason": "Both consumers read parameter type, enum and boolean required only (dump-tools-from-db.ts:39-45, check-tool-db-drift.ts:243-283). Nested properties/items remain unknown passthrough in DbToolRow and are neither interpreted nor claimed validated. A full JSON Schema validator is outside this correction; no claim of recursive schema certification is made.",
+    "cost_if_wrong": "A malformed unused nested schema remains undetected by these release readers; runtime schema certification is not provided by this gate.",
+    "focused_evidence": "catalog-shape-tests-001:31 passed"
+  }
 }

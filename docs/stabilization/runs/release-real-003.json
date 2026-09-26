@@ -1,0 +1,40 @@
+{
+  "id": "release-real-003",
+  "feature_id": "EXT-F-0003",
+  "defect_id": "EXT-D-0004",
+  "status": "fail",
+  "source_sha": "aacec77",
+  "candidate_sha": "8a1118baaf64e5428b5e9890de4b721735f1b0a8",
+  "candidate_version": "0.2.51",
+  "at": "2026-09-26T03:32:47.944Z",
+  "command": [
+    "bash",
+    "release.sh",
+    "--message",
+    "EXT-D-0002 validated release integration"
+  ],
+  "exit_code": 1,
+  "resource_invalid": false,
+  "tests_passed": 1297,
+  "tests_skipped": 3,
+  "test_files_passed": 157,
+  "test_files_skipped": 1,
+  "passed_checks": [
+    "typecheck",
+    "unit-tests",
+    "schema-routing",
+    "matrx-packages",
+    "package-twins",
+    "canonical-pickers",
+    "archived-items",
+    "archived-items-self-test",
+    "org-default-ban",
+    "org-default-ban-self-test",
+    "swallowed-refusals",
+    "migrations"
+  ],
+  "failed_gate": "tool-drift: real catalog row rejected by overly narrow required-field validator",
+  "diagnosis": "reports/live-catalog-shape-diagnosis.json",
+  "publication": "Stopped before push; no candidate main or tag published",
+  "log_sha256": "966ad262ce07e824d59c5c73b22a465bfe3155519a3420222033c1b4d7c91ecd"
+}

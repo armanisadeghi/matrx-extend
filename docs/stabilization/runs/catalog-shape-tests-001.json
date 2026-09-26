@@ -1,0 +1,25 @@
+{
+  "id": "catalog-shape-tests-001",
+  "feature_id": "EXT-F-0003",
+  "defect_id": "EXT-D-0004",
+  "status": "pass",
+  "source_sha": "c13b735",
+  "at": "2026-09-26T03:37:54.294Z",
+  "command": [
+    "pnpm",
+    "exec",
+    "vitest",
+    "run",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "tests/unit/tool-db-row-validation.test.ts",
+    "tests/unit/private-catalog-commands.test.ts"
+  ],
+  "exit_code": 0,
+  "test_files_passed": 2,
+  "tests_passed": 31,
+  "duration_seconds": 0.342,
+  "resource_invalid": false,
+  "log_sha256": "2f1e5e00de09e04aa190152fe20f0476995c02497ea712996d114f1c0e73607e",
+  "scope": "Focused production validator and command guards. Real strict catalog integration pending."
+}

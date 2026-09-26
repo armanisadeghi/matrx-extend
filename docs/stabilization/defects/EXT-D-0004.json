@@ -36,17 +36,20 @@
     "2042903",
     "decb69e",
     "6f87da0",
-    "b61a6b3"
+    "b61a6b3",
+    "c13b735"
   ],
   "original_reproduction_retest_run": null,
   "surrounding_case_runs": [
     "management-tests-002",
     "management-tests-003",
-    "management-compile-001"
+    "management-compile-001",
+    "catalog-shape-tests-001"
   ],
   "reviewer_identity": [
     "/root/management_read_final_peer",
-    "/root/public_read_boundary_peer"
+    "/root/public_read_boundary_peer",
+    "/root/catalog_shape_peer"
   ],
   "transition_history": [
     {
