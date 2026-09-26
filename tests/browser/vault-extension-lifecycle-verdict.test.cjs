@@ -14,6 +14,12 @@ const passed = {
     settingsUiRecovered: true,
     replacementWorkerObserved: true,
     sameIdentityRecovered: true,
+    previousWorkerTargetRetired: true,
+    previousPanelTargetRetired: true,
+    initialWorkerTargetId: 'A'.repeat(32),
+    replacementWorkerTargetId: 'B'.repeat(32),
+    initialPanelTargetId: 'C'.repeat(32),
+    replacementPanelTargetId: 'D'.repeat(32),
     identitySha256: initialIdentitySha256,
   },
   disableEnable: {
@@ -96,6 +102,32 @@ for (const [section, prefix, field] of [
     new RegExp(`vault_lifecycle_${prefix}_missing_${field}`),
   );
 }
+assert.throws(
+  () =>
+    assertVaultExtensionLifecycleVerdict({
+      lifecycle: {
+        ...passed,
+        extensionReload: {
+          ...passed.extensionReload,
+          previousPanelTargetRetired: false,
+        },
+      },
+    }),
+  /vault_lifecycle_extensionReload_missing_previousPanelTargetRetired/,
+);
+assert.throws(
+  () =>
+    assertVaultExtensionLifecycleVerdict({
+      lifecycle: {
+        ...passed,
+        extensionReload: {
+          ...passed.extensionReload,
+          replacementPanelTargetId: passed.extensionReload.initialPanelTargetId,
+        },
+      },
+    }),
+  /vault_lifecycle_extensionReload_panel_target_not_replaced/,
+);
 assert.throws(
   () =>
     assertVaultExtensionLifecycleVerdict({

@@ -65,6 +65,7 @@ const localStorage = new Map<string, unknown>();
 const sessionStorage = new Map<string, unknown>();
 let signedIn = true;
 let matches: Array<{ item_id: string; display_name: string }> = [];
+let matchLookupFailure = false;
 let itemFields: Array<{ id: string; field_key: string; is_active: boolean }> = [];
 let createGate: Promise<void> | null = null;
 let createResult: unknown = { ok: true, data: { id: 'new-item' } };
@@ -131,6 +132,7 @@ vi.mock('@/lib/api/routes/vault', () => ({
   hasRealUserToken: async () => signedIn,
   fetchBrowserLoginMatches: async (url: string) => {
     calls.push({ name: 'matches', args: [url] });
+    if (matchLookupFailure) throw new Error('saved-login lookup unavailable');
     return { ok: true, data: { matches } };
   },
   createVaultItem: async (input: unknown, options?: unknown) => {
@@ -210,6 +212,7 @@ beforeEach(() => {
   panelDecisions.length = 0;
   signedIn = true;
   matches = [];
+  matchLookupFailure = false;
   itemFields = [];
   createGate = null;
   createResult = { ok: true, data: { id: 'new-item' } };
@@ -499,6 +502,55 @@ describe('detector — snapshotLogin', () => {
     } as unknown as Event);
     await Promise.resolve();
     expect(sent).toEqual([]);
+    dispose();
+  });
+
+  it('shows only the value-free Vault recovery card when capture is unavailable', async () => {
+    const { mountCaptureDetector } = await import('@/lib/credentials/capture-detector');
+    const attachShadow = HTMLElement.prototype.attachShadow;
+    const captured: { shadow: ShadowRoot | null } = { shadow: null };
+    vi.spyOn(HTMLElement.prototype, 'attachShadow').mockImplementation(function (
+      this: HTMLElement,
+      init: ShadowRootInit,
+    ) {
+      captured.shadow = attachShadow.call(this, init);
+      return captured.shadow;
+    });
+    const listeners = new Map<string, EventListener>();
+    const add = document.addEventListener.bind(document);
+    vi.spyOn(document, 'addEventListener').mockImplementation((type, listener, options) => {
+      if (type === 'keydown') listeners.set(type, listener as EventListener);
+      return add(type, listener, options);
+    });
+    Object.assign(chrome, {
+      runtime: {
+        id: 'test-extension',
+        sendMessage: async () => ({
+          status: 'unavailable',
+          reason: 'capture_unavailable',
+          tabId: 33,
+        }),
+      },
+    });
+    localStorage.set(
+      SETTINGS_KEY,
+      JSON.stringify({ state: { credentialAssistancePresentation: 'on_page' } }),
+    );
+    const doc = mount(`<form method="post"><input autocomplete="username" value="${USER}">
+      <input type="password" value="${SENTINEL}"></form>`);
+    const password = doc.querySelector('input[type=password]') as HTMLInputElement;
+    const dispose = mountCaptureDetector(document);
+    listeners.get('keydown')?.({
+      isTrusted: true,
+      key: 'Enter',
+      composedPath: () => [password, password.form, document, window],
+    } as unknown as Event);
+    await vi.waitFor(() => expect(captured.shadow).not.toBeNull());
+    expect(captured.shadow?.textContent).toContain('Login was not saved');
+    expect(captured.shadow?.textContent).toContain('Open Vault');
+    expect(captured.shadow?.textContent).toContain('Dismiss');
+    expect(captured.shadow?.textContent).not.toContain(SENTINEL);
+    expect(captured.shadow?.textContent).not.toContain(USER);
     dispose();
   });
 });
@@ -1304,6 +1356,25 @@ describe('host — registered worker listeners and session continuity', () => {
     sessionSetFailure = new Error('trusted session unavailable');
     const reply = await ask({ __matrx: true, kind: 'credential-capture:candidate', payload: WIRE });
     expect(reply).toEqual({ status: 'unavailable', reason: 'capture_unavailable', tabId: 33 });
+    expect(JSON.stringify(reply)).not.toContain(SENTINEL);
+    expect(JSON.stringify(reply)).not.toContain(USER);
+    expect(JSON.stringify(reply)).not.toContain(ACTOR.userId);
+  });
+
+  it('removes an unresolved candidate and returns only capture_unavailable when saved-login lookup rejects', async () => {
+    matchLookupFailure = true;
+    const host = await import('@/lib/credentials/capture-candidates');
+    const reply = await ask({ __matrx: true, kind: 'credential-capture:candidate', payload: WIRE });
+
+    expect(reply).toEqual({ status: 'unavailable', reason: 'capture_unavailable', tabId: 33 });
+    expect(host.pendingCaptureForTab(33)).toBeNull();
+    expect(sessionStorage.has(SESSION_KEY)).toBe(false);
+    expect(
+      tabMessages.some(
+        (entry) =>
+          (entry as { message?: { kind?: string } }).message?.kind === 'credential-capture:prompt',
+      ),
+    ).toBe(false);
     expect(JSON.stringify(reply)).not.toContain(SENTINEL);
     expect(JSON.stringify(reply)).not.toContain(USER);
     expect(JSON.stringify(reply)).not.toContain(ACTOR.userId);

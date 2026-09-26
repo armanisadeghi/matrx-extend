@@ -29,16 +29,16 @@ for (const permission of ['pageCapture', 'tabCapture']) {
 }
 
 assert.equal(safari.manifest_version, 2);
-assert.equal(safari.minimum_chrome_version, '116');
-assert.ok(safari.key, 'Safari development manifest must retain its stable key');
+assert.equal(safari.minimum_chrome_version, undefined);
+assert.equal(safari.key, undefined);
 assert.equal(safari.browser_action?.default_popup, 'popup.html');
-assert.ok(safari.externally_connectable?.matches?.includes('https://*.aimatrx.com/*'));
-for (const permission of ['sidePanel', 'offscreen', 'tabGroups', 'debugger']) {
-  assert.ok(safari.permissions?.includes(permission), `Safari must retain ${permission}`);
+assert.equal(safari.externally_connectable, undefined);
+for (const permission of ['sidePanel', 'offscreen', 'tabGroups', 'debugger', 'nativeMessaging']) {
+  assert.ok(!safari.permissions?.includes(permission), `Safari must omit ${permission}`);
 }
 for (const permission of ['pageCapture', 'tabCapture']) {
   assert.ok(
-    safari.optional_permissions?.includes(permission),
-    `Safari must retain optional ${permission}`,
+    !safari.optional_permissions?.includes(permission),
+    `Safari must omit optional ${permission}`,
   );
 }

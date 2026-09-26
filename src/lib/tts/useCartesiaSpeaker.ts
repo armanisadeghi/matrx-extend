@@ -19,6 +19,7 @@ import { useVoicePrefsStore } from '@/state/voice-prefs';
 import type { CartesiaClient, WebPlayer } from '@cartesia/cartesia-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { parseMarkdownToText } from './parse-markdown-for-speech';
+import { resolveReadAloudVoice } from './read-aloud-voice';
 
 export type SpeakerPhase =
   | 'idle'
@@ -54,7 +55,6 @@ export function useCartesiaSpeaker({
     onErrorRef.current = onError;
   }, [onError]);
 
-  const voiceId = useVoicePrefsStore((s) => s.voice);
   const storedLanguage = useVoicePrefsStore((s) => s.language);
   const speed = useVoicePrefsStore((s) => s.speed);
   const language = languageOverride ?? storedLanguage;
@@ -137,7 +137,7 @@ export function useCartesiaSpeaker({
       }
 
       try {
-        await ensureConnection();
+        const [voiceId] = await Promise.all([resolveReadAloudVoice(), ensureConnection()]);
 
         if (mountedRef.current) setPhase('sending');
 
@@ -171,7 +171,7 @@ export function useCartesiaSpeaker({
         if (mountedRef.current) setPhase('error');
       }
     },
-    [voiceId, language, speed, processMarkdown, ensureConnection],
+    [language, speed, processMarkdown, ensureConnection],
   );
 
   const pause = useCallback(async () => {

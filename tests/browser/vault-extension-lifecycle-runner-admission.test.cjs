@@ -24,6 +24,21 @@ assert.doesNotMatch(
   /context\.serviceWorkers\(\)\.find\(\(entry\) => entry !== initialWorker\)/,
   'reload must not rely on Playwright worker-object identity',
 );
+assert.match(
+  runner,
+  /runOwnedBrowserRestart\(\{[\s\S]*?initialBrowserPid: initialBrowser\.browserPid[\s\S]*?verifyProcessExited: verifyBrowserProcessExited/,
+  'lifecycle runner must close and prove retirement of its owned browser process before restart',
+);
+assert.match(
+  runner,
+  /browserRestartCustody = restartCustody[\s\S]*?restartCustody\.replacement = \{[\s\S]*?cdpOwnerVerified: rawCdp\.ownerVerified === true/,
+  'restart proof must retain owned profile/executable fingerprints and replacement CDP custody',
+);
+assert.match(
+  runner,
+  /networkJournal = restarted\.journal[\s\S]*?realPanel = restarted\.panel[\s\S]*?worker = restarted\.worker/,
+  'successful restart must transfer replacement journal, panel, and worker to final cleanup',
+);
 
 process.stdout.write(
   'PASS: lifecycle runner fails closed until every required observation exists\n',

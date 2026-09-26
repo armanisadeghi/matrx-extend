@@ -88,6 +88,7 @@ const {
     refreshWorker: async () => ({
       worker: replacement,
       replacementWorkerTargetObserved: true,
+      replacementWorkerTargetId: 'replacement-worker',
     }),
     verifySettingsIdentity: async () => true,
     checkpoint: () => {},
@@ -122,6 +123,7 @@ const {
       return {
         worker: replacement,
         replacementWorkerTargetObserved: true,
+        replacementWorkerTargetId: 'replacement-worker',
       };
     },
     verifySettingsIdentity: async () => {
@@ -192,16 +194,17 @@ const {
   assert.equal(oldTargetReopenCalls, 0);
 
   const unobservedProof = {};
-  await runExtensionReload({
-    worker,
-    ...reloadBoundary,
-    refreshWorker: async () => replacement,
-    verifySettingsIdentity: async () => true,
-    checkpoint: () => {},
-    proof: unobservedProof,
-  });
-  assert.equal(unobservedProof.lifecycle.extensionReload.disposition, 'failed');
-  assert.equal(unobservedProof.lifecycle.extensionReload.replacementWorkerObserved, false);
+  await assert.rejects(
+    () => runExtensionReload({
+      worker,
+      ...reloadBoundary,
+      refreshWorker: async () => replacement,
+      verifySettingsIdentity: async () => true,
+      checkpoint: () => {},
+      proof: unobservedProof,
+    }),
+    /lifecycle_reload_worker_target_not_replaced/,
+  );
 
   let extensionEnabled = true;
   let extensionsPageClosed = false;
