@@ -234,6 +234,7 @@ const {
     },
   });
   destroyedListeners.get('Target.targetDestroyed')({ targetId: 'destroyed-worker' });
+  await new Promise((resolve) => setTimeout(resolve, 0));
   await assert.rejects(
     destroyedWatcher.replacementTarget,
     /lifecycle_reload_replacement_worker_destroyed_before_attach/,
@@ -256,6 +257,95 @@ const {
     0,
     'timed-out watcher cleanup must remove every CDP listener',
   );
+
+  // A Target.attachToTarget completion after the lifecycle timeout cannot
+  // retain a session, and normal disposal does not finish before detaching.
+  const lateListeners = new Map();
+  let resolveLateAttach;
+  let resolveDetach;
+  let detachedSession;
+  const lateCdp = {
+    send: async (method, params) => {
+      if (method === 'Target.setDiscoverTargets') return undefined;
+      if (method === 'Target.attachToTarget')
+        return new Promise((resolve) => {
+          resolveLateAttach = () => resolve({ sessionId: `late-${params.targetId}` });
+        });
+      if (method === 'Target.detachFromTarget') {
+        detachedSession = params.sessionId;
+        return new Promise((resolve) => {
+          resolveDetach = resolve;
+        });
+      }
+      assert.fail(`unexpected CDP method ${method}`);
+    },
+    on: (event, listener) => lateListeners.set(event, listener),
+    off: (event, listener) => {
+      if (lateListeners.get(event) === listener) lateListeners.delete(event);
+    },
+  };
+  const lateWatcher = await armReplacementExtensionWorkerTargetWatcher({
+    cdp: lateCdp,
+    workerUrl: reloadBoundary.workerUrl,
+    previousTargetId: 'old-worker',
+    timeoutMs: 0,
+  });
+  lateListeners.get('Target.targetCreated')({
+    targetInfo: { targetId: 'late-worker', type: 'service_worker', url: reloadBoundary.workerUrl },
+  });
+  await assert.rejects(
+    lateWatcher.replacementTarget,
+    /lifecycle_reload_replacement_worker_target_timeout/,
+  );
+  resolveLateAttach();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(
+    detachedSession,
+    'late-late-worker',
+    'late attachment must be detached after timeout',
+  );
+  resolveDetach();
+  await lateWatcher.dispose();
+  assert.equal(lateListeners.size, 0, 'late watcher cleanup must remove every CDP listener');
+
+  const attachedListeners = new Map();
+  let completeDetach;
+  const attachedCdp = {
+    send: async (method, params) => {
+      if (method === 'Target.setDiscoverTargets') return undefined;
+      if (method === 'Target.attachToTarget') return { sessionId: `attached-${params.targetId}` };
+      if (method === 'Target.detachFromTarget')
+        return new Promise((resolve) => {
+          completeDetach = resolve;
+        });
+      assert.fail(`unexpected CDP method ${method}`);
+    },
+    on: (event, listener) => attachedListeners.set(event, listener),
+    off: (event, listener) => {
+      if (attachedListeners.get(event) === listener) attachedListeners.delete(event);
+    },
+  };
+  const attachedWatcher = await armReplacementExtensionWorkerTargetWatcher({
+    cdp: attachedCdp,
+    workerUrl: reloadBoundary.workerUrl,
+    previousTargetId: 'old-worker',
+  });
+  attachedListeners.get('Target.targetCreated')({
+    targetInfo: {
+      targetId: 'attached-worker',
+      type: 'service_worker',
+      url: reloadBoundary.workerUrl,
+    },
+  });
+  await attachedWatcher.replacementTarget;
+  let disposalFinished = false;
+  const disposal = attachedWatcher.dispose().then(() => {
+    disposalFinished = true;
+  });
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(disposalFinished, false, 'watcher disposal must await CDP detach');
+  completeDetach();
+  await disposal;
 
   // A stale panel can remain callable across a reload, but it cannot be used
   // as recovery evidence even if its Settings interaction appears successful.

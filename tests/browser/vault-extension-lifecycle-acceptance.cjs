@@ -124,13 +124,33 @@ async function armReplacementExtensionWorkerTargetWatcher({
   let timeout = undefined;
   let candidateTargetId;
   let candidateDestroyed = false;
+  let settled = false;
+  let disposed = false;
+  let attachmentDetached = false;
   const replacementTarget = new Promise((resolve, reject) => {
     resolveReplacement = resolve;
     rejectReplacement = reject;
   });
-  // Avoid an unhandled rejection before the reload sequence starts awaiting
-  // the watcher, while preserving the original rejection for the caller.
-  const reject = (error) => rejectReplacement(error);
+  // The caller awaits this after retiring the old targets. Observe a possible
+  // early rejection now without changing what the later await receives.
+  replacementTarget.catch(() => {});
+  const resolve = (target) => {
+    if (settled) return;
+    settled = true;
+    clearTimeout(timeout);
+    resolveReplacement(target);
+  };
+  const reject = (error) => {
+    if (settled) return;
+    settled = true;
+    clearTimeout(timeout);
+    rejectReplacement(error);
+  };
+  const detachAttachment = async () => {
+    if (!attachment?.sessionId || attachmentDetached) return;
+    attachmentDetached = true;
+    await cdp.send('Target.detachFromTarget', { sessionId: attachment.sessionId });
+  };
   const onTargetCreated = async ({ targetInfo } = {}) => {
     if (
       targetInfo?.type === 'service_worker' &&
@@ -144,14 +164,11 @@ async function armReplacementExtensionWorkerTargetWatcher({
           flatten: false,
         });
         assert(typeof attachment?.sessionId === 'string', 'lifecycle_reload_worker_attach_missing');
-        if (candidateDestroyed) {
-          await cdp
-            .send('Target.detachFromTarget', { sessionId: attachment.sessionId })
-            .catch(() => {});
+        if (disposed || settled || candidateDestroyed) {
+          await detachAttachment().catch(() => {});
           return;
         }
-        clearTimeout(timeout);
-        resolveReplacement({ ...targetInfo, attachment });
+        resolve({ ...targetInfo, attachment });
       } catch {
         clearTimeout(timeout);
         reject(new Error('lifecycle_reload_replacement_worker_attach_refused'));
@@ -161,7 +178,6 @@ async function armReplacementExtensionWorkerTargetWatcher({
   const onTargetDestroyed = ({ targetId } = {}) => {
     if (targetId && targetId === candidateTargetId) {
       candidateDestroyed = true;
-      clearTimeout(timeout);
       reject(new Error('lifecycle_reload_replacement_worker_destroyed_before_attach'));
     }
   };
@@ -178,11 +194,13 @@ async function armReplacementExtensionWorkerTargetWatcher({
       cdp.removeListener('Target.targetDestroyed', onTargetDestroyed);
     throw error;
   }
-  timeout = setTimeout(
-    () => reject(new Error('lifecycle_reload_replacement_worker_target_timeout')),
-    timeoutMs,
-  );
-  const dispose = () => {
+  if (!settled)
+    timeout = setTimeout(
+      () => reject(new Error('lifecycle_reload_replacement_worker_target_timeout')),
+      timeoutMs,
+    );
+  const dispose = async () => {
+    disposed = true;
     clearTimeout(timeout);
     if (typeof cdp.off === 'function') cdp.off('Target.targetCreated', onTargetCreated);
     else if (typeof cdp.removeListener === 'function')
@@ -190,8 +208,7 @@ async function armReplacementExtensionWorkerTargetWatcher({
     if (typeof cdp.off === 'function') cdp.off('Target.targetDestroyed', onTargetDestroyed);
     else if (typeof cdp.removeListener === 'function')
       cdp.removeListener('Target.targetDestroyed', onTargetDestroyed);
-    if (attachment?.sessionId)
-      cdp.send('Target.detachFromTarget', { sessionId: attachment.sessionId }).catch(() => {});
+    await detachAttachment();
   };
   return { replacementTarget, dispose };
 }
@@ -272,6 +289,8 @@ async function runExtensionReload({
     previousTargetId: previousWorkerTargetId,
   });
   checkpoint('lifecycle_extension_reload');
+  let lifecycleError;
+  let result;
   try {
     await worker.evaluate(() => chrome.runtime.reload());
     checkpoint('lifecycle_extension_reload_previous_targets_retired');
@@ -324,10 +343,19 @@ async function runExtensionReload({
       settingsUiRecovered,
       identitySha256: after.identitySha256,
     };
-    return replacement;
-  } finally {
-    watcher.dispose();
+    result = replacement;
+  } catch (error) {
+    lifecycleError = error;
   }
+  let cleanupError;
+  try {
+    await watcher.dispose();
+  } catch (error) {
+    cleanupError = error;
+  }
+  if (lifecycleError) throw lifecycleError;
+  if (cleanupError) throw cleanupError;
+  return result;
 }
 
 async function runExtensionDisableEnable({
