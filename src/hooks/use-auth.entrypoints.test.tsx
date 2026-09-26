@@ -134,8 +134,8 @@ describe('useAuth canonical session entry points', () => {
     await waitFor(() => expect(dependencies.checkIsAdmin).toHaveBeenCalledTimes(2));
     await broadcastAuth({ user: null, isAdmin: false });
 
-    expect(result.current.user?.id).toBe(admin.id);
     await waitFor(() => expect(dependencies.checkIsAdmin).toHaveBeenCalledTimes(3));
+    expect(result.current.user?.id).toBe(admin.id);
     expect(result.current.status).toBe('signed-in');
     expect(result.current.error).toBeNull();
   });
