@@ -2836,6 +2836,10 @@ Every entry follows this shape:
     other controls. A separate database refusal remains visible. The same
     no-workspace notice also retires if a delayed read reports it after the
     workspace was selected.
+  - Start a highlight save or saved-capture delete with no workspace selected.
+    If the action fails before it is sent, selecting a workspace does not
+    replay it: the failure notice remains until the person retries that action
+    or dismisses the notice. A late write refusal remains visible too.
   - Go offline and Save: the notice says the database could not be reached and
     to check the connection — not "refused".
   - Clear all highlights on a page where you have none: it clears 0 and says

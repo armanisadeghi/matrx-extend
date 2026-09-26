@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "run_id": "notice-write-retention-red-001",
+  "defect_id": "EXT-D-0023",
+  "source_commit": "1d259f5a",
+  "command": "pnpm exec vitest run tests/unit/notice-resolution.test.tsx --maxWorkers=1",
+  "guard_log_path": "/tmp/matrx-notice-write-retention-red-001.log",
+  "guard_log_sha256": "b7ec5da9150f1225d97cd096289b5a08dc2a534b47a3f765da1cd27ca01ca88e",
+  "guard": {
+    "admitted_at": "2026-09-26T22:24:26.458Z",
+    "child_exit_at": "2026-09-26T22:24:27.535Z",
+    "child_exit_code": 1
+  },
+  "result": "Two tests failed on the intended assertions: the highlight insert notice disappeared after organization selection, and the late saved-capture update notice disappeared when an organization was already selected. Both existing read-retirement cases passed."
+}

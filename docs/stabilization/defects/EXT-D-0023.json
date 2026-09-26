@@ -29,11 +29,12 @@
     "docs/stabilization/runs/source-workspace-007.json",
     "docs/stabilization/reports/d23-runtime-peer.json",
     "docs/stabilization/runs/release-stabilization-037.json",
-    "docs/stabilization/reports/d23-notice-operation-census.json"
+    "docs/stabilization/reports/d23-notice-operation-census.json",
+    "docs/stabilization/runs/notice-write-retention-red-001.json"
   ],
   "severity": "S2: a resolved read notice can obstruct controls; an unperformed write notice can disappear after workspace selection, leaving an unsaved highlight or undeleted capture without its failure announcement",
   "priority": "P1: make notice retirement depend on whether the operation's remedy is actually complete; keep unperformed write failures visible until a real retry or explicit dismissal",
-  "state": "open",
+  "state": "in-fix",
   "owner": "/root/d22_ci_refusal_timing",
   "transition_history": [
     {
@@ -71,6 +72,18 @@
       "from": "closed",
       "to": "open",
       "reason": "Independent operation census found that the shared no-workspace marker also auto-retires unperformed highlight insert and saved-capture update failures when an organization is selected. The earlier native read retest remains valid but does not cover this write-notice gap."
+    },
+    {
+      "at": "2026-09-26T22:24:27.535Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Guarded four-case run reproduced both unperformed-write notice losses while both existing Capture read-retirement guards passed. The failed writes are reachable from highlight insert and saved-capture update callers."
+    },
+    {
+      "at": "2026-09-26T22:28:03Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Narrowing automatic retirement to an explicitly opted-in subscribed read that refreshes on organization selection; write operations remain visible because their actions are not replayed."
     }
   ],
   "fix_commits": ["9b64e44e"],
