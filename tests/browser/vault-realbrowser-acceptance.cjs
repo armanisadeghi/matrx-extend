@@ -859,6 +859,21 @@ async function verifyBrowserProcessExited(browserPid) {
   return false;
 }
 
+async function verifyNoBrowserProcessForProfile(candidateProfile) {
+  const profileArgument = new RegExp(
+    `(?:^|[\\s\\0])--user-data-dir=${escapeRegExp(candidateProfile)}(?=$|[\\s\\0])`,
+  );
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    const { stdout } = await execFileAsync('ps', ['-axo', 'args='], {
+      timeout: 5000,
+      maxBuffer: 4 * 1024 * 1024,
+    });
+    if (!stdout.split('\n').some((line) => profileArgument.test(line))) return true;
+    await wait(100);
+  }
+  return false;
+}
+
 function persist() {
   syncFs.mkdirSync(root, { recursive: true, mode: 0o700 });
   const temporary = `${proofPath}.tmp`;
@@ -3368,6 +3383,8 @@ async function materializedPassword(id) {
       const restartCustody = {
         profileSha256: sha256Value(profile),
         executableSha256: sha256Value(restartExecutable),
+        replacementLaunchAttempted: false,
+        failedLaunchCleanupProven: false,
         initial: {
           browserPid: initialBrowser.browserPid,
           cdpOwnerVerified: rawCdp.ownerVerified === true,
@@ -3405,11 +3422,13 @@ async function materializedPassword(id) {
         launchOptions: restartLaunchOptions,
         launchOwnedPersistentContext: async ({ profile: candidateProfile, launchOptions }) => {
           replacementPreparedProfile = await prepareOwnedProfile(candidateProfile);
-          const replacementContext = await chromium.launchPersistentContext(
-            candidateProfile,
-            launchOptions,
-          );
+          restartCustody.replacementLaunchAttempted = true;
+          let replacementContext;
           try {
+            replacementContext = await chromium.launchPersistentContext(
+              candidateProfile,
+              launchOptions,
+            );
             const replacementBrowser = await ownedBrowserProcess({
               candidateProfile,
               executablePath: launchOptions.executablePath,
@@ -3417,7 +3436,19 @@ async function materializedPassword(id) {
             });
             return { context: replacementContext, browserPid: replacementBrowser.browserPid };
           } catch (error) {
-            await replacementContext.close().catch(() => {});
+            let contextClosed = replacementContext == null;
+            try {
+              if (replacementContext) await replacementContext.close();
+              contextClosed = true;
+            } catch {
+              contextClosed = false;
+            }
+            try {
+              restartCustody.failedLaunchCleanupProven =
+                contextClosed && (await verifyNoBrowserProcessForProfile(candidateProfile));
+            } catch {
+              restartCustody.failedLaunchCleanupProven = false;
+            }
             throw error;
           }
         },
@@ -4852,6 +4883,9 @@ async function materializedPassword(id) {
               proof.cleanup.finalBaselineMetadataMatches === true)));
       const safeToRelease =
         vaultCleanupProven &&
+        (!proof.lifecycle?.browserRestartCustody?.replacementLaunchAttempted ||
+          Number.isSafeInteger(restartReplacementPid) ||
+          proof.lifecycle.browserRestartCustody.failedLaunchCleanupProven === true) &&
         (!Number.isSafeInteger(restartReplacementPid) ||
           (proof.cleanup.restartReplacementProcessExited === true &&
             (proof.lifecycle.browserRestart.cleanupProven === true ||

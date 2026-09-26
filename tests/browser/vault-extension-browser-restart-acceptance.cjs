@@ -315,10 +315,10 @@ async function runOwnedBrowserRestart({
           });
         }
       };
-      await cleanupStep('panel_dispose', replacementPanel?.dispose);
-      await cleanupStep('journal_dispose', replacementJournal?.dispose);
-      await cleanupStep('cdp_detach', replacementCdp?.detach);
-      await cleanupStep('context_close', replacementContext?.close);
+      await cleanupStep('panel_dispose', () => replacementPanel?.dispose());
+      await cleanupStep('journal_dispose', () => replacementJournal?.dispose());
+      await cleanupStep('cdp_detach', () => replacementCdp?.detach());
+      await cleanupStep('context_close', () => replacementContext?.close());
       if (Number.isSafeInteger(lifecycle.replacementBrowserPid)) {
         try {
           lifecycle.replacementProcessExited =
