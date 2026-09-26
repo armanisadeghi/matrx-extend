@@ -1,0 +1,33 @@
+{
+  "id": "admin-default-agent-001",
+  "at": "2026-09-26T05:07:22Z",
+  "status": "partial",
+  "lease": {
+    "id": "guest-settings-007",
+    "owner": "coordinator-held native browser lease, session 76318"
+  },
+  "feature_id": "EXT-F-1003",
+  "case_id": "EXT-F-1003-T09",
+  "observation": {
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.51",
+    "source": ".output/chrome-mv3-dev",
+    "identity": "admin@admin.com (ADMIN)",
+    "organization": "ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete",
+    "original_default_agent": "Matrx Browser Agent",
+    "alternate_agent_picker_label": "Quick Test Agent 2",
+    "alternate_agent_detail_heading": "Quick Test Agent",
+    "alternate_settings_label": "Quick Test Agent"
+  },
+  "evidence": [
+    "Settings initially showed Default agent Matrx Browser Agent.",
+    "Agent picker offered the built-in Matrx Browser Agent (system) and existing Quick Test Agent 2; no agent was created or launched.",
+    "Selected the row labeled Quick Test Agent 2; Settings displayed Quick Test Agent.",
+    "The row's Show details view had heading Quick Test Agent, ID b32f2079-4fa5-4613-a01d-726f1243ebe5, and an Open in chat link; the row label and details heading therefore differ. No chat was opened.",
+    "After Chrome Extensions > Matrx Extend > Reload and reopening Settings, Default agent still displayed Quick Test Agent.",
+    "Restored Matrx Browser Agent (system); Settings displayed Matrx Browser Agent."
+  ],
+  "ui_stopped": true,
+  "state_left": "Signed in as admin@admin.com; explicit throwaway fixture remains Acting as organization; Default agent restored to Matrx Browser Agent; Settings open.",
+  "limitation": "Picker row label Quick Test Agent 2 differs from its details heading and the selected Default agent value Quick Test Agent, so identity equivalence is not assumed; alternate-agent persistence is observed only under the Settings label."
+}

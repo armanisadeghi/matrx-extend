@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T02:28:14.192234+00:00",
+  "updated_at": "2026-09-26T05:21:13.372331+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
@@ -227,10 +227,12 @@
             "status": "unverified",
             "verified_substeps": [
               "Actual login source uses public PKCE OAuth client registration, not general Auth redirect allowlist.",
-              "Active client registration contains exact development callback and expected browser callbacks."
+              "Active client registration contains exact development callback and expected browser callbacks.",
+              "admin-signin001 proved actual admin signin and full extension reload persistence on0.2.51."
             ],
             "remaining_criteria": [
-              "Actual browser sign-in and reload/session behavior on fresh unpacked build; Mac unlock pending."
+              "Callback origin not exposed in observed UI; directcallback-observation criterion remainsunverified.",
+              "Ordinary-member signin remainsunverified."
             ]
           }
         }
@@ -2290,19 +2292,10 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "guest-settings-006",
-              "evidence": "docs/stabilization/runs/guest-settings-006.json",
-              "verified_substeps": [
-                "Guest Organization view showed sign-in to choose; no organization selection or post-reload Acting as result was observed."
-              ],
-              "remaining_criteria": [
-                "Run the guest negative-visibility/guidance check in warm and cold/reloaded UI state, confirming signed-out state throughout."
-              ],
-              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
-              "blocked_run_id": "guest-settings-003",
-              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "detail": "Resource-invalid partial batch; warm/panel-reopen observations retained but full extension reload/full theme criteria unverified. Original System theme restored and verified in settings-cleanup-001."
+              "status": "pass",
+              "run_id": "guest-settings-007",
+              "evidence": "docs/stabilization/runs/guest-settings-007.json",
+              "detail": "Native Chrome guest controls matched all expected criteria warm and after full extension Reload; ID/path/version0.2.51 verified, resource healthy."
             }
           }
         },
@@ -2319,8 +2312,9 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Choose/clear device active organization and handle errors."
+            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
+            "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
+            "Perform a full extension Reload and confirm the organization persists."
           ],
           "expected": [
             "Selected organization is reflected as Acting as after reload; unset state requires explicit selection and does not choose an implicit default."
@@ -2328,7 +2322,8 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "scope_note": "SettingsView.tsx:144-153 offers Choose only while unset and ignores NONE; no clear control exists. Generated choose/clear step corrected to actual feature. Empty-membership/error states remain unverified unless tested."
         },
         {
           "id": "EXT-F-1003-T03",
@@ -2343,8 +2338,9 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Choose/clear device active organization and handle errors."
+            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
+            "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
+            "Perform a full extension Reload and confirm the organization persists."
           ],
           "expected": [
             "Selected organization is reflected as Acting as after reload; unset state requires explicit selection and does not choose an implicit default."
@@ -2352,7 +2348,16 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "scope_note": "SettingsView.tsx:144-153 offers Choose only while unset and ignores NONE; no clear control exists. Generated choose/clear step corrected to actual feature. Empty-membership/error states remain unverified unless tested.",
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-org-001",
+              "evidence": "docs/stabilization/runs/admin-org-001.json",
+              "detail": "Initialunset did not chooseimplicitly; explicitfixture selected, Actingas and fullreload persistence verified. Nonexistent clear-step corrected from source/UI."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T04",
@@ -2379,18 +2384,10 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "guest-settings-006",
-              "evidence": "docs/stabilization/runs/guest-settings-006.json",
-              "verified_substeps": [
-                "System/Light/Dark selections were reflected by selection controls."
-              ],
-              "remaining_criteria": [
-                "Verify each selected appearance is actually applied and persists after reopen/reload."
-              ],
-              "blocked_run_id": "guest-settings-003",
-              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "detail": "Resource-invalid partial batch; warm/panel-reopen observations retained but full extension reload/full theme criteria unverified. Original System theme restored and verified in settings-cleanup-001."
+              "status": "pass",
+              "run_id": "guest-theme-001",
+              "evidence": "docs/stabilization/runs/guest-theme-001.json",
+              "detail": "Light/Dark/System each visibly applied and persisted through separate full extension Reloads on0.2.51. OriginalSystem restored; resource healthy."
             }
           }
         },
@@ -2440,7 +2437,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-settings-local-001",
+              "evidence": "docs/stabilization/runs/admin-settings-local-001.json",
+              "detail": "Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T07",
@@ -2467,19 +2472,10 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "guest-settings-006",
-              "evidence": "docs/stabilization/runs/guest-settings-006.json",
-              "verified_substeps": [
-                "Without an organization, Default agent displayed \u201cChoose an organization above.\u201d"
-              ],
-              "remaining_criteria": [
-                "Run the guest negative-visibility/guidance check in warm and cold/reloaded UI state, confirming signed-out state throughout."
-              ],
-              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
-              "blocked_run_id": "guest-settings-003",
-              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "detail": "Resource-invalid partial batch; warm/panel-reopen observations retained but full extension reload/full theme criteria unverified. Original System theme restored and verified in settings-cleanup-001."
+              "status": "pass",
+              "run_id": "guest-settings-007",
+              "evidence": "docs/stabilization/runs/guest-settings-007.json",
+              "detail": "Native Chrome guest controls matched all expected criteria warm and after full extension Reload; ID/path/version0.2.51 verified, resource healthy."
             }
           }
         },
@@ -2529,7 +2525,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-default-agent-002",
+              "evidence": "docs/stabilization/runs/admin-default-agent-002.json",
+              "detail": "FreshSol visual+AX/detail reconciled sameQuickTestAgent plus2memberbadge; actualchosenidentity persisted afterfullreload, originalMatrxBrowserAgent restored."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T10",
@@ -2689,7 +2693,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-settings-local-001",
+              "evidence": "docs/stabilization/runs/admin-settings-local-001.json",
+              "detail": "Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T16",
@@ -2873,19 +2885,10 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "guest-settings-006",
-              "evidence": "docs/stabilization/runs/guest-settings-006.json",
-              "verified_substeps": [
-                "Advanced agent capabilities was absent from guest Settings AX tree."
-              ],
-              "remaining_criteria": [
-                "Run the guest negative-visibility/guidance check in warm and cold/reloaded UI state, confirming signed-out state throughout."
-              ],
-              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
-              "blocked_run_id": "guest-settings-003",
-              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "detail": "Resource-invalid partial batch; warm/panel-reopen observations retained but full extension reload/full theme criteria unverified. Original System theme restored and verified in settings-cleanup-001."
+              "status": "pass",
+              "run_id": "guest-settings-007",
+              "evidence": "docs/stabilization/runs/guest-settings-007.json",
+              "detail": "Native Chrome guest controls matched all expected criteria warm and after full extension Reload; ID/path/version0.2.51 verified, resource healthy."
             }
           }
         },
@@ -3087,7 +3090,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-settings-local-001",
+              "evidence": "docs/stabilization/runs/admin-settings-local-001.json",
+              "detail": "Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T31",
@@ -3665,12 +3676,10 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "blocked_run_id": "guest-settings-003",
-              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "run_id": "guest-settings-006",
-              "evidence": "docs/stabilization/runs/guest-settings-006.json",
-              "detail": "Resource-invalid partial batch; warm/panel-reopen observations retained but full extension reload/full theme criteria unverified. Original System theme restored and verified in settings-cleanup-001."
+              "status": "pass",
+              "run_id": "admin-signin-001",
+              "evidence": "docs/stabilization/runs/admin-signin-001.json",
+              "detail": "Real Settings sign-in reached admin@admin.com ADMIN and identity persisted through full extension Reload. Noorgselected; separatecapturelistwarning recorded."
             }
           }
         },
@@ -4096,7 +4105,10 @@
             "guest-settings-004",
             "guest-settings-005",
             "guest-settings-006",
-            "settings-cleanup-001"
+            "settings-cleanup-001",
+            "guest-settings-007",
+            "guest-theme-001",
+            "admin-signin-001"
           ],
           "retest_status": "not-run"
         },
@@ -4113,13 +4125,35 @@
           "defect_ids": [
             "EXT-D-0001"
           ],
-          "run_ids": [],
+          "run_ids": [
+            "admin-org-001",
+            "admin-default-agent-001",
+            "admin-settings-local-001",
+            "admin-default-agent-002"
+          ],
           "retest_status": "not-run"
         }
       },
       "inventory_status": "complete",
       "missing_items": [],
-      "source_complete": true
+      "source_complete": true,
+      "unverified_leads": [
+        {
+          "id": "EXT-L-0006",
+          "summary": "Capture list no-workspace notice appears immediately after signin and reload before explicit org selection. Determine intended unset-state UX before labeling defect; authentication succeeded.",
+          "source": "docs/stabilization/runs/admin-signin-001.json",
+          "state": "needs-expected-behavior-review",
+          "wave": "A"
+        },
+        {
+          "id": "EXT-L-0007",
+          "summary": "Agent picker row AX Quick Test Agent 2 vs detail/selection Quick Test Agent; determine composite label versus identity mismatch before defect triage.",
+          "source": "docs/stabilization/runs/admin-default-agent-001.json",
+          "state": "refuted",
+          "wave": "A",
+          "resolution": "Native visual/detail evidence shows separate2memberorchestrabadge; AX concatenates. No wrongagentselection defect. See default-agent-precision report."
+        }
+      ]
     },
     {
       "id": "EXT-F-1004",

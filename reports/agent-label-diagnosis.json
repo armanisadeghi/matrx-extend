@@ -1,0 +1,14 @@
+{
+  "finding": "Shared picker source explains how a row can append an orchestra member-count badge after its name, but the exact runtime UUID could not be resolved through either documented catalog RPC.",
+  "classification": "Runtime association unresolved; no proven wrong-agent selection defect.",
+  "row_rendering": "Installed @ai-matrx/agents 0.13.13 dist/catalog/react/index.js:1720-1750 renders agent.name and, when agent.orchestra exists, a separate badge containing agent.orchestra.memberCount.",
+  "detail_rendering": "Same installed package, AgentDetailCard at dist/catalog/react/index.js:1393-1411 renders heading agent.name only.",
+  "selection": "Picker handleSelectAgent at dist/catalog/react/index.js:817-821 calls onSelect(agent.id); row/detail operate on the same Agent object through package list component.",
+  "settings_sink": "src/features/settings/SettingsView.tsx:191-205 supplies activeAgentId and onSelect={(id) => settings.setDefaultAgentId(id)}; src/state/settings.ts:137 stores that ID and Zustand persists as matrx.settings.v1.",
+  "observed_id": "Run record reports detail ID b32f2079-4fa5-4613-a01d-726f1243ebe5. Supabase metadata confirms the package source path public.agx_get_list_full() returns id/name/orchestra; filtering that RPC to this UUID returned no row. The package fallback public.agx_resolve_agent_address(uuid[]) also returned no row for this UUID.",
+  "verdict": "The suffix 2 could be the shared picker’s orchestra member-count badge, but current runtime data cannot confirm that for this agent. Settings persistence of Quick Test Agent alone does not prove row/detail identity equivalence.",
+  "remaining_uncertainty": "No matching record surfaced through either catalog RPC, so this MCP session cannot establish this UUID's current name, orchestra, or member count, nor whether it was the selected row's ID.",
+  "verification": "Read-only source trace at checkout cf2b7f0, installed @ai-matrx/agents 0.13.13; read-only Supabase MCP metadata lookup and exact-ID queries against the two source-discovered catalog RPCs; run record docs/stabilization/runs/admin-default-agent-001.json. No mutations/tests/build/browser/process launches.",
+  "limitation": "Accessibility name concatenates visible row text and numeric badge, which can be ambiguous to users; whether to change that UX needs a separate product decision.",
+  "recommended_next_step": "Keep the wrong-name/identity lead unresolved until the UUID is visible through the catalog RPC under an authorized session or the row ID/orchestra data is captured in the UI; no database edit is indicated by current evidence."
+}

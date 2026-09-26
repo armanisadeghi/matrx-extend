@@ -1,0 +1,58 @@
+{
+  "id": "admin-settings-local-001",
+  "at": "2026-09-26T05:16:11Z",
+  "status": "complete",
+  "lease": {
+    "id": "guest-settings-007",
+    "owner": "coordinator-held native browser lease, session 76318"
+  },
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T06", "EXT-F-1003-T15", "EXT-F-1003-T30"],
+  "preconditions": {
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.51",
+    "build_channel": "unpacked dev extension at .output/chrome-mv3-dev",
+    "identity": "admin@admin.com (ADMIN)",
+    "device_organization": "ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete",
+    "permissions_visible_in_chrome_details": [
+      "Access the page debugger backend",
+      "Read and change all your data on all websites",
+      "Read and change your browsing history on all your signed-in devices",
+      "Display notifications",
+      "Read and change your bookmarks",
+      "Modify data you copy and paste",
+      "Manage your downloads",
+      "Communicate with cooperating native applications",
+      "View and manage your tab groups"
+    ]
+  },
+  "observations": {
+    "EXT-F-1003-T06": {
+      "status": "passed",
+      "evidence": [
+        "Selected Light; Settings displayed Light and native screenshot showed a white side panel. After Chrome extension Reload and reopening Settings, Light remained selected.",
+        "Selected Dark; native screenshot showed a black side panel. After Chrome extension Reload and reopening Settings, Dark remained selected and the panel remained dark.",
+        "Restored System; Settings displayed System and the panel matched the observed dark system appearance. After a subsequent full extension Reload, System remained selected."
+      ]
+    },
+    "EXT-F-1003-T15": {
+      "status": "passed",
+      "evidence": [
+        "Initial Default speed was Fast. Selected Thinking; Settings displayed Thinking after the selection.",
+        "After full Chrome extension Reload and reopening Settings, Default speed still displayed Thinking.",
+        "Restored original Fast selection. After a subsequent full extension Reload, Settings displayed Fast."
+      ]
+    },
+    "EXT-F-1003-T30": {
+      "status": "passed",
+      "evidence": [
+        "For each visible Settings group header—ACCOUNT, ORGANIZATION, APPEARANCE, CHAT, PRIVACY, SCRAPE, DATA, SEO, DESKTOP BRIDGE, ADVANCED AGENT CAPABILITIES, DATA & RESET, ABOUT—clicked twice and observed AX descendants disappear/reappear for collapsed/expanded groups.",
+        "ABOUT was separately verified: expanded AX subtree showed Version 0.2.51 and extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml; collapsing removed that subtree.",
+        "After a full extension Reload and reopening Settings, the Settings groups remained visible and the original expanded/collapsed arrangement was restored; final About group is collapsed."
+      ]
+    },
+    "state_reading_note": "One AX filter matched the text `Choose an organization above` inside the Default agent guidance while the Organization group was collapsed. Expanding the owning Organization row showed Acting as ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete; no organization-loss conclusion or org/auth change was made."
+  },
+  "state_left": "Signed in as admin@admin.com; explicit throwaway fixture remains Acting as organization; System theme and Fast speed restored; original group arrangement restored; Settings open.",
+  "ui_stopped": true
+}

@@ -1,0 +1,67 @@
+{
+  "id": "guest-settings-007",
+  "feature_id": "EXT-F-1003",
+  "at": "2026-09-26T04:50:52Z",
+  "status": "pass",
+  "scope": "Guest Settings T01, T07, and T22 warm and full extension reload checks.",
+  "installation": {
+    "status": "verified",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.51",
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "store_copy": "0.2.23 disabled; left untouched",
+    "build_receipt": "docs/stabilization/runs/release-real-005.json",
+    "receipt_candidate_sha": "760c7a1c5dba504b894dd5450b83e9fee060d065"
+  },
+  "resource": {
+    "lease_id": "guest-settings-007",
+    "owner": "coordinator-held native browser lease, session 76318",
+    "admitted_at": "2026-09-26T04:47:36Z",
+    "resource_invalid": false,
+    "stop_reason": null
+  },
+  "observations": {
+    "role": "signed-out guest; Email displayed as —",
+    "active_organization": "Organization displayed 'Sign in to choose'; no organization selector/action appeared",
+    "guest_default_agent": "Chat displayed 'Default agent Choose an organization above'; no agent picker/action appeared",
+    "advanced_agent_capabilities": "absent from the Settings section tree; visible sections included Account, Organization, Appearance, Chat, Privacy, Scrape, Data, SEO, Desktop Bridge, Data & Reset, and About",
+    "theme": "System selected before and after checks; not changed",
+    "authentication": "remained signed out; no sign-in action attempted",
+    "settings_mutated": false,
+    "current_ui_state": "Actual side panel open on Settings as guest; Theme System selected."
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-1003-T01",
+      "status": "pass",
+      "verified_substeps": [
+        "Warm Settings showed Organization 'Sign in to choose' with no selector/action.",
+        "After full extension Reload and reopening Settings, Organization again showed 'Sign in to choose' with no selector/action."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T07",
+      "status": "pass",
+      "verified_substeps": [
+        "Warm Settings > Chat showed 'Default agent Choose an organization above' with no agent picker/action.",
+        "After full extension Reload and reopening Settings, Chat again showed the same guidance with no agent picker/action."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T22",
+      "status": "pass",
+      "verified_substeps": [
+        "The Advanced agent capabilities section was absent from the warm guest Settings section tree.",
+        "The section remained absent from the post-reload guest Settings section tree."
+      ]
+    }
+  ],
+  "evidence": [
+    "Native Chrome extension details showed ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.51, enabled, and unpacked source /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev; version and candidate match docs/stabilization/runs/release-real-005.json.",
+    "After clicking the extension Reload button, Chrome showed 'Reloaded'; the side panel reopened in Chat as a guest. Settings About showed Version 0.2.51 and the expected extension ID.",
+    "Chrome's installed extensions list showed the separate Matrx Extend 0.2.23 copy Off; it was not changed.",
+    "Post-reload Settings showed Email —, Organization 'Sign in to choose', Default agent guidance, no Advanced agent capabilities section, and Theme System."
+  ],
+  "limitations": [],
+  "next_action": null
+}

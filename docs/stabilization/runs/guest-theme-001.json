@@ -1,0 +1,66 @@
+{
+  "id": "guest-theme-001",
+  "feature_id": "EXT-F-1003",
+  "at": "2026-09-26T04:54:23Z",
+  "status": "pass",
+  "scope": "Guest theme T04: verify System, Light, and Dark are visibly applied and persist through a real extension Reload; restore original System before ending.",
+  "resource": {
+    "lease_id": "guest-settings-007",
+    "owner": "coordinator-held native browser lease, session 76318",
+    "admitted_at": "2026-09-26T04:47:36Z",
+    "stop_observation": "No stop message received by this worker during this check."
+  },
+  "installation": {
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.51",
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "build_receipt": "docs/stabilization/runs/release-real-005.json",
+    "receipt_candidate_sha": "760c7a1c5dba504b894dd5450b83e9fee060d065"
+  },
+  "preconditions": {
+    "role": "signed-out guest; Email displayed as —",
+    "device_organization": "none selected; Organization guest state remained 'Sign in to choose'",
+    "permissions": "No permission prompt or permission change occurred.",
+    "build_channel": "unpacked dev extension, 0.2.51"
+  },
+  "original_state": {
+    "theme": "System",
+    "visible_appearance": "dark side panel, matching the observed system appearance"
+  },
+  "themes": [
+    {
+      "selection": "Light",
+      "expected": "Chosen light appearance is applied and persists after reopen.",
+      "applied_evidence": "After selecting Light, the Settings panel visibly changed from dark to white; the Theme control displayed Light.",
+      "persistence_evidence": "After clicking Chrome's extension Reload button, reopening the side panel and Settings showed Theme Light and the panel remained visibly white.",
+      "status": "pass"
+    },
+    {
+      "selection": "Dark",
+      "expected": "Chosen dark appearance is applied and persists after reopen.",
+      "applied_evidence": "After selecting Dark, the Settings panel visibly changed to the dark appearance; the Theme control displayed Dark.",
+      "persistence_evidence": "After clicking Chrome's extension Reload button, reopening the side panel and Settings showed Theme Dark and the panel remained visibly dark.",
+      "status": "pass"
+    },
+    {
+      "selection": "System",
+      "expected": "Chosen system appearance is applied and persists after reopen.",
+      "applied_evidence": "After restoring System, the panel visibly returned to the original dark system appearance; the Theme control displayed System.",
+      "persistence_evidence": "After another full extension Reload, reopening the side panel and Settings showed Theme System and the panel remained visibly dark.",
+      "status": "pass"
+    }
+  ],
+  "restoration": {
+    "theme": "System",
+    "verified_after_extension_reload": true,
+    "other_settings_changed": false,
+    "authentication_changed": false
+  },
+  "evidence": [
+    "Actual Chrome side panel screenshots showed System baseline dark, Light white, Dark dark, and restored System dark appearance.",
+    "Each theme was followed by Chrome's extension Reload control and reopening Settings; the same choice and visible appearance persisted for all three.",
+    "The extension details page remained on ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.51, loaded from /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev."
+  ],
+  "limitations": [],
+  "next_action": null
+}

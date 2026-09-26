@@ -1,0 +1,33 @@
+{
+  "id": "admin-default-agent-002",
+  "at": "2026-09-26T05:19:00Z",
+  "status": "passed",
+  "lease": {
+    "id": "guest-settings-007",
+    "owner": "coordinator-held native browser lease, session 76318"
+  },
+  "feature_id": "EXT-F-1003",
+  "case_id": "EXT-F-1003-T09",
+  "observation": {
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.51",
+    "source": ".output/chrome-mv3-dev",
+    "identity": "admin@admin.com (ADMIN)",
+    "organization": "ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete",
+    "original_default_agent": "Matrx Browser Agent",
+    "selected_agent_name": "Quick Test Agent",
+    "selected_agent_id_shown_in_details": "b32f2079-4fa5-4613-a01d-726f1243ebe5"
+  },
+  "evidence": [
+    "Before selection, Settings showed Default agent Matrx Browser Agent.",
+    "The picker visually rendered Quick Test Agent as the row name and a separate badge with an orchestra icon and 2; the link accessibility name combined them as Quick Test Agent 2.",
+    "The row's Show details view identified Quick Test Agent, ID b32f2079-4fa5-4613-a01d-726f1243ebe5, and Orchestra · supervisor · 2 members. Its Select button was used; no agent or chat was launched.",
+    "After Select, Settings showed Default agent Quick Test Agent.",
+    "Chrome Extensions > Matrx Extend > Reload showed Reloaded and closed the side panel. After reopening, Settings first briefly displayed Choose an organization above while loading, then displayed Quick Test Agent; Organization showed the explicit throwaway fixture.",
+    "The picker then marked Quick Test Agent 2 as CURRENT AGENT. Selecting Matrx Browser Agent system restored the Settings Default agent value Matrx Browser Agent."
+  ],
+  "verdict": "The selected agent identity is consistent across picker row, details, and Settings; selection persisted through a full extension reload. The numeric suffix in the link accessibility name is the separate two-member orchestra badge, not part of the agent name.",
+  "limitation": "The link accessibility name combines the name and badge without verbal separation; this run does not assess screen-reader comprehension. A transient loading placeholder was not treated as the settled Settings state.",
+  "ui_stopped": true,
+  "state_left": "Signed in as admin@admin.com; explicit throwaway fixture remains Acting as organization; Default agent restored to Matrx Browser Agent; Settings open."
+}

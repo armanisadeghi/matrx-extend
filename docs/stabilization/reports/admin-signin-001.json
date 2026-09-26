@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "report_id": "admin-signin-001",
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "Guest sign-in succeeded and the admin identity persisted through a full extension Reload. The extension remained signed in without a selected organization; the visible no-organization toast accurately stated that the browser request was never sent. T05 remains partial because the UI did not expose the OAuth callback origin.",
+  "changed_files": [
+    "docs/stabilization/runs/admin-signin-001.json",
+    "docs/stabilization/reports/admin-signin-001.json"
+  ],
+  "verification": [
+    "T52: clicking Settings > Sign in while guest changed the extension to Email admin@admin.com, Role ADMIN, and a Sign out action; after extension Reload the same identity and role remained visible.",
+    "T05 runtime: sign-in from dev extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml returned an authenticated state; that state survived extension Reload.",
+    "No organization was selected. The Organization setting displayed the explicit required picker; opening it showed 142 choices and Escape dismissed the list.",
+    "The exact no-organization toast text and observation timing limits are recorded in the run. No credentials or tokens were recorded."
+  ],
+  "limitations": [
+    "The UI did not expose a provider auth page or chromiumapp callback origin, so T05 is not marked fully verified.",
+    "No organization was chosen, as directed; the authenticated session is therefore confirmed without an active organization."
+  ],
+  "next_action": null,
+  "run_id": "admin-signin-001",
+  "case_ids": [
+    "EXT-F-1003-T52",
+    "EXT-F-0001-T05"
+  ]
+}
