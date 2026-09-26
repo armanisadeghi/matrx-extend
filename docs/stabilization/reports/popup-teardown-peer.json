@@ -1,0 +1,34 @@
+{
+  "defect_id": "EXT-D-0020",
+  "role": "independent_peer_review",
+  "implementation_commit": "9a3cdb9c435ff3cb67a124ea45a524a0642880e0",
+  "verdict_a_acceptance": {
+    "status": "PASS_SOURCE_REVIEW_RUNTIME_PENDING",
+    "evidence": [
+      "The original CI run 36253562084 passed popup-claim-recovery.test.tsx, then failed with EnvironmentTeardownError in the ChatView -> CopyMenu -> utils -> clsx import chain attributed to that test.",
+      "The test still uses the real launch-intent request and claim path. Its assertions still require the failure alert, Chat remaining selected before user action, Scrape selected only after Open Scrape, alert removal, and a consumed launch intent.",
+      "The new awaited ChatView import matches App's active Chat VIEW_LOADERS dynamic import. The new awaited ScrapeView import matches its post-click pre-warm import. Both occur before the test returns and teardown begins."
+    ],
+    "missing_or_extra": "No acceptance assertion was removed or suppressed. No implementation behavior changed.",
+    "cannot_verify": "I did not run tests or browser work under the root's sole resource guard. The focused run passed on the repaired commit, but the full suite and remote CI remain necessary to show the timing race is closed under their conditions."
+  },
+  "verdict_b_quality": {
+    "status": "PASS_SOURCE_REVIEW_RUNTIME_PENDING",
+    "evidence": [
+      "The fix waits on the real module imports at the test lifecycle boundary; it adds no skip, catch, fake timer, global error suppression, or production shim.",
+      "App starts a fire-and-forget active-view import in an effect. This is the only test found rendering the real sidepanel App, so the sibling census found no second test with this exact lifecycle exposure.",
+      "The historical CI failure is a valid red for teardown timing, though it does not reproduce locally. The root's guarded focused run /tmp/matrx-popup-teardown-green-001.log reports 1/1 passed, 505 ms, child exit 0."
+    ],
+    "limits": [
+      "The direct import await covers module evaluation; App's loader also has a subsequent .then wrapper. Normal microtask processing and the later asynchronous assertions should settle that wrapper, but only runtime evidence can prove the entire runner lifecycle.",
+      "No mutation or independent runtime test was run in this review."
+    ]
+  },
+  "files_reviewed": [
+    "tests/unit/popup-claim-recovery.test.tsx",
+    "tests/unit/popup-capture-route.test.tsx",
+    "src/entrypoints/sidepanel/App.tsx",
+    "docs/stabilization/reports/ci-teardown-repair.json",
+    "/tmp/matrx-ci-36253562084.log"
+  ]
+}
