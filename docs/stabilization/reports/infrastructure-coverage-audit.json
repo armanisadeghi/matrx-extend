@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "task_id": "infrastructure-coverage-audit",
+  "date": "2026-09-26",
+  "lane": "structured evidence reconciliation; no builds, tests, browser work, or resource-heavy commands",
+  "scope": ["EXT-F-0001", "EXT-F-0002", "EXT-F-0003"],
+  "summary": "Reconciled each case's expected behavior against existing run receipts and reports. Evidence supports several exact fixture outcomes and one successful real release, but mode-specific runtime gaps and incomplete fixture assertions remain. No acceptance status in inventory was changed.",
+  "applicability": {
+    "EXT-F-0001": "Build identity, extension reload, content-script refresh, and worker/offscreen recovery are infrastructure behaviors independent of authentication. The runtime identity retained after reload is still mode-specific, so guest, ordinary-member, and admin observations are recorded separately below. An admin observation cannot stand in for member behavior.",
+    "EXT-F-0002": "Resource admission and process ownership are host-level and authentication-independent. The guest/member/admin duplicates in current result entries do not represent three distinct product roles. Keep role cells unverified or resolve their applicability at the inventory owner; shared scratch evidence should not be counted three times.",
+    "EXT-F-0003": "Release validation and publication are authentication-independent infrastructure. The guest/member/admin duplicate fixture results do not demonstrate three identity-specific behaviors. They should be interpreted as one fixture outcome; release real-run evidence is also shared across modes."
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-0001-T01",
+      "verdict": "partially_proven",
+      "proven": ["A fresh development bundle built successfully; Chrome loaded the exact receipt bundle with expected development extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml and version 0.2.47."],
+      "evidence": ["docs/stabilization/runs/render-build-001.json", "docs/stabilization/runs/render-retest-001.json"],
+      "limits": ["Later development-build-002 is build-only and explicitly says the loaded browser runtime was not verified.", "Admin v0.2.56 native verification proves a loaded release bundle, not the same fresh-development-build case. Ordinary-member loaded-identity observation is absent."],
+      "remaining": ["Record fresh build plus unpacked identity for the current candidate if T01 is intended to track current source; otherwise retain the 0.2.47 receipt as historical proof and keep current candidate identity unverified."]
+    },
+    {
+      "case_id": "EXT-F-0001-T02",
+      "verdict": "mode_limited_pass",
+      "proven": ["Guest: Chrome loaded and reloaded development extension 0.2.47 and the actual sidepanel opened twice without the original startup render error.", "Admin: final shipped 0.2.56 full-extension Reload restored ADMIN identity and selected organization in the actual sidepanel after settling."],
+      "evidence": ["docs/stabilization/runs/render-retest-001.json", "docs/stabilization/runs/release-native-verification.json", "docs/stabilization/reports/operations-traceability-repair.json"],
+      "limits": ["No equivalent ordinary-member reload observation is recorded. The guest and admin evidence use different candidate versions and establish only the stated observations."],
+      "remaining": ["Ordinary-member runtime identity and initial-view result after reload remain unverified."]
+    },
+    {
+      "case_id": "EXT-F-0001-T03",
+      "verdict": "unverified",
+      "proven": [],
+      "evidence": ["docs/stabilization/reports/operations-traceability-repair.json"],
+      "limits": ["Build, install, and sidepanel reload receipts do not exercise a content-script-backed entry point after page reload."],
+      "remaining": ["Controlled page reload and visible success or truthful recovery state; guest/member/admin runtime cells have no direct case evidence."]
+    },
+    {
+      "case_id": "EXT-F-0001-T04",
+      "verdict": "unverified",
+      "proven": [],
+      "evidence": ["docs/stabilization/reports/operations-traceability-repair.json"],
+      "limits": ["Source changes that serialize offscreen cleanup and reconnect probing are not runtime evidence."],
+      "remaining": ["Service-worker termination/restart, offscreen recreation, message routing, and a recovered long-running operation across applicable runtime modes."]
+    },
+    {
+      "case_id": "EXT-F-0001-T05",
+      "verdict": "partial_all_modes",
+      "proven": ["A signed-out extension session started sign-in and returned to visible admin@admin.com / ADMIN state; that state survived full extension Reload."],
+      "evidence": ["docs/stabilization/runs/admin-signin-001.json", "docs/stabilization/reports/dev-auth-readiness.json"],
+      "limits": ["The provider page and chromiumapp callback origin were not visible, so the case's direct redirect/callback observation remains unmet.", "Ordinary-member sign-in is explicitly unverified; the observed successful account was admin, not an ordinary member."],
+      "remaining": ["Direct callback-origin evidence and ordinary-member sign-in result. Keep guest start, admin outcome, and member outcome distinct; no evidence establishes a member pass."]
+    },
+    {
+      "case_id": "EXT-F-0002-T01",
+      "verdict": "historical_evidence_not_currently_reverified",
+      "proven": ["An isolated scratch policy refused unsafe admission with RESOURCE_PREFLIGHT_REFUSED and no workload start."],
+      "evidence": ["docs/stabilization/reports/resource-scope-review.json", "docs/stabilization/reports/resource-reverify.json"],
+      "limits": ["These independent checks predate the last resource-runner repair. The latest resource-admission report does not include an unsafe-preflight refusal after that repair."],
+      "remaining": ["Repeat the unsafe admission refusal against the final runner, or mark the existing proof historical and leave the case unverified for the current runner."]
+    },
+    {
+      "case_id": "EXT-F-0002-T02",
+      "verdict": "historical_evidence_not_currently_reverified",
+      "proven": ["A simultaneous second scratch runner returned RESOURCE_HEAVY_BUSY while the first permit holder remained intact."],
+      "evidence": ["docs/stabilization/reports/resource-scope-review.json", "docs/stabilization/reports/resource-reverify.json", "docs/stabilization/reports/resource-review.json"],
+      "limits": ["The contention pass predates the latest process ownership/CPU-policy repair; the latest resource-admission report does not rerun contention on the final runner."],
+      "remaining": ["Re-run contention against the final runner and confirm the first owner's lease and process remain intact."]
+    },
+    {
+      "case_id": "EXT-F-0002-T03",
+      "verdict": "builder_scratch_evidence_independent_review_pending",
+      "proven": ["After injected unsafe watchdog samples, the final-runner scratch execution requested a safe-boundary stop, stopped the owned group, and confirmed the descendant gone."],
+      "evidence": ["docs/stabilization/reports/resource-admission.json"],
+      "limits": ["This is builder-produced scratch evidence, not independent post-repair verification. The review notes a contract boundary for descendants that escape into a new session; only permitted foreground/trusted launch behavior is in scope."],
+      "remaining": ["Independent post-repair check of watchdog stop, owned descendant cleanup, and lease retention on cleanup failure within the documented supported command contract."]
+    },
+    {
+      "case_id": "EXT-F-0002-T04",
+      "verdict": "builder_scratch_evidence_independent_review_pending",
+      "proven": ["Scratch evidence says the direct child and owned descendant were confirmed gone before lease release; ownerless recovery is fail-closed."],
+      "evidence": ["docs/stabilization/reports/resource-admission.json", "docs/stabilization/reports/resource-final-repair.json", "docs/stabilization/reports/resource-reverify.json"],
+      "limits": ["The latest final-repair evidence is builder-produced and its independent review is pending. Prior independent review found an escaped detached protected-binary boundary; the supported command contract now prohibits daemonizing and detached protected-system-binary children."],
+      "remaining": ["Fresh reviewer confirms cleanup and retained lease on cleanup failure under the final supported command contract."]
+    },
+    {
+      "case_id": "EXT-F-0002-T05",
+      "verdict": "builder_scratch_evidence_independent_review_pending",
+      "proven": ["Injected unsafe samples left the manual-browser lease held until explicit operator SIGINT/stop confirmation, then exited resource-invalid."],
+      "evidence": ["docs/stabilization/reports/resource-admission.json"],
+      "limits": ["This verifies the operator confirmation protocol in scratch; it cannot independently prove the person stopped browser actions, and post-repair independent review is pending."],
+      "remaining": ["Independent reviewer verifies the final runner retains the lease through explicit confirmation; the operator-action limitation remains inherent."]
+    },
+    {
+      "case_id": "EXT-F-0003-T01",
+      "verdict": "fixture_proven_and_real_refusals_observed",
+      "proven": ["The isolated bare-origin fixture refused a red mandatory-test candidate before publication and preserved old installed/upload artifacts.", "Real release attempts also failed closed before publication on package-twin, tool-drift/catalog, and tool-drift/surface-inclusion gates."],
+      "evidence": ["docs/stabilization/runs/release-green-001.json", "docs/stabilization/runs/release-real-002.json", "docs/stabilization/runs/release-real-003.json", "docs/stabilization/runs/release-real-004.json"],
+      "limits": ["The real refusals were package/catalog drift refusals, not an actual failing unit test; the red-unit-test refusal remains local-fixture evidence."],
+      "remaining": ["No demonstrated gap for the documented isolated-fixture acceptance. Do not describe the real package/catalog refusals as a real red-test run."]
+    },
+    {
+      "case_id": "EXT-F-0003-T02",
+      "verdict": "fixture_proven_and_real_successful_candidate_proven",
+      "proven": ["Fixture asserts candidate checks precede publication and final checked SHA equals published fixture main.", "Real release 0.2.51 completed mandatory gates against candidate 760c7a1c5dba504b894dd5450b83e9fee060d065 and published that validated candidate."],
+      "evidence": ["docs/stabilization/runs/release-green-001.json", "docs/stabilization/runs/release-real-005.json"],
+      "limits": ["Fixture controls use stubs; the real run complements them with actual mandatory tooling. Aggregate test counts are not case-level proof."],
+      "remaining": []
+    },
+    {
+      "case_id": "EXT-F-0003-T03",
+      "verdict": "fixture_proven_real_push_race_unverified",
+      "proven": ["The isolated fixture preserves both local and foreign commits and refuses publication on conflicting trees."],
+      "evidence": ["docs/stabilization/runs/release-green-001.json"],
+      "limits": ["No real concurrent main advance/conflict occurred during release-real-005 or another real release receipt. The real 0.2.51 run proves a successful publication, not race reconciliation."],
+      "remaining": ["Only if campaign acceptance requires a real remote race: observe a natural/injected real remote race safely; otherwise the specified isolated fixture is the direct acceptance method."]
+    },
+    {
+      "case_id": "EXT-F-0003-T04",
+      "verdict": "partially_proven_fixture_exact_all_gates_not_asserted",
+      "proven": ["The isolated fixture asserts checks run for both candidates, selected mandatory gates rerun after the race, and the final checked SHA equals published main."],
+      "evidence": ["docs/stabilization/runs/release-green-001.json", "docs/stabilization/reports/release-final-peer.json", "docs/stabilization/reports/release-freshness-peer.json"],
+      "limits": ["The release-green assertion list names schema, Store-package, and Store-risk reruns, but does not enumerate/assert every mandatory check reran. Freshness-peer is source-only and its stale/push-race fixture was explicitly pending root execution. Real release-005 had no remote race."],
+      "remaining": ["Runtime evidence that every mandatory check reruns on the raced final candidate, or narrow the expected criterion only through the inventory owner. The newly added T07 release008 run is a separate active gate-ordering proof and must remain unverified until its receipt is recorded."]
+    },
+    {
+      "case_id": "EXT-F-0003-T05",
+      "verdict": "fixture_proven_with_scope_limit",
+      "proven": ["The isolated fixture proves a live owner lock blocks a contender before validation/build and proves local bundle promotion follows validation success."],
+      "evidence": ["docs/stabilization/runs/release-green-001.json", "docs/stabilization/reports/release-final-peer.json"],
+      "limits": ["Evidence does not model two actual builds competing for shared output; it proves serialized release ownership and post-validation promotion in the fixture."],
+      "remaining": ["No gap for the acceptance as currently written if lock serialization is the intended observable. Avoid claiming a direct simultaneous-build stress run."]
+    },
+    {
+      "case_id": "EXT-F-0003-T06",
+      "verdict": "real_release_artifact_match_proven",
+      "proven": ["Real release-005 reports remote main and v0.2.51 at the candidate SHA; the local installed tree and both zip hashes match the receipt, including its tree hash and file count."],
+      "evidence": ["docs/stabilization/runs/release-real-005.json"],
+      "limits": ["The receipt explicitly says Chrome loaded-runtime verification is still outstanding; artifact identity does not imply Chrome installation/runtime proof."],
+      "remaining": []
+    },
+    {
+      "case_id": "EXT-F-0003-T07",
+      "verdict": "unverified_active_release008",
+      "proven": ["Static review says freshness gate is unconditionally first and failure returns before build/atomic publication; the fixture source contains stale refusal and remote-race assertions."],
+      "evidence": ["docs/stabilization/reports/release-freshness-peer.json", "docs/stabilization/reports/release-freshness-failfast.json"],
+      "limits": ["The independent peer is source-only; it states the new fixtures were not executed. Root has release-008 running. No T07 outcome may be inferred before the actual receipt."],
+      "remaining": ["Record release-008's strict gate-ordering result and any required current-graph positive control from its actual receipt. Keep guest/member/admin cells unverified until then; this is shared infrastructure, not three auth-specific outcomes."]
+    }
+  ],
+  "real_release_005_reconciliation": {
+    "release_outcome": "Actual strict release succeeded for version 0.2.51 at candidate 760c7a1c5dba504b894dd5450b83e9fee060d065; the receipt names all mandatory passes, verified remote main/tag equivalence, and matching local artifacts.",
+    "prior_real_refusals": ["release-real-001 stopped as invalid-resource after unsafe sustained host load; this is an environment/resource stop, not a product failure.", "release-real-002 failed package-twins before publication.", "release-real-003 failed tool-drift catalog-row validation before publication.", "release-real-004 failed tool-drift surface inclusion before publication."],
+    "concurrent_push_races": "release-green-001 is a temporary bare-origin fixture proving remote/local commit preservation, conflict refusal, and selected gate reruns after race. release-real-005 had no observed remote push race. Do not call the real release a race test.",
+    "resource_admission": "release-real-005 has resource_invalid=false, and release-real-001 records the guard stopping its owned group after sustained CPU refusal. The latest resource-admission.json separately records a full real-host preflight and final-runner scratch lifecycle cases. Resource T01/T02 and independent post-repair review still need reconciliation; an admission at one time is not proof of later machine readiness.",
+    "test_count_limit": "Counts of 1,300 passing tests in release-real-005 describe suite execution only; they do not establish any individual T-case without the linked behavior-specific evidence."
+  },
+  "inventory_owner": "Root owner retains inventory.json ownership. This report records evidence findings only and deliberately leaves case/mode statuses unchanged.",
+  "next_actions": [
+    "Keep EXT-F-0003-T07 unverified until release-008 has an actual receipt.",
+    "Have root decide whether to change stale per-role EXT-F-0002 pass entries to one shared auth-independent proof with role cells left unverified/not-applicable; do not count repeated guest/member/admin copies as independent results.",
+    "Close or preserve exact unresolved T03/T04/T05/T01 member-runtime gaps under EXT-F-0001 according to the current candidate and native-session evidence; do not let admin evidence substitute for member identity behavior."
+  ]
+}
