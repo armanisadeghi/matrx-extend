@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Read-only admin SEO gate in the owned native panel. Root admits execution. */
+/** Admin SEO acceptance in the owned native panel. Root admits execution. */
 import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
@@ -19,11 +19,14 @@ const report = {
   feature_id: 'EXT-F-1008',
   mode: 'admin',
   status: 'unverified',
-  scope: 'real admin sign-in and selected organization; public SEO detail and JSON menu gate',
+  scope:
+    'real admin sign-in and selected organization; public SEO audit, menu, and one saved history row',
   targets: [],
   limitations: [
-    'No clipboard content, saved audit, history, recommendations, Chat, or member role is exercised.',
+    'Only one new public-page audit is saved in the selected campaign test organization; no prior row is changed or deleted.',
+    'No clipboard content, provider recommendation, Chat, or member role is exercised.',
     'Title and heading presence are a bounded detail baseline; they do not prove every SEO field.',
+    'Backend failure/retry, history empty/error/loading, two-snapshot comparison, and changed-page diff remain unverified.',
   ],
 };
 const target = (caseId, subtarget, evidence) =>
@@ -141,9 +144,37 @@ async function seoState(panel) {
       && trigger?.getAttribute('data-state') === 'open';
     const choices = [...(openMenu?.querySelectorAll('button') ?? [])]
       .map((node) => node.textContent.trim());
+    const history = [...(pane?.querySelectorAll('button[title]') ?? [])]
+      .filter((node) => node.title === 'Saved audits for this URL');
+    const historyToggle = history.length === 1 ? history[0] : null;
+    const historyHeading = [...(pane?.querySelectorAll('div') ?? [])]
+      .find((node) => node.childElementCount === 0
+        && node.textContent.trim() === 'Saved audits for this URL');
+    const list = historyHeading?.parentElement;
+    const historyRows = [...(list?.children ?? [])]
+      .filter((node) => node.tagName === 'BUTTON');
+    const savedSnapshot = [...(pane?.querySelectorAll('div') ?? [])]
+      .some((node) => node.childElementCount === 0 && node.textContent.trim() === 'Saved snapshot');
+    const liveButtons = [...(pane?.querySelectorAll('button') ?? [])]
+      .filter((node) => node.textContent.trim() === 'Live');
+    const saveButtons = [...(pane?.querySelectorAll('button') ?? [])]
+      .filter((node) => node.textContent.trim() === 'Save');
+    const savedButtons = [...(pane?.querySelectorAll('button') ?? [])]
+      .filter((node) => node.textContent.trim() === 'Saved');
     return {
+      documentTimeOrigin: performance.timeOrigin,
       linked, title, headings, reAudit, copyCount: copy.length,
       menuOpen: menuOwnedByCopy, choices,
+      saveCount: saveButtons.length, savedCount: savedButtons.length,
+      historyToggleCount: history.length,
+      historyCount: historyToggle && /^\d+$/.test(historyToggle.textContent.trim())
+        ? Number(historyToggle.textContent.trim()) : 0,
+      historyOpen: !!historyHeading,
+      historyRowCount: historyRows.length,
+      newestHistoryLabel: historyRows[0]?.textContent.trim() ?? null,
+      newestHistoryLabelUnique: historyRows.length > 0
+        && historyRows.filter((node) => node.textContent.trim() === historyRows[0].textContent.trim()).length === 1,
+      savedSnapshot, liveButtonCount: liveButtons.length,
       error: /Audit failed:|This page cannot be audited/.test(pane?.innerText ?? ''),
     };
   })()`,
@@ -246,6 +277,138 @@ try {
         jsonChoice: true,
       });
       assert.ok(menu.menuOpen);
+
+      // Close the popover without choosing a clipboard action. One Save creates
+      // a new row for the current public URL in the selected test organization.
+      stage = 'close_copy_menu';
+      await click(panel, 'title', 'Copy audit');
+      await waitFor(
+        'copy_menu_closed',
+        () => seoState(panel),
+        (state) => state?.linked && !state.menuOpen,
+      );
+      const beforeSave = await seoState(panel);
+      assert.equal(beforeSave.saveCount, 1, 'one Save button for current live audit');
+      assert.equal(beforeSave.savedCount, 0, 'audit has not been saved by this run');
+      stage = 'save_public_audit';
+      await click(panel, 'button', 'Save');
+      const afterSave = await waitFor(
+        'save_returned_and_history_refreshed',
+        () => seoState(panel),
+        (state) =>
+          state?.linked &&
+          state.savedCount === 1 &&
+          state.saveCount === 0 &&
+          state.historyToggleCount === 1 &&
+          state.historyCount >= beforeSave.historyCount + 1 &&
+          !state.error,
+        30_000,
+      );
+      target('T04', 'one_public_audit_saved_and_history_refreshed', {
+        savedButtonVisible: true,
+        historyCountIncreased: true,
+      });
+
+      stage = 'history_open';
+      await click(panel, 'title', 'Saved audits for this URL');
+      const open = await waitFor(
+        'history_list_open',
+        () => seoState(panel),
+        (state) =>
+          state?.linked &&
+          state.historyOpen &&
+          state.historyRowCount === afterSave.historyCount &&
+          state.newestHistoryLabelUnique,
+      );
+      target('T05', 'history_opens_for_current_public_url', {
+        rowCountMatchesBadge: true,
+        newestRowHasUniqueVisibleLabel: true,
+      });
+      stage = 'history_close';
+      await click(panel, 'title', 'Saved audits for this URL');
+      await waitFor(
+        'history_list_closed',
+        () => seoState(panel),
+        (state) => state?.linked && !state.historyOpen,
+      );
+      stage = 'history_reopen';
+      await click(panel, 'title', 'Saved audits for this URL');
+      await waitFor(
+        'history_list_reopened',
+        () => seoState(panel),
+        (state) =>
+          state?.linked &&
+          state.historyOpen &&
+          state.newestHistoryLabel === open.newestHistoryLabel,
+      );
+      stage = 'saved_snapshot_open';
+      await click(panel, 'button', open.newestHistoryLabel);
+      await waitFor(
+        'saved_snapshot_visible',
+        () => seoState(panel),
+        (state) =>
+          state?.linked &&
+          state.savedSnapshot &&
+          state.liveButtonCount === 1 &&
+          !state.historyOpen &&
+          state.title === titles[1],
+      );
+      stage = 'return_to_live';
+      await click(panel, 'button', 'Live');
+      await waitFor(
+        'live_audit_restored',
+        () => seoState(panel),
+        (state) =>
+          state?.linked &&
+          !state.savedSnapshot &&
+          state.liveButtonCount === 0 &&
+          state.title === titles[1] &&
+          state.reAudit,
+      );
+      target('T05', 'newest_saved_snapshot_and_live_return', {
+        snapshotVisible: true,
+        selectedSnapshotTitleMatchesPublicDom: true,
+        liveAuditRestored: true,
+      });
+
+      stage = 'panel_reload';
+      const beforeReload = await seoState(panel);
+      await panel.send('Page.reload', { ignoreCache: false });
+      const remounted = await waitFor(
+        'admin_panel_document_reloaded',
+        () => seoState(panel),
+        (state) => state?.documentTimeOrigin > beforeReload.documentTimeOrigin,
+        30_000,
+      );
+      if (!remounted.linked) await click(panel, 'title', 'SEO');
+      const persisted = await waitFor(
+        'saved_history_after_reload',
+        () => seoState(panel),
+        (state) =>
+          state?.linked &&
+          state.title === titles[1] &&
+          state.reAudit &&
+          state.historyToggleCount === 1 &&
+          state.historyCount >= afterSave.historyCount &&
+          !state.error,
+        30_000,
+      );
+      stage = 'persisted_history_reopen';
+      await click(panel, 'title', 'Saved audits for this URL');
+      await waitFor(
+        'persisted_history_list_visible',
+        () => seoState(panel),
+        (state) =>
+          state?.linked &&
+          state.historyOpen &&
+          state.historyRowCount === persisted.historyCount &&
+          state.newestHistoryLabel === open.newestHistoryLabel,
+      );
+      target('T05', 'saved_history_survives_panel_reload', {
+        newDocumentObserved: true,
+        currentPublicTitleMatches: true,
+        newestSavedRowStillVisible: true,
+      });
     },
   });
   report.status = 'partial';
