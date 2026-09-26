@@ -114,10 +114,26 @@ async function accountState(panel) {
     const section = account?.parentElement?.nextElementSibling;
     const row = (label) => [...(section?.querySelectorAll('span') ?? [])]
       .find((span) => span.textContent.trim() === label)?.parentElement?.textContent.trim() ?? null;
-    return { emailRow: row('Email'), roleRow: row('Role'),
-      signIn: [...document.querySelectorAll('button')].some((button) => button.textContent.trim() === 'Sign in'),
-      signOut: [...document.querySelectorAll('button')].some((button) => button.textContent.trim() === 'Sign out'),
-      advanced: document.body?.innerText.includes('Advanced agent capabilities') ?? false };
+    const emailRow = row('Email'), roleRow = row('Role');
+    const buttons = [...document.querySelectorAll('button')];
+    const signIn = buttons.find((button) => button.textContent.trim() === 'Sign in');
+    const retry = buttons.find((button) => button.textContent.trim() === 'Try again');
+    return {
+      accountPresent: Boolean(account),
+      accountExpanded: account?.getAttribute('aria-expanded') ?? null,
+      emailRowPresent: emailRow !== null,
+      expectedEmailMatch: emailRow === 'Email${EXPECTED_ADMIN}',
+      roleRowPresent: roleRow !== null,
+      adminRoleMatch: roleRow?.toLowerCase() === 'roleadmin',
+      signIn: Boolean(signIn),
+      signInDisabled: signIn?.disabled ?? false,
+      signOut: buttons.some((button) => button.textContent.trim() === 'Sign out'),
+      advanced: buttons.some((button) => button.textContent.trim() === 'Advanced agent capabilities'),
+      authErrorPresent: Boolean(document.querySelector('[role="alert"]')),
+      authRetryPresent: Boolean(retry),
+      authRetryDisabled: retry?.disabled ?? false,
+      loadingIndicatorPresent: Boolean(document.querySelector('[role="progressbar"], [aria-busy="true"]')),
+    };
   })()`);
 }
 
@@ -137,15 +153,29 @@ try {
       stage = 'extension_signin_click';
       await click(panel, 'button', 'Sign in');
       stage = 'extension_admin_wait';
-      await waitFor('admin_settings_after_real_signin', () => accountState(panel),
-        (state) => state?.emailRow === `Email${EXPECTED_ADMIN}` &&
-          state.roleRow?.toLowerCase() === 'roleadmin' && state.signOut && state.advanced,
-        90_000);
+      evidence.extension = { guestBefore: true, lastObserved: null };
+      try {
+        await waitFor('admin_settings_after_real_signin', async () => {
+          try {
+            const observed = await accountState(panel);
+            evidence.extension.lastObserved = observed;
+            return observed;
+          } catch {
+            evidence.extension.observationReadFailed = true;
+            throw new Error('safe_account_observation_failed');
+          }
+        },
+          (state) => state?.expectedEmailMatch && state.adminRoleMatch &&
+            state.signOut && state.advanced,
+          90_000);
+      } catch {
+        fail('extension_admin_state_not_observed');
+      }
       const admin = await accountState(panel);
       evidence.extension = {
         guestBefore: true,
         signedInAs: EXPECTED_ADMIN,
-        adminRoleVisible: admin.roleRow?.toLowerCase() === 'roleadmin',
+        adminRoleVisible: admin.adminRoleMatch,
         advancedCapabilitiesVisible: admin.advanced,
         signOutVisible: admin.signOut,
       };

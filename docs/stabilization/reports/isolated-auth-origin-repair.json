@@ -1,6 +1,6 @@
 {
   "defect_id": "EXT-D-0014",
-  "status": "source_repaired_runtime_unverified",
+  "status": "origin_repair_runtime_verified_extension_signin_unverified",
   "cause": "The isolated admin sign-in runner required the apex web origin, but its real login navigation landed on the canonical www origin before credential entry. Its dashboard wait used the same stale apex requirement.",
   "evidence": [
     "docs/stabilization/runs/isolated-admin-signin-002.json records https://www.aimatrx.com/login and web_origin_mismatch at web_url_check before credential_file_read.",
@@ -19,8 +19,14 @@
   "safety": "The pre-credential exact-origin and /login path checks remain in place. The dashboard wait still requires the exact origin and /dashboard path. No broad hostname allowance or fallback was added.",
   "verification": {
     "source_review": "The one-line origin change and every WEB_ORIGIN use were inspected.",
-    "syntax": "pending root owner check",
-    "guarded_real_browser_runtime": "pending root owner resource-guard admission and execution",
+    "syntax": "node --check passed after diagnostic instrumentation",
+    "guarded_real_browser_runtime": "isolated-admin-signin-003 passed real web login and reached https://www.aimatrx.com/dashboard; extension Settings did not satisfy the admin assertion within 90 seconds",
     "credential_read": "not performed in this repair lane"
+  },
+  "extension_diagnostic": {
+    "source_run": "docs/stabilization/runs/isolated-admin-signin-003.json",
+    "ambiguity": "The prior runner discarded the last account UI state on timeout, so run 003 cannot distinguish an assertion mismatch, a collapsed Account section, a visible auth error, or an unfinished sign-in.",
+    "instrumentation": "The next guarded run will retain only booleans and the Account expanded-state enum: expected email and admin-role matches, row presence, sign-in/sign-out and advanced-control presence, visible auth alert/retry, disabled controls, and generic loading indicator presence. It writes no raw account text, error message, DOM, browser storage, auth URL, or credential.",
+    "pending": "Root owner to run the instrumented acceptance runner under the resource guard, then use the safe observation to decide whether a product auth repro exists."
   }
 }
