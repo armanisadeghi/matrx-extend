@@ -351,6 +351,7 @@ describe('VaultView focused child-frame projection', () => {
       ],
     };
     render(<VaultView />);
+    await waitFor(() => expect(screen.getAllByRole('button', { name: 'Fill' })).toHaveLength(3));
     const { selectEligibleFillSelector } = await import(
       '../../../tests/browser/firefox-vault/multi-account-acceptance.mjs'
     );

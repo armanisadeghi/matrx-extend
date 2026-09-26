@@ -1,0 +1,12 @@
+{
+  "id": "remote-vault-red-001",
+  "defect_id": "EXT-D-0019",
+  "feature_id": "EXT-F-0003",
+  "status": "pass_did_not_reproduce",
+  "tested_commit": "3a01a4502e432b2d3422fa5b8052159ee785bff4",
+  "scope": "Pre-edit focused VaultView test on local macOS; original remote CI run 36251603459 remains the red evidence.",
+  "command": "vitest run --maxWorkers=1 src/features/vault/VaultView.focused-frame.test.tsx",
+  "result": "16 passed, 0 failed; exit 0",
+  "duration": "819ms",
+  "source_log": "/tmp/matrx-remote-vault-red-001.log"
+}

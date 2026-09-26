@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/svg003_runtime_peer",
+  "run_id": "svg-caption-native-003",
+  "method": "Independent source and supplied native run evidence review; no browser execution, product edit, inventory change, or defect transition in this lane.",
+  "evidence": [
+    "docs/stabilization/runs/svg-caption-native-003.json",
+    "docs/stabilization/runs/svg-caption-red-001.json",
+    "docs/stabilization/runs/svg-caption-green-001.json",
+    "docs/stabilization/runs/svg-caption-siblings-001.json",
+    "tests/browser/svg-caption-native-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/unit/normalize-markup.test.ts",
+    "src/lib/scrape/pipeline.ts",
+    "docs/stabilization/defects/EXT-D-0018.json"
+  ],
+  "verdict_a_original_reproduction_and_surrounding_acceptance": {
+    "status": "PASS_BOUNDED_D18_CLOSURE_JUSTIFIED",
+    "reason": "The original guarded red exercised runScrape/Defuddle with SVG present but caption missing (1 failed, 14 passed). Green passed 15; sibling run passed 17 including two ordered captioned figures and layered SVG with ordinary image. Native 003 then returned fixture_pass and actual exit 0 for Fast and Deep, each reporting two loaded SVGs, two captions and labels, ordered rendered Article, exact SVG geometry, and idle usable controls. Deep required a source DOM caption, paragraph, and bar-geometry revision before passing, so stale Fast content cannot satisfy it.",
+    "runtime_scope": "Real Chrome side panel and trusted input against an owned localhost HTML article and release-receipt-verified unpacked extension 0.2.67, sourceSha 79d1dba35ea1157a6dbf7a8ce23942a0a2a8f271.",
+    "limits": [
+      "The native run uses one SVG per figure; layered SVG and ordinary-image sibling cases are unit pipeline evidence, not native UI evidence.",
+      "The native profile is a settled guest panel. Member and admin cells are unverified.",
+      "No unrelated public production article was exercised; public_production_proof is false.",
+      "Full EXT-F-1007-T28 breadth, including every role and site variation, remains unverified despite bounded D18 caption-loss closure."
+    ]
+  },
+  "verdict_b_acceptance_quality": {
+    "status": "PASS_WITH_STATED_LIMITS",
+    "reason": "The runner constructs independent literal expected captions, labels, image names, path and bar coordinates before serving the source page. It reads actual source DOM, invokes the UI Capture and Scroll & capture via trusted CDP input, scrolls the Article by native mouseWheel until lazy images load, reads the linked rendered Article, decodes its image payloads, asserts image/text interleaving and exact geometry, and checks settled controls. It does not synthesize observed Article data or directly invoke scrape internals. The native harness verifies the release receipt, unpacked tree, Store ZIP, owned Chrome profile, extension worker, and SIDE_PANEL context.",
+    "observed_run_details": {
+      "resource_admitted_at": "2026-09-26T15:22:30.849Z",
+      "resource_exit_at": "2026-09-26T15:22:39.930Z",
+      "exit_code": 0,
+      "fast_and_deep_passes": ["fast", "deep"],
+      "last_observation_scope": "article_active",
+      "last_observation_loaded_svg_count": 2,
+      "last_observation_chart_scroll_hit": true,
+      "last_observation_chart_scroll_loaded": true,
+      "deep_stale_second_caption_absent": true,
+      "deep_revised_caption_present": true,
+      "deep_revised_paragraph_present": true
+    },
+    "qualification": "The retained JSON contains a detailed final Deep observation and per-mode pass summaries, not full per-mode DOM snapshots. The per-mode details are supported by the reviewed pass assertions and the 0-exit run; this peer did not rerun Chrome."
+  }
+}

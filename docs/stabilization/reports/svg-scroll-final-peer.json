@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/svg_scroll_final_peer",
+  "reviewed_commit": "52d769a489d5ea3ac1c47bff9a2882e73b68a80b",
+  "method": "Independent source-only review of the changed runner, its waitFor/CDP driver, ScrapeView scroll container and controls, prior peer findings, and run-002 evidence. No browser, build, test, or runner edit.",
+  "verdict_a_runtime_acceptance": {
+    "status": "UNVERIFIED",
+    "evidence": "The supplied native run-002 stopped at fast_article_wait with the second lazy SVG below the viewport and unloaded. It predates 52d769a4. No post-change native result demonstrates trusted wheel delivery, second-image load, or Fast and Deep completion.",
+    "next_action": "Rerun the guarded native acceptance against the changed runner and inspect the per-mode result and scrolling observations."
+  },
+  "verdict_b_source_quality": {
+    "status": "ACCEPTABLE_FOR_NATIVE_RERUN",
+    "findings": [
+      {
+        "prior_finding": "P1 missing alt in both polling readers",
+        "status": "ADDRESSED",
+        "evidence": "Both image-load and wheel-progress readers now call chartScrollState(panel, alt); both predicates require chart_scroller and imageCount === 1."
+      },
+      {
+        "prior_finding": "P2 wheel point clipping and progress without scroll or visibility",
+        "status": "ADDRESSED",
+        "evidence": "The wheel point is the center of the scroller/viewport intersection further clipped by overflow ancestors, then hit-tested against the scroller. Progress requires changed scrollTop or the same target entering the visible scroller. The loaded flag alone no longer counts. The subsequent loop requires the target in the visible scroller and loaded before return."
+      },
+      {
+        "prior_finding": "P2 settled capture may remain busy with unusable controls",
+        "status": "ADDRESSED",
+        "evidence": "Each mode now asserts one enabled Re-capture button, one enabled Scroll & capture button, busy === false, and no visible alert before recording pass."
+      }
+    ],
+    "preserved_assertions": "assertArticle still checks both SVG image loads, exact path and bar geometry including the Deep revision, captions, adjacent labels, and DOM order. The runner does not force image loading attributes.",
+    "residual_limit": "Source inspection found no guaranteed subsequent runtime failure, but cannot establish that CDP mouseWheel reaches the Article scroller or triggers lazy loading in the native panel. The visibility alternative in wheel progress could coincide with layout movement; final success still requires the loaded-image and full article assertions."
+  }
+}

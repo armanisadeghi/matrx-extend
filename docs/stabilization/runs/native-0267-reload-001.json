@@ -1,0 +1,34 @@
+{
+  "id": "native-0267-reload-001",
+  "status": "pass",
+  "operator_report": "docs/stabilization/reports/native-0267-reload.json",
+  "build_version": "0.2.67",
+  "exit_code": 0,
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:19:52.672Z",
+      "runId": "native-0267-reload-001",
+      "mode": "browser",
+      "code": "RESOURCE_ADMITTED",
+      "provenance": "Root browser-lease message; detailed admission sample not supplied to this lane."
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:21:12.350Z",
+      "runId": "native-0267-reload-001",
+      "signal": "SIGINT",
+      "code": "RESOURCE_STOP_REQUESTED",
+      "provenance": "Root guard record relayed by root."
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:21:12.351Z",
+      "runId": "native-0267-reload-001",
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "code": "RESOURCE_BROWSER_STOP_CONFIRMED",
+      "provenance": "Root guard record relayed by root."
+    }
+  ]
+}
