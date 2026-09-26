@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "scope": "Independent evidence and acceptance review of EXT-D-0006 and EXT-F-1003-T55 through T59. No browser launch, test execution, source edits, or permission changes in this lane.",
+  "verdict_a_acceptance": {
+    "status": "PASS_FOR_EXT_D_0006_ORIGINAL_REPRO; PARTIAL_FOR_T55_THROUGH_T59",
+    "defect_id": "EXT-D-0006",
+    "basis": "The original 0.2.51 failure was an interactive DevTools Protocol switch that stayed on after clicks and extension reload. The 0.2.64 native reload evidence directly observes the same Settings row as installation-included, non-switchable, and accurate after a full Chrome extension Reload. This is the original defect's corrected behavior, with exact loaded build identity recorded. It supports closing the defect itself.",
+    "evidence": [
+      "docs/stabilization/runs/admin-permissions-002.json (0.2.51 original failure)",
+      "docs/stabilization/runs/native-0264-reload-001.json and docs/stabilization/reports/native-0264-reload.json (0.2.64 actual side panel after extension Reload)",
+      "docs/stabilization/defects/EXT-D-0006.json (root cause and transition history)"
+    ],
+    "limits": [
+      "This acceptance closes the misleading permission-control defect, not whether CDP tools work; the inventory explicitly assigns tool behavior to its separate tool-feature cases.",
+      "T55 includes adjacent optional-permission behavior. That wider case is not fully closed because Cookies denial remains unobserved and actions span builds; see case matrix below."
+    ]
+  },
+  "verdict_b_engineering_quality": {
+    "status": "PASS_ON_REVIEWED_SOURCE; OWNER_GUARD_RESULT_NOT_REPEATED",
+    "basis": "The independent final source review recorded in permission-final-peer.json found no important source regression: manifest-backed classification drives Settings, dispatcher remedies, and Tools badges; debugger and sessions are treated as required; unsupported optional rows are filtered; busy cleanup and recoverable status-read handling are covered in source/tests. This lane inspected that report and the final source-review scope, but did not rerun tests.",
+    "evidence": [
+      "docs/stabilization/reports/permission-final-peer.json",
+      "docs/stabilization/reports/debugger-permission-fix.json",
+      "docs/stabilization/defects/EXT-D-0006.json"
+    ],
+    "limits": [
+      "This is an engineering-source verdict, not test-execution evidence. The owner-lane focused gate result remains separately attributable.",
+      "No security bypass or permissions escalation is implied by the report; Chrome required debugger remains required and no new privilege was granted by this review."
+    ]
+  },
+  "case_matrix": {
+    "EXT-F-1003-T55": {
+      "status": "PARTIAL; DO NOT CLOSE BROAD CASE",
+      "closeable_claim": "The original DevTools Protocol UI failure is fixed and the final 0.2.64 row is accurate, informational, and remains so after extension reload.",
+      "remaining": "T55 also asks adjacent optional controls to cover grant, denial, removal, and persistence. Current 0.2.64 durable denial/reload evidence covers pageCapture (T57) and tabCapture (T59), and current reload saw all four optional grants OFF. Cookies (T56) has no observed native denial path. Prior grant/removal evidence is from 0.2.51 or 0.2.54, so it cannot be silently relabeled as 0.2.64 behavior.",
+      "evidence": [
+        "native-0264-reload-001",
+        "isolated-permission-denial-002",
+        "isolated-permission-denial-004",
+        "admin-permissions-001",
+        "permissions-auth-native-sol"
+      ]
+    },
+    "EXT-F-1003-T56": {
+      "status": "PARTIAL; DO NOT CLOSE",
+      "verified": "Cookies off→on→off and off after extension reload in build 0.2.51; current 0.2.64 native reload observed it OFF without mutation.",
+      "remaining": "The defined denial criterion was not exercised because Chrome showed no permission prompt. Current-build grant/removal cycles are also absent. The old successful cycle is explicitly limited to 0.2.51.",
+      "evidence": ["admin-permissions-001", "native-0264-reload-001"]
+    },
+    "EXT-F-1003-T57": {
+      "status": "PASS_FOR_0.2.51_SCENARIO; CURRENT_0.2.64_DENIAL_AND_RELOAD_SUBSTEP_PASS; BROAD_CURRENT_CASE_NOT_CLOSED",
+      "verified": "Build 0.2.51 exercised grant, native denial, removal, and reload. Build 0.2.64 independently exercised native denial; the real Settings refusal alert appeared, switch stayed OFF, both Chrome permission APIs reported absent, and a real side-panel reload retained admin/OFF/absent.",
+      "remaining": "The 0.2.64 run did not exercise allow/grant or removal. Preserve the build boundary; the two runs establish the distinct claims above, not a single all-actions-on-0.2.64 pass.",
+      "evidence": [
+        "admin-permissions-001",
+        "isolated-permission-denial-002",
+        "native-denial-operator-001"
+      ]
+    },
+    "EXT-F-1003-T58": {
+      "status": "PASS_FOR_0.2.51_SCENARIO; CURRENT_0.2.64_STATE_ONLY; BROAD_CURRENT_CASE_NOT_CLOSED",
+      "verified": "Build 0.2.51 exercised grant, native denial, removal, and reload. Build 0.2.64 native reload observed Clipboard read OFF.",
+      "remaining": "No 0.2.64 grant, denial, or removal cycle is recorded. Do not upgrade the older scenario to current-build evidence.",
+      "evidence": ["admin-permissions-001", "native-0264-reload-001"]
+    },
+    "EXT-F-1003-T59": {
+      "status": "PASS_FOR_0.2.51_SCENARIO; CURRENT_0.2.64_DENIAL_AND_RELOAD_SUBSTEP_PASS; BROAD_CURRENT_CASE_NOT_CLOSED",
+      "verified": "Build 0.2.51 exercised grant, native denial, removal, and reload. Build 0.2.64 independently exercised native denial; the refusal alert appeared with switch OFF and both permission APIs absent, and the actual side-panel reload retained admin/OFF/absent.",
+      "remaining": "The 0.2.64 run did not exercise allow/grant or removal. Preserve the build boundary; the two runs do not prove all actions on the current build.",
+      "evidence": [
+        "admin-permissions-002",
+        "isolated-permission-denial-004",
+        "native-denial-operator-004"
+      ]
+    }
+  },
+  "overall_disposition": "Close EXT-D-0006 on its corrected original behavior and reviewed source quality, while keeping T55-T59 scenario statuses version-specific. No broad permission case T55-T59 has complete all-actions evidence on build 0.2.64. T57 and T59 have current-build denial/reload substeps; T56 lacks denial evidence; T58 has current OFF state only."
+}
