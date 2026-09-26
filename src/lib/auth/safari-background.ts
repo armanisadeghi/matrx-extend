@@ -56,7 +56,7 @@ async function failAttempt(attempt: SafariAttempt, message: string, closeTab = f
 
 export async function startSafariAuthorization(): Promise<{ pending: true }> {
   if (BROWSER !== 'safari') throw new Error('Safari authorization is unavailable in this browser');
-  if (!ENV.EXTENSION_OAUTH_CLIENT_ID) throw new Error('OAuth client configuration is unavailable');
+  if (!ENV.SAFARI_OAUTH_CLIENT_ID) throw new Error('Safari OAuth client configuration is unavailable');
 
   const previous = await readAttempt();
   if (previous) await clearAttempt(previous);
@@ -72,7 +72,7 @@ export async function startSafariAuthorization(): Promise<{ pending: true }> {
     await chrome.storage.session.set({ [verifierKey(state)]: verifier, [ACTIVE_AUTH_ATTEMPT_KEY]: attemptId, [STORAGE_KEYS.SAFARI_AUTH_ATTEMPT]: attempt });
     await chrome.storage.session.remove([STORAGE_KEYS.SAFARI_AUTH_FAILURE]);
     chrome.alarms.create(ALARMS.SAFARI_AUTH_TIMEOUT, { when: attempt.createdAt + AUTH_TIMEOUT_MS });
-    const params = new URLSearchParams({ response_type: 'code', client_id: ENV.EXTENSION_OAUTH_CLIENT_ID, redirect_uri: redirectUri, state, code_challenge: challenge, code_challenge_method: 'S256', scope: 'email profile' });
+    const params = new URLSearchParams({ response_type: 'code', client_id: ENV.SAFARI_OAUTH_CLIENT_ID, redirect_uri: redirectUri, state, code_challenge: challenge, code_challenge_method: 'S256', scope: 'email profile' });
     await chrome.tabs.update(attempt.tabId, { url: `${authorizeUrl()}?${params.toString()}` });
     log.info('auth', 'Safari OAuth sign-in tab opened', { callbackOrigin: redirectUri });
   } catch (error) {
@@ -115,6 +115,7 @@ async function handleCallback(tabId: number, callbackUrl: string): Promise<void>
       state,
       code,
       attempt.redirectUri,
+      ENV.SAFARI_OAUTH_CLIENT_ID,
     );
     await clearAttempt(attempt);
     const isAdmin = await checkIsAdmin(user.id);

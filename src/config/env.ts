@@ -68,6 +68,9 @@ export const ENV = {
   get EXTENSION_OAUTH_CLIENT_ID(): string {
     return safeRead(() => import.meta.env.WXT_EXTENSION_OAUTH_CLIENT_ID) ?? '';
   },
+  get SAFARI_OAUTH_CLIENT_ID(): string {
+    return safeRead(() => import.meta.env.WXT_SAFARI_OAUTH_CLIENT_ID) ?? '';
+  },
   get DESKTOP_NATIVE_HOST(): string {
     return safeRead(() => import.meta.env.WXT_DESKTOP_NATIVE_HOST) ?? 'com.matrx.local';
   },

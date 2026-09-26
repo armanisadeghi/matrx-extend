@@ -12,7 +12,7 @@ const callbacks = vi.hoisted(() => ({
 vi.mock('@/lib/browser/detect', () => ({ BROWSER: 'safari' }));
 vi.mock('@/lib/auth/flow', () => ({ completeBackgroundAuthorizationCode: callbacks.complete }));
 vi.mock('@/config/env', () => ({
-  ENV: { FRONTEND_URL: 'https://aimatrx.com', SUPABASE_URL: 'https://db.example.test', EXTENSION_OAUTH_CLIENT_ID: 'client' },
+  ENV: { FRONTEND_URL: 'https://aimatrx.com', SUPABASE_URL: 'https://db.example.test', EXTENSION_OAUTH_CLIENT_ID: 'client', SAFARI_OAUTH_CLIENT_ID: 'safari-client' },
   STORAGE_KEYS: { PKCE_VERIFIER: 'pkce', SAFARI_AUTH_ATTEMPT: 'safari-attempt', SAFARI_AUTH_FAILURE: 'safari-failure' },
   ALARMS: { SAFARI_AUTH_TIMEOUT: 'safari-timeout' },
 }));
@@ -47,7 +47,7 @@ describe('Safari background OAuth tab transport', () => {
     await callbacks.handlers.get('auth:safari-start')?.();
     callbacks.complete.mockResolvedValue({ id: 'u', email: 'a@example.com' });
     callbacks.committed?.({ tabId: 44, frameId: 0, url: 'https://www.aimatrx.com/auth/extension-callback?code=code&state=state' });
-    await vi.waitFor(() => expect(callbacks.complete).toHaveBeenCalledWith(expect.any(String), 'state', 'code', 'https://www.aimatrx.com/auth/extension-callback'));
+    await vi.waitFor(() => expect(callbacks.complete).toHaveBeenCalledWith(expect.any(String), 'state', 'code', 'https://www.aimatrx.com/auth/extension-callback', 'safari-client'));
     expect(callbacks.broadcasts).toContainEqual(expect.objectContaining({ kind: 'auth:state-changed' }));
   });
 

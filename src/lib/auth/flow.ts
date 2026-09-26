@@ -404,10 +404,11 @@ async function exchangeCode(
   code: string,
   codeVerifier: string,
   redirectUri: string,
+  clientId = ENV.EXTENSION_OAUTH_CLIENT_ID,
 ): Promise<OAuthTokens> {
   const body = new URLSearchParams({
     grant_type: 'authorization_code',
-    client_id: ENV.EXTENSION_OAUTH_CLIENT_ID,
+    client_id: clientId,
     code,
     code_verifier: codeVerifier,
     redirect_uri: redirectUri,
@@ -482,12 +483,13 @@ export async function completeBackgroundAuthorizationCode(
   state: string,
   code: string,
   redirectUri: string,
+  clientId: string,
 ): Promise<UserProfile> {
   const verifierStorageKey = pkceVerifierStorageKey(state);
   const verifierRow = await chrome.storage.session.get([verifierStorageKey]);
   const verifier = verifierRow[verifierStorageKey] as string | undefined;
   if (!verifier) throw new Error('OAuth sign-in could not recover its PKCE verifier');
-  const tokens = await exchangeCode(code, verifier, redirectUri);
+  const tokens = await exchangeCode(code, verifier, redirectUri, clientId);
   const user = await fetchSupabaseUserAtSignIn(tokens.access_token);
   await commitSignInAttempt(attemptId, tokens, user);
   return user;
