@@ -249,7 +249,7 @@ Every entry follows this shape:
 
 ### Fresh-install guest conversation organization
 - **What it does:** Starts Chat without an account and resolves the fingerprint
-  guest's personal organization only on the server, before the first persisted
+  guest's own organization (created at signup) only on the server, before the first persisted
   conversation write.
 - **Where to test:** A fresh Chrome profile with the exact Store build loaded
   and no AI Matrx sign-in.

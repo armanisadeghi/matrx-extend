@@ -20,7 +20,7 @@ snapshot without exposing its bearer. These helpers establish no tab ownership.
 
 Every bearer-backed agent start must include an explicit `organization_id`.
 Fingerprint guests omit it: aidream's AI funnel resolves only that guest's
-personal organization before its first write, and a guest can never nominate
+own organization (created at signup) before its first write, and a guest can never nominate
 a tenant. The extension does not invent a value or hardcode a system organization.
 `stream/offscreen-proxy.ts#startStream` binds headers and every conversation-
 start body to one service-worker actor snapshot, then revalidates that actor
@@ -46,9 +46,6 @@ organization into every insert.
 - 2026-08-24 — Applied the request-organization assertion to all seven
   extension-owned `wbx_*` insert/upsert families, with zero-Supabase negative
   tests and exact-payload tests.
-- 2026-08-23 — Replaced effective/personal organization bootstrap with the
-  request-carried assertion and documented explicit note and conversation-task
-  write provenance.
 
 ## Mandate-backed starts
 
