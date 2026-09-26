@@ -1,8 +1,27 @@
 {
   "schema_version": 1,
-  "status": "notice_host_obstruction_confirmed_bounded_remedy_unverified",
+  "status": "member_access_unverified_setup_navigation_failure",
   "run_id": "member-vault-access-009",
   "receipt": "docs/stabilization/runs/member-vault-access-009.json",
+  "latest_run": {
+    "run_id": "member-vault-access-010",
+    "receipt": "docs/stabilization/runs/member-vault-access-010.json",
+    "resource_guard": {
+      "wrapper_pid": 4702,
+      "confirmed_exit_code": 1,
+      "confirmed_exit_at": "2026-09-26T17:40:01.266"
+    },
+    "failure_stage": "vault_prerequisite_observation",
+    "admin_web_signed_in": true,
+    "admin_extension_signed_in": true,
+    "organization_selected": false,
+    "organization_picker_pending": false,
+    "organization_picker_visible": false,
+    "vault_tab_active": false,
+    "vault_panel_active": false,
+    "vault_heading_visible": false,
+    "interpretation": "The probe stopped before organization selection, Mine inventory, notice classification or dismissal, and the Shared tab click. Run 010 does not verify or refute the bounded notice remedy from run 009. The receipt contains no driverFailure or pointer sample for this run. The cause of the inactive Vault panel is unresolved."
+  },
   "observed_boundary": {
     "admin_web_signed_in": true,
     "admin_extension_signed_in": true,
@@ -26,6 +45,6 @@
     "If run 009's notice is the stale capture no-workspace notice, the next run dismisses it with a real trusted pointer and reaches the Shared inventory.",
     "If it is another notice, the Shared click remains blocked and known_notice distinguishes database refusal, missing relation, expired sign-in, unreachable database, another no-workspace notice, or other alert. Its actual error remains visible for diagnosis."
   ],
-  "next_step": "Root serial runner should execute one admitted owned-profile probe after this commit. A successful Shared click still does not establish member authorization; inspect only masked inventory and continue the separate member-auth acceptance work.",
+  "next_step": "Preserve the distinct run 010 setup/navigation failure for later diagnosis. Do not treat it as a notice-remedy result or member authorization. No additional source change or runtime retry is authorized in this lane now.",
   "member_auth_status": "unverified"
 }
