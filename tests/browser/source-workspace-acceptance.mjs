@@ -16,6 +16,7 @@ const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'source-workspace-acceptance.json');
 const PRIVATE_CONFIG = join(REPO, 'test-results', 'd22-private-config.json');
 const ATTEMPT = join(REPO, 'test-results', 'd22-source-save-attempt.json');
+const PRIVATE_POINTER_SCREENSHOT = join(REPO, 'test-results', 'd22-save-pointer-private.png');
 const RELEASE_RECEIPT = join(REPO, '.output', 'release-receipt.json');
 const MANIFEST = join(REPO, '.output', 'chrome-mv3-dev', 'manifest.json');
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
@@ -293,6 +294,28 @@ async function inspectSavePointerWithoutInput(panel) {
         const hit = document.elementFromPoint(point.x, point.y);
         return Boolean(hit && (hit === target || target.contains(hit)));
       };
+      const describeHit = (hit) => {
+        if (!hit) return null;
+        const tag = hit.tagName?.toLowerCase();
+        const role = hit.getAttribute?.('role');
+        const slot = hit.getAttribute?.('data-slot');
+        const box = hit.getBoundingClientRect();
+        const style = getComputedStyle(hit);
+        return {
+          tag: ['button', 'div', 'span', 'svg', 'path', 'p', 'section', 'header', 'main']
+            .includes(tag) ? tag : 'other',
+          role: ['dialog', 'alertdialog', 'alert', 'tab', 'tablist', 'tabpanel', 'button']
+            .includes(role) ? role : 'other_or_none',
+          slot: ['dialog-content', 'dialog-overlay', 'alert-dialog-content',
+            'alert-dialog-overlay', 'popover-content', 'tooltip-content']
+            .includes(slot) ? slot : 'other_or_none',
+          inActiveScrapePane: pane?.contains(hit) === true,
+          inDialog: Boolean(hit.closest('[role="dialog"], [role="alertdialog"]')),
+          position: ['static', 'relative', 'absolute', 'fixed', 'sticky']
+            .includes(style.position) ? style.position : 'other',
+          rect: { x: box.x, y: box.y, width: box.width, height: box.height },
+        };
+      };
       const center = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
       const points = [];
       if (bounds.right > bounds.left && bounds.bottom > bounds.top) {
@@ -301,6 +324,7 @@ async function inspectSavePointerWithoutInput(panel) {
             y: bounds.top + (bounds.bottom - bounds.top) * fy });
       }
       const interiorHitCount = points.filter(hitsTarget).length;
+      const firstBlockedPoint = points.find((point) => !hitsTarget(point)) ?? null;
       return {
         activeScrapePane: pane?.getAttribute('data-state') === 'active',
         exactButtonCount: candidates.length,
@@ -313,6 +337,15 @@ async function inspectSavePointerWithoutInput(panel) {
         interiorHitCount,
         selectedPointAvailable: interiorHitCount > 0,
         clippingAncestorCount,
+        viewport: { width: innerWidth, height: innerHeight },
+        targetRect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+        clippedRect: { x: bounds.left, y: bounds.top,
+          width: Math.max(0, bounds.right - bounds.left),
+          height: Math.max(0, bounds.bottom - bounds.top) },
+        targetPointerEventsNone: getComputedStyle(target).pointerEvents === 'none',
+        centerOccluder: describeHit(document.elementFromPoint(center.x, center.y)),
+        firstInteriorOccluder: firstBlockedPoint
+          ? describeHit(document.elementFromPoint(firstBlockedPoint.x, firstBlockedPoint.y)) : null,
       };
     })()`,
   );
@@ -566,6 +599,19 @@ try {
               60_000,
             );
             report.observations.readOnlySavePointer = await inspectSavePointerWithoutInput(panel);
+            try {
+              const shot = await panel.send('Page.captureScreenshot', {
+                format: 'png',
+                captureBeyondViewport: false,
+              });
+              await writeFile(PRIVATE_POINTER_SCREENSHOT, Buffer.from(shot.data, 'base64'), {
+                flag: 'wx',
+                mode: 0o600,
+              });
+              report.observations.privatePointerScreenshot = 'captured_private';
+            } catch {
+              report.observations.privatePointerScreenshot = 'unavailable';
+            }
             fail('prior_save_absent_pointer_diagnosed_no_retry');
           }
           if (network !== 'found') fail('recovery_source_not_definitively_found');

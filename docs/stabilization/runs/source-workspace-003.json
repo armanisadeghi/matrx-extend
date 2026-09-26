@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "run_id": "source-workspace-003",
+  "defect_id": "EXT-D-0022",
+  "source": {
+    "result_path": "test-results/source-workspace-acceptance.json",
+    "result_sha256": "3dbe8505ffde7e7ae69a7ace18aaf6a8ee43bf1905842acd76d4eefa7352d3e2",
+    "guard_log_path": "/tmp/matrx-source-workspace-003.log",
+    "guard_log_sha256": "514f6cd08af3dc4c7c7e3c3fd5321c3ad0fcfd4e957660581da4e7c5a13a75c9"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T21:12:25.563Z",
+    "child_exit_at": "2026-09-26T21:12:37.827Z",
+    "child_exit_code": 1
+  },
+  "build": {
+    "version": "0.2.77",
+    "tree_sha256": "007c94aae25c20c235eba269d6e5673367c1916e1eff4d17e8e55ecccdda760b"
+  },
+  "observations": {
+    "real_admin_ui": true,
+    "approved_existing_organization_selected_by_ui": true,
+    "mode": "read_only_recovery",
+    "scoped_recovery_lookup": "none",
+    "public_capture_ready": true,
+    "save_pointer_input": "not_attempted",
+    "save_button": {
+      "active_scrape_pane": true,
+      "exact_button_count": 1,
+      "visible_button_count": 1,
+      "unique_target_in_active_scrape_pane": true,
+      "target_disabled": false,
+      "target_has_area": true,
+      "clipped_target_has_area": true,
+      "center_hits_target": false,
+      "interior_hit_count": 0,
+      "selected_point_available": false,
+      "clipping_ancestor_count": 0
+    },
+    "checkpoint": "existing_reserved_unchanged"
+  },
+  "failure": {
+    "stage": "read_only_save_pointer_diagnostic",
+    "code": "prior_save_absent_pointer_diagnosed_no_retry",
+    "status": "diagnostic_only"
+  },
+  "conclusion": "The active Scrape pane shows one enabled visible Save button with nonzero geometry, yet none of nine tested interior points hit it. The result identifies an occlusion or hit-testing problem at observation time but does not identify the covering element or prove the exact cause of run 001. No Save input was sent and the original checkpoint remains authoritative."
+}
