@@ -5,7 +5,6 @@
  * Two real public pages have distinct document titles; no response or auth is mocked.
  */
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
 import { writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
@@ -26,7 +25,7 @@ const report = {
     { case: 'T02', part: 'fresh capture and stale advice replacement after re-audit' },
     { case: 'T03', part: 'restricted and unreachable URLs' },
     { case: 'T04-T06,T08', part: 'database save, history, and diff flows' },
-    { case: 'T07', part: 'member/admin role gates and JSON contents' },
+    { case: 'T07', part: 'actual clipboard output, member/admin role gates, and JSON contents' },
     { case: 'T09', part: 'remaining detail groups and outbound links' },
     { case: 'T10-T14', part: 'recommendations, Chat staging, and social snippet actions' },
     { case: 'all', part: 'member and admin modes' },
@@ -179,55 +178,9 @@ async function copyMenu(panel) {
   );
 }
 
-async function clipboardEqualsCanary(panel, canary) {
-  return evaluate(
-    panel,
-    `(async () => {
-    await navigator.clipboard.writeText(${JSON.stringify(canary)});
-    return (await navigator.clipboard.readText()) === ${JSON.stringify(canary)};
-  })()`,
-  );
-}
-
-async function copiedAuditEvidence(panel, label, page, canary) {
-  const observed = await waitObserved(
-    `copy_${label.replaceAll(' ', '_')}_clipboard_wait`,
-    () =>
-      evaluate(
-        panel,
-        `(async () => {
-      const value = await navigator.clipboard.readText();
-      const title = ${JSON.stringify(page.title)};
-      const url = ${JSON.stringify(page.url)};
-      const heading = ${JSON.stringify(page.heading)};
-      const canary = ${JSON.stringify(canary)};
-      return {
-        replacedCanary: value !== canary,
-        containsUrl: value.includes(url),
-        containsTitle: value.includes(title),
-        containsHeading: heading ? value.includes(heading) : null,
-        textHeader: value.startsWith('URL: '),
-        agentWrapper: value.startsWith('The following is an SEO audit for a webpage.')
-          && value.includes('Source URL: ' + url) && value.includes('\u0060\u0060\u0060'),
-        copyFailureVisible: document.body.innerText.includes('Copy failed'),
-      };
-    })()`,
-      ),
-    (state) =>
-      state?.replacedCanary &&
-      state.containsUrl &&
-      state.containsTitle &&
-      state.containsHeading !== false &&
-      !state.copyFailureVisible,
-  );
-  assert.equal(observed.textHeader, label === 'Summary (text)', 'copy format matches choice');
-  assert.equal(observed.agentWrapper, label === 'For AI agent', 'AI wrapper matches choice');
-  return observed;
-}
-
 try {
   const harness = await runNativeSidepanelQa({
-    exercisePanel: async ({ page, panel, panelTarget }) => {
+    exercisePanel: async ({ page, panel }) => {
       advance('owned_guest_panel_ready', { nativePanel: true });
       const publicPages = [];
       for (const [index, url] of PAGES.entries()) {
@@ -322,40 +275,6 @@ try {
         agentChoice: true,
         jsonAbsent: true,
       });
-
-      // This profile and clipboard belong to the native harness. A canary
-      // proves the menu action changed the clipboard; public page facts are
-      // the oracle, rather than a second invocation of the product formatter.
-      await page.context().grantPermissions(['clipboard-read', 'clipboard-write'], {
-        origin: new URL(panelTarget.url).origin,
-      });
-      for (const [index, label] of ['Summary (text)', 'For AI agent'].entries()) {
-        if (index > 0) await copyMenu(panel);
-        const canary = `seo-owned-clipboard-${randomUUID()}`;
-        assert.equal(await clipboardEqualsCanary(panel, canary), true, 'owned clipboard canary');
-        enter(`copy_${index}_click`);
-        await click(panel, 'button', label);
-        advance(`copy_${index}_click_dispatched`, { trustedInput: true });
-        const copied = await copiedAuditEvidence(panel, label, publicPages[1], canary);
-        target(
-          'T07',
-          index === 0 ? 'guest_summary_clipboard_content' : 'guest_ai_clipboard_content',
-          copied,
-        );
-      }
-      assert.equal(
-        await observe('owned_clipboard_clear', () =>
-          evaluate(
-            panel,
-            `(async () => {
-          await navigator.clipboard.writeText('');
-          return (await navigator.clipboard.readText()) === '';
-        })()`,
-          ),
-        ),
-        true,
-        'owned clipboard cleared after copy checks',
-      );
 
       // The panel document is reloaded in the owned target. React state is
       // gone; a fresh audit must match the actual current browser page.

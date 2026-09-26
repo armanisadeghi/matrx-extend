@@ -5,18 +5,13 @@
   "status": "prepared_unverified",
   "script": "tests/browser/seo-guest-acceptance.mjs",
   "prior_run": "docs/stabilization/runs/seo-guest-003.json",
+  "peer_review": "docs/stabilization/reports/seo-remaining-peer.json",
   "new_subtargets": [
-    {
-      "case_id": "EXT-F-1008-T07",
-      "dimension": "warm",
-      "subtargets": ["guest_summary_clipboard_content", "guest_ai_clipboard_content"],
-      "oracle": "Owned clipboard canary is replaced after trusted menu input; copied text contains the current public page URL, title, and heading; text and AI formats have distinct headers."
-    },
     {
       "case_id": "EXT-F-1008-T01",
       "dimension": "reload",
       "subtarget": "reload_audits_current_url",
-      "oracle": "Owned panel document time origin changes; the remounted SEO audit shows the current public page title and heading presence, with no error."
+      "oracle": "Owned panel document time origin changes; the remounted SEO audit shows the current public page title and heading presence, with enabled Re-audit and no error. This is partial T01 coverage, not an audit count or stale-result race proof."
     },
     {
       "case_id": "EXT-F-1008-T07",
@@ -33,7 +28,7 @@
   ],
   "limits": [
     "No browser or build was launched in this preparation; runtime status stays unverified.",
-    "Clipboard checks use an owned browser permission and fail closed if native clipboard access is unavailable; they do not assert byte-for-byte agreement with every displayed field.",
+    "Actual clipboard output remains unverified. The runner performs no clipboard read or write because an owned Chrome profile does not isolate the host clipboard and this harness cannot guarantee preservation of all MIME types through interruption.",
     "Reload coverage checks a fresh current-page audit and the guest menu gate, not saved audit persistence or a slow old-result race.",
     "Restricted pages, database save/history/diff, recommendations, Chat staging, social snippets, and member/admin modes remain unverified."
   ]
