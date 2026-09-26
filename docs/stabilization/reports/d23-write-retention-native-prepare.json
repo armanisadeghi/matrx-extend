@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "report_id": "d23-write-retention-native-prepare",
+  "defect_id": "EXT-D-0023",
+  "case_id": "EXT-F-2010-T02",
+  "status": "prepared_unrun_source_review_required",
+  "runner": "tests/browser/notice-write-retention-acceptance.mjs",
+  "resource_allowlist_entry_needed": [
+    "node",
+    "tests/browser/notice-write-retention-acceptance.mjs"
+  ],
+  "route_diagnosis": "The real Highlights tab starts the page overlay. A trusted mouse drag over the public Example Domain heading sends HIGHLIGHT_CAPTURED to useHighlightBridge, which calls createHighlight. With no selected workspace, requireRequestOrganizationId holds for up to 120 seconds; if nobody chooses, createHighlight emits the exact Highlight not saved/no-workspace notice and throws before the extend.wbx_highlight insert. Only after this exact notice appears does the runner select the approved existing workspace in the real picker. The settled request cannot resume after the hold has timed out.",
+  "acceptance": [
+    "Real web and extension admin sign-in occurs in a fresh receipt-verified owned Chrome profile. Settings must show Choose… and no device workspace before the action.",
+    "One real pointer text selection on https://example.com/ must be followed by exactly one typed Highlight not saved notice saying the request was never sent and nothing was saved. A network observer must see zero POST requests to wbx_highlight before workspace selection.",
+    "Only after the failed-write notice is observed may the runner choose the exact previously approved existing workspace through the real UI picker. The notice must remain after selection and a bounded quiet interval, with zero wbx_highlight POST requests. A naturally late notice is observed only if it occurs; the runner does not synthesize one."
+  ],
+  "safety": [
+    "No Source Save action or delete input is reachable. The runner never reads or changes the ambiguous D22 private Save checkpoint and never creates an organization.",
+    "No auth/session/organization storage is injected and no network call is forced or mocked. The browser action cannot continue into a write because workspace selection is gated on the terminal failed-write notice.",
+    "The report records fixed categories and request counts only. Failure attempts a private exclusive-create mode-0600 screenshot; no credentials, organization names or IDs, request URLs, tokens, or response bodies enter public evidence.",
+    "An automatic error-reporting RPC may occur after the local refusal; the acceptance specifically proves the user-requested highlight insert was not sent. This route does not establish member-mode behavior or a deliberately delayed late notice."
+  ],
+  "verification": {
+    "node_check": "passed",
+    "biome": "passed",
+    "native_browser": "not_run_in_preparation_lane"
+  }
+}
