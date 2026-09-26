@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0015",
   "feature_id": "EXT-F-1003",
-  "case_ids": [
-    "EXT-F-1003-T51"
-  ],
+  "case_ids": ["EXT-F-1003-T51"],
   "surface": "Disposable admin Settings reset acceptance runner",
   "auth_mode": "admin",
   "reproduction": [
