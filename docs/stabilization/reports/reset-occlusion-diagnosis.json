@@ -3,12 +3,22 @@
   "task_id": "reset-occlusion-diagnosis",
   "lane": "exceptional diagnosis",
   "model": "Astra medium",
-  "status": "failure_capture_ready_for_root_guarded_run",
-  "feature_ids": ["EXT-F-1003"],
-  "defect_ids": ["EXT-D-0015"],
-  "summary": "Run 007 proves a visible unique reset button remains blocked at nine points despite an unchanged clipping intersection. No actual hit node was recorded, so changing the shared driver again would be speculative. Added failure-only hit stack and clipped Settings screenshot evidence to the runner; no driver or product behavior changed.",
-  "evidence": ["docs/stabilization/runs/isolated-admin-reset-007.json"],
-  "changed_files": ["tests/browser/isolated-admin-reset-acceptance.mjs", "docs/stabilization/reports/reset-occlusion-diagnosis.json"],
+  "status": "cause_verified_setup_repair_handoff",
+  "feature_ids": [
+    "EXT-F-1003"
+  ],
+  "defect_ids": [
+    "EXT-D-0015"
+  ],
+  "summary": "Run 008 and its Settings-only screenshot identify a real fixed NoticeHost card covering the reset target. Its Capture list unavailable notice says no workspace is selected and the capture request was never sent. This is a missing test precondition followed by an undismissed specific notice; native hit-testing correctly refuses the covered button. No further shared pointer algorithm change is justified.",
+  "evidence": [
+    "docs/stabilization/runs/isolated-admin-reset-007.json",
+    "docs/stabilization/runs/isolated-admin-reset-008.json"
+  ],
+  "changed_files": [
+    "tests/browser/isolated-admin-reset-acceptance.mjs",
+    "docs/stabilization/reports/reset-occlusion-diagnosis.json"
+  ],
   "hypotheses": [
     {
       "cause": "An unrelated sibling layer covers the reset button",
@@ -32,10 +42,52 @@
     "failure_behavior": "Fixed capture status preserves the original failing verdict even if diagnostics or screenshot fail"
   },
   "verification": [
-    { "case_id": "source-syntax", "verdict": "pass", "evidence": "node --check tests/browser/isolated-admin-reset-acceptance.mjs" },
-    { "case_id": "original-native-reopen", "verdict": "unverified", "evidence": "Root owns the sole guarded browser run; no runtime/build/browser/install executed by this worker" }
+    {
+      "case_id": "source-syntax",
+      "verdict": "pass",
+      "evidence": "node --check tests/browser/isolated-admin-reset-acceptance.mjs"
+    },
+    {
+      "case_id": "original-native-reopen",
+      "verdict": "unverified",
+      "evidence": "Root owns the sole guarded browser run; no runtime/build/browser/install executed by this worker"
+    },
+    {
+      "case_id": "run008-occluder-identification",
+      "verdict": "pass",
+      "evidence": "Recorded node chain, personal PNG inspection and matching NoticeHost/listNeedsYou source agree"
+    }
   ],
-  "limitations": ["Actual occluder and product root cause remain unknown until the next failing run", "Run 005 post-reset chat preference identity is a separate lead and is unchanged"],
+  "limitations": [
+    "No setup repair or runtime/browser/build/install executed by this worker in this follow-up",
+    "Existing fixture option availability must be checked in the real picker",
+    "Run 005 unknown post-reset chat_preferences value remains a separate unresolved lead; no whitelist or exemption justified"
+  ],
   "open_questions": [],
-  "next_action": "Root executes the existing acceptance runner under its resource guard and returns reset_confirm.occlusion plus the PNG; diagnose the actual node before any driver or product repair."
+  "next_action": "Root dispatches the straightforward runner/UI selector repair to Sol, then reruns under the resource guard. Require actual green original reset path; preserve unknown post-reset chat_preferences investigation.",
+  "observed_cause": {
+    "visual_verification": "Worker personally inspected test-results/isolated-admin-reset-occlusion.png: Capture list unavailable card with the no-workspace explanation and a visible close icon covers the bottom Settings controls.",
+    "target_rect": {
+      "x": 13,
+      "y": 281.28125,
+      "width": 326,
+      "height": 40
+    },
+    "hit": "Node 17 is a paragraph outside Settings at x47 y252.34375 width262 height117. Its node19 card spans x12 y225.34375 width336 height183.65625; node20 parent is position fixed, z-index 50, x0 y213.34375 width360 height207.65625. Card descendants accept pointer events.",
+    "source": "src/components/NoticeHost.tsx renders exactly that fixed bottom z-50 stack, role=alert card, title/message and button[aria-label=\"Dismiss\"]. src/lib/capture-ladder/queue.ts:listNeedsYou raises Capture list unavailable with NO_ORGANIZATION when getActiveOrganizationId returns null.",
+    "ruled_out": "Clipping alone, modal teardown, and a native pointer-dispatch failure cannot explain this run: the actual competing notice is above the target in the hit stack and covers it in the screenshot.",
+    "not_yet_proven": "A green Cancel/reopen/Confirm/reload run after real UI workspace selection and explicit dismissal remains required. Reset storage correctness remains unclosed."
+  },
+  "implementation_contract": {
+    "lane": "Sol medium; narrow acceptance-runner setup repair only",
+    "insertion": "After admin_settings_after_real_signin and before theme/storage fixture baseline, establish the organization through actual Settings UI.",
+    "organization_control": "src/features/settings/SettingsView.tsx: Organization collapsible contains ControlRow label Acting as and PillSelect (Radix SelectTrigger role combobox). openSection(panel, Organization) already exists. A new small driver kind can find the exact Acting as label span, ascend to its ControlRow and select its button[role=\"combobox\"], analogous to existing theme kind. Existing option kind clicks role=option by exact label.",
+    "fixture_label": "ZZZ APPROVAL-TAIL throwaway a2c8a05f \u2014 safe to delete",
+    "fixture_constraint": "Select only this known owned fixture if a unique live option exists. The name does not authorize deleting anything. Do not choose first/personal/default or inject org/auth storage. A missing option is explicit unavailable evidence, not permission to invent another fixture.",
+    "success_oracle": "Wait for the Acting as combobox to display the exact fixture label. Read-only evaluation may emit only booleans that matrx.org.active has a nonempty string id and expected fixture name; never serialize its id/value. This proves the getActiveOrganizationId stored-selection precondition, not successful backend request completion.",
+    "source_precondition": "Settings org.choose calls useActiveOrganization.choose -> setActiveOrganization, which verifies live membership and persists the device choice. use-active-organization.ts refreshes on the stored selection change. getActiveOrganizationId consumes that device selection; listNeedsYou requires it.",
+    "specific_notice_dismiss": "After selection, inspect only role=alert cards whose source-rendered title equals Capture list unavailable AND whose message contains the no-workspace explanation. If exactly one exists, click its own button[aria-label=\"Dismiss\"] through native hit-tested CDP input and verify that matching notice is absent. Record presence/dismissal booleans. Do not blanket-dismiss alerts, remove DOM, call store.dismiss, force clicks or change pointer-events.",
+    "modal_caveat": "OrganizationPickerDialog.tsx may also open a modal titled Which organization are you working in? from pending requests. It uses shared OrganizationPicker rows and onSelect -> setActiveOrganization. Its installed row selector has not been verified here; do not fabricate a modal-row selector if the guarded run reveals that state.",
+    "acceptance": "Original Cancel preserves every baseline key/value; reopen gets a native hittable target; Confirm clears auth/local/session and reload reaches guest defaults. Keep diagnostics on failure. No added storage whitelist."
+  }
 }
