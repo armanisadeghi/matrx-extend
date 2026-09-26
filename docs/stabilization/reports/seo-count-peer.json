@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "review_id": "seo-count-peer",
+  "commit": "e2855b39f99f912a4badd4fda40f2bd81c585cb7",
+  "verdicts": {
+    "source_quality": "pass",
+    "runtime": "pending_read_only_rerun"
+  },
+  "findings": [
+    {
+      "claim": "The badge parser fix addresses the recorded false zero.",
+      "evidence": "SeoView renders history.length in exactly one span.tabular-nums inside the uniquely titled history button. The test selects that span and validates /^[0-9]+$/; this regex has no backslash to be consumed by the surrounding template literal. A missing, duplicate, or malformed span yields null, which cannot satisfy row-count equality."
+    },
+    {
+      "claim": "History and identity acceptance remain strong.",
+      "evidence": "The opened list must be visible, its row count must equal the parsed badge, and historyIdentities must contain the checkpoint's exact Save response ID. Close/reopen, unique row label, snapshot ID equality, Live return, new document timeOrigin, and post-reload history and snapshot ID checks remain in the source."
+    },
+    {
+      "claim": "The repair preserves one-write and privacy boundaries.",
+      "evidence": "The change only observes a rendered span. The existing checkpoint precedes the sole Save click; a resumed checkpoint with an observed ID takes the read_only_resume branch and skips Save. last_safe_history_observation records only booleans and counts, not labels, row IDs, URL, or audit content."
+    }
+  ],
+  "verification": {
+    "component_contract_reviewed": "src/features/seo/SeoView.tsx:202-206",
+    "acceptance_flow_reviewed": "tests/browser/seo-admin-acceptance.mjs:254-305, 465-590",
+    "biome": "pass: pnpm exec biome check tests/browser/seo-admin-acceptance.mjs docs/stabilization/runs/seo-admin-003.json docs/stabilization/reports/seo-admin-persistence-prepare.json",
+    "browser": "not run; this is source review only"
+  },
+  "limits": [
+    "The component-backed numeric badge observation is repaired by inspection, but runtime truth is not established until the guarded read-only resume passes.",
+    "T05 history/snapshot/reload remains unverified; the prior admin003 receipt explicitly records the failed observation and no Save attempt."
+  ]
+}
