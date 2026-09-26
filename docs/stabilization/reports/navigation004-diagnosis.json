@@ -3,9 +3,7 @@
   "task_id": "navigation004-diagnosis",
   "lane": "implementation diagnostic",
   "status": "diagnostic_capture_prepared_peer_required",
-  "feature_ids": [
-    "EXT-F-1001"
-  ],
+  "feature_ids": ["EXT-F-1001"],
   "run_id": "contained-navigation-004",
   "build_version": "0.2.67",
   "evidence": [
