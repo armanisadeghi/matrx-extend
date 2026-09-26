@@ -21,20 +21,31 @@ const report = {
   cases: [],
 };
 
-async function guestNavigation(panel) {
+async function guestNavigation(panel, targetTitle = null, viewMarker = null) {
   return evaluate(
     panel,
     `(() => {
+    const targetTitle=${JSON.stringify(targetTitle)},viewMarker=${JSON.stringify(viewMarker)};
     const lists=[...document.querySelectorAll('[role="tablist"]')].filter(n=>!n.closest('[role="tabpanel"]'));
     const list=lists.length===1?lists[0]:null;
     const tabs=list?[...list.querySelectorAll('[role="tab"]')].filter(n=>n.closest('[role="tablist"]')===list):[];
     const screenshotTabs=tabs.filter(n=>n.title==='Screenshots');
+    const targetTabs=targetTitle===null?[]:tabs.filter(n=>n.title===targetTitle);
+    const targetTab=targetTabs.length===1?targetTabs[0]:null;
     const panes=[...document.querySelectorAll('[role="tabpanel"]')].filter(n=>!n.parentElement?.closest('[role="tabpanel"]'));
     const active=panes.filter(n=>n.getAttribute('data-state')==='active');
+    const pane=active.length===1?active[0]:null;
+    const linkedPaneVisible=!!pane&&!!targetTab&&pane.id===targetTab.getAttribute('aria-controls')&&
+      pane.getAttribute('aria-labelledby')===targetTab.id&&pane.getBoundingClientRect().height>0;
     return {listCount:lists.length,tabCount:tabs.length,screenshotTriggerCount:screenshotTabs.length,
       screenshotTriggerVisible:screenshotTabs.some(n=>{const r=n.getBoundingClientRect();return r.width>0&&r.height>0}),
       screenshotContentMounted:[...document.querySelectorAll('button')].some(n=>['Visible','Full page'].includes(n.textContent.trim())),
-      activePaneCount:active.length,activePaneIsScreenshots:active.some(n=>n.id.toLowerCase().includes('screenshots'))};
+      screenshotPaneCount:panes.filter(n=>n.id.toLowerCase().includes('screenshots')).length,
+      activePaneCount:active.length,activePaneIsScreenshots:active.some(n=>n.id.toLowerCase().includes('screenshots')),
+      targetTabCount:targetTabs.length,targetSelected:targetTab?.getAttribute('aria-selected')==='true',
+      linkedPaneVisible,viewMarkerPresent:viewMarker===null?null:
+        [...(pane?.querySelectorAll('span,h1,h2')??[])].some(n=>n.textContent.trim()===viewMarker),
+      suspenseFallback:!!pane?.querySelector('svg.animate-spin')&&!pane?.innerText?.trim()};
   })()`,
   );
 }
@@ -59,6 +70,7 @@ async function exercise({ panel, artifacts }) {
     assert.equal(initial.listCount, 1);
     assert.equal(initial.screenshotTriggerCount, 0);
     assert.equal(initial.screenshotContentMounted, false);
+    assert.equal(initial.screenshotPaneCount, 0);
     report.cases.push({
       id: 'EXT-F-1009-T09',
       status: 'pass',
@@ -69,22 +81,43 @@ async function exercise({ panel, artifacts }) {
 
     stage = 'accessible_view_navigation';
     await click(panel, 'title', 'Settings');
-    await waitFor('settings_selected', guestNavigation, (value) => value?.activePaneCount === 1);
+    const settings = await waitFor(
+      'settings_selected',
+      () => guestNavigation(panel, 'Settings', 'Settings'),
+      (value) =>
+        value?.targetTabCount === 1 &&
+        value.targetSelected &&
+        value.activePaneCount === 1 &&
+        value.linkedPaneVisible &&
+        value.viewMarkerPresent &&
+        !value.suspenseFallback,
+    );
+    assert.equal(settings.screenshotTriggerCount, 0);
+    assert.equal(settings.screenshotPaneCount, 0);
+    assert.equal(settings.screenshotContentMounted, false);
     await click(panel, 'title', 'SEO');
     const afterNavigation = await waitFor(
       'seo_selected',
-      guestNavigation,
-      (value) => value?.activePaneCount === 1,
+      () => guestNavigation(panel, 'SEO', 'SEO audit'),
+      (value) =>
+        value?.targetTabCount === 1 &&
+        value.targetSelected &&
+        value.activePaneCount === 1 &&
+        value.linkedPaneVisible &&
+        value.viewMarkerPresent &&
+        !value.suspenseFallback,
     );
     assert.equal(afterNavigation.screenshotTriggerCount, 0);
+    assert.equal(afterNavigation.screenshotPaneCount, 0);
     assert.equal(afterNavigation.screenshotContentMounted, false);
     report.cases.push({
       id: 'EXT-F-1009-T09',
       subcase: 'visible_navigation',
       status: 'pass',
       expected: 'Moving through public tabs does not expose screenshot view.',
-      actual: afterNavigation,
-      evidence: 'public tab navigation remained protected',
+      actual: { settings, seo: afterNavigation },
+      evidence:
+        'selected public trigger, linked visible pane, mounted target marker, and Screenshots absence at each transition',
     });
 
     report.cases.push({

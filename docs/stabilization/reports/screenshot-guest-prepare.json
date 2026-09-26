@@ -1,12 +1,13 @@
 {
   "feature_id": "EXT-F-1009",
-  "status": "prepared_partial",
+  "status": "source_peer_corrections_prepared_for_fresh_review",
   "case_scope": "EXT-F-1009-T09 guest access gate only",
   "runner": "tests/browser/screenshot-guest-acceptance.mjs",
   "inventory_applicability": "Guest applicability is explicitly false for screenshot capture/gallery; T01-T08 are member/admin cases and are not run here.",
   "prior_evidence": "contained-navigation-006 recorded guest navigation without Screenshots, but predates the dedicated EXT-F-1009 guest case and does not exercise its stale-selection subcase.",
-  "runner_behavior": "Uses the receipt-verified owned native-profile harness and trusted Settings/SEO navigation. It checks trigger absence and protected-content absence. It does not interact with Chat/Pilot, capture, read, copy, or delete screenshots, or call backend services.",
+  "runner_behavior": "Uses the receipt-verified owned native-profile harness and trusted Settings/SEO clicks. Each wait closes over the actual panel argument and requires the named trigger to be uniquely selected, its own linked pane visible, and the mounted Settings or SEO audit marker present with no lazy fallback. The runner checks Screenshots trigger/pane/content absence initially and after each public navigation. It does not interact with Chat/Pilot, capture, read, copy, or delete screenshots, or call backend services.",
   "stale_selection": "Unverified: fresh guest profile has no prior signed-in selection. A real authentication transition could exercise it, but no auth or tab state is fabricated in this guest-only runner.",
-  "execution": "Not run in preparation lane; awaiting root source peer and resource admission.",
-  "evidence_safety": "Counts and booleans only; any failure screenshot is uniquely named, exclusive-created, mode 0600, and stored under harness-owned private artifacts."
+  "execution": "Source-only correction; fresh independent source review and root-owned resource-admitted native runtime remain required. No browser launched in this lane.",
+  "evidence_safety": "Counts and booleans only; any failure screenshot is uniquely named, exclusive-created, mode 0600, and stored under harness-owned private artifacts.",
+  "source_peer_correction": "Peer 5c4e2d80 found both waits passed a panel-requiring function without binding the panel; a pre-existing active pane could also satisfy the old oracle. The callbacks now pass panel explicitly and require exact selected Settings then SEO identities, linked active panes, and mounted target markers before recording protection. Stale authenticated selection/role transition remains unverified."
 }
