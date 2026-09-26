@@ -317,6 +317,78 @@ async function frozenDigest(spec: string): Promise<string> {
 }
 
 describe('owned local-browser tab controller', () => {
+  it('does not treat a Chrome network-error document as a completed navigation', async () => {
+    const originalChrome = globalThis.chrome;
+    let onUpdated: ((tabId: number, changeInfo: { status?: string }) => void) | null = null;
+    const getFrame = vi.fn(async () => ({
+      documentId: 'network-error-document',
+      url: 'https://unreachable.example.test/login',
+      errorOccurred: true,
+    }));
+    Object.assign(globalThis, {
+      chrome: {
+        webNavigation: { getFrame },
+        tabs: {
+          onUpdated: {
+            addListener: (handler: typeof onUpdated) => {
+              onUpdated = handler;
+            },
+            removeListener: () => {
+              onUpdated = null;
+            },
+          },
+          update: async () => {
+            queueMicrotask(() => onUpdated?.(42, { status: 'complete' }));
+            return { id: 42 };
+          },
+        },
+      },
+    });
+    try {
+      const controller = new LocalBrowserController();
+      const deps = (controller as unknown as { deps: LocalBrowserControllerDeps }).deps;
+      expect(await deps.command?.currentDocument(42)).toBeNull();
+      getFrame.mockResolvedValue({
+        documentId: 'loaded-document',
+        url: 'https://unreachable.example.test/login',
+        errorOccurred: false,
+      });
+      expect(await deps.command?.currentDocument(42)).toEqual({
+        documentId: 'loaded-document',
+        url: 'https://unreachable.example.test/login',
+      });
+      getFrame.mockRejectedValueOnce(new Error('private-navigation-error-sentinel'));
+      expect(await deps.command?.currentDocument(42)).toBeNull();
+      getFrame.mockRejectedValueOnce(new Error('private-navigation-error-sentinel'));
+      vi.mocked(log.warn).mockClear();
+      const startedAt = Date.now();
+      const result = await (
+        controller as unknown as {
+          navigateOwnedTab: (
+            tabId: number,
+            original: { documentId: string; url: string },
+            target: URL,
+            deadlineMs: number,
+            isCurrent: () => boolean,
+          ) => Promise<boolean>;
+        }
+      ).navigateOwnedTab(
+        42,
+        { documentId: 'original-document', url: 'about:blank' },
+        new URL('https://unreachable.example.test/login'),
+        startedAt + 5_000,
+        () => true,
+      );
+      expect(result).toBe(false);
+      expect(Date.now() - startedAt).toBeLessThan(1_000);
+      expect(JSON.stringify(vi.mocked(log.warn).mock.calls)).not.toContain(
+        'private-navigation-error-sentinel',
+      );
+    } finally {
+      Object.assign(globalThis, { chrome: originalChrome });
+    }
+  });
+
   it('reports a fixed delivery diagnostic after a completed command result is not sent', async () => {
     const happyWindow = window as typeof window & { happyDOM: DetachedWindowAPI };
     happyWindow.happyDOM.setURL('https://example.test/login');

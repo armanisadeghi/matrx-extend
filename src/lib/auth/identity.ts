@@ -20,6 +20,20 @@ import { getRedirectUri } from '@/lib/auth/identity-transport';
 import { BROWSER } from '@/lib/browser/detect';
 import { log } from '@/lib/debug/log';
 
+/**
+ * A diagnostic read of a required env var. `ENV.<name>` THROWS when the var is
+ * missing (src/config/env.ts), so `?? '(unset)'` never fired and this
+ * identity log — a diagnostic — crashed its caller (seen in the release test
+ * run when the side panel logged after a test tore down).
+ */
+function optionalEnv(read: () => string | undefined): string {
+  try {
+    return read() || '(unset)';
+  } catch {
+    return '(unset)';
+  }
+}
+
 export interface ExtensionIdentity {
   runtime_id: string;
   redirect_uri: string;
@@ -55,7 +69,7 @@ export function readExtensionIdentity(): ExtensionIdentity {
     redirect_uri,
     oauth_client_id:
       (safari ? ENV.SAFARI_OAUTH_CLIENT_ID : ENV.EXTENSION_OAUTH_CLIENT_ID) || '(unset)',
-    supabase_url: ENV.SUPABASE_URL ?? '(unset)',
+    supabase_url: optionalEnv(() => ENV.SUPABASE_URL),
     expected_ids: EXPECTED_EXTENSION_IDS,
     known_id,
     expected_redirect_uri,

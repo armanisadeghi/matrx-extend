@@ -32,6 +32,7 @@
  */
 
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
+import { decisionAnswersText } from '@/lib/chat/decision-answers';
 import { log } from '@/lib/debug/log';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { canonicalUrl } from '@/lib/sources/canonical';
@@ -516,6 +517,13 @@ export function dbMessagesToChatMessages(
         const text = typeof block.text === 'string' ? block.text : '';
         if (!text) continue;
         parts.push({ type: 'reasoning', content: text });
+      } else if (type === 'decision_answers') {
+        // A decision turn is ONE typed part and no text — read it as its
+        // verdict; skipping it left the reloaded reply an empty bubble.
+        const text = decisionAnswersText(block);
+        if (!text) continue;
+        textBuf += text;
+        parts.push({ type: 'text', content: text });
       } else if (type === 'tool_call') {
         const callId = String(block.call_id ?? '');
         const toolName = String(block.name ?? '');

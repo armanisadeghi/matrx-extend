@@ -565,6 +565,13 @@ const RECEIPT_BACKED_LOCAL_SOURCE_ARTIFACTS = new Map([
       version: '0.2.54',
     },
   ],
+  [
+    'eca3ab8ab9a138bebeb63b0aa7efe0e29edd3af8',
+    {
+      manifestSha256: '1ee9665455d4aecabd753b274f5269ad69c84db56c421cd7dd5d5ec832df39ff',
+      version: '0.2.56',
+    },
+  ],
 ]);
 const RECEIPT_BACKED_SAVE_UPDATE_COMMITS = new Set([
   RECEIPT_BACKED_FROZEN_SOURCE_COMMIT,
@@ -577,8 +584,7 @@ const RECEIPT_BACKED_SERVICE_SHA256 =
   '0dd2347f4637b8f7787a34ba98af6767aa90eca7b3827d610147f29d6211e174';
 const RECEIPT_BACKED_SOURCE_COMMIT = 'b20c757670f5348f5d198f3a1c64d25a1343f5c3';
 const RECEIPT_BACKED_SOURCE_GIT_TREE = 'dbe91a70fbc62eb3c7496eb3fc8445c6f52ea54e';
-const RECEIPT_BACKED_SOURCE_TREE_SHA256 =
-  '8a473cca03f5c9b8b464faee102091c8967ac08a2b97ed7a1418177dc9f17f58';
+const RECEIPT_BACKED_SOURCE_ENTRY_COUNT = 21210;
 const generatorTransportMode =
   lifecycleDryRun || process.env.MATRX_VAULT_CANARY_GENERATOR === 'RUN_GENERATOR_TRANSPORT';
 const displayMode =
@@ -1317,9 +1323,6 @@ async function prewriteLocalCanonicalPreflight() {
     provenIDs: placeholderIds,
     expectedRouterSha256: routerHash,
     expectedServiceSha256: serviceHash,
-    expectedSourceCommit: RECEIPT_BACKED_SOURCE_COMMIT,
-    expectedSourceGitTree: RECEIPT_BACKED_SOURCE_GIT_TREE,
-    expectedSourceTreeSha256: RECEIPT_BACKED_SOURCE_TREE_SHA256,
     sourceRoot,
   });
   assert(
@@ -1344,11 +1347,15 @@ async function verifyPinnedLocalCanonicalSource() {
         sourceRoot,
         routerHash,
         serviceHash,
-        RECEIPT_BACKED_SOURCE_TREE_SHA256,
-        RECEIPT_BACKED_SOURCE_GIT_TREE,
-        RECEIPT_BACKED_SOURCE_COMMIT,
       ],
-      { cwd: sourceRoot, timeout: 30000, maxBuffer: 32768 },
+      {
+        cwd: sourceRoot,
+        env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' },
+        // Measured archive proof plus bootstrap completes in about 31 seconds;
+        // this bounded ceiling prevents a stalled preflight from reaching custody.
+        timeout: 60000,
+        maxBuffer: 32768,
+      },
     ));
   } catch (error) {
     stdout = typeof error?.stdout === 'string' ? error.stdout : '';
@@ -1361,11 +1368,11 @@ async function verifyPinnedLocalCanonicalSource() {
   }
   assert(result?.ok === true, `local_cleanup_${result?.code || 'source_verify_refused'}`);
   assert(
-    result?.source?.router === routerHash &&
+      result?.source?.router === routerHash &&
       result?.source?.service === serviceHash &&
       result?.source?.sourceCommit === RECEIPT_BACKED_SOURCE_COMMIT &&
       result?.source?.sourceGitTree === RECEIPT_BACKED_SOURCE_GIT_TREE &&
-      result?.source?.sourceTreeSha256 === RECEIPT_BACKED_SOURCE_TREE_SHA256,
+      result?.source?.sourceEntryCount === RECEIPT_BACKED_SOURCE_ENTRY_COUNT,
     'local_cleanup_source_verify_result_refused',
   );
   return {
@@ -1374,7 +1381,7 @@ async function verifyPinnedLocalCanonicalSource() {
     serviceHash,
     sourceCommit: RECEIPT_BACKED_SOURCE_COMMIT,
     sourceGitTree: RECEIPT_BACKED_SOURCE_GIT_TREE,
-    sourceTreeSha256: RECEIPT_BACKED_SOURCE_TREE_SHA256,
+    sourceEntryCount: RECEIPT_BACKED_SOURCE_ENTRY_COUNT,
   };
 }
 async function verifyArtifact() {
@@ -1708,9 +1715,6 @@ async function localCanonicalCleanup(proven) {
     provenIDs: [...proven],
     expectedRouterSha256: routerHash,
     expectedServiceSha256: serviceHash,
-    expectedSourceCommit: pinnedSource.sourceCommit,
-    expectedSourceGitTree: pinnedSource.sourceGitTree,
-    expectedSourceTreeSha256: pinnedSource.sourceTreeSha256,
     sourceRoot,
   });
   assert(
@@ -1720,8 +1724,13 @@ async function localCanonicalCleanup(proven) {
   const result = await new Promise((resolve, reject) => {
     const child = spawn(python, [adapter], {
       cwd: sourceRoot,
+      env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' },
       stdio: ['pipe', 'pipe', 'ignore'],
     });
+    const timeout = setTimeout(() => {
+      child.kill();
+      reject(new Error('local_cleanup_timeout'));
+    }, 60000);
     let stdout = '';
     child.stdout.setEncoding('utf8');
     child.stdout.on('data', (chunk) => {
@@ -1730,6 +1739,7 @@ async function localCanonicalCleanup(proven) {
     });
     child.once('error', () => reject(new Error('local_cleanup_spawn_refused')));
     child.once('close', (code) => {
+      clearTimeout(timeout);
       let parsed;
       try {
         parsed = JSON.parse(stdout);

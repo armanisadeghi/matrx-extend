@@ -35,6 +35,7 @@ vi.mock('@/lib/agents/catalog', () => ({ getAgentCatalog: () => ({}) }));
 vi.mock('@/lib/debug/log', () => ({
   useDebugStore: (selector: (state: { events: never[] }) => unknown) => selector({ events: [] }),
 }));
+vi.mock('@/lib/auth/identity', () => ({ logExtensionIdentityOnce: vi.fn() }));
 vi.mock('@/lib/messaging/native', () => ({
   on: () => () => undefined,
   send: () => Promise.resolve({ state: 'none' }),
