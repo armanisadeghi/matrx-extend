@@ -1,0 +1,42 @@
+{
+  "lane": "Astra medium escalation, source-only optional metadata acceptance",
+  "status": "READY_FOR_INDEPENDENT_REVIEW",
+  "scope": "Optional Airbnb hreflang/schema continuation only; all sixteen earlier predicates remain unchanged.",
+  "hypotheses": [
+    {
+      "cause": "Unrelated live listing or image counts change around manual re-audit",
+      "prediction": "Full-object stability fails even when every metadata door datum is unchanged",
+      "verdict": "Overbroad dependency confirmed in source; exact 018 differing field cannot be recovered because before/diff were discarded."
+    },
+    {
+      "cause": "Actual hreflang/schema/title mutation",
+      "prediction": "Metadata-only projection still fails and full before/after evidence names changing fields",
+      "verdict": "Not ruled out; guard deliberately continues failing for any changed metadata value."
+    },
+    {
+      "cause": "Wrong panel/source state or unsafe outbound activation",
+      "prediction": "Scoped pane/title, complete door comparison, real hit-tested pointer and destination assertions fail",
+      "verdict": "Existing trusted activation retained; explicit scoped pane/title assertions added."
+    }
+  ],
+  "changes": [
+    "Compare stability only for independently observed title, all alternate language/URL pairs and all schema types. Sort for semantically irrelevant order without dropping duplicates.",
+    "Retain full public before/after observations and changed field names, so a structured mismatch never reduces to unexplained null scalar values.",
+    "Assert fixture URL after re-audit and active SEO pane/title before complete metadata equality checks.",
+    "Preserve immutable 018 receipt with raw-result/log hashes, available public after structure, and explicit limitation that missing before cannot be recovered."
+  ],
+  "unchanged": [
+    "All preceding guest/Wikipedia acceptance predicates",
+    "Metadata counts, all hreflang pairs, all schema chips/targets and noopener/noreferrer checks",
+    "Trusted pointer activation, hit-testing, bounded motion stability, actual new-tab destination assertion",
+    "Missing candidates remain UNVERIFIED, never PASS",
+    "Automatic snapshot remains UNVERIFIED point-in-time; manual exact acceptance remains mandatory"
+  ],
+  "validation": {
+    "node_check": "Passed",
+    "biome": "Exact-path check/write passed",
+    "browser": "Not run; root sole permit owner",
+    "runtime_claim": "None; requires independent peer and root 019"
+  },
+  "open_questions": []
+}

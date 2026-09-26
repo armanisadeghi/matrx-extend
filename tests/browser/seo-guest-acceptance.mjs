@@ -1255,6 +1255,10 @@ try {
           METADATA_FIXTURE_PAGE,
           'manual fixture audit starts on public URL',
         );
+        report.metadata_fixture_manual_public = {
+          before: fixtureBefore,
+          sourceUrlBefore: page.url(),
+        };
         enter('metadata_fixture_reaudit_click');
         await click(panel, 'button', 'Re-audit');
         advance('metadata_fixture_reaudit_click_dispatched', { trustedInput: true });
@@ -1276,18 +1280,48 @@ try {
         const fixtureAfter = await observe('metadata_fixture_public_after_inspected', () =>
           publicNextDetailEvidence(page, fixtureResponse),
         );
-        assertNext('metadata_fixture_source_stability', () =>
-          assert.deepEqual(
-            fixtureAfter,
-            fixtureBefore,
-            'public metadata and navigation remain stable around manual re-audit',
+        // This continuation verifies metadata doors, not Airbnb's live listing
+        // cards or navigation timing. Preserve both complete public observations
+        // for diagnosis, but require stability of EVERY datum used by this target.
+        // Sorting changes only order: duplicate alternates remain significant.
+        const metadataDoorSource = (value) => ({
+          title: value.title,
+          alternates: [...value.alternates].sort((a, b) =>
+            `${a.lang}:${a.href}`.localeCompare(`${b.lang}:${b.href}`),
           ),
-        );
+          schemaTypes: [...value.schemaTypes].sort(),
+        });
+        report.metadata_fixture_manual_public = {
+          ...report.metadata_fixture_manual_public,
+          after: fixtureAfter,
+          sourceUrlAfter: page.url(),
+          changedFields: Object.keys(fixtureBefore).filter(
+            (key) => JSON.stringify(fixtureBefore[key]) !== JSON.stringify(fixtureAfter[key]),
+          ),
+        };
+        assertNext('metadata_fixture_source_stability', () => {
+          assert.equal(
+            page.url(),
+            METADATA_FIXTURE_PAGE,
+            'manual fixture audit ends on public URL',
+          );
+          assert.deepEqual(
+            metadataDoorSource(fixtureAfter),
+            metadataDoorSource(fixtureBefore),
+            'public title and complete metadata remain stable around manual re-audit',
+          );
+        });
         const fixtureDetails = await observe('metadata_fixture_seo_details_inspected', () =>
           seoNextDetailState(panel),
         );
         let fixtureSchemaLinks;
         assertNext('metadata_fixture_doors', () => {
+          assert.equal(fixtureDetails.scopeValid, true, 'metadata doors use the active SEO pane');
+          assert.equal(
+            fixtureDetails.title,
+            fixtureAfter.title,
+            'metadata audit belongs to the public fixture',
+          );
           fixtureSchemaLinks = assertNextDoors(fixtureDetails, fixtureAfter);
         });
         const uniqueFixtureAlternate = fixtureAfter.alternates.find(

@@ -1,0 +1,473 @@
+{
+  "schema_version": 1,
+  "run_id": "seo-guest-018",
+  "feature_id": "EXT-F-1008",
+  "status": "unverified",
+  "source": {
+    "result_path": "test-results/seo-guest-acceptance.json",
+    "result_sha256": "0d6a7848ef2cbb31023978beedcc46a22f3a959b07e05b63e4debce4767f90d6",
+    "guard_log_path": "/tmp/matrx-seo-guest-018.log",
+    "guard_log_sha256": "8ee3564ee915983661500a0654183ca848730f8876f97470d254010b1d6c81b5"
+  },
+  "guard": {
+    "events": [
+      {
+        "schema": 1,
+        "at": "2026-09-26T22:02:51.392Z",
+        "runId": "seo-guest-018",
+        "mode": "run",
+        "policySchema": 1,
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 12,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 3.71,
+          "logicalCpus": 10,
+          "cpuBusyFraction": 0.13522857142857142,
+          "swapUsedMiB": 3640.12,
+          "repoFreeGiB": 1674.7813415527344,
+          "profileFreeGiB": 1674.7813415527344
+        },
+        "cpuBusySamples": [
+          0.36539999999999995, 0.09739999999999993, 0.09400000000000008, 0.08660000000000001,
+          0.10670000000000002, 0.08799999999999997, 0.10849999999999993
+        ],
+        "reasons": [],
+        "swapWindowSeconds": 60,
+        "code": "RESOURCE_ADMITTED"
+      },
+      {
+        "schema": 1,
+        "at": "2026-09-26T22:03:02.337Z",
+        "runId": "seo-guest-018",
+        "childExitCode": 1,
+        "childSignal": null,
+        "code": "RESOURCE_JOB_EXIT"
+      }
+    ]
+  },
+  "acceptance": {
+    "passing_subtargets_before_failure": 16,
+    "unverified_subtargets_before_failure": 1,
+    "failure_stage": "next_detail_metadata_fixture_source_stability_assertion",
+    "failure": {
+      "predicate": "metadata_fixture_source_stability",
+      "assertion_label": "public metadata and navigation remain stable around manual re-audit",
+      "actual_scalar": null,
+      "expected_scalar": null
+    },
+    "public_after": {
+      "title": "Airbnb | Vacation rentals, cabins, beach houses, & more",
+      "links": {
+        "internal": 108,
+        "external": 0
+      },
+      "images": {
+        "total": 0,
+        "missingAlt": 0
+      },
+      "bodyHasText": true,
+      "alternates": [
+        {
+          "lang": "en",
+          "href": "https://www.airbnb.com/"
+        },
+        {
+          "lang": "es-US",
+          "href": "https://es.airbnb.com/"
+        },
+        {
+          "lang": "zh-US",
+          "href": "https://zh.airbnb.com/"
+        },
+        {
+          "lang": "de",
+          "href": "https://www.airbnb.de/"
+        },
+        {
+          "lang": "it",
+          "href": "https://www.airbnb.it/"
+        },
+        {
+          "lang": "es-ES",
+          "href": "https://www.airbnb.es/"
+        },
+        {
+          "lang": "fr",
+          "href": "https://www.airbnb.fr/"
+        },
+        {
+          "lang": "pt",
+          "href": "https://www.airbnb.com.br/"
+        },
+        {
+          "lang": "da",
+          "href": "https://www.airbnb.dk/"
+        },
+        {
+          "lang": "en-GB",
+          "href": "https://www.airbnb.co.uk/"
+        },
+        {
+          "lang": "ru",
+          "href": "https://www.airbnb.ru/"
+        },
+        {
+          "lang": "pl",
+          "href": "https://www.airbnb.pl/"
+        },
+        {
+          "lang": "ko",
+          "href": "https://www.airbnb.co.kr/"
+        },
+        {
+          "lang": "cs",
+          "href": "https://www.airbnb.cz/"
+        },
+        {
+          "lang": "hu",
+          "href": "https://www.airbnb.hu/"
+        },
+        {
+          "lang": "de-AT",
+          "href": "https://www.airbnb.at/"
+        },
+        {
+          "lang": "pt-PT",
+          "href": "https://www.airbnb.pt/"
+        },
+        {
+          "lang": "el",
+          "href": "https://www.airbnb.gr/"
+        },
+        {
+          "lang": "tr",
+          "href": "https://www.airbnb.com.tr/"
+        },
+        {
+          "lang": "nl",
+          "href": "https://www.airbnb.nl/"
+        },
+        {
+          "lang": "sv",
+          "href": "https://www.airbnb.se/"
+        },
+        {
+          "lang": "zh-TW",
+          "href": "https://www.airbnb.com.tw/"
+        },
+        {
+          "lang": "zh-HK",
+          "href": "https://www.airbnb.com.hk/"
+        },
+        {
+          "lang": "en-SG",
+          "href": "https://www.airbnb.com.sg/"
+        },
+        {
+          "lang": "id",
+          "href": "https://www.airbnb.co.id/"
+        },
+        {
+          "lang": "ms",
+          "href": "https://www.airbnb.com.my/"
+        },
+        {
+          "lang": "en-AU",
+          "href": "https://www.airbnb.com.au/"
+        },
+        {
+          "lang": "ja",
+          "href": "https://www.airbnb.jp/"
+        },
+        {
+          "lang": "is",
+          "href": "https://www.airbnb.is/"
+        },
+        {
+          "lang": "no",
+          "href": "https://www.airbnb.no/"
+        },
+        {
+          "lang": "de-CH",
+          "href": "https://www.airbnb.ch/"
+        },
+        {
+          "lang": "fr-CH",
+          "href": "https://fr.airbnb.ch/"
+        },
+        {
+          "lang": "it-CH",
+          "href": "https://it.airbnb.ch/"
+        },
+        {
+          "lang": "en-NZ",
+          "href": "https://www.airbnb.co.nz/"
+        },
+        {
+          "lang": "en-CA",
+          "href": "https://www.airbnb.ca/"
+        },
+        {
+          "lang": "fr-CA",
+          "href": "https://fr.airbnb.ca/"
+        },
+        {
+          "lang": "nl-BE",
+          "href": "https://www.airbnb.be/"
+        },
+        {
+          "lang": "fr-BE",
+          "href": "https://fr.airbnb.be/"
+        },
+        {
+          "lang": "fi",
+          "href": "https://www.airbnb.fi/"
+        },
+        {
+          "lang": "en-IE",
+          "href": "https://www.airbnb.ie/"
+        },
+        {
+          "lang": "ga",
+          "href": "https://ga.airbnb.ie/"
+        },
+        {
+          "lang": "ca",
+          "href": "https://www.airbnb.cat/"
+        },
+        {
+          "lang": "en-IN",
+          "href": "https://www.airbnb.co.in/"
+        },
+        {
+          "lang": "hi",
+          "href": "https://hi.airbnb.co.in/"
+        },
+        {
+          "lang": "mr",
+          "href": "https://mr.airbnb.co.in/"
+        },
+        {
+          "lang": "kn",
+          "href": "https://kn.airbnb.co.in/"
+        },
+        {
+          "lang": "es-MX",
+          "href": "https://www.airbnb.mx/"
+        },
+        {
+          "lang": "es-CL",
+          "href": "https://www.airbnb.cl/"
+        },
+        {
+          "lang": "es-CR",
+          "href": "https://www.airbnb.co.cr/"
+        },
+        {
+          "lang": "es-VE",
+          "href": "https://www.airbnb.co.ve/"
+        },
+        {
+          "lang": "es-AR",
+          "href": "https://www.airbnb.com.ar/"
+        },
+        {
+          "lang": "es-BO",
+          "href": "https://www.airbnb.com.bo/"
+        },
+        {
+          "lang": "es-BZ",
+          "href": "https://www.airbnb.com.bz/"
+        },
+        {
+          "lang": "es-CO",
+          "href": "https://www.airbnb.com.co/"
+        },
+        {
+          "lang": "es-EC",
+          "href": "https://www.airbnb.com.ec/"
+        },
+        {
+          "lang": "es-GT",
+          "href": "https://www.airbnb.com.gt/"
+        },
+        {
+          "lang": "es-HN",
+          "href": "https://www.airbnb.com.hn/"
+        },
+        {
+          "lang": "es-NI",
+          "href": "https://www.airbnb.com.ni/"
+        },
+        {
+          "lang": "es-PA",
+          "href": "https://www.airbnb.com.pa/"
+        },
+        {
+          "lang": "es-PE",
+          "href": "https://www.airbnb.com.pe/"
+        },
+        {
+          "lang": "es-PY",
+          "href": "https://www.airbnb.com.py/"
+        },
+        {
+          "lang": "es-SV",
+          "href": "https://www.airbnb.com.sv/"
+        },
+        {
+          "lang": "en-MT",
+          "href": "https://www.airbnb.com.mt/"
+        },
+        {
+          "lang": "mt",
+          "href": "https://mt.airbnb.com.mt/"
+        },
+        {
+          "lang": "en-GY",
+          "href": "https://www.airbnb.gy/"
+        },
+        {
+          "lang": "en-AE",
+          "href": "https://www.airbnb.ae/"
+        },
+        {
+          "lang": "tl",
+          "href": "https://www.airbnb.com.ph/"
+        },
+        {
+          "lang": "vi",
+          "href": "https://www.airbnb.com.vn/"
+        },
+        {
+          "lang": "en-ZA",
+          "href": "https://www.airbnb.co.za/"
+        },
+        {
+          "lang": "xh",
+          "href": "https://xh.airbnb.co.za/"
+        },
+        {
+          "lang": "zu",
+          "href": "https://zu.airbnb.co.za/"
+        },
+        {
+          "lang": "fr-LU",
+          "href": "https://www.airbnb.lu/"
+        },
+        {
+          "lang": "de-LU",
+          "href": "https://de.airbnb.lu/"
+        },
+        {
+          "lang": "uk",
+          "href": "https://www.airbnb.com.ua/"
+        },
+        {
+          "lang": "hy",
+          "href": "https://www.airbnb.am/"
+        },
+        {
+          "lang": "az",
+          "href": "https://www.airbnb.az/"
+        },
+        {
+          "lang": "bs",
+          "href": "https://www.airbnb.ba/"
+        },
+        {
+          "lang": "et",
+          "href": "https://www.airbnb.com.ee/"
+        },
+        {
+          "lang": "ro",
+          "href": "https://www.airbnb.com.ro/"
+        },
+        {
+          "lang": "lt",
+          "href": "https://www.airbnb.lt/"
+        },
+        {
+          "lang": "lv",
+          "href": "https://www.airbnb.lv/"
+        },
+        {
+          "lang": "sr-ME",
+          "href": "https://www.airbnb.me/"
+        },
+        {
+          "lang": "sr",
+          "href": "https://www.airbnb.rs/"
+        },
+        {
+          "lang": "sl",
+          "href": "https://www.airbnb.si/"
+        },
+        {
+          "lang": "ar",
+          "href": "https://ar.airbnb.com/"
+        },
+        {
+          "lang": "bg",
+          "href": "https://bg.airbnb.com/"
+        },
+        {
+          "lang": "es",
+          "href": "https://es-l.airbnb.com/"
+        },
+        {
+          "lang": "he",
+          "href": "https://he.airbnb.com/"
+        },
+        {
+          "lang": "hr",
+          "href": "https://hr.airbnb.com/"
+        },
+        {
+          "lang": "ka",
+          "href": "https://ka.airbnb.com/"
+        },
+        {
+          "lang": "mk",
+          "href": "https://mk.airbnb.com/"
+        },
+        {
+          "lang": "sk",
+          "href": "https://sk.airbnb.com/"
+        },
+        {
+          "lang": "sq",
+          "href": "https://sq.airbnb.com/"
+        },
+        {
+          "lang": "sw",
+          "href": "https://sw.airbnb.com/"
+        },
+        {
+          "lang": "th",
+          "href": "https://th.airbnb.com/"
+        },
+        {
+          "lang": "zh",
+          "href": "https://zh.airbnb.com/"
+        }
+      ],
+      "schemaTypes": ["WebSite", "SearchAction"],
+      "navigation": {
+        "type": "navigate",
+        "durationMs": 1976,
+        "transferSizeBytes": 72175,
+        "responseStatus": 200
+      },
+      "responseStatus": 200
+    },
+    "metadata_fixture_auto_observed": {
+      "title": "Airbnb: Vacation Rentals, Cabins, Beach Houses, Unique Homes & Experiences",
+      "publicTitleAtNavigation": "Airbnb | Vacation rentals, cabins, beach houses, & more",
+      "publicTitleAtWait": "Airbnb | Vacation rentals, cabins, beach houses, & more",
+      "exactDataStatus": "unverified_point_in_time"
+    }
+  },
+  "interpretation": "The optional metadata stability assertion compared all public details, including live link/image counts and navigation metrics outside the hreflang/schema target. Before and structured diff were not retained, so the exact changing field cannot be reconstructed from 018. This receipt preserves the available after observation; no passing metadata claim is inferred."
+}
