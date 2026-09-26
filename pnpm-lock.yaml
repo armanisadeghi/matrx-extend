@@ -13,7 +13,7 @@ importers:
         version: 0.14.3(@supabase/supabase-js@2.117.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/content-ir':
         specifier: latest
-        version: 0.19.11
+        version: 0.19.13
       '@ai-matrx/content-ir-react':
         specifier: latest
         version: 0.11.11(react@19.3.0)
@@ -28,7 +28,7 @@ importers:
         version: 0.8.7(react@19.3.0)
       '@ai-matrx/records':
         specifier: latest
-        version: 0.58.25(react@19.3.0)
+        version: 0.58.26(react@19.3.0)
       '@ai-matrx/tap-target':
         specifier: latest
         version: 0.2.14(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -243,8 +243,8 @@ packages:
     peerDependencies:
       react: '>=19.0.0'
 
-  '@ai-matrx/content-ir@0.19.11':
-    resolution: {integrity: sha512-mTBc95OdUmp8T373VUOtquVTu3wfX+50H/g5UIe13r+gbSnciAIOuzYbhENSVWny0wlOhOfbonmiKm71gYLW3A==}
+  '@ai-matrx/content-ir@0.19.13':
+    resolution: {integrity: sha512-Vd8Yi1PExh661ch2OE76cC+WBW12W47gc9xKJcQ6SH6B/PzbkdcJ6TQwfrkrH2TMZB8Hqqz2S6nlgZBZfGMpgw==}
     engines: {node: '>=20'}
 
   '@ai-matrx/data@0.18.1':
@@ -281,8 +281,8 @@ packages:
       react-native:
         optional: true
 
-  '@ai-matrx/records@0.58.25':
-    resolution: {integrity: sha512-hnSpeXLspjjUfvvYNSDZRPiwIZwLo8lYwq8DZ2H0M9ZhGd3WqRlkdByJAkoHvs41f9usZt3TLOBI7b9AchU5Sw==}
+  '@ai-matrx/records@0.58.26':
+    resolution: {integrity: sha512-vVouxRzsJUW00qWwVKDSr5L92V9uklACnXAxlBIQCSUzQI1LS5Z06uE7JYcvFKgfWYNG3JfbRp+CyfWU6rzkRw==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -4367,10 +4367,10 @@ snapshots:
 
   '@ai-matrx/content-ir-react@0.11.11(react@19.3.0)':
     dependencies:
-      '@ai-matrx/content-ir': 0.19.11
+      '@ai-matrx/content-ir': 0.19.13
       react: 19.3.0
 
-  '@ai-matrx/content-ir@0.19.11':
+  '@ai-matrx/content-ir@0.19.13':
     dependencies:
       ajv: 8.20.0
 
@@ -4427,7 +4427,7 @@ snapshots:
 
   '@ai-matrx/kit@0.16.7(react@19.3.0)':
     dependencies:
-      '@ai-matrx/content-ir': 0.19.11
+      '@ai-matrx/content-ir': 0.19.13
       dompurify: 3.4.15
       idb: 8.0.3
       json5: 2.2.3
@@ -4439,7 +4439,7 @@ snapshots:
     optionalDependencies:
       react: 19.3.0
 
-  '@ai-matrx/records@0.58.25(react@19.3.0)':
+  '@ai-matrx/records@0.58.26(react@19.3.0)':
     optionalDependencies:
       react: 19.3.0
 
