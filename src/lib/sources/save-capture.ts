@@ -45,6 +45,8 @@ export interface UnsavedCapture {
   id: string;
   url: string;
   title: string;
+  /** Organization of the last attempted send, when one was selected. */
+  organizationId?: string;
   createdAt: number;
   attempts: number;
   lastRefusal: LandingRefusal;
@@ -52,7 +54,7 @@ export interface UnsavedCapture {
 }
 
 export type SaveOutcome =
-  | { status: 'landed'; landed: LandedSource }
+  | { status: 'landed'; landed: LandedSource; organizationId: string }
   | { status: 'unsaved'; unsaved: UnsavedCapture }
   | { status: 'empty'; message: string };
 
@@ -147,7 +149,9 @@ export function prepareLanding(
   };
 }
 
-type SendResult = { ok: true; landed: LandedSource } | { ok: false; refusal: LandingRefusal };
+type SendResult =
+  | { ok: true; landed: LandedSource; organizationId: string }
+  | { ok: false; refusal: LandingRefusal; organizationId?: string };
 
 async function send(prepared: PreparedLanding): Promise<SendResult> {
   const user = await getCurrentUser().catch(() => null);
@@ -185,7 +189,8 @@ async function send(prepared: PreparedLanding): Promise<SendResult> {
     organization_id: organizationId,
     provenance: { ...prepared.provenance, user_id: user.id },
   };
-  return landSource(body);
+  const result = await landSource(body);
+  return { ...result, organizationId };
 }
 
 // ─── The unsaved queue (chrome.storage.local) ──────────────────────────────
@@ -220,11 +225,21 @@ async function upsertUnsaved(row: UnsavedCapture): Promise<UnsavedCapture> {
 }
 
 /** A page that landed leaves the queue, whichever control landed it. */
-async function dropUnsavedForUrl(url: string): Promise<void> {
+async function dropUnsavedForUrl(
+  url: string,
+  expected: Pick<UnsavedCapture, 'id' | 'attempts'> | null,
+  organizationId: string,
+): Promise<void> {
+  if (!expected) return;
   const rows = await listUnsavedCaptures();
   const key = canonicalUrl(url);
-  if (rows.some((r) => canonicalUrl(r.url) === key)) {
-    await writeUnsaved(rows.filter((r) => canonicalUrl(r.url) !== key));
+  const queued = rows.find((r) => canonicalUrl(r.url) === key);
+  if (
+    queued?.id === expected.id &&
+    queued.attempts === expected.attempts &&
+    (!queued.organizationId || queued.organizationId === organizationId)
+  ) {
+    await writeUnsaved(rows.filter((r) => r.id !== queued.id));
   }
 }
 
@@ -265,15 +280,19 @@ export async function saveCaptureAsSource(
         'This capture has no article text, so there is nothing to save. Try "Scroll & capture" to load the page fully, then save again.',
     };
   }
+  const queuedBefore = await listUnsavedCaptures()
+    .then((rows) => rows.find((row) => canonicalUrl(row.url) === canonicalUrl(soup.url)) ?? null)
+    .catch(() => null);
   const result = await send(prepared);
   if (result.ok) {
-    await dropUnsavedForUrl(soup.url).catch(() => undefined);
-    return { status: 'landed', landed: result.landed };
+    await dropUnsavedForUrl(soup.url, queuedBefore, result.organizationId).catch(() => undefined);
+    return { status: 'landed', landed: result.landed, organizationId: result.organizationId };
   }
   let unsaved: UnsavedCapture = {
     id: newId(),
     url: soup.url,
     title: prepared.name,
+    ...(result.organizationId && { organizationId: result.organizationId }),
     createdAt: Date.now(),
     attempts: 1,
     lastRefusal: result.refusal,
@@ -300,10 +319,16 @@ export async function retryUnsavedCapture(id: string): Promise<SaveOutcome> {
   }
   const result = await send(row.prepared);
   if (result.ok) {
-    await discardUnsavedCapture(id);
-    return { status: 'landed', landed: result.landed };
+    const current = (await listUnsavedCaptures()).find((pending) => pending.id === id);
+    if (current?.attempts === row.attempts) await discardUnsavedCapture(id);
+    return { status: 'landed', landed: result.landed, organizationId: result.organizationId };
   }
-  const next: UnsavedCapture = { ...row, attempts: row.attempts + 1, lastRefusal: result.refusal };
+  const next: UnsavedCapture = {
+    ...row,
+    ...(result.organizationId && { organizationId: result.organizationId }),
+    attempts: row.attempts + 1,
+    lastRefusal: result.refusal,
+  };
   await upsertUnsaved(next);
   return { status: 'unsaved', unsaved: next };
 }

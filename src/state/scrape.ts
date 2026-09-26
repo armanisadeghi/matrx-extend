@@ -62,6 +62,7 @@ interface ScrapeState {
   removeLink: (key: string) => void;
   addLink: (link: { href: string; text?: string }) => void;
   markSaved: () => void;
+  markUnsaved: () => void;
 }
 
 const linkKey = (href: string, text: string) => `${href}|${text}`;
@@ -86,6 +87,7 @@ export const useScrapeStore = create<ScrapeState>((set) => ({
   setError: (error) => set({ error, loading: false }),
   setAlreadyCaptured: (alreadyCapturedAt) => set({ alreadyCapturedAt }),
   markSaved: () => set({ edited: false }),
+  markUnsaved: () => set({ edited: true }),
 
   setDiagnoseMode: (mode) => set((s) => ({ diagnose: { ...s.diagnose, mode } })),
   setDiagnosePicking: (picking) => set((s) => ({ diagnose: { ...s.diagnose, picking } })),

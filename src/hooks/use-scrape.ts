@@ -51,6 +51,7 @@ export function useScrape() {
     setLoading,
     setError,
     markSaved,
+    markUnsaved,
   } = useScrapeStore();
   const setDiagnosePicking = useScrapeStore((s) => s.setDiagnosePicking);
   const setDiagnoseResult = useScrapeStore((s) => s.setDiagnoseResult);
@@ -203,9 +204,9 @@ export function useScrape() {
    * a landing that does not happen leaves it on this device under
    * "Not yet a Source" (retry) (`save-capture.ts`).
    *
-   * The unsaved-edits guard is disarmed (`markSaved`) ONLY when the Source
-   * actually landed. An unsaved outcome leaves it armed, so a Re-capture still
-   * asks before discarding edits the person has not saved.
+   * The panel disarms the unsaved-edits guard only after a landed result is
+   * confirmed for its current capture and workspace. A late result from an
+   * earlier workspace must not silently mark the current draft saved.
    */
   const save = useCallback(
     async (extra: { patternId?: string } = {}): Promise<SaveOutcome | null> => {
@@ -218,12 +219,12 @@ export function useScrape() {
         articleEdited,
       });
       if (outcome.status !== 'landed') return outcome;
-      markSaved();
       // The normalized wbx_seo_audit row powers the SEO tab's "Previously
       // audited" recognition. It is a companion write, not the save itself —
       // but when it fails the person is TOLD, never left believing it happened.
       const audit = await saveSeoAudit({
         url: current.url,
+        organizationId: outcome.organizationId,
         signals: current.seo,
         flesch_reading_ease: current.seo.flesch_reading_ease,
         word_count: current.seo.word_count,
@@ -238,7 +239,7 @@ export function useScrape() {
       }
       return outcome;
     },
-    [current, original, articleEdited, markSaved],
+    [current, original, articleEdited],
   );
 
   return {
@@ -252,6 +253,8 @@ export function useScrape() {
     reloadActiveTab,
     clearError,
     save,
+    markSaved,
+    markUnsaved,
     launchDiagnose,
   };
 }

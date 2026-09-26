@@ -21,8 +21,8 @@ export function UnsavedCapturesCard({
   onUrlsChange,
   currentPage,
 }: {
-  /** Called with the capture's URL and the Source id when a retry lands. */
-  onLanded?: (url: string, processedDocumentId: string) => void;
+  /** Called with the capture's URL, Source id, and organization when a retry lands. */
+  onLanded?: (url: string, processedDocumentId: string, organizationId: string) => void;
   /** The URLs this card currently owns — while a URL is here, the card is its only save action. */
   onUrlsChange?: (urls: string[]) => void;
   /**
@@ -63,7 +63,7 @@ export function UnsavedCapturesCard({
         } else {
           const outcome = await retryUnsavedCapture(row.id);
           if (outcome.status === 'landed')
-            onLanded?.(row.url, outcome.landed.processed_document_id);
+            onLanded?.(row.url, outcome.landed.processed_document_id, outcome.organizationId);
         }
         setRows(await listUnsavedCaptures());
       } finally {

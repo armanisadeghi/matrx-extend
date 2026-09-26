@@ -8,6 +8,7 @@ import { useActiveTab } from '@/hooks/use-active-tab';
 import { usePageRecognition } from '@/hooks/use-page-recognition';
 import { usePageScrollSync } from '@/hooks/use-page-scroll-sync';
 import { useScrape } from '@/hooks/use-scrape';
+import { getActiveOrganizationId, onActiveOrganizationChange } from '@/lib/org/active-org';
 import type { CaptureError, CaptureErrorAction } from '@/lib/scrape/capture-error';
 import { partitionImages } from '@/lib/scrape/classify-images';
 import {
@@ -66,6 +67,8 @@ export function ScrapeView() {
     reloadActiveTab,
     clearError,
     save,
+    markSaved,
+    markUnsaved,
     launchDiagnose,
   } = useScrape();
   const setCurrent = useScrapeStore((s) => s.setCurrent);
@@ -81,10 +84,22 @@ export function ScrapeView() {
   const recognition = usePageRecognition();
   const tab = useActiveTab();
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  /** The Source the last Save landed as, and what the door said about it. */
-  const [savedSource, setSavedSource] = useState<{ id: string; notices: string[] } | null>(null);
+  const [activeOrganizationId, setActiveOrganizationId] = useState<string | null>(null);
+  const organizationEpochRef = useRef(0);
+  const saveRunRef = useRef(0);
+  /** Local confirmation is bound to the organization that received the Save. */
+  const [savedSource, setSavedSource] = useState<{
+    id: string;
+    notices: string[];
+    organizationId: string;
+    capture: NonNullable<typeof current>;
+  } | null>(null);
+  const saved =
+    savedSource !== null &&
+    savedSource.organizationId === activeOrganizationId &&
+    savedSource.capture === current &&
+    !edited;
   /** URLs the unsaved-retry card owns; for those, its Retry is the one save action. */
   const [unsavedUrls, setUnsavedUrls] = useState<string[]>([]);
   // Retry must replay the mode the user actually picked — activeMode is
@@ -103,6 +118,41 @@ export function ScrapeView() {
   const [articleDraft, setArticleDraft] = useState('');
   /** Pending re-capture mode while waiting on the unsaved-edits confirm. */
   const [pendingCaptureMode, setPendingCaptureMode] = useState<'fast' | 'deep' | null>(null);
+
+  useEffect(() => {
+    const epoch = organizationEpochRef.current;
+    const off = onActiveOrganizationChange((organizationId) => {
+      organizationEpochRef.current += 1;
+      setActiveOrganizationId(organizationId);
+      // The old Save may still be finishing in its original workspace. Let
+      // this workspace offer Save now; the old completion cannot own its UI.
+      setSaving(false);
+      setSaveError(null);
+    });
+    void getActiveOrganizationId()
+      .then((organizationId) => {
+        if (epoch !== organizationEpochRef.current) return;
+        setActiveOrganizationId(organizationId);
+      })
+      .catch(() => {
+        // A failed read is unknown, never a license to show a saved claim.
+        if (epoch === organizationEpochRef.current) {
+          setActiveOrganizationId(null);
+        }
+      });
+    return off;
+  }, []);
+
+  // The same in-memory capture may be saved in A and unsaved in B. Keep the
+  // recapture warning aligned with the workspace, without changing its text.
+  useEffect(() => {
+    if (!savedSource || savedSource.capture !== current) return;
+    if (savedSource.organizationId === activeOrganizationId) {
+      if (edited) markSaved();
+    } else if (!edited) {
+      markUnsaved();
+    }
+  }, [savedSource, current, activeOrganizationId, edited, markSaved, markUnsaved]);
 
   const beginArticleEdit = () => {
     setArticleDraft(current?.article.content_markdown ?? '');
@@ -136,7 +186,7 @@ export function ScrapeView() {
     lastModeRef.current = mode;
     // A fresh capture is unsaved by definition — the Saved badge used to
     // persist across re-captures of the same URL.
-    setSaved(false);
+    setSavedSource(null);
     setSaveError(null);
     void captureActiveTab({ mode });
   };
@@ -147,7 +197,7 @@ export function ScrapeView() {
     if (!mode) return;
     setEditingArticle(false);
     lastModeRef.current = mode;
-    setSaved(false);
+    setSavedSource(null);
     setSaveError(null);
     void captureActiveTab({ mode });
   };
@@ -158,31 +208,30 @@ export function ScrapeView() {
   useEffect(() => {
     if (current && tab.url && current.url !== tab.url) {
       setCurrent(null);
-      setSaved(false);
+      setSavedSource(null);
     }
   }, [tab.url, current, setCurrent]);
 
-  // Local edits invalidate the "Saved" badge — the persisted row no longer
-  // matches the in-memory state until the user hits Save again.
-  useEffect(() => {
-    if (edited && saved) setSaved(false);
-  }, [edited, saved]);
-
   const handleSave = async () => {
+    if (!current) return;
+    const run = ++saveRunRef.current;
+    const capture = current;
+    const organizationEpoch = organizationEpochRef.current;
     setSaving(true);
-    setSaved(false);
     setSavedSource(null);
     setSaveError(null);
     try {
       const outcome = await save();
       if (!outcome) return;
+      if (run !== saveRunRef.current || useScrapeStore.getState().current !== capture) return;
       if (outcome.status === 'landed') {
-        setSaved(true);
         setSavedSource({
           id: outcome.landed.processed_document_id,
           notices: outcome.landed.notices.map((n) => n.message),
+          organizationId: outcome.organizationId,
+          capture,
         });
-      } else if (outcome.status === 'empty') {
+      } else if (outcome.status === 'empty' && organizationEpoch === organizationEpochRef.current) {
         setSaveError(outcome.message);
       }
       // 'unsaved': the capture is on this device and the "Not yet a Source" (retry)
@@ -190,13 +239,19 @@ export function ScrapeView() {
     } catch (err) {
       // save() never throws for a refusal or an outage; reaching here is a bug
       // in the save path itself. Still say it at the button, never snap back.
-      setSaveError(
-        err instanceof Error
-          ? err.message
-          : 'Save failed — check your connection and sign-in, then try again.',
-      );
+      if (
+        run === saveRunRef.current &&
+        organizationEpoch === organizationEpochRef.current &&
+        useScrapeStore.getState().current === capture
+      ) {
+        setSaveError(
+          err instanceof Error
+            ? err.message
+            : 'Save failed — check your connection and sign-in, then try again.',
+        );
+      }
     } finally {
-      setSaving(false);
+      if (run === saveRunRef.current) setSaving(false);
     }
   };
 
@@ -250,10 +305,9 @@ export function ScrapeView() {
         <UnsavedCapturesCard
           onUrlsChange={setUnsavedUrls}
           currentPage={current ? { url: current.url, save: handleSave } : null}
-          onLanded={(url, id) => {
+          onLanded={(url, id, organizationId) => {
             if (current && url === current.url) {
-              setSaved(true);
-              setSavedSource({ id, notices: [] });
+              setSavedSource({ id, notices: [], organizationId, capture: current });
             }
           }}
         />

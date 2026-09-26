@@ -117,6 +117,9 @@ beforeEach(async () => {
       sendMessage: vi.fn(async () => undefined),
     },
   });
+  await chrome.storage.local.set({
+    [STORAGE_KEYS.ACTIVE_ORGANIZATION]: { id: mocks.organizationId, name: 'Harbor Dental' },
+  });
   useScrapeStore.getState().setCurrent(soup);
   // The person edited the article before saving.
   useScrapeStore
@@ -391,6 +394,7 @@ describe('Save never loses input', () => {
     expect(screen.queryByRole('button', { name: /Open this Source/ })).toBeNull();
     expect(screen.getByRole('button', { name: /^Save$/ })).toBeTruthy();
     expect(useScrapeStore.getState().current?.article.content_markdown).toContain('Intro, edited.');
+    expect(useScrapeStore.getState().edited).toBe(true);
   });
 
   it('a save started in the old workspace cannot restore its Saved claim after a switch', async () => {
@@ -424,5 +428,32 @@ describe('Save never loses input', () => {
       organization_id: OTHER_ORGANIZATION_ID,
     });
     expect(await screen.findByRole('button', { name: /^Saved$/ })).toBeTruthy();
+  });
+
+  it('an old workspace save finishing late keeps the new workspace retry capture queued', async () => {
+    const oldSave = deferredApiResponse();
+    mocks.apiPost
+      .mockReturnValueOnce(oldSave.promise)
+      .mockResolvedValueOnce({ ok: false, status: 0, error: 'Failed to fetch' });
+    render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
+
+    await switchWorkspace(OTHER_ORGANIZATION_ID);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(2));
+    expect(mocks.apiPost.mock.calls[1]?.[1]).toMatchObject({
+      organization_id: OTHER_ORGANIZATION_ID,
+    });
+    expect(
+      await screen.findByRole('alert', { name: 'Captures not yet saved as Sources' }),
+    ).toBeTruthy();
+
+    await act(async () => oldSave.resolve(landedResponse));
+    const queued = await listUnsavedCaptures();
+    expect(queued).toHaveLength(1);
+    expect(queued[0]).toMatchObject({ url: soup.url, organizationId: OTHER_ORGANIZATION_ID });
+    expect(screen.getByRole('button', { name: /Retry save/ })).toBeTruthy();
+    expect(useScrapeStore.getState().current?.article.content_markdown).toContain('Intro, edited.');
   });
 });

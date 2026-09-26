@@ -1079,6 +1079,8 @@ export type SeoAuditRow = z.infer<typeof SeoAuditRowSchema>;
 export interface SaveSeoAuditPayload {
   url: string;
   signals: unknown;
+  /** Bind an audit accompanying a Source landing to the organization that received it. */
+  organizationId?: string;
   flesch_reading_ease?: number | null;
   word_count?: number | null;
   notes?: string | null;
@@ -1087,7 +1089,7 @@ export interface SaveSeoAuditPayload {
 export async function saveSeoAudit(p: SaveSeoAuditPayload): Promise<{ id: string } | null> {
   let organizationId: string;
   try {
-    organizationId = await requireRequestOrganizationId();
+    organizationId = p.organizationId ?? (await requireRequestOrganizationId());
   } catch (error) {
     console.warn('[matrx-extend] saveSeoAudit refused: missing request organization', error);
     return null;
