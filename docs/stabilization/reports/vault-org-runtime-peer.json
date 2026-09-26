@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "report_id": "vault-org-runtime-peer",
+  "reviewed_source_commit": "6974350e5da022a07a5462e6037b74768f9f5310",
+  "prior_independent_review_commit": "658b6ea5",
+  "runtime_evidence": {
+    "run_id": "member-vault-access-005",
+    "log_path": "/tmp/matrx-member-vault-access-005.log",
+    "log_sha256": "1c7a1ce09a85b4dd4b9a1d3dd449ef0d349d22ec78f2498fd33d3d8d80e7dc34",
+    "result_path": "test-results/member-vault-access-probe.json",
+    "result_sha256": "e848b96e9bc72bbf0489153bc1d176a5ee0cffe59da42c5455e5dc1dc0651c61",
+    "scope": "Existing root-authorized run receipt review only; no browser, runtime probe, build, or test launched by this peer."
+  },
+  "acceptance": {
+    "verdict": "INITIAL_LOADING_LEAD_RESOLVED_AS_MISSING_DEVICE_ORGANIZATION_PREREQUISITE",
+    "reason": "Before the choice, device organization selection was absent, the global picker was pending, visible, and loading, and the Vault showed its pre-content spinner. The exact approved fixture was then offered and explicitly chosen. Afterward the picker was gone and selection was present; the persisted observation reached the Vault heading, Mine scope, and Shared tab, with the pre-content and inventory spinners clear. The runner passed its Mine inventory readiness wait and failed later at shared_tab_click. This supports the initial loading lead as a missing device-organization prerequisite and confirms Mine became ready after choice.",
+    "bounded_claim": "This does not establish successful Shared inventory, credential identity, member access, Fill behavior, member sign-in, or whole-probe acceptance. The run status remains unverified."
+  },
+  "quality": {
+    "verdict": "EVIDENCE_SUFFICIENT_FOR_BOUNDED_PREREQUISITE_CONCLUSION",
+    "resource_guard": {
+      "admission": "RESOURCE_ADMITTED",
+      "watch": "RESOURCE_WATCH_HEALTHY",
+      "watch_events": 1,
+      "exit": "RESOURCE_JOB_EXIT",
+      "child_exit_code": 1,
+      "child_signal": null,
+      "resource_failure_observed": false
+    },
+    "preserved_limits": [
+      "Run 005 is unverified; the child exited with code 1 at shared_tab_click.",
+      "The actual terminal observation records siteSpinner=true, which is a separate site-matching spinner and does not invalidate Mine inventory readiness.",
+      "Mine's designated-candidate count was zero; no matching masked title or credential identity was established.",
+      "Shared inventory did not complete, and the probe stops before member Vault Fill or member extension sign-in.",
+      "This observation does not prove the initial spinner had no other possible causes in other device states or runs."
+    ],
+    "key_observations": {
+      "beforeOrganizationChoice": {
+        "organizationSelected": false,
+        "organizationPickerPending": true,
+        "organizationPickerVisible": true,
+        "organizationPickerLoading": true,
+        "preContentSpinner": true,
+        "activeScope": "none"
+      },
+      "afterOrganizationChoice": {
+        "organizationSelected": true,
+        "organizationPickerVisible": false,
+        "approvedOrganizationOffered": false,
+        "preContentSpinner": true,
+        "activeScope": "none"
+      },
+      "terminalMineObservation": {
+        "vaultHeadingVisible": true,
+        "preContentSpinner": false,
+        "inventorySpinner": false,
+        "refreshSpinner": false,
+        "siteSpinner": true,
+        "activeScope": "mine",
+        "sharedTabAvailable": true,
+        "designatedCandidateCount": 0
+      },
+      "runnerFailureStage": "shared_tab_click"
+    }
+  }
+}

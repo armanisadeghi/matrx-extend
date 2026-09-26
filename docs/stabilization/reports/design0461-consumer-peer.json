@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/member_probe_retry_peer",
+  "source_commit": "fb32a06f5e682b128dee79395b284bc844cbe84b",
+  "scope": "Bounded source-only consumer-action review for @ai-matrx/design-system 0.46.1. No browser, tests, or build were run.",
+  "package_evidence": {
+    "published_source": "../aidream/apps/shared/design-system/CHANGELOG.md and package.json",
+    "version": "0.46.1",
+    "consumer_action": "The 0.46.1 changelog entry gives no consumer action. It changes the single-row MatrxDataTable toolbar's fine-pointer tap target and pill size to 32px while retaining the 44px coarse-pointer floor.",
+    "extension_applicability": "No extension source imports MatrxDataTable or @ai-matrx/design-system/data-table, and no single-row table toolbar configuration or toolbar selectors were found. The extension's Tables tab extracts HTML tables from the active page; it is not the design-system data-table component. Therefore this 0.46.1 change has no direct extension UI consumer action."
+  },
+  "dependency_delta": {
+    "commit": "fb32a06f5e682b128dee79395b284bc844cbe84b",
+    "files_changed": ["pnpm-lock.yaml"],
+    "change": "Lockfile resolves @ai-matrx/design-system from 0.46.0 to 0.46.1, including agent and tap-target snapshots. package.json already declares latest, consistent with the pre-launch package rule."
+  },
+  "verdict_a_consumer_action": {
+    "status": "NONE_REQUIRED",
+    "reason": "The published changelog change targets a component the extension does not render. No extension source adjustment is indicated by the 0.46.1 consumer contract."
+  },
+  "verdict_b_installation_and_runtime": {
+    "status": "PENDING",
+    "reason": "At review time node_modules/@ai-matrx/design-system/package.json still reports 0.46.0, while pnpm-lock.yaml resolves 0.46.1. Root reports guarded install session 27313 is active. The existing Chrome runtime at 0.2.68 predates this dependency update; no browser update or runtime verification is claimed."
+  },
+  "verification": [
+    "Compared fb32a06f's exact lockfile-only diff and confirmed the extension package manifest remains latest.",
+    "Read the sibling package's current 0.46.1 changelog and package metadata.",
+    "Searched extension source for MatrxDataTable, the data-table entrypoint, and single-row toolbar use; none were found."
+  ]
+}

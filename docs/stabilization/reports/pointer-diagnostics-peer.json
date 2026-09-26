@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "report_id": "pointer-diagnostics-peer",
+  "role": "independent_source_review",
+  "reviewed_commit": "af6ff8e6fa589aa5229084dbdc0d7e79a5732697",
+  "scope": "Source review only of the new pointer failure instrumentation and probe catch. No browser, runtime, build, or test was launched.",
+  "acceptance": {
+    "verdict": "PENDING_GUARDED_ACTUAL_PROBE",
+    "reason": "Run 006 failed inside shared_tab_click before Shared scope or inventory was observed. The instrumentation has not run in a subsequent owned profile, so the Shared click cause and member access remain unknown. The device organization prerequisite was resolved in run 006, and Mine inventory became ready."
+  },
+  "quality": {
+    "verdict": "SOURCE_READY_WITH_DIAGNOSTIC_LIMITATION",
+    "reason": "The new failure paths preserve a failing outcome and do not change target selectors, scroll preparation, clipping, hit and animation requirements, two stable samples, deadline, or trusted mouse press/release payloads. The new probe receipt copies only the driver's bounded failure object.",
+    "branch_and_catch_census": [
+      "Page-realm target resolution, visibility filter, scroll preparation, clipping geometry, hit testing, and animation observation are wrapped by a catch that returns only sampleFailed and one fixed sampleFailureStage. Each caught exception remains a failure before input dispatch.",
+      "Initial Runtime.evaluate rejection becomes pointer_initial_evaluation_failed; a page sample failure becomes pointer_page_sample_failed; a nonunique visible target becomes pointer_target_not_unique.",
+      "Followup Runtime.evaluate rejection becomes pointer_followup_evaluation_failed; a page sample failure becomes pointer_page_sample_failed. The unchanged stability predicate still requires a unique hit target, no running ancestor animation, and two consecutive stable position observations within the same deadline.",
+      "A stability timeout becomes pointer_stable_hit_not_observed. Mouse press and release each have a distinct fixed dispatch failure; neither catch reports success or retries a failed action.",
+      "The member probe top-level catch still marks unverified, retains failureStage and failureCategory, and copies driverFailure only when present. The existing cleanup and lease catches still mark failures."
+    ],
+    "privacy": "The new driverFailure fields are fixed codes/stages/categories, integer counts, and booleans or null. It contains no coordinates, raw error, DOM text, URL, Vault item metadata, or credential. The old pointerDiagnostic geometry attachment remains on stable-hit errors for other callers, but the member probe does not copy it.",
+    "diagnostic_limitation": "An initial Runtime.evaluate exception formerly reached sibling classifiers as panel_runtime_exception. It is now pointer_initial_evaluation_failed, which their message-prefix classifiers treat as a generic browser failure. This reduces classification detail outside the member probe but does not alter click failure or expose data. Also, if member probe cleanup rejects after a click failure, JavaScript finally can replace the click error and omit driverFailure; this pre-existing cleanup behavior limits the new diagnostic's guarantee.",
+    "readiness": "Ready for one root-guarded probe to locate the Shared click boundary; no Shared product or member-access acceptance claim."
+  },
+  "checks": [
+    "Inspected the full exact commit diff and current driver, probe, harness cleanup, and sibling failure classifiers.",
+    "No runtime, browser, build, or test executed."
+  ]
+}

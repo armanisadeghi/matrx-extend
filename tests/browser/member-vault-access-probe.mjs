@@ -26,6 +26,7 @@ const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const EXPECTED_ADMIN = 'admin@admin.com';
 const TARGET_MEMBER = 'test@test.com';
+const APPROVED_ORGANIZATION = 'ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete';
 
 let stage = 'admission';
 const evidence = {
@@ -126,7 +127,9 @@ async function maskedInventory(panel) {
     panel,
     `(() => {
     const vaultTab = document.querySelector('button[role="tab"][title="Vault"]');
-    const active = document.querySelector('[role="tabpanel"][data-state="active"]');
+    // Radix links this trigger to its own panel. A document-wide first active
+    // tabpanel can belong to another mounted surface or a nested tab set.
+    const active = document.getElementById(vaultTab?.getAttribute('aria-controls') ?? '');
     const rows = [...(active?.querySelectorAll('li.rounded-md.border.bg-card > button') ?? [])];
     const candidateRows = rows.filter((row) => {
       const title = row.querySelector('span.block.truncate.text-xs.font-medium')?.textContent?.trim() ?? '';
@@ -135,8 +138,13 @@ async function maskedInventory(panel) {
     return {
       activePanelFound: Boolean(active),
       vaultTabActive: vaultTab?.getAttribute('data-state') === 'active',
+      vaultPanelActive: active?.getAttribute('data-state') === 'active',
+      firstActivePanelIsVault: document.querySelector('[role="tabpanel"][data-state="active"]') === active,
       vaultHeadingVisible: Boolean(active?.querySelector('span.text-sm.font-medium')) &&
         [...(active?.querySelectorAll('span') ?? [])].some((span) => span.textContent.trim() === 'Vault'),
+      // Both the lazy view fallback and Vault's auth-checking branch render
+      // this pre-content spinner; it is outside the inventory spinner selector.
+      preContentSpinner: Boolean(active?.querySelector(':scope > div.flex.h-full.items-center.justify-center svg.animate-spin')),
       // Site matching and the password generator have independent spinners.
       // Neither is evidence that the Mine/Shared inventory is still loading.
       inventorySpinner: Boolean(active?.querySelector('div.h-20 .animate-spin')),
@@ -159,10 +167,32 @@ async function maskedInventory(panel) {
 
 async function observeInventory(panel) {
   const observed = await maskedInventory(panel);
+  // Only fixed diagnostic booleans cross the page boundary. Never inspect
+  // React hook state, organization identities, tokens, or Vault data here.
+  const prerequisite = await evaluate(
+    panel,
+    `(async () => {
+    const stored = await chrome.storage.local.get(['matrx.org.active', 'matrx.org.picker-pending']);
+    const picker = [...document.querySelectorAll('[role="dialog"]')].find((node) =>
+      node.textContent.includes('Which organization are you working in?'));
+    return {
+      organizationSelected: Boolean(stored['matrx.org.active']?.id),
+      organizationPickerPending: stored['matrx.org.picker-pending'] === true,
+      organizationPickerVisible: Boolean(picker),
+      organizationPickerLoading: Boolean(picker?.querySelector('[aria-label="Loading organizations"]')),
+      approvedOrganizationOffered: [...(picker?.querySelectorAll('[role="option"] span.truncate') ?? [])]
+        .filter((node) => node.textContent.trim() === ${JSON.stringify(APPROVED_ORGANIZATION)}).length === 1,
+    };
+  })()`,
+  );
   evidence.lastVaultObservation = {
+    ...prerequisite,
     activePanelFound: observed.activePanelFound === true,
     vaultTabActive: observed.vaultTabActive === true,
+    vaultPanelActive: observed.vaultPanelActive === true,
+    firstActivePanelIsVault: observed.firstActivePanelIsVault === true,
     vaultHeadingVisible: observed.vaultHeadingVisible === true,
+    preContentSpinner: observed.preContentSpinner === true,
     inventorySpinner: observed.inventorySpinner === true,
     refreshSpinner: observed.refreshSpinner === true,
     siteSpinner: observed.siteSpinner === true,
@@ -177,7 +207,7 @@ async function observeInventory(panel) {
     designatedCandidateCount: observed.candidateCount,
     designatedCandidateFillOnCount: observed.candidateFillOnCount,
   };
-  return observed;
+  return { ...observed, ...prerequisite };
 }
 
 let lease;
@@ -212,11 +242,40 @@ try {
 
         stage = 'vault_tab_click';
         await click(panel, 'title', 'Vault');
+        stage = 'vault_prerequisite_observation';
+        const prerequisite = await waitFor(
+          'vault_prerequisite_or_content',
+          () => observeInventory(panel),
+          (state) => state?.vaultHeadingVisible || state?.organizationPickerVisible,
+          30_000,
+        );
+        evidence.beforeOrganizationChoice = { ...evidence.lastVaultObservation };
+        if (prerequisite.organizationPickerVisible) {
+          stage = 'vault_organization_prerequisite';
+          const offered = await waitFor(
+            'organization_choices_loaded',
+            () => observeInventory(panel),
+            (state) => state?.organizationPickerVisible && !state.organizationPickerLoading,
+            30_000,
+          );
+          if (!offered.approvedOrganizationOffered)
+            fail('approved_organization_prerequisite_unavailable');
+          if (offered.organizationSelected) fail('organization_prerequisite_state_inconsistent');
+          await click(panel, 'organization-picker-choice', APPROVED_ORGANIZATION);
+          await waitFor(
+            'explicit_organization_selected',
+            () => observeInventory(panel),
+            (state) => state?.organizationSelected && !state.organizationPickerVisible,
+            30_000,
+          );
+          evidence.afterOrganizationChoice = { ...evidence.lastVaultObservation };
+        }
         stage = 'mine_inventory_wait';
         await waitFor(
           'masked_vault_inventory',
           () => observeInventory(panel),
           (state) =>
+            state?.vaultPanelActive &&
             state?.vaultHeadingVisible &&
             !state.inventorySpinner &&
             !state.refreshSpinner &&
@@ -229,12 +288,13 @@ try {
         if (mine.errorVisible) fail('vault_inventory_error');
         if (!mine.sharedTabLabel) fail('shared_inventory_tab_missing');
         stage = 'shared_tab_click';
-        await click(panel, 'button', mine.sharedTabLabel);
+        await click(panel, 'vault-shared-tab', 'Shared');
         stage = 'shared_inventory_wait';
         await waitFor(
           'shared_vault_inventory',
           () => observeInventory(panel),
           (state) =>
+            state?.vaultPanelActive &&
             state?.vaultHeadingVisible &&
             !state.inventorySpinner &&
             !state.refreshSpinner &&
@@ -257,9 +317,10 @@ try {
   evidence.status = 'inventory_observed_member_auth_unverified';
   stage = 'complete';
   process.stdout.write('OBSERVED member_vault_masked_inventory; member auth unverified\n');
-} catch {
+} catch (error) {
   evidence.status = 'unverified';
   evidence.failureStage = stage;
+  if (error?.driverFailure) evidence.driverFailure = error.driverFailure;
   evidence.failureCategory ??= 'stage_operation_failed';
   process.stderr.write(`UNVERIFIED member_vault_access_probe at ${stage}\n`);
   process.exitCode = 1;

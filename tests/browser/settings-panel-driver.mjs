@@ -57,12 +57,51 @@ export async function openSection(panel, label) {
   );
 }
 
+// Transport only this allowlisted summary into sensitive acceptance receipts.
+// Never derive a category from raw browser/transport exception messages.
+function pointerFailure(code, location) {
+  const message =
+    code === 'pointer_target_not_unique'
+      ? 'unique visible pointer target'
+      : code === 'pointer_stable_hit_not_observed'
+        ? 'stable hit target for pointer'
+        : code === 'pointer_followup_evaluation_failed' || code === 'pointer_page_sample_failed'
+          ? 'pointer_sample_failed for pointer'
+          : code;
+  const error = new Error(message);
+  const pointer = location?.pointerDiagnostic;
+  error.driverFailure = {
+    code,
+    sampleStage: location?.sampleFailureStage ?? null,
+    matchedTargetCount: Number.isInteger(location?.matchedCount) ? location.matchedCount : null,
+    visibleMatchCount: Number.isInteger(location?.count) ? location.count : null,
+    uniqueVisibleTarget: location?.count === 1,
+    hitTarget: location?.hitTarget === true,
+    animating: location?.animating === true,
+    stableSamples: location?.stableSamples ?? 0,
+    positionStable: location?.positionStable === true,
+    targetHasArea: pointer ? pointer.target_rect.width > 0 && pointer.target_rect.height > 0 : null,
+    clippedTargetHasArea: pointer
+      ? pointer.clipped_rect.width > 0 && pointer.clipped_rect.height > 0
+      : null,
+    selectedPointAvailable: pointer?.selected_point_available ?? null,
+    centerHitCategory: pointer?.center_hit_category ?? null,
+    targetDisabled: pointer?.target_disabled ?? null,
+    pointerEventsNone: pointer?.target_pointer_events_none ?? null,
+    clippingAncestorCount: pointer?.clipping_ancestor_count ?? null,
+    testedPointCount: pointer?.tested_point_count ?? null,
+  };
+  return error;
+}
+
 export async function click(panel, kind, label) {
   const pointerSample = () =>
     evaluate(
       panel,
       `(() => {
     const kind = ${JSON.stringify(kind)}, label = ${JSON.stringify(label)};
+    let sampleFailureStage = 'target_resolution';
+    try {
     const visible = (el) => {
       const style = getComputedStyle(el), rect = el.getBoundingClientRect();
       return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' &&
@@ -88,19 +127,44 @@ export async function click(panel, kind, label) {
       .filter((el) => el.getAttribute('aria-label') === label);
     else if (kind === 'option') candidates = [...document.querySelectorAll('[role="option"]')]
       .filter((el) => el.textContent.trim() === label);
+    else if (kind === 'organization-picker-choice') candidates = [...document.querySelectorAll('[role="dialog"]')]
+      .filter((el) => el.textContent.includes('Which organization are you working in?'))
+      .flatMap((el) => [...el.querySelectorAll('button[role="option"]')])
+      .filter((el) => [...el.querySelectorAll('span.truncate')]
+        .some((name) => name.textContent.trim() === label));
+    else if (kind === 'vault-shared-tab') {
+      // Scope the changing count label to the active Vault panel. The caller
+      // still uses this driver's visible, hit-tested, trusted pointer path.
+      const vaultTriggers = [...document.querySelectorAll('button[role="tab"][title="Vault"][data-state="active"]')];
+      const vaultTrigger = vaultTriggers.length === 1 ? vaultTriggers[0] : null;
+      const panelId = vaultTrigger?.getAttribute('aria-controls') ?? '';
+      const vaultPanel = panelId ? document.getElementById(panelId) : null;
+      const activeVaultPanel = vaultPanel?.matches('[role="tabpanel"][data-state="active"]') ? vaultPanel : null;
+      candidates = label === 'Shared'
+        ? [...(activeVaultPanel?.querySelectorAll('button[role="tab"]') ?? [])].filter((el) => {
+            const text = el.textContent.trim();
+            return text.startsWith('Shared (') && text.endsWith(')') &&
+              /^[0-9]+$/.test(text.slice(8, -1));
+          })
+        : [];
+    }
     else if (kind === 'dialog') candidates = [...document.querySelectorAll('[role="alertdialog"]')]
       .filter((el) => el.querySelector('[data-slot="alert-dialog-title"]')?.textContent.trim() === 'Clear local data?')
       .flatMap((el) => [...el.querySelectorAll('button')])
       .filter((el) => el.textContent.trim() === label);
     else candidates = [...document.querySelectorAll('button')]
       .filter((el) => el.textContent.trim() === label);
+    sampleFailureStage = 'visibility_filter';
+    const matchedCount = candidates.length;
     candidates = candidates.filter(visible);
-    if (candidates.length !== 1) return { count: candidates.length };
+    if (candidates.length !== 1) return { count: candidates.length, matchedCount };
     const target = candidates[0];
     // Viewport preparation is not the acceptance action. Reposition on every
     // sample because an expanding section can invalidate a one-shot scroll.
     // Never click unless the real target subsequently passes hit-testing.
+    sampleFailureStage = 'scroll_preparation';
     target.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' });
+    sampleFailureStage = 'clipping_geometry';
     const rect = target.getBoundingClientRect();
     // A viewport-visible center can still lie outside a nested overflow clip.
     // Intersect every clipping ancestor, then use only points that the browser
@@ -121,6 +185,7 @@ export async function click(panel, kind, label) {
         bounds.bottom = Math.min(bounds.bottom, box.top + ancestor.clientTop + ancestor.clientHeight);
       }
     }
+    sampleFailureStage = 'hit_testing';
     const originalCenter = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
     const centerHit = document.elementFromPoint(originalCenter.x, originalCenter.y);
     const hitsTarget = (hit) => Boolean(hit && (hit === target || target.contains(hit)));
@@ -159,6 +224,7 @@ export async function click(panel, kind, label) {
       target_disabled: Boolean(target.disabled),
       target_pointer_events_none: getComputedStyle(target).pointerEvents === 'none',
     };
+    sampleFailureStage = 'animation_observation';
     let animating = false;
     for (let ancestor = target; ancestor; ancestor = ancestor.parentElement) {
       if (ancestor.getAnimations({ subtree: false }).some((animation) => animation.playState === 'running')) {
@@ -166,13 +232,22 @@ export async function click(panel, kind, label) {
         break;
       }
     }
-    return { count: 1, x, y, hitTarget, animating,
+    return { count: 1, matchedCount, x, y, hitTarget, animating,
       viewport: { width: innerWidth, height: innerHeight },
       pointerDiagnostic };
+    } catch {
+      return { sampleFailed: true, sampleFailureStage };
+    }
   })()`,
     );
-  let location = await pointerSample();
-  assert.equal(location?.count, 1, `unique visible ${kind} ${label}`);
+  let location;
+  try {
+    location = await pointerSample();
+  } catch {
+    throw pointerFailure('pointer_initial_evaluation_failed', location);
+  }
+  if (location?.sampleFailed) throw pointerFailure('pointer_page_sample_failed', location);
+  if (location?.count !== 1) throw pointerFailure('pointer_target_not_unique', location);
   // Poll outside the page: a paused requestAnimationFrame must not strand
   // Runtime.evaluate(awaitPromise) or hide the last pointer diagnostic.
   const deadline = Date.now() + 3000;
@@ -182,43 +257,50 @@ export async function click(panel, kind, label) {
     await new Promise((resolveWait) => setTimeout(resolveWait, 50));
     try {
       location = await pointerSample();
-    } catch (error) {
-      throw new Error(
-        `pointer_sample_failed for ${kind} ${label}: ${String(error?.message ?? error)}; last=${JSON.stringify(location)}`,
-      );
+    } catch {
+      throw pointerFailure('pointer_followup_evaluation_failed', location);
     }
-    stableSamples =
+    if (location?.sampleFailed) throw pointerFailure('pointer_page_sample_failed', location);
+    const positionStable =
       location?.count === 1 &&
-      location.hitTarget &&
-      !location.animating &&
       previous !== undefined &&
       Math.abs(previous.x - location.x) < 0.25 &&
-      Math.abs(previous.y - location.y) < 0.25
+      Math.abs(previous.y - location.y) < 0.25;
+    stableSamples =
+      location?.count === 1 && location.hitTarget && !location.animating && positionStable
         ? stableSamples + 1
         : 0;
-    location = { ...location, stableSamples };
+    location = { ...location, stableSamples, positionStable };
     if (stableSamples >= 2) break;
     previous = location?.count === 1 ? { x: location.x, y: location.y } : undefined;
   } while (Date.now() < deadline);
   if (stableSamples < 2) {
-    const error = new Error(`stable hit target for ${kind} ${label}`);
+    const error = pointerFailure('pointer_stable_hit_not_observed', location);
     error.pointerDiagnostic = location?.pointerDiagnostic ?? { sample_unavailable: true };
     throw error;
   }
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mousePressed',
-    x: location.x,
-    y: location.y,
-    button: 'left',
-    clickCount: 1,
-  });
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mouseReleased',
-    x: location.x,
-    y: location.y,
-    button: 'left',
-    clickCount: 1,
-  });
+  try {
+    await panel.send('Input.dispatchMouseEvent', {
+      type: 'mousePressed',
+      x: location.x,
+      y: location.y,
+      button: 'left',
+      clickCount: 1,
+    });
+  } catch {
+    throw pointerFailure('pointer_press_dispatch_failed', location);
+  }
+  try {
+    await panel.send('Input.dispatchMouseEvent', {
+      type: 'mouseReleased',
+      x: location.x,
+      y: location.y,
+      button: 'left',
+      clickCount: 1,
+    });
+  } catch {
+    throw pointerFailure('pointer_release_dispatch_failed', location);
+  }
   if (kind === 'port') {
     const focused = await evaluate(
       panel,

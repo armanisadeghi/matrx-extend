@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "prepared_unverified",
+  "script": "tests/browser/seo-guest-acceptance.mjs",
+  "prior_run": "docs/stabilization/runs/seo-guest-004.json",
+  "new_subtargets": [
+    {
+      "case_id": "EXT-F-1008-T03",
+      "dimension": "warm",
+      "subtarget": "about_blank_clear_error_without_stale_audit",
+      "oracle": "The owned active tab actually reaches about:blank; selected SEO shows the exact browser-restricted error, omits the old detail card and Copy audit control, and offers an enabled Audit this page button."
+    },
+    {
+      "case_id": "EXT-F-1008-T03",
+      "dimension": "warm",
+      "subtarget": "public_page_recovers_after_restricted_url",
+      "oracle": "The same owned tab returns to example.org; SEO title and heading presence match the freshly inspected public page, Re-audit is enabled, and the error is absent."
+    }
+  ],
+  "source_basis": [
+    "src/lib/scrape/capture-with-fallback.ts classifies about: as unreachable-url before content-script messaging or injection.",
+    "src/features/seo/SeoView.tsx clears the prior audit and renders the browser-internal or restricted URL error for unreachable-url."
+  ],
+  "limits": [
+    "No browser, tests, or build were launched in preparation; new subtargets have no runtime pass yet.",
+    "This covers one restricted browser scheme and positive recovery. Unreachable HTTP(S), other restricted schemes, failure after manual retry, and reload remain unverified.",
+    "The exact visible error and disappearance of stale details are required; a navigation or audit failure leaves the batch unverified rather than passing a fallback.",
+    "The batch does not read or write the clipboard or test member/admin access."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "id": "remote-deps-022",
+  "status": "pass",
+  "command": "pnpm install --frozen-lockfile --ignore-scripts",
+  "admitted_at": "2026-09-26T16:44:38.298Z",
+  "exited_at": "2026-09-26T16:44:40.094Z",
+  "result": "Frozen installation design-system0.46.1 succeeded; wrapper27313 exit0 confirmed.",
+  "source_log": "/tmp/matrx-remote-deps-022.log",
+  "remote_source": "49b1edd2",
+  "consumer_review": "docs/stabilization/reports/design0461-consumer-peer.json",
+  "limits": [
+    "Consumer reviewer inspected old installed0.46.0 before this completed install; installed graph is now0.46.1.",
+    "Runtime0.2.68 artifact has not been rebuilt; native observations remain version-specific."
+  ]
+}

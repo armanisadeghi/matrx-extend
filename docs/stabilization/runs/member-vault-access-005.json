@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "run_id": "member-vault-access-005",
+  "status": "unverified",
+  "operator_session_id": 98976,
+  "resource_guard": {
+    "log_path": "/tmp/matrx-member-vault-access-005.log",
+    "log_sha256": "1c7a1ce09a85b4dd4b9a1d3dd449ef0d349d22ec78f2498fd33d3d8d80e7dc34",
+    "admission": {
+      "at": "2026-09-26T16:49:00.133Z",
+      "code": "RESOURCE_ADMITTED",
+      "reasons": [],
+      "available_memory_gib": 12.8,
+      "required_memory_gib": 4
+    },
+    "watch": {
+      "at": "2026-09-26T16:49:16.517Z",
+      "code": "RESOURCE_WATCH_HEALTHY",
+      "reasons": []
+    },
+    "exit": {
+      "at": "2026-09-26T16:49:23.156Z",
+      "code": "RESOURCE_JOB_EXIT",
+      "child_exit_code": 1,
+      "child_signal": null
+    }
+  },
+  "sanitized_runner_result": {
+    "schema_version": 1,
+    "status": "unverified",
+    "scope": "owned disposable Chrome profile; real admin web and extension sign-in; masked Vault inventory",
+    "targetMember": "test@test.com",
+    "adminWebSignedIn": true,
+    "adminExtensionSignedIn": true,
+    "inventory": null,
+    "lastVaultObservation": {
+      "organizationSelected": true,
+      "organizationPickerPending": false,
+      "organizationPickerVisible": false,
+      "organizationPickerLoading": false,
+      "approvedOrganizationOffered": false,
+      "activePanelFound": true,
+      "vaultTabActive": true,
+      "vaultPanelActive": true,
+      "firstActivePanelIsVault": true,
+      "vaultHeadingVisible": true,
+      "preContentSpinner": false,
+      "inventorySpinner": false,
+      "refreshSpinner": false,
+      "siteSpinner": true,
+      "signedOutPrompt": false,
+      "errorVisible": false,
+      "activeScope": "mine",
+      "sharedTabAvailable": true,
+      "designatedCandidateCount": 0,
+      "designatedCandidateFillOnCount": 0
+    },
+    "failureCategory": "stage_operation_failed",
+    "limitations": [
+      "A matching masked title is only a candidate, not proof of credential identity or member access.",
+      "This probe stops before website sign-out, member Vault Fill, or member extension sign-in."
+    ],
+    "beforeOrganizationChoice": {
+      "organizationSelected": false,
+      "organizationPickerPending": true,
+      "organizationPickerVisible": true,
+      "organizationPickerLoading": true,
+      "approvedOrganizationOffered": false,
+      "activePanelFound": true,
+      "vaultTabActive": true,
+      "vaultPanelActive": true,
+      "firstActivePanelIsVault": true,
+      "vaultHeadingVisible": false,
+      "preContentSpinner": true,
+      "inventorySpinner": false,
+      "refreshSpinner": false,
+      "siteSpinner": false,
+      "signedOutPrompt": false,
+      "errorVisible": false,
+      "activeScope": "none",
+      "sharedTabAvailable": false,
+      "designatedCandidateCount": 0,
+      "designatedCandidateFillOnCount": 0
+    },
+    "afterOrganizationChoice": {
+      "organizationSelected": true,
+      "organizationPickerPending": false,
+      "organizationPickerVisible": false,
+      "organizationPickerLoading": false,
+      "approvedOrganizationOffered": false,
+      "activePanelFound": true,
+      "vaultTabActive": true,
+      "vaultPanelActive": true,
+      "firstActivePanelIsVault": true,
+      "vaultHeadingVisible": false,
+      "preContentSpinner": true,
+      "inventorySpinner": false,
+      "refreshSpinner": false,
+      "siteSpinner": false,
+      "signedOutPrompt": false,
+      "errorVisible": false,
+      "activeScope": "none",
+      "sharedTabAvailable": false,
+      "designatedCandidateCount": 0,
+      "designatedCandidateFillOnCount": 0
+    },
+    "failureStage": "shared_tab_click"
+  },
+  "mine_candidate_count": 0,
+  "shared_candidate_count": null,
+  "member_auth_verified": false,
+  "interpretation": "The selected organization prerequisite was resolved in the owned profile, then the real Vault Mine view settled with zero designated test@test.com candidates. The probe stopped while trying to click the Shared tab. The earlier driver searched document-wide by a dynamic text label; its exact failure mode was not recorded. Shared inventory and member authentication remain unverified."
+}

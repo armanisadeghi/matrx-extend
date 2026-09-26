@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "content0198-consumer-peer",
+  "status": "DONE",
+  "subject": "@ai-matrx/content-ir 0.19.7 to 0.19.8 consumer reconciliation",
+  "source_quality_verdict": "PASS: no extension consumer code action is required. The published 0.19.8 changelog calls this an automatic changed-only republish with no intended source change and no consumer action. A byte comparison of both published tarballs found 58 files in each and only package/CHANGELOG.md and package/package.json changed; every dist runtime and declaration file is identical. Package exports and dependencies are unchanged; package.json changes its version.",
+  "acceptance_verdict": "PENDING root integration evidence: this lane did not install, build, test, or exercise the extension. The root owns the guarded install and release verification. This source review is not acceptance of the resulting extension build.",
+  "extension_action": "None. The extension's Content IR call sites use core, wire, and content-ir-react APIs; the 0.19.8 tarball changes no runtime or declaration byte. The already-merged ab45f7c1 lock update resolves the importer and content-ir-react/kit edges to 0.19.8 while package.json retains latest.",
+  "evidence": [
+    "Published npm registry tarballs @ai-matrx/content-ir 0.19.7 and 0.19.8, package/CHANGELOG.md and SHA-256 comparison of all members: 58 files per tarball, two changed metadata files only.",
+    "Published 0.19.8 metadata integrity sha512-JV1D4SgVLTyX6r+yeBPJnQEr8IhQTa4TcDEJbvjyjOW5pyadjyKz8ALWjZc+YTk32t/m/ryz+CcHvVkqaDqnYg== matches pnpm-lock.yaml.",
+    "git show ab45f7c1 -- pnpm-lock.yaml: sole changed repository file; content-ir importer/package/snapshot and content-ir-react/kit edges updated.",
+    "src/components/kinds/RenderBlockView.tsx:43-44, src/lib/content-ir/inbound.ts:16-17, and src/features/chat/copy-conversation.ts:12 import core/wire; no direct /source import was found in src."
+  ],
+  "source_limit": "The sibling aidream apps/shared/content-ir-core checkout remains at 0.19.6, so published tarballs are the release authority for this comparison. This lane did not run the package or extension.",
+  "open_actions": [
+    "Root: finish its guarded install, build/test/browser verification, and release decision; no source migration is needed for this package."
+  ],
+  "questions": []
+}

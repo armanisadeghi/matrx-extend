@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "report_id": "remote-mfa-1700-reconcile",
+  "scope": "Source and contract reconciliation only. No tests, build, browser, package installation, credential use, database write, or runtime verification was performed.",
+  "commits": [
+    {
+      "sha": "0c88e2ce939434e51bfea1c83e8ac061ad24a75e",
+      "change": "The owned local-browser inspect_login controller accepts an optional mfa_selector from its injected auto_probe, trims and rejects nonstring, empty, over-512-character, or control-bearing values, then reports challenge=mfa and the selector after top-frame, origin, destination-safety, and current-document checks. A controller test supplies synthetic probe results for the accepted and refused paths.",
+      "source_limit": "The real autoProbe() in src/lib/credentials/fill-primitive.ts returns username_selector, password_selector, submit_selector and destination_safe, but never mfa_selector. Its LoginFormProbe result type likewise has no mfa_selector. Therefore this controller branch cannot report MFA from the current injected producer; the new test bypasses that producer. This is an end-to-end behavior gap, not evidence that a live MFA inspection succeeds.",
+      "evidence": [
+        "src/lib/desktop/local-browser/controller.ts:994-1022",
+        "src/lib/credentials/fill-primitive.ts:45-54,335-433,1251-1253",
+        "src/lib/desktop/local-browser/controller.test.ts:321-432"
+      ]
+    },
+    {
+      "sha": "df715b1869c48e24eed99255d5a223d6c04702aa",
+      "change": "The completion validator now permits the optional selector only as trimmed, printable text of 1-512 characters; inspect_login data remains strict, so an extra private field or control-bearing selector refuses before fetch. The new route test covers those two refusals.",
+      "source_limit": "The validator limits shape and control characters; it does not establish that the selector identifies a unique MFA field, belongs to a safe form, or is suitable for an authenticator action. The controller labels it informational and takes no MFA action from it.",
+      "evidence": [
+        "src/lib/api/routes/local-browser-commands.ts:524-568",
+        "src/lib/api/routes/local-browser-commands.test.ts:248-283",
+        "src/lib/desktop/local-browser/controller.ts:147-152"
+      ]
+    },
+    {
+      "sha": "3e664b5568ae5240a09e9cf0f5a1d31c1a44610b",
+      "change": "pnpm-lock.yaml alone moves @ai-matrx/content-ir 0.19.6 to 0.19.7, including the content-ir-react and kit dependency edges; package.json retains the required latest specifier. Other package versions are unchanged in this commit.",
+      "consumer_action": "The published 0.19.7 changelog changes /source fence-opener recognition for backtick-containing info strings and lists no explicit consumer migration. An extension caller census found only content-ir core and wire envelope/metadata APIs, types, and content-ir-react rendering; no direct /source fence or tokenizer API caller. No extension code adaptation is indicated by this release note. The installed node_modules package still reports 0.19.6, so this lane did not inspect or execute locally installed 0.19.7 bytes.",
+      "evidence": [
+        "pnpm-lock.yaml:14-17,240-247,4368-4374,4427-4432",
+        "package.json:64-65",
+        "Published https://registry.npmjs.org/@ai-matrx/content-ir/-/content-ir-0.19.7.tgz package/CHANGELOG.md, 0.19.7 entry",
+        "node_modules/@ai-matrx/content-ir/package.json:3",
+        "src/components/kinds/RenderBlockView.tsx:43-44; src/lib/content-ir/inbound.ts:16-17; src/features/chat/copy-conversation.ts:12"
+      ]
+    }
+  ],
+  "contracts": {
+    "credential_boundary": "The extension system of record requires sanitized metadata only and no credential or TOTP code in agent-visible results. The new selector contains no code by design, but is page-derived text and therefore must remain bounded and scrutinized as untrusted data.",
+    "local_browser_wire_drift": "The shared LOCAL-EXECUTOR.md completion contract currently closes inspect_login data at origin, form and challenge. It does not include mfa_selector. The extension completion schema now admits that extra field; coordinate the canonical wire contract and downstream server projection before treating it as an established public contract. No cross-repo code or contract was edited in this lane.",
+    "selector_use": "The existing authenticator command separately requires an explicit code_selector and fresh approval/claim. The inspection selector must not itself authorize credential or TOTP materialization.",
+    "evidence": [
+      "/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md:198-207",
+      "/Users/armanisadeghi/code/common-docs/systems/clients/extension/DECISIONS.md:35-43",
+      "/Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/LOCAL-EXECUTOR.md:190-194"
+    ]
+  },
+  "inventory_recommendation": {
+    "new_control": false,
+    "reason": "These commits change a private local-browser inspection result and package lock, not a visible extension control.",
+    "case_amendments_for_root": [
+      {
+        "case": "EXT-F-2014-T03",
+        "applicability": "Admin Pilot, deferred wave D; add only when systematic Pilot work resumes.",
+        "amendment": "Extend the admitted local-browser inspect scenario to a safe owned MFA form and an ordinary form. Require value-free challenge classification and an optional bounded selector only for a validated MFA field; verify malformed/page-private selector data refuses before completion transport, and binding/origin/top-frame/unsafe-destination failures remain fail closed. Preserve the current source-only gap until the real auto_probe emits and verifies this field."
+      },
+      {
+        "case": "EXT-F-4089-T01",
+        "applicability": "Member/admin registered credential_login manual execution; currently an empty design-needed case.",
+        "amendment": "If this case is made executable, include inspect/discover with MFA and no-MFA outcomes, but do not mark the current case observed from these source tests. This is secondary to the admitted local-browser Pilot case."
+      }
+    ],
+    "excluded": "EXT-F-2011 Vault side-panel Use here is a different current-page credential path. Chat and Pilot systematic work stays last under the coordinator's current sequence; this report authorizes no run."
+  },
+  "required_follow_up": [
+    "Root: treat missing mfa_selector production in autoProbe() as an unresolved source gap and route an owner-scoped fix with an end-to-end producer-to-completion guard before any MFA inspection claim.",
+    "Root: reconcile the shared inspect_login completion wire contract and downstream acceptance/projection before releasing the new optional field as supported behavior.",
+    "Root: revalidate the changed graph, refreshed package bytes, and CI/build through the existing guarded workflow; the installed 0.2.68 runtime predates these commits and the 0.19.7 lock."
+  ],
+  "verification_limit": "No live, installed, browser, API, build, or test pass is claimed by this report."
+}
