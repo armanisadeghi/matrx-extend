@@ -1,0 +1,116 @@
+{
+  "id": "release-stabilization-037",
+  "status": "tag-pushed_ci-in-progress_store-not-uploaded",
+  "candidateVersion": "0.2.78",
+  "candidateCommit": "df4c51ef5f145855855673d546c692247d5f07e7",
+  "tag": {
+    "name": "v0.2.78",
+    "localCommit": "df4c51ef5f145855855673d546c692247d5f07e7",
+    "remoteRef": "refs/tags/v0.2.78",
+    "remoteCommit": "df4c51ef5f145855855673d546c692247d5f07e7",
+    "verifiedAt": "2026-09-26T21:46:00Z"
+  },
+  "wrapper": {
+    "source": "/tmp/matrx-release-stabilization-037.log",
+    "sha256": "80a075e35c93e1f3154b23ba1a29a4a705f7eaffd5a2ae4b1f7281e383e93fb3",
+    "admittedAt": "2026-09-26T21:42:12.212Z",
+    "childExitAt": "2026-09-26T21:44:23.601Z",
+    "childExitCode": 0
+  },
+  "releaseLog": {
+    "source": "tmp/release-logs/latest.log",
+    "sha256": "abe932b18fcc256f038f44086768557db08dc49537c21d07859c78bc8d039029",
+    "result": "v0.2.78 pushed to main and tag; build and package completed"
+  },
+  "build": {
+    "version": "0.2.78",
+    "unpackedPath": ".output/chrome-mv3",
+    "manifestVersion": "0.2.78",
+    "treeSha256": "b126815ce6f93fe761d9559d0148922dbcffbe74217a25f92bc566e954790f7d",
+    "treeFileCount": 532,
+    "storeZip": {
+      "path": ".output/matrx-extend-0.2.78-store.zip",
+      "sha256": "bda257376fdfcdb682d0ac28c1c3a3504ba0e70f6e4c8cf09dd9f37c1cf4cee3",
+      "bytes": 11107371,
+      "entries": 521,
+      "manifestSha256": "a22782eb827a7e1bfe87513dc9333d7b1747dc37b1c1659acd46cb01e6ea2005"
+    },
+    "localZip": {
+      "path": ".output/matrx-extend-0.2.78-local.zip",
+      "sha256": "f9009f66777b32e415f00f897f54ee55f917bc7d0fdd5b4bb768dabf2fcb9b25",
+      "bytes": 11163788,
+      "entries": 532,
+      "manifestSha256": "7853eb01b0c71175efe06c798408667ca7d746110196f5c7cb40e6059d64811e"
+    },
+    "storeUpload": "not-performed"
+  },
+  "releaseChecks": {
+    "passedCheckSteps": 15,
+    "failedCheckSteps": 0,
+    "names": [
+      "matrx-packages",
+      "typecheck",
+      "lint",
+      "unit-tests",
+      "schema-routing",
+      "package-twins",
+      "canonical-pickers",
+      "archived-items",
+      "archived-items-self-test",
+      "org-default-ban",
+      "org-default-ban-self-test",
+      "swallowed-refusals",
+      "migrations",
+      "tool-drift",
+      "mandate-references"
+    ],
+    "unitTests": {
+      "filesPassed": 182,
+      "filesSkipped": 1,
+      "filesTotal": 183,
+      "testsPassed": 1469,
+      "testsSkipped": 3,
+      "testsTotal": 1472
+    },
+    "matrxPackages": {
+      "latestPackageCount": 9,
+      "stalePackages": 0
+    },
+    "migrations": {
+      "files": 17,
+      "skipMarked": 2,
+      "ledgerRows": 18,
+      "applied": 15,
+      "unapplied": 0,
+      "drifted": 0
+    },
+    "toolDrift": {
+      "advertisedTools": 82,
+      "definitions": 82,
+      "activeBindings": 82,
+      "surfaceDefaults": 2,
+      "result": "no-drift"
+    },
+    "chromeWebStorePackageValidation": "passed; package generated, not uploaded",
+    "chromeWebStoreApprovalRiskGate": "passed"
+  },
+  "ci": {
+    "provider": "GitHub Actions",
+    "runId": "36273958725",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/36273958725",
+    "headSha": "df4c51ef5f145855855673d546c692247d5f07e7",
+    "statusAtReview": "in_progress",
+    "conclusionAtReview": null,
+    "completedChecksAtReview": 16,
+    "completedChecksConclusion": "success",
+    "currentStepAtReview": "Unit tests",
+    "pendingStepsAtReview": ["Unit tests", "Production build"],
+    "verifiedAt": "2026-09-26T21:46:00Z"
+  },
+  "runtimeEvidenceBoundary": {
+    "primaryUi": "prior guarded SEO evidence remains on build 0.2.73; this release did not establish current-build UI behavior",
+    "d23NativeRetest": "pending; source-workspace-004 was a diagnostic-only read with no Save input",
+    "storePublication": "not performed"
+  },
+  "updatedAt": "2026-09-26T21:46:33Z"
+}
