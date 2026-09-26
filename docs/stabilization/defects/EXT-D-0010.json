@@ -1,0 +1,37 @@
+{
+  "id": "EXT-D-0010",
+  "feature_id": "EXT-F-1002",
+  "case_ids": [
+    "EXT-F-1002-T19",
+    "EXT-F-1002-T20"
+  ],
+  "surface": "Popup claim recovery integration test",
+  "auth_mode": "Test infrastructure independent of role; product popup cases member/admin remain unverified",
+  "reproduction": [
+    "Integrate main through75cfb09 and test infrastructure changes through release candidate38c03d7.",
+    "Run full serial Vitest suite inside strict release snapshot."
+  ],
+  "expected": "Popup recovery assertions complete with no unhandled asynchronous work after test teardown.",
+  "actual": "1417 tests passed but required WXT_SUPABASE_URL rejection occurs after popup-claim-recovery teardown through identity logger effect. Runner exits1; release refuses publication.",
+  "evidence": [
+    "docs/stabilization/runs/release-stabilization-003.json"
+  ],
+  "severity": "S2: integration blocked; no native user failure demonstrated",
+  "priority": "P1: restore green integration",
+  "state": "triaged",
+  "owner": "/root/popup_async_error_repair",
+  "transition_history": [
+    {
+      "at": "2026-09-26T08:40:07.126926+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Strict release reports unhandled rejection and exits1."
+    },
+    {
+      "at": "2026-09-26T08:40:07.126926+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Stack and test attribution captured; original focused reproduction in progress, source diagnosis delegated."
+    }
+  ]
+}
