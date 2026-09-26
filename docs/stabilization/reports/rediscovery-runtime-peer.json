@@ -22,6 +22,5 @@
     "tests/browser/native-sidepanel-qa-harness.mjs",
     ".output/release-receipt.json",
     "docs/stabilization/reports/rediscovery-trace-escalation.json"
-  ],
-  "commit": "882fcd3"
+  ]
 }
