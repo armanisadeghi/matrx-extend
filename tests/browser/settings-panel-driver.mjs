@@ -76,6 +76,13 @@ export async function click(panel, kind, label) {
     else if (kind === 'theme') candidates = [...document.querySelectorAll('span')]
       .filter((el) => el.textContent.trim() === 'Theme')
       .flatMap((el) => [...el.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
+    else if (kind === 'organization') candidates = [...document.querySelectorAll('span')]
+      .filter((el) => el.textContent.trim() === 'Acting as')
+      .flatMap((el) => [...el.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
+    else if (kind === 'capture-no-workspace-dismiss') candidates = [...document.querySelectorAll('[role="alert"]')]
+      .filter((el) => el.querySelector('.font-medium')?.textContent.trim() === 'Capture list unavailable'
+        && el.querySelector('p')?.textContent.includes('no workspace is selected, so the request was never sent'))
+      .flatMap((el) => [...el.querySelectorAll('button[aria-label="Dismiss"]')]);
     else if (kind === 'port') candidates = [...document.querySelectorAll('input[placeholder="auto"]')];
     else if (kind === 'switch') candidates = [...document.querySelectorAll('[role="switch"][aria-label]')]
       .filter((el) => el.getAttribute('aria-label') === label);

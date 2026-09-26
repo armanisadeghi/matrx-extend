@@ -18,6 +18,7 @@ const OUTPUT = join(REPO, 'test-results', 'isolated-admin-reset-acceptance.json'
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const EXPECTED_ADMIN = 'admin@admin.com';
+const OWNED_ORGANIZATION = 'ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete';
 const LOCAL_KEY = 'matrx.qa.adminReset.local';
 const LOCAL_VALUE = 'disposable-admin-reset-local-fixture';
 const SESSION_KEY = 'matrx.qa.adminReset.session';
@@ -37,7 +38,8 @@ const evidence = {
   login_method: 'real web form followed by extension Settings Sign in',
   response_interception: false,
   injected_auth_session: false,
-  fixture: 'Dark theme through Settings and inert local/session values',
+  fixture:
+    'Existing owned organization and Dark theme through Settings; inert local/session values',
   steps: [],
 };
 
@@ -139,6 +141,41 @@ async function panelState(panel) {
         ?.querySelector('button[role="combobox"]')?.textContent.trim() ?? null,
       dialog: Boolean(dialog),
     };
+  })()`,
+  );
+}
+
+async function organizationSetupState(panel) {
+  return evaluate(
+    panel,
+    `(async () => {
+    const label = ${JSON.stringify(OWNED_ORGANIZATION)};
+    const rows = [...document.querySelectorAll('span')]
+      .filter((span) => span.textContent.trim() === 'Acting as');
+    const controls = rows.flatMap((span) =>
+      [...span.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
+    const options = [...document.querySelectorAll('[role="option"]')]
+      .filter((option) => option.textContent.trim() === label);
+    const stored = (await chrome.storage.local.get('matrx.org.active'))['matrx.org.active'];
+    return {
+      control_count: controls.length,
+      option_count: options.length,
+      displayed_match: controls.length === 1 && controls[0].textContent.trim() === label,
+      stored_match: typeof stored?.id === 'string' && stored.id.length > 0 && stored.name === label,
+    };
+  })()`,
+  );
+}
+
+async function captureNoWorkspaceNoticeState(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+    const matches = [...document.querySelectorAll('[role="alert"]')]
+      .filter((el) => el.querySelector('.font-medium')?.textContent.trim() === 'Capture list unavailable'
+        && el.querySelector('p')?.textContent.includes('no workspace is selected, so the request was never sent'));
+    return { matching_count: matches.length,
+      dismiss_count: matches.flatMap((el) => [...el.querySelectorAll('button[aria-label="Dismiss"]')]).length };
   })()`,
   );
 }
@@ -534,6 +571,48 @@ try {
         stage = 'extension_signin';
         await click(panel, 'button', 'Sign in');
         await waitFor('admin_settings_after_real_signin', () => panelState(panel), isAdmin, 90_000);
+        stage = 'organization_fixture_selection';
+        await openSection(panel, 'Organization');
+        await waitFor(
+          'organization_control_ready',
+          () => organizationSetupState(panel),
+          (s) => s?.control_count === 1,
+        );
+        await click(panel, 'organization', 'Acting as');
+        const offered = await organizationSetupState(panel);
+        evidence.organization_setup = {
+          fixture_option_unique: offered.option_count === 1,
+          displayed_match: false,
+          stored_match: false,
+          matching_notice_present: false,
+          matching_notice_dismissed: false,
+        };
+        if (offered.option_count !== 1) fail('organization_fixture_option_unavailable');
+        await click(panel, 'option', OWNED_ORGANIZATION);
+        const chosen = await waitFor(
+          'organization_choice_stored',
+          () => organizationSetupState(panel),
+          (s) => s?.displayed_match && s.stored_match,
+        );
+        evidence.organization_setup.displayed_match = chosen.displayed_match;
+        evidence.organization_setup.stored_match = chosen.stored_match;
+        const notice = await captureNoWorkspaceNoticeState(panel);
+        if (notice.matching_count > 1 || notice.dismiss_count !== notice.matching_count)
+          fail('matching_capture_notice_ambiguous');
+        evidence.organization_setup.matching_notice_present = notice.matching_count === 1;
+        if (notice.matching_count === 1) {
+          await click(panel, 'capture-no-workspace-dismiss', 'Dismiss');
+          await waitFor(
+            'matching_capture_notice_dismissed',
+            () => captureNoWorkspaceNoticeState(panel),
+            (s) => s?.matching_count === 0,
+          );
+          evidence.organization_setup.matching_notice_dismissed = true;
+        }
+        evidence.steps.push(
+          'Existing owned organization selected through Settings and stored on this device',
+        );
+        stage = 'theme_fixture_selection';
         await openSection(panel, 'Appearance');
         await click(panel, 'theme', 'Theme');
         await click(panel, 'option', 'Dark');
