@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "task_id": "remote-deps-1312",
+  "source_sha": "b469cfe",
+  "commits_reviewed": [
+    "b469cfeee28e9b1fc1d36a7dd2c58bf4b39051a2"
+  ],
+  "status": "consumer-action review complete; installed package bytes not yet refreshed",
+  "packages": [
+    {
+      "name": "@ai-matrx/content-ir",
+      "previous_lock_version": "0.19.4",
+      "target_lock_version": "0.19.5",
+      "consumer_action": "None required for 0.19.5. Its changelog identifies an automatic changed-only republish for docs/metadata drift since the prior tag and explicitly says no source changes intended and no consumer action required.",
+      "source": "/Volumes/Samsung2TB/code/aidream/apps/shared/content-ir-core/CHANGELOG.md:3-6"
+    },
+    {
+      "name": "@ai-matrx/design-system",
+      "previous_lock_version": "0.44.1",
+      "target_lock_version": "0.44.3",
+      "consumer_action": "None required for the 0.44.2 and 0.44.3 changes. Both entries explicitly say consumer action: none; they correct styling of context-menu regions and their descendants. The 0.44.1 changelog also specifies no consumer action for its Progress fix and added spreadsheet selection callback.",
+      "source": "/Volumes/Samsung2TB/code/aidream/apps/shared/design-system/CHANGELOG.md:3-34"
+    }
+  ],
+  "historical_action_applicability": {
+    "finding": "The design-system changelog's earlier 0.44.0 entry asks host window managers to call announceLayerFront(element) when a window opens and is focused; it names matrx-frontend WindowPanel as the consumer.",
+    "extension_census": "Source search in this checkout found no WindowPanel, announceLayerFront, or LAYER_FRONT_EVENT usage. The extension has no corresponding host window-manager call site, so this older action has no identified extension consumer.",
+    "sources": [
+      "/Volumes/Samsung2TB/code/aidream/apps/shared/design-system/CHANGELOG.md:37-57",
+      "src/features and src/components source search for WindowPanel, announceLayerFront, and LAYER_FRONT_EVENT"
+    ]
+  },
+  "lock_delta": "The reviewed commit changes only pnpm-lock.yaml. content-ir-react 0.11.11 and other @ai-matrx packages are unchanged in the lock diff; no application source or manifest edit is part of this commit.",
+  "verification": [
+    "Read both package changelogs and inspected b469cfe's lockfile diff.",
+    "Checked extension source for the only older design-system consumer action found in the package changelog.",
+    "No install, tests, build, browser, or runtime work performed. This reports changelog consumer-action evidence only; root owns the guarded package refresh and any further compatibility verification."
+  ],
+  "open_questions": []
+}
