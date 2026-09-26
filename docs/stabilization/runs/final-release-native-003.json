@@ -1,0 +1,702 @@
+{
+  "id": "final-release-native-003",
+  "status": "pass",
+  "resource_invalid": false,
+  "ui_evidence": "docs/stabilization/runs/native-0258-port-verification.json",
+  "ui_stop_before_lease_release": true,
+  "exit_code": 0,
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:48:49.675Z",
+      "runId": "final-release-native-003",
+      "mode": "browser",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.44,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1012,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1604347229004,
+        "profileFreeGiB": 23.754810333251953
+      },
+      "cpuBusySamples": [
+        0.1078,
+        0.11010000000000009,
+        0.09739999999999993,
+        0.09019999999999995,
+        0.09400000000000008,
+        0.09799999999999998,
+        0.1109
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:49:06.002Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.16,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.10239999999999994,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1604309082031,
+        "profileFreeGiB": 23.756778717041016
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:49:22.341Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.12,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.18669999999999998,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1604309082031,
+        "profileFreeGiB": 23.755043029785156
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:49:38.687Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.6,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.19169999999999998,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1604309082031,
+        "profileFreeGiB": 23.75676727294922
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:49:55.025Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 11.84,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.54,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1079000000000001,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.160415649414,
+        "profileFreeGiB": 23.754531860351562
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:50:11.364Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.63,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.08609999999999995,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1602973937988,
+        "profileFreeGiB": 23.753520965576172
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:50:27.704Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.49,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.2802,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1602020263672,
+        "profileFreeGiB": 23.75341033935547
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:50:44.029Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.81,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.18900000000000006,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603698730469,
+        "profileFreeGiB": 23.753528594970703
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:51:00.359Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.79,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.0929000000000001,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603698730469,
+        "profileFreeGiB": 23.752025604248047
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:51:16.654Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.69,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.14400000000000002,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603698730469,
+        "profileFreeGiB": 23.757129669189453
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:51:32.992Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.63,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.23760000000000003,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603698730469,
+        "profileFreeGiB": 23.734661102294922
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:51:49.320Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.49,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.09670000000000001,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603698730469,
+        "profileFreeGiB": 23.76122283935547
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:52:05.649Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.86,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.11040000000000005,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603698730469,
+        "profileFreeGiB": 23.756011962890625
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:52:21.976Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.67,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.09310000000000007,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603698730469,
+        "profileFreeGiB": 23.75539779663086
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:52:38.307Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.59,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.10189999999999999,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603660583496,
+        "profileFreeGiB": 23.75823974609375
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:52:54.638Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.15,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.11340000000000006,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603660583496,
+        "profileFreeGiB": 23.754039764404297
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:53:11.009Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.76,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.2874,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603660583496,
+        "profileFreeGiB": 23.75384521484375
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:53:27.341Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.72,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.0929000000000001,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603660583496,
+        "profileFreeGiB": 23.751800537109375
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:53:43.671Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.55,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.09079999999999999,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603660583496,
+        "profileFreeGiB": 23.7532958984375
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:53:59.998Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.51,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.10309999999999997,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603660583496,
+        "profileFreeGiB": 23.749893188476562
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:54:16.320Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.5,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.09099999999999997,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603546142578,
+        "profileFreeGiB": 23.74872589111328
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:54:32.656Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.39,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.10329999999999995,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603698730469,
+        "profileFreeGiB": 23.748916625976562
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:54:48.977Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.3,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.09450000000000003,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603698730469,
+        "profileFreeGiB": 23.75253677368164
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:55:05.311Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.15,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.08530000000000004,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1603164672852,
+        "profileFreeGiB": 23.752185821533203
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:55:21.582Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.33,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1049,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1601676940918,
+        "profileFreeGiB": 23.751449584960938
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:55:37.897Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.32,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.10400000000000009,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1602630615234,
+        "profileFreeGiB": 23.750736236572266
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:55:54.222Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.34,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.10629999999999995,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1602630615234,
+        "profileFreeGiB": 23.750621795654297
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:56:10.545Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.68,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1056999999999999,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1602630615234,
+        "profileFreeGiB": 23.75058364868164
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:56:26.893Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.54,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.19489999999999996,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1602630615234,
+        "profileFreeGiB": 23.7493896484375
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:56:43.225Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.69,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.08819999999999995,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1602630615234,
+        "profileFreeGiB": 23.749465942382812
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:56:59.557Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.54,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.16310000000000002,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1602630615234,
+        "profileFreeGiB": 23.766223907470703
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:57:15.890Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.85,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1744,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1602630615234,
+        "profileFreeGiB": 23.718372344970703
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:57:32.206Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.97,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.23840000000000006,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1602630615234,
+        "profileFreeGiB": 23.715660095214844
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:57:48.545Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.29,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.18610000000000004,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1602630615234,
+        "profileFreeGiB": 23.713302612304688
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:58:04.877Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.0887,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1602630615234,
+        "profileFreeGiB": 23.711490631103516
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:58:21.230Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.07,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.11099999999999999,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.1602630615234,
+        "profileFreeGiB": 23.71491241455078
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:58:37.559Z",
+      "runId": "final-release-native-003",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.98,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.11030000000000006,
+        "swapUsedMiB": 1809.56,
+        "repoFreeGiB": 1676.157642364502,
+        "profileFreeGiB": 23.713539123535156
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:58:41.758Z",
+      "runId": "final-release-native-003",
+      "signal": "SIGINT",
+      "code": "RESOURCE_STOP_REQUESTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:58:41.758Z",
+      "runId": "final-release-native-003",
+      "resourceInvalid": false,
+      "code": "RESOURCE_BROWSER_STOP_CONFIRMED"
+    }
+  ]
+}
