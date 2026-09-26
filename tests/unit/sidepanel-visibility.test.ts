@@ -45,6 +45,14 @@ describe('sidepanel visibility', () => {
     ).toBe(true);
   });
 
+  it('does not open admin tabs from a stale admin flag on a guest viewer', () => {
+    const staleGuest = { signedIn: false, isAdmin: true };
+    expect(canAccessSidepanelTab('pilot', staleGuest)).toBe(false);
+    expect(canAccessSidepanelTab('showcase', staleGuest)).toBe(false);
+    expect(canAccessSidepanelTab('broker', staleGuest)).toBe(false);
+    expect(canAccessSidepanelTab('debug', staleGuest)).toBe(false);
+  });
+
   it('returns a safe public fallback', () => {
     expect(firstAccessibleSidepanelTab({ signedIn: false, isAdmin: false })).toBe('chat');
   });
