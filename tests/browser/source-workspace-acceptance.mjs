@@ -175,6 +175,32 @@ async function chooseOrganization(panel, name, approvedName) {
   let step = 'settings_tab';
   try {
     await click(panel, 'title', 'Settings');
+    // The no-workspace notice occupies the bottom of this narrow panel.
+    // Collapse the real Account section to bring the Organization controls
+    // above it, without dismissing the notice whose retirement we must test.
+    step = 'account_section_collapse';
+    const account = await evaluate(
+      panel,
+      `(() => {
+        const buttons = [...document.querySelectorAll('button[aria-expanded]')]
+          .filter((button) => button.textContent.trim() === 'Account');
+        return { count: buttons.length, expanded: buttons[0]?.getAttribute('aria-expanded') ?? null };
+      })()`,
+    );
+    if (account.count !== 1 || !['true', 'false'].includes(account.expanded))
+      fail('account_section_not_unique_or_absent');
+    if (account.expanded === 'true') await click(panel, 'section', 'Account');
+    await waitFor(
+      'account_section_collapsed_for_organization',
+      () =>
+        evaluate(
+          panel,
+          `(() => [...document.querySelectorAll('button[aria-expanded]')]
+            .filter((button) => button.textContent.trim() === 'Account')
+            .map((button) => button.getAttribute('aria-expanded')))()`,
+        ),
+      (states) => states?.length === 1 && states[0] === 'false',
+    );
     step = 'organization_section';
     await openSection(panel, 'Organization');
     step = 'organization_control_ready';
@@ -912,6 +938,7 @@ try {
       stage = 'protected_settings_after_run';
       await click(panel, 'title', 'Settings');
       const finalSettings = await protectedSettings(panel);
+      await openSection(panel, 'Account');
       const finalAdmin = await adminState(panel);
       if (
         !finalSettings.portAuto ||

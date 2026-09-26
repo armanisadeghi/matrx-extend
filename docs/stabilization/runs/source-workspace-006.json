@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "run_id": "source-workspace-006",
+  "defect_id": "EXT-D-0023",
+  "source": {
+    "result_path": "test-results/source-workspace-acceptance.json",
+    "result_sha256": "b303dbdf5ad5253f2c1187eb76dba0f06df253b8571dec3ead84295326dbeb3d",
+    "guard_log_path": "/tmp/matrx-source-workspace-006.log",
+    "guard_log_sha256": "22b8e66925222844e3b5269d3fbbb283f2065b44bc6f11b981ae86a1c19ab4c7"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T21:54:02.686Z",
+    "child_exit_at": "2026-09-26T21:54:25.372Z",
+    "child_exit_code": 1
+  },
+  "build": {
+    "version": "0.2.78",
+    "tree_sha256": "b126815ce6f93fe761d9559d0148922dbcffbe74217a25f92bc566e954790f7d"
+  },
+  "observations": {
+    "real_admin_ui": true,
+    "initial_no_workspace_notice": "observed",
+    "selection_substep": "organization_section",
+    "pointer_failure": "pointer_stable_hit_not_observed",
+    "pointer_center_known_notice": "capture_no_workspace",
+    "settings_tab_active": true,
+    "acting_as_row_count": 1,
+    "organization_control_count": 1,
+    "private_screenshot": "captured_ignored_0600",
+    "approved_organization_selection": "unverified",
+    "save_input": "not_attempted",
+    "checkpoint": "existing_reserved_unchanged"
+  },
+  "failure": {
+    "stage": "approved_organization_selection",
+    "code": "stage_failed",
+    "status": "unverified"
+  },
+  "conclusion": "The known no-workspace notice blocked the Organization section header after the runner scrolled it into the center of the narrow Settings panel. The private screenshot shows the expanded Account card above it and the notice across the bottom. The account menu only opens Preferences; the request-driven organization dialog was absent. The runner can use the visible Account section control to collapse that card and bring the Organization control above the notice, while keeping the notice for D23 observation. No Save input was sent."
+}
