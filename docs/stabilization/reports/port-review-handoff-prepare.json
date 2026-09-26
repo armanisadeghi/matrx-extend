@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "artifact": "port-review-handoff-prepare",
+  "state": "prepared_not_submitted",
+  "defect_id": "EXT-D-0012",
+  "row": {
+    "title": "Settings clears the stale local engine port error after a successful clear",
+    "url": "chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html",
+    "instructions": "Open the Matrx Extend development extension in an isolated Chrome profile and use the side panel route above; choose Settings → Desktop bridge → Local engine port. Begin with a disposable profile whose port is set to auto, save 65001, reload Settings, and confirm the override persists. Enter 65536 and save; confirm the range error appears and the prior override remains, then clear the input and save without reloading or leaving Settings; confirm the input returns to auto, the override is removed, and the error disappears. Close and reopen the side panel to confirm the cleared state persists, restore the profile's original port value, and report any mismatch.",
+    "source": "matrx-extend",
+    "repo_slug": "matrx-extend",
+    "domain": {
+      "slug": "platform",
+      "id": "210ab588-6285-461a-bcfe-f1e9ac97351e"
+    },
+    "feature": {
+      "slug": "settings",
+      "id": "3b3009db-8b76-4646-9435-3e77ab87eecb"
+    },
+    "metadata": {
+      "origin": {
+        "agent_label": "matrx-extend-stabilization",
+        "commit": "399bee5"
+      },
+      "triage": {
+        "version": 1,
+        "lane": "browser_ui",
+        "required_tools": ["browser", "frontend_code", "authenticated_session"],
+        "workstreams": ["verification", "correctness"],
+        "priority": "normal",
+        "assignment": {
+          "mode": "origin_agent",
+          "state": "ready"
+        },
+        "verification": {
+          "browser_breakpoints": ["desktop"],
+          "notes": "Exercise the current installed development extension in an isolated Chrome profile. The actual surface is chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html, then Settings > Desktop bridge > Local engine port. Existing native acceptance is documented for release 0.2.58; this review must verify the current installed build independently and must not inherit that result as new evidence. Restore the isolated profile's original port value after the sequence."
+        }
+      },
+      "preparation": {
+        "defect_state": "closed",
+        "fix_commit": "399bee5",
+        "previous_live_acceptance": "docs/stabilization/reports/native-0258-port-verification.json records the invalid-to-blank sequence passing on native Chrome side panel release 0.2.58, admin session, and disposable organization; original auto setting was restored.",
+        "remaining_review": "Independent queue reviewer should rerun the sequence against the current installed development extension in an isolated profile. Prior 0.2.58 evidence is historical provenance, not proof of the current candidate.",
+        "duplicate_and_feedback_check": "Read-only query on 2026-09-26 found no matrx-extend row matching local engine port, port validation, or lane matrx-extend-stabilization; no prior feedback row for this lane was found.",
+        "conversation_creation": "Omit conversation_id on the agent.review_queue insert. The existing BEFORE INSERT trigger agent.review_queue_create_thread calls agent.create_review_thread(), which creates communication.dm_conversations, adds super-admin participants, writes the initial instructions message, and sets NEW.conversation_id atomically. Capture and verify both returned id and conversation_id; do not manually create a conversation or message.",
+        "limits": [
+          "No review_queue row was inserted or updated during preparation.",
+          "No browser, test, or application runtime was launched during preparation.",
+          "Current installed-build behavior remains unverified by this preparation task."
+        ]
+      }
+    }
+  }
+}
