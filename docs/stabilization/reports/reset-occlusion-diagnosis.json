@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "task_id": "reset-occlusion-diagnosis",
+  "lane": "exceptional diagnosis",
+  "model": "Astra medium",
+  "status": "failure_capture_ready_for_root_guarded_run",
+  "feature_ids": ["EXT-F-1003"],
+  "defect_ids": ["EXT-D-0015"],
+  "summary": "Run 007 proves a visible unique reset button remains blocked at nine points despite an unchanged clipping intersection. No actual hit node was recorded, so changing the shared driver again would be speculative. Added failure-only hit stack and clipped Settings screenshot evidence to the runner; no driver or product behavior changed.",
+  "evidence": ["docs/stabilization/runs/isolated-admin-reset-007.json"],
+  "changed_files": ["tests/browser/isolated-admin-reset-acceptance.mjs", "docs/stabilization/reports/reset-occlusion-diagnosis.json"],
+  "hypotheses": [
+    {
+      "cause": "An unrelated sibling layer covers the reset button",
+      "prediction": "The first hit node has within_settings false or a fixed/absolute ancestor overlapping the target; removing only that proven layer in a subsequent controlled experiment restores native hit testing."
+    },
+    {
+      "cause": "A Settings descendant overlaps the reset button",
+      "prediction": "The first hit node belongs to Settings but not the target and its geometry covers the target; the screenshot and ancestor chain identify the same competing control."
+    },
+    {
+      "cause": "The panel's visual/DOM hit-testing coordinate state is inconsistent",
+      "prediction": "Screenshot renders the reset button at the recorded point while the hit stack geometries do not contain that point, or a transform/scroll geometry disagreement is visible; a single proven coordinate correction restores hit testing."
+    }
+  ],
+  "capture_contract": {
+    "trigger": "Only the failure of reset_confirm_open_action after Cancel",
+    "screenshot": "test-results/isolated-admin-reset-occlusion.png",
+    "surface": "Existing attached chrome-extension /sidepanel.html CDP session, active Settings control, reset target within a tabpanel; visible forms/password inputs/iframes refuse capture; screenshot clipped to that Settings tabpanel intersected with the viewport",
+    "node_fields": "Per-snapshot numeric identities, fixed tag/role/slot/state/aria-hidden allowlists, inert/hidden booleans, geometry, computed pointer-events/position/z-index/opacity/visibility/overflow, scroll/client geometry, transform-presence boolean, and relationships to target/Settings",
+    "never_recorded": "DOM text, outerHTML, arbitrary attributes, class names, URLs, storage values, raw errors or credentials",
+    "failure_behavior": "Fixed capture status preserves the original failing verdict even if diagnostics or screenshot fail"
+  },
+  "verification": [
+    { "case_id": "source-syntax", "verdict": "pass", "evidence": "node --check tests/browser/isolated-admin-reset-acceptance.mjs" },
+    { "case_id": "original-native-reopen", "verdict": "unverified", "evidence": "Root owns the sole guarded browser run; no runtime/build/browser/install executed by this worker" }
+  ],
+  "limitations": ["Actual occluder and product root cause remain unknown until the next failing run", "Run 005 post-reset chat preference identity is a separate lead and is unchanged"],
+  "open_questions": [],
+  "next_action": "Root executes the existing acceptance runner under its resource guard and returns reset_confirm.occlusion plus the PNG; diagnose the actual node before any driver or product repair."
+}

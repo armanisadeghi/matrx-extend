@@ -363,6 +363,94 @@ async function nativeActionDiagnostic(panel, error, kind, label) {
   }
 }
 
+// Failure-only evidence on the already attached native Settings target. Never
+// attach to the login tab; never serialize node text, arbitrary attrs or values.
+async function resetOcclusionDiagnostic(panel) {
+  try {
+    const snapshot = await evaluate(
+      panel,
+      `(() => {
+      const activeSettings = document.querySelector('button[title="Settings"][data-state="active"]');
+      const target = [...document.querySelectorAll('button')].find((el) =>
+        el.textContent.trim() === 'Clear local data on this device' &&
+        el.getBoundingClientRect().width > 0 && !el.closest('[inert]'));
+      const settings = target?.closest('[role="tabpanel"]');
+      const visible = (el) => { const r = el.getBoundingClientRect();
+        return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden'; };
+      const safeSurface = location.protocol === 'chrome-extension:' &&
+        location.pathname === '/sidepanel.html' && Boolean(activeSettings && settings) &&
+        ![...document.querySelectorAll('form, input[type="password"], iframe')].some(visible);
+      if (!safeSurface) return { surface_verified: false };
+      const rect = (el) => { const r = el.getBoundingClientRect();
+        return { x: r.x, y: r.y, width: r.width, height: r.height }; };
+      const ids = new Map();
+      const fixed = (value, allowed) => allowed.includes(value) ? value : value == null ? null : 'other';
+      const describe = (el) => {
+        if (!el) return null;
+        if (!ids.has(el)) ids.set(el, ids.size + 1);
+        const style = getComputedStyle(el);
+        return { node: ids.get(el),
+          tag: fixed(el.localName, ['html','body','div','span','button','svg','path','input','section','header','main','nav','p','a']),
+          role: fixed(el.getAttribute('role'), ['tabpanel','tablist','tab','dialog','alertdialog','button','listbox','option','presentation','none']),
+          // These slots are already source-declared selectors in this runner/driver.
+          slot: fixed(el.getAttribute('data-slot'), ['alert-dialog-title','alert-dialog-overlay','dialog-overlay']),
+          state: fixed(el.getAttribute('data-state'), ['active','inactive','open','closed']),
+          aria_hidden: fixed(el.getAttribute('aria-hidden'), ['true','false']),
+          inert: el.hasAttribute('inert'), hidden: el.hasAttribute('hidden'),
+          is_target: el === target, contains_target: el.contains(target),
+          within_settings: settings.contains(el), rect: rect(el),
+          pointer_events: fixed(style.pointerEvents, ['auto','none']),
+          position: fixed(style.position, ['static','relative','absolute','fixed','sticky']),
+          z_index: style.zIndex === 'auto' ? 'auto' : Number.isFinite(Number(style.zIndex)) ? Number(style.zIndex) : 'other',
+          opacity: Number(style.opacity),
+          visibility: fixed(style.visibility, ['visible','hidden','collapse']),
+          overflow_x: fixed(style.overflowX, ['visible','hidden','clip','scroll','auto']),
+          overflow_y: fixed(style.overflowY, ['visible','hidden','clip','scroll','auto']),
+          scroll_top: el.scrollTop, scroll_left: el.scrollLeft,
+          client_width: el.clientWidth, client_height: el.clientHeight,
+          transformed: style.transform !== 'none' };
+      };
+      const chain = (el) => { const result = [];
+        for (; el; el = el.parentElement) result.push(describe(el)); return result; };
+      const r = target.getBoundingClientRect();
+      const x = r.x + r.width / 2, y = r.y + r.height / 2;
+      const hit = document.elementFromPoint(x, y);
+      const box = settings.getBoundingClientRect();
+      const left = Math.max(0, box.left), top = Math.max(0, box.top);
+      const width = Math.max(0, Math.min(innerWidth, box.right) - left);
+      const height = Math.max(0, Math.min(innerHeight, box.bottom) - top);
+      return { surface_verified: true, target_chain: chain(target), hit_chain: chain(hit),
+        center_stack: document.elementsFromPoint(x, y).map(describe),
+        point: { x, y }, viewport: { width: innerWidth, height: innerHeight },
+        screenshot_clip: width > 0 && height > 0 ? { x: left + scrollX, y: top + scrollY, width, height, scale: 1 } : null };
+    })()`,
+    );
+    if (!snapshot?.surface_verified || !snapshot.screenshot_clip)
+      return { ...snapshot, screenshot_status: 'surface_refused' };
+    try {
+      const { data } = await panel.send('Page.captureScreenshot', {
+        format: 'png',
+        captureBeyondViewport: false,
+        clip: snapshot.screenshot_clip,
+      });
+      if (typeof data !== 'string' || data.length < 100) throw new Error('png_missing');
+      const filename = 'isolated-admin-reset-occlusion.png';
+      await writeFile(join(REPO, 'test-results', filename), Buffer.from(data, 'base64'), {
+        mode: 0o600,
+      });
+      return {
+        ...snapshot,
+        screenshot_status: 'captured',
+        screenshot_path: 'test-results/' + filename,
+      };
+    } catch {
+      return { ...snapshot, screenshot_status: 'capture_failed' };
+    }
+  } catch {
+    return { snapshot_available: false, screenshot_status: 'surface_unavailable' };
+  }
+}
+
 async function panelLifecycleDiagnostic(panel) {
   const state = { target_info_available: false, runtime_read_available: false };
   try {
@@ -567,6 +655,7 @@ try {
             'button',
             'Clear local data on this device',
           );
+          evidence.reset_confirm.occlusion = await resetOcclusionDiagnostic(panel);
           throw error;
         }
         stage = 'reset_confirm_dialog_wait';
