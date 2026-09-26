@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "report_id": "d23-write-native-source-peer",
-  "reviewed_source_commit": "1211b540",
+  "reviewed_source_commits": ["1211b540", "5b7e587b"],
   "runner": "tests/browser/notice-write-retention-acceptance.mjs",
   "A_runtime": {
     "status": "UNVERIFIED",
@@ -15,11 +15,12 @@
       "createHighlight awaits requireRequestOrganizationId before constructing or sending its insert. Its no-organization catch raises the typed Highlight not saved notice through failDbCall. The runner requires exactly one notice with the no-workspace, request-never-sent, and Nothing was saved sentences before choosing a workspace. Once that notice exists, this createHighlight invocation has thrown and has no pending insert to resume.",
       "The runner chooses the exact privately approved existing workspace through the trusted picker click, then requires the selected name in device storage and a closed picker. It observes the original notice after a bounded quiet interval and fails on a highlight insert request. No Source Save, deletion, checkpoint read or edit, auth storage injection, event fabrication, network interception, or mock response appears in this runner. Public output contains fixed booleans, counts, stages, and failure categories; the failure screenshot uses a unique wx mode-0600 path."
     ],
-    "blocking_finding": "The CDP Network listener is used only as a zero-count oracle for POST /wbx_highlight. It does not require any real request event to prove that the side-panel target listener is functioning. If the listener is attached to a silent or wrong target, or Network events are not delivered, the runner can report zero inserts and bounded_pass while an insert may have been sent. After the listener starts, the no-workspace hold calls listMemberOrganizations from the side panel, which gives a suitable real membership-request positive control. Require an observed relevant panel request before treating zero inserts as evidence; retain only safe request categories and counts.",
+    "resolved_on_rereview": "Commit 5b7e587b arms the side-panel CDP observer immediately before mouseup, counts every subsequent POST /wbx_highlight, and requires a matching membership RPC request with HTTP 200 response and completed loading. The no-workspace hold actually calls this endpoint from the side panel, so a dead or wrong-target observer cannot satisfy the positive control. The observer remains active through the post-selection quiet interval. Only counts enter the result; URLs, headers, bodies, and organization identity stay private.",
+    "blocking_finding": "The after-selection retention gate still calls failedHighlightNoticeCount, which counts matching alert DOM nodes without checking that any is rendered and visible. Once the picker closes, a regression that leaves the failed-write alert hidden, zero-area, or offscreen could report bounded_pass despite the requested visible retained notice being absent. Keep the pre-selection count as the terminal-failure gate, but require a rendered, viewport-visible matching alert after selection before claiming retention.",
     "limits": [
       "The two-second post-selection interval is a bounded no-retry observation, not a proof about an arbitrarily late future write or notice.",
       "The run can prove this real admin highlight path only. Member mode, deliberately late notices, and other failed-write callers remain separate obligations."
     ]
   },
-  "resource_policy": "NOT_CHANGED: the exact node command should be admitted only after the source correction is independently accepted."
+  "resource_policy": "NOT_CHANGED: the exact node command should be admitted only after the retained-notice visibility oracle is independently accepted."
 }
