@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "report_id": "evidence-integrity-generator",
+  "scope": "Small file-bound guard/result metadata writer for a single stabilization run",
+  "cause": "The immutable screenshot-guest-001 receipt reused the SHA-256 digest of the Debug 006 guard log. The actual screenshot guard log and private result files are still available; the audit does not establish how the wrong digest was copied.",
+  "tool": "scripts/record-stabilization-evidence.mjs",
+  "usage": "node scripts/record-stabilization-evidence.mjs --run-id screenshot-guest-001 --guard-log /tmp/matrx-screenshot-guest-001.log --result test-results/screenshot-guest-acceptance-617a4dc0-297b-4e54-98f8-d74e58c0bb58.json --output docs/stabilization/runs/screenshot-guest-001-evidence-correction.json",
+  "contract": "The tool reads both exact files and computes each SHA-256 from its bytes. It refuses a guard with missing, duplicate, or mismatched RESOURCE_ADMITTED/RESOURCE_JOB_EXIT run IDs and writes a new mode-0600 JSON file with exclusive creation. It emits only paths, hashes, bounded guard timestamps/exit code, a classified raw-result status, and validated build version/tree if present; it copies no child stdout or private result payload. It never accepts a caller-supplied digest or edits an existing receipt.",
+  "verification": "A light unit guard covers wrong-run refusal before output creation and independently recomputed digests for two distinct raw files, along with payload omission and no-overwrite behavior. Root owns the guarded test run and the separate correction artifact; this lane has not launched a browser, build, or test.",
+  "boundary": "The generated metadata corrects provenance only. It does not promote an inventory case, defect state, or product acceptance result."
+}
