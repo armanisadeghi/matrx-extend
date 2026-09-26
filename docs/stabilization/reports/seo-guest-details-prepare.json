@@ -33,6 +33,12 @@
     }
   ],
   "execution": "Not run in this preparation lane; root owns the release preflight, resource guard, native browser run, and independent source/runtime review.",
+  "run_009_diagnostic": {
+    "receipt": "docs/stabilization/runs/seo-guest-009.json",
+    "observed": "The active Wikipedia panel displayed HTTP 200, navigate, and 121 KB while Load duration was absent. Fifteen earlier checks passed before the performance predicate failed; its first diagnostic retained no assertion label or public navigation timing values.",
+    "source_boundary": "SeoDetails renders Load duration only when perf.duration_ms is non-null, through the same SeoRow shape as HTTP status and Navigation. The collector maps a zero or absent navigation duration to null. The SEO view auto-audits on URL change, potentially before the public tab's load event, while the test reads navigation timing after page.goto(waitUntil='load').",
+    "unresolved": "Run 009 cannot prove whether the mismatch was the duration, another performance value, or a row-reader defect. The next focused diagnostic retains the fixed assertion label and post-load navigation scalars without weakening the check."
+  },
   "excluded": [
     "Save, history, clipboard, provider, Chat/Pilot, member authentication, and database writes",
     "Full T09 or feature acceptance from these five predicates",

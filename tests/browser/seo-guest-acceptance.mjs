@@ -86,6 +86,9 @@ function assertNext(predicate, verify) {
   try {
     verify();
   } catch (error) {
+    // Node appends a multiline actual/expected diff to strict equality
+    // messages. The first line is our fixed label; never retain the diff.
+    const firstLine = typeof error?.message === 'string' ? error.message.split('\n', 1)[0] : '';
     const scalar = (value) =>
       typeof value === 'boolean' || (typeof value === 'number' && Number.isFinite(value))
         ? value
@@ -93,11 +96,8 @@ function assertNext(predicate, verify) {
     report.failure = {
       predicate,
       assertion_label:
-        error?.code === 'ERR_ASSERTION' &&
-        typeof error.message === 'string' &&
-        error.message.length <= 100 &&
-        !error.message.includes('\n')
-          ? error.message
+        error?.code === 'ERR_ASSERTION' && firstLine.length > 0 && firstLine.length <= 100
+          ? firstLine
           : 'predicate_evaluation_failed',
       actual_scalar: scalar(error?.actual),
       expected_scalar: scalar(error?.expected),
@@ -999,6 +999,15 @@ try {
           'guest_readability_display_is_populated_and_explained',
           'The public body had no text, so populated readability fields could not be exercised.',
         );
+      report.next_detail_public_navigation = nextExpected.navigation
+        ? {
+            type: nextExpected.navigation.type,
+            durationMs: nextExpected.navigation.durationMs,
+            transferSizeBytes: nextExpected.navigation.transferSizeBytes,
+            responseStatus: nextExpected.navigation.responseStatus,
+            pageResponseStatus: nextExpected.responseStatus,
+          }
+        : null;
       assertNext('performance', () => assertNextPerformance(nextDetails, nextExpected));
       target('T09', 'guest_performance_reflects_current_navigation', {
         pageResponseStatus: nextExpected.responseStatus,
