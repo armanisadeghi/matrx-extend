@@ -1,0 +1,27 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "lane": "independent evidence verifier; read-only runtime review; no browser run",
+  "scope": ["guest-reset-001/002/008/009", "guest-settings-local-001/002/003", "38b0091", "5d7129f"],
+  "verdict_A_original_interactions_and_reset": {
+    "status": "PASS_WITH_LIMITS",
+    "findings": [
+      "guest-reset-001 is a separate EXT-D-0009 pre-launch MODULE_NOT_FOUND and launched no browser; it is not evidence about reset behavior.",
+      "guest-reset-002 reached the 0.2.56 guest panel and persisted Dark, but the port fixture was absent, so reset was not exercised.",
+      "guest-reset-008 on 0.2.57 failed before reset: trusted wheel targeted y=1327 outside the 360x421 panel. It established a shared-driver failure, not a product reset failure.",
+      "guest-reset-009 on the same recorded 0.2.57 build reports independent local/session fixture persistence, cancel preserving theme/port/session, confirm removing prior keys, and reload showing defaults. This directly completes the reset acceptance missing in 002 and blocked by 008.",
+      "guest-settings-local-003 reaches T46 save-valid, reject-65536 while retaining 65001, valid persistence through reload, clear, and cleared persistence through reload. It reaches T70 identity/readiness and a real no-update response, with reload state recorded."
+    ],
+    "limits": ["No reset negative assertion beyond reported removal of the populated disposable profile keys is recorded in this peer review.", "The runtime artifacts are represented by run records and screenshots; this verifier did not replay the native interaction."]
+  },
+  "verdict_B_honesty_and_remaining_gaps": {
+    "status": "PASS_WITH_OPEN_GAPS",
+    "findings": [
+      "Current runner source was compared directly with 38b0091 and 5d7129f: viewport scrollIntoView preparation is followed by fresh target hit-testing, animation/stability checks, and trusted CDP click; port replacement uses the selectAll command and observes selection before Backspace. These changes address the 008 off-viewport failure and 002-era macOS selection failure in the shared driver/runner path.",
+      "No acceptance assertions were removed in the repair commits; the reset and local-controls runner source retains the expected cancel/confirm and port checks.",
+      "The overall guest-settings-local-003 record correctly remains unverified: T46 and T70 are unverified because rediscovery lacks worker evidence and alternate About branches were not exercised. Do not promote either to full pass.",
+      "Owner caveat is accurate: T46 clears only after reload following invalid input, so the same-render invalid-to-blank transition and stale-error clearing are not tested. The recorded 'blank clears override and stale error' criterion overstates its evidence; only blank clearing after reload is established."
+    ],
+    "required_follow_up": ["Keep T46/T70 unverified until worker rediscovery and the untested About branches have observable evidence; rerun T46 with invalid then blank in one render to settle stale-error behavior."],
+    "source_basis": ["git show 38b0091", "git show 5d7129f", "tests/browser/settings-panel-driver.mjs", "tests/browser/settings-local-controls-acceptance.mjs"]
+  }
+}
