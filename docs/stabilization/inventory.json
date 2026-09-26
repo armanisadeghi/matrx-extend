@@ -5279,6 +5279,19 @@
           "report": "docs/stabilization/reports/native-0268-reload.json",
           "proven": "Nativebuild/ID/path; account/org/autoport/4OFF/informationalDevTools anddisabledStore retained; bridgeautomaticallyconnectedwithin30secondsafterreload.",
           "limits": "No desktopend-to-endfunctionality, member/guest orfullSettings claim."
+        },
+        {
+          "run_id": "native-0272-reload",
+          "mode": "admin",
+          "build": "0.2.72",
+          "status": "partial",
+          "case_ids": [
+            "EXT-F-1003-T45",
+            "EXT-F-1003-T48"
+          ],
+          "independent_review": "docs/stabilization/reports/native-0272-reload.json",
+          "environment_followup": "docs/stabilization/reports/bridge0272-prerequisite.json",
+          "detail": "Native reload preservesadmin/org/autoport/fouroptionalpermissionsOFF; bridgeNotconnectedimmediateand30s. Laterreadonlyhostprobe findsnoengine/discoveryfile/scanportroute; no historicalcause or fullpairing/bridgehealth claim."
         }
       ]
     },
