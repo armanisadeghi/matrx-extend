@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/admin_reset_source_peer",
+  "reviewed_commits": ["ff6b609"],
+  "method": "Independent source-only review of EXT-F-1003-T51, the isolated admin reset runner and its native side-panel harness, Settings reset/sign-out implementation, and sanitized runner report. No test, build, install, process, or browser was launched.",
+  "verdict_a_acceptance": {
+    "status": "PARTIAL",
+    "source_assessment": "The runner follows the required real UI sequence: real web login, extension Settings sign-in, Cancel, Confirm, and native panel reload. It checks signed-in admin controls, Dark preference, auth-key presence, a disposable session fixture, and local/session key removal after Confirm.",
+    "runtime_status": "UNVERIFIED; no native Chrome interaction was performed in this review.",
+    "risk_or_gap": "After reload, the runner checks only known auth/settings/session sentinels. It does not compare all pre-reset local and session key names against the reloaded storage, so a non-sentinel extension key restored during boot could escape detection.",
+    "side_effect_scope": "The harness owns a fresh temporary Chrome profile, verifies its DevTools endpoint and spawned-process ownership, and deletes only that profile. The real admin login/reset also creates and revokes the disposable profile's auth session; signOut makes a best-effort Supabase logout request. No application/account data mutation is present in the runner, but describing the flow as having no server-side effect at all would be inaccurate."
+  },
+  "verdict_b_engineering_quality": {
+    "status": "PARTIAL",
+    "passing_source_evidence": [
+      "No primary Chrome profile is attached: the harness launches Chrome with a newly created temporary user-data directory and rejects an endpoint/profile not owned by its child.",
+      "The runner performs UI clicks on the actual SIDE_PANEL, rather than directly invoking reset implementation code.",
+      "Credential reads are confined to the authorized aidream .env and actual login form. Catch paths emit fixed stage/category labels; storage inspection exports auth-key booleans and key names, never auth values. The session fixture value is used only for equality checks and is not serialized.",
+      "The report writes an allowlisted evidence object with mode 0600. The harness screenshot capture occurs before admin login, while the panel is still a guest.",
+      "The reset implementation clears extension local/session storage and invokes signOut. SignOut clears local auth state and may send a best-effort scope=local logout request for this disposable session."
+    ],
+    "findings": [
+      {
+        "severity": "important",
+        "location": "tests/browser/isolated-admin-reset-acceptance.mjs:223-231",
+        "issue": "The reload oracle checks only the named auth/settings/session sentinels. It omits comparison of every pre-reset local/session key against reloaded storage. A key that is restored during extension boot after the immediate post-confirm sample would not fail acceptance.",
+        "repair": "Retain the pre-reset key-name snapshots in process memory and assert that their intersection with localKeys and sessionKeys remains empty after panel reload. Do not serialize storage values or the fixture value."
+      }
+    ],
+    "verification_limit": "Source inspection only. No syntax check, test, build, browser run, or mutation proof was performed."
+  },
+  "open_questions": []
+}
