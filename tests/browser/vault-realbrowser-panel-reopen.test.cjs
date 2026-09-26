@@ -7,10 +7,10 @@ const vm = require('node:vm');
 
 const runner = fs.readFileSync(path.join(__dirname, 'vault-realbrowser-acceptance.cjs'), 'utf8');
 const match = runner.match(
-  /async function openSidePanelFromActionPopup[\s\S]*?\n}\nasync function chooseAuthorizedOrganization/,
+  /async function openSidePanelFromActionPopup[\s\S]*?\n}\n\nasync function closeOwnedSidePanelForPopupRoute/,
 );
 assert.ok(match, 'action_popup_reopen_helper_missing');
-const functionSource = match[0].replace(/\nasync function chooseAuthorizedOrganization$/, '');
+const functionSource = match[0].replace(/\n\nasync function closeOwnedSidePanelForPopupRoute$/, '');
 
 const extensionId = 'abcdefghijklmnopabcdefghijklmnop';
 let targetLookup = 0;
@@ -38,13 +38,15 @@ const cdp = {
   detach: async () => {},
 };
 const popup = {
-  send: async (method) => {
-    if (method === 'Runtime.evaluate')
+  send: async (method, params) => {
+    if (method === 'Runtime.evaluate') {
+      assert.match(params.expression, /Capture page/);
       return {
         result: {
           value: { control: true, x: 1, y: 1, width: 8, height: 8, visible: true, hit: true },
         },
       };
+    }
     return {};
   },
   dispose: () => {},
@@ -103,9 +105,17 @@ new vm.Script(
     signInVisible: true,
     signOutVisible: false,
   });
-  const opened = await sandbox.openPanel(extensionId, {}, 7, replacementWorker);
+  const opened = await sandbox.openPanel(
+    extensionId,
+    {},
+    7,
+    replacementWorker,
+    undefined,
+    'Capture page',
+  );
   assert.equal(opened.opened, true);
   assert.equal(opened.panel.targetId, 'panel');
+  assert.equal(opened.popupControlLabel, 'Capture page');
   assert.equal(replacementCalls, 2, 'the replacement worker must open and observe the panel');
   process.stdout.write(
     'PASS: action-popup panel reopening uses its explicit replacement worker facade\n',
