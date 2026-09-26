@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "review": "seo-detail008-finalpeer",
+  "target_commit": "a336fba52fd30eaa7f7e4ecdf2bbdead66f7af45",
+  "scope": "Fresh source-only re-review of the guest SEO detail batch and prior peer findings. No browser, heavy test, UI interaction, child agent, code edit, or push.",
+  "runtime_verdict": {
+    "result": "PENDING",
+    "reason": "No native runtime evidence was examined. Source review cannot establish current page values, timing, navigation, or visible rendered values in a live panel."
+  },
+  "source_quality_verdict": {
+    "result": "REPAIR_BEFORE_RUN",
+    "prior_findings": [
+      {
+        "id": "copied_product_algorithms",
+        "result": "PARTLY_ADDRESSED",
+        "evidence": "The source now narrows readability to body-text presence plus positive displayed fields; it no longer claims exact word/sentence counts or Flesch correctness. Link/image totals still apply the same straightforward product business rules to independently read public DOM facts, which is acceptable under the root ruling. JSON-LD types now use JSON.parse's reviver rather than copying the product recursive walker, while microdata is read directly from itemtype elements. This is independent observation with equivalent semantics, not a copied implementation. The test still relies on matching product-facing rules for link/image totals, bounded to those DOM facts.",
+        "remaining": "The target name and report wording say readability is 'measured'; positive values and a numeric score/band only establish displayed, plausible fields, not that values were calculated from this page. Narrow the target/claim to populated readability fields with an explanation, or independently verify the metric before calling it measured."
+      },
+      {
+        "id": "plain_schema_chip_labels",
+        "result": "ADDRESSED",
+        "evidence": "seoNextDetailState reads text from every rendered chip child, including anchors and plain spans. assertNextDoors compares the sorted full visible-label set with the independently observed schema type set, and separately checks linked destinations, title, target, noopener, and noreferrer."
+      }
+    ],
+    "predicate_review": [
+      {
+        "id": "guest_link_counts_match_live_dom",
+        "result": "SOURCE_COHERENT",
+        "evidence": "Counts come from anchors on the owned public document and are checked against the active selected SEO pane. This is the same simple definition used by the product, but no product audit output supplies expected values."
+      },
+      {
+        "id": "guest_image_alt_counts_match_live_dom",
+        "result": "SOURCE_COHERENT",
+        "evidence": "The oracle reads document.images and alt attributes directly; total, missing-alt, hint, and zero-image group behavior are asserted."
+      },
+      {
+        "id": "guest_readability_is_measured_and_explained",
+        "result": "PARTIAL",
+        "evidence": "The empty-text fallback now aligns with capture's innerText/textContent source and exact derivation claims were removed. Positive displayed counts, numeric score, and named band do not prove these values reflect the observed page, so the target's 'measured' claim is broader than its assertion."
+      },
+      {
+        "id": "guest_performance_reflects_current_navigation",
+        "result": "SOURCE_COHERENT",
+        "evidence": "Navigation fields are read from the owned document's NavigationTiming entry; available response status is cross-checked with page.goto, and absent duration/status remain absent."
+      },
+      {
+        "id": "guest_hreflang_and_schema_doors_match_page",
+        "result": "PARTIAL",
+        "evidence": "Full schema chip labels and openable destinations are now compared, and trusted pointer activation checks the unique selected links. The activation precondition still requires jsonLdTypeCount > 0, so a microdata-only page becomes unverified even when it has a unique openable schema door. This is a coverage omission/false negative, not a false pass."
+      }
+    ],
+    "retained_targets": {
+      "result": "PASS",
+      "evidence": "All prior 10 static target IDs remain, along with the two dynamic page title/headings targets generated from the two PAGES entries (12 prior runtime targets total). The five detail targets are additive."
+    },
+    "specific_failure_cases": [
+      "If the production readability collector regresses to constant positive counts and a numeric canned score/band, guest_readability_is_measured_and_explained still passes. Rename/narrow the claim before treating it as measurement evidence.",
+      "If the source exposes schema.org microdata only, or has both microdata and no JSON-LD, the schema labels and destinations can match but the door target is marked unverified due solely to jsonLdTypeCount > 0."
+    ]
+  },
+  "verification": {
+    "command": "pnpm exec biome check tests/browser/seo-guest-acceptance.mjs docs/stabilization/reports/seo-detail008-peer.json docs/stabilization/reports/seo-detail008-finalpeer.json",
+    "result": "PASS"
+  },
+  "next_action": "Narrow the readability target wording to the assertions actually made and permit the door action when a unique schema link comes from JSON-LD or microdata; then run a fresh source review before the guarded native run."
+}
