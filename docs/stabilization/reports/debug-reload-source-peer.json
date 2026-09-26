@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "report_id": "debug-reload-source-peer",
+  "reviewed_source_commit": "63278ec7",
+  "runner": "tests/browser/debug-log-controls-acceptance.mjs",
+  "A_runtime": {
+    "status": "UNVERIFIED",
+    "reason": "This independent lane did not build or run the native browser. No post-reload UI behavior is claimed from source inspection."
+  },
+  "B_source": {
+    "status": "ACCEPTED_FOR_RUNTIME_VERIFICATION",
+    "findings": [
+      "DEBUG_RELOAD_BEFORE_CONTROLS=1 selects a distinct post_real_panel_reload scenario. After real web and extension admin sign-in, the runner sends Page.reload to the owned side-panel CDP target, requires a changed main-frame loader ID, waits for Settings to mount, and reopens Account to require the exact admin email, role, and Sign out control before entering Debug. A mere component rerender or browser-page navigation cannot satisfy this sequence.",
+      "The same natural public-page interaction and trusted Search, Pause/Resume, row-click, and Clear controls run after the reload. The runner requires mounted Debug Search and its row counter again, rather than carrying pre-reload Log DOM forward.",
+      "Every case includes the scenario. scenarioEvidence marks only the executed warm or reload dimension; service-error stays unverified. T14 remains partial on message search with a distinct no-match state, T15 on observed paused/resumed counts, T17 on a previously nonempty list cleared to zero with no-events and badge semantics, and T22 on natural detail expand/collapse plus no-detail and empty-state controls. Missing positive rows or details stay unverified; no case is promoted to full acceptance.",
+      "The extended detail-only probe reads an expanded natural JSON pre block and prefers a key, then a parsed primitive string or finite number. It requires the candidate to occur once in that detail, be 6–64 characters, and be absent from every visible message. Trusted input must retain the original detail row with a matching filtered counter before the detail-search dimension is marked pass; otherwise it remains unverified. The term and event payload stay in private runner memory and do not enter the result or public diagnostics.",
+      "The native harness still verifies the owned profile and release artifact at startup, while the runner compares receipt/manifest version and tree hash before and after. Failure screenshots remain exclusive-create mode 0600 in the private artifact directory."
+    ],
+    "limits": [
+      "Runtime must prove that Page.reload preserves an operable side-panel CDP session and actually supplies natural rows. Source checks alone establish neither.",
+      "A detail value that is unavailable, repeated, too short or long, or present in messages cannot prove detail-only search; the runner reports that branch unverified. The key/value occurrence rule is deliberately stricter than the product behavior.",
+      "Warm and post-reload runs write the same ignored result path, so each runtime result needs an immutable receipt before the next run. Service-error acceptance remains open in both scenarios."
+    ]
+  }
+}
