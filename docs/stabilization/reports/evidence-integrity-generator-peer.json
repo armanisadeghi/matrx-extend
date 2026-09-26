@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "report_id": "evidence-integrity-generator-peer",
+  "reviewed_commit": "5e22dd9e",
+  "source_verdict": "rejected_pending_guard_outcome_repair",
+  "unit_runtime": "pending_root_guarded_run",
+  "scope": "scripts/record-stabilization-evidence.mjs and tests/unit/stabilization-evidence.test.ts; no browser or heavy test run by this reviewer",
+  "accepted_source_properties": [
+    "Guard and result SHA-256 values are computed from independently read file bytes rather than caller-supplied digests; the two source paths must resolve to distinct files.",
+    "The guard parser requires exactly one RESOURCE_ADMITTED and one RESOURCE_JOB_EXIT with the requested run ID, rejecting the observed Debug 006 log when asked to record Screenshot 001.",
+    "The writer uses exclusive create with mode 0600 and cannot overwrite an existing receipt or either source file.",
+    "Raw child stdout and arbitrary result fields are not copied into the record; the test independently recomputes both digests and checks private fixture strings are absent."
+  ],
+  "blocking_findings": [
+    {
+      "location": "scripts/record-stabilization-evidence.mjs:39-67",
+      "problem": "An admitted run with RESOURCE_JOB_EXIT childExitCode 0 is accepted even if the wrapper subsequently emits RESOURCE_OWNED_PROCESS_STILL_RUNNING or RESOURCE_GROUP_STILL_RUNNING for the same run. stabilization-resource.mjs sets wrapper exit code 3 on those post-child cleanup failures, so the generated summary can look successful despite failed resource ownership. The guard parser only validates the admitted and child-exit pair; it does not classify terminal wrapper failure events.",
+      "required_repair": "Refuse guard logs containing terminal unsafe/cleanup failure events and add a test with RESOURCE_ADMITTED, child exit 0, then RESOURCE_OWNED_PROCESS_STILL_RUNNING for the same run. Do not promote a child result to overall run success when wrapper completion is unproven."
+    },
+    {
+      "location": "scripts/record-stabilization-evidence.mjs:69-91; tests/unit/stabilization-evidence.test.ts:68-79",
+      "problem": "The result status is copied independently of the guard exit. A child exit code 1 paired with a raw result status of pass remains raw_result.status=pass, with no classified inconsistency or failure verdict. The current tests cover only exit 0 with partial status.",
+      "required_repair": "Explicitly classify or reject nonzero-child/pass inconsistencies and test that failure cannot be represented as an accepted pass. Preserve the raw status only as an attributed observation if needed."
+    }
+  ],
+  "bounded_metadata_note": "The fixed output shape excludes private payload fields. Source path strings and accepted version strings are not length-bounded, so callers should pass only intended evidence paths; a bounded-path/version check would make this guarantee stronger without copying raw payload.",
+  "next_step": "Repair the two guard-status cases, obtain a fresh source review and root-owned guarded unit run, then generate a separate Screenshot 001 correction without modifying the original receipt."
+}
