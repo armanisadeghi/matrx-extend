@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-unlocked-retest-006",
+  "status": "partial_resource_invalid",
+  "run_record": "docs/stabilization/runs/guest-settings-006.json",
+  "summary": "The required unpacked extension identity/version/path were confirmed. Guest Organization, Default agent, and Advanced agent capabilities visibility were checked in a warm Settings view and after reopening the panel. Light visibly applied and persisted after panel reopen. The coordinator stopped UI activity on a second memory-pressure event while Light remained selected; Dark/System checks and sign-in were not completed, and the original System preference remains unrestored.",
+  "counts": {
+    "cases_total": 5,
+    "passed": 0,
+    "failed": 0,
+    "partial": 4,
+    "unverified": 1
+  },
+  "feature_controls_cases": [
+    {
+      "feature_id": "EXT-F-1003",
+      "control_ids": [
+        "EXT-F-1003-C01",
+        "EXT-F-1003-C03",
+        "EXT-F-1003-C08",
+        "EXT-F-1003-C02",
+        "EXT-F-1003-C18"
+      ],
+      "case_ids": [
+        "EXT-F-1003-T01",
+        "EXT-F-1003-T07",
+        "EXT-F-1003-T22",
+        "EXT-F-1003-T04",
+        "EXT-F-1003-T52"
+      ],
+      "status": "partial"
+    }
+  ],
+  "evidence": [
+    "Verified actual native Chrome extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.51, source .output/chrome-mv3-dev against release-real-005.json.",
+    "Warm and reopened guest Settings showed Organization 'Sign in to choose', Default agent 'Choose an organization above', and no Advanced agent capabilities section.",
+    "Light mode visibly changed the panel to white and persisted after close/reopen.",
+    "UI work stopped on coordinator instruction following the second sustained memory-pressure event at 04:16:15.627 UTC."
+  ],
+  "resource_lease": "guest-settings-006, coordinator-held session 5402",
+  "limitations": [
+    "The worker did not observe resource exit metadata.",
+    "No full extension reload was performed.",
+    "Dark/System behavior and T52 sign-in outcome are unverified.",
+    "Theme is currently Light; the original System preference was not restored before the stop.",
+    "Current captured UI is the open Settings side panel, still signed out as guest."
+  ]
+}

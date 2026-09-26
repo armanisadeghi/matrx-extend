@@ -1,0 +1,95 @@
+{
+  "id": "guest-settings-006",
+  "feature_id": "EXT-F-1003",
+  "at": "2026-09-26T04:16:15Z",
+  "status": "partial",
+  "scope": "Guest Settings T01, T07, T22 warm and panel-reopen checks; theme T04; sign-in T52.",
+  "installation": {
+    "status": "verified",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.51",
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "store_copy": "0.2.23 disabled; left untouched",
+    "build_receipt": "docs/stabilization/runs/release-real-005.json",
+    "receipt_candidate_sha": "760c7a1c5dba504b894dd5450b83e9fee060d065"
+  },
+  "resource": {
+    "lease_id": "guest-settings-006",
+    "owner": "coordinator-held native browser lease, session 5402",
+    "admitted_at": "2026-09-26T04:14:53Z",
+    "stop_reason": "Coordinator instructed stop after a second sustained memory-pressure event at 2026-09-26T04:16:15.627Z.",
+    "ui_actions_after_stop": 0,
+    "resource_invalid": true,
+    "resource_exit_metadata": "Not observed by this worker."
+  },
+  "observations": {
+    "role": "signed-out guest; no email shown",
+    "active_organization": "none shown; Organization section displayed 'Sign in to choose' and no selector/action",
+    "guest_default_agent": "Default agent displayed 'Choose an organization above'; no Default agent picker/action was exposed",
+    "advanced_agent_capabilities": "absent from the observed Settings section tree, which showed Account, Organization, Appearance, Chat, Privacy, Scrape, Data, SEO, Desktop Bridge, Data & Reset, and About",
+    "theme_original": "System, selected before any theme changes",
+    "theme_tested": "Light changed the panel from dark to white and remained selected/visibly applied after closing and reopening the side panel and Settings",
+    "theme_restore": "Attempted after the stop instruction; the final captured UI state remained Light. Original System theme is not restored.",
+    "authentication": "remained signed out; no sign-in action was attempted",
+    "settings_mutated": true,
+    "current_ui_state_at_stop": "Actual side panel open on Settings as guest; Theme shows Light; no sign-in performed."
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-1003-T01",
+      "status": "partial",
+      "verified_substeps": [
+        "Warm Organization view showed 'Sign in to choose' and no organization selector/action.",
+        "After closing and reopening the side panel and opening Settings, Organization again showed guest guidance with no selector/action."
+      ],
+      "remaining_criteria": [
+        "No full extension reload was performed."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T07",
+      "status": "partial",
+      "verified_substeps": [
+        "Warm Settings showed 'Choose an organization above' and no Default agent picker/action.",
+        "After closing and reopening the side panel and opening Settings, Default agent again showed the unavailable guidance and no agent picker/action."
+      ],
+      "remaining_criteria": [
+        "No full extension reload was performed."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T22",
+      "status": "partial",
+      "verified_substeps": [
+        "Advanced agent capabilities and its controls were absent from the observed Settings section tree before and after panel reopen."
+      ],
+      "remaining_criteria": [
+        "No full extension reload was performed."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T04",
+      "status": "partial",
+      "verified_substeps": [
+        "Original selection was System.",
+        "Light visibly changed the side panel to white and persisted across side panel close/reopen."
+      ],
+      "remaining_criteria": [
+        "Dark and System appearance behavior were not exercised.",
+        "Original System setting remains unrestored; final captured setting is Light."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T52",
+      "status": "unverified",
+      "reason": "No sign-in action was attempted; user remained a signed-out guest."
+    }
+  ],
+  "evidence": [
+    "Native Chrome showed extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.51, source /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev; the release receipt is docs/stabilization/runs/release-real-005.json.",
+    "Settings UI after reopening showed Organization 'Sign in to choose', Default agent 'Choose an organization above', and no Advanced agent capabilities section.",
+    "Light theme was visibly white in a screenshot and remained Light after closing and reopening the side panel and Settings.",
+    "Coordinator stop instruction received at 2026-09-26T04:16:15.627Z due to a second sustained memory-pressure event; no UI calls occurred afterward."
+  ],
+  "next_action": "If the coordinator admits another safe lease, restore System first; then check Dark/System and sign-in criteria."
+}
