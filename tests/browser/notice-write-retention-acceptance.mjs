@@ -38,6 +38,7 @@ const report = {
     failedWriteNoticeRetained: false,
     lateNoticeAfterSelection: 'not_observed',
     highlightInsertRequests: 0,
+    membershipRpcCompleted200: 0,
     privateScreenshot: 'not_needed',
   },
 };
@@ -167,18 +168,46 @@ async function highlightPanelState(panel) {
   );
 }
 
-async function watchHighlightInserts(panel) {
+async function watchHighlightTransport(panel) {
   await panel.send('Network.enable');
-  let requests = 0;
-  const off = panel.on('Network.requestWillBeSent', ({ request }) => {
+  let armed = false;
+  let insertRequests = 0;
+  let membershipCompleted200 = 0;
+  const memberships = new Map();
+  const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
+    if (!armed) return;
     try {
       const url = new URL(request?.url);
-      if (request?.method === 'POST' && url.pathname.endsWith('/wbx_highlight')) requests += 1;
+      if (request?.method !== 'POST') return;
+      if (url.pathname.endsWith('/wbx_highlight')) insertRequests += 1;
+      if (url.pathname === '/rest/v1/rpc/mbr_for_user') memberships.set(requestId, null);
     } catch {
       // Never record URLs, headers or bodies from credential-bearing traffic.
     }
   });
-  return { count: () => requests, stop: off };
+  const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
+    if (memberships.has(requestId)) memberships.set(requestId, response?.status ?? null);
+  });
+  const offFinished = panel.on('Network.loadingFinished', ({ requestId }) => {
+    if (!memberships.has(requestId)) return;
+    if (memberships.get(requestId) === 200) membershipCompleted200 += 1;
+    memberships.delete(requestId);
+  });
+  const offFailed = panel.on('Network.loadingFailed', ({ requestId }) => {
+    memberships.delete(requestId);
+  });
+  return {
+    arm: () => {
+      armed = true;
+    },
+    read: () => ({ insertRequests, membershipCompleted200 }),
+    stop: () => {
+      offRequest();
+      offResponse();
+      offFinished();
+      offFailed();
+    },
+  };
 }
 
 async function privateFailureScreenshot(panel) {
@@ -250,7 +279,7 @@ try {
         );
         report.observations.highlighterActiveOnPublicPage = true;
 
-        const inserts = await watchHighlightInserts(panel);
+        const transport = await watchHighlightTransport(panel);
         try {
           stage = 'real_highlight_action';
           const heading = page.getByRole('heading', { name: 'Example Domain', exact: true });
@@ -266,6 +295,7 @@ try {
             selectedEnough = await page.evaluate(
               () => (window.getSelection()?.toString().trim().length ?? 0) >= 2,
             );
+            if (selectedEnough) transport.arm();
           } finally {
             await page.mouse.up();
           }
@@ -282,9 +312,13 @@ try {
             (count) => count === 1,
             150_000,
           );
-          if (inserts.count() !== 0) fail('highlight_insert_sent_without_workspace');
+          const beforeSelection = transport.read();
+          report.observations.membershipRpcCompleted200 = beforeSelection.membershipCompleted200;
+          report.observations.highlightInsertRequests = beforeSelection.insertRequests;
+          if (beforeSelection.membershipCompleted200 < 1)
+            fail('no_membership_rpc_positive_control_from_highlight_hold');
+          if (beforeSelection.insertRequests !== 0) fail('highlight_insert_sent_without_workspace');
           report.observations.failedWriteNoticeBeforeSelection = true;
-          report.observations.highlightInsertRequests = inserts.count();
 
           stage = 'approved_workspace_selection_after_failure';
           const offered = await waitFor(
@@ -306,13 +340,14 @@ try {
           // This is a bounded absence check for an automatic insert retry.
           await new Promise((resolveWait) => setTimeout(resolveWait, 2_000));
           const retained = await failedHighlightNoticeCount(panel);
-          report.observations.highlightInsertRequests = inserts.count();
+          report.observations.highlightInsertRequests = transport.read().insertRequests;
           if (retained !== 1) fail('failed_write_notice_retired_without_retry');
-          if (inserts.count() !== 0) fail('highlight_insert_retried_after_workspace_selection');
+          if (transport.read().insertRequests !== 0)
+            fail('highlight_insert_retried_after_workspace_selection');
           report.observations.failedWriteNoticeRetained = true;
           report.status = 'bounded_pass';
         } finally {
-          inserts.stop();
+          transport.stop();
         }
       } catch (error) {
         report.observations.privateScreenshot = await privateFailureScreenshot(panel);
