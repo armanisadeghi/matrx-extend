@@ -44,6 +44,7 @@ const {
 } = require('./vault-readonly-cleanup.cjs');
 const {
   cleanupReceiptOwnedFallback,
+  createDistributedReceiptCleanupRequest,
   isKnownLocalAdapterBootTypeError,
 } = require('./vault-receipt-cleanup-fallback.cjs');
 const {
@@ -1632,6 +1633,7 @@ async function localCanonicalCleanup(proven) {
           errorType: /^[A-Za-z]{1,80}$/.test(parsed?.errorType || '')
             ? parsed.errorType
             : undefined,
+          stage: /^[a-z_]{1,100}$/.test(parsed?.stage || '') ? parsed.stage : undefined,
         };
         return reject(new Error('local_cleanup_refused'));
       }
@@ -1657,16 +1659,19 @@ async function localCanonicalCleanup(proven) {
   return result;
 }
 async function distributedReceiptCleanupFallback(proven) {
+  assert(token && organizationId, 'distributed_cleanup_identity_refused');
+  for (const id of proven) {
+    assert(createdIds.has(id) && !baselineIds.has(id), 'distributed_cleanup_ownership_refused');
+  }
   const result = await cleanupReceiptOwnedFallback({
     receiptIds: proven,
-    request: async (id, method) => {
-      const headers = { Authorization: `Bearer ${token}` };
-      if (organizationId) headers['X-Organization-Id'] = organizationId;
-      const url = `${API}/api/vault/items/${encodeURIComponent(id)}`;
-      journalVaultMutationRequest(url, method, headers);
-      const response = await fetch(url, { method, headers });
-      return { status: response.status };
-    },
+    request: createDistributedReceiptCleanupRequest({
+      apiBaseUrl: API,
+      token,
+      organizationId,
+      journalRequest: journalVaultMutationRequest,
+      fetchImpl: fetch,
+    }),
   });
   proof.cleanup.distributedFallback = result;
   return result;
@@ -4537,7 +4542,8 @@ async function materializedPassword(id) {
           } catch (error) {
             // Only the observed broad-package boot TypeError can use the
             // distributed route, and it stays restricted to receipt-owned IDs.
-            if (!isKnownLocalAdapterBootTypeError(proof.cleanup.canonicalAdapterFailure)) throw error;
+            if (!isKnownLocalAdapterBootTypeError(proof.cleanup.canonicalAdapterFailure))
+              throw error;
             proof.cleanup.stage = 'canonical_distributed_fallback';
             await distributedReceiptCleanupFallback(proven);
           }
