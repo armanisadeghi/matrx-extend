@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "report_id": "debug002-runtime-peer",
+  "run_receipt": "docs/stabilization/runs/debug-log-controls-002.json",
+  "verdict": "BOUNDED_CASE_EVIDENCE_WITH_OPEN_CRITERIA",
+  "evidence": [
+    "The raw ignored result and guard log match their recorded SHA-256 hashes. The guard admitted the job and the child exited 0 with explicit top-level partial, not full pass.",
+    "The native harness's source creates a fresh profile, verifies ownership against its spawned Chrome child and attaches only to that profile. The runner reports realAdminUi=true and profileOwned=true. The result omits release version/tree identity, so this peer makes no exact-build claim.",
+    "Natural event rows increased from 51 to 64. T15's visible rows stayed at 65 during Pause while total count rose from 65 to 75, then Resume displayed 75; that satisfies the runner's strict pause positive control.",
+    "T17 had a nonempty event set before Clear and then reached the no-events state with zero displayed rows; the source predicate also required zero total count. The raw result does not separately record the Debug error badge.",
+    "T14 used trusted search input to keep the original message-only row visible and produced a zero-row no-match state. It reports partial because no detail-only term was exercised. T22 remains unverified for expansion/collapse and no-detail behavior."
+  ],
+  "inventory_interpretation": {
+    "T14": "This run adds message-search and no-match evidence only. Detail search and declared reload/service-error dimensions remain open; no full-case pass is eligible from run 002 alone.",
+    "T15": "Warm pause/resume evidence is eligible for linking. Declared reload and service-error dimensions remain open, so the full inventory case remains unverified.",
+    "T17": "Event-list clearing has warm positive evidence. The inventory also expects the error badge to clear, which this result does not directly observe; its reload and service-error dimensions remain open. Do not mark the full case passed.",
+    "T22": "No positive detail expansion/collapse was performed; remain unverified."
+  },
+  "checks_performed": "Read-only raw result, guard log, runner/harness source and inventory review. No browser, build, test, push or primary-Chrome action by this peer."
+}

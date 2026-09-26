@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "run_id": "debug-log-controls-002",
+  "feature_id": "EXT-F-1005",
+  "source": {
+    "guard_log_path": "/tmp/matrx-debug-log-controls-002.log",
+    "guard_log_sha256": "07db32b82d2587b3f80c4c1f80c69a643333d5b576cc5ea2117ea79991f4bdb4",
+    "acceptance_result_path": "test-results/debug-log-controls-acceptance.json",
+    "acceptance_result_sha256": "5ec80d0e4c63c70518c985dd7200d08b71acf3637ed09b0159a03149b373b4d4",
+    "runner_path": "tests/browser/debug-log-controls-acceptance.mjs",
+    "runner_sha256_at_review": "5f3c2935d491305eba50e3f77d896f92a39709461b55fdc50a865fc36f9911e7"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T22:45:22.391Z",
+    "child_exit_at": "2026-09-26T22:45:36.724Z",
+    "child_exit_code": 0,
+    "wrapper_stdout": "PARTIAL debug_log_controls_acceptance"
+  },
+  "observed": {
+    "top_level_status": "partial",
+    "real_admin_ui": true,
+    "owned_profile_verified": true,
+    "natural_event_rows_before": 51,
+    "natural_event_rows_after": 64,
+    "cases": {
+      "EXT-F-1005-T14": "partial_message_search_and_no_match;detail_search_unverified",
+      "EXT-F-1005-T15": "pass_paused_65_held_65_total_65_to_75_resumed_75",
+      "EXT-F-1005-T17": "pass_no_events_state_and_zero_rows",
+      "EXT-F-1005-T22": "unverified_no_detail_expansion_control"
+    }
+  },
+  "provenance_limit": "The runner result records profileOwned=true but no release version or unpacked tree hash. The harness source verifies a release receipt and owned Chrome profile before exercise, yet this result alone does not bind the observed cases to a specific release artifact."
+}
