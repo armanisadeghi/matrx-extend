@@ -46,4 +46,57 @@ describe('ensureOffscreen creation barrier', () => {
     await Promise.all([first, second]);
     expect(secondResolved).toBe(true);
   });
+
+  it('holds a recovery acquisition until reload cleanup settles', async () => {
+    let releaseCleanup!: () => void;
+    const cleanup = new Promise<void>((resolve) => {
+      releaseCleanup = resolve;
+    });
+    const getContexts = vi.fn(async () => []);
+    const createDocument = vi.fn(async () => undefined);
+    vi.stubGlobal('chrome', {
+      runtime: { getContexts },
+      offscreen: { createDocument },
+    });
+
+    const { deferOffscreenAcquisitionUntil, ensureOffscreen } = await import(
+      '@/lib/stream/offscreen-proxy'
+    );
+    deferOffscreenAcquisitionUntil(cleanup);
+    const recoveryAcquire = ensureOffscreen();
+    await Promise.resolve();
+    expect(getContexts).not.toHaveBeenCalled();
+    expect(createDocument).not.toHaveBeenCalled();
+
+    releaseCleanup();
+    await recoveryAcquire;
+    expect(createDocument).toHaveBeenCalledOnce();
+  });
+
+  it('fails open after cleanup rejects or exceeds its bounded wait', async () => {
+    vi.useFakeTimers();
+    const getContexts = vi.fn(async () => []);
+    const createDocument = vi.fn(async () => undefined);
+    vi.stubGlobal('chrome', {
+      runtime: { getContexts },
+      offscreen: { createDocument },
+    });
+    const { deferOffscreenAcquisitionUntil, ensureOffscreen } = await import(
+      '@/lib/stream/offscreen-proxy'
+    );
+
+    deferOffscreenAcquisitionUntil(Promise.reject(new Error('chrome close rejected')));
+    await ensureOffscreen();
+    expect(createDocument).toHaveBeenCalledOnce();
+
+    vi.resetModules();
+    const hanging = new Promise<void>(() => undefined);
+    const next = await import('@/lib/stream/offscreen-proxy');
+    next.deferOffscreenAcquisitionUntil(hanging);
+    const afterTimeout = next.ensureOffscreen();
+    await vi.advanceTimersByTimeAsync(5_000);
+    await afterTimeout;
+    expect(createDocument).toHaveBeenCalledTimes(2);
+    vi.useRealTimers();
+  });
 });

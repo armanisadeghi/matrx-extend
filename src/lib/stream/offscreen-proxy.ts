@@ -15,8 +15,35 @@ import { getActiveOrganizationId, requireActiveOrganizationId } from '@/lib/org/
 import { markStreamActive, markStreamInactive } from '@/lib/stream/active-runs';
 
 const OFFSCREEN_PATH = 'offscreen.html';
+const STARTUP_CLEANUP_TIMEOUT_MS = 5_000;
 
 let creating: Promise<void> | null = null;
+let startupAcquisitionBarrier: Promise<void> = Promise.resolve();
+
+/**
+ * Keep every offscreen owner behind reload cleanup. The desktop bridge,
+ * streams, and media all acquire the same Chrome singleton, so this belongs
+ * at the acquisition boundary rather than at one reconnect caller.
+ */
+export function deferOffscreenAcquisitionUntil(cleanup: Promise<void>): void {
+  startupAcquisitionBarrier = new Promise((resolve) => {
+    const timeout = setTimeout(() => {
+      log.warn('stream', 'stale offscreen cleanup timed out; continuing acquisition');
+      resolve();
+    }, STARTUP_CLEANUP_TIMEOUT_MS);
+    void cleanup.then(
+      () => {
+        clearTimeout(timeout);
+        resolve();
+      },
+      () => {
+        clearTimeout(timeout);
+        log.warn('stream', 'stale offscreen cleanup failed; continuing acquisition');
+        resolve();
+      },
+    );
+  });
+}
 
 export async function ensureOffscreen(): Promise<void> {
   // Check the realm-local creation barrier BEFORE asking Chrome whether a
@@ -35,6 +62,7 @@ export async function ensureOffscreen(): Promise<void> {
 }
 
 async function createOffscreenIfMissing(): Promise<void> {
+  await startupAcquisitionBarrier;
   if (await offscreenExists()) {
     log.info('stream', 'offscreen already exists');
     return;

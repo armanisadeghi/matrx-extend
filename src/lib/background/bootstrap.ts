@@ -72,6 +72,7 @@ import { hasRecentActiveStream } from '@/lib/stream/active-runs';
 import {
   type StartStreamArgs,
   cancelStream,
+  deferOffscreenAcquisitionUntil,
   ensureOffscreen,
   startStream,
 } from '@/lib/stream/offscreen-proxy';
@@ -113,6 +114,7 @@ export function bootstrapBackground(): void {
   // then asynchronously close its new offscreen owner, leaving the desktop
   // healthy but without an extension session.
   const staleOffscreenCleanup = closeStaleOffscreenOnBoot();
+  deferOffscreenAcquisitionUntil(staleOffscreenCleanup);
 
   // ── 1. Register message handlers SYNCHRONOUSLY so they're ready immediately.
   registerHandlers();

@@ -15,6 +15,7 @@ const deferred = <T>() => {
 
 const mocks = vi.hoisted(() => ({
   close: vi.fn(),
+  deferOffscreen: vi.fn(),
   probe: vi.fn(async () => ({ transport: 'http' as const, health: null, lastChecked: 1 })),
   connect: vi.fn(),
 }));
@@ -97,6 +98,7 @@ vi.mock('@/lib/settings/persisted', () => ({ readDefaultPermissionMode: vi.fn() 
 vi.mock('@/lib/stream/active-runs', () => ({ hasRecentActiveStream: mocks.close }));
 vi.mock('@/lib/stream/offscreen-proxy', () => ({
   cancelStream: vi.fn(),
+  deferOffscreenAcquisitionUntil: mocks.deferOffscreen,
   ensureOffscreen: vi.fn(),
   startStream: vi.fn(),
 }));
@@ -132,6 +134,7 @@ describe('reload startup ordering', () => {
     const { bootstrapBackground } = await import('@/lib/background/bootstrap');
 
     bootstrapBackground();
+    expect(mocks.deferOffscreen).toHaveBeenCalledWith(cleanup.promise);
     // Let every independent bootstrap task make progress. The cleanup stays
     // unresolved, so a reconnect here would recreate the race.
     await new Promise((resolve) => setTimeout(resolve, 0));
