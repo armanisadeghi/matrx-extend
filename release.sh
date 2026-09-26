@@ -317,7 +317,7 @@ build_commit() {  # CURRENT_VERSION NEW_VERSION COMMIT_MSG → RELEASE_SHA
 CHECKS=()
 $SKIP_TYPECHECK || CHECKS+=("typecheck|600|ERROR|typecheck failed|pnpm compile|pnpm -s compile")
 CHECKS+=(
-    "unit-tests|900|ERROR|unit tests failed|pnpm test|pnpm -s test"
+    "unit-tests|900|ERROR|unit tests failed|pnpm exec vitest run --maxWorkers=1 --minWorkers=1|pnpm -s exec vitest run --maxWorkers=1 --minWorkers=1"
     "schema-routing|300|ERROR|unqualified Supabase table routing (404s at runtime)|pnpm check:schema-routing|pnpm -s check:schema-routing:strict"
     "matrx-packages|300|ERROR|@ai-matrx packages are stale or pinned|pnpm sync:matrx-packages|pnpm -s check:matrx-packages"
     "package-twins|300|ERROR|package logic re-grown outside its @ai-matrx package|pnpm check:package-twins|pnpm -s check:package-twins"

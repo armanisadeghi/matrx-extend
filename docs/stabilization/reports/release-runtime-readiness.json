@@ -1,0 +1,28 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "summary": "The release script serializes generation, checks, and Store/local packaging before atomic publication. Its unit-test check was narrowed to one Vitest worker. Actual release execution remains pending; the campaign resource guard does not admit release.sh as a command, and this host lacks timeout/gtimeout, so release.sh's bounded helper would not enforce time limits.",
+  "changed_files": [
+    "release.sh",
+    "docs/stabilization/reports/release-runtime-readiness.json"
+  ],
+  "verification": [
+    {
+      "check": "bash -n release.sh",
+      "result": "pass"
+    },
+    {
+      "check": "source inspection of release CHECKS and resource-policy allowedCommands",
+      "result": "unit-tests now uses pnpm exec vitest run --maxWorkers=1 --minWorkers=1; release.sh itself is not in the guard allowlist"
+    },
+    {
+      "check": "prerequisite presence only; no credential values read",
+      "result": "pnpm, node, uvx, unzip, node_modules, sibling aidream, .env.production, and .env.development are present; timeout and gtimeout are absent"
+    }
+  ],
+  "limitations": [
+    "No release, build, package sync, network write, or additional test was run in this source-only assignment.",
+    "The actual strict DB and package freshness gates remain unverified until the release candidate is executed.",
+    "The report does not assert that the env files contain all required keys or that remote services are reachable."
+  ],
+  "next_action": "After the current heavy suite and the coordinator's affected release guard rerun, admit one guarded release execution without overlapping browser/dev/test work. Resolve the guard admission and timeout binary gaps before invoking the real publish path."
+}
