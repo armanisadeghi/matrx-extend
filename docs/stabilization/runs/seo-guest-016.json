@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "run_id": "seo-guest-016",
+  "feature_id": "EXT-F-1008",
+  "status": "unverified",
+  "source": {
+    "result_path": "test-results/seo-guest-acceptance.json",
+    "result_sha256": "bfaca36a9bed01e6e4ec8595b85ac0d7ac60379fd35c11e53d2e284a8ef40b79",
+    "guard_log_path": "/tmp/matrx-seo-guest-016.log",
+    "guard_log_sha256": "2d9601931a34dba1e589b6a6b22af38db84ac878bef7dbf858531b3677894b0d"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T21:48:59.088Z",
+    "healthy_watch_samples": 2,
+    "child_exit_at": "2026-09-26T21:49:39.671Z",
+    "child_exit_code": 1
+  },
+  "acceptance": {
+    "passing_subtargets_before_failure": 16,
+    "unverified_subtargets_before_failure": 1,
+    "failure_stage": "metadata_fixture_audit_wait",
+    "last_safe_sample": {
+      "scopeValid": true,
+      "seoTitle": "Airbnb: Vacation Rentals, Cabins, Beach Houses, Unique Homes & Experiences",
+      "expectedPublicTitleAtNavigation": "Airbnb | Vacation rentals, cabins, beach houses, & more",
+      "publicDomTitleAtSample": "Airbnb | Vacation rentals, cabins, beach houses, & more",
+      "publicTitleStable": true,
+      "seoTitleMatchesExpected": false,
+      "headings": true,
+      "reAudit": true,
+      "error": false
+    }
+  },
+  "interpretation": "The optional Airbnb control's automatic SEO title differed from the stable post-load public document title. The automatic audit starts on URL change, which may precede load completion, and does not automatically repeat for same-URL DOM changes. This source timing is consistent with the observed mismatch; the run does not prove when Airbnb changed its title or establish a product defect. The trusted manual re-audit did not execute in this run."
+}

@@ -2,13 +2,14 @@
   "schema_version": 1,
   "feature_id": "EXT-F-1008",
   "status": "source_diagnostic_ready_for_review",
-  "latest_receipt": "docs/stabilization/runs/seo-guest-015.json",
-  "finding": "Guest run 014 completed 16 passing subtargets but timed out waiting for the optional Airbnb fixture audit; its saved output lacked the public title needed to identify the mismatch. Run 015 passed that wait and reached the Structured data outbound door after a successful hreflang activation. The schema anchor was unique, pointed to the expected public destination, and passed one stable hit sample; the helper failed on the later sample before any pointer press. The current receipt cannot distinguish an overlay from a zero-area or moving anchor. No product defect is established.",
-  "source_change": "The bounded audit wait records expected and current public titles without relaxing the equality assertion or 30-second bound. The outbound door probe now retains the initial and each later hit-test sample with safe geometry and occluder category, records the failed predicate, and attempts one private panel screenshot only on anchor-sample failure. It does not retry the click, change timing, or mark the door passing.",
+  "latest_receipt": "docs/stabilization/runs/seo-guest-016.json",
+  "finding": "Run 016 isolated the optional Airbnb title mismatch: the public title captured after load and the public title sampled during the wait were identical, while the automatic SEO view retained another Airbnb title. The pane was scoped, offered Re-audit, and showed no error. SeoView starts its automatic audit once on URL change and offers manual Re-audit for same-URL refresh; the code does not await the page load event before the automatic capture. This timing is consistent with the mismatch but does not prove the exact moment the page title changed or establish a product defect. Run 015 separately failed before schema-link mouse input; its geometry cause remains open.",
+  "source_change": "The optional fixture now waits only for the correct public URL, scoped SEO pane, enabled Re-audit, and no error, and records the automatic title as unverified point-in-time evidence. It then clicks Re-audit with trusted input and retains the strict exact title wait, independent public DOM pre/post stability assertion, and exact metadata/detail checks. The schema-link geometry and private screenshot diagnostic remain intact. No timeout or final assertion was relaxed.",
   "limits": [
     "No browser or heavy test was launched in this lane.",
-    "The next guarded run must identify the actual failing anchor sample and inspect the private screenshot before a reliability fix or product bug is claimed.",
+    "Run 016 never executed the manual re-audit; only a later root-owned guarded run can verify that the exact post-load title and metadata match the manually refreshed SEO view.",
+    "The schema-link anchor failure from run 015 remains unresolved until a later failing sample and private screenshot identify the obstruction or movement.",
     "The built extension version and binary digest are not recorded in this runner output; this source-only diagnosis does not assert a new build attribution."
   ],
-  "next_action": "Independent source review, then root-owned bounded browser run. Preserve runs 014 and 015 and inspect the safe anchor-sample fields and private screenshot on any repeat failure."
+  "next_action": "Independent source review, then root-owned bounded browser run 017. Preserve runs 014-016; require the exact manual metadata assertions, and inspect the safe anchor-sample fields and private screenshot on any repeated schema-link failure."
 }

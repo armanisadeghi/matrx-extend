@@ -1217,13 +1217,14 @@ try {
           publicNextDetailEvidence(page, fixtureResponse),
         );
         assert.equal(page.url(), METADATA_FIXTURE_PAGE, 'owned tab reached public fixture URL');
-        await waitObserved(
+        const fixtureAuto = await waitObserved(
           'metadata_fixture_audit_wait',
           async () => {
             const state = await seoContent(panel);
             const publicDomTitleAtSample = await page.evaluate(() => document.title.trim());
             return {
               ...state,
+              pageUrlMatchesFixture: page.url() === METADATA_FIXTURE_PAGE,
               expectedPublicTitleAtNavigation: fixtureExpected.title,
               publicDomTitleAtSample,
               publicTitleStable: publicDomTitleAtSample === fixtureExpected.title,
@@ -1231,14 +1232,22 @@ try {
             };
           },
           (state) =>
-            state?.scopeValid &&
-            state.title === fixtureExpected.title &&
-            state.reAudit &&
-            !state.error,
+            state?.scopeValid && state.pageUrlMatchesFixture && state.reAudit && !state.error,
           30000,
         );
+        report.metadata_fixture_auto_observed = {
+          title: fixtureAuto.title,
+          publicTitleAtNavigation: fixtureExpected.title,
+          publicTitleAtWait: fixtureAuto.publicDomTitleAtSample,
+          exactDataStatus: 'unverified_point_in_time',
+        };
         const fixtureBefore = await observe('metadata_fixture_public_before_inspected', () =>
           publicNextDetailEvidence(page, fixtureResponse),
+        );
+        assert.equal(
+          page.url(),
+          METADATA_FIXTURE_PAGE,
+          'manual fixture audit starts on public URL',
         );
         enter('metadata_fixture_reaudit_click');
         await click(panel, 'button', 'Re-audit');
