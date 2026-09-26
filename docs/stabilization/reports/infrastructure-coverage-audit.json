@@ -299,7 +299,7 @@
     },
     {
       "case_id": "EXT-F-0003-T07",
-      "verdict": "guarded_stale_negative_root_attested_and_current_positive_release_proven",
+      "verdict": "partial_root_attested_fixture_without_standalone_receipt",
       "proven": [
         "The current shell fixture contains a stale @ai-matrx candidate refusal asserting no Vitest call, no remote main change, and no candidate tag. Root confirms the guarded release-008 work ran the fixture.",
         "The actual 0.2.58 current-graph positive release passed all 14 mandatory checks (1428 tests passed, 3 skipped) and verified remote main/tag at exact candidate d665898."
@@ -314,7 +314,9 @@
         "No standalone fixture output receipt was checked in; stale-negative execution is root-attested, while the separate release-008 receipt proves the current-graph positive control. The old independent peer was source-only, so it must not be misrepresented as the runtime verifier.",
         "The three skipped dev-clone DB cases and unmeasured mandate scan remain outside this gate-ordering conclusion."
       ],
-      "remaining": []
+      "remaining": [
+        "Attach or record the stale-candidate fixture result showing the actual refused gate, no Vitest/build invocation, and unchanged remote refs/artifacts. The guarded execution is root-attested; this report has no fixture-specific output to independently reconcile."
+      ]
     }
   ],
   "real_release_005_reconciliation": {
