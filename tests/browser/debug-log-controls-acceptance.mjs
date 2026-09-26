@@ -327,43 +327,62 @@ function observeHealthRequests(panel) {
       return false;
     }
   };
-  const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
-    panelRequestCount++;
-    if (!isHealth(request?.url)) return;
-    const entry = {
-      url: request.url,
-      method: request.method,
-      status: null,
-      finished: false,
-      offlineFailure: false,
-      failureCategory: null,
-      servedFromCache: false,
-    };
-    healthRequests.set(requestId, entry);
-    if (request.method === 'GET') requests.set(requestId, entry);
-  });
+  const offRequest = panel.on(
+    'Network.requestWillBeSent',
+    ({ requestId, request, redirectResponse, type }) => {
+      panelRequestCount++;
+      if (!isHealth(request?.url)) return;
+      const entry = {
+        url: request.url,
+        method: request.method,
+        status: null,
+        finished: false,
+        offlineFailure: false,
+        failureCategory: null,
+        servedFromCache: false,
+        fromServiceWorker: false,
+        redirected: Boolean(redirectResponse),
+        fetchResource: type === 'Fetch',
+        corsFailure: false,
+        blocked: false,
+        canceled: false,
+      };
+      healthRequests.set(requestId, entry);
+      if (request.method === 'GET') requests.set(requestId, entry);
+    },
+  );
   const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
     const request = healthRequests.get(requestId);
-    if (request) request.status = response?.status ?? null;
+    if (request) {
+      request.status = response?.status ?? null;
+      request.servedFromCache ||= response?.fromDiskCache === true;
+      request.fromServiceWorker = response?.fromServiceWorker === true;
+    }
   });
   const offFinished = panel.on('Network.loadingFinished', ({ requestId }) => {
     const request = healthRequests.get(requestId);
     if (request) request.finished = true;
   });
-  const offFailed = panel.on('Network.loadingFailed', ({ requestId, errorText }) => {
-    const request = healthRequests.get(requestId);
-    if (!request) return;
-    request.offlineFailure = errorText === 'net::ERR_INTERNET_DISCONNECTED';
-    request.failureCategory = request.offlineFailure
-      ? 'internet_disconnected'
-      : errorText === 'net::ERR_ABORTED'
-        ? 'aborted'
-        : errorText === 'net::ERR_FAILED'
-          ? 'generic_failed'
-          : typeof errorText === 'string' && errorText.startsWith('net::ERR_')
-            ? 'other_network_error'
-            : 'other';
-  });
+  const offFailed = panel.on(
+    'Network.loadingFailed',
+    ({ requestId, errorText, corsErrorStatus, blockedReason, canceled }) => {
+      const request = healthRequests.get(requestId);
+      if (!request) return;
+      request.corsFailure = Boolean(corsErrorStatus);
+      request.blocked = Boolean(blockedReason);
+      request.canceled = canceled === true;
+      request.offlineFailure = errorText === 'net::ERR_INTERNET_DISCONNECTED';
+      request.failureCategory = request.offlineFailure
+        ? 'internet_disconnected'
+        : errorText === 'net::ERR_ABORTED'
+          ? 'aborted'
+          : errorText === 'net::ERR_FAILED'
+            ? 'generic_failed'
+            : typeof errorText === 'string' && errorText.startsWith('net::ERR_')
+              ? 'other_network_error'
+              : 'other';
+    },
+  );
   const offCache = panel.on('Network.requestServedFromCache', ({ requestId }) => {
     const request = healthRequests.get(requestId);
     if (request) request.servedFromCache = true;
@@ -389,6 +408,26 @@ function observeHealthRequests(panel) {
         otherNetworkFailureCount: count((entry) => entry.failureCategory === 'other_network_error'),
         otherFailureCount: count((entry) => entry.failureCategory === 'other'),
         cacheServedCount: count((entry) => entry.servedFromCache),
+        serviceWorkerResponseCount: count((entry) => entry.fromServiceWorker),
+        redirectCount: count((entry) => entry.redirected),
+        corsFailureCount: count((entry) => entry.corsFailure),
+        blockedCount: count((entry) => entry.blocked),
+        canceledCount: count((entry) => entry.canceled),
+        // Fixed categories and numeric statuses only: no URL, header, body,
+        // initiator stack, request id or raw error leaves the owned observer.
+        healthRequests: entries.map((entry) => ({
+          method: ['GET', 'OPTIONS'].includes(entry.method) ? entry.method : 'other',
+          status: Number.isInteger(entry.status) ? entry.status : null,
+          finished: entry.finished,
+          failureCategory: entry.failureCategory,
+          servedFromCache: entry.servedFromCache,
+          fromServiceWorker: entry.fromServiceWorker,
+          redirected: entry.redirected,
+          fetchResource: entry.fetchResource,
+          corsFailure: entry.corsFailure,
+          blocked: entry.blocked,
+          canceled: entry.canceled,
+        })),
       };
     },
     stop: () => {
@@ -427,9 +466,11 @@ async function exerciseServiceError(panel) {
     visibleFailure: false,
     outagePersistedThroughControls: false,
     networkRestored: false,
+    onlinePingClickDispatched: false,
     offlineSetApplied: false,
     offlinePingClickDispatched: false,
     status: 'unverified',
+    phaseDiagnostics: {},
   };
   result.serviceErrorObservation = observed;
   let networkEnabled = false;
@@ -438,11 +479,47 @@ async function exerciseServiceError(panel) {
   let probe;
   let onlineUrl;
   let restored = false;
+  const phaseDiagnostic = async (phase, error) => {
+    let ui;
+    try {
+      ui = await bridgePingUi(panel);
+    } catch {
+      ui = null;
+    }
+    const requests = probe?.read() ?? [];
+    const diagnostic = {
+      ...(probe?.diagnostic() ?? {}),
+      observerAttached: Boolean(probe),
+      exactOneGet: requests.length === 1,
+      completed200GetCount: requests.filter((request) => request.status === 200 && request.finished)
+        .length,
+      matchingOfflineGetCount: requests.filter(
+        (request) => request.url === onlineUrl && request.offlineFailure,
+      ).length,
+      uiStatus: ui?.status === 'ok' || ui?.status === 'fail' ? ui.status : 'unavailable',
+      uiButtonCount: Number.isInteger(ui?.buttonCount) ? ui.buttonCount : null,
+      uiPingDisabled: typeof ui?.pingDisabled === 'boolean' ? ui.pingDisabled : null,
+      driverFailure: safeDriverFailure(error),
+      operation: observed.operation ?? null,
+    };
+    observed.phaseDiagnostics[phase] = diagnostic;
+    return diagnostic;
+  };
+  const restoreCommand = async (operation, method, params = {}) => {
+    observed.operation = operation;
+    try {
+      await panel.send(method, params);
+    } catch {
+      observed.restoreFailure = operation;
+      observed.networkRestored = false;
+      throw new Error('owned_panel_network_restore_failed');
+    }
+  };
   const restore = async () => {
     if (restored) return;
     probe?.stop();
     if (offlineAttempted) {
-      await panel.send('Network.emulateNetworkConditions', {
+      await restoreCommand('restore_panel_online', 'Network.emulateNetworkConditions', {
         offline: false,
         latency: 0,
         downloadThroughput: -1,
@@ -451,11 +528,13 @@ async function exerciseServiceError(panel) {
       offlineAttempted = false;
     }
     if (cacheDisabled) {
-      await panel.send('Network.setCacheDisabled', { cacheDisabled: false });
+      await restoreCommand('restore_panel_cache', 'Network.setCacheDisabled', {
+        cacheDisabled: false,
+      });
       cacheDisabled = false;
     }
     if (networkEnabled) {
-      await panel.send('Network.disable');
+      await restoreCommand('disable_network_observer', 'Network.disable');
       networkEnabled = false;
     }
     restored = true;
@@ -463,19 +542,27 @@ async function exerciseServiceError(panel) {
   };
   try {
     stage = 'service_error_bridges';
+    observed.operation = 'open_bridges';
     await click(panel, 'button', 'Bridges');
+    observed.operation = 'wait_ping_button';
     await waitFor(
       'bridge_ping_ready',
       () => bridgePingUi(panel),
       (ui) => ui?.buttonCount === 1,
     );
     stage = 'service_error_online_control';
+    observed.operation = 'enable_network_observer';
     await panel.send('Network.enable');
     networkEnabled = true;
+    observed.operation = 'disable_panel_cache';
     await panel.send('Network.setCacheDisabled', { cacheDisabled: true });
     cacheDisabled = true;
     probe = observeHealthRequests(panel);
+    await phaseDiagnostic('online_before_click');
+    observed.operation = 'online_ping_click';
     await click(panel, 'button', 'Send test ping');
+    observed.onlinePingClickDispatched = true;
+    observed.operation = 'online_ping_wait';
     const online = await waitFor(
       'real_online_health_ping',
       async () => ({ requests: probe.read(), ui: await bridgePingUi(panel) }),
@@ -486,12 +573,14 @@ async function exerciseServiceError(panel) {
         sample.ui?.status === 'ok',
       15_000,
     );
+    await phaseDiagnostic('online_accepted');
     observed.onlinePositiveControl = true;
     onlineUrl = online.requests[0].url;
     probe.stop();
     probe = observeHealthRequests(panel);
     stage = 'service_error_offline_control';
     offlineAttempted = true;
+    observed.operation = 'set_panel_offline';
     await panel.send('Network.emulateNetworkConditions', {
       offline: true,
       latency: 0,
@@ -499,8 +588,11 @@ async function exerciseServiceError(panel) {
       uploadThroughput: 0,
     });
     observed.offlineSetApplied = true;
+    await phaseDiagnostic('offline_before_click');
+    observed.operation = 'offline_ping_click';
     await click(panel, 'button', 'Send test ping');
     observed.offlinePingClickDispatched = true;
+    observed.operation = 'offline_ping_wait';
     const failed = await waitFor(
       'real_offline_health_ping',
       async () => ({ requests: probe.read(), ui: await bridgePingUi(panel) }),
@@ -511,32 +603,22 @@ async function exerciseServiceError(panel) {
         sample.ui?.status === 'fail',
       15_000,
     );
+    await phaseDiagnostic('offline_accepted');
     observed.actualFailedRequest = failed.requests[0].offlineFailure;
     observed.visibleFailure = failed.ui.status === 'fail';
     observed.status = 'outage_active_for_controls';
     serviceErrorProved = true;
-  } catch {
-    // The scenario remains unverified; no raw URL, payload, or transport error
-    // enters the receipt. The normal read-only Debug battery may still run.
+  } catch (error) {
+    // Every phase retains its safe UI/network predicates, including online
+    // control failures. A failed online setup says nothing about offline I/O.
     observed.status = 'unverified';
     observed.failureStage = stage;
-    if (stage === 'service_error_offline_control') {
-      let ui;
-      try {
-        ui = await bridgePingUi(panel);
-      } catch {
-        ui = null;
-      }
-      observed.offlineDiagnostic = {
-        ...(probe?.diagnostic() ?? {}),
-        uiStatus: ui?.status === 'ok' || ui?.status === 'fail' ? ui.status : 'unavailable',
-        uiButtonCount: Number.isInteger(ui?.buttonCount) ? ui.buttonCount : null,
-        uiPingDisabled: typeof ui?.pingDisabled === 'boolean' ? ui.pingDisabled : null,
-      };
-    }
+    const diagnostic = await phaseDiagnostic(stage, error);
+    if (stage === 'service_error_offline_control') observed.offlineDiagnostic = diagnostic;
     await restore();
   }
   stage = 'service_error_return_to_log';
+  observed.operation = 'return_to_log';
   try {
     await click(panel, 'button', 'Log');
     await waitFor(
@@ -544,7 +626,9 @@ async function exerciseServiceError(panel) {
       () => snapshot(panel),
       (state) => state?.searchPresent && state.counterMatchesRows,
     );
-  } catch {
+  } catch (error) {
+    observed.failureStage = stage;
+    await phaseDiagnostic(stage, error);
     await restore();
     throw new Error('service_error_return_to_log_failed');
   }
@@ -554,7 +638,9 @@ async function exerciseServiceError(panel) {
     async verifyAfterControls() {
       try {
         stage = 'service_error_persistence_after_controls';
+        observed.operation = 'after_controls_open_bridges';
         await click(panel, 'button', 'Bridges');
+        observed.operation = 'after_controls_wait_ping_button';
         await waitFor(
           'bridge_ping_after_controls_ready',
           () => bridgePingUi(panel),
@@ -562,7 +648,10 @@ async function exerciseServiceError(panel) {
         );
         probe?.stop();
         probe = observeHealthRequests(panel);
+        await phaseDiagnostic('after_controls_before_click');
+        observed.operation = 'after_controls_ping_click';
         await click(panel, 'button', 'Send test ping');
+        observed.operation = 'after_controls_ping_wait';
         const persisted = await waitFor(
           'real_offline_health_ping_after_controls',
           async () => ({ requests: probe.read(), ui: await bridgePingUi(panel) }),
@@ -573,24 +662,14 @@ async function exerciseServiceError(panel) {
             sample.ui?.status === 'fail',
           15_000,
         );
+        await phaseDiagnostic('after_controls_accepted');
         observed.outagePersistedThroughControls =
           persisted.requests[0].offlineFailure && persisted.ui.status === 'fail';
         observed.status = 'verified_during_controls';
-      } catch {
+      } catch (error) {
         observed.status = 'unverified_after_controls';
         observed.failureStage = stage;
-        let ui;
-        try {
-          ui = await bridgePingUi(panel);
-        } catch {
-          ui = null;
-        }
-        observed.finalDiagnostic = {
-          ...(probe?.diagnostic() ?? {}),
-          uiStatus: ui?.status === 'ok' || ui?.status === 'fail' ? ui.status : 'unavailable',
-          uiButtonCount: Number.isInteger(ui?.buttonCount) ? ui.buttonCount : null,
-          uiPingDisabled: typeof ui?.pingDisabled === 'boolean' ? ui.pingDisabled : null,
-        };
+        observed.finalDiagnostic = await phaseDiagnostic(stage, error);
         serviceErrorProved = false;
         for (const item of result.cases) {
           if (item.evidence && typeof item.evidence === 'object')

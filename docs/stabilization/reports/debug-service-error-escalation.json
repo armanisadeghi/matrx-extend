@@ -1,0 +1,193 @@
+{
+  "lane": "Astra medium escalation",
+  "status": "READY_FOR_SCOPED_DIAGNOSTIC_RUN_AFTER_PEER",
+  "scope": "Debug service-error native acceptance setup and safe observer diagnostics only",
+  "preserved_006": {
+    "result_path": "test-results/debug-log-controls-acceptance.json",
+    "result_sha256": "d9daebe1de5cd012075efe289e4001a941c3a622d1140a7958024fb27abbd362",
+    "guard_log_path": "/tmp/matrx-debug-log-controls-006.log",
+    "guard_log_sha256": "6888a4e6ae63f1c77d516dd8df468e5993d135e628cbb8684de0b037a80b2215",
+    "guard_events": [
+      {
+        "schema": 1,
+        "at": "2026-09-26T23:24:47.765Z",
+        "runId": "debug-log-controls-006",
+        "mode": "run",
+        "policySchema": 1,
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 12.16,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 3.03,
+          "logicalCpus": 10,
+          "cpuBusyFraction": 0.19021428571428572,
+          "swapUsedMiB": 3416.12,
+          "repoFreeGiB": 1674.616943359375,
+          "profileFreeGiB": 1674.616943359375
+        },
+        "cpuBusySamples": [
+          0.5553, 0.15590000000000004, 0.11870000000000003, 0.18310000000000004,
+          0.09760000000000002, 0.12580000000000002, 0.09510000000000007
+        ],
+        "reasons": [],
+        "swapWindowSeconds": 60,
+        "code": "RESOURCE_ADMITTED"
+      },
+      {
+        "schema": 1,
+        "at": "2026-09-26T23:25:04.193Z",
+        "runId": "debug-log-controls-006",
+        "reasons": [],
+        "sample": {
+          "pressureLevel": 1,
+          "availableMemoryGiB": 11.52,
+          "requiredMemoryGiB": 4,
+          "oneMinuteLoad": 2.39,
+          "logicalCpus": 10,
+          "cpuBusyFraction": 0.09860000000000002,
+          "swapUsedMiB": 3416.12,
+          "repoFreeGiB": 1674.5587120056152,
+          "profileFreeGiB": 1674.5587120056152
+        },
+        "code": "RESOURCE_WATCH_HEALTHY"
+      },
+      {
+        "schema": 1,
+        "at": "2026-09-26T23:25:16.852Z",
+        "runId": "debug-log-controls-006",
+        "childExitCode": 0,
+        "childSignal": null,
+        "code": "RESOURCE_JOB_EXIT"
+      }
+    ],
+    "acceptance": {
+      "schema": 1,
+      "feature": "EXT-F-1005",
+      "status": "partial",
+      "scenario": "real_panel_service_error",
+      "cases": [
+        {
+          "id": "EXT-F-1005-T14",
+          "status": "partial",
+          "scenario": "real_panel_service_error",
+          "expected": "Search matches message and detail values; unmatched text shows no-match state.",
+          "actual": "Positive count=1; original message-only row visible=true; unmatched count=0.",
+          "evidence": {
+            "warm": "unverified",
+            "reload": "unverified",
+            "serviceError": "unverified",
+            "messageSearch": "pass_via_trusted_input_on_row_without_detail",
+            "unmatchedState": "pass",
+            "detailSearch": "pass_via_natural_detail_primitive_absent_from_messages",
+            "searchReset": "pass_exact_prior_count"
+          }
+        },
+        {
+          "id": "EXT-F-1005-T15",
+          "status": "partial",
+          "scenario": "real_panel_service_error",
+          "expected": "Paused view stays frozen; resume displays naturally arriving events.",
+          "actual": "Visible counts before=71, held=71, resumed=81; total before=71, held=81.",
+          "evidence": {
+            "warm": "unverified",
+            "reload": "unverified",
+            "serviceError": "unverified"
+          }
+        },
+        {
+          "id": "EXT-F-1005-T17",
+          "status": "partial",
+          "scenario": "real_panel_service_error",
+          "expected": "Clear removes local events and shows the no-events state.",
+          "actual": "No-events state=true; row count=0.",
+          "evidence": {
+            "eventList": "pass",
+            "errorBadge": "pass",
+            "warm": "unverified",
+            "reload": "unverified",
+            "serviceError": "unverified",
+            "ownedDisposableProfile": true
+          }
+        },
+        {
+          "id": "EXT-F-1005-T22",
+          "status": "partial",
+          "scenario": "real_panel_service_error",
+          "expected": "Detail JSON expands/collapses; no-detail row is non-actionable; no-match and no-events states differ.",
+          "actual": "Expanded=true; collapsed=true; no-detail inert=true; no-match=true; no-events=true.",
+          "evidence": {
+            "warm": "unverified",
+            "reload": "unverified",
+            "serviceError": "unverified"
+          }
+        }
+      ],
+      "countsOnly": true,
+      "build": {
+        "version": "0.2.79",
+        "treeSha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0",
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+      },
+      "realAdminUi": true,
+      "serviceErrorObservation": {
+        "onlinePositiveControl": false,
+        "actualFailedRequest": false,
+        "visibleFailure": false,
+        "outagePersistedThroughControls": false,
+        "networkRestored": true,
+        "offlineSetApplied": false,
+        "offlinePingClickDispatched": false,
+        "status": "unverified",
+        "failureStage": "service_error_online_control"
+      },
+      "naturalEventObservation": {
+        "before": 53,
+        "after": 71,
+        "increased": true
+      },
+      "profileOwned": true
+    }
+  },
+  "005_evidence": "Immutable docs/stabilization/runs/debug-log-controls-005.json confirms online success; no offline request/UI failure proof. Controls occurred after restoration, so outage dimensions remain unverified.",
+  "root_cause_status": "Runtime setup failure cause remains unproven. Confirmed diagnostic defect: online failures retained no network/UI predicate observations; structured reasons were discarded by catch.",
+  "source_trace": [
+    "BridgesView.onPing clears result, sets disabled, awaits pingHealth, then shows OK iff result is non-null.",
+    "pingHealth performs healthCheck using real side-panel apiGet GET /health; no bridge/proxy owns this request.",
+    "REST transport assembles bearer and organization before fetch; pre-dispatch session handling can therefore delay or prevent any observed /health request.",
+    "Health GET can coexist with app-start/after-sign-in health requests. Exact-one-request assertion may reject concurrency, but 006 lacks evidence to confirm this hypothesis.",
+    "Network observer is scoped to the owned side-panel CDP session and filters pathname /health.",
+    "Both existing proofs still require exactly one GET, online 200 plus loadingFinished and UI OK, then matching endpoint ERR_INTERNET_DISCONNECTED plus UI FAIL before/after controls."
+  ],
+  "hypotheses": [
+    {
+      "cause": "UI click not dispatched / button not ready",
+      "prediction": "Trusted-driver allowlisted failure or no click flag; UI button/disabled state identifies boundary."
+    },
+    {
+      "cause": "Transport blocked before health fetch (identity setup) or endpoint unavailable",
+      "prediction": "Zero health GETs or HTTP/non-offline failure evidence with corresponding UI state."
+    },
+    {
+      "cause": "More than one real health GET enters observer",
+      "prediction": "getCount greater than one with successful completed200GetCount and UI OK; exactOneGet false."
+    },
+    {
+      "cause": "CDP offline failure uses another request/error category or does not affect privileged panel request",
+      "prediction": "Offline diagnostics show preflight/GET categories, cache/service-worker responses, or actual 200 despite offlineSetApplied."
+    }
+  ],
+  "changes": [
+    "Preserve safe phase diagnostics before clicks, after successful proofs, and for all setup failures including online and Bridges readiness.",
+    "Expose fixed request categories, numeric statuses, completed 200 counts, endpoint-matching offline counts, exact-one predicate, UI status/count/disabled, and allowlisted trusted-input failure.",
+    "Retain per-request safe summaries without URLs, headers, bodies, request ids, initiator stacks or raw errors.",
+    "Keep all acceptance predicates, exact build binding, scoped network emulation, restore logic and outage dimensions unchanged."
+  ],
+  "validation": {
+    "node_check": "Passed",
+    "biome": "Exact-path check passed",
+    "browser": "Not launched; root holds sole admission.",
+    "tests": "Not run."
+  },
+  "next_diagnostic": "After peer review, root runs the existing service-error flag once. Read phaseDiagnostics at failure before choosing a network/UI repair. No second outage inference is justified by 006.",
+  "open_questions": []
+}
