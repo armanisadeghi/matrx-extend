@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "prepared_unverified",
+  "source": "docs/stabilization/reports/seo-next-batch.json",
+  "runner": "tests/browser/seo-guest-acceptance.mjs",
+  "public_page": "https://en.wikipedia.org/wiki/HTML",
+  "scope": "Five bounded T09 guest predicates added after the existing sparse/rich detail and canonical door checks. Runtime evidence and admin coverage remain separate.",
+  "prepared_subtargets": [
+    {
+      "id": "guest_link_counts_match_live_dom",
+      "oracle": "Resolve href anchors in the owned public document; compare internal, external, and total displayed counts. Both zero requires the Links group to be absent."
+    },
+    {
+      "id": "guest_image_alt_counts_match_live_dom",
+      "oracle": "Count live img elements and absent or blank alt attributes; compare Total, Missing alt, and group hint. Zero images requires the Images group to be absent."
+    },
+    {
+      "id": "guest_readability_is_measured_and_explained",
+      "oracle": "Count words and sentences independently from the owned public body's rendered text and compare both displayed counts exactly. Require a numeric Flesch score and named standard band with grade. With no rendered text, require the group to be absent."
+    },
+    {
+      "id": "guest_performance_reflects_current_navigation",
+      "oracle": "Read the owned page's navigation entry and page response. Compare navigation type, exposed HTTP status and rounded duration exactly; check displayed transfer size against the measured bytes within its displayed precision. Absent timing values must remain omitted."
+    },
+    {
+      "id": "guest_hreflang_and_schema_doors_match_page",
+      "oracle": "Read the public page's alternate links and JSON-LD/microdata types, compare displayed values and schema destinations, then use trusted pointer activation for one unique hreflang and schema link.",
+      "limit": "The door subtarget is recorded unverified when the public DOM lacks a unique hreflang link, a JSON-LD type, or a unique openable schema type."
+    }
+  ],
+  "execution": "Not run in this preparation lane; root owns the release preflight, resource guard, native browser run, and independent source/runtime review.",
+  "excluded": [
+    "Save, history, clipboard, provider, Chat/Pilot, member authentication, and database writes",
+    "Full T09 or feature acceptance from these five predicates",
+    "Assumed Wikipedia metadata or browser timing where the live source is absent"
+  ]
+}
