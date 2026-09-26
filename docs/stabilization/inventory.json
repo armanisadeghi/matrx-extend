@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T00:17:33-07:00",
+  "updated_at": "2026-09-26T00:27:32-07:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
-  "source_sha": "c8046192f22db3dab3233e20a77a3a7317c4e642",
+  "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
   "modes": [
     "guest",
     "member",
@@ -1572,7 +1572,7 @@
         {
           "id": "EXT-F-1002-C02",
           "label": "Capture page",
-          "action": "In local/unpacked signed-in popup, open the active window sidepanel and route to Scrape using a short-lived, window-scoped, one-time launch intent; does not create a tab."
+          "action": "In local/unpacked signed-in popup, open the active window sidepanel and select Scrape in the confirmed panel instance; no browser tab is created."
         },
         {
           "id": "EXT-F-1002-C03",
@@ -1734,23 +1734,27 @@
             "EXT-F-1002-C02"
           ],
           "preconditions": [
-            "Local/unpacked signed-in extension; record active window and active tab before opening the toolbar popup."
+            "Local/unpacked signed-in extension; record the active browser window and tab before clicking Capture page, and keep that tab active through panel opening."
           ],
           "steps": [
-            "Open toolbar popup.",
-            "Click Capture page.",
-            "Observe the newly opened active-window sidepanel and its selected view.",
-            "Reopen the sidepanel and confirm the consumed launch intent does not repeat the route."
+            "Open toolbar popup and click Capture page.",
+            "Observe the sidepanel instance created or confirmed for the initiating browser window.",
+            "Verify Scrape selection in that exact sidepanel instance and confirm the active browser tab remains the same.",
+            "Reopen the sidepanel in a new context and confirm it does not consume or replay the earlier click."
           ],
           "expected": [
-            "Sidepanel opens in the same browser window, popup closes, and Scrape is selected.",
-            "The active browser tab is unchanged; no new browser tab is created.",
-            "The short-lived request is one-time and window-scoped; an unrelated window or later reopen does not consume/replay it."
+            "The popup waits for the sidepanel open result and a unique sidepanel context in the initiating window before arming the launch request.",
+            "The request is pending before arming and is consumed only by the sidepanel instance whose context matches the armed request.",
+            "The active tab remains unchanged and no browser tab is created.",
+            "A stale request cannot route a reopened or different sidepanel context; missing or ambiguous sidepanel context fails closed with a retry path."
           ],
           "dimensions": [
             "warm",
             "reload",
             "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
             "one-time-intent"
           ],
           "build_variant": "local-unpacked"
@@ -1765,23 +1769,27 @@
             "EXT-F-1002-C02"
           ],
           "preconditions": [
-            "Local/unpacked signed-in extension; record active window and active tab before opening the toolbar popup."
+            "Local/unpacked signed-in extension; record the active browser window and tab before clicking Capture page, and keep that tab active through panel opening."
           ],
           "steps": [
-            "Open toolbar popup.",
-            "Click Capture page.",
-            "Observe the newly opened active-window sidepanel and its selected view.",
-            "Reopen the sidepanel and confirm the consumed launch intent does not repeat the route."
+            "Open toolbar popup and click Capture page.",
+            "Observe the sidepanel instance created or confirmed for the initiating browser window.",
+            "Verify Scrape selection in that exact sidepanel instance and confirm the active browser tab remains the same.",
+            "Reopen the sidepanel in a new context and confirm it does not consume or replay the earlier click."
           ],
           "expected": [
-            "Sidepanel opens in the same browser window, popup closes, and Scrape is selected.",
-            "The active browser tab is unchanged; no new browser tab is created.",
-            "The short-lived request is one-time and window-scoped; an unrelated window or later reopen does not consume/replay it."
+            "The popup waits for the sidepanel open result and a unique sidepanel context in the initiating window before arming the launch request.",
+            "The request is pending before arming and is consumed only by the sidepanel instance whose context matches the armed request.",
+            "The active tab remains unchanged and no browser tab is created.",
+            "A stale request cannot route a reopened or different sidepanel context; missing or ambiguous sidepanel context fails closed with a retry path."
           ],
           "dimensions": [
             "warm",
             "reload",
             "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
             "one-time-intent"
           ],
           "build_variant": "local-unpacked"
@@ -2087,7 +2095,7 @@
             "EXT-F-1002-C02"
           ],
           "preconditions": [
-            "Local/unpacked signed-in extension; use a browser state where the sidepanel cannot open or the session-storage intent write fails."
+            "Local/unpacked signed-in extension; exercise a failed panel open, failed session-storage write, unavailable sidepanel-context API, or missing/ambiguous matching sidepanel context."
           ],
           "steps": [
             "Open toolbar popup.",
@@ -2095,14 +2103,16 @@
             "Inspect the visible error and retry after restoring the required browser capability."
           ],
           "expected": [
-            "Failure is announced with a specific recovery path; the popup remains available.",
-            "The in-flight button state clears so the person can retry.",
-            "A failed attempt does not leave a stale launch intent that routes a later unrelated panel opening."
+            "Failure is announced with a specific recovery path; the popup remains available and the in-flight button state clears.",
+            "The request is not armed or consumed unless the opened sidepanel context is uniquely confirmed.",
+            "Cleanup of a failed click does not route a later panel or active-tab session."
           ],
           "dimensions": [
             "warm",
             "failure",
-            "retry"
+            "retry",
+            "context-unavailable",
+            "context-ambiguous"
           ]
         },
         {
@@ -2115,7 +2125,7 @@
             "EXT-F-1002-C02"
           ],
           "preconditions": [
-            "Local/unpacked signed-in extension; use a browser state where the sidepanel cannot open or the session-storage intent write fails."
+            "Local/unpacked signed-in extension; exercise a failed panel open, failed session-storage write, unavailable sidepanel-context API, or missing/ambiguous matching sidepanel context."
           ],
           "steps": [
             "Open toolbar popup.",
@@ -2123,14 +2133,16 @@
             "Inspect the visible error and retry after restoring the required browser capability."
           ],
           "expected": [
-            "Failure is announced with a specific recovery path; the popup remains available.",
-            "The in-flight button state clears so the person can retry.",
-            "A failed attempt does not leave a stale launch intent that routes a later unrelated panel opening."
+            "Failure is announced with a specific recovery path; the popup remains available and the in-flight button state clears.",
+            "The request is not armed or consumed unless the opened sidepanel context is uniquely confirmed.",
+            "Cleanup of a failed click does not route a later panel or active-tab session."
           ],
           "dimensions": [
             "warm",
             "failure",
-            "retry"
+            "retry",
+            "context-unavailable",
+            "context-ambiguous"
           ]
         }
       ],

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "task_id": "remote-popup-about-reconciliation",
-  "source_sha": "c8046192f22db3dab3233e20a77a3a7317c4e642",
+  "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
   "status": "source-reconciled-runtime-unverified",
   "summary": "Reconciled the remote popup Capture route, Settings About readiness controls, and Vault browser acceptance scenarios with canonical feature controls and concrete cases. Source inspection only; no product tests, build, browser, or network writes were performed.",
   "changes": [
@@ -84,5 +84,23 @@
     "D7 final native acceptance is pending; the current active unit regression exists and the archived diagnostic remains non-discovered.",
     "EXT-D-0008 release-guard finding is linked to signed-in popup Capture cells; source repair/release integration remains owned by the root task."
   ],
-  "source_sha_before_inventory_reconciliation": "74be9f2c10ad4a440971960aa5bd9edb94aa5de5"
+  "source_sha_before_inventory_reconciliation": "74be9f2c10ad4a440971960aa5bd9edb94aa5de5",
+  "followups": [
+    {
+      "source_sha": "cfa14fe",
+      "commits_reviewed": [
+        "08c6b252423b31bdf6d0ab79e45963d9a3a33f7b",
+        "ae0e27e",
+        "7c9e0d5"
+      ],
+      "finding": "Capture intents now begin pending and become armed only after panel open succeeds and exactly one sidepanel context is confirmed for the initiating window. The armed request carries that context ID, and only that context can consume it. The existing popup cases now cover pending/armed order, same-window/same-active-tab expectations, exact panel-instance matching, stale reopened contexts, and missing/ambiguous context recovery; no duplicate cases or controls were needed. All remain unverified in the inventory.",
+      "tab_binding_limit": "Implementation binds the route to a window and panel context; it does not store a tab ID. The case verifies the active tab is unchanged and no tab is created during the action, without claiming the request has a tab-ID binding.",
+      "vault_observer_commit": {
+        "commit": "1dd54a5",
+        "inventory_delta": false,
+        "reason": "Test harness detaches the old logout observer before destroying its panel and binds a new observer to the final panel; no product behavior or user-facing Vault control changed."
+      },
+      "test_result_note": "Root reported popup-cleanup-green-002 as passing 17 checks including the guard. This lane did not run or independently verify that result; inventory behavior remains runtime-unverified."
+    }
+  ]
 }
