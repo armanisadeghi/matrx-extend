@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "admin-org-001",
+  "status": "partial",
+  "run_record": "docs/stabilization/runs/admin-org-001.json",
+  "summary": "Admin organization selection is explicit and persists across a real Chrome extension Reload. Initial unset state showed Choose… and no Acting as label. After selection, the dropdown offered no visible clear/unset choice, so the unset-and-hold round trip remains unverified.",
+  "feature_controls_cases": [
+    {
+      "feature_id": "EXT-F-1003",
+      "case_ids": ["EXT-F-1003-T03"],
+      "status": "partial"
+    }
+  ],
+  "evidence": [
+    "Native Chrome Settings showed admin@admin.com with role ADMIN.",
+    "Selected explicit fixture ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete; Acting as displayed the exact label.",
+    "Chrome extension details showed Reloaded; after reopening Settings, the selected Acting as label persisted.",
+    "The selector's expanded list had no visible Choose… or clear/unset entry; no clear behavior is claimed."
+  ],
+  "resource_lease": "guest-settings-007, coordinator-held session 76318",
+  "limitations": [
+    "Organization ID was not visible in the UI.",
+    "Could not return to unset state using a visible selector control, so post-unset hold behavior was not rechecked in this batch."
+  ],
+  "state_left": "Signed in as admin@admin.com; explicit throwaway fixture selected; Settings > Organization open.",
+  "ui_stopped": true
+}
