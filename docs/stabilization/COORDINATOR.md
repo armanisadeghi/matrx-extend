@@ -3,6 +3,12 @@
 ## Resume contract
 User authorizes autonomous test → capture → fix → independent retest → green integration. Read PLAN.md, inventory.json, defects and runs. Inventory is sole coverage register; campaign remains largely unverified. Chat/Pilot systematic testing stays last. Shared main only; preserve concurrent edits, fetch before push, never publish red trunk. Root alone launches one resource-guarded heavy test/build OR native browser lease. Flat root+3 max: Luna medium narrow execution, Sol medium coding/moderate diagnosis, fresh independent reviews with separate acceptance/quality verdicts.
 
+## Latest synchronization — 2026-09-26 16:09 UTC
+- Pushed main79f5cdeb after fetching and merging remote89ed14ac. Clean local/remote main; next hourly deadline17:09UTC. Remote CI36254397373 pending.
+- D20 repaired9a3cdb9c, independentpeere29fcc88, focused1pass and full1442pass/3skip/zero unhandled errors (popup-teardown-suite-001, guard91249 exit0 confirmed). Defect fixed, not closed pending remote CI.
+- Final fetch unexpectedly included content-ir0.19.6 lock update; merge and push occurred before local revalidation of that graph. Earlier fullsuite proves0.19.5 only. Root frozeninstall remote-deps-021 session3474 active; fresh Luna content_ir_0196_peer checks Consumer actions, then mergedgraph validation required. Preserve this ordering limit honestly.
+- Member credential-pathbe987aeb confirms same-profile Vault Sign in keeps secrets inside handler; designated saved item/access remains unverified. No new human blocker. Reviewqueue port handoff still outstanding; campaign and all deferredChat/Pilot work remain incomplete.
+
 ## Active checkpoint — 2026-09-26 16:03 UTC
 - Current main CI is RED: run36253562084 on ca8c023c reports one EnvironmentTeardownError after1441 passing assertions/4 skips. New EXT-D-0020 owns this independently of closed D19. Sol /root/ci_teardown_repair is repairing pending lazy imports in test teardown; fresh peer and full/remote retests remain required.
 - Focused unchanged popup-teardown-red-001 passed1test in506ms; guard session1040 exited0 at15:59:16.185UTC. No active heavy/browser lease. Do not claim local red reproduction.
