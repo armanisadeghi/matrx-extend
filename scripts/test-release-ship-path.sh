@@ -175,6 +175,8 @@ check "prior local zip is intact"                     'grep -q "prior local zip"
 check "failed candidate created no upload zip"        '[[ ! -e .output/matrx-extend-0.1.2-store.zip ]]'
 check "candidate was checked before any publication"  '[[ -s "$SANDBOX/checked-shas" ]] && grep -q "nothing was pushed" "$SANDBOX/failed-out"'
 check "local uncommitted work remains"                 'grep -q "uncommitted work" shared.txt'
+check "refused release still pulled GitHub's main"    '[[ -f theirs.txt ]] && git merge-base --is-ancestor "$REMOTE_BASE" HEAD'
+check "ship reports its pull for ship-all"            'grep -q "ship.sh: sync exit 0, release exit" "$SANDBOX/failed-out"'
 
 # Failed generation and failed package build are equally publication-blocking.
 rm "$SANDBOX/fail-tests"
