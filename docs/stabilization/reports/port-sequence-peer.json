@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "e7efbb1ee017bec3e4da2e23ca43e71f4e0e76a6",
+  "scope": "Source-only independent peer review of the T46 invalid-port-to-blank sequence",
+  "verdict_a_acceptance": {
+    "status": "PASS",
+    "evidence": [
+      "The runner verifies a valid port is saved and persists across a Settings reload before beginning the invalid-to-blank sequence.",
+      "After that persistence check, it submits 65536, observes the actual adjacent Settings error text 'Port must be 1–65535', then clears the input and saves blank without another reload or leaving the Settings view.",
+      "The clear criterion requires the stored override to be null and the override label absent, then separately verifies that cleared state persists across reload."
+    ],
+    "limits": [
+      "The actual product result of clearing the stale error remains runtime-unverified; the source assertion fails if that error remains visible.",
+      "Worker rediscovery attribution remains explicitly unverified."
+    ]
+  },
+  "verdict_b_quality": {
+    "status": "PASS",
+    "evidence": [
+      "The DOM observation reads the real error element adjacent to the port row, and the invalid-step wait proves the error was present before the blank-clear assertion.",
+      "The change is limited to sequence ordering, observation wording, and the corresponding stabilization report; it does not weaken the retained valid-persistence check or claim rediscovery evidence."
+    ],
+    "limits": [
+      "No runtime/browser execution was performed as part of this source peer review."
+    ]
+  },
+  "review_method": "Inspected the exact commit diff and the port observer, interaction helper, and SettingsView error-rendering/validation source. No tests or browser session were run.",
+  "reviewed_paths": [
+    "tests/browser/settings-local-controls-acceptance.mjs",
+    "docs/stabilization/reports/guest-settings-local-batch.json",
+    "src/features/settings/SettingsView.tsx"
+  ]
+}
