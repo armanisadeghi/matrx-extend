@@ -5,7 +5,8 @@
  *
  * On PAUSED, an independent UI operator observes Chrome's native permission
  * prompt, clicks Deny through CUA, then writes only "denied" to the ack file
- * named in stdout. The runner never simulates a permission decision.
+ * named in stdout. The ACK only resumes the runner; it is not native UI proof.
+ * Root must combine separate CUA evidence with this runner's postconditions.
  */
 import assert from 'node:assert/strict';
 import { readFile, writeFile, rm } from 'node:fs/promises';
@@ -30,6 +31,7 @@ const evidence = {
   profile: 'new owned disposable headed Chrome profile',
   login: 'real web form and extension Settings Sign in',
   native_choice: 'independent CUA operator must observe and click Deny',
+  evidence_boundary: 'ACK is coordination only; native UI evidence is recorded separately',
   response_interception: false,
   injected_auth_session: false,
 };
@@ -41,15 +43,21 @@ function fail(category) {
 
 async function credentials() {
   let raw;
-  try { raw = await readFile(ADMIN_ENV, 'utf8'); }
-  catch { fail('credential_source_unavailable'); }
+  try {
+    raw = await readFile(ADMIN_ENV, 'utf8');
+  } catch {
+    fail('credential_source_unavailable');
+  }
   const values = {};
   for (const line of raw.split(/\r?\n/)) {
     const found = /^\s*(AI_ADMIN_USERNAME|AI_ADMIN_PASSWORD)\s*=\s*(.*?)\s*$/.exec(line);
     if (!found) continue;
     let value = found[2];
-    if ((value.startsWith('"') && value.endsWith('"')) ||
-        (value.startsWith("'") && value.endsWith("'"))) value = value.slice(1, -1);
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    )
+      value = value.slice(1, -1);
     values[found[1]] = value;
   }
   if (values.AI_ADMIN_USERNAME !== EMAIL || !values.AI_ADMIN_PASSWORD)
@@ -63,12 +71,15 @@ async function signInOnWeb(page) {
     stage = 'web_login';
     await web.goto(`${WEB}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
     const location = new URL(web.url());
-    if (location.origin !== WEB || location.pathname !== '/login') fail('web_login_route_unavailable');
+    if (location.origin !== WEB || location.pathname !== '/login')
+      fail('web_login_route_unavailable');
     const secret = await credentials();
     await web.locator('input[name="email"]').fill(secret.AI_ADMIN_USERNAME);
     await web.locator('input[name="password"]').fill(secret.AI_ADMIN_PASSWORD);
     await Promise.all([
-      web.waitForURL((url) => url.origin === WEB && url.pathname === '/dashboard', { timeout: 90_000 }),
+      web.waitForURL((url) => url.origin === WEB && url.pathname === '/dashboard', {
+        timeout: 90_000,
+      }),
       web.getByRole('button', { name: 'Sign in', exact: true }).click(),
     ]);
     evidence.web_login_reached_dashboard = true;
@@ -80,7 +91,9 @@ async function signInOnWeb(page) {
 }
 
 async function state(panel) {
-  return evaluate(panel, `(async () => {
+  return evaluate(
+    panel,
+    `(async () => {
     const permission = ${JSON.stringify(PERMISSION)};
     const title = ${JSON.stringify(TITLE)};
     const account = [...document.querySelectorAll('button[aria-expanded]')]
@@ -105,11 +118,14 @@ async function state(panel) {
         sw?.getAttribute('aria-checked') === 'true',
       contains, get_all: granted.includes(permission), refusal_alert: alert,
     };
-  })()`);
+  })()`,
+  );
 }
 
 async function clickPermission(panel) {
-  const target = await evaluate(panel, `(() => {
+  const target = await evaluate(
+    panel,
+    `(() => {
     const title = ${JSON.stringify(TITLE)};
     const rows = [...document.querySelectorAll('label')]
       .filter((el) => el.textContent.includes(title) && el.textContent.includes('pageCapture'));
@@ -123,24 +139,39 @@ async function clickPermission(panel) {
     return { count: rows.length, ready: rect.width > 0 && rect.height > 0 &&
       x >= 0 && x < innerWidth && y >= 0 && y < innerHeight &&
       (hit === sw || sw.contains(hit)), x, y };
-  })()`);
+  })()`,
+  );
   if (target?.count !== 1 || !target.ready) fail('permission_switch_not_hittable');
-  await panel.send('Input.dispatchMouseEvent',
-    { type: 'mousePressed', x: target.x, y: target.y, button: 'left', clickCount: 1 });
-  await panel.send('Input.dispatchMouseEvent',
-    { type: 'mouseReleased', x: target.x, y: target.y, button: 'left', clickCount: 1 });
+  await panel.send('Input.dispatchMouseEvent', {
+    type: 'mousePressed',
+    x: target.x,
+    y: target.y,
+    button: 'left',
+    clickCount: 1,
+  });
+  await panel.send('Input.dispatchMouseEvent', {
+    type: 'mouseReleased',
+    x: target.x,
+    y: target.y,
+    button: 'left',
+    clickCount: 1,
+  });
 }
 
 async function waitForNativeDeny() {
   stage = 'native_deny';
-  process.stdout.write(`PAUSED native Chrome prompt: CUA operator clicks Deny, then writes denied to ${ACK}\n`);
+  process.stdout.write(
+    `PAUSED for native Chrome observation: CUA operator records prompt and Deny evidence, then writes denied to ${ACK}\n`,
+  );
   const deadline = Date.now() + 120_000;
   while (Date.now() < deadline) {
     let acknowledged;
-    try { acknowledged = (await readFile(ACK, 'utf8')).trim(); } catch {}
+    try {
+      acknowledged = (await readFile(ACK, 'utf8')).trim();
+    } catch {}
     if (acknowledged === 'denied') {
       await rm(ACK, { force: true });
-      evidence.native_deny_operator_acknowledged = true;
+      evidence.native_decision_ack_received = true;
       return;
     }
     if (acknowledged) fail('native_ack_invalid');
@@ -153,8 +184,11 @@ try {
   stage = 'prepare';
   await rm(ACK, { force: true });
   const receipt = JSON.parse(await readFile(join(REPO, '.output', 'release-receipt.json'), 'utf8'));
-  evidence.build = { version: receipt.version, source_sha: receipt.sourceSha,
-    tree_sha256: receipt.treeSha256 };
+  evidence.build = {
+    version: receipt.version,
+    source_sha: receipt.sourceSha,
+    tree_sha256: receipt.treeSha256,
+  };
   const result = await runNativeSidepanelQa({
     headed: true,
     exercisePanel: async ({ page, panel }) => {
@@ -165,27 +199,47 @@ try {
       try {
         stage = 'extension_signin';
         await click(panel, 'button', 'Sign in');
-        await waitFor('real_admin_settings', () => state(panel), (s) => s?.admin, 90_000);
+        await waitFor(
+          'real_admin_settings',
+          () => state(panel),
+          (s) => s?.admin,
+          90_000,
+        );
         await openSection(panel, 'Advanced agent capabilities');
         const before = await state(panel);
         evidence.before = before;
-        assert.equal(before.admin && before.declared && before.row_count === 1 &&
-          !before.switch_on && !before.contains && !before.get_all, true);
+        assert.equal(
+          before.admin &&
+            before.declared &&
+            before.row_count === 1 &&
+            !before.switch_on &&
+            !before.contains &&
+            !before.get_all,
+          true,
+        );
         stage = 'permission_request_click';
         await clickPermission(panel);
         await waitForNativeDeny();
         stage = 'denial_result';
-        const after = await waitFor('native_refusal_ui', () => state(panel),
-          (s) => s?.refusal_alert && !s.switch_on && !s.contains && !s.get_all, 10_000);
+        const after = await waitFor(
+          'native_refusal_ui',
+          () => state(panel),
+          (s) => s?.refusal_alert && !s.switch_on && !s.contains && !s.get_all,
+          10_000,
+        );
         evidence.after = after;
         assert.equal(after.admin && after.declared && after.row_count === 1, true);
-      } finally { await web.close(); }
+      } finally {
+        await web.close();
+      }
     },
   });
   evidence.extension_id = result.extensionId;
-  evidence.status = 'pass';
+  evidence.status = 'postconditions_verified_requires_operator_evidence';
   stage = 'complete';
-  process.stdout.write('PASS isolated_native_permission_denial\n');
+  process.stdout.write(
+    'POSTCONDITIONS_VERIFIED_REQUIRES_OPERATOR_EVIDENCE isolated_native_permission_denial\n',
+  );
 } catch {
   evidence.status = 'unverified';
   evidence.failure_stage = stage;

@@ -13,8 +13,8 @@
   ],
   "acceptance": [
     "Before the request, real Settings shows admin@admin.com and a declared Page archive switch OFF; Chrome permissions.contains and getAll both show pageCapture absent.",
-    "The runner sends a trusted mouse click to that actual Settings switch, then pauses. An independent UI operator uses CUA on the owned Chrome for Testing app to observe the native prompt, click Deny, and write only the word denied to the displayed acknowledgement file.",
-    "After the acknowledgement, the runner requires the real Settings refusal alert, switch OFF, permissions.contains false, and getAll absence. It never mocks permissions.request, seeds grant state, or calls a Chrome permission override."
+    "The runner sends a trusted mouse click to that actual Settings switch, then pauses. An independent UI operator uses CUA on the owned Chrome for Testing app to record the native prompt and Deny action, then writes only the word denied to the displayed acknowledgement file to resume the runner.",
+    "After the acknowledgement, the runner requires the real Settings refusal alert, switch OFF, permissions.contains false, and getAll absence. Its terminal status is postconditions_verified_requires_operator_evidence, never a standalone pass. Root combines the independent CUA evidence with those postconditions to adjudicate the case. The runner never mocks permissions.request, seeds grant state, or calls a Chrome permission override."
   ],
   "command_after_root_resource_admission": "node tests/browser/isolated-permission-denial-acceptance.mjs",
   "safety": "The browser profile is new and disposable; no primary Chrome profile or stored grant is touched. The runner reads only authorized test credentials at the real web login form and suppresses raw browser/auth errors. It records booleans and receipt metadata in test-results. No archive is created.",
@@ -26,7 +26,7 @@
     "Native Chrome denial: not launched under this lane"
   ],
   "limitations": [
-    "The operator acknowledgement attests to native prompt observation and Deny; the runner independently verifies Chrome permission state and visible product feedback afterward.",
+    "The plaintext acknowledgement is coordination only and proves no native UI observation by itself. Root must retain independent CUA screenshot or accessibility evidence of the native prompt and Deny action before marking this case passed; the runner verifies only subsequent Chrome permission state and visible product feedback.",
     "This first run covers pageCapture denial only. tabCapture may differ and remains separately unverified until exercised.",
     "Current CUA inventory showed Google Chrome but no running Chrome for Testing; binding to the newly launched owned window remains to be confirmed in the admitted run."
   ]
