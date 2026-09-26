@@ -429,6 +429,21 @@ try {
           'Cancel must preserve signed-in admin',
         );
         const afterCancel = await storageState(panel);
+        evidence.reset_cancel = {
+          prior_value_comparison: afterCancel.valueComparison,
+        };
+        for (const area of ['local', 'session']) {
+          assert.equal(
+            afterCancel.valueComparison[area].changed,
+            0,
+            `Cancel must preserve every preexisting ${area} value`,
+          );
+          assert.equal(
+            afterCancel.valueComparison[area].missing,
+            0,
+            `Cancel must preserve every preexisting ${area} key`,
+          );
+        }
         assert.equal(
           afterCancel.hasAccessToken &&
             afterCancel.hasUserProfile &&
@@ -450,7 +465,7 @@ try {
           'Cancel must not remove any preexisting session key',
         );
         evidence.steps.push(
-          'Cancel preserved admin UI, auth, preference, fixture, and prior storage keys',
+          'Cancel preserved admin UI, auth, preference, fixtures, and every prior storage key/value',
         );
 
         evidence.reset_confirm = {

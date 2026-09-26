@@ -10,7 +10,7 @@
     "tests/browser/isolated-admin-reset-acceptance.mjs",
     "docs/stabilization/reports/reset-oracle-escalation.json"
   ],
-  "commit_shas": [],
+  "commit_shas": ["2a8fdd5"],
   "diagnosis": {
     "confirmed": "Run 004 observed empty local/session storage immediately after Confirm, signed-out UI, and guest/System UI after reload. Its final failure checks key-name overlap after bootstrap; the receipt does not record the names or value identities needed to determine whether state was restored.",
     "unresolved": "Four returning local key names cannot be classified retrospectively. They may be fresh bootstrap data or retained data; source inspection alone cannot choose.",
@@ -35,6 +35,7 @@
   },
   "privacy": "No raw storage names or arbitrary values leave Chrome. Browser computes SHA-256 fingerprints with a random per-run salt, then compares them inside Chrome on later observations. Salt and opaque fingerprints remain ephemeral in the runner; durable receipts receive fixed category counts only. Existing explicit theme/boolean observations remain.",
   "oracle_contract": [
+    "Cancel requires zero changed and zero missing prior values in both storage areas; aggregate comparison counts are recorded before assertions. Background mutation receives no exception without observed causal evidence.",
     "Immediate Confirm still requires every prior local/session key to be absent, using opaque key fingerprints.",
     "Reload requires auth, settings and both fixtures absent, guest UI and System theme.",
     "Returning guest or component identity must differ from its pre-reset value; source-backed discovery cache must differ, while a valid rediscovered port may equal its previous port.",
@@ -69,5 +70,11 @@
     "Source inspection ruled out assuming the admin flag is automatically persisted for a guest; no such exception was added."
   ],
   "open_questions": [],
-  "next_action": "Fresh peer source review, then root guarded real-admin runtime. Inspect fixed category/value comparison counts; any unexplained overlap still fails and requires source/runtime diagnosis before changing policy."
+  "next_action": "Fresh source re-review of Cancel full-value checks, then root guarded real-admin runtime. Any background mutation is an evidenced investigation, not a silent exception. EXT-D-0015 remains open.",
+  "peer_followup": {
+    "review": "docs/stabilization/reports/reset-identity-peer.json",
+    "finding": "Cancel previously checked only key presence and sentinel values, allowing mutation of other prior values to pass.",
+    "repair": "Require changed===0 and missing===0 for local and session, using existing browser-side canonical value comparison. No background-mutation exceptions added.",
+    "verification": "Node syntax, Biome formatting and exact-path whitespace checks pass; runtime/mutation execution remains pending with root."
+  }
 }
