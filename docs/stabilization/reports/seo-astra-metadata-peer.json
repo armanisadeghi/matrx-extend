@@ -1,0 +1,23 @@
+{
+  "lane": "Sol medium independent source review",
+  "reviewed_commit": "0561d3c08e5d2e79f5f80a3c7df8a90a64df2556",
+  "scope": "Optional metadata fixture comparison in tests/browser/seo-guest-acceptance.mjs",
+  "A_runtime": {
+    "status": "UNVERIFIED",
+    "evidence": "The preserved seo-guest-018 run predates this correction and failed the earlier full-object stability assertion. No browser run of the corrected source was performed in this lane."
+  },
+  "B_source": {
+    "status": "ACCEPTED",
+    "findings": [
+      "The stability projection compares the exact public title, every filtered public hreflang language/URL pair with duplicate multiplicity retained, and the complete unique schema-type set before and after manual re-audit. Sorting normalizes order only; changed values or multiplicity fail deep equality.",
+      "Live listing/link/image counts, body text and navigation timing remain in the public observations but do not gate metadata stability. This removes unrelated changing fields from the optional metadata target without relaxing its metadata comparison.",
+      "The full public before and after observations, both source URLs and raw changedFields are assigned to the report before the projected assertion. assertNext records the failed predicate and rethrows; the outer failure path leaves the run unverified rather than silently passing.",
+      "The exact fixture URL, active SEO pane and public title are asserted. assertNextDoors still compares the complete visible hreflang set, schema counts/chips/destinations, and new-tab/noopener/noreferrer properties to the independently observed public DOM.",
+      "The commit changes only the optional fixture section of the browser acceptance harness; the preceding sixteen predicates and trusted hit-tested pointer activation with actual new-tab destination assertions remain unchanged. Missing unique metadata door candidates remain unverified."
+    ],
+    "limits": [
+      "changedFields is a raw diagnostic: an order-only difference can appear there even when the normalized metadata oracle correctly passes.",
+      "If the bounded re-audit settle wait fails before the after observation, the report retains the before observation and failure stage but cannot contain an after snapshot; that path remains unverified."
+    ]
+  }
+}
