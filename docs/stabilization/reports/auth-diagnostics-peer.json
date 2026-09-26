@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "report_id": "auth-diagnostics-peer",
+  "reviewed_commit": "e3dc70d",
+  "method": "Independent source-only review of the diagnostics change. No tests, builds, browser or process launches, credential reads, or account changes were performed.",
+  "A_runtime": {
+    "status": "pending",
+    "reason": "Runtime admission and execution are owned by the root lane; this review makes no runtime claim."
+  },
+  "B_source_verdict": {
+    "status": "PASS",
+    "observations": [
+      "failureStage uses only fixed source literals; failureCategory is set from fixed literals or a fixed fallback. Raw caught exceptions and error messages are suppressed.",
+      "The diagnostics retain only URL origin plus pathname. URL query and hash are omitted; credentials and form values are never interpolated into evidence or diagnostics.",
+      "Credential-file failures expose only a fixed category selected from the error code; parsed credential values remain local to the login function.",
+      "The real UI flow remains intact: guest Settings assertions precede credential use, the actual web form must reach same-origin /dashboard, then the extension Settings Sign in control must yield admin email, role, sign-out, and advanced capabilities.",
+      "The web tab closes on login failure and in the extension-flow finally block on subsequent failure. The existing owned-profile harness remains responsible for spawned-Chrome and temporary-profile cleanup."
+    ],
+    "limits": [
+      "This source review does not establish that the run succeeds or that a browser's actual redirect path is free of sensitive material; runtime remains pending."
+    ]
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "verdict": "addressed_source_review_only",
+  "scope": "fresh review of commit 9e64e53 in tests/browser/isolated-admin-signin-acceptance.mjs",
+  "finding": "The accountExpanded evidence is now strictly true, false, or null: only exact aria-expanded strings true/false map to booleans; missing or any other attribute value maps to null.",
+  "oracle": "unchanged: real web /dashboard check and extension expected email + admin role + sign-out + advanced capability checks remain in the acceptance source",
+  "runtime": "pending; no browser execution or credentials used by this peer",
+  "disposition": "sole raw aria-expanded concern addressed in source; guarded runtime run remains outstanding"
+}

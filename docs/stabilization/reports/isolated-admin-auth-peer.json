@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "report_id": "isolated-admin-auth-peer",
+  "reviewed_commit": "999e0ca",
+  "method": "Independent read-only source and security review. No tests, builds, browser or process launches, credential reads, or account changes were performed.",
+  "A_runtime": {
+    "status": "unverified",
+    "reason": "The root guard has not admitted execution. At reviewed commit 999e0ca, line 132 of the runner is bare prose, so node --check fails with Unexpected identifier 'form'. No live guest-to-admin result exists from this runner."
+  },
+  "B_source_security": {
+    "status": "conditional_pass_after_syntax_repair",
+    "blocker": "Prefix the line beginning 'entered form values' in the catch block with //, then rerun syntax admission before any guarded runtime attempt.",
+    "observations": [
+      "The native harness creates a disposable profile, correlates Chrome ownership and the expected extension, verifies the release receipt, opens a native SIDE_PANEL, and gives the runner a page in that same browser context.",
+      "The runner observes guest Settings before credential use, fills the real aimatrx.com/login form, waits for the same-origin /dashboard redirect, clicks the actual Settings Sign in button, and requires admin email, admin Role, Sign out, and Advanced agent capabilities in the panel.",
+      "The web login route has the named input fields and Sign in button, and its action returns a hard redirect to /dashboard when no alternate destination is supplied. Extension signIn calls the OAuth identity flow from the Settings control.",
+      "Credentials are read at the web form point of use from the authorized aidream .env, only the two AI_ADMIN variables are retained, and the username must equal admin@admin.com. Neither credentials nor tokens or browser storage enter the evidence object.",
+      "The runner suppresses raw auth and browser exceptions, records only the failing stage on error, and strips query and hash from the recorded web location. The inherited harness screenshots only the guest panel and test page before the credential read; its Chrome stderr is held in memory and any resulting exception is suppressed by this runner.",
+      "The harness closes only its spawned Chrome child and removes only its temporary profile. The runner closes its own web tab. Artifact screenshots and the sanitized JSON remain under ignored test-results for inspection."
+    ],
+    "limits": [
+      "Source review cannot establish that headless Chrome completes its interactive identity window or that the observed web session is accepted by the extension. Those require the guarded runtime result.",
+      "The runner does not directly observe the OAuth callback origin or verify extension reload persistence and optional-permission denial. The source report states these limits."
+    ]
+  }
+}

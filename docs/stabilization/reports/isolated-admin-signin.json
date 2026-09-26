@@ -1,0 +1,23 @@
+{
+  "status": "source-prepared-runtime-unverified",
+  "source_preflight": "Root's node --check of commit 999e0ca failed before browser launch because a catch-block prose line lacked its // comment prefix. Commit b138335 repaired that syntax; root then admitted runtime attempt isolated-admin-signin-001.",
+  "runtime_attempt_001": "Root's resource-admitted isolated-admin-signin-001 exited 1 after about five seconds at the former web_login_page stage. That stage grouped navigation, URL checks, and credential-file loading, so the run proves none of those substeps individually failed. No login or extension-auth result was observed.",
+  "safe_metadata_observation": "The configured ~/code/aidream/.env path resolves to an existing regular file (18,632 bytes, mode -rw-r--r--); no credential values or file contents were read during this repair. Existence alone does not prove the required variables are valid or readable at guarded runtime.",
+  "diagnostic_repair": "The next guarded run separates web navigation, origin/path check, and credential-file read stages. It records only an allowlisted failure category and the observed web origin/path without query or hash; raw browser and auth exceptions remain suppressed.",
+  "scope": "An owned, receipt-verified disposable Chrome profile should sign in through the real aimatrx.com login form, then click the real extension Settings Sign in button and observe admin Settings. Root's first guarded attempt stopped before login; this repair lane ran no browser, build, test, credential read, or account change.",
+  "runner": "tests/browser/isolated-admin-signin-acceptance.mjs",
+  "guarded_command": "node tests/browser/isolated-admin-signin-acceptance.mjs",
+  "source_contract": [
+    "tests/browser/native-sidepanel-qa-harness.mjs creates and owns a fresh Chrome profile, verifies the released artifact receipt and extension identity, opens the real native side panel, and supplies the same Playwright browser context to exercisePanel.",
+    "ai-matrx/app/(auth-pages)/login/page.tsx renders input[name=email], input[name=password], and a Sign in button; its server action hard redirects to /dashboard on successful login.",
+    "src/features/settings/SettingsView.tsx exposes the guest Sign in button and shows the signed-in Email and admin Role; the admin-only Advanced agent capabilities section is the target UI proof."
+  ],
+  "secret_custody": "The runner reads AI_ADMIN_USERNAME and AI_ADMIN_PASSWORD from ~/code/aidream/.env only inside the real web-login function. It never prints credentials, auth URLs with query/hash, network bodies, browser console, tokens, cookies, or storage. The only runtime artifact is test-results/isolated-admin-signin-acceptance.json with safe origin/path and identity/result fields. The harness screenshots the guest panel before credential use only.",
+  "success_condition": "Fresh guest Settings is observed; the real web login reaches https://aimatrx.com/dashboard; clicking extension Settings Sign in yields Email admin@admin.com, Role admin, Advanced agent capabilities, and Sign out in the actual panel.",
+  "limitations": [
+    "Headless Chrome's identity window behavior is unverified until guarded execution; no prompt or sign-in result is claimed here.",
+    "The OAuth callback origin is not directly observed, so EXT-F-0001-T05 remains partial even if the runner passes.",
+    "Extension reload persistence and optional-permission denial require separate native checks; this runner does not claim them.",
+    "If runtime sign-in fails, the runner writes only the failing stage and returns nonzero; raw auth or browser exceptions are suppressed to protect credentials."
+  ]
+}

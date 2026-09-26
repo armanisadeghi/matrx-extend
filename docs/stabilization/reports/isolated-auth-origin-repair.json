@@ -1,0 +1,32 @@
+{
+  "defect_id": "EXT-D-0014",
+  "status": "origin_repair_runtime_verified_extension_signin_unverified",
+  "cause": "The isolated admin sign-in runner required the apex web origin, but its real login navigation landed on the canonical www origin before credential entry. Its dashboard wait used the same stale apex requirement.",
+  "evidence": [
+    "docs/stabilization/runs/isolated-admin-signin-002.json records https://www.aimatrx.com/login and web_origin_mismatch at web_url_check before credential_file_read.",
+    "common-docs/systems/clients/extension/ARCHITECTURE.md specifies the exact www.aimatrx.com callback origin.",
+    "tests/browser/vault-realbrowser-acceptance.cjs uses https://www.aimatrx.com for origin checks and real login navigation."
+  ],
+  "sibling_census": {
+    "runner_origin_checks": [
+      "Initial navigation uses WEB_ORIGIN.",
+      "Pre-credential login URL check requires WEB_ORIGIN.",
+      "Post-submit dashboard wait requires WEB_ORIGIN."
+    ],
+    "other_browser_tests": "Existing real-browser auth tests already require the exact www origin; they need no change."
+  },
+  "repair": "Set the runner's single WEB_ORIGIN constant to https://www.aimatrx.com so navigation, credential-entry guard, and dashboard wait agree with the observed canonical origin.",
+  "safety": "The pre-credential exact-origin and /login path checks remain in place. The dashboard wait still requires the exact origin and /dashboard path. No broad hostname allowance or fallback was added.",
+  "verification": {
+    "source_review": "The one-line origin change and every WEB_ORIGIN use were inspected.",
+    "syntax": "node --check passed after diagnostic instrumentation",
+    "guarded_real_browser_runtime": "isolated-admin-signin-003 passed real web login and reached https://www.aimatrx.com/dashboard; extension Settings did not satisfy the admin assertion within 90 seconds",
+    "credential_read": "not performed in this repair lane"
+  },
+  "extension_diagnostic": {
+    "source_run": "docs/stabilization/runs/isolated-admin-signin-003.json",
+    "ambiguity": "The prior runner discarded the last account UI state on timeout, so run 003 cannot distinguish an assertion mismatch, a collapsed Account section, a visible auth error, or an unfinished sign-in.",
+    "instrumentation": "The next guarded run will retain only booleans and the Account expanded-state enum: expected email and admin-role matches, row presence, sign-in/sign-out and advanced-control presence, visible auth alert/retry, disabled controls, and generic loading indicator presence. It writes no raw account text, error message, DOM, browser storage, auth URL, or credential.",
+    "pending": "Root owner to run the instrumented acceptance runner under the resource guard, then use the safe observation to decide whether a product auth repro exists."
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "report_id": "debug-acceptance-peer",
+  "feature_id": "EXT-F-1005",
+  "scope": [
+    "docs/stabilization/runs/admin-debug-filters-001.json",
+    "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+    "EXT-F-1005-T13,T14,T15,T39,T40,T44,T45,T54,T25,T29,T30,T36,T38,T55,T41"
+  ],
+  "method": "Read-only review of inventory criteria, run evidence, reports, and DebugView/log-store source; no browser, test, build, or process launch.",
+  "acceptance": {
+    "native_warm_session": {
+      "status": "supported",
+      "case_ids": [
+        "EXT-F-1005-T13", "EXT-F-1005-T14", "EXT-F-1005-T15",
+        "EXT-F-1005-T39", "EXT-F-1005-T40", "EXT-F-1005-T44", "EXT-F-1005-T45",
+        "EXT-F-1005-T54", "EXT-F-1005-T25", "EXT-F-1005-T29", "EXT-F-1005-T30",
+        "EXT-F-1005-T36", "EXT-F-1005-T38", "EXT-F-1005-T55", "EXT-F-1005-T41"
+      ],
+      "finding": "All 15 reported passes meet the exercised warm-session criteria in the inventory. The native evidence describes actual row-count changes with positive matching events for each individual source/level case, restoration on re-enable, and unrelated rows remaining. T13/T14/T15 and all/none cases likewise have outcome evidence matching their listed expected behavior. No acceptance defect is exposed by this scoped evidence."
+    },
+    "reload": {
+      "status": "unverified",
+      "finding": "Neither run performed a reload during its acceptance steps. Matching extension ID/version/path and prior build verification establish which build was loaded; they do not establish these cases after reload. Source says the event store is in-memory and cleared on extension reload, so positive-row per-source/level cases require fresh matching events to accumulate before they can be exercised. Filter state is React component state and the inventory does not specify whether it must persist across reload; do not infer persistence."
+    },
+    "service_error": {
+      "status": "unverified",
+      "finding": "Neither run identifies a deliberately observed service-error condition while exercising these cases. Errors arriving naturally during ordinary use are not evidence that the filter behavior was checked in a service-error state. The filter computation is client-side over the in-memory event list and source/level sets, but source alone does not prove UI behavior during service errors."
+    }
+  },
+  "evidence_quality": {
+    "strengths": [
+      "The native runs record admin identity, selected organization, extension ID/version/unpacked path, row counts, actual matching categories, and cleanup state.",
+      "The matrix run holds the feed paused to stabilize counts and reports positive rows removed/restored for all eight passing per-category cases.",
+      "Source confirms source, level, search, pause, and tag filters are local computations over in-memory events; the log store explicitly says reload clears events."
+    ],
+    "limits": [
+      "The 15 statuses are valid for observed warm-session acceptance only; inventory dimensions warm/reload/service-error are not individually recorded as completed dimensions.",
+      "The matrix evidence is written as structured observations rather than screenshots or exported artifacts; it is specific and internally coherent, but an independent reviewer cannot replay the already-stopped native session from these files alone.",
+      "Positive data absence in other matrix cases is correctly left unverified and is outside this audit's 15 reported passes."
+    ]
+  },
+  "inventory_guidance": {
+    "safe_status": "Retain pass for the 15 cases as warm-session observed acceptance; annotate scope as warm only. Keep reload and service-error dimensions open for these cases.",
+    "not_applicable": "No listed dimension can be marked not-applicable from the current inventory contract. Reload makes preexisting in-memory rows unavailable, but fresh matching rows could still be generated; service-error is also not declared irrelevant by the inventory.",
+    "remaining_criteria": "For reload, reload the assigned build, wait for positive matching events where a case requires them, then repeat the inventory step and expected outcome. For service-error, observe a real service-error condition with relevant events and repeat the same local filter step; do not manufacture a backend failure or claim backend semantics beyond the inventory."
+  },
+  "evidence_files": [
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/runs/admin-debug-filters-001.json",
+    "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+    "docs/stabilization/reports/admin-debug-filters.json",
+    "docs/stabilization/reports/admin-debug-filter-matrix.json",
+    "src/features/debug/DebugView.tsx",
+    "src/lib/debug/log.ts"
+  ]
+}
