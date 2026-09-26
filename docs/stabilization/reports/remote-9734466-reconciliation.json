@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "task_id": "remote-9734466-reconciliation",
+  "source_sha": "9734466f0e83532c2e66c8dfa1c631b2ed420c7d",
+  "commits_reviewed": [
+    "c3a2477",
+    "1b605be",
+    "7de7209",
+    "d750600",
+    "bf17af8",
+    "710f348",
+    "5ade4e9",
+    "89ad1d4",
+    "62667cb",
+    "9734466"
+  ],
+  "source_findings": [
+    {
+      "area": "Scrape prior-save recognition and Save refusal copy",
+      "commits": ["c3a2477"],
+      "finding": "A failed saved-page lookup is now represented as unknown and the Scrape view says it could not check; it no longer implies the page has never been saved. Save refusals now extract the server's top-level user_message/message/remedy (with nested detail fallback) so the refusal sentence and remedy reach the person.",
+      "inventory_action": "Added EXT-F-1007-C27 and T26 for honest lookup-failure state. Existing C04/T21/T22 already cover landing refusal and the unsaved retry path; retained them and their IDs, no duplicate case added."
+    },
+    {
+      "area": "Saved Captures partial-read disclosure",
+      "commits": ["c3a2477"],
+      "finding": "Saved Captures counts returned rows that fail client validation, keeps readable rows, displays a retryable unreadable-count notice, and does not show a false empty state when no readable row remains.",
+      "inventory_action": "Added EXT-F-2009-C37 and T06 because the partial-read/false-empty behavior was not covered by existing list, search, or detail cases."
+    },
+    {
+      "area": "Safari authentication transport",
+      "commits": ["1b605be", "bf17af8", "89ad1d4", "62667cb", "9734466"],
+      "finding": "Safari OAuth now uses an extension-owned background tab and dedicated Safari OAuth client; callbacks are bound to the active attempt, cancellation/timeout/failure are surfaced, and cleanup closes only an owned authorization or callback tab. The final commit permits the public Safari OAuth build input.",
+      "inventory_action": "Added EXT-F-1015-C15/C16/C17 and T36/T37 for real Safari sign-in, owned-tab cancellation/replacement, callback failure, timeout, and retry."
+    },
+    {
+      "area": "Profile PII wording",
+      "commits": ["710f348"],
+      "finding": "Only source comments were corrected: profile PII is saved for the person's own reference and no form-fill handler currently reads it.",
+      "inventory_action": "No inventory change; this is not a user-visible control or runtime behavior change."
+    },
+    {
+      "area": "@ai-matrx package graph",
+      "commits": ["5ade4e9", "root frozen-lock install"],
+      "finding": "Installed package changelogs were inspected: content-ir 0.18.6 and records 0.58.19 are automatic changed-only republishes with no consumer action. design-system 0.42.1 adds ErrorActions on package errors; its explicit consumer action is to mount ErrorActionsProvider once at the app root if the host wants these actions. The extension uses the design-system package but no ErrorActionsProvider currently appears in src/entrypoints/sidepanel/App.tsx.",
+      "inventory_action": "No feature inventory delta. Actionable package follow-up: decide whether the extension should provide host error actions; if yes, mount ErrorActionsProvider once at the sidepanel root and supply extension-appropriate retry/remedy rendering. This is optional per the changelog and not a package-required code migration; content-ir and records require no adoption."
+    }
+  ],
+  "changed_ids": {
+    "added_controls": [
+      "EXT-F-1007-C27",
+      "EXT-F-2009-C37",
+      "EXT-F-1015-C15",
+      "EXT-F-1015-C16",
+      "EXT-F-1015-C17"
+    ],
+    "added_cases": [
+      "EXT-F-1007-T26",
+      "EXT-F-2009-T06",
+      "EXT-F-1015-T36",
+      "EXT-F-1015-T37"
+    ],
+    "revised_cases": [],
+    "retired_ids": [],
+    "preserved_ids": [
+      "EXT-F-1007-C04",
+      "EXT-F-1007-T21",
+      "EXT-F-1007-T22",
+      "EXT-F-2009-C01",
+      "EXT-F-2009-T02",
+      "EXT-F-1015-C14",
+      "EXT-F-1003-T52"
+    ]
+  },
+  "prior_evidence_impact": [
+    {
+      "feature_id": "EXT-F-1007",
+      "retained_history": "The existing guest-local-001 history remains attached to its original case/cell; T04 already records unverified-after-source-change and says old Save evidence is not fresh proof. New T26 is unverified-after-source-change. No prior pass was upgraded."
+    },
+    {
+      "feature_id": "EXT-F-2009",
+      "retained_history": "Existing T02/T03/T04/T05 IDs and their results remain unchanged. T06 is unverified-after-source-change; no prior list pass was recorded as evidence for malformed-row handling."
+    },
+    {
+      "feature_id": "EXT-F-1015 / EXT-F-1003",
+      "retained_history": "Safari has no prior UI result, so T36/T37 start unverified-after-source-change. EXT-F-1003-T52 already preserves admin-signin-001 as historical pass while current result is unverified after earlier auth transport changes; this reconciliation keeps that history and does not treat it as Safari proof."
+    }
+  ],
+  "next_tests": [
+    "Exercise Safari sign-in through the actual extension and a real OAuth flow, including cancel, stale/invalid callback, replacement attempt, timeout, retry, and owned-tab cleanup; record Safari-specific runtime identity and auth state.",
+    "Exercise Scrape lookup failure with controlled capture data and verify the unknown state does not claim the page is new; exercise representative server refusal envelopes and confirm their user message/remedy is visible.",
+    "Exercise Saved Captures with one intentionally unreadable returned row plus readable rows, then retry after correcting the row; verify the notice and non-empty truthfulness."
+  ],
+  "limitations": [
+    "Source-only reconciliation; no builds, tests, browser sessions, or runtime outcomes were performed.",
+    "Chat and Pilot remain deferred under the campaign plan.",
+    "Safari OAuth depends on real configured client/callback registration and cannot be verified by source inspection alone.",
+    "Package changelogs were read from the installed package graph after the coordinator's frozen-lock install; no package or application source edits were made in this lane."
+  ]
+}

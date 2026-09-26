@@ -4,7 +4,7 @@
   "updated_at": "2026-09-26T06:16:57.606993+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
-  "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
+  "source_sha": "9734466f0e83532c2e66c8dfa1c631b2ed420c7d",
   "modes": [
     "guest",
     "member",
@@ -7726,6 +7726,12 @@
           "action": "After a refused or unreachable save, close and reopen the side panel; verify the device-local Unsaved card and retry action return.",
           "source_anchor": "src/features/scrape/ScrapeView.tsx:1",
           "source_applicable": true
+        },
+        {
+          "id": "EXT-F-1007-C27",
+          "label": "Inspect prior-save lookup failure",
+          "action": "When the saved-page lookup fails, say the prior-save status could not be checked and keep Save available; do not imply the page is new.",
+          "source_anchor": "src/features/scrape/ScrapeView.tsx:211"
         }
       ],
       "source_anchors": [
@@ -7754,7 +7760,9 @@
         "src/lib/sources/save-capture.ts:1",
         "src/lib/api/routes/sources.ts:1",
         "src/lib/sources/portions.ts:1",
-        "src/lib/sources/canonical.ts:1"
+        "src/lib/sources/canonical.ts:1",
+        "src/hooks/use-page-recognition.ts:7",
+        "src/features/scrape/ScrapeView.tsx:211"
       ],
       "dependency_class": "cross-system",
       "wave": "C",
@@ -8476,6 +8484,35 @@
           ],
           "verification_status": "unverified-after-source-change",
           "source_evidence": "b8c8313 adds mount-time queue restoration and a close/reopen regression scenario; no current runtime pass is recorded."
+        },
+        {
+          "id": "EXT-F-1007-T26",
+          "title": "Saved-page lookup failure is not reported as unsaved",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C27"
+          ],
+          "preconditions": [
+            "Open Scrape on a controlled page and make the prior-capture lookup fail without altering capture data."
+          ],
+          "steps": [
+            "Open the Scrape view while the lookup is unavailable.",
+            "Restore lookup service and allow recognition to refresh."
+          ],
+          "expected": [
+            "The view says it could not check whether the page was saved, never claims the page was not saved, and leaves Save available; after recovery it reports the known result."
+          ],
+          "dimensions": [
+            "lookup-failure",
+            "recovery",
+            "honest-state"
+          ],
+          "verification_status": "unverified-after-source-change",
+          "source_evidence": "c3a2477 changed lookup results to found/none/unknown and added the could-not-check state; runtime behavior remains unverified."
         }
       ],
       "cells": {
@@ -13286,6 +13323,24 @@
           "id": "EXT-F-1015-C14",
           "label": "Retry sign-in after auth error",
           "action": "When sign-in fails, activate Try again and inspect progress/error recovery."
+        },
+        {
+          "id": "EXT-F-1015-C15",
+          "label": "Start Safari sign-in in a background tab",
+          "action": "Start Safari OAuth from the extension using the configured Safari client and complete the callback into the extension session.",
+          "source_anchor": "src/lib/auth/safari-background.ts:79"
+        },
+        {
+          "id": "EXT-F-1015-C16",
+          "label": "Cancel or replace Safari sign-in attempt",
+          "action": "Cancel a pending sign-in or start a replacement; clear its state and close only the extension-owned authorization/callback tab.",
+          "source_anchor": "src/lib/auth/safari-background.ts:52"
+        },
+        {
+          "id": "EXT-F-1015-C17",
+          "label": "Recover from Safari callback failure or timeout",
+          "action": "Surface cancellation, invalid callback, completion failure, or timeout and allow the person to retry.",
+          "source_anchor": "src/lib/auth/safari-background.ts:113"
         }
       ],
       "source_anchors": [
@@ -13293,7 +13348,12 @@
         "src/components/UserMenu.tsx:28",
         "src/features/org/OrganizationPickerDialog.tsx:25",
         "src/features/settings/SettingsView.tsx:122",
-        "src/lib/org/active-org.ts:1"
+        "src/lib/org/active-org.ts:1",
+        "src/hooks/use-auth.ts:1",
+        "src/lib/auth/flow.ts:1",
+        "src/lib/auth/identity-transport.ts:1",
+        "src/lib/auth/safari-background.ts:1",
+        "src/lib/messaging/schemas.ts:14"
       ],
       "dependency_class": "cross-system",
       "wave": "B",
@@ -14186,6 +14246,66 @@
             "reload",
             "auth-transition"
           ]
+        },
+        {
+          "id": "EXT-F-1015-T36",
+          "title": "Safari sign-in completes through its owned authorization tab",
+          "modes": [
+            "guest"
+          ],
+          "control_ids": [
+            "EXT-F-1015-C15"
+          ],
+          "preconditions": [
+            "Run the extension in Safari with its dedicated OAuth client configured; begin signed out and use a real account flow."
+          ],
+          "steps": [
+            "Start sign-in from the extension.",
+            "Complete the provider flow in the opened tab.",
+            "Return to the extension and inspect authenticated identity."
+          ],
+          "expected": [
+            "The background-owned authorization tab reaches the configured callback, the extension session becomes authenticated, and the owned tab closes."
+          ],
+          "dimensions": [
+            "safari",
+            "auth-transition",
+            "real-oauth"
+          ],
+          "verification_status": "unverified-after-source-change",
+          "source_evidence": "1b605be introduced Safari tab OAuth; bf17af8 selected a dedicated Safari OAuth client and 89ad1d4 bound callback errors; no runtime UI evidence is recorded."
+        },
+        {
+          "id": "EXT-F-1015-T37",
+          "title": "Safari sign-in cancellation and callback failures remain recoverable",
+          "modes": [
+            "guest"
+          ],
+          "control_ids": [
+            "EXT-F-1015-C14",
+            "EXT-F-1015-C16",
+            "EXT-F-1015-C17"
+          ],
+          "preconditions": [
+            "Run Safari extension signed out with real OAuth configuration; use controlled cancellation, timeout, or invalid callback conditions without fabricating a session."
+          ],
+          "steps": [
+            "Cancel an active authorization or close its owned tab.",
+            "Retry and exercise a rejected or invalid callback and timeout.",
+            "Inspect the visible error and retry sign-in."
+          ],
+          "expected": [
+            "The extension reports a clear failure and permits retry; stale attempts do not complete a newer sign-in, and cancellation closes only the owned authorization/callback tab."
+          ],
+          "dimensions": [
+            "safari",
+            "cancel",
+            "invalid-callback",
+            "timeout",
+            "retry"
+          ],
+          "verification_status": "unverified-after-source-change",
+          "source_evidence": "1b605be, 89ad1d4, and 62667cb changed callback validation, error delivery, and owned-tab cleanup; no runtime UI evidence is recorded."
         }
       ],
       "cells": {
@@ -18019,6 +18139,12 @@
           "action": "Show saved-file, loading, failure, or text-only state for the original capture.",
           "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:525",
           "source_applicable": true
+        },
+        {
+          "id": "EXT-F-2009-C37",
+          "label": "Report unreadable saved captures",
+          "action": "Show the number of returned saved captures that could not be read and offer a refresh retry; do not present the list as empty when unreadable rows exist.",
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:221"
         }
       ],
       "source_anchors": [
@@ -18042,7 +18168,10 @@
         "src/lib/api/routes/sources.ts:1",
         "src/lib/sources/read-original.ts:1",
         "src/lib/sources/portions.ts:1",
-        "src/lib/sources/web-app-link.ts:1"
+        "src/lib/sources/web-app-link.ts:1",
+        "src/features/saved-captures/SavedCapturesView.tsx:66",
+        "src/features/saved-captures/SavedCapturesView.tsx:221",
+        "src/lib/supabase/queries.ts:687"
       ],
       "dependency_class": "cross-system",
       "wave": "C",
@@ -18216,6 +18345,36 @@
             "backend-available"
           ],
           "verification_status": "unverified"
+        },
+        {
+          "id": "EXT-F-2009-T06",
+          "title": "Unreadable saved captures are disclosed and retryable",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2009-C01",
+            "EXT-F-2009-C37"
+          ],
+          "preconditions": [
+            "Use controlled saved-capture rows where at least one returned row fails client validation while other rows are readable."
+          ],
+          "steps": [
+            "Open or refresh Saved Captures.",
+            "Inspect the unreadable-count notice and visible rows.",
+            "Use Refresh after the row becomes readable."
+          ],
+          "expected": [
+            "The list discloses how many returned captures could not be read, does not claim the list is empty, keeps readable rows visible, and retries on refresh."
+          ],
+          "dimensions": [
+            "malformed-row",
+            "partial-read",
+            "refresh"
+          ],
+          "verification_status": "unverified-after-source-change",
+          "source_evidence": "c3a2477 returns unreadable row count and renders a retryable notice; runtime behavior remains unverified."
         }
       ],
       "cells": {
