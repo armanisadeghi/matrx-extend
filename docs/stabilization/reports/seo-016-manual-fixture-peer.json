@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "report_id": "seo-016-manual-fixture-peer",
+  "reviewed_source_commit": "519e370285fadb544612a01c1a5f14a653cbc422",
+  "source_review": {
+    "verdict": "ACCEPT",
+    "reason": "The automatic fixture observation is a control-wait only: it requires the correct fixture URL in every sample, a scoped SEO pane, enabled Re-audit, and no error, while explicitly recording its title as unverified point-in-time data. It does not mark any target passing. The actual data verdict still requires a trusted manual Re-audit followed by the exact expected title and strict metadata checks against public DOM evidence that is unchanged before and after the refresh.",
+    "evidence": [
+      "The automatic wait retains its 30-second bound and additionally requires pageUrlMatchesFixture; it intentionally omits title equality only to reach the manual refresh control.",
+      "The automatic title, public title at navigation, and public title at wait are recorded with exactDataStatus `unverified_point_in_time`; no target/status is awarded at this stage.",
+      "Immediately before the manual Re-audit click, the public DOM is sampled and the current URL is asserted to equal METADATA_FIXTURE_PAGE; Re-audit is activated through the real button click helper.",
+      "The post-click settle wait still requires scoped pane, exact SEO title equality with fixtureBefore.title, enabled Re-audit, and no error. The independent full public metadata/navigation snapshot must deep-equal before versus after.",
+      "assertNextDoors still validates exact hreflang values, schema types/chips, links, and safe new-tab attributes; outbound activation remains gated on unique observed public destinations."
+    ],
+    "limits": [
+      "No browser, test, or heavy verification was run by this source-review lane.",
+      "This verifies the source's acceptance design only; it does not establish that manual re-audit will produce matching data on the live Airbnb page."
+    ]
+  },
+  "runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "No runtime or browser verification was performed in this source-review lane."
+  }
+}
