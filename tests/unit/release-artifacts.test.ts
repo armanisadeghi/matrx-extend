@@ -174,14 +174,17 @@ describe('release.sh ship path', () => {
     delete env.RELEASE_LOG_CAPTURED;
     delete env.RELEASE_LOG_DIR;
     delete env.RELEASE_LOG_FILE;
+    // This guard performs several real local Git releases. Under the serial
+    // 170+ file release suite it can outlast 120s without any failed check;
+    // keep the assertions and give the subprocess its own bounded wall.
     const guard = spawnSync('bash', ['scripts/test-release-ship-path.sh'], {
       cwd: repoRoot,
       env,
       encoding: 'utf8',
-      timeout: 120_000,
+      timeout: 240_000,
     });
     expect(guard.status, `${guard.stdout}\n${guard.stderr}`).toBe(0);
-  }, 150_000);
+  }, 270_000);
 });
 
 
