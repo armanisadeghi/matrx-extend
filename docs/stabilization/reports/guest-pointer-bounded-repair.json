@@ -15,6 +15,13 @@
     "repair": "The test now detects the specifically titled reset alertdialog and targets its Cancel and Clear & sign out buttons within that alertdialog through the same real CDP pointer path. Both cancel preservation and confirm clearing assertions remain required.",
     "runtime": "UNVERIFIED_AFTER_ORACLE_REPAIR"
   },
+  "guestReset006": {
+    "status": "RESET_SEMANTICS_PASSED_RELOAD_SECTION_READINESS_FAILED",
+    "observed": "Native UI changed and persisted Dark theme and port 65001; Cancel preserved Dark, port, and the session fixture; Confirm removed every prior local and session key. After reload and Settings tab selection, the immediate Appearance section lookup failed.",
+    "sourceEvidence": "In frozen App.tsx, the Settings tab trigger is distinct from its TabsContent, which renders React.lazy(SettingsView) inside Suspense. The test's settings flag reads only the active trigger; it can become true before SettingsView's Collapsible buttons exist. Collapsible.tsx supplies a real aria-expanded button for Appearance once rendered.",
+    "repair": "openSection now waits for exactly one labeled aria-expanded button with a valid true/false state before deciding whether to click it. It still requires the expanded state and all later System theme, guest, and cleared-storage assertions.",
+    "runtime": "UNVERIFIED_AFTER_READINESS_REPAIR"
+  },
   "sourceChecks": [
     "node --check tests/browser/settings-local-reset-acceptance.mjs",
     "git diff --check -- tests/browser/settings-local-reset-acceptance.mjs"

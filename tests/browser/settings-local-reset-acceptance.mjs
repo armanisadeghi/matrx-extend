@@ -46,12 +46,13 @@ async function waitFor(label, read, accept, timeoutMs = 10000) {
 }
 
 async function openSection(panel, label) {
-  const expanded = await evaluate(panel, `(() => {
-    const button = [...document.querySelectorAll('button[aria-expanded]')]
-      .find((el) => el.textContent.trim() === ${JSON.stringify(label)});
-    return button?.getAttribute('aria-expanded') ?? null;
-  })()`);
-  assert.notEqual(expanded, null, `${label} section exists`);
+  const section = await waitFor(`${label}_section_ready`, () => evaluate(panel, `(() => {
+    const buttons = [...document.querySelectorAll('button[aria-expanded]')]
+      .filter((el) => el.textContent.trim() === ${JSON.stringify(label)});
+    return { count: buttons.length, expanded: buttons[0]?.getAttribute('aria-expanded') ?? null };
+  })()`), (state) => state?.count === 1 &&
+    (state.expanded === 'true' || state.expanded === 'false'));
+  const expanded = section.expanded;
   if (expanded === 'false') await click(panel, 'section', label);
   await waitFor(`${label}_expanded`, () => evaluate(panel, `(() =>
     [...document.querySelectorAll('button[aria-expanded]')]
