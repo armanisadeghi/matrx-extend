@@ -17,13 +17,20 @@ import { useCallback, useEffect, useState } from 'react';
  */
 export function UnsavedCapturesCard({
   onLanded,
+  onUrlsChange,
 }: {
   /** Called with the capture's URL and the Source id when a retry lands. */
   onLanded?: (url: string, processedDocumentId: string) => void;
+  /** The URLs this card currently owns — while a URL is here, the card is its only save action. */
+  onUrlsChange?: (urls: string[]) => void;
 }) {
   const [rows, setRows] = useState<UnsavedCapture[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [discardTarget, setDiscardTarget] = useState<UnsavedCapture | null>(null);
+
+  useEffect(() => {
+    onUrlsChange?.(rows.map((r) => r.url));
+  }, [rows, onUrlsChange]);
 
   useEffect(() => {
     let alive = true;

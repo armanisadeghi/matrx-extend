@@ -22,6 +22,7 @@ import {
 import { articleToMarkdown } from '@/lib/scrape/to-markdown';
 import type { SeoAudit } from '@/lib/seo/audit';
 import { toStoredSignals } from '@/lib/seo/diff';
+import { canonicalUrl } from '@/lib/sources/canonical';
 import { sourceWebAppUrl } from '@/lib/sources/web-app-link';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/state/auth';
@@ -84,6 +85,8 @@ export function ScrapeView() {
   const [saveError, setSaveError] = useState<string | null>(null);
   /** The Source the last Save landed as, and what the door said about it. */
   const [savedSource, setSavedSource] = useState<{ id: string; notices: string[] } | null>(null);
+  /** URLs the unsaved-retry card owns; for those, its Retry is the one save action. */
+  const [unsavedUrls, setUnsavedUrls] = useState<string[]>([]);
   // Retry must replay the mode the user actually picked — activeMode is
   // cleared in the hook's finally, so the error card's fallback was ALWAYS
   // 'fast' (a failed Scroll & capture silently retried without scrolling).
@@ -200,7 +203,8 @@ export function ScrapeView() {
   // SOURCE-CONVERGENCE §1 rule 6: a web address whose content has not landed is
   // "not yet a Source", said with the action that makes it one. Only for a
   // signed-in person on a page that CAN be a Source, and never while a check,
-  // a capture or a save is still running (the answer is not known yet).
+  // a capture or a save is still running (the answer is not known yet). While
+  // the retry card holds this page, the card's Retry is the one control.
   const notYetASource =
     signedIn &&
     /^https?:\/\//i.test(tab.url ?? '') &&
@@ -209,7 +213,8 @@ export function ScrapeView() {
     !recognition.capturedAt &&
     !saved &&
     !saving &&
-    !loading;
+    !loading &&
+    !unsavedUrls.some((u) => canonicalUrl(u) === canonicalUrl(tab.url ?? ''));
 
   return (
     <div className="flex h-full flex-col">
@@ -230,6 +235,7 @@ export function ScrapeView() {
           </div>
         )}
         <UnsavedCapturesCard
+          onUrlsChange={setUnsavedUrls}
           onLanded={(url, id) => {
             if (current && url === current.url) {
               setSaved(true);

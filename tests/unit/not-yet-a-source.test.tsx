@@ -20,6 +20,7 @@ const state = vi.hoisted(() => ({
   current: null as unknown,
   captureActiveTab: vi.fn(async () => undefined),
   save: vi.fn(async () => null),
+  unsavedUrls: [] as string[],
 }));
 
 vi.mock('@/hooks/use-active-tab', () => ({
@@ -49,7 +50,15 @@ vi.mock('@/features/scrape/DiagnoseCard', () => ({
   DiagnoseCard: () => null,
   DiagnoseLauncher: () => null,
 }));
-vi.mock('@/features/scrape/UnsavedCapturesCard', () => ({ UnsavedCapturesCard: () => null }));
+vi.mock('@/features/scrape/UnsavedCapturesCard', async () => {
+  const { useEffect } = await import('react');
+  return {
+    UnsavedCapturesCard: ({ onUrlsChange }: { onUrlsChange?: (urls: string[]) => void }) => {
+      useEffect(() => onUrlsChange?.(state.unsavedUrls), [onUrlsChange]);
+      return null;
+    },
+  };
+});
 vi.mock('@/features/seo/SeoDetails', () => ({ SeoDetails: () => null }));
 
 import { ScrapeView } from '@/features/scrape/ScrapeView';
@@ -76,6 +85,7 @@ beforeEach(() => {
   state.url = 'https://docs.example.com/guide';
   state.recognition = { capturedAt: null, capturedId: null, loading: false, checkFailed: false };
   state.current = null;
+  state.unsavedUrls = [];
   state.captureActiveTab.mockClear();
   state.save.mockClear();
   useAuthStore.setState({ user: { id: 'u1' } as never });
@@ -106,6 +116,20 @@ describe('Scrape panel names a page by whether it is a Source', () => {
     expect(screen.getAllByRole('button', { name: /^Save$/ })).toHaveLength(1);
     fireEvent.click(inBanner);
     expect(state.save).toHaveBeenCalledTimes(1);
+  });
+
+  it('a page waiting in the retry card gets no banner — the card owns the action', () => {
+    state.current = soup;
+    state.unsavedUrls = ['https://docs.example.com/guide#top'];
+    render(<ScrapeView />);
+    expect(banner()).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Save as a Source' })).toBeNull();
+  });
+
+  it("a retry card for a DIFFERENT page leaves this page's banner in place", () => {
+    state.unsavedUrls = ['https://other.example.com/'];
+    render(<ScrapeView />);
+    expect(banner()).not.toBeNull();
   });
 
   it('a landed page reads "This page is a Source", never "not yet"', () => {

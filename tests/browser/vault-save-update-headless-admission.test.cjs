@@ -15,22 +15,22 @@ const localReleaseZipManifestSha256 =
   'c395a10b2b8d6dfc42dc045f553a9098781eab3d33634e5a0a1a947f0bec8b9b';
 const localReleaseZipKind = 'local-release-zip-artifact';
 const localReleaseZipVersion = '0.2.38';
-const localSourceCommit = 'eca3ab8ab9a138bebeb63b0aa7efe0e29edd3af8';
+const localSourceCommit = 'f60a904dc8843443b4585db615bcb1297cbd072a';
 const localSourceManifestSha256 =
-  '1ee9665455d4aecabd753b274f5269ad69c84db56c421cd7dd5d5ec832df39ff';
+  '34b398260054f64fd9df2f44272ce0b094edd57e7e57a0cbd2697002ebf678c9';
 const reviewedLocalSourceArtifact = {
   path: path.join(
     __dirname,
-    '../../.matrx/realbrowser-vault/2026-09-26T08-23-50-230Z-5c4c3289-9ce6-40b8-8458-8d4a5c210118/artifact-manifest.json',
+    '../../.matrx/realbrowser-vault/2026-09-26T08-52-55-499Z-e20292bc-272f-4d0c-9b23-fb313a464236/artifact-manifest.json',
   ),
-  sourceCommit: 'eca3ab8ab9a138bebeb63b0aa7efe0e29edd3af8',
-  manifestSha256: '1ee9665455d4aecabd753b274f5269ad69c84db56c421cd7dd5d5ec832df39ff',
+  sourceCommit: 'f60a904dc8843443b4585db615bcb1297cbd072a',
+  manifestSha256: '34b398260054f64fd9df2f44272ce0b094edd57e7e57a0cbd2697002ebf678c9',
   version: '0.2.56',
   kind: 'local-multi-repo-source-artifact',
 };
 const cleanupSourceRoot = path.join(
   __dirname,
-  '../../.matrx/task1-active/cleanup-source-b20c757-git-verified-20260926',
+  '../../.matrx/task1-active/cleanup-source-b20c757-git-verified-20260926-r2/source',
 );
 const cleanupAdapter = path.join(__dirname, 'cleanup-vault-canary.py');
 const cleanupSourceCommit = 'b20c757670f5348f5d198f3a1c64d25a1343f5c3';
@@ -52,7 +52,8 @@ try {
         ...env,
       },
       encoding: 'utf8',
-      timeout: 30000,
+      // The runner's bounded cold prewrite source proof is 180 seconds.
+      timeout: 210000,
     });
     assert.notEqual(result.status, 0, `${name} unexpectedly ran`);
     assert.match(`${result.stderr}${result.stdout}`, new RegExp(expectedCode));
@@ -79,7 +80,7 @@ try {
       {
         encoding: 'utf8',
         env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' },
-        timeout: 60000,
+        timeout: 180000,
       },
     );
     assert.equal(result.error, undefined, `source verifier subprocess error: ${result.error?.code || 'unknown'}`);
@@ -96,6 +97,12 @@ try {
       sourceEntryCount: cleanupSourceEntryCount,
     });
   };
+  const restoreArchiveDirectoryModes = (entry) => {
+    const entryStat = fs.lstatSync(entry);
+    if (!entryStat.isDirectory() || entryStat.isSymbolicLink()) return;
+    for (const name of fs.readdirSync(entry)) restoreArchiveDirectoryModes(path.join(entry, name));
+    fs.chmodSync(entry, 0o500);
+  };
   const rejectUnrelatedArchiveMutationBeforeCustody = () => {
     const mutatedSource = path.join(root, 'unrelated-archive-mutation');
     fs.cpSync(cleanupSourceRoot, mutatedSource, {
@@ -103,10 +110,12 @@ try {
       dereference: false,
       verbatimSymlinks: true,
     });
-    fs.chmodSync(mutatedSource, 0o755);
+    restoreArchiveDirectoryModes(mutatedSource);
     const readme = path.join(mutatedSource, 'README.md');
     fs.chmodSync(readme, 0o644);
     fs.appendFileSync(readme, '\narchive mutation must refuse\n');
+    fs.chmodSync(readme, 0o444);
+    fs.chmodSync(mutatedSource, 0o500);
     rejectBeforeCustody('unrelated-archive-mutation', 'local_cleanup_archive_git_tree_mismatch', {
       ...strictReceiptEnv,
       MATRX_VAULT_CANARY_LOCAL_SOURCE_ROOT: mutatedSource,
@@ -125,13 +134,16 @@ try {
       dereference: false,
       verbatimSymlinks: true,
     });
+    restoreArchiveDirectoryModes(bytecodeSource);
     const packageDir = path.join(bytecodeSource, 'aidream');
     fs.chmodSync(packageDir, 0o700);
     const cacheDir = path.join(packageDir, '__pycache__');
-    fs.mkdirSync(cacheDir, { mode: 0o500 });
+    fs.mkdirSync(cacheDir, { mode: 0o700 });
     const bytecode = path.join(cacheDir, 'vault.cpython-313.pyc');
     fs.writeFileSync(bytecode, 'extra bytecode', { mode: 0o400 });
     fs.chmodSync(bytecode, 0o444);
+    fs.chmodSync(cacheDir, 0o500);
+    fs.chmodSync(packageDir, 0o500);
     rejectBeforeCustody('archive-extra-bytecode', 'local_cleanup_archive_git_tree_mismatch', {
       ...strictReceiptEnv,
       MATRX_VAULT_CANARY_LOCAL_SOURCE_ROOT: bytecodeSource,
@@ -188,7 +200,7 @@ try {
         ...strictReceiptEnv,
       },
       encoding: 'utf8',
-      timeout: 30000,
+      timeout: 210000,
     });
     assert.notEqual(result.status, 0, `${name} unexpectedly ran`);
     assert.match(`${result.stderr}${result.stdout}`, new RegExp(expectedCode));
@@ -235,7 +247,7 @@ try {
         MATRX_VAULT_CANARY_LOCAL_SOURCE_ROOT: sourceRoot,
       },
       encoding: 'utf8',
-      timeout: 30000,
+      timeout: 210000,
     });
     assert.notEqual(result.status, 0, 'source drift unexpectedly ran');
     assert.equal(
@@ -287,7 +299,7 @@ try {
         MATRX_VAULT_CANARY_ARTIFACT_KIND: localReleaseZipKind,
       },
       encoding: 'utf8',
-      timeout: 30000,
+      timeout: 210000,
     });
     assert.notEqual(result.status, 0, 'near-match local release manifest unexpectedly ran');
     assert.match(
@@ -346,7 +358,7 @@ try {
         MATRX_VAULT_CANARY_ARTIFACT_KIND: 'local-multi-repo-source-artifact',
       },
       encoding: 'utf8',
-      timeout: 30000,
+      timeout: 210000,
     });
     assert.notEqual(result.status, 0, 'near-match local source manifest unexpectedly ran');
     assert.match(
@@ -421,7 +433,7 @@ try {
         MATRX_VAULT_CANARY_ARTIFACT_KIND: reviewedLocalSourceArtifact.kind,
       },
       encoding: 'utf8',
-      timeout: 30000,
+      timeout: 210000,
     });
     assert.notEqual(result.status, 0, 'wrong source unexpectedly ran');
     assert.match(`${result.stderr}${result.stdout}`, /artifact_commit_mismatch/);
@@ -531,5 +543,12 @@ try {
     'PASS: receipt-backed Save/Update admission refuses unsafe modes before custody\n',
   );
 } finally {
+  const makeTreeDeletable = (entry) => {
+    const entryStat = fs.lstatSync(entry);
+    if (!entryStat.isDirectory() || entryStat.isSymbolicLink()) return;
+    fs.chmodSync(entry, 0o700);
+    for (const name of fs.readdirSync(entry)) makeTreeDeletable(path.join(entry, name));
+  };
+  if (fs.existsSync(root)) makeTreeDeletable(root);
   fs.rmSync(root, { recursive: true, force: true });
 }

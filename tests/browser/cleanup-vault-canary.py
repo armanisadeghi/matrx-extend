@@ -119,6 +119,7 @@ def _symlink_target_is_internal(root: Path, link: Path, target: str) -> bool:
 def _archive_entries(source_root: Path) -> dict[str, tuple[str, str]]:
     root = source_root.resolve()
     refuse(root.is_dir() and not source_root.is_symlink(), "source_root_refused")
+    refuse(stat.S_IMODE(root.lstat().st_mode) == 0o500, "archive_mode_refused")
     entries: dict[str, tuple[str, str]] = {}
     def visit(directory: Path) -> None:
         for entry in sorted(directory.iterdir(), key=lambda candidate: candidate.name):
@@ -534,7 +535,18 @@ def _verify_source_root_args(args: list[str], *, checkout_fallback_test: bool = 
                 sys.path.insert(0, checkout_connect)
                 _verify_required_module_specs(source_path, prepare=False)
             try:
-                build_local_app(data)
+                # Package bootstrap derives a temp location from the process
+                # environment.  Keep it outside the read-only archive.
+                with tempfile.TemporaryDirectory(prefix="vault-canary-preflight-") as runtime_dir:
+                    previous_temp_dir = os.environ.get("MATRX_TEMP_DIR")
+                    os.environ["MATRX_TEMP_DIR"] = runtime_dir
+                    try:
+                        build_local_app(data)
+                    finally:
+                        if previous_temp_dir is None:
+                            os.environ.pop("MATRX_TEMP_DIR", None)
+                        else:
+                            os.environ["MATRX_TEMP_DIR"] = previous_temp_dir
             except Exception:
                 raise Refused("bootstrap_refused") from None
             result = {"ok": True, "source": hashes}
