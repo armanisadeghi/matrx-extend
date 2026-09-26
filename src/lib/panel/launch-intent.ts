@@ -73,7 +73,7 @@ const claimQueues = new Map<number, Promise<void>>();
 /** Claims the latest unexpired request for one window, then removes its snapshot. */
 export function takePopupLaunchTarget(windowId: number): Promise<SidepanelTab | null> {
   const previous = claimQueues.get(windowId) ?? Promise.resolve();
-  const claim = previous.then(async () => {
+  const claimPopupLaunchTarget = previous.then(async () => {
     let rows: Record<string, unknown>;
     try {
       rows = await chrome.storage.session.get(null);
@@ -106,10 +106,10 @@ export function takePopupLaunchTarget(windowId: number): Promise<SidepanelTab | 
   });
   claimQueues.set(
     windowId,
-    claim.then(
+    claimPopupLaunchTarget.then(
       () => undefined,
       () => undefined,
     ),
   );
-  return claim;
+  return claimPopupLaunchTarget;
 }
