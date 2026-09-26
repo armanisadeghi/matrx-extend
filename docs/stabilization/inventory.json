@@ -10847,7 +10847,8 @@
             "seo-guest-001",
             "seo-guest-002",
             "seo-guest-003",
-            "seo-guest-004"
+            "seo-guest-004",
+            "seo-guest-005"
           ],
           "retest_status": "not-run"
         },
@@ -10955,6 +10956,39 @@
           "rechecked_prior_subtargets": 5,
           "independent_review": "docs/stabilization/reports/seo004-runtime-peer.json",
           "limits": "Actual panel document reload and current page title/heading presence plus guest menu gates only. No full T01/T07, audit-count/race, clipboard output, member/admin or full-feature claim."
+        },
+        {
+          "run_id": "seo-guest-005",
+          "mode": "guest",
+          "build": "0.2.70",
+          "status": "partial",
+          "accepted_subtargets": [
+            {
+              "case_id": "EXT-F-1008-T03",
+              "subtarget": "about_blank_clear_error_without_stale_audit",
+              "status": "pass",
+              "evidence": {
+                "scopeValid": true,
+                "expectedErrorVisible": true,
+                "staleAuditAbsent": true,
+                "copyAuditAbsent": true,
+                "retryOffered": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T03",
+              "subtarget": "public_page_recovers_after_restricted_url",
+              "status": "pass",
+              "evidence": {
+                "publicTitleMatched": true,
+                "headingsPresenceMatched": true,
+                "auditErrorAbsent": true
+              }
+            }
+          ],
+          "rechecked_prior_subtargets": 7,
+          "independent_review": "docs/stabilization/reports/seo005-runtime-peer.json",
+          "limits": "Two bounded restricted-page/recovery predicates only. No full T03 or feature pass; unreachable HTTP(S), other restricted schemes, reload, fresh recapture and all other outstanding dimensions remain unverified."
         }
       ]
     },

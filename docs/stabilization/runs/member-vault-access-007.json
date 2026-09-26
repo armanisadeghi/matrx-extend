@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "run_id": "member-vault-access-007",
+  "status": "unverified",
+  "resource_guard": {
+    "log_path": "/tmp/matrx-member-vault-access-007.log",
+    "log_sha256": "4f0a614e2cc073d7bfb714e4d7cfa8fd6c239230be1830522509bdcb94b4e500",
+    "admission": {
+      "at": "2026-09-26T17:18:22.498Z",
+      "code": "RESOURCE_ADMITTED"
+    },
+    "watch_events": [
+      {
+        "at": "2026-09-26T17:18:38.891Z",
+        "code": "RESOURCE_WATCH_HEALTHY"
+      }
+    ],
+    "exit": {
+      "at": "2026-09-26T17:18:43.426Z",
+      "code": "RESOURCE_JOB_EXIT",
+      "child_exit_code": 1,
+      "child_signal": null
+    }
+  },
+  "sanitized_runner_result": {
+    "schema_version": 1,
+    "status": "unverified",
+    "scope": "owned disposable Chrome profile; real admin web and extension sign-in; masked Vault inventory",
+    "targetMember": "test@test.com",
+    "adminWebSignedIn": true,
+    "adminExtensionSignedIn": true,
+    "inventory": null,
+    "lastVaultObservation": {
+      "organizationSelected": true,
+      "organizationPickerPending": false,
+      "organizationPickerVisible": false,
+      "organizationPickerLoading": false,
+      "approvedOrganizationOffered": false,
+      "activePanelFound": true,
+      "vaultTabActive": true,
+      "vaultPanelActive": true,
+      "firstActivePanelIsVault": true,
+      "vaultHeadingVisible": true,
+      "preContentSpinner": false,
+      "inventorySpinner": false,
+      "refreshSpinner": false,
+      "siteSpinner": true,
+      "signedOutPrompt": false,
+      "errorVisible": false,
+      "activeScope": "mine",
+      "sharedTabAvailable": true,
+      "designatedCandidateCount": 0,
+      "designatedCandidateFillOnCount": 0
+    },
+    "failureCategory": "stage_operation_failed",
+    "limitations": [
+      "A matching masked title is only a candidate, not proof of credential identity or member access.",
+      "This probe stops before website sign-out, member Vault Fill, or member extension sign-in."
+    ],
+    "beforeOrganizationChoice": {
+      "organizationSelected": false,
+      "organizationPickerPending": true,
+      "organizationPickerVisible": true,
+      "organizationPickerLoading": true,
+      "approvedOrganizationOffered": false,
+      "activePanelFound": true,
+      "vaultTabActive": true,
+      "vaultPanelActive": true,
+      "firstActivePanelIsVault": true,
+      "vaultHeadingVisible": false,
+      "preContentSpinner": true,
+      "inventorySpinner": false,
+      "refreshSpinner": false,
+      "siteSpinner": false,
+      "signedOutPrompt": false,
+      "errorVisible": false,
+      "activeScope": "none",
+      "sharedTabAvailable": false,
+      "designatedCandidateCount": 0,
+      "designatedCandidateFillOnCount": 0
+    },
+    "afterOrganizationChoice": {
+      "organizationSelected": true,
+      "organizationPickerPending": false,
+      "organizationPickerVisible": false,
+      "organizationPickerLoading": false,
+      "approvedOrganizationOffered": false,
+      "activePanelFound": true,
+      "vaultTabActive": true,
+      "vaultPanelActive": true,
+      "firstActivePanelIsVault": true,
+      "vaultHeadingVisible": false,
+      "preContentSpinner": true,
+      "inventorySpinner": false,
+      "refreshSpinner": false,
+      "siteSpinner": false,
+      "signedOutPrompt": false,
+      "errorVisible": false,
+      "activeScope": "none",
+      "sharedTabAvailable": false,
+      "designatedCandidateCount": 0,
+      "designatedCandidateFillOnCount": 0
+    },
+    "failureStage": "shared_tab_click",
+    "driverFailure": {
+      "code": "pointer_stable_hit_not_observed",
+      "sampleStage": null,
+      "matchedTargetCount": 1,
+      "visibleMatchCount": 1,
+      "uniqueVisibleTarget": true,
+      "hitTarget": false,
+      "animating": false,
+      "stableSamples": 0,
+      "positionStable": true,
+      "targetHasArea": true,
+      "clippedTargetHasArea": true,
+      "selectedPointAvailable": false,
+      "centerHitCategory": "other_element",
+      "targetDisabled": false,
+      "pointerEventsNone": false,
+      "clippingAncestorCount": 1,
+      "testedPointCount": 9
+    }
+  },
+  "interpretation": "Guard admitted and stayed healthy. Admin web and extension sign-in and explicit approved organization selection succeeded. Mine inventory became ready. The unique visible enabled Shared tab failed the trusted pointer gate: all nine clipped interior samples hit other elements while the tab had area and a stable position. No Shared inventory or member auth result was observed; the occluder identity remains unmeasured."
+}

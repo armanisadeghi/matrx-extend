@@ -1,0 +1,7 @@
+{
+  "status": "accepted_for_bounded_diagnostic_run",
+  "review": "docs/stabilization/reports/vault-occluder-peer.json",
+  "ruling": "Accept fixed layout rectangle numbers alongside fixed semantic categories for one diagnostic probe. These describe browser hit-test obstruction, not DOM content, item metadata, URLs, credentials or account values. No click bypass or product acceptance is authorized.",
+  "prior_contract": "Earlier probe restricted persisted data to enums/counts/booleans; this explicitly amends only layout geometry for obstruction diagnosis.",
+  "risk_and_limit": "Coordinates describe viewport layout. If field content or unrestricted attributes appear, refuse retention; keep Vault contents and screenshots excluded."
+}

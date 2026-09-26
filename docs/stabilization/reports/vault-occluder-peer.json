@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "review": "vault-occluder-peer",
+  "reviewed_commit": "a7557d525d913df82597f73d5d0e10e7ab32d2cc",
+  "reviewed_at": "2026-09-26",
+  "scope": "Independent source-only review of the shared pointer-driver diagnostics and their Vault receipt path. Reviewer did not author this change.",
+  "runtime": {
+    "verdict": "PENDING_NEW_DIAGNOSTICS_RUNTIME",
+    "evidence": [
+      "member-vault-access-007 records failure at shared_tab_click with one visible target, stable position, nine tested points, no selected point, and center category other_element.",
+      "That run exited 1 at 2026-09-26T17:18:43.426Z. Diagnostic implementation commit a7557d52 was committed at 10:22:11 PDT, after the run; the preserved receipt contains none of the new interiorHitKinds or occluder fields.",
+      "The receipt therefore documents the obstruction boundary only; it does not show how the new diagnostic performs, identify an occluder, establish a product defect, or verify Shared inventory/member access."
+    ]
+  },
+  "source_quality": {
+    "verdict": "TRUSTED_HIT_GATE_PRESERVED_WITH_DIAGNOSTIC_SCOPE_DELTA",
+    "evidence": [
+      "Candidate uniqueness, visibility, viewport/clipping bounds, elementFromPoint target-or-descendant hit, disabled-target rejection, animation/stability checks, and trusted CDP mouse press/release remain required. No DOM click, overlay dismissal, or Vault selection was added.",
+      "New semantic fields use closed allowlists for tag, role, relation, position, pointer-event state, plus fixed hit categories. They do not copy text, arbitrary attributes/classes, URLs, field values, or screenshots from the credential-bearing page.",
+      "The Vault probe copies only error.driverFailure to its sanitized receipt; it does not serialize raw exceptions."
+    ],
+    "finding": "The previous instrumentation contract in vault-shared-pipeline-escalation.json explicitly promised no coordinates in the new Vault driverFailure receipt, limiting it to positional booleans, fixed categories, and counts. The new pointerFailure projection includes interiorHitKinds plus centerOccluder and firstInteriorOccluder; each occluder includes rectangle {x,y,width,height}, and the probe persists that object at member-vault-access-probe.mjs:323. These are bounded layout measurements rather than content or credential values, so this is a scope/privacy expansion rather than evidence of secret disclosure; it should be called out and either accepted explicitly or reduced to bounded overlap/size predicates."
+  },
+  "limits": [
+    "Source review cannot determine what element actually covered the Shared tab or whether the new geometry is useful in a live owned profile.",
+    "No browser, build, test, or runtime was launched for this review."
+  ],
+  "references": [
+    "docs/stabilization/reports/vault-shared-pipeline-escalation.json",
+    "docs/stabilization/runs/member-vault-access-007.json",
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/member-vault-access-probe.mjs"
+  ]
+}
