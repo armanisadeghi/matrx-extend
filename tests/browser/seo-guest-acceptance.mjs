@@ -78,6 +78,34 @@ const target = (caseId, subtarget, evidence) =>
 const unverifiedTarget = (caseId, subtarget, reason) =>
   report.targets.push({ case_id: `EXT-F-1008-${caseId}`, subtarget, status: 'unverified', reason });
 
+// New-batch failures retain only our fixed assertion label and scalar values.
+// Public page text, arbitrary DOM strings, transport errors, and URLs never
+// enter this diagnostic; the run receipt can identify the failed predicate.
+function assertNext(predicate, verify) {
+  enter(`next_detail_${predicate}_assertion`);
+  try {
+    verify();
+  } catch (error) {
+    const scalar = (value) =>
+      typeof value === 'boolean' || (typeof value === 'number' && Number.isFinite(value))
+        ? value
+        : null;
+    report.failure = {
+      predicate,
+      assertion_label:
+        error?.code === 'ERR_ASSERTION' &&
+        typeof error.message === 'string' &&
+        error.message.length <= 100 &&
+        !error.message.includes('\n')
+          ? error.message
+          : 'predicate_evaluation_failed',
+      actual_scalar: scalar(error?.actual),
+      expected_scalar: scalar(error?.expected),
+    };
+    throw error;
+  }
+}
+
 // One scoped relationship for all SEO observations. The outer tablist is the
 // app navigation; mounted feature panels may contain their own nested tabs.
 const SEO_SCOPE = `
@@ -437,7 +465,7 @@ function assertPublicDetails(actual, expected) {
     );
 }
 
-function assertNextDetailCounts(actual, expected) {
+function assertNextLinks(actual, expected) {
   assert.equal(actual.scopeValid, true, 'next detail observation uses the active SEO pane');
   assert.equal(actual.title, expected.title, 'next detail audit belongs to the owned public tab');
   const totalLinks = expected.links.internal + expected.links.external;
@@ -455,6 +483,9 @@ function assertNextDetailCounts(actual, expected) {
     );
     assert.equal(displayedCount(actual.links.hint), totalLinks, 'Links group total');
   }
+}
+
+function assertNextImages(actual, expected) {
   assert.equal(
     Boolean(actual.images),
     expected.images.total > 0,
@@ -926,6 +957,13 @@ try {
       const nextExpected = await observe('next_public_details_inspected', () =>
         publicNextDetailEvidence(page, nextResponse),
       );
+      report.next_detail_public_counts = {
+        links: nextExpected.links,
+        images: nextExpected.images,
+        bodyHasText: nextExpected.bodyHasText,
+        alternateCount: nextExpected.alternates.length,
+        schemaTypeCount: nextExpected.schemaTypes.length,
+      };
       assert.equal(page.url(), NEXT_DETAIL_PAGE, 'owned tab reached the selected public URL');
       assert.ok(nextExpected.title, 'selected public page has a title');
       await waitObserved(
@@ -938,16 +976,17 @@ try {
       const nextDetails = await observe('next_seo_details_inspected', () =>
         seoNextDetailState(panel),
       );
-      assertNextDetailCounts(nextDetails, nextExpected);
+      assertNext('links', () => assertNextLinks(nextDetails, nextExpected));
       target('T09', 'guest_link_counts_match_live_dom', {
         url: NEXT_DETAIL_PAGE,
         ...nextExpected.links,
       });
+      assertNext('images', () => assertNextImages(nextDetails, nextExpected));
       target('T09', 'guest_image_alt_counts_match_live_dom', {
         url: NEXT_DETAIL_PAGE,
         ...nextExpected.images,
       });
-      assertNextReadability(nextDetails, nextExpected);
+      assertNext('readability', () => assertNextReadability(nextDetails, nextExpected));
       if (nextExpected.bodyHasText)
         target('T09', 'guest_readability_display_is_populated_and_explained', {
           publicBodyHasText: true,
@@ -960,7 +999,7 @@ try {
           'guest_readability_display_is_populated_and_explained',
           'The public body had no text, so populated readability fields could not be exercised.',
         );
-      assertNextPerformance(nextDetails, nextExpected);
+      assertNext('performance', () => assertNextPerformance(nextDetails, nextExpected));
       target('T09', 'guest_performance_reflects_current_navigation', {
         pageResponseStatus: nextExpected.responseStatus,
         exposedNavigation: nextExpected.navigation,
@@ -972,7 +1011,10 @@ try {
       const uniqueAlternate = nextExpected.alternates.find(
         (item) => nextExpected.alternates.filter((other) => other.href === item.href).length === 1,
       );
-      const schemaLinks = assertNextDoors(nextDetails, nextExpected);
+      let schemaLinks;
+      assertNext('doors', () => {
+        schemaLinks = assertNextDoors(nextDetails, nextExpected);
+      });
       const uniqueSchema = schemaLinks.find(
         (item) => schemaLinks.filter((other) => other.href === item.href).length === 1,
       );
