@@ -37,7 +37,12 @@ export async function waitForSidePanelContextId(windowId: number): Promise<strin
   };
   if (!runtime.getContexts) return null;
   for (let attempt = 0; attempt < 5; attempt += 1) {
-    const contexts = await runtime.getContexts({ contextTypes: ['SIDE_PANEL'] });
+    let contexts: SidePanelContext[];
+    try {
+      contexts = await runtime.getContexts({ contextTypes: ['SIDE_PANEL'] });
+    } catch {
+      return null;
+    }
     const matches = contexts.filter(
       (context) => context.contextType === 'SIDE_PANEL' && context.windowId === windowId,
     );
@@ -92,6 +97,13 @@ export async function clearCapturePagePanel(request: CapturePagePanelRequest): P
 }
 
 const claimQueues = new Map<number, Promise<void>>();
+const attemptedClaimKeys = new Map<string, number>();
+
+function pruneAttemptedClaims(now: number): void {
+  for (const [key, expiresAt] of attemptedClaimKeys) {
+    if (expiresAt < now) attemptedClaimKeys.delete(key);
+  }
+}
 
 /** Claims the latest unexpired request for one window, then removes its snapshot. */
 export function takePopupLaunchTarget(
@@ -108,6 +120,7 @@ export function takePopupLaunchTarget(
     }
 
     const now = Date.now();
+    pruneAttemptedClaims(now);
     const candidates: Array<[string, CapturePageIntent]> = [];
     for (const [key, value] of Object.entries(rows)) {
       if (
@@ -116,6 +129,7 @@ export function takePopupLaunchTarget(
         value.windowId === windowId &&
         value.phase === 'armed' &&
         value.contextId === contextId &&
+        !attemptedClaimKeys.has(key) &&
         value.expiresAt >= now
       ) {
         candidates.push([key, value]);
@@ -127,8 +141,10 @@ export function takePopupLaunchTarget(
     try {
       await chrome.storage.session.remove(candidates.map(([key]) => key));
     } catch {
+      for (const [key, intent] of candidates) attemptedClaimKeys.set(key, intent.expiresAt);
       return null;
     }
+    for (const [key, intent] of candidates) attemptedClaimKeys.set(key, intent.expiresAt);
     return 'scrape';
   });
   claimQueues.set(

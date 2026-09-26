@@ -136,6 +136,8 @@ describe('popup capture route', () => {
       .mockResolvedValueOnce([])
       .mockResolvedValueOnce([]);
     await expect(waitForSidePanelContextId(9)).resolves.toBeNull();
+    getContexts.mockRejectedValueOnce(new Error('contexts unavailable'));
+    await expect(waitForSidePanelContextId(9)).resolves.toBeNull();
     getContexts.mockResolvedValueOnce([
       { contextId: 'one', contextType: 'SIDE_PANEL', windowId: 9 },
       { contextId: 'two', contextType: 'SIDE_PANEL', windowId: 9 },
@@ -156,6 +158,10 @@ describe('popup capture route', () => {
 
     await expect(takePopupLaunchTarget(9, 'panel-9')).resolves.toBeNull();
     remove.mockRestore();
+    // A later storage event in this same panel document must not replay it.
+    await expect(takePopupLaunchTarget(9, 'panel-9')).resolves.toBeNull();
+    // A reopened panel has a different context ID and also refuses it.
+    await expect(takePopupLaunchTarget(9, 'reopened-panel')).resolves.toBeNull();
   });
 
   it('leaves a failed-open request inert when exact cleanup also fails', async () => {
