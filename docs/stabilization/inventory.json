@@ -2824,7 +2824,7 @@
             "Reload/reopen Settings in the still-signed-out guest session; confirm the same guidance and absence of the selector."
           ],
           "expected": [
-            "The guest sees “Sign in to choose”; no organization selector or guest organization-choice action is exposed, and the guest guidance remains after reload."
+            "The guest sees \u201cSign in to choose\u201d; no organization selector or guest organization-choice action is exposed, and the guest guidance remains after reload."
           ],
           "dimensions": [
             "warm",
@@ -2852,7 +2852,7 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
+            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
             "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
             "Perform a full extension Reload and confirm the organization persists."
           ],
@@ -2878,7 +2878,7 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
+            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
             "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
             "Perform a full extension Reload and confirm the organization persists."
           ],
@@ -3004,7 +3004,7 @@
             "Reload/reopen Settings in the same guest state; confirm the unavailable-state guidance remains."
           ],
           "expected": [
-            "The guest sees “Choose an organization above” and no agent picker or selection action; this unavailable-state guidance remains after reload."
+            "The guest sees \u201cChoose an organization above\u201d and no agent picker or selection action; this unavailable-state guidance remains after reload."
           ],
           "dimensions": [
             "warm",
@@ -4551,11 +4551,11 @@
                     "docs/stabilization/reports/cookies-prompt-semantics.json",
                     "docs/stabilization/reports/native-denial-operator-005.json"
                   ],
-                  "detail": "Ruling inferred from official Chrome warning semantics and current broad-host manifest, corroborated by actual no-prompt OFF→ON observation. Not a denial pass. Re-evaluate on browser/manifest warning-policy change."
+                  "detail": "Ruling inferred from official Chrome warning semantics and current broad-host manifest, corroborated by actual no-prompt OFF\u2192ON observation. Not a denial pass. Re-evaluate on browser/manifest warning-policy change."
                 },
                 "current-grant-removal-reload": {
                   "status": "unverified",
-                  "detail": "Current005 only observed UI OFF→ON; prior build grant/removal/reload remains historical."
+                  "detail": "Current005 only observed UI OFF\u2192ON; prior build grant/removal/reload remains historical."
                 }
               }
             }
@@ -4799,7 +4799,7 @@
             "Select all, agent, pilot, parallel and webmcp receipt filters."
           ],
           "expected": [
-            "Visible receipt rows and counts match selected origin; empty filter shows “No receipts with origin=…”; all restores every row."
+            "Visible receipt rows and counts match selected origin; empty filter shows \u201cNo receipts with origin=\u2026\u201d; all restores every row."
           ],
           "dimensions": [
             "warm",
@@ -6646,7 +6646,7 @@
                 "reload": "unverified",
                 "service-error": "unverified"
               },
-              "detail": "Switched Log → Bridges → Log. Both selected subviews rendered their intended content; Logs retained its current 113-row state when revisited, while Bridges showed its existing channel and health state. No bridge action was invoked.",
+              "detail": "Switched Log \u2192 Bridges \u2192 Log. Both selected subviews rendered their intended content; Logs retained its current 113-row state when revisited, while Bridges showed its existing channel and health state. No bridge action was invoked.",
               "remaining_criteria": [
                 "Reload and service-error observations required for the declared dimensions."
               ]
@@ -6689,7 +6689,7 @@
                 "reload": "unverified",
                 "service-error": "unverified"
               },
-              "detail": "Search for existing message text ‘engine not found’ returned 2 rows. Search for the existing detail value ‘1.4.204’ returned 14 rows, demonstrating serialized details are searched. Clearing search restored the unfiltered set (114 rows after naturally arriving events).",
+              "detail": "Search for existing message text \u2018engine not found\u2019 returned 2 rows. Search for the existing detail value \u20181.4.204\u2019 returned 14 rows, demonstrating serialized details are searched. Clearing search restored the unfiltered set (114 rows after naturally arriving events).",
               "remaining_criteria": [
                 "Reload and service-error observations required for the declared dimensions."
               ]
@@ -6890,7 +6890,7 @@
                 "reload": "unverified",
                 "service-error": "unverified"
               },
-              "detail": "Expanded and collapsed an existing event with details. Clicking a row without details left the accessibility tree unchanged. Source=none showed ‘No events match the current filter.’ The distinct ‘No events yet’ state was not exercised because clearing logs is excluded.",
+              "detail": "Expanded and collapsed an existing event with details. Clicking a row without details left the accessibility tree unchanged. Source=none showed \u2018No events match the current filter.\u2019 The distinct \u2018No events yet\u2019 state was not exercised because clearing logs is excluded.",
               "remaining_criteria": [
                 "Reload and service-error observations required for the declared dimensions."
               ]
@@ -7671,7 +7671,7 @@
                 "reload": "unverified",
                 "service-error": "unverified"
               },
-              "detail": "Source=none deselected all source pills, reduced the row count to 0, and showed ‘No events match the current filter.’",
+              "detail": "Source=none deselected all source pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019",
               "remaining_criteria": [
                 "Reload and service-error observations required for the declared dimensions."
               ]
@@ -7929,7 +7929,7 @@
                 "reload": "unverified",
                 "service-error": "unverified"
               },
-              "detail": "Level=none deselected all four level pills, reduced the row count to 0, and showed ‘No events match the current filter.’",
+              "detail": "Level=none deselected all four level pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019",
               "remaining_criteria": [
                 "Reload and service-error observations required for the declared dimensions."
               ]
@@ -8288,7 +8288,7 @@
         {
           "id": "EXT-F-1006-C07",
           "label": "Desktop port override validation",
-          "action": "Enter blank, valid 1–65535, 0, >65535, fractional and nonnumeric values; Save."
+          "action": "Enter blank, valid 1\u201365535, 0, >65535, fractional and nonnumeric values; Save."
         },
         {
           "id": "EXT-F-1006-C09",
@@ -8589,7 +8589,7 @@
             "Signed in as an admin; open Debug > Bridges; use local test services and harmless requests."
           ],
           "steps": [
-            "Enter blank, valid 1–65535, 0, >65535, fractional and nonnumeric values; Save."
+            "Enter blank, valid 1\u201365535, 0, >65535, fractional and nonnumeric values; Save."
           ],
           "expected": [
             "Blank clears; valid integer persists and discovery reruns; invalid values are rejected and existing override remains."
@@ -9978,7 +9978,7 @@
             "Open Scrape before capturing, then navigate active tab to another URL."
           ],
           "expected": [
-            "Empty state invites capture; previous page’s content and Saved badge clear after navigation."
+            "Empty state invites capture; previous page\u2019s content and Saved badge clear after navigation."
           ],
           "dimensions": [
             "warm",
@@ -10556,7 +10556,7 @@
             "Run/auto-run on browser-internal or restricted URL."
           ],
           "expected": [
-            "No fabricated partial audit is shown; clear “cannot be audited” or capture failure appears."
+            "No fabricated partial audit is shown; clear \u201ccannot be audited\u201d or capture failure appears."
           ],
           "dimensions": [
             "warm",
@@ -10781,7 +10781,7 @@
             "Choose Ask the agent to fix this for a finding."
           ],
           "expected": [
-            "The finding’s section and message are staged in Chat composer; user can review before sending."
+            "The finding\u2019s section and message are staged in Chat composer; user can review before sending."
           ],
           "dimensions": [
             "warm",
@@ -11369,7 +11369,7 @@
         {
           "id": "EXT-F-1010-C08",
           "label": "Overlay stop toolbar control",
-          "action": "Click ✕ in injected highlighter toolbar."
+          "action": "Click \u2715 in injected highlighter toolbar."
         },
         {
           "id": "EXT-F-1010-C09",
@@ -11673,7 +11673,7 @@
             "Sign in; open Highlights on a controlled page with test text and selectable elements."
           ],
           "steps": [
-            "Click ✕ in injected highlighter toolbar."
+            "Click \u2715 in injected highlighter toolbar."
           ],
           "expected": [
             "Overlay sends inactive state and unmounts all page listeners/host."
@@ -17684,7 +17684,7 @@
             "On a conversation with disposable plan/task/todo rows, click Wipe all and cancel; verify rows remain. Reopen, confirm, then refresh."
           ],
           "expected": [
-            "Cancel preserves all rows; confirm removes that conversation’s plan, tasks and todos; dialog names permanent consequence."
+            "Cancel preserves all rows; confirm removes that conversation\u2019s plan, tasks and todos; dialog names permanent consequence."
           ],
           "dimensions": [
             "warm",
@@ -20658,7 +20658,7 @@
             "Signed-in member who belongs to two organizations; other membership has a controlled waiting handoff."
           ],
           "steps": [
-            "Open Capture with active organization A; use “waiting elsewhere” control to switch to organization B; wait for subscription refresh."
+            "Open Capture with active organization A; use \u201cwaiting elsewhere\u201d control to switch to organization B; wait for subscription refresh."
           ],
           "expected": [
             "Only a membership-listed organization can be selected; device org switches and queue refreshes; pointer clears after successful switch; membership loss yields explicit explanation."
@@ -20715,7 +20715,7 @@
             "Signed-in member with controlled needs_drive handoff and safe test page."
           ],
           "steps": [
-            "Open it; perform page sign-in/navigation manually; enter page-specific note and capture. Repeat with another handoff and choose This one won’t work with a reason. Follow a valid pickup pointer."
+            "Open it; perform page sign-in/navigation manually; enter page-specific note and capture. Repeat with another handoff and choose This one won\u2019t work with a reason. Follow a valid pickup pointer."
           ],
           "expected": [
             "Extension leaves page actions to user until explicit capture; capture completes and updates status; skip removes only selected handoff and records note; pickup opens matching item/tab."
@@ -24081,7 +24081,7 @@
       "name": "Run built-in browser AI scenarios",
       "surface": "Tools Smart tests",
       "entry_points": [
-        "Tools tab → Tools Smart tests"
+        "Tools tab \u2192 Tools Smart tests"
       ],
       "controls": [
         {
@@ -24449,7 +24449,7 @@
       "name": "Record active browser tab",
       "surface": "Tools Recorder",
       "entry_points": [
-        "Tools tab → Tools Recorder"
+        "Tools tab \u2192 Tools Recorder"
       ],
       "controls": [
         {
@@ -24758,7 +24758,7 @@
       "name": "Generate and use credentials",
       "surface": "Vault password generator",
       "entry_points": [
-        "Tools tab → Vault password generator"
+        "Tools tab \u2192 Vault password generator"
       ],
       "controls": [
         {
