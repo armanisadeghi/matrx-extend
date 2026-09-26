@@ -1,0 +1,33 @@
+{
+  "runId": "release-stabilization-027",
+  "reviewer": "independent integration evidence peer",
+  "verdictAIntegration": "PASS for local release, publication, and remote CI of v0.2.72 at exact SHA; primary Chrome acceptance remains pending.",
+  "verdictBQuality": "PASS for 15 local release gates with disclosed skips and debt; D20 source repair preserves behavioral assertions and error reporting.",
+  "d20RetestClosure": {
+    "verdictABehavior": "PASS for the observed CI teardown symptom: exact repaired SHA CI succeeded, popup-claim-recovery passed, and no EnvironmentTeardownError or Unhandled Errors section appeared. This intermittent race has no deterministic local red reproduction or future-flake guarantee.",
+    "verdictBSourceQuality": "PASS: bff8ecea adds unconditional React cleanup and Vitest dynamic-import settlement in afterEach; all original claim quarantine, alert, explicit Open Scrape routing, and consumed-intent assertions remain. No test failure suppression, weakened configuration, or owned-behavior mock was added.",
+    "closureRecommendation": "Eligible to transition EXT-D-0020 from in-fix to closed for the observed CI symptom; owner records the state transition."
+  },
+  "evidence": [
+    "Wrapper RESOURCE_JOB_EXIT at 2026-09-26T17:52:30.365Z reports child exit 0.",
+    "Latest release log ends exit 0, lists 15 checks exit 0, 1446 passed and 3 skipped unit tests.",
+    "Remote origin/main and v0.2.72 tag both resolve to 4a57aa4af4e7260665d166f6aba4a5371d948b6d.",
+    "Store and local ZIP SHA-256 hashes independently recomputed; unpacked tree hash 25394eea2b1f8d4805731986c021996b6bdb6cc0ca68718c087cfdb1eac76b37, 532 files, manifest 0.2.72.",
+    "GitHub CI 36260569407 succeeded on exact release SHA; bff8ecea D20 repair is its ancestor. CI reports 179 passed and 1 skipped files, 1445 passed and 4 skipped tests; popup-claim-recovery passed in 1554ms. No EnvironmentTeardownError or Unhandled Errors section appeared."
+  ],
+  "limits": [
+    "Lint reported 572 warnings; package-twins reported five censused debt items; mandate scan reported 11 non-blocking findings.",
+    "Local checkout fast-forward failed during release due diverged review/policy commits; owner merged remote afterward without discarding them.",
+    "No primary Chrome real-data exercise or Chrome Web Store upload was verified in this lane.",
+    "D20 closure verdict is scoped to the observed intermittent CI symptom; no deterministic local red or future-flake guarantee."
+  ],
+  "sources": [
+    "/tmp/matrx-release-stabilization-027.log",
+    "tmp/release-logs/release-2026-09-26_10-50-16.log",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/36260569407",
+    "origin/main",
+    "refs/tags/v0.2.72",
+    ".output/matrx-extend-0.2.72-store.zip",
+    ".output/matrx-extend-0.2.72-local.zip"
+  ]
+}

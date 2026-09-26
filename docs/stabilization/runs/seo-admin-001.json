@@ -1,0 +1,52 @@
+{
+  "id": "seo-admin-001",
+  "feature_id": "EXT-F-1008",
+  "at": "2026-09-26T17:54:21.394Z",
+  "status": "partial",
+  "mode": "admin",
+  "scope": "Real admin identity and explicit organization prerequisite; T09 title/heading-group presence on two public pages; T07 admin menu option availability.",
+  "runtime_output": "test-results/seo-admin-acceptance.json",
+  "runtime_output_sha256": "b1755ca2ab53dc7f121fb4b637ab5a240a6d55b27cd8df734809d6dda358bb93",
+  "resource_log": "/tmp/matrx-seo-admin-001.log",
+  "resource_log_sha256": "ac655c49b19eb8f995c180c072544da2fa2085538ecd3e9402481c2ee9096c62",
+  "resource": {
+    "run_id": "seo-admin-001",
+    "admission_code": "RESOURCE_ADMITTED",
+    "admitted_at": "2026-09-26T17:54:21.394Z",
+    "watch_code": "RESOURCE_WATCH_HEALTHY",
+    "child_exit_code": 0,
+    "child_signal": null,
+    "exit_at": "2026-09-26T17:54:40.527Z",
+    "wrapper_stdout": ["PARTIAL seo_admin_native_batch"],
+    "wrapper_session": "root confirmed wrapper 32965 exit 0"
+  },
+  "release_receipt": {
+    "source_sha": "4a57aa4af4e7260665d166f6aba4a5371d948b6d",
+    "version": "0.2.72",
+    "receipt_source": "docs/stabilization/runs/release-stabilization-027.json",
+    "harness_provenance": "Native harness verified receipt before launch."
+  },
+  "runtime_source": {
+    "acceptance_runner": "tests/browser/seo-admin-acceptance.mjs",
+    "acceptance_runner_commit": "f9209891ea32014b1c5b0734ef04134c0d30a1f7",
+    "driver_commit": "dced501c9f7b37d9c28e8480cb0961b9c5df1d44",
+    "both_precede_admission": true
+  },
+  "acceptance_result": {
+    "status": "partial",
+    "target_count": 4,
+    "verified": [
+      "T07 real admin and explicit organization prerequisite",
+      "T09 page 0 title and heading-group presence match public DOM",
+      "T09 page 1 title and heading-group presence match public DOM",
+      "T07 menu offers text, agent, and JSON choices without activation"
+    ]
+  },
+  "limitations": [
+    "Does not establish full T07 or T09 completion.",
+    "No clipboard contents, saved audit/history, recommendations, Chat/Pilot, or member role exercised.",
+    "Positive admin JSON availability does not establish a member exclusion gate.",
+    "Heading check establishes presence only; remaining SEO fields and groups remain unverified."
+  ],
+  "peer_report": "docs/stabilization/reports/seo-admin001-runtime-peer.json"
+}

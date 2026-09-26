@@ -1318,7 +1318,9 @@
             "release-stabilization-018",
             "release-stabilization-021",
             "release-stabilization-023",
-            "popup-teardown-suite-001"
+            "popup-teardown-suite-001",
+            "popup-teardown-green-002",
+            "release-stabilization-027"
           ],
           "retest_status": "pass"
         },
@@ -1351,7 +1353,9 @@
             "release-stabilization-018",
             "release-stabilization-021",
             "release-stabilization-023",
-            "popup-teardown-suite-001"
+            "popup-teardown-suite-001",
+            "popup-teardown-green-002",
+            "release-stabilization-027"
           ],
           "retest_status": "pass"
         },
@@ -1384,7 +1388,9 @@
             "release-stabilization-018",
             "release-stabilization-021",
             "release-stabilization-023",
-            "popup-teardown-suite-001"
+            "popup-teardown-suite-001",
+            "popup-teardown-green-002",
+            "release-stabilization-027"
           ],
           "retest_status": "pass"
         }
@@ -1418,7 +1424,25 @@
           "wave": "D"
         }
       ],
-      "integration_status": "Release005 green, main/tag760c7a1 published, both zip and unpacked tree hashes verified. No Store upload or loaded runtime proof."
+      "integration_status": "Release005 green, main/tag760c7a1 published, both zip and unpacked tree hashes verified. No Store upload or loaded runtime proof.",
+      "runtime_evidence": [
+        {
+          "run_id": "ci-36259193096",
+          "status": "fail",
+          "defect_id": "EXT-D-0020",
+          "source_sha": "e1cd63d629d501993bc4188468ea84970568bc7e",
+          "evidence": "https://github.com/armanisadeghi/matrx-extend/actions/runs/36259193096",
+          "detail": "Previously fixed popup-claim-recovery teardown regression recurred with explicit imports still present:1445 assertions pass/4skip, one EnvironmentTeardownError. Reopened; no passing retry substitutes for repair."
+        },
+        {
+          "run_id": "release-stabilization-027",
+          "status": "pass",
+          "defect_id": "EXT-D-0020",
+          "source_sha": "4a57aa4af4e7260665d166f6aba4a5371d948b6d",
+          "independent_review": "docs/stabilization/reports/release027-peer.json",
+          "detail": "Reopened regression repaired with explicit cleanup+dynamic import settlement, actualmergedCI36260569407 success. Historicalfailedrunretained; no deterministicredclaim."
+        }
+      ]
     },
     {
       "id": "EXT-F-1001",
@@ -5255,6 +5279,19 @@
           "report": "docs/stabilization/reports/native-0268-reload.json",
           "proven": "Nativebuild/ID/path; account/org/autoport/4OFF/informationalDevTools anddisabledStore retained; bridgeautomaticallyconnectedwithin30secondsafterreload.",
           "limits": "No desktopend-to-endfunctionality, member/guest orfullSettings claim."
+        },
+        {
+          "run_id": "native-0272-reload",
+          "mode": "admin",
+          "build": "0.2.72",
+          "status": "partial",
+          "case_ids": [
+            "EXT-F-1003-T45",
+            "EXT-F-1003-T48"
+          ],
+          "independent_review": "docs/stabilization/reports/native-0272-reload.json",
+          "environment_followup": "docs/stabilization/reports/bridge0272-prerequisite.json",
+          "detail": "Native reload preservesadmin/org/autoport/fouroptionalpermissionsOFF; bridgeNotconnectedimmediateand30s. Laterreadonlyhostprobe findsnoengine/discoveryfile/scanportroute; no historicalcause or fullpairing/bridgehealth claim."
         }
       ]
     },
@@ -10848,7 +10885,9 @@
             "seo-guest-002",
             "seo-guest-003",
             "seo-guest-004",
-            "seo-guest-005"
+            "seo-guest-005",
+            "seo-guest-006",
+            "seo-guest-007"
           ],
           "retest_status": "not-run"
         },
@@ -10861,7 +10900,9 @@
         "admin": {
           "test_status": "unverified",
           "defect_ids": [],
-          "run_ids": [],
+          "run_ids": [
+            "seo-admin-001"
+          ],
           "retest_status": "not-run"
         }
       },
@@ -10989,6 +11030,104 @@
           "rechecked_prior_subtargets": 7,
           "independent_review": "docs/stabilization/reports/seo005-runtime-peer.json",
           "limits": "Two bounded restricted-page/recovery predicates only. No full T03 or feature pass; unreachable HTTP(S), other restricted schemes, reload, fresh recapture and all other outstanding dimensions remain unverified."
+        },
+        {
+          "run_id": "seo-guest-006",
+          "mode": "guest",
+          "build": "0.2.70",
+          "status": "partial",
+          "accepted_subtargets": [
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "sparse_public_detail_groups",
+              "status": "pass",
+              "evidence": {
+                "descriptionAbsent": true,
+                "canonicalAbsent": true,
+                "groupsMatchPublicDom": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "rich_public_detail_groups_and_canonical_door",
+              "status": "pass",
+              "evidence": {
+                "descriptionMatchesPublicDom": true,
+                "canonicalMatchesPublicDom": true,
+                "groupsMatchPublicDom": true,
+                "outboundAnchorSafe": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "canonical_outbound_opens_expected_public_tab",
+              "status": "pass",
+              "evidence": {
+                "trustedInput": true,
+                "destinationMatchesPublicDom": true
+              }
+            }
+          ],
+          "rechecked_prior_subtargets": 9,
+          "independent_review": "docs/stabilization/reports/seo006-runtime-peer.json",
+          "limits": "Sparse/rich public detail predicates and actual canonical outbound tab only; remaining detail values/schema/hreflang/performance and all member/admin/fullfeature coverage unverified."
+        },
+        {
+          "run_id": "seo-admin-001",
+          "mode": "admin",
+          "build": "0.2.72",
+          "status": "partial",
+          "accepted_subtargets": [
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "real_admin_and_explicit_organization_prerequisite",
+              "status": "pass",
+              "evidence": {
+                "adminIdentityVisible": true,
+                "organizationSelectedThroughSettings": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "admin_public_page_0_title_and_heading_presence",
+              "status": "pass",
+              "evidence": {
+                "titleMatchesPublicDom": true,
+                "headingPresenceMatchesPublicDom": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "admin_public_page_1_title_and_heading_presence",
+              "status": "pass",
+              "evidence": {
+                "titleMatchesPublicDom": true,
+                "headingPresenceMatchesPublicDom": true
+              }
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "admin_menu_offers_json_without_copying",
+              "status": "pass",
+              "evidence": {
+                "textChoice": true,
+                "agentChoice": true,
+                "jsonChoice": true
+              }
+            }
+          ],
+          "independent_review": "docs/stabilization/reports/seo-admin001-runtime-peer.json",
+          "limits": "Realadmin/orgprerequisite, two publictitle/headingpresence checks and JSONmenu availability only. No clipboardcontents, persistence/history, recommendations, membergate orfullfeatureclaim."
+        },
+        {
+          "run_id": "seo-guest-007",
+          "mode": "guest",
+          "build": "0.2.72",
+          "status": "partial",
+          "rechecked_prior_subtargets": 12,
+          "new_subtargets": 0,
+          "independent_review": "docs/stabilization/reports/seo007-runtime-peer.json",
+          "limits": "Currentbuildrecheck of prior12boundedpredicates. Design-systempopoverfinding limitedto actualCopyauditmenu; nofullfeature or allpopover claim."
         }
       ]
     },
@@ -21456,7 +21595,9 @@
         "admin": {
           "test_status": "unverified",
           "defect_ids": [],
-          "run_ids": [],
+          "run_ids": [
+            "member-vault-access-011"
+          ],
           "retest_status": "not-run"
         }
       },
@@ -21464,6 +21605,28 @@
       "missing_items": [],
       "readiness_gaps": [
         "No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel."
+      ],
+      "runtime_evidence": [
+        {
+          "run_id": "member-vault-access-011",
+          "mode": "admin",
+          "build": "0.2.72",
+          "status": "partial",
+          "case_ids": [
+            "EXT-F-2011-T01"
+          ],
+          "control_ids": [
+            "EXT-F-2011-C04"
+          ],
+          "independent_review": "docs/stabilization/reports/member011-runtime-peer.json",
+          "accepted_subtargets": [
+            "actualadminwebandextensionsignin",
+            "approveddeviceorgselectedthroughSettings",
+            "knownstaleno-workspaceCapturedismissal",
+            "linkedactiveVaultMineandSharedwithsettledinventory"
+          ],
+          "limits": "Maskedtitlecandidatecountzero is not globalcredentialabsence, memberlogin, current-site readiness, content correctness, reload, create/edit/use or fullVaulthealth. All featurecellsremainunverified."
+        }
       ]
     },
     {

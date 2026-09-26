@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "review": "seo-admin001-runtime-peer",
+  "run_id": "seo-admin-001",
+  "reviewed_at": "2026-09-26",
+  "acceptance": "PARTIAL: four bounded predicates pass; T07 and T09 and EXT-F-1008 remain incomplete.",
+  "runtime": "Admission at 17:54:21.394Z; healthy resource watch at 17:54:37.794Z; child exit 0/no signal at 17:54:40.527Z; root confirmed wrapper 32965 exit 0.",
+  "provenance": "Loaded 0.2.72 receipt source 4a57aa4; runner f9209891 and driver dced501c predate admission.",
+  "quality": "PASS WITH LIMITS: real admin identity and explicit organization selection; two public DOM title/heading-presence comparisons; JSON menu availability without activation.",
+  "limits": "No clipboard evidence or member-role evidence; do not infer clipboard content or member gate. Remaining T07/T09 and feature coverage unverified.",
+  "verification": "Compared sanitized acceptance artifact, resource log, runner assertions, inventory T07/T09, and release receipt; no runtime/browser/build/tests launched. See docs/stabilization/runs/seo-admin-001.json."
+}

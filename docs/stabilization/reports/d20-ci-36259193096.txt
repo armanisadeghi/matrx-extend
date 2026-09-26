@@ -1,0 +1,49 @@
+Source: gh run view 36259193096 --log-failed
+Head: e1cd63d629d501993bc4188468ea84970568bc7e
+Only teardown error and run summary retained; ANSI escapes removed.
+
+checks	Unit tests	2026-09-26T17:31:51.9611313Z ⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+checks	Unit tests	2026-09-26T17:31:51.9612141Z 
+checks	Unit tests	2026-09-26T17:31:51.9612692Z Vitest caught 1 unhandled error during the test run.
+checks	Unit tests	2026-09-26T17:31:51.9614206Z This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+checks	Unit tests	2026-09-26T17:31:51.9632029Z 
+checks	Unit tests	2026-09-26T17:31:51.9632970Z ⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+checks	Unit tests	2026-09-26T17:31:51.9635541Z EnvironmentTeardownError: Cannot load '/node_modules/.pnpm/clsx@2.1.1/node_modules/clsx/dist/clsx.mjs' imported from /home/runner/work/matrx-extend/matrx-extend/src/lib/utils.ts after the environment was torn down. This is not a bug in Vitest. The last recorded callstack:
+checks	Unit tests	2026-09-26T17:31:51.9637336Z - /node_modules/.pnpm/clsx@2.1.1/node_modules/clsx/dist/clsx.mjs
+checks	Unit tests	2026-09-26T17:31:51.9637858Z - /home/runner/work/matrx-extend/matrx-extend/src/lib/utils.ts
+checks	Unit tests	2026-09-26T17:31:51.9638405Z - /home/runner/work/matrx-extend/matrx-extend/src/components/CopyMenu.tsx
+checks	Unit tests	2026-09-26T17:31:51.9638996Z - /home/runner/work/matrx-extend/matrx-extend/src/features/chat/ChatView.tsx
+checks	Unit tests	2026-09-26T17:31:51.9640080Z - /home/runner/work/matrx-extend/matrx-extend/src/entrypoints/sidepanel/App.tsx
+checks	Unit tests	2026-09-26T17:31:51.9641185Z - /home/runner/work/matrx-extend/matrx-extend/tests/unit/popup-claim-recovery.test.tsx
+checks	Unit tests	2026-09-26T17:31:51.9641849Z  ❯ src/lib/utils.ts:1:1
+checks	Unit tests	2026-09-26T17:31:51.9675061Z       1| import { type ClassValue, clsx } from 'clsx';
+checks	Unit tests	2026-09-26T17:31:51.9675711Z        | ^
+checks	Unit tests	2026-09-26T17:31:51.9676268Z       2| import { twMerge } from 'tailwind-merge';
+checks	Unit tests	2026-09-26T17:31:51.9676735Z       3|
+checks	Unit tests	2026-09-26T17:31:51.9677219Z  ❯ src/components/CopyMenu.tsx:16:1
+checks	Unit tests	2026-09-26T17:31:51.9677644Z 
+checks	Unit tests	2026-09-26T17:31:51.9678962Z This error originated in "tests/unit/popup-claim-recovery.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+checks	Unit tests	2026-09-26T17:31:51.9680609Z ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+checks	Unit tests	2026-09-26T17:31:51.9681010Z 
+checks	Unit tests	2026-09-26T17:31:51.9684988Z 
+checks	Unit tests	2026-09-26T17:31:51.9698367Z  Test Files  179 passed | 1 skipped (180)
+checks	Unit tests	2026-09-26T17:31:51.9706598Z       Tests  1445 passed | 4 skipped (1449)
+checks	Unit tests	2026-09-26T17:31:51.9707659Z      Errors  1 error
+checks	Unit tests	2026-09-26T17:31:51.9708416Z    Start at  17:30:35
+checks	Unit tests	2026-09-26T17:31:51.9710249Z    Duration  76.63s (transform 5.22s, setup 982ms, import 22.40s, tests 48.66s, environment 56.09s)
+checks	Unit tests	2026-09-26T17:31:51.9712788Z 
+checks	Unit tests	2026-09-26T17:31:51.9738010Z 
+checks	Unit tests	2026-09-26T17:31:51.9755791Z ##[error]EnvironmentTeardownError: Cannot load '/node_modules/.pnpm/clsx@2.1.1/node_modules/clsx/dist/clsx.mjs' imported from /home/runner/work/matrx-extend/matrx-extend/src/lib/utils.ts after the environment was torn down. This is not a bug in Vitest. The last recorded callstack:
+checks	Unit tests	- /node_modules/.pnpm/clsx@2.1.1/node_modules/clsx/dist/clsx.mjs
+checks	Unit tests	- /home/runner/work/matrx-extend/matrx-extend/src/lib/utils.ts
+checks	Unit tests	- /home/runner/work/matrx-extend/matrx-extend/src/components/CopyMenu.tsx
+checks	Unit tests	- /home/runner/work/matrx-extend/matrx-extend/src/features/chat/ChatView.tsx
+checks	Unit tests	- /home/runner/work/matrx-extend/matrx-extend/src/entrypoints/sidepanel/App.tsx
+checks	Unit tests	- /home/runner/work/matrx-extend/matrx-extend/tests/unit/popup-claim-recovery.test.tsx
+checks	Unit tests	 ❯ src/lib/utils.ts:1:1
+checks	Unit tests	 ❯ src/components/CopyMenu.tsx:16:1
+checks	Unit tests	
+checks	Unit tests	This error originated in "tests/unit/popup-claim-recovery.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+checks	Unit tests	
+checks	Unit tests	2026-09-26T17:31:52.0506863Z  ELIFECYCLE  Test failed. See above for more details.
+checks	Unit tests	2026-09-26T17:31:52.0904627Z ##[error]Process completed with exit code 1.

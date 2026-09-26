@@ -1,0 +1,49 @@
+{
+  "id": "release-stabilization-028",
+  "status": "published-local-ci-in-progress",
+  "wrapper": {
+    "source": "/tmp/matrx-release-stabilization-028.log",
+    "childExitCode": 0,
+    "finishedAt": "2026-09-26T18:22:12.028Z"
+  },
+  "rawLog": "tmp/release-logs/latest.log",
+  "release": {
+    "version": "0.2.73",
+    "tag": "v0.2.73",
+    "sourceSha": "6acf1801d3ed65c016b96cf3cb194e0a83163e81",
+    "remoteMainAndTagVerified": true,
+    "storeZipSha256": "884c2c104153780ccc272443a555bd6f4cc8267a68eb9e3b6ee152ec54e8fb68",
+    "unpackedTreeSha256": "560f397c2055a01ecdda11321f3b0729cb61aabca956a9ebf5054e98e86523cb",
+    "unpackedFileCount": 532,
+    "manifestVersion": "0.2.73"
+  },
+  "localChecks": {
+    "passed": 15,
+    "failed": 0,
+    "unitPassed": 1446,
+    "unitSkipped": 3,
+    "unitFailed": 0,
+    "lintWarnings": 572,
+    "packageTwinCensusDebt": 5,
+    "mandateScanFindingsNonBlocking": 11
+  },
+  "gitCheckoutWarning": "Release could not fast-forward the shared checkout because local review/policy commits diverged. The owner subsequently merged origin/main locally; this checkout is now four commits ahead of origin/main. The validated candidate remains 6acf1801d3ed65c016b96cf3cb194e0a83163e81.",
+  "remoteCI": {
+    "runId": 36262295396,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/36262295396",
+    "headSha": "6acf1801d3ed65c016b96cf3cb194e0a83163e81",
+    "statusAtReview": "in_progress",
+    "conclusionAtReview": null,
+    "ownerFollowup": {
+      "at": "2026-09-26T18:27:06.825237+00:00",
+      "status": "completed",
+      "conclusion": "success",
+      "verifiedVia": "gh run list exact headSha match"
+    }
+  },
+  "open": [
+    "Primary Chrome real-data reload was not verified in this lane.",
+    "Chrome Web Store upload was not verified in this lane."
+  ],
+  "peerReport": "docs/stabilization/reports/release028-peer.json"
+}

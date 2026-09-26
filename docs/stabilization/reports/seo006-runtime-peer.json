@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "review": "seo006-runtime-peer",
+  "run_id": "seo-guest-006",
+  "reviewed_at": "2026-09-26",
+  "acceptance": "PARTIAL: exactly three new T09 subtargets (sparse_public_detail_groups; rich_public_detail_groups_and_canonical_door; canonical_outbound_opens_expected_public_tab); nine prior targets are rechecks, not new coverage. T09 and EXT-F-1008 remain incomplete; the artifact's overall status is partial.",
+  "quality": "PASS WITH LIMITS: runner compares displayed fields/group presence with public DOM on sparse Example and rich MDN pages, and checks safe canonical link attributes, trusted activation, and expected destination. Inventory T09 calls for these detail/link dimensions.",
+  "runtime": "Log admits at 17:37:11.917Z with no reasons and records child exit 0/no signal at 17:37:18.199Z; owner confirmed wrapper 67563 exit 0. Acceptance has 12 passing records and last_safe_stage canonical_outbound_verified.",
+  "provenance": "Receipt is 0.2.70/source 8742ff91f07cb2bb13f46e84ce94cf54ac8fb5c4. Runner 65436c9ec34e99736386772f1a221cba8f553fe5 and driver dced501c9f7b37d9c28e8480cb0961b9c5df1d44 predate admission.",
+  "oracle_limits": "Group presence does not establish every detail semantic; first-heading checks expected text but not heading levels/count. Runtime output omits build/runner IDs. Remaining T09 schema/hreflang/broken-image/readability/performance/other doors, listed T01-T08/T10-T14 gaps, and member/admin modes remain unverified.",
+  "verification": "Independent comparison of acceptance JSON, resource log, runner source, inventory, run 005, and release receipt; no browser/runtime/build/tests launched. See docs/stabilization/runs/seo-guest-006.json."
+}

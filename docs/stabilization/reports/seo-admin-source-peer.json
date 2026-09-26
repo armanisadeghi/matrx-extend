@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "review": "seo-admin-source-peer",
+  "target_commit": "ad35cf38",
+  "runtime_verdict": "PENDING: no browser, build, runner, or release was executed in this lane; no T07/T09 runtime pass is attested.",
+  "source_quality_verdict": "PASS_WITH_LIMITS: the owned native-panel harness uses a disposable profile; the runner signs in through the real web form, verifies the admin email and role in Settings, chooses the named organization through UI, and checks its on-device storage record. It injects no auth state, reads the secret only for form fill, discards raw exceptions, and records no secret, URL query, or DOM title in its receipt. It makes no clipboard, save, provider, Chat, or role-write action. Both SEO pages are public HTTPS; expected titles and h1 presence come from their DOM, with distinct titles to reject a stale first-page result. The linked active SEO pane must show the title and Re-audit, then the Copy audit popover must offer text, AI, and JSON without selecting an option. Browser and temporary profile cleanup are delegated to the owned harness, and the login tab closes in finally.",
+  "findings": [
+    "LIMIT: tests/browser/seo-admin-acceptance.mjs:203-216 equates the Headings group with h1 presence. SEO renders the group for any heading level, so a public page with h2 but no h1 would fail a correct UI. Sample all h1-h6 for this oracle; still describe the result as group presence, not full heading fidelity.",
+    "LIMIT: tests/browser/seo-admin-acceptance.mjs:136-140 locates any open element in the whole document containing two labels. Scope the menu to the clicked Copy audit trigger/popover to prevent another open menu from satisfying T07. The observed positive JSON option alone does not prove a non-admin exclusion gate.",
+    "LIMIT: the top-level catch and output write assume the harness created test-results; a pre-artifact harness failure can skip the JSON receipt, though stderr and exit code remain unverified."
+  ],
+  "coverage": "If the guarded runtime passes, count only T07 admin menu availability and T09 two-page title/heading-group presence as partial; remaining SEO details, clipboard content, saves/history, recommendations, and member gate remain open."
+}

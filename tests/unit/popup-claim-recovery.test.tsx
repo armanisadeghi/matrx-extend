@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -76,6 +76,13 @@ describe('popup capture claim recovery', () => {
   });
 
   afterEach(async () => {
+    // Vitest globals are disabled, so RTL cannot register automatic cleanup.
+    // Stop effects/subscriptions before draining every in-flight import, including
+    // pre-warming imports started by App. Awaiting a separately mocked view import
+    // does not establish that all work started by the mounted tree has settled.
+    // This must run even when a routing assertion throws.
+    cleanup();
+    await vi.dynamicImportSettled();
     const { POPUP_LAUNCH_INTENT_KEY } = await import('@/lib/panel/launch-intent');
     const rows = await chrome.storage.session.get(null);
     await chrome.storage.session.remove(
@@ -97,16 +104,12 @@ describe('popup capture claim recovery', () => {
     useSidepanelTabStore.getState().setTab('chat');
     const { App } = await import('@/entrypoints/sidepanel/App');
     render(<App />);
-    // App pre-warms the active view without awaiting its dynamic import.
-    // Let that import finish before this test can tear down its environment.
-    await import('@/features/chat/ChatView');
 
     const alert = await screen.findByRole('alert');
     expect(alert.textContent).toContain('Capture did not open');
     expect(useSidepanelTabStore.getState().tab).toBe('chat');
 
     await userEvent.click(screen.getByRole('button', { name: 'Open Scrape' }));
-    await import('@/features/scrape/ScrapeView');
     expect(useSidepanelTabStore.getState().tab).toBe('scrape');
     expect(screen.queryByRole('alert')).toBeNull();
 

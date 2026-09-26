@@ -1,0 +1,54 @@
+{
+  "id": "EXT-D-0021",
+  "feature_id": "EXT-F-1008",
+  "case_ids": ["EXT-F-1008-T05"],
+  "surface": "Admin SEO native acceptance runner: saved-history count oracle",
+  "auth_mode": "admin; read-only resume after one earlier authorized Save",
+  "reproduction": [
+    "In seo-admin-003 on released extension 0.2.73, use the existing 0600 Save checkpoint and run the owned native-panel acceptance under the root resource guard. The runner skips Save and opens the current URL's saved history.",
+    "Actual sanitized observation: selected SEO pane linked=true, one history toggle, historyOpen=true, one rendered history row, exact saved response ID present=true, auditErrorVisible=false, but parsed historyCount=0. The child exits 1 at history_list_wait/history_list_open.",
+    "Isolated JavaScript template-cooking RED: `const cooked = `^\\d+$`` produces `^d+$`; numericMatch for `1` is false and literalDMatch for `d` is true. GREEN for `^[0-9]+$`: numericMatch is true and literalDMatch is false. These are expression checks, not a browser retest."
+  ],
+  "expected": "The runner parses the component's numeric history count from its count span, then still requires rendered row count equality and the exact saved response ID in the opened history list.",
+  "actual": "A single backslash-d in the Runtime.evaluate template was cooked to literal d before browser evaluation. The numeric badge failed the runner regex and became zero, causing a false-negative T05 wait despite an open one-row history containing the saved ID.",
+  "evidence": [
+    "docs/stabilization/runs/seo-admin-003.json",
+    "/tmp/matrx-seo-admin-003.log",
+    "tests/browser/seo-admin-acceptance.mjs",
+    "src/features/seo/SeoView.tsx",
+    "docs/stabilization/reports/seo-admin-persistence-prepare.json"
+  ],
+  "severity": "S3: false-negative acceptance harness; no demonstrated SEO product failure or data loss",
+  "priority": "P1: restore trustworthy admin SEO history verification while retaining the one-write checkpoint",
+  "state": "fixed",
+  "owner": "/root/seo_admin_prepare",
+  "transition_history": [
+    {
+      "at": "2026-09-26T18:34:18.709Z",
+      "from": null,
+      "to": "open",
+      "reason": "Guarded admin003 child exited at history_list_wait with one visible saved row and a zero parsed badge count."
+    },
+    {
+      "at": "2026-09-26T18:37:01Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Runtime observation and source isolated the JavaScript template escape loss; the panel had opened and contained the actual saved row ID."
+    },
+    {
+      "at": "2026-09-26T18:37:01Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Scoped runner oracle repair targeted the numeric span and retained exact count and row-ID checks."
+    },
+    {
+      "at": "2026-09-26T18:37:01Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Commit e2855b39 replaced the cooked regex with template-safe [0-9] and read the component's single span.tabular-nums; isolated expression check turned green. Native UI retest remains pending."
+    }
+  ],
+  "fix_commits": ["e2855b39"],
+  "ui_retest": "pending; a fresh source peer and root-guarded read-only run must confirm T05 without another Save",
+  "closure_requirement": "Independent review plus a guarded read-only native rerun showing numeric badge count equals actual rows, exact saved ID appears in history and snapshot, and the same ID survives panel reload. Keep the existing checkpoint intact."
+}

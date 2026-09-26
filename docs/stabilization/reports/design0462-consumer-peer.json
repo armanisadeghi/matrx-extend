@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/design0462_consumer_peer",
+  "source_commit_at_review": "28653a9e7e9ca1d32b7685d727cb0eb0b4d7f269",
+  "scope": "Published-package and extension-source consumer review for @ai-matrx/design-system 0.46.1 to 0.46.2. No install, build, tests, or browser verification were run.",
+  "published_package_evidence": {
+    "source": "https://registry.npmjs.org/@ai-matrx/design-system/-/design-system-0.46.2.tgz compared in memory with https://registry.npmjs.org/@ai-matrx/design-system/-/design-system-0.46.1.tgz",
+    "changelog_claim": "0.46.2 calls itself an automatic changed-only republish for docs/metadata drift and says no source changes intended or consumer action required.",
+    "actual_runtime_delta": "The published ESM and CJS bundles add PopoverContent collisionPadding=16 by default, pass it to Radix, and add max-w-[calc(100vw-2rem)] for fixed sizing. The declaration adds a comment describing the phone gutter. The package version and changelog also change. No other JavaScript behavior difference was found in the changed entry bundles.",
+    "source_quality_note": "The changelog's docs/metadata-only characterization is inaccurate for the published tarballs. The runtime delta is narrow and appears intentional from the new declaration comment, but should be represented accurately upstream. This is distinct from extension consumer action."
+  },
+  "extension_applicability": {
+    "manifest": "package.json already declares @ai-matrx/design-system as latest; the lockfile and installed symlink still resolved 0.46.1 when reviewed.",
+    "source_census": "Extension src has 17 PopoverContent JSX call sites across chat, tasks, notes, showcase, and shared components. None sets collisionPadding or sizing. Several set w-72 or w-80, so the new default gutter and max-width can affect their positioning at narrow viewport widths without changing their call signatures.",
+    "consumer_action": "No extension source migration is required. Adopt the latest package through the root guarded dependency refresh; the changed default is supplied by the package."
+  },
+  "verdict_a_consumer_action": {
+    "status": "NONE_REQUIRED",
+    "reason": "The published package has no breaking API change or required host prop. Existing PopoverContent calls inherit its revised gutter behavior."
+  },
+  "verdict_b_installation_and_runtime": {
+    "status": "PENDING",
+    "reason": "The root guarded update to 0.46.2 is in progress outside this lane. The lockfile and installed package were 0.46.1 at review time. No 0.46.2 extension build or browser observation is claimed."
+  },
+  "verification": [
+    "Queried the npm registry for both published tarball URLs and compared all tarball members in memory.",
+    "Diffed changed JavaScript and declaration files and read the published 0.46.2 changelog entry.",
+    "Searched extension source for PopoverContent, collisionPadding, and sizing props."
+  ]
+}

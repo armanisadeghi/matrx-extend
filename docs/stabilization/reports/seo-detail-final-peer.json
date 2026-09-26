@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "review": "seo-detail-final-peer",
+  "reviewed_commits": ["bb2d2a44", "4d57928f", "65436c9e"],
+  "scope": "Fresh, zero-authorship source re-verification against EXT-F-1008-T09. No runner, browser, test, build, child agent, or implementation edit was used.",
+  "prior_findings": [
+    {
+      "finding": "Sparse detail target could pass when description or canonical were present.",
+      "status": "ADDRESSED",
+      "evidence": "tests/browser/seo-guest-acceptance.mjs now asserts sparseExpected.description === null and sparseExpected.canonical === null before recording the target (around lines 588-590). The earlier source defect is fixed in 65436c9e."
+    },
+    {
+      "finding": "Empty social metadata content could count as present in the public DOM oracle.",
+      "status": "ADDRESSED",
+      "evidence": "publicDetailEvidence now requires Boolean(node.getAttribute('content')) before counting og:/twitter: metadata (around lines 209-213), matching the nonempty signal rule."
+    }
+  ],
+  "runtime_verdict": {
+    "result": "PENDING",
+    "reason": "No owned native-panel execution or independent UI observation was performed here. Source shows the runner's planned actions and assertions only; it cannot prove the sparse/rich pages loaded, groups rendered, or the new tab actually opened. Existing aggregate status remains partial and does not establish these new T09 targets."
+  },
+  "source_quality_verdict": {
+    "result": "PASS_WITH_SCOPE_LIMITS",
+    "findings": [],
+    "evidence": [
+      "Sparse page expectations are asserted absent before a pass record; rich detail page must expose nonempty description and canonical and have a title distinct from the sparse page. The displayed detail state is compared with values independently sampled from the public tab DOM.",
+      "Canonical activation scopes a unique anchor to the linked selected SEO pane, verifies DOM-derived href, _blank, noopener and noreferrer, checks stable visible hit-tested geometry twice, dispatches mouse press/release, then waits for and verifies an actual new page at the public-DOM URL.",
+      "The added detail path uses ordinary public navigation and DOM reads. It does not inject authentication, mock network responses, read or write clipboard data, read secrets, invoke Chat/Pilot, or write account/external data. The aggregate script writes only its local test-results JSON artifact.",
+      "Inventory T09 expects available measured groups plus URL/schema doors. This addition verifies selected groups and one canonical URL door only; the preparation report correctly leaves hreflang/schema destinations, broken image fallback, readability/performance values, other URL doors, and member/admin modes outstanding."
+    ],
+    "limits": [
+      "The runner labels each target pass after its source assertions, but this report does not independently validate that report-generation logic at runtime.",
+      "The aggregate also repeats prior T01/T02/T03/T07 and title/headings observations. Those remain previously earned or partial and are not new evidence from these commits.",
+      "This does not constitute full T09, C09, or feature acceptance."
+    ]
+  }
+}

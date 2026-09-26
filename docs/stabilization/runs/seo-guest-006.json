@@ -1,0 +1,62 @@
+{
+  "id": "seo-guest-006",
+  "feature_id": "EXT-F-1008",
+  "at": "2026-09-26T17:37:11.917Z",
+  "status": "partial",
+  "mode": "guest",
+  "scope": "Guest SEO detail groups and canonical outbound door on sparse and rich public pages in an owned native side panel.",
+  "runtime_output": "test-results/seo-guest-acceptance.json",
+  "runtime_output_sha256": "04c3b68fd397b7e1f058ec1fdc4e4e83249fdc27a8440885a27b8e3533a97636",
+  "resource_log": "/tmp/matrx-seo-guest-006.log",
+  "resource_log_sha256": "327e1f4c951e03a1021d6cdc37569c0e93884b70d0a7a74e31aa2c0045c0504c",
+  "resource": {
+    "run_id": "seo-guest-006",
+    "admission_code": "RESOURCE_ADMITTED",
+    "admitted_at": "2026-09-26T17:37:11.917Z",
+    "child_exit_code": 0,
+    "child_signal": null,
+    "exit_at": "2026-09-26T17:37:18.199Z",
+    "wrapper_stdout": ["PARTIAL seo_guest_native_batch"],
+    "wrapper_session": "root reports wrapper 67563 confirmed exit 0"
+  },
+  "release_receipt": {
+    "source_sha": "8742ff91f07cb2bb13f46e84ce94cf54ac8fb5c4",
+    "version": "0.2.70",
+    "publish_state": "pushed",
+    "unpacked_tree_sha256": "ed3b3bf990740c5d604ecde803ee46904b4210c8dc39026696c00d1f65d5c5aa",
+    "receipt_source": "docs/stabilization/runs/release-stabilization-024.json",
+    "harness_provenance": "Native harness verifies receipt version, unpacked tree digest, and store ZIP digest before launch."
+  },
+  "runtime_source": {
+    "acceptance_runner": "tests/browser/seo-guest-acceptance.mjs",
+    "acceptance_runner_commit": "65436c9ec34e99736386772f1a221cba8f553fe5",
+    "acceptance_runner_commit_time": "2026-09-26T10:32:29-07:00",
+    "driver_commit": "dced501c9f7b37d9c28e8480cb0961b9c5df1d44",
+    "driver_commit_time": "2026-09-26T10:36:19-07:00",
+    "runtime_started_after_both_commits": true
+  },
+  "new_subtargets": [
+    "EXT-F-1008-T09 sparse_public_detail_groups",
+    "EXT-F-1008-T09 rich_public_detail_groups_and_canonical_door",
+    "EXT-F-1008-T09 canonical_outbound_opens_expected_public_tab"
+  ],
+  "rechecked_prior_subtargets": 9,
+  "acceptance_result": {
+    "status": "partial",
+    "target_count": 12,
+    "last_safe_stage": "canonical_outbound_verified",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "deferred": [
+      "T01 race/audit count",
+      "T02 fresh capture/advice replacement",
+      "T03 unreachable HTTP(S), other schemes and reload",
+      "T04-T06/T08 persistence and history",
+      "T07 clipboard output and role gates",
+      "T09 remaining groups/doors",
+      "T10-T14",
+      "member/admin modes"
+    ]
+  },
+  "interpretation": "Three T09 subtargets are new versus seo-guest-005; the nine earlier targets appear again in the aggregate result and are rechecked, not new coverage.",
+  "peer_report": "docs/stabilization/reports/seo006-runtime-peer.json"
+}

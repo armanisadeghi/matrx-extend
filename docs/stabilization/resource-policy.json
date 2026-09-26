@@ -44,6 +44,7 @@
     ["node", "tests/browser/isolated-permission-denial-acceptance.mjs"],
     ["node", "tests/browser/contained-navigation-acceptance.mjs"],
     ["node", "tests/browser/seo-guest-acceptance.mjs"],
+    ["node", "tests/browser/seo-admin-acceptance.mjs"],
     ["node", "tests/browser/svg-caption-native-acceptance.mjs"],
     ["node", "tests/browser/member-vault-access-probe.mjs"]
   ],

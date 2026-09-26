@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "status": "unverified",
+  "scope": "owned disposable Chrome profile; real admin web and extension sign-in; masked Vault inventory",
+  "targetMember": "test@test.com",
+  "adminWebSignedIn": true,
+  "adminExtensionSignedIn": true,
+  "inventory": null,
+  "lastVaultObservation": {
+    "organizationSelected": false,
+    "organizationPickerPending": false,
+    "organizationPickerVisible": false,
+    "organizationPickerLoading": false,
+    "approvedOrganizationOffered": false,
+    "activePanelFound": true,
+    "vaultTabActive": false,
+    "vaultPanelActive": false,
+    "firstActivePanelIsVault": false,
+    "vaultHeadingVisible": false,
+    "preContentSpinner": false,
+    "inventorySpinner": false,
+    "refreshSpinner": false,
+    "siteSpinner": false,
+    "signedOutPrompt": false,
+    "errorVisible": false,
+    "activeScope": "none",
+    "sharedTabAvailable": false,
+    "designatedCandidateCount": 0,
+    "designatedCandidateFillOnCount": 0
+  },
+  "failureCategory": "stage_operation_failed",
+  "limitations": [
+    "A matching masked title is only a candidate, not proof of credential identity or member access.",
+    "This probe stops before website sign-out, member Vault Fill, or member extension sign-in."
+  ],
+  "failureStage": "vault_prerequisite_observation"
+}

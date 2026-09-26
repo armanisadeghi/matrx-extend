@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "report_id": "vault-notice-peer",
+  "reviewed_commit": "dced501c9f7b37d9c28e8480cb0961b9c5df1d44",
+  "scope": "Independent source and run-009 receipt review only; no browser, test, build, or implementation edit.",
+  "source_quality": {
+    "verdict": "BOUNDED_REMEDY_READY_FOR_ROOT_RUN",
+    "findings": [
+      "The probe waits for a settled Mine inventory, rejects a Vault error or missing Shared tab, and requires a selected device organization before checking notices. When the picker appears, selection uses the exact approved option through the driver's stable, hit-tested CDP mouse path; beforeOrganizationChoice and afterOrganizationChoice observations remain intact.",
+      "Dismissal requires exactly one role=alert with the source Capture list unavailable title and the db-failure no-workspace sentence in its first message paragraph. The driver selects only that alert's Dismiss button, verifies a unique visible hit-tested target, sends a trusted mouse press/release, then waits until the matching alert count is zero before recording dismissedStaleCaptureNoWorkspaceNotice=true.",
+      "Other alerts do not match the selector and are not dismissed. A second matching alert fails as ambiguous. The driver still refuses a Shared click covered by any remaining alert; known_notice reports a bounded category on that failure without returning arbitrary notice text.",
+      "The matched sentence is a distinctive fixed source fragment, not a full-message equality check. Current source has one Capture list unavailable title and one no-workspace message template, so this identifies that known source case; the title and message checks occur independently inside the page realm."
+    ]
+  },
+  "runtime": {
+    "verdict": "PENDING_ROOT_GUARDED_RUN",
+    "evidence": "Run 009 proves a NoticeHost-shaped role=alert card covered all nine Shared-tab interior points after real organization selection. It did not record the alert title or message, so it does not prove the occluder is the Capture no-workspace notice. The changed probe has no subsequent run receipt in this review.",
+    "required_next_observation": "Root's guarded run should inspect whether the known notice is present and dismissed, then whether Shared becomes natively clickable and the masked inventory settles. If another alert remains, preserve its bounded known_notice category and investigate the actual product error. Member authorization remains separately unverified."
+  },
+  "evidence_integrity": "The original before/after organization observations are preserved. The new dismissal boolean is written only after a trusted click and disappearance of the matching alert; absence leaves it unset. This does not imply run 009's unknown alert was stale or that member access succeeded."
+}

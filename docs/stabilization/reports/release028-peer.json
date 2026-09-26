@@ -1,0 +1,28 @@
+{
+  "runId": "release-stabilization-028",
+  "reviewer": "independent release evidence peer",
+  "verdict": {
+    "integrationAcceptance": "PASS for local release, publication, and exact artifact provenance; remote CI remains in progress.",
+    "quality": "PASS for the 15 local release checks with disclosed skips and existing findings.",
+    "uiAcceptance": "pending"
+  },
+  "evidence": [
+    "Wrapper log records RESOURCE_JOB_EXIT at 2026-09-26T18:22:12.028Z with child exit 0.",
+    "Release log ends exit 0 and lists all 15 checks with exit 0; unit suite reports 179 files passed, 1 skipped, and 1446 tests passed, 3 skipped.",
+    "Candidate v0.2.73 is 6acf1801d3ed65c016b96cf3cb194e0a83163e81; release output records push of that SHA to main and creation of v0.2.73 tag. Current origin/main and local v0.2.73 tag resolve to the candidate SHA.",
+    "Store ZIP SHA-256 independently recomputed as 884c2c104153780ccc272443a555bd6f4cc8267a68eb9e3b6ee152ec54e8fb68. Release log reports matching unpacked tree hashes 560f397c2055a01ecdda11321f3b0729cb61aabca956a9ebf5054e98e86523cb for 532 files; version is 0.2.73.",
+    "GitHub CI run 36262295396 is currently in progress on the exact release SHA."
+  ],
+  "limits": [
+    "Lint reported 572 warnings; package-twins reported five census debt items; mandate scan reported 11 non-blocking findings.",
+    "Release fast-forward failed because this checkout had diverged local review/policy commits. The owner later merged origin/main locally; current checkout is four commits ahead. This local HEAD differs from the release candidate, which remains the exact SHA recorded above.",
+    "No primary Chrome real-data exercise or Chrome Web Store upload was verified in this lane."
+  ],
+  "sources": [
+    "/tmp/matrx-release-stabilization-028.log",
+    "tmp/release-logs/latest.log",
+    "origin/main and refs/tags/v0.2.73",
+    ".output/matrx-extend-0.2.73-store.zip",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/36262295396"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "run_id": "bridge0272-prerequisite-001",
+  "status": "completed",
+  "scope": "Read-only local environment prerequisite check for the Primary Chrome 0.2.72 reload observation; no browser operation, service change, pairing, or authenticated RPC.",
+  "related_ui_report": "docs/stabilization/reports/native-0272-reload.json",
+  "related_feature": "EXT-F-1003 Settings desktop bridge; broader Settings and mode verification remains open",
+  "ui_observation": "The Primary Chrome unpacked extension showed Local engine port auto and Desktop Bridge Not connected immediately after reload and after 30 seconds. The UI worker did not investigate the cause.",
+  "documented_local_path": {
+    "source": "src/lib/desktop/FEATURE.md and src/lib/desktop/discovery.ts",
+    "behavior": "With auto port, the extension checks a cached port, probes its last good port, then calls public GET /health on 127.0.0.1:22140-22159; an authenticated extension RPC is not a discovery probe. A signed-in owner tunnel is a separate later path."
+  },
+  "current_machine_evidence": {
+    "local_config": "~/.matrx/local.json absent at the read-only check; no configured local port was available to inspect.",
+    "process": "pgrep and ps found no process name or command matching matrx-local / Matrx Local.",
+    "listener": "lsof found no TCP listener on the documented 22140-22159 scan range.",
+    "health": "Public GET /health on each of the 20 documented loopback ports yielded no HTTP response; all 20 attempts raised URLError. No response body, authenticated route, or credential was requested."
+  },
+  "assessment": "The local desktop engine prerequisite is absent in the current machine state. This is sufficient to explain why auto local discovery cannot connect now. It does not establish the engine state at the earlier reload timestamp, test native messaging, or determine whether owner-RLS remote tunnel discovery could connect. The 0.2.68 run connected by HTTP after 30 seconds, so the 0.2.72 observation alone does not prove a product regression.",
+  "remedy": "For a controlled local bridge retest, start the installed Matrx Local app through the normal user flow, confirm its public GET /health answers with status ok on a documented scan-range port, then reobserve the actual Settings bridge status and its transport in Primary Chrome. If the engine is healthy but the UI remains Not connected, diagnose the extension's native/HTTP discovery and pairing path from that live boundary. Do not treat this prerequisite check as full bridge health verification.",
+  "constraints_honored": "No process was started or stopped; no browser, build, remote tunnel, account, organization, credentials, or other repository was touched."
+}

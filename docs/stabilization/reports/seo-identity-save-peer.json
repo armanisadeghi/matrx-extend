@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "079050106863e7e58819677205b9ebeabba71a67",
+  "feature_id": "EXT-F-1008",
+  "mode": "admin",
+  "source_quality": {
+    "verdict": "hold_before_save_runtime",
+    "accepted": [
+      "The added data-audit-id attributes expose only the existing stable row UUID on the history button and selected snapshot. They change no visible behavior or API shape.",
+      "The CDP observer filters a real POST by endpoint, exact public IANA URL and selected on-device organization ID, then correlates requestId, successful response status, loading completion and returned UUID. The harness panel.on API returns unsubscribe closures, which the runner calls in finally. It neither intercepts nor replays the request.",
+      "The exclusive wx checkpoint is created before the trusted Save click; a rerun with no observed ID refuses another write, and a rerun with an ID attempts read-only history verification. No prior row is updated or deleted. The 25-row history count is not treated as insert proof.",
+      "The test joins the response UUID to the URL-specific history button and selected snapshot before and after a new panel document time origin. It does not substitute title or count for row identity.",
+      "The report and exception paths emit stages and booleans, not credentials, raw request bodies or response bodies. The checkpoint stores the organization ID, URL hash and audit UUID with mode 0600."
+    ],
+    "blocking_findings": [
+      {
+        "id": "checkpoint_directory_durability",
+        "source": "tests/browser/seo-admin-acceptance.mjs:39-60",
+        "finding": "The pre-click checkpoint syncs the file but not the containing test-results directory. After a crash or power loss, the newly created directory entry is not guaranteed durable even though file.sync() returned. If the real Save commits and the entry disappears, a rerun sees ENOENT and can issue a second insert, breaking the at-most-one-row authorization.",
+        "required_action": "Make the exclusive checkpoint's directory entry durable before clicking Save (including a newly created test-results directory), and preserve the conservative refusal if durability cannot be confirmed. Review the final source before runtime."
+      }
+    ],
+    "bounded_limitations": [
+      "CDP may omit request.postData for a large audit payload; that leaves the checkpoint ambiguous and correctly prevents an automatic second Save, but the insert ID and UI acceptance remain unverified.",
+      "The ignored test-results checkpoint must be retained across reruns; deleting it removes the one-write memory. The runner does not independently recover a lost checkpoint from the database.",
+      "The history label must be unique for the trusted pointer driver. A timestamp collision can stop verification safely even if the correct UUID is present.",
+      "T04 failure/retry, T05 second snapshot and diff, T06 empty/loading/error, and T08 changed-page diff remain unverified."
+    ]
+  },
+  "runtime": {
+    "status": "pending",
+    "reviewer_executed_build_test_or_browser": false,
+    "required_next_step": "After repairing and re-reviewing checkpoint durability, use a fresh build containing the data-audit-id source and the root resource guard for one controlled real Save. Record runtime result separately."
+  }
+}

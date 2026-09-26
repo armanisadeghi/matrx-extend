@@ -7,10 +7,11 @@
   "reproduction": [
     "Check out ca8c023c54b2a0ac6e7d5c86e6806c8bf9331bf0 with frozen dependencies and run configured CI.",
     "Inspect CI run 36253562084: assertions pass but EnvironmentTeardownError reports clsx imported through ChatView and App after popup-claim-recovery test environment teardown.",
-    "Intermittent: unchanged local focused run popup-teardown-red-001 passed one test; it is not a local red reproduction."
+    "Intermittent: unchanged local focused run popup-teardown-red-001 passed one test; it is not a local red reproduction.",
+    "CI run 36259193096 on e1cd63d629d501993bc4188468ea84970568bc7e reproduces the same unhandled teardown error after prior closure; no deterministic local reproduction claimed."
   ],
   "expected": "Tests settle pending imports and lifecycle work before environment teardown, retaining routing assertions.",
-  "actual": "CI failed with one unhandled teardown error despite 1441 passed assertions and four skips.",
+  "actual": "Regressed on e1cd63d629d501993bc4188468ea84970568bc7e: CI 36259193096 failed with the same clsx \u2192 utils \u2192 CopyMenu \u2192 ChatView \u2192 App \u2192 popup-claim-recovery EnvironmentTeardownError despite 1445 passing assertions and four skips. The prior explicit mocked-view import awaits were present.",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/36253562084",
     "/tmp/matrx-ci-36253562084.log",
@@ -19,12 +20,19 @@
     "docs/stabilization/runs/popup-teardown-green-001.json",
     "docs/stabilization/runs/popup-teardown-suite-001.json",
     "docs/stabilization/reports/d20-ci-closure-peer.json",
-    "https://github.com/armanisadeghi/matrx-extend/actions/runs/36254397373"
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/36254397373",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/36259193096",
+    "docs/stabilization/reports/d20-ci-36259193096.txt",
+    "docs/stabilization/reports/d20-regression-repair.json",
+    "docs/stabilization/runs/popup-teardown-green-002.json",
+    "docs/stabilization/runs/release-stabilization-027.json",
+    "docs/stabilization/reports/release027-peer.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/36260569407"
   ],
   "severity": "S3: unreliable integration gate; no product impact established",
   "priority": "P1: restore trustworthy main",
   "state": "closed",
-  "owner": "/root/ci_teardown_repair",
+  "owner": "/root/d20_teardown_regression",
   "transition_history": [
     {
       "at": "2026-09-26T16:03:25.533582+00:00",
@@ -61,6 +69,42 @@
       "from": "retest-pass",
       "to": "closed",
       "reason": "Fresh independent peer1e323cbd accepts bounded original CI symptom closure. No deterministic local red or future-flake guarantee claimed."
+    },
+    {
+      "at": "2026-09-26T17:37:45.237551+00:00",
+      "from": "closed",
+      "to": "open",
+      "reason": "Actual CI regression with previous repair still present; earlier successful CI did not establish lifecycle completeness."
+    },
+    {
+      "at": "2026-09-26T17:37:45.237551+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "The sole sidepanel App renderer omits React cleanup under non-global Vitest and only awaits individual mocked imports; file teardown has no full import-settlement barrier."
+    },
+    {
+      "at": "2026-09-26T17:37:45.237551+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Replace body-only waits with unconditional unmount then Vitest dynamic-import settlement in afterEach. Owner must run focused/full tests and independent review; implementation remains unverified."
+    },
+    {
+      "at": "2026-09-26T17:56:54.115250+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Lifecycle repair bff8ecea independently source-reviewed0a152cf6."
+    },
+    {
+      "at": "2026-09-26T17:56:54.115250+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Focused1pass; release0271446pass3skip; exact4a57aa4 CI36260569407 success1445pass4skip including popup1554ms with no unhandled teardown error. Independent382400a0 accepts scopedclosure."
+    },
+    {
+      "at": "2026-09-26T17:56:54.115250+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original observed CI symptom absent on repaired merged candidate and surrounding suite passes. Historical recurrence retained; no guarantee of futureflakeelimination."
     }
   ],
   "closure_requirement": "Independent no-weakening review, local focused/full suite and remote CI pass containing repair.",
