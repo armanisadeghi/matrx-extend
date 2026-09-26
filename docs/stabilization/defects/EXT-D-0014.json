@@ -15,11 +15,14 @@
   "actual": "Runner rejects the canonical www origin at web_url_check, before credentials are filled.",
   "evidence": [
     "docs/stabilization/runs/isolated-admin-signin-001.json",
-    "docs/stabilization/runs/isolated-admin-signin-002.json"
+    "docs/stabilization/runs/isolated-admin-signin-002.json",
+    "docs/stabilization/runs/isolated-admin-signin-003.json",
+    "docs/stabilization/reports/auth-origin-peer.json",
+    "docs/stabilization/reports/auth-state-peer.json"
   ],
   "severity": "S2: authenticated test setup unavailable; not a demonstrated product authentication defect",
   "priority": "P1: unlock isolated authenticated coverage",
-  "state": "in-fix",
+  "state": "closed",
   "owner": "/root/isolated_auth_origin_repair",
   "transition_history": [
     {
@@ -39,6 +42,27 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Actual safe runtime evidence shows canonical www redirect; two failed attempts trigger fresh Sol decomposition per PLAN."
+    },
+    {
+      "at": "2026-09-26T11:01:39.194517+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "42f0565 canonical origin repair, source peer b42a563."
+    },
+    {
+      "at": "2026-09-26T11:01:39.194517+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Real isolated web login reached canonical dashboard in run003; fresh auth-state peer independently accepts original origin reproduction resolved."
+    },
+    {
+      "at": "2026-09-26T11:01:39.194517+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original defect resolved and source/runtime evidence verified; extension auth/setup remains separately unverified."
     }
+  ],
+  "limitations": [
+    "Extension authenticated state timed out in run003; fullF0001T05 is not passed."
   ]
 }
