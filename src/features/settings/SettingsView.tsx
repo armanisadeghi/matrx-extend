@@ -116,7 +116,7 @@ export function SettingsView() {
             <Card>
               <Row label="Email" value={user?.email ?? '—'} mono />
               {user?.full_name && <Row label="Name" value={user.full_name} />}
-              {isAdmin && <Row label="Role" value={<Badge>admin</Badge>} />}
+              {user && isAdmin && <Row label="Role" value={<Badge>admin</Badge>} />}
             </Card>
           </Collapsible>
 

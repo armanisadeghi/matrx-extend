@@ -1,6 +1,7 @@
 import { STORAGE_KEYS } from '@/config/env';
 import { pingHealth } from '@/lib/api/routes/health';
 import {
+  getVerifiedCurrentUser,
   restoreSupabaseSession,
   signIn as runSignIn,
   signOut as runSignOut,
@@ -68,11 +69,14 @@ export function useAuth() {
       bootGeneration === currentBoot &&
       signInGeneration === currentAuth;
     void (async () => {
-      await restoreSupabaseSession();
-      const result = await chrome.storage.local.get([
-        STORAGE_KEYS.USER_PROFILE,
-        STORAGE_KEYS.IS_ADMIN,
-      ]);
+      let restored = false;
+      try {
+        restored = await restoreSupabaseSession();
+      } catch {
+        // A transient restore failure is a recoverable guest state. Keep the
+        // saved credentials and profile so a later reload can try again.
+      }
+      const result = await chrome.storage.local.get([STORAGE_KEYS.USER_PROFILE]);
       // Safari's extension storage has no session area in some test and older
       // runtime contexts. A missing one means there is simply no transient
       // Safari sign-in failure to show.
@@ -82,20 +86,47 @@ export function useAuth() {
         : {};
       if (!isCurrent()) return;
       const profile = result[STORAGE_KEYS.USER_PROFILE] as UserProfile | undefined;
-      const cachedAdmin = result[STORAGE_KEYS.IS_ADMIN] as boolean | undefined;
-      setUser(profile ?? null);
-      setIsAdmin(!!cachedAdmin);
+      let verified: UserProfile | null = null;
+      if (restored) {
+        try {
+          // The restored Supabase client only installs Realtime auth. The
+          // canonical bearer verifier proves which person it belongs to.
+          verified = await getVerifiedCurrentUser();
+        } catch {
+          // Network/refresh/verification errors do not erase a saved session.
+        }
+      }
+      if (!isCurrent()) return;
+      const mismatch = profile && verified && profile.id !== verified.id;
+      if (!restored || !verified || mismatch) {
+        setUser(null);
+        setIsAdmin(false);
+        if (mismatch) {
+          setError('This sign-in does not match your saved account. Sign in again to choose an account.');
+        } else if (profile && !restored) {
+          setError('Could not restore your saved sign-in. Reload to retry, or sign in again.');
+        } else if (restored) {
+          setError('Could not verify your saved sign-in. Reload to retry, or sign in again.');
+        } else {
+          const safariFailure = session[STORAGE_KEYS.SAFARI_AUTH_FAILURE];
+          setError(typeof safariFailure === 'string' ? safariFailure : null);
+        }
+        void pingHealth('app start');
+        return;
+      }
+      setUser(verified);
+      // A cached admin flag is not authority. Wait for the current account's
+      // admin check before showing privileged UI.
+      setIsAdmin(false);
       const safariFailure = session[STORAGE_KEYS.SAFARI_AUTH_FAILURE];
-      if (typeof safariFailure === 'string') setError(safariFailure);
+      setError(typeof safariFailure === 'string' ? safariFailure : null);
 
       // Refresh admin flag in the background — guards against role changes.
-      if (profile?.id) {
-        void checkIsAdmin(profile.id).then(async (admin) => {
-          if (!isCurrent()) return;
-          setIsAdmin(admin);
-          await chrome.storage.local.set({ [STORAGE_KEYS.IS_ADMIN]: admin });
-        });
-      }
+      void checkIsAdmin(verified.id).then(async (admin) => {
+        if (!isCurrent()) return;
+        setIsAdmin(admin);
+        await chrome.storage.local.set({ [STORAGE_KEYS.IS_ADMIN]: admin });
+      });
 
       void pingHealth('app start');
     })();
@@ -125,7 +156,7 @@ export function useAuth() {
         } else {
           setStatus('signed-out');
         }
-        if (typeof payload.isAdmin === 'boolean') setIsAdmin(payload.isAdmin);
+        setIsAdmin(payload.user !== null && payload.isAdmin === true);
         return { ack: true };
       },
     );

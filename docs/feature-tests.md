@@ -53,6 +53,7 @@
 - **Where to test:** the keyed unpacked Chrome development extension, signed in as the admin, with an organization explicitly selected.
 - **Steps:** open Settings and confirm the account and organization, use Chrome's full extension Reload, reopen the side panel, and return to Settings without pressing Sign in.
 - **Expected:** the same account and organization appear after hydration. The account must not settle at Email — with Sign in offered while its saved session remains present. If a refresh is truly rejected, the signed-out state and its reason must be visible.
+- **Recovery case:** in an isolated profile, leave a saved account profile but remove its session keys, then reopen Settings. The account shows as signed out, an alert above Settings explains that the saved sign-in could not be restored and offers **Try again**, and admin-only tabs stay hidden. Restoring connectivity and reloading can retry without deleting the saved profile.
 
 ### Reload and transient-outage console hygiene
 
