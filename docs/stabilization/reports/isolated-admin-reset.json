@@ -8,13 +8,16 @@
   "control_ids": ["EXT-F-1003-C17"],
   "runner": "tests/browser/isolated-admin-reset-acceptance.mjs",
   "guarded_command": "node tests/browser/isolated-admin-reset-acceptance.mjs",
-  "scope": "The existing receipt-verified native-side-panel harness owns a fresh disposable Chrome profile. The runner performs real Matrx web login and real extension Settings Sign in before touching the reset control. It never attaches to the primary Chrome profile, injects an auth session, intercepts responses, or changes server/account data.",
+  "scope": "The existing receipt-verified native-side-panel harness owns a fresh disposable Chrome profile. The runner performs real Matrx web login and real extension Settings Sign in before touching the reset control. It never attaches to the primary Chrome profile, injects an auth session, intercepts responses, or calls an application-data mutation endpoint.",
   "acceptance": [
-    "Before reset, actual Settings shows admin@admin.com, Role admin, Sign out, and Advanced agent capabilities; the local auth keys, Dark theme preference, and inert session fixture are present.",
-    "Cancel closes the real confirmation while preserving admin UI, auth key presence, the Dark preference, the exact session fixture, and every prior extension local/session key.",
+    "Before reset, actual Settings shows admin@admin.com, Role admin, Sign out, and Advanced agent capabilities; the local auth keys, Dark theme preference, and inert local/session fixtures are present.",
+    "Cancel closes the real confirmation while preserving admin UI, auth key presence, the Dark preference, the exact local/session fixtures, and every prior extension local/session key.",
     "Confirm removes every preexisting extension local/session key and shows signed-out Settings.",
-    "After native-panel reload, Settings remains guest, shows the System theme, and contains no prior auth, settings, or session fixture."
+    "After native-panel reload, Settings remains guest, shows the System theme, contains no prior auth, settings, or fixtures, and has restored no pre-reset key except the source-backed guest identity, cross-component instance, and live desktop-discovery keys that may be generated afresh."
   ],
+  "peer_finding_ruling": "Confirmed the peer's non-sentinel restoration gap. Repaired with an independent inert local fixture and an after-reload comparison of all pre-reset key names outside a narrow source-backed regenerated-key set. A blanket intersection would falsely fail new guest identity, cross-component instance, or live desktop port cache keys created by fresh boot. The immediate post-Confirm comparison still requires every pre-reset key to be absent without exceptions.",
+  "ruling_cost_if_wrong": "A stale value under an exempt guest or desktop discovery key could escape the reload key-name check; the immediate post-Confirm zero-intersection proves it was cleared first, but the runner does not prove a later same-named value is newly minted. A missing legitimate boot-key exception would produce a false failure that must be diagnosed from a guarded run rather than silently waived.",
+  "server_effects": "The runner itself sends only the real web/extension authentication flow and UI clicks. Static source shows Settings reset clears extension local/session storage before signOut; signOut may issue a best-effort Supabase POST /auth/v1/logout?scope=local only if an access token remains at its read. In the ordinary reset order the prior token has already been cleared. No runner path invokes application-data writes. Real sign-in may create disposable auth sessions, and guest boot may mint an anonymous guest identity through the existing backend flow; no claim of zero authentication-system effects is made.",
   "secret_custody": "Credentials are read from the authorized aidream .env only at the real web form. Auth storage is observed solely as boolean presence; raw values, cookies, callback URLs, request bodies, and browser exceptions never enter output. The runner writes only allowlisted stage/category results under test-results with mode 0600.",
   "verification": [
     { "check": "node --check tests/browser/isolated-admin-reset-acceptance.mjs", "result": "pass" },
@@ -23,7 +26,8 @@
   ],
   "limitations": [
     "No runtime behavior verdict is claimed until root's guarded run and independent review.",
-    "This case checks extension local/session reset and UI sign-out. It does not prove server-side data persistence or ordinary-member reset."
+    "This case checks extension local/session reset and UI sign-out. It does not prove server-side data persistence or ordinary-member reset.",
+    "The regenerated-key exceptions are based on current source behavior; a guarded run or source change may require revisiting them."
   ],
   "next_action": "Root admits the runner under the campaign resource guard against the intended receipt-verified build and files the run evidence; an independent reviewer checks the behavior and source."
 }
