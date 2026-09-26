@@ -774,7 +774,7 @@
             "guest-local-001",
             "render-retest-001"
           ],
-          "retest_status": "not-run"
+          "retest_status": "pass"
         },
         "member": {
           "test_status": "unverified",

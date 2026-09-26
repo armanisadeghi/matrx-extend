@@ -30,11 +30,13 @@
   "reproducibility_count": "2/2 panel opens in one browser session",
   "severity": "S0: complete sidepanel unavailable",
   "priority": "P0: blocks all contained-surface UI testing",
-  "state": "retest-pass",
+  "state": "closed",
   "owner": "/root/fix_sidepanel_render",
   "root_cause": "Cartesia SDK imports qs\u2192side-channel\u2192object-inspect; its browser:false optional util.inspect mapping becomes Vite throwing proxy, and object-inspect reads .custom during module evaluation.",
   "sibling_census": "not started",
-  "fix_commits": [],
+  "fix_commits": [
+    "bb9f18f"
+  ],
   "original_reproduction_retest_run": "render-retest-001",
   "surrounding_case_runs": [
     "render-retest-001"
@@ -70,6 +72,12 @@
       "from": "fixed",
       "to": "retest-pass",
       "reason": "Fresh independent Luna verified candidate0.2.47 original sidepanel repro2x and7 adjacent cases; deepcapture unverified due fixture, no observed regression. Automated regression/integration pending."
+    },
+    {
+      "at": "2026-09-26T02:09:49.207903+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent originalrepro+adjacent UI pass,1233automated tests pass(3explicit skips), compile/build/catalog pass; verifiedcandidate committedbb9f18f and pushedorigin/main."
     }
   ],
   "resource_note": "Failure recorded at22:30:39Z before unsafe samples22:31:33/49. Entire batch ends resource-invalid; no passes accepted. Healthy independent retest required.",
@@ -90,5 +98,5 @@
     "runs/render-regression-001.json",
     "reports/render-code-review.json"
   ],
-  "integration_status": "Verified candidate; exact-path commit and push pending"
+  "integration_status": "Pushed to origin/main; verified development runtime. Campaign release packaging pending EXT-D-0002."
 }
