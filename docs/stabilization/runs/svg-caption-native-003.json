@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "id": "svg-caption-native-003",
+  "defect_id": "EXT-D-0018",
+  "linked_case": "EXT-F-1007-T28",
+  "status": "fixture_pass",
+  "exit_code": 0,
+  "fixture_kind": "owned_localhost_real_html_article",
+  "public_production_proof": false,
+  "source_paths": {
+    "runtime_report": "test-results/svg-caption-native-acceptance.json",
+    "release_receipt": ".output/release-receipt.json",
+    "resource_log": "/tmp/matrx-svg-caption-native-003.log"
+  },
+  "source_sha256": {
+    "runtime_report": "70beccc8ac9d23fe11c3aaff23c6405ba3ef279bed04370e47bc1b83fdc7cf54",
+    "release_receipt": "48b7e51371d5e1c32e73371f55519e681670d4a3ad7c62b66a76a606dee15659",
+    "resource_log": "324dbfb23b7925f33e3429a2f3c5440bbff59c93fd716c219b5f713c0638bdef"
+  },
+  "runtime_report": {
+    "schema_version": 1,
+    "defect_id": "EXT-D-0018",
+    "linked_case": "EXT-F-1007-T28",
+    "status": "fixture_pass",
+    "fixture_kind": "owned_localhost_real_html_article",
+    "public_production_proof": false,
+    "modes": [
+      {
+        "mode": "fast",
+        "result": "pass",
+        "svg_images": 2,
+        "captions": 2,
+        "html_labels": 2,
+        "ordered_article": true,
+        "svg_geometry_verified": true
+      },
+      {
+        "mode": "deep",
+        "result": "pass",
+        "svg_images": 2,
+        "captions": 2,
+        "html_labels": 2,
+        "ordered_article": true,
+        "svg_geometry_verified": true,
+        "source_revision_observed": true
+      }
+    ],
+    "last_stage": "deep_rendered_article_confirmed",
+    "active_mode": "deep",
+    "last_observation": {
+      "articleScope": "article_active",
+      "linked": true,
+      "articleTabCount": 1,
+      "articleState": null,
+      "scrapeSelected": true,
+      "capture": 0,
+      "recapture": 1,
+      "deep": 1,
+      "recaptureEnabled": true,
+      "deepEnabled": true,
+      "busy": false,
+      "error": false,
+      "errorCard": null,
+      "paneTail": "next quarter staffing. The operations team used both trends to plan next quarter staffing. The operations team used both trends to plan next quarter staffing. The operations team used both trends to plan next quarter staffing.\n\nRe-capture\nScroll & capture\nSave",
+      "allImageCount": 2,
+      "svgImages": [
+        {
+          "alt": "Appointments growth curve",
+          "visible": true,
+          "loaded": true,
+          "complete": true,
+          "loading": "lazy",
+          "nearViewport": false,
+          "hasSvgRoot": true,
+          "pathD": "M15 115 L125 70 L245 20",
+          "expectedGeometry": true
+        },
+        {
+          "alt": "Follow-up visits bar chart",
+          "visible": true,
+          "loaded": true,
+          "complete": true,
+          "loading": "lazy",
+          "nearViewport": true,
+          "hasSvgRoot": true,
+          "bars": [
+            {
+              "x": "15",
+              "y": "70",
+              "width": "60",
+              "height": "60"
+            },
+            {
+              "x": "100",
+              "y": "40",
+              "width": "60",
+              "height": "90"
+            },
+            {
+              "x": "185",
+              "y": "10",
+              "width": "60",
+              "height": "120"
+            }
+          ],
+          "expectedGeometry": true
+        }
+      ],
+      "orderMarkers": [
+        {
+          "marker": "Appointments booked",
+          "offset": 1224
+        },
+        {
+          "marker": "Appointments growth curve",
+          "offset": 1324
+        },
+        {
+          "marker": "Booked appointments rose from January through March.",
+          "offset": 1352
+        },
+        {
+          "marker": "Measured in completed bookings per month.",
+          "offset": 1405
+        },
+        {
+          "marker": "Follow-up visits",
+          "offset": 2267
+        },
+        {
+          "marker": "Follow-up visits bar chart",
+          "offset": 2341
+        },
+        {
+          "marker": "Follow-up visits increased after the revised April roster.",
+          "offset": 2370
+        },
+        {
+          "marker": "Measured in returning patients per month.",
+          "offset": 2429
+        },
+        {
+          "marker": "The revised April roster added follow-up capacity for returning patients.",
+          "offset": 2471
+        },
+        {
+          "marker": "The operations team used both trends",
+          "offset": 2545
+        }
+      ],
+      "textMarkers": {
+        "heading": true,
+        "firstCaption": true,
+        "firstLabel": true,
+        "secondCaption": false,
+        "secondLabel": true,
+        "deepCaption": true,
+        "deepRevision": true
+      }
+    },
+    "scroll_observation": {
+      "chart": "Follow-up visits bar chart",
+      "attempt": 8,
+      "scope": "chart_scroller",
+      "imageCount": 1,
+      "x": 177,
+      "y": 257.5,
+      "hitScroller": true,
+      "scrollTop": 1493,
+      "maxScroll": 2069,
+      "targetTop": 254.25,
+      "scrollerTop": 198,
+      "scrollerBottom": 317,
+      "inScroller": true,
+      "nearViewport": true,
+      "loaded": true,
+      "deltaY": -80
+    },
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "release_receipt": {
+    "sourceSha": "79d1dba35ea1157a6dbf7a8ce23942a0a2a8f271",
+    "version": "0.2.67",
+    "publishState": "pushed",
+    "storeZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.67-store.zip",
+      "sha256": "2e48fb724ab5af1bd17bbec25fd3b4b251309b6c58a12af27b75f85beef7cfc3"
+    },
+    "localZip": {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.67-local.zip",
+      "sha256": "40d318d5df6c8227348b630827f0382d427ecbc8977bf41d3d75b68eb239afea"
+    },
+    "sourcePath": "/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/matrx-extend-release.o8ZiGi/matrx-extend/.output/chrome-mv3",
+    "destinationPath": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "destinationPaths": [
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3"
+    ],
+    "treeSha256": "ce7a1faadd3a7ba45ceb90f6754b26a6be8f6573ec8b660e995e4f5c4bd8a82a",
+    "fileCount": 526
+  },
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:22:30.849Z",
+      "runId": "svg-caption-native-003",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.48,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.27,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1325285714285714,
+        "swapUsedMiB": 2413.69,
+        "repoFreeGiB": 1675.6441955566406,
+        "profileFreeGiB": 22.187557220458984
+      },
+      "cpuBusySamples": [
+        0.3046,
+        0.11199999999999999,
+        0.118,
+        0.10329999999999995,
+        0.09739999999999993,
+        0.10840000000000005,
+        0.08400000000000007
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T15:22:39.930Z",
+      "runId": "svg-caption-native-003",
+      "childExitCode": 0,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ],
+  "resource_log_exact": "{\"schema\":1,\"at\":\"2026-09-26T15:22:30.849Z\",\"runId\":\"svg-caption-native-003\",\"mode\":\"run\",\"policySchema\":1,\"sample\":{\"pressureLevel\":1,\"availableMemoryGiB\":12.48,\"requiredMemoryGiB\":4,\"oneMinuteLoad\":2.27,\"logicalCpus\":10,\"cpuBusyFraction\":0.1325285714285714,\"swapUsedMiB\":2413.69,\"repoFreeGiB\":1675.6441955566406,\"profileFreeGiB\":22.187557220458984},\"cpuBusySamples\":[0.3046,0.11199999999999999,0.118,0.10329999999999995,0.09739999999999993,0.10840000000000005,0.08400000000000007],\"reasons\":[],\"swapWindowSeconds\":60,\"code\":\"RESOURCE_ADMITTED\"}\nFIXTURE_PASS svg_caption_native_acceptance\n{\"schema\":1,\"at\":\"2026-09-26T15:22:39.930Z\",\"runId\":\"svg-caption-native-003\",\"childExitCode\":0,\"childSignal\":null,\"code\":\"RESOURCE_JOB_EXIT\"}\n",
+  "runtime_report_exact": "{\n  \"schema_version\": 1,\n  \"defect_id\": \"EXT-D-0018\",\n  \"linked_case\": \"EXT-F-1007-T28\",\n  \"status\": \"fixture_pass\",\n  \"fixture_kind\": \"owned_localhost_real_html_article\",\n  \"public_production_proof\": false,\n  \"modes\": [\n    {\n      \"mode\": \"fast\",\n      \"result\": \"pass\",\n      \"svg_images\": 2,\n      \"captions\": 2,\n      \"html_labels\": 2,\n      \"ordered_article\": true,\n      \"svg_geometry_verified\": true\n    },\n    {\n      \"mode\": \"deep\",\n      \"result\": \"pass\",\n      \"svg_images\": 2,\n      \"captions\": 2,\n      \"html_labels\": 2,\n      \"ordered_article\": true,\n      \"svg_geometry_verified\": true,\n      \"source_revision_observed\": true\n    }\n  ],\n  \"last_stage\": \"deep_rendered_article_confirmed\",\n  \"active_mode\": \"deep\",\n  \"last_observation\": {\n    \"articleScope\": \"article_active\",\n    \"linked\": true,\n    \"articleTabCount\": 1,\n    \"articleState\": null,\n    \"scrapeSelected\": true,\n    \"capture\": 0,\n    \"recapture\": 1,\n    \"deep\": 1,\n    \"recaptureEnabled\": true,\n    \"deepEnabled\": true,\n    \"busy\": false,\n    \"error\": false,\n    \"errorCard\": null,\n    \"paneTail\": \"next quarter staffing. The operations team used both trends to plan next quarter staffing. The operations team used both trends to plan next quarter staffing. The operations team used both trends to plan next quarter staffing.\\n\\nRe-capture\\nScroll & capture\\nSave\",\n    \"allImageCount\": 2,\n    \"svgImages\": [\n      {\n        \"alt\": \"Appointments growth curve\",\n        \"visible\": true,\n        \"loaded\": true,\n        \"complete\": true,\n        \"loading\": \"lazy\",\n        \"nearViewport\": false,\n        \"hasSvgRoot\": true,\n        \"pathD\": \"M15 115 L125 70 L245 20\",\n        \"expectedGeometry\": true\n      },\n      {\n        \"alt\": \"Follow-up visits bar chart\",\n        \"visible\": true,\n        \"loaded\": true,\n        \"complete\": true,\n        \"loading\": \"lazy\",\n        \"nearViewport\": true,\n        \"hasSvgRoot\": true,\n        \"bars\": [\n          {\n            \"x\": \"15\",\n            \"y\": \"70\",\n            \"width\": \"60\",\n            \"height\": \"60\"\n          },\n          {\n            \"x\": \"100\",\n            \"y\": \"40\",\n            \"width\": \"60\",\n            \"height\": \"90\"\n          },\n          {\n            \"x\": \"185\",\n            \"y\": \"10\",\n            \"width\": \"60\",\n            \"height\": \"120\"\n          }\n        ],\n        \"expectedGeometry\": true\n      }\n    ],\n    \"orderMarkers\": [\n      {\n        \"marker\": \"Appointments booked\",\n        \"offset\": 1224\n      },\n      {\n        \"marker\": \"Appointments growth curve\",\n        \"offset\": 1324\n      },\n      {\n        \"marker\": \"Booked appointments rose from January through March.\",\n        \"offset\": 1352\n      },\n      {\n        \"marker\": \"Measured in completed bookings per month.\",\n        \"offset\": 1405\n      },\n      {\n        \"marker\": \"Follow-up visits\",\n        \"offset\": 2267\n      },\n      {\n        \"marker\": \"Follow-up visits bar chart\",\n        \"offset\": 2341\n      },\n      {\n        \"marker\": \"Follow-up visits increased after the revised April roster.\",\n        \"offset\": 2370\n      },\n      {\n        \"marker\": \"Measured in returning patients per month.\",\n        \"offset\": 2429\n      },\n      {\n        \"marker\": \"The revised April roster added follow-up capacity for returning patients.\",\n        \"offset\": 2471\n      },\n      {\n        \"marker\": \"The operations team used both trends\",\n        \"offset\": 2545\n      }\n    ],\n    \"textMarkers\": {\n      \"heading\": true,\n      \"firstCaption\": true,\n      \"firstLabel\": true,\n      \"secondCaption\": false,\n      \"secondLabel\": true,\n      \"deepCaption\": true,\n      \"deepRevision\": true\n    }\n  },\n  \"scroll_observation\": {\n    \"chart\": \"Follow-up visits bar chart\",\n    \"attempt\": 8,\n    \"scope\": \"chart_scroller\",\n    \"imageCount\": 1,\n    \"x\": 177,\n    \"y\": 257.5,\n    \"hitScroller\": true,\n    \"scrollTop\": 1493,\n    \"maxScroll\": 2069,\n    \"targetTop\": 254.25,\n    \"scrollerTop\": 198,\n    \"scrollerBottom\": 317,\n    \"inScroller\": true,\n    \"nearViewport\": true,\n    \"loaded\": true,\n    \"deltaY\": -80\n  },\n  \"extension_id\": \"cihdmkcdjjckfhjpgoedmgfpoljebaml\"\n}\n",
+  "release_receipt_exact": "{\n  \"sourceSha\": \"79d1dba35ea1157a6dbf7a8ce23942a0a2a8f271\",\n  \"version\": \"0.2.67\",\n  \"publishState\": \"pushed\",\n  \"storeZip\": {\n    \"path\": \"/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.67-store.zip\",\n    \"sha256\": \"2e48fb724ab5af1bd17bbec25fd3b4b251309b6c58a12af27b75f85beef7cfc3\"\n  },\n  \"localZip\": {\n    \"path\": \"/Volumes/Samsung2TB/code/matrx-extend/.output/matrx-extend-0.2.67-local.zip\",\n    \"sha256\": \"40d318d5df6c8227348b630827f0382d427ecbc8977bf41d3d75b68eb239afea\"\n  },\n  \"sourcePath\": \"/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/matrx-extend-release.o8ZiGi/matrx-extend/.output/chrome-mv3\",\n  \"destinationPath\": \"/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev\",\n  \"destinationPaths\": [\n    \"/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev\",\n    \"/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3\"\n  ],\n  \"treeSha256\": \"ce7a1faadd3a7ba45ceb90f6754b26a6be8f6573ec8b660e995e4f5c4bd8a82a\",\n  \"fileCount\": 526\n}\n",
+  "adjudication": "Native owned-localhost fixture passed Fast and Deep with two loaded SVGs, captions, HTML labels, article ordering, exact geometry and Deep source revision; this is bounded engineering-fixture evidence, not public production or all T28 mode coverage."
+}
