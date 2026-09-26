@@ -9,6 +9,12 @@ const RUN_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SHA256 = /^[a-f0-9]{64}$/;
 const VERSION = /^\d+\.\d+\.\d+(?:[-+][a-zA-Z0-9.-]+)?$/;
 const RESULT_STATUSES = new Set(['pass', 'partial', 'unverified', 'fail', 'diagnostic_only']);
+const TERMINAL_GUARD_FAILURES = new Set([
+  'RESOURCE_OWNED_PROCESS_STILL_RUNNING',
+  'RESOURCE_GROUP_STILL_RUNNING',
+  'RESOURCE_GROUP_UNCONFIRMED',
+  'RESOURCE_STOP_AT_SAFE_BOUNDARY',
+]);
 
 function refuse(code) {
   const error = new Error(code);
@@ -38,6 +44,10 @@ function guardEvent(line) {
 
 function guardSummary(bytes, runId) {
   const events = bytes.toString('utf8').split(/\r?\n/).map(guardEvent).filter(Boolean);
+  if (events.some((event) => event.runId !== undefined && event.runId !== runId))
+    refuse('GUARD_RUN_ID_MISMATCH');
+  if (events.some((event) => TERMINAL_GUARD_FAILURES.has(event.code)))
+    refuse('GUARD_TERMINAL_FAILURE');
   if (events.some((event) => event.runId !== runId)) refuse('GUARD_RUN_ID_MISMATCH');
   const admitted = events.filter((event) => event.code === 'RESOURCE_ADMITTED');
   const exits = events.filter((event) => event.code === 'RESOURCE_JOB_EXIT');
@@ -94,6 +104,10 @@ export async function buildEvidenceRecord({ runId, guardLogPath, resultPath }) {
   const [guardReal, resultReal] = await Promise.all([realpath(guardLogPath), realpath(resultPath)]);
   if (guardReal === resultReal) refuse('SOURCE_FILES_NOT_DISTINCT');
   const [guardBytes, resultBytes] = await Promise.all([readFile(guardReal), readFile(resultReal)]);
+  const guard = guardSummary(guardBytes, runId);
+  const rawResult = safeResultSummary(resultBytes);
+  if (guard.child_exit_code !== 0 && rawResult.status === 'pass')
+    refuse('RESULT_GUARD_CONTRADICTION');
   return {
     schema_version: 1,
     run_id: runId,
@@ -103,8 +117,13 @@ export async function buildEvidenceRecord({ runId, guardLogPath, resultPath }) {
       raw_result_path: resultPath,
       raw_result_sha256: digest(resultBytes),
     },
-    guard: guardSummary(guardBytes, runId),
-    raw_result: safeResultSummary(resultBytes),
+    guard,
+    raw_result: rawResult,
+    execution_evidence: {
+      child_exit: guard.child_exit_code === 0 ? 'zero' : 'nonzero',
+      wrapper_completion: 'unverified_from_guard_log',
+      overall_acceptance: 'not_adjudicated',
+    },
   };
 }
 
