@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "report_id": "d23-native-build-binding-peer",
+  "reviewed_source_commit": "3281a58c",
+  "runner": "tests/browser/notice-write-retention-acceptance.mjs",
+  "A_runtime": {
+    "status": "UNVERIFIED_FOR_PROSPECTIVE_RUN_002",
+    "reason": "This lane did not launch the browser or build. Immutable native run 001 did not record exact version/tree identity and is not retroactively attributed to an artifact."
+  },
+  "B_source": {
+    "status": "ACCEPTED_FOR_RUNTIME_VERIFICATION",
+    "findings": [
+      "The runner reads the release receipt tree SHA-256 and dev manifest version before launching. The existing owned native harness independently rereads the receipt, requires a valid version/tree and Store ZIP digest, hashes the unpacked extension tree, checks the manifest version, and opens only its fresh owned Chrome profile with that directory. It also verifies the expected extension service worker and separate side-panel target.",
+      "After all notice assertions complete and the native harness returns, the runner rereads receipt and manifest, requires identical version/tree identity to its initial read, and hashes the actual unpacked extension tree again against that same tree SHA-256. A mismatch or changed release turns the result unverified and exits nonzero. The successful result records version, tree SHA-256, and the owned harness extension ID.",
+      "The correction leaves the real admin login, no-workspace prerequisite, trusted highlight pointer action, completed membership-RPC positive control, zero highlight POSTs, terminal failed-write notice before selection, trusted organization choice, and visibly retained notice after selection unchanged.",
+      "The added public evidence is only the release version, tree digest, and extension ID. Credentials, organization name/ID, request URLs/bodies, and event payloads remain outside the result. Run 001's immutable receipt is unchanged."
+    ],
+    "limits": [
+      "The startup byte check belongs to the owned harness and the end byte check belongs to the runner; the result should be called bound only if run 002 reaches bounded_pass with a non-null build object and ownedReceiptVerified=true.",
+      "The Store ZIP is verified at harness startup but not rehashed at the end; the browser executes the unpacked tree, which is checked at both boundaries. A malicious transient byte swap between checks is outside this trusted local harness contract."
+    ]
+  }
+}
