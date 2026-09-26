@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "run_id": "notice-resolution-green-001",
+  "defect_id": "EXT-D-0023",
+  "source_commit": "9b64e44e",
+  "command": "pnpm exec vitest run tests/unit/notice-resolution.test.tsx tests/unit/db-refusal-seam.test.ts --maxWorkers=1",
+  "guard_log_path": "/tmp/matrx-notice-resolution-green-001.log",
+  "guard_log_sha256": "0df61fb906f481abb5b4fc422197dffeff2008ea0069396469dcd76091f73fdf",
+  "guard": {
+    "admitted_at": "2026-09-26T21:29:09.953Z",
+    "child_exit_at": "2026-09-26T21:29:11.393Z",
+    "child_exit_code": 0
+  },
+  "result": "Two test files passed; 24 tests passed, including existing-no-workspace and late-arrival notice retirement plus the sibling database refusal suite. Independent source and native UI verification remain pending."
+}

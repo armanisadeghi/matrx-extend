@@ -7,6 +7,6 @@
   "sibling_census": "The same stale Capture notice was documented as covering Settings Reset and Vault controls; those acceptance runners manually dismissed the exact alert after organization setup. Other database failures have different remedies and must remain visible.",
   "red_guard": "docs/stabilization/runs/notice-resolution-red-001.json",
   "repair": "The shared Notice type carries a typed active-organization resolution condition. The database refusal producer marks only no-workspace notices. NoticeHost retires matching notices when the organization changes and rechecks on notice arrival for late refusals; unrelated errors are untouched.",
-  "verification": "Red guard confirmed by root. Product repair and exact-file formatting are prepared; focused green, typecheck, independent source review and native read-only retest remain pending.",
+  "verification": "Red guard confirmed by root. Guarded focused green run notice-resolution-green-001 passed 24 tests across the new notice guards and sibling database refusal suite. Typecheck, independent source review and native read-only retest remain pending.",
   "d22_boundary": "The original Source Save click remains ambiguous. The private one-attempt checkpoint is unchanged; this repair neither dispatches Save nor authorizes retry."
 }
