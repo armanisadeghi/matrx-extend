@@ -44,6 +44,52 @@ import { useCallback, useEffect, useState } from 'react';
 
 const NONE = '__none__';
 
+type ExtensionUpdateStatus =
+  | { kind: 'idle' }
+  | { kind: 'no_update' }
+  | { kind: 'update_available'; version?: string }
+  | { kind: 'throttled' }
+  | { kind: 'error' };
+
+type BrowserLoginReadiness = 'ready' | 'unavailable';
+
+function installedBrowserLabel(): string {
+  const userAgent = navigator.userAgent;
+  if (userAgent.includes('Edg/')) return 'Microsoft Edge';
+  if (userAgent.includes('OPR/')) return 'Opera';
+  if (userAgent.includes('Firefox/')) return 'Firefox';
+  if (userAgent.includes('CriOS/') || userAgent.includes('Chrome/')) return 'Chrome';
+  if (userAgent.includes('Safari/')) return 'Safari';
+  return 'This browser';
+}
+
+function browserLoginReadiness(): BrowserLoginReadiness {
+  const runtime = chrome.runtime;
+  const canUsePasswordFlow =
+    typeof runtime?.sendMessage === 'function' &&
+    typeof chrome.tabs?.get === 'function' &&
+    typeof chrome.scripting?.executeScript === 'function' &&
+    typeof chrome.storage?.local?.get === 'function';
+  return canUsePasswordFlow ? 'ready' : 'unavailable';
+}
+
+function updateStatusCopy(status: ExtensionUpdateStatus): string | null {
+  switch (status.kind) {
+    case 'no_update':
+      return 'Your browser did not find an update right now.';
+    case 'update_available':
+      return status.version
+        ? `Version ${status.version} is available. Your browser will install it when its update finishes.`
+        : 'An update is available. Your browser will install it when its update finishes.';
+    case 'throttled':
+      return 'Your browser limited update checks. Try again later, or use its Extensions page to review updates.';
+    case 'error':
+      return 'Could not check right now. Open your browser’s Extensions page, find Matrx Extend, and use its update controls.';
+    case 'idle':
+      return null;
+  }
+}
+
 export function SettingsView() {
   const { user, signIn, signOut, isAdmin } = useAuth();
   const desktop = useDesktopBridge();
@@ -53,6 +99,7 @@ export function SettingsView() {
   const [enginePortSaved, setEnginePortSaved] = useState<number | null>(null);
   const [enginePortError, setEnginePortError] = useState<string | null>(null);
   const [clearLocalDataOpen, setClearLocalDataOpen] = useState(false);
+  const [extensionUpdate, setExtensionUpdate] = useState<ExtensionUpdateStatus>({ kind: 'idle' });
   // Which organization this install acts in. Every backend request and every
   // organization-scoped write carries it, so a user with more than one
   // organization must state which one before the extension can do anything.
@@ -103,6 +150,35 @@ export function SettingsView() {
 
   const desktopColor = desktopStatusTextClass(desktop.transport, desktop.health);
   const engineHealth = engineHealthState(desktop.health);
+  const canCheckForUpdate = typeof chrome.runtime.requestUpdateCheck === 'function';
+  const loginReadiness = browserLoginReadiness();
+
+  const checkForExtensionUpdate = () => {
+    if (typeof chrome.runtime.requestUpdateCheck !== 'function') return;
+    setExtensionUpdate({ kind: 'idle' });
+    try {
+      chrome.runtime.requestUpdateCheck((status, details) => {
+        if (chrome.runtime.lastError) {
+          setExtensionUpdate({ kind: 'error' });
+          return;
+        }
+        if (status === 'update_available') {
+          setExtensionUpdate({
+            kind: 'update_available',
+            ...(details?.version ? { version: details.version } : {}),
+          });
+          return;
+        }
+        if (status === 'no_update' || status === 'throttled') {
+          setExtensionUpdate({ kind: status });
+          return;
+        }
+        setExtensionUpdate({ kind: 'error' });
+      });
+    } catch {
+      setExtensionUpdate({ kind: 'error' });
+    }
+  };
 
   return (
     <div className="flex h-full flex-col">
@@ -493,8 +569,46 @@ export function SettingsView() {
 
           <Collapsible label="About" defaultOpen={false}>
             <Card>
-              <Row label="Version" value={chrome.runtime.getManifest().version} mono />
+              <Row label="Browser" value={installedBrowserLabel()} />
+              <Row label="Installed version" value={chrome.runtime.getManifest().version} mono />
               <Row label="Extension ID" value={chrome.runtime.id} mono />
+              <Row
+                label="Saved-login browser support"
+                value={
+                  loginReadiness === 'ready' ? (
+                    <span className="text-emerald-600 dark:text-emerald-400">Ready</span>
+                  ) : (
+                    <span className="text-destructive">Unavailable</span>
+                  )
+                }
+              />
+              {loginReadiness === 'unavailable' && (
+                <p className="px-3.5 pb-2 text-xs text-muted-foreground">
+                  Reload or reinstall Matrx Extend in a supported browser to use saved logins.
+                </p>
+              )}
+              {canCheckForUpdate ? (
+                <div className="px-3.5 py-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-7 rounded-full px-3"
+                    onClick={checkForExtensionUpdate}
+                  >
+                    Check for extension update
+                  </Button>
+                </div>
+              ) : (
+                <p className="px-3.5 py-2 text-xs text-muted-foreground">
+                  Updates are managed by your browser. Open its Extensions page, find Matrx Extend,
+                  and use its update controls.
+                </p>
+              )}
+              {updateStatusCopy(extensionUpdate) && (
+                <p className="px-3.5 pb-2 text-xs text-muted-foreground">
+                  {updateStatusCopy(extensionUpdate)}
+                </p>
+              )}
             </Card>
           </Collapsible>
         </div>
