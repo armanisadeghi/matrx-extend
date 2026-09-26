@@ -22,6 +22,17 @@
   click Run. The Tools tab routes through the same dispatcher path
   agents use, so it's a real end-to-end test.
 
+### Sidepanel browser module load and speech
+
+- **What it does:** the sidepanel opens with Settings and Scrape available, while
+  Cartesia's browser speech client loads only when a message is spoken.
+- **Where to test:** the keyed unpacked Chrome development extension on an ordinary page.
+- **Steps:** reload the extension, open and reopen the sidepanel, visit Settings and
+  Scrape, then sign in and use the speaker button on a chat response.
+- **Expected:** neither panel open shows a render error; Settings and Scrape render;
+  speaking loads the Cartesia client without a browser-externalized module error and
+  plays audio, with pause and stop controls responding.
+
 ### Release refreshes the existing unpacked development path
 
 - **What it does:** a successful release replaces `.output/chrome-mv3-dev/` with the

@@ -153,7 +153,9 @@ export function useCartesiaSpeaker({
         });
 
         if (!playerRef.current) {
-          playerRef.current = new playerClassRef.current!({ bufferDuration: 0.25 });
+          const Player = playerClassRef.current;
+          if (!Player) throw new Error('Speech player was not initialized.');
+          playerRef.current = new Player({ bufferDuration: 0.25 });
         }
 
         if (mountedRef.current) setPhase('playing');

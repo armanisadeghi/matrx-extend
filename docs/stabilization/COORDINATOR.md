@@ -1,27 +1,26 @@
 # Stabilization coordinator
 
-Execution started 2026-09-25 21:49 UTC. User approved PLAN.md and explicitly requires ongoing quality, performance and efficiency assessment. Goal remains active. Chat/Pilot are deferred until all other applicable cases pass.
-
-## Resume
-Read PLAN.md and this file; inspect git status and active agents/processes before work. Inventory is canonical for coverage. Fetch remote main and reconcile without losing concurrent work. No product tests until the complete inventory is reconciled. Every heavy job requires resource admission. Never invoke the current push-first release path.
+## Mandate and resume
+User approved autonomous test→capture→fix→independent retest→green integration. Read PLAN.md, inventory.json, defects/, runs/ and this file. Chat/Pilot waveD remains last, except universal blockers. Inventory source gate passed; runtime coverage is partial. No new approval is needed for authorized work. Preserve concurrent changes, fetch main at boundaries and before push; never invoke current push-first release.sh until repaired.
 
 ## Current truth
-- Source main is bb217ba (five remote browser/Vault test-helper commits integrated after first UI batch; runtime still f70ecd47 build0.2.44). Remote changes were incorporated twice. A concurrent process reset a local checkpoint/merge; our eight planning files were recovered without overwriting anything from checkpoint dc64e8a1c6c0ac28ac8102dd31857bf645d72df2. They and reports are presently untracked. Preserve and commit exact paths before further synchronization.
-- Locked install and static dev build passed (baseline-install-002, baseline-build-001). Version0.2.44. First guest batch blocked by reproducible panel render error EXT-D-0001; no behavior passes or fixes landed. Store 0.2.23 is disabled with data preserved; fresh unpacked bundle now exists; installed dev identity/version verified in Chrome. Native Chrome control works; named browser connector did not.
-- Local census: 16 features / 307 controls; connected census: 17 / 636; tool candidate census 169 entries / 168 unique names. Independent source review found seven corrections, currently assigned. Canonical inventory merged; independent source gate PASS, 205 features / 1256 controls. Runtime remains unverified.
-- Resource runner passed fresh independent supported-scope review (resource-scope-review.json). Cap1 now enforced. Trusted bounded commands only; daemonizing/protected detached system processes are outside contract. First guarded install admitted through this runner.
-- Admin web session and vault credential located without revealing secrets. Ordinary test account exists; no credential located yet. No access blocker question asked.
+- Base main53fd39f, release0.2.47. All campaign artifacts and interrupted partial fix were preserved in external sweep76ba129. No data was discarded. Provider disconnect interrupted work; user explicitly resumed.
+- EXT-D-0001 (sidepanel .custom render crash): fixed candidate, fresh peer original repro passed twice as guest; seven adjacent cases passed. Typecheck/build/catalog passed; unit suite1233passed,3live-db tests explicitly skipped. Independent source review accepted browser mapping. Commitbb9f18f pushed origin/main; EXT-D-0001 closed.
+- Fresh development build receipt runs/render-build-001.json. Chrome devIDcihdmkcdjjckfhjpgoedmgfpoljebaml version0.2.47 confirmed. Store0.2.23 remains disabled, data retained. Reload initially left0.2.44; Loadunpacked exactabsolute path corrected it. Always verify live version, not just clicking Reload.
+- Deepcapture remains unverified: short example.com fixture cannot distinguish deep vs fast behavior. No defect claimed from unchanged output. UI latency was not measured, so no performance pass claim.
+- Guest confirmed. Admin web session/vault credential located earlier without revealing secret; extension signed-in testing remains unverified. Ordinary-member credential unresolved.
+- Resource guard independently verified for trusted bounded foreground commands, cap1. All current leases/jobs stopped. Guard is not an arbitrary daemon sandbox; see policy. One first-batch resource invalidation retained; latest retest/regression healthy.
 
-## Assignments
-- All source collection/correction/review and resource repair/review agents complete.
-- first_test_brief completed: install passed, panel errors twice before controls render. Browser permit36325 released after later unsafe resource stop; no UI worker active.
-- fix_sidepanel_render: Sol medium root-cause/class fix for EXT-D-0001. Must request guarded commands; no own tests/browser/Git.
-- Next independent verifier must re-open native sidepanel under healthy permit and execute original eight cases, auth status checked visibly.
-- Owner: guarded dependency install, fresh static WXT development build, unpacked install; then delegate first-test-brief.json eight guest cases to Luna under one browser lease.
-- Upcoming: first reproducible defect implementation Sol, fresh peer original repro and surrounding cases, exact-path commit and push only green.
-
-## Operating health
-After each batch or every 30 active minutes, record elapsed time, accepted/rejected evidence, first-pass retest rate, reopened defects, environment-invalid runs, resource refusals and useful completed cases. Measure UI latency on repeatable actions with cold/warm state and machine load; do not claim thresholds met without measurements. Two unusable Luna returns trigger decomposition/Sol; two failed Sol repairs trigger escalation. Prefer smaller batches when review rejection or environmental invalidation rises. No dashboard before first verified fix.
+## Completed agents
+- fix_sidepanel_render Sol implementation: reports/fix-sidepanel-render.json.
+- render_code_review Sol fresh peer: reports/render-code-review.json. Two preexisting speech lifecycle leads EXT-L-0001/2 remain unverified in Chat feature waveD.
+- render_ui_retest Luna fresh peer: reports/render-ui-retest.json and runs/render-retest-001.json. No active UI work. fix_release_gate Sol owns release repair; release_fixture_safety Luna reviews isolation; next_guest_batch Luna prepares next local Settings cases.
 
 ## Next actions
-Complete/reconcile inventory (including live tool advertisements), establish dev runtime, admit first contained-surface test, land independently verified first defect fix. Repair release ordering before campaign release. Resolve remaining access facts independently and consolidate proven human-only gates once.
+1. EXT-D-0001 integratedbb9f18f and closed; maintain closure receipts.
+2. Repair release candidate ordering before campaign shipping: current release publishes before checks, contrary to user mandate. Reproduce with isolated local fixture, independent review and safe candidate validation; never test publication against realremote.
+3. Continue contained guest/auth local features. Deepcapture needs discriminating fixture. Keep every remaining case/mode unverified until evidence; coverage comes only from inventory.json.
+4. Reconcile remote changes at each batch. Update environment/runtime receipt after every build/reload. No stale-build defect reports.
+
+## Quality, performance and efficiency
+Reject generic evidence and invalid fixtures; keep reports compact and batches narrow. Two failed lower-tier attempts trigger decomposition/escalation. Resource preflight failures are environment events, not product defects. Preserve raw timing evidence with overhead caveats; no invented latency. First product fix validation complete; full-system health remains far from proven. Follow PLAN thresholds, no management layers or dashboard work.

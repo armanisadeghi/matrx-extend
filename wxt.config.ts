@@ -238,8 +238,12 @@ export default defineConfig({
             importer &&
             /[/\\]object-inspect[/\\]index\.js$/.test(importer)
           ) {
-            return path.resolve(__dirname, './src/lib/browser/object-inspect-util.cjs');
+            return '\0object-inspect-browser-util';
           }
+          return null;
+        },
+        load(id) {
+          if (id === '\0object-inspect-browser-util') return 'export const custom = undefined;';
           return null;
         },
       },

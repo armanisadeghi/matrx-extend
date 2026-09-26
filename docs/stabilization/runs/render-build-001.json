@@ -1,0 +1,19 @@
+{
+  "id": "render-build-001",
+  "feature_id": "EXT-F-0001",
+  "defect_id": "EXT-D-0001",
+  "at": "2026-09-26T01:49:44.904Z",
+  "status": "pass",
+  "scope": "fresh development build; independent browser retest pending",
+  "source_sha": "53fd39f972817210572fe219f4f5c48e203666a7",
+  "candidate_diff_sha256": "2ccd4ebc8d55a51ba270ed83daf5d00e3cf78a14f76ff44dbfce9defb867d92a",
+  "lockfile_sha256": "1cd51352654e088d816808ccfc7577df8f5377562ce2e311b586391916cbf796",
+  "bundle_sha256": "2a43e979f0adf97ae73759ee846a9a90d40eea07e52b6ad96aef030164bf22d7",
+  "output": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+  "mode": "development",
+  "manifest_version": "0.2.47",
+  "expected_runtime_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "exit_code": 0,
+  "build_duration_seconds": 2.372,
+  "resource_admitted": true
+}

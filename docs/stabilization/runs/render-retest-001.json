@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "id": "render-retest-001",
+  "at": "2026-09-26T02:01:43Z",
+  "status": "completed_with_unverified_case",
+  "lane": "independent_ui_verification",
+  "browser": "Google Chrome native app; AI (aimatrx.com) profile",
+  "resource_lease": "root-admitted render-retest-001, exec session 46435",
+  "resource_warning_seen": false,
+  "fixture": {"url": "https://example.com/", "visible_title": "Example Domain", "verified": true, "cleanup": "Temporary markdown edits discarded by Re-capture; restored 16-word capture with no EDITED marker; fixture tab closed."},
+  "extension": {
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "enabled": true,
+    "store_extension": "Matrx Extend 0.2.23, disabled",
+    "expected_version": "0.2.47",
+    "initial_observed_version": "0.2.44",
+    "candidate_version": "0.2.47",
+    "candidate_loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "fresh_build_receipt": "docs/stabilization/runs/render-build-001.json",
+    "candidate_bundle_loaded": true,
+    "recovery": "Chrome Load unpacked using the exact receipt bundle path updated the existing matching extension ID; Chrome confirmed Extension loaded, version 0.2.47. Then extension Reload confirmed Reloaded. No removal or data deletion."
+  },
+  "observations": [
+    {"at": "2026-09-26T01:51:45Z", "action": "Initial panel on Example Domain", "result": "Installed 0.2.44 displayed EXT-D-0001 .custom browser-compatibility render error."},
+    {"at": "2026-09-26T01:52:16Z", "action": "Reload stale extension", "result": "Still 0.2.44 and same error; candidate verification blocked at this point."},
+    {"at": "2026-09-26T01:54Z", "action": "Load unpacked exact receipt path and verify", "result": "Native Chrome confirmed extension loaded; matching ID showed 0.2.47 from expected .output/chrome-mv3-dev path; extension Reload confirmed."},
+    {"at": "2026-09-26T01:55Z", "action": "Open actual sidepanel twice on Example Domain", "result": "Both opens showed Chat, Settings, Scrape controls and no EXT-D-0001 render error. Account UI visibly showed guest state (Sign in; choose an agent)."},
+    {"at": "2026-09-26T01:56Z", "action": "EXT-F-1003-T04 Theme", "result": "System→Light→Dark→System; selection controls reflected each choice; restored System."},
+    {"at": "2026-09-26T01:57Z", "action": "EXT-F-1003-T10 Default mode", "result": "Ask before acting→Act without asking; persisted across Chat/Settings navigation; restored Ask before acting; no backend action invoked."},
+    {"at": "2026-09-26T01:58Z", "action": "EXT-F-1003-T13 Default speed", "result": "Fast→Thinking; persisted across Chat/Settings navigation; restored Fast."},
+    {"at": "2026-09-26T01:59Z", "action": "EXT-F-1003-T40 Auto-scrape", "result": "Off→On; persisted after navigation and extension Reload; then restored Off and verified."},
+    {"at": "2026-09-26T02:00Z", "action": "EXT-F-1007-T01 Fast Capture", "result": "Capture produced Example Domain article, 16 words; Links tab count 1 and result tabs visible."},
+    {"at": "2026-09-26T02:00Z", "action": "EXT-F-1007-T02 Scroll & capture", "result": "Clicked twice; output remained the same 16-word article on this short static fixture. This does not establish failure; progressive busy behavior was not measured."},
+    {"at": "2026-09-26T02:00Z", "action": "EXT-F-1007-T05 Markdown Apply", "result": "Added FIRST-TEST-EDIT; preview showed EDITED and marker; reopening editor retained marker. Did not Save."},
+    {"at": "2026-09-26T02:01Z", "action": "EXT-F-1007-T06 Cancel and cleanup", "result": "Added CANCEL-ME then Cancel; preview returned to FIRST-TEST-EDIT without CANCEL-ME. Re-capture confirmed discard prompt; confirmed and restored original 16-word capture without EDITED marker; closed fixture tab."}
+  ],
+  "case_results": {
+    "EXT-D-0001-original-repro": "pass_candidate: original .custom render error absent on two actual sidepanel opens with verified 0.2.47 candidate; guest mode",
+    "EXT-F-1003-T04": "pass: theme choices reflected; restored System",
+    "EXT-F-1003-T10": "pass: mode persisted across view navigation; restored Ask before acting",
+    "EXT-F-1003-T13": "pass: speed persisted across view navigation; restored Fast",
+    "EXT-F-1003-T40": "pass: auto-scrape persisted across extension Reload; restored Off",
+    "EXT-F-1007-T01": "pass: Fast Capture rendered 16-word Example Domain article and one link",
+    "EXT-F-1007-T02": "unverified: same output on the short static fixture is inconclusive; busy/progress timing not measured",
+    "EXT-F-1007-T05": "pass: temporary edit appeared in preview and reopened editor; no Save",
+    "EXT-F-1007-T06": "pass: Cancel discarded draft; recapture cleanup restored original content"
+  },
+  "auth_mode": "guest; visible Sign in and choose-an-agent UI; no auth state changed",
+  "verdict_a_original_reproduction_and_surrounding_behavior": "EXT-D-0001 original runtime error did not reproduce on candidate 0.2.47 across two actual sidepanel opens. Four Settings cases and Fast Capture passed in guest mode. Scroll & capture remains unverified on this short static page; no new defect filed.",
+  "verdict_b_evidence_quality": "Direct native Chrome accessibility-tree evidence and visible UI inspection; extension ID/version/path checked in Chrome Extensions. Exact per-case ordering and outcomes recorded; timestamps are approximate minute-level except initial stale-build observations. No screenshot artifact saved. Scroll/busy progression and timing were not measured.",
+  "stop_reason": null,
+  "next_action": "Root owns EXT-D-0001 disposition and may run a stronger long-page deep-capture fixture separately."
+}

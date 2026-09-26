@@ -1,0 +1,17 @@
+{
+  "id": "render-compile-001",
+  "feature_id": "EXT-F-0001",
+  "defect_id": "EXT-D-0001",
+  "at": "2026-09-26T01:48:06.879Z",
+  "status": "pass",
+  "scope": "typecheck only; no runtime claim",
+  "source_sha": "53fd39f972817210572fe219f4f5c48e203666a7",
+  "candidate_diff_sha256": "2ccd4ebc8d55a51ba270ed83daf5d00e3cf78a14f76ff44dbfce9defb867d92a",
+  "command": [
+    "pnpm",
+    "compile"
+  ],
+  "exit_code": 0,
+  "resource_admitted": true,
+  "cpu_busy_fraction": 0.10181428571428575
+}
