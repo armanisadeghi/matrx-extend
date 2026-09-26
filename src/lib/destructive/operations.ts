@@ -193,11 +193,6 @@ export const INTERNAL_ONLY: { fn: string; module: string; why: string }[] = [
     why: 'Reads-and-consumes a one-shot draft handed over by the right-click menu.',
   },
   {
-    fn: 'createTask',
-    module: 'src/lib/agenda/queries.ts',
-    why: 'Rolls back the half-created row it just inserted when a later insert fails. It can only ever delete its own failed work.',
-  },
-  {
     fn: 'signIn',
     module: 'src/lib/auth/flow.ts',
     why: 'Clears the one-time PKCE verifier the sign-in exchange has just consumed.',

@@ -18,6 +18,7 @@
  *   4. no active sch_run is currently claimed (claim_token IS NULL or expired)
  */
 
+import { requireActiveOrganizationId } from '@/lib/org/active-org';
 import { getSupabase } from '@/lib/supabase/client';
 import { schedulerDb, schedulerMachineryDb } from '@/lib/supabase/schemas';
 import { z } from 'zod';
@@ -386,17 +387,23 @@ export interface CreateTaskInput {
 }
 
 /**
- * Atomic path: the `create_agent_task` Postgres RPC (one transaction —
- * migrations/2026_06_10_sch_create_agent_task_rpc.sql, audit P2-16) does
- * all three inserts; a mid-sequence failure can no longer orphan a
- * trigger-less sch_task. The legacy three-insert path below remains as a
- * fallback for DBs where the function hasn't been applied yet (42883).
+ * The ONE create path: the `create_agent_task` Postgres RPC does the three
+ * inserts (sch_task, sch_agent_task, sch_trigger) in one transaction.
+ *
+ * THE ORGANIZATION IS NAMED, NEVER CHOSEN FOR THE PERSON. A new schedule has
+ * no parent row to inherit from, so the RPC refuses a NULL
+ * `p_organization_id` (`organization_required`) and since 2026-09-26
+ * `scheduler.sch_agent_task.organization_id` is NOT NULL too. The id comes
+ * from the ONE resolver (`requireActiveOrganizationId` — this device's
+ * choice, or the sole membership); with nothing set the create is HELD on the
+ * picker and resumes with the person's choice. The old three-insert fallback
+ * (for a DB without the RPC) is gone: it sent no organization at all, and the
+ * RPC is live everywhere (common-docs/projects/no-db-assigned-org).
  */
 export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
+  const organizationId = await requireActiveOrganizationId();
   // RPCs still live in `public` — must stay on the plain (unscoped) client.
   const c = getSupabase();
-  // Table fallback path below targets `scheduler.sch_*` — scoped client.
-  const sch = schedulerDb();
   const nextDueAt = input.next_due_at ?? computeFirstDue(input.trigger_config);
 
   const { data: rpcId, error: rpcErr } = await c.rpc('create_agent_task', {
@@ -415,71 +422,13 @@ export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
     p_tags: input.tags ?? [],
     p_expires_at: input.expires_at ?? null,
     p_next_due_at: nextDueAt,
+    p_organization_id: organizationId,
   });
-  if (!rpcErr && typeof rpcId === 'string') {
-    const created = await getTask(rpcId);
-    if (!created) throw new Error(`createTask: row vanished after RPC insert (${rpcId})`);
-    return created;
-  }
-  // 42883 = undefined_function — the RPC isn't applied on this DB (staging /
-  // fresh env). Anything else from the RPC is a real failure: surface it
-  // rather than retrying down the non-atomic path.
-  if (rpcErr && rpcErr.code !== '42883' && !/create_agent_task/.test(rpcErr.message ?? '')) {
-    throw new Error(`createTask (rpc): ${rpcErr.message}`);
-  }
-  console.warn('[matrx-extend] create_agent_task RPC unavailable — using legacy 3-insert path');
-
-  // 1. sch_task
-  const { data: taskRow, error: taskErr } = await sch
-    .from('sch_task')
-    .insert({
-      kind: 'agent',
-      title: input.title,
-      description: input.description ?? null,
-      queue: 'default',
-      surfaces: input.surfaces ?? ['any'],
-      enabled: true,
-      expires_at: input.expires_at ?? null,
-      tags: input.tags ?? [],
-      next_due_at: nextDueAt,
-    })
-    .select('id')
-    .single();
-  if (taskErr || !taskRow) throw new Error(`createTask (sch_task): ${taskErr?.message}`);
-  const taskId = taskRow.id as string;
-
-  // 2. sch_agent_task — cleanup parent if this fails.
-  const { error: agentErr } = await sch.from('sch_agent_task').insert({
-    id: taskId,
-    agent_id: input.agent_id ?? null,
-    prompt: input.prompt,
-    variables: input.variables ?? {},
-    persistent_conversation_id: input.persistent_conversation_id ?? null,
-    auth_mode: input.auth_mode ?? 'ask',
-    max_runtime_seconds: input.max_runtime_seconds ?? 600,
-    max_concurrent: input.max_concurrent ?? 1,
-  });
-  if (agentErr) {
-    await sch.from('sch_task').delete().eq('id', taskId);
-    throw new Error(`createTask (sch_agent_task): ${agentErr.message}`);
-  }
-
-  // 3. sch_trigger — cleanup parent if this fails.
-  const { error: trigErr } = await sch.from('sch_trigger').insert({
-    task_id: taskId,
-    type: input.trigger_type,
-    config: input.trigger_config,
-    enabled: true,
-    next_due_at: nextDueAt,
-  });
-  if (trigErr) {
-    await sch.from('sch_task').delete().eq('id', taskId);
-    throw new Error(`createTask (sch_trigger): ${trigErr.message}`);
-  }
-
-  const fetched = await getTask(taskId);
-  if (!fetched) throw new Error(`createTask: row vanished after insert (${taskId})`);
-  return fetched;
+  if (rpcErr) throw new Error(`createTask (rpc): ${rpcErr.message}`);
+  if (typeof rpcId !== 'string') throw new Error('createTask (rpc): no task id returned');
+  const created = await getTask(rpcId);
+  if (!created) throw new Error(`createTask: row vanished after RPC insert (${rpcId})`);
+  return created;
 }
 
 /**

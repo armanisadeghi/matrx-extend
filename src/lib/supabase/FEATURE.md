@@ -16,6 +16,16 @@ REAL Holder, so nothing here spells an agent name). Host wiring lives in
 [../agents/catalog.ts](../agents/catalog.ts); the picker is
 `AgentListDropdown` / `AgentListInlinePicker`. Guard: `pnpm check:canonical-pickers`.
 
+## Every org-scoped write names its organization
+
+A write that creates an org-scoped row sends the organization explicitly —
+`organization_id` in a row, `p_organization_id` to a create RPC — resolved by
+`requireActiveOrganizationId()` (`src/lib/org/active-org.ts`: this device's
+choice or the sole membership; otherwise HELD on the picker). No database
+default or trigger may choose it. Guard (red on any omission):
+`tests/unit/org-scoped-writes-name-their-organization.test.ts`, whose RPC list
+mirrors the live signatures of the create RPCs this extension calls.
+
 ## Change log
 
 - 2026-08-17 — Aligned the agent-list validator with the canonical RPC and
@@ -25,3 +35,12 @@ REAL Holder, so nothing here spells an agent name). Host wiring lives in
   system seed is the system-owned Matrx Browser Agent.
 - 2026-09-08 — Agent-list reads left this module entirely for
   `@ai-matrx/agents/catalog` (THE ONE AGENT PICKER, ruling D1).
+- 2026-09-26 — Creating a schedule from the extension always failed:
+  `createTask` called `create_agent_task` without `p_organization_id`
+  (`organization_required`). It now passes the resolved organization, the
+  org-less three-insert fallback is deleted, and the Agenda form shows the
+  failure with its remedy. The census found the same omission in
+  `capture_study_set` (`edu_import_deck`) and the `users.user_form_profile`
+  upsert (NOT NULL `organization_id`; an existing profile keeps its org, the
+  first save names the active one — same contract as the web app). Class
+  guard added (above).
