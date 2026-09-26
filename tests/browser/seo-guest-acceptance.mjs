@@ -23,7 +23,7 @@ const report = {
   deferred: [
     { case: 'T01', part: 'one audit per URL and slow-old-result race' },
     { case: 'T02', part: 'fresh capture and stale advice replacement after re-audit' },
-    { case: 'T03', part: 'restricted and unreachable URLs' },
+    { case: 'T03', part: 'unreachable HTTP(S), other restricted schemes, and reload dimension' },
     { case: 'T04-T06,T08', part: 'database save, history, and diff flows' },
     { case: 'T07', part: 'actual clipboard output, member/admin role gates, and JSON contents' },
     { case: 'T09', part: 'remaining detail groups and outbound links' },
@@ -141,6 +141,29 @@ async function seoContent(panel) {
           .some((node) => node.textContent.trim() === 'Re-audit' && !node.disabled),
         error: [...(pane?.querySelectorAll('div') ?? [])]
           .some((node) => /^Audit failed:|^This page cannot be audited/.test(node.textContent.trim())) };
+    })()`,
+  );
+}
+
+async function restrictedSeoState(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+      ${SEO_SCOPE}
+      if (!linked || tab?.getAttribute('aria-selected') !== 'true')
+        return { scopeValid: false };
+      const error = [...pane.querySelectorAll('div')]
+        .find((node) => node.textContent?.trim()
+          === 'This page cannot be audited (browser-internal or restricted URL).');
+      const buttons = [...pane.querySelectorAll('button')];
+      const titleGroup = [...pane.querySelectorAll('span')]
+        .some((node) => node.textContent.trim() === 'Title & description');
+      return { scopeValid: true,
+        expectedErrorVisible: !!error && error.getBoundingClientRect().height > 0,
+        staleAuditAbsent: !titleGroup,
+        copyAuditAbsent: !buttons.some((node) => node.title === 'Copy audit'),
+        retryOffered: buttons.some((node) => node.textContent.trim() === 'Audit this page'
+          && !node.disabled) };
     })()`,
   );
 }
@@ -330,6 +353,50 @@ try {
         textChoice: reloadMenu.choices.includes('Summary (text)'),
         agentChoice: reloadMenu.choices.includes('For AI agent'),
         jsonAbsent: true,
+      });
+
+      // about:blank is a real browser-restricted scheme in the capture
+      // contract. Keep the same owned tab and require the previous audit to
+      // disappear before testing recovery on a known public page.
+      enter('restricted_page_navigation');
+      await page.goto('about:blank', { waitUntil: 'domcontentloaded' });
+      assert.equal(page.url(), 'about:blank', 'owned tab reached restricted URL');
+      advance('restricted_page_loaded', { restrictedScheme: 'about:' });
+      const restricted = await waitObserved(
+        'restricted_audit_error_wait',
+        () => restrictedSeoState(panel),
+        (state) =>
+          state?.scopeValid &&
+          state.expectedErrorVisible &&
+          state.staleAuditAbsent &&
+          state.copyAuditAbsent &&
+          state.retryOffered,
+        30000,
+      );
+      target('T03', 'about_blank_clear_error_without_stale_audit', restricted);
+
+      enter('restricted_recovery_navigation');
+      await page.goto(PAGES[0], { waitUntil: 'domcontentloaded' });
+      const recoveryPage = await observe('restricted_recovery_page_inspected', () =>
+        pageEvidence(page),
+      );
+      assert.equal(recoveryPage.title, publicPages[0].title, 'known public recovery title');
+      advance('restricted_recovery_page_loaded', { title: recoveryPage.title });
+      const recovered = await waitObserved(
+        'restricted_recovery_audit_wait',
+        () => seoContent(panel),
+        (state) =>
+          state?.scopeValid &&
+          state.title === recoveryPage.title &&
+          state.headings === !!recoveryPage.heading &&
+          state.reAudit &&
+          !state.error,
+        30000,
+      );
+      target('T03', 'public_page_recovers_after_restricted_url', {
+        publicTitleMatched: recovered.title === recoveryPage.title,
+        headingsPresenceMatched: recovered.headings === !!recoveryPage.heading,
+        auditErrorAbsent: !recovered.error,
       });
     },
   });
