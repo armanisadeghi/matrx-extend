@@ -16,11 +16,17 @@
     "docs/stabilization/reports/release-ci-parity.json",
     "docs/stabilization/reports/ci-gate-source-peer.json",
     "release.sh",
-    "scripts/test-release-ship-path.sh"
+    "scripts/test-release-ship-path.sh",
+    "docs/stabilization/runs/release-ci-red-001.json",
+    "docs/stabilization/runs/release-ci-green-001.json",
+    "docs/stabilization/runs/release-stabilization-017.json",
+    "docs/stabilization/runs/release-stabilization-018.json",
+    "docs/stabilization/reports/ci-gate-runtime-peer.json",
+    "docs/stabilization/reports/release018-peer.json"
   ],
   "severity": "S2: missing prepublication validation can publish CI-red main; exact v0.2.64 candidate failure is unproven",
   "priority": "P1: enforce CI lint parity before publication",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/release_ci_parity",
   "transition_history": [
     {
@@ -46,10 +52,23 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "a8966b9 adds lint gate and fixture; 3f853c0 corrects evidence scope; independent source peer 1c1f053 passes with runtime fixture pending."
+    },
+    {
+      "at": "2026-09-26T14:12:10.844836+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Guarded old-source red/current green fixtures independently accepted; actual release017 refused lint-red candidate and018 passed all15 gates before publication. Fresh independent release018-peer verifies hashes, identity and gate outcomes."
+    },
+    {
+      "at": "2026-09-26T14:12:10.844836+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original gate omission fixed, refusal and validated publication proven, published0.2.66 source52517fdb; no Storeupload or skippedDB health claim."
     }
   ],
   "limitations": [
-    "The root-owned guarded fixture has not yet produced failing-before and passing-after runtime evidence.",
-    "No claim that the exact v0.2.64 release candidate was lint-red."
-  ]
+    "No claim exact v0.2.64 candidate was lint-red; actual later release017 demonstrates refusal.",
+    "Local release engineering verification, no Store submission or full product health claim."
+  ],
+  "fix_commits": ["a8966b9", "2f78fa4f"]
 }
