@@ -54,4 +54,5 @@ for (const permission of ['pageCapture', 'clipboardRead', 'tabCapture']) {
     `Safari must omit optional ${permission}`,
   );
 }
-assert.equal(safari.options_ui, undefined);
+assert.equal(safari.options_ui?.page, 'options.html');
+assert.equal(safari.options_ui?.open_in_tab, undefined);

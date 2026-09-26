@@ -294,9 +294,16 @@ export default defineConfig({
   hooks: {
     'build:manifestGenerated': (wxt, manifest) => {
       // WXT always adds options_ui.open_in_tab for an options entrypoint, but
-      // Safari's converter rejects that key. The options page remains a built
-      // asset; Safari does not advertise an unsupported navigation contract.
-      if (wxt.config.browser === 'safari') manifest.options_ui = undefined;
+      // Safari's converter rejects that key. Keep the settings page reachable
+      // through options_ui while omitting the unsupported navigation flag.
+      if (wxt.config.browser === 'safari' && manifest.options_ui) {
+        (
+          manifest.options_ui as {
+            page: string;
+            open_in_tab?: boolean | undefined;
+          }
+        ).open_in_tab = undefined;
+      }
     },
   },
   // Dev server port. WXT defaults to 3000 (with fallbacks 3001-3010), which
