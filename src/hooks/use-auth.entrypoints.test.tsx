@@ -125,6 +125,7 @@ describe('useAuth canonical session entry points', () => {
     );
 
     await waitFor(() => expect(screen.getByRole('alert').textContent).toMatch(/could not check admin access/i));
+    expect(screen.getByRole('alert').textContent).not.toContain('Sign-in failed');
     expect(useAuthStore.getState().user?.id).toBe(admin.id);
     expect(useAuthStore.getState().isAdmin).toBe(false);
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }));

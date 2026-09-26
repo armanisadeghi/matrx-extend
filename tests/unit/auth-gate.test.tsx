@@ -4,6 +4,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const auth = vi.hoisted(() => ({
   error: null as string | null,
   signIn: vi.fn(),
+  retry: vi.fn(),
+  user: null as null | { id: string },
   status: 'signed-out' as 'signed-out' | 'signing-in',
 }));
 
@@ -18,6 +20,8 @@ describe('AuthGate sign-in failure notice', () => {
     auth.error = null;
     auth.status = 'signed-out';
     auth.signIn.mockReset();
+    auth.retry.mockReset();
+    auth.user = null;
   });
 
   it('shows the real sign-in failure and retries the shared auth action', () => {
@@ -32,7 +36,8 @@ describe('AuthGate sign-in failure notice', () => {
       'Sign-in failed: Token exchange failed',
     );
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    expect(auth.signIn).toHaveBeenCalledOnce();
+    expect(auth.retry).toHaveBeenCalledOnce();
+    expect(auth.signIn).not.toHaveBeenCalled();
     expect(screen.getByText('Chat')).toBeTruthy();
   });
 });

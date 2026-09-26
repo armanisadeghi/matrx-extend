@@ -100,8 +100,9 @@ function parseRowsSafe<T>(
  *   );
  * Anything debug-related (Debug tab, cross-context relay, advanced toggles)
  * is gated on this check.
+ * `null` means the role read failed; it is not a confirmed non-admin result.
  */
-export async function checkIsAdmin(userId: string): Promise<boolean> {
+export async function checkIsAdmin(userId: string): Promise<boolean | null> {
   // `admins` lives in the `admin` schema now, not `public`. It kept its
   // `user_id` column (unlike the extend/* tables, which renamed it to
   // `created_by`) — so only the routing changes here.
@@ -112,7 +113,7 @@ export async function checkIsAdmin(userId: string): Promise<boolean> {
     .limit(1);
   if (error) {
     console.warn('[matrx-extend] checkIsAdmin error', error.message);
-    return false;
+    return null;
   }
   return Array.isArray(data) && data.length > 0;
 }

@@ -18,7 +18,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   // session, refresh admin flag) still runs on cold sidepanel open even if
   // no other early component subscribes. The hook is internally guarded
   // against double boot.
-  const { error, signIn, status } = useAuth();
+  const { error, retry, status, user } = useAuth();
   return (
     <>
       {error && (
@@ -26,12 +26,12 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
           role="alert"
           className="flex shrink-0 items-center justify-between gap-3 border-b border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive"
         >
-          <span>Sign-in failed: {error}</span>
+          <span>{user ? error : `Sign-in failed: ${error}`}</span>
           <Button
             size="sm"
             variant="outline"
             disabled={status === 'signing-in'}
-            onClick={() => void signIn()}
+            onClick={() => void retry()}
           >
             Try again
           </Button>

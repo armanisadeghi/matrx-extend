@@ -38,6 +38,69 @@ export function resetAuthBootGuard(): void {
   signInGeneration = 0;
 }
 
+type CanonicalSession =
+  | { kind: 'authenticated'; user: UserProfile; error: string | null }
+  | { kind: 'guest'; error: string | null };
+
+/** Every path into signed-in UI reads the same stored session and bearer. */
+async function readCanonicalSession(expectedUserId?: string): Promise<CanonicalSession> {
+  let restored = false;
+  try {
+    restored = await restoreSupabaseSession();
+  } catch {
+    // A transient restore failure must not delete the saved account.
+  }
+  let profile: UserProfile | undefined;
+  let safariFailure: string | null = null;
+  try {
+    const stored = await chrome.storage.local.get([STORAGE_KEYS.USER_PROFILE]);
+    profile = stored[STORAGE_KEYS.USER_PROFILE] as UserProfile | undefined;
+    const session = chrome.storage.session
+      ? await chrome.storage.session.get([STORAGE_KEYS.SAFARI_AUTH_FAILURE])
+      : {};
+    const failure = session[STORAGE_KEYS.SAFARI_AUTH_FAILURE];
+    safariFailure = typeof failure === 'string' ? failure : null;
+  } catch {
+    return { kind: 'guest', error: 'Could not read your saved sign-in. Reload to retry.' };
+  }
+  if (!restored) {
+    return {
+      kind: 'guest',
+      error: profile
+        ? 'Could not restore your saved sign-in. Reload to retry, or sign in again.'
+        : safariFailure,
+    };
+  }
+  let verified: UserProfile | null = null;
+  try {
+    // This checks the current or refreshed bearer locally against JWKS; a
+    // Realtime session installation alone does not prove the user's identity.
+    verified = await getVerifiedCurrentUser();
+  } catch {
+    // The bearer may be temporarily unverifiable. Keep the saved credentials.
+  }
+  if (!verified) {
+    return {
+      kind: 'guest',
+      error: 'Could not verify your saved sign-in. Reload to retry, or sign in again.',
+    };
+  }
+  if (
+    (profile && profile.id !== verified.id) ||
+    (expectedUserId && expectedUserId !== verified.id)
+  ) {
+    return {
+      kind: 'guest',
+      error: 'This sign-in does not match your saved account. Sign in again to choose an account.',
+    };
+  }
+  return { kind: 'authenticated', user: verified, error: safariFailure };
+}
+
+type AppliedSession =
+  | { kind: 'stale' | 'guest' }
+  | { kind: 'authenticated'; user: UserProfile; isAdmin: boolean };
+
 /**
  * Auth runs in the sidepanel context — chrome.identity is available there
  * and we sidestep the SW message-handler race entirely. After a successful
@@ -46,6 +109,42 @@ export function resetAuthBootGuard(): void {
  */
 export function useAuth() {
   const { user, isAdmin, status, error, setUser, setIsAdmin, setStatus, setError } = useAuthStore();
+
+  const applyCanonicalSession = useCallback(
+    async (isCurrent: () => boolean, expectedUserId?: string): Promise<AppliedSession> => {
+      const session = await readCanonicalSession(expectedUserId);
+      if (!isCurrent()) return { kind: 'stale' };
+      if (session.kind === 'guest') {
+        setUser(null);
+        setIsAdmin(false);
+        setError(session.error);
+        return { kind: 'guest' };
+      }
+
+      setUser(session.user);
+      setIsAdmin(false);
+      setError(session.error);
+      let admin: boolean | null = null;
+      try {
+        admin = await checkIsAdmin(session.user.id);
+      } catch {
+        // Treat a thrown role read exactly like a returned unavailable result.
+      }
+      if (!isCurrent()) return { kind: 'stale' };
+      if (admin === null) {
+        setError('Could not check admin access. Try again to retry this account check.');
+        return { kind: 'authenticated', user: session.user, isAdmin: false };
+      }
+      setIsAdmin(admin);
+      try {
+        await chrome.storage.local.set({ [STORAGE_KEYS.IS_ADMIN]: admin });
+      } catch {
+        if (isCurrent()) setError('Could not save the account role check. Try again to retry.');
+      }
+      return { kind: 'authenticated', user: session.user, isAdmin: admin };
+    },
+    [setUser, setIsAdmin, setError],
+  );
 
   // On mount: hydrate user state, restore Supabase session, re-check admin,
   // then ping health. Guarded so it runs once per sidepanel lifetime even
@@ -68,68 +167,9 @@ export function useAuth() {
       mountedAuthConsumers > 0 &&
       bootGeneration === currentBoot &&
       signInGeneration === currentAuth;
-    void (async () => {
-      let restored = false;
-      try {
-        restored = await restoreSupabaseSession();
-      } catch {
-        // A transient restore failure is a recoverable guest state. Keep the
-        // saved credentials and profile so a later reload can try again.
-      }
-      const result = await chrome.storage.local.get([STORAGE_KEYS.USER_PROFILE]);
-      // Safari's extension storage has no session area in some test and older
-      // runtime contexts. A missing one means there is simply no transient
-      // Safari sign-in failure to show.
-      const sessionStorage = chrome.storage.session;
-      const session = sessionStorage
-        ? await sessionStorage.get([STORAGE_KEYS.SAFARI_AUTH_FAILURE])
-        : {};
-      if (!isCurrent()) return;
-      const profile = result[STORAGE_KEYS.USER_PROFILE] as UserProfile | undefined;
-      let verified: UserProfile | null = null;
-      if (restored) {
-        try {
-          // The restored Supabase client only installs Realtime auth. The
-          // canonical bearer verifier proves which person it belongs to.
-          verified = await getVerifiedCurrentUser();
-        } catch {
-          // Network/refresh/verification errors do not erase a saved session.
-        }
-      }
-      if (!isCurrent()) return;
-      const mismatch = profile && verified && profile.id !== verified.id;
-      if (!restored || !verified || mismatch) {
-        setUser(null);
-        setIsAdmin(false);
-        if (mismatch) {
-          setError('This sign-in does not match your saved account. Sign in again to choose an account.');
-        } else if (profile && !restored) {
-          setError('Could not restore your saved sign-in. Reload to retry, or sign in again.');
-        } else if (restored) {
-          setError('Could not verify your saved sign-in. Reload to retry, or sign in again.');
-        } else {
-          const safariFailure = session[STORAGE_KEYS.SAFARI_AUTH_FAILURE];
-          setError(typeof safariFailure === 'string' ? safariFailure : null);
-        }
-        void pingHealth('app start');
-        return;
-      }
-      setUser(verified);
-      // A cached admin flag is not authority. Wait for the current account's
-      // admin check before showing privileged UI.
-      setIsAdmin(false);
-      const safariFailure = session[STORAGE_KEYS.SAFARI_AUTH_FAILURE];
-      setError(typeof safariFailure === 'string' ? safariFailure : null);
-
-      // Refresh admin flag in the background — guards against role changes.
-      void checkIsAdmin(verified.id).then(async (admin) => {
-        if (!isCurrent()) return;
-        setIsAdmin(admin);
-        await chrome.storage.local.set({ [STORAGE_KEYS.IS_ADMIN]: admin });
-      });
-
-      void pingHealth('app start');
-    })();
+    void applyCanonicalSession(isCurrent).then(() => {
+      if (isCurrent()) void pingHealth('app start');
+    });
     return () => {
       mountedAuthConsumers -= 1;
       if (mountedAuthConsumers === 0) {
@@ -137,7 +177,7 @@ export function useAuth() {
         bootGeneration += 1;
       }
     };
-  }, [setUser, setIsAdmin, setError]);
+  }, [applyCanonicalSession]);
 
   useEffect(() => {
     return on<{ user: UserProfile | null; isAdmin?: boolean }, { ack: true }>(
@@ -145,22 +185,24 @@ export function useAuth() {
       (payload) => {
         // A sign-in/sign-out from a different extension context supersedes
         // any local OAuth attempt still awaiting admin lookup.
-        signInGeneration += 1;
-        // Realtime must follow canonical encrypted storage, never a token
-        // carried by a stale broadcast payload.
-        void restoreSupabaseSession();
-        setUser(payload.user);
-        if (payload.user) {
+        const event = ++signInGeneration;
+        if (payload.user === null) {
+          setUser(null);
+          setIsAdmin(false);
           setError(null);
-          setStatus('signed-in');
-        } else {
-          setStatus('signed-out');
+          return { ack: true };
         }
-        setIsAdmin(payload.user !== null && payload.isAdmin === true);
+        // A positive broadcast is only a notice to reread canonical storage.
+        // The payload may be delayed from a prior sign-in and is not identity
+        // or role evidence in this receiving context.
+        setUser(null);
+        setIsAdmin(false);
+        setStatus('unknown');
+        void applyCanonicalSession(() => event === signInGeneration);
         return { ack: true };
       },
     );
-  }, [setUser, setIsAdmin, setError, setStatus]);
+  }, [applyCanonicalSession, setUser, setIsAdmin, setError, setStatus]);
 
   useEffect(() => {
     return on<{ message: string }, { ack: true }>(CHANNELS.AUTH_SAFARI_FAILED, ({ message }) => {
@@ -180,27 +222,33 @@ export function useAuth() {
       if ('pending' in result) return;
       const { user: profile } = result;
       if (attempt !== signInGeneration) return;
-      // signIn committed storage under the auth lock. Re-read that canonical
-      // session rather than installing this attempt's supplied token.
-      await restoreSupabaseSession();
-      if (attempt !== signInGeneration) return;
-      setUser(profile);
-
-      // Determine admin status now that we have a JWT.
-      const admin = await checkIsAdmin(profile.id);
-      if (attempt !== signInGeneration) return;
-      setIsAdmin(admin);
-      await chrome.storage.local.set({ [STORAGE_KEYS.IS_ADMIN]: admin });
-      if (attempt !== signInGeneration) return;
-
-      broadcast(CHANNELS.AUTH_STATE_CHANGED, { user: profile, isAdmin: admin });
+      const applied = await applyCanonicalSession(
+        () => attempt === signInGeneration,
+        profile.id,
+      );
+      if (applied.kind !== 'authenticated' || attempt !== signInGeneration) return;
+      broadcast(CHANNELS.AUTH_STATE_CHANGED, {
+        user: applied.user,
+        isAdmin: applied.isAdmin,
+      });
       void pingHealth('after sign-in');
     } catch (err) {
       if (attempt !== signInGeneration) return;
       setError((err as Error).message);
       setStatus('signed-out');
     }
-  }, [setError, setIsAdmin, setStatus, setUser]);
+  }, [applyCanonicalSession, setError, setStatus]);
+
+  const retry = useCallback(async () => {
+    const stored = await chrome.storage.local.get([STORAGE_KEYS.USER_PROFILE]);
+    if (!user && !stored[STORAGE_KEYS.USER_PROFILE]) {
+      await signIn();
+      return;
+    }
+    const attempt = ++signInGeneration;
+    setError(null);
+    await applyCanonicalSession(() => attempt === signInGeneration);
+  }, [user, signIn, applyCanonicalSession, setError]);
 
   const signOut = useCallback(async () => {
     const attempt = ++signInGeneration;
@@ -215,5 +263,5 @@ export function useAuth() {
     bootRan = false;
   }, [setUser, setIsAdmin]);
 
-  return { user, isAdmin, status, error, signIn, signOut };
+  return { user, isAdmin, status, error, signIn, signOut, retry };
 }
