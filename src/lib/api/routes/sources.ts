@@ -14,7 +14,12 @@
  * validates the response with Zod rather than trusting it.
  */
 
-import { type ApiResult, type ApiRequestOptions, apiPost } from '@/lib/api/client';
+import {
+  type ApiRequestOptions,
+  type ApiResult,
+  STATUS_EXPECTED_ACTOR_MISMATCH,
+  apiPost,
+} from '@/lib/api/client';
 import type { SectionPortion } from '@/lib/sources/portions';
 import { z } from 'zod';
 
@@ -108,6 +113,16 @@ function sentence(text: string): string {
 /** Turn a failed `ApiResult` into a refusal with the server's own sentence when it sent one. */
 export function refusalFromResult(result: { status: number; error: string }): LandingRefusal {
   if (result.status === 0) return { status: 0, ...UNREACHABLE };
+  if (result.status === STATUS_EXPECTED_ACTOR_MISMATCH) {
+    return {
+      status: result.status,
+      code: 'actor_changed_before_send',
+      message:
+        'This page was not sent because your account or selected workspace changed before saving. It is kept on this device; choose the workspace where you want it saved and retry.',
+      remedy: 'choose_a_workspace_and_retry',
+      retryable: true,
+    };
+  }
   if (result.status < 0) {
     // Client-side stops (no organization chosen, session not ready, unreadable
     // body): the client already wrote the sentence; carry it and keep the capture.
@@ -174,7 +189,11 @@ export function refusalFromResult(result: { status: number; error: string }): La
   };
 }
 
-async function post(path: string, body: unknown, options?: ApiRequestOptions): Promise<LandingOutcome> {
+async function post(
+  path: string,
+  body: unknown,
+  options?: ApiRequestOptions,
+): Promise<LandingOutcome> {
   let result: ApiResult<unknown>;
   try {
     result = await apiPost<unknown>(path, body, undefined, options);

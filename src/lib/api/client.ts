@@ -51,6 +51,9 @@ export const STATUS_INVALID_BODY = -1;
  */
 export const STATUS_NO_ORGANIZATION = -2;
 
+/** The pinned user or organization changed before dispatch; no HTTP response exists. */
+export const STATUS_EXPECTED_ACTOR_MISMATCH = -4;
+
 export type PrivateRequestError =
   | 'deadline_exceeded'
   | 'identity_changed'
@@ -715,7 +718,8 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
     }
     throw err;
   }
-  if (!headers) return { ok: false, status: 403, error: 'expected_actor_mismatch' };
+  if (!headers)
+    return { ok: false, status: STATUS_EXPECTED_ACTOR_MISMATCH, error: 'expected_actor_mismatch' };
   let hasAuth = !!headers.Authorization;
   // THE HOLD. An authenticated request with no organization is not a failure
   // — it is a question nobody has asked yet. Raise the picker, wait for the
@@ -728,7 +732,7 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   // `hasAuth` is only knowable once the headers exist — a guest request must
   // never raise this question. And `buildExpectedActorHeaders` never reaches
   // here without the header: it binds the organization the CALLER already
-  // pinned, and returns null (→ 403 expected_actor_mismatch) the moment the
+  // pinned, and returns null (→ STATUS_EXPECTED_ACTOR_MISMATCH) the moment the
   // live organization stops matching that pin. Holding inside it would mean
   // pausing a request whose whole contract is "fail closed if the actor
   // changed", so that path is untouched: it fails closed exactly as before.

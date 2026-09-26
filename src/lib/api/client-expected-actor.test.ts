@@ -48,7 +48,7 @@ vi.mock('@/lib/debug/log', () => ({
 }));
 vi.mock('@/lib/messaging/native', () => ({ broadcast: vi.fn() }));
 
-import { apiPost } from './client';
+import { STATUS_EXPECTED_ACTOR_MISMATCH, apiPost } from './client';
 
 const actor = {
   userId: '00000000-0000-4000-8000-000000000001',
@@ -98,7 +98,11 @@ describe('expectedActor transport binding', () => {
     state.token = 'token-b';
     state.organizationId = '00000000-0000-4000-8000-000000000003';
     release();
-    await expect(pending).resolves.toMatchObject({ ok: false, status: 403 });
+    await expect(pending).resolves.toMatchObject({
+      ok: false,
+      status: STATUS_EXPECTED_ACTOR_MISMATCH,
+      error: 'expected_actor_mismatch',
+    });
     expect(fetchMock).not.toHaveBeenCalled();
     state.token = 'token-a';
     state.organizationId = actor.organizationId;
