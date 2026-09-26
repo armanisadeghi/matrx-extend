@@ -61,7 +61,22 @@
     "repair_commit": "553bad3",
     "repair_behavior": "Boot shows signed-in UI only after session restore and a locally verified bearer whose subject matches the cached profile. Missing, unverifiable, or mismatched identity shows guest with a recoverable error while preserving the saved account material. Admin UI waits for the current account's check; a guest cannot access admin tabs from a stale admin flag, and Settings never shows an admin role without a user. A null auth broadcast clears UI admin state.",
     "visible_recovery": "src/entrypoints/sidepanel/App.tsx wraps SettingsView in AuthGate; AuthGate displays useAuth error above Settings with a Try again action. The browser recipe in docs/feature-tests.md now covers this recovery state.",
-    "verification_state": "Root coordinator started run 64208 over auth classification, auth races, permissions, AuthGate, popup error, and Safari auth tests. Its result and fresh independent classification review were pending when this report update was written."
+    "verification_state": "docs/stabilization/runs/auth-classification-green-001.json records 37 of 37 focused tests passing over seven files with no unhandled errors after commit 553bad3. The fresh peer confirmed the two previous findings addressed and identified three new entrypoint/role-result findings; native reload remains unverified."
+  },
+  "round_two_peer_and_pending_design": {
+    "peer_report": "docs/stabilization/reports/auth-classification-peer.json",
+    "peer_verdict": "Earlier cached-profile/admin findings addressed; three remaining entrypoint findings: incoming auth broadcasts trust their payload before canonical storage validation, interactive sign-in ignores restore false, and an admin lookup error is reported as confirmed non-admin.",
+    "red_tests_commit": "a11cbd2",
+    "red_test_paths": ["src/hooks/use-auth.entrypoints.test.tsx", "tests/unit/admin-role-query.test.ts"],
+    "caller_census": [
+      "src/hooks/use-auth.ts boot checks checkIsAdmin after verified hydration; a failed read needs a visible role warning and same-session retry without overwriting the cached admin decision as false.",
+      "src/hooks/use-auth.ts interactive sign-in checks checkIsAdmin after OAuth completion; a failed read must keep verified identity while marking role unavailable, rather than claiming non-admin or silently exiting.",
+      "src/lib/auth/safari-background.ts checks checkIsAdmin after OAuth completion and broadcasts user/isAdmin; on a failed read it must not broadcast an unverified admin claim, while the receiver must independently rehydrate and show the role warning.",
+      "src/lib/supabase/queries.ts checkIsAdmin is the sole role query function; its current error-to-false mapping collapses unavailable and confirmed non-admin. The three callers above are its complete source-call census."
+    ],
+    "planned_shared_boundary": "Use one canonical storage rehydration decision for boot, interactive sign-in after committed tokens, and auth broadcasts. The decision awaits restoreSupabaseSession, uses getVerifiedCurrentUser to validate the current bearer, compares the verified subject with any saved/expected profile, and reports a recoverable guest state without deleting credentials when unavailable. Broadcast payloads only trigger this decision and never supply the displayed identity or admin role. A generation check prevents an older async decision from overwriting a newer sign-out or sign-in.",
+    "planned_role_result": "Let checkIsAdmin return true, false, or null for read failure, update all three callers, and keep the UI admin flag false until confirmed true. Null shows a role-check warning with a retry action that rechecks the current session rather than starting OAuth; the query error never writes a false cache value.",
+    "state": "Design only. Root coordinator controls the queued RED run and no round-two production edit has been made."
   },
   "verification": {
     "reported_by": "root coordinator",
@@ -88,7 +103,11 @@
     "docs/feature-tests.md",
     "docs/stabilization/runs/auth-strict-red-003.json",
     "docs/stabilization/runs/auth-classification-red-001.json",
+    "docs/stabilization/runs/auth-classification-green-001.json",
     "docs/stabilization/reports/auth-hydration-peer.json",
+    "docs/stabilization/reports/auth-classification-peer.json",
+    "src/hooks/use-auth.entrypoints.test.tsx",
+    "tests/unit/admin-role-query.test.ts",
     "docs/stabilization/runs/admin-signin-001.json",
     "docs/stabilization/runs/permission-native-retest.json",
     "docs/stabilization/reports/permission-native-retest.json",
