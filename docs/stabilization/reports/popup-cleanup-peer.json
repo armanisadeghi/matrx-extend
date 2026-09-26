@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "popup-cleanup-peer-review",
+  "defect_id": "EXT-D-0008",
+  "reviewed_commit": "8fbff5e3efdfd94abc0a1ba5a3d740049e424ce1",
+  "verdict_a": {
+    "target": "Engineering destructive-operation guard",
+    "status": "PENDING_ROOT_RUNTIME_VERIFICATION",
+    "evidence": "Source review confirms the two reported owners now appear in INTERNAL_ONLY; the independent runtime guard result belongs to the root run and was not available to this review. Native popup functionality was not exercised.",
+    "native_popup": "UNVERIFIED"
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "evidence": [
+      "clearCapturePagePanel removes only request.key, which is minted from the extension-owned session key prefix, windowId, and a fresh requestId. It waits for that exact write to settle; concurrent clicks receive distinct keys, so cleanup cannot remove a newer click's request.",
+      "takePopupLaunchTarget reads session storage, filters to the requested window's prefixed keys, validates the payload windowId and expiry, sorts newest first, then removes only the filtered transient route-request keys before returning 'scrape'. It has no user-content or persistent-storage deletion path.",
+      "Independent caller trace: popup/main.tsx calls clearCapturePagePanel only on failed launch; sidepanel/App.tsx calls takePopupLaunchTarget while handling the launch intent. Neither operation is a UI entry point for deleting content, so the existing confirmation guard need not classify them as confirmed destructive operations.",
+      "The patch changes only the two exact INTERNAL_ONLY registry records. The guard implementation, exclusions, and confirmation logic are unchanged; function names match the exported source declarations and module path.",
+      "Defect scope is consistent with the source failure: missing registry classification for these two removal functions. Severity describes the reproduced integrated validation block and explicitly records no observed native user failure or user-data deletion."
+    ],
+    "limitations": "No tests, build, browser run, or network writes were performed by this peer."
+  },
+  "files": [
+    "docs/stabilization/defects/EXT-D-0008.json",
+    "src/lib/destructive/operations.ts",
+    "src/lib/panel/launch-intent.ts",
+    "src/entrypoints/popup/main.tsx",
+    "src/entrypoints/sidepanel/App.tsx",
+    "tests/unit/destructive-confirm-guard.test.ts"
+  ],
+  "open_questions": [],
+  "reviewer_commit": null
+}
