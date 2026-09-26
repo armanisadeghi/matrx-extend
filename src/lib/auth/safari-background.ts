@@ -2,13 +2,13 @@
 
 import { ALARMS, ENV, STORAGE_KEYS } from '@/config/env';
 import { completeBackgroundAuthorizationCode } from '@/lib/auth/flow';
-import { checkIsAdmin } from '@/lib/supabase/queries';
 import { getSafariRedirectUri } from '@/lib/auth/identity-transport';
 import { generateCodeChallenge, generateCodeVerifier, generateNonce } from '@/lib/auth/pkce';
 import { BROWSER } from '@/lib/browser/detect';
 import { log } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { checkIsAdmin } from '@/lib/supabase/queries';
 
 const AUTH_TIMEOUT_MS = 10 * 60 * 1000;
 const ACTIVE_AUTH_ATTEMPT_KEY = `${STORAGE_KEYS.PKCE_VERIFIER}.active-attempt`;
@@ -49,6 +49,24 @@ async function clearAttempt(attempt: SafariAttempt, failure?: string): Promise<v
   }
 }
 
+async function closeOwnedAuthTab(attempt: SafariAttempt): Promise<void> {
+  try {
+    const tab = await chrome.tabs.get(attempt.tabId);
+    if (!tab.url) return;
+    const current = new URL(tab.url);
+    const authorize = new URL(authorizeUrl());
+    const callback = new URL(attempt.redirectUri);
+    if (
+      (current.origin === authorize.origin && current.pathname.startsWith('/auth/v1/oauth/')) ||
+      (current.origin === callback.origin && current.pathname === callback.pathname)
+    ) {
+      await chrome.tabs.remove(attempt.tabId);
+    }
+  } catch {
+    // The tab may have been closed or moved before cancellation completed.
+  }
+}
+
 async function failAttempt(
   attempt: SafariAttempt,
   message: string,
@@ -64,7 +82,10 @@ export async function startSafariAuthorization(): Promise<{ pending: true }> {
     throw new Error('Safari OAuth client configuration is unavailable');
 
   const previous = await readAttempt();
-  if (previous) await clearAttempt(previous);
+  if (previous) {
+    await clearAttempt(previous);
+    await closeOwnedAuthTab(previous);
+  }
   const tab = await chrome.tabs.create({ url: 'about:blank', active: true });
   if (tab.id === undefined) throw new Error('Could not create the Safari sign-in tab');
   try {
@@ -157,7 +178,10 @@ export function registerSafariAuthorizationBackground(): void {
   on<undefined, { pending: true }>(CHANNELS.AUTH_SAFARI_START, () => startSafariAuthorization());
   on<undefined, { ok: true }>(CHANNELS.AUTH_SAFARI_CANCEL, async () => {
     const attempt = await readAttempt();
-    if (attempt) await clearAttempt(attempt);
+    if (attempt) {
+      await clearAttempt(attempt);
+      await closeOwnedAuthTab(attempt);
+    }
     return { ok: true };
   });
   chrome.webNavigation.onCommitted.addListener((details) => {
