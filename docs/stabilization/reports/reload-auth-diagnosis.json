@@ -1,0 +1,55 @@
+{
+  "id": "reload-auth-diagnosis",
+  "status": "probable_ui_hydration_defect_unconfirmed_session_state",
+  "scope": "Read-only diagnosis of the 0.2.53 native Chrome sign-in gate after full Reload; no browser action, token read, or credential value inspection in this lane.",
+  "observed": [
+    "docs/stabilization/runs/admin-signin-001.json records admin@admin.com visible after sign-in and full Reload in the same dev extension ID at 0.2.51, using the prior release artifact.",
+    "docs/stabilization/runs/permission-native-retest.json records the same extension ID and path at 0.2.53, then Email — and Sign in to choose across approximately 5, 12, 20, and 30 seconds after Reload. It does not establish that storage was cleared or that refresh failed.",
+    "docs/stabilization/reports/permission-native-retest.json additionally records that the later normal Sign in action opened the AI Matrx OAuth route and showed Authorization error (400), Auth session missing! at 06:13:13 UTC. This is a separate sign-in attempt after the false or real signed-out UI; it does not establish the earlier storage state.",
+    "docs/stabilization/runs/debugger-build-002.json ties the loaded 0.2.53 development build to source 013fd432147fb3c75185d027e97f233d889dd885. The 0.2.51 artifact came from release-real-005.json and a strict release build.",
+    "The checked-in .env.development and .env.production have equal WXT_SUPABASE_URL, WXT_SUPABASE_PUBLISHABLE_KEY, and WXT_EXTENSION_OAUTH_CLIENT_ID values; only the URL origin https://db.matrxserver.com and equality booleans were emitted.",
+    "The 0.2.53 development bundle contains React development diagnostics ('Expected static flag was missing'); the prior .output/chrome-mv3 release bundle does not. This establishes a material React runtime-mode difference between artifacts."
+  ],
+  "static_trace": [
+    "src/entrypoints/sidepanel/main.tsx:24-40 wraps App in React.StrictMode.",
+    "src/hooks/use-auth.ts:26 and :48-58 set a module-wide bootRan=true before the first await, mark that first effect cancelled in cleanup, and skip every later effect setup while bootRan stays true. In a development Strict Mode effect setup/cleanup/setup cycle, the first async hydration is cancelled and the second setup returns; setUser at :61 is never reached.",
+    "src/state/auth.ts:15-22 initializes user=null; SettingsView.tsx:127 and :135 display Email — and Sign in to choose from that null user. Thus the exact observed UI follows from skipped hydration even if a session remains in chrome.storage.local.",
+    "The auth boot code above is unchanged between 0.2.51 candidate 760c7a1 and 0.2.53 source 013fd43. The only auth-flow source delta in that interval moves Chrome identity calls into src/lib/auth/identity-transport.ts for Safari support; restoreSupabaseSession and refresh logic are unchanged.",
+    "src/lib/auth/flow.ts:577-602 restores from persisted local storage; :299-359 only clears storage after refresh decryption failure or a terminal 400/401 for the current refresh ciphertext. A roughly one-hour interval is compatible with a refresh attempt, but no status/log or storage-presence evidence confirms one failed."
+  ],
+  "ranked_hypotheses": [
+    {
+      "rank": 1,
+      "cause": "Development React Strict Mode effect replay and the module-wide boot guard suppress auth hydration after Reload.",
+      "prediction": "The sign-in gate can coexist with USER_PROFILE and refresh-material keys still present. A focused mount guard that survives effect replay would restore the stored admin without a new OAuth sign-in.",
+      "smallest_proof": "Before normal sign-in, in the UI-owned native extension context record only booleans for USER_PROFILE, ACCESS_TOKEN, REFRESH_TOKEN_ENC, REFRESH_TOKEN_IV and the expiry timestamp relative to now; do not output values. If present, run a focused dev-React effect-replay test of useAuth and assert setUser(admin) after storage read."
+    },
+    {
+      "rank": 2,
+      "cause": "A refresh attempt around the token's one-hour lifetime was rejected and clearLocalSession removed the profile and credentials.",
+      "prediction": "Those storage keys are absent before a new sign-in and prior worker diagnostics contain a terminal refresh 400/401 or decrypt failure; the UI boot guard is then insufficient to explain missing persisted identity.",
+      "smallest_proof": "Inspect only storage-key presence and sanitized refresh status/error category around the reload interval; no token values or raw response bodies."
+    },
+    {
+      "rank": 3,
+      "cause": "The loaded extension uses a different storage namespace or OAuth configuration after build replacement.",
+      "prediction": "The extension ID/path or public config fingerprint differs across loaded builds, or the old profile is present under another ID.",
+      "smallest_proof": "Already weakened by matching native extension ID/path and equal selected build env values; compare manifest identity and public origin in loaded artifact only if the first two tests do not decide the case."
+    }
+  ],
+  "verdict": "The source and bundle provide a concrete, deterministic mechanism for a false signed-out UI in the 0.2.53 development artifact. The native observation has not yet distinguished it from genuinely missing storage, so no code change is authorized by this diagnosis alone.",
+  "next_action": "With the UI owner controlling Chrome, capture presence-only storage evidence if available. The smallest red-capable loop is a useAuth mount under React.StrictMode with a stored fixture USER_PROFILE and async restore/storage read, asserting that user hydrates without calling Sign in; the current boot guard should fail that assertion in development React. Then repair the shared boot guard, re-run the loop, and census other one-time effect guards using the same pattern. Investigate the OAuth 400 separately if it persists after UI hydration is fixed.",
+  "files": [
+    "src/hooks/use-auth.ts",
+    "src/entrypoints/sidepanel/main.tsx",
+    "src/state/auth.ts",
+    "src/features/settings/SettingsView.tsx",
+    "src/lib/auth/flow.ts",
+    "src/lib/auth/identity-transport.ts",
+    "docs/stabilization/runs/admin-signin-001.json",
+    "docs/stabilization/runs/permission-native-retest.json",
+    "docs/stabilization/reports/permission-native-retest.json",
+    "docs/stabilization/runs/debugger-build-002.json",
+    "docs/stabilization/runs/release-real-005.json"
+  ]
+}

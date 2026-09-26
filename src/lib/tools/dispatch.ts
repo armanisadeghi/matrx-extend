@@ -34,7 +34,11 @@ import { BROWSER, isBrowserSupported } from '@/lib/browser/detect';
 import { log } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { type OptionalPermission, hasOptionalPermissions } from '@/lib/permissions/optional';
+import {
+  type OptionalPermission,
+  hasOptionalPermissions,
+  missingPermissionRemedy,
+} from '@/lib/permissions/optional';
 import { recordToolEvent } from '@/lib/recording/state';
 import { markStreamInactive } from '@/lib/stream/active-runs';
 import { getToolDescription, primeToolDescriptions } from '@/lib/tools/descriptions';
@@ -784,7 +788,7 @@ async function handleCall(
     if (!granted) {
       const perms = handler.required_optional_permissions.join(', ');
       return fail(
-        `permission_not_yet_granted: this tool needs the optional Chrome permission(s) [${perms}]. Use user(type='confirm', ...) or user(type='notify', ...) to request the user enable it via the Advanced agent capabilities toggle, then retry. Do not give up — the user can grant the permission and the next call will succeed.`,
+        `permission_not_yet_granted: this tool needs Chrome permission(s) [${perms}]. ${missingPermissionRemedy(handler.required_optional_permissions)}`,
       );
     }
   }
@@ -1414,7 +1418,7 @@ export async function handleWebmcpCall(
     if (!granted) {
       return {
         ok: false,
-        error: `webmcp: tool needs optional permission(s) [${handler.required_optional_permissions.join(', ')}] — user can grant via Advanced agent capabilities`,
+        error: `webmcp: tool needs Chrome permission(s) [${handler.required_optional_permissions.join(', ')}] — ${missingPermissionRemedy(handler.required_optional_permissions)}`,
       };
     }
   }

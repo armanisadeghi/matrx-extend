@@ -1,0 +1,70 @@
+{
+  "id": "admin-permissions-002",
+  "feature_id": "EXT-F-1003",
+  "at": "2026-09-26T05:30:32Z",
+  "status": "partial_fail",
+  "scope": "Admin optional permission controls T55 DevTools Protocol and T59 Tab video capture; warm and extension reload checks.",
+  "installation": {
+    "status": "verified",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.51",
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev"
+  },
+  "resource": {
+    "lease_id": "guest-settings-007",
+    "owner": "coordinator-held native browser lease, session 76318",
+    "resource_invalid": false,
+    "stop_reason": null
+  },
+  "initial_state": {
+    "role": "ADMIN; admin@admin.com",
+    "organization": "Organization section was collapsed; selection not visible in current Settings view.",
+    "agent": "Matrx Browser Agent",
+    "speed": "Fast",
+    "theme": "System",
+    "debugger": "on",
+    "tabCapture": "off"
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-1003-T55",
+      "status": "fail",
+      "verified_substeps": [
+        "Initial DevTools Protocol switch showed on.",
+        "Clicked its labeled switch through accessibility targeting twice and clicked the visible switch by screen coordinates; each time the switch remained visibly on and AX still reported on. No Chrome grant dialog appeared.",
+        "After full extension reload, the switch remained on. Chrome details continued to list ‘Access the page debugger backend’."
+      ],
+      "limitations": [
+        "Could not exercise off/on or deny because the switch did not leave its initial on state.",
+        "Dependent CDP tool availability is unverified; no debugger session or CDP tool was started."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T59",
+      "status": "pass",
+      "verified_substeps": [
+        "Initial Tab video capture switch was off.",
+        "Turning it on displayed a Chrome permission prompt stating ‘Read and change all your data on all websites’. Denying returned to Settings with the switch off.",
+        "Retrying and accepting the Chrome prompt made the switch show on; turning it back off made it show off.",
+        "After full extension reload, Tab video capture remained off, matching initial state."
+      ],
+      "limitations": [
+        "Busy state was not observed in the immediate UI snapshots.",
+        "No recording was started. Chrome extension details did not expose a separate Tab video permission entry in the observed list."
+      ]
+    }
+  ],
+  "cleanup": {
+    "permission_states": "DevTools Protocol on (matching initial state); Tab video capture off (matching initial state).",
+    "other_settings": "System theme, Matrx Browser Agent, and Fast speed remained as initially observed.",
+    "data_access": "No video was captured; no debugger session or CDP tool was invoked; no other-user pages were read; no agent launched.",
+    "current_ui": "Chrome extension details page foreground; extension side panel Settings > Advanced agent capabilities open after reload.",
+    "ui_stopped": true
+  },
+  "evidence": [
+    "Chrome extension details showed enabled unpacked extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.51, loaded from .output/chrome-mv3-dev.",
+    "Settings before interaction showed admin@admin.com, ADMIN, theme System, agent Matrx Browser Agent, and speed Fast.",
+    "After extension reload, Settings > Advanced agent capabilities showed DevTools Protocol on and Tab video capture off."
+  ],
+  "next_action": null
+}

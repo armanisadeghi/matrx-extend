@@ -1,0 +1,40 @@
+{
+  "id": "debugger-red-001",
+  "feature_id": "EXT-F-0002",
+  "status": "refused",
+  "product_verdict": null,
+  "reason": "Internal /tmp volume18.62GiB below20GiB floor. Test child never launched.",
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T05:51:29.752Z",
+      "runId": "debugger-red-001",
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.48,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.6599999999999997,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.10074285714285716,
+        "swapUsedMiB": 1837.12,
+        "repoFreeGiB": 18.623233795166016,
+        "profileFreeGiB": 18.623233795166016
+      },
+      "cpuBusySamples": [
+        0.11340000000000006,
+        0.10620000000000007,
+        0.08430000000000004,
+        0.09319999999999995,
+        0.10400000000000009,
+        0.10699999999999998,
+        0.09709999999999996
+      ],
+      "reasons": [
+        "RESOURCE_DISK_LOW"
+      ],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_PREFLIGHT_REFUSED"
+    }
+  ],
+  "recovery": "Move owned test scratch to external volume; keep same guard and thresholds. Primary Chrome profile remains on internal volume and requires its own valid admission."
+}

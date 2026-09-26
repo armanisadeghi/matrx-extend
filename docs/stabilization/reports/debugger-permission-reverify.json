@@ -1,0 +1,61 @@
+{
+  "defect_id": "EXT-D-0006",
+  "reviewed_commit": "77ce8f0fe5ce10bd68325bd20623471f1579b6aa",
+  "scope": "Fresh independent source and focused-test review; no implementation edits or live browser exercise. Root's guarded focused run debugger-unit-002 was inspected, not rerun.",
+  "verdict_a_acceptance": {
+    "status": "UNVERIFIED",
+    "reason": "The repaired extension has not been rebuilt and exercised in live Chrome from the admin Settings surface. Source and unit evidence cannot prove grant, refusal, removal, reload, or actual browser status display."
+  },
+  "verdict_b_engineering_quality": {
+    "status": "FAIL",
+    "reason": "The guarded focused test is red (7 passed, 1 failed), and the new permission remedy still directs an agent to a nonexistent switch when the required sessions permission is missing. No security bypass was found in the scoped repair.",
+    "prior_findings": [
+      {
+        "finding": "Permission roster is not build-specific",
+        "status": "ADDRESSED_IN_SOURCE",
+        "evidence": "declaredRuntimeOptionalPermissions() filters the Settings roster against chrome.runtime.getManifest().optional_permissions; wxt.config.ts omits pageCapture/tabCapture on Firefox and Safari. The new roster test models an omitted pair."
+      },
+      {
+        "finding": "Refresh rejection can strand a switch busy",
+        "status": "ADDRESSED_IN_SOURCE",
+        "evidence": "refresh catches status-read failure and offers Retry permission check; toggle clears busy in an outer finally even when refresh fails. The new recovery test exercises rejection after removal."
+      },
+      {
+        "finding": "Debugger gate gives impossible remediation",
+        "status": "ADDRESSED_FOR_DEBUGGER",
+        "evidence": "Both dispatcher paths now use missingPermissionRemedy; debugger's message says it is install-required and cannot be enabled in Settings. The Settings row is informational with no switch."
+      },
+      {
+        "finding": "Tests omit grant denial, thrown API results, and status-read failure",
+        "status": "CASES_ADDED_BUT_SUITE_RED",
+        "evidence": "New tests cover false grant, thrown request and status-read failure with retry. The focused guarded run debugger-unit-002 reports 7 passed and 1 failed because the existing false-removal case queries before initial refresh completes. No executed return-expected mutation proof was supplied; the direct helper remedy test does not exercise dispatcher integration."
+      }
+    ],
+    "findings": [
+      {
+        "severity": "important",
+        "title": "Required sessions permission receives impossible optional-switch remedy",
+        "evidence": "wxt.config.ts:83 declares sessions in required permissions; src/lib/tools/handlers/optional-perms.ts:169,205 and canonical-mergers.ts:432 put sessions in required_optional_permissions; src/lib/permissions/optional.ts:110-113 maps every non-debugger name to an Advanced agent capabilities optional toggle, while its Settings roster contains no sessions entry. Both dispatcher paths use this remedy at dispatch.ts:789-792,1414-1423.",
+        "effect": "If a build lacks or cannot read the required sessions grant, the tool says the user can enable a switch that does not exist. Classify permissions from the runtime manifest, not only by whether the name is debugger."
+      },
+      {
+        "severity": "important",
+        "title": "Focused permission test remains red due to asynchronous setup",
+        "evidence": "Root's /tmp/matrx-debugger-unit-002.log: 7 passed, 1 failed. tests/unit/advanced-agent-capabilities.test.tsx:84 uses synchronous getByText immediately after render, while AdvancedAgentCapabilities begins with available=[] and populates it after awaited permission reads; the failure DOM shows the initial Checking status and no switches.",
+        "effect": "This is a test timing defect, not evidence of a product failure. Await the Clipboard read row before interacting and rerun the focused gate."
+      },
+      {
+        "severity": "minor",
+        "title": "Tools roster still labels required debugger as optional",
+        "evidence": "src/features/tools/ToolsView.tsx:275-284 shows the opt-perm badge for every required_optional_permissions entry, including handlers/cdp.ts debugger tools and the sessions handlers.",
+        "effect": "The manual tool runner gives an inaccurate capability label even though Settings now correctly treats debugger as required."
+      }
+    ],
+    "positive_evidence": "RuntimeOptionalPermission excludes debugger from request/remove; the Chrome manifest keeps debugger required; source keeps the admin-only Settings boundary and both dispatcher gates. The status-read error disables uncertain switches until retry."
+  },
+  "next_actions": [
+    "Repair the test's asynchronous query and rerun the guarded focused suite.",
+    "Classify required versus runtime optional permissions in dispatcher remediation, including sessions, and verify the tool roster label.",
+    "Rebuild and perform live Chrome admin Settings acceptance against the original reproduction before closing EXT-D-0006."
+  ]
+}

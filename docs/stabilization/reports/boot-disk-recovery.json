@@ -1,0 +1,51 @@
+{
+  "date": "2026-09-25",
+  "scope": "Read-only boot-disk recovery assessment for primary Chrome-profile testing",
+  "policy": {
+    "sources": [
+      ".claude/skills/disk-groom/SKILL.md",
+      "/Volumes/Samsung2TB/code/common-docs/operations/disk-grooming.md"
+    ],
+    "constraints": "No deletion or movement; no broad apply; preserve user files, worktrees, browser profiles, and caches belonging to active contributors."
+  },
+  "filesystem": {
+    "boot_volume": "/",
+    "boot_available_at_inspection": "19 GiB",
+    "target_minimum": "more than 20 GiB",
+    "preferred_available": "22 GiB",
+    "external_volume": "/Volumes/Samsung2TB",
+    "external_available_at_inspection": "1.6 TiB"
+  },
+  "groomer_dry_run": {
+    "command": "MATRX_GROOM_LSOF=1 python3 /Users/armanisadeghi/code/common-docs/meta/scripts/disk-groom/groom.py inventory; python3 /Users/armanisadeghi/code/common-docs/meta/scripts/disk-groom/groom.py daily",
+    "result": "17 registered trees: 9 primary, 8 temporary copies; 0 linked worktrees; 0 stale linked worktrees; 3 primary .next caches skipped; 0 bytes reclaimed. Docker engine unavailable, so Docker pruning was skipped.",
+    "temporary_tree_paths": [
+      "/private/tmp/claude-501/-private-var-folders-xp--2jlqq-j0-z80zn9x0zzk7gr0000gn-T-claude-sandbox-status-P5RUEq",
+      "/private/tmp/claude-501/-Users-armanisadeghi",
+      "/private/tmp/claude-501/-Volumes-Samsung2TB-code",
+      "/private/tmp/claude-501/bash-edit-diff",
+      "/private/tmp/claude-501/-Volumes-Samsung2TB-code-matrx-extend",
+      "/private/tmp/matrx-tsc-slots",
+      "/private/tmp/matrx-release-before",
+      "/private/tmp/claude-501"
+    ],
+    "temporary_tree_ages": "1.6 to 7.0 hours, below the 24-hour stale threshold; dry run marked all KEEP young."
+  },
+  "candidate_scan": {
+    "method": "Read-only du, directory age/owner metadata, process listing, and lsof path-reference inspection under /private/tmp.",
+    "result": "No eligible campaign-owned disposable artifact large enough to recover the approximately 3 GiB needed to reach 22 GiB was identified. The groomer's listed temporary trees measured at most about 1 GiB each and together are not a material recovery source; no lsof references were found for the inspected named temporary build trees, but their age and uncertain campaign ownership disqualify removal. Other temporary paths are system/app/browser temporary data or unverified owner artifacts and were not considered safe. Active Google Chrome processes and Chrome extension renderers were present, so Chrome profiles and related caches were excluded."
+  },
+  "safe_options": [
+    {
+      "action": "No cleanup approved by this assessment.",
+      "expected_boot_space_recovered": "0 GiB",
+      "basis": "No identified artifact met both sufficient size and verified stale/rebuildable ownership criteria."
+    },
+    {
+      "action": "Have the adjudicating owner identify a specific artifact or approve a system-managed cleanup target after establishing ownership and lack of active references.",
+      "expected_boot_space_recovered": "Unknown until target is identified",
+      "basis": "The permitted candidates inspected here cannot safely reach the requested free-space target."
+    }
+  ],
+  "result": "Insufficient safe cleanup identified to reach either the >20 GiB floor or the preferred 22 GiB target. No files were deleted or moved."
+}

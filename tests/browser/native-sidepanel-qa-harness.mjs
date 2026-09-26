@@ -250,22 +250,31 @@ async function attachTargetSession(cdp, targetId) {
 }
 
 function stopOwnedChild(child) {
-  if (!child?.pid || child.exitCode !== null) return Promise.resolve();
+  if (!child?.pid || child.exitCode !== null || child.signalCode !== null) return Promise.resolve();
   return new Promise((resolve) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      clearTimeout(killWait);
+      resolve();
+    };
+    let killWait;
     const timeout = setTimeout(() => {
       try {
         child.kill('SIGKILL');
       } catch {}
+      // Node can miss an exit event if Chrome died between the initial check
+      // and listener registration. Never strand disposal on that event.
+      killWait = setTimeout(finish, 2000);
     }, 5000);
-    child.once('exit', () => {
-      clearTimeout(timeout);
-      resolve();
-    });
+    child.once('exit', finish);
+    if (child.exitCode !== null || child.signalCode !== null) return finish();
     try {
       child.kill('SIGTERM');
     } catch {
-      clearTimeout(timeout);
-      resolve();
+      finish();
     }
   });
 }

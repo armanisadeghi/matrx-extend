@@ -1,0 +1,49 @@
+{
+  "defect_id": "EXT-D-0006",
+  "reviewed_commits": ["9c2a3a3", "28d48d8"],
+  "scope": "Independent source review only; no implementation edits, test run, or live browser exercise.",
+  "verdict_a_acceptance": {
+    "status": "UNVERIFIED",
+    "source_assessment": "Chrome manifest declares debugger required and the Settings row has no switch; optional Chrome grants are requested and removed through the permissions API, with false and thrown request/remove results shown to the user. Live Chrome retest remains required.",
+    "missing": [
+      "Firefox and Safari manifests filter out pageCapture and tabCapture, but the shared ALL_OPTIONAL list still renders both switches in Advanced agent capabilities. An admin can attempt a grant that this extension build cannot supply.",
+      "The dispatcher still describes debugger as an optional permission and directs the agent to a nonexistent Settings toggle if its required-permission check fails."
+    ],
+    "evidence": [
+      "wxt.config.ts:96-120; src/lib/permissions/optional.ts:49-94; src/features/settings/AdvancedAgentCapabilities.tsx:99-123; src/features/settings/SettingsView.tsx:455-459",
+      "src/lib/tools/dispatch.ts:776-790 and 1411-1420; src/lib/tools/handlers/cdp.ts:49-50",
+      "https://developer.chrome.com/docs/extensions/reference/api/permissions"
+    ]
+  },
+  "verdict_b_engineering_quality": {
+    "status": "FAIL",
+    "findings": [
+      {
+        "severity": "important",
+        "title": "Permission roster is not build-specific",
+        "evidence": "wxt.config.ts:118-120 removes pageCapture and tabCapture from Firefox/Safari optional_permissions, while src/lib/permissions/optional.ts:57-68,92-94 and AdvancedAgentCapabilities.tsx:99-123 always render them as actionable switches.",
+        "effect": "A browser-specific build presents unsupported capabilities as grantable and retries cannot repair the manifest mismatch. Filter the roster by the actual build capability or manifest."
+      },
+      {
+        "severity": "important",
+        "title": "Refresh rejection can strand a switch busy",
+        "evidence": "AdvancedAgentCapabilities.tsx:67-70 awaits refresh() before setBusy(null), and refresh() calls permissions.contains without catch at lines 44-50.",
+        "effect": "If contains rejects after a grant or removal result, the async handler rejects and the switch stays disabled. Make state cleanup unconditional and show a recoverable status-read error."
+      },
+      {
+        "severity": "minor",
+        "title": "Debugger gate gives impossible remediation",
+        "evidence": "src/lib/tools/dispatch.ts:781-789 applies the optional-permission error to required_optional_permissions including debugger, telling the agent to enable an Advanced agent capabilities toggle; the new UI intentionally has none.",
+        "effect": "In a build where debugger is absent, the tool failure points to an action the user cannot take."
+      },
+      {
+        "severity": "minor",
+        "title": "New tests omit grant denial, thrown API results, and status-read failure",
+        "evidence": "tests/unit/advanced-agent-capabilities.test.tsx:44-92 covers debugger status, successful removal, and false removal only; no grant-denial or rejection path is asserted.",
+        "effect": "The stated recoverability contract is only partly guarded. No live proof or mutation/gut-check evidence was provided with the implementation report."
+      }
+    ],
+    "positive_evidence": "RuntimeOptionalPermission excludes debugger from request/remove signatures; Chrome documentation forbids debugger as optional and says removing required permissions returns false. The tests do exercise the key no-switch and false-removal behaviors."
+  },
+  "open_questions": ["Retest actual Chrome Settings grant, removal, refusal, and reload behavior before acceptance closure."]
+}

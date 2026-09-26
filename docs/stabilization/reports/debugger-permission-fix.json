@@ -1,0 +1,35 @@
+{
+  "defect_id": "EXT-D-0006",
+  "status": "round2_repair_committed_pending_final_guarded_test_fresh_peer_and_live_retest",
+  "root_cause": "Chrome forbids debugger in optional_permissions and permissions.remove returns false for required permissions. The manifest correctly declared debugger as required, but the shared optional-permission Settings roster offered it as a removable switch and ignored a false removal result.",
+  "official_contract": "https://developer.chrome.com/docs/extensions/reference/api/permissions",
+  "census": "The four possible runtime grants are cookies, pageCapture, clipboardRead, and tabCapture. Settings now derives its offered subset from this build's runtime manifest; Firefox and Safari omit pageCapture and tabCapture. The inert prompt type excludes debugger. The manifest and debugger security grants were preserved.",
+  "changed_files": [
+    "src/lib/permissions/optional.ts",
+    "src/state/permission-prompts.ts",
+    "src/features/settings/AdvancedAgentCapabilities.tsx",
+    "src/features/tools/ToolsView.tsx",
+    "src/lib/tools/dispatch.ts",
+    "tests/unit/advanced-agent-capabilities.test.tsx",
+    "docs/feature-tests.md"
+  ],
+  "evidence": [
+    "Chrome documentation explicitly lists debugger among permissions that cannot be optional and says permissions.remove returns false for required permissions.",
+    "Source census confirmed debugger was required in wxt.config.ts yet included in ALL_OPTIONAL and rendered as a switch.",
+    "Root reported initial focused test passed three cases, compile001 passed, and compile002 passed on round1. The round1 focused test passed seven cases and failed one test-only async query before the Settings refresh completed; the query now waits for the row.",
+    "Round2 peer found required sessions also receives optional-switch remediation and Tools called required grants opt-perm. Both now consume one manifest-backed permission classification; tests cover debugger, sessions, optional cookies, mixed requirements, and undeclared pageCapture.",
+    "git diff --check passed; targeted Biome check fixed formatting, with only the preexisting design-system Switch label warning remaining."
+  ],
+  "commands_for_root_scheduler": [
+    "pnpm exec vitest run tests/unit/advanced-agent-capabilities.test.tsx --maxWorkers=1 --minWorkers=1",
+    "pnpm compile"
+  ],
+  "open_questions": [
+    "Root's final guarded focused test and a fresh peer must inspect the round2 implementation independently.",
+    "The original Chrome reproduction requires a live retest before defect closure."
+  ],
+  "red_green_proposal": "In a scratch copy of 77ce8f0, overlay the updated advanced-agent-capabilities test and run the targeted Vitest command; the sessions remedy and badge cases should fail. Run the same command at ba5a9ed for green evidence. Do not mutate shared source for this proof.",
+  "commits": ["9c2a3a3", "28d48d8", "77ce8f0", "4f92848", "ba5a9ed"],
+  "commit": "ba5a9ed",
+  "push": "withheld_pending_root_green_gate"
+}

@@ -1,0 +1,53 @@
+{
+  "id": "EXT-D-0006",
+  "feature_id": "EXT-F-1003",
+  "control_id": "EXT-F-1003-C19",
+  "case_id": "EXT-F-1003-T55",
+  "surface": "Settings > Advanced agent capabilities",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Load unpacked development extension cihdmkcdjjckfhjpgoedmgfpoljebaml version 0.2.51; sign in as admin@admin.com.",
+    "Open Settings > Advanced agent capabilities. DevTools Protocol initially shows on.",
+    "Click its switch to turn it off; observe it stays on with no explanation. Reload extension and repeat."
+  ],
+  "expected": "Capability controls honestly reflect Chrome-supported permission management; an unavailable removal action is not offered as a working switch.",
+  "actual": "The interactive DevTools Protocol switch remains on after clicks and reload without feedback.",
+  "evidence": [
+    "docs/stabilization/runs/admin-permissions-002.json"
+  ],
+  "severity": "S2: misleading nonfunctional permission control",
+  "priority": "P1: current Settings stabilization",
+  "state": "fixed",
+  "owner": "/root/debugger_permission_fix",
+  "transition_history": [
+    {
+      "at": "2026-09-26T05:33:37.760391+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Native Chrome repeated reproduction on verified loaded development build."
+    },
+    {
+      "at": "2026-09-26T05:33:37.760391+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Manifest declares debugger required while Settings offers runtime removal; implementation diagnosis pending."
+    },
+    {
+      "at": "2026-09-26T05:34:50.946394+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol medium implementation assigned; independent peer and fresh-build native retest required."
+    },
+    {
+      "at": "2026-09-26T05:48:27.726464+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh final source peer PASS and8focused tests pass; rebuild/native original reproduction retest remains pending."
+    }
+  ],
+  "fix_commits": [
+    "9c2a3a3",
+    "77ce8f0",
+    "ba5a9ed"
+  ]
+}

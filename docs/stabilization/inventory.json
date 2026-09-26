@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T05:21:13.372331+00:00",
+  "updated_at": "2026-09-26T06:16:57.606993+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
@@ -147,8 +147,10 @@
               "detail": "No member-mode session evidence; the operational behavior is intended to be auth-independent."
             },
             "admin": {
-              "status": "unverified",
-              "detail": "No admin-mode session evidence; the operational behavior is intended to be auth-independent."
+              "status": "fail",
+              "run_id": "permission-native-retest",
+              "evidence": "docs/stabilization/runs/permission-native-retest.json",
+              "detail": "Freshdevelopment reload settledguest instead of restoring observedadminidentity; D7 diagnosis pending."
             }
           }
         },
@@ -255,7 +257,9 @@
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0007"
+          ],
           "run_ids": [
             "baseline-build-001",
             "render-retest-001",
@@ -270,7 +274,9 @@
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0007"
+          ],
           "run_ids": [
             "baseline-build-001",
             "render-retest-001",
@@ -3676,12 +3682,19 @@
           ],
           "results": {
             "guest": {
+              "status": "unverified",
+              "detail": "Source auth transport changed by remote55896d4; prior admin-signin-001 evidence remains valid for old0.2.51 only, fresh callback/sign-in smoke required."
+            }
+          },
+          "previous_results": [
+            {
+              "mode": "guest",
               "status": "pass",
               "run_id": "admin-signin-001",
               "evidence": "docs/stabilization/runs/admin-signin-001.json",
               "detail": "Real Settings sign-in reached admin@admin.com ADMIN and identity persisted through full extension Reload. Noorgselected; separatecapturelistwarning recorded."
             }
-          }
+          ]
         },
         {
           "id": "EXT-F-1003-T53",
@@ -3733,7 +3746,7 @@
         },
         {
           "id": "EXT-F-1003-T55",
-          "title": "Optional permission: DevTools Protocol",
+          "title": "Required capability: DevTools Protocol",
           "modes": [
             "admin"
           ],
@@ -3744,15 +3757,26 @@
             "Signed in as admin; Settings > Advanced agent capabilities is visible."
           ],
           "steps": [
-            "As admin, toggle debugger on and off; verify Chrome grant/removal result, busy state, and reflected current permission. Also deny the grant request."
+            "Complete development build and full extension Reload; record source/build identity. As admin open Settings > Advanced agent capabilities.",
+            "Verify DevTools Protocol truthfully identifies its installation-required permission state, offers no unsupported on/off action, and explains its availability.",
+            "Reload extension and verify status remains accurate; exercise adjacent optional permission grant, denial, removal and persistence to check no regression."
           ],
           "expected": [
-            "Granted state updates; dependent CDP tools become available. Denial leaves the switch off and is recoverable."
+            "Chrome debugger is correctly described as an installation-required capability without a nonfunctional switch; unavailable states have truthful remediation.",
+            "Neighbor optional controls remain usable and reflect actual Chrome grants."
           ],
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "fail",
+              "run_id": "admin-permissions-002",
+              "evidence": "docs/stabilization/runs/admin-permissions-002.json"
+            }
+          },
+          "scope_note": "Chrome permissions API forbids optional debugger and removal of required grants. Original generated optional-toggle expectation corrected after native failure EXT-D-0006; original evidence retained in admin-permissions-002. Actual CDP tool behavior is independently covered by tool-feature inventory, not claimed by this permission UI case."
         },
         {
           "id": "EXT-F-1003-T56",
@@ -3775,7 +3799,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-permissions-001",
+              "evidence": "docs/stabilization/runs/admin-permissions-001.json",
+              "detail": "All three initialoff restored; on/off and reload verified. Chrome offeredno Cookiesdenialdialog; denialcriterion unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T57",
@@ -3798,7 +3830,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-permissions-001",
+              "evidence": "docs/stabilization/runs/admin-permissions-001.json",
+              "detail": "All three initialoff restored; on/off and reload verified. RealChrome deny leftoff andaccept turnedon; allcasecriteria observed."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T58",
@@ -3821,7 +3861,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-permissions-001",
+              "evidence": "docs/stabilization/runs/admin-permissions-001.json",
+              "detail": "All three initialoff restored; on/off and reload verified. RealChrome deny leftoff andaccept turnedon; allcasecriteria observed."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T59",
@@ -3844,7 +3892,14 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-permissions-002",
+              "evidence": "docs/stabilization/runs/admin-permissions-002.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T60",
@@ -4115,7 +4170,8 @@
         "member": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0001"
+            "EXT-D-0001",
+            "EXT-D-0007"
           ],
           "run_ids": [],
           "retest_status": "not-run"
@@ -4123,13 +4179,17 @@
         "admin": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0001"
+            "EXT-D-0001",
+            "EXT-D-0006",
+            "EXT-D-0007"
           ],
           "run_ids": [
             "admin-org-001",
             "admin-default-agent-001",
             "admin-settings-local-001",
-            "admin-default-agent-002"
+            "admin-default-agent-002",
+            "admin-permissions-001",
+            "admin-permissions-002"
           ],
           "retest_status": "not-run"
         }
@@ -20743,6 +20803,49 @@
             "reload"
           ],
           "wave": "D"
+        },
+        {
+          "id": "EXT-F-2013-T06",
+          "title": "Reply read-aloud follows current platform voice preference",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2013-C102",
+            "EXT-F-2013-C103"
+          ],
+          "preconditions": [
+            "Deferred wave D only, after non-Chat/Pilot health baseline. Complete fresh build/reload including origin commit557adc2; record source SHA, extension identity and mode."
+          ],
+          "steps": [
+            "Read a reply aloud using the platform-selected Read-aloud voice; compare the actual selected voice and audio with that preference.",
+            "Change the authorized test account preference through its supported UI; repeat and verify current preference is consumed.",
+            "Exercise no preference and unavailable preference lookup for each applicable mode; verify documented default and recoverable behavior, then stop playback."
+          ],
+          "expected": [
+            "Reply speech uses the platform preference when available and the canonical documented default when absent; stop control stops playback. Failures and guest applicability are explicitly evidenced."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
+          "source_delta": "origin557adc2; systematic execution deferred wave D",
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "New remote behavior; loaded0.2.51 predates this source."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "New remote behavior; loaded0.2.51 predates this source."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New remote behavior; loaded0.2.51 predates this source."
+            }
+          }
         }
       ],
       "cells": {

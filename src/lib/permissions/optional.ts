@@ -13,16 +13,19 @@
  * the 2026-05-08 revert of roadmap item #10's `<all_urls>` opt-in.)
  */
 
-// Active optional permissions. Each entry here MUST also appear in
-// `optional_permissions` in wxt.config.ts — otherwise Chrome silently
-// rejects the runtime permission request and the Settings → Advanced
-// toggle for it will fail.
+// Chrome's debugger permission is required in the manifest: Chrome forbids it
+// in optional_permissions and will not remove it at runtime. Keep it in the
+// capability type for tool checks, but never offer it to request/remove.
 export type OptionalPermission =
   | 'debugger'
   | 'cookies'
   | 'pageCapture'
   | 'clipboardRead'
   | 'tabCapture';
+
+// Every runtime permission here MUST also appear in optional_permissions in
+// wxt.config.ts. This type is the Settings switch/request/remove contract.
+export type RuntimeOptionalPermission = Exclude<OptionalPermission, 'debugger'>;
 
 // ─── Reserved for future capabilities ────────────────────────────────────
 // These were previously declared but had no corresponding chrome.<api>
@@ -44,13 +47,9 @@ export type OptionalPermission =
 // ─────────────────────────────────────────────────────────────────────────
 
 export const OPTIONAL_PERMISSION_LABELS: Record<
-  OptionalPermission,
+  RuntimeOptionalPermission,
   { title: string; desc: string }
 > = {
-  debugger: {
-    title: 'DevTools Protocol',
-    desc: 'Enables CDP-powered tools: full-page screenshots, accessibility tree dumps, network capture, coordinate-based clicks. Chrome shows a "is being debugged" banner while attached.',
-  },
   cookies: {
     title: 'Cookies',
     desc: 'Read, set, and delete cookies for any site. Required for session-aware automation.',
@@ -74,25 +73,80 @@ export async function hasOptionalPermissions(perms: OptionalPermission[]): Promi
   return chrome.permissions.contains({ permissions: perms });
 }
 
-export async function requestOptionalPermission(perm: OptionalPermission): Promise<boolean> {
+export async function requestOptionalPermission(perm: RuntimeOptionalPermission): Promise<boolean> {
   return chrome.permissions.request({ permissions: [perm] });
 }
 
-export async function removeOptionalPermission(perm: OptionalPermission): Promise<boolean> {
+export async function removeOptionalPermission(perm: RuntimeOptionalPermission): Promise<boolean> {
   return chrome.permissions.remove({ permissions: [perm] });
 }
 
-export async function listGrantedOptional(): Promise<OptionalPermission[]> {
+export async function listGrantedOptional(): Promise<RuntimeOptionalPermission[]> {
   const got = await chrome.permissions.getAll();
   const granted = (got.permissions ?? []) as string[];
-  return granted.filter((p): p is OptionalPermission =>
+  return granted.filter((p): p is RuntimeOptionalPermission =>
     Object.prototype.hasOwnProperty.call(OPTIONAL_PERMISSION_LABELS, p),
   );
 }
 
-export const ALL_OPTIONAL: OptionalPermission[] = Object.keys(
+export const ALL_OPTIONAL: RuntimeOptionalPermission[] = Object.keys(
   OPTIONAL_PERMISSION_LABELS,
-) as OptionalPermission[];
+) as RuntimeOptionalPermission[];
+
+/** Only permissions declared by this browser build may be offered as switches. */
+export function declaredRuntimeOptionalPermissions(): RuntimeOptionalPermission[] {
+  const declared = new Set(chrome.runtime.getManifest().optional_permissions ?? []);
+  return ALL_OPTIONAL.filter((permission) => declared.has(permission));
+}
+
+/** Tool messaging and roster badges use this build's manifest as one source. */
+export function classifyDeclaredPermissions(perms: string[]): {
+  required: string[];
+  optional: string[];
+  unavailable: string[];
+} {
+  const manifest = chrome.runtime.getManifest();
+  const required = new Set(manifest.permissions ?? []);
+  const optional = new Set(manifest.optional_permissions ?? []);
+  return {
+    required: perms.filter((permission) => required.has(permission)),
+    optional: perms.filter((permission) => optional.has(permission)),
+    unavailable: perms.filter(
+      (permission) => !required.has(permission) && !optional.has(permission),
+    ),
+  };
+}
+
+/** A concise badge that never calls an installation grant optional. */
+export function permissionRequirementLabel(perms: string[]): string {
+  const { required, optional, unavailable } = classifyDeclaredPermissions(perms);
+  if (unavailable.length) return 'unavailable';
+  if (required.length && optional.length) return 'mixed perms';
+  if (required.length) return 'req-perm';
+  return 'opt-perm';
+}
+
+/** Remediation follows the permission declarations in this browser build. */
+export function missingPermissionRemedy(perms: string[]): string {
+  const { required, optional, unavailable } = classifyDeclaredPermissions(perms);
+  const remedies: string[] = [];
+  if (required.length) {
+    remedies.push(
+      `Required Chrome permission(s) [${required.join(', ')}] cannot be enabled in Settings. Check this extension's access in Chrome or use a browser build that includes them.`,
+    );
+  }
+  if (optional.length) {
+    remedies.push(
+      `Ask the user to enable optional permission(s) [${optional.join(', ')}] in Settings → Advanced agent capabilities, then retry.`,
+    );
+  }
+  if (unavailable.length) {
+    remedies.push(
+      `Permission(s) [${unavailable.join(', ')}] are not declared by this browser build. Use a build that supports them.`,
+    );
+  }
+  return remedies.join(' ');
+}
 
 /**
  * Is this specific URL covered by any of our currently-granted host
