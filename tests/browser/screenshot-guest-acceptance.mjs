@@ -3,23 +3,30 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { mkdir, open, readFile, writeFile } from 'node:fs/promises';
+import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
+import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const OUTPUT = join(REPO, 'test-results', `screenshot-guest-acceptance-${randomUUID()}.json`);
 const EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
 const RELEASE_RECEIPT = join(REPO, '.output', 'release-receipt.json');
 const MANIFEST = join(EXTENSION_DIR, 'manifest.json');
+const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
+const WEB_ORIGIN = 'https://www.aimatrx.com';
+const ADMIN_EMAIL = 'admin@admin.com';
+const GUEST_RELOAD = process.env.SCREENSHOT_GUEST_RELOAD === '1';
+const ROLE_CHANGE = process.env.SCREENSHOT_ROLE_CHANGE === '1';
 let stage = 'owned_profile';
 const report = {
   schema: 1,
   feature: 'EXT-F-1009',
-  mode: 'guest',
+  mode: ROLE_CHANGE ? 'real_admin_to_guest_transition' : 'guest',
   status: 'unverified',
+  scenario: { guestReloadRequested: GUEST_RELOAD, roleChangeRequested: ROLE_CHANGE },
   build: null,
   cases: [],
 };
@@ -58,9 +65,97 @@ async function guestNavigation(panel, targetTitle = null, viewMarker = null) {
       targetTabCount:targetTabs.length,targetSelected:targetTab?.getAttribute('aria-selected')==='true',
       linkedPaneVisible,viewMarkerPresent:viewMarker===null?null:
         [...(pane?.querySelectorAll('span,h1,h2')??[])].some(n=>n.textContent.trim()===viewMarker),
-      suspenseFallback:!!pane?.querySelector('svg.animate-spin')&&!pane?.innerText?.trim()};
+      suspenseFallback:!!pane?.querySelector('svg.animate-spin')&&!pane?.innerText?.trim(),
+      guestAvatarCount:document.querySelectorAll('button[title="Account"]').length,
+      adminAvatarCount:document.querySelectorAll('button[title="admin@admin.com"]').length};
   })()`,
   );
+}
+
+function guestViewAccepted(value, title) {
+  return (
+    value?.listCount === 1 &&
+    value.targetTabCount === 1 &&
+    value.targetSelected &&
+    value.activePaneCount === 1 &&
+    value.linkedPaneVisible &&
+    (title === 'Chat' || value.viewMarkerPresent) &&
+    (title === 'Chat' || !value.suspenseFallback) &&
+    value.guestAvatarCount === 1 &&
+    value.adminAvatarCount === 0 &&
+    value.screenshotTriggerCount === 0 &&
+    value.screenshotPaneCount === 0 &&
+    !value.screenshotContentMounted
+  );
+}
+
+async function selectedGuestView(panel, title, marker = null) {
+  return waitFor(
+    `guest_${title.toLowerCase()}_selected`,
+    () => guestNavigation(panel, title, marker),
+    (value) => guestViewAccepted(value, title),
+  );
+}
+
+// Mirrors the real web-form and extension Account sign-in sequence in
+// isolated-admin-signin-acceptance.mjs without importing its executable entrypoint.
+async function signInAsAdmin(page, panel) {
+  stage = 'role_change_account';
+  await click(panel, 'title', 'Settings');
+  await openSection(panel, 'Account');
+  const web = await page.context().newPage();
+  try {
+    stage = 'role_change_web_login';
+    await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    const route = new URL(web.url());
+    if (route.origin !== WEB_ORIGIN || route.pathname !== '/login')
+      throw new Error('screenshot_guest_web_login_route_unverified');
+    const variables = {};
+    for (const line of (await readFile(ADMIN_ENV, 'utf8')).split(/\r?\n/)) {
+      const found = /^\s*(AI_ADMIN_USERNAME|AI_ADMIN_PASSWORD)\s*=\s*(.*?)\s*$/.exec(line);
+      if (!found) continue;
+      let value = found[2];
+      if (
+        (value.startsWith('"') && value.endsWith('"')) ||
+        (value.startsWith("'") && value.endsWith("'"))
+      )
+        value = value.slice(1, -1);
+      variables[found[1]] = value;
+    }
+    if (variables.AI_ADMIN_USERNAME !== ADMIN_EMAIL || !variables.AI_ADMIN_PASSWORD)
+      throw new Error('screenshot_guest_admin_credentials_unavailable');
+    await web.locator('input[name="email"]').fill(ADMIN_EMAIL);
+    await web.locator('input[name="password"]').fill(variables.AI_ADMIN_PASSWORD);
+    await Promise.all([
+      web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname === '/dashboard', {
+        timeout: 90_000,
+      }),
+      web.getByRole('button', { name: 'Sign in', exact: true }).click(),
+    ]);
+    stage = 'role_change_extension_signin';
+    await click(panel, 'button', 'Sign in');
+    await waitFor(
+      'screenshot_guest_admin_identity',
+      () =>
+        evaluate(
+          panel,
+          `(() => {
+        const account=[...document.querySelectorAll('button[aria-expanded]')]
+          .find(button=>button.textContent.trim()==='Account');
+        const section=account?.parentElement?.nextElementSibling;
+        const row=label=>[...(section?.querySelectorAll('span')??[])]
+          .find(span=>span.textContent.trim()===label)?.parentElement?.textContent.trim()??null;
+        return {emailMatch:row('Email')==='Email${ADMIN_EMAIL}',
+          adminRole:row('Role')?.toLowerCase()==='roleadmin',
+          avatarCount:document.querySelectorAll('button[title="admin@admin.com"]').length};
+      })()`,
+        ),
+      (identity) => identity?.emailMatch && identity.adminRole && identity.avatarCount === 1,
+      90_000,
+    );
+  } finally {
+    await web.close();
+  }
 }
 
 async function saveFailureScreenshot(panel, artifacts) {
@@ -76,7 +171,7 @@ async function saveFailureScreenshot(panel, artifacts) {
   return true;
 }
 
-async function exercise({ panel, artifacts }) {
+async function exercise({ page, panel, artifacts }) {
   try {
     stage = 'guest_initial_navigation';
     const initial = await guestNavigation(panel);
@@ -84,6 +179,8 @@ async function exercise({ panel, artifacts }) {
     assert.equal(initial.screenshotTriggerCount, 0);
     assert.equal(initial.screenshotContentMounted, false);
     assert.equal(initial.screenshotPaneCount, 0);
+    assert.equal(initial.guestAvatarCount, 1);
+    assert.equal(initial.adminAvatarCount, 0);
     report.cases.push({
       id: 'EXT-F-1009-T09',
       status: 'pass',
@@ -94,35 +191,9 @@ async function exercise({ panel, artifacts }) {
 
     stage = 'accessible_view_navigation';
     await click(panel, 'title', 'Settings');
-    const settings = await waitFor(
-      'settings_selected',
-      () => guestNavigation(panel, 'Settings', 'Settings'),
-      (value) =>
-        value?.targetTabCount === 1 &&
-        value.targetSelected &&
-        value.activePaneCount === 1 &&
-        value.linkedPaneVisible &&
-        value.viewMarkerPresent &&
-        !value.suspenseFallback,
-    );
-    assert.equal(settings.screenshotTriggerCount, 0);
-    assert.equal(settings.screenshotPaneCount, 0);
-    assert.equal(settings.screenshotContentMounted, false);
+    const settings = await selectedGuestView(panel, 'Settings', 'Settings');
     await click(panel, 'title', 'SEO');
-    const afterNavigation = await waitFor(
-      'seo_selected',
-      () => guestNavigation(panel, 'SEO', 'SEO audit'),
-      (value) =>
-        value?.targetTabCount === 1 &&
-        value.targetSelected &&
-        value.activePaneCount === 1 &&
-        value.linkedPaneVisible &&
-        value.viewMarkerPresent &&
-        !value.suspenseFallback,
-    );
-    assert.equal(afterNavigation.screenshotTriggerCount, 0);
-    assert.equal(afterNavigation.screenshotPaneCount, 0);
-    assert.equal(afterNavigation.screenshotContentMounted, false);
+    const afterNavigation = await selectedGuestView(panel, 'SEO', 'SEO audit');
     report.cases.push({
       id: 'EXT-F-1009-T09',
       subcase: 'visible_navigation',
@@ -133,15 +204,94 @@ async function exercise({ panel, artifacts }) {
         'selected public trigger, linked visible pane, mounted target marker, and Screenshots absence at each transition',
     });
 
-    report.cases.push({
-      id: 'EXT-F-1009-T09',
-      subcase: 'stale_selection',
-      status: 'unverified',
-      expected: 'Attempt stale Screenshots selection after a role change.',
-      actual:
-        'Fresh guest profile has no prior signed-in Screenshots selection; a real auth transition was outside this guest-only run.',
-      evidence: 'No auth state or tab selection was fabricated.',
-    });
+    if (GUEST_RELOAD) {
+      stage = 'guest_real_panel_reload';
+      const previousLoader = (await panel.send('Page.getFrameTree'))?.frameTree?.frame?.loaderId;
+      if (!previousLoader) throw new Error('screenshot_guest_loader_before_reload_unverified');
+      await panel.send('Page.reload', { ignoreCache: false });
+      await waitFor(
+        'screenshot_guest_new_document',
+        async () => (await panel.send('Page.getFrameTree'))?.frameTree?.frame?.loaderId,
+        (loader) => Boolean(loader && loader !== previousLoader),
+        30_000,
+      );
+      const reloaded = await selectedGuestView(panel, 'Chat');
+      report.cases.push({
+        id: 'EXT-F-1009-T09',
+        subcase: 'guest_real_reload',
+        status: 'pass',
+        expected: 'Real guest panel reload keeps Screenshots inaccessible.',
+        actual: { newDocument: true, guestView: reloaded },
+        evidence:
+          'new loader identity; selected linked public Chat pane and guest avatar; protected trigger/pane/content absent',
+      });
+    } else {
+      report.cases.push({
+        id: 'EXT-F-1009-T09',
+        subcase: 'guest_real_reload',
+        status: 'unverified',
+        expected: 'Guest denial after real panel reload.',
+        actual: 'Optional guest reload was not requested.',
+      });
+    }
+
+    if (ROLE_CHANGE) {
+      await signInAsAdmin(page, panel);
+      stage = 'admin_screenshots_selected';
+      await click(panel, 'title', 'Screenshots');
+      const selected = await waitFor(
+        'admin_screenshots_selected',
+        () => guestNavigation(panel, 'Screenshots', 'Screenshots'),
+        (value) =>
+          value?.targetTabCount === 1 &&
+          value.targetSelected &&
+          value.activePaneCount === 1 &&
+          value.linkedPaneVisible &&
+          value.viewMarkerPresent &&
+          !value.suspenseFallback &&
+          value.adminAvatarCount === 1,
+      );
+      stage = 'admin_screenshots_signout';
+      await click(panel, 'title', ADMIN_EMAIL);
+      await waitFor(
+        'avatar_local_signout_ready',
+        () =>
+          evaluate(
+            panel,
+            `(() => {
+          const popover=document.querySelector('[data-state="open"][role="dialog"]')??
+            [...document.querySelectorAll('[data-state="open"]')]
+              .find(node=>node.textContent?.includes('Desktop:'));
+          return {menuOpen:!!popover,signOutCount:[...(popover?.querySelectorAll('button')??[])]
+            .filter(button=>button.textContent.trim()==='Sign out').length};
+        })()`,
+          ),
+        (value) => value?.menuOpen && value.signOutCount === 1,
+      );
+      await click(panel, 'button', 'Sign out');
+      stage = 'guest_navigation_recovery_after_signout';
+      const recovered = await selectedGuestView(panel, 'Chat');
+      report.cases.push({
+        id: 'EXT-F-1009-T09',
+        subcase: 'stale_selection_after_real_signout',
+        status: 'pass',
+        expected: 'Signing out from selected Screenshots returns to an accessible guest view.',
+        actual: {
+          adminScreenshotsSelected: selected.targetSelected && selected.linkedPaneVisible,
+          guestRecovery: recovered,
+        },
+        evidence:
+          'same owned profile; real avatar Sign out; selected linked public Chat pane with Screenshots trigger/pane/content absent',
+      });
+    } else {
+      report.cases.push({
+        id: 'EXT-F-1009-T09',
+        subcase: 'stale_selection_after_real_signout',
+        status: 'unverified',
+        expected: 'Admin-selected Screenshots then real sign-out and guest recovery.',
+        actual: 'Optional real auth transition was not requested; no auth state was fabricated.',
+      });
+    }
     report.status = 'partial';
   } catch (error) {
     report.status = 'unverified';
