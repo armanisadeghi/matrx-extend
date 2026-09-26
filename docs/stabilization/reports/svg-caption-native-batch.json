@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0018",
+  "linked_case": "EXT-F-1007-T28",
+  "status": "prepared_not_run",
+  "runner": "tests/browser/svg-caption-native-acceptance.mjs",
+  "runtime_output": "test-results/svg-caption-native-acceptance.json",
+  "scope": "Owned localhost HTML article in a real Chrome tab with the released unpacked extension and native side panel. The fixture contains two inline SVG figures, each with a distinct caption and adjacent HTML label. Fast Capture and Scroll & capture must preserve both graphics and all text in rendered Article order.",
+  "fixture_classification": "engineering_fixture_not_public_production_proof",
+  "runtime_verdict": "unverified",
+  "execution_owner": "root guarded browser/build launch",
+  "deferred": [
+    "An independent public production article with inline SVG, caption, and HTML label has not been identified.",
+    "Full EXT-F-1007-T28 breadth beyond this caption-loss regression remains unverified."
+  ]
+}
