@@ -13,7 +13,7 @@
  *
  * READ-ONLY. This repo ships only the publishable key and cannot apply DDL or
  * write the ledger. The private ledger is read through the authenticated Supabase
- * CLI Management API when the browser-safe role cannot select it. Recording is
+ * read-only Management API when the browser-safe role cannot select it. Recording is
  * the applier's job. To apply + record a pending migration, from aidream run:
  *     python db/apply_migrations.py --source matrx-extend
  *
@@ -89,7 +89,7 @@ function loudBox(title: string): void {
   console.log(`${C.bold}${C.red}╚${bar}╝${C.reset}`);
 }
 
-async function main(): Promise<number> {
+export async function main(): Promise<number> {
   const strict = process.argv.includes('--strict');
 
   const files = listSql(MIGRATIONS_DIR);
@@ -112,21 +112,20 @@ async function main(): Promise<number> {
   }
 
   const env = loadSupabaseEnv();
-  if (!env) {
-    console.log(
-      `${C.yellow}check:migrations — Supabase creds absent — ledger check skipped${C.reset}`,
-    );
-    return 0;
+  let ledgerRows: LedgerRow[] | null = null;
+  let publicError: unknown = new Error('publishable credentials absent');
+  if (env) {
+    try {
+      ledgerRows = await fetchPublicJson<LedgerRow[]>(
+        env.url,
+        env.key,
+        `_schema_migrations?source=eq.${encodeURIComponent(SOURCE)}&select=filename,checksum`,
+      );
+    } catch (error) {
+      publicError = error;
+    }
   }
-
-  let ledgerRows: LedgerRow[];
-  try {
-    ledgerRows = await fetchPublicJson<LedgerRow[]>(
-      env.url,
-      env.key,
-      `_schema_migrations?source=eq.${encodeURIComponent(SOURCE)}&select=filename,checksum`,
-    );
-  } catch (publicError) {
+  if (ledgerRows === null) {
     try {
       ledgerRows = await fetchLedgerViaManagementApi();
       console.log(
@@ -156,7 +155,7 @@ async function main(): Promise<number> {
     .filter((r) => !local.has(r.filename) && !skipped.includes(r.filename))
     .map((r) => r.filename);
 
-  const host = env.url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const host = env?.url.replace(/^https?:\/\//, '').replace(/\/$/, '') ?? 'Supabase Management API';
   console.log(`${C.bold}━━━ migration ledger check (source='${SOURCE}') ━━━${C.reset}`);
   console.log(`  target: ${C.dim}${host}${C.reset}`);
   console.log(`  local:  ${files.length} file(s) in migrations/ (${skipped.length} skip-marked)`);
@@ -205,10 +204,12 @@ async function main(): Promise<number> {
   return 0;
 }
 
-main().then(
-  (code) => process.exit(code),
-  (err) => {
-    console.error(`${C.red}check:migrations — unexpected error:${C.reset}`, err);
-    process.exit(2);
-  },
-);
+if (resolve(process.argv[1] ?? '') === fileURLToPath(import.meta.url)) {
+  main().then(
+    (code) => process.exit(code),
+    (err) => {
+      console.error(`${C.red}check:migrations — unexpected error:${C.reset}`, err);
+      process.exit(2);
+    },
+  );
+}

@@ -51,6 +51,7 @@ import process from 'node:process';
 import { buildToolCatalogManifest } from '../src/lib/tools/catalog';
 import { CANONICAL_SURFACE } from '../src/lib/tools/categories';
 import { selectRowsViaManagementApi } from './_supabase-management';
+import { isDbSurfaceDefaultsRow, isDbToolRow, type DbSurfaceDefaultsRow, type DbToolRow } from './_tool-db-row-validation';
 import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
 
 interface LocalTool {
@@ -68,40 +69,10 @@ interface LocalTool {
   };
 }
 
-interface DbToolRow {
-  id: string;
-  name: string;
-  description: string;
-  parameters: Record<
-    string,
-    { type?: string | string[]; enum?: unknown[]; required?: boolean; [k: string]: unknown }
-  > | null;
-  tier: string | null;
-  admin_only: boolean | null;
-  is_active: boolean | null;
-  category: string | null;
-  source_kind: string | null;
-}
-
 interface DbBindingRow {
   tool_id: string;
   executor_name: string;
   is_active: boolean;
-}
-
-interface DbSurfaceDefaultsRow {
-  surface_name: string;
-  always_include_tools: string[] | null;
-  /**
-   * Bundles the surface pulls in wholesale. The server resolves membership from
-   * `platform.associations` (source_id = tool id, target_id = bundle id), which
-   * the publishable key CANNOT read — so this script can see THAT a bundle is
-   * declared but not WHAT is in it. See `bundleSuppliedNote` below: rather than
-   * guess in either direction, a tool missing from `always_include_tools` while
-   * a bundle is declared is reported as UNVERIFIED, never as absent.
-   */
-  always_include_bundles: string[] | null;
-  never_include_tools: string[] | null;
 }
 
 interface Drift {
@@ -163,8 +134,7 @@ async function fetchOwnedToolsViaManagementApi(): Promise<{
   );
   const defs = await selectRowsViaManagementApi(
     `select distinct d.id, d.name, d.description, d.parameters, d.tier, d.admin_only, d.is_active, d.category, d.source_kind from tool.definition d join tool.binding b on b.tool_id = d.id where b.is_active and (b.executor_name = '${EXECUTOR_NAME}' or b.executor_name like '${EXECUTOR_NAME}.%') order by d.name`,
-    (row): row is DbToolRow =>
-      isRecord(row) && typeof row.id === 'string' && typeof row.name === 'string',
+    isDbToolRow,
   );
   return { defs, bindings };
 }
@@ -188,7 +158,7 @@ async function fetchSurfaceDefaults(url: string, key: string): Promise<DbSurface
 async function fetchSurfaceDefaultsViaManagementApi(): Promise<DbSurfaceDefaultsRow[]> {
   return selectRowsViaManagementApi(
     `select surface_name, always_include_tools, always_include_bundles, never_include_tools from tool.surface_defaults where surface_name in ('${ASSISTANT_SURFACE}', '${PILOT_SURFACE}')`,
-    (row): row is DbSurfaceDefaultsRow => isRecord(row) && typeof row.surface_name === 'string',
+    isDbSurfaceDefaultsRow,
   );
 }
 
@@ -339,33 +309,18 @@ function compareTool(local: LocalTool, db: DbToolRow): string[] {
 const STRICT = process.argv.includes('--strict');
 
 async function main(): Promise<void> {
-  // No env var gates this (Rule 6). Missing creds is "cannot verify", NOT drift:
-  // warn loudly and exit 0 so it never blocks a build or boot. (--strict
-  // flips that to a hard failure — releases must actually verify.)
+  // Missing publishable credentials still permits an operator read. Only when
+  // BOTH read paths fail is the catalog unverified (fatal in strict mode).
   const env = loadSupabaseEnv();
-  if (!env) {
-    if (STRICT) {
-      console.error(
-        'drift-check (--strict): Supabase creds not found — FAILING. A release ' +
-          'gate must actually verify against the DB; run with creds present.',
-      );
-      process.exit(3);
-    }
-    console.warn(
-      'drift-check: Supabase creds not found — SKIPPING (cannot verify without DB ' +
-        'access). This is NOT drift; a build/CI with creds present runs the full check.',
-    );
-    process.exit(0);
-  }
-  const { url, key } = env;
   const localAll = loadLiveSchemas();
   let dbDefs: DbToolRow[];
   let dbBindings: DbBindingRow[];
   let dbSurfaces: DbSurfaceDefaultsRow[];
   try {
+    if (!env) throw new Error('publishable credentials absent');
     const [owned, surfaces] = await Promise.all([
-      fetchOwnedTools(url, key),
-      fetchSurfaceDefaults(url, key),
+      fetchOwnedTools(env.url, env.key),
+      fetchSurfaceDefaults(env.url, env.key),
     ]);
     dbDefs = owned.defs;
     dbBindings = owned.bindings;

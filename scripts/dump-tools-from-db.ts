@@ -71,16 +71,9 @@ function paramSummary(params: DbToolRow['parameters']): string {
 
 async function main(): Promise<void> {
   const env = loadSupabaseEnv();
-  if (!env) {
-    console.warn(
-      'docs:tools — Supabase creds not found; leaving docs/TOOLS.generated.md untouched. ' +
-        'A build/CI with creds present regenerates it from the DB.',
-    );
-    return;
-  }
-
   let rows: DbToolRow[];
   try {
+    if (!env) throw new Error('publishable credentials absent');
     // Two-step: bindings → ids → defs. The PostgREST embedded-filter
     // pattern `tool_binding.executor_name=eq.chrome-extension` only filters
     // joined rows, not the parent — explicit two-step gives precise results.

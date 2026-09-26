@@ -4,9 +4,12 @@
   "changed_files": [
     "scripts/_supabase-management.ts",
     "scripts/_supabase-management.test.ts",
+    "scripts/_tool-db-row-validation.ts",
+    "scripts/_tool-db-row-validation.test.ts",
     "scripts/dump-tools-from-db.ts",
     "scripts/check-tool-db-drift.ts",
     "scripts/check-migrations.ts",
+    "scripts/check-migrations.test.ts",
     "docs/DEVELOPMENT.md",
     "docs/stabilization/defects/EXT-D-0004.json",
     "docs/stabilization/reports/management-read-fix.json"
@@ -25,10 +28,32 @@
       "result": "pass"
     }
   ],
+  "review_round_1": {
+    "peer_report": "docs/stabilization/reports/management-read-peer.json",
+    "findings": [
+      {
+        "finding": "Strict migrations returned success when public credentials were absent.",
+        "disposition": "ADDRESSED: operator fallback is attempted without public credentials; strict mode returns 2 if it also fails. A caller-level test asserts the previous false-green path now fails."
+      },
+      {
+        "finding": "Private catalog predicates accepted shallow or malformed rows.",
+        "disposition": "ADDRESSED: shared validators require complete definition and surface field shapes, including an object parameter map and string-array inclusion lists. Focused tests cover valid and malformed rows."
+      },
+      {
+        "finding": "Tests omitted missing authorization, malformed payloads, real caller predicates and strict exit paths.",
+        "disposition": "ADDRESSED IN SOURCE: helper tests now cover missing auth, malformed JSON and top-level payload; validator tests use the production predicates; migration caller test covers absent public credentials and strict refusal. Execution and RED/GREEN proof remain root-owned."
+      },
+      {
+        "finding": "Migration script header still named the CLI.",
+        "disposition": "ADDRESSED: header now names the direct read-only Management API."
+      }
+    ],
+    "sibling_census": "The same early public-credential return existed in docs:tools and tool-drift; both now attempt operator reads when the public configuration is absent."
+  },
   "limitations": [
     "No tests, compile, build, SQL, or release were run by this worker under the active single-heavy-job lease.",
     "The operator token is read only from process configuration or sibling aidream/.env; its value is never copied into extension env files or emitted in error messages.",
-    "Live strict gate result and independent peer review are pending; EXT-D-0004 remains in-fix."
+    "Review round 1 source findings are repaired but tests, RED/GREEN guard proof, live strict gate result, and scoped independent re-review are pending; EXT-D-0004 remains in-fix."
   ],
   "next_action": "After the UI resource lease ends, root runs the focused helper test, compile, and real strict release candidate under the guard, then obtains fresh source peer review."
 }

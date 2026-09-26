@@ -43,6 +43,17 @@ describe('build-time Management API read', () => {
     expect(fetchRead).not.toHaveBeenCalled();
   });
 
+  it('refuses missing operator authorization before any network request', async () => {
+    vi.stubEnv('MATRX_SUPABASE_PROJECT_REF', projectRef);
+    vi.stubEnv('SUPABASE_ACCESS_TOKEN', '');
+    const fetchRead = vi.fn();
+    vi.stubGlobal('fetch', fetchRead);
+
+    await expect(selectRowsViaManagementApi('select name from tool.definition', isNamedRow))
+      .rejects.toThrow('SUPABASE_ACCESS_TOKEN is missing');
+    expect(fetchRead).not.toHaveBeenCalled();
+  });
+
   it('fails closed and never includes a refused response body in its error', async () => {
     vi.stubEnv('MATRX_SUPABASE_PROJECT_REF', projectRef);
     vi.stubEnv('SUPABASE_ACCESS_TOKEN', 'operator-fixture-token');
@@ -59,5 +70,19 @@ describe('build-time Management API read', () => {
 
     await expect(selectRowsViaManagementApi('select name from tool.definition', isNamedRow))
       .rejects.toThrow('Supabase Management API returned invalid rows');
+  });
+
+  it('rejects malformed JSON and a non-array top-level payload', async () => {
+    vi.stubEnv('MATRX_SUPABASE_PROJECT_REF', projectRef);
+    vi.stubEnv('SUPABASE_ACCESS_TOKEN', 'operator-fixture-token');
+    const fetchRead = vi.fn()
+      .mockResolvedValueOnce(new Response('{invalid', { status: 201 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ rows: [{ name: 'capture_page' }] }), { status: 201 }));
+    vi.stubGlobal('fetch', fetchRead);
+
+    await expect(selectRowsViaManagementApi('select name from tool.definition', isNamedRow))
+      .rejects.toThrow('invalid JSON');
+    await expect(selectRowsViaManagementApi('select name from tool.definition', isNamedRow))
+      .rejects.toThrow('invalid rows');
   });
 });

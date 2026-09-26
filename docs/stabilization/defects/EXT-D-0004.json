@@ -31,7 +31,7 @@
   "state": "in-fix",
   "owner": "/root",
   "root_cause": "The build-time shared reader assumed an installed, authenticated Supabase CLI instead of consuming the existing operator Management API credential at the read point.",
-  "sibling_census": "The docs:tools generator, strict tool-drift checker, and strict migration ledger checker share this helper; all three callers are converted to await the same authenticated read path.",
+  "sibling_census": "The docs:tools generator, strict tool-drift checker, and strict migration ledger checker share this helper. Review round 1 found all three had an early public-credential branch; each now attempts the operator read when public configuration is absent. The catalog checker also validates full private definition and surface shapes before comparison.",
   "fix_commits": [],
   "original_reproduction_retest_run": null,
   "surrounding_case_runs": [],
@@ -54,6 +54,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Replace shared CLI fallback with fixed-SELECT read_only API request, sanitizing errors and preserving row validation; root owns guarded strict retest."
+    },
+    {
+      "at": "2026-09-26T03:11:23Z",
+      "from": "in-fix",
+      "to": "in-fix",
+      "reason": "Independent peer returned A/B PARTIAL: strict migration false-green without public env and shallow private catalog row predicates. Repair and focused guard tests added; root execution pending."
     }
   ],
   "limitations": [
