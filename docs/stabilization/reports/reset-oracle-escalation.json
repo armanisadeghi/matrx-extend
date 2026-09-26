@@ -10,7 +10,7 @@
     "tests/browser/isolated-admin-reset-acceptance.mjs",
     "docs/stabilization/reports/reset-oracle-escalation.json"
   ],
-  "commit_shas": ["2a8fdd5"],
+  "commit_shas": ["2a8fdd5", "acb4753"],
   "diagnosis": {
     "confirmed": "Run 004 observed empty local/session storage immediately after Confirm, signed-out UI, and guest/System UI after reload. Its final failure checks key-name overlap after bootstrap; the receipt does not record the names or value identities needed to determine whether state was restored.",
     "unresolved": "Four returning local key names cannot be classified retrospectively. They may be fresh bootstrap data or retained data; source inspection alone cannot choose.",
@@ -70,11 +70,22 @@
     "Source inspection ruled out assuming the admin flag is automatically persisted for a guest; no such exception was added."
   ],
   "open_questions": [],
-  "next_action": "Fresh source re-review of Cancel full-value checks, then root guarded real-admin runtime. Any background mutation is an evidenced investigation, not a silent exception. EXT-D-0015 remains open.",
+  "next_action": "Fresh peer review, then one root-guarded run to identify the remaining source class with initial-guest/shape evidence. Trace its writer and exact default before any acceptance exception; unknown remains failure.",
   "peer_followup": {
     "review": "docs/stabilization/reports/reset-identity-peer.json",
     "finding": "Cancel previously checked only key presence and sentinel values, allowing mutation of other prior values to pass.",
     "repair": "Require changed===0 and missing===0 for local and session, using existing browser-side canonical value comparison. No background-mutation exceptions added.",
     "verification": "Node syntax, Biome formatting and exact-path whitespace checks pass; runtime/mutation execution remains pending with root."
+  },
+  "runtime_followup_005": {
+    "evidence": "docs/stabilization/runs/isolated-admin-reset-005.json",
+    "observed": "Cancel preserves all 18 prior values. Confirm observes zero local/session keys. Reload is guest/System with three changed guest identities and one identical unexplained local value; no session overlap.",
+    "diagnosis": "The three guest fields are fresh initialization. The single remaining value is not identified by run 005, so neither retained user data nor a deterministic default is proven.",
+    "source_census": "Checked direct local writes, chrome-local setOne/setMany wrappers, Zustand persisted stores, sidepanel startup/auth, organization clear paths, audit key/log writers, and discovery. No source writer can be bound to the anonymous overlap from counts alone.",
+    "candidate_assessment": "Zustand stores, organization null markers and audit metadata are source-defined possibilities; none is ranked as the confirmed cause. No static binding feature or hidden known writer was found. Static source key names are mapped to fixed diagnostic classes only.",
+    "next_run_observation": "Capture opaque baseline identities in the fresh guest profile before login; for returning unexplained values record fixed source class, identical/changed count, initial-guest equality/absence count, and coarse JSON shape. Only nonzero fixed classes appear. No raw key/value/fingerprint enters receipts.",
+    "causal_proof_requirement": "Matching initial guest state is corroboration only. Classify a repeat as safe initialization only after binding that observed class to the actual writer and its exact non-user default. Immediate empty storage establishes removal, not the origin of a subsequent identical write.",
+    "acceptance_unchanged": "All unexplained overlap still fails. No whitelist/default exemption added. Original dialog reopening fault remains unresolved despite passes 003/004/005.",
+    "verification": "Source-only Node syntax, local Biome formatting, and exact-path diff whitespace checks. No browser/runtime/build/install/mutation run."
   }
 }

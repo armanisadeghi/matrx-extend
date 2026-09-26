@@ -27,6 +27,7 @@ const SESSION_VALUE = 'disposable-admin-reset-fixture';
 // value identities, including guest identity, instead of exempting key names.
 const STORAGE_SALT = randomBytes(32).toString('hex');
 let storageBaseline = null;
+let initialGuestBaseline = null;
 let stage = 'not_started';
 const evidence = {
   schema_version: 1,
@@ -150,6 +151,45 @@ async function storageState(panel) {
     const local = await chrome.storage.local.get(null);
     const session = await chrome.storage.session.get(null);
     const baseline = ${JSON.stringify(storageBaseline)};
+    const initialGuest = ${JSON.stringify(initialGuestBaseline)};
+    // Fixed source-declared store classes only: observations, never exemptions.
+    // Source census: config/env.ts, state/*.ts, lib/audit/{log,device-key}.ts,
+    // lib/{guidance,demos,lists}/storage.ts and lib/desktop/ws-invoke.ts.
+    const otherStores = {
+      'matrx.chat.v1': 'chat_preferences',
+      'matrx.pilot-chat.v1': 'pilot_chat_preferences',
+      'matrxPilotSession': 'pilot_session',
+      'matrx.permission-prompts': 'permission_preferences',
+      'matrx.showcase.subTab.v1': 'showcase_tab',
+      'matrx.voicePrefs.v1': 'voice_preferences',
+      'matrx.scrapeQueue.view.v1': 'scrape_view',
+      'matrx.org.active': 'organization_selection',
+      'matrx.org.picker-pending': 'organization_picker',
+      'matrx.audit.deviceKey': 'audit_device',
+      'matrx.audit.publicKeyHistory': 'audit_history',
+      'matrx.audit.log': 'audit_log',
+      'matrx.audit.failedCount': 'audit_failures',
+      'matrx.backend.env': 'backend_selection',
+      'matrx.backend.urlOverride': 'backend_override',
+      'matrx.desktop.pairToken': 'desktop_pairing',
+      'matrx.credentials.captureNeverOrigins': 'credential_preferences',
+      'matrx.capture.pickup': 'capture_pickup',
+      'matrx.guidance.list': 'guidance_index',
+      'matrx.demos.list': 'demo_index',
+      'matrx.lists.plans': 'list_plans',
+      'matrx.lists.user_todos': 'list_todos',
+      'matrx.debug.verboseConsole': 'debug_console',
+      'matrx.debug.bridgeTraffic.enabled': 'debug_bridge',
+      'matrx.desktop.lastCapabilities': 'desktop_capabilities',
+      'matrx.sources.unsaved': 'unsaved_sources',
+      'matrx.domain_memos': 'domain_memos',
+      'matrx.context.shape': 'context_preference',
+      'matrx.recordings.v1': 'recordings',
+      'matrxLocalEnginePortOverride': 'discovery_override',
+      'matrx.admin-flags.v1': 'admin_flags',
+      ${JSON.stringify(LOCAL_KEY)}: 'local_fixture',
+      ${JSON.stringify(SESSION_KEY)}: 'session_fixture',
+    };
     const canonical = (value) => JSON.stringify(value, (_, entry) =>
       entry && typeof entry === 'object' && !Array.isArray(entry)
         ? Object.fromEntries(Object.keys(entry).sort().map((key) => [key, entry[key]]))
@@ -171,6 +211,11 @@ async function storageState(panel) {
     const describe = async (area, values) => Promise.all(Object.entries(values).map(async ([key, value]) => ({
       key: await fingerprint([area, key]), value: await fingerprint([area, key, value]),
       category: category(area, key),
+      sourceClass: Object.hasOwn(otherStores, key) ? otherStores[key] : 'unclassified',
+      shape: value === null ? 'null_value' : value === false ? 'false_value' : value === true ? 'true_value'
+        : Array.isArray(value) ? (value.length === 0 ? 'empty_array' : 'array')
+        : typeof value === 'object' ? (Object.keys(value).length === 0 ? 'empty_object' : 'object')
+        : typeof value === 'string' ? 'string' : typeof value === 'number' ? 'number' : 'other',
       // A discovery port may be the same again. The cache must have a changed
       // value; neither user overrides nor pairing credentials are exempt.
       validDiscoveryPort: key === 'matrxLocalEngineLastGoodPort' && Number.isInteger(value) && value > 0 && value <= 65535,
@@ -181,6 +226,9 @@ async function storageState(panel) {
         fresh_guest: 0, stale_guest: 0, fresh_instance: 0, stale_instance: 0,
         fresh_discovery_cache: 0, stale_discovery_cache: 0, rediscovered_port: 0,
         account_overlap: 0, settings_overlap: 0, other_overlap: 0, other_identical: 0, other_changed: 0 };
+      result.other_sources = Object.fromEntries([...Object.values(otherStores), 'unclassified'].map((name) =>
+        [name, { overlap: 0, identical: 0, changed: 0, matches_initial_guest: 0, absent_initial_guest: 0 }]));
+      result.other_shapes = Object.fromEntries(['null_value', 'false_value', 'true_value', 'empty_array', 'array', 'empty_object', 'object', 'string', 'number', 'other'].map((name) => [name, 0]));
       for (const prior of baseline?.[area] ?? []) {
         const current = identities[area].find((entry) => entry.key === prior.key);
         if (!current) { result.missing++; continue; }
@@ -195,10 +243,21 @@ async function storageState(panel) {
           result.rediscovered_port++;
         } else {
           result[(kind === 'account' || kind === 'settings' ? kind : 'other') + '_overlap']++;
-          if (kind !== 'account' && kind !== 'settings') result[same ? 'other_identical' : 'other_changed']++;
+          if (kind !== 'account' && kind !== 'settings') {
+            result[same ? 'other_identical' : 'other_changed']++;
+            const group = result.other_sources[current.sourceClass];
+            group.overlap++;
+            group[same ? 'identical' : 'changed']++;
+            const guest = initialGuest?.[area]?.find((entry) => entry.key === current.key);
+            if (!guest) group.absent_initial_guest++;
+            else if (guest.value === current.value) group.matches_initial_guest++;
+            result.other_shapes[current.shape]++;
+          }
           result.unexplained++;
         }
       }
+      result.other_sources = Object.fromEntries(Object.entries(result.other_sources).filter(([, counts]) => counts.overlap > 0));
+      result.other_shapes = Object.fromEntries(Object.entries(result.other_shapes).filter(([, count]) => count > 0));
       return result;
     };
     let theme = null;
@@ -362,6 +421,22 @@ try {
       const guest = await panelState(panel);
       assert.equal(guest.signIn && !guest.signOut && !guest.advanced, true);
 
+      // Capture the untouched owned profile's guest values before real login.
+      // This is diagnostic provenance, not permission to restore the same data.
+      const initialGuestStorage = await storageState(panel);
+      assert.ok(
+        Array.isArray(initialGuestStorage.identities?.local) &&
+          Array.isArray(initialGuestStorage.identities?.session),
+      );
+      initialGuestBaseline = initialGuestStorage.identities;
+      evidence.initial_guest_storage = {
+        local_count: initialGuestStorage.localKeys.length,
+        session_count: initialGuestStorage.sessionKeys.length,
+        auth_present:
+          initialGuestStorage.hasAccessToken ||
+          initialGuestStorage.hasUserProfile ||
+          initialGuestStorage.hasAdminFlag,
+      };
       const web = await signInOnRealWebPage(page);
       try {
         stage = 'extension_signin';
