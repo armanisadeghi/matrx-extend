@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-refusal-message-peer",
+  "reviewed_source_commits": [
+    "d83d872575a5b0d820baf83e03abb00d0bf8cb82",
+    "f6161e26530df1ffede92919c507f566cd3e8b33"
+  ],
+  "source_quality": {
+    "verdict": "ACCEPT_WITH_DOCUMENTATION_CAVEAT",
+    "reason": "The expected-actor mismatch now has a dedicated negative status and an explicit Sources refusal that says the request was not sent, keeps the capture on device, and tells the person to choose the intended workspace and retry. The distinct HTTP 403 branch still reports a server refusal. The transport census found no other application callers branching on this prior synthetic 403 status; the only numeric 403 handling found is in unrelated Vault routes. Caveat: LandingRefusal.status still documents every nonzero value as an HTTP status, although the new -4 value is local and no HTTP response exists.",
+    "evidence": [
+      "src/lib/api/client.ts defines STATUS_EXPECTED_ACTOR_MISMATCH=-4 and returns it before fetch when pinned actor headers cannot be built.",
+      "src/lib/api/routes/sources.ts handles -4 before generic negative statuses and uses code actor_changed_before_send with choose_a_workspace_and_retry.",
+      "tests/unit/source-landing-transport.test.ts asserts zero network calls and the local refusal; its separate 403 case asserts one network call and server-refused wording.",
+      "rg census found expected_actor_mismatch/status-specific uses in the client test and Sources path; Vault's status===403 handling is for a separate API route."
+    ],
+    "follow_up": "Correct the LandingRefusal.status comment to describe local transport sentinels as well as HTTP statuses."
+  },
+  "runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "No tests, browser session, build, or live runtime check was run by this peer, per lane scope."
+  }
+}
