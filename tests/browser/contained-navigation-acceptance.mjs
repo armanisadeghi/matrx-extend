@@ -20,7 +20,6 @@ const ADMIN = [
   'Tasks',
   'Agenda',
   'Saved captures',
-  'Capture',
   'Highlights',
   'Guidance',
   'Notes',
@@ -32,6 +31,15 @@ const ADMIN = [
   'Token broker (admin only)',
   'Debug (admin only)',
 ];
+// The Capture trigger's title is a queue sentence, not the static tab name.
+// Keep this narrow to the three forms in captureTabLabel().
+function isCaptureTitle(title) {
+  return (
+    title === 'Pages that need your browser' ||
+    /^\d+ pages? need your browser(?: — \d+ more waiting in another workspace)?$/.test(title) ||
+    /^Nothing needs your browser here — \d+ waiting in another workspace$/.test(title)
+  );
+}
 const LAZY_VIEW_MARKERS = {
   Data: 'Structured data',
   SEO: 'SEO audit',
@@ -79,6 +87,7 @@ const report = {
       observationReadFailed: false,
     },
   },
+  admin_tab_inventory: null,
 };
 let stage = 'owned_profile';
 const advance = (next) => {
@@ -321,7 +330,7 @@ try {
       await avatar(panel, 'guest', 'Account');
       advance('guest_navigation');
       for (const title of GUEST) await navigate(panel, title, 'guest');
-      assert.equal(guestTabs.includes('Capture'), false);
+      assert.equal(guestTabs.some(isCaptureTitle), false);
       target('capture-absent:guest', 'guest', 'EXT-F-1001-C02', { triggerAbsent: true });
       const vaultShortcutAbsent = await evaluate(
         panel,
@@ -333,8 +342,14 @@ try {
       await realAdminSignin(page, panel);
       advance('admin_tab_inventory');
       const adminTabs = await inventory(panel);
+      const captureTitles = adminTabs.filter(isCaptureTitle);
+      report.admin_tab_inventory = { titles: adminTabs, captureTitles };
+      assert.equal(captureTitles.length, 1);
       const expected = [...GUEST, ...ADMIN, 'Chat', 'Pilot (admin only — sandboxed tab group)'];
-      assert.deepEqual(adminTabs.sort(), expected.sort());
+      assert.deepEqual(
+        adminTabs.map((title) => (isCaptureTitle(title) ? 'Capture' : title)).sort(),
+        expected.concat('Capture').sort(),
+      );
       target('admin-tab-inventory', 'admin', 'EXT-F-1001-C01', { titles: adminTabs });
       advance('admin_avatar');
       await avatar(panel, 'admin', 'admin@admin.com');
@@ -345,7 +360,9 @@ try {
       const capture = await evaluate(
         panel,
         `(() => {
-        const tab = [...document.querySelectorAll('[role="tab"]')].find((el) => el.title?.startsWith('Capture'));
+        const isCaptureTitle = ${isCaptureTitle.toString()};
+        const tab = [...document.querySelectorAll('[role="tab"]')]
+          .find((el) => isCaptureTitle(el.title ?? ''));
         return { present: !!tab, label: tab?.getAttribute('aria-label') ?? null,
           badge: tab?.querySelector('.rounded-full')?.textContent?.trim() ?? null };
       })()`,
