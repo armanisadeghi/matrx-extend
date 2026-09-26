@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { access, mkdir, mkdtemp, readFile, readlink, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, readlink, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 /**
  * Isolated, native-side-panel browser QA harness.
@@ -20,8 +20,9 @@ import { createServer } from 'node:http';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { resolveBrowserRuntime } from './browser-runtime.mjs';
 
 const require = createRequire(import.meta.url);
 const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs');
@@ -33,33 +34,6 @@ const RELEASE_RECEIPT = join(REPO, '.output', 'release-receipt.json');
 const EXPECTED_EXTENSION_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
 const WAIT_MS = 100;
 const ATTEMPTS = 150;
-
-async function resolveBrowserRuntime(chromeExecutable) {
-  let chromium;
-  if (process.env.MATRX_PLAYWRIGHT_MODULE) {
-    ({ chromium } = await import(pathToFileURL(resolve(process.env.MATRX_PLAYWRIGHT_MODULE))));
-  } else {
-    try {
-      ({ chromium } = require('playwright'));
-    } catch (error) {
-      if (error?.code !== 'MODULE_NOT_FOUND' || !String(error.message).includes("'playwright'"))
-        throw error;
-      throw new Error(
-        'native_sidepanel_playwright_missing: set MATRX_PLAYWRIGHT_MODULE to an installed playwright/index.mjs',
-      );
-    }
-  }
-  if (typeof chromium?.connectOverCDP !== 'function') throw new Error('native_sidepanel_playwright_invalid');
-  const executable = chromeExecutable ?? process.env.MATRX_CHROME_PATH ?? chromium.executablePath();
-  try {
-    await access(executable);
-  } catch {
-    throw new Error(
-      'native_sidepanel_chrome_missing: set MATRX_CHROME_PATH to an installed Chrome-for-Testing executable',
-    );
-  }
-  return { chromium, chromeExecutable: executable };
-}
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -338,8 +312,8 @@ export async function runNativeSidepanelQa({
   }
   const expected = resolveExpectedRelease({ receipt, extensionDir, expectedRelease });
   await verifyReleasedArtifact(expected);
-  const browserRuntime = await resolveBrowserRuntime(chromeExecutable);
-  chromeExecutable = browserRuntime.chromeExecutable;
+  const browserRuntime = await resolveBrowserRuntime({ chromeExecutable });
+  chromeExecutable = browserRuntime.executablePath;
   const verifiedExtensionDir = expected.extensionDir;
   const root = await mkdtemp(join(tmpdir(), 'matrx-native-sidepanel-qa-'));
   const profile = join(root, 'profile');

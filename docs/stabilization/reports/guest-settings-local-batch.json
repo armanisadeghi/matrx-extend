@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "report_id": "guest-settings-local-batch",
+  "status": "prepared_runtime_unverified",
+  "scope": "Isolated native Chrome sidepanel guest acceptance runner for EXT-F-1003-T22, T37, T46, and T70",
+  "runner": "tests/browser/settings-local-controls-acceptance.mjs",
+  "runtime_output": "test-results/settings-local-controls-acceptance.json",
+  "source": "docs/stabilization/inventory.json",
+  "case_ids_checked": [
+    "EXT-F-1003-T22",
+    "EXT-F-1003-T37",
+    "EXT-F-1003-T46",
+    "EXT-F-1003-T70"
+  ],
+  "case_results": [
+    { "id": "EXT-F-1003-T22", "status": "unverified", "reason": "Runner prepared; no native panel run in this lane." },
+    { "id": "EXT-F-1003-T37", "status": "unverified", "reason": "Runner prepared; no native panel run in this lane." },
+    { "id": "EXT-F-1003-T46", "status": "unverified", "reason": "Runner prepared; no native panel run in this lane. Worker rediscovery needs separate observable evidence for a full pass." },
+    { "id": "EXT-F-1003-T70", "status": "unverified", "reason": "Runner prepared; no native panel run in this lane. Unavailable API and non-observed update outcomes remain unverified." }
+  ],
+  "source_leads_for_owner": [
+    "T46 blank-port save does not clear a prior invalid-range error in SettingsView.tsx; the native runner checks for a stale error after clearing."
+  ],
+  "semantic_rulings": [
+    "T70 inventory wording Ready describes supported password-flow APIs; Settings About explicitly labels that state Available. The oracle accepts Ready or Available only when the actual required browser APIs are present, and rejects missing or Unavailable in that branch. It requires Unavailable plus the reload/reinstall remedy when APIs are absent. No unavailable API or alternate update outcome is fabricated."
+  ],
+  "isolation": "Existing native-sidepanel-qa-harness verifies receipt version, source revision ancestry, release tree hash, Store ZIP hash, extension ID and owned disposable Chrome profile. Its teardown terminates its own child process and removes the temporary profile.",
+  "test_method": "Trusted pointer and keyboard input through the owned native panel; DOM and chrome.storage reads for observation only; no product-state injection, mocked services, or auth changes.",
+  "execution_owner": "Root guarded run after source peer review and release/build gate."
+}

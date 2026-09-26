@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T08:17:17.930027+00:00",
+  "updated_at": "2026-09-26T08:40:07.126926+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -2185,7 +2185,8 @@
         "member": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0008"
+            "EXT-D-0008",
+            "EXT-D-0010"
           ],
           "run_ids": [],
           "retest_status": "not-run"
@@ -2193,7 +2194,8 @@
         "admin": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0008"
+            "EXT-D-0008",
+            "EXT-D-0010"
           ],
           "run_ids": [],
           "retest_status": "not-run"
@@ -3737,12 +3739,46 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "guest-reset-001",
-              "detail": "Infrastructure failed before browser launch; EXT-D-0009 repair in progress.",
-              "evidence": "docs/stabilization/runs/guest-reset-001.json"
+              "status": "pass",
+              "run_id": "guest-reset-007",
+              "evidence": "docs/stabilization/runs/guest-reset-007.json",
+              "detail": "Frozen0.2.56 actual native guest sidepanel: Cancel preserves exact theme/port/session fixtures; Confirm clears all prior local/session keys; Reload shows guest/System and no prior overrides. Primary profile untouched."
             }
-          }
+          },
+          "previous_results": [
+            {
+              "mode": "guest",
+              "status": "unverified",
+              "run_id": "guest-reset-005",
+              "evidence": "docs/stabilization/runs/guest-reset-005.json",
+              "verified_substeps": [
+                "Real native guest panel",
+                "Dark theme persisted",
+                "Real typed engineport65001 plus Set persisted",
+                "Disposable session fixture persisted"
+              ],
+              "remaining_criteria": [
+                "Observe actual confirmation",
+                "Cancel preserves state",
+                "Confirm clears state",
+                "Reload returns guest defaults"
+              ]
+            },
+            {
+              "mode": "guest",
+              "status": "unverified",
+              "run_id": "guest-reset-006",
+              "evidence": "docs/stabilization/runs/guest-reset-006.json",
+              "verified_substeps": [
+                "Real guest native sidepanel and typed preference fixtures",
+                "Actual Cancel preserves theme/port/session",
+                "Actual Confirm clears all prior local/session keys"
+              ],
+              "remaining_criteria": [
+                "Post-reload Settings content and System defaults"
+              ]
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T50",
@@ -4477,7 +4513,12 @@
             "guest-theme-001",
             "admin-signin-001",
             "guest-reset-001",
-            "guest-reset-002"
+            "guest-reset-002",
+            "guest-reset-003",
+            "guest-reset-004",
+            "guest-reset-005",
+            "guest-reset-006",
+            "guest-reset-007"
           ],
           "retest_status": "not-run"
         },
@@ -4533,13 +4574,15 @@
           "id": "EXT-L-0008",
           "summary": "Isolated guest reset runner reaches real native panel and persists Dark theme, but typed engine port65001 plus Set produces no port override. Product versus test input cause unresolved.",
           "source": "docs/stabilization/runs/guest-reset-002.json",
-          "state": "in-diagnosis",
+          "state": "refuted",
           "case_ids": [
             "EXT-F-1003-T46",
             "EXT-F-1003-T49"
           ],
           "owner": "/root/guest_reset_harness_repair",
-          "wave": "A"
+          "wave": "A",
+          "resolution": "guest-reset005 real pointer settles target and focuses input; typed port65001 and Set persist successfully. Earlier failures were test input mechanics, not a demonstrated product save failure.",
+          "retest_evidence": "docs/stabilization/runs/guest-reset-005.json"
         }
       ]
     },

@@ -1,0 +1,165 @@
+{
+  "id": "release-stabilization-004",
+  "status": "failed_closed",
+  "candidate": "bb85d6a71d8e3d734418d9696c57fe6216a979aa",
+  "version": "0.2.57",
+  "published": false,
+  "typecheck": "pass",
+  "unit_tests": {
+    "passed": 1419,
+    "skipped": 3,
+    "unhandled_errors": 0
+  },
+  "failure": "Newly published @ai-matrx/design-system0.44.0 makes installed0.43.0 stale; mandatory package gate refused publication.",
+  "defect_retest": {
+    "EXT-D-0010": "original full-suite rejection no longer reproduces; integration remains pending package refresh"
+  },
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T08:47:27.768Z",
+      "runId": "release-stabilization-004",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.67,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.16025714285714288,
+        "swapUsedMiB": 2501.38,
+        "repoFreeGiB": 1676.2410736083984,
+        "profileFreeGiB": 1676.2410736083984
+      },
+      "cpuBusySamples": [
+        0.15790000000000004,
+        0.2551000000000001,
+        0.10659999999999992,
+        0.10450000000000004,
+        0.11019999999999996,
+        0.10189999999999999,
+        0.2856000000000001
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T08:47:44.074Z",
+      "runId": "release-stabilization-004",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.33,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1864,
+        "swapUsedMiB": 2501.38,
+        "repoFreeGiB": 1676.2409210205078,
+        "profileFreeGiB": 1676.2409210205078
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T08:48:00.432Z",
+      "runId": "release-stabilization-004",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 10.4,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.84,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.18299999999999994,
+        "swapUsedMiB": 2501.38,
+        "repoFreeGiB": 1676.2408332824707,
+        "profileFreeGiB": 1676.2408332824707
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T08:48:16.766Z",
+      "runId": "release-stabilization-004",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.32,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.65,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.17420000000000002,
+        "swapUsedMiB": 2493.38,
+        "repoFreeGiB": 1676.2408409118652,
+        "profileFreeGiB": 1676.2408409118652
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T08:48:33.058Z",
+      "runId": "release-stabilization-004",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.95,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.3075,
+        "swapUsedMiB": 2493.38,
+        "repoFreeGiB": 1676.2409744262695,
+        "profileFreeGiB": 1676.2409744262695
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T08:48:49.376Z",
+      "runId": "release-stabilization-004",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.47,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.15300000000000002,
+        "swapUsedMiB": 2493.38,
+        "repoFreeGiB": 1676.2409591674805,
+        "profileFreeGiB": 1676.2409591674805
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T08:49:05.677Z",
+      "runId": "release-stabilization-004",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.16,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.44,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.21409999999999996,
+        "swapUsedMiB": 2493.38,
+        "repoFreeGiB": 1676.2409591674805,
+        "profileFreeGiB": 1676.2409591674805
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T08:49:14.192Z",
+      "runId": "release-stabilization-004",
+      "childExitCode": 1,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ]
+}

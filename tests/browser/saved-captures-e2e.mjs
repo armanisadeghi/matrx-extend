@@ -12,17 +12,16 @@ import { createServer } from 'node:http';
  *
  *   pnpm build && node tests/browser/saved-captures-e2e.mjs [screenshot-dir]
  */
-import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { resolveBrowserRuntime } from './browser-runtime.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
 const CODE = '/Users/armanisadeghi/code';
 const EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3');
 const ORIGINAL_EXTENSION = join(CODE, 'matrx-extend');
-const require_ = createRequire(join(CODE, 'matrx-frontend', 'package.json'));
-const { chromium } = require_('playwright');
+const { chromium, executablePath } = await resolveBrowserRuntime();
 
 function readEnvFile(path) {
   if (!existsSync(path)) return {};
@@ -135,6 +134,7 @@ async function main() {
   let context;
   try {
     context = await chromium.launchPersistentContext('', {
+      executablePath,
       headless: false,
       viewport: { width: 420, height: 900 },
       args: [

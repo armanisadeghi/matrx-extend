@@ -2,7 +2,7 @@
   "schema": 1,
   "defect": "EXT-D-0009",
   "case": "EXT-F-1003-T49",
-  "status": "native_ui_port_click_repair_pending_reverify",
+  "status": "browser_runtime_class_repaired_source_verification_only",
   "rootCause": "native-sidepanel-qa-harness.mjs loaded Playwright at module import through /Users/armanisadeghi/code/matrx-frontend/package.json, a different checkout absent on this host. The acceptance runner failed with MODULE_NOT_FOUND before its receipt or UI checks.",
   "originalRedEvidence": {
     "log": "/tmp/matrx-guest-reset-001.log",
@@ -20,7 +20,7 @@
       "tests/browser/side-panel-gesture-spike.mjs",
       "tests/browser/capture-handoff-carries-the-workspace.mjs"
     ],
-    "disposition": "outside the owned native sidepanel harness lane; parent tracks the broader browser-runner class"
+    "disposition": "all seven .mjs siblings now use tests/browser/browser-runtime.mjs; their existing browser options and auth/data steps are unchanged"
   },
   "change": "Load repo-installed Playwright lazily, or use MATRX_PLAYWRIGHT_MODULE for an existing host runtime. Resolve Chrome-for-Testing from MATRX_CHROME_PATH or Playwright and fail with an actionable error when unavailable. Release artifact verification still precedes runtime resolution and browser launch.",
   "hostRuntime": {
@@ -45,6 +45,18 @@
     "observed": "After the test's CDP click and Input.insertText, the port input remained empty and unfocused; the Set button remained visible. No product write failure was demonstrated.",
     "sourceFinding": "Desktop bridge uses a 200 ms grid-template-rows transition. The test previously used a single coordinate captured immediately after expanding and scrolling, so the input could move before CDP dispatched the click.",
     "repair": "The test waits for real animation completion, stable target bounds, and a matching document.elementFromPoint before its mouse click. It asserts that the real click focused the input before typing. The wait is bounded and returns hit target and viewport evidence on failure."
+  },
+  "classRepair": {
+    "resolver": "tests/browser/browser-runtime.mjs",
+    "behavior": "Use explicitly configured MATRX_PLAYWRIGHT_MODULE or repo-installed Playwright; use MATRX_CHROME_PATH or that Playwright installation's Chrome-for-Testing path. Validate the executable before launch and fail with a remedy when missing.",
+    "adoptedBy": "native-sidepanel-qa-harness.mjs and the seven .mjs sibling browser runners in siblingCensus.matches",
+    "preserved": "Each runner retains its own profile, headless/keep-open, auth, data, and click flow; only runtime import and executablePath resolution changed.",
+    "remainingSeparateScope": [
+      "Vault .cjs browser acceptance and probes have separate runtime and owned-browser contracts",
+      "Two historical username-first diagnostics pin old Playwright and Chrome paths",
+      "saved-captures-e2e.mjs and capture-handoff-carries-the-workspace.mjs still have unrelated fixed credential/env lookup paths"
+    ],
+    "runtimeVerification": "pending root guarded run; no browser launch or suite run in this lane"
   },
   "acceptanceCommand": "MATRX_PLAYWRIGHT_MODULE='/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs' MATRX_CHROME_PATH='/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing' node tests/browser/settings-local-reset-acceptance.mjs",
   "preservedGates": [

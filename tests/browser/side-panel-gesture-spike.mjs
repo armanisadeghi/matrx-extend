@@ -69,12 +69,11 @@
  */
 import { mkdtempSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
-import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { resolveBrowserRuntime } from './browser-runtime.mjs';
 
-const require_ = createRequire('/Users/armanisadeghi/code/matrx-frontend/package.json');
-const { chromium } = require_('playwright');
+const { chromium, executablePath } = await resolveBrowserRuntime();
 
 const SKIP_SLOW = process.env.SKIP_SLOW === '1';
 const PORT = Number(process.env.SPIKE_PORT ?? 8899);
@@ -193,6 +192,7 @@ const srv = createServer((req, res) => {
 await new Promise((r) => srv.listen(PORT, r));
 
 const ctx = await chromium.launchPersistentContext('', {
+  executablePath,
   headless: false,
   args: ['--headless=new', `--disable-extensions-except=${root}`, `--load-extension=${root}`],
   viewport: { width: 1280, height: 900 },

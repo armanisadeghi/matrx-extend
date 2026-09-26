@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "f2e2e2fa99a25826fe4d8050fbe2190ebd80d84f",
+  "scope": [
+    "EXT-F-1003-T22",
+    "EXT-F-1003-T37",
+    "EXT-F-1003-T46",
+    "EXT-F-1003-T70",
+    "preservation of EXT-F-1003-T49 reset acceptance"
+  ],
+  "verdict_a_acceptance_readiness": {
+    "status": "PARTIAL_READY_RUNTIME_UNVERIFIED",
+    "runtime_verified_by_this_review": false,
+    "cases": [
+      {
+        "id": "EXT-F-1003-T22",
+        "status": "runner_covers_inventory_steps",
+        "evidence": "settings-local-controls-acceptance.mjs inspects guest Settings section/admin-control absence both warm and after full extension reload. Existing inventory also records guest-settings-007 pass against the same warm/reload expectation; this review did not repeat UI execution."
+      },
+      {
+        "id": "EXT-F-1003-T37",
+        "status": "runner_covers_visible_state_and_reload_persistence",
+        "evidence": "Runner verifies exactly one Deep clean switch, coming-soon hint, changed state, persistence after reload, and restores the original value. No behavior beyond the inventory's visible preference expectation is claimed."
+      },
+      {
+        "id": "EXT-F-1003-T46",
+        "status": "partial_runner_with_honest_open_acceptance",
+        "evidence": "Runner exercises valid save, invalid range/error with prior saved port retained, reload persistence, blank clear, and clear persistence. It explicitly records rediscovery as unverified, so it cannot produce a full T46 pass while inventory requires rediscovery to run."
+      },
+      {
+        "id": "EXT-F-1003-T70",
+        "status": "partial_runner_with_honest_open_dimensions",
+        "evidence": "Runner checks identity, API readiness, real update outcome when available, and reload; it deliberately leaves API-unavailable and update-available/throttled/error outcomes unverified rather than fabricating them. The pass criterion expects readiness text 'Ready', while the batch report notes SettingsView currently renders 'Available'; on the available-API branch this is likely an honest failure until observed/spec reconciled."
+      }
+    ],
+    "overall_reason": "The new batch report correctly says prepared_runtime_unverified and all four cases remain unverified. It is acceptance-ready as a bounded runner with explicit limits, not as evidence that these cases passed. T46 and T70 still lack dimensions required for complete inventory acceptance."
+  },
+  "verdict_b_engineering_and_test_honesty": {
+    "status": "PASS_WITH_GAPS_RECORDED",
+    "findings": [
+      "The native runner uses trusted CDP pointer/keyboard actions for interaction and DOM/storage reads for observation; no mocked browser APIs or forced product state were found.",
+      "Per-case failures are retained as failures; unsupported or unobserved branches remain unverified, and top-level status cannot become pass when any criterion remains unverified.",
+      "T46 honestly refuses to claim rediscovery from storage/UI observation alone. T70 honestly avoids claiming unsupported browser API and update outcomes.",
+      "Known likely acceptance mismatch is recorded: T70 expects 'Ready' but the report says the UI emits 'Available'. This may make a real available-API run fail; do not reinterpret or suppress that result without reconciling the inventory/source contract.",
+      "T46 clear criterion checks stale validation text, guarding the previously identified blank-save error issue rather than hiding it.",
+      "T49 reset acceptance is preserved: the refactor removes duplicated helper definitions and imports the shared driver; the cancel-preserves-theme/port/session assertions, confirm-clears-prior-local-and-session-keys assertions, post-reload default checks, and isolated-profile fixture remain present."
+    ],
+    "validation": "node --check passed for settings-local-controls-acceptance.mjs, settings-local-reset-acceptance.mjs, and settings-panel-driver.mjs. No browser, build, or test run was launched, per assignment.",
+    "limits": "No live UI execution; no claim of runtime acceptance, test forcing-function mutation proof, or successful rediscovery."
+  }
+}

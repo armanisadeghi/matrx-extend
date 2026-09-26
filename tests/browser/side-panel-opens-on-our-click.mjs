@@ -38,9 +38,9 @@
  */
 import { existsSync } from 'node:fs';
 import { createServer } from 'node:http';
-import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { resolveBrowserRuntime } from './browser-runtime.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
@@ -52,8 +52,7 @@ if (!existsSync(join(EXTENSION_DIR, 'manifest.json'))) {
   process.exit(1);
 }
 
-const require_ = createRequire('/Users/armanisadeghi/code/matrx-frontend/package.json');
-const { chromium } = require_('playwright');
+const { chromium, executablePath } = await resolveBrowserRuntime();
 
 // `http://localhost/*` is in the manifest's externally_connectable matches AND
 // in src/lib/origin-allowlist.ts, so this page is exactly as trusted as the
@@ -93,6 +92,7 @@ const srv = createServer((_req, res) => {
 await new Promise((r) => srv.listen(PORT, r));
 
 const ctx = await chromium.launchPersistentContext('', {
+  executablePath,
   headless: false,
   args: [
     '--headless=new',

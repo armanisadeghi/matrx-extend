@@ -12,11 +12,12 @@
   "actual": "Module import fails for playwright through hardcoded /Users/armanisadeghi/code/matrx-frontend/package.json before browser launch.",
   "evidence": [
     "docs/stabilization/runs/guest-reset-001.json",
-    "tests/browser/native-sidepanel-qa-harness.mjs:26"
+    "tests/browser/native-sidepanel-qa-harness.mjs:26",
+    "docs/stabilization/runs/guest-reset-007.json"
   ],
   "severity": "S2 test infrastructure: guest reset acceptance unavailable; no product failure demonstrated",
   "priority": "P1 restore contained Settings verification",
-  "state": "in-fix",
+  "state": "retest-pass",
   "owner": "/root/guest_pointer_bounded_repair",
   "transition_history": [
     {
@@ -36,6 +37,18 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol assigned portable dependency resolution and sibling census; independent review then guarded runtime required."
+    },
+    {
+      "at": "2026-09-26T08:34:23.108924+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Portable shared browser runtime and truthful bounded native input/confirmation/readiness probes completed; fresh source peers pass."
+    },
+    {
+      "at": "2026-09-26T08:34:23.108924+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "guest-reset007 actual native guest sidepanel completes entire Cancel/Confirm/reload acceptance; dependency failure absent. Integration pending."
     }
   ],
   "scope_note": "Original runtime dependency import is repaired; real guest reset still cannot complete because shared test pointer mechanics failed to focus the animated port input. Product persistence failure not established.",
