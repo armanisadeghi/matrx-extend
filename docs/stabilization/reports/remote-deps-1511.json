@@ -1,0 +1,10 @@
+{
+  "lane": "records 0.58.25 consumer check",
+  "remote_commit": "2e2765d7",
+  "published_source": "https://registry.npmjs.org/@ai-matrx/records/-/records-0.58.25.tgz, package/CHANGELOG.md",
+  "change": "Automatic changed-only docs/metadata republish since 0.58.24; no source changes intended and no consumer action required.",
+  "graph": "Tracked pnpm-lock.yaml resolves 0.58.25; node_modules/.pnpm/lock.yaml and root records symlink still resolve 0.58.24. Released artifact 0.2.67 predates the merge.",
+  "next_reconciliation": "Run guarded pnpm install --frozen-lockfile --ignore-scripts against current HEAD, verify installed graph and package freshness, then retry release from current source. No product migration or package pin is indicated.",
+  "ui_evidence": "Existing native UI outcomes explicitly proven against 0.2.67 remain valid for that artifact; they do not prove a future release. Recheck only changed behavior or required release identity after rebuilding.",
+  "limits": "Read-only package inspection. No install, build, test, browser run, or product edit in this lane."
+}
