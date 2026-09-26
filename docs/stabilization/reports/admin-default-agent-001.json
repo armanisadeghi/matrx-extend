@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "admin-default-agent-001",
+  "status": "partial",
+  "run_record": "docs/stabilization/runs/admin-default-agent-001.json",
+  "summary": "The Default agent setting changed to Quick Test Agent and persisted through a full Chrome extension Reload; the original built-in Matrx Browser Agent was restored afterward. The picker row said Quick Test Agent 2 while its details heading and selected Settings value said Quick Test Agent, so alternate-agent identity equivalence remains unresolved.",
+  "feature_controls_cases": [
+    {
+      "feature_id": "EXT-F-1003",
+      "case_ids": ["EXT-F-1003-T09"],
+      "status": "partial"
+    }
+  ],
+  "evidence": [
+    "Initial Settings showed Matrx Browser Agent.",
+    "Picker row label was Quick Test Agent 2; Show details heading was Quick Test Agent, with visible ID b32f2079-4fa5-4613-a01d-726f1243ebe5.",
+    "After selecting that row, Settings displayed Quick Test Agent; after actual extension Reload, Settings still displayed Quick Test Agent.",
+    "Restored the original Matrx Browser Agent (system); Settings confirmed the original selection.",
+    "No agent was launched. The mismatch prevents claiming an unambiguous alternate-agent selection proof."
+  ],
+  "resource_lease": "guest-settings-007, coordinator-held session 76318",
+  "limitations": ["Picker row label Quick Test Agent 2 differs from details heading and Default agent value Quick Test Agent; identity equivalence is unresolved."],
+  "state_left": "Signed in as admin@admin.com; explicit throwaway fixture remains selected; Matrx Browser Agent restored; Settings open.",
+  "ui_stopped": true
+}
