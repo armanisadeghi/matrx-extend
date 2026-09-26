@@ -27,7 +27,10 @@ const report = {
     { case: 'T03', part: 'unreachable HTTP(S), other restricted schemes, and reload dimension' },
     { case: 'T04-T06,T08', part: 'database save, history, and diff flows' },
     { case: 'T07', part: 'actual clipboard output, member/admin role gates, and JSON contents' },
-    { case: 'T09', part: 'schema chips, hreflang, broken social preview image, readability, performance values, and other URL doors' },
+    {
+      case: 'T09',
+      part: 'schema chips, hreflang, broken social preview image, readability, performance values, and other URL doors',
+    },
     { case: 'T10-T14', part: 'recommendations, Chat staging, and social snippet actions' },
     { case: 'all', part: 'member and admin modes' },
   ],
@@ -184,10 +187,16 @@ async function publicDetailEvidence(page) {
   return page.evaluate(() => {
     const meta = (selector) => document.querySelector(selector)?.getAttribute('content') ?? null;
     const headings = [...document.querySelectorAll('h1,h2,h3,h4,h5,h6')]
-      .map((node) => node.textContent?.trim() ?? '').filter(Boolean);
+      .map((node) => node.textContent?.trim() ?? '')
+      .filter(Boolean);
     const links = [...document.querySelectorAll('a[href]')].filter((node) => {
-      try { return ['http:', 'https:'].includes(new URL(node.getAttribute('href'), location.href).protocol); }
-      catch { return false; }
+      try {
+        return ['http:', 'https:'].includes(
+          new URL(node.getAttribute('href'), location.href).protocol,
+        );
+      } catch {
+        return false;
+      }
     });
     return {
       title: document.title.trim(),
@@ -197,9 +206,11 @@ async function publicDetailEvidence(page) {
       language: document.documentElement.lang || null,
       headingCount: Math.min(headings.length, 200),
       firstHeading: headings[0] ?? null,
-      hasSocialMetadata: [...document.querySelectorAll('meta')].some((node) =>
-        (node.getAttribute('property') ?? '').startsWith('og:') ||
-        (node.getAttribute('name') ?? '').startsWith('twitter:')),
+      hasSocialMetadata: [...document.querySelectorAll('meta')].some(
+        (node) =>
+          (node.getAttribute('property') ?? '').startsWith('og:') ||
+          (node.getAttribute('name') ?? '').startsWith('twitter:'),
+      ),
       hasLinks: links.length > 0,
       hasImages: document.querySelectorAll('img').length > 0,
     };
@@ -207,7 +218,9 @@ async function publicDetailEvidence(page) {
 }
 
 async function seoDetailState(panel) {
-  return evaluate(panel, `(() => {
+  return evaluate(
+    panel,
+    `(() => {
     ${SEO_SCOPE}
     if (!linked || tab?.getAttribute('aria-selected') !== 'true') return { scopeValid: false };
     const card = (label) => [...pane.querySelectorAll('span')]
@@ -238,7 +251,8 @@ async function seoDetailState(panel) {
       },
       firstHeading: firstHeading?.textContent.trim() ?? null,
     };
-  })()`);
+  })()`,
+  );
 }
 
 function assertPublicDetails(actual, expected) {
@@ -246,21 +260,43 @@ function assertPublicDetails(actual, expected) {
   assert.equal(actual.title, expected.title, 'detail title comes from public document');
   assert.equal(actual.description, expected.description ?? '—', 'description matches public meta');
   assert.equal(actual.robots, expected.robots, 'robots row follows public meta');
-  assert.equal(actual.canonical?.href ?? null, expected.canonical, 'canonical destination matches public link');
+  assert.equal(
+    actual.canonical?.href ?? null,
+    expected.canonical,
+    'canonical destination matches public link',
+  );
   assert.equal(actual.language, expected.language, 'language follows public html element');
-  assert.equal(actual.groups.social, expected.hasSocialMetadata, 'social group follows public metadata');
-  assert.equal(actual.groups.international, Boolean(expected.language), 'language group is measured');
-  assert.equal(actual.groups.headings, expected.headingCount > 0, 'headings group follows public headings');
+  assert.equal(
+    actual.groups.social,
+    expected.hasSocialMetadata,
+    'social group follows public metadata',
+  );
+  assert.equal(
+    actual.groups.international,
+    Boolean(expected.language),
+    'language group is measured',
+  );
+  assert.equal(
+    actual.groups.headings,
+    expected.headingCount > 0,
+    'headings group follows public headings',
+  );
   assert.equal(actual.groups.links, expected.hasLinks, 'links group follows public anchors');
   assert.equal(actual.groups.images, expected.hasImages, 'images group follows public images');
   if (expected.firstHeading)
-    assert.ok(actual.firstHeading?.includes(expected.firstHeading), 'first heading text matches public page');
+    assert.ok(
+      actual.firstHeading?.includes(expected.firstHeading),
+      'first heading text matches public page',
+    );
 }
 
 async function activateCanonicalLink(panel, page, expectedHref) {
   // A real mouse press reaches only the scoped, hit-tested canonical anchor.
   // The anchor's href and target are asserted before any outbound navigation.
-  const sample = () => evaluate(panel, `(() => {
+  const sample = () =>
+    evaluate(
+      panel,
+      `(() => {
     ${SEO_SCOPE}
     if (!linked || tab?.getAttribute('aria-selected') !== 'true') return null;
     const group = [...pane.querySelectorAll('span')]
@@ -277,7 +313,8 @@ async function activateCanonicalLink(panel, page, expectedHref) {
     return { count: 1, href: anchor.href, target: anchor.target,
       x, y, width: rect.width, height: rect.height,
       hit: anchor.contains(document.elementFromPoint(x, y)) };
-  })()`);
+  })()`,
+    );
   const first = await sample();
   assert.equal(first?.count, 1, 'unique canonical anchor');
   assert.equal(first.href, expectedHref, 'canonical anchor points to public DOM destination');
@@ -288,16 +325,26 @@ async function activateCanonicalLink(panel, page, expectedHref) {
     const current = await sample();
     assert.equal(current?.hit, true, 'canonical link is unobstructed for real pointer');
     assert.ok(current.width > 0 && current.height > 0, 'canonical link has a click area');
-    assert.ok(Math.abs(previous.x - current.x) < 0.25 && Math.abs(previous.y - current.y) < 0.25,
-      'canonical link remains stable');
+    assert.ok(
+      Math.abs(previous.x - current.x) < 0.25 && Math.abs(previous.y - current.y) < 0.25,
+      'canonical link remains stable',
+    );
     previous = current;
   }
   const openedPromise = page.context().waitForEvent('page', { timeout: 20000 });
   await panel.send('Input.dispatchMouseEvent', {
-    type: 'mousePressed', x: previous.x, y: previous.y, button: 'left', clickCount: 1,
+    type: 'mousePressed',
+    x: previous.x,
+    y: previous.y,
+    button: 'left',
+    clickCount: 1,
   });
   await panel.send('Input.dispatchMouseEvent', {
-    type: 'mouseReleased', x: previous.x, y: previous.y, button: 'left', clickCount: 1,
+    type: 'mouseReleased',
+    x: previous.x,
+    y: previous.y,
+    button: 'left',
+    clickCount: 1,
   });
   const opened = await openedPromise;
   try {
@@ -535,9 +582,11 @@ try {
       // expected values: the sparse Example page has no description/canonical,
       // while the documentation page supplies both and a real outbound door.
       const sparseExpected = await observe('sparse_public_details_inspected', () =>
-        publicDetailEvidence(page));
+        publicDetailEvidence(page),
+      );
       const sparseDetails = await observe('sparse_seo_details_inspected', () =>
-        seoDetailState(panel));
+        seoDetailState(panel),
+      );
       assertPublicDetails(sparseDetails, sparseExpected);
       target('T09', 'sparse_public_detail_groups', {
         descriptionAbsent: sparseExpected.description === null,
@@ -548,15 +597,22 @@ try {
       enter('rich_detail_page_navigation');
       await page.goto(DETAIL_PAGE, { waitUntil: 'domcontentloaded' });
       const richExpected = await observe('rich_public_details_inspected', () =>
-        publicDetailEvidence(page));
-      assert.ok(richExpected.description && richExpected.canonical,
-        'public detail page provides description and canonical link');
-      assert.notEqual(richExpected.title, sparseExpected.title,
-        'detail pages distinguish fixed audit responses');
+        publicDetailEvidence(page),
+      );
+      assert.ok(
+        richExpected.description && richExpected.canonical,
+        'public detail page provides description and canonical link',
+      );
+      assert.notEqual(
+        richExpected.title,
+        sparseExpected.title,
+        'detail pages distinguish fixed audit responses',
+      );
       await waitObserved(
         'rich_detail_audit_wait',
         () => seoContent(panel),
-        (state) => state?.scopeValid && state.title === richExpected.title && state.reAudit && !state.error,
+        (state) =>
+          state?.scopeValid && state.title === richExpected.title && state.reAudit && !state.error,
         30000,
       );
       const richDetails = await observe('rich_seo_details_inspected', () => seoDetailState(panel));
