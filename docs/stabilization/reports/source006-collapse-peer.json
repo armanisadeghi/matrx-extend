@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "report_id": "source006-collapse-peer",
+  "reviewed_commit": "cad5286c8d9b001a0d9ecce3da5d26e0f8e039a8",
+  "scope": "Independent source review of the D23 native runner's Account-section collapse after source-workspace-006 found the no-workspace notice covering the Organization header. No browser or heavy test was run in this lane.",
+  "A_runtime": {
+    "verdict": "UNVERIFIED",
+    "evidence": "source-workspace-006 predates cad5286c. It observed the initial notice and stopped at the Organization section with pointer_stable_hit_not_observed and capture_no_workspace as the center occluder. It does not prove the new collapse path, organization selection, or notice retirement."
+  },
+  "B_source": {
+    "verdict": "ACCEPTED",
+    "honest_ui_action": "The runner reads only the count and aria-expanded state of the visible Account section, requires exactly one known control, uses the existing trusted click(panel, 'section', 'Account') only when expanded, and waits for a unique collapsed control before continuing. It does not mutate DOM style, inject a click, dismiss the notice, or use the account menu as an organization picker.",
+    "selection_integrity": "After the new collapse, the existing Organization openSection, unique control wait, real Acting as click, approved/comparison option uniqueness checks, real option click, and stored ID/name selection wait remain unchanged. A failure is still rethrown with fixed diagnostics; no retry or passing fallback was introduced.",
+    "notice_obligation": "The initial no-workspace notice count is still observed before chooseOrganization. The same known notice is checked for absence only after approved organization selection. D23 readOnlyAcceptance still requires observed before, absent after, and a hit-testable Save target on a public capture; collapsing Account cannot itself satisfy that predicate.",
+    "save_boundary": "D23_READ_ONLY remains true with an existing private checkpoint required before recovery. This commit adds no Save input and changes no checkpoint path. The final admin check now reopens Account through the existing visible section control before reading its rows, preserving the prior verification.",
+    "limits": "Source proof only; the next guarded native run must show whether Account collapse actually clears the pointer obstruction in the live narrow panel."
+  }
+}
