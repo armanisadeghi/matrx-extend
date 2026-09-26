@@ -5,7 +5,8 @@
  * Two real public pages have distinct document titles; no response or auth is mocked.
  */
 import assert from 'node:assert/strict';
-import { writeFile } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
+import { open, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
@@ -661,6 +662,7 @@ async function activateSeoLink(panel, page, groupName, expectedHref) {
   })()`,
     );
   try {
+    diagnostic.sampleFailure = 'initial_sample_unavailable';
     const first = await sample();
     const safeSample = (value) => ({
       candidateCount: Number.isInteger(value?.count) ? value.count : null,
@@ -678,22 +680,33 @@ async function activateSeoLink(panel, page, groupName, expectedHref) {
     diagnostic.candidateCount = Number.isInteger(first?.count) ? first.count : null;
     diagnostic.destinationMatched = first?.href === expectedHref;
     diagnostic.opensNewTab = first?.target === '_blank';
+    diagnostic.sampleFailure =
+      first?.count !== 1
+        ? 'initial_candidate_count'
+        : first.href !== expectedHref
+          ? 'initial_destination'
+          : first.target !== '_blank'
+            ? 'initial_target'
+            : null;
     assert.equal(first?.count, 1, `unique ${groupName} outbound anchor`);
     assert.equal(first.href, expectedHref, `${groupName} anchor points to public DOM destination`);
     assert.equal(first.target, '_blank', `${groupName} opens in a new tab`);
     let previous = first;
     for (let index = 0; index < 2; index += 1) {
       await new Promise((resolveWait) => setTimeout(resolveWait, 50));
+      diagnostic.sampleFailure = 'followup_sample_unavailable';
       const current = await sample();
       diagnostic.samples.push(safeSample(current));
       diagnostic.sampleFailure =
-        current?.hit !== true
-          ? 'hit'
-          : !(current.width > 0 && current.height > 0)
-            ? 'area'
-            : Math.abs(previous.x - current.x) >= 0.25 || Math.abs(previous.y - current.y) >= 0.25
-              ? 'position_stability'
-              : null;
+        current?.count !== 1
+          ? 'followup_candidate_count'
+          : current?.hit !== true
+            ? 'hit'
+            : !(current.width > 0 && current.height > 0)
+              ? 'area'
+              : Math.abs(previous.x - current.x) >= 0.25 || Math.abs(previous.y - current.y) >= 0.25
+                ? 'position_stability'
+                : null;
       assert.equal(current?.hit, true, `${groupName} link is unobstructed for real pointer`);
       assert.ok(current.width > 0 && current.height > 0, `${groupName} link has a click area`);
       assert.ok(
@@ -737,12 +750,15 @@ async function activateSeoLink(panel, page, groupName, expectedHref) {
           format: 'png',
           captureBeyondViewport: false,
         });
-        await writeFile(
-          join(REPO, 'test-results', 'seo-guest-door-failure.png'),
-          Buffer.from(shot.data, 'base64'),
-          { mode: 0o600 },
-        );
-        diagnostic.privateScreenshot = 'test-results/seo-guest-door-failure.png';
+        const relativePath = `test-results/seo-guest-door-failure-${randomUUID()}.png`;
+        const handle = await open(join(REPO, relativePath), 'wx', 0o600);
+        try {
+          await handle.writeFile(Buffer.from(shot.data, 'base64'));
+          await handle.sync();
+        } finally {
+          await handle.close();
+        }
+        diagnostic.privateScreenshot = relativePath;
       } catch {
         diagnostic.privateScreenshot = 'capture_unavailable';
       }
