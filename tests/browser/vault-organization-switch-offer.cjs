@@ -66,6 +66,7 @@ exports.runOrganizationSwitchOfferProbe = async ({
   let fixture;
   let page;
   let portOpened = false;
+  let focusWitnessArmed = false;
   let failure;
   const evidence = {
     scope: 'owned localhost password form and raw extension generation port',
@@ -88,6 +89,66 @@ exports.runOrganizationSwitchOfferProbe = async ({
     );
     assert(Number.isInteger(tabId), 'organization_switch_fixture_tab_missing');
     await focusOwnedBrowser(tabId);
+
+    focusWitnessArmed = await worker.evaluate((id) => {
+      if (globalThis.__vaultOrganizationSwitchFocusWitness) return false;
+      const counts = {
+        windowFocus: 0,
+        windowRemoved: 0,
+        tabActivated: 0,
+        tabChanged: 0,
+        navigation: 0,
+        tabRemoved: 0,
+        orgChange: 0,
+        authChange: 0,
+        profileChange: 0,
+      };
+      const windowFocus = () => {
+        counts.windowFocus += 1;
+      };
+      const windowRemoved = () => {
+        counts.windowRemoved += 1;
+      };
+      const tabActivated = () => {
+        counts.tabActivated += 1;
+      };
+      const tabChanged = (changedId, change) => {
+        if (changedId === id && (change.status === 'loading' || change.url)) counts.tabChanged += 1;
+      };
+      const navigation = (details) => {
+        if (details.tabId === id) counts.navigation += 1;
+      };
+      const tabRemoved = (removedId) => {
+        if (removedId === id) counts.tabRemoved += 1;
+      };
+      const storageChanged = (changes, area) => {
+        if (area !== 'local') return;
+        if ('matrx.org.active' in changes) counts.orgChange += 1;
+        if ('matrx.auth.accessToken' in changes) counts.authChange += 1;
+        if ('matrx.user.profile' in changes) counts.profileChange += 1;
+      };
+      chrome.windows.onFocusChanged.addListener(windowFocus);
+      chrome.windows.onRemoved.addListener(windowRemoved);
+      chrome.tabs.onActivated.addListener(tabActivated);
+      chrome.tabs.onUpdated.addListener(tabChanged);
+      chrome.webNavigation.onCommitted.addListener(navigation);
+      chrome.tabs.onRemoved.addListener(tabRemoved);
+      chrome.storage.onChanged.addListener(storageChanged);
+      globalThis.__vaultOrganizationSwitchFocusWitness = {
+        counts,
+        dispose: () => {
+          chrome.windows.onFocusChanged.removeListener(windowFocus);
+          chrome.windows.onRemoved.removeListener(windowRemoved);
+          chrome.tabs.onActivated.removeListener(tabActivated);
+          chrome.tabs.onUpdated.removeListener(tabChanged);
+          chrome.webNavigation.onCommitted.removeListener(navigation);
+          chrome.tabs.onRemoved.removeListener(tabRemoved);
+          chrome.storage.onChanged.removeListener(storageChanged);
+        },
+      };
+      return true;
+    }, tabId);
+    assert(focusWitnessArmed === true, 'organization_switch_focus_witness_missing');
 
     let registryReady = false;
     for (let attempt = 0; attempt < 60; attempt += 1) {
@@ -126,11 +187,11 @@ exports.runOrganizationSwitchOfferProbe = async ({
       port.onDisconnect.addListener(disconnected);
       timer = setTimeout(() => finish(null), 10000);
     })`);
+    portOpened = true;
     assert(
       typeof connectionId === 'string' && /^[a-f0-9]{36}$/.test(connectionId),
       'organization_switch_port_handshake_missing',
     );
-    portOpened = true;
     const request = (payload) =>
       panel.evaluate(
         `chrome.runtime.sendMessage(${JSON.stringify({
@@ -164,6 +225,16 @@ exports.runOrganizationSwitchOfferProbe = async ({
       ) === true;
     assert(evidence.newActorOfferReady, 'organization_switch_new_actor_offer_unavailable');
     const result = await request({ operation: 'use', offerId: offer.id, value: syntheticValue });
+    const focusEvents = await worker.evaluate(
+      () => globalThis.__vaultOrganizationSwitchFocusWitness?.counts ?? null,
+    );
+    assert(
+      focusEvents &&
+        focusEvents.orgChange >= 1 &&
+        Object.entries(focusEvents).every(([name, count]) => name === 'orgChange' || count === 0),
+      'organization_switch_competing_invalidation_observed',
+    );
+    evidence.noCompetingBrowserInvalidation = true;
     assert(result?.status === 'stale', 'organization_switch_offer_not_stale');
     evidence.staleResponse = true;
     evidence.fieldsUnchanged = await page.evaluate(
@@ -183,7 +254,7 @@ exports.runOrganizationSwitchOfferProbe = async ({
       if (portOpened)
         return panel.evaluate(`(() => {
             const port = globalThis.__vaultOrganizationSwitchOfferPort;
-            if (!port) return false;
+            if (!port) return true;
             try { port.disconnect(); } finally { delete globalThis.__vaultOrganizationSwitchOfferPort; }
             return true;
           })()`);
@@ -195,15 +266,27 @@ exports.runOrganizationSwitchOfferProbe = async ({
     Promise.resolve().then(async () => {
       if (fixture) await fixture.close();
     }),
+    Promise.resolve().then(async () => {
+      if (!focusWitnessArmed) return true;
+      return worker.evaluate(() => {
+        const witness = globalThis.__vaultOrganizationSwitchFocusWitness;
+        if (!witness) return false;
+        witness.dispose();
+        delete globalThis.__vaultOrganizationSwitchFocusWitness;
+        return true;
+      });
+    }),
   ]);
   evidence.portClosed = cleanup[0].status === 'fulfilled' && cleanup[0].value === true;
   evidence.ownedFixturePageClosed = cleanup[1].status === 'fulfilled' && (!page || page.isClosed());
   evidence.ownedFixtureServerClosed = cleanup[2].status === 'fulfilled';
+  evidence.focusWitnessDisposed = cleanup[3].status === 'fulfilled' && cleanup[3].value === true;
   if (
     cleanup.some((result) => result.status === 'rejected') ||
     !evidence.portClosed ||
     !evidence.ownedFixturePageClosed ||
-    !evidence.ownedFixtureServerClosed
+    !evidence.ownedFixtureServerClosed ||
+    !evidence.focusWitnessDisposed
   )
     throw new Error('organization_switch_offer_probe_cleanup_failed');
   if (failure) throw failure;

@@ -7,7 +7,11 @@ const harnessAssert = (condition, code) => {
   if (!condition) throw new Error(code);
 };
 
-function harness({ cleanupFailure = false } = {}) {
+function harness({
+  cleanupFailure = false,
+  malformedHandshake = false,
+  competingFocus = false,
+} = {}) {
   const calls = [];
   let pageClosed = false;
   let switched = 0;
@@ -22,7 +26,8 @@ function harness({ cleanupFailure = false } = {}) {
   };
   const panel = {
     evaluate: async (expression) => {
-      if (expression.includes('chrome.runtime.connect')) return 'a'.repeat(36);
+      if (expression.includes('chrome.runtime.connect'))
+        return malformedHandshake ? 'malformed-id' : 'a'.repeat(36);
       if (expression.includes('"operation":"discover"'))
         return {
           status: 'ready',
@@ -45,7 +50,20 @@ function harness({ cleanupFailure = false } = {}) {
         worker: {
           evaluate: async (fn) => {
             const source = String(fn);
-            return source.includes('chrome.tabs.query') ? 7 : true;
+            if (source.includes('chrome.tabs.query')) return 7;
+            if (source.includes('__vaultOrganizationSwitchFocusWitness?.counts'))
+              return {
+                windowFocus: competingFocus ? 1 : 0,
+                windowRemoved: 0,
+                tabActivated: 0,
+                tabChanged: 0,
+                navigation: 0,
+                tabRemoved: 0,
+                orgChange: 1,
+                authChange: 0,
+                profileChange: 0,
+              };
+            return true;
           },
         },
         panel,
@@ -71,23 +89,27 @@ function harness({ cleanupFailure = false } = {}) {
       offerDiscoveredWithGenerousTtl: evidence.offerDiscoveredWithGenerousTtl,
       organizationSwitchInvoked: evidence.organizationSwitchInvoked,
       newActorOfferReady: evidence.newActorOfferReady,
+      noCompetingBrowserInvalidation: evidence.noCompetingBrowserInvalidation,
       staleResponse: evidence.staleResponse,
       fieldsUnchanged: evidence.fieldsUnchanged,
       noWebsiteSubmission: evidence.noWebsiteSubmission,
       portClosed: evidence.portClosed,
       ownedFixturePageClosed: evidence.ownedFixturePageClosed,
       ownedFixtureServerClosed: evidence.ownedFixtureServerClosed,
+      focusWitnessDisposed: evidence.focusWitnessDisposed,
     },
     {
       offerDiscoveredWithGenerousTtl: true,
       organizationSwitchInvoked: true,
       newActorOfferReady: true,
+      noCompetingBrowserInvalidation: true,
       staleResponse: true,
       fieldsUnchanged: true,
       noWebsiteSubmission: true,
       portClosed: true,
       ownedFixturePageClosed: true,
       ownedFixtureServerClosed: true,
+      focusWitnessDisposed: true,
     },
   );
   assert.ok(successful.calls.includes('port_closed'));
@@ -95,6 +117,11 @@ function harness({ cleanupFailure = false } = {}) {
   const failingCleanup = harness({ cleanupFailure: true });
   await assert.rejects(failingCleanup.run(), /organization_switch_offer_probe_cleanup_failed/);
   assert.equal(failingCleanup.switched(), 1);
+  const malformed = harness({ malformedHandshake: true });
+  await assert.rejects(malformed.run(), /organization_switch_port_handshake_missing/);
+  assert.ok(malformed.calls.includes('port_closed'));
+  const lostFocus = harness({ competingFocus: true });
+  await assert.rejects(lostFocus.run(), /organization_switch_competing_invalidation_observed/);
   process.stdout.write(
     'PASS: organization switch probe requires stale raw offer use and closes custody\n',
   );

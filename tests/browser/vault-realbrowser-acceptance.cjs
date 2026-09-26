@@ -3037,9 +3037,15 @@ async function chooseDifferentOrganizationInPanel(panel, activeWorker) {
       const rect = option.getBoundingClientRect();
       return rect.width > 0 && rect.height > 0;
     });
-    return { count: visible.length, next: visible.findIndex((option) => option.getAttribute('aria-selected') !== 'true') };
+    const selected = visible.map((option, index) =>
+      option.getAttribute('aria-selected') === 'true' || option.getAttribute('data-state') === 'checked'
+        ? index : -1).filter((index) => index >= 0);
+    return { count: visible.length, selectedCount: selected.length, next: visible.findIndex((_, index) => index !== selected[0]) };
   })()`);
-  assert(options?.count >= 2 && options.next >= 0, 'org_switch_second_membership_missing');
+  assert(
+    options?.count >= 2 && options.selectedCount === 1 && options.next >= 0,
+    'org_switch_second_membership_missing',
+  );
   const choice = `Array.from(document.querySelectorAll('[role="option"]')).filter((option) => {
     const rect = option.getBoundingClientRect();
     return rect.width > 0 && rect.height > 0;
@@ -3060,15 +3066,22 @@ async function chooseDifferentOrganizationInPanel(panel, activeWorker) {
 async function verifyPanelReadInOrganization(panel, expectedOrganizationId) {
   assert(typeof panel?.onEvent === 'function', 'org_switch_panel_observer_missing');
   const requests = new Map();
+  const expectedApiOrigin = new URL(API).origin;
   const stop = panel.onEvent((method, params) => {
     if (method === 'Network.requestWillBeSent') {
-      let pathname;
+      let requestUrl;
       try {
-        pathname = new URL(params.request?.url).pathname;
+        requestUrl = new URL(params.request?.url);
       } catch {
         return;
       }
-      if (pathname !== '/api/vault/items' || params.request?.method !== 'GET') return;
+      if (
+        requestUrl.origin !== expectedApiOrigin ||
+        requestUrl.pathname !== '/api/vault/items' ||
+        requestUrl.searchParams.get('principal_type') !== 'user' ||
+        params.request?.method !== 'GET'
+      )
+        return;
       const header = Object.entries(params.request?.headers || {}).find(
         ([name]) => name.toLowerCase() === 'x-organization-id',
       )?.[1];
@@ -3077,6 +3090,9 @@ async function verifyPanelReadInOrganization(panel, expectedOrganizationId) {
     if (method === 'Network.responseReceived' && requests.has(params.requestId)) {
       const request = requests.get(params.requestId);
       request.status = params.response?.status;
+    }
+    if (method === 'Network.loadingFinished' && requests.has(params.requestId)) {
+      requests.get(params.requestId).finished = true;
     }
   });
   try {
@@ -3087,12 +3103,28 @@ async function verifyPanelReadInOrganization(panel, expectedOrganizationId) {
         !!document.querySelector('[role="tabpanel"]');
     })()`);
     for (let attempt = 0; attempt < 60; attempt += 1) {
-      if (
-        [...requests.values()].some(
-          (entry) => entry.correctOrganization && entry.status >= 200 && entry.status < 300,
-        )
-      )
+      const completed = [...requests].find(
+        ([, entry]) =>
+          entry.correctOrganization &&
+          entry.status >= 200 &&
+          entry.status < 300 &&
+          entry.finished === true,
+      );
+      if (completed) {
+        const response = await panel.send('Network.getResponseBody', { requestId: completed[0] });
+        const body = response.base64Encoded
+          ? Buffer.from(response.body, 'base64').toString('utf8')
+          : response.body;
+        const payload = JSON.parse(body);
+        assert(Array.isArray(payload?.items), 'org_switch_panel_items_response_invalid');
+        const count = payload.items.length;
+        await panel.waitFor(`(() => {
+          const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+          return tabs.some((tab) => tab.getAttribute('aria-selected') === 'true' &&
+            tab.textContent?.trim() === 'Mine (${count})');
+        })()`);
         return true;
+      }
       await wait(250);
     }
     throw new Error('org_switch_new_panel_read_unverified');
@@ -3922,11 +3954,13 @@ async function materializedPassword(id) {
           disposition:
             offerProbe.staleResponse === true &&
             offerProbe.newActorOfferReady === true &&
+            offerProbe.noCompetingBrowserInvalidation === true &&
             offerProbe.fieldsUnchanged === true &&
             offerProbe.noWebsiteSubmission === true &&
             offerProbe.portClosed === true &&
             offerProbe.ownedFixturePageClosed === true &&
             offerProbe.ownedFixtureServerClosed === true &&
+            offerProbe.focusWitnessDisposed === true &&
             newPanelRead === true &&
             personalVaultScopePreserved
               ? 'passed'
