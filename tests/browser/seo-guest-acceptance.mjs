@@ -976,6 +976,89 @@ try {
       const nextDetails = await observe('next_seo_details_inspected', () =>
         seoNextDetailState(panel),
       );
+      // If the auto-audit and the post-load source disagree, retain the auto
+      // assertion but sample the live source around an explicit re-audit. This
+      // distinguishes a changed public DOM from a collector/display mismatch
+      // without waiting for, or substituting, an expected count.
+      let autoLinksMatch = true;
+      let autoPerformanceMatch = true;
+      try {
+        assertNextLinks(nextDetails, nextExpected);
+      } catch {
+        autoLinksMatch = false;
+      }
+      try {
+        assertNextPerformance(nextDetails, nextExpected);
+      } catch {
+        autoPerformanceMatch = false;
+      }
+      if (!autoLinksMatch || !autoPerformanceMatch) {
+        report.next_detail_capture_diagnostic = {
+          autoLinksMatch,
+          autoPerformanceMatch,
+          status: 'unverified',
+        };
+        try {
+          const before = await publicNextDetailEvidence(page, nextResponse);
+          await click(panel, 'button', 'Re-audit');
+          await waitFor(
+            'next_detail_manual_reaudit_running',
+            () => seoContent(panel),
+            (state) => state?.scopeValid && !state.reAudit,
+          );
+          await waitFor(
+            'next_detail_manual_reaudit_settled',
+            () => seoContent(panel),
+            (state) =>
+              state?.scopeValid &&
+              state.title === nextExpected.title &&
+              state.reAudit &&
+              !state.error,
+            30000,
+          );
+          const after = await publicNextDetailEvidence(page, nextResponse);
+          const refreshed = await seoNextDetailState(panel);
+          let refreshedLinksMatch = true;
+          let refreshedPerformanceMatch = true;
+          try {
+            assertNextLinks(refreshed, after);
+          } catch {
+            refreshedLinksMatch = false;
+          }
+          try {
+            assertNextPerformance(refreshed, after);
+          } catch {
+            refreshedPerformanceMatch = false;
+          }
+          report.next_detail_capture_diagnostic = {
+            autoLinksMatch,
+            autoPerformanceMatch,
+            status: 'observed',
+            publicLinks: {
+              postLoad: nextExpected.links,
+              beforeRefresh: before.links,
+              afterRefresh: after.links,
+            },
+            publicNavigationDurationMs: {
+              postLoad: nextExpected.navigation?.durationMs ?? null,
+              beforeRefresh: before.navigation?.durationMs ?? null,
+              afterRefresh: after.navigation?.durationMs ?? null,
+            },
+            panelLinks: {
+              auto: nextDetails.links,
+              refreshed: refreshed.links,
+            },
+            panelDuration: {
+              auto: nextDetails.performance?.duration ?? null,
+              refreshed: refreshed.performance?.duration ?? null,
+            },
+            refreshedLinksMatch,
+            refreshedPerformanceMatch,
+          };
+        } catch {
+          report.next_detail_capture_diagnostic.status = 'observation_failed';
+        }
+      }
       assertNext('links', () => assertNextLinks(nextDetails, nextExpected));
       target('T09', 'guest_link_counts_match_live_dom', {
         url: NEXT_DETAIL_PAGE,

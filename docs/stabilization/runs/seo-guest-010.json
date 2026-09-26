@@ -1,0 +1,59 @@
+{
+  "id": "seo-guest-010",
+  "feature_id": "EXT-F-1008",
+  "at": "2026-09-26T19:20:58.609Z",
+  "status": "unverified",
+  "mode": "guest",
+  "scope": "Owned native side-panel guest SEO acceptance against public pages, including the Wikipedia detail batch.",
+  "runtime_output": "test-results/seo-guest-acceptance.json",
+  "runtime_output_sha256": "fe45fa3421c36c8882cebdf06d470b4dca80d43ea16f7c18e4605fdea916cd99",
+  "resource_log": "/tmp/matrx-seo-guest-010.log",
+  "resource_log_sha256": "4d53796bef6a87518b0eeac6479a75ff324e06157a79c5c400567a7ba39f723b",
+  "resource": {
+    "run_id": "seo-guest-010",
+    "admission_code": "RESOURCE_ADMITTED",
+    "admitted_at": "2026-09-26T19:20:58.609Z",
+    "child_exit_code": 1,
+    "child_signal": null,
+    "exit_at": "2026-09-26T19:21:05.944Z",
+    "wrapper_stdout": ["UNVERIFIED seo_guest_native_batch"]
+  },
+  "runtime_source": {
+    "acceptance_runner": "tests/browser/seo-guest-acceptance.mjs",
+    "acceptance_runner_commit": "cb1e00ce628f27f1820ee3502e2a56b16b253fa9",
+    "driver_commit": "dced501c9f7b37d9c28e8480cb0961b9c5df1d44",
+    "harness_commit": "d9c50f40f3f1a2d615753e63ea76caf8b690ca1c"
+  },
+  "acceptance_result": {
+    "status": "unverified",
+    "prior_subtargets_passed": 12,
+    "new_detail_subtargets_passed": 0,
+    "failure_stage": "next_detail_links_assertion",
+    "failure_diagnostic": {
+      "predicate": "links",
+      "assertion_label": "internal link count",
+      "actual_scalar": 1782,
+      "expected_scalar": 1785
+    },
+    "public_dom_counts": {
+      "links": { "internal": 1785, "external": 410 },
+      "images": { "total": 28, "missing_alt": 10 },
+      "body_has_text": true,
+      "alternate_count": 0,
+      "schema_type_count": 3
+    },
+    "panel_observation": {
+      "scope_valid": true,
+      "title": "HTML - Wikipedia",
+      "displayed_links": { "internal": "1,782", "external": "409", "hint": "2191" },
+      "displayed_images": { "total": "28", "missing_alt": "10" },
+      "displayed_performance": {
+        "status": "200",
+        "navigation": "navigate",
+        "duration": null,
+        "transfer": "121 KB"
+      }
+    }
+  },
+  "interpretation": "The 12 earlier guest subtargets passed. The link assertion compared the panel's previously captured 1782 internal links with 1785 in the public DOM read after load; external counts also differ by one. The receipt does not establish whether the public DOM changed after audit capture or the collector missed links. The performance assertion was not reached and the public navigation scalars were not saved."
+}
