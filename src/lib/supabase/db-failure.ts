@@ -197,6 +197,7 @@ export function userMessageFor(kind: DbFailureKind, site: DbCallSite): string {
 export function sourceFeatureForTable(table: string): string {
   switch (table) {
     case 'extend.wbx_capture':
+    case 'docproc.processed_documents':
     case 'capture_handoff':
     case 'media.capture_handoff':
     case 'extend.wbx_highlight':

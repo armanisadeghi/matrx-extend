@@ -87,6 +87,11 @@ export const TABLE_SCHEMA = {
   // enforced in one place (capture-ladder CONTRACT.md §3/§4). Org-stamped and
   // RLS-scoped; soft-delete is `deleted_at`.
   capture_handoff: 'media',
+  // docproc — Sources (SOURCE-CONVERGENCE §4.2). A saved page is a
+  // processed_documents row landed by `POST /sources/land`; this client READS
+  // it under RLS (Saved captures tab, recognition) and writes only the row's
+  // soft delete. Creating or editing one always goes through the door.
+  processed_documents: 'docproc',
   // misc
   user_form_profile: 'users',
   // users.integration_connections — safe Google connection metadata only. The
@@ -149,6 +154,13 @@ export const iamDb = () => getSupabase().schema('iam');
  * here, because `/capture/*` is the one door that runs the ladder law.
  */
 export const mediaDb = () => getSupabase().schema('media');
+
+/**
+ * `docproc` — Sources (`processed_documents`). Read under RLS; the only write
+ * from this client is a Source's soft delete (`deleted_at`). Create and edit go
+ * through the landing door (`src/lib/api/routes/sources.ts`).
+ */
+export const docprocDb = () => getSupabase().schema('docproc');
 
 /** `admin` — admins. Ownership: `user_id` (kept). */
 export const adminDb = () => getSupabase().schema('admin');

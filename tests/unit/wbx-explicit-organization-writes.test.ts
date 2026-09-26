@@ -1,6 +1,5 @@
 import { createHighlight } from '@/lib/highlights/queries';
 import {
-  saveCapture,
   savePattern,
   saveScreenshot,
   saveSeoAudit,
@@ -47,10 +46,6 @@ type Writer = {
 };
 
 const writers: Writer[] = [
-  {
-    name: 'capture',
-    run: () => saveCapture({ url: 'https://example.com', soup: {} }),
-  },
   {
     name: 'pattern',
     run: () =>
@@ -162,7 +157,7 @@ describe('extend.wbx_* explicit organization writes', () => {
     });
   }
 
-  it('stamps the exact request organization on all seven insert/upsert payloads', async () => {
+  it('stamps the exact request organization on all six insert/upsert payloads (page saves land through the Sources door)', async () => {
     mocks.requireRequestOrganizationId.mockResolvedValue(ORG_ID);
     const payloads = installSupabaseWriteRecorder();
 
@@ -182,7 +177,7 @@ describe('extend.wbx_* explicit organization writes', () => {
       fields: [],
     });
 
-    expect(payloads).toHaveLength(7);
+    expect(payloads).toHaveLength(6);
     for (const payload of payloads) {
       expect(payload).toEqual(expect.objectContaining({ organization_id: ORG_ID }));
     }

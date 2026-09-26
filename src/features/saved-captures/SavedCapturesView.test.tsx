@@ -4,17 +4,19 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   list: vi.fn(),
   get: vi.fn(),
-  update: vi.fn(),
-  setDeleted: vi.fn(),
+  edit: vi.fn(),
+  del: vi.fn(),
+  readOriginal: vi.fn(),
   setTab: vi.fn(),
 }));
 
 vi.mock('@/lib/supabase/queries', () => ({
   listSavedCaptures: mocks.list,
   getSavedCapture: mocks.get,
-  updateSavedCapture: mocks.update,
-  setSavedCaptureDeleted: mocks.setDeleted,
+  deleteSavedCapture: mocks.del,
 }));
+vi.mock('@/lib/api/routes/sources', () => ({ editSource: mocks.edit }));
+vi.mock('@/lib/sources/read-original', () => ({ readCaptureOriginal: mocks.readOriginal }));
 vi.mock('@/state/sidepanel-tab', () => ({
   useSidepanelTabStore: (selector: (state: { setTab: typeof mocks.setTab }) => unknown) =>
     selector({ setTab: mocks.setTab }),
@@ -33,9 +35,7 @@ const firstSummary = {
   updated_at: '2026-09-20T12:00:00.000Z',
   title: 'Alpha guide',
   description: 'The first saved guide',
-  media_count: 2,
-  deleted_at: null,
-  version: 3,
+  kept_at: '2026-09-20T12:00:00.000Z',
 };
 
 const secondSummary = {
@@ -45,9 +45,7 @@ const secondSummary = {
   updated_at: '2026-09-19T08:30:00.000Z',
   title: 'Beta report',
   description: null,
-  media_count: 0,
-  deleted_at: null,
-  version: 1,
+  kept_at: null,
 };
 
 const soup = {
@@ -75,27 +73,44 @@ const soup = {
 
 const fullCapture = {
   ...firstSummary,
-  lang: 'en',
-  soup,
-  markdown: '# Original alpha',
-  metadata: soup.metadata,
-  ld_json: [],
-  pattern_id: null,
-  created_at: firstSummary.captured_at,
+  structured: {
+    images: soup.images,
+    videos: [],
+    audio: [],
+    links: soup.links,
+    ld_json: [],
+    metadata: soup.metadata,
+    pattern_id: null,
+  },
+  content: 'Original alpha',
+  edited_content: null,
+  original_file_id: '99999999-9999-4999-8999-999999999999',
+  visibility: 'personal',
 };
 
 beforeEach(() => {
   mocks.list.mockReset().mockResolvedValue([firstSummary, secondSummary]);
   mocks.get.mockReset().mockResolvedValue(fullCapture);
-  mocks.update.mockReset().mockImplementation(async (input) => ({
-    ...fullCapture,
-    title: input.title,
-    description: input.description,
-    markdown: input.markdown,
-    soup: input.soup,
-    version: 4,
-  }));
-  mocks.setDeleted.mockReset().mockResolvedValue(undefined);
+  mocks.readOriginal.mockReset().mockResolvedValue(soup);
+  mocks.edit.mockReset().mockResolvedValue({
+    ok: true,
+    landed: {
+      processed_document_id: '55555555-5555-4555-8555-555555555555',
+      source_id: 'spp',
+      reused_existing: false,
+      kept: true,
+      intelligence: 'deferred',
+      notices: [
+        {
+          code: 'edit_kept_beside_original',
+          message:
+            'Your edit was saved as the version people read; the original capture is kept unchanged.',
+          remedy: '',
+        },
+      ],
+    },
+  });
+  mocks.del.mockReset().mockResolvedValue(undefined);
   mocks.setTab.mockReset();
   Object.assign(chrome, { tabs: { create: vi.fn() } });
 });
@@ -117,50 +132,75 @@ describe('SavedCapturesView', () => {
 
     expect(await screen.findByText('Alpha guide 1')).toBeTruthy();
 
-    fireEvent.change(screen.getByPlaceholderText('Search title, URL, or description'), {
+    fireEvent.change(screen.getByPlaceholderText('Search title or URL'), {
       target: { value: 'later match' },
     });
     expect(await screen.findByText('Beta report')).toBeTruthy();
     expect(mocks.list).toHaveBeenLastCalledWith({ limit: 40, search: 'later match' });
   });
 
-  it('opens a persisted capture, edits its article, and updates the exact versioned row', async () => {
+  it('opens a Source, reads its original from S3, and saves an edit through the door', async () => {
     render(<SavedCapturesView />);
     fireEvent.click(await screen.findByText('Alpha guide'));
 
     expect(await screen.findByText('# Original alpha')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
-    fireEvent.change(screen.getByLabelText('Title'), { target: { value: 'Alpha handbook' } });
-    fireEvent.change(screen.getByLabelText('Description'), {
-      target: { value: 'Updated field notes' },
+    expect(mocks.readOriginal).toHaveBeenCalledWith(fullCapture.original_file_id);
+    mocks.get.mockResolvedValueOnce({
+      ...fullCapture,
+      edited_content: '# Revised alpha\n\nComplete text.',
     });
-    fireEvent.change(screen.getByLabelText('Article markdown'), {
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    fireEvent.change(screen.getByLabelText('Article text'), {
       target: { value: '# Revised alpha\n\nComplete text.' },
     });
     fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
 
-    await waitFor(() =>
-      expect(mocks.update).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: firstSummary.id,
-          expectedVersion: 3,
-          title: 'Alpha handbook',
-          description: 'Updated field notes',
-          markdown: '# Revised alpha\n\nComplete text.',
-        }),
+    await waitFor(() => expect(mocks.edit).toHaveBeenCalled());
+    const [id, portions] = mocks.edit.mock.calls[0] as [
+      string,
+      { locator: unknown; text: string }[],
+    ];
+    expect(id).toBe(firstSummary.id);
+    expect(portions).toEqual([
+      {
+        ordinal: 1,
+        kind: 'section',
+        text: '# Revised alpha\n\nComplete text.',
+        locator: {
+          heading_path: ['Revised alpha'],
+          text_fragment: '# Revised alpha Complete text.',
+        },
+        method: 'native',
+      },
+    ]);
+    expect(
+      await screen.findByText(
+        'Your edit was saved as the version people read; the original capture is kept unchanged.',
       ),
-    );
-    const updateInput = mocks.update.mock.calls[0]?.[0];
-    expect(updateInput).toBeTruthy();
-    expect(updateInput?.soup.article.content_markdown).toBe('# Revised alpha\n\nComplete text.');
-    expect(updateInput?.soup.article.word_count).toBe(5);
-    expect(updateInput?.soup.article.reading_time_minutes).toBe(1);
-    expect(updateInput?.soup.seo.word_count).toBe(5);
-    expect(updateInput?.metadata).toEqual({
-      title: 'Alpha handbook',
-      description: 'Updated field notes',
+    ).toBeTruthy();
+    expect(
+      screen.getByText('Showing your edited version. The original capture is kept unchanged.'),
+    ).toBeTruthy();
+    expect(screen.getByText('# Revised alpha Complete text.')).toBeTruthy();
+  });
+
+  it('shows the door refusal sentence when an edit is refused', async () => {
+    mocks.edit.mockResolvedValueOnce({
+      ok: false,
+      refusal: {
+        status: 403,
+        code: 'x',
+        message: 'You cannot edit this Source.',
+        remedy: '',
+        retryable: false,
+      },
     });
-    expect(await screen.findByText('Alpha handbook')).toBeTruthy();
+    render(<SavedCapturesView />);
+    fireEvent.click(await screen.findByText('Alpha guide'));
+    await screen.findByText('# Original alpha');
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    expect(await screen.findByText('You cannot edit this Source.')).toBeTruthy();
   });
 
   it('shows a load failure without also claiming the library is empty', async () => {
@@ -176,10 +216,10 @@ describe('SavedCapturesView', () => {
     expect(await screen.findByText('Alpha guide')).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: 'Delete Alpha guide' }));
-    expect(mocks.setDeleted).not.toHaveBeenCalled();
+    expect(mocks.del).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
 
-    await waitFor(() => expect(mocks.setDeleted).toHaveBeenCalledWith(firstSummary.id, true));
+    await waitFor(() => expect(mocks.del).toHaveBeenCalledWith(firstSummary.id));
     expect(screen.queryByText('Alpha guide')).toBeNull();
     expect(screen.getByText('Beta report')).toBeTruthy();
   });

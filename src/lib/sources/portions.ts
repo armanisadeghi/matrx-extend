@@ -181,9 +181,7 @@ export function portionsFromMarkdown(markdown: string | null | undefined): Secti
 }
 
 /** The portions for a capture: article HTML first, the article markdown as the fallback. */
-export function buildCapturePortions(
-  soup: Pick<SoupResult, 'article'>,
-): CapturePortions {
+export function buildCapturePortions(soup: Pick<SoupResult, 'article'>): CapturePortions {
   const fromHtml = portionsFromArticleHtml(soup.article.content_html_safe);
   if (fromHtml.length > 0) return { portions: fromHtml, from: 'article_html' };
   const fromMarkdown = portionsFromMarkdown(soup.article.content_markdown);
