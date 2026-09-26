@@ -303,6 +303,7 @@ function testPage(extensionId) {
 }
 
 export async function runNativeSidepanelQa({
+  headed = false,
   extensionDir,
   expectedRelease,
   releaseReceiptPath = RELEASE_RECEIPT,
@@ -339,7 +340,7 @@ export async function runNativeSidepanelQa({
     child = spawn(
       chromeExecutable,
       [
-        '--headless=new',
+        ...(!headed ? ['--headless=new'] : []),
         '--enable-automation',
         '--no-first-run',
         '--no-default-browser-check',
