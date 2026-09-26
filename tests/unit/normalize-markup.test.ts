@@ -126,6 +126,37 @@ describe('normalizeSemanticMarkup — highlighted code blocks', () => {
 });
 
 describe('scrape pipeline — inline SVG figures', () => {
+  it('keeps an inline chart caption and HTML label with the graphic', async () => {
+    const doc = new DOMParser().parseFromString(
+      `<!doctype html><html><head><title>Chart lesson</title></head><body><article>
+        <h1>Chart lesson</h1><p>${'Context before the graph. '.repeat(40)}</p>
+        <figure>
+          <svg aria-label="Growth curve" width="100" height="100" viewBox="0 0 100 100">
+            <path d="M0 90 L100 10" stroke="blue" />
+          </svg>
+          <figcaption>Revenue grew from January to March.</figcaption>
+          <span>Measured in thousands of dollars.</span>
+        </figure>
+        <p>${'Context after the graph. '.repeat(40)}</p>
+      </article></body></html>`,
+      'text/html',
+    );
+
+    const result = await runScrape(doc, {
+      includeImages: false,
+      includeVideos: false,
+      includeAudio: false,
+      includeLinks: false,
+      includeStructured: false,
+    });
+    const markdown = result.article.content_markdown ?? '';
+
+    expect(result.article.extractor).toBe('defuddle');
+    expect(markdown).toContain('![Growth curve](data:image/svg+xml;base64,');
+    expect(markdown).toContain('Revenue grew from January to March.');
+    expect(markdown).toContain('Measured in thousands of dollars.');
+  });
+
   it.each([
     {
       name: 'a labelled standalone chart',
