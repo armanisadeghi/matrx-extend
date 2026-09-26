@@ -1,0 +1,15 @@
+{
+  "status": "DIAGNOSED_SOURCE_ONLY",
+  "summary": "The release's docs:tools generator cannot read the private tool catalog with the extension publishable key. Its authenticated Management API fallback calls the Supabase CLI, which is absent from this host's PATH. docs:tools warns and exits zero, but the later strict tool-drift and migration checks will fail closed if their private reads also cannot use an authenticated path.",
+  "observed_evidence": [
+    "tmp/release-logs/latest.log records 401 / 42501 permission denied on tool.binding for the publishable read, then spawnSync supabase ENOENT for the Management API fallback.",
+    "scripts/_supabase-management.ts calls the supabase executable with a SELECT-only query and resolves MATRX_SUPABASE_PROJECT_REF from env files; that named key is present in .env.production and .env.development.",
+    "supabase is absent from PATH and from this repo's and sibling aidream's node_modules/.bin. The authenticated Supabase MCP tool is available to the agent, but its session is not a shell credential or CLI executable."
+  ],
+  "least_privilege_remedy": "Keep tool.binding, tool.definition, tool.surface_defaults, and the migration ledger private to browser roles. Provide a trusted Supabase CLI binary and a noninteractive operator-authenticated Management API session to the guarded release process, then verify the helper's exact db query invocation against that installed CLI's --help and rerun the real strict gates. The existing Supabase MCP can independently perform read-only SQL verification, but cannot by itself satisfy the shell gate; any MCP-backed release bridge would need explicit source integration and its own strict evidence. Do not grant anon SELECT or use a service-role key in the extension.",
+  "limitations": [
+    "No credential values were inspected or printed, and no CLI install, SQL, test, build, or network write was performed.",
+    "Actual strict drift/migration outcomes are pending the coordinator's guarded rerun; package-twins was the first current blocking gate."
+  ],
+  "next_action": "Coordinator should resolve the package-twins false positive first, then establish the authenticated CLI read path before rerunning the exact release candidate's strict DB gates."
+}
