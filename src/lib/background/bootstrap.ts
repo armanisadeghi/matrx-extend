@@ -108,7 +108,11 @@ export function bootstrapBackground(): void {
   //       offscreen broadcast ArrayBuffer (which JSON-serializes to `{}`).
   //       Closing eagerly here guarantees the next `ensureOffscreen` call
   //       creates a fresh document with the latest bundle.
-  void closeStaleOffscreenOnBoot();
+  // The reconnect path creates the same singleton document. Keep it behind
+  // this cleanup: otherwise a reload can open a fresh desktop socket and
+  // then asynchronously close its new offscreen owner, leaving the desktop
+  // healthy but without an extension session.
+  const staleOffscreenCleanup = closeStaleOffscreenOnBoot();
 
   // ── 1. Register message handlers SYNCHRONOUSLY so they're ready immediately.
   registerHandlers();
@@ -154,7 +158,8 @@ export function bootstrapBackground(): void {
   //       parallel made cold service-worker boots race as anonymous users:
   //       remote app_instances discovery returned no rows and private
   //       Broadcast channels could fail their first subscribe.
-  void rehydrateSupabaseSession().then(async () => {
+  void staleOffscreenCleanup.then(async () => {
+    await rehydrateSupabaseSession();
     const state = await probeDesktop();
     lastDesktopTransport = state.transport;
     lastDesktopHealthKey = desktopHealthSnapshotKey(state.health);
