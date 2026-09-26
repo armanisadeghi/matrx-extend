@@ -5,7 +5,7 @@
  * Real UI login follows isolated-admin-signin-acceptance.mjs; that script is
  * an executable entrypoint, so importing it would launch a second browser.
  */
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { lstat, mkdir, open, readFile, rename, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -172,30 +172,91 @@ async function organizationState(panel, approvedName) {
 }
 
 async function chooseOrganization(panel, name, approvedName) {
-  await click(panel, 'title', 'Settings');
-  await openSection(panel, 'Organization');
-  await waitFor(
-    'organization_control',
-    () => organizationState(panel, approvedName),
-    (state) => state?.controlCount === 1,
-  );
-  await click(panel, 'organization', 'Acting as');
-  const offered = await organizationState(panel, approvedName);
-  if (offered.approvedOptionCount !== 1) fail('approved_org_not_unique_or_absent');
-  if (
-    offered.otherOptions.filter((option) => option === name).length !==
-    (name === approvedName ? 0 : 1)
-  )
-    fail('comparison_org_not_unique_or_absent');
-  await click(panel, 'option', name);
-  return waitFor(
-    'organization_selected',
-    () => organizationState(panel, approvedName),
-    (state) =>
-      state?.displayed === name &&
-      Boolean(state.storedId) &&
-      state.storedApproved === (name === approvedName),
-  );
+  let step = 'settings_tab';
+  try {
+    await click(panel, 'title', 'Settings');
+    step = 'organization_section';
+    await openSection(panel, 'Organization');
+    step = 'organization_control_ready';
+    await waitFor(
+      'organization_control',
+      () => organizationState(panel, approvedName),
+      (state) => state?.controlCount === 1,
+    );
+    step = 'organization_control_click';
+    await click(panel, 'organization', 'Acting as');
+    step = 'approved_option_ready';
+    const offered = await organizationState(panel, approvedName);
+    if (offered.approvedOptionCount !== 1) fail('approved_org_not_unique_or_absent');
+    if (
+      offered.otherOptions.filter((option) => option === name).length !==
+      (name === approvedName ? 0 : 1)
+    )
+      fail('comparison_org_not_unique_or_absent');
+    step = 'organization_option_click';
+    await click(panel, 'option', name);
+    step = 'organization_selected';
+    return await waitFor(
+      'organization_selected',
+      () => organizationState(panel, approvedName),
+      (state) =>
+        state?.displayed === name &&
+        Boolean(state.storedId) &&
+        state.storedApproved === (name === approvedName),
+    );
+  } catch (error) {
+    // The previous run established that a notice was present, but the
+    // generic selection failure concealed which real UI action it blocked.
+    // Keep only fixed categories and counts from this credential-bearing UI.
+    const pointer = error?.driverFailure;
+    report.observations.d23.organizationSelectionFailure = {
+      step,
+      driverCode: pointer?.code ?? 'non_pointer_failure',
+      pointerHitTarget: pointer?.hitTarget === true,
+      centerKnownNotice: pointer?.centerOccluder?.known_notice ?? null,
+      centerInDialog: pointer?.centerOccluder?.in_dialog === true,
+      centerInAlert: pointer?.centerOccluder?.in_alert === true,
+    };
+    try {
+      report.observations.d23.organizationSelectionSurface = await evaluate(
+        panel,
+        `(() => {
+          const settings = document.querySelector('button[role="tab"][title="Settings"]');
+          const dialogs = [...document.querySelectorAll('[role="dialog"]')];
+          const picker = dialogs.filter((dialog) =>
+            dialog.querySelector('[data-slot="dialog-title"]')?.textContent.trim() ===
+              'Which organization are you working in?');
+          const rows = [...document.querySelectorAll('span')]
+            .filter((span) => span.textContent.trim() === 'Acting as');
+          return {
+            settingsTabActive: settings?.getAttribute('data-state') === 'active',
+            dialogCount: dialogs.length,
+            organizationPickerDialogCount: picker.length,
+            actingAsRowCount: rows.length,
+            organizationControlCount: rows.flatMap((row) =>
+              [...row.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]).length,
+          };
+        })()`,
+      );
+    } catch {
+      report.observations.d23.organizationSelectionSurface = 'unavailable';
+    }
+    try {
+      const privateScreenshot = join(REPO, 'test-results', `d23-org-selection-${randomUUID()}.png`);
+      const shot = await panel.send('Page.captureScreenshot', {
+        format: 'png',
+        captureBeyondViewport: false,
+      });
+      await writeFile(privateScreenshot, Buffer.from(shot.data, 'base64'), {
+        flag: 'wx',
+        mode: 0o600,
+      });
+      report.observations.d23.organizationSelectionScreenshot = 'captured_private';
+    } catch {
+      report.observations.d23.organizationSelectionScreenshot = 'unavailable';
+    }
+    throw error;
+  }
 }
 
 // Return only a count for the known, typed no-workspace failure UI. The

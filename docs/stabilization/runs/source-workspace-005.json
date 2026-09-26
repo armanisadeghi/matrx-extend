@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "run_id": "source-workspace-005",
+  "defect_id": "EXT-D-0023",
+  "source": {
+    "result_path": "test-results/source-workspace-acceptance.json",
+    "result_sha256": "152d47f00acf27b8dd349d35b98d224958b3170a0ecf283b0a1fc19bc9f9e4aa",
+    "guard_log_path": "/tmp/matrx-source-workspace-005.log",
+    "guard_log_sha256": "ef5e41b5d499f85b92260f42e5989452fe57c72355a3754c321ccf7c92466b59"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T21:46:15.661Z",
+    "child_exit_at": "2026-09-26T21:46:27.192Z",
+    "child_exit_code": 1
+  },
+  "build": {
+    "version": "0.2.78",
+    "tree_sha256": "b126815ce6f93fe761d9559d0148922dbcffbe74217a25f92bc566e954790f7d"
+  },
+  "observations": {
+    "real_admin_ui": true,
+    "initial_no_workspace_notice": "observed",
+    "approved_organization_selection": "unverified",
+    "save_input": "not_attempted",
+    "checkpoint": "existing_reserved_unchanged"
+  },
+  "failure": {
+    "stage": "approved_organization_selection",
+    "code": "stage_failed",
+    "status": "unverified"
+  },
+  "conclusion": "The no-workspace notice appeared naturally before selection. The run stopped during UI organization selection before the approved organization was selected. Its generic failure gives no pointer or substep category, so the notice cannot yet be blamed for this failure. No Save input was sent."
+}
