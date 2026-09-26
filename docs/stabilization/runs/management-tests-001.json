@@ -1,0 +1,24 @@
+{
+  "id": "management-tests-001",
+  "feature_id": "EXT-F-0003",
+  "defect_id": "EXT-D-0004",
+  "status": "fail",
+  "source_sha": "decb69e",
+  "at": "2026-09-26T03:14:44.105Z",
+  "command": [
+    "pnpm",
+    "exec",
+    "vitest",
+    "run",
+    "--maxWorkers=1",
+    "--minWorkers=1",
+    "scripts/_supabase-management.test.ts",
+    "scripts/_tool-db-row-validation.test.ts",
+    "scripts/check-migrations.test.ts"
+  ],
+  "exit_code": 1,
+  "tests_executed": 0,
+  "resource_invalid": false,
+  "reason": "New tests lived under scripts/, outside configured Vitest include paths; no test files found. No verification pass is claimed.",
+  "log_sha256": "cab2ccd8206822c29b7fc9ccabb44bd80fca1fe90a6eeb1ee11ecbea48b69da5"
+}

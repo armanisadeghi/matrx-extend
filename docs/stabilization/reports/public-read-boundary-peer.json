@@ -1,0 +1,20 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Independent source-only peer verification of commit b61a6b3 for the confirmed public-success validation bypass. No tests, builds, UI, SQL, network writes, or product edits performed.",
+  "finding_a_behavior": {
+    "status": "ADDRESSED_IN_SOURCE",
+    "evidence": [
+      "check-tool-db-drift.ts validates public bindings, tool definitions, and surface rows with the shared isDbBindingRow/isDbToolRow/isDbSurfaceDefaultsRow predicates before accepting the public result; any invalid shape enters the operator-read fallback, then strict failure if unavailable.",
+      "dump-tools-from-db.ts validates public bindings and definitions with the same production predicates before generating docs; its error path attempts separately validated operator reads and leaves docs untouched if both fail.",
+      "check-migrations.ts validates the complete public ledger array with isLedgerRow before accepting it; malformed extra rows and non-array payloads enter the operator fallback, then strict failure if unavailable.",
+      "Added public-path command guards cover valid catalog and complete-ledger positive controls with operator authorization absent, plus null parameters, malformed extra definitions/ledger rows, non-array responses, invalid bindings, and invalid surface fields."
+    ],
+    "limits": "The source satisfies the requested behavior. New guards and live strict commands were not executed in this peer lane; no runtime pass is claimed."
+  },
+  "finding_b_quality_security": {
+    "verdict": "PASS_SOURCE_REVIEW",
+    "evidence": "Validation occurs before successful-public results enter comparison or documentation generation. The fallback is fail-closed for strict checks and preserves existing docs on failure. Positive controls exercise the actual command entry points with fixture publishable credentials and no operator token; negative controls make malformed public responses unable to pass through the successful-public branch.",
+    "limits": "Test assertions are source-reviewed only. Root owns the focused test rerun and strict release commands."
+  },
+  "unresolved": []
+}

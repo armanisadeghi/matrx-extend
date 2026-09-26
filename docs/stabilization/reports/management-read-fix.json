@@ -7,6 +7,7 @@
     "scripts/_tool-db-row-validation.ts",
     "scripts/_tool-db-row-validation.test.ts",
     "scripts/dump-tools-from-db.ts",
+    "tests/unit/private-catalog-commands.test.ts",
     "scripts/check-tool-db-drift.ts",
     "scripts/check-migrations.ts",
     "scripts/check-migrations.test.ts",
@@ -50,10 +51,17 @@
     ],
     "sibling_census": "The same early public-credential return existed in docs:tools and tool-drift; both now attempt operator reads when the public configuration is absent."
   },
+  "live_catalog_correction": {
+    "failed_run": "release-real-003",
+    "diagnosis": "The Management API returned the canonical screenshot_region rect object parameter with required [x,y,w,h]. The shared validator rejected this valid nested JSON Schema required array because it accepted only boolean required fields.",
+    "source_fix": "DbToolRow and isDbToolRow now accept boolean or string[] required fields, rejecting mixed and object values. Both the drift comparator and generated-doc parameter summary mark a top-level parameter required only when required === true, so the nested array does not imply top-level rect presence.",
+    "guard": "tests/unit/tool-db-row-validation.test.ts includes the live rect contract as a valid fixture and rejects mixed-array and object required values. tests/unit/private-catalog-commands.test.ts checks the real docs command does not mislabel nested required members as top-level parameter presence and rejects malformed arrays.",
+    "verification": "Source-only; root must execute the focused guard and real strict release retest."
+  },
   "limitations": [
     "No tests, compile, build, SQL, or release were run by this worker under the active single-heavy-job lease.",
     "The operator token is read only from process configuration or sibling aidream/.env; its value is never copied into extension env files or emitted in error messages.",
-    "Review round 1 source findings are repaired but tests, RED/GREEN guard proof, live strict gate result, and scoped independent re-review are pending; EXT-D-0004 remains in-fix."
+    "Release-real-003 revealed a valid live nested required array that the validator rejected. Its source correction is complete; focused guard, real strict release retest, and any further peer verification remain root-owned."
   ],
-  "next_action": "After the UI resource lease ends, root runs the focused helper test, compile, and real strict release candidate under the guard, then obtains fresh source peer review."
+  "next_action": "Root runs the focused row-validator guard, compile, and real strict release candidate under its resource guard, then records the retest outcome."
 }

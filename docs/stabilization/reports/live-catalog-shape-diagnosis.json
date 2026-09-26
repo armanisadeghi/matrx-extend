@@ -1,0 +1,45 @@
+{
+  "status": "SOURCE_CORRECTED_RETEST_PENDING",
+  "summary": "The private Management API catalog read rejects a valid nested JSON Schema required array on screenshot_region.parameters.rect. The new validator permits only a boolean required flag, so docs:tools reports invalid rows despite valid database data.",
+  "changed_files": [
+    "scripts/_tool-db-row-validation.ts",
+    "scripts/dump-tools-from-db.ts",
+    "tests/unit/tool-db-row-validation.test.ts",
+    "tests/unit/private-catalog-commands.test.ts",
+    "docs/stabilization/defects/EXT-D-0004.json",
+    "docs/stabilization/reports/management-read-fix.json",
+    "docs/stabilization/reports/live-catalog-shape-diagnosis.json"
+  ],
+  "verification": [
+    {
+      "source": "Supabase MCP read-only information_schema SELECT, project brsgrqvjdzwihsvnfqkf",
+      "result": "tool.definition.parameters is NOT NULL jsonb. Relevant binding and surface fields have declared non-null primitive/array types; queried catalog has 84 binding rows, 82 distinct active-bound definitions and 2 surface rows."
+    },
+    {
+      "source": "Supabase MCP read-only aggregate SELECT over active chrome-extension bindings",
+      "result": "Exactly one definition violates the current predicate: screenshot_region, parameter rect, required JSON type array. No selected definition has a null or non-object parameter map."
+    },
+    {
+      "source": "Supabase MCP read-only SELECT of screenshot_region.parameters.rect",
+      "result": "rect has type object, required [x,y,w,h], and matching numeric properties; this is the normal JSON Schema contract for nested required object members."
+    },
+    {
+      "source": "src/lib/tools/handlers/extract.ts and scripts/check-tool-db-drift.ts source inspection",
+      "result": "The live Zod rect is an optional object whose x/y/w/h members are required. The drift comparator uses only top-level parameter required === true; a nested string-array required field is compatible with its existing comparison."
+    }
+  ],
+  "specific_mismatch": {
+    "file": "scripts/_tool-db-row-validation.ts",
+    "field": "DbToolRow.parameters.rect.required",
+    "database_value_shape": "string[]",
+    "validator_allowed_shape": "boolean only",
+    "classification": "validator false rejection; database row is canonical and agrees with live Zod argument structure"
+  },
+  "minimal_correction": "Allow parameter.required to be a boolean or an array of strings in DbToolRow and isDbToolRow, then add a valid nested-object fixture with required [x,y,w,h] while retaining rejection for non-string arrays and malformed values. Do not alter database data, public grants, or the drift comparator's top-level required check.",
+  "limitations": [
+    "No tests, builds, release gates, browser actions, or database mutations were run in this lane.",
+    "The release log's generic invalid rows error does not identify a row; the active-bound SQL shape census isolates the only current predicate mismatch, subject to root's guarded rerun."
+  ],
+  "source_correction": "The shared row type and predicate now accept required as boolean or string[] and reject mixed arrays or objects. A regression fixture reproduces the exact live screenshot_region rect object shape. The drift comparator and generated-doc parameter summary treat only required === true as top-level parameter presence.",
+  "next_action": "Root runs the focused validator test and real strict release gate under its resource guard, then records the retest result."
+}

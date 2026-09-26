@@ -1,0 +1,35 @@
+{
+  "review": "EXT-D-0004 catalog shape peer review",
+  "commit_reviewed": "c13b735a2da1c4ea7e975aff3b4ebb691e186c84",
+  "status": "source-accepted-live-unverified",
+  "verdict_a_acceptance": {
+    "result": "ACCEPTED from source; live release outcome remains unverified",
+    "evidence": [
+      "scripts/_tool-db-row-validation.ts accepts required as a boolean or an array whose every member is a string; malformed mixed-type arrays and object-valued required are rejected.",
+      "scripts/dump-tools-from-db.ts labels a top-level input required only when required === true, so rect.required child names do not mark rect as required.",
+      "tests/unit/tool-db-row-validation.test.ts contains positive screenshot_region rect.required string-array and negative malformed-array cases.",
+      "tests/unit/private-catalog-commands.test.ts exercises doc output for nested required members and rejection of malformed nested-required arrays before docs writes."
+    ],
+    "live_evidence": "The defect record reports a live screenshot_region.parameters.rect.required array was the release failure trigger; this reviewer did not run the release or query live data."
+  },
+  "verdict_b_quality": {
+    "result": "PARTIAL",
+    "findings": [
+      "The validator intentionally permits unknown JSON Schema keywords but validates only each top-level parameter object. It does not recursively validate properties or array item schemas; malformed deeper required values could pass as a row. This is outside the demonstrated live shape but limits the broad claim that malformed schema rows refuse.",
+      "The new tests appear to target both regression directions, but their execution and the real release retest are root-owned and remain unverified here."
+    ]
+  },
+  "files_touched": [
+    "docs/stabilization/reports/catalog-shape-peer.json"
+  ],
+  "open_questions": [
+    "Did the root-owned focused tests and strict release retest pass against the live catalog?",
+    "Does the DB contract permit arbitrary nested JSON Schema keywords, or should recursive validation be in scope?"
+  ],
+  "coordinator_adjudication": {
+    "finding": "CONFIRMED limitation; not a blocker for this row-reader contract",
+    "reason": "Both consumers read parameter type, enum and boolean required only (dump-tools-from-db.ts:39-45, check-tool-db-drift.ts:243-283). Nested properties/items remain unknown passthrough in DbToolRow and are neither interpreted nor claimed validated. A full JSON Schema validator is outside this correction; no claim of recursive schema certification is made.",
+    "cost_if_wrong": "A malformed unused nested schema remains undetected by these release readers; runtime schema certification is not provided by this gate.",
+    "focused_evidence": "catalog-shape-tests-001:31 passed"
+  }
+}

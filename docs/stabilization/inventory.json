@@ -221,7 +221,18 @@
           "dimensions": [
             "warm",
             "auth-redirect"
-          ]
+          ],
+          "readiness_evidence": {
+            "run_id": "dev-auth-readiness-001",
+            "status": "unverified",
+            "verified_substeps": [
+              "Actual login source uses public PKCE OAuth client registration, not general Auth redirect allowlist.",
+              "Active client registration contains exact development callback and expected browser callbacks."
+            ],
+            "remaining_criteria": [
+              "Actual browser sign-in and reload/session behavior on fresh unpacked build; Mac unlock pending."
+            ]
+          }
         }
       ],
       "cells": {
@@ -235,7 +246,8 @@
             "render-compile-001",
             "integrated-compile-001",
             "integrated-install-002",
-            "integrated-regression-001"
+            "integrated-regression-001",
+            "dev-auth-readiness-001"
           ],
           "retest_status": "not-run"
         },
@@ -249,7 +261,8 @@
             "render-compile-001",
             "integrated-compile-001",
             "integrated-install-002",
-            "integrated-regression-001"
+            "integrated-regression-001",
+            "dev-auth-readiness-001"
           ],
           "retest_status": "not-run"
         },
@@ -263,7 +276,8 @@
             "render-compile-001",
             "integrated-compile-001",
             "integrated-install-002",
-            "integrated-regression-001"
+            "integrated-regression-001",
+            "dev-auth-readiness-001"
           ],
           "retest_status": "not-run"
         }
@@ -922,7 +936,8 @@
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
-            "EXT-D-0004"
+            "EXT-D-0004",
+            "EXT-D-0005"
           ],
           "run_ids": [
             "release-red-001",
@@ -930,7 +945,9 @@
             "release-recovery-001",
             "release-worker-guard-001",
             "integrated-regression-001",
-            "release-real-002"
+            "release-real-002",
+            "release-real-003",
+            "release-real-004"
           ],
           "retest_status": "not-run"
         },
@@ -939,7 +956,8 @@
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
-            "EXT-D-0004"
+            "EXT-D-0004",
+            "EXT-D-0005"
           ],
           "run_ids": [
             "release-red-001",
@@ -947,7 +965,9 @@
             "release-recovery-001",
             "release-worker-guard-001",
             "integrated-regression-001",
-            "release-real-002"
+            "release-real-002",
+            "release-real-003",
+            "release-real-004"
           ],
           "retest_status": "not-run"
         },
@@ -956,7 +976,8 @@
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
-            "EXT-D-0004"
+            "EXT-D-0004",
+            "EXT-D-0005"
           ],
           "run_ids": [
             "release-red-001",
@@ -964,16 +985,18 @@
             "release-recovery-001",
             "release-worker-guard-001",
             "integrated-regression-001",
-            "release-real-002"
+            "release-real-002",
+            "release-real-003",
+            "release-real-004"
           ],
           "retest_status": "not-run"
         }
       },
       "readiness_gaps": [
-        "Real strict release and final integration remain unverified: release-real-002 stopped before publication when package-twins reported numeric resource telemetry as a formatter (EXT-D-0003).",
+        "Pending strict green real release; latest release-real-004 refused publication on EXT-D-0005 records inclusion mismatch.",
         "Isolated fixture evidence validates targeted release ordering/recovery controls but does not prove external service gates or a completed real push."
       ],
-      "current_source_behavior": "Committed release path assembles a generated candidate, runs mandatory gates and builds before atomic main/tag publication, refuses failed candidates, rebuilds and revalidates after a remote race, and stages/promotes artifacts transactionally. Isolated release-green-001 and recovery/guard runs cover those targeted behaviors. A real strict release remains incomplete: release-real-002 stopped before publication at package-twins due the separate numeric-arithmetic false positive EXT-D-0003; no successful real release/integration is claimed.",
+      "current_source_behavior": "Validated-before-publication release path has independent fixture proof and real refusal proof. Release-real-004 passed 1300 unit tests, live private catalog reads and migration verification, then refused publication at records surface inclusion mismatch. Real successful publication remains unverified.",
       "unverified_leads": [
         {
           "id": "EXT-L-0003",
@@ -982,9 +1005,23 @@
           "source_anchor": "release.sh:493",
           "state": "needs-reproduction",
           "wave": "A"
+        },
+        {
+          "id": "EXT-L-0004",
+          "summary": "Declared google bundle has is_system=false; source policy R14 expects system bundle. Impact and intended ownership need verification.",
+          "source": "docs/stabilization/reports/records-drift-diagnosis.json",
+          "state": "needs-reproduction",
+          "wave": "D"
+        },
+        {
+          "id": "EXT-L-0005",
+          "summary": "Backend binding-based Chrome discovery may differ from canonical surface-inclusion contract; strict gate error overstates demonstrated model invisibility.",
+          "source": "docs/stabilization/reports/records-drift-diagnosis.json",
+          "state": "needs-reproduction",
+          "wave": "D"
         }
       ],
-      "integration_status": "Pending a strict green real release and final integration; latest real attempt stopped before publication on EXT-D-0003."
+      "integration_status": "Pending strict green real release; latest release-real-004 refused publication on EXT-D-0005 records inclusion mismatch."
     },
     {
       "id": "EXT-F-1001",
@@ -2251,7 +2288,7 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
+              "status": "blocked",
               "run_id": "guest-settings-002",
               "evidence": "docs/stabilization/runs/guest-settings-002.json",
               "verified_substeps": [
@@ -2260,7 +2297,9 @@
               "remaining_criteria": [
                 "Run the guest negative-visibility/guidance check in warm and cold/reloaded UI state, confirming signed-out state throughout."
               ],
-              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases."
+              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
+              "blocked_run_id": "guest-settings-003",
+              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved."
             }
           }
         },
@@ -2337,7 +2376,7 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
+              "status": "blocked",
               "run_id": "render-retest-001",
               "evidence": "docs/stabilization/runs/render-retest-001.json",
               "verified_substeps": [
@@ -2345,7 +2384,9 @@
               ],
               "remaining_criteria": [
                 "Verify each selected appearance is actually applied and persists after reopen/reload."
-              ]
+              ],
+              "blocked_run_id": "guest-settings-003",
+              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved."
             }
           }
         },
@@ -2422,7 +2463,7 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
+              "status": "blocked",
               "run_id": "guest-settings-002",
               "evidence": "docs/stabilization/runs/guest-settings-002.json",
               "verified_substeps": [
@@ -2431,7 +2472,9 @@
               "remaining_criteria": [
                 "Run the guest negative-visibility/guidance check in warm and cold/reloaded UI state, confirming signed-out state throughout."
               ],
-              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases."
+              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
+              "blocked_run_id": "guest-settings-003",
+              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved."
             }
           }
         },
@@ -2825,7 +2868,7 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
+              "status": "blocked",
               "run_id": "guest-settings-002",
               "evidence": "docs/stabilization/runs/guest-settings-002.json",
               "verified_substeps": [
@@ -2834,7 +2877,9 @@
               "remaining_criteria": [
                 "Run the guest negative-visibility/guidance check in warm and cold/reloaded UI state, confirming signed-out state throughout."
               ],
-              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases."
+              "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
+              "blocked_run_id": "guest-settings-003",
+              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved."
             }
           }
         },
@@ -3611,7 +3656,14 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "blocked",
+              "blocked_run_id": "guest-settings-003",
+              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T53",

@@ -28,14 +28,29 @@
   "reproducibility_count": "1/1 observed real release regeneration; strict post-fix run pending",
   "severity": "S1: strict release cannot verify private catalog and migration state on this host",
   "priority": "P0: blocks a truthful strict release",
-  "state": "in-fix",
+  "state": "retest-pass",
   "owner": "/root",
   "root_cause": "The build-time shared reader assumed an installed, authenticated Supabase CLI instead of consuming the existing operator Management API credential at the read point.",
-  "sibling_census": "The docs:tools generator, strict tool-drift checker, and strict migration ledger checker share this helper. Review round 1 found all three had an early public-credential branch; each now attempts the operator read when public configuration is absent. The catalog checker also validates full private definition and surface shapes before comparison.",
-  "fix_commits": [],
-  "original_reproduction_retest_run": null,
-  "surrounding_case_runs": [],
-  "reviewer_identity": null,
+  "sibling_census": "The docs:tools generator, strict tool-drift checker, and strict migration ledger checker share this helper. Review round 1 found all three had an early public-credential branch; each now attempts the operator read when public configuration is absent. The catalog checker also validates full private definition and surface shapes before comparison. Final repair adds complete docs row validation, canonical private bundle-member reads, strict unknown-membership failure, and discovered command-level guards in tests/unit. Release-real-003 isolated one legitimate nested JSON Schema required array; the shared definition validator now accepts boolean top-level presence or string-array nested object members without accepting malformed arrays.",
+  "fix_commits": [
+    "2042903",
+    "decb69e",
+    "6f87da0",
+    "b61a6b3",
+    "c13b735"
+  ],
+  "original_reproduction_retest_run": "release-real-004",
+  "surrounding_case_runs": [
+    "management-tests-002",
+    "management-tests-003",
+    "management-compile-001",
+    "catalog-shape-tests-001"
+  ],
+  "reviewer_identity": [
+    "/root/management_read_final_peer",
+    "/root/public_read_boundary_peer",
+    "/root/catalog_shape_peer"
+  ],
   "transition_history": [
     {
       "at": "2026-09-26T02:56:57Z",
@@ -60,10 +75,52 @@
       "from": "in-fix",
       "to": "in-fix",
       "reason": "Independent peer returned A/B PARTIAL: strict migration false-green without public env and shallow private catalog row predicates. Repair and focused guard tests added; root execution pending."
+    },
+    {
+      "at": "2026-09-26T03:21:04.441876+00:00",
+      "from": "in-fix",
+      "to": "in-fix",
+      "reason": "Final repair resolves both second-review findings. Canonical bundle membership proven by readonly MCP; actual helper/checker commands and discovered guards remain root verification pending."
+    },
+    {
+      "at": "2026-09-26T03:26:22.193638+00:00",
+      "from": "in-fix",
+      "to": "in-fix",
+      "reason": "Final peer confirmed public-success transport bypass of private row validators. Same predicates now validate public bindings, definitions, surfaces, and ledger before acceptance; new public positive/negative command guards require root execution."
+    },
+    {
+      "at": "2026-09-26T03:29:30.630256+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Bounded escalation completed private/public validation and canonical bundle relation; independent source recheck accepted correction, 40 discovered guards passed. Actual strict release remains pending."
+    },
+    {
+      "at": "2026-09-26T03:34:46Z",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Release-real-003 reached the authenticated Management API, then rejected a valid screenshot_region.parameters.rect.required string array as invalid rows; other strict gates passed."
+    },
+    {
+      "at": "2026-09-26T03:34:46Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Read-only live catalog census and source Zod contract identified the validator's boolean-only required predicate as the specific false rejection."
+    },
+    {
+      "at": "2026-09-26T03:34:46Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source correction accepts boolean or string-array required fields and adds the live nested rect positive and malformed-array negative fixtures; guarded test and real release retest remain root-owned."
+    },
+    {
+      "at": "2026-09-26T03:44:04.533Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Live docs regenerated, migrations verified, and drift comparison completed; a separate records inclusion mismatch stopped publication."
     }
   ],
   "limitations": [
-    "No post-fix DB request, tests, build, or release was run by this source-only worker.",
-    "The strict gate remains unverified until root's guarded candidate run and independent peer review."
+    "Integration pending: separate EXT-D-0005 stops release.",
+    "Row validation covers consumed fields, not recursive JSON Schema certification."
   ]
 }
