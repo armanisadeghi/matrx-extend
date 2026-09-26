@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "report_id": "member-vault-runtime-prepare",
+  "status": "source_prepared_not_executed",
+  "runner": "tests/browser/member-vault-access-probe.mjs",
+  "scope": "Read-only first access step for the existing test@test.com fixture. An owned disposable Chrome profile performs real admin web and extension sign-in, then checks only whether a masked Vault item title explicitly contains test@test.com and whether its row says Fill on.",
+  "execution_guard": "The root resource guard must approve the run, set MATRX_MEMBER_VAULT_PROBE_RUN=1 for that process, and ensure the shared admin Vault lease is free. The runner reuses the receipt-verified native side-panel harness and its owned Chrome cleanup. No browser, build, or test run occurred in preparation.",
+  "evidence_boundary": "The runner persists only designated-candidate booleans and counts, stage categories, and verified admin identity booleans. It does not persist item titles, item IDs, page text, credential values, sessions, raw auth URLs, network bodies, or authenticated screenshots. Existing harness screenshots are taken before authentication; the root must ignore them for credential evidence. No post-auth screenshot is taken because unrelated Vault entries could be exposed.",
+  "session_transition": "This first step keeps the admin website and extension sessions intact until the disposable profile closes. The web app's sign-out source currently calls Supabase signOut({scope:'local'}), but this preparation has not proved that sign-out leaves the separate extension OAuth session usable. A later guarded native step must sign out only the owned website profile, check the extension identity again, and stop if it lost Vault access before offering member Vault Sign in.",
+  "member_identity": "No member login or organization-role acceptance is claimed. A matching title alone cannot establish that the saved credential belongs to test@test.com; member website identity and extension identity must be observed after an actual supported Vault Sign in in a separate guarded step.",
+  "prohibited_operations": [
+    "No primary Chrome profile sign-out or auth injection",
+    "No account, role, organization, or Vault item mutation",
+    "No Reveal, Fill, Sign in, materialize, or credential plaintext inspection in this first access step"
+  ],
+  "source_references": [
+    "tests/browser/isolated-admin-signin-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/vault-acceptance-lease.cjs",
+    "src/features/vault/VaultView.tsx",
+    "/Users/armanisadeghi/code/ai-matrx/features/shell/auth/useSignOut.ts"
+  ]
+}
