@@ -217,11 +217,17 @@ function productionDeps(): LocalBrowserControllerDeps {
       claim: claimLocalCommand,
       complete: completeLocalCommand,
       currentDocument: async (tabId) => {
-        const frame = (await chrome.webNavigation.getFrame({ tabId, frameId: 0 })) as unknown as {
+        let frame: {
           documentId?: unknown;
           url?: unknown;
           errorOccurred?: unknown;
         } | null;
+        try {
+          frame = (await chrome.webNavigation.getFrame({ tabId, frameId: 0 })) as typeof frame;
+        } catch {
+          // Missing/failed frames cannot prove navigation or authorize a login.
+          return null;
+        }
         // Chrome can keep the requested HTTPS URL on an error document. It is
         // not evidence that navigation succeeded or that a login page exists.
         return frame?.errorOccurred !== true &&
