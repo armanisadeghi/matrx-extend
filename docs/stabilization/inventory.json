@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T19:10:12.497840+00:00",
+  "updated_at": "2026-09-26T19:17:33.386368+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -9590,7 +9590,8 @@
             "Open the Source in the web app."
           ],
           "expected": [
-            "A confirmed landing is shown as saved and opens the corresponding Source; refusal remains an honest, recoverable outcome."
+            "A confirmed landing is shown as saved and opens the corresponding Source; refusal remains an honest, recoverable outcome.",
+            "A successful scrape lands as an internal Source in the explicitly selected organization, with no personal visibility option; missing organization never selects a fallback."
           ],
           "dimensions": [
             "warm",
@@ -10378,7 +10379,9 @@
             "EXT-D-0001",
             "EXT-D-0018"
           ],
-          "run_ids": [],
+          "run_ids": [
+            "incoming-sources-001"
+          ],
           "retest_status": "not-run"
         },
         "admin": {
@@ -10387,7 +10390,9 @@
             "EXT-D-0001",
             "EXT-D-0018"
           ],
-          "run_ids": [],
+          "run_ids": [
+            "incoming-sources-001"
+          ],
           "retest_status": "not-run"
         }
       },
@@ -20397,19 +20402,23 @@
             "admin"
           ],
           "preconditions": [
-            "Signed-in user with at least two saved captures and an additional page; one no-results query."
+            "Signed-in user with at least two saved captures and an additional page; one no-results query.",
+            "Two real authorized members of one selected test workspace, a Source created for this test by member A, and another workspace where that Source is absent; never manufacture access by changing roles."
           ],
           "steps": [
-            "Refresh list; search distinct title, URL, and description tokens; clear search; open capture; use Back; use Load more; on empty list use Go to Scrape."
+            "Refresh list; search distinct title, URL, and description tokens; clear search; open capture; use Back; use Load more; on empty list use Go to Scrape.",
+            "As member B, list the same workspace and open A\u2019s Source; check Captured by labeling for self, readable creator, and an unavailable creator name; switch to the other workspace and recheck isolation."
           ],
           "expected": [
-            "Search filters list; detail corresponds to selected capture; pagination adds results without duplicates; empty-state shortcut opens Scrape."
+            "Search filters list; detail corresponds to selected capture; pagination adds results without duplicates; empty-state shortcut opens Scrape.",
+            "Workspace members see authorized internal Sources regardless of creator. Attribution says you for self, the permitted display name when readable, or another member when unreadable; it never invents a name. Another workspace does not show the Source."
           ],
           "dimensions": [
             "member",
             "admin",
             "reload"
-          ]
+          ],
+          "verification_status": "unverified-after-source-change"
         },
         {
           "id": "EXT-F-2009-T03",
@@ -20471,20 +20480,24 @@
             "admin"
           ],
           "preconditions": [
-            "Signed-in owner of a disposable capture and a second capture whose detail read can be retried."
+            "Signed-in owner of a disposable capture and a second capture whose detail read can be retried.",
+            "Only the Source created for this test may be confirmed for deletion; existing user records remain untouched."
           ],
           "steps": [
-            "Open delete and cancel; verify capture remains. Reopen and confirm; verify it leaves list. On second item open original URL and induce detail failure then Retry."
+            "Open delete and cancel; verify capture remains. Reopen and confirm; verify it leaves list. On second item open original URL and induce detail failure then Retry.",
+            "Inspect the confirmation for an explicit workspace-wide consequence before Cancel or an authorized disposable-record confirmation."
           ],
           "expected": [
-            "Cancel leaves saved item; confirm removes only saved capture and does not alter original page; original URL opens separately; Retry reloads detail or reports an error."
+            "Cancel leaves saved item; confirm removes only saved capture and does not alter original page; original URL opens separately; Retry reloads detail or reports an error.",
+            "The warning explains that deleting removes this workspace Source for its members. Cancel preserves it for both members; a permitted confirm affects only the disposable Source."
           ],
           "dimensions": [
             "member",
             "admin",
             "reload",
             "network"
-          ]
+          ],
+          "verification_status": "unverified-after-source-change"
         },
         {
           "id": "EXT-F-2009-T05",
@@ -20556,13 +20569,17 @@
         "member": {
           "test_status": "unverified",
           "defect_ids": [],
-          "run_ids": [],
+          "run_ids": [
+            "incoming-sources-001"
+          ],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
           "defect_ids": [],
-          "run_ids": [],
+          "run_ids": [
+            "incoming-sources-001"
+          ],
           "retest_status": "not-run"
         }
       },
