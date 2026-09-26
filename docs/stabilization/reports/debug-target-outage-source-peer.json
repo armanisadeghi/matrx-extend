@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "report_id": "debug-target-outage-source-peer",
+  "feature_id": "EXT-F-1005",
+  "reviewed_source_commit": "07556345",
+  "scope": ["EXT-F-1005-T14", "EXT-F-1005-T15", "EXT-F-1005-T17", "EXT-F-1005-T22"],
+  "A_runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "This peer reviewed source and the current CDP protocol only. No browser, build, test, or service-error run was launched. Run 008 used the earlier broad outage; the selected-service revision requires its own native observation."
+  },
+  "B_source": {
+    "verdict": "ACCEPT_SOURCE_WITH_RUNTIME_UNVERIFIED",
+    "protocol": "The current experimental Network.emulateNetworkConditionsByRule method applies conditions to URLPattern-matched requests without changing navigator state; a nonempty absolute urlPattern avoids its global condition, the rule's offline field is supported, and the result returns one rule ID per entry. An unsupported method or rejected rule leaves the scenario unverified, with no broad fallback. The source requests removal by replacing the rule list with an empty list in cleanup.",
+    "binding_and_oracle": "The health URL comes from the owned Debug BackendSwitcher UI, is required to be HTTP(S) without credentials, query, or fragment, and is re-read unchanged before and after the control battery. The online gate requires a same-URL Fetch GET completed with HTTP 200 and visible OK. Both outage gates require a same-URL Fetch GET failing with net::ERR_INTERNET_DISCONNECTED and visible FAIL. Neither diagnostics nor a merely acknowledged rule can satisfy these gates.",
+    "scope_and_controls": "The only installed offline rule has the nonempty selected-health URL pattern; no global rule, deprecated broad network condition, or navigator override is installed. Auth, membership, organization, and database request categories are observed but not deliberately faulted. The proven outage remains active during the real Search, Pause/Resume, detail, and Clear controls; loss of the final outage proof downgrades every service-error case to unverified. The source does not claim those prerequisites were independently healthy merely because they were spared by the rule.",
+    "restoration": "An outer finally invokes the service-outage restore after the control battery. Setup failures also invoke restore. Restore requests an empty rule list first, then re-enables cache and disables the observer; a rejected restore is recorded as failure, never as restored. No source review can prove the browser actually removed a rule or completed a later online request.",
+    "privacy_and_limits": "The exact endpoint URL stays in memory. Durable diagnostics contain fixed request categories, numeric statuses and counts, fixed failure classes, UI predicates, and allowlisted driver failures, without request URLs, query strings, headers, bodies, raw network errors, or identities. No mock response, log injection, SQL write, Chat/Pilot action, or Source Save input was added. A silent health ping alone does not prove a natural log row or an error badge, which retain their separate positive controls."
+  },
+  "reviewed_paths": [
+    "tests/browser/debug-log-controls-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "docs/stabilization/reports/debug-service-error-escalation.json"
+  ],
+  "protocol_source": "https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-emulateNetworkConditionsByRule"
+}
