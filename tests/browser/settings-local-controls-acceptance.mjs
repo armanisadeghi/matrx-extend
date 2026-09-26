@@ -98,11 +98,66 @@ async function port(panel) {
   })()`);
 }
 
-async function nextDesktopProbeAlarm(panel) {
-  return evaluate(panel, `(async () => {
-    const alarm = await chrome.alarms.get('matrx.alarm.desktopProbe');
-    return alarm?.scheduledTime ?? null;
-  })()`);
+async function observeWorkerRediscover(worker) {
+  const scripts = [];
+  const pauses = [];
+  let resumeError = null;
+  const offScript = worker.on('Debugger.scriptParsed', (event) => {
+    if (event.url.endsWith('/background.js')) scripts.push(event.scriptId);
+  });
+  const offPaused = worker.on('Debugger.paused', (event) => {
+    pauses.push({ reason: event.reason, hitBreakpoints: event.hitBreakpoints ?? [],
+      callFrames: event.callFrames?.slice(0, 3).map((frame) => ({
+        functionName: frame.functionName, url: frame.url, location: frame.location,
+      })) ?? [], observedAt: Date.now() });
+    void worker.send('Debugger.resume').catch((error) => {
+      resumeError = String(error?.message ?? error);
+    });
+  });
+  try {
+    await worker.send('Debugger.enable');
+    const scriptId = await waitFor('owned_worker_background_script',
+      () => scripts.at(-1) ?? null, (value) => typeof value === 'string');
+    const { scriptSource } = await worker.send('Debugger.getScriptSource', { scriptId });
+    const matches = [...scriptSource.matchAll(/\.DESKTOP_REDISCOVER\s*,\s*async\s*\(\)\s*=>\s*\{/g)];
+    assert.equal(matches.length, 1, 'released worker must contain exactly one desktop rediscovery handler');
+    const entryOffset = matches[0].index + matches[0][0].length;
+    const completionMatch = scriptSource.slice(entryOffset, entryOffset + 400)
+      .match(/[A-Za-z_$][\w$]*\([A-Za-z_$][\w$]*\.DESKTOP_AVAILABILITY\s*,/);
+    assert.ok(completionMatch, 'released worker handler must broadcast availability after its probe');
+    const completionOffset = entryOffset + completionMatch.index;
+    const setAt = async (offset, label) => {
+      const prefix = scriptSource.slice(0, offset);
+      const lineNumber = prefix.split('\n').length - 1;
+      const columnNumber = prefix.length - prefix.lastIndexOf('\n') - 1;
+      const { breakpointId, actualLocation } = await worker.send('Debugger.setBreakpoint', {
+        location: { scriptId, lineNumber, columnNumber },
+      });
+      assert.equal(typeof breakpointId, 'string', `${label} breakpoint must install`);
+      assert.equal(actualLocation?.scriptId, scriptId, `${label} breakpoint must resolve in owned worker`);
+      assert.equal(actualLocation.lineNumber === lineNumber &&
+        actualLocation.columnNumber >= columnNumber && actualLocation.columnNumber < columnNumber + 32,
+      true, `${label} breakpoint must resolve at intended handler statement`);
+      return breakpointId;
+    };
+    const entryBreakpoint = await setAt(entryOffset, 'rediscovery entry');
+    const completionBreakpoint = await setAt(completionOffset, 'post-probe availability');
+    return {
+      read: () => ({ entry: pauses.find((pause) => pause.hitBreakpoints.includes(entryBreakpoint)) ?? null,
+        postProbe: pauses.find((pause) => pause.hitBreakpoints.includes(completionBreakpoint)) ?? null,
+        resumeError }),
+      async close() {
+        offPaused();
+        offScript();
+        await worker.send('Debugger.disable');
+      },
+    };
+  } catch (error) {
+    offPaused();
+    offScript();
+    await worker.send('Debugger.disable').catch(() => {});
+    throw error;
+  }
 }
 
 async function portSelection(panel) {
@@ -184,7 +239,7 @@ try {
   execFileSync('git', ['diff', '--quiet', receipt.sourceSha, '--', 'src/features/settings/SettingsView.tsx'], { cwd: REPO });
   report.build = { ...report.build, version: receipt.version, sourceSha: receipt.sourceSha, treeSha256: receipt.treeSha256 };
   observedPort = await startObservedDeadPort();
-  const result = await runNativeSidepanelQa({ exercisePanel: async ({ panel }) => {
+  const result = await runNativeSidepanelQa({ exercisePanel: async ({ panel, attachWorker }) => {
     await settings(panel);
     await runCase(byId('T22'), async () => {
       const c = byId('T22');
@@ -227,29 +282,30 @@ try {
       const initial = await port(panel);
       c.steps.push({ phase: 'warm', action: 'Record original engine port state', observation: initial });
       assert.equal(initial.saved, null, 'fresh disposable profile must have no override');
+      let worker;
+      let rediscoverWatch;
       try {
-        const nextAlarm = await waitFor('desktop_probe_alarm_window',
-          () => nextDesktopProbeAlarm(panel),
-          (scheduledTime) => typeof scheduledTime === 'number' && scheduledTime - Date.now() > 12000,
-          35000);
+        worker = await attachWorker();
+        rediscoverWatch = await observeWorkerRediscover(worker);
         const beforeProbeCount = observedPort.requests.length;
         assert.equal(beforeProbeCount, 0, 'isolated override port must not be probed before save');
         await replacePort(panel, String(observedPort.port));
         const saved = await waitFor('valid_port_saved', () => port(panel), (s) => s?.saved === observedPort.port && s.override);
         c.steps.push({ phase: 'warm', action: 'Save valid port', observation: saved });
         criterion(c, 'valid port saved', 'pass', saved);
-        const workerProbe = await waitFor('worker_override_health_probe',
-          () => observedPort.requests.slice(beforeProbeCount),
-          (requests) => requests.some((request) => request.method === 'GET' && request.path === '/health' &&
-            request.observedAt < nextAlarm));
-        c.steps.push({ phase: 'warm', action: 'Observe real worker probe to saved port', observation: workerProbe });
-        criterion(c, 'saved port triggers desktop worker rediscovery', 'pass',
-          { port: observedPort.port, nextScheduledBackgroundProbeAt: nextAlarm, requests: workerProbe });
+        const handler = await waitFor('worker_rediscovery_handler',
+          () => rediscoverWatch.read(), (state) =>
+            (state.entry !== null && state.postProbe !== null) || state.resumeError !== null);
+        assert.equal(handler.resumeError, null, 'owned worker debugger must resume');
+        c.steps.push({ phase: 'warm', action: 'Observe worker rediscovery enter and reach post-probe broadcast after Save',
+          observation: { ...handler, port: observedPort.port,
+            healthRequests: observedPort.requests.slice(beforeProbeCount) } });
+        criterion(c, 'saved port triggers desktop worker rediscovery', 'pass', handler);
         await reloadSettings(panel);
         await openSection(panel, 'Desktop bridge');
         const reloaded = await port(panel);
         c.steps.push({ phase: 'reload', action: 'Inspect valid override after reload', observation: reloaded });
-        criterion(c, 'valid override persists after reload', reloaded.saved === VALID_PORT && reloaded.value === String(VALID_PORT) ? 'pass' : 'fail', reloaded);
+        criterion(c, 'valid override persists after reload', reloaded.saved === observedPort.port && reloaded.value === String(observedPort.port) ? 'pass' : 'fail', reloaded);
         await replacePort(panel, '65536');
         const invalid = await waitFor('invalid_port_error', () => port(panel), (s) => /Port must be 1–65535/.test(s?.error ?? ''));
         c.steps.push({ phase: 'warm', action: 'Submit invalid range', observation: invalid });
@@ -264,6 +320,8 @@ try {
         c.steps.push({ phase: 'reload', action: 'Inspect cleared override after reload', observation: empty });
         criterion(c, 'cleared override persists after reload', empty.saved === null && empty.value === '' ? 'pass' : 'fail', empty);
       } finally {
+        await rediscoverWatch?.close();
+        await worker?.detach();
         if ((await port(panel))?.saved !== null) {
           await replacePort(panel, '');
           const cleared = await waitFor('port_cleanup', () => port(panel), (s) => s?.saved === null);

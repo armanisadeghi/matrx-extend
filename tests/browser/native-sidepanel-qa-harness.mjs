@@ -242,6 +242,13 @@ async function attachTargetSession(cdp, targetId) {
     async send(method, params = {}) {
       return cdp.send(method, params, sessionId);
     },
+    on(method, listener) {
+      const scoped = (params, eventSessionId) => {
+        if (eventSessionId === sessionId) listener(params);
+      };
+      cdp.on(method, scoped);
+      return () => cdp.off(method, scoped);
+    },
     async detach() {
       await cdp.send('Target.detachFromTarget', { sessionId }).catch(() => {});
     },
@@ -407,7 +414,8 @@ export async function runNativeSidepanelQa({
     if (exercisePanel) {
       const panel = await attachTargetSession(cdp, panelTarget.targetId);
       try {
-        await exercisePanel(Object.freeze({ page, panel, panelTarget, artifacts }));
+        await exercisePanel(Object.freeze({ page, panel, panelTarget, artifacts,
+          attachWorker: () => attachTargetSession(cdp, extensionWorker.targetId) }));
       } finally {
         await panel.detach();
       }

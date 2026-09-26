@@ -2,9 +2,9 @@
   "case_id": "EXT-F-1003-T46",
   "status": "candidate_unverified",
   "runner": "tests/browser/settings-local-controls-acceptance.mjs",
-  "observable": "A real GET /health reaches an isolated loopback listener at the port saved through trusted Settings input, before the next scheduled desktop probe alarm.",
-  "isolation": "The listener uses an OS-assigned port outside the automatic discovery range, records requests, and returns HTTP 503. It never supplies a fabricated desktop health response or alters the extension worker.",
-  "attribution": "The listener has no request before Save; a matching request must arrive after Save and before the preexisting alarm's scheduled time.",
-  "limit": "The listener cannot establish a healthy desktop connection or prove a changed status label. Neither is part of T46's inventory expected result; this runner claims only the real worker rediscovery request.",
+  "observable": "An observational CDP debugger session on the owned extension service worker sets breakpoints at the released DESKTOP_REDISCOVER handler entry and its availability broadcast after probeDesktop returns. Trusted Settings Save must hit both, and the panel's saved state is observed after the worker resumes.",
+  "isolation": "The debugger observes the real released worker and auto-resumes it; it does not replace the message handler or change product state. An OS-assigned loopback listener outside the scan range records optional HTTP /health requests and returns 503, never a fabricated desktop health response.",
+  "attribution": "Both breakpoints are installed in the owned worker before the Settings Save click, and only hits on those exact handler statements count. Startup and periodic probes use probeDesktop directly and cannot hit this handler. The second hit proves execution reached the handler's post-probe broadcast. The proof also applies when native messaging wins and HTTP is skipped.",
+  "limit": "The listener cannot establish a healthy desktop connection or prove a changed status label. Neither is part of T46's inventory expected result; the runner claims only real worker rediscovery handler execution.",
   "execution": "Awaiting the root lane's guarded native-browser run and independent review. This report is not runtime evidence."
 }
