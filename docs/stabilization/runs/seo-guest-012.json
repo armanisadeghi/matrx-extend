@@ -31,9 +31,14 @@
     "unverified_subtargets": ["guest_manual_hreflang_and_schema_doors_match_page"],
     "observed_detail": {
       "url": "https://en.wikipedia.org/wiki/HTML",
-      "manual_link_counts": {"internal": 1789, "external": 445},
-      "manual_image_counts": {"total": 42, "missing_alt": 20},
-      "manual_performance": {"status": 200, "navigation": "navigate", "duration_ms": 595, "transfer_bytes": 123751}
+      "manual_link_counts": { "internal": 1789, "external": 445 },
+      "manual_image_counts": { "total": 42, "missing_alt": 20 },
+      "manual_performance": {
+        "status": 200,
+        "navigation": "navigate",
+        "duration_ms": 595,
+        "transfer_bytes": 123751
+      }
     },
     "automatic_observations": {
       "readability_metric_correctness": "unverified",

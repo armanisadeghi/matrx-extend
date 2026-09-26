@@ -39,11 +39,7 @@
       "EXT-F-1008-T07",
       "EXT-F-1008-T09"
     ],
-    "run_ids": [
-      "seo-guest-010",
-      "seo-guest-011",
-      "seo-guest-012"
-    ],
+    "run_ids": ["seo-guest-010", "seo-guest-011", "seo-guest-012"],
     "result": "The guest cell now lists runs 010-012. Per-run subtargets are linked to their relevant cases; all overall runs remain unverified/partial, and no whole case or feature is marked passed. Exact automatic data and readability correctness, the unavailable hreflang/schema door, deferred case dimensions, and member/admin modes remain open."
   }
 }

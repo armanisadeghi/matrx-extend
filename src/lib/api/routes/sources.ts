@@ -84,7 +84,7 @@ export type LandedSource = z.infer<typeof LandedSourceSchema>;
 
 /** Why a landing did not happen, in words a person can act on. */
 export interface LandingRefusal {
-  /** 0 = the server could not be reached; otherwise the HTTP status. */
+  /** Positive values are HTTP statuses; negative values identify local/network refusal causes. */
   status: number;
   code: string;
   message: string;

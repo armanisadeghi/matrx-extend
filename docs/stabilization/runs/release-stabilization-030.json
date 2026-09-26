@@ -1,0 +1,15 @@
+{
+  "id": "release-stabilization-030",
+  "status": "stopped-before-push",
+  "wrapper": {
+    "source": "/tmp/matrx-release-stabilization-030.log",
+    "session": "90450",
+    "childExitCode": 1,
+    "finishedAt": "2026-09-26T20:14:20.420Z"
+  },
+  "rawLog": "tmp/release-logs/latest.log",
+  "candidateVersion": "0.2.77",
+  "failure": "Mandatory pnpm -s lint check failed with 7 errors; 571 warnings were also reported.",
+  "publication": "No push or package publication occurred in this attempt.",
+  "followup": "The targeted stabilization JSON formatting and documented refusal-status clarification are recorded in the follow-up commits; unrelated lint findings remain outside this receipt's repair scope."
+}
