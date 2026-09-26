@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-readonly-scope-peer",
+  "reviewed_source_commit": "30adb5b4",
+  "A_runtime": {
+    "status": "UNVERIFIED",
+    "reason": "This peer did not run a browser, build, or test. The opt-in read-only scope path has no runtime result yet."
+  },
+  "B_source": {
+    "status": "QUALIFIED",
+    "verified": [
+      "SOURCE_READONLY_SCOPE=1 takes a separate early-return branch after real admin UI sign-in and protected-settings checks. The default D23 path stays after that branch and is unchanged by this diff.",
+      "The native harness creates and verifies a fresh owned Chrome-for-Testing profile. The new branch reads the previously approved organization name from a private configuration file, confirms the picker displays Choose… with no stored active workspace, and selects the approved existing workspace through real Settings UI input. It does not inject authentication or organization storage.",
+      "Before selection, the network observer starts before public fixture navigation and Scrape activation. It counts all processed_documents GET requests during that bounded observation and fails if any occur, including an unscoped read. Scrape must settle with the choose-organization remedy and no saved banner or Open Source control.",
+      "After UI selection, a recognition request must complete with HTTP 200 and an empty JSON array for the exact fixture canonical identity and selected workspace ID, followed by linked Scrape UI showing not saved without unknown or prior Source links.",
+      "The read-only branch sends no Capture or Save input and never calls the Save checkpoint helpers. Failure screenshots use unique random paths, exclusive creation and mode 0600; the public report records fixed categories and counts rather than private names, IDs, request URLs, credentials, or response bodies."
+    ],
+    "required_correction_before_exact_positive_control_claim": "watchScopedLookup accepts any present origin_client and derivation_kind query values. The production recognition contract requires origin_client=eq.extension and derivation_kind=in.(initial_extract,recapture). A request with wrong values could return HTTP 200 [] and make the new positive control pass while the intended Source lookup was not proved. Require those exact filter values, or identify the same strict request through an equally strong public oracle, before calling this an exact recognition positive control.",
+    "limits": [
+      "The no-workspace request watcher covers the post-baseline interval around fixture navigation and Scrape activation; it is not a claim about every request since browser startup.",
+      "The scoped watcher ignores other processed_documents GET requests and can return after its first matching empty response. Its result proves at least one matching response, not absence of additional requests.",
+      "The existing D23 write-retirement gap is outside this opt-in read-only branch and does not change this source finding."
+    ]
+  }
+}
