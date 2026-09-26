@@ -10,7 +10,8 @@
  *
  * Order of preference, as the plan fixes it:
  *   1. the sanitized article HTML (`article.content_html_safe`), split at H1–H3;
- *   2. the article markdown (`article.content_markdown`), split at ATX `#`–`###`.
+ *   2. the article markdown (`article.content_markdown`), split at ATX `#`–`###`,
+ *      its markup dropped (portion text is plain text on every path).
  * A page with no headings is ONE section with an empty heading path. Pure,
  * free, no model — landing runs no AI.
  */
@@ -156,26 +157,81 @@ export function portionsFromArticleHtml(html: string | null | undefined): Sectio
 const ATX = /^ {0,3}(#{1,3})[ \t]+(.+?)(?:[ \t]+#+)?[ \t]*$/;
 const FENCE = /^ {0,3}(```|~~~)/;
 
-/** Split markdown at ATX `#`, `##`, `###` headings (never inside a fenced code block). */
+// PORTION TEXT IS PLAIN TEXT on every path (the server's rule, aidream
+// matrx_scraper/portions.py `plain_markdown_line`, ported line for line): a
+// heading is its words, a link is its text, an image is nothing, a list item has
+// no bullet, a table is one cell per line. `\w`/`\d` are Unicode here because
+// Python's are.
+const MD_IMAGE = /!\[[^\]]*\]\([^)]*\)/gu;
+const MD_LINK = /\[([^\]]*)\]\([^)]*\)/gu;
+const MD_AUTOLINK = /<((?:https?|mailto):[^>\s]+)>/gu;
+const MD_STRONG = /(\*\*|__)(?=\S)(.+?)(?<=\S)\1/gu;
+const MD_EM = /(?<![\p{L}\p{N}_*])\*(?=\S)(.+?)(?<=\S)\*(?![\p{L}\p{N}_*])/gu;
+const MD_CODE = /`([^`]*)`/gu;
+const MD_BULLET = /^\s*(?:[-*+]|\p{Nd}{1,9}[.)])\s+/u;
+const MD_QUOTE = /^\s*(?:>\s?)+/u;
+const MD_RULE = /^\s*([-*_])(?:\s*\1){2,}\s*$/u;
+const MD_TABLE_SEP = /^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)*\|?\s*$/u;
+const TABULATE_SEP = /^\s*-{2,}(?: {2,}-{2,})+\s*$/u;
+
+/** One markdown line as the plain-text line(s) a portion stores (headings are the caller's). */
+export function plainMarkdownLine(line: string): string[] {
+  if (
+    FENCE.test(line) ||
+    MD_RULE.test(line) ||
+    MD_TABLE_SEP.test(line) ||
+    TABULATE_SEP.test(line)
+  ) {
+    return [];
+  }
+  const text = line.replace(MD_QUOTE, '').replace(MD_BULLET, '');
+  const stripped = text.trim();
+  const cells =
+    stripped.startsWith('|') && stripped.endsWith('|') && stripped.length > 1
+      ? stripped.slice(1, -1).split('|')
+      : [text];
+  return cells.map((cell) =>
+    cell
+      .replace(MD_IMAGE, '')
+      .replace(MD_LINK, '$1')
+      .replace(MD_AUTOLINK, '$1')
+      .replace(MD_CODE, '$1')
+      .replace(MD_STRONG, '$2')
+      .replace(MD_EM, '$1'),
+  );
+}
+
+/**
+ * Split markdown at ATX `#`, `##`, `###` headings (never inside a fenced code
+ * block) into PLAIN-TEXT sections; the text of a fenced code block is kept as
+ * written, the fence lines themselves are dropped.
+ */
 export function portionsFromMarkdown(markdown: string | null | undefined): SectionPortion[] {
   if (!markdown?.trim()) return [];
   const stack: (string | undefined)[] = [];
   const drafts: Draft[] = [{ path: [], lines: [] }];
+  const current = () => drafts[drafts.length - 1] as Draft;
   let fence: string | null = null;
   for (const line of markdown.replace(/\r\n?/g, '\n').split('\n')) {
     const fenceMatch = FENCE.exec(line);
     if (fenceMatch) {
       const marker = fenceMatch[1] ?? '';
       fence = fence === null ? marker : fence === marker ? null : fence;
-    }
-    const heading = fence === null && !fenceMatch ? ATX.exec(line) : null;
-    if (heading) {
-      const level = (heading[1] ?? '#').length;
-      const title = (heading[2] ?? '').trim();
-      drafts.push({ path: nextPath(stack, level, title), lines: [line.trim()] });
       continue;
     }
-    drafts[drafts.length - 1]?.lines.push(line);
+    if (fence !== null) {
+      current().lines.push(...tidyLines(line));
+      continue;
+    }
+    const heading = ATX.exec(line);
+    if (heading) {
+      const level = (heading[1] ?? '#').length;
+      const title = tidyLines(plainMarkdownLine((heading[2] ?? '').trim()).join(' ')).join(' ');
+      if (!title) continue;
+      drafts.push({ path: nextPath(stack, level, title), lines: [title] });
+      continue;
+    }
+    for (const plain of plainMarkdownLine(line)) current().lines.push(...tidyLines(plain));
   }
   return finish(drafts, '\n');
 }
