@@ -20,10 +20,12 @@
  * an unqualified `.from()` silently resolves against `public` and 404s at
  * RUNTIME (PGRST205) — tsc and the build will not catch it.
  *
+ * Saved pages are Sources: docproc.processed_documents (read here under RLS;
+ * created and edited only through the landing door, src/lib/api/routes/sources.ts).
+ *
  * Tables this extension OWNS now live in the dedicated `extend` schema
  * (moved out of public in the 2026-06-27 DB transition — reached via
  * `.schema('extend')`, see EXTEND_SCHEMA below):
- *   - extend.wbx_capture        (Page captures from Scrape tab)
  *   - extend.wbx_pattern        (Saved Data-tab patterns)
  *   - extend.wbx_seo_audit      (SEO audits + AI recommendations)
  *   - extend.wbx_screenshot · extend.wbx_guidance · extend.wbx_demo · extend.wbx_highlight · extend.wbx_recipe
@@ -31,6 +33,8 @@
 
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { log } from '@/lib/debug/log';
+import { getActiveOrganizationId } from '@/lib/org/active-org';
+import { canonicalUrl } from '@/lib/sources/canonical';
 import {
   type WriteActor,
   getMachineryAuthoredSupabase,
@@ -39,7 +43,7 @@ import {
   supabaseForActor,
 } from '@/lib/supabase/client';
 import { type DbCallSite, failDbCall } from '@/lib/supabase/db-failure';
-import { adminDb, aiDb, extendDb } from '@/lib/supabase/schemas';
+import { adminDb, aiDb, docprocDb, extendDb } from '@/lib/supabase/schemas';
 import type { ChatMessage, MessagePart } from '@/state/chat';
 import { requireOrganizationContext } from '@ai-matrx/agents/matrx';
 import { z } from 'zod';
@@ -547,7 +551,24 @@ export function dbMessagesToChatMessages(
   }
 }
 
-// ─── wbx_capture (page captures) ────────────────────────────────────────────
+// ─── Sources: saved pages (docproc.processed_documents) ─────────────────────
+//
+// SOURCE-CONVERGENCE §4.2. A page saved from Scrape is a Source — a
+// `docproc.processed_documents` row landed by `POST /sources/land` with
+// `origin_client='extension'`. These are the direct RLS reads behind
+// recognition, `prior_capture` and the Saved captures tab, plus the one write
+// this client makes to the table: a Source's soft delete. Create and edit go
+// through the door (`src/lib/api/routes/sources.ts`), never through here.
+//
+// A Source can have versions: a re-capture with different text mints a
+// `recapture` document whose parent is the previous one, and an edit mints a
+// `manual_curation` document the canonical row points at (`canonical_clean_id`).
+// The lists below show one card per Source: the CURRENT version.
+
+const SOURCE_ORIGIN_EXTENSION = 'extension';
+/** The versions a person sees as "the capture"; edits are read through canonical_clean_id. */
+const CAPTURE_DERIVATIONS = ['initial_extract', 'recapture'];
+
 export const CapturedPageSchema = z.object({
   id: z.string().uuid(),
   url: z.string(),
@@ -556,99 +577,64 @@ export const CapturedPageSchema = z.object({
 });
 export type CapturedPage = z.infer<typeof CapturedPageSchema>;
 
+/** Superseded versions among `ids`: the ones a newer `recapture` names as its parent. */
+async function supersededSourceIds(ids: string[]): Promise<Set<string>> {
+  if (ids.length === 0) return new Set();
+  const { data, error } = await docprocDb()
+    .from('processed_documents')
+    .select('parent_processed_id')
+    .in('parent_processed_id', ids)
+    .eq('derivation_kind', 'recapture')
+    .is('deleted_at', null);
+  if (error) throw new Error(`Could not load saved captures: ${error.message}`);
+  return new Set(
+    ((data ?? []) as { parent_processed_id: string | null }[])
+      .map((r) => r.parent_processed_id)
+      .filter((id): id is string => typeof id === 'string'),
+  );
+}
+
+/**
+ * The newest saved Source for this page, looked up by the door's canonical
+ * identity (the same canonicalizer the server applies — `canonical.ts`).
+ */
 export async function lookupCapturedByUrl(url: string): Promise<CapturedPage | null> {
-  // A capture belongs to an organization, so a device with no session can have no capture: the
-  // honest answer is "no record", not a round trip. Until 2026-09-22 this ran anyway and the
-  // database answered `200 []` on an `anon` column grant that no policy reached — a key with no
-  // door, which is why `extend.wbx_capture` read as world-readable in every access audit. The
-  // generator has withdrawn that key (lane DEAD-KEYS, DD-249), so the same call would now answer
-  // 42501 and log a warning on every page the side panel sees. Measured 2026-09-22: 14 such
-  // signed-out lookups in 24 h, every one of them returning nothing.
+  // A Source belongs to a person in an organization, so a device with no
+  // session can have none: answer "no record" without a round trip.
   if (!(await hasSupabaseAccessToken())) return null;
-  const c = getSupabase();
-  const { data, error } = await c
-    .schema(EXTEND_SCHEMA)
-    .from('wbx_capture')
-    .select('id, url, captured_at, title')
-    .eq('url', url)
-    .order('captured_at', { ascending: false })
-    .limit(1);
+  const identity = canonicalUrl(url);
+  if (!identity) return null;
+  // Read-only recognition never raises the workspace picker; with no workspace
+  // chosen on this device RLS still scopes the read to what the person can see.
+  const organizationId = await getActiveOrganizationId().catch(() => null);
+  let query = docprocDb()
+    .from('processed_documents')
+    .select('id, canonical_identity, created_at, name')
+    .eq('canonical_identity', identity)
+    .eq('origin_client', SOURCE_ORIGIN_EXTENSION)
+    .in('derivation_kind', CAPTURE_DERIVATIONS)
+    .is('deleted_at', null);
+  if (organizationId) query = query.eq('organization_id', organizationId);
+  const { data, error } = await query.order('created_at', { ascending: false }).limit(1);
   if (error) {
-    if (/relation .* does not exist/i.test(error.message)) return null;
     console.warn('[matrx-extend] lookupCapturedByUrl error', error.message);
     return null;
   }
-  const row = (data ?? [])[0];
+  const row = (data ?? [])[0] as
+    | { id: string; canonical_identity: string; created_at: string; name: string | null }
+    | undefined;
   if (!row) return null;
-  const parsed = CapturedPageSchema.safeParse(row);
+  const parsed = CapturedPageSchema.safeParse({
+    id: row.id,
+    url: row.canonical_identity,
+    captured_at: row.created_at,
+    title: row.name,
+  });
   if (!parsed.success) {
     log.error('supabase', 'lookupCapturedByUrl: row failed validation', parsed.error.issues);
     return null;
   }
   return parsed.data;
-}
-
-export interface SaveCapturePayload {
-  url: string;
-  title?: string;
-  description?: string;
-  lang?: string;
-  soup: unknown;
-  markdown?: string;
-  metadata?: unknown;
-  ld_json?: unknown;
-  media_count?: number;
-  pattern_id?: string;
-}
-
-/**
- * Persist a page capture.
- *
- * Throws `DbFailureError` when the database refuses or the write lands
- * nowhere — never a success-shaped `null`. The user sees the refusal as a
- * notice and the platform's error store gets the row (see
- * `src/lib/supabase/db-failure.ts`).
- */
-export async function saveCapture(p: SaveCapturePayload): Promise<{ id: string }> {
-  const site: DbCallSite = {
-    table: 'extend.wbx_capture',
-    operation: 'insert',
-    what: 'save this page capture',
-    title: 'Page capture not saved',
-  };
-  let organizationId: string;
-  try {
-    organizationId = await requireRequestOrganizationId();
-  } catch (error) {
-    failDbCall(site, {
-      code: 'no_organization',
-      message: error instanceof Error ? error.message : String(error),
-    });
-  }
-  const c = getSupabase();
-  const { data, error } = await c
-    .schema(EXTEND_SCHEMA)
-    .from('wbx_capture')
-    .insert({
-      organization_id: organizationId,
-      url: p.url,
-      title: p.title ?? null,
-      description: p.description ?? null,
-      lang: p.lang ?? null,
-      soup: p.soup,
-      markdown: p.markdown ?? null,
-      // CONVERGE: C-7 — caller-supplied metadata written with no reserved-key guard; metadata is system-only — declared 2026-09-10, Data Doctrine §3.2. Register: /projects/data-doctrine-adoption/REGISTER.md#DD-060
-      metadata: p.metadata ?? null,
-      ld_json: p.ld_json ?? null,
-      media_count: p.media_count ?? 0,
-      pattern_id: p.pattern_id ?? null,
-    })
-    .select('id')
-    .single();
-  // `!data` with no error is RLS filtering the RETURNING row away — a refusal
-  // wearing a success costume. Treated as a refusal, never as "saved".
-  if (error || !data) failDbCall(site, error);
-  return data as { id: string };
 }
 
 export const SavedCaptureSummarySchema = z.object({
@@ -658,26 +644,26 @@ export const SavedCaptureSummarySchema = z.object({
   updated_at: z.string(),
   title: z.string().nullable(),
   description: z.string().nullable(),
-  media_count: z.number().int(),
-  deleted_at: z.string().nullable(),
-  version: z.number().int(),
+  kept_at: z.string().nullable(),
 });
 export type SavedCaptureSummary = z.infer<typeof SavedCaptureSummarySchema>;
 
 export const SavedCaptureSchema = SavedCaptureSummarySchema.extend({
-  lang: z.string().nullable(),
-  soup: z.unknown(),
-  markdown: z.string().nullable(),
-  metadata: z.unknown().nullable(),
-  ld_json: z.unknown().nullable(),
-  pattern_id: z.string().uuid().nullable(),
-  created_at: z.string(),
+  /** The capture's collectors (images, videos, audio, links, ld_json, metadata, pattern_id). */
+  structured: z.record(z.unknown()).nullable(),
+  /** The landed text, all portions joined. */
+  content: z.string().nullable(),
+  /** The person's edited text, when they saved an edit (read through canonical_clean_id). */
+  edited_content: z.string().nullable(),
+  /** The full SoupResult JSON kept in S3 (null when the organization keeps text only). */
+  original_file_id: z.string().uuid().nullable(),
+  visibility: z.string().nullable(),
 });
 export type SavedCapture = z.infer<typeof SavedCaptureSchema>;
 
-const CAPTURE_SUMMARY_COLUMNS =
-  'id, url, captured_at, updated_at, title, description, media_count, deleted_at, version';
-const CAPTURE_DETAIL_COLUMNS = `${CAPTURE_SUMMARY_COLUMNS}, lang, soup, markdown, metadata, ld_json, pattern_id, created_at`;
+const SOURCE_SUMMARY_COLUMNS =
+  'id, url:canonical_identity, captured_at:created_at, updated_at, title:name, description:structured_json->metadata->>description, kept_at';
+const SOURCE_DETAIL_COLUMNS = `${SOURCE_SUMMARY_COLUMNS}, structured:structured_json, content, canonical_clean_id, original_file_id, visibility`;
 
 export async function listSavedCaptures(
   options: {
@@ -688,14 +674,15 @@ export async function listSavedCaptures(
 ): Promise<SavedCaptureSummary[]> {
   const limit = options.limit ?? 40;
   const organizationId = await requireRequestOrganizationId();
-  let query = getSupabase()
-    .schema(EXTEND_SCHEMA)
-    .from('wbx_capture')
-    .select(CAPTURE_SUMMARY_COLUMNS)
-    .order('captured_at', { ascending: false })
-    .order('id', { ascending: false })
+  let query = docprocDb()
+    .from('processed_documents')
+    .select(SOURCE_SUMMARY_COLUMNS)
+    .eq('origin_client', SOURCE_ORIGIN_EXTENSION)
     .eq('organization_id', organizationId)
-    .is('deleted_at', null);
+    .in('derivation_kind', CAPTURE_DERIVATIONS)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: false });
   const search = options.search?.trim();
   if (search) {
     // PostgREST's raw `or` grammar requires quoted values. Escape the two
@@ -703,11 +690,11 @@ export async function listSavedCaptures(
     // title search cannot alter the filter expression.
     const escaped = search.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     const pattern = `"%${escaped}%"`;
-    query = query.or(`title.ilike.${pattern},url.ilike.${pattern},description.ilike.${pattern}`);
+    query = query.or(`name.ilike.${pattern},canonical_identity.ilike.${pattern}`);
   }
   if (options.before) {
     query = query.or(
-      `captured_at.lt.${options.before.captured_at},and(captured_at.eq.${options.before.captured_at},id.lt.${options.before.id})`,
+      `created_at.lt.${options.before.captured_at},and(created_at.eq.${options.before.captured_at},id.lt.${options.before.id})`,
     );
   }
   const { data, error } = await query.limit(limit);
@@ -722,21 +709,34 @@ export async function listSavedCaptures(
       `${parsed.badCount} saved capture${parsed.badCount === 1 ? '' : 's'} could not be read. Refresh to try again.`,
     );
   }
-  return parsed.rows;
+  const superseded = await supersededSourceIds(parsed.rows.map((r) => r.id));
+  return parsed.rows.filter((r) => !superseded.has(r.id));
 }
 
-export async function getSavedCapture(captureId: string): Promise<SavedCapture | null> {
+export async function getSavedCapture(sourceId: string): Promise<SavedCapture | null> {
   const organizationId = await requireRequestOrganizationId();
-  const { data, error } = await getSupabase()
-    .schema(EXTEND_SCHEMA)
-    .from('wbx_capture')
-    .select(CAPTURE_DETAIL_COLUMNS)
-    .eq('id', captureId)
+  const { data, error } = await docprocDb()
+    .from('processed_documents')
+    .select(SOURCE_DETAIL_COLUMNS)
+    .eq('id', sourceId)
     .eq('organization_id', organizationId)
+    .is('deleted_at', null)
     .maybeSingle();
   if (error) throw new Error(`Could not load saved capture: ${error.message}`);
   if (!data) return null;
-  const parsed = SavedCaptureSchema.safeParse(data);
+  const row = data as unknown as Record<string, unknown>;
+  let editedContent: string | null = null;
+  const cleanId = typeof row.canonical_clean_id === 'string' ? row.canonical_clean_id : null;
+  if (cleanId && cleanId !== sourceId) {
+    const edited = await docprocDb()
+      .from('processed_documents')
+      .select('content')
+      .eq('id', cleanId)
+      .maybeSingle();
+    if (edited.error) throw new Error(`Could not load your edit: ${edited.error.message}`);
+    editedContent = (edited.data as { content: string | null } | null)?.content ?? null;
+  }
+  const parsed = SavedCaptureSchema.safeParse({ ...row, edited_content: editedContent });
   if (!parsed.success) {
     log.error('supabase', 'getSavedCapture: row failed validation', parsed.error.issues);
     throw new Error('This saved capture has an invalid data shape.');
@@ -744,56 +744,37 @@ export async function getSavedCapture(captureId: string): Promise<SavedCapture |
   return parsed.data;
 }
 
-export async function updateSavedCapture(input: {
-  id: string;
-  expectedVersion: number;
-  title: string | null;
-  description: string | null;
-  markdown: string | null;
-  soup: unknown;
-  metadata: unknown;
-}): Promise<SavedCapture> {
-  const organizationId = await requireRequestOrganizationId();
-  const { data, error } = await getSupabase()
-    .schema(EXTEND_SCHEMA)
-    .from('wbx_capture')
-    .update({
-      title: input.title,
-      description: input.description,
-      markdown: input.markdown,
-      soup: input.soup,
-      metadata: input.metadata,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', input.id)
+/**
+ * Soft-delete a saved Source. Proves the write landed: a refused update (RLS
+ * filtering the returned row away) throws with the sentence the person saw,
+ * never a success-shaped nothing.
+ */
+export async function deleteSavedCapture(sourceId: string): Promise<void> {
+  const site: DbCallSite = {
+    table: 'docproc.processed_documents',
+    operation: 'update',
+    what: 'delete this saved capture',
+    title: 'Saved capture not deleted',
+  };
+  let organizationId: string;
+  try {
+    organizationId = await requireRequestOrganizationId();
+  } catch (error) {
+    failDbCall(site, {
+      code: 'no_organization',
+      message: error instanceof Error ? error.message : String(error),
+    });
+  }
+  const { data, error } = await docprocDb()
+    .from('processed_documents')
+    .update({ deleted_at: new Date().toISOString() })
+    .eq('id', sourceId)
     .eq('organization_id', organizationId)
-    .eq('version', input.expectedVersion)
     .is('deleted_at', null)
-    .select(CAPTURE_DETAIL_COLUMNS)
+    .select('id, deleted_at')
     .maybeSingle();
-  if (error) throw new Error(`Could not update saved capture: ${error.message}`);
-  if (!data) {
-    throw new Error('This capture changed elsewhere. Reload it before saving your edits.');
-  }
-  const parsed = SavedCaptureSchema.safeParse(data);
-  if (!parsed.success) throw new Error('The updated capture returned an invalid data shape.');
-  return parsed.data;
-}
-
-export async function setSavedCaptureDeleted(captureId: string, deleted: boolean): Promise<void> {
-  const organizationId = await requireRequestOrganizationId();
-  const { data, error } = await getSupabase()
-    .schema(EXTEND_SCHEMA)
-    .from('wbx_capture')
-    .update({ deleted_at: deleted ? new Date().toISOString() : null })
-    .eq('id', captureId)
-    .eq('organization_id', organizationId)
-    .select('id')
-    .maybeSingle();
-  if (error) {
-    throw new Error(`${deleted ? 'Delete' : 'Restore'} failed: ${error.message}`);
-  }
-  if (!data) throw new Error('This capture no longer exists or could not be changed.');
+  const landed = data as { id: string; deleted_at: string | null } | null;
+  if (error || !landed?.deleted_at) failDbCall(site, error);
 }
 
 // ─── wbx_pattern (extraction patterns) ──────────────────────────────────────

@@ -1,14 +1,18 @@
 import { CopyMenu } from '@/components/CopyMenu';
 import { MarkdownView } from '@/components/MarkdownView';
+import { editSource } from '@/lib/api/routes/sources';
 import { fullCaptureCopyOptions } from '@/lib/scrape/copy-options';
 import type { SoupResult } from '@/lib/scrape/pipeline';
+import { portionsFromMarkdown } from '@/lib/sources/portions';
+import { readCaptureOriginal } from '@/lib/sources/read-original';
+import { sourceWebAppUrl } from '@/lib/sources/web-app-link';
+import { isDbFailureError } from '@/lib/supabase/db-failure';
 import {
   type SavedCapture,
   type SavedCaptureSummary,
+  deleteSavedCapture,
   getSavedCapture,
   listSavedCaptures,
-  setSavedCaptureDeleted,
-  updateSavedCapture,
 } from '@/lib/supabase/queries';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import {
@@ -51,20 +55,6 @@ function captureHost(url: string): string {
   } catch {
     return url;
   }
-}
-
-function isSoupResult(value: unknown): value is SoupResult {
-  if (!value || typeof value !== 'object') return false;
-  const row = value as Record<string, unknown>;
-  return (
-    typeof row.url === 'string' &&
-    row.article !== null &&
-    typeof row.article === 'object' &&
-    Array.isArray(row.images) &&
-    Array.isArray(row.videos) &&
-    Array.isArray(row.audio) &&
-    Array.isArray(row.links)
-  );
 }
 
 export function SavedCapturesView() {
@@ -131,7 +121,10 @@ export function SavedCapturesView() {
         before: { captured_at: lastCapture.captured_at, id: lastCapture.id },
       });
       if (generation !== requestGeneration.current) return;
-      setCaptures((current) => [...current, ...rows]);
+      setCaptures((current) => {
+        const seen = new Set(current.map((c) => c.id));
+        return [...current, ...rows.filter((r) => !seen.has(r.id))];
+      });
       setHasMore(rows.length === PAGE_SIZE);
     } catch (cause) {
       if (generation !== requestGeneration.current) return;
@@ -147,11 +140,17 @@ export function SavedCapturesView() {
     setDeleteTarget(null);
     setError(null);
     try {
-      await setSavedCaptureDeleted(target.id, true);
+      await deleteSavedCapture(target.id);
       setCaptures((current) => current.filter((capture) => capture.id !== target.id));
       if (selected?.id === target.id) setSelected(null);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'The capture could not be deleted.');
+      setError(
+        isDbFailureError(cause)
+          ? cause.userMessage
+          : cause instanceof Error
+            ? cause.message
+            : 'The capture could not be deleted.',
+      );
     }
   };
 
@@ -175,7 +174,7 @@ export function SavedCapturesView() {
             if (!open) setDeleteTarget(null);
           }}
           title="Delete saved capture?"
-          description="This removes it from your saved captures. The original web page is not affected."
+          description="This removes it from your saved captures and your Sources. The original web page is not affected."
           confirmLabel="Delete"
           variant="destructive"
           onConfirm={() => void confirmDelete()}
@@ -190,7 +189,9 @@ export function SavedCapturesView() {
         <div className="flex items-center justify-between gap-2">
           <div>
             <h2 className="text-sm font-semibold">Saved captures</h2>
-            <p className="text-[11px] text-muted-foreground">Pages saved from Scrape</p>
+            <p className="text-[11px] text-muted-foreground">
+              Pages saved from Scrape, kept as Sources
+            </p>
           </div>
           <Button size="icon" variant="ghost" className="size-8" onClick={() => void load(query)}>
             <RefreshCw className={loading ? 'animate-spin' : ''} />
@@ -203,7 +204,7 @@ export function SavedCapturesView() {
             <Input
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search title, URL, or description"
+              placeholder="Search title or URL"
               className="h-8 rounded-full pl-8 text-sm"
             />
           </div>
@@ -259,7 +260,7 @@ export function SavedCapturesView() {
                 </button>
                 <div className="mt-2 flex items-center justify-between">
                   <span className="text-[10px] text-muted-foreground">
-                    {capture.media_count} media item{capture.media_count === 1 ? '' : 's'}
+                    {capture.kept_at ? 'Kept' : 'Saved'}
                   </span>
                   <div className="flex items-center gap-1">
                     <Button
@@ -296,13 +297,17 @@ export function SavedCapturesView() {
           if (!open) setDeleteTarget(null);
         }}
         title="Delete saved capture?"
-        description="This removes it from your saved captures. The original web page is not affected."
+        description="This removes it from your saved captures and your Sources. The original web page is not affected."
         confirmLabel="Delete"
         variant="destructive"
         onConfirm={() => void confirmDelete()}
       />
     </div>
   );
+}
+
+function countOf(value: unknown): number {
+  return Array.isArray(value) ? value.length : 0;
 }
 
 function SavedCaptureDetail({
@@ -320,62 +325,66 @@ function SavedCaptureDetail({
   error: string | null;
   setError: (error: string | null) => void;
 }) {
-  const soup = isSoupResult(capture.soup) ? capture.soup : null;
+  // The full SoupResult lives in S3 as the Source's original; the collectors
+  // also ride on structured_json, so Details and Data still work when the
+  // organization keeps text only (or while the original downloads).
+  const [soup, setSoup] = useState<SoupResult | null>(null);
+  const [originalState, setOriginalState] = useState<'loading' | 'ready' | 'none' | 'failed'>(
+    capture.original_file_id ? 'loading' : 'none',
+  );
+  const [originalNote, setOriginalNote] = useState<string | null>(null);
+  useEffect(() => {
+    if (!capture.original_file_id) return;
+    let alive = true;
+    readCaptureOriginal(capture.original_file_id)
+      .then((result) => {
+        if (!alive) return;
+        setSoup(result);
+        setOriginalState('ready');
+      })
+      .catch((cause) => {
+        if (!alive) return;
+        setOriginalState('failed');
+        setOriginalNote(cause instanceof Error ? cause.message : String(cause));
+      });
+    return () => {
+      alive = false;
+    };
+  }, [capture.original_file_id]);
+
+  const structured = capture.structured ?? {};
+  const metadata = (structured.metadata ?? {}) as Record<string, unknown>;
+  const article = (structured.article ?? {}) as Record<string, unknown>;
+  const text = capture.edited_content ?? soup?.article.content_markdown ?? capture.content ?? '';
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [title, setTitle] = useState(capture.title ?? soup?.article.title ?? '');
-  const [description, setDescription] = useState(capture.description ?? '');
-  const [markdown, setMarkdown] = useState(
-    capture.markdown ?? soup?.article.content_markdown ?? '',
-  );
+  const [draft, setDraft] = useState(text);
+  const [savedNote, setSavedNote] = useState<string | null>(null);
+
+  const beginEdit = () => {
+    setDraft(text);
+    setSavedNote(null);
+    setEditing((value) => !value);
+  };
 
   const saveEdits = async () => {
+    const portions = portionsFromMarkdown(draft);
+    if (portions.length === 0) {
+      setError('The edit has no text in it, so there is nothing to save.');
+      return;
+    }
     setSaving(true);
     setError(null);
     try {
-      const wordCount = markdown.split(/\s+/).filter(Boolean).length;
-      const nextSoup = soup
-        ? {
-            ...soup,
-            metadata: {
-              ...soup.metadata,
-              title: title.trim() || null,
-              description: description.trim() || null,
-            },
-            article: {
-              ...soup.article,
-              title: title.trim() || null,
-              content_markdown: markdown || null,
-              word_count: wordCount || null,
-              reading_time_minutes: wordCount ? Math.max(1, Math.round(wordCount / 220)) : null,
-            },
-            seo: {
-              ...soup.seo,
-              word_count: wordCount,
-            },
-          }
-        : capture.soup;
-      const nextMetadata =
-        capture.metadata && typeof capture.metadata === 'object'
-          ? {
-              ...capture.metadata,
-              title: title.trim() || null,
-              description: description.trim() || null,
-            }
-          : {
-              title: title.trim() || null,
-              description: description.trim() || null,
-            };
-      const updated = await updateSavedCapture({
-        id: capture.id,
-        expectedVersion: capture.version,
-        title: title.trim() || null,
-        description: description.trim() || null,
-        markdown: markdown || null,
-        soup: nextSoup,
-        metadata: nextMetadata,
-      });
-      onUpdated(updated);
+      const outcome = await editSource(capture.id, portions);
+      if (!outcome.ok) {
+        setError(outcome.refusal.message);
+        return;
+      }
+      const reloaded = await getSavedCapture(capture.id);
+      if (!reloaded) throw new Error('This saved capture no longer exists.');
+      setSavedNote(outcome.landed.notices.map((n) => n.message).join(' ') || null);
+      onUpdated(reloaded);
       setEditing(false);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'The capture could not be updated.');
@@ -383,6 +392,13 @@ function SavedCaptureDetail({
       setSaving(false);
     }
   };
+
+  const words =
+    soup?.article.word_count ??
+    (typeof article.word_count === 'number' ? article.word_count : null) ??
+    text.split(/\s+/).filter(Boolean).length;
+  const lang =
+    soup?.metadata.lang ?? (typeof metadata.lang === 'string' ? metadata.lang : null) ?? 'Unknown';
 
   return (
     <div className="flex h-full flex-col">
@@ -411,7 +427,16 @@ function SavedCaptureDetail({
             size="sm"
             variant="secondary"
             className="h-7 rounded-full px-2.5 text-xs"
-            onClick={() => setEditing((value) => !value)}
+            title="Opens this Source in the AI Matrx web app"
+            onClick={() => void chrome.tabs.create({ url: sourceWebAppUrl(capture.id) })}
+          >
+            <Library /> Open in web app
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            className="h-7 rounded-full px-2.5 text-xs"
+            onClick={beginEdit}
           >
             <Pencil /> {editing ? 'Cancel edit' : 'Edit'}
           </Button>
@@ -428,32 +453,22 @@ function SavedCaptureDetail({
 
       <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
         {error && <ErrorNotice message={error} />}
+        {savedNote && !editing && (
+          <div className="mb-3 rounded-xl bg-emerald-500/10 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-300">
+            {savedNote}
+          </div>
+        )}
         {editing ? (
           <div className="space-y-3">
-            <label htmlFor="saved-capture-title" className="block space-y-1">
-              <span className="text-xs font-medium">Title</span>
-              <Input
-                id="saved-capture-title"
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-              />
-            </label>
-            <label htmlFor="saved-capture-description" className="block space-y-1">
-              <span className="text-xs font-medium">Description</span>
-              <textarea
-                id="saved-capture-description"
-                value={description}
-                onChange={(event) => setDescription(event.target.value)}
-                rows={3}
-                className="w-full resize-y rounded-lg border border-border bg-background px-3 py-2 text-base outline-none focus:ring-2 focus:ring-ring"
-              />
-            </label>
+            <p className="text-[11px] text-muted-foreground">
+              Your edit is saved as the version people read. The original capture is kept unchanged.
+            </p>
             <label htmlFor="saved-capture-markdown" className="block space-y-1">
-              <span className="text-xs font-medium">Article markdown</span>
+              <span className="text-xs font-medium">Article text</span>
               <textarea
                 id="saved-capture-markdown"
-                value={markdown}
-                onChange={(event) => setMarkdown(event.target.value)}
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
                 rows={16}
                 className="w-full resize-y rounded-lg border border-border bg-background px-3 py-2 font-mono text-base outline-none focus:ring-2 focus:ring-ring"
               />
@@ -467,7 +482,7 @@ function SavedCaptureDetail({
               Save changes
             </Button>
           </div>
-        ) : soup ? (
+        ) : (
           <Tabs defaultValue="article">
             <TabsList className="mb-3 bg-transparent p-0">
               <TabsTrigger value="article">Article</TabsTrigger>
@@ -475,8 +490,13 @@ function SavedCaptureDetail({
               <TabsTrigger value="data">Data</TabsTrigger>
             </TabsList>
             <TabsContent value="article">
-              {markdown ? (
-                <MarkdownView content={markdown} />
+              {capture.edited_content && (
+                <p className="mb-2 text-[11px] text-muted-foreground">
+                  Showing your edited version. The original capture is kept unchanged.
+                </p>
+              )}
+              {text ? (
+                <MarkdownView content={text} />
               ) : (
                 <EmptyDetail icon={FileText} text="This capture has no article text." />
               )}
@@ -484,24 +504,44 @@ function SavedCaptureDetail({
             <TabsContent value="details" className="space-y-3 text-xs">
               <DetailRow label="Captured" value={new Date(capture.captured_at).toLocaleString()} />
               <DetailRow label="Updated" value={new Date(capture.updated_at).toLocaleString()} />
-              <DetailRow label="Language" value={capture.lang ?? 'Unknown'} />
-              <DetailRow label="Words" value={String(soup.article.word_count ?? 0)} />
-              <DetailRow label="Images" value={String(soup.images.length)} />
-              <DetailRow label="Videos" value={String(soup.videos.length)} />
-              <DetailRow label="Audio" value={String(soup.audio.length)} />
-              <DetailRow label="Links" value={String(soup.links.length)} />
+              <DetailRow label="Kept" value={capture.kept_at ? 'Yes' : 'Not yet'} />
+              <DetailRow label="Language" value={lang} />
+              <DetailRow label="Words" value={String(words ?? 0)} />
+              <DetailRow
+                label="Images"
+                value={String(soup?.images.length ?? countOf(structured.images))}
+              />
+              <DetailRow
+                label="Videos"
+                value={String(soup?.videos.length ?? countOf(structured.videos))}
+              />
+              <DetailRow
+                label="Audio"
+                value={String(soup?.audio.length ?? countOf(structured.audio))}
+              />
+              <DetailRow
+                label="Links"
+                value={String(soup?.links.length ?? countOf(structured.links))}
+              />
+              <DetailRow
+                label="Original"
+                value={
+                  originalState === 'ready'
+                    ? 'Kept'
+                    : originalState === 'loading'
+                      ? 'Loading…'
+                      : originalState === 'failed'
+                        ? (originalNote ?? 'Could not be read.')
+                        : 'Not kept — your organization keeps the text only.'
+                }
+              />
             </TabsContent>
             <TabsContent value="data">
               <pre className="overflow-x-auto whitespace-pre-wrap rounded-xl bg-secondary/40 p-3 text-[11px]">
-                {JSON.stringify(capture.soup, null, 2)}
+                {JSON.stringify(soup ?? capture.structured, null, 2)}
               </pre>
             </TabsContent>
           </Tabs>
-        ) : (
-          <EmptyDetail
-            icon={FileText}
-            text="This capture's stored page data could not be displayed."
-          />
         )}
       </div>
     </div>

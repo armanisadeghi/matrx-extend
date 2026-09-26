@@ -12,7 +12,9 @@ import type {
   DiagnoseResult,
 } from '@/lib/scrape/diagnose-bundle';
 import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
-import { saveCapture, saveSeoAudit } from '@/lib/supabase/queries';
+import { type SaveOutcome, saveCaptureAsSource } from '@/lib/sources/save-capture';
+import { saveSeoAudit } from '@/lib/supabase/queries';
+import { pushNotice } from '@/state/notices';
 import { useScrapeStore } from '@/state/scrape';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -185,45 +187,40 @@ export function useScrape() {
 
   const clearError = useCallback(() => setError(null), [setError]);
 
+  /**
+   * Save the capture as a Source through the landing door (SOURCE-CONVERGENCE
+   * §4.2). Never throws for a refusal or an outage and never loses the capture:
+   * a landing that does not happen leaves it on this device under
+   * "Unsaved — retry" (`save-capture.ts`).
+   *
+   * The unsaved-edits guard is disarmed (`markSaved`) ONLY when the Source
+   * actually landed. An unsaved outcome leaves it armed, so a Re-capture still
+   * asks before discarding edits the person has not saved.
+   */
   const save = useCallback(
-    async (extra: { patternId?: string } = {}) => {
+    async (extra: { patternId?: string } = {}): Promise<SaveOutcome | null> => {
       if (!current) return null;
-      // Persist the full capture (the SEO data is embedded in soup as
-      // current.seo, so it round-trips with the snapshot).
-      const captureRow = await saveCapture({
-        url: current.url,
-        ...(current.metadata.title ? { title: current.metadata.title } : {}),
-        ...(current.metadata.description != null
-          ? { description: current.metadata.description }
-          : {}),
-        ...(current.metadata.lang != null ? { lang: current.metadata.lang } : {}),
-        soup: current,
-        ...(current.article.content_markdown != null
-          ? { markdown: current.article.content_markdown }
-          : {}),
-        metadata: current.metadata,
-        ld_json: current.ld_json,
-        media_count: current.images.length + current.videos.length + current.audio.length,
-        ...(extra.patternId !== undefined ? { pattern_id: extra.patternId } : {}),
-      });
-      // Also write a normalized wbx_seo_audit row so the standalone SEO tab's
-      // "Previously audited" recognition works without us re-fetching the
-      // capture's JSONB blob. Best-effort — we don't fail the save if this
-      // sub-write errors.
-      void saveSeoAudit({
+      const outcome = await saveCaptureAsSource(current, extra);
+      if (outcome.status !== 'landed') return outcome;
+      markSaved();
+      // The normalized wbx_seo_audit row powers the SEO tab's "Previously
+      // audited" recognition. It is a companion write, not the save itself —
+      // but when it fails the person is TOLD, never left believing it happened.
+      const audit = await saveSeoAudit({
         url: current.url,
         signals: current.seo,
         flesch_reading_ease: current.seo.flesch_reading_ease,
         word_count: current.seo.word_count,
-      }).catch(() => undefined);
-      // Only clear the "edited" flag when the row ACTUALLY persisted.
-      // `saveCapture` now THROWS on a refused or lost write (it shows the user
-      // a sentence and records the refusal), so reaching this line means the
-      // row is in the database. The unconditional markSaved() this replaced
-      // silently disarmed the unsaved-edits guard, so a Re-capture could
-      // destroy edits the user believed were saved.
-      markSaved();
-      return captureRow;
+      }).catch(() => null);
+      if (!audit) {
+        pushNotice({
+          tone: 'warning',
+          title: 'SEO audit not recorded',
+          message:
+            'The page was saved, but its SEO audit was not recorded, so the SEO tab will not show it as previously audited. Open the SEO tab and press Save to record it.',
+        });
+      }
+      return outcome;
     },
     [current, markSaved],
   );

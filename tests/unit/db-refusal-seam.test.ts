@@ -19,7 +19,7 @@
 
 import { clearHighlightsForUrl, createHighlight, deleteHighlight } from '@/lib/highlights/queries';
 import { classifyDbFailure, isDbFailureError, userMessageFor } from '@/lib/supabase/db-failure';
-import { saveCapture } from '@/lib/supabase/queries';
+import { deleteSavedCapture } from '@/lib/supabase/queries';
 import { appendRowsToUserTable, listUserTables } from '@/lib/supabase/user-tables';
 import { useNoticeStore } from '@/state/notices';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -64,17 +64,19 @@ vi.mock('@/lib/supabase/schemas', () => ({
   extendDb: mocks.extendDb,
   adminDb: mocks.adminDb,
   aiDb: mocks.aiDb,
+  docprocDb: () => mocks.getSupabase(),
 }));
 vi.mock('@/lib/org/active-org', () => ({
   getActiveOrganizationId: mocks.getActiveOrganizationId,
 }));
 
 const ORG_ID = '22222222-2222-4222-8222-222222222222';
+const SOURCE_ID = '44444444-4444-4444-8444-444444444444';
 
 /** The exact envelope PostgREST returns when RLS refuses a write. */
 const RLS_REFUSAL = {
   code: '42501',
-  message: 'new row violates row-level security policy for table "wbx_capture"',
+  message: 'new row violates row-level security policy for table "processed_documents"',
   details: null,
   hint: null,
 };
@@ -135,12 +137,12 @@ beforeEach(() => {
 });
 
 describe('a refused write is never swallowed', () => {
-  it('saveCapture: a 42501 refusal throws, shows a notice, and is reported', async () => {
+  it('deleteSavedCapture: a 42501 refusal throws, shows a notice, and is reported', async () => {
     const chain = builder({ data: null, error: RLS_REFUSAL });
     mocks.getSupabase.mockReturnValue(chain);
 
     // (c) no success-shaped value
-    await expect(saveCapture({ url: 'https://example.com', soup: {} })).rejects.toMatchObject({
+    await expect(deleteSavedCapture(SOURCE_ID)).rejects.toMatchObject({
       name: 'DbFailureError',
       kind: 'refused',
       code: '42501',
@@ -150,8 +152,8 @@ describe('a refused write is never swallowed', () => {
     const notice = lastNotice();
     expect(notice).toBeDefined();
     expect(notice?.tone).toBe('error');
-    expect(notice?.title).toBe('Page capture not saved');
-    expect(notice?.message).toContain('AI Matrx could not save this page capture');
+    expect(notice?.title).toBe('Saved capture not deleted');
+    expect(notice?.message).toContain('AI Matrx could not delete this saved capture');
     expect(notice?.message).toContain('Nothing was saved.');
     expect(notice?.message.toLowerCase()).toContain('try again');
     // The raw Postgres code is NOT in the sentence the user reads.
@@ -170,7 +172,7 @@ describe('a refused write is never swallowed', () => {
     expect(args.p_source_app).toBe('matrx-extend');
     expect(args.p_source).toBe('chrome-extension');
     expect(args.p_code).toBe('42501');
-    expect(args.p_route).toBe('extend.wbx_capture');
+    expect(args.p_route).toBe('docproc.processed_documents');
     expect(args.p_organization_id).toBe(ORG_ID);
   });
 
@@ -191,11 +193,11 @@ describe('a refused write is never swallowed', () => {
     mocks.mayReportExternalTelemetry.mockResolvedValue(false);
     mocks.getSupabase.mockReturnValue(builder({ data: null, error: RLS_REFUSAL }));
 
-    await expect(saveCapture({ url: 'https://example.com', soup: {} })).rejects.toMatchObject({
+    await expect(deleteSavedCapture(SOURCE_ID)).rejects.toMatchObject({
       kind: 'refused',
     });
 
-    expect(lastNotice()?.title).toBe('Page capture not saved');
+    expect(lastNotice()?.title).toBe('Saved capture not deleted');
     expect(lastNotice()?.message).not.toContain('reported automatically');
     await vi.waitFor(() => expect(mocks.mayReportExternalTelemetry).toHaveBeenCalled());
     expect(mocks.rpc).not.toHaveBeenCalled();
@@ -246,12 +248,10 @@ describe('the error door itself can fail — and says so', () => {
     mocks.rpc.mockResolvedValue({ data: null, error: null });
     mocks.getSupabase.mockReturnValue(builder({ data: null, error: RLS_REFUSAL }));
 
-    await expect(saveCapture({ url: 'https://example.com', soup: {} })).rejects.toSatisfy(
-      isDbFailureError,
-    );
+    await expect(deleteSavedCapture(SOURCE_ID)).rejects.toSatisfy(isDbFailureError);
 
     // The user is still told.
-    expect(lastNotice()?.title).toBe('Page capture not saved');
+    expect(lastNotice()?.title).toBe('Saved capture not deleted');
     // And the double-failure is loud locally, carrying BOTH errors.
     await vi.waitFor(() => {
       const loud = mocks.logError.mock.calls.find((c) =>
@@ -268,9 +268,7 @@ describe('the error door itself can fail — and says so', () => {
     mocks.rpc.mockRejectedValue(new Error('Failed to fetch'));
     mocks.getSupabase.mockReturnValue(builder({ data: null, error: RLS_REFUSAL }));
 
-    await expect(saveCapture({ url: 'https://example.com', soup: {} })).rejects.toSatisfy(
-      isDbFailureError,
-    );
+    await expect(deleteSavedCapture(SOURCE_ID)).rejects.toSatisfy(isDbFailureError);
     await vi.waitFor(() => {
       expect(
         mocks.logError.mock.calls.some((c) => String(c[1]).includes('did NOT record this')),

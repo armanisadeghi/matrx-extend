@@ -2,6 +2,7 @@ import { AddToProjectButton } from '@/components/AddToProjectButton';
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { MarkdownView } from '@/components/MarkdownView';
 import { DiagnoseCard, DiagnoseLauncher } from '@/features/scrape/DiagnoseCard';
+import { UnsavedCapturesCard } from '@/features/scrape/UnsavedCapturesCard';
 import { SeoDetails } from '@/features/seo/SeoDetails';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { usePageRecognition } from '@/hooks/use-page-recognition';
@@ -21,7 +22,7 @@ import {
 import { articleToMarkdown } from '@/lib/scrape/to-markdown';
 import type { SeoAudit } from '@/lib/seo/audit';
 import { toStoredSignals } from '@/lib/seo/diff';
-import { isDbFailureError } from '@/lib/supabase/db-failure';
+import { sourceWebAppUrl } from '@/lib/sources/web-app-link';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/state/auth';
 import { useHighlightStore } from '@/state/highlights';
@@ -35,6 +36,7 @@ import {
   CheckCircle2,
   ChevronsDown,
   Download,
+  ExternalLink,
   ImageIcon,
   Link2,
   Link2Off,
@@ -79,6 +81,8 @@ export function ScrapeView() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  /** The Source the last Save landed as, and what the door said about it. */
+  const [savedSource, setSavedSource] = useState<{ id: string; notices: string[] } | null>(null);
   // Retry must replay the mode the user actually picked — activeMode is
   // cleared in the hook's finally, so the error card's fallback was ALWAYS
   // 'fast' (a failed Scroll & capture silently retried without scrolling).
@@ -163,21 +167,29 @@ export function ScrapeView() {
   const handleSave = async () => {
     setSaving(true);
     setSaved(false);
+    setSavedSource(null);
     setSaveError(null);
     try {
-      await save();
-      setSaved(true);
+      const outcome = await save();
+      if (!outcome) return;
+      if (outcome.status === 'landed') {
+        setSaved(true);
+        setSavedSource({
+          id: outcome.landed.processed_document_id,
+          notices: outcome.landed.notices.map((n) => n.message),
+        });
+      } else if (outcome.status === 'empty') {
+        setSaveError(outcome.message);
+      }
+      // 'unsaved': the capture is on this device and the "Unsaved — retry"
+      // card above shows it with the server's sentence — nothing else to say.
     } catch (err) {
-      // A refused insert throws DbFailureError carrying the exact sentence the
-      // user already saw in the notice; echo it here so the failure is visible
-      // at the button too. The button silently returning to "Save" looked like
-      // success.
+      // save() never throws for a refusal or an outage; reaching here is a bug
+      // in the save path itself. Still say it at the button, never snap back.
       setSaveError(
-        isDbFailureError(err)
-          ? err.userMessage
-          : err instanceof Error
-            ? err.message
-            : 'Save failed — check your connection and sign-in, then try again.',
+        err instanceof Error
+          ? err.message
+          : 'Save failed — check your connection and sign-in, then try again.',
       );
     } finally {
       setSaving(false);
@@ -196,10 +208,34 @@ export function ScrapeView() {
           {current && <CopyMenu title="Copy capture" options={fullCaptureCopyOptions(current)} />}
         </div>
         <HighlightRegionsBanner />
+        <UnsavedCapturesCard
+          onLanded={(url, id) => {
+            if (current && url === current.url) {
+              setSaved(true);
+              setSavedSource({ id, notices: [] });
+            }
+          }}
+        />
         {recognition.capturedAt && !saved && (
           <div className="mt-2 flex items-center gap-2 rounded-xl bg-emerald-500/10 px-3 py-1.5 text-xs text-emerald-700 dark:text-emerald-300">
             <CheckCircle2 className="size-3.5 shrink-0" />
-            Captured {new Date(recognition.capturedAt).toLocaleString()}
+            <span className="min-w-0 flex-1">
+              Saved {new Date(recognition.capturedAt).toLocaleString()}
+            </span>
+            {recognition.capturedId && (
+              <button
+                type="button"
+                className="shrink-0 underline-offset-2 hover:underline"
+                title="Opens this Source in the AI Matrx web app"
+                onClick={() =>
+                  void chrome.tabs.create({
+                    url: sourceWebAppUrl(recognition.capturedId as string),
+                  })
+                }
+              >
+                Open (web app)
+              </button>
+            )}
           </div>
         )}
         {error && (
@@ -568,6 +604,20 @@ export function ScrapeView() {
       </div>
       {saveError && (
         <div className="px-3 pb-1 text-[11px] text-red-600 dark:text-red-400">{saveError}</div>
+      )}
+      {saved && savedSource && (
+        <div className="space-y-1 px-3 pb-2 text-[11px] text-muted-foreground">
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 text-primary underline-offset-2 hover:underline"
+            onClick={() => void chrome.tabs.create({ url: sourceWebAppUrl(savedSource.id) })}
+          >
+            <ExternalLink className="size-3" /> Open this Source (opens in the web app)
+          </button>
+          {savedSource.notices.map((message) => (
+            <p key={message}>{message}</p>
+          ))}
+        </div>
       )}
       <ConfirmDialog
         open={pendingCaptureMode !== null}

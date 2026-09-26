@@ -1,0 +1,17 @@
+{
+  "_generated_from": "aidream: uv run python -c 'from matrx_scraper.canonical import canonical_url; ...' (2026-09-25). Regenerate from the server whenever canonical_url changes.",
+  "cases": [
+    ["https://example.com/", "https://example.com/"],
+    ["https://example.com", "https://example.com"],
+    ["https://example.com/a/", "https://example.com/a"],
+    ["https://example.com/a/#top", "https://example.com/a"],
+    ["  https://example.com/a?b=1#x  ", "https://example.com/a?b=1"],
+    ["https://example.com/a/b/?q=1", "https://example.com/a/b/?q=1"],
+    ["https://example.com/?q=/x/", "https://example.com/?q=/x"],
+    ["", ""],
+    ["#only", ""],
+    ["https://example.com//", "https://example.com/"],
+    ["http://x.io/path/", "http://x.io/path"],
+    ["https://example.com/a/?q=1/", "https://example.com/a/?q=1"]
+  ]
+}
