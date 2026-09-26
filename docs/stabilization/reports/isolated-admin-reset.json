@@ -17,9 +17,9 @@
   ],
   "secret_custody": "Credentials are read from the authorized aidream .env only at the real web form. Auth storage is observed solely as boolean presence; raw values, cookies, callback URLs, request bodies, and browser exceptions never enter output. The runner writes only allowlisted stage/category results under test-results with mode 0600.",
   "verification": [
-    {"check": "node --check tests/browser/isolated-admin-reset-acceptance.mjs", "result": "pass"},
-    {"check": "git diff --check", "result": "pass"},
-    {"check": "native Chrome reset acceptance", "result": "not run; root owns resource admission"}
+    { "check": "node --check tests/browser/isolated-admin-reset-acceptance.mjs", "result": "pass" },
+    { "check": "git diff --check", "result": "pass" },
+    { "check": "native Chrome reset acceptance", "result": "not run; root owns resource admission" }
   ],
   "limitations": [
     "No runtime behavior verdict is claimed until root's guarded run and independent review.",

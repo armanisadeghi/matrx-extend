@@ -35,9 +35,7 @@
     "git diff fde1a11..HEAD -- tests/browser/isolated-admin-signin-acceptance.mjs tests/browser/native-sidepanel-qa-harness.mjs tests/browser/settings-panel-driver.mjs",
     "shasum -a 256 .output/matrx-extend-0.2.60-store.zip .output/matrx-extend-0.2.60-local.zip"
   ],
-  "changed_files": [
-    "docs/stabilization/reports/isolated004-peer.json"
-  ],
+  "changed_files": ["docs/stabilization/reports/isolated004-peer.json"],
   "commit_shas": [],
   "limitations": [
     "No new runtime observation was performed; this review relies on retained run artifacts and source inspection.",
