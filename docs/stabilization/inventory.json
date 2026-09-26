@@ -274,6 +274,15 @@
               "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
               "acceptance": "Optional environment reads and the outer identity diagnostic now catch unavailable Chrome/environment state and warn/skip instead of throwing through the caller."
             }
+          ],
+          "runtime_evidence": [
+            {
+              "run": "docs/stabilization/runs/isolated-admin-signin-004.json",
+              "peer": "docs/stabilization/reports/isolated004-peer.json",
+              "status": "partial",
+              "verified": "Real fresh-profile web login and extension admin UI on0.2.60.",
+              "remaining": "OAuth callback not directly observed; ordinary-member flow unverified. All full mode cells remain unverified."
+            }
           ]
         }
       ],
