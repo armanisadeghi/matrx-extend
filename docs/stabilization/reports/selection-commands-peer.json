@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "5d7129f57402cca422cca7e2192b2cf43cf8a8bb",
+  "scope": ["EXT-D-0011", "EXT-F-1003-T46 native input selection", "preservation of T70 scrolling"],
+  "verdict_a_acceptance_readiness": {
+    "status": "PARTIAL_READY_RUNTIME_UNVERIFIED",
+    "runtime_verified_by_this_review": false,
+    "evidence": "The runner now dispatches CDP Input.dispatchKeyEvent keyDown with commands:['selectAll'] and the platform modifier (Meta on macOS, Control elsewhere), then reads focused input selectionStart/selectionEnd and requires the full original value to be selected before Backspace. T46 remains unverified until the native retest runs. Even if UI steps pass, rediscovery is explicitly unverified, so the case cannot falsely become a full pass."
+  },
+  "verdict_b_engineering": {
+    "status": "PASS_STATIC",
+    "evidence": "Chromium's protocol addition describes commands as editing commands and specifically identifies Meta+A/SelectAll on Mac; its protocol test observes selected text before Backspace. The runner uses no DOM value/selection mutation or mocked browser API; failed selection assertion prevents deletion/replacement. Replacement input proceeds only after observed clearing and waits for the exact entered value before Save/Set. The T70 trusted-wheel scrolling implementation is unchanged by this commit.",
+    "validation": ["node --check tests/browser/settings-local-controls-acceptance.mjs passed"],
+    "limits": ["No native browser execution or product behavior verified.", "The Chromium primary source supports the command mechanism; only the pending native retest can prove it works in this runner/browser build."]
+  },
+  "findings": []
+}
