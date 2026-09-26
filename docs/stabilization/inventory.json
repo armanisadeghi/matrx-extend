@@ -4394,7 +4394,7 @@
                 "PageCaptureandtabCaptureeachgrantON,persistONafterReload,removeOFF,persistOFFafterReload; all4optionalOFFatend"
               ],
               "remaining_criteria": [
-                "Chromeofferednorequestdialog; native denialpath oncurrentcandidate remainsunverified. T55 includesadjacentdenialcriterion; no broadpassclaimed."
+                "Native denial now passes on0.2.64; current denial reload remains unverified. Prior grant/removal/reload evidence is retained with original build provenance."
               ]
             }
           },
@@ -4412,6 +4412,17 @@
               "run": "isolated-permission-denial-001",
               "status": "unverified",
               "detail": "Real admin sign-in and fresh absent pageCapture proven on0.2.64; native switch click not hittable, no permission request or denial occurred. Root delegates actual native click to CUA operator; product cause unproven."
+            },
+            {
+              "run": "isolated-permission-denial-002",
+              "status": "partial",
+              "operator": "docs/stabilization/reports/native-denial-operator-001.json",
+              "verified": [
+                "Native Chrome prompt observed and Deny clicked",
+                "Actual Settings refusal alert and switchOFF",
+                "Chrome contains/getAll absent"
+              ],
+              "remaining": "Current0.2.64 denial reload not exercised; prior grant/removal/reload evidence remains version-specific."
             }
           ]
         },
