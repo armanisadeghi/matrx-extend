@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "report_id": "member-panel-scope-peer",
+  "reviewed_commit": "66c9df2b75c1ea9581d98872ddbb11852f89cf19",
+  "scope": "Read-only source and existing artifact inspection of the owned-profile Vault candidate probe and its fixed boolean instrumentation. No browser, build, or test launched.",
+  "acceptance_verdict": "runtime_pending_unverified",
+  "quality_readiness_verdict": "instrumentation_scope_repaired_output_redaction_still_needed",
+  "findings": [
+    {
+      "severity": "confirmed_harness_gap_repair",
+      "finding": "Vault inventory is now scoped through the clicked Vault trigger's aria-controls to its linked panel. The observation also records whether the old first-active-panel selection matched Vault. The previous run's active-panel and no-heading result therefore remains inconclusive about the actual Vault content.",
+      "evidence": "tests/browser/member-vault-access-probe.mjs maskedInventory() resolves document.getElementById(vaultTab.getAttribute('aria-controls')), then records vaultPanelActive and firstActivePanelIsVault. App.tsx has the Vault TabsContent and trigger; Radix implements the trigger-to-panel relationship."
+    },
+    {
+      "severity": "confirmed_harness_gap_repair",
+      "finding": "The fixed preContentSpinner boolean distinguishes a lazy Vault view or auth-checking view from rendered inventory. Source shows VaultSession returns a full-height Loader2 spinner while vault.auth is checking, and App.tsx wraps the lazy VaultView in Suspense with the same TabFallback shape.",
+      "evidence": "src/features/vault/VaultView.tsx auth checking branch; src/entrypoints/sidepanel/App.tsx Vault Suspense fallback; probe selector is scoped to the linked panel and returns one boolean."
+    },
+    {
+      "severity": "needs_redaction_before_quality_ready",
+      "finding": "The persisted evidence object includes targetMember with the hardcoded email identifier. Candidate titles are reduced to counts in the panel realm, but this field still emits sensitive identifying metadata and conflicts with the stated no-sensitive-metadata output boundary.",
+      "evidence": "tests/browser/member-vault-access-probe.mjs evidence initialization sets targetMember: TARGET_MEMBER; finally writes the entire evidence object to test-results/member-vault-access-probe.json."
+    }
+  ],
+  "runtime_truth": {
+    "previous_run": "member-vault-access-003 authenticated the admin web and extension but failed at mine_inventory_wait with heading false and scope none. It did not establish a product defect or candidate absence.",
+    "new_runtime_observation": "None in this review. The new booleans are source-reviewed only; no browser was launched."
+  },
+  "disposition": "Keep acceptance unverified until a separately admitted owned-profile run observes the linked Vault panel and settled content. Before treating the harness as quality-ready, omit targetMember from persisted output; candidate counting may continue inside the panel realm. No member authentication or credential identity can be inferred from a candidate count.",
+  "checks": [
+    "Exact HEAD inspected: 66c9df2b75c1ea9581d98872ddbb11852f89cf19",
+    "Existing .output/matrx-extend-0.2.68-local.zip manifest/chunk presence confirmed; no rebuild performed",
+    "No browser, build, or test launched"
+  ]
+}
