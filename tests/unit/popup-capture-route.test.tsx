@@ -31,7 +31,10 @@ describe('popup capture route', () => {
 
   afterEach(async () => {
     const { POPUP_LAUNCH_INTENT_KEY } = await import('@/lib/panel/launch-intent');
-    await chrome.storage.session.remove(POPUP_LAUNCH_INTENT_KEY);
+    const rows = await chrome.storage.session.get(null);
+    await chrome.storage.session.remove(
+      Object.keys(rows).filter((key) => key.startsWith(`${POPUP_LAUNCH_INTENT_KEY}.`)),
+    );
     document.body.innerHTML = '';
   });
 
@@ -47,15 +50,18 @@ describe('popup capture route', () => {
     expect(await takePopupLaunchTarget(9)).toBeNull();
 
     await userEvent.click(screen.getByRole('button', { name: 'Capture page' }));
-    expect(set).toHaveBeenCalledWith(
-      expect.objectContaining({
-        [POPUP_LAUNCH_INTENT_KEY]: expect.objectContaining({ kind: 'capture-page', windowId: 9 }),
-      }),
-    );
+    const payload = set.mock.calls.at(-1)?.[0] ?? {};
+    const [intentKey, intent] = Object.entries(payload)[0] ?? [];
+    expect(intentKey).toMatch(new RegExp(`^${POPUP_LAUNCH_INTENT_KEY}\\.9\\.`));
+    expect(intent).toMatchObject({ kind: 'capture-page', windowId: 9 });
 
     expect(await takePopupLaunchTarget(9)).toBe('scrape');
     expect(await takePopupLaunchTarget(9)).toBeNull();
-    expect(await chrome.storage.session.get([POPUP_LAUNCH_INTENT_KEY])).toEqual({});
+    expect(
+      Object.keys(await chrome.storage.session.get(null)).filter((key) =>
+        key.startsWith(POPUP_LAUNCH_INTENT_KEY),
+      ),
+    ).toEqual([]);
     set.mockRestore();
   });
 
@@ -68,6 +74,20 @@ describe('popup capture route', () => {
 
     expect(await takePopupLaunchTarget(10)).toBeNull();
     expect(await takePopupLaunchTarget(9)).toBe('scrape');
+  });
+
+  it('keeps simultaneous Capture clicks in separate browser windows', async () => {
+    const { requestCapturePagePanel, takePopupLaunchTarget } = await import(
+      '@/lib/panel/launch-intent'
+    );
+    const first = requestCapturePagePanel(9);
+    const second = requestCapturePagePanel(10);
+    await Promise.all([first.write, second.write]);
+
+    expect(first.key).not.toBe(second.key);
+    await expect(
+      Promise.all([takePopupLaunchTarget(9), takePopupLaunchTarget(10)]),
+    ).resolves.toEqual(['scrape', 'scrape']);
   });
 
   it('serializes concurrent claims so only one callback can route the page', async () => {
@@ -109,7 +129,11 @@ describe('popup capture route', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Capture page' }));
     await vi.waitFor(async () => {
       expect(screen.getByRole('alert').textContent).toContain('Native panel refusal');
-      expect(await chrome.storage.session.get([POPUP_LAUNCH_INTENT_KEY])).toEqual({});
+      expect(
+        Object.keys(await chrome.storage.session.get(null)).filter((key) =>
+          key.startsWith(POPUP_LAUNCH_INTENT_KEY),
+        ),
+      ).toEqual([]);
     });
     await userEvent.click(screen.getByRole('button', { name: 'Open chat' }));
     expect(await takePopupLaunchTarget(9)).toBeNull();
@@ -130,7 +154,11 @@ describe('popup capture route', () => {
     rejectPanel(new Error('Native panel rejected'));
     await vi.waitFor(async () => {
       expect(screen.getByRole('alert').textContent).toContain('Native panel rejected');
-      expect(await chrome.storage.session.get([POPUP_LAUNCH_INTENT_KEY])).toEqual({});
+      expect(
+        Object.keys(await chrome.storage.session.get(null)).filter((key) =>
+          key.startsWith(POPUP_LAUNCH_INTENT_KEY),
+        ),
+      ).toEqual([]);
     });
   });
 
@@ -143,7 +171,7 @@ describe('popup capture route', () => {
     const newer = requestCapturePagePanel(9);
     await newer.write;
 
-    await expect(clearCapturePagePanel(failed)).resolves.toBe(false);
+    await expect(clearCapturePagePanel(failed)).resolves.toBe(true);
     expect(await takePopupLaunchTarget(9)).toBe('scrape');
   });
 
@@ -155,10 +183,12 @@ describe('popup capture route', () => {
     await import('@/entrypoints/popup/main');
 
     await userEvent.click(await screen.findByRole('button', { name: 'Capture page' }));
-    await vi.waitFor(() =>
-      expect(screen.getByRole('alert').textContent).toContain("Couldn't prepare Capture page"),
-    );
-    expect(await chrome.storage.session.get([POPUP_LAUNCH_INTENT_KEY])).toEqual({});
+    await vi.waitFor(() => expect(screen.getByRole('alert').textContent).toContain('write failed'));
+    expect(
+      Object.keys(await chrome.storage.session.get(null)).filter((key) =>
+        key.startsWith(POPUP_LAUNCH_INTENT_KEY),
+      ),
+    ).toEqual([]);
     set.mockRestore();
   });
 });

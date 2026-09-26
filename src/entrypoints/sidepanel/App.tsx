@@ -188,7 +188,13 @@ export function App() {
       changes: Record<string, chrome.storage.StorageChange>,
       areaName: string,
     ) => {
-      if (areaName === 'session' && changes[POPUP_LAUNCH_INTENT_KEY]?.newValue !== undefined) {
+      if (
+        areaName === 'session' &&
+        Object.entries(changes).some(
+          ([key, change]) =>
+            key.startsWith(`${POPUP_LAUNCH_INTENT_KEY}.`) && change.newValue !== undefined,
+        )
+      ) {
         applyPopupIntent();
       }
     };
