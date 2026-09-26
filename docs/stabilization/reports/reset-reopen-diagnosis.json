@@ -26,7 +26,12 @@
       "prediction": "open_click_diagnostic reports native_input_failed with target_hit true."
     }
   ],
-  "change": "Capture a fixed click error category plus safe target, viewport, hit-test, modal, inert, and animation facts only when the second native click fails. No raw exception, page text, storage value, credential, or URL is recorded.",
+  "change": "Capture a fixed click error category plus safe target, viewport, hit-test, modal, inert, and animation facts only when the second native click fails. target_count and its hit test use the driver's eligible-visible filter; raw_target_count and raw_target_in_inert_tree are explicitly separate diagnostics. No raw exception, page text, storage value, credential, or URL is recorded.",
+  "peer_review": {
+    "report": "docs/stabilization/reports/reopen-diagnostic-peer.json",
+    "finding": "Initial diagnostic counted hidden and inert exact-text buttons while the click driver filtered them.",
+    "resolution": "Diagnostic candidate filtering now matches the driver before counting and hit-testing."
+  },
   "verification": {
     "node_check": "pass",
     "git_diff_check": "pass",

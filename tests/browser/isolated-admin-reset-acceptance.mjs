@@ -166,8 +166,13 @@ async function resetOpenClickDiagnostic(panel, error) {
         'native_input_failed';
   try {
     const state = await evaluate(panel, `(() => {
-      const targets = [...document.querySelectorAll('button')]
+      const rawTargets = [...document.querySelectorAll('button')]
         .filter((button) => button.textContent.trim() === 'Clear local data on this device');
+      const targets = rawTargets.filter((button) => {
+        const style = getComputedStyle(button), rect = button.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' &&
+          style.display !== 'none' && !button.closest('[inert]');
+      });
       const target = targets[0];
       const rect = target?.getBoundingClientRect();
       const x = rect ? rect.x + rect.width / 2 : null;
@@ -178,11 +183,12 @@ async function resetOpenClickDiagnostic(panel, error) {
         .find((button) => button.textContent.trim() === 'Data & reset');
       return {
         target_count: targets.length,
+        raw_target_count: rawTargets.length,
         target_has_layout: Boolean(rect && rect.width > 0 && rect.height > 0),
         target_in_viewport: Boolean(rect && x >= 0 && x < innerWidth && y >= 0 && y < innerHeight),
         target_hit: Boolean(target && hit && (hit === target || target.contains(hit))),
         hit_is_dialog: Boolean(hit?.closest('[role="alertdialog"]')),
-        target_in_inert_tree: Boolean(target?.closest('[inert]')),
+        raw_target_in_inert_tree: rawTargets.some((button) => Boolean(button.closest('[inert]'))),
         target_animating: Boolean(target?.getAnimations({ subtree: true })
           .some((animation) => animation.playState === 'running')),
         dialog_count: dialogs.length,
