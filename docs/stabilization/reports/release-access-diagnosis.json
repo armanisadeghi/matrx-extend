@@ -6,10 +6,21 @@
     "scripts/_supabase-management.ts calls the supabase executable with a SELECT-only query and resolves MATRX_SUPABASE_PROJECT_REF from env files; that named key is present in .env.production and .env.development.",
     "supabase is absent from PATH and from this repo's and sibling aidream's node_modules/.bin. The authenticated Supabase MCP tool is available to the agent, but its session is not a shell credential or CLI executable."
   ],
-  "least_privilege_remedy": "Keep tool.binding, tool.definition, tool.surface_defaults, and the migration ledger private to browser roles. Provide a trusted Supabase CLI binary and a noninteractive operator-authenticated Management API session to the guarded release process, then verify the helper's exact db query invocation against that installed CLI's --help and rerun the real strict gates. The existing Supabase MCP can independently perform read-only SQL verification, but cannot by itself satisfy the shell gate; any MCP-backed release bridge would need explicit source integration and its own strict evidence. Do not grant anon SELECT or use a service-role key in the extension.",
+  "least_privilege_remedy": "Keep tool.binding, tool.definition, tool.surface_defaults, and the migration ledger private to browser roles. The concrete host path is the existing SUPABASE_ACCESS_TOKEN key in sibling aidream/.env, consumed only inside the build-time read helper at point of use, to call the official Supabase Management API POST /v1/projects/{ref}/database/query with read_only=true and fixed SELECT statements. Validate this token's database_read permission and the endpoint response shape with one coordinator-owned read before changing the helper. Do not copy the token to extension env files, include it in a WXT build environment, grant anon SELECT, or use a service-role key in the extension. The authenticated MCP can independently cross-check the read, but its OAuth session is not a shell token.",
+  "further_discovery": {
+    "local_access": "../aidream/.env has a SUPABASE_ACCESS_TOKEN key (name/presence inspected only); this shell has no SUPABASE_ACCESS_TOKEN, and no supabase or psql executable was found in PATH or the checked standard/repo locations. ~/.supabase contains only telemetry.json, so an existing CLI login profile was not found.",
+    "helper_provenance": "scripts/_supabase-management.ts was introduced in commit 50ce4d4 on 2026-09-13. It assumes a Supabase CLI db query subcommand with --linked, --project-ref, --output json, and --workdir. The Supabase CLI source documents --project-ref as a TypeScript CLI-only divergence for db query; this host has no CLI binary, so exact invocation and output shape are unverified here.",
+    "canonical_project": "Local database contracts identify https://db.matrxserver.com as the platform Data API URL and brsgrqvjdzwihsvnfqkf as its Supabase Management API project ref. The build helper's named MATRX_SUPABASE_PROJECT_REF key is present in .env.production and .env.development.",
+    "official_sources": [
+      "https://supabase.com/docs/reference/api/v1-run-a-query",
+      "https://supabase.com/docs/reference/api/introduction",
+      "https://github.com/supabase/cli/blob/develop/apps/cli/docs/go-cli-divergences.md"
+    ]
+  },
   "limitations": [
-    "No credential values were inspected or printed, and no CLI install, SQL, test, build, or network write was performed.",
+    "No credential values were inspected or printed, and no CLI install, SQL, test, build, or database network request was performed.",
+    "The existing token's database_read permission and Management API response shape are unverified; a failed authenticated read must remain a strict-gate failure.",
     "Actual strict drift/migration outcomes are pending the coordinator's guarded rerun; package-twins was the first current blocking gate."
   ],
-  "next_action": "Coordinator should resolve the package-twins false positive first, then establish the authenticated CLI read path before rerunning the exact release candidate's strict DB gates."
+  "next_action": "Coordinator should validate one fixed SELECT through the official read_only Management API endpoint using aidream's existing token at point of use, then route the three build-time catalog/ledger readers through that authenticated helper and rerun the exact release candidate's strict gates."
 }
