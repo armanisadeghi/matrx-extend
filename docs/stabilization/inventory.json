@@ -10873,7 +10873,8 @@
             "seo-guest-003",
             "seo-guest-004",
             "seo-guest-005",
-            "seo-guest-006"
+            "seo-guest-006",
+            "seo-guest-007"
           ],
           "retest_status": "not-run"
         },
@@ -11104,6 +11105,16 @@
           ],
           "independent_review": "docs/stabilization/reports/seo-admin001-runtime-peer.json",
           "limits": "Realadmin/orgprerequisite, two publictitle/headingpresence checks and JSONmenu availability only. No clipboardcontents, persistence/history, recommendations, membergate orfullfeatureclaim."
+        },
+        {
+          "run_id": "seo-guest-007",
+          "mode": "guest",
+          "build": "0.2.72",
+          "status": "partial",
+          "rechecked_prior_subtargets": 12,
+          "new_subtargets": 0,
+          "independent_review": "docs/stabilization/reports/seo007-runtime-peer.json",
+          "limits": "Currentbuildrecheck of prior12boundedpredicates. Design-systempopoverfinding limitedto actualCopyauditmenu; nofullfeature or allpopover claim."
         }
       ]
     },
