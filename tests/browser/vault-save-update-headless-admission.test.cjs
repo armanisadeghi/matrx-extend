@@ -28,8 +28,17 @@ const reviewedLocalSourceArtifact = {
   version: '0.2.54',
   kind: 'local-multi-repo-source-artifact',
 };
-const routerHash = '53e19fea4a7ddf57a1c8b12a0a641e9e694e8ce2527112520d5c85fd5520006c';
-const serviceHash = 'd62944d5e9968bcb6323182487a410a600f03771942f05127df5ff1f0e1f4ff8';
+const cleanupSourceRoot = path.join(
+  __dirname,
+  '../../.matrx/task1-active/cleanup-source-b20c757670f5',
+);
+const cleanupAdapter = path.join(__dirname, 'cleanup-vault-canary.py');
+const cleanupSourceCommit = 'b20c757670f5348f5d198f3a1c64d25a1343f5c3';
+const cleanupSourceGitTree = 'dbe91a70fbc62eb3c7496eb3fc8445c6f52ea54e';
+const cleanupSourceTreeSha256 =
+  '8a473cca03f5c9b8b464faee102091c8967ac08a2b97ed7a1418177dc9f17f58';
+const routerHash = '22be9386e3a8cb9cddb51c8b2dfe78883242967d6cf94d06e23dec10fa658f6f';
+const serviceHash = '0dd2347f4637b8f7787a34ba98af6767aa90eca7b3827d610147f29d6211e174';
 
 try {
   const rejectBeforeCustody = (name, expectedCode, env) => {
@@ -44,7 +53,7 @@ try {
         ...env,
       },
       encoding: 'utf8',
-      timeout: 10000,
+      timeout: 30000,
     });
     assert.notEqual(result.status, 0, `${name} unexpectedly ran`);
     assert.match(`${result.stderr}${result.stdout}`, new RegExp(expectedCode));
@@ -53,9 +62,88 @@ try {
   const strictReceiptEnv = {
     MATRX_VAULT_CANARY_DISPLAY: 'HEADLESS_NO_CLIPBOARD',
     MATRX_VAULT_CANARY_LOCAL_CANONICAL_CLEANUP: 'RUN_LOCAL_CANONICAL_CLEANUP',
+    MATRX_VAULT_CANARY_LOCAL_SOURCE_ROOT: cleanupSourceRoot,
     MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256: routerHash,
     MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256: serviceHash,
     MATRX_VAULT_CANARY_EXPECTED_COMMIT: frozenCommit,
+  };
+  const verifySource = (command, sourceRoot, treeDigest = cleanupSourceTreeSha256) => {
+    const result = spawnSync(
+      '/Users/armanisadeghi/code/aidream/.venv/bin/python',
+      [
+        cleanupAdapter,
+        command,
+        sourceRoot,
+        routerHash,
+        serviceHash,
+        treeDigest,
+        cleanupSourceGitTree,
+        cleanupSourceCommit,
+      ],
+      { encoding: 'utf8', timeout: 30000 },
+    );
+    assert.equal(result.error, undefined, `source verifier subprocess error: ${result.error?.code || 'unknown'}`);
+    return { result, body: JSON.parse(result.stdout) };
+  };
+  const calculateSourceTreeDigest = (sourceRoot) => {
+    const result = spawnSync(
+      '/Users/armanisadeghi/code/aidream/.venv/bin/python',
+      [cleanupAdapter, '--source-tree-digest', sourceRoot],
+      { encoding: 'utf8', timeout: 30000 },
+    );
+    assert.equal(result.status, 0, `source digest failed: ${result.stdout}`);
+    return JSON.parse(result.stdout).sourceTreeSha256;
+  };
+  const proveArchivePreflightAndPackageClosure = () => {
+    const source = verifySource('--verify-source-root', cleanupSourceRoot);
+    assert.equal(source.result.status, 0, source.result.stdout);
+    assert.deepEqual(source.body.source, {
+      router: routerHash,
+      service: serviceHash,
+      sourceCommit: cleanupSourceCommit,
+      sourceGitTree: cleanupSourceGitTree,
+      sourceTreeSha256: cleanupSourceTreeSha256,
+    });
+    const closure = verifySource('--verify-import-closure', cleanupSourceRoot);
+    assert.equal(closure.result.status, 0, closure.result.stdout);
+  };
+  const rejectUnrelatedArchiveMutationBeforeCustody = () => {
+    const mutatedSource = path.join(root, 'unrelated-archive-mutation');
+    fs.cpSync(cleanupSourceRoot, mutatedSource, {
+      recursive: true,
+      dereference: false,
+      verbatimSymlinks: true,
+    });
+    fs.chmodSync(mutatedSource, 0o755);
+    const readme = path.join(mutatedSource, 'README.md');
+    fs.chmodSync(readme, 0o644);
+    fs.appendFileSync(readme, '\narchive mutation must refuse\n');
+    rejectBeforeCustody('unrelated-archive-mutation', 'local_cleanup_source_tree_hash_mismatch', {
+      ...strictReceiptEnv,
+      MATRX_VAULT_CANARY_LOCAL_SOURCE_ROOT: mutatedSource,
+    });
+  };
+  const rejectFallbackToCheckoutPackage = () => {
+    const fallbackSource = path.join(root, 'package-origin-fallback');
+    fs.cpSync(cleanupSourceRoot, fallbackSource, {
+      recursive: true,
+      dereference: false,
+      verbatimSymlinks: true,
+    });
+    fs.chmodSync(path.join(fallbackSource, 'packages'), 0o755);
+    fs.chmodSync(path.join(fallbackSource, 'packages/matrx-connect'), 0o755);
+    fs.renameSync(
+      path.join(fallbackSource, 'packages/matrx-connect/matrx_connect'),
+      path.join(fallbackSource, 'packages/matrx-connect/matrx_connect.withheld'),
+    );
+    const result = verifySource(
+      '--verify-import-closure',
+      fallbackSource,
+      calculateSourceTreeDigest(fallbackSource),
+    );
+    assert.notEqual(result.result.status, 0, 'checkout package fallback unexpectedly passed');
+    assert.equal(result.body.ok, false);
+    assert.equal(result.body.code, 'required_import_origin_refused');
   };
   const receiptZeroWriteProof = {
     schema: 3,
@@ -86,7 +174,7 @@ try {
         ...strictReceiptEnv,
       },
       encoding: 'utf8',
-      timeout: 10000,
+      timeout: 30000,
     });
     assert.notEqual(result.status, 0, `${name} unexpectedly ran`);
     assert.match(`${result.stderr}${result.stdout}`, new RegExp(expectedCode));
@@ -129,11 +217,11 @@ try {
         MATRX_VAULT_CANARY_ADMISSION: 'RUN_RECEIPT_BACKED_SAVE_UPDATE',
         MATRX_VAULT_CANARY_MANIFEST: manifestPath,
         MATRX_VAULT_CANARY_ARTIFACT_KIND: 'frozen',
-        MATRX_VAULT_CANARY_LOCAL_SOURCE_ROOT: sourceRoot,
         ...strictReceiptEnv,
+        MATRX_VAULT_CANARY_LOCAL_SOURCE_ROOT: sourceRoot,
       },
       encoding: 'utf8',
-      timeout: 10000,
+      timeout: 30000,
     });
     assert.notEqual(result.status, 0, 'source drift unexpectedly ran');
     assert.equal(
@@ -177,6 +265,7 @@ try {
         MATRX_VAULT_CANARY_ADMISSION: 'RUN_RECEIPT_BACKED_SAVE_UPDATE',
         MATRX_VAULT_CANARY_DISPLAY: 'HEADLESS_NO_CLIPBOARD',
         MATRX_VAULT_CANARY_LOCAL_CANONICAL_CLEANUP: 'RUN_LOCAL_CANONICAL_CLEANUP',
+        MATRX_VAULT_CANARY_LOCAL_SOURCE_ROOT: cleanupSourceRoot,
         MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256: routerHash,
         MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256: serviceHash,
         MATRX_VAULT_CANARY_EXPECTED_COMMIT: localReleaseZipCommit,
@@ -184,7 +273,7 @@ try {
         MATRX_VAULT_CANARY_ARTIFACT_KIND: localReleaseZipKind,
       },
       encoding: 'utf8',
-      timeout: 10000,
+      timeout: 30000,
     });
     assert.notEqual(result.status, 0, 'near-match local release manifest unexpectedly ran');
     assert.match(
@@ -235,6 +324,7 @@ try {
         MATRX_VAULT_CANARY_ADMISSION: 'RUN_RECEIPT_BACKED_SAVE_UPDATE',
         MATRX_VAULT_CANARY_DISPLAY: 'HEADLESS_NO_CLIPBOARD',
         MATRX_VAULT_CANARY_LOCAL_CANONICAL_CLEANUP: 'RUN_LOCAL_CANONICAL_CLEANUP',
+        MATRX_VAULT_CANARY_LOCAL_SOURCE_ROOT: cleanupSourceRoot,
         MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256: routerHash,
         MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256: serviceHash,
         MATRX_VAULT_CANARY_EXPECTED_COMMIT: localSourceCommit,
@@ -242,7 +332,7 @@ try {
         MATRX_VAULT_CANARY_ARTIFACT_KIND: 'local-multi-repo-source-artifact',
       },
       encoding: 'utf8',
-      timeout: 10000,
+      timeout: 30000,
     });
     assert.notEqual(result.status, 0, 'near-match local source manifest unexpectedly ran');
     assert.match(
@@ -309,6 +399,7 @@ try {
         MATRX_VAULT_CANARY_ADMISSION: 'RUN_RECEIPT_BACKED_SAVE_UPDATE',
         MATRX_VAULT_CANARY_DISPLAY: 'HEADLESS_NO_CLIPBOARD',
         MATRX_VAULT_CANARY_LOCAL_CANONICAL_CLEANUP: 'RUN_LOCAL_CANONICAL_CLEANUP',
+        MATRX_VAULT_CANARY_LOCAL_SOURCE_ROOT: cleanupSourceRoot,
         MATRX_VAULT_CANARY_LOCAL_ROUTER_SHA256: routerHash,
         MATRX_VAULT_CANARY_LOCAL_SERVICE_SHA256: serviceHash,
         MATRX_VAULT_CANARY_EXPECTED_COMMIT: reviewedLocalSourceArtifact.sourceCommit,
@@ -316,7 +407,7 @@ try {
         MATRX_VAULT_CANARY_ARTIFACT_KIND: reviewedLocalSourceArtifact.kind,
       },
       encoding: 'utf8',
-      timeout: 10000,
+      timeout: 30000,
     });
     assert.notEqual(result.status, 0, 'wrong source unexpectedly ran');
     assert.match(`${result.stderr}${result.stdout}`, /artifact_commit_mismatch/);
@@ -359,6 +450,9 @@ try {
     ...strictReceiptEnv,
   });
   rejectSourceDriftBeforeCustody();
+  proveArchivePreflightAndPackageClosure();
+  rejectUnrelatedArchiveMutationBeforeCustody();
+  rejectFallbackToCheckoutPackage();
   rejectNearMatchLocalReleaseManifestBeforeCustody();
   rejectNearMatchLocalSourceManifestBeforeCustody();
   assertReviewedLocalSourceArtifactAdmission();
