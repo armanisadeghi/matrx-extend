@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "report_id": "debug-log-controls-mount-peer",
+  "reviewed_source_commit": "adbd6d70",
+  "run_receipt": "docs/stabilization/runs/debug-log-controls-001.json",
+  "A_runtime": {
+    "status": "UNVERIFIED",
+    "evidence": "Run 001 was admitted but exited 1 before any feature case. Its saved result has realAdminUi=true, failure stage open_debug, pointer_target_not_unique with zero matching and visible targets, and an empty cases array. The result and guard-log SHA-256 values match the immutable receipt. This peer did not execute the corrected runner."
+  },
+  "B_source": {
+    "status": "ACCEPTED_FOR_RUNTIME_RETRY",
+    "screenshot_provenance": "The owned native harness created a private artifact directory. The run's failure screenshot is a mode-0600 file written with exclusive wx creation; its SHA-256 is 43afb1d77bceb3341052cda56e6f4df4fe335636792826164f3db52b6f052164. Private visual inspection shows the Debug tab selected and a loading spinner in the content area, with no Log controls. The screenshot is not copied into this report.",
+    "source_basis": [
+      "The side-panel App loads DebugView with React lazy. DebugView initializes its subview to Log, so an immediate second click on Log is unnecessary and can race the loading fallback seen in run 001.",
+      "The correction keeps the trusted Debug tab click, removes only the immediate Log click, and waits for snapshot.searchPresent plus counterMatchesRows. snapshot locates Search in the Log view and parses its adjacent filtered/total counter; a spinner alone cannot satisfy this condition.",
+      "The wait is bounded by the existing settings-panel-driver default 10-second timeout. A missing Log mount fails with the new debug_log_mount stage. Natural event, trusted search, pause/resume, clear, detail-unverified and top-level status assertions are unchanged by this commit."
+    ],
+    "limit": "The screenshot supports a lazy-mount diagnosis for run 001, but only a new admitted native run can establish that the corrected wait reaches mounted controls and exercises the cases."
+  }
+}
