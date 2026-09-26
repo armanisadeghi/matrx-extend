@@ -1,0 +1,45 @@
+{
+  "id": "remote-deps-018",
+  "feature_id": "EXT-F-0003",
+  "status": "pass",
+  "exit_code": 0,
+  "command": ["pnpm", "update", "-r", "@ai-matrx/*", "--latest", "--ignore-scripts"],
+  "installed_design_system": "0.44.6",
+  "lock_sha256": "e3c2f45bfa4d8d542f39cff620119db8f9fe248b4f1d19117a281e6a953607e5",
+  "consumer_report": "docs/stabilization/reports/remote-deps-1444.json",
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T14:44:00.114Z",
+      "runId": "remote-deps-018",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.64,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.49,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.09771428571428574,
+        "swapUsedMiB": 2421.69,
+        "repoFreeGiB": 1675.756607055664,
+        "profileFreeGiB": 22.26299285888672
+      },
+      "cpuBusySamples": [
+        0.11199999999999999, 0.10250000000000004, 0.09150000000000003, 0.09430000000000005,
+        0.08889999999999998, 0.0979000000000001, 0.09689999999999999
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T14:44:03.422Z",
+      "runId": "remote-deps-018",
+      "childExitCode": 0,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ]
+}
