@@ -2291,8 +2291,8 @@
           "results": {
             "guest": {
               "status": "blocked",
-              "run_id": "guest-settings-002",
-              "evidence": "docs/stabilization/runs/guest-settings-002.json",
+              "run_id": "guest-settings-004",
+              "evidence": "docs/stabilization/runs/guest-settings-004.json",
               "verified_substeps": [
                 "Guest Organization view showed sign-in to choose; no organization selection or post-reload Acting as result was observed."
               ],
@@ -2301,7 +2301,8 @@
               ],
               "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
               "blocked_run_id": "guest-settings-003",
-              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved."
+              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
+              "detail": "Fresh native Chrome check03:54:44UTC found Mac locked; zero UI actions. Current0.2.51 loaded state and case behavior unverified."
             }
           }
         },
@@ -2379,8 +2380,8 @@
           "results": {
             "guest": {
               "status": "blocked",
-              "run_id": "render-retest-001",
-              "evidence": "docs/stabilization/runs/render-retest-001.json",
+              "run_id": "guest-settings-004",
+              "evidence": "docs/stabilization/runs/guest-settings-004.json",
               "verified_substeps": [
                 "System/Light/Dark selections were reflected by selection controls."
               ],
@@ -2388,7 +2389,8 @@
                 "Verify each selected appearance is actually applied and persists after reopen/reload."
               ],
               "blocked_run_id": "guest-settings-003",
-              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved."
+              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
+              "detail": "Fresh native Chrome check03:54:44UTC found Mac locked; zero UI actions. Current0.2.51 loaded state and case behavior unverified."
             }
           }
         },
@@ -2466,8 +2468,8 @@
           "results": {
             "guest": {
               "status": "blocked",
-              "run_id": "guest-settings-002",
-              "evidence": "docs/stabilization/runs/guest-settings-002.json",
+              "run_id": "guest-settings-004",
+              "evidence": "docs/stabilization/runs/guest-settings-004.json",
               "verified_substeps": [
                 "Without an organization, Default agent displayed \u201cChoose an organization above.\u201d"
               ],
@@ -2476,7 +2478,8 @@
               ],
               "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
               "blocked_run_id": "guest-settings-003",
-              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved."
+              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
+              "detail": "Fresh native Chrome check03:54:44UTC found Mac locked; zero UI actions. Current0.2.51 loaded state and case behavior unverified."
             }
           }
         },
@@ -2871,8 +2874,8 @@
           "results": {
             "guest": {
               "status": "blocked",
-              "run_id": "guest-settings-002",
-              "evidence": "docs/stabilization/runs/guest-settings-002.json",
+              "run_id": "guest-settings-004",
+              "evidence": "docs/stabilization/runs/guest-settings-004.json",
               "verified_substeps": [
                 "Advanced agent capabilities was absent from guest Settings AX tree."
               ],
@@ -2881,7 +2884,8 @@
               ],
               "spec_change_reason": "Corrected the case to test only the guest behavior for its guest mode. The former expected text required authenticated admin/member operations while remaining signed out, which was an invalid cross-mode acceptance criterion. Those positive/admin and member-denial requirements remain assigned to their existing authenticated cases.",
               "blocked_run_id": "guest-settings-003",
-              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved."
+              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
+              "detail": "Fresh native Chrome check03:54:44UTC found Mac locked; zero UI actions. Current0.2.51 loaded state and case behavior unverified."
             }
           }
         },
@@ -3663,7 +3667,10 @@
             "guest": {
               "status": "blocked",
               "blocked_run_id": "guest-settings-003",
-              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved."
+              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
+              "run_id": "guest-settings-004",
+              "evidence": "docs/stabilization/runs/guest-settings-004.json",
+              "detail": "Fresh native Chrome check03:54:44UTC found Mac locked; zero UI actions. Current0.2.51 loaded state and case behavior unverified."
             }
           }
         },
@@ -4085,7 +4092,8 @@
           "run_ids": [
             "guest-local-001",
             "render-retest-001",
-            "guest-settings-002"
+            "guest-settings-002",
+            "guest-settings-004"
           ],
           "retest_status": "not-run"
         },
