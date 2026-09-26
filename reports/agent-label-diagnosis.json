@@ -1,0 +1,14 @@
+{
+  "finding": "The observed labels do not establish an identity mismatch; shared picker source explains the trailing 2 as the orchestra member-count badge appended to the agent name in a row.",
+  "classification": "Likely composite row semantics; no proven wrong-agent selection defect.",
+  "row_rendering": "Installed @ai-matrx/agents 0.13.13 dist/catalog/react/index.js:1720-1750 renders agent.name and, when agent.orchestra exists, a separate badge containing agent.orchestra.memberCount.",
+  "detail_rendering": "Same installed package, AgentDetailCard at dist/catalog/react/index.js:1393-1411 renders heading agent.name only.",
+  "selection": "Picker handleSelectAgent at dist/catalog/react/index.js:817-821 calls onSelect(agent.id); row/detail operate on the same Agent object through package list component.",
+  "settings_sink": "src/features/settings/SettingsView.tsx:191-205 supplies activeAgentId and onSelect={(id) => settings.setDefaultAgentId(id)}; src/state/settings.ts:137 stores that ID and Zustand persists as matrx.settings.v1.",
+  "observed_id": "Run record reports detail ID b32f2079-4fa5-4613-a01d-726f1243ebe5, but source-only evidence cannot associate that ID with the selected row because the run record did not capture row ID/orchestra fields.",
+  "verdict": "Quick Test Agent / Quick Test Agent 2 can be fully explained by name + orchestra count badge; reported Settings persistence of Quick Test Agent is consistent with the same agent name. No evidence of distinct-agent selection.",
+  "remaining_uncertainty": "The runtime row's orchestra.memberCount and its ID were not captured; therefore this is a strong source-supported explanation, not proof of the specific runtime row data.",
+  "verification": "Read-only source trace at checkout cf2b7f0, installed @ai-matrx/agents 0.13.13; run record docs/stabilization/runs/admin-default-agent-001.json. No tests/build/browser/process/database access performed per task boundary.",
+  "limitation": "Accessibility name concatenates visible row text and numeric badge, which can be ambiguous to users; whether to change that UX needs a separate product decision.",
+  "recommended_next_step": "If confirming this instance matters, capture the row's data-testid/ID and orchestra badge meaning on a later authorized UI pass; no database edit is indicated by current evidence."
+}
