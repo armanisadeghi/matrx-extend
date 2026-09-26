@@ -1,0 +1,14 @@
+{
+  "id": "remote-deps-025",
+  "status": "pass",
+  "command": "pnpm install --frozen-lockfile --ignore-scripts",
+  "admitted_at": "2026-09-26T17:11:10.529Z",
+  "exited_at": "2026-09-26T17:11:11.722Z",
+  "wrapper_exit_confirmed": 0,
+  "result": "Installed content-ir 0.19.8 after incoming ab45f7c1 merged without conflicts. Runtime rebuild pending release024.",
+  "source_log": "/tmp/matrx-remote-deps-025.log",
+  "prior_refusal": {
+    "id": "remote-deps-024",
+    "reason": "Command omitted mandatory --ignore-scripts; guard refused before launch. Corrected command used unchanged policy."
+  }
+}
