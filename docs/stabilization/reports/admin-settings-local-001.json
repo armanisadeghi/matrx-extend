@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "task_id": "admin-settings-local-001",
+  "status": "complete",
+  "run_record": "docs/stabilization/runs/admin-settings-local-001.json",
+  "summary": "Admin Settings T06, T15, and T30 completed in native Chrome. Light, Dark, and System each displayed and persisted through extension Reload; Fast/Thinking speed selection persisted; all twelve Settings groups were opened and closed, with their original arrangement restored.",
+  "feature_controls_cases": [
+    {"feature_id": "EXT-F-1003", "case_ids": ["EXT-F-1003-T06"], "status": "passed"},
+    {"feature_id": "EXT-F-1003", "case_ids": ["EXT-F-1003-T15"], "status": "passed"},
+    {"feature_id": "EXT-F-1003", "case_ids": ["EXT-F-1003-T30"], "status": "passed"}
+  ],
+  "evidence": [
+    "The actual unpacked extension was cihdmkcdjjckfhjpgoedmgfpoljebaml version 0.2.51 from .output/chrome-mv3-dev.",
+    "Before interpreting organization state, the Organization row was expanded and separately verified Acting as the existing throwaway fixture; the apparent unset wording belonged to Default agent guidance while Organization was collapsed.",
+    "Final full extension Reload and Settings reopen showed System and Fast selected."
+  ],
+  "resource_lease": "guest-settings-007, coordinator-held session 76318",
+  "state_left": "Signed in as admin@admin.com; explicit fixture organization selected; System theme; Fast speed; original group arrangement; Settings open.",
+  "ui_stopped": true
+}
