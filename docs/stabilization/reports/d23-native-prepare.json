@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "report_id": "d23-native-prepare",
+  "defect_id": "EXT-D-0023",
+  "status": "prepared_not_run",
+  "scope": "Read-only native Source observation in a fresh authenticated panel with the existing D22 Save checkpoint",
+  "observation": "The runner now checks whether the known Capture no-workspace alert appears before organization selection, whether it retires after the approved organization is selected through the UI, and whether the public capture's enabled Save target has a hit-tested interior point. It records only categorical results and safe pointer geometry, not organization names or raw notice text.",
+  "acceptance_boundary": "D23 read-only acceptance is observed only if the initial notice was seen, the same notice is absent after selection, and the later Save pointer is hit-testable. If the initial notice does not appear naturally, the original native reproduction remains unverified even if later checks succeed.",
+  "write_boundary": "An existing private D22 Save-attempt checkpoint is required. The recovery path may capture the approved public fixture locally but sends no Save input, never resets the checkpoint, and never retries the ambiguous prior Save.",
+  "verification": "Source change awaits independent review and a root-owned guarded native run. This lane has not launched a browser, build, or test."
+}
