@@ -2,19 +2,20 @@
   "schema_version": 1,
   "report_id": "debug-service-error-source-peer",
   "feature_id": "EXT-F-1005",
-  "reviewed_source_commit": "f6e8dd50a7c001fc26279fb98920d55a0d89940e",
+  "reviewed_source_commit": "bb74a496",
   "scope": ["EXT-F-1005-T14", "EXT-F-1005-T15", "EXT-F-1005-T17", "EXT-F-1005-T22"],
   "A_runtime": {
     "verdict": "UNVERIFIED",
-    "reason": "This peer performed source review only. No browser, build, test, or service-error run was launched. Existing warm and reload observations do not establish the service-error dimension."
+    "reason": "This peer performed source review only. No browser, build, test, or service-error run was launched. Existing warm and reload observations do not establish the service-error dimension; the revised runner still requires a root-owned native run."
   },
   "B_source": {
-    "verdict": "REJECT_SERVICE_ERROR_DIMENSION_AS_WRITTEN",
-    "finding": "The runner proves a real /health failure only during the Bridges probe. exerciseServiceError restores the owned side-panel target to online, re-enables cache, disables Network observation, and returns to Log before the natural public-page event generation and every Search, Pause/Resume, Clear, and detail control action. serviceErrorProved remains true, so scenarioEvidence can label those later healthy-network actions as serviceError pass despite no failure condition persisting through them.",
-    "positive_controls": "The source checks a same-URL real panel GET with HTTP 200 and visible OK, then an actual Network.loadingFailed and visible FAIL under target-scoped offline conditions. It does not mock responses, inject events, write database data, use Chat/Pilot, or send Source Save input. The native harness owns the disposable browser profile.",
-    "restoration": "The offline toggle is target-scoped and its restoration is in finally before ordinary controls. This bounds the outage safely but is also why those controls are not service-error evidence.",
-    "additional_limit": "The health helper's failure is silent in the Debug event log. The failed ping does not establish a natural error row or positive error badge; T17 badge clearing still requires its separate pre-Clear positive control.",
-    "required_correction": "Keep the actual service-error condition present and independently observable while each relevant Debug control runs, then restore the owned target's network in an outer finally. Alternatively, keep all four service-error dimension results unverified and use the current probe only as a precondition check. Do not promote an earlier FAIL label after restoration into during-error evidence."
+    "verdict": "ACCEPT_SOURCE_WITH_RUNTIME_UNVERIFIED",
+    "prior_finding": "The f6e8dd50 version restored panel connectivity before the controls and could label healthy-network actions as service-error evidence. That source defect is addressed in bb74a496.",
+    "finding": "The runner now proves a same-URL panel /health GET returned HTTP 200 with visible OK, then requires net::ERR_INTERNET_DISCONNECTED and visible FAIL under target-scoped offline conditions. It returns to Debug Log without restoring connectivity, runs natural public-page event generation and the Search, Pause/Resume, Clear, and detail controls while the owned panel target remains offline, then repeats the same failed health ping and visible FAIL before restoration. The public page is a separate browser target.",
+    "evidence_gate": "scenarioEvidence can label serviceError only after the initial outage proof. A missing final outage proof clears that flag and downgrades every recorded serviceError dimension to unverified. Existing case predicates still require real matching rows, count changes, details, and empty states; missing positive controls remain unverified rather than fabricated. A control-stage exception during a proved outage is marked fail with a fixed stage, without asserting product root cause.",
+    "restoration": "The offline toggle applies only to the owned side-panel CDP target. An outer finally restores online network conditions, cache setting, and Network observation after the battery, including on control failure. Failure to restore is not recorded as success. The disposable profile is owned by the native harness.",
+    "privacy": "The health URL stays in memory for equality checks. Error text is compared only to the fixed disconnected code; receipts carry booleans, counts, fixed stages, and categories. The runner does not mock responses, inject log entries, write database data, use Chat/Pilot, or send Source Save input.",
+    "remaining_limits": "The health helper is intentionally silent in the Debug event log, so a failed ping alone proves neither a natural error row nor a positive error badge. T17 badge clearing is separately conditional on a badge observed before Clear. Native behavior and actual case outcomes remain unverified until a guarded run."
   },
   "reviewed_paths": [
     "tests/browser/debug-log-controls-acceptance.mjs",
