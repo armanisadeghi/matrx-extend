@@ -208,8 +208,9 @@ async function publicDetailEvidence(page) {
       firstHeading: headings[0] ?? null,
       hasSocialMetadata: [...document.querySelectorAll('meta')].some(
         (node) =>
-          (node.getAttribute('property') ?? '').startsWith('og:') ||
-          (node.getAttribute('name') ?? '').startsWith('twitter:'),
+          Boolean(node.getAttribute('content')) &&
+          ((node.getAttribute('property') ?? '').startsWith('og:') ||
+            (node.getAttribute('name') ?? '').startsWith('twitter:')),
       ),
       hasLinks: links.length > 0,
       hasImages: document.querySelectorAll('img').length > 0,
@@ -584,6 +585,8 @@ try {
       const sparseExpected = await observe('sparse_public_details_inspected', () =>
         publicDetailEvidence(page),
       );
+      assert.equal(sparseExpected.description, null, 'sparse public page has no meta description');
+      assert.equal(sparseExpected.canonical, null, 'sparse public page has no canonical link');
       const sparseDetails = await observe('sparse_seo_details_inspected', () =>
         seoDetailState(panel),
       );

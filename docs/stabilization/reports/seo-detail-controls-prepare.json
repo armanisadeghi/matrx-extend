@@ -26,6 +26,12 @@
     }
   ],
   "source_check": "The public MDN HTML fetched read-only on 2026-09-26 included a meta description and a canonical link. The runner re-reads both from the owned browser tab during the real run and refuses to claim coverage if either is missing.",
+  "source_peer_repairs": {
+    "peer_report": "docs/stabilization/reports/seo-detail-source-peer.json",
+    "sparse_fixture": "The live Example Domain DOM must have neither description nor canonical before sparse_public_detail_groups can pass.",
+    "social_oracle": "Only og:/twitter: meta tags with nonempty content count as social metadata, matching the signal contract.",
+    "runtime_status": "unverified"
+  },
   "already_verified_by_005_not_new_coverage": [
     "T01 warm URL title replacement and reload current-page audit",
     "T02 manual Re-audit returns to the current page",
