@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "review": "independent_source_review",
+  "source_commit": "82b8247",
+  "scope": [
+    "tests/browser/contained-navigation-acceptance.mjs",
+    "tests/browser/isolated-permission-denial-acceptance.mjs"
+  ],
+  "runtime": {
+    "contained_navigation": "pending_not_launched",
+    "permission_denial": "pending_not_launched"
+  },
+  "verdicts": {
+    "contained_navigation": {
+      "diagnostic_coverage": "pass_source_review",
+      "real_signin_preserved": true,
+      "outcomes_weakened": false,
+      "safe_evidence_retained_before_cleanup": true,
+      "details": "The runner still submits real credentials through the real web form, waits for the real dashboard, then clicks the extension Sign in control and requires the expected account, admin role, Sign out, and advanced-settings controls. It records named stages, the pre-click Account readiness booleans, click completion, and the latest allowlisted state booleans before the harness returns and cleans up. Existing guest and admin assertions are unchanged."
+    },
+    "permission_denial": {
+      "diagnostic_coverage": "pass_with_observation_flag_gap",
+      "real_signin_preserved": true,
+      "outcomes_weakened": false,
+      "safe_evidence_retained_before_cleanup": true,
+      "details": "The runner still performs real web-form sign-in, clicks the real extension Sign in control, requires admin readiness, and retains the original permission baseline, native Deny acknowledgement, refusal UI, and reload postconditions. Auth diagnostics contain stage names and booleans only."
+    }
+  },
+  "finding": {
+    "severity": "low",
+    "file": "tests/browser/isolated-permission-denial-acceptance.mjs",
+    "issue": "observation_read_failed is set only inside the post-click admin polling callback. If authState(panel) throws while recording guest or before_click, the exact stage is still retained, but the dedicated observation failure boolean remains false.",
+    "impact": "The failure boundary remains diagnosable from stage and null snapshot, but the boolean does not cover all auth-state reads as its name suggests.",
+    "recommendation": "If this instrumentation is reused, wrap guest and before-click authState reads with the same safe catch that sets observation_read_failed, then rethrow a fixed safe error. This is not a blocker for identifying the current sign-in boundary."
+  },
+  "data_safety": {
+    "raw_auth_urls_recorded": false,
+    "credentials_recorded": false,
+    "raw_errors_recorded": false,
+    "tokens_or_storage_recorded": false,
+    "page_contents_recorded": false,
+    "identity_evidence": "boolean equality checks against the expected admin identity; no identity string is serialized"
+  },
+  "conclusion": "The source changes preserve real authentication and permission outcomes while retaining safe stage and readiness evidence before disposable-profile cleanup. Source review supports both diagnostics; both runtime verdicts remain pending because no browser fixture was launched."
+}
