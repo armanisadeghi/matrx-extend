@@ -1,0 +1,60 @@
+{
+  "reviewer": "/root/isolated_reset_peer",
+  "reviewed_commit": "80db6c24348a8d91d438b5fddaaf017b35c9bd72",
+  "method": "Fresh source-only review of the acceptance script, native side-panel harness, reset implementation, release receipt, and case contract. No browser, tests, build, or other process was launched.",
+  "verdict_a_acceptance": {
+    "status": "UNVERIFIED",
+    "reason": "The guest cancel/confirm/reload flow has not been executed in this review lane. The script targets a real native SIDE_PANEL context and uses CDP pointer events, but its present assertions do not force the entire case contract.",
+    "findings": [
+      {
+        "severity": "important",
+        "location": "tests/browser/settings-local-reset-acceptance.mjs:150-154",
+        "issue": "Confirm checks removal of matrx.settings.v1 only. It records all local keys before confirm but never asserts that the other preexisting local keys were cleared. A reset implementation that removes only the Settings key can pass this part while leaving extension data behind; the case expects local extension state to be cleared.",
+        "remedy": "Seed or identify at least one independent local-data key in the disposable profile, then require every pre-confirm local key to disappear after confirmation and reload. Keep secrets out of the report."
+      },
+      {
+        "severity": "important",
+        "location": "tests/browser/settings-local-reset-acceptance.mjs:144,149-154",
+        "issue": "The script demands a nonempty guest session store without creating a known guest session value, and waits only for the local Settings key to disappear before sampling session storage. The implementation clears local storage first and session storage second (SettingsView.tsx:97-101), so a correct run can fail in that interval; a fresh guest may also have no session key to test.",
+        "remedy": "Create a harmless, named session value in the isolated extension before confirm, verify Cancel preserves it, then wait for that value to disappear after confirm. Assert the condition after reload too."
+      },
+      {
+        "severity": "important",
+        "location": "tests/browser/settings-local-reset-acceptance.mjs:14,123-126",
+        "issue": "The executable test is pinned to release version 0.2.51. Current package.json is 0.2.53 while the local release receipt remains 0.2.51, so a passing run today would prove the older released artifact rather than the current source; a fresh 0.2.53 receipt would cause the test to refuse before browser launch.",
+        "remedy": "Bind the expected version and source revision to the intended completed receipt, and report both in the runtime evidence. Require a release containing the reset code under review before accepting the result."
+      }
+    ],
+    "cannot_verify": [
+      "No execution of cancel, confirm, reload, browser profile cleanup, or trusted pointer behavior was observed.",
+      "The guest case cannot independently demonstrate a signed-in account was signed out; that belongs to the member/admin cases."
+    ]
+  },
+  "verdict_b_engineering_quality": {
+    "status": "PARTIAL",
+    "passing_source_evidence": [
+      "The harness creates a fresh temporary Chrome profile, uses port 0 and that profile's DevToolsActivePort, checks browser command line/profile lock/extension worker, and verifies a distinct SIDE_PANEL runtime context before exercising it (native-sidepanel-qa-harness.mjs:305-389).",
+      "All reset clicks use Input.dispatchMouseEvent on coordinates of one visible element, while the initial panel opener uses Playwright's trusted click; the script does not call DOM element.click().",
+      "Cleanup targets only the spawned Chrome child and removes its temporary profile (native-sidepanel-qa-harness.mjs:412-417). The script reads storage key names and the theme value, without writing credential values to its report."
+    ],
+    "findings": [
+      {
+        "severity": "important",
+        "location": "tests/browser/settings-local-reset-acceptance.mjs:150-163",
+        "issue": "The test's output can be green after the wrong local-data clearing implementation because the sole local value it requires to disappear is the Settings key. It lacks a second independent local value and does not establish a controlled session value, so the forcing-function standard is unmet.",
+        "remedy": "Use two distinct safe local/session values and assert preservation on Cancel, removal on Confirm, and absence after reload. Demonstrate a wrong-key or skipped-clear mutation goes red in scratch, without editing the shared tree."
+      },
+      {
+        "severity": "minor",
+        "location": "tests/browser/native-sidepanel-qa-harness.mjs:250-270",
+        "issue": "Inherited cleanup resolves only on an exit event after the listener is installed, but checks exitCode rather than signalCode. A Chrome child already terminated by signal can enter this path with exitCode null and no future exit event, leaving the harness pending. This does not point at the operator browser, but it can prevent the disposable profile cleanup from finishing.",
+        "remedy": "Treat a non-null signalCode as already exited and ensure the kill timeout also settles cleanup."
+      }
+    ],
+    "runtime_limits": [
+      "The harness's Playwright module is loaded through the sibling matrx-frontend package path; source review cannot confirm that path and Chrome-for-Testing are available in the scheduler's runtime.",
+      "No test sabotage, syntax check, or browser run was executed in this lane."
+    ]
+  },
+  "open_questions": []
+}
