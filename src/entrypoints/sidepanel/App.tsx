@@ -21,7 +21,11 @@ import { getAgentCatalog } from '@/lib/agents/catalog';
 import { useDebugStore } from '@/lib/debug/log';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { POPUP_LAUNCH_INTENT_KEY, takePopupLaunchTarget } from '@/lib/panel/launch-intent';
+import {
+  POPUP_LAUNCH_INTENT_KEY,
+  takePopupLaunchTarget,
+  waitForSidePanelContextId,
+} from '@/lib/panel/launch-intent';
 import { useSettingsStore } from '@/state/settings';
 import { type SidepanelTab, useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { AgentCatalogProvider } from '@ai-matrx/agents/catalog/react';
@@ -177,8 +181,13 @@ export function App() {
         .getCurrent()
         .then((window) => {
           if (mounted && window.id != null) {
-            void takePopupLaunchTarget(window.id).then((target) => {
-              if (mounted && target) setTab(target);
+            const windowId = window.id;
+            void waitForSidePanelContextId(windowId).then((contextId) => {
+              if (mounted && contextId) {
+                void takePopupLaunchTarget(windowId, contextId).then((target) => {
+                  if (mounted && target) setTab(target);
+                });
+              }
             });
           }
         })

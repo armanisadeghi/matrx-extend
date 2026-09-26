@@ -27,6 +27,11 @@ describe('popup capture route', () => {
     globalThis.chrome.windows = {
       getCurrent: vi.fn(async () => ({ id: 9 })),
     } as unknown as typeof chrome.windows;
+    globalThis.chrome.runtime = {
+      getContexts: vi.fn(async () => [
+        { contextId: 'panel-9', contextType: 'SIDE_PANEL', windowId: 9 },
+      ]),
+    } as unknown as typeof chrome.runtime;
   });
 
   afterEach(async () => {
@@ -47,7 +52,7 @@ describe('popup capture route', () => {
 
     await userEvent.click(await screen.findByRole('button', { name: 'Open chat' }));
     expect(set).not.toHaveBeenCalled();
-    expect(await takePopupLaunchTarget(9)).toBeNull();
+    expect(await takePopupLaunchTarget(9, 'panel-9')).toBeNull();
 
     await userEvent.click(screen.getByRole('button', { name: 'Capture page' }));
     const payload = set.mock.calls.at(-1)?.[0] ?? {};
@@ -55,8 +60,8 @@ describe('popup capture route', () => {
     expect(intentKey).toMatch(new RegExp(`^${POPUP_LAUNCH_INTENT_KEY}\\.9\\.`));
     expect(intent).toMatchObject({ kind: 'capture-page', windowId: 9 });
 
-    expect(await takePopupLaunchTarget(9)).toBe('scrape');
-    expect(await takePopupLaunchTarget(9)).toBeNull();
+    expect(await takePopupLaunchTarget(9, 'panel-9')).toBe('scrape');
+    expect(await takePopupLaunchTarget(9, 'panel-9')).toBeNull();
     expect(
       Object.keys(await chrome.storage.session.get(null)).filter((key) =>
         key.startsWith(POPUP_LAUNCH_INTENT_KEY),
@@ -71,10 +76,10 @@ describe('popup capture route', () => {
     );
     const request = requestCapturePagePanel(9);
     await request.write;
-    await armCapturePagePanel(request);
+    await armCapturePagePanel(request, 'panel-9');
 
-    expect(await takePopupLaunchTarget(10)).toBeNull();
-    expect(await takePopupLaunchTarget(9)).toBe('scrape');
+    expect(await takePopupLaunchTarget(10, 'panel-10')).toBeNull();
+    expect(await takePopupLaunchTarget(9, 'panel-9')).toBe('scrape');
   });
 
   it('keeps simultaneous Capture clicks in separate browser windows', async () => {
@@ -84,11 +89,14 @@ describe('popup capture route', () => {
     const first = requestCapturePagePanel(9);
     const second = requestCapturePagePanel(10);
     await Promise.all([first.write, second.write]);
-    await Promise.all([armCapturePagePanel(first), armCapturePagePanel(second)]);
+    await Promise.all([
+      armCapturePagePanel(first, 'panel-9'),
+      armCapturePagePanel(second, 'panel-10'),
+    ]);
 
     expect(first.key).not.toBe(second.key);
     await expect(
-      Promise.all([takePopupLaunchTarget(9), takePopupLaunchTarget(10)]),
+      Promise.all([takePopupLaunchTarget(9, 'panel-9'), takePopupLaunchTarget(10, 'panel-10')]),
     ).resolves.toEqual(['scrape', 'scrape']);
   });
 
@@ -98,11 +106,41 @@ describe('popup capture route', () => {
     );
     const request = requestCapturePagePanel(9);
     await request.write;
-    await armCapturePagePanel(request);
+    await armCapturePagePanel(request, 'panel-9');
 
     await expect(
-      Promise.all([takePopupLaunchTarget(9), takePopupLaunchTarget(9)]),
+      Promise.all([takePopupLaunchTarget(9, 'panel-9'), takePopupLaunchTarget(9, 'panel-9')]),
     ).resolves.toEqual(['scrape', null]);
+  });
+
+  it('refuses a stale armed intent from a reopened side panel context', async () => {
+    const { armCapturePagePanel, requestCapturePagePanel, takePopupLaunchTarget } = await import(
+      '@/lib/panel/launch-intent'
+    );
+    const request = requestCapturePagePanel(9);
+    await request.write;
+    await armCapturePagePanel(request, 'live-panel');
+
+    expect(await takePopupLaunchTarget(9, 'reopened-panel')).toBeNull();
+    expect(await takePopupLaunchTarget(9, 'live-panel')).toBe('scrape');
+  });
+
+  it('fails closed when the side panel context is missing or ambiguous', async () => {
+    const { waitForSidePanelContextId } = await import('@/lib/panel/launch-intent');
+    const getContexts = (chrome.runtime as unknown as { getContexts: ReturnType<typeof vi.fn> })
+      .getContexts;
+    getContexts
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([]);
+    await expect(waitForSidePanelContextId(9)).resolves.toBeNull();
+    getContexts.mockResolvedValueOnce([
+      { contextId: 'one', contextType: 'SIDE_PANEL', windowId: 9 },
+      { contextId: 'two', contextType: 'SIDE_PANEL', windowId: 9 },
+    ]);
+    await expect(waitForSidePanelContextId(9)).resolves.toBeNull();
   });
 
   it('fails closed when removing a claimed intent fails', async () => {
@@ -111,12 +149,12 @@ describe('popup capture route', () => {
     );
     const request = requestCapturePagePanel(9);
     await request.write;
-    await armCapturePagePanel(request);
+    await armCapturePagePanel(request, 'panel-9');
     const remove = vi
       .spyOn(chrome.storage.session, 'remove')
       .mockRejectedValueOnce(new Error('remove failed'));
 
-    await expect(takePopupLaunchTarget(9)).resolves.toBeNull();
+    await expect(takePopupLaunchTarget(9, 'panel-9')).resolves.toBeNull();
     remove.mockRestore();
   });
 
@@ -131,7 +169,7 @@ describe('popup capture route', () => {
       .mockRejectedValueOnce(new Error('remove failed'));
 
     await expect(clearCapturePagePanel(request)).resolves.toBe(false);
-    expect(await takePopupLaunchTarget(9)).toBeNull();
+    expect(await takePopupLaunchTarget(9, 'panel-9')).toBeNull();
     remove.mockRestore();
   });
 
@@ -145,8 +183,8 @@ describe('popup capture route', () => {
       .spyOn(chrome.storage.session, 'set')
       .mockRejectedValueOnce(new Error('arm failed'));
 
-    await expect(armCapturePagePanel(request)).rejects.toThrow('arm failed');
-    expect(await takePopupLaunchTarget(9)).toBeNull();
+    await expect(armCapturePagePanel(request, 'panel-9')).rejects.toThrow('arm failed');
+    expect(await takePopupLaunchTarget(9, 'panel-9')).toBeNull();
     set.mockRestore();
   });
 
@@ -170,7 +208,7 @@ describe('popup capture route', () => {
       ).toEqual([]);
     });
     await userEvent.click(screen.getByRole('button', { name: 'Open chat' }));
-    expect(await takePopupLaunchTarget(9)).toBeNull();
+    expect(await takePopupLaunchTarget(9, 'panel-9')).toBeNull();
   });
 
   it('clears its own pending intent when native panel opening rejects', async () => {
@@ -207,10 +245,10 @@ describe('popup capture route', () => {
     await failed.write;
     const newer = requestCapturePagePanel(9);
     await newer.write;
-    await armCapturePagePanel(newer);
+    await armCapturePagePanel(newer, 'panel-9');
 
     await expect(clearCapturePagePanel(failed)).resolves.toBe(true);
-    expect(await takePopupLaunchTarget(9)).toBe('scrape');
+    expect(await takePopupLaunchTarget(9, 'panel-9')).toBe('scrape');
   });
 
   it('shows a capture preparation failure instead of leaving a redirect behind', async () => {

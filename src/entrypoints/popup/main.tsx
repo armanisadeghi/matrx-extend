@@ -5,6 +5,7 @@ import {
   armCapturePagePanel,
   clearCapturePagePanel,
   requestCapturePagePanel,
+  waitForSidePanelContextId,
 } from '@/lib/panel/launch-intent';
 import { Button } from '@ai-matrx/design-system';
 import { ExternalLink, MessageSquare, ScanLine } from 'lucide-react';
@@ -85,7 +86,10 @@ export function Popup() {
         if (opened.status !== 'fulfilled') throw opened.reason;
       }
       if (!request) throw new Error("Couldn't prepare Capture page.");
-      await armCapturePagePanel(request);
+      const contextId = await waitForSidePanelContextId(request.intent.windowId);
+      if (!contextId)
+        throw new Error('Matrx could not confirm the opened side panel. Please try again.');
+      await armCapturePagePanel(request, contextId);
       window.close();
     } catch (err) {
       if (request) await clearCapturePagePanel(request);

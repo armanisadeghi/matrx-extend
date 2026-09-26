@@ -10,6 +10,7 @@ type CapturePageIntent = {
   requestId: string;
   createdAt: number;
   expiresAt: number;
+  contextId?: string;
 };
 
 export interface CapturePagePanelRequest {
@@ -18,11 +19,33 @@ export interface CapturePagePanelRequest {
   write: Promise<void>;
 }
 
-export function armCapturePagePanel(request: CapturePagePanelRequest): Promise<void> {
-  const armed = { ...request.intent, phase: 'armed' as const };
+export function armCapturePagePanel(
+  request: CapturePagePanelRequest,
+  contextId: string,
+): Promise<void> {
+  const armed = { ...request.intent, phase: 'armed' as const, contextId };
   return chrome.storage.session.set({ [request.key]: armed }).then(() => {
     request.intent = armed;
   });
+}
+
+type SidePanelContext = { contextId: string; contextType: string; windowId?: number };
+
+export async function waitForSidePanelContextId(windowId: number): Promise<string | null> {
+  const runtime = chrome.runtime as typeof chrome.runtime & {
+    getContexts?: (filter: { contextTypes: string[] }) => Promise<SidePanelContext[]>;
+  };
+  if (!runtime.getContexts) return null;
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const contexts = await runtime.getContexts({ contextTypes: ['SIDE_PANEL'] });
+    const matches = contexts.filter(
+      (context) => context.contextType === 'SIDE_PANEL' && context.windowId === windowId,
+    );
+    if (matches.length === 1) return matches[0]?.contextId ?? null;
+    if (matches.length > 1) return null;
+    if (attempt < 4) await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  return null;
 }
 
 function isCapturePageIntent(value: unknown): value is CapturePageIntent {
@@ -71,7 +94,10 @@ export async function clearCapturePagePanel(request: CapturePagePanelRequest): P
 const claimQueues = new Map<number, Promise<void>>();
 
 /** Claims the latest unexpired request for one window, then removes its snapshot. */
-export function takePopupLaunchTarget(windowId: number): Promise<SidepanelTab | null> {
+export function takePopupLaunchTarget(
+  windowId: number,
+  contextId: string,
+): Promise<SidepanelTab | null> {
   const previous = claimQueues.get(windowId) ?? Promise.resolve();
   const claimPopupLaunchTarget = previous.then(async () => {
     let rows: Record<string, unknown>;
@@ -89,6 +115,7 @@ export function takePopupLaunchTarget(windowId: number): Promise<SidepanelTab | 
         isCapturePageIntent(value) &&
         value.windowId === windowId &&
         value.phase === 'armed' &&
+        value.contextId === contextId &&
         value.expiresAt >= now
       ) {
         candidates.push([key, value]);
