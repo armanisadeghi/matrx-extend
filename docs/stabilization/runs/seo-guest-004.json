@@ -1,0 +1,190 @@
+{
+  "id": "seo-guest-004",
+  "feature_id": "EXT-F-1008",
+  "at": "2026-09-26T16:52:04.814Z",
+  "status": "partial",
+  "mode": "guest",
+  "scope": "Reload dimension of guest SEO audit on the current URL; copy menu role visibility after reload.",
+  "runtime_output": "test-results/seo-guest-acceptance.json",
+  "runtime_output_sha256": "836f69de9485a345fcfb6da8818f8bf172b47a41dc5f06f4768d52e381f4e193",
+  "resource_log": "/tmp/matrx-seo-guest-004.log",
+  "resource_log_sha256": "afdd28f51e0cbcb424cb0790cb0b74896bc5e53875159f74b6496131cef37c72",
+  "resource": {
+    "run_id": "seo-guest-004",
+    "admission_code": "RESOURCE_ADMITTED",
+    "admitted_at": "2026-09-26T16:52:04.814Z",
+    "child_exit_code": 0,
+    "child_signal": null,
+    "exit_at": "2026-09-26T16:52:10.182Z"
+  },
+  "release_receipt": {
+    "source_sha": "a86e15da662cddb60029b480c340e2ccfef40c1f",
+    "version": "0.2.68",
+    "publish_state": "pushed",
+    "unpacked_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "tree_sha256": "7d799987698fbbd727eff27593a4969438d8d0701044ccac776cb29c9148e887",
+    "store_zip_sha256": "fc4fe2163212f6cef3880b8223a1634291948cbba793cc8d6472114c96815960",
+    "local_zip_sha256": "0a56cbc389f8287c4653f4e816b4dd64437d6497e6d558245c686dcf2c970c57",
+    "artifact_unchanged_from_release_023": true
+  },
+  "runtime_source": {
+    "acceptance_runner_commit": "caf48ab2722a01458172dd8a3fa7acc541c9b44b",
+    "prior_peer_commit": "658b6ea5",
+    "loaded_extension_source_commit": "6974350e5da022a07a5462e6037b74768f9f5310",
+    "driver_state": "temporary-added-branch-restored-at-2026-09-26T16:51:46-before-admission",
+    "wrapper_pid": 17524
+  },
+  "acceptance_result": {
+    "schema_version": 1,
+    "feature_id": "EXT-F-1008",
+    "mode": "guest",
+    "status": "partial",
+    "scope": "public-page guest SEO actions in an owned native side panel",
+    "targets": [
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "page_0_title_and_headings",
+        "status": "pass",
+        "evidence": {
+          "publicTitle": "Example Domain",
+          "titleMatches": true,
+          "headingsPresenceMatches": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "page_1_title_and_headings",
+        "status": "pass",
+        "evidence": {
+          "publicTitle": "IANA-managed Reserved Domains",
+          "titleMatches": true,
+          "headingsPresenceMatches": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T01",
+        "subtarget": "new_url_replaces_visible_title",
+        "status": "pass",
+        "evidence": {
+          "twoDistinctPublicTitles": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "manual_button_returns_to_current_page",
+        "status": "pass",
+        "evidence": {
+          "currentTitlePreserved": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+        "status": "pass",
+        "evidence": {
+          "textChoice": true,
+          "agentChoice": true,
+          "jsonAbsent": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T01",
+        "subtarget": "reload_audits_current_url",
+        "status": "pass",
+        "evidence": {
+          "currentUrl": "https://www.iana.org/domains/reserved",
+          "currentTitleMatched": true,
+          "headingsPresenceMatched": true,
+          "reselectedAfterReload": true
+        }
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_role_gate_after_reload",
+        "status": "pass",
+        "evidence": {
+          "textChoice": true,
+          "agentChoice": true,
+          "jsonAbsent": true
+        }
+      }
+    ],
+    "deferred": [
+      {
+        "case": "T01",
+        "part": "one audit per URL and slow-old-result race"
+      },
+      {
+        "case": "T02",
+        "part": "fresh capture and stale advice replacement after re-audit"
+      },
+      {
+        "case": "T03",
+        "part": "restricted and unreachable URLs"
+      },
+      {
+        "case": "T04-T06,T08",
+        "part": "database save, history, and diff flows"
+      },
+      {
+        "case": "T07",
+        "part": "actual clipboard output, member/admin role gates, and JSON contents"
+      },
+      {
+        "case": "T09",
+        "part": "remaining detail groups and outbound links"
+      },
+      {
+        "case": "T10-T14",
+        "part": "recommendations, Chat staging, and social snippet actions"
+      },
+      {
+        "case": "all",
+        "part": "member and admin modes"
+      }
+    ],
+    "last_safe_stage": "copy_menu_choices_wait_accepted",
+    "last_safe_observable": {
+      "open": true,
+      "choices": ["Summary (text)", "For AI agent"]
+    },
+    "current_operation": null,
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T16:52:04.814Z",
+      "runId": "seo-guest-004",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.96,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.88,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1442571428571429,
+        "swapUsedMiB": 2852.31,
+        "repoFreeGiB": 1674.9660720825195,
+        "profileFreeGiB": 21.73998260498047
+      },
+      "cpuBusySamples": [
+        0.13430000000000009, 0.08719999999999994, 0.19510000000000005, 0.16480000000000006,
+        0.19230000000000003, 0.1401, 0.09599999999999997
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T16:52:10.182Z",
+      "runId": "seo-guest-004",
+      "childExitCode": 0,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ],
+  "resource_log_non_event_lines": ["PARTIAL seo_guest_native_batch"]
+}

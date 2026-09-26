@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "review": "seo004-runtime-peer",
+  "run_id": "seo-guest-004",
+  "reviewed_at": "2026-09-26",
+  "verdict_a": {
+    "result": "PARTIAL_RUNTIME_PASS_TWO_NEW_RELOAD_SUBTARGETS",
+    "evidence": [
+      "The guarded runtime log records RESOURCE_ADMITTED at 2026-09-26T16:52:04.814Z with no admission reasons and RESOURCE_JOB_EXIT at 16:52:10.182Z, child exit 0, signal null; wrapper PID 17524 was confirmed.",
+      "The runtime artifact records pass for reload_audits_current_url (current URL is IANA Reserved Domains; title/headings presence matched; reselected after reload) and guest_role_gate_after_reload (text and AI choices present, JSON absent). These are two new reload subtargets beyond the five previously passed warm-page targets.",
+      "The exact acceptance artifact SHA-256 is 836f69de9485a345fcfb6da8818f8bf172b47a41dc5f06f4768d52e381f4e193 and the exact resource log SHA-256 is afdd28f51e0cbcb424cb0790cb0b74896bc5e53875159f74b6496131cef37c72.",
+      "Loaded extension provenance is release 0.2.68, source SHA a86e15da662cddb60029b480c340e2ccfef40c1f, unpacked tree 7d799987698fbbd727eff27593a4969438d8d0701044ccac776cb29c9148e887. Artifact tree/receipt was unchanged from release-stabilization-023. Runner source was caf48ab2722a01458172dd8a3fa7acc541c9b44b with peer accepted safe clipboard removal at 658b6ea5. The loaded source tree corresponds to 6974350e5da022a07a5462e6037b74768f9f5310.",
+      "The driver temporary branch had been restored at 16:51:46, before admission at 16:52:04; the loaded source remained unchanged at launch."
+    ],
+    "limits": [
+      "Only the two recorded reload subtargets are newly accepted. This does not establish complete T01, T07, or T09, nor the full feature.",
+      "Clipboard read/write/click behavior was removed from the runner and was not exercised. No clipboard-output assertion or member/admin role check occurred.",
+      "T01 one-audit-per-URL and slow-old-result race remain open; T07 actual clipboard output, JSON contents, and member/admin gates remain open; T09 remaining detail groups and outbound links remain open.",
+      "All other deferred cases and member/admin modes remain unverified."
+    ]
+  },
+  "verdict_b": {
+    "result": "ACCEPTANCE_BOUNDED_AND_SAFE_CLIPBOARD_REMOVAL",
+    "evidence": [
+      "The artifact retains partial status and separately records observed reload evidence; its seven passing subtargets comprise five earlier warm-page claims and two reload claims.",
+      "The runner's temporary host clipboard interaction was removed before this run, so browser clipboard state was not altered and no clipboard success is claimed.",
+      "The release receipt identifies the loaded 0.2.68 build, while source provenance shows the loaded tree stayed unchanged during the driver restoration."
+    ],
+    "limits": [
+      "The run only establishes predicates represented by the acceptance artifact; it does not inspect complete SEO detail content or prove broad product quality."
+    ]
+  },
+  "changed_files": [
+    "docs/stabilization/runs/seo-guest-004.json",
+    "docs/stabilization/reports/seo004-runtime-peer.json"
+  ],
+  "verification": {
+    "method": "Read-only comparison of runtime result, exact guarded log, release-stabilization-023 receipt, and EXT-F-1008 inventory. No test, build, browser launch, commit, push, or amend performed."
+  }
+}
