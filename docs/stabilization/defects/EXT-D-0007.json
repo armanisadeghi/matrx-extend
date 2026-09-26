@@ -1,0 +1,34 @@
+{
+  "id": "EXT-D-0007",
+  "feature_id": "EXT-F-0001",
+  "control_id": "EXT-F-0001-C02",
+  "case_id": "EXT-F-0001-T02",
+  "surface": "Development sidepanel authentication hydration",
+  "auth_mode": "admin observed; member applicability unverified",
+  "reproduction": [
+    "Start with admin@admin.com visible in the unpacked Chrome extension; known prior release0.2.51 retained this account across reloads.",
+    "Build development source013fd43 with pnpm exec wxt build --mode development; verify dev extensionIDcihdmkcdjjckfhjpgoedmgfpoljebaml version0.2.53 and path.output/chrome-mv3-dev.",
+    "Perform full Chrome extension Reload, reopen Settings, inspect actual Account and Organization sections for30seconds."
+  ],
+  "expected": "Persisted authenticated identity is restored after development sidepanel reload, with truthful loading or recoverable failure state.",
+  "actual": "Account remains Email \u2014, Organization says Sign in to choose, and Sign in is offered after30seconds. This UI observation does not prove stored tokens were deleted.",
+  "evidence": [
+    "docs/stabilization/runs/permission-native-retest.json",
+    "docs/stabilization/reports/reload-auth-diagnosis.json",
+    "docs/stabilization/runs/debugger-build-002.json"
+  ],
+  "severity": "S1: authenticated development testing blocked by missing identity",
+  "priority": "P0: baseline authentication blocker",
+  "state": "open",
+  "owner": "/root/reload_auth_diagnosis",
+  "hypothesis": "React development StrictMode cancels first async boot while module bootRan suppresses replacement effect; focused RED proof required before fix.",
+  "transition_history": [
+    {
+      "at": "2026-09-26T06:16:57.606993+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Settled native reproduction after verified fresh development build; source mechanism identified, validation pending."
+    }
+  ],
+  "separate_observation": "A later manual OAuth SignIn attempt returned Authorization error400/Auth session missing; not assumed to have the same cause."
+}
