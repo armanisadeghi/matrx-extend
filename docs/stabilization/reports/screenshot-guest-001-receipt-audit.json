@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-guest-001-receipt-audit",
+  "scope": "Read-only audit of the guard-log digest in the already committed screenshot-guest-001 receipt. Original receipt, raw log, and result were not edited.",
+  "receipt": {
+    "path": "docs/stabilization/runs/screenshot-guest-001.json",
+    "commit": "05db8607",
+    "recorded_guard_log_sha256": "6888a4e6ae63f1c77d516dd8df468e5993d135e628cbb8684de0b037a80b2215",
+    "recorded_result_sha256": "2d49581a7da5ac2f54a44071931b6f3aabe1db78618a3279ccba3497e0841d83"
+  },
+  "raw_guard_log": {
+    "path": "/tmp/matrx-screenshot-guest-001.log",
+    "sha256_recomputed_from_file_bytes": "98f6fb5377fc4d14774cdade43fbfdc88a942627791b078eeb8c0d1d4b074cb6",
+    "byte_length": 726,
+    "line_count": 3,
+    "mtime_local": "2026-09-26T16:30:54-0700",
+    "mode": "0644",
+    "embedded_lines_match_receipt": {
+      "admitted_at": "2026-09-26T23:30:50.404Z",
+      "stdout": "PARTIAL screenshot_guest_gate",
+      "child_exit_at": "2026-09-26T23:30:54.094Z",
+      "child_exit_code": 0
+    }
+  },
+  "digest_finding": {
+    "match": false,
+    "receipt_digest_matches_debug006_guard_log": "6888a4e6ae63f1c77d516dd8df468e5993d135e628cbb8684de0b037a80b2215",
+    "debug006_guard_log_path": "/tmp/matrx-debug-log-controls-006.log",
+    "screenshot_log_actual_sha256": "98f6fb5377fc4d14774cdade43fbfdc88a942627791b078eeb8c0d1d4b074cb6",
+    "explanation": "The receipt contains the exact SHA-256 of the Debug 006 guard log, not the screenshot-guest-001 guard log. This proves a wrong digest value was reused/substituted while the receipt was authored; the available files do not establish the human/tooling mechanism that caused the substitution."
+  },
+  "raw_result": {
+    "path": "test-results/screenshot-guest-acceptance-617a4dc0-297b-4e54-98f8-d74e58c0bb58.json",
+    "sha256_recomputed_from_file_bytes": "2d49581a7da5ac2f54a44071931b6f3aabe1db78618a3279ccba3497e0841d83",
+    "recorded_sha256_matches": true,
+    "byte_length": 3043,
+    "mtime_local": "2026-09-26T16:30:54-0700",
+    "mode": "0600"
+  },
+  "boundary": "This audit reports the receipt defect without correcting or superseding the original immutable receipt. The runner/result/build claims are not changed by this log-hash mismatch; the guard log content and timestamps agree with the recorded execution metadata."
+}
