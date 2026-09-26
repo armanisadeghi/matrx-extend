@@ -557,7 +557,7 @@ export function dbMessagesToChatMessages(
 // SOURCE-CONVERGENCE §4.2. A page saved from Scrape is a Source — a
 // `docproc.processed_documents` row landed by `POST /sources/land` with
 // `origin_client='extension'`. These are the direct RLS reads behind
-// recognition, `prior_capture` and the Saved captures tab, plus the one write
+// recognition, the chat context's `page_source` and the Saved captures tab, plus the one write
 // this client makes to the table: a Source's soft delete. Create and edit go
 // through the door (`src/lib/api/routes/sources.ts`), never through here.
 //

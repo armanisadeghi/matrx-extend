@@ -24,7 +24,7 @@
  */
 
 import { log } from '@/lib/debug/log';
-import { fetchPatternsForDomain, lookupCapturedByUrl } from '@/lib/supabase/queries';
+import { fetchPatternsForDomain } from '@/lib/supabase/queries';
 import { prewarmReadPageCache } from '@/lib/tools/handlers/page-refs';
 import { useSettingsStore } from '@/state/settings';
 import { checkAuthState } from './check-auth-state';
@@ -36,6 +36,7 @@ import { detectTicket, isTicketUrl } from './detect-ticket';
 import { discoverFormsForContext } from './discover-forms';
 import { getDomainMemoForUrl } from './domain-memo';
 import { getGuidanceForUrl } from './guidance';
+import { pageSourceStatus } from './page-source';
 import { probeActivePage } from './probe';
 import type { ContextBuildInputs } from './types';
 
@@ -582,21 +583,9 @@ export async function buildContextV2Bundled(
     ctx.saved_patterns_for_domain = savedPatterns;
   }
 
-  // ── Capture history (recognition row from Supabase) ──────────────────
+  // ── Is this page a Source? (SOURCE-CONVERGENCE §1 rule 6) ─────────────
   if (activeUrl) {
-    try {
-      const lookup = await lookupCapturedByUrl(activeUrl);
-      const captured = lookup.status === 'found' ? lookup.page : null;
-      if (captured) {
-        ctx.prior_capture = {
-          captured_at: captured.captured_at,
-          id: captured.id,
-          title: captured.title,
-        };
-      }
-    } catch {
-      /* not critical */
-    }
+    ctx.page_source = await pageSourceStatus(activeUrl);
   }
 
   return ctx;

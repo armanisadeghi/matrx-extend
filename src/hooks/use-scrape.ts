@@ -201,7 +201,7 @@ export function useScrape() {
    * Save the capture as a Source through the landing door (SOURCE-CONVERGENCE
    * §4.2). Never throws for a refusal or an outage and never loses the capture:
    * a landing that does not happen leaves it on this device under
-   * "Unsaved — retry" (`save-capture.ts`).
+   * "Not yet a Source" (retry) (`save-capture.ts`).
    *
    * The unsaved-edits guard is disarmed (`markSaved`) ONLY when the Source
    * actually landed. An unsaved outcome leaves it armed, so a Re-capture still
@@ -233,7 +233,7 @@ export function useScrape() {
           tone: 'warning',
           title: 'SEO audit not recorded',
           message:
-            'The page was saved, but its SEO audit was not recorded, so the SEO tab will not show it as previously audited. Open the SEO tab and press Save to record it.',
+            'The page is now a Source, but its SEO audit was not recorded, so the SEO tab will not show it as previously audited. Open the SEO tab and press Save to record it.',
         });
       }
       return outcome;

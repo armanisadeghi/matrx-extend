@@ -4,7 +4,7 @@
  *
  * Every page the person saves becomes a Source: a `docproc.processed_documents`
  * row. Writes go through these routes; READS never do — the Saved captures tab,
- * recognition and `prior_capture` read `processed_documents` directly from
+ * recognition and the chat context's `page_source` read `processed_documents` directly from
  * Supabase under RLS (`src/lib/supabase/queries.ts`).
  *
  * The shapes mirror aidream's `content_processing/landing_types.py`
@@ -94,7 +94,7 @@ export type LandingOutcome =
 const UNREACHABLE: Omit<LandingRefusal, 'status'> = {
   code: 'server_unreachable',
   message:
-    'The AI Matrx server could not be reached, so this page is not saved yet. It is kept on this device and will be saved when you retry.',
+    'The AI Matrx server could not be reached, so this page is not yet a Source. It is kept on this device and becomes one when you retry.',
   remedy: 'retry_when_online',
   retryable: true,
 };

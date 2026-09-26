@@ -10,7 +10,7 @@ import { AlertTriangle, Loader2, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 /**
- * "Unsaved — retry": every capture whose save did not land, kept on this
+ * "Not yet a Source" (retry): every capture whose save did not land, kept on this
  * device until it does (SOURCE-CONVERGENCE §4.2, never lose input). Rendered
  * at the top of Scrape so an unsaved page is impossible to miss, whichever
  * page the person is on now.
@@ -58,12 +58,12 @@ export function UnsavedCapturesCard({
   return (
     <div
       role="alert"
-      aria-label="Unsaved captures"
+      aria-label="Captures not yet saved as Sources"
       className="mt-2 space-y-2 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs"
     >
       <div className="flex items-center gap-2 font-medium text-amber-800 dark:text-amber-200">
         <AlertTriangle className="size-3.5 shrink-0" />
-        Unsaved — retry ({rows.length})
+        Not yet a Source — kept on this device until the save lands ({rows.length})
       </div>
       {rows.map((row) => (
         <div key={row.id} className="rounded-lg bg-background/60 px-2 py-1.5">
@@ -99,8 +99,8 @@ export function UnsavedCapturesCard({
         onOpenChange={(open) => {
           if (!open) setDiscardTarget(null);
         }}
-        title="Discard this unsaved capture?"
-        description="It was never saved, so discarding it removes it for good. The web page itself is not affected."
+        title="Discard this capture?"
+        description="It never became a Source, so discarding it removes it for good. The web page itself is not affected."
         confirmLabel="Discard"
         variant="destructive"
         onConfirm={() => {

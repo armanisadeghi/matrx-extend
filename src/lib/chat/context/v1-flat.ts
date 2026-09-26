@@ -7,7 +7,7 @@
  */
 
 import { log } from '@/lib/debug/log';
-import { lookupCapturedByUrl } from '@/lib/supabase/queries';
+import { pageSourceFlat, pageSourceStatus } from './page-source';
 import { probeActivePage } from './probe';
 import type { ContextBuildInputs } from './types';
 
@@ -156,19 +156,12 @@ export async function buildContextV1Flat(
     }
   }
 
-  // ── Capture history for this URL ─────────────────────────────────────────
+  // ── Is this page a Source? (SOURCE-CONVERGENCE §1 rule 6) ───────────────
+  // A landed page is a Source; a web address without landed content is "not
+  // yet a Source" (Save in the Scrape tab makes it one); a failed lookup says
+  // so instead of implying either.
   if (activeUrl) {
-    try {
-      const lookup = await lookupCapturedByUrl(activeUrl);
-      const captured = lookup.status === 'found' ? lookup.page : null;
-      if (captured) {
-        ctx.previously_captured_at = captured.captured_at;
-        ctx.previously_captured_id = captured.id;
-        ctx.previously_captured_title = captured.title;
-      }
-    } catch {
-      /* not critical */
-    }
+    Object.assign(ctx, pageSourceFlat(await pageSourceStatus(activeUrl)));
   }
 
   return ctx;
