@@ -8,11 +8,14 @@ import { randomUUID } from 'node:crypto';
 import { lstat, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'notice-write-retention-acceptance.json');
+const RELEASE_RECEIPT = join(REPO, '.output', 'release-receipt.json');
+const MANIFEST = join(REPO, '.output', 'chrome-mv3-dev', 'manifest.json');
 const PRIVATE_CONFIG = join(REPO, 'test-results', 'd22-private-config.json');
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const WEB_ORIGIN = 'https://www.aimatrx.com';
@@ -27,6 +30,7 @@ const report = {
   case_id: 'EXT-F-2010-T02',
   status: 'unverified',
   scope: 'fresh owned admin panel; one real no-workspace Highlights action; no Source Save',
+  build: null,
   observations: {
     ownedReceiptVerified: false,
     adminSignedInThroughUi: false,
@@ -257,8 +261,21 @@ async function privateFailureScreenshot(panel) {
   }
 }
 
+async function readBuildIdentity() {
+  const [receipt, manifest] = await Promise.all([
+    readFile(RELEASE_RECEIPT, 'utf8').then(JSON.parse),
+    readFile(MANIFEST, 'utf8').then(JSON.parse),
+  ]);
+  if (receipt.version !== manifest.version || !/^[a-f0-9]{64}$/.test(receipt.treeSha256 ?? ''))
+    fail('release_manifest_identity_mismatch');
+  return { version: manifest.version, treeSha256: receipt.treeSha256 };
+}
+
 try {
-  await runNativeSidepanelQa({
+  stage = 'verify_release_identity_start';
+  const buildAtStart = await readBuildIdentity();
+  report.build = buildAtStart;
+  const nativeResult = await runNativeSidepanelQa({
     exercisePanel: async ({ page, panel }) => {
       activePanel = panel;
       try {
@@ -393,6 +410,15 @@ try {
       }
     },
   });
+  stage = 'verify_release_identity_end';
+  const buildAtEnd = await readBuildIdentity();
+  if (
+    buildAtEnd.version !== buildAtStart.version ||
+    buildAtEnd.treeSha256 !== buildAtStart.treeSha256 ||
+    hashReleaseTree(join(REPO, '.output', 'chrome-mv3-dev')) !== buildAtStart.treeSha256
+  )
+    fail('release_build_changed_during_run');
+  report.build = { ...buildAtEnd, extensionId: nativeResult.extensionId };
   report.observations.ownedReceiptVerified = true;
 } catch {
   report.status = 'unverified';
