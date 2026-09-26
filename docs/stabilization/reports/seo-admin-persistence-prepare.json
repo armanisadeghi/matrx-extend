@@ -6,6 +6,12 @@
   "script": "tests/browser/seo-admin-acceptance.mjs",
   "prior_run": "docs/stabilization/runs/seo-admin-001.json",
   "source_peer_to_recheck": "docs/stabilization/reports/seo-admin-persistence-peer.json",
+  "actual_run_002_diagnosis": {
+    "observation": "The guarded .73 admin run recorded the real matching Save response ID and visible Saved button as a T04 subtarget, then exited unverified at the broad history_open stage. The local 0600 checkpoint is present with phase save_id_observed, an ID, selected organization ID, and URL hash.",
+    "resource_log": "/tmp/matrx-seo-admin-002.log records resource admission, a healthy watch sample, and child exit 1 at 2026-09-26T18:24:25.887Z.",
+    "uncertainty": "The prior runner used one stage for waiting on the history toggle, clicking it, and waiting for the row list, and discarded the error. Existing evidence cannot distinguish a missing toggle, pointer hit-test refusal, or row-list/ID timeout. No product defect is inferred.",
+    "repair": "The read-only rerun now records separate operation stages, the shared pointer driver's bounded diagnostic if a click fails, and only booleans/counts from the latest history observation. It retains the existing checkpoint and skips Save."
+  },
   "scope": "At most one new public IANA audit row in the explicitly selected existing campaign test organization, identified through the real Save response and stable history/snapshot DOM attributes.",
   "identity_contract": {
     "production_ui": "History button and selected Saved snapshot expose the same existing row UUID as data-audit-id. The attribute changes no visible copy or database/API shape.",

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "run_id": "seo-admin-002",
+  "feature_id": "EXT-F-1008",
+  "mode": "admin",
+  "extension_version": "0.2.73",
+  "status": "unverified",
+  "wrapper": {
+    "resource_log": "/tmp/matrx-seo-admin-002.log",
+    "admitted": true,
+    "resource_watch_healthy": true,
+    "child_exit_code": 1,
+    "child_exit_at_utc": "2026-09-26T18:24:25.887Z"
+  },
+  "runtime_output": "test-results/seo-admin-acceptance.json",
+  "confirmed_subtarget": {
+    "case_id": "EXT-F-1008-T04",
+    "name": "one_public_audit_saved_with_real_response_id",
+    "evidence": "The real matching Save response ID was observed, the UI showed Saved, and the 0600 checkpoint retains the observed ID. No ID value or request content is copied into this receipt."
+  },
+  "failure": {
+    "stage": "history_open",
+    "detail": "The original runner grouped history-toggle readiness, the pointer click, and list/ID readiness under one stage and discarded the error. Their individual outcomes are unknown from this run."
+  },
+  "next_run": "Read-only resume using the retained checkpoint. The runner refuses a second Save and now emits bounded stage and pointer/history observations.",
+  "limits": [
+    "T04 failure/retry and T05 history open/snapshot/reload remain unverified.",
+    "No browser was rerun during receipt repair."
+  ]
+}

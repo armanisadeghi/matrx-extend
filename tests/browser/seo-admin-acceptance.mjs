@@ -296,6 +296,20 @@ async function seoState(panel) {
   );
 }
 
+async function observedHistory(panel, saveId) {
+  const state = await seoState(panel);
+  report.last_safe_history_observation = {
+    linked: state?.linked === true,
+    historyToggleCount: state?.historyToggleCount ?? null,
+    historyCount: state?.historyCount ?? null,
+    historyOpen: state?.historyOpen === true,
+    historyRowCount: state?.historyRowCount ?? null,
+    savedRowIdPresent: state?.historyIdentities?.some((row) => row.id === saveId) === true,
+    auditErrorVisible: state?.error === true,
+  };
+  return state;
+}
+
 try {
   await runNativeSidepanelQa({
     exercisePanel: async ({ page, panel }) => {
@@ -445,16 +459,18 @@ try {
         report.save_attempt = { status: 'read_only_resume', realInsertIdFromCheckpoint: true };
       }
 
-      stage = 'history_open';
+      stage = 'history_toggle_wait';
       await waitFor(
         'saved_history_row_loaded',
-        () => seoState(panel),
+        () => observedHistory(panel, saveId),
         (state) => state?.linked && state.historyToggleCount === 1,
       );
+      stage = 'history_pointer_click';
       await click(panel, 'title', 'Saved audits for this URL');
+      stage = 'history_list_wait';
       const open = await waitFor(
         'history_list_open',
-        () => seoState(panel),
+        () => observedHistory(panel, saveId),
         (state) =>
           state?.linked &&
           state.historyOpen &&
@@ -575,9 +591,14 @@ try {
   report.status = 'partial';
   stage = 'complete';
   process.stdout.write('PARTIAL seo_admin_native_batch\n');
-} catch {
+} catch (error) {
   report.status = 'unverified';
   report.failure_stage = stage;
+  if (error?.driverFailure) report.pointer_diagnostic = error.driverFailure;
+  const knownWait = /^(saved_history_row_loaded|history_list_open)_not_observed:/.exec(
+    String(error?.message ?? ''),
+  );
+  if (knownWait) report.failure_wait = knownWait[1];
   process.exitCode = 1;
   process.stderr.write(`UNVERIFIED seo_admin_native_batch at ${stage}\n`);
 }
