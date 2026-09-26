@@ -31,7 +31,7 @@
   "state": "in-fix",
   "owner": "/root",
   "root_cause": "The build-time shared reader assumed an installed, authenticated Supabase CLI instead of consuming the existing operator Management API credential at the read point.",
-  "sibling_census": "The docs:tools generator, strict tool-drift checker, and strict migration ledger checker share this helper. Review round 1 found all three had an early public-credential branch; each now attempts the operator read when public configuration is absent. The catalog checker also validates full private definition and surface shapes before comparison.",
+  "sibling_census": "The docs:tools generator, strict tool-drift checker, and strict migration ledger checker share this helper. Review round 1 found all three had an early public-credential branch; each now attempts the operator read when public configuration is absent. The catalog checker also validates full private definition and surface shapes before comparison. Final repair adds complete docs row validation, canonical private bundle-member reads, strict unknown-membership failure, and discovered command-level guards in tests/unit.",
   "fix_commits": [],
   "original_reproduction_retest_run": null,
   "surrounding_case_runs": [],
@@ -60,10 +60,16 @@
       "from": "in-fix",
       "to": "in-fix",
       "reason": "Independent peer returned A/B PARTIAL: strict migration false-green without public env and shallow private catalog row predicates. Repair and focused guard tests added; root execution pending."
+    },
+    {
+      "at": "2026-09-26T03:21:04.441876+00:00",
+      "from": "in-fix",
+      "to": "in-fix",
+      "reason": "Final repair resolves both second-review findings. Canonical bundle membership proven by readonly MCP; actual helper/checker commands and discovered guards remain root verification pending."
     }
   ],
   "limitations": [
-    "No post-fix DB request, tests, build, or release was run by this source-only worker.",
-    "The strict gate remains unverified until root's guarded candidate run and independent peer review."
+    "Worker executed readonly metadata/member SELECTs only; no tests, typechecks, builds, or release.",
+    "Four tests/unit files and strict private-read commands require root guarded execution and fresh independent review."
   ]
 }

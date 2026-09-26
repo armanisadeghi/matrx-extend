@@ -1,5 +1,6 @@
+// @vitest-environment node
 import { describe, expect, it } from 'vitest';
-import { isDbSurfaceDefaultsRow, isDbToolRow } from './_tool-db-row-validation';
+import { isDbSurfaceDefaultsRow, isDbToolRow } from '../../scripts/_tool-db-row-validation';
 
 const tool = {
   id: 'b1f7624d-8ec0-465d-b5dd-1f0ba47c8859',

@@ -18,8 +18,7 @@ export interface DbToolRow {
 export interface DbSurfaceDefaultsRow {
   surface_name: string;
   always_include_tools: string[] | null;
-  /** Bundle membership is private; a declared bundle is reported as unverified
-   * rather than guessed absent when a tool is not in always_include_tools. */
+  /** Bundle membership is verified separately through platform.associations. */
   always_include_bundles: string[] | null;
   never_include_tools: string[] | null;
 }
@@ -62,4 +61,13 @@ export function isDbSurfaceDefaultsRow(value: unknown): value is DbSurfaceDefaul
     stringArrayOrNull(value.always_include_tools) &&
     stringArrayOrNull(value.always_include_bundles) &&
     stringArrayOrNull(value.never_include_tools);
+}
+
+export interface DbBundleMemberRow {
+  bundle_name: string;
+  tool_name: string | null;
+}
+
+export function isDbBundleMemberRow(value: unknown): value is DbBundleMemberRow {
+  return isRecord(value) && typeof value.bundle_name === 'string' && stringOrNull(value.tool_name);
 }

@@ -1,5 +1,6 @@
+// @vitest-environment node
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { selectRowsViaManagementApi } from './_supabase-management';
+import { selectRowsViaManagementApi } from '../../scripts/_supabase-management';
 
 const projectRef = 'brsgrqvjdzwihsvnfqkf';
 const isNamedRow = (row: unknown): row is { name: string } =>
