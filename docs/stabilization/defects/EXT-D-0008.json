@@ -15,11 +15,13 @@
   "evidence": [
     "docs/stabilization/runs/auth-integrated-suite-001.json",
     "docs/stabilization/reports/remote-popup-about-reconciliation.json",
-    "docs/stabilization/runs/popup-cleanup-green-001.json"
+    "docs/stabilization/runs/popup-cleanup-green-001.json",
+    "docs/stabilization/runs/popup-cleanup-green-002.json",
+    "docs/stabilization/reports/popup-cleanup-final-peer.json"
   ],
   "severity": "S2: integrated release validation blocked; no evidence of user-data deletion or broken native Capture UI.",
   "priority": "P1: repair before next green integration",
-  "state": "in-fix",
+  "state": "retest-pass",
   "owner": "/root/popup_cleanup_guard_repair",
   "root_cause": "New popup launch-intent session-record cleanup was not included in the destructive-operation classification registry. Source trace shows only owned transient request records removed.",
   "transition_history": [
@@ -40,6 +42,18 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol narrow exact-function registry repair assigned; existing popup lifecycle tests retained."
+    },
+    {
+      "at": "2026-09-26T07:25:42.275652+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "d9d86aa names and registers exact discovered callback; freshSolpeer cfa14fe confirms deletion scope and guard unchanged."
+    },
+    {
+      "at": "2026-09-26T07:25:42.275652+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original discoveryguard plus surroundingpopup tests17/17pass; integration required beforeclosed. No nativepopuphealth claim."
     }
   ],
   "review_rounds": [
