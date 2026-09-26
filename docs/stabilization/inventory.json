@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T13:05:00Z",
+  "updated_at": "2026-09-26T13:56:48.922118+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -1176,8 +1176,14 @@
         {
           "id": "EXT-F-0003-T08",
           "title": "Refuse a CI lint-red release candidate",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-0003-C03"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0003-C03"
+          ],
           "preconditions": [
             "Use the resource-guarded isolated release fixture with its temporary bare origin and controlled pnpm lint failure; no real remote is configured.",
             "For the red proof, pass the pre-fix release.sh scratch copy to scripts/test-release-ship-path.sh; use current release.sh for the green proof."
@@ -1190,11 +1196,24 @@
             "The pre-fix script fails the lint-publication fixture for the missing gate.",
             "The current script runs pnpm lint against the exact candidate and refuses publication on lint failure before unit tests or packaging; fixture main/tag and installed artifacts remain unchanged."
           ],
-          "dimensions": ["isolated-fixture", "red-candidate", "CI-parity"],
+          "dimensions": [
+            "isolated-fixture",
+            "red-candidate",
+            "CI-parity"
+          ],
           "results": {
-            "guest": {"status": "unverified", "detail": "Source fix and independent review only; root guarded red/green fixture pending."},
-            "member": {"status": "unverified", "detail": "Source fix and independent review only; root guarded red/green fixture pending."},
-            "admin": {"status": "unverified", "detail": "Source fix and independent review only; root guarded red/green fixture pending."}
+            "guest": {
+              "status": "unverified",
+              "detail": "Source fix and independent review only; root guarded red/green fixture pending."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "Source fix and independent review only; root guarded red/green fixture pending."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Source fix and independent review only; root guarded red/green fixture pending."
+            }
           }
         }
       ],
@@ -1798,7 +1817,9 @@
           ],
           "run_ids": [
             "guest-local-001",
-            "render-retest-001"
+            "render-retest-001",
+            "contained-navigation-001",
+            "contained-navigation-002"
           ],
           "retest_status": "pass"
         },
@@ -1815,7 +1836,10 @@
           "defect_ids": [
             "EXT-D-0001"
           ],
-          "run_ids": [],
+          "run_ids": [
+            "contained-navigation-001",
+            "contained-navigation-002"
+          ],
           "retest_status": "not-run"
         }
       },
