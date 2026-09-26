@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "run_id": "source-workspace-002",
+  "defect_id": "EXT-D-0022",
+  "source": {
+    "result_path": "test-results/source-workspace-acceptance.json",
+    "result_sha256": "3749dde99b678ec0d0efd7123d3b209931db64f049325edb56c13f8fe9cb2b8f",
+    "guard_log_path": "/tmp/matrx-source-workspace-002.log",
+    "guard_log_sha256": "630379cca1d7873ecfedb42d022724b136aed4571a070f01146b789389f1d7df"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T21:05:53.774Z",
+    "watch_healthy_at": "2026-09-26T21:06:10.154Z",
+    "child_exit_at": "2026-09-26T21:06:10.879Z",
+    "child_exit_code": 1
+  },
+  "build": {
+    "version": "0.2.77",
+    "tree_sha256": "007c94aae25c20c235eba269d6e5673367c1916e1eff4d17e8e55ecccdda760b"
+  },
+  "observations": {
+    "real_admin_ui": true,
+    "approved_existing_organization_selected_by_ui": true,
+    "mode": "read_only_recovery",
+    "scoped_recovery_lookup": "none",
+    "save_pointer_input": "not_attempted",
+    "checkpoint": "existing_reserved_unchanged",
+    "local_saved_and_open_source": "unverified"
+  },
+  "failure": {
+    "stage": "read_only_recovery_lookup",
+    "code": "recovery_source_not_definitively_found"
+  },
+  "conclusion": "The original Save attempt remains ambiguous. A fresh organization- and identity-scoped recognition lookup did not find the fixture, so the recovery branch stopped without Save input. The existing private checkpoint remains authoritative and must not be reset or deleted."
+}

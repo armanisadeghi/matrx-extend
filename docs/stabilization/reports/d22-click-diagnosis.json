@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-click-diagnosis",
+  "defect_id": "EXT-D-0022",
+  "verdict": "Save pointer cause not yet established; read-only diagnostic prepared",
+  "evidence": [
+    "Run 001 reached one_save_click after capture and a durable one-attempt reservation, then the trusted driver threw. That run did not retain the pointer phase or error category, so a Save dispatch cannot be inferred or ruled out.",
+    "Run 002 used the existing checkpoint and real admin UI to obtain one scoped recognition lookup with result none. It stopped before Save. The checkpoint was neither reset nor deleted.",
+    "The current Save control is rendered only for an open capture that the unsaved retry card does not own. The trusted driver resolves exact visible button text globally, scrolls the unique target, requires a hit-tested interior point, and dispatches press and release only after stable samples. The 001 receipt does not say which of these conditions failed."
+  ],
+  "change": "When checkpoint recovery definitively finds no Source, the runner can capture the same public page in the panel, wait for its Save control, inspect exact-match count, active Scrape pane ownership, area, clipping, and hit-test results, then exit with status diagnostic_only and a nonzero code. It sends no Save pointer, keyboard, or DOM click input and leaves the checkpoint untouched.",
+  "next_step": "Root runs the guarded diagnostic branch once. Inspect the allowlisted pointer result to choose a causal repair; do not retry Save or call the absence of a Source proof that the original click was never dispatched.",
+  "runtime": "Diagnostic branch has not been run in this lane. No browser, test, or build was launched here."
+}

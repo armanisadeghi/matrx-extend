@@ -240,6 +240,84 @@ async function scrapeState(panel) {
   );
 }
 
+// A prior Save attempt has an ambiguous pointer boundary. A new run may
+// inspect the public capture's Save target, but must never send Save input.
+async function inspectSavePointerWithoutInput(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+      const trigger = document.querySelector('button[role="tab"][title="Scrape"][data-state="active"]');
+      const paneId = trigger?.getAttribute('aria-controls');
+      const pane = paneId ? document.getElementById(paneId) : null;
+      const candidates = [...document.querySelectorAll('button')]
+        .filter((button) => button.textContent.trim() === 'Save');
+      const visible = (button) => {
+        const style = getComputedStyle(button), rect = button.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' &&
+          style.display !== 'none' && !button.closest('[inert]');
+      };
+      const visibleButtons = candidates.filter(visible);
+      const target = visibleButtons.length === 1 ? visibleButtons[0] : null;
+      if (!target) return {
+        activeScrapePane: pane?.getAttribute('data-state') === 'active',
+        exactButtonCount: candidates.length,
+        visibleButtonCount: visibleButtons.length,
+        uniqueTargetInActiveScrapePane: false,
+        targetDisabled: null,
+        targetHasArea: null,
+        clippedTargetHasArea: null,
+        centerHitsTarget: null,
+        interiorHitCount: null,
+        selectedPointAvailable: null,
+        clippingAncestorCount: null,
+      };
+      target.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' });
+      const rect = target.getBoundingClientRect();
+      const bounds = { left: Math.max(0, rect.left), top: Math.max(0, rect.top),
+        right: Math.min(innerWidth, rect.right), bottom: Math.min(innerHeight, rect.bottom) };
+      let clippingAncestorCount = 0;
+      for (let ancestor = target.parentElement; ancestor; ancestor = ancestor.parentElement) {
+        const style = getComputedStyle(ancestor), box = ancestor.getBoundingClientRect();
+        const clips = (overflow) => /^(auto|scroll|hidden|clip)$/.test(overflow);
+        if (clips(style.overflowX)) {
+          bounds.left = Math.max(bounds.left, box.left + ancestor.clientLeft);
+          bounds.right = Math.min(bounds.right, box.left + ancestor.clientLeft + ancestor.clientWidth);
+        }
+        if (clips(style.overflowY)) {
+          clippingAncestorCount++;
+          bounds.top = Math.max(bounds.top, box.top + ancestor.clientTop);
+          bounds.bottom = Math.min(bounds.bottom, box.top + ancestor.clientTop + ancestor.clientHeight);
+        }
+      }
+      const hitsTarget = (point) => {
+        const hit = document.elementFromPoint(point.x, point.y);
+        return Boolean(hit && (hit === target || target.contains(hit)));
+      };
+      const center = { x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
+      const points = [];
+      if (bounds.right > bounds.left && bounds.bottom > bounds.top) {
+        for (const fy of [0.5, 0.25, 0.75]) for (const fx of [0.5, 0.25, 0.75])
+          points.push({ x: bounds.left + (bounds.right - bounds.left) * fx,
+            y: bounds.top + (bounds.bottom - bounds.top) * fy });
+      }
+      const interiorHitCount = points.filter(hitsTarget).length;
+      return {
+        activeScrapePane: pane?.getAttribute('data-state') === 'active',
+        exactButtonCount: candidates.length,
+        visibleButtonCount: visibleButtons.length,
+        uniqueTargetInActiveScrapePane: pane?.contains(target) === true,
+        targetDisabled: Boolean(target.disabled),
+        targetHasArea: rect.width > 0 && rect.height > 0,
+        clippedTargetHasArea: bounds.right > bounds.left && bounds.bottom > bounds.top,
+        centerHitsTarget: hitsTarget(center),
+        interiorHitCount,
+        selectedPointAvailable: interiorHitCount > 0,
+        clippingAncestorCount,
+      };
+    })()`,
+  );
+}
+
 // Observe the request made by the real recognition hook. Its UI can say
 // "not yet" without a request when no token exists, so the Save gate also
 // requires one scoped 200 response with an empty result for this exact URL.
@@ -478,6 +556,18 @@ try {
             30_000,
           );
           report.observations.recoveryLookup = network;
+          if (network === 'none') {
+            stage = 'read_only_save_pointer_diagnostic';
+            await click(panel, 'button', 'Capture this page');
+            await waitFor(
+              'public_capture_ready_for_pointer_inspection',
+              () => scrapeState(panel),
+              (state) => state?.linked && state.save && state.notSaved && !state.checkUnknown,
+              60_000,
+            );
+            report.observations.readOnlySavePointer = await inspectSavePointerWithoutInput(panel);
+            fail('prior_save_absent_pointer_diagnosed_no_retry');
+          }
           if (network !== 'found') fail('recovery_source_not_definitively_found');
           const recovered = await waitFor(
             'recovery_source_ui',
@@ -677,7 +767,10 @@ try {
     fail('release_build_changed_during_run');
   report.build = { ...buildAtEnd, extensionId: nativeResult.extensionId };
 } catch (error) {
-  report.status = 'unverified';
+  report.status =
+    stage === 'read_only_save_pointer_diagnostic' && report.observations.readOnlySavePointer
+      ? 'diagnostic_only'
+      : 'unverified';
   report.failureStage = stage;
   report.failureCode ??= 'stage_failed';
   if (stage === 'one_save_click') {
