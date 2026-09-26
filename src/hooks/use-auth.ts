@@ -182,27 +182,17 @@ export function useAuth() {
   useEffect(() => {
     return on<{ user: UserProfile | null; isAdmin?: boolean }, { ack: true }>(
       CHANNELS.AUTH_STATE_CHANGED,
-      (payload) => {
+      () => {
         // A sign-in/sign-out from a different extension context supersedes
         // any local OAuth attempt still awaiting admin lookup.
         const event = ++signInGeneration;
-        if (payload.user === null) {
-          setUser(null);
-          setIsAdmin(false);
-          setError(null);
-          return { ack: true };
-        }
-        // A positive broadcast is only a notice to reread canonical storage.
-        // The payload may be delayed from a prior sign-in and is not identity
-        // or role evidence in this receiving context.
-        setUser(null);
-        setIsAdmin(false);
-        setStatus('unknown');
+        // Either payload can arrive after a newer auth transition. Treat the
+        // broadcast only as a notice to reread the current verified session.
         void applyCanonicalSession(() => event === signInGeneration);
         return { ack: true };
       },
     );
-  }, [applyCanonicalSession, setUser, setIsAdmin, setError, setStatus]);
+  }, [applyCanonicalSession]);
 
   useEffect(() => {
     return on<{ message: string }, { ack: true }>(CHANNELS.AUTH_SAFARI_FAILED, ({ message }) => {
