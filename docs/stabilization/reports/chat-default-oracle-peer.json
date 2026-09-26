@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "reviewer_lane": "fresh source oracle peer Luna medium",
+  "commit_reviewed": "a997caa464353b8dda087a2e9d735767a414cdd3",
+  "scope": "Source-only review of the reset chat-default exception; no runtime, browser, test, build, or install run.",
+  "A_original_D15": "CLOSED: prior independent runtime review identifies the original no-organization/notice obstruction as resolved through Confirm; this commit does not reopen it.",
+  "B_oracle_quality": "PASS: exception requires the after-Confirm local and session snapshot to be empty, exact local matrx.chat.v1 key/source class, equality with the initial guest fingerprint, and version-1 payload with exactly the five source-persisted fields and empty/default values plus current browser-chat Mandate ref.",
+  "source_attribution": "Actual regeneration path is ChatView mount effect (src/features/chat/ChatView.tsx:228-234) reading settings defaultAgentId (src/state/settings.ts:120-124), then useChatStore.setAgent (src/state/chat.ts:283); Zustand persist partialize writes those five fields under matrx.chat.v1 (src/state/chat.ts:551-565) via chromeLocalStorage.setItem (src/lib/storage/zustand-adapter.ts:12-19). App forceMount keeps the chat surface mounted but is not itself the writer.",
+  "retention_boundary": "Custom draft, variable values, permission modes, bound target, or selected agent fail exact default shape and/or initial fingerprint. Any other key, session overlap, account/settings overlap, stale guest identity, or unexplained value remains failing.",
+  "A_capability_runtime": "PENDING: this source review does not establish browser behavior.",
+  "B_full_T51": "UNVERIFIED: original run009 post-reload observation and acceptance failure remain until the guarded full runtime rerun passes.",
+  "findings": [],
+  "next_action": "Root runs the guarded acceptance and confirms one fresh_chat_default with zero unexplained overlaps; retain T51 as unverified until then."
+}
