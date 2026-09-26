@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "id": "native-0258-port-verification",
+  "scope": "Independent native Chrome verification of released 0.2.58 admin port setting",
+  "status": "pass",
+  "build": {
+    "version": "0.2.58",
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "sourceSha": "d66589855aafacfb9a9cfa521b80561b36f8e8b3",
+    "treeSha256": "7458afebc20194398c31288d355fa6f9cb42b4baadd1ddba3a29fa419b28144b",
+    "receiptPath": ".output/release-receipt.json",
+    "unpackedPath": ".output/chrome-mv3-dev"
+  },
+  "surface": "Settings > Desktop bridge > Local engine port",
+  "actualUiAcceptance": {
+    "status": "pass",
+    "role": "admin",
+    "email": "admin@admin.com",
+    "organizationRetained": "ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete",
+    "original": {"value": "auto", "saved": null},
+    "valid65001": {"saved": true, "error": null},
+    "invalid65536": {"savedOverrideRetained": true, "error": "Port must be 1–65535."},
+    "blankInSameView": {"overrideRemoved": true, "input": "auto", "errorCleared": true},
+    "afterPanelReopen": {"overrideRemoved": true, "input": "auto", "error": null},
+    "restoredOriginal": true
+  },
+  "evidenceReview": {
+    "guestSettingsLocal005T46": "Reviewed as separate guest evidence: valid and cleared persistence, invalid retention, same-render error clearing pass; rediscovery remains unverified.",
+    "extD0012": "Reviewed as fixed with source test and release record references.",
+    "rediscoveryClaimed": false
+  },
+  "screenshots": {
+    "directory": "docs/stabilization/evidence/native0258",
+    "inlineNativeCaptures": ["original auto state", "valid 65001 saved", "invalid 65536 error", "blank clear", "after panel reopen"],
+    "localImageFiles": [],
+    "note": "CUA exposed screenshot display but no local-file export API; captures are present inline in the native verification tool transcript."
+  },
+  "limitations": ["This admin UI run is independent native acceptance evidence; it does not convert the guest run's unverified rediscovery check to verified."],
+  "artifacts": ["docs/stabilization/reports/native-0258-port-verification.json", "docs/stabilization/evidence/native0258/"]
+}

@@ -1,0 +1,11 @@
+{
+  "verification": "native-0258-port-verification",
+  "captures": [
+    {"sequence": 1, "state": "original auto port", "delivery": "inline CUA screenshot in verification session"},
+    {"sequence": 2, "state": "valid 65001 saved", "delivery": "inline CUA screenshot in verification session"},
+    {"sequence": 3, "state": "invalid 65536 validation shown", "delivery": "inline CUA screenshot in verification session"},
+    {"sequence": 4, "state": "blank save cleared validation", "delivery": "inline CUA screenshot in verification session"},
+    {"sequence": 5, "state": "after panel reopen, auto port persisted", "delivery": "inline CUA screenshot in verification session"}
+  ],
+  "fileExport": "Unavailable from the native CUA screenshot API; no screenshot image files are represented as saved artifacts."
+}

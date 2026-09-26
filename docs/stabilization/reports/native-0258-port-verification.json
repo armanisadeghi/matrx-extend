@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "id": "native-0258-port-verification",
+  "build": {
+    "version": "0.2.58",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "source_sha": "d66589855aafacfb9a9cfa521b80561b36f8e8b3",
+    "tree_sha256": "7458afebc20194398c31288d355fa6f9cb42b4baadd1ddba3a29fa419b28144b",
+    "receipt": ".output/release-receipt.json",
+    "installed_source": ".output/chrome-mv3-dev"
+  },
+  "actual_ui_acceptance": {
+    "status": "pass",
+    "surface": "Chrome native side panel > Settings > Desktop bridge > Local engine port",
+    "account": "admin@admin.com",
+    "role": "ADMIN",
+    "existing_organization": "ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete",
+    "original_port": {
+      "input": "auto",
+      "saved_override": null
+    },
+    "steps": [
+      {"action": "Save valid 65001", "observed_input": "65001", "override": true, "error": null},
+      {"action": "Save invalid 65536", "observed_input": "65536", "override": true, "error": "Port must be 1–65535."},
+      {"action": "Without reload, clear input and save", "observed_input": "auto", "override": false, "error": null},
+      {"action": "Close and reopen extension side panel, revisit Settings", "observed_input": "auto", "override": false, "error": null}
+    ],
+    "cleanup": "Original auto/blank setting restored exactly; no sign-out, reset, organization, permission, or other preference changes."
+  },
+  "provenance_and_guest_record_review": {
+    "status": "pass",
+    "receipt_matches_requested_source": true,
+    "guest_settings_local_005_review": "Its EXT-F-1003-T46 row independently reports valid save and persistence, invalid-range retention, same-view invalid-to-blank error clearing, and cleared-state persistence as passing.",
+    "EXT_D_0012_review": "Defect marked fixed; source test and release-stabilization-008 references reviewed.",
+    "rediscovery": "Not exercised or inferred from UI/storage. guest-settings-local-005 explicitly leaves rediscovery unverified; this verification does not change that result."
+  },
+  "screenshots": {
+    "directory": "docs/stabilization/evidence/native0258",
+    "capture_method": "Native CUA screenshots were emitted inline during the verification session.",
+    "persisted_image_files": false,
+    "limitation": "The CUA screenshot API returned display-only images and exposed no local export/write operation; no image files are claimed."
+  }
+}
