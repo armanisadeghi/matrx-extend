@@ -210,6 +210,19 @@ async function observeInventory(panel) {
   return { ...observed, ...prerequisite };
 }
 
+async function staleCaptureNoWorkspaceNoticeCount(panel) {
+  // This notice can be raised by the mounted capture view before the person
+  // chooses an organization. Compare fixed source copy inside the page only;
+  // never transport a notice title, message, or technical detail into a receipt.
+  return evaluate(
+    panel,
+    `(() => [...document.querySelectorAll('[role="alert"]')]
+      .filter((alert) => alert.querySelector('.font-medium')?.textContent.trim() === 'Capture list unavailable'
+        && alert.querySelector('p')?.textContent.includes('no workspace is selected, so the request was never sent'))
+      .length)()`,
+  );
+}
+
 let lease;
 try {
   // A direct invocation is refused until the root resource guard explicitly
@@ -287,6 +300,23 @@ try {
         const mine = await observeInventory(panel);
         if (mine.errorVisible) fail('vault_inventory_error');
         if (!mine.sharedTabLabel) fail('shared_inventory_tab_missing');
+        if (!mine.organizationSelected) fail('organization_prerequisite_not_selected');
+        stage = 'stale_capture_notice_check';
+        const staleCaptureNotices = await staleCaptureNoWorkspaceNoticeCount(panel);
+        if (staleCaptureNotices > 1) fail('stale_capture_notice_ambiguous');
+        if (staleCaptureNotices === 1) {
+          // A previous capture read was refused before org selection. Its
+          // remedy is now complete. Use the notice's real Dismiss button and
+          // the same visible, hit-tested, stable, trusted pointer path.
+          stage = 'stale_capture_notice_dismiss';
+          await click(panel, 'capture-no-workspace-dismiss', 'Dismiss');
+          await waitFor(
+            'stale_capture_notice_dismissed',
+            () => staleCaptureNoWorkspaceNoticeCount(panel),
+            (count) => count === 0,
+          );
+          evidence.dismissedStaleCaptureNoWorkspaceNotice = true;
+        }
         stage = 'shared_tab_click';
         await click(panel, 'vault-shared-tab', 'Shared');
         stage = 'shared_inventory_wait';

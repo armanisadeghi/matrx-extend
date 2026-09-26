@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "review": "seo-detail-source-peer",
+  "reviewed_commits": ["bb2d2a44", "4d57928f"],
+  "scope": "Zero-authorship source review of the new guest SEO detail and canonical-door batch against EXT-F-1008-C09. No browser, runner, build, test, implementation edit, or child agent was used.",
+  "runtime_verdict": {
+    "result": "PENDING",
+    "reason": "The three new T09 subtargets are prepared but have no owned native-panel runtime receipt or independent UI observation. Earlier seo-guest-005 evidence remains partial and is repeated by this aggregate runner, not newly earned. Full C09, member/admin, and feature acceptance remain open."
+  },
+  "source_quality_verdict": {
+    "result": "REPAIR_TWO_ORACLES_BEFORE_RUNTIME",
+    "strengths": [
+      "Expected title, description, canonical, robots, language, heading, links, images, and social metadata are sampled from the owned public tab DOM, separately from the linked, selected SEO panel. The rich page must actually supply a nonempty description and canonical URL and have a different title.",
+      "The canonical anchor is scoped to the selected SEO pane, must be unique, openable, target _blank, and have noopener/noreferrer. The runner requires an unobstructed stable pointer point, dispatches browser mouse input, and waits for an actual new tab at the DOM-derived destination.",
+      "The new path contains no authentication injection, network mock, account or external data write, clipboard read/write, secret read, Chat/Pilot action, or synthetic page response. The only file output is the runner's local acceptance artifact.",
+      "The preparation document explicitly calls the three targets unverified, leaves other C09 controls open, and separates repeated earlier checks from new coverage."
+    ],
+    "findings": [
+      {
+        "severity": "repair_before_run",
+        "location": "tests/browser/seo-guest-acceptance.mjs sparse_public_detail_groups target",
+        "finding": "The target records status pass even when the supposedly sparse public page has a description or canonical. descriptionAbsent and canonicalAbsent are merely evidence booleans, never assertions. A changed page can therefore produce a false pass under the named absent-metadata subtarget.",
+        "repair": "Assert both expected DOM values are null before recording this sparse subtarget, or rename it to describe only whatever presence the live page actually supplies."
+      },
+      {
+        "severity": "repair_before_run",
+        "location": "tests/browser/seo-guest-acceptance.mjs publicDetailEvidence.hasSocialMetadata",
+        "finding": "The DOM oracle treats an og:/twitter: meta tag with empty content as social metadata, while src/lib/seo/audit.ts deliberately skips tags whose content is empty. Such a real page makes a correct omitted Social preview group fail the runner.",
+        "repair": "Require nonempty content in the independent DOM social expectation, matching the audited signal contract."
+      }
+    ],
+    "limits": [
+      "The new checks cover group presence and the first heading's text, not full heading levels/counts, link/image/readability/performance values, schema chips, hreflang, social preview fallback, other URL doors, or a second outbound destination.",
+      "Source review cannot establish live DOM stability, MDN reachability, new-tab creation, or that the expected panels actually render. The root-owned guarded run and independent runtime review remain necessary.",
+      "The forcing-function gut check and mutation pass were not executed in this lane."
+    ]
+  },
+  "coverage_accounting": {
+    "new_if_repaired_and_runtime_passes": [
+      "EXT-F-1008-T09 sparse public detail presence/absence",
+      "EXT-F-1008-T09 rich public detail presence and canonical anchor",
+      "EXT-F-1008-T09 canonical outbound tab to public-DOM destination"
+    ],
+    "repeated_not_new": ["T01", "T02", "T03", "T07", "T09 earlier title and headings presence"],
+    "full_case_or_feature_pass": false
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "id": "release-stabilization-026",
+  "status": "refused",
+  "wrapper_session_id": 87894,
+  "wrapper_exit_confirmed": 1,
+  "reason": "Two new D20 tracking JSON files failed formatting. Candidate0.2.72 notpublished. Packagefreshness/typecheck passed; fullsuite notrun.",
+  "repair_commit": "8fbf68b9",
+  "verification": "All26applicable changedfiles subsequently pass exactBiome; no gateweakened.",
+  "source_log": "/tmp/matrx-release-stabilization-026.log"
+}

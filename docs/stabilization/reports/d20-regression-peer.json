@@ -1,0 +1,11 @@
+{
+  "defect_id": "EXT-D-0020",
+  "reviewed_commit": "bff8ecea",
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_A_behavior": "PENDING: actual CI 36259193096 proves recurrence with 9a3cdb9c, but this repair has no runtime evidence yet; retain in-fix.",
+  "verdict_B_source_quality": "PASS with evidence gap: the one App renderer now unmounts React before awaiting Vitest-tracked imports in an unconditional afterEach; all original routing/quarantine assertions remain; no error suppression, owned-behavior stub, or configuration weakening was added.",
+  "sibling_census": "rg finds only popup-claim-recovery importing/rendering sidepanel App; neighboring popup-main tests do not own its VIEW_LOADERS imports.",
+  "failure_path": "Vitest afterEach runs after assertion failure; the awaited cleanup/import barrier is in that hook, though it has not been exercised under an induced failure.",
+  "required_proof": "In an isolated scratch copy, change one post-render routing expectation to an impossible value; run that test and confirm the expected assertion failure occurs without EnvironmentTeardownError, then restore the file. Also run focused/full CI-concurrency tests and remote CI at a SHA containing bff8ecea.",
+  "limit": "The intermittent race has no deterministic local red guard or mutation proof. A local pass alone cannot close it; do not claim root cause conclusively until repaired-source CI passes."
+}

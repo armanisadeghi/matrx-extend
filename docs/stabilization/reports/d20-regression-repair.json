@@ -1,0 +1,59 @@
+{
+  "id": "EXT-D-0020",
+  "status": "DONE_WITH_CONCERNS",
+  "at": "2026-09-26T17:37:45.237551+00:00",
+  "scope": "Test lifecycle repair only; no product behavior, mocking boundaries, Vitest error reporting, assertions, or build configuration changed.",
+  "observed_red": {
+    "run": 36259193096,
+    "sha": "e1cd63d629d501993bc4188468ea84970568bc7e",
+    "conclusion": "failure",
+    "assertions_passed": 1445,
+    "skipped": 4,
+    "unhandled_errors": 1,
+    "evidence": "docs/stabilization/reports/d20-ci-36259193096.txt"
+  },
+  "hypotheses": [
+    {
+      "cause": "React roots remain mounted because RTL auto-cleanup requires global afterEach and Vitest globals are disabled",
+      "prediction": "Explicit cleanup must detach the App storage listener and stop subsequent effect-triggered work before imports drain.",
+      "evidence": "tests/unit/popup-claim-recovery.test.tsx had no cleanup/unmount; tests/setup.ts has no cleanup hook; vitest.config.ts does not enable globals; node_modules/@testing-library/react/dist/index.js guards automatic cleanup by typeof afterEach."
+    },
+    {
+      "cause": "Awaiting separate mocked view imports does not cover all imports/effect work started by App",
+      "prediction": "Unmount plus vi.dynamicImportSettled in afterEach keeps all runner-tracked resolving/evaluating imports within the live test environment, including assertion failures.",
+      "evidence": "Real CI fails despite the two explicit imports; node_modules/vitest/dist/chunks/utils.BX5Fg8C4.js waitForImportsToResolve recursively checks resolvingModules and unevaluated module promises."
+    },
+    {
+      "cause": "Product claim/routing behavior fails",
+      "prediction": "Existing quarantine, explicit Open Scrape routing and consumed-intent assertions would fail.",
+      "evidence": "They pass in actual failed CI, so this does not explain the observed unhandled error."
+    }
+  ],
+  "change": "afterEach first calls RTL cleanup, then awaits vi.dynamicImportSettled, then clears test launch-intent storage and restores spies. Removed the inadequate two body-only view import waits. All five original behavioral expectations retained.",
+  "sibling_census": {
+    "command": "rg -n entrypoints/sidepanel/App tests/unit src --glob *test*",
+    "result": "popup-claim-recovery is the only sidepanel App test renderer. App prewarms every tab through one VIEW_LOADERS effect; teardown drains all tracked imports rather than listing Chat and Scrape.",
+    "adjacent": "popup-capture-route, popup-panel-remedy and popup-auth-error import popup/main, which uses createRoot and no dynamic import expressions. They are not members of the observed sidepanel lazy-import class. Their root ownership is a separate lifecycle concern and was not modified."
+  },
+  "verification": {
+    "performed": [
+      "Fetched actual CI failure and head SHA via gh",
+      "Inspected installed RTL and Vitest lifecycle implementations",
+      "Source diff preserves every original behavioral expectation",
+      "git diff --check"
+    ],
+    "not_performed": [
+      "No runtime, test, build or browser execution per owner guard",
+      "No deterministic local red reproduction",
+      "No mutation pass",
+      "No independent peer review"
+    ],
+    "required_owner_runs": [
+      "Focused popup-claim-recovery test repeatedly, including ordinary and deliberately failing assertion paths in an isolated scratch copy to verify teardown still runs",
+      "Full pnpm test under CI maxWorkers=2",
+      "Independent no-weakening review",
+      "Actual remote CI containing repair before defect closure"
+    ]
+  },
+  "limits": "The missing cleanup and incomplete import barrier are source-established lifecycle defects. Whether they fully explain this intermittent CI race remains unverified until owner execution; do not mark D20 fixed or closed from this report."
+}

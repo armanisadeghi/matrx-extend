@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "status": "member_access_unverified_setup_navigation_failure",
+  "run_id": "member-vault-access-009",
+  "receipt": "docs/stabilization/runs/member-vault-access-009.json",
+  "latest_run": {
+    "run_id": "member-vault-access-010",
+    "receipt": "docs/stabilization/runs/member-vault-access-010.json",
+    "resource_guard": {
+      "wrapper_pid": 4702,
+      "confirmed_exit_code": 1,
+      "confirmed_exit_at": "2026-09-26T17:40:01.266"
+    },
+    "failure_stage": "vault_prerequisite_observation",
+    "admin_web_signed_in": true,
+    "admin_extension_signed_in": true,
+    "organization_selected": false,
+    "organization_picker_pending": false,
+    "organization_picker_visible": false,
+    "vault_tab_active": false,
+    "vault_panel_active": false,
+    "vault_heading_visible": false,
+    "interpretation": "The probe stopped before organization selection, Mine inventory, notice classification or dismissal, and the Shared tab click. Run 010 does not verify or refute the bounded notice remedy from run 009. The receipt contains no driverFailure or pointer sample for this run. The cause of the inactive Vault panel is unresolved."
+  },
+  "observed_boundary": {
+    "admin_web_signed_in": true,
+    "admin_extension_signed_in": true,
+    "organization_selected": true,
+    "mine_inventory_ready": true,
+    "failure_stage": "shared_tab_click",
+    "shared_tab_unique_visible_enabled": true,
+    "shared_tab_position_stable": true,
+    "interior_points_tested": 9,
+    "interior_points_hitting_shared_tab": 0,
+    "occluder": "static p inside an app-root role=alert card, below a fixed pointer-events-none container; outside every tabpanel and dialog; x47 y252.34375 width262 height117",
+    "trusted_pointer_dispatched": false
+  },
+  "source_findings": [
+    "Run 009's p→div→role=alert div→fixed pointer-events-none div→#app chain matches NoticeHost.tsx. Its role=alert cards are pointer-events-auto notices with a real Dismiss button. The fixed ancestor layout rules out an inactive mounted tabpanel or organization picker dialog as this occluder.",
+    "NoticeHost presents real database failures as well as other notices. Run 009 does not disclose the notice title or message; blind dismissal would hide a product error. The driver already has a source-specific Capture list unavailable/no-workspace Dismiss selector from an earlier acceptance lane.",
+    "The probe now checks only that known stale capture notice after the approved organization is selected, dismisses it through the existing trusted click path, waits for disappearance, and records a boolean. All other notices stay visible and can still block the Shared click."
+  ],
+  "diagnostic_change": "On a pointer failure, report a fixed known_notice enum derived inside the page from NoticeHost's known static title and db-failure sentence fragments. The paragraph and alert content remain in the page; no arbitrary notice text, Vault values, raw errors, screenshots, or secrets cross to Node.",
+  "falsifiable_next_observation": [
+    "If run 009's notice is the stale capture no-workspace notice, the next run dismisses it with a real trusted pointer and reaches the Shared inventory.",
+    "If it is another notice, the Shared click remains blocked and known_notice distinguishes database refusal, missing relation, expired sign-in, unreachable database, another no-workspace notice, or other alert. Its actual error remains visible for diagnosis."
+  ],
+  "next_step": "Preserve the distinct run 010 setup/navigation failure for later diagnosis. Do not treat it as a notice-remedy result or member authorization. No additional source change or runtime retry is authorized in this lane now.",
+  "member_auth_status": "unverified"
+}
