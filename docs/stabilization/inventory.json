@@ -2370,18 +2370,10 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "guest-settings-006",
-              "evidence": "docs/stabilization/runs/guest-settings-006.json",
-              "verified_substeps": [
-                "System/Light/Dark selections were reflected by selection controls."
-              ],
-              "remaining_criteria": [
-                "Verify each selected appearance is actually applied and persists after reopen/reload."
-              ],
-              "blocked_run_id": "guest-settings-003",
-              "blocker": "Mac locked; native computer control automatic unlock failed before UI actions. Human normal unlock requested; earlier partial evidence preserved.",
-              "detail": "Resource-invalid partial batch; warm/panel-reopen observations retained but full extension reload/full theme criteria unverified. Original System theme restored and verified in settings-cleanup-001."
+              "status": "pass",
+              "run_id": "guest-theme-001",
+              "evidence": "docs/stabilization/runs/guest-theme-001.json",
+              "detail": "Light/Dark/System each visibly applied and persisted through separate full extension Reloads on0.2.51. OriginalSystem restored; resource healthy."
             }
           }
         },
@@ -4070,7 +4062,8 @@
             "guest-settings-005",
             "guest-settings-006",
             "settings-cleanup-001",
-            "guest-settings-007"
+            "guest-settings-007",
+            "guest-theme-001"
           ],
           "retest_status": "not-run"
         },

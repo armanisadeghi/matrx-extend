@@ -28,3 +28,5 @@ One heavy run or native browser lease at a time, through scripts/stabilization-r
 User resumed04:46UTC. Remote main unchanged and resourcepressure normal. guest-settings007 browser lease session76318 admitted04:47:36UTC; Luna guest_cold_three owns ONLY guestT01/T07/T22 warm+realextensionreload. No theme/signin extra scope. Root watches resource; no concurrent heavyworker. Next: integrate fullcase evidence, then one small remaining batch. Prior memorypressure stops retain incomplete states.
 
 04:52UTC: guest-settings007 completed3full guestcases T01/T07/T22 warm+fullreload, valid resources. Inventory advanced only those cases. Same healthy lease76318 remains held; Luna guest_cold_three now owns guest-theme001 to completeT04 and restoreSystem. No newheavylaunch.
+
+04:55UTC: guesttheme001 completedT04 (all3themes visibly applied/persisted through fullreload, originalSystem restored). Inventory casepass. Samehealthy lease76318 remains held; Luna guest_cold_three now owns admin-signin001 normalOAuth+reload persistence. Credential values never recorded.
