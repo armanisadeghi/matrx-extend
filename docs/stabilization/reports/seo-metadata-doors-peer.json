@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "review": "seo-metadata-doors-peer",
+  "target_commit": "e8838f689030bb5ac75df29d55b9f35046249b68",
+  "scope": "Independent source review of the opt-in guest Airbnb metadata-door continuation in tests/browser/seo-guest-acceptance.mjs.",
+  "verdict_a_runtime": {
+    "result": "UNVERIFIED",
+    "evidence": [
+      "The change's preparation record says no browser, build, or acceptance run was launched. This review also ran no browser or acceptance command.",
+      "No runtime output in this scope proves the opt-in Airbnb result, public-to-panel parity, or either outbound action. The prior Wikipedia run remains 16/17 partial evidence; this source change does not upgrade it."
+    ],
+    "required_for_runtime_claim": "Run the guest acceptance with SEO_GUEST_METADATA_FIXTURE=airbnb and inspect its saved output; verify the actual guest panel, DOM candidates, both opened destinations, and the report status."
+  },
+  "verdict_b_source": {
+    "result": "PASS_WITH_LIMITS",
+    "findings": [],
+    "evidence": [
+      "The change adds only an opt-in continuation guarded by the exact environment value SEO_GUEST_METADATA_FIXTURE=airbnb. With the variable unset, the Wikipedia acceptance path and existing predicates are unchanged; the new branch runs after them.",
+      "Actual product controls covered are the existing Re-audit button, existing hreflang outbound anchors in the static International group, and existing schema-type outbound anchors in the static Structured data group. SeoGroup renders as static markup; there is no expand/collapse control. The change adds no product UI control.",
+      "The expected values come from page.evaluate over the public page DOM and do not reuse the extension's audit object. It reads rel/hreflang links, JSON-LD @type values and microdata itemtype values, then compares counts, all displayed language/href pairs, schema chips, link titles/destinations, target, noopener, and noreferrer attributes.",
+      "The fixture source is sampled before and after manual re-audit and the full public evidence objects must deep-equal. The opt-in T09 pass target is added only after unique public candidates exist and both real pointer activations open tabs at their exact observed hrefs; each opened tab is closed. Missing candidates create an unverified target; assertion or navigation failures are caught as top-level unverified, never converted to pass.",
+      "The runner uses the native side-panel guest harness. The new branch navigates a public page, reads DOM, re-audits, and opens/closes public outbound tabs; it adds no sign-in, save, copy, database, or other data-write action."
+    ],
+    "limits": [
+      "The acceptance oracle selects `link[rel~=\"alternate\"][hreflang]`, while src/lib/seo/audit.ts selects `link[rel=\"alternate\"][hreflang]`. A valid combined rel-token value can therefore appear in the independent oracle but not the collector. This is a standards/collector lead: if present, a failing assertion may expose a collector gap, not a bad oracle; the prior Airbnb fetch does not establish whether the live page has such a value.",
+      "The existing fixture report records one successful HTTP fetch with hreflang and JSON-LD candidates, but the page can vary by location or time. That report is candidate evidence, not proof the browser DOM will have usable unique candidates during the opt-in run.",
+      "This acceptance slice covers two metadata groups and their outbound links. It does not exhaust all SEO metadata, all T09 details, member/admin modes, clipboard actions, saves, or other feature cases."
+    ]
+  },
+  "controls_review": {
+    "product_controls_added": 0,
+    "existing_controls_exercised_by_opt_in_path": [
+      "Re-audit",
+      "International hreflang outbound anchor",
+      "Structured data schema-type outbound anchor"
+    ],
+    "expand_collapse_controls": "None are rendered by SeoGroup; no expansion behavior is claimed.",
+    "not_covered": ["Other SEO details", "Save/history", "Copy formats", "Member/admin gates"]
+  },
+  "review_scope": "Source-only, zero-authorship review of the target commit and its referenced fixture evidence. No browser, build, tests, auth session, data write, product edit, or push was performed."
+}
