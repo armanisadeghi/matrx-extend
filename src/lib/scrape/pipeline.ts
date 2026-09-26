@@ -491,6 +491,14 @@ function protectInlineSvgFigures(doc: Document, figureSvgGeometry?: FigureSvgGeo
       USE_PROFILES: { svg: true, svgFilters: true },
       FORBID_TAGS: ['script', 'style', 'foreignObject'],
     });
+    // DOMPurify returns the sanitized children when the input itself is an
+    // SVG root. A single-layer figure is still a valid SVG fragment, but a
+    // multi-layer figure needs the generated canvas root to retain one image
+    // coordinate system. Re-wrap only with dimensions we computed as finite
+    // numbers; the layer markup above has already passed the SVG sanitizer.
+    if (compositeRoot) {
+      serialized = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${serialized}</svg>`;
+    }
 
     const complete =
       !hasUnsupportedFigureGraphics(figure) &&
@@ -595,6 +603,23 @@ async function defuddleExtract(doc: Document): Promise<SoupResult['article'] | n
     mod as unknown as { default: new (d: Document) => { parse: () => unknown } }
   ).default;
   if (!DefuddleCtor) return null;
+  // Defuddle 0.19+ deliberately strips data-URL images. Our inline-SVG lane
+  // has already sanitized and encoded those figures, so replace each with a
+  // plain-text position token for extraction and restore the inert image into
+  // the parsed HTML before the final sanitizer. The token keeps the original
+  // article position and prevents a figure-only subtree from being pruned.
+  const protectedSvgs = Array.from(
+    doc.querySelectorAll<HTMLImageElement>('img[src^="data:image/svg+xml;base64,"]'),
+  ).map((image, index) => {
+    const token = `MATRXPROTECTEDSVG${index}END`;
+    const html = image.outerHTML;
+    const placeholder = doc.createElement('p');
+    placeholder.textContent = token;
+    const figure = image.closest('figure');
+    if (figure) figure.replaceWith(placeholder);
+    else image.replaceWith(placeholder);
+    return { token, html };
+  });
   const inst = new DefuddleCtor(doc);
   const parsed = inst.parse() as
     | {
@@ -607,7 +632,13 @@ async function defuddleExtract(doc: Document): Promise<SoupResult['article'] | n
     | null
     | undefined;
   if (!parsed?.content) return null;
-  const safe = DOMPurify.sanitize(parsed.content, {
+  let restoredContent = parsed.content;
+  for (const { token, html } of protectedSvgs) {
+    restoredContent = restoredContent.includes(token)
+      ? restoredContent.replace(token, html)
+      : `${restoredContent}\n${html}`;
+  }
+  const safe = DOMPurify.sanitize(restoredContent, {
     USE_PROFILES: { html: true },
     FORBID_TAGS: ['script', 'style'],
   });

@@ -41,6 +41,7 @@ vi.mock('@/lib/messaging/native', () => ({
   send: () => Promise.resolve({ state: 'none' }),
 }));
 vi.mock('@/features/chat/ChatView', () => ({ ChatView: () => <div>Chat</div> }));
+vi.mock('@/features/scrape/ScrapeView', () => ({ ScrapeView: () => <div>Scrape</div> }));
 vi.mock('@ai-matrx/agents/catalog/react', () => ({
   AgentCatalogProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
