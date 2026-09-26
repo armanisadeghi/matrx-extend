@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "1f8190203c14e045d5c5d58d37dced3f7885619a",
+  "review_type": "source_only",
+  "scope": "Diagnostics-only delta for the disposable admin reset runner",
+  "verdict_a": {
+    "title": "Diagnostic sufficiency and runtime status",
+    "verdict": "PARTIAL",
+    "runtime": "UNVERIFIED",
+    "evidence": "The diagnostic is emitted only after the second native reset-action click throws. It records fixed failure categories and bounded DOM facts, without changing the native click or the post-confirm storage/sign-out oracle. It can help distinguish absent/layout, hit-test obstruction, dialog/inert/animation, viewport, and input-dispatch boundaries.",
+    "finding": {
+      "severity": "minor",
+      "file": "tests/browser/isolated-admin-reset-acceptance.mjs",
+      "detail": "target_count counts every exact-text button, including hidden or inert duplicates; settings-panel-driver.click filters candidates for visibility and inert ancestry before enforcing uniqueness. A hidden duplicate can therefore report target_count > 1 even when the native click sees one eligible target. The diagnostic also hit-tests only the first raw match, making that result ambiguous when duplicates exist.",
+      "recommendation": "Make the diagnostic count and hit-test the same eligible visible candidates as the click driver's uniqueness check, while retaining only booleans/counts in the receipt."
+    },
+    "limitations": "The recorded isolated-admin-reset-001/002 failures show the runner stopped before Confirm; they do not establish a product reset defect. No browser/runtime execution was performed for this review."
+  },
+  "verdict_b": {
+    "title": "Safety and source quality",
+    "verdict": "PASS",
+    "evidence": "Only a fixed category, booleans, and counts are persisted. Raw exception text is consulted only for prefix classification and is not returned or written. Snapshot failure emits a fixed availability boolean. Native click sequence and acceptance assertions are unchanged; diagnostic evaluation is read-only."
+  },
+  "verification": {
+    "source_review": "complete",
+    "tests_build_install_browser": "not run as instructed",
+    "product_reset_behavior": "unverified"
+  },
+  "next_action": "Correct the visible-candidate mismatch before relying on target_count as root-cause evidence; then the root-owned guarded run can collect runtime evidence."
+}
