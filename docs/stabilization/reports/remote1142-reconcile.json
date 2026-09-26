@@ -1,0 +1,23 @@
+{
+  "base": "ad9d679254a43d15317a4ec54a610178b6447c53",
+  "remote": "819379218d282484e1c20bebb3e0b95f05615b82",
+  "scope": "Read-only reconciliation of remote source, evidence JSON, lockfile, and the two refreshed package changelogs; no tests, browser, build, install, or runtime claims.",
+  "source_census": {
+    "product_code": "No behavioral edits found under src; observed changes are formatting only.",
+    "test_harness": "tests/browser/isolated-admin-reset-acceptance.mjs has substantive coverage changes: adds disposable local and session fixtures; verifies Cancel preserves both; checks immediate post-Confirm absence; and after reload ensures old keys remain absent while allowing known guest/desktop regenerated keys. Other broad source/test changes are Biome formatting or structural reflow.",
+    "formatting_config": "biome.json adds docs/stabilization/inventory.json to the ignore list so generated inventory data is not rewritten by formatting."
+  },
+  "evidence_json": {
+    "result": "Compared parsed JSON for 182 changed *.json paths: 181 are semantically identical; the sole semantic difference is biome.json above. Stabilization run, report, and evidence records retain the same values; their diffs are formatting only."
+  },
+  "dependencies": {
+    "locked": {
+      "@ai-matrx/content-ir": "0.19.4 (specifier remains latest)",
+      "@ai-matrx/design-system": "0.44.1 (specifier remains latest)"
+    },
+    "content_ir_consumer_action": "CHANGELOG 0.19.4 changes /source GFM table continuation and explicitly says no consumer action required. This extension imports content-ir core/wire APIs; no direct continuesTable/findTableEnd caller was found.",
+    "design_system_consumer_action": "CHANGELOG 0.44.1 fixes indeterminate Progress width and explicitly says no consumer action. No Progress component import/use was found in extension source.",
+    "required_follow_up": "No package Consumer action remains for this repo from these two changelogs. The lockfile refresh adopts both latest packages."
+  },
+  "verification_limits": "Source and stored evidence census only; no runtime, test, build, or package installation was performed by this lane."
+}

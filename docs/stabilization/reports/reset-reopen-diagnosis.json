@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0015",
+  "status": "diagnostic_instrumentation_ready",
+  "evidence": [
+    "docs/stabilization/runs/isolated-admin-reset-001.json",
+    "docs/stabilization/runs/isolated-admin-reset-002.json"
+  ],
+  "observed_boundary": "Both guarded runs completed real web and extension sign-in, persisted the Dark and disposable storage fixtures, and proved Cancel preserved them. Run 002 stopped within the second native reset action click before dialog wait, Confirm, or any post-confirm storage read.",
+  "current_limit": "The acceptance runner suppresses raw browser exceptions to protect credentials and auth URLs. Existing receipts therefore cannot distinguish a missing target, failed hit test, dialog overlay, animation, or CDP input failure. Product reset behavior is unverified.",
+  "hypotheses_for_next_guarded_run": [
+    {
+      "cause": "The target is no longer visible or unique after Cancel",
+      "prediction": "open_click_diagnostic reports target_count other than 1 or target_has_layout false."
+    },
+    {
+      "cause": "A closing modal or inert/scroll lock still obstructs the real pointer action",
+      "prediction": "open_click_diagnostic reports target_count 1 with target_hit false and dialog, inert, animation, or body lock evidence."
+    },
+    {
+      "cause": "The action moved outside the native panel's viewport after Cancel",
+      "prediction": "open_click_diagnostic reports target_count 1 with target_in_viewport false and target_hit false."
+    },
+    {
+      "cause": "The CDP pointer dispatch fails despite a hittable target",
+      "prediction": "open_click_diagnostic reports native_input_failed with target_hit true."
+    }
+  ],
+  "change": "Capture a fixed click error category plus safe target, viewport, hit-test, modal, inert, and animation facts only when the second native click fails. target_count and its hit test use the driver's eligible-visible filter; raw_target_count and raw_target_in_inert_tree are explicitly separate diagnostics. No raw exception, page text, storage value, credential, or URL is recorded.",
+  "peer_review": {
+    "report": "docs/stabilization/reports/reopen-diagnostic-peer.json",
+    "finding": "Initial diagnostic counted hidden and inert exact-text buttons while the click driver filtered them.",
+    "resolution": "Diagnostic candidate filtering now matches the driver before counting and hit-testing."
+  },
+  "verification": {
+    "node_check": "pass",
+    "git_diff_check": "pass",
+    "browser_retest": "reserved for root resource guard"
+  },
+  "next_action": "Root runs the exact acceptance runner through the resource gate once and reads reset_confirm.open_click_diagnostic. Apply a repair only after the first failing boundary is identified, then rerun the original case and independent UI retest."
+}

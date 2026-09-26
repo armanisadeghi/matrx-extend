@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "c9ed570c1ad2cf33f330d2348b1f1ce224fa8ad6",
+  "review_type": "source_only",
+  "scope": "Independent review of the reset diagnostic candidate-filter correction",
+  "verdict_a": {
+    "title": "Finding resolution, diagnostic usefulness, and runtime status",
+    "verdict": "PARTIAL",
+    "runtime": "UNVERIFIED",
+    "evidence": "The diagnostic now derives target_count and its sampled target from candidates satisfying the same checks as settings-panel-driver.click: positive layout, computed visibility not hidden, computed display not none, and no inert ancestor. It separately reports raw_target_count and whether any raw match is in an inert tree, so hidden/inert exact-text duplicates no longer inflate the eligible count. The driver still rejects any candidate count other than one before hit-testing; the diagnostic nevertheless hit-tests targets[0] when multiple eligible candidates exist, so target_hit then describes only the first eligible candidate rather than a uniquely selected native target.",
+    "finding": {
+      "severity": "minor",
+      "file": "tests/browser/isolated-admin-reset-acceptance.mjs",
+      "detail": "The original raw-versus-eligible mismatch is fixed. A residual ambiguity remains when multiple candidates pass the shared filter: the native driver stops at uniqueness failure, while the diagnostic samples the first eligible candidate.",
+      "recommendation": "When target_count is not exactly one, omit target-specific hit/layout/viewport/animation facts or make their first-candidate scope explicit; the guarded retry remains necessary for runtime evidence."
+    },
+    "limitations": "No browser/runtime execution was performed. The prior receipts still do not establish a product reset defect or behavior after Confirm."
+  },
+  "verdict_b": {
+    "title": "Safety and source quality",
+    "verdict": "PASS",
+    "evidence": "The diff adds only counts and boolean facts for candidate filtering; no raw text, URL, exception, storage value, credential, or auth material is serialized. It changes only failure diagnostics. The native click sequence and post-confirm storage/sign-out acceptance assertions are unchanged."
+  },
+  "verification": {
+    "source_review": "complete",
+    "tests_build_install_browser": "not run as instructed",
+    "product_reset_behavior": "unverified"
+  }
+}
