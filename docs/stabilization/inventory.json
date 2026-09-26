@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T09:00:40.289165+00:00",
+  "updated_at": "2026-09-26T09:04:27.849193+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -3043,9 +3043,20 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "guest-settings-007",
-              "evidence": "docs/stabilization/runs/guest-settings-007.json",
-              "detail": "Native Chrome guest controls matched all expected criteria warm and after full extension Reload; ID/path/version0.2.51 verified, resource healthy."
+              "run_id": "guest-settings-local-001",
+              "detail": "Real isolated native0.2.57 guest warm/reload criteria passed; independent evidence peer a005b2e. Deep clean functional implementation not claimed beyond coming-soon preference.",
+              "evidence": [
+                "docs/stabilization/runs/guest-settings-local-001.json",
+                "docs/stabilization/reports/guest-local-evidence-peer.json"
+              ],
+              "prior_evidence": [
+                {
+                  "status": "pass",
+                  "run_id": "guest-settings-007",
+                  "evidence": "docs/stabilization/runs/guest-settings-007.json",
+                  "detail": "Native Chrome guest controls matched all expected criteria warm and after full extension Reload; ID/path/version0.2.51 verified, resource healthy."
+                }
+              ]
             }
           }
         },
@@ -3453,9 +3464,20 @@
           "results": {
             "guest": {
               "status": "pass",
-              "scope": "Visible state or preference persistence only; not full integration behavior",
-              "run_id": "guest-settings-002",
-              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+              "run_id": "guest-settings-local-001",
+              "detail": "Real isolated native0.2.57 guest warm/reload criteria passed; independent evidence peer a005b2e. Deep clean functional implementation not claimed beyond coming-soon preference.",
+              "evidence": [
+                "docs/stabilization/runs/guest-settings-local-001.json",
+                "docs/stabilization/reports/guest-local-evidence-peer.json"
+              ],
+              "prior_evidence": [
+                {
+                  "status": "pass",
+                  "scope": "Visible state or preference persistence only; not full integration behavior",
+                  "run_id": "guest-settings-002",
+                  "evidence": "docs/stabilization/runs/guest-settings-002.json"
+                }
+              ]
             }
           }
         },
@@ -3686,7 +3708,17 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": "guest-settings-local-001",
+              "defect_ids": [
+                "EXT-D-0011"
+              ],
+              "detail": "Native runner failed trusted interaction; product verdict withheld pending harness repair. Partial evidence in run receipt."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T47",
@@ -4420,7 +4452,17 @@
             "no-update",
             "throttled",
             "error"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": "guest-settings-local-001",
+              "defect_ids": [
+                "EXT-D-0011"
+              ],
+              "detail": "Native runner failed trusted interaction; product verdict withheld pending harness repair. Partial evidence in run receipt."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T71",
