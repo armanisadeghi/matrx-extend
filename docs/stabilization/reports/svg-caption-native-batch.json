@@ -5,7 +5,7 @@
   "status": "prepared_not_run",
   "runner": "tests/browser/svg-caption-native-acceptance.mjs",
   "runtime_output": "test-results/svg-caption-native-acceptance.json",
-  "scope": "Owned localhost HTML article in a real Chrome tab with the released unpacked extension and native side panel. The fixture contains two inline SVG figures, each with a distinct caption and adjacent HTML label. Fast Capture and Scroll & capture must preserve both graphics and all text in rendered Article order.",
+  "scope": "Owned localhost HTML article in a real Chrome tab with the released unpacked extension and native side panel. The fixture contains two inline SVG figures, each with a distinct caption and adjacent HTML label. Fast Capture and Scroll & capture must preserve each loaded graphic's decoded SVG geometry and interleave it with its own caption and label in rendered Article order. Before Deep capture the owned page changes a caption and bar geometry, so the visible result must prove a new capture generation.",
   "fixture_classification": "engineering_fixture_not_public_production_proof",
   "runtime_verdict": "unverified",
   "execution_owner": "root guarded browser/build launch",

@@ -7,9 +7,9 @@
  * it is not evidence that an unrelated public production page works.
  */
 import assert from 'node:assert/strict';
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
@@ -48,6 +48,8 @@ const expected = [
     label: 'Measured in returning patients per month.',
   },
 ];
+const deepCaption = 'Follow-up visits increased after the revised April roster.';
+const deepRevision = 'The revised April roster added follow-up capacity for returning patients.';
 const report = {
   schema_version: 1,
   defect_id: 'EXT-D-0018',
@@ -93,7 +95,6 @@ async function scrapePane(panel) {
       capture: linked ? [...pane.querySelectorAll('button')].filter(el => el.textContent.trim() === 'Capture').length : 0,
       recapture: linked ? [...pane.querySelectorAll('button')].filter(el => el.textContent.trim() === 'Re-capture').length : 0,
       deep: linked ? [...pane.querySelectorAll('button')].filter(el => el.textContent.trim() === 'Scroll & capture').length : 0,
-      deepRunning: linked ? [...pane.querySelectorAll('button')].some(el => /^Scrolling/.test(el.textContent.trim())) : false,
       error: linked ? !!pane.querySelector('[role="alert"]') : false };
   })()`,
   );
@@ -105,8 +106,10 @@ async function renderedArticle(panel) {
     `(() => {
     const mainLists = [...document.querySelectorAll('[role="tablist"]')]
       .filter(el => !el.closest('[role="tabpanel"]'));
-    const scrape = mainLists.length === 1
-      ? [...mainLists[0].querySelectorAll('[role="tab"]')].find(el => el.title === 'Scrape') : null;
+    const scrapeTabs = mainLists.length === 1
+      ? [...mainLists[0].querySelectorAll('[role="tab"]')]
+        .filter(el => el.closest('[role="tablist"]') === mainLists[0] && el.title === 'Scrape') : [];
+    const scrape = scrapeTabs.length === 1 ? scrapeTabs[0] : null;
     const pane = scrape && document.getElementById(scrape.getAttribute('aria-controls'));
     if (!pane || scrape.getAttribute('aria-selected') !== 'true'
       || pane.getAttribute('data-state') !== 'active') return { linked: false };
@@ -115,13 +118,29 @@ async function renderedArticle(panel) {
     const article = articleTab && document.getElementById(articleTab.getAttribute('aria-controls'));
     if (!article || article.getAttribute('aria-labelledby') !== articleTab.id
       || article.getAttribute('data-state') !== 'active') return { linked: false };
+    const sequence = [];
+    const walk = document.createTreeWalker(article, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
+    while (walk.nextNode()) {
+      const node = walk.currentNode;
+      if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'IMG'
+        && node.getAttribute('src')?.startsWith('data:image/svg+xml;base64,'))
+        sequence.push({ kind: 'image', value: node.alt });
+      if (node.nodeType === Node.TEXT_NODE && node.textContent.trim())
+        sequence.push({ kind: 'text', value: node.textContent.trim() });
+    }
     const text = article.innerText;
-    return { linked: true, text,
+    return { linked: true, text, sequence,
       images: [...article.querySelectorAll('img')]
         .filter(el => el.getAttribute('src')?.startsWith('data:image/svg+xml;base64,'))
-        .map(el => ({ alt: el.alt, visible: el.getBoundingClientRect().width > 0 })) };
+        .map(el => ({ alt: el.alt, src: el.getAttribute('src'),
+          visible: el.getBoundingClientRect().width > 0,
+          loaded: el.complete && el.naturalWidth > 0 && el.naturalHeight > 0 })) };
   })()`,
   );
+}
+
+function attributeOf(tag, name) {
+  return new RegExp(`\\b${name}="([^"]+)"`).exec(tag)?.[1] ?? null;
 }
 
 function assertArticle(observed, mode) {
@@ -134,26 +153,68 @@ function assertArticle(observed, mode) {
       `${mode}: graphic ${index + 1} has its label`,
     );
     assert.equal(observed.images[index].visible, true, `${mode}: graphic ${index + 1} is visible`);
+    assert.equal(observed.images[index].loaded, true, `${mode}: graphic ${index + 1} loads`);
   }
+  const firstSvg = Buffer.from(observed.images[0].src.split(',')[1], 'base64').toString('utf8');
+  const secondSvg = Buffer.from(observed.images[1].src.split(',')[1], 'base64').toString('utf8');
+  assert.match(firstSvg, /<svg\b/, `${mode}: first payload is SVG`);
+  assert.match(secondSvg, /<svg\b/, `${mode}: second payload is SVG`);
+  const path = firstSvg.match(/<path\b[^>]*>/)?.[0] ?? '';
+  assert.equal(attributeOf(path, 'd'), 'M15 115 L125 70 L245 20', `${mode}: growth curve survives`);
+  const bars = [...secondSvg.matchAll(/<rect\b[^>]*>/g)].map(([tag]) => ({
+    x: attributeOf(tag, 'x'),
+    y: attributeOf(tag, 'y'),
+    width: attributeOf(tag, 'width'),
+    height: attributeOf(tag, 'height'),
+  }));
+  assert.deepEqual(
+    bars,
+    [
+      { x: '15', y: '70', width: '60', height: '60' },
+      { x: '100', y: '40', width: '60', height: '90' },
+      {
+        x: '185',
+        y: mode === 'deep' ? '10' : '15',
+        width: '60',
+        height: mode === 'deep' ? '120' : '115',
+      },
+    ],
+    `${mode}: three real bars survive with the expected revision`,
+  );
+
   const ordered = [
-    'Appointments booked',
-    expected[0].caption,
-    expected[0].label,
-    'Follow-up visits',
-    expected[1].caption,
-    expected[1].label,
-    'The operations team used both trends',
+    { kind: 'text', value: 'Appointments booked' },
+    { kind: 'image', value: expected[0].image },
+    { kind: 'text', value: expected[0].caption },
+    { kind: 'text', value: expected[0].label },
+    { kind: 'text', value: 'Follow-up visits' },
+    { kind: 'image', value: expected[1].image },
+    { kind: 'text', value: mode === 'deep' ? deepCaption : expected[1].caption },
+    { kind: 'text', value: expected[1].label },
+    ...(mode === 'deep' ? [{ kind: 'text', value: deepRevision }] : []),
+    { kind: 'text', value: 'The operations team used both trends' },
   ];
-  let offset = -1;
+  const stream = observed.sequence
+    .map((node) => (node.kind === 'image' ? `\u0001${node.value}\u0002` : node.value))
+    .join(' ');
+  let offset = 0;
   for (const item of ordered) {
-    const next = observed.text.indexOf(item, offset + 1);
-    assert.ok(next > offset, `${mode}: missing or out-of-order article text: ${item}`);
-    offset = next;
+    const marker = item.kind === 'image' ? `\u0001${item.value}\u0002` : item.value;
+    const next = stream.indexOf(marker, offset);
+    assert.ok(next >= offset, `${mode}: missing or detached article node: ${item.value}`);
+    offset = next + marker.length;
   }
+  if (mode === 'deep')
+    assert.equal(
+      observed.text.includes(expected[1].caption),
+      false,
+      'deep: stale second caption was replaced',
+    );
 }
 
 let server;
 try {
+  await mkdir(dirname(OUTPUT), { recursive: true, mode: 0o700 });
   const harness = await runNativeSidepanelQa({
     exercisePanel: async ({ page, panel }) => {
       server = serveArticle();
@@ -186,34 +247,46 @@ try {
       report.last_stage = 'scrape_view_ready';
 
       for (const mode of ['fast', 'deep']) {
+        if (mode === 'deep') {
+          report.last_stage = 'deep_source_revision';
+          const revised = await page.evaluate(
+            ({ caption, revision }) => {
+              const figures = document.querySelectorAll('article figure');
+              const second = figures[1];
+              const text = second?.querySelector('figcaption');
+              const bar = second?.querySelector('rect[x="185"]');
+              const tail = document.querySelector('article p:last-child');
+              if (!text || !bar || !tail) return false;
+              text.textContent = caption;
+              bar.setAttribute('y', '10');
+              bar.setAttribute('height', '120');
+              const paragraph = document.createElement('p');
+              paragraph.textContent = revision;
+              tail.before(paragraph);
+              return true;
+            },
+            { caption: deepCaption, revision: deepRevision },
+          );
+          assert.equal(revised, true, 'deep: article revision reached the real source DOM');
+          report.last_stage = 'deep_source_revised';
+        }
         const action = mode === 'fast' ? 'Capture' : 'Scroll & capture';
         report.last_stage = `${mode}_click`;
         await click(panel, 'button', action);
-        if (mode === 'deep') {
-          await waitFor(
-            'deep_capture_started',
-            () => scrapePane(panel),
-            (state) => state?.selected && state.deepRunning,
-            10000,
-          );
-          report.last_stage = 'deep_capture_started';
-          await waitFor(
-            'deep_capture_settled',
-            () => scrapePane(panel),
-            (state) =>
-              state?.selected && state.recapture === 1 && state.deep === 1 && !state.deepRunning,
-            60000,
-          );
-          report.last_stage = 'deep_capture_settled';
-        }
+        report.last_stage = `${mode}_article_wait`;
         const observed = await waitFor(
           `${mode}_article_rendered`,
           () => renderedArticle(panel),
           (value) =>
             value?.linked &&
             value.images?.length === 2 &&
+            value.images.every((image) => image.loaded) &&
+            (mode === 'fast' ||
+              (value.text.includes(deepCaption) && value.text.includes(deepRevision))) &&
             expected.every(
-              (item) => value.text.includes(item.caption) && value.text.includes(item.label),
+              (item, index) =>
+                value.text.includes(index === 1 && mode === 'deep' ? deepCaption : item.caption) &&
+                value.text.includes(item.label),
             ),
           mode === 'deep' ? 60000 : 30000,
         );
@@ -228,6 +301,8 @@ try {
           captions: 2,
           html_labels: 2,
           ordered_article: true,
+          svg_geometry_verified: true,
+          ...(mode === 'deep' && { source_revision_observed: true }),
         });
         report.last_stage = `${mode}_rendered_article_confirmed`;
       }
@@ -239,6 +314,9 @@ try {
   report.status = 'unverified';
   report.failure_stage = report.last_stage;
   report.failure_code = error?.code ?? error?.name ?? 'unknown_error';
+  report.failure_detail = String(error?.message ?? '')
+    .split(':')[0]
+    .slice(0, 180);
   process.exitCode = 1;
 } finally {
   if (server?.listening) {
