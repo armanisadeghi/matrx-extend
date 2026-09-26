@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "review": "seo009-diagnostic-peer",
+  "target_commit": "a8d24200e1f6f98425dea956e801ca7ebc353f22",
+  "scope": "Fresh source-only peer review of the bounded guest SEO assertion diagnostics. No browser, heavy test, UI interaction, implementation edit, child agent, or push.",
+  "runtime_verdict": {
+    "result": "PENDING",
+    "reason": "This review inspected source only. No runtime result or prior failed comparison receipt was available in the inspected stabilization run records, so native behavior remains unverified."
+  },
+  "source_quality_verdict": {
+    "result": "PASS_WITH_LIMITS",
+    "diagnostic_review": {
+      "result": "BOUNDED",
+      "evidence": "assertNext accepts only fixed predicate call sites (links, images, readability, performance, doors), stores scalar actual/expected values only when boolean or finite number, and substitutes predicate_evaluation_failed for other failures. The current wrapped assertions use fixed, source-authored assertion labels; value-bearing strict/deep comparison failures are multiline and therefore replaced by the fallback. The failure object does not store arbitrary DOM values, URLs, transport errors, or credentials.",
+      "limit": "Assertion labels are accepted from error.message based on length and newline checks, rather than selected from a fixed allowlist. Current call sites use static assertion messages and are bounded, but a future assertion with a short single-line message derived from page content could bypass that assumption."
+    },
+    "public_fixture_counts": {
+      "result": "SAFE_SCALAR_SUMMARY",
+      "evidence": "next_detail_public_counts contains only public-DOM link/image integer counts, bodyHasText boolean, and alternate/schema type counts. It omits the page title, text, URL, hrefs, and schema labels."
+    },
+    "acceptance_integrity": {
+      "result": "RETAINED",
+      "evidence": "The existing links and images assertions were split into separately wrapped functions without removing their comparisons. Readability, performance, and schema/hreflang-door assertions remain invoked through assertNext. Each passing target is emitted only after its corresponding assertion succeeds; optional door activation still requires unique candidates and otherwise remains unverified. No added browser action or mutation is introduced by this commit."
+    },
+    "remaining_limits": [
+      "No runtime execution was performed; failure-stage behavior and the written receipt are not attested live.",
+      "The short-message assertion-label guard is safe for the current static assertion call sites but should be made an explicit allowlist if future wrapped assertions include dynamic messages."
+    ]
+  },
+  "verification": {
+    "command": "pnpm exec biome check tests/browser/seo-guest-acceptance.mjs docs/stabilization/reports/seo009-diagnostic-peer.json",
+    "result": "PASS"
+  },
+  "next_action": "Owner may proceed with guarded runtime review after preserving the prior comparison receipt; this report does not establish runtime acceptance."
+}
