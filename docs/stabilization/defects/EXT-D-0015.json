@@ -19,12 +19,16 @@
     "docs/stabilization/runs/isolated-admin-reset-005.json",
     "docs/stabilization/runs/isolated-admin-reset-006.json",
     "docs/stabilization/runs/isolated-admin-reset-007.json",
-    "docs/stabilization/runs/isolated-admin-reset-008.json"
+    "docs/stabilization/runs/isolated-admin-reset-008.json",
+    "docs/stabilization/runs/isolated-admin-reset-009.json",
+    "docs/stabilization/reports/org-setup-peer.json",
+    "docs/stabilization/reports/org-setup-runtime-peer.json",
+    "docs/stabilization/runs/guest-settings-local-007.json"
   ],
   "severity": "S2: authenticated reset coverage blocked; no demonstrated product data-loss defect",
   "priority": "P1: complete contained Settings acceptance",
-  "state": "in-fix",
-  "owner": "/root/reset_oracle_escalation",
+  "state": "closed",
+  "owner": "/root/reset_org_setup",
   "transition_history": [
     {
       "at": "2026-09-26T11:37:01.104672+00:00",
@@ -43,7 +47,28 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Two real guarded attempts localize test interaction failure; fresh Sol diagnosis under objective escalation threshold."
+    },
+    {
+      "at": "2026-09-26T12:57:22.376711+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "fe4369f establishes exact fixture organization through real UI and dismisses only the matching prior no-workspace notice."
+    },
+    {
+      "at": "2026-09-26T12:57:22.376711+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Actual009 selects org, reopens after Cancel, clears both storage areas, signs out. Independent492c755 accepts original blocker resolved; guest007 surroundings pass."
+    },
+    {
+      "at": "2026-09-26T12:57:22.376711+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original reproducible setup obstruction resolved and independently accepted. FullT51 remains unverified on separate post-reload preference-oracle reconciliation."
     }
   ],
-  "diagnosis": "Run008 Settings-only screenshot and hit-chain identify a fixed bottom Capture list unavailable notice (no workspace selected) covering Reset. Native hit refusal is correct; clipping alone is refuted by007. Fresh authenticated test setup must establish explicit device organization through real UI; recover existing specific notice via its native dismiss control. No product reset defect proven."
+  "diagnosis": "Run008 Settings-only screenshot and hit-chain identify a fixed bottom Capture list unavailable notice (no workspace selected) covering Reset. Native hit refusal is correct; clipping alone is refuted by007. Fresh authenticated test setup must establish explicit device organization through real UI; recover existing specific notice via its native dismiss control. No product reset defect proven.",
+  "limitations": [
+    "Matching default chat preference reappears after observed empty storage and reload; this does not prove retained old user data. Full T51 remains unverified until source/default-oracle reconciliation and retest."
+  ]
 }

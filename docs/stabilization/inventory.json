@@ -4142,6 +4142,18 @@
                 "Cancel preserves admin and fixtures"
               ],
               "remaining": "Confirmation/reload not reached; EXT-D-0015 tracks native test interaction failure."
+            },
+            {
+              "run": "isolated-admin-reset-009",
+              "peer": "docs/stabilization/reports/org-setup-runtime-peer.json",
+              "status": "unverified",
+              "verified_substeps": [
+                "Exact owned org real UI selection",
+                "Cancel preserves all prior key/value identities",
+                "Confirm all prior local/session keys absent and UI guest",
+                "Reload remains guest with System theme and no prior auth/theme/fixtures"
+              ],
+              "remaining": "Default chat preference matches initial guest baseline; narrow source-backed oracle reconciliation in progress. D15 original no-workspace obstruction closed; do not infer retained data from matching default alone."
             }
           ]
         },
