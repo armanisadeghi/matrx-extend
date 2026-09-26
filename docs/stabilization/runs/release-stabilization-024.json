@@ -25,21 +25,66 @@
   },
   "raw_log": "tmp/release-logs/release-2026-09-26_10-12-34.log",
   "check_results": [
-    { "name": "matrx-packages", "exit_code": 0 },
-    { "name": "typecheck", "exit_code": 0 },
-    { "name": "lint", "exit_code": 0 },
-    { "name": "unit-tests", "exit_code": 0 },
-    { "name": "schema-routing", "exit_code": 0 },
-    { "name": "package-twins", "exit_code": 0 },
-    { "name": "canonical-pickers", "exit_code": 0 },
-    { "name": "archived-items", "exit_code": 0 },
-    { "name": "archived-items-self-test", "exit_code": 0 },
-    { "name": "org-default-ban", "exit_code": 0 },
-    { "name": "org-default-ban-self-test", "exit_code": 0 },
-    { "name": "swallowed-refusals", "exit_code": 0 },
-    { "name": "migrations", "exit_code": 0 },
-    { "name": "tool-drift", "exit_code": 0 },
-    { "name": "mandate-references", "exit_code": 0 }
+    {
+      "name": "matrx-packages",
+      "exit_code": 0
+    },
+    {
+      "name": "typecheck",
+      "exit_code": 0
+    },
+    {
+      "name": "lint",
+      "exit_code": 0
+    },
+    {
+      "name": "unit-tests",
+      "exit_code": 0
+    },
+    {
+      "name": "schema-routing",
+      "exit_code": 0
+    },
+    {
+      "name": "package-twins",
+      "exit_code": 0
+    },
+    {
+      "name": "canonical-pickers",
+      "exit_code": 0
+    },
+    {
+      "name": "archived-items",
+      "exit_code": 0
+    },
+    {
+      "name": "archived-items-self-test",
+      "exit_code": 0
+    },
+    {
+      "name": "org-default-ban",
+      "exit_code": 0
+    },
+    {
+      "name": "org-default-ban-self-test",
+      "exit_code": 0
+    },
+    {
+      "name": "swallowed-refusals",
+      "exit_code": 0
+    },
+    {
+      "name": "migrations",
+      "exit_code": 0
+    },
+    {
+      "name": "tool-drift",
+      "exit_code": 0
+    },
+    {
+      "name": "mandate-references",
+      "exit_code": 0
+    }
   ],
   "unit_tests": {
     "passed": 1446,
@@ -71,5 +116,6 @@
       "Package-twins check passed with 5 explicitly reported pre-existing census items (4 collapsed exports and 1 formatCount item).",
       "Lint passed with 572 warnings."
     ]
-  }
+  },
+  "peer_report": "docs/stabilization/reports/release024-peer.json"
 }
