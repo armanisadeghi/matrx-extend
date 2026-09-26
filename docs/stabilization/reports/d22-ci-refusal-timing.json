@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "d22-ci-refusal-timing",
+  "defect_id": "EXT-D-0022",
+  "scope": "Diagnose the CI refusal assertion in save-never-loses-input.test.tsx without weakening the server-sentence or device-queue checks.",
+  "classification": "Test harness regression. The production refusal parser was not changed.",
+  "cause": "Commit f6161e26 added a runtime import of STATUS_EXPECTED_ACTOR_MISMATCH to sources.ts. The integration test mocked the entire client module with only apiPost. A 422 response reaches that missing export inside refusalFromResult, so the test throws before queuing the refusal. Status-zero cases returned before reading the export and continued to pass.",
+  "red_evidence": [
+    {
+      "run_id": "source-ci-refusal-repro-001",
+      "source_commit": "c9d40965",
+      "log_path": "/tmp/matrx-source-ci-refusal-repro-001.log",
+      "result": "1 failed, 15 passed; the server-sentence UI assertion failed, matching CI run 36269359553."
+    },
+    {
+      "run_id": "source-ci-refusal-repro-002",
+      "source_commit": "0329ef6d",
+      "log_path": "/tmp/matrx-source-ci-refusal-repro-002.log",
+      "result": "1 failed, 15 passed; an earlier assertion found zero queued captures after the 422 refusal. This locates the loss before the retry-card render."
+    }
+  ],
+  "repair_commit": "9022e59a",
+  "repair": "The test now imports the real client module exports and replaces only apiPost. The queue assertion checks the server sentence before the original UI assertion, so the guard still requires both persistence and display.",
+  "sibling_census": "Searched all partial '@/lib/api/client' mocks. Other tests mock only the client calls their subjects use; the source-landing transport test keeps the real client module. The failing integration test was the only partial client mock found that exercises the sources.ts runtime status export.",
+  "verification": {
+    "biome_write": "passed on tests/unit/save-never-loses-input.test.tsx",
+    "biome_check": "passed on tests/unit/save-never-loses-input.test.tsx",
+    "focused_green": "pending root guard run; no green result claimed by this report"
+  },
+  "runtime_limits": "This lane did not run tests, build, or browser. Root owns the guarded reproduction and green run."
+}
