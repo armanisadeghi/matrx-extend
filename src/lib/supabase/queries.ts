@@ -623,17 +623,27 @@ export async function lookupCapturedByUrl(url: string): Promise<CaptureLookup> {
   if (!(await hasSupabaseAccessToken())) return { status: 'none' };
   const identity = canonicalUrl(url);
   if (!identity) return { status: 'none' };
-  // Read-only recognition never raises the workspace picker; with no workspace
-  // chosen on this device RLS still scopes the read to what the person can see.
-  const organizationId = await getActiveOrganizationId().catch(() => null);
-  let query = docprocDb()
+  // Read-only recognition never raises the workspace picker. It also never
+  // performs an unscoped read: without the organization selected on this
+  // device, the caller must say that recognition could not be checked.
+  let organizationId: string | null;
+  try {
+    organizationId = await getActiveOrganizationId();
+  } catch (error) {
+    return {
+      status: 'unknown',
+      reason: error instanceof Error ? `could not resolve the workspace: ${error.message}` : 'could not resolve the workspace',
+    };
+  }
+  if (!organizationId) return { status: 'unknown', reason: 'select a workspace before checking saved Sources' };
+  const query = docprocDb()
     .from('processed_documents')
     .select('id, canonical_identity, created_at, name')
     .eq('canonical_identity', identity)
     .eq('origin_client', SOURCE_ORIGIN_EXTENSION)
     .in('derivation_kind', CAPTURE_DERIVATIONS)
-    .is('deleted_at', null);
-  if (organizationId) query = query.eq('organization_id', organizationId);
+    .is('deleted_at', null)
+    .eq('organization_id', organizationId);
   let data: unknown[] | null;
   try {
     const res = await query.order('created_at', { ascending: false }).limit(1);
