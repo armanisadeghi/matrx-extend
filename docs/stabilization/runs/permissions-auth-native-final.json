@@ -1,0 +1,26 @@
+{
+  "run_id": "permissions-auth-native-final",
+  "status": "partial",
+  "scope": "Independent native Chrome verification of final dev build authentication and advanced optional-permission UI. Permission grant/removal flows were not completed.",
+  "started_at": "2026-09-26T07:29:27Z",
+  "source_sha": "84f4713db7fd139bf33e93bfdbec97bdf1bde6b3",
+  "build_tree_sha256": "7b4d4fcab9a02b728f3d50917b4eed96c2a3446e2d66ddee31724db06df7c589",
+  "build_version": "0.2.54",
+  "chrome_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "loaded_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+  "checks": {
+    "fresh_build_identity": "PASS: Chrome extensions details page showed version 0.2.54, expected extension ID, and expected unpacked path.",
+    "d7_cold_reload_auth": "UNVERIFIED on the required sidepanel: after full extension Reload and 30-second settle, Chrome's Extension options page showed admin@admin.com, ADMIN, and the same selected organization 'ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete'. The sidepanel showed the same identity and organization before reload. No sign-in or account data mutation occurred.",
+    "d6_devtools_protocol": "PASS: Advanced agent capabilities rendered DevTools Protocol as explanatory informational text; no action switch was present. No CDP call was made.",
+    "optional_rows_initial": "PASS: Cookies, Page archive (MHTML), Clipboard read, and Tab video capture were all visible and OFF initially.",
+    "page_capture_denial": "UNVERIFIED: toggling Page archive immediately changed its UI state to on without a visible Chrome denial prompt or deny choice. It was immediately switched back off. No archive was created.",
+    "page_capture_grant_persist_remove": "UNVERIFIED: no permission grant/reload/remove persistence sequence was completed.",
+    "tab_capture_denial_grant_remove": "UNVERIFIED: no permission prompt or tabCapture state change was attempted.",
+    "cleanup": "PASS: Page archive returned to OFF and remained OFF after a full extension Reload and 30-second settle; other optional rows remained at initial OFF state."
+  },
+  "surface_note": "The post-reload identity observation was on Chrome's full-page Extension options settings overlay (options.html), not the sidepanel. Initial pre-reload identity was observed in the sidepanel.",
+  "limitations": [
+    "Chrome did not visibly offer a denial choice on the attempted pageCapture toggle.",
+    "Grant, removal, and their persistence checks remain incomplete pending root adjudication."
+  ]
+}

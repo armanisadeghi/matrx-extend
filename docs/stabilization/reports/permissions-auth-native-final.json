@@ -1,0 +1,25 @@
+{
+  "run_id": "permissions-auth-native-final",
+  "reviewer": "independent native Chrome verification lane",
+  "result": "PARTIAL; follow-up native verification required",
+  "build": {
+    "source_sha": "84f4713db7fd139bf33e93bfdbec97bdf1bde6b3",
+    "tree_sha256": "7b4d4fcab9a02b728f3d50917b4eed96c2a3446e2d66ddee31724db06df7c589",
+    "version": "0.2.54",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev"
+  },
+  "observations": {
+    "identity": "Before reload, the actual sidepanel showed admin@admin.com, ADMIN, and organization 'ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete'. Following full extension Reload and a 30-second settle, the same identity and organization were visible in the full-page Extension options settings overlay. Required post-reload sidepanel check is unverified.",
+    "devtools_protocol": "PASS: required DevTools Protocol permission is an informational row with no actionable switch; no CDP call was made.",
+    "optional_permission_rows": "PASS: Cookies, Page archive (MHTML), Clipboard read, and Tab video capture were all visible and initially OFF.",
+    "page_capture": "A click immediately changed the Page archive control to on without a visible native Chrome prompt or denial choice. It was switched back off. No page archive was created. Denial, grant persistence, and removal persistence are unverified.",
+    "tab_capture": "Denial, grant persistence, and removal persistence are unverified; no recording was started.",
+    "cleanup": "PASS: Page archive was OFF and remained OFF after full extension Reload plus 30-second settle. Other optional rows were unchanged and remained OFF."
+  },
+  "limitations": [
+    "The post-reload identity observation was on options.html, not in the required sidepanel.",
+    "Permission deny/grant/remove flows are incomplete.",
+    "No screenshots were committed."
+  ]
+}
