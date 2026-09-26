@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "report_id": "d23-notice-resolution",
+  "defect_id": "EXT-D-0023",
+  "classification": "Product notice lifecycle defect exposed by the D22 read-only Source pointer diagnosis",
+  "cause": "Capture correctly announces a no-workspace read failure before selection, but its notice has no typed resolution condition. NoticeHost keeps the bottom overlay mounted after the organization resolver reports a selected workspace, so the stale notice can intercept otherwise enabled controls.",
+  "sibling_census": "The same stale Capture notice was documented as covering Settings Reset and Vault controls; those acceptance runners manually dismissed the exact alert after organization setup. Other database failures have different remedies and must remain visible.",
+  "red_guard": "docs/stabilization/runs/notice-resolution-red-001.json",
+  "repair": "The shared Notice type carries a typed active-organization resolution condition. The database refusal producer marks only no-workspace notices. NoticeHost retires matching notices when the organization changes and rechecks on notice arrival for late refusals; unrelated errors are untouched.",
+  "verification": "Red guard confirmed by root. Product repair and exact-file formatting are prepared; focused green, typecheck, independent source review and native read-only retest remain pending.",
+  "d22_boundary": "The original Source Save click remains ambiguous. The private one-attempt checkpoint is unchanged; this repair neither dispatches Save nor authorizes retry."
+}

@@ -339,6 +339,7 @@ export function failDbCall(site: DbCallSite, error: DbErrorLike | null | undefin
     title: site.title,
     message: userMessage,
     detail: `${site.operation} ${site.table} · ${technical}`,
+    ...(kind === 'no_workspace' && { resolvesWhen: 'active_organization_available' as const }),
   });
   void recordDbFailure(site, kind, error);
 

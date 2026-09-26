@@ -27,6 +27,7 @@ import { CHANNELS } from '@/lib/messaging/schemas';
 import { create } from 'zustand';
 
 export type NoticeTone = 'error' | 'warning' | 'info';
+export type NoticeResolution = 'active_organization_available';
 
 export interface Notice {
   id: string;
@@ -38,6 +39,8 @@ export interface Notice {
   message: string;
   /** Admin-only technical tail (error code, table). Never shown to normal users. */
   detail?: string | undefined;
+  /** A known condition that makes this notice's remedy complete. */
+  resolvesWhen?: NoticeResolution | undefined;
 }
 
 export interface NoticeInput {
@@ -45,6 +48,7 @@ export interface NoticeInput {
   title: string;
   message: string;
   detail?: string | undefined;
+  resolvesWhen?: NoticeResolution | undefined;
 }
 
 const MAX_NOTICES = 8;
@@ -53,6 +57,7 @@ interface NoticeState {
   notices: Notice[];
   add: (n: Notice) => void;
   dismiss: (id: string) => void;
+  retireResolved: (condition: NoticeResolution) => void;
   clear: () => void;
 }
 
@@ -65,6 +70,8 @@ export const useNoticeStore = create<NoticeState>((set) => ({
       return { notices: [...without, n].slice(-MAX_NOTICES) };
     }),
   dismiss: (id) => set((s) => ({ notices: s.notices.filter((n) => n.id !== id) })),
+  retireResolved: (condition) =>
+    set((s) => ({ notices: s.notices.filter((n) => n.resolvesWhen !== condition) })),
   clear: () => set({ notices: [] }),
 }));
 
@@ -89,6 +96,7 @@ export function makeNotice(input: NoticeInput): Notice {
     title: input.title,
     message: input.message,
     ...(input.detail !== undefined && { detail: input.detail }),
+    ...(input.resolvesWhen !== undefined && { resolvesWhen: input.resolvesWhen }),
   };
 }
 

@@ -13,6 +13,7 @@
 
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { getActiveOrganizationId, onActiveOrganizationChange } from '@/lib/org/active-org';
 import { useAuthStore } from '@/state/auth';
 import { type Notice, useNoticeStore } from '@/state/notices';
 import { AlertTriangle, X } from 'lucide-react';
@@ -34,6 +35,30 @@ export function NoticeHost() {
       return { ok: true };
     });
   }, []);
+
+  // A no-workspace refusal is true when raised, but its remedy is complete
+  // once this device has an active organization. Recheck on each arrival too:
+  // an earlier read can fail after the person has already selected one.
+  useEffect(() => {
+    const off = onActiveOrganizationChange((organizationId) => {
+      if (organizationId) useNoticeStore.getState().retireResolved('active_organization_available');
+    });
+    return off;
+  }, []);
+
+  useEffect(() => {
+    if (!notices.some((notice) => notice.resolvesWhen === 'active_organization_available')) return;
+    let alive = true;
+    void getActiveOrganizationId()
+      .then((organizationId) => {
+        if (alive && organizationId)
+          useNoticeStore.getState().retireResolved('active_organization_available');
+      })
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, [notices]);
 
   if (notices.length === 0) return null;
 

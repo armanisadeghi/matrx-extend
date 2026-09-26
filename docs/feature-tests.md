@@ -2830,6 +2830,12 @@ Every entry follows this shape:
      `chrome-extension` (they land under `source_app='matrx-frontend'` — a
      known limitation of the shared RPC, tracked in the B-13 report).
 - **Edge cases worth poking:**
+  - Open a fresh side panel before choosing a workspace. The Capture list may
+    announce that its read was not sent. Select a workspace in Settings: that
+    resolved notice leaves the bottom of the panel so it cannot cover Save or
+    other controls. A separate database refusal remains visible. The same
+    no-workspace notice also retires if a delayed read reports it after the
+    workspace was selected.
   - Go offline and Save: the notice says the database could not be reached and
     to check the connection — not "refused".
   - Clear all highlights on a page where you have none: it clears 0 and says
