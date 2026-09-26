@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-readonly-recovery-peer",
+  "reviewed_source_commit": "61820f4ffc75d60fc8eb01e18b7857654fc195f4",
+  "source_review": {
+    "verdict": "ACCEPT",
+    "reason": "An existing checkpoint enters the read_only_recovery branch before any Save path. A matching checkpoint fixture must return exactly one scoped recognition response with a found Source, then the real Scrape UI must show the saved banner and recognized Open link, and that link must open a Source URL with a valid ID. Any absent, unknown, mismatched, or incomplete result fails closed before Save. Checkpoint creation uses exclusive open, so a checkpoint appearing after the initial absence check also blocks Save. The recovery branch does not enter the write path, and the workspace comparison/restore steps perform recognition and UI selection only.",
+    "evidence": [
+      "existingSaveAttempt validates private file mode, phase, organization, fixture hash, and any previously recorded Source ID; invalid or mismatched checkpoints fail closed.",
+      "The recovery branch requires `network === 'found'`, `savedBanner`, `openRecognized`, and a real Open link whose destination is a valid `/knowledge/sources/<UUID>` URL before appending an ID.",
+      "recordObservedSourceId reads and preserves the existing checkpoint fields, permits update only from `reserved`, and writes through an exclusive temporary file plus atomic rename. Existing IDs are checked for exact agreement instead of replaced.",
+      "The only Save click exists in the no-checkpoint branch after a fresh definitive empty scoped lookup; reserveSaveAttempt uses `wx`, making a concurrent/existing checkpoint a hard stop.",
+      "After recovery, comparison organization handling is read-only and restoration is attempted in `finally`; the report and stdout omit organization names/IDs, Source IDs, credentials, and raw errors."
+    ],
+    "limits": [
+      "Source inspection only; no browser, tests, or runtime was launched.",
+      "The target proof establishes the UI Open link destination and ID, while organization ownership is inferred from the concurrently observed organization-scoped recognition request and matching Source UI state."
+    ]
+  },
+  "runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "No browser run or other runtime verification was performed in this source-review lane."
+  }
+}
