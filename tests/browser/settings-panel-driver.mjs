@@ -90,6 +90,9 @@ function pointerFailure(code, location) {
     pointerEventsNone: pointer?.target_pointer_events_none ?? null,
     clippingAncestorCount: pointer?.clipping_ancestor_count ?? null,
     testedPointCount: pointer?.tested_point_count ?? null,
+    interiorHitKinds: pointer?.interior_hit_kinds ?? null,
+    centerOccluder: pointer?.center_occluder ?? null,
+    firstInteriorOccluder: pointer?.first_interior_occluder ?? null,
   };
   return error;
 }
@@ -209,6 +212,35 @@ export async function click(panel, kind, label) {
       if (hit.closest('header, [role="tablist"]')) return 'header_or_tabs';
       return 'other_element';
     };
+    // Fixed, content-free semantics at the exact pointer boundary. An
+    // "other_element" result alone cannot distinguish a notice, scrolling
+    // sibling, or outside overlay; no DOM text, attributes, classes, URLs, or
+    // field values may cross from this credential-bearing page.
+    const occluder = (hit) => {
+      if (!hit || hitsTarget(hit)) return null;
+      const tag = hit.tagName?.toLowerCase();
+      const role = hit.getAttribute?.('role');
+      const style = getComputedStyle(hit);
+      const box = hit.getBoundingClientRect();
+      const vaultPanel = target.closest('[role="tabpanel"]');
+      return {
+        tag: ['button', 'div', 'span', 'svg', 'path', 'input', 'header', 'main',
+          'section', 'p', 'li'].includes(tag) ? tag : 'other',
+        role: ['dialog', 'alertdialog', 'alert', 'tab', 'tablist', 'button',
+          'listbox', 'option'].includes(role) ? role : 'other_or_none',
+        relation: hit.contains(target) ? 'target_ancestor'
+          : target.closest('[role="tablist"]') &&
+              hit.closest('[role="tablist"]') === target.closest('[role="tablist"]')
+            ? 'same_tablist'
+            : vaultPanel?.contains(hit) ? 'same_vault_panel' : 'outside_vault_panel',
+        position: ['static', 'relative', 'absolute', 'fixed', 'sticky'].includes(style.position)
+          ? style.position : 'other',
+        pointer_events: style.pointerEvents === 'none' ? 'none' : 'enabled',
+        rectangle: { x: box.x, y: box.y, width: box.width, height: box.height },
+      };
+    };
+    const interiorHits = points.map((point) => document.elementFromPoint(point.x, point.y));
+    const interiorHitKinds = interiorHits.map(hitCategory);
     // Fixed categories and geometry only: never element text, attributes,
     // class names, form values, URL, or screenshot contents.
     const pointerDiagnostic = {
@@ -219,6 +251,9 @@ export async function click(panel, kind, label) {
       clipping_ancestor_count: clippingAncestors,
       tested_point_count: points.length,
       center_hit_category: hitCategory(centerHit),
+      interior_hit_kinds: interiorHitKinds,
+      center_occluder: occluder(centerHit),
+      first_interior_occluder: occluder(interiorHits.find((hit) => hit && !hitsTarget(hit))),
       selected_point_available: Boolean(selected),
       selected_point: selected ?? null,
       target_disabled: Boolean(target.disabled),

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "obstruction_observed_cause_unresolved",
+  "run_id": "member-vault-access-007",
+  "receipt": "docs/stabilization/runs/member-vault-access-007.json",
+  "observed_boundary": {
+    "stage": "shared_tab_click",
+    "admin_web_signed_in": true,
+    "admin_extension_signed_in": true,
+    "approved_organization_selected": true,
+    "mine_inventory_ready": true,
+    "shared_tab_unique_visible_enabled": true,
+    "target_position_stable": true,
+    "clipped_target_has_area": true,
+    "tested_interior_points": 9,
+    "interior_points_hitting_target": 0,
+    "center_hit_category": "other_element",
+    "trusted_pointer_dispatched": false
+  },
+  "inference": "An element other than the Shared tab or its descendants received every tested pointer point. Existing categories do not identify that element, its relationship to the tab, or its geometry. The run does not establish whether the cause is an extension layout defect, a temporary layer, a Chrome sidepanel condition, or a driver geometry defect.",
+  "falsifiable_hypotheses": [
+    {
+      "cause": "A sibling or overlay covers the Shared tab",
+      "prediction": "Hit elements at the tab's interior points are outside the tab subtree and have covering rectangles over those points; their semantic category or CSS positioning will be consistent across samples."
+    },
+    {
+      "cause": "The tab is clipped or displaced after scrollIntoView",
+      "prediction": "The hit elements are ancestors or adjacent scrolling content, and the target or clipped rectangle differs from the apparent clickable region."
+    },
+    {
+      "cause": "A transient layer remains after organization choice or site matching",
+      "prediction": "A later controlled sample sees the same tab with at least one true interior hit, without a target or layout code change."
+    },
+    {
+      "cause": "Pointer sample algorithm misattributes a valid tab hit",
+      "prediction": "elementFromPoint returns a descendant or composed-tree part of the tab that target.contains does not recognize; semantic ancestry shows the hit belongs to the tab control."
+    }
+  ],
+  "next_evidence": "The shared pointer driver now records fixed semantic and geometry categories for the elementFromPoint obstruction on a failed click. The next root-admitted owned-profile run must identify the actual covering element or reveal a driver geometry error. The hit-test gate and trusted pointer requirement remain intact. No Vault content, raw attributes, text, URLs, tokens, screenshots, or credential values leave the page realm.",
+  "member_auth_status": "unverified"
+}
