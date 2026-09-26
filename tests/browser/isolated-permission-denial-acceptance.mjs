@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * EXT-F-1003-T57: fresh Chrome optional-permission denial in the real admin
+ * EXT-F-1003-T56–T59: fresh Chrome optional-permission denial in the real admin
  * Settings side panel. Root admits this headed, disposable-profile run.
  *
  * On PAUSED, an independent UI operator clicks the real Settings switch,
@@ -22,12 +22,20 @@ const ACK = join(REPO, 'test-results', 'isolated-permission-denial-native-ack.tx
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const WEB = 'https://www.aimatrx.com';
 const EMAIL = 'admin@admin.com';
-const PERMISSION = 'pageCapture';
-const TITLE = 'Page archive (MHTML)';
+const TARGETS = Object.freeze({
+  cookies: { title: 'Cookies', caseId: 'EXT-F-1003-T56' },
+  pageCapture: { title: 'Page archive (MHTML)', caseId: 'EXT-F-1003-T57' },
+  clipboardRead: { title: 'Clipboard read', caseId: 'EXT-F-1003-T58' },
+  tabCapture: { title: 'Tab video capture', caseId: 'EXT-F-1003-T59' },
+});
+const PERMISSION = process.env.MATRX_PERMISSION_DENIAL_TARGET ?? 'pageCapture';
+const TARGET = Object.hasOwn(TARGETS, PERMISSION) ? TARGETS[PERMISSION] : null;
+const TITLE = TARGET?.title;
 let stage = 'not_started';
 const evidence = {
   schema_version: 1,
-  case_id: 'EXT-F-1003-T57',
+  case_id: TARGET?.caseId ?? null,
+  permission: TARGET ? PERMISSION : null,
   status: 'unverified',
   profile: 'new owned disposable headed Chrome profile',
   login: 'real web form and extension Settings Sign in',
@@ -126,7 +134,7 @@ async function state(panel) {
 async function waitForNativeDeny() {
   stage = 'native_deny';
   process.stdout.write(
-    `PAUSED at real admin Settings: CUA operator clicks Page archive switch, records native prompt and Deny evidence, then writes denied to ${ACK}\n`,
+    `PAUSED at real admin Settings: CUA operator clicks ${TITLE} switch, records native prompt and Deny evidence, then writes denied to ${ACK}\n`,
   );
   const deadline = Date.now() + 120_000;
   while (Date.now() < deadline) {
@@ -147,6 +155,7 @@ async function waitForNativeDeny() {
 
 try {
   stage = 'prepare';
+  if (!TARGET) fail('target_not_allowlisted');
   await rm(ACK, { force: true });
   const receipt = JSON.parse(await readFile(join(REPO, '.output', 'release-receipt.json'), 'utf8'));
   evidence.build = {
@@ -192,6 +201,37 @@ try {
         );
         evidence.after = after;
         assert.equal(after.admin && after.declared && after.row_count === 1, true);
+        stage = 'sidepanel_reload';
+        await panel.send('Page.reload', { ignoreCache: true });
+        await waitFor(
+          'sidepanel_ready_after_reload',
+          () =>
+            evaluate(
+              panel,
+              `(() => ({ ready: document.readyState === 'complete',
+                settings: [...document.querySelectorAll('button[title]')]
+                  .some((el) => el.title === 'Settings') }))()`,
+            ),
+          (s) => s?.ready && s.settings,
+          30_000,
+        );
+        stage = 'settings_after_reload';
+        await click(panel, 'title', 'Settings');
+        await openSection(panel, 'Account');
+        await openSection(panel, 'Advanced agent capabilities');
+        const reloaded = await waitFor(
+          'permission_absent_after_reload',
+          () => state(panel),
+          (s) =>
+            s?.admin &&
+            s.declared &&
+            s.row_count === 1 &&
+            !s.switch_on &&
+            !s.contains &&
+            !s.get_all,
+          30_000,
+        );
+        evidence.after_reload = reloaded;
       } finally {
         await web.close();
       }
