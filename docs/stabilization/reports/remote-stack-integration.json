@@ -22,6 +22,7 @@
     "fix": "Replace the protected image with its token and unwrap the figure while retaining its child nodes in order.",
     "red": "svg-caption-red-001: 1 failed, 14 passed; SVG image survived, but article Markdown omitted Revenue grew from January to March.",
     "green": "svg-caption-green-001: 15 passed on the changed source.",
+    "sibling_guards": "Added real runScrape cases for ordered distinct captioned SVG figures and a layered SVG with caption, HTML label, ordinary image, and surrounding article text. Execution pending the root's guarded run; do not count these cases as passed yet.",
     "checks": [
       "Biome check of edited TypeScript passed with one pre-existing warning",
       "git diff --check passed"
