@@ -6,6 +6,7 @@
  * Root alone admits this browser run through the campaign resource guard.
  */
 import assert from 'node:assert/strict';
+import { randomBytes } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -21,17 +22,11 @@ const LOCAL_KEY = 'matrx.qa.adminReset.local';
 const LOCAL_VALUE = 'disposable-admin-reset-local-fixture';
 const SESSION_KEY = 'matrx.qa.adminReset.session';
 const SESSION_VALUE = 'disposable-admin-reset-fixture';
-// These keys can be created by a fresh guest panel or live desktop discovery
-// after the reset. Their names alone cannot distinguish new state from a
-// restored old value; immediate post-Confirm absence still covers every key.
-const REGENERATED_LOCAL_KEYS = new Set([
-  'matrx.guest.signature',
-  'matrx.guest.nonce',
-  'matrx.guest.createdAt',
-  'matrxLocalEnginePort',
-  'matrxLocalEngineLastGoodPort',
-]);
-const REGENERATED_SESSION_KEYS = new Set(['matrx.crossComponent.instanceId']);
+// Per-run salt and opaque fingerprints stay in this process, never in receipts.
+// Raw storage names and values never cross CDP. The browser compares canonical
+// value identities, including guest identity, instead of exempting key names.
+const STORAGE_SALT = randomBytes(32).toString('hex');
+let storageBaseline = null;
 let stage = 'not_started';
 const evidence = {
   schema_version: 1,
@@ -148,13 +143,64 @@ async function panelState(panel) {
 }
 
 async function storageState(panel) {
-  // Return booleans only for auth keys. No credential, token, profile, or
-  // arbitrary storage value crosses CDP into the test process.
+  // Only opaque per-run fingerprints and aggregate observations leave Chrome.
   return evaluate(
     panel,
     `(async () => {
     const local = await chrome.storage.local.get(null);
     const session = await chrome.storage.session.get(null);
+    const baseline = ${JSON.stringify(storageBaseline)};
+    const canonical = (value) => JSON.stringify(value, (_, entry) =>
+      entry && typeof entry === 'object' && !Array.isArray(entry)
+        ? Object.fromEntries(Object.keys(entry).sort().map((key) => [key, entry[key]]))
+        : entry);
+    const fingerprint = async (value) => {
+      const bytes = new TextEncoder().encode(${JSON.stringify(STORAGE_SALT)} + canonical(value));
+      return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)),
+        (byte) => byte.toString(16).padStart(2, '0')).join('');
+    };
+    const category = (area, key) => {
+      if (area === 'session') return key === 'matrx.crossComponent.instanceId' ? 'instance' : 'other';
+      if (['matrx.guest.signature', 'matrx.guest.nonce', 'matrx.guest.createdAt'].includes(key)) return 'guest';
+      if (key === 'matrxLocalEnginePort') return 'discovery_cache';
+      if (key === 'matrxLocalEngineLastGoodPort') return 'discovery_port';
+      if (key.startsWith('matrx.auth.') || key.startsWith('matrx.user.')) return 'account';
+      if (key === 'matrx.settings.v1') return 'settings';
+      return 'other';
+    };
+    const describe = async (area, values) => Promise.all(Object.entries(values).map(async ([key, value]) => ({
+      key: await fingerprint([area, key]), value: await fingerprint([area, key, value]),
+      category: category(area, key),
+      // A discovery port may be the same again. The cache must have a changed
+      // value; neither user overrides nor pairing credentials are exempt.
+      validDiscoveryPort: key === 'matrxLocalEngineLastGoodPort' && Number.isInteger(value) && value > 0 && value <= 65535,
+    })));
+    const identities = { local: await describe('local', local), session: await describe('session', session) };
+    const compare = (area) => {
+      const result = { overlap: 0, identical: 0, changed: 0, missing: 0, unexplained: 0,
+        fresh_guest: 0, stale_guest: 0, fresh_instance: 0, stale_instance: 0,
+        fresh_discovery_cache: 0, stale_discovery_cache: 0, rediscovered_port: 0,
+        account_overlap: 0, settings_overlap: 0, other_overlap: 0, other_identical: 0, other_changed: 0 };
+      for (const prior of baseline?.[area] ?? []) {
+        const current = identities[area].find((entry) => entry.key === prior.key);
+        if (!current) { result.missing++; continue; }
+        result.overlap++;
+        const same = current.value === prior.value;
+        result[same ? 'identical' : 'changed']++;
+        const kind = current.category;
+        if (kind === 'guest' || kind === 'instance' || kind === 'discovery_cache') {
+          result[(same ? 'stale_' : 'fresh_') + kind]++;
+          if (same) result.unexplained++;
+        } else if (kind === 'discovery_port' && current.validDiscoveryPort) {
+          result.rediscovered_port++;
+        } else {
+          result[(kind === 'account' || kind === 'settings' ? kind : 'other') + '_overlap']++;
+          if (kind !== 'account' && kind !== 'settings') result[same ? 'other_identical' : 'other_changed']++;
+          result.unexplained++;
+        }
+      }
+      return result;
+    };
     let theme = null;
     if (typeof local['matrx.settings.v1'] === 'string') {
       try { theme = JSON.parse(local['matrx.settings.v1']).state?.theme ?? null; } catch {}
@@ -169,7 +215,10 @@ async function storageState(panel) {
       hasLocalFixture: Object.hasOwn(local, ${JSON.stringify(LOCAL_KEY)}),
       sessionFixtureMatches: session[${JSON.stringify(SESSION_KEY)}] === ${JSON.stringify(SESSION_VALUE)},
       hasSessionFixture: Object.hasOwn(session, ${JSON.stringify(SESSION_KEY)}),
-      localKeys: Object.keys(local).sort(), sessionKeys: Object.keys(session).sort(),
+      localKeys: identities.local.map((entry) => entry.key).sort(),
+      sessionKeys: identities.session.map((entry) => entry.key).sort(),
+      identities: baseline ? undefined : identities,
+      valueComparison: { local: compare('local'), session: compare('session') },
     };
   })()`,
   );
@@ -351,6 +400,11 @@ try {
             s.localFixtureMatches &&
             s.sessionFixtureMatches,
         );
+        assert.ok(
+          Array.isArray(before.identities?.local) && Array.isArray(before.identities?.session),
+          'Storage identity baseline must be available',
+        );
+        storageBaseline = before.identities;
         evidence.steps.push(
           'Real admin identity, Dark preference, and disposable local/session fixtures observed',
         );
@@ -579,6 +633,7 @@ try {
         evidence.reset_reload.storage_snapshot = {
           auth_present: reloaded.hasAccessToken || reloaded.hasUserProfile || reloaded.hasAdminFlag,
           settings_present: reloaded.hasSettings,
+          prior_value_comparison: reloaded.valueComparison,
           local_fixture_present: reloaded.hasLocalFixture,
           session_fixture_present: reloaded.hasSessionFixture,
           prior_local_overlap_count: before.localKeys.filter((key) =>
@@ -598,22 +653,18 @@ try {
             reloaded.hasSessionFixture,
           false,
         );
-        assert.deepEqual(
-          before.localKeys.filter(
-            (key) => !REGENERATED_LOCAL_KEYS.has(key) && reloaded.localKeys.includes(key),
-          ),
-          [],
-          'Reload must not restore any prior non-regenerated local key',
+        assert.equal(
+          reloaded.valueComparison.local.unexplained,
+          0,
+          'Reload must not restore prior account/settings/data or reuse guest identity',
         );
-        assert.deepEqual(
-          before.sessionKeys.filter(
-            (key) => !REGENERATED_SESSION_KEYS.has(key) && reloaded.sessionKeys.includes(key),
-          ),
-          [],
-          'Reload must not restore any prior non-regenerated session key',
+        assert.equal(
+          reloaded.valueComparison.session.unexplained,
+          0,
+          'Reload must not restore prior session values or reuse component identity',
         );
         evidence.steps.push(
-          'Panel reload remained guest and showed System theme; prior non-regenerated keys stayed absent',
+          'Panel reload remained guest with System theme; returning keys passed browser-side value identity checks',
         );
       } catch (error) {
         if (stage.startsWith('reset_reload')) {

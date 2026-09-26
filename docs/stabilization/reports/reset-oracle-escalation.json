@@ -1,0 +1,73 @@
+{
+  "task_id": "reset-oracle-escalation",
+  "lane": "bounded exceptional escalation",
+  "model": "Astra / medium",
+  "status": "source-ready; independent source review and guarded runtime pending",
+  "feature_ids": ["EXT-F-1003"],
+  "defect_ids": ["EXT-D-0015"],
+  "summary": "Replaced key-name exceptions with browser-side prior-value identity comparisons and fixed aggregate categories. No product change or defect closure.",
+  "changed_files": [
+    "tests/browser/isolated-admin-reset-acceptance.mjs",
+    "docs/stabilization/reports/reset-oracle-escalation.json"
+  ],
+  "commit_shas": [],
+  "diagnosis": {
+    "confirmed": "Run 004 observed empty local/session storage immediately after Confirm, signed-out UI, and guest/System UI after reload. Its final failure checks key-name overlap after bootstrap; the receipt does not record the names or value identities needed to determine whether state was restored.",
+    "unresolved": "Four returning local key names cannot be classified retrospectively. They may be fresh bootstrap data or retained data; source inspection alone cannot choose.",
+    "hypotheses": [
+      {
+        "cause": "Fresh guest identity reused storage key names",
+        "prediction": "Guest category overlaps have changed fingerprints; reused fingerprints remain failures."
+      },
+      {
+        "cause": "Discovery regenerated infrastructure cache",
+        "prediction": "Discovery category explains overlap; cache fingerprint changes, or a valid port is rediscovered after verified immediate absence."
+      },
+      {
+        "cause": "User/account data restored from a surviving context",
+        "prediction": "Account/settings/other overlap remains a hard failure, including changed values; aggregate identical/changed counters discriminate restoration from rewrite."
+      },
+      {
+        "cause": "Earlier dialog reopening/lifecycle failure remains intermittent",
+        "prediction": "001/002 failure can recur independently of reload identity checking; 003/004 do not establish a causal fix."
+      }
+    ]
+  },
+  "privacy": "No raw storage names or arbitrary values leave Chrome. Browser computes SHA-256 fingerprints with a random per-run salt, then compares them inside Chrome on later observations. Salt and opaque fingerprints remain ephemeral in the runner; durable receipts receive fixed category counts only. Existing explicit theme/boolean observations remain.",
+  "oracle_contract": [
+    "Immediate Confirm still requires every prior local/session key to be absent, using opaque key fingerprints.",
+    "Reload requires auth, settings and both fixtures absent, guest UI and System theme.",
+    "Returning guest or component identity must differ from its pre-reset value; source-backed discovery cache must differ, while a valid rediscovered port may equal its previous port.",
+    "Unknown, account and settings overlap remains a failure regardless of whether its value changed. No new exempt key was added.",
+    "Baseline absence is a failure; fingerprints are canonically serialized with sorted object keys."
+  ],
+  "source_anchors": [
+    "src/lib/auth/guest-signature.ts:38",
+    "src/lib/desktop/discovery.ts:247",
+    "src/lib/desktop/discovery.ts:335",
+    "src/lib/cross-component/instance-id.ts:45"
+  ],
+  "verification": [
+    {
+      "case_id": "runner syntax",
+      "run_id": null,
+      "verdict": "pass",
+      "evidence": "node --check tests/browser/isolated-admin-reset-acceptance.mjs"
+    },
+    {
+      "case_id": "format and whitespace",
+      "run_id": null,
+      "verdict": "pass",
+      "evidence": "local Biome format and git diff --check on owned runner"
+    }
+  ],
+  "limitations": [
+    "No browser, build, installation, product runtime, or mutation test executed: root owns the active resource permit.",
+    "No runtime green or failing-then-passing claim is made.",
+    "Discovery port equality is intentionally allowed only after immediate key absence; the runner does not independently prove the discovery network probe.",
+    "Earlier dialog reopening intermittence stays unresolved. EXT-D-0015 must remain open.",
+    "Source inspection ruled out assuming the admin flag is automatically persisted for a guest; no such exception was added."
+  ],
+  "open_questions": [],
+  "next_action": "Fresh peer source review, then root guarded real-admin runtime. Inspect fixed category/value comparison counts; any unexplained overlap still fails and requires source/runtime diagnosis before changing policy."
+}
