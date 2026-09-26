@@ -1,0 +1,9 @@
+{
+  "run_id": "seo-guest-003",
+  "source": "tests/browser/seo-guest-acceptance.mjs",
+  "acceptance": {"verdict": "partial_pass", "evidence": "Recorded report has five passed targets and status partial. T09 matched titles and h1-presence on Example Domain and IANA Reserved Domains; T01 saw distinct titles across navigation; T02 saw Re-audit disabled while running and restored after settling with the current title; T07 found Summary (text) and For AI agent and no JSON. Assertions in source correspond to these recorded booleans."},
+  "quality": {"verdict": "narrow_guest_smoke_only", "evidence": "Source scopes reads to the linked active SEO panel and requires matching title, enabled Re-audit, and no visible error before recording T09. Menu acceptance checks visible open popover and required choices; artifact stores booleans, not raw menu labels or DOM."},
+  "proven_subtargets": ["page_0_title_and_headings", "page_1_title_and_headings", "new_url_replaces_visible_title", "manual_button_returns_to_current_page", "guest_menu_offers_text_and_ai_but_hides_json"],
+  "unverified": ["T01 one-audit-per-URL/race", "T02 fresh capture and stale-advice replacement", "T07 clipboard contents and reload", "remaining T09 details/links", "T03-T06/T08, T10-T14", "reload/member/admin modes"],
+  "limits": "Does not establish full feature acceptance, product quality, or other modes. No new runtime run or claim made. Receipt identifies build 0.2.67, source SHA 79d1dba35ea1157a6dbf7a8ce23942a0a2a8f271; resource log records admission and child exit 0, not a full quality signal."
+}
