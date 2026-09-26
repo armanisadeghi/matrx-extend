@@ -1,0 +1,16 @@
+{
+  "reviewed_commit": "a408a06",
+  "baseline_commit": "18b4c92",
+  "review_lane": "independent source review; read-only",
+  "verdict_a_diagnostic_usefulness": {
+    "status": "PARTIAL",
+    "finding": "The new fixed stages split dialog reopen, dialog wait, Confirm click, storage-clear wait, post-clear snapshot, prior-key check, and signed-out UI wait. Safe progress evidence records dialog/click completion, storage read attempts and successes, current key counts, overlap counts, auth/settings/fixture presence, and signed-in UI booleans. This will localize the formerly opaque reset_confirm failure. It does not prove a reset defect or runtime behavior: isolated-admin-reset-001 remains unverified at the former combined stage. If the guarded retry fails during storage observation, attempts-versus-successes helps distinguish it, but there is no per-attempt error category beyond fixed failure stage/category.",
+    "runtime_verdict": "UNVERIFIED; root-owned guarded diagnostic retry required"
+  },
+  "verdict_b_privacy_and_oracle": {
+    "status": "PASS",
+    "finding": "Secret and raw storage values are not serialized by the added diagnostics. Exact storage key names remain transient in-process solely for comparison and are reduced in evidence to counts/overlap counts. Auth state is boolean-only; fixture values are used for equality checks and only presence is emitted. The outer catch suppresses thrown errors and writes only the fixed stage/category, so assertion diffs or browser/auth exceptions do not enter the runner output. Stage names are source literals. The real UI reset acceptance oracle is preserved: after Confirm it waits for auth/settings/fixture absence and asserts zero intersection for all pre-reset local and session keys; documented regenerated-key exceptions apply only after reload."
+  },
+  "scope_and_method": "Inspected the a408a06 source diff and relevant diagnostic helper/harness error handling against 18b4c92. No test, browser, build, or install command was run.",
+  "review_limit": "Source review cannot determine what the guarded retry will observe or establish runtime reset behavior."
+}
