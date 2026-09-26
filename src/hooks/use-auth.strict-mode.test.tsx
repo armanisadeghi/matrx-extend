@@ -59,6 +59,20 @@ afterEach(async () => {
 });
 
 describe('useAuth persisted-session boot', () => {
+  it('hydrates the persisted admin profile without effect replay', async () => {
+    const profile = profiles[0]!;
+    await chrome.storage.local.set({
+      [STORAGE_KEYS.USER_PROFILE]: profile,
+      [STORAGE_KEYS.IS_ADMIN]: false,
+    });
+
+    const { result } = renderHook(() => useAuth());
+
+    await waitFor(() => expect(result.current.user?.id).toBe(profile.id));
+    expect(result.current.user?.email).toBe(profile.email);
+    expect(result.current.status).toBe('signed-in');
+  });
+
   it.each(profiles)('hydrates $email after Strict Mode replays the mount effect', async (profile) => {
     await chrome.storage.local.set({
       [STORAGE_KEYS.USER_PROFILE]: profile,
