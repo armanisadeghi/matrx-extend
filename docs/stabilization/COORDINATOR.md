@@ -3,7 +3,10 @@
 ## Resume contract
 User authorizes autonomous test → capture → fix → independent retest → green integration. Read PLAN.md, inventory.json, defects and runs. Inventory is sole coverage register; campaign remains largely unverified. Chat/Pilot systematic testing stays last. Shared main only; preserve concurrent edits, fetch before push, never publish red trunk. Root alone launches one resource-guarded heavy test/build OR native browser lease. Flat root+3 max: Luna medium narrow execution, Sol medium coding/moderate diagnosis, fresh independent reviews with separate acceptance/quality verdicts.
 
-## Current integration checkpoint — 2026-09-26 12:02 UTC
+## Current integration checkpoint — 2026-09-26 12:14 UTC
+- Reset oracle2a8fdd5/acb4753 acceptedbyfreshSol2139592 thenLunadac50a7 (Cancelvaluegap repaired); nextrootreset005 pendingnewartifact. Allfourpriorreset runs remainunverified;003/004Confirm/reloadUIpartialproof, name-onlyoverlapnotproofretaineduserdata.
+- Release011 coordinatorcancelledbeforechecks,012refusedabandonedlock43309 (verifiedabsent/cleanedexactlock),013allgatespassedbutwatchdogterminatedpackagingafter2pressurelevel2samples; exit3, nopush/artifactpromotion. Otherrepo ai-matrx typecheckPID46136 active, doNOTkillothers orlowerthreshold. Waithealthythenrootguardrelease014. No activeownedheavy/browser; guardstopconfirmed.
+- Remote1bc7b3b0.2.62 merged afterbe77e57recordsrefresh. Lastownpushbbc4d53~11:54UTC deadline12:54UTC. Pendinglocalcommitsmustpublishaftergreenintegration, notlosework. Latestverifiedartifactremains0.2.61 e61967e; primaryChrome0.2.58unlessfreshreloadverified.
 - Reset004 on0.2.61 proves Confirm emptylocal/session andguestUI, reloadguest/System/noauthorfixtures; failure onlyreturned4priorlocalnames, notyetretaineduserdata. Rare bounded Astra medium reset_oracle_escalation owns meaningful browser-only prioridentity oracle; D15 remainsin-fix, originalreopenintermittencycauseunproven. No productedit.
 - Remote be77e57 records0.58.22 merged49fea5c, frozeninstall013passed, changelog explicitlynoconsumeraction. Nextguardedrelease011beforepush; lastconfirmedownpushbbc4d53~11:54UTC; deadline12:54UTC.
 - Keepawake renewed ownedcaffeinatePID41576/session54559 at11:52UTC for4hours (expires~15:52UTC); password/manual-lock unchanged.
