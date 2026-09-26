@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "e801e3bbc60c64fef2507862389822b839f773c1",
+  "report_id": "member-settings-peer",
+  "verdict": "source_ready_runtime_pending",
+  "runtime": "Pending. This peer did not launch a browser, runtime, build, or test. seo-admin-001 is precedent for the Settings path only; it does not prove this probe's selection or Vault observations.",
+  "source_quality": {
+    "accepted": [
+      "The probe signs the admin in through the real website and extension UI; it does not inject authentication or sign in as the target member.",
+      "It opens Settings > Organization, locates the unique Acting as control, and uses a trusted pointer click on the exact approved organization. It waits for that name in both the control and device-persisted active selection before opening Vault, with no first/default-organization fallback.",
+      "Mine and Shared observations are scoped through the Vault trigger's aria-controls target and require the trigger and linked panel to be active. Both inventories wait for a settled named scope, and only masked candidate counts and fixed diagnostic booleans are retained.",
+      "No Vault item is opened, filled, revealed, edited, or deleted; no candidate credential is materialized. No credential, ID, URL, title, organization ID, or raw page text is written to the evidence receipt."
+    ],
+    "source_findings": [
+      {
+        "id": "stale-capture-notice-dismissal",
+        "severity": "low",
+        "source": "tests/browser/member-vault-access-probe.mjs:323-337",
+        "finding": "After the organization choice, the probe may dismiss a stale Capture list unavailable alert through a trusted UI click. This is outside the Vault read and is an additional UI state change, even though it does not alter Vault data or credentials.",
+        "required_action": "For a strict zero-other-mutations run, remove this dismissal from the probe or record it as an explicitly authorized setup exception before runtime."
+      }
+    ],
+    "runtime_pending": [
+      "The actual Settings organization choice and persisted selection have not been observed in this member-probe run.",
+      "Mine and Shared settlement, candidate counts, and the remaining member-access boundary are unverified."
+    ]
+  },
+  "action": "Keep runtime pending until the owner resolves whether the stale-notice dismissal is within the authorized setup boundary; then run once under the root-owned guard and independently inspect the sanitized receipt."
+}
