@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "report_id": "d23-write-retention-peer",
+  "reviewed_source_commit": "e210a626",
+  "scope": "Workspace-resolution notices after failed reads and unperformed writes",
+  "A_runtime": {
+    "status": "UNVERIFIED_IN_THIS_LANE",
+    "reason": "This peer did not run focused tests, a build, or the browser. The root owns red-to-green execution and native acceptance."
+  },
+  "B_source": {
+    "status": "ACCEPTED_FOR_RUNTIME_VERIFICATION",
+    "findings": [
+      "classifyDbFailure uppercases error codes, so the lowercase no_organization emitted by real highlight creation and saved-capture deletion is classified as no_workspace, just like the Capture queue's uppercase NO_ORGANIZATION.",
+      "failDbCall now attaches active_organization_available only when the failure is no_workspace, the operation is select, and the call site explicitly declares retriesOnOrganizationSelection. A write cannot gain the retirement marker even if a future caller mistakenly sets that flag.",
+      "The only production opt-in found is media.capture_handoff listNeedsYou. Its subscription refreshes immediately on active-organization changes, so retiring its old no-workspace read notice accompanies an actual retry path.",
+      "Real createHighlight and deleteSavedCapture catch a missing-organization prerequisite and call failDbCall with insert and update sites respectively. They are not retried by organization selection and now receive notices without resolvesWhen; both already-raised and late-arriving failures survive NoticeHost's conditional retirement.",
+      "Cross-context pushNotice relays the full Notice object through DB_FAILURE_NOTICE and NoticeHost adds that object unchanged. The host retires only matching tagged notices on an organization-change event or a later current-organization read; unrelated failures and null/sign-out transitions are not retired.",
+      "The focused guard distinguishes existing read retirement, late read retirement, an existing failed insert and a late failed update. The preserved red receipt reports the two write assertions failing before this source correction while the read cases passed."
+    ],
+    "limits": [
+      "The focused write guard calls failDbCall with representative sites; it does not execute the complete createHighlight/deleteSavedCapture caller chains or Chrome message relay. Those boundaries require the root's runtime verification and source-backed interpretation.",
+      "This correction does not perform or retry a failed write. Its notice must remain until the person dismisses it or actually retries the action."
+    ]
+  }
+}
