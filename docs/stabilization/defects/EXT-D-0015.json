@@ -17,7 +17,9 @@
     "docs/stabilization/runs/isolated-admin-reset-003.json",
     "docs/stabilization/runs/isolated-admin-reset-004.json",
     "docs/stabilization/runs/isolated-admin-reset-005.json",
-    "docs/stabilization/runs/isolated-admin-reset-006.json"
+    "docs/stabilization/runs/isolated-admin-reset-006.json",
+    "docs/stabilization/runs/isolated-admin-reset-007.json",
+    "docs/stabilization/runs/isolated-admin-reset-008.json"
   ],
   "severity": "S2: authenticated reset coverage blocked; no demonstrated product data-loss defect",
   "priority": "P1: complete contained Settings acceptance",
@@ -43,5 +45,5 @@
       "reason": "Two real guarded attempts localize test interaction failure; fresh Sol diagnosis under objective escalation threshold."
     }
   ],
-  "diagnosis": "Run006: unique target visible/inviewport but native hit false, no active dialog/animation/inert/bodylock. Source hypothesis: center-only hit test ignores ancestor clipping. Bounded clipped-point repair pending runtime proof; no productresetfailure adjudicated."
+  "diagnosis": "Run008 Settings-only screenshot and hit-chain identify a fixed bottom Capture list unavailable notice (no workspace selected) covering Reset. Native hit refusal is correct; clipping alone is refuted by007. Fresh authenticated test setup must establish explicit device organization through real UI; recover existing specific notice via its native dismiss control. No product reset defect proven."
 }
