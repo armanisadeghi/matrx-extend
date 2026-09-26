@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "run_id": "notice-write-native-001",
+  "defect_id": "EXT-D-0023",
+  "case_id": "EXT-F-2010-T02",
+  "source": {
+    "result_path": "test-results/notice-write-retention-acceptance.json",
+    "result_sha256": "0a824b3140f07453f9b326dc7ebcd5da51e612e1d61bcb33058cceef03960c56",
+    "runner_path": "tests/browser/notice-write-retention-acceptance.mjs",
+    "runner_sha256": "7d666e0dfe831e05de4014771468caca86b2083e375e8ebe5c92ed527c5133b5",
+    "harness_path": "tests/browser/native-sidepanel-qa-harness.mjs",
+    "harness_sha256": "f599b6d982d3a39255ad3565b8ff06d68a0619e7c5e39307719d8457d5b5701a",
+    "guard_log_path": "/tmp/matrx-notice-write-native-001.log",
+    "guard_log_sha256": "90b50ee03dccd783803b16ee7d42948018ac214b8eb95518e556ee33d580f145"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T23:04:47.390Z",
+    "child_exit_at": "2026-09-26T23:06:59.434Z",
+    "child_exit_code": 0,
+    "wrapper_confirmed_exit_code": 0,
+    "stdout": "BOUNDED_PASS d23_notice_write_retention_native"
+  },
+  "observations": {
+    "result_status": "bounded_pass",
+    "owned_receipt_verified_by_harness": true,
+    "real_admin_ui_signin": true,
+    "no_workspace_before_action": true,
+    "public_page_highlighter_active": true,
+    "trusted_pointer_highlight_action": true,
+    "terminal_failed_write_notice_before_selection": true,
+    "approved_existing_workspace_selected_through_ui": true,
+    "same_failed_write_notice_retained_after_selection": true,
+    "retained_notice_visible_unoccluded": true,
+    "retained_notice_count": 1,
+    "membership_rpc_completed_200_count": 14,
+    "highlight_insert_post_count": 0,
+    "late_notice_after_selection": "not_observed",
+    "private_screenshot": "not_needed"
+  },
+  "build_binding": {
+    "harness_contract": "The native harness reads a release receipt, checks the manifest version and hashes the unpacked tree and Store ZIP before opening its fresh owned Chrome profile; completed exercise returned ownedReceiptVerified=true.",
+    "per_run_version_and_tree_hash": "not_recorded_in_result_or_guard_log",
+    "current_disk_receipt": "The current .output/release-receipt.json says 0.2.79 and tree be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0, with file modification time before this run, but it is not an immutable per-run build identity. This receipt does not attribute run 001 to that exact version or tree."
+  },
+  "interpretation": "One real admin highlight attempt settled as a no-workspace failed write before selection. Its notice remained visibly rendered after a trusted workspace choice and bounded quiet interval, while an observed real membership transport positive control accompanied zero highlight-table POSTs. The run did not Save a Source or exercise the full pending-handoff queue case."
+}

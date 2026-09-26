@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "report_id": "d23-native-write-runtime-peer",
+  "run_receipt": "docs/stabilization/runs/notice-write-native-001.json",
+  "A_runtime": {
+    "status": "BOUNDED_WRITE_RETENTION_PASS",
+    "evidence": [
+      "The resource guard admitted the owned native run at 23:04:47.390Z and recorded BOUNDED_PASS plus child and wrapper exit 0 at 23:06:59.434Z. The saved acceptance JSON hash and guard-log hash match the immutable receipt.",
+      "Real admin sign-in, no selected device workspace, public-page highlighter, and trusted text-selection pointer action are all positive in the saved result. The exact Highlight not saved/no-workspace notice appeared before any workspace selection, closing the pending write invocation before it could resume.",
+      "After the exact approved existing workspace was selected through the real picker, the same unique notice remained rendered. Display, visibility, opacity, nonzero area, viewport intersection, and interior hit point were positive; the saved visible size was 336 by 177 pixels.",
+      "The side-panel network observer saw 14 completed HTTP 200 membership RPC requests after arming and zero highlight-table POST requests through the bounded post-selection interval. This is a positive observer control and an absence observation for the attempted insert, not an invented request or intercepted response."
+    ],
+    "build_attribution": "The completed owned-profile harness enforces release-receipt, manifest, unpacked-tree, and Store-ZIP verification at startup. This runner result and guard log omit the actual version and tree hash, so exact 0.2.79 attribution is not independently established for run 001. Current disk receipt and timestamps are corroborative only."
+  },
+  "B_evidence_quality": {
+    "status": "CORROBORATED_WITH_BOUNDED_SCOPE",
+    "checks": [
+      "Raw result, runner, harness, and guard log SHA-256 values are recorded. Guard admission, healthy watches, stdout, and terminal child exit agree with the saved result.",
+      "The source-reviewed runner waits for the terminal write notice before org selection; the real createHighlight call catches an expired no-org hold, raises the notice, and throws before .insert. The observer remains active through the post-selection quiet interval.",
+      "Source-workspace-009 separately records the original read-side no-workspace notice disappearing after approved UI workspace selection on a result explicitly bound to release 0.2.79; it was diagnostic-only for D22 and performed no Save input.",
+      "The focused guarded red receipt failed the two intended stale-write assertions. The green receipt then passed 26 tests across notice resolution and database-refusal seams, including preserved read retirement and write notice retention; their raw guard-log hashes still match the receipts. Independent source reviews cover lowercase no_organization classification and late-arriving failed-write retention."
+    ],
+    "limits": [
+      "Run 001 is one real admin highlight path. It does not prove member-mode behavior, deliberately late native notice arrival, every write caller, or arbitrary future no-retry absence; late-arrival is unit-covered only.",
+      "The run does not complete EXT-F-2010-T02 pending-handoff queue behavior or EXT-D-0022 Source Save/open recognition. Those remain separate open work."
+    ]
+  },
+  "closure_assessment": {
+    "EXT-D-0023": "DEFECT_SPECIFIC_CLOSURE_ELIGIBLE on combined native read and write observations, red-to-green 26-test guard, and independent source reviews. The existing closed record is supportable at this bounded scope; this peer does not edit defect or inventory status.",
+    "EXT-F-2010-T02": "NOT_FULLY_PASSED",
+    "EXT-D-0022": "OPEN"
+  }
+}
