@@ -19,16 +19,24 @@ const PUBLIC_URL = 'https://www.aimatrx.com/';
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const ADMIN_EMAIL = 'admin@admin.com';
+const RELOAD_BEFORE_CONTROLS = process.env.DEBUG_RELOAD_BEFORE_CONTROLS === '1';
+const SCENARIO = RELOAD_BEFORE_CONTROLS ? 'post_real_panel_reload' : 'warm';
 let stage = 'startup';
 const result = {
   schema: 1,
   feature: 'EXT-F-1005',
   status: 'unverified',
+  scenario: SCENARIO,
   cases: [],
   countsOnly: true,
 };
 const add = (id, status, expected, actual, evidence) =>
-  result.cases.push({ id, status, expected, actual, evidence });
+  result.cases.push({ id, status, scenario: SCENARIO, expected, actual, evidence });
+const scenarioEvidence = (value) => ({
+  warm: RELOAD_BEFORE_CONTROLS ? 'unverified' : value,
+  reload: RELOAD_BEFORE_CONTROLS ? value : 'unverified',
+  serviceError: 'unverified',
+});
 
 async function readBuildIdentity() {
   const [receipt, manifest] = await Promise.all([
@@ -64,6 +72,25 @@ async function snapshot(panel) {
 
 // Mirrors the proven real UI flow in isolated-admin-signin-acceptance.mjs.
 // Its executable entrypoint cannot be imported without launching another browser.
+async function adminIdentity(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+      const account = [...document.querySelectorAll('button[aria-expanded]')]
+        .find((button) => button.textContent.trim() === 'Account');
+      const section = account?.parentElement?.nextElementSibling;
+      const row = (label) => [...(section?.querySelectorAll('span') ?? [])]
+        .find((span) => span.textContent.trim() === label)?.parentElement?.textContent.trim() ?? null;
+      return { emailMatch: row('Email') === 'Email${ADMIN_EMAIL}',
+        adminRole: row('Role')?.toLowerCase() === 'roleadmin',
+        signOut: [...document.querySelectorAll('button')]
+          .some((button) => button.textContent.trim() === 'Sign out') };
+    })()`,
+  );
+}
+
+const isAdminIdentity = (state) => state?.emailMatch && state.adminRole && state.signOut;
+
 async function signInAsAdmin(page, panel) {
   stage = 'guest_account';
   await click(panel, 'title', 'Settings');
@@ -100,26 +127,7 @@ async function signInAsAdmin(page, panel) {
     ]);
     stage = 'extension_signin';
     await click(panel, 'button', 'Sign in');
-    await waitFor(
-      'real_admin_identity',
-      () =>
-        evaluate(
-          panel,
-          `(() => {
-            const account = [...document.querySelectorAll('button[aria-expanded]')]
-              .find((button) => button.textContent.trim() === 'Account');
-            const section = account?.parentElement?.nextElementSibling;
-            const row = (label) => [...(section?.querySelectorAll('span') ?? [])]
-              .find((span) => span.textContent.trim() === label)?.parentElement?.textContent.trim() ?? null;
-            return { emailMatch: row('Email') === 'Email${ADMIN_EMAIL}',
-              adminRole: row('Role')?.toLowerCase() === 'roleadmin',
-              signOut: [...document.querySelectorAll('button')]
-                .some((button) => button.textContent.trim() === 'Sign out') };
-          })()`,
-        ),
-      (state) => state?.emailMatch && state.adminRole && state.signOut,
-      90_000,
-    );
+    await waitFor('real_admin_identity', () => adminIdentity(panel), isAdminIdentity, 90_000);
     result.realAdminUi = true;
   } finally {
     await web.close();
@@ -273,9 +281,31 @@ async function detailOnlySearchTerm(panel, rowText) {
       const detail=rows[0].querySelector('pre')?.textContent??'';
       const messages=[...(list?.children??[])].map(e=>
         e.firstElementChild?.querySelector('span.truncate')?.textContent.toLowerCase()??'');
+      const uniqueOutsideMessages=(term)=>{
+        if(typeof term!=='string'||term.length<6||term.length>64)return false;
+        const lowered=term.toLowerCase();
+        return detail.toLowerCase().split(lowered).length===2 &&
+          !messages.some(message=>message.includes(lowered));
+      };
       const keys=[...detail.matchAll(/"([A-Za-z_][A-Za-z0-9_]{5,})"\\s*:/g)]
         .map(match=>match[1]);
-      return keys.find(key=>!messages.some(message=>message.includes(key.toLowerCase())))??null;
+      const key=keys.find(uniqueOutsideMessages);
+      if(key)return {term:key,kind:'key'};
+      let parsed;
+      try{parsed=JSON.parse(detail)}catch{return null}
+      const primitiveValues=[];
+      const visit=(value)=>{
+        if(Array.isArray(value)){for(const item of value)visit(item);return}
+        if(value&&typeof value==='object'){
+          for(const item of Object.values(value))visit(item);
+          return;
+        }
+        if(typeof value==='string')primitiveValues.push(value.trim());
+        else if(typeof value==='number'&&Number.isFinite(value))primitiveValues.push(String(value));
+      };
+      visit(parsed);
+      const primitive=primitiveValues.find(uniqueOutsideMessages);
+      return primitive?{term:primitive,kind:'primitive'}:null;
     })()`,
   );
 }
@@ -285,6 +315,29 @@ async function exercise({ page, panel, artifacts }) {
   let noMatchObserved = false;
   try {
     await signInAsAdmin(page, panel);
+    if (RELOAD_BEFORE_CONTROLS) {
+      stage = 'owned_panel_reload';
+      const previousLoader = (await panel.send('Page.getFrameTree'))?.frameTree?.frame?.loaderId;
+      if (!previousLoader) throw new Error('panel_loader_before_reload_unverified');
+      await panel.send('Page.reload', { ignoreCache: false });
+      await waitFor(
+        'new_panel_document_after_reload',
+        async () => (await panel.send('Page.getFrameTree'))?.frameTree?.frame?.loaderId,
+        (loader) => Boolean(loader && loader !== previousLoader),
+        30_000,
+      );
+      stage = 'admin_identity_after_reload';
+      await waitFor(
+        'settings_after_real_reload',
+        () => evaluate(panel, `!!document.querySelector('button[title="Settings"]')`),
+        (ready) => ready === true,
+        30_000,
+      );
+      await click(panel, 'title', 'Settings');
+      await openSection(panel, 'Account');
+      await waitFor('restored_admin_identity', () => adminIdentity(panel), isAdminIdentity, 90_000);
+      result.reloadObservation = { actualPanelReload: true, adminIdentityRestored: true };
+    }
     stage = 'debug_tab_click';
     await click(panel, 'title', 'Debug (admin only)');
     // DebugView is lazy-loaded and starts in Log. Its loading fallback has no
@@ -399,6 +452,7 @@ async function exercise({ page, panel, artifacts }) {
           'Search matches message and detail values; unmatched text shows no-match state.',
           `Positive count=${matched.rowCount}; original message-only row visible=${matched.sourceRowVisible}; unmatched count=${state.rowCount}.`,
           {
+            ...scenarioEvidence('partial'),
             messageSearch: 'pass_via_trusted_input_on_row_without_detail',
             unmatchedState: 'pass',
             detailSearch: 'unverified_no_natural_detail_only_term',
@@ -452,11 +506,7 @@ async function exercise({ page, panel, artifacts }) {
         pauseProved ? 'partial' : 'unverified',
         'Paused view stays frozen; resume displays naturally arriving events.',
         `Visible counts before=${paused.rowCount}, held=${held.rowCount}, resumed=${resumed.rowCount}; total before=${paused.totalCount}, held=${held.totalCount}.`,
-        {
-          warm: pauseProved ? 'pass' : 'unverified',
-          reload: 'unverified',
-          serviceError: 'unverified',
-        },
+        scenarioEvidence(pauseProved ? 'pass' : 'unverified'),
       );
       stage = 'details';
       const detailRows = await naturalDetailRows(panel);
@@ -484,7 +534,7 @@ async function exercise({ page, panel, artifacts }) {
         detailCollapsed = true;
         const t14 = result.cases.find((item) => item.id === 'EXT-F-1005-T14');
         if (detailTerm && t14?.status === 'partial') {
-          await setSearch(panel, detailTerm);
+          await setSearch(panel, detailTerm.term);
           await waitFor(
             'detail_only_search_positive',
             async () => ({
@@ -497,7 +547,10 @@ async function exercise({ page, panel, artifacts }) {
               observed.row?.count === 1 &&
               observed.row.detailIcon,
           );
-          t14.evidence.detailSearch = 'pass_via_natural_detail_key_absent_from_messages';
+          t14.evidence.detailSearch =
+            detailTerm.kind === 'key'
+              ? 'pass_via_natural_detail_key_absent_from_messages'
+              : 'pass_via_natural_detail_primitive_absent_from_messages';
           await setSearch(panel, '');
           await waitFor(
             'detail_search_reset',
@@ -535,7 +588,7 @@ async function exercise({ page, panel, artifacts }) {
         'Clear removes local events and shows the no-events state.',
         `No-events state=${state.noEvents}; row count=${state.rowCount}.`,
         {
-          warmEventList:
+          eventList:
             state.noEvents && state.rowCount === 0 && state.totalCount === 0 ? 'pass' : 'fail',
           errorBadge: beforeClear.errorBadge
             ? state.errorBadge
@@ -544,8 +597,9 @@ async function exercise({ page, panel, artifacts }) {
             : state.errorBadge
               ? 'fail'
               : 'unverified_no_positive_badge',
-          reload: 'unverified',
-          serviceError: 'unverified',
+          ...scenarioEvidence(
+            state.noEvents && state.rowCount === 0 && state.totalCount === 0 ? 'partial' : 'fail',
+          ),
           ownedDisposableProfile: true,
         },
       );
@@ -560,11 +614,7 @@ async function exercise({ page, panel, artifacts }) {
         warmDetails ? 'partial' : 'unverified',
         'Detail JSON expands/collapses; no-detail row is non-actionable; no-match and no-events states differ.',
         `Expanded=${detailExpanded}; collapsed=${detailCollapsed}; no-detail inert=${noDetailNonActionable}; no-match=${noMatchObserved}; no-events=${state.noEvents}.`,
-        {
-          warm: warmDetails ? 'pass' : 'unverified',
-          reload: 'unverified',
-          serviceError: 'unverified',
-        },
+        scenarioEvidence(warmDetails ? 'pass' : 'unverified'),
       );
     }
   } catch (error) {
