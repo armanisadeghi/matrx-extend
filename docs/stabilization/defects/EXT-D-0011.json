@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0011",
+  "feature_id": "EXT-F-1003",
+  "case_ids": [
+    "EXT-F-1003-T46",
+    "EXT-F-1003-T70"
+  ],
+  "surface": "Native Settings acceptance driver",
+  "auth_mode": "guest; test infrastructure failure",
+  "reproduction": [
+    "Build/reload0.2.57 dd41089 and verify release receipt.",
+    "Run resource-guarded tests/browser/settings-local-controls-acceptance.mjs with configured installed Playwright and Chrome for Testing runtime.",
+    "After saving65001 replace input with65536; then attempt About update button in360x421 panel."
+  ],
+  "expected": "Trusted replacement selects existing input; offscreen target is scrolled into view before a stable trusted pointer click.",
+  "actual": "Replacement produced665365001; update button center y573 outside421 viewport, hitTargetfalse.",
+  "evidence": [
+    "docs/stabilization/runs/guest-settings-local-001.json"
+  ],
+  "severity": "S2: blocks two acceptance cases; product failure not established",
+  "priority": "P1: restore trustworthy test execution",
+  "state": "in-fix",
+  "owner": "/root/guest_settings_local_batch",
+  "transition_history": [
+    {
+      "at": "2026-09-26T09:02:34.959379+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Guarded native runner captured deterministic interaction failures."
+    },
+    {
+      "at": "2026-09-26T09:02:34.959379+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Evidence isolates keyboard selection and offscreen click, not product semantics."
+    },
+    {
+      "at": "2026-09-26T09:02:34.959379+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Original implementation lane repairing shared interaction class."
+    }
+  ]
+}
