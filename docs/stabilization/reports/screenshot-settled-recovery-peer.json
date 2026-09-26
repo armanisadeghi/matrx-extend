@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-settled-recovery-peer",
+  "reviewed_source_commit": "4c7e2dd43f6adb95c83160b0818f4cc78a7e668b",
+  "source_review": {
+    "verdict": "ACCEPT",
+    "reason": "The corrected guest predicate cannot pass on the Suspense shell alone: it requires the selected, linked active Chat pane plus both ChatView-owned markers, no Suspense fallback, the guest avatar, and complete Screenshots absence. These markers are real normal ChatHeader children rather than strings in a popover, title attribute, or the fallback: ChatView renders the guest guidance as a plain span and New chat as a real Button in its header; the fallback is only a spinning Loader2. After reload and after local sign-out from admin-selected Screenshots, the same predicate is awaited. The runner only observes Chat after those transitions and never clicks New chat or submits a chat turn.",
+    "evidence": [
+      "guestNavigation scopes all pane and Chat markers to the unique active top-level tabpanel and requires it to be linked to the uniquely selected target tab with positive height.",
+      "ChatView.tsx renders `Sign in to choose an agent` as a normal header span for signed-out users and renders `New chat` as an actual Button in the same ChatHeader; repository search finds the exact markers only at those source locations.",
+      "App.tsx wraps the lazy ChatView in Suspense with TabFallback, which contains only a Loader2 spinner. The required ChatView markers therefore distinguish its mounted component from the fallback even if the fallback is otherwise present in the active pane.",
+      "guestViewAccepted requires chatComponentMounted and guestChatGuidancePresent for Chat, and independently rejects the fallback, admin avatar, Screenshots trigger/pane/content, or any non-guest state.",
+      "Both the real guest reload branch and real admin Screenshots-to-local-signout branch call selectedGuestView('Chat'); that helper waits on the full predicate. The runner does not click the New chat button, compose, or send a chat message."
+    ],
+    "limits": [
+      "No browser or runtime was launched; runtime remains unverified. The prior run's suspense observation is not upgraded by this source review.",
+      "The DOM oracle establishes component mount and public guest guidance from source-owned markers; it does not test chat functionality or send behavior, which remain outside scope."
+    ]
+  },
+  "runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "Source-only review; no browser/runtime verification was performed."
+  }
+}
