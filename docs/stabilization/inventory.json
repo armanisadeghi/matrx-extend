@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T05:42:10.277609+00:00",
+  "updated_at": "2026-09-26T05:54:00.375152+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
@@ -3676,12 +3676,19 @@
           ],
           "results": {
             "guest": {
+              "status": "unverified",
+              "detail": "Source auth transport changed by remote55896d4; prior admin-signin-001 evidence remains valid for old0.2.51 only, fresh callback/sign-in smoke required."
+            }
+          },
+          "previous_results": [
+            {
+              "mode": "guest",
               "status": "pass",
               "run_id": "admin-signin-001",
               "evidence": "docs/stabilization/runs/admin-signin-001.json",
               "detail": "Real Settings sign-in reached admin@admin.com ADMIN and identity persisted through full extension Reload. Noorgselected; separatecapturelistwarning recorded."
             }
-          }
+          ]
         },
         {
           "id": "EXT-F-1003-T53",
