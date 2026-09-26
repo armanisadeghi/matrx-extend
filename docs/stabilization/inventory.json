@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T09:39:43.823358+00:00",
+  "updated_at": "2026-09-26T09:59:12.941268+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -725,24 +725,33 @@
           "results": {
             "guest": {
               "status": "pass",
-              "detail": "Red mandatory-test refusal, prior artifacts retained, and no fixture publication. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             },
             "member": {
               "status": "pass",
-              "detail": "Red mandatory-test refusal, prior artifacts retained, and no fixture publication. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             },
             "admin": {
               "status": "pass",
-              "detail": "Red mandatory-test refusal, prior artifacts retained, and no fixture publication. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             }
           }
         },
@@ -771,24 +780,33 @@
           "results": {
             "guest": {
               "status": "pass",
-              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             },
             "member": {
               "status": "pass",
-              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             },
             "admin": {
               "status": "pass",
-              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             }
           }
         },
@@ -817,24 +835,33 @@
           "results": {
             "guest": {
               "status": "pass",
-              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             },
             "member": {
               "status": "pass",
-              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             },
             "admin": {
               "status": "pass",
-              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             }
           }
         },
@@ -863,24 +890,33 @@
           "results": {
             "guest": {
               "status": "pass",
-              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             },
             "member": {
               "status": "pass",
-              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             },
             "admin": {
               "status": "pass",
-              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             }
           }
         },
@@ -909,24 +945,33 @@
           "results": {
             "guest": {
               "status": "pass",
-              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             },
             "member": {
               "status": "pass",
-              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             },
             "admin": {
               "status": "pass",
-              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             }
           }
         },
@@ -955,24 +1000,33 @@
           "results": {
             "guest": {
               "status": "pass",
-              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             },
             "member": {
               "status": "pass",
-              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             },
             "admin": {
               "status": "pass",
-              "detail": "Targeted isolated fixture assertions passed; this does not establish a real strict release or integration. Isolated local fixture; no real remote publication.",
-              "run_id": "release-green-001",
-              "evidence": "docs/stabilization/runs/release-green-001.json",
-              "scope": "Isolated local fixture; no real remote publication."
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
+              ],
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             }
           }
         },
@@ -1001,32 +1055,41 @@
           ],
           "results": {
             "guest": {
-              "status": "fail",
-              "defect_ids": [
-                "EXT-D-0013"
+              "status": "pass",
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
               ],
-              "detail": "Shared role-independent pipeline runs expensive tests before known-stale refusal."
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             },
             "member": {
-              "status": "fail",
-              "defect_ids": [
-                "EXT-D-0013"
+              "status": "pass",
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
               ],
-              "detail": "Shared role-independent pipeline runs expensive tests before known-stale refusal."
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             },
             "admin": {
-              "status": "fail",
-              "defect_ids": [
-                "EXT-D-0013"
+              "status": "pass",
+              "run_id": "release-stabilization-008",
+              "evidence": [
+                "docs/stabilization/reports/infrastructure-coverage-audit.json",
+                "docs/stabilization/reports/infrastructure-owner-adjudication.json",
+                "docs/stabilization/runs/release-stabilization-008.json"
               ],
-              "detail": "Shared role-independent pipeline runs expensive tests before known-stale refusal."
+              "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             }
           }
         }
       ],
       "cells": {
         "guest": {
-          "test_status": "unverified",
+          "test_status": "pass",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
@@ -1042,12 +1105,13 @@
             "release-real-002",
             "release-real-003",
             "release-real-004",
-            "release-real-005"
+            "release-real-005",
+            "release-stabilization-008"
           ],
-          "retest_status": "not-run"
+          "retest_status": "pass"
         },
         "member": {
-          "test_status": "unverified",
+          "test_status": "pass",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
@@ -1063,12 +1127,13 @@
             "release-real-002",
             "release-real-003",
             "release-real-004",
-            "release-real-005"
+            "release-real-005",
+            "release-stabilization-008"
           ],
-          "retest_status": "not-run"
+          "retest_status": "pass"
         },
         "admin": {
-          "test_status": "unverified",
+          "test_status": "pass",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
@@ -1084,9 +1149,10 @@
             "release-real-002",
             "release-real-003",
             "release-real-004",
-            "release-real-005"
+            "release-real-005",
+            "release-stabilization-008"
           ],
-          "retest_status": "not-run"
+          "retest_status": "pass"
         }
       },
       "readiness_gaps": [
@@ -3768,15 +3834,22 @@
           ],
           "results": {
             "guest": {
-              "status": "fail",
-              "run_id": "guest-settings-local-004",
+              "status": "unverified",
+              "run_id": "guest-settings-local-005",
+              "evidence": "docs/stabilization/runs/guest-settings-local-005.json",
+              "verified_substeps": [
+                "Valid port save and persistence",
+                "Invalid range preserves override",
+                "Same-view blank save clears override and obsolete error",
+                "Cleared state persists after reopening"
+              ],
+              "remaining_criteria": [
+                "Actual desktop worker rediscovery"
+              ],
               "defect_ids": [
                 "EXT-D-0012"
               ],
-              "evidence": [
-                "docs/stabilization/runs/guest-settings-local-004.json"
-              ],
-              "detail": "Successful blank clear leaves previous invalid-port error. Worker rediscovery separately unverified."
+              "retest_status": "pass"
             }
           }
         },
@@ -3826,7 +3899,27 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "native-0258-port-verification",
+              "evidence": "docs/stabilization/runs/native-0258-port-verification.json",
+              "verified_substeps": [
+                "Valid port save and persistence",
+                "Invalid range preserves override",
+                "Same-view blank save clears override and obsolete error",
+                "Cleared state persists after reopening"
+              ],
+              "remaining_criteria": [
+                "Actual desktop worker rediscovery"
+              ],
+              "defect_ids": [
+                "EXT-D-0012"
+              ],
+              "retest_status": "pass"
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T49",
@@ -4632,7 +4725,7 @@
       ],
       "cells": {
         "guest": {
-          "test_status": "fail",
+          "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0001",
             "EXT-D-0009",
@@ -4655,7 +4748,8 @@
             "guest-reset-004",
             "guest-reset-005",
             "guest-reset-006",
-            "guest-reset-007"
+            "guest-reset-007",
+            "guest-settings-local-005"
           ],
           "retest_status": "not-run"
         },
@@ -4683,7 +4777,8 @@
             "admin-permissions-001",
             "admin-permissions-002",
             "permissions-auth-native-sol",
-            "release-native-verification"
+            "release-native-verification",
+            "native-0258-port-verification"
           ],
           "retest_status": "not-run"
         }

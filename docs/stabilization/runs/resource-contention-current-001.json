@@ -1,0 +1,18 @@
+{
+  "id": "resource-contention-current-001",
+  "status": "pass",
+  "case_id": "EXT-F-0002-T02",
+  "expected_exit": 2,
+  "actual_exit": 2,
+  "heavy_child_launched": false,
+  "active_positive_control": "final-release-native-003 admitted and healthy before/after attempted second admission",
+  "events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T09:53:13.056Z",
+      "detail": "RESOURCE_HEAVY_BUSY",
+      "code": "RESOURCE_HEAVY_BUSY"
+    }
+  ],
+  "source_sha": "d66589855aafacfb9a9cfa521b80561b36f8e8b3"
+}

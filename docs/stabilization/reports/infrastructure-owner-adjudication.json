@@ -1,0 +1,222 @@
+{
+  "at": "2026-09-26T09:54:52.394889+00:00",
+  "review": "docs/stabilization/reports/infrastructure-coverage-audit.json",
+  "rulings": [
+    {
+      "case": "EXT-F-0003-T04",
+      "decision": "PASS for real current release race control. Missing per-candidate matrix concern resolved by extracting all14successful gates for all3candidates from immutable005 log.",
+      "evidence": "tmp/release-logs/release-2026-09-26_01-52-48.log"
+    },
+    {
+      "case": "EXT-F-0003-T07",
+      "decision": "PASS: no separate fixture rerun required. Named unskipped Vitest test passed in guarded008; its spawnSync executes shell fixture and asserts exit0. Unconditional stale scenario exits1 unless stale refusal precedes Vitest and publication. This is behavioral assertion evidence, not inference from aggregate test count.",
+      "evidence": [
+        "tests/unit/release-artifacts.test.ts:169",
+        "scripts/test-release-ship-path.sh:100",
+        "tmp/release-logs/release-2026-09-26_02-42-45.log:295"
+      ]
+    },
+    {
+      "case": "EXT-F-0003-T01/T02/T03/T05/T06",
+      "decision": "PASS within exact inventory release-fixture/real-publication scope. Real guarded release+fixture control-flow assertions demonstrate required publication/refusal/serialization/artifact properties. This does not certify all product UI, DB skips, mandate submission, or arbitrary daemon processes."
+    }
+  ],
+  "candidate_gate_matrix": [
+    {
+      "candidate": "2ce5c4ea53f543a141c5c8133167e0f0df45040a",
+      "checks": [
+        {
+          "name": "typecheck",
+          "exit_code": 0
+        },
+        {
+          "name": "unit-tests",
+          "exit_code": 0
+        },
+        {
+          "name": "schema-routing",
+          "exit_code": 0
+        },
+        {
+          "name": "matrx-packages",
+          "exit_code": 0
+        },
+        {
+          "name": "package-twins",
+          "exit_code": 0
+        },
+        {
+          "name": "canonical-pickers",
+          "exit_code": 0
+        },
+        {
+          "name": "archived-items",
+          "exit_code": 0
+        },
+        {
+          "name": "archived-items-self-test",
+          "exit_code": 0
+        },
+        {
+          "name": "org-default-ban",
+          "exit_code": 0
+        },
+        {
+          "name": "org-default-ban-self-test",
+          "exit_code": 0
+        },
+        {
+          "name": "swallowed-refusals",
+          "exit_code": 0
+        },
+        {
+          "name": "migrations",
+          "exit_code": 0
+        },
+        {
+          "name": "tool-drift",
+          "exit_code": 0
+        },
+        {
+          "name": "mandate-references",
+          "exit_code": 0
+        }
+      ]
+    },
+    {
+      "candidate": "e09f4853f0d791ff39b52e02a3b35d43493da204",
+      "checks": [
+        {
+          "name": "typecheck",
+          "exit_code": 0
+        },
+        {
+          "name": "unit-tests",
+          "exit_code": 0
+        },
+        {
+          "name": "schema-routing",
+          "exit_code": 0
+        },
+        {
+          "name": "matrx-packages",
+          "exit_code": 0
+        },
+        {
+          "name": "package-twins",
+          "exit_code": 0
+        },
+        {
+          "name": "canonical-pickers",
+          "exit_code": 0
+        },
+        {
+          "name": "archived-items",
+          "exit_code": 0
+        },
+        {
+          "name": "archived-items-self-test",
+          "exit_code": 0
+        },
+        {
+          "name": "org-default-ban",
+          "exit_code": 0
+        },
+        {
+          "name": "org-default-ban-self-test",
+          "exit_code": 0
+        },
+        {
+          "name": "swallowed-refusals",
+          "exit_code": 0
+        },
+        {
+          "name": "migrations",
+          "exit_code": 0
+        },
+        {
+          "name": "tool-drift",
+          "exit_code": 0
+        },
+        {
+          "name": "mandate-references",
+          "exit_code": 0
+        }
+      ]
+    },
+    {
+      "candidate": "dd41089e7a35b7e334d1b3128c448a83ec7b0e35",
+      "checks": [
+        {
+          "name": "typecheck",
+          "exit_code": 0
+        },
+        {
+          "name": "unit-tests",
+          "exit_code": 0
+        },
+        {
+          "name": "schema-routing",
+          "exit_code": 0
+        },
+        {
+          "name": "matrx-packages",
+          "exit_code": 0
+        },
+        {
+          "name": "package-twins",
+          "exit_code": 0
+        },
+        {
+          "name": "canonical-pickers",
+          "exit_code": 0
+        },
+        {
+          "name": "archived-items",
+          "exit_code": 0
+        },
+        {
+          "name": "archived-items-self-test",
+          "exit_code": 0
+        },
+        {
+          "name": "org-default-ban",
+          "exit_code": 0
+        },
+        {
+          "name": "org-default-ban-self-test",
+          "exit_code": 0
+        },
+        {
+          "name": "swallowed-refusals",
+          "exit_code": 0
+        },
+        {
+          "name": "migrations",
+          "exit_code": 0
+        },
+        {
+          "name": "tool-drift",
+          "exit_code": 0
+        },
+        {
+          "name": "mandate-references",
+          "exit_code": 0
+        }
+      ]
+    }
+  ],
+  "current_zip_hash_verification": [
+    {
+      "artifact": "storeZip",
+      "sha256": "96cade5775eed6e78a24125723218e02998370d9891c0d761d216fc8074ca6ca",
+      "matches_receipt": true
+    },
+    {
+      "artifact": "localZip",
+      "sha256": "a9f7039721cf6dac06e28a102aa7c4b107bd9743d9cc45d4b869be1a4ee5b883",
+      "matches_receipt": true
+    }
+  ],
+  "auth_applicability": "Engineering pipeline behavior independent of user auth; same verified execution applies to guest/member/admin infrastructure cells, not their distinct UI flows."
+}

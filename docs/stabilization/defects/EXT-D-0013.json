@@ -14,11 +14,13 @@
   "actual": "Repeated runs spend ~85seconds on full unit suite before deterministically rejecting already-stale graph; increases reconciliation cost under concurrent publishing.",
   "evidence": [
     "docs/stabilization/runs/release-stabilization-006.json",
-    "docs/stabilization/runs/release-stabilization-007.json"
+    "docs/stabilization/runs/release-stabilization-007.json",
+    "docs/stabilization/runs/release-stabilization-008.json",
+    "docs/stabilization/reports/infrastructure-owner-adjudication.json"
   ],
   "severity": "S3: unnecessary integration time/resource expenditure; publication stays safely blocked",
   "priority": "P2: reduce recurring integration cost",
-  "state": "in-fix",
+  "state": "closed",
   "owner": "/root/release_freshness_failfast",
   "transition_history": [
     {
@@ -38,6 +40,24 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol narrow gate ordering and regression repair."
+    },
+    {
+      "at": "2026-09-26T09:54:52.394889+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "6b79a5d moves mandatory freshness gate before expensive checks; sourcepeer0332843."
+    },
+    {
+      "at": "2026-09-26T09:54:52.394889+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Guarded008 executed real stale-negative fixture and successful current candidate; behavioral proof chain in owner-adjudication report."
+    },
+    {
+      "at": "2026-09-26T09:54:52.394889+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "All14gates passed,0.2.58 published d665898; no mandatory gate removed."
     }
   ]
 }

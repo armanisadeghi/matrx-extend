@@ -5,7 +5,7 @@
     "EXT-F-1003-T46"
   ],
   "surface": "Settings > Desktop bridge > Local engine port",
-  "auth_mode": "guest reproduced; member/admin same component not yet exercised",
+  "auth_mode": "guest reproduced; guest and admin retested; member unverified",
   "reproduction": [
     "Use unpacked0.2.57 source dd41089, fresh isolated guest profile; build/reload and confirm release receipt.",
     "Open Settings > Desktop bridge, save port65001 and reload to confirm persistence.",
@@ -16,11 +16,13 @@
   "actual": "Override is removed and input blank, but Port must be1\u201365535 remains visible.",
   "evidence": [
     "docs/stabilization/runs/guest-settings-local-004.json",
-    "docs/stabilization/runs/release-stabilization-008.json"
+    "docs/stabilization/runs/release-stabilization-008.json",
+    "docs/stabilization/runs/guest-settings-local-005.json",
+    "docs/stabilization/reports/native-0258-port-verification.json"
   ],
   "severity": "S3: misleading stale validation after successful action",
   "priority": "P2: contained Settings correctness before broader surfaces",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/port_error_repair",
   "transition_history": [
     {
@@ -46,6 +48,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "399bee5 implementation, independent sourcepeer, guarded strictrelease008 passed and published0.2.58; native originalretest underway."
+    },
+    {
+      "at": "2026-09-26T09:59:12.941268+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original same-view reproduction and persistence pass in guest-settings-local-005 and independent native-0258-port-verification; source peer and strict release008 passed."
+    },
+    {
+      "at": "2026-09-26T09:59:12.941268+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original same-view reproduction and persistence pass in guest-settings-local-005 and independent native-0258-port-verification; source peer and strict release008 passed."
     }
   ]
 }
