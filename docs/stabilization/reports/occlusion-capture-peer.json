@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "report_id": "occlusion-capture-peer",
+  "reviewed_commit": "2e3f5f7",
+  "privacy_safety": {
+    "status": "pass_with_visual_scope_note",
+    "findings": [
+      "Failure-only capture stays on the native extension Settings panel; visible forms, password inputs, and iframes refuse it. Hit-stack serialization uses bounded categories, booleans, and geometry; no DOM text, raw markup, arbitrary attributes, or storage values are serialized.",
+      "The PNG necessarily preserves visible Settings pixels, including readable labels; it is clipped to the Settings panel's viewport intersection. This meets the stated capture scope but is still visual text in the artifact."
+    ],
+    "utility": "Useful target/hit ancestor chains and center-point stack can distinguish sibling overlays, within-panel overlap, and geometry mismatch without changing shared driver behavior."
+  },
+  "acceptance_addendum": {
+    "source": "docs/stabilization/runs/guest-settings-local-007.json",
+    "build_provenance": "verified release 0.2.63 / source b76367b / tree hash present",
+    "T22": "pass: guest admin section and controls absent warm and after reload",
+    "T37": "pass: preference toggles and persists after reload",
+    "T46": "pass: valid/invalid/cleared port behavior and worker rediscovery",
+    "T70": "unverified: core identity/readiness and no-update pass; unavailable, available, throttled, and error branches remain unverified",
+    "scope": "Surrounding guest Settings regressions only; does not close EXT-D-0015."
+  },
+  "runtime": "unverified_by_peer",
+  "next_action": "Root performs the guarded native reopen run and reviews actual occlusion evidence."
+}
