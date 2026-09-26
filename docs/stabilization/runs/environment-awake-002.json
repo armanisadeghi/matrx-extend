@@ -1,0 +1,17 @@
+{
+  "id": "environment-awake-002",
+  "feature_id": "EXT-F-0001",
+  "status": "configuration-verified",
+  "at": "2026-09-26T08:00:10.047053+00:00",
+  "authorization": "User requested preventing idle lock during ongoing testing.",
+  "temporary_assertion": {
+    "command": "caffeinate -di -t 14400",
+    "session_id": 5571,
+    "pid": 58434,
+    "duration_hours": 4,
+    "verification": "pmset confirms owned idle system/display sleep assertions active"
+  },
+  "screensaver_idle_seconds_readback": 0,
+  "unchanged": "Password protection and manual lock; no schedule installed",
+  "expires_approximately": "2026-09-26T12:00:00Z"
+}
