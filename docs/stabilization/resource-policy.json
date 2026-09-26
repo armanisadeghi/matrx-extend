@@ -81,6 +81,10 @@
       "scripts/test-release-recovery.mjs"
     ],
     [
+      "node",
+      "tests/browser/settings-local-reset-acceptance.mjs"
+    ],
+    [
       "bash",
       "release.sh",
       "--message",
