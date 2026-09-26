@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "reviewedCommit": "e91d2e1d08b05b4d302bbbfd459c4c5cf3807959",
+  "runtime": "UNVERIFIED",
+  "engineering": "PASS",
+  "findings": [
+    "The new pre-click wait requires the real input value to equal 65001 and document.activeElement to be that input; failure identifies typing/focus loss before save rather than labeling it a product persistence failure.",
+    "After the real Set click, the bounded persistence wait samples both the UI control state and chrome.storage.local; timeout evidence includes value, focus, Set/Save label, inline error, and port key. It preserves storage as the acceptance oracle.",
+    "The selector matches the current SettingsView structure: input is inside the row, and the inline error is the next sibling row. The port button is still located as a visible, unique button and clicked through the native panel input path.",
+    "No port value is written by script, no acceptance check is weakened, and storage diagnostics expose only keys and the target port field, not stored values or secrets.",
+    "guest-reset-002 reached the native panel and proved Dark theme persistence, but its earlier run predates this probe and recorded only missing port storage; it cannot establish which input/save stage failed or prove this diagnostic change at runtime."
+  ],
+  "scope": "Independent source review of e91d2e1 and guest-reset-002 log/report; no browser, tests, build, install, or source edits."
+}
