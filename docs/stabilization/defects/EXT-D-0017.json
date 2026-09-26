@@ -11,10 +11,16 @@
   ],
   "expected": "Run required unit tests under the one-worker resource cap before publication.",
   "actual": "Historical release and allowlist still require removed minWorkers option; CLI cannot execute suite.",
-  "evidence": ["ea86560d", "docs/stabilization/reports/remote-stack-integration.json"],
+  "evidence": [
+    "ea86560d",
+    "docs/stabilization/reports/remote-stack-integration.json",
+    "docs/stabilization/runs/remote-stack-tests-001.json",
+    "docs/stabilization/runs/release-stabilization-021.json",
+    "docs/stabilization/reports/release021-peer.json"
+  ],
   "severity": "S2: mandatory validation blocked after dependency upgrade",
   "priority": "P1: synchronized integration prerequisite",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/remote_stack_integration",
   "transition_history": [
     {
@@ -40,6 +46,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "cb6b85e6 updates release, resourceguard and fixture to supported single-worker command; runtime pending."
+    },
+    {
+      "at": "2026-09-26T14:52:11.284598+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Full release021 actually executed Vitest4.1.11 with maxWorkers1;1436pass3explicitDBskips and all15gates passed. Independent release021-peer verifies source/tag/hash/gates."
+    },
+    {
+      "at": "2026-09-26T14:52:11.284598+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Corrected mandatory test invocation published in0.2.67 source79d1dba3 with unchanged worker cap. D18 native caption work remains separate."
     }
   ],
   "fix_commits": ["cb6b85e6"]
