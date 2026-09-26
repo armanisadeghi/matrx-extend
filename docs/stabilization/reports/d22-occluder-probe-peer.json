@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-occluder-probe-peer",
+  "reviewed_commit": "1256ab647840ed3622bda97abbf35289566077ba",
+  "scope": "Independent source-only review of the read-only Save occluder probe and run 003 receipt. No browser, test, or build run.",
+  "A_runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "Run 003 is evidence for the earlier geometry-only probe. The newly added occluder fields and screenshot have not been exercised in this review lane."
+  },
+  "B_source": {
+    "verdict": "PASS_SOURCE_REVIEW",
+    "findings": [
+      "The diagnostic remains reachable only from existing-checkpoint recovery after a definitive lookup result of none. It captures the public page into local Scrape UI state, inspects Save, captures a screenshot, then exits diagnostic_only. There is no Save click, keyboard input, DOM click, attempt reservation, checkpoint update, or checkpoint deletion in this branch.",
+      "New structured diagnostics contain only viewport/target/clipped rectangles, booleans, counts, and allowlisted tag, role, data-slot, and CSS position categories. No text, attribute values, class names, IDs, organization details, page URLs, or network response bodies are returned.",
+      "The screenshot is written under ignored test-results with exclusive-create flag wx and mode 0600. If that path already exists or creation fails, the report records unavailable; the existing file is not overwritten. Screenshot capture uses read-only CDP Page.captureScreenshot.",
+      "Checkpoint recovery calls existingSaveAttempt for lstat/read validation. In the lookup-none branch, control fails out before any checkpoint-writing helper is reachable, preserving the prior reserved checkpoint. The public result records only a fixed screenshot status and allowlisted probe object."
+    ],
+    "limits": [
+      "The report's blocker diagnosis is limited to a hit-test failure observed in run 003; the new occluder identity is not runtime verified here.",
+      "The private screenshot may contain visible UI text, but it remains a private ignored artifact created with mode 0600; it is not serialized into the public report."
+    ]
+  },
+  "checks": ["No browser, tests, build, or Save input performed in this review."]
+}
