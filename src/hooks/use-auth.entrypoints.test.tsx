@@ -11,7 +11,7 @@ const dependencies = vi.hoisted(() => ({
   verifiedUser: vi.fn(),
   signIn: vi.fn(),
   signOut: vi.fn(),
-  checkIsAdmin: vi.fn(async () => false),
+  checkIsAdmin: vi.fn(async (): Promise<boolean | null> => false),
   broadcast: vi.fn(),
   listeners: new Map<string, Set<(payload: unknown) => unknown>>(),
 }));
