@@ -1,0 +1,51 @@
+{
+  "id": "remote-deps-004",
+  "status": "pass",
+  "command": "pnpm install --frozen-lockfile --ignore-scripts",
+  "remote_commit": "74be9f2",
+  "updated_packages": {
+    "@ai-matrx/agents": "0.13.13\u21920.13.14",
+    "@ai-matrx/content-ir": "0.18.6\u21920.19.0"
+  },
+  "consumer_actions": "Pending report remote-popup-about-reconciliation.json",
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:14:21.415Z",
+      "runId": "remote-deps-004",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 3.4399999999999995,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1327714285714286,
+        "swapUsedMiB": 1757.12,
+        "repoFreeGiB": 1676.3529891967773,
+        "profileFreeGiB": 1676.3529891967773
+      },
+      "cpuBusySamples": [
+        0.23709999999999998,
+        0.12400000000000011,
+        0.1261,
+        0.11099999999999999,
+        0.11230000000000007,
+        0.10450000000000004,
+        0.11439999999999995
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T07:14:22.853Z",
+      "runId": "remote-deps-004",
+      "childExitCode": 0,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ]
+}
