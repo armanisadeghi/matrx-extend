@@ -1,0 +1,36 @@
+{
+  "task_id": "resource-current-peer",
+  "lane": "independent_structured_verification_luna_medium",
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Source and saved evidence only. No test, build, browser, or process launched.",
+  "verdicts": {
+    "A_runtime_evidence_acceptance": {
+      "result": "PASS",
+      "case": "EXT-F-0002-T02 single-heavy-job contention",
+      "proof": [
+        "docs/stabilization/runs/resource-contention-current-001.json records expected_exit=2, actual_exit=2, heavy_child_launched=false, and RESOURCE_HEAVY_BUSY.",
+        "Its positive control names final-release-native-003 as admitted and healthy before and after the second admission attempt.",
+        "docs/stabilization/runs/final-release-native-003.json has RESOURCE_ADMITTED and repeated RESOURCE_WATCH_HEALTHY events spanning the contention timestamp (09:53:13Z); its operator stop confirmation occurs later (09:58:41Z). This supports that the first lease remained intact through refusal.",
+        "contention source_sha d66589855aafacfb9a9cfa521b80561b36f8e8b3 matches current scripts/stabilization-resource.mjs byte-for-byte by source comparison."
+      ],
+      "limits": [
+        "This proves the single host-level T02 contention case. It does not establish separate guest/member/admin behavior; the control is auth-independent infrastructure.",
+        "It does not prove that every campaign launcher is routed through this guard; the implementation report says coordinator invocation is required.",
+        "It does not accept T01, T03, T04, or T05, nor broader release/build/test readiness."
+      ]
+    },
+    "B_guard_quality": {
+      "result": "PASS_FOR_T02_WITH_SCOPE_LIMIT",
+      "proof": [
+        "scripts/stabilization-resource.mjs reserves the shared heavy directory with atomic mkdir before preflight; a live owner whose PID start identity matches causes RESOURCE_HEAVY_BUSY.",
+        "That refusal path does not signal or mutate the incumbent owner. The only subsequent contention-path mutations concern stale-owner reclamation under a separate reclaim mutex; they are not entered for a live matching identity.",
+        "The saved run shows no child launch for the second request and the positive-control receipt shows the incumbent browser lease continuing healthy."
+      ],
+      "limits": [
+        "This is a single contention scenario, not a general proof against escaped/daemonized processes or commands that bypass the wrapper.",
+        "T02 result should be counted once at the host-infrastructure level, not triplicated by authentication mode."
+      ]
+    }
+  },
+  "adjudication": "Accept resource-contention-current-001 as fresh T02 evidence against the current guard. Keep claims constrained to T02 and wrapper-mediated host work; leave unrelated resource controls and integration coverage unresolved."
+}
