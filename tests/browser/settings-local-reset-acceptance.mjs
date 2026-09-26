@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
@@ -8,10 +9,12 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 // Removing either storage clear or making Cancel destructive must make this go red.
 const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'settings-local-reset-acceptance.json');
+const PORT = 65001;
+const SESSION_KEY = 'matrx.qa.settingsReset.session';
 const report = {
   feature: 'EXT-F-1003',
   case: 'EXT-F-1003-T49',
-  build: { version: '0.2.51', extensionId: 'cihdmkcdjjckfhjpgoedmgfpoljebaml' },
+  build: { extensionId: 'cihdmkcdjjckfhjpgoedmgfpoljebaml' },
   surface: 'fresh isolated Chrome-for-Testing native side panel; signed-out guest',
   steps: [],
   status: 'fail',
@@ -71,6 +74,7 @@ async function click(panel, kind, label) {
     else if (kind === 'theme') candidates = [...document.querySelectorAll('span')]
       .filter((el) => el.textContent.trim() === 'Theme')
       .flatMap((el) => [...el.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
+    else if (kind === 'port') candidates = [...document.querySelectorAll('input[placeholder="auto"]')];
     else if (kind === 'option') candidates = [...document.querySelectorAll('[role="option"]')]
       .filter((el) => el.textContent.trim() === label);
     else if (kind === 'dialog') candidates = [...document.querySelectorAll('[role="dialog"] button')]
@@ -90,6 +94,20 @@ async function click(panel, kind, label) {
   await panel.send('Input.dispatchMouseEvent', {
     type: 'mouseReleased', x: location.x, y: location.y, button: 'left', clickCount: 1,
   });
+}
+
+async function setEnginePort(panel) {
+  await click(panel, 'port', 'Local engine port');
+  await panel.send('Input.insertText', { text: String(PORT) });
+  await click(panel, 'button', 'Set');
+  await waitFor('port_override_persisted', () => storageState(panel), (s) => s.port === PORT);
+}
+
+async function seedDisposableSession(panel) {
+  await evaluate(panel, `(async () => {
+    await chrome.storage.session.set({ [${JSON.stringify(SESSION_KEY)}]: 'disposable-guest-session-state' });
+  })()`);
+  await waitFor('session_fixture_persisted', () => storageState(panel), (s) => s.hasSessionFixture);
 }
 
 async function panelState(panel) {
@@ -115,14 +133,23 @@ async function storageState(panel) {
     if (typeof local['matrx.settings.v1'] === 'string') {
       try { theme = JSON.parse(local['matrx.settings.v1']).state?.theme ?? null; } catch {}
     }
-    return { theme, hasSettingsKey: Object.hasOwn(local, 'matrx.settings.v1'),
+    return { theme, port: local.matrxLocalEnginePortOverride ?? null,
+      hasSettingsKey: Object.hasOwn(local, 'matrx.settings.v1'),
+      hasSessionFixture: Object.hasOwn(session, ${JSON.stringify(SESSION_KEY)}),
       localKeys: Object.keys(local).sort(), sessionKeys: Object.keys(session).sort() };
   })()`);
 }
 
 try {
+  const packageJson = JSON.parse(await readFile(join(REPO, 'package.json'), 'utf8'));
   const receipt = JSON.parse(await readFile(join(REPO, '.output', 'release-receipt.json'), 'utf8'));
-  assert.equal(receipt.version, report.build.version, 'released build must be version 0.2.51');
+  assert.equal(receipt.version, packageJson.version, 'released build must match current package version');
+  assert.match(receipt.sourceSha, /^[a-f0-9]{40}$/, 'receipt must identify source revision');
+  execFileSync('git', ['merge-base', '--is-ancestor', receipt.sourceSha, 'HEAD'], { cwd: REPO });
+  execFileSync('git', ['diff', '--quiet', receipt.sourceSha, '--', 'src/features/settings/SettingsView.tsx'], { cwd: REPO });
+  report.build.version = receipt.version;
+  report.build.sourceSha = receipt.sourceSha;
+  report.build.treeSha256 = receipt.treeSha256;
   const result = await runNativeSidepanelQa({ exercisePanel: async ({ panel }) => {
     await click(panel, 'title', 'Settings');
     await waitFor('settings_view', () => panelState(panel), (s) => s.settings && s.guest);
@@ -133,6 +160,11 @@ try {
     await waitFor('dark_theme_storage', () => storageState(panel), (s) => s.theme === 'dark');
     report.steps.push({ action: 'Set Dark in Settings', result: 'Dark visible and persisted' });
 
+    await openSection(panel, 'Desktop bridge');
+    await setEnginePort(panel);
+    await seedDisposableSession(panel);
+    report.steps.push({ action: 'Set local engine port and disposable guest session fixture', result: 'independent local and session values persisted in isolated profile' });
+
     await openSection(panel, 'Data & reset');
     await click(panel, 'button', 'Clear local data on this device');
     await waitFor('reset_dialog', () => panelState(panel), (s) => s.dialog);
@@ -141,18 +173,24 @@ try {
     assert.equal((await panelState(panel)).theme, 'Dark');
     const beforeConfirm = await storageState(panel);
     assert.equal(beforeConfirm.theme, 'dark');
-    assert.ok(beforeConfirm.sessionKeys.length > 0, 'guest session storage must contain real state to prove session clear');
-    report.steps.push({ action: 'Cancel Clear local data', result: 'dialog closed; Dark UI and persisted state preserved' });
+    assert.equal(beforeConfirm.port, PORT, 'Cancel must preserve local port override');
+    assert.equal(beforeConfirm.hasSessionFixture, true, 'Cancel must preserve guest session fixture');
+    report.steps.push({ action: 'Cancel Clear local data', result: 'dialog closed; Dark theme, port override, and session fixture preserved' });
 
     await click(panel, 'button', 'Clear local data on this device');
     await waitFor('reset_dialog_reopened', () => panelState(panel), (s) => s.dialog);
     await click(panel, 'dialog', 'Clear & sign out');
-    await waitFor('settings_storage_removed', () => storageState(panel), (s) => !s.hasSettingsKey);
+    await waitFor('local_and_session_cleared', () => storageState(panel), (s) =>
+      !s.hasSettingsKey && s.port === null && !s.hasSessionFixture);
     const after = await storageState(panel);
     assert.equal(after.hasSettingsKey, false);
+    assert.equal(after.port, null);
+    assert.equal(after.hasSessionFixture, false);
+    assert.deepEqual(beforeConfirm.localKeys.filter((key) => after.localKeys.includes(key)), [],
+      'all pre-confirm local keys must be cleared');
     assert.deepEqual(beforeConfirm.sessionKeys.filter((key) => after.sessionKeys.includes(key)), [],
-      'previous guest session keys must be cleared');
-    report.steps.push({ action: 'Confirm Clear & sign out', result: 'persisted Settings key and prior session keys removed' });
+      'all pre-confirm session keys must be cleared');
+    report.steps.push({ action: 'Confirm Clear & sign out', result: 'all prior local and session keys removed' });
 
     await panel.send('Page.reload', { ignoreCache: true });
     await waitFor('guest_after_reload', () => panelState(panel), (s) => s.guest && s.signIn);
@@ -160,8 +198,11 @@ try {
     await waitFor('settings_after_reload', () => panelState(panel), (s) => s.settings);
     await openSection(panel, 'Appearance');
     await waitFor('default_theme_after_reload', () => panelState(panel), (s) => s.theme === 'System');
-    assert.equal((await storageState(panel)).theme, null);
-    report.steps.push({ action: 'Reload native panel', result: 'guest controls and System default visible; removed Settings value stayed absent' });
+    const reloaded = await storageState(panel);
+    assert.equal(reloaded.theme, null);
+    assert.equal(reloaded.port, null);
+    assert.equal(reloaded.hasSessionFixture, false);
+    report.steps.push({ action: 'Reload native panel', result: 'guest controls and System default visible; theme, port, and session fixture absent' });
   }});
   assert.equal(result.verified, true);
   report.build.verified = true;

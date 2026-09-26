@@ -1,26 +1,30 @@
 {
   "feature": "EXT-F-1003",
   "case": "EXT-F-1003-T49",
-  "status": "implemented_unexecuted",
+  "status": "repaired_unexecuted",
   "build": {
-    "expected_version": "0.2.51",
+    "expected_version": "current package.json version; receipt must match",
     "expected_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
-    "artifact_source": ".output/release-receipt.json"
+    "artifact_source": ".output/release-receipt.json",
+    "source_binding": "receipt sourceSha must be an ancestor of HEAD and the reset implementation must be unchanged since that release"
   },
   "command": ["node", "tests/browser/settings-local-reset-acceptance.mjs"],
   "isolation": "Reuses native-sidepanel-qa-harness.mjs: fresh temporary Chrome-for-Testing profile, owned CDP endpoint, verified released unpacked extension and actual SIDE_PANEL runtime context. No existing browser or profile is attached.",
   "steps": [
     "Open Settings in the real native panel as an isolated guest.",
-    "Choose Dark through trusted pointer input; verify visible choice and persisted settings key.",
-    "Open Clear local data, Cancel; verify Dark remains visible and persisted.",
-    "Reopen and Confirm; verify settings key and prior session keys are removed.",
-    "Reload the panel; verify guest UI, System default, and no persisted theme."
+    "Choose Dark and set a disposable local engine port through trusted native-panel input; verify two independent local keys.",
+    "Seed one harmless guest session value in the isolated extension profile, and verify it exists.",
+    "Open Clear local data, Cancel; verify theme, port, and session value remain.",
+    "Reopen and Confirm; wait for both local and session clear, then verify every pre-confirm key was removed.",
+    "Reload the panel; verify guest UI, System default, and no persisted theme, port, or session fixture."
   ],
   "verification": {
     "source_syntax": "passed: node --check tests/browser/settings-local-reset-acceptance.mjs",
     "diff_whitespace": "passed: git diff --check",
     "browser_execution": "not run by this lane; primary UI lease belongs to root task",
     "runtime_evidence_path": "test-results/settings-local-reset-acceptance.json",
-    "partial_execution_policy": "The command exits nonzero if any assertion fails or guest session storage has no existing keys to prove session clearing."
+    "partial_execution_policy": "The command exits nonzero if any assertion fails, if the receipt is stale, or if either storage area retains any pre-confirm key.",
+    "peer_round_1": "Confirmed all three runner findings. A controlled session fixture replaces the unreliable natural-key precondition; checks now wait for both clears and bind the released source to the current package. The narrow inherited child-cleanup hang was also repaired.",
+    "mutation_proof": "Pending browser lease: a real run and scratch-only sabotage are required before this case may be reported as passed."
   }
 }
