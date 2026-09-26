@@ -3,6 +3,13 @@
 ## Resume contract
 User authorizes autonomous test → capture → fix → independent retest → green integration. Read PLAN.md, inventory.json, defects and runs. Inventory is sole coverage register; campaign remains largely unverified. Chat/Pilot systematic testing stays last. Shared main only; preserve concurrent edits, fetch before push, never publish red trunk. Root alone launches one resource-guarded heavy test/build OR native browser lease. Flat root+3 max: Luna medium narrow execution, Sol medium coding/moderate diagnosis, fresh independent reviews with separate acceptance/quality verdicts.
 
+## Current integration checkpoint — 2026-09-26 11:10 UTC
+- Latest confirmed push4b24ab3 ~10:27UTC; next hourly deadline11:27UTC. Remote c6e8af1 merged viaafa5de3, frozen install011 passed. Release009 is next; no heavy/browser run active at this checkpoint.
+- Consumer ruling: agents0.14.0 is additive; its explicit migration instructions name other clients. Extension duplicate-reader convergence remains tracked as EXT-L-0010 in Chat/Pilot wave D, honoring user's ordering. No demonstrated break justifies pulling systematic Chat/Pilot work forward; a failing integration gate changes this ruling. Content-ir0.19.3/kit0.16.7 require no current extension consumer edit.
+- Remote Vault recovery scenario added to PilotT03; source-only, runtime unverified. Current primary artifact remains0.2.58, not proof for merged source.
+- After green integration/push, run isolated-admin-signin004 with reviewed safe enum diagnostics. Real web sign-in passed003 but extension admin wait timed out; product cause unresolved. No token/session injection. D14 canonical-origin defect is closed, not the broader authentication case.
+- Diagnostics:15 warm behaviors passed; reload/service-error dimensions remain unverified. T46 guest port case passed0.2.58. D12/D13 closed. Broader campaign and review-queue handoff remain unfinished.
+
 ## Current continuation — 2026-09-26 09:58 UTC
 - Main synchronized and pushed9c9e5b0 after fetch/merge; no remote delta pending at publication. Hourly deadline10:58UTC, fetch at boundaries/15min and before pushes. Existing hourly-matrx-repository-sync automation remains active.
 - Strict release008 published0.2.58 source/tag d66589855aafacfb9a9cfa521b80561b36f8e8b3: all14 gates,1428 tests passed,3 explicit DB skips, no unhandled errors. No Store submission. Later remote dependency refresh matched validated source/deps exactly and was merged without discarding either side.

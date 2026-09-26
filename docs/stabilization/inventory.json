@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T10:50:35.041375+00:00",
+  "updated_at": "2026-09-26T11:12:51.735435+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -22684,6 +22684,14 @@
           "source": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json",
           "wave": "D",
           "reason": "Chat/Pilot cross-system work remains last; not blocking contained Settings tests."
+        },
+        {
+          "id": "EXT-L-0010",
+          "state": "deferred-source-contract-reconciliation",
+          "wave": "D",
+          "summary": "Reconcile extension decision-answer reader with additive agents 0.14.0 canonical reader. Changelog explicitly names frontend and Workflow Studio; extension adoption is a source-census follow-up, not a demonstrated integration break.",
+          "source": "docs/stabilization/reports/remote-1100-reconcile.json",
+          "reason": "User explicitly sequences Chat/Pilot last; retain this nonblocking convergence work for wave D. Reconsider immediately if integration gates expose a regression."
         }
       ]
     },
@@ -23250,10 +23258,12 @@
             "admin"
           ],
           "steps": [
-            "Send Pilot work from source, not-yet, and unknown pages; exercise an admitted credential operation with a controlled changed binding, unavailable field, or lost post-submit document."
+            "Send Pilot work from source, not-yet, and unknown pages; exercise an admitted credential operation with a controlled changed binding, unavailable field, or lost post-submit document.",
+            "Exercise transient null and throwing post-submit document reads that recover to a valid same-origin document before deadline; separately exercise persistent loss through timeout."
           ],
           "expected": [
-            "Pilot context carries the explicit page Source state; a terminal operation reports a reason matching its actual failed stage and never mislabels an unavailable observation as configuration_error."
+            "Pilot context carries the explicit page Source state; a terminal operation reports a reason matching its actual failed stage and never mislabels an unavailable observation as configuration_error.",
+            "Transient document loss is retried within the existing deadline and authority/origin fences; persistent loss fails closed with an accurate terminal reason."
           ],
           "dimensions": [
             "context-contract",
@@ -23279,6 +23289,11 @@
               "source": "ab5d151",
               "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
               "acceptance": "Failed or missing top-frame reads no longer validate a navigation target; post-submit document changes are not reclassified using a check intended for pre-submit binding, and an expired wait is reported as form_changed."
+            },
+            {
+              "source": "c6e8af1",
+              "review": "docs/stabilization/reports/remote-1100-reconcile.json",
+              "acceptance": "Transient post-submit document-loss recovery and persistent-loss timeout; runtime remains unverified."
             }
           ]
         },
@@ -23340,6 +23355,16 @@
         "Execution is deferred to wave D. Source control inventory does not claim chat/provider behavior; run all applicable persona cases after non-Chat/Pilot completion gate.",
         "Agent picker implementation was read from the shared @ai-matrx/agents source checkout; installed package version and live menu behavior require runtime reconciliation.",
         "Public tab label and unavailable Sneak Peek were reconciled from shared package 0.13.10 and host props; still verify picker at wave D."
+      ],
+      "unverified_leads": [
+        {
+          "id": "EXT-L-0010",
+          "state": "deferred-source-contract-reconciliation",
+          "wave": "D",
+          "summary": "Reconcile extension decision-answer reader with additive agents 0.14.0 canonical reader. Changelog explicitly names frontend and Workflow Studio; extension adoption is a source-census follow-up, not a demonstrated integration break.",
+          "source": "docs/stabilization/reports/remote-1100-reconcile.json",
+          "reason": "User explicitly sequences Chat/Pilot last; retain this nonblocking convergence work for wave D. Reconsider immediately if integration gates expose a regression."
+        }
       ]
     },
     {
