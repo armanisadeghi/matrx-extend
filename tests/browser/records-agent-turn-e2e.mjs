@@ -42,9 +42,9 @@
  */
 
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { resolveBrowserRuntime } from './browser-runtime.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
@@ -65,19 +65,7 @@ const TABLE_ID = argOf('--table');
 /** A record seeded into that Table before the browser ever started. */
 const SEEDED_RECORD_ID = argOf('--record');
 
-// Playwright is deliberately NOT a dependency of this repo — the extension
-// ships to a store, it does not ship a browser-test runner. It is borrowed from
-// matrx-frontend, and the borrow is announced rather than hidden.
-const require_ = createRequire(join(WORKSPACE, 'matrx-frontend', 'package.json'));
-let chromium;
-try {
-  ({ chromium } = require_('playwright'));
-} catch (error) {
-  fail(
-    'Playwright is not installed. This harness borrows it from matrx-frontend; ' +
-      `run \`pnpm install\` there first. (${error.message})`,
-  );
-}
+const { chromium, executablePath } = await resolveBrowserRuntime();
 
 function fail(message) {
   console.error(`\n  REFUSED: ${message}\n`);
@@ -194,6 +182,7 @@ async function main() {
   // anyone's screen. Playwright's own `headless: true` swaps in the headless
   // SHELL, which cannot load an unpacked extension at all.
   const context = await chromium.launchPersistentContext('', {
+    executablePath,
     headless: false,
     args: [
       ...(KEEP_OPEN ? [] : ['--headless=new']),

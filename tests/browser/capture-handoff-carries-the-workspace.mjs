@@ -19,9 +19,9 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
  * Nothing is mocked: real Supabase sign-in, real RLS, the built extension
  * loaded unpacked, the real Next dev server, the real live queue.
  */
-import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { resolveBrowserRuntime } from './browser-runtime.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
@@ -36,8 +36,7 @@ mkdirSync(SHOTS, { recursive: true });
 // own, so an empty tray cannot be mistaken for the fix working.
 const WRONG_ORG = { id: '304cd2ed-a65e-4c52-8375-324e605d16bd', name: 'ZZZ G2 Activation Probe' };
 
-const require_ = createRequire(join('/Users/armanisadeghi/code/matrx-frontend', 'package.json'));
-const { chromium } = require_('playwright');
+const { chromium, executablePath } = await resolveBrowserRuntime();
 
 function env(file) {
   const out = {};
@@ -67,6 +66,7 @@ const session = await res.json();
 console.log('signed in as', session.user?.email);
 
 const ctx = await chromium.launchPersistentContext('', {
+  executablePath,
   headless: false,
   args: [
     '--headless=new',

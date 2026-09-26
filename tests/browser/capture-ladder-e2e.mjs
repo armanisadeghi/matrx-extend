@@ -10,9 +10,8 @@
  * cannot reach that: they run the runner against a fake `chrome` object, which
  * is exactly the "manufactured data to the author's own code" a test is not
  * allowed to be mistaken for. Before this file, the only browser script in the
- * repo was a single explicitly-armed Vault canary, and it borrowed Playwright
- * from matrx-frontend's node_modules. This one does the same borrowing — that
- * is deliberate and stated, not an accident — but it is a general harness.
+ * repo was a single explicitly-armed Vault canary. This general harness
+ * resolves Playwright from the repo or an explicitly configured host runtime.
  *
  * WHAT IT PROVES, AND WHAT IT DOES NOT
  * ------------------------------------
@@ -40,9 +39,9 @@
  */
 
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { resolveBrowserRuntime } from './browser-runtime.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
@@ -52,21 +51,7 @@ const SHOTS = join(REPO, '.output', 'capture-ladder-e2e');
 
 const KEEP_OPEN = process.argv.includes('--keep-open');
 
-// Playwright is deliberately NOT a dependency of this repo — the extension
-// ships to a store, it does not ship a browser-test runner. It is borrowed from
-// matrx-frontend, which already installs it, and the borrow is announced rather
-// than hidden behind a try/catch that would make a missing install look like a
-// passing run.
-const require_ = createRequire(join(WORKSPACE, 'matrx-frontend', 'package.json'));
-let chromium;
-try {
-  ({ chromium } = require_('playwright'));
-} catch (error) {
-  fail(
-    'Playwright is not installed. This harness borrows it from matrx-frontend; ' +
-      `run \`pnpm install\` there first. (${error.message})`,
-  );
-}
+const { chromium, executablePath } = await resolveBrowserRuntime();
 
 function fail(message) {
   console.error(`\n  REFUSED: ${message}\n`);
@@ -262,6 +247,7 @@ async function main() {
   // never starts). Launching the full browser and putting IT in new headless
   // mode keeps extensions working with no window on anyone's screen.
   const context = await chromium.launchPersistentContext('', {
+    executablePath,
     headless: false,
     args: [
       ...(KEEP_OPEN ? [] : ['--headless=new']),

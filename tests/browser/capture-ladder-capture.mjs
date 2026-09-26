@@ -30,9 +30,9 @@
  */
 
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { resolveBrowserRuntime } from './browser-runtime.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
@@ -45,8 +45,7 @@ const API = process.env.MATRX_LADDER_API || 'http://127.0.0.1:8077';
 const APP = process.env.MATRX_LADDER_APP || 'https://aimatrx.com';
 const TARGET = process.env.MATRX_LADDER_TARGET || `${APP}/dashboard`;
 
-const require_ = createRequire(join(WORKSPACE, 'matrx-frontend', 'package.json'));
-const { chromium } = require_('playwright');
+const { chromium, executablePath } = await resolveBrowserRuntime();
 
 function fail(message) {
   console.error(`\n  REFUSED: ${message}\n`);
@@ -171,6 +170,7 @@ async function main() {
   console.log(`              ${target.reason} · ${target.reason_note}`);
 
   const context = await chromium.launchPersistentContext('', {
+    executablePath,
     headless: false,
     args: [
       ...(KEEP_OPEN ? [] : ['--headless=new']),
