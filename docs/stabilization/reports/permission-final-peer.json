@@ -1,0 +1,47 @@
+{
+  "defect_id": "EXT-D-0006",
+  "reviewed_commits": ["9c2a3a3", "77ce8f0", "ba5a9ed"],
+  "scope": "Fresh independent source review of repaired permission Settings, shared helpers, dispatcher remedies, Tools badges, manifest declarations, and focused tests. No browser exercise or test run in this review lane.",
+  "verdict_a_runtime": {
+    "status": "UNVERIFIED",
+    "reason": "The admin Settings surface has not been exercised in a rebuilt Chrome extension from this review lane. Grant, refusal, removal, reload, and displayed browser status require live verification."
+  },
+  "verdict_b_engineering_quality": {
+    "status": "PASS",
+    "reason": "No important source regression found in the reviewed target. The shared manifest classifier drives both missing-grant remedies and Tools badges; required debugger and sessions grants are no longer described as optional switches. The focused test gate is running separately in the owner lane, so its result is not claimed here.",
+    "prior_findings": [
+      {
+        "finding": "Permission roster is not build-specific",
+        "status": "ADDRESSED_IN_SOURCE",
+        "evidence": "declaredRuntimeOptionalPermissions filters the Settings rows through runtime optional_permissions; the build config excludes unsupported capture permissions on Firefox and Safari, and the focused test covers an omitted pair."
+      },
+      {
+        "finding": "Refresh rejection can strand a switch busy",
+        "status": "ADDRESSED_IN_SOURCE",
+        "evidence": "AdvancedAgentCapabilities.toggle clears busy in an outer finally; refresh catches a rejected status read and exposes Retry permission check. The test covers a rejected read followed by recovery."
+      },
+      {
+        "finding": "Debugger gate gives impossible remediation",
+        "status": "ADDRESSED_IN_SOURCE",
+        "evidence": "debugger remains required in wxt.config.ts and has an informational Settings row without a switch. Both dispatcher paths call missingPermissionRemedy, which now uses classifyDeclaredPermissions."
+      },
+      {
+        "finding": "Required sessions permission receives optional-switch remedy",
+        "status": "ADDRESSED_IN_SOURCE",
+        "evidence": "sessions is declared in required manifest permissions. classifyDeclaredPermissions maps it to required, and the remedy says it cannot be enabled in Settings; the focused helper test includes sessions."
+      },
+      {
+        "finding": "Focused permission test queries before asynchronous refresh completes",
+        "status": "ADDRESSED_IN_SOURCE",
+        "evidence": "The initial Clipboard read queries in the affected tests now use await screen.findByText. Fresh test result belongs to the owner lane."
+      },
+      {
+        "finding": "Tools roster labels required debugger as optional",
+        "status": "ADDRESSED_IN_SOURCE",
+        "evidence": "ToolsView calls permissionRequirementLabel on the handler requirements; the helper returns req-perm for required debugger and sessions, opt-perm for cookies, mixed perms for a mixed requirement, and unavailable for undeclared permissions."
+      }
+    ],
+    "new_important_findings": [],
+    "evidence_limit": "No runtime Chrome proof and no independently executed focused test result."
+  }
+}
