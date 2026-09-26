@@ -5,7 +5,7 @@
   "mutation": {
     "file": "src/features/settings/AdvancedAgentCapabilities.tsx",
     "change": "Inserted an interactive Switch inside the DevTools Protocol permission status row; it reflects debuggerGranted and routes changes to toggle('debugger'). This recreates the realistic regression where an install-required Chrome permission is offered as user-toggleable.",
-    "scope": "Scratch archive only. Shared source was not changed."
+    "scope": "Scratch archive only. The only deviation from source SHA is the inserted debugger-row Switch. Shared source was not changed."
   },
   "expected_failing_tests": [
     "shows the required debugger grant as status while optional grants remain removable \u2014 within(debuggerRow).queryByRole('switch') must find the unintended switch instead of null.",
@@ -18,5 +18,10 @@
     "environment_files": "None copied; no secrets or .env files included",
     "tests_or_builds_run_by_fixture_author": false
   },
-  "profile_dir": "/Volumes/Samsung2TB/code/.stabilization-scratch/ext-d-0006-red"
+  "profile_dir": "/Volumes/Samsung2TB/code/.stabilization-scratch/ext-d-0006-red",
+  "prior_attempt": {
+    "run": "red002",
+    "result": "Invalid fixture result; 7 failed and 1 passed, with failures caused by a TypeError reading OPTIONAL_PERMISSION_LABELS.debugger.title.",
+    "fixture_defect": "The scratch copy had an extra mutation that appended debugger to the optional-permission list, exposing it to absent optional metadata. That mutation has been removed; only the debugger-row Switch insertion remains."
+  }
 }
