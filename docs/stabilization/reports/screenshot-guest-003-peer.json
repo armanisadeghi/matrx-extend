@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-guest-003-peer",
+  "run_id": "screenshot-guest-003",
+  "source_receipt": "docs/stabilization/runs/screenshot-guest-003.json",
+  "acceptance_verdict": {
+    "status": "BOUNDED_GUEST_T09_ACCEPTED",
+    "scope": "EXT-F-1009-T09 guest denial and recovery through the observed warm, real reload, and real admin-to-guest transition paths on release 0.2.79; no full EXT-F-1009 or signed-in capture/gallery acceptance",
+    "evidence": [
+      "Fresh guest navigation has five public tabs, a guest avatar, no admin avatar, and no Screenshots trigger, pane, or mounted capture controls. Trusted Settings and SEO navigation each reaches a uniquely selected, linked visible pane with its mounted marker while Screenshots remains absent.",
+      "The guest reload records a changed main-frame loader identity. Its post-reload sample is a uniquely selected, linked visible Chat pane with the mounted New chat control and guest agent guidance, no suspense fallback, guest identity, and no Screenshots trigger, pane, or mounted capture controls. This resolves the run 002 sample that still showed a fallback.",
+      "The runner signs in through the real web form and extension control, requires the admin account identity, selects a linked and mounted Screenshots pane, then uses the real avatar Sign out in the same owned profile. The recorded adminScreenshotsSelected=true and post-sign-out sample show a settled guest Chat pane and Screenshots absence. This exercises a genuine selected-tab state across role change."
+    ],
+    "limits": [
+      "The inventory's excluded audience here is guest because Screenshots is signed-in-only. No separate signed-in member behavior, screenshot capture, gallery, save, or deletion was exercised.",
+      "The runner reaches the persisted selected-tab condition through the real sign-out route; it does not inject arbitrary malformed tab state or exercise an inaccessible guest Screenshots trigger. These are outside the observed path.",
+      "The raw result intentionally reports top-level partial. Four passing T09 rows establish only the bounded guest case dimensions, not full feature acceptance."
+    ]
+  },
+  "evidence_quality_verdict": {
+    "status": "ACCEPT_WITH_SCOPE_LIMITS",
+    "checks": [
+      "The unique raw result and guard log SHA-256 values match the generated immutable run receipt. The guard records admission, PARTIAL stdout, a healthy resource watch, and child exit 0 at 2026-09-26T23:53:03.000Z; the coordinator separately confirmed wrapper exit 0. The receipt itself leaves wrapper completion unverified from the guard log, which is accurate for that artifact alone.",
+      "The owned harness validates the release receipt, unpacked extension tree, Store ZIP, expected extension ID, and disposable profile. The result records version 0.2.79 and tree be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0 before and after, artifactTreeMatchedAfter=true, profileOwned=true, and extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml. The current receipt and manifest agree with this identity.",
+      "Source acceptance waits on linked active panes, mounted public Chat content, guest guidance, no suspense fallback, guest avatar, and Screenshots absence after both reload and sign-out. It neither injects authentication nor invokes screenshot capture/save/delete. Raw output carries fixed labels, booleans, and counts rather than credentials or private screenshot content."
+    ],
+    "boundary": "This is an independent review of the saved run and runner source, not a second browser execution or visual observation. The post-run artifact hash is a runner-recorded check, corroborated by the source and release receipt rather than independently recomputed here."
+  }
+}
