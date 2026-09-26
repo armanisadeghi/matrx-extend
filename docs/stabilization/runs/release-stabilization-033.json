@@ -1,0 +1,18 @@
+{
+  "id": "release-stabilization-033",
+  "status": "stopped-before-push",
+  "wrapper": {
+    "source": "/tmp/matrx-release-stabilization-033.log",
+    "sha256": "db0250cbe359788a0bfa8c78e3c0d87a42c36e5c3f6a4e32547778bb636f91a8",
+    "childExitCode": 1,
+    "finishedAt": "2026-09-26T20:39:12.451Z"
+  },
+  "rawLog": {
+    "sourceAtReview": "tmp/release-logs/latest.log",
+    "sha256AtReview": "3e1d48e3b457a1720a2f5577f395b707491cfddf1b08aa5aca045e3d268ae0ba"
+  },
+  "candidateVersion": "0.2.77",
+  "failure": "Mandatory check:matrx-packages failed because installed @ai-matrx/design-system 0.46.3 lagged npm latest 0.46.4. Other @ai-matrx packages checked current.",
+  "publication": "Nothing was pushed or published in this attempt.",
+  "remedy": "Root is refreshing the full @ai-matrx dependency graph to latest; inspect docs/stabilization/reports/package-catchup-005-peer.json for consumer review, then retry release after owner verification."
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/package_catchup_004_peer",
+  "scope": "Consumer review for @ai-matrx/design-system 0.46.3 to 0.46.4 after release-stabilization-033 stopped at the package freshness gate. This lane did not install, build, test, or run a browser.",
+  "source_evidence": {
+    "comparison": "aidream tags npm/design-system/v0.46.3..npm/design-system/v0.46.4, apps/shared/design-system",
+    "changedFiles": [
+      "CHANGELOG.md",
+      "package.json",
+      "src/organization-picker.tsx",
+      "src/organization-picker.test.tsx"
+    ],
+    "organizationPickerSourceDiffSha256": "73fe5313254d052cbda4796526f71af8bab7f4e6794547622a80c63451ce8748",
+    "installedPackageVersion": "0.46.4",
+    "installedChangelogSha256": "f89347acf1f66f7a5e141857fa7d1abc3ec1cd8c0ffa90b8791c1783b981734a",
+    "installedEsmIndexSha256": "c4209d8a8595a3214807d9ba8cfc322fe78eb327ac68f5910c3e212760071c5f",
+    "actualChange": "OrganizationPickerOrganization no longer declares isPersonal, and OrganizationPicker no longer renders a Personal badge. Its tests now use an ordinary named organization instead of a Personal fixture. No required prop or callback changed.",
+    "changelogAccuracy": "The 0.46.4 entry calls this docs/metadata drift and says no source changes intended. The source tag diff shows a real component behavior change. Its no-consumer-action conclusion still holds for the extension."
+  },
+  "extension_applicability": {
+    "pickerCallSite": "src/features/org/OrganizationPickerDialog.tsx passes ActiveOrganization rows from listMemberOrganizations to OrganizationPicker. Its selection callback consumes only organization.id.",
+    "extraField": "ActiveOrganization still has isPersonal. Passing a variable with that extra field is structurally valid TypeScript; the package picker simply ceases to draw its former Personal badge.",
+    "adjacentExistingState": "src/features/settings/SettingsView.tsx still labels isPersonal organizations as '(personal)', and src/lib/org/active-org.ts still derives isPersonal from is_personal. Those are pre-existing platform-doctrine convergence concerns, not a new required API adoption for this package bump.",
+    "consumerAction": "No extension source change required for design-system 0.46.4."
+  },
+  "dependency_refresh_observed": {
+    "lockfileSha256": "5c65901570c66238df242c519d3c7b56afb4d2b7725c7f72f3a06ada8994ed9d",
+    "rootCommitAtReview": "6ac104dd chore: adopt design-system 0.46.4 organization picker update",
+    "lockfileDelta": "Only design-system 0.46.3 to 0.46.4, including its transitive references."
+  },
+  "verdict": "No package-driven host adoption required. Root owns dependency refresh, package gate, build, tests, browser verification, and release retry; none is claimed here."
+}
