@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/member_probe_retry_peer",
+  "reviewed_commit": "fc72f74d00549aeb3ceab696a39095a5cfc36252",
+  "scope": "Independent read-only source review of the member Vault candidate probe repair and sanitized run-002 observation. No browser, test, build, or network operation was run.",
+  "verdict_a_acceptance": {
+    "status": "UNVERIFIED",
+    "reason": "Run member-vault-access-002 proves real admin web and extension sign-in in an owned disposable profile, but it used runner commit 6c0003b and failed at generic stage_operation_failed before inventory. The repaired runner at fc72f74 has not been run, so settled inventory and candidate observation after this repair remain runtime-pending. No member authentication or identity is established."
+  },
+  "verdict_b_quality": {
+    "status": "PASS_WITH_CAVEAT",
+    "positive_evidence": [
+      "The readiness predicates require the Vault heading and the selected Mine/Shared scope, and wait for the inventory spinner and Vault Refresh spinner to stop. They do not wait on the independent site-login spinner; the source comments identify site matching and password generation as separate work.",
+      "The observation crosses the page boundary only as booleans, fixed scope labels, and designated-candidate counts. The persisted lastVaultObservation likewise contains only fixed booleans/categories/counts. No item title, item id, page body, auth URL, session, credential value, or authenticated screenshot is emitted by this runner.",
+      "A visible Vault error is sampled as errorVisible. Once the inventory readiness predicate resolves, the read stage converts it to vault_inventory_error rather than treating the inventory as an empty candidate set.",
+      "The report explicitly says that a matching title is only a candidate and that member login, member identity, and organization-role acceptance are not claimed."
+    ],
+    "caveat": "If an error is visible while a readiness condition remains false, waitFor continues polling until its timeout; the last safe observation retains errorVisible=true, but the top-level failure category remains stage_operation_failed. This preserves evidence without identifying the error as the immediate cause. Run-002's exact failed predicate remains unknown; the spinner theory is only a hypothesis.",
+    "source_references": [
+      "tests/browser/member-vault-access-probe.mjs",
+      "tests/browser/settings-panel-driver.mjs",
+      "src/features/vault/VaultView.tsx",
+      "docs/stabilization/runs/member-vault-access-002.json",
+      "docs/stabilization/reports/member-vault-runtime-prepare.json"
+    ]
+  },
+  "runtime_pending": "A separately admitted guarded run of the repaired runner is required to determine whether inventory settles and to capture the safe predicate observations. Run-002 only verified admin sign-in before the inventory failure."
+}
