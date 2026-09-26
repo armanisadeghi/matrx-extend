@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "report_id": "debug-log-controls-peer",
+  "reviewed_source_commits": ["a5a96395", "7b0fdf77"],
+  "runner": "tests/browser/debug-log-controls-acceptance.mjs",
+  "A_runtime": {
+    "status": "UNVERIFIED",
+    "reason": "This independent lane did not run the browser or build. No claims about actual native UI behavior follow from source inspection."
+  },
+  "B_source": {
+    "status": "QUALIFIED",
+    "verified": [
+      "The owned native harness creates a disposable Chrome profile, and the runner signs in through the real web form and extension Sign in control. It verifies the exact admin email, admin role and Sign out control before opening Debug; it does not inject auth or debug events.",
+      "The Debug snapshot scopes rows to the Log view beneath Search and cross-checks displayed rows against the filtered/total counter. Search requires a real existing row for its positive branch and zero rows plus the distinct no-match state for its negative branch.",
+      "Pause can pass only when rows stay frozen while the total event count grows and resumed rows then grow. Clear can pass only when pre-clear rows existed and the no-events state has zero displayed and total events. T22 remains explicitly unverified rather than receiving a fabricated pass.",
+      "The public result stores counts, booleans, fixed stage names and allowlisted pointer diagnostics. Raw credentials and auth errors do not enter it. Failure screenshots use exclusive mode-0600 creation in an owned private artifact directory."
+    ],
+    "actionable_flaws": [
+      {
+        "case": "EXT-F-1005-T14",
+        "issue": "setSearch changes the React input through a native setter and synthetic InputEvent/change event in page evaluation. This does not prove that a genuine user search action works through the browser's input path. Use trusted input in the owned panel and observe the same positive and negative UI results."
+      },
+      {
+        "case": "EXT-F-1005-T14",
+        "issue": "The positive search term is copied only from the first row's visible message span. The case claims matching message/detail values, but a broken detail-search branch would still pass. Exercise an independently observed detail-bearing row with a term present only in its detail, or narrow the automated claim to message search and leave detail search unverified."
+      },
+      {
+        "case": "run_status",
+        "issue": "If no natural events appear, T14/T15/T17/T22 are all unverified, yet the runner assigns top-level partial and exits 0. An empty-evidence run should remain unverified and exit nonzero so automation cannot treat it as successful acceptance."
+      }
+    ],
+    "limits": [
+      "Public-page navigation is a plausible natural event source, but the runtime must show that it actually produced rows; the current source correctly leaves event-dependent cases unverified when it does not.",
+      "T22 has no automated expand/collapse positive control and remains a separate manual or future runner obligation."
+    ]
+  }
+}
