@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T18:47:56.699245+00:00",
+  "updated_at": "2026-09-26T19:10:12.497840+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -10887,7 +10887,9 @@
             "seo-guest-004",
             "seo-guest-005",
             "seo-guest-006",
-            "seo-guest-007"
+            "seo-guest-007",
+            "seo-guest-008",
+            "seo-guest-009"
           ],
           "retest_status": "not-run"
         },
