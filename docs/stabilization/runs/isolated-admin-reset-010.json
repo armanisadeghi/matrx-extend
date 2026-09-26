@@ -1,0 +1,324 @@
+{
+  "id": "isolated-admin-reset-010",
+  "status": "pass",
+  "acceptance": {
+    "schema_version": 1,
+    "case_id": "EXT-F-1003-T51",
+    "scope": "real native Settings side panel in an owned disposable Chrome profile",
+    "status": "pass",
+    "login_method": "real web form followed by extension Settings Sign in",
+    "response_interception": false,
+    "injected_auth_session": false,
+    "fixture": "Existing owned organization and Dark theme through Settings; inert local/session values",
+    "steps": [
+      "Real web login reached the dashboard",
+      "Existing owned organization selected through Settings and stored on this device",
+      "Real admin identity, Dark preference, and disposable local/session fixtures observed",
+      "Cancel preserved admin UI, auth, preference, fixtures, and every prior storage key/value",
+      "Confirm removed prior extension local/session keys and signed out in Settings",
+      "Panel reload remained guest with System theme; returning keys passed browser-side value identity checks"
+    ],
+    "build": {
+      "version": "0.2.63",
+      "source_sha": "b76367b00b9cfa59a5b81d505e6ecfc1f4a3c413",
+      "tree_sha256": "d1afc8cfbcbbde0b9fd5106b5529b06f46bcb96fdc5b4ada7db397bfd8f15a35",
+      "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+    },
+    "initial_guest_storage": {
+      "local_count": 4,
+      "session_count": 0,
+      "auth_present": false
+    },
+    "organization_setup": {
+      "fixture_option_unique": true,
+      "displayed_match": true,
+      "stored_match": true,
+      "matching_notice_present": true,
+      "matching_notice_dismissed": true
+    },
+    "reset_cancel": {
+      "prior_value_comparison": {
+        "local": {
+          "overlap": 17,
+          "identical": 17,
+          "changed": 0,
+          "missing": 0,
+          "unexplained": 17,
+          "fresh_chat_default": 0,
+          "fresh_guest": 0,
+          "stale_guest": 3,
+          "fresh_instance": 0,
+          "stale_instance": 0,
+          "fresh_discovery_cache": 0,
+          "stale_discovery_cache": 0,
+          "rediscovered_port": 0,
+          "account_overlap": 6,
+          "settings_overlap": 1,
+          "other_overlap": 7,
+          "other_identical": 7,
+          "other_changed": 0,
+          "other_sources": {
+            "chat_preferences": {
+              "overlap": 1,
+              "identical": 1,
+              "changed": 0,
+              "matches_initial_guest": 1,
+              "absent_initial_guest": 0
+            },
+            "pilot_chat_preferences": {
+              "overlap": 1,
+              "identical": 1,
+              "changed": 0,
+              "matches_initial_guest": 0,
+              "absent_initial_guest": 1
+            },
+            "organization_selection": {
+              "overlap": 1,
+              "identical": 1,
+              "changed": 0,
+              "matches_initial_guest": 0,
+              "absent_initial_guest": 1
+            },
+            "organization_picker": {
+              "overlap": 1,
+              "identical": 1,
+              "changed": 0,
+              "matches_initial_guest": 0,
+              "absent_initial_guest": 1
+            },
+            "audit_device": {
+              "overlap": 1,
+              "identical": 1,
+              "changed": 0,
+              "matches_initial_guest": 0,
+              "absent_initial_guest": 1
+            },
+            "audit_history": {
+              "overlap": 1,
+              "identical": 1,
+              "changed": 0,
+              "matches_initial_guest": 0,
+              "absent_initial_guest": 1
+            },
+            "local_fixture": {
+              "overlap": 1,
+              "identical": 1,
+              "changed": 0,
+              "matches_initial_guest": 0,
+              "absent_initial_guest": 1
+            }
+          },
+          "other_shapes": {
+            "null_value": 1,
+            "array": 1,
+            "object": 2,
+            "string": 3
+          }
+        },
+        "session": {
+          "overlap": 3,
+          "identical": 3,
+          "changed": 0,
+          "missing": 0,
+          "unexplained": 3,
+          "fresh_chat_default": 0,
+          "fresh_guest": 0,
+          "stale_guest": 0,
+          "fresh_instance": 0,
+          "stale_instance": 1,
+          "fresh_discovery_cache": 0,
+          "stale_discovery_cache": 0,
+          "rediscovered_port": 0,
+          "account_overlap": 0,
+          "settings_overlap": 0,
+          "other_overlap": 2,
+          "other_identical": 2,
+          "other_changed": 0,
+          "other_sources": {
+            "session_fixture": {
+              "overlap": 1,
+              "identical": 1,
+              "changed": 0,
+              "matches_initial_guest": 0,
+              "absent_initial_guest": 1
+            },
+            "unclassified": {
+              "overlap": 1,
+              "identical": 1,
+              "changed": 0,
+              "matches_initial_guest": 0,
+              "absent_initial_guest": 1
+            }
+          },
+          "other_shapes": {
+            "string": 2
+          }
+        }
+      }
+    },
+    "reset_confirm": {
+      "dialog_reopened": true,
+      "confirm_click_completed": true,
+      "storage_read_attempts": 1,
+      "storage_read_successes": 1,
+      "open_pointer": {
+        "target_rect": {
+          "x": 13,
+          "y": 281.28125,
+          "width": 326,
+          "height": 40
+        },
+        "clipped_rect": {
+          "x": 13,
+          "y": 281.28125,
+          "width": 326,
+          "height": 40
+        },
+        "viewport": {
+          "width": 360,
+          "height": 421
+        },
+        "clipping_ancestor_count": 3,
+        "tested_point_count": 9,
+        "center_hit_category": "target",
+        "selected_point_available": true,
+        "selected_point": {
+          "x": 176,
+          "y": 301.28125
+        },
+        "target_disabled": false,
+        "target_pointer_events_none": false
+      },
+      "last_storage": {
+        "local_count": 0,
+        "session_count": 0,
+        "prior_local_overlap_count": 0,
+        "prior_session_overlap_count": 0,
+        "auth_present": false,
+        "settings_present": false,
+        "local_fixture_present": false,
+        "session_fixture_present": false
+      },
+      "last_panel": {
+        "sign_in_visible": true,
+        "sign_out_visible": false,
+        "advanced_visible": false,
+        "admin_email_visible": false,
+        "admin_role_visible": false
+      }
+    },
+    "reset_reload": {
+      "command_completed": true,
+      "panel_state_read_attempts": 6,
+      "panel_state_read_successes": 6,
+      "last_panel": {
+        "settings_visible": true,
+        "sign_in_visible": true,
+        "sign_out_visible": false,
+        "advanced_visible": false,
+        "admin_email_visible": false,
+        "theme_is_system": true
+      },
+      "storage_read_completed": true,
+      "storage_snapshot": {
+        "auth_present": false,
+        "settings_present": false,
+        "prior_value_comparison": {
+          "local": {
+            "overlap": 4,
+            "identical": 1,
+            "changed": 3,
+            "missing": 13,
+            "unexplained": 0,
+            "fresh_chat_default": 1,
+            "fresh_guest": 3,
+            "stale_guest": 0,
+            "fresh_instance": 0,
+            "stale_instance": 0,
+            "fresh_discovery_cache": 0,
+            "stale_discovery_cache": 0,
+            "rediscovered_port": 0,
+            "account_overlap": 0,
+            "settings_overlap": 0,
+            "other_overlap": 1,
+            "other_identical": 1,
+            "other_changed": 0,
+            "other_sources": {
+              "chat_preferences": {
+                "overlap": 1,
+                "identical": 1,
+                "changed": 0,
+                "matches_initial_guest": 1,
+                "absent_initial_guest": 0
+              }
+            },
+            "other_shapes": {
+              "string": 1
+            }
+          },
+          "session": {
+            "overlap": 0,
+            "identical": 0,
+            "changed": 0,
+            "missing": 3,
+            "unexplained": 0,
+            "fresh_chat_default": 0,
+            "fresh_guest": 0,
+            "stale_guest": 0,
+            "fresh_instance": 0,
+            "stale_instance": 0,
+            "fresh_discovery_cache": 0,
+            "stale_discovery_cache": 0,
+            "rediscovered_port": 0,
+            "account_overlap": 0,
+            "settings_overlap": 0,
+            "other_overlap": 0,
+            "other_identical": 0,
+            "other_changed": 0,
+            "other_sources": {},
+            "other_shapes": {}
+          }
+        },
+        "local_fixture_present": false,
+        "session_fixture_present": false,
+        "prior_local_overlap_count": 4,
+        "prior_session_overlap_count": 0
+      }
+    }
+  },
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T13:00:49.104Z",
+      "runId": "isolated-admin-reset-010",
+      "mode": "run",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.87,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.15491428571428573,
+        "swapUsedMiB": 2653.69,
+        "repoFreeGiB": 1675.931064605713,
+        "profileFreeGiB": 22.411903381347656
+      },
+      "cpuBusySamples": [
+        0.10819999999999996, 0.15280000000000005, 0.20129999999999992, 0.25549999999999995,
+        0.1615000000000001, 0.11430000000000007, 0.09079999999999999
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T13:01:02.668Z",
+      "runId": "isolated-admin-reset-010",
+      "childExitCode": 0,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    }
+  ]
+}
