@@ -2312,8 +2312,9 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Choose/clear device active organization and handle errors."
+            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
+            "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
+            "Perform a full extension Reload and confirm the organization persists."
           ],
           "expected": [
             "Selected organization is reflected as Acting as after reload; unset state requires explicit selection and does not choose an implicit default."
@@ -2321,7 +2322,8 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "scope_note": "SettingsView.tsx:144-153 offers Choose only while unset and ignores NONE; no clear control exists. Generated choose/clear step corrected to actual feature. Empty-membership/error states remain unverified unless tested."
         },
         {
           "id": "EXT-F-1003-T03",
@@ -2336,8 +2338,9 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Choose/clear device active organization and handle errors."
+            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
+            "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
+            "Perform a full extension Reload and confirm the organization persists."
           ],
           "expected": [
             "Selected organization is reflected as Acting as after reload; unset state requires explicit selection and does not choose an implicit default."
@@ -2345,7 +2348,16 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "scope_note": "SettingsView.tsx:144-153 offers Choose only while unset and ignores NONE; no clear control exists. Generated choose/clear step corrected to actual feature. Empty-membership/error states remain unverified unless tested.",
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "admin-org-001",
+              "evidence": "docs/stabilization/runs/admin-org-001.json",
+              "detail": "Initialunset did not chooseimplicitly; explicitfixture selected, Actingas and fullreload persistence verified. Nonexistent clear-step corrected from source/UI."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T04",
@@ -4081,7 +4093,9 @@
           "defect_ids": [
             "EXT-D-0001"
           ],
-          "run_ids": [],
+          "run_ids": [
+            "admin-org-001"
+          ],
           "retest_status": "not-run"
         }
       },

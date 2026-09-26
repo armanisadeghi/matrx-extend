@@ -32,3 +32,5 @@ User resumed04:46UTC. Remote main unchanged and resourcepressure normal. guest-s
 04:55UTC: guesttheme001 completedT04 (all3themes visibly applied/persisted through fullreload, originalSystem restored). Inventory casepass. Samehealthy lease76318 remains held; Luna guest_cold_three now owns admin-signin001 normalOAuth+reload persistence. Credential values never recorded.
 
 05:02UTC: admin-signin001 T52 fullpass; admin@admin.com ADMIN persists afterreload. F0001T05 remainspartial(callbacknotobserved). Noorgselected. L0006 capturelist-noorgnotice tracked without claimingauthfailure. Samelease76318 healthy; Luna guest_cold_three now owns admin-org001T03 existingexplicit-test-org selection/persistence, no datawrites.
+
+05:06UTC: adminorg001 initialunset+explicitfixtureselection+fullreload passed correctedT03. Generated clearstep removed T02/T03 basedon source/UI; workerpartial retained with adjudication. Fixture ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete remainsselected; no orgdata/membershipchanges. Samehealthy lease76318; Luna now admin-default-agent001T09 (pickeronly, noagentexecution).

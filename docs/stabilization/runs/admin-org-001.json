@@ -13,15 +13,20 @@
     "version": "0.2.51",
     "source": ".output/chrome-mv3-dev",
     "identity": "admin@admin.com (ADMIN)",
-    "selected_organization": "ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete",
+    "selected_organization": "ZZZ APPROVAL-TAIL throwaway a2c8a05f \u2014 safe to delete",
     "organization_id_visible": false
   },
   "evidence": [
-    "Before selection the Organization selector showed Choose… with no Acting as label; no implicit organization was selected.",
-    "Selected the clearly disposable existing fixture labeled ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete; Settings then showed Acting as and that exact label.",
+    "Before selection the Organization selector showed Choose\u2026 with no Acting as label; no implicit organization was selected.",
+    "Selected the clearly disposable existing fixture labeled ZZZ APPROVAL-TAIL throwaway a2c8a05f \u2014 safe to delete; Settings then showed Acting as and that exact label.",
     "Used Chrome Extensions > Matrx Extend > Reload; Chrome announced Reloaded and closed the side panel. After reopening Settings, the same Acting as label remained selected.",
-    "After selection, the open selector exposed existing organizations but no Choose… or clear/unset option; the unset-and-hold round trip could not be exercised through a visible control."
+    "After selection, the open selector exposed existing organizations but no Choose\u2026 or clear/unset option; the unset-and-hold round trip could not be exercised through a visible control."
   ],
   "ui_stopped": true,
-  "state_left": "Signed in as admin@admin.com; explicit throwaway test fixture remains selected as Acting as; Settings > Organization open."
+  "state_left": "Signed in as admin@admin.com; explicit throwaway test fixture remains selected as Acting as; Settings > Organization open.",
+  "coordinator_adjudication": {
+    "status": "pass-for-corrected-T03",
+    "reason": "Generated clear action is not a product control. Source SettingsView NONE guard and activeconditional options agree with live UI. Initial explicit choice and reload persistence verified.",
+    "scope": "No empty-membership/error/network-failure proof. Original workerpartial retained."
+  }
 }
