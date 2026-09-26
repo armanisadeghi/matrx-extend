@@ -319,6 +319,7 @@ async function detailOnlySearchTerm(panel, rowText) {
 function observeHealthRequests(panel, expectedUrl) {
   const requests = new Map();
   const healthRequests = new Map();
+  const panelRequests = new Map();
   let panelRequestCount = 0;
   const isHealth = (url) => {
     try {
@@ -327,12 +328,30 @@ function observeHealthRequests(panel, expectedUrl) {
       return false;
     }
   };
+  const requestCategory = (rawUrl) => {
+    try {
+      const url = new URL(rawUrl);
+      if (rawUrl === expectedUrl) return 'selected_backend_health';
+      if (url.pathname === '/health') return 'other_health';
+      if (['/auth/v1/token', '/auth/v1/oauth/token'].includes(url.pathname)) return 'auth_token';
+      if (url.pathname === '/auth/v1/user') return 'auth_user';
+      if (url.pathname === '/auth/v1/.well-known/jwks.json') return 'auth_keys';
+      if (url.pathname === '/rest/v1/rpc/mbr_for_user') return 'membership_lookup';
+      if (url.pathname === '/rest/v1/organizations') return 'organization_lookup';
+      if (url.pathname.startsWith('/rest/v1/')) return 'database_request';
+      if (url.protocol === 'chrome-extension:') return 'extension_resource';
+      if (url.origin === new URL(expectedUrl).origin) return 'selected_backend_other';
+      return 'other';
+    } catch {
+      return 'unclassified';
+    }
+  };
   const offRequest = panel.on(
     'Network.requestWillBeSent',
     ({ requestId, request, redirectResponse, type }) => {
       panelRequestCount++;
-      if (!isHealth(request?.url)) return;
       const entry = {
+        category: requestCategory(request?.url),
         url: request.url,
         method: request.method,
         status: null,
@@ -347,12 +366,14 @@ function observeHealthRequests(panel, expectedUrl) {
         blocked: false,
         canceled: false,
       };
+      panelRequests.set(requestId, entry);
+      if (!isHealth(request?.url)) return;
       healthRequests.set(requestId, entry);
       if (request.method === 'GET') requests.set(requestId, entry);
     },
   );
   const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
-    const request = healthRequests.get(requestId);
+    const request = panelRequests.get(requestId);
     if (request) {
       request.status = response?.status ?? null;
       request.servedFromCache ||= response?.fromDiskCache === true;
@@ -360,13 +381,13 @@ function observeHealthRequests(panel, expectedUrl) {
     }
   });
   const offFinished = panel.on('Network.loadingFinished', ({ requestId }) => {
-    const request = healthRequests.get(requestId);
+    const request = panelRequests.get(requestId);
     if (request) request.finished = true;
   });
   const offFailed = panel.on(
     'Network.loadingFailed',
     ({ requestId, errorText, corsErrorStatus, blockedReason, canceled }) => {
-      const request = healthRequests.get(requestId);
+      const request = panelRequests.get(requestId);
       if (!request) return;
       request.corsFailure = Boolean(corsErrorStatus);
       request.blocked = Boolean(blockedReason);
@@ -384,7 +405,7 @@ function observeHealthRequests(panel, expectedUrl) {
     },
   );
   const offCache = panel.on('Network.requestServedFromCache', ({ requestId }) => {
-    const request = healthRequests.get(requestId);
+    const request = panelRequests.get(requestId);
     if (request) request.servedFromCache = true;
   });
   return {
@@ -396,6 +417,30 @@ function observeHealthRequests(panel, expectedUrl) {
       const count = (predicate) => entries.filter(predicate).length;
       return {
         panelRequestCount,
+        // Fixed categories summarize the pre-health pipeline without retaining
+        // auth/DB paths, query parameters, headers, payloads or identities.
+        panelRequestCategories: [
+          ...new Set([...panelRequests.values()].map((entry) => entry.category)),
+        ].map((category) => {
+          const group = [...panelRequests.values()].filter((entry) => entry.category === category);
+          return {
+            category,
+            count: group.length,
+            responseStatuses: [
+              ...new Set(group.map((entry) => entry.status).filter(Number.isInteger)),
+            ],
+            finishedCount: group.filter((entry) => entry.finished).length,
+            pendingCount: group.filter((entry) => !entry.finished && entry.failureCategory === null)
+              .length,
+            failedCount: group.filter((entry) => entry.failureCategory !== null).length,
+            offlineFailureCount: group.filter((entry) => entry.offlineFailure).length,
+            failureCategories: [
+              ...new Set(group.map((entry) => entry.failureCategory).filter(Boolean)),
+            ],
+            corsFailureCount: group.filter((entry) => entry.corsFailure).length,
+            blockedCount: group.filter((entry) => entry.blocked).length,
+          };
+        }),
         healthPathRequestCount: entries.length,
         distinctHealthUrlCount: new Set(entries.map((entry) => entry.url)).size,
         intendedBackendCount: count((entry) => entry.url === expectedUrl),
@@ -488,7 +533,7 @@ async function bridgePingUi(panel) {
 
 // The Debug Bridges button calls pingHealth('debug bridges panel') in this
 // side-panel document. Its /health GET is read-only and its OK/FAIL label is
-// real product UI; CDP only observes the request and toggles this owned target.
+// real product UI; CDP observes this owned target and faults only its health URL.
 async function exerciseServiceError(panel) {
   const observed = {
     onlinePositiveControl: false,
@@ -549,11 +594,8 @@ async function exerciseServiceError(panel) {
     if (restored) return;
     probe?.stop();
     if (offlineAttempted) {
-      await restoreCommand('restore_panel_online', 'Network.emulateNetworkConditions', {
-        offline: false,
-        latency: 0,
-        downloadThroughput: -1,
-        uploadThroughput: -1,
+      await restoreCommand('remove_health_outage_rule', 'Network.emulateNetworkConditionsByRule', {
+        matchedNetworkConditions: [],
       });
       offlineAttempted = false;
     }
@@ -617,13 +659,23 @@ async function exerciseServiceError(panel) {
       'selected backend unchanged before outage',
     );
     offlineAttempted = true;
-    observed.operation = 'set_panel_offline';
-    await panel.send('Network.emulateNetworkConditions', {
-      offline: true,
-      latency: 0,
-      downloadThroughput: 0,
-      uploadThroughput: 0,
+    observed.operation = 'set_selected_health_offline';
+    // A service outage must not prevent auth/membership prerequisites from
+    // dispatching the service request. CDP's per-rule offline flag affects only
+    // this exact URL; no global rule or navigator override is installed.
+    const rule = await panel.send('Network.emulateNetworkConditionsByRule', {
+      matchedNetworkConditions: [
+        {
+          urlPattern: onlineUrl,
+          offline: true,
+          latency: 0,
+          downloadThroughput: -1,
+          uploadThroughput: -1,
+        },
+      ],
     });
+    assert.equal(rule.ruleIds?.length, 1, 'one selected-health network rule installed');
+    observed.outageScope = 'selected_backend_health_url_only';
     observed.offlineSetApplied = true;
     await phaseDiagnostic('offline_before_click');
     observed.operation = 'offline_ping_click';
