@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "report_id": "d23-closeout",
+  "closed_at": "2026-09-26T22:04:29Z",
+  "defect_id": "EXT-D-0023",
+  "state": "closed",
+  "closure_basis": [
+    {
+      "evidence": "docs/stabilization/runs/notice-resolution-red-001.json",
+      "result": "Two intended stale-notice assertions failed on the unfixed implementation."
+    },
+    {
+      "evidence": "docs/stabilization/runs/notice-resolution-green-001.json",
+      "result": "Guarded two-file suite passed 24 tests, including existing notice and late-arrival retirement plus unrelated refusal preservation."
+    },
+    {
+      "evidence": "docs/stabilization/reports/d23-implementation-peer.json",
+      "result": "Independent source review found the typed resolution condition is scoped to no-workspace refusals and unrelated errors survive."
+    },
+    {
+      "evidence": "docs/stabilization/runs/source-workspace-007.json",
+      "result": "Native read-only D23 retest observed notice before selection, absence after selecting the approved organization without manual dismissal, and Save hit-testability across nine interior samples. Actual retest timestamp: 2026-09-26T21:59:09.585Z."
+    },
+    {
+      "evidence": "docs/stabilization/runs/release-stabilization-037.json",
+      "result": "Release 0.2.78 local checks passed, including typecheck and 1,469 tests; exact GitHub Actions run 36273958725 completed success on df4c51ef5f145855855673d546c692247d5f07e7."
+    }
+  ],
+  "inventory_links": {
+    "EXT-F-2010": ["source-workspace-005", "source-workspace-006", "source-workspace-007"],
+    "EXT-F-1008": ["seo-guest-016", "seo-guest-017"]
+  },
+  "status_boundary": {
+    "EXT-D-0023": "Closed after explicit fixed -> retest-pass -> closed history entries. This is defect-specific closure.",
+    "EXT-F-2010-T02": "Remains unverified as a full case; the native run was admin mode and did not exercise pending-handoff queue switching.",
+    "EXT-F-2010": "Feature mode test_status and retest_status remain unverified/not-run.",
+    "EXT-D-0022": "Remains open. Run 007 made no Save input; the earlier result remains ambiguous, and the reserved checkpoint remains unchanged.",
+    "EXT-F-1008": "Guest case/feature statuses unchanged. SEO016/017 are linked only as unverified bounded observations; exact automatic data and readability metric correctness remain unverified."
+  },
+  "validation": {
+    "defect_json_parse": "pass",
+    "inventory_json_parse": "pass",
+    "report_json_parse": "pass",
+    "ascii_escaping": "pass",
+    "biome": "pass",
+    "diff_check": "pass"
+  }
+}

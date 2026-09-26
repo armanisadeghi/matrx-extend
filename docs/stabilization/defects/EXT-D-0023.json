@@ -19,11 +19,20 @@
     "src/lib/capture-ladder/queue.ts",
     "src/state/notices.ts",
     "tests/unit/notice-resolution.test.tsx",
-    "/tmp/matrx-notice-resolution-red-001.log"
+    "/tmp/matrx-notice-resolution-red-001.log",
+    "docs/stabilization/runs/notice-resolution-red-001.json",
+    "docs/stabilization/runs/notice-resolution-green-001.json",
+    "docs/stabilization/reports/d23-notice-resolution.json",
+    "docs/stabilization/reports/d23-implementation-peer.json",
+    "docs/stabilization/runs/source-workspace-005.json",
+    "docs/stabilization/runs/source-workspace-006.json",
+    "docs/stabilization/runs/source-workspace-007.json",
+    "docs/stabilization/reports/d23-runtime-peer.json",
+    "docs/stabilization/runs/release-stabilization-037.json"
   ],
   "severity": "S2: a resolved notice can obstruct Save, Reset and other visible controls after ordinary workspace selection; no Source data loss is demonstrated",
   "priority": "P1: retire resolved no-workspace notices in the shared notice layer so core controls remain usable, while preserving unrelated errors",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/d22_ci_refusal_timing",
   "transition_history": [
     {
@@ -43,9 +52,21 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "The typed notice-resolution repair passed the guarded two-file, 24-test run. Independent source review and native UI retest remain pending."
+    },
+    {
+      "at": "2026-09-26T21:59:09.585Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Native read-only run source-workspace-007 observed the typed no-workspace notice before approved organization selection, its absence after selection without manual dismissal, and a unique enabled Save target hit-tested at all nine sampled interior points. This is bounded D23 retest evidence only; no Save input was sent."
+    },
+    {
+      "at": "2026-09-26T22:04:29Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "D23 closure requirements are satisfied by the focused red-to-green 24-test guard, independent source review, release 0.2.78 local typecheck/full 1,469-test suite and exact CI success, and native read-only D23 retest. EXT-F-2010-T02 full pending-queue semantics remain unverified; EXT-D-0022 remains open and the earlier Save result ambiguous."
     }
   ],
   "fix_commits": ["9b64e44e"],
-  "ui_retest": "pending; the original D22 Save attempt remains ambiguous and its private checkpoint must not be reset or retried",
+  "ui_retest": "passed: source-workspace-007 native read-only D23 notice-retirement and Save hit-testability acceptance at 2026-09-26T21:59:09.585Z; no Save input was sent. This closes EXT-D-0023 only, not EXT-F-2010-T02 or EXT-D-0022.",
   "closure_requirement": "Guarded red-to-green notice-resolution tests, typecheck, independent source review, and a read-only native panel rerun showing that selecting a workspace removes only the resolved no-workspace notice so Save is hit-testable. No second Save input is needed."
 }
