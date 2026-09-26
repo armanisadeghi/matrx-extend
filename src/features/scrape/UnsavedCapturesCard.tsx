@@ -131,9 +131,15 @@ export function UnsavedCapturesCard({
         onConfirm={() => {
           const target = discardTarget;
           setDiscardTarget(null);
-          if (target) void discardUnsavedCapture(target.id).then(listUnsavedCaptures).then(setRows).catch(() => {
-            setRetryError('This capture could not be discarded from this device. It is still here; retry when device storage is available.');
-          });
+          if (target)
+            void discardUnsavedCapture(target.id)
+              .then(listUnsavedCaptures)
+              .then(setRows)
+              .catch(() => {
+                setRetryError(
+                  'This capture could not be discarded from this device. It is still here; retry when device storage is available.',
+                );
+              });
         }}
       />
     </div>

@@ -307,7 +307,9 @@ async function dropUnsavedForUrl(
       await chrome.storage.local.set({ [UNSAVED_TERMINALS_KEY]: completed });
     }
   }).catch((err) => {
-    throw new Error(`The Source landed, but its retry state could not be updated on this device (${String(err)}). Keep this panel open and retry once device storage is available.`);
+    throw new Error(
+      `The Source landed, but its retry state could not be updated on this device (${String(err)}). Keep this panel open and retry once device storage is available.`,
+    );
   });
 }
 
@@ -366,12 +368,19 @@ export async function saveCaptureAsSource(
     revision = await reserveQueueRevision();
   } catch (err) {
     return {
-      status: 'unsaved', persisted: false,
+      status: 'unsaved',
+      persisted: false,
       unsaved: {
-        id: newId(), url: soup.url, title: prepared.name, prepared,
-        createdAt: Date.now(), attempts: 0,
+        id: newId(),
+        url: soup.url,
+        title: prepared.name,
+        prepared,
+        createdAt: Date.now(),
+        attempts: 0,
         lastRefusal: {
-          status: -3, code: 'device_storage_unavailable', retryable: true,
+          status: -3,
+          code: 'device_storage_unavailable',
+          retryable: true,
           remedy: 'keep_panel_open_and_retry',
           message: `This page was not sent or saved on this device because device storage is unavailable (${String(err)}). Keep this panel open and retry; your editable capture is still here.`,
         },
@@ -396,7 +405,11 @@ export async function saveCaptureAsSource(
   };
   try {
     const queued = await upsertUnsaved(unsaved);
-    if (!queued) return { status: 'empty', message: 'A newer save or discard already completed for this page.' };
+    if (!queued)
+      return {
+        status: 'empty',
+        message: 'A newer save or discard already completed for this page.',
+      };
     unsaved = queued;
   } catch (err) {
     // The device store refused too (quota, storage disabled). The capture is
