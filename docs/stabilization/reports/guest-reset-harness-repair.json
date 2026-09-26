@@ -2,7 +2,7 @@
   "schema": 1,
   "defect": "EXT-D-0009",
   "case": "EXT-F-1003-T49",
-  "status": "source_repaired_runtime_pending",
+  "status": "native_ui_reached_port_setup_diagnostic_pending",
   "rootCause": "native-sidepanel-qa-harness.mjs loaded Playwright at module import through /Users/armanisadeghi/code/matrx-frontend/package.json, a different checkout absent on this host. The acceptance runner failed with MODULE_NOT_FOUND before its receipt or UI checks.",
   "originalRedEvidence": {
     "log": "/tmp/matrx-guest-reset-001.log",
@@ -31,7 +31,13 @@
     "nodeCheck": "pass: node --check tests/browser/native-sidepanel-qa-harness.mjs",
     "diffCheck": "pass: git diff --check -- tests/browser/native-sidepanel-qa-harness.mjs",
     "runtimePaths": "pass: both configured files exist; Chrome executable is executable",
-    "browserAcceptance": "pending parent admitted run"
+    "browserAcceptance": "guest-reset-002 reached isolated native side panel; Dark theme visibly changed and persisted; port setup failed before reset"
+  },
+  "secondRun": {
+    "log": "/tmp/matrx-guest-reset-002.log",
+    "result": "port_override_persisted_not_observed",
+    "observed": "Dark theme persisted, but chrome.storage.local had no matrxLocalEnginePortOverride key after typing 65001 and clicking Set",
+    "diagnosticChange": "Wait for actual focused input value 65001 before Set, then include visible input, button label, inline error, and storage in bounded persistence failure evidence. No storage is seeded or bypassed."
   },
   "acceptanceCommand": "MATRX_PLAYWRIGHT_MODULE='/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs' MATRX_CHROME_PATH='/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing' node tests/browser/settings-local-reset-acceptance.mjs",
   "preservedGates": [

@@ -100,8 +100,24 @@ async function click(panel, kind, label) {
 async function setEnginePort(panel) {
   await click(panel, 'port', 'Local engine port');
   await panel.send('Input.insertText', { text: String(PORT) });
+  await waitFor('port_input_typed', () => portControlState(panel),
+    (state) => state?.value === String(PORT) && state.focused);
   await click(panel, 'button', 'Set');
-  await waitFor('port_override_persisted', () => storageState(panel), (s) => s.port === PORT);
+  await waitFor('port_override_persisted', async () => ({
+    control: await portControlState(panel), storage: await storageState(panel),
+  }), (state) => state.storage?.port === PORT);
+}
+
+async function portControlState(panel) {
+  return evaluate(panel, `(() => {
+    const input = document.querySelector('input[placeholder="auto"]');
+    if (!input) return null;
+    const button = [...input.parentElement.querySelectorAll('button')]
+      .find((el) => /^(Set|Save)$/.test(el.textContent.trim()));
+    return { value: input.value, focused: document.activeElement === input,
+      button: button?.textContent.trim() ?? null,
+      error: input.parentElement.nextElementSibling?.textContent.trim() ?? null };
+  })()`);
 }
 
 async function seedDisposableSession(panel) {
