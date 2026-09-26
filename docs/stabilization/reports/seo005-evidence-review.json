@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "review": "seo005-evidence-review",
+  "reviewed_at": "2026-09-26",
+  "verdict_a_runtime_acceptance": {
+    "result": "PARTIAL_PASS_T05_POST_RELOAD",
+    "evidence": [
+      "The preserved resource log records RESOURCE_ADMITTED with no reasons, then RESOURCE_JOB_EXIT with childExitCode 0 and no signal at 2026-09-26T18:45:04.090Z; acceptance artifact status is partial.",
+      "T07 admin identity and explicit organization prerequisite passed; the admin Copy audit menu offered text, AI, and JSON without selecting an option.",
+      "T09 passed bounded title and heading-group-presence comparisons on two public pages.",
+      "T05 passed count-to-rendered-row equality, actual prior Save response identity in history, selection of that row's snapshot, Live restoration, and persisted history/snapshot identity after a fresh panel document reload.",
+      "The runner's post-reload predicate requires a newer document time origin and one unique mounted main SEO navigation target before any possible reselection. If already selected, it does not click. It then requires the same saveId in reloaded history and selected snapshot. The aggregate records only true/false evidence, not the ID."
+    ],
+    "limits": [
+      "Evidence is scoped to the identified saved row in selected-organization admin mode; it does not establish full T05, all EXT-F-1008 targets, or member-role behavior.",
+      "The post-reload page oracle compares the current linked audit to the pre-reload public title and Re-audit state but does not independently verify the browser tab URL after reload.",
+      "Clipboard output, provider recommendations, Chat, remaining SEO fields, history empty/error/loading, two-snapshot comparison, changed-page diff, and member gates remain unverified."
+    ]
+  },
+  "verdict_b_source_quality_and_provenance": {
+    "result": "PASS_WITH_LIMITS",
+    "evidence": [
+      "Reviewed runner source at b42c5f5c0db92d1e68606d9ff1678f542c5266bf (SHA-256 642d9f98b59a4b9d374e3d2f4f35079e225a41bef76d0b6af8b8900b4fa9a45e). The reload gate waits for document remount and unique main navigation controls; all post-reload identity comparisons use the actual prior saveId.",
+      "The read-only checkpoint resume returns the stored ID and does not issue Save. Durable acceptance evidence contains no checkpoint value or raw request content.",
+      "The EXT-D-0021 original failure was a false-negative count oracle: run 003 had an opened one-row history containing the real saved ID, but template cooking turned the numeric regex into a literal-d check and count became zero. The fix reads the component's count span with a template-safe [0-9] regex and still requires count-to-row equality and ID identity. Run 005 supplies fresh runtime proof of those checks through reload, closing the recorded closure requirement for this bounded harness regression. No product history defect was established."
+    ],
+    "limits": [
+      "The runtime resource log does not itself embed extension version or artifact digest. Version/source identity is tied to release-stabilization-028 provenance, while runner identity is verified from the checked-out source commit and hash.",
+      "The original regression is now covered by a real read-only runtime path, but this does not prove all possible embedded regular-expression forms are safe or close broader SEO history coverage."
+    ]
+  },
+  "evidence_hashes": {
+    "acceptance_sha256": "ed3e20e42c159321960fccf18a49b799e076ebfc193eb28cc1226bb768e66b1f",
+    "resource_log_sha256": "97dc655b5bd7dcc53baecb4f8708ee64a2d2f851184f5dfedb028f6c5aba306e",
+    "runner_sha256": "642d9f98b59a4b9d374e3d2f4f35079e225a41bef76d0b6af8b8900b4fa9a45e"
+  },
+  "verification_method": "Fresh source and artifact review of the preserved admin acceptance JSON, resource log, runner, EXT-D-0021, its original reproducer, and prior run history. No browser, build, or heavy test was launched. Checkpoint contents and audit identifiers were not read into this review."
+}
