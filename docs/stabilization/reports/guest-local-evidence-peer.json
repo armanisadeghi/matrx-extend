@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "a33fdbf3ae79034d54ac0671afc46e45ecc812ad",
+  "lane": "independent guest Settings local evidence review",
+  "scope": [
+    "EXT-F-1003-T22",
+    "EXT-F-1003-T37",
+    "EXT-F-1003-T46",
+    "EXT-F-1003-T70"
+  ],
+  "verdict_a_recorded_evidence_acceptance": {
+    "status": "PASS_T22_T37_LIMITED_TO_RECORDED_CRITERIA",
+    "runtime_executed_by_reviewer": false,
+    "cases": [
+      {
+        "id": "EXT-F-1003-T22",
+        "status": "pass",
+        "basis": "guest-settings-local-001 records guest section-tree, Advanced agent capabilities text, and Audit key/Permission gate controls absent in both warm and reload observations. These directly cover inventory's guest hiding criteria. The driver performs Page.reload then reopens Settings; this is panel reload/reopen evidence, while guest-settings-007 independently records absence across Chrome's full extension Reload."
+      },
+      {
+        "id": "EXT-F-1003-T37",
+        "status": "pass",
+        "basis": "Run records exactly one Deep clean switch, visible coming-soon text, false-to-true toggle, and the same true state plus hint after panel reload. The test restores the initial value. This supports the inventory's visible preference and persistence expectation only; it makes no claim that deep-clean behavior is integrated."
+      },
+      {
+        "id": "EXT-F-1003-T46",
+        "status": "fail",
+        "basis": "The recorded trusted replacement becomes 665365001 instead of the intended value and the runner fails. Rediscovery also remains unverified. EXT-D-0011 remains the owning harness defect; this does not establish a product pass."
+      },
+      {
+        "id": "EXT-F-1003-T70",
+        "status": "fail",
+        "basis": "The recorded update-button center is outside the native panel viewport and no click lands. Alternate API/update outcomes remain unverified. EXT-D-0011 remains the owning harness defect; this does not establish a product pass."
+      }
+    ],
+    "limitations": [
+      "This peer inspected existing artifacts and source only; no browser or heavy runner was launched.",
+      "T22 and T37 status accepts the run's panel reload/reopen dimension. T22 also has separate earlier full-extension-reload evidence in guest-settings-007, though that older run did not record the admin-control text scan."
+    ]
+  },
+  "verdict_b_forcing_function_and_honesty": {
+    "status": "REAL_UI_CHAIN_SUPPORTED_NO_MUTATION_PROOF",
+    "basis": [
+      "The runner uses the isolated native Chrome-for-Testing panel, trusted CDP pointer/keyboard interactions, and live DOM observation; it does not inject product state or mock browser APIs.",
+      "T22's absence criteria read the rendered section tree and page text, so exposing the restricted section or either named control changes the observed result.",
+      "T37 reads the rendered switch and hint, requires an observed state change after a real click, then reloads and requires persisted state and hint. A missing switch, missing hint, inert control, or lost persistence cannot reach pass.",
+      "The aggregate runner leaves unobserved T70 dimensions unverified and preserves T46/T70 interaction failures; neither can become an overall pass while criteria remain unverified or failed."
+    ],
+    "limits": [
+      "No forcing-function mutation or mutant run was performed in this evidence-review lane.",
+      "The artifact supports case acceptance for T22/T37, not a claim that the acceptance runner itself has completed the skill's mutation-proof standard."
+    ]
+  },
+  "validation": "Read-only comparison of inventory.json, guest-settings-local-001.json, test-results/settings-local-controls-acceptance.json, settings-local-controls-acceptance.mjs, and related prior evidence. No browser/test/build launched."
+}
