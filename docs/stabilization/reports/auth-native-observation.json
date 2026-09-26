@@ -1,0 +1,17 @@
+{
+  "id": "auth-native-observation-report-001",
+  "run_id": "auth-native-observation-001",
+  "defect_id": "EXT-D-0007",
+  "assessment": "The reproduced initial guest/error UI did not recur after either of two full extension reloads in this native Chrome session. Admin identity and the same selected organization were visible after both reloads; the first remained stable through 30 seconds.",
+  "evidence": {
+    "extension_identity": "Native Chrome Extensions details showed Matrx Extend, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.53, loaded from /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev.",
+    "build_source_sha": "522390c7a2c789d2a0afa822fd62410d53a0468a",
+    "build_tree_sha256": "61f7ab0a3f8d09ec461bbb65f9b4b1625965b6c99a3409bb5c23b82639568f32",
+    "initial": "Settings showed Email — and Organization: Sign in to choose. The sidepanel showed: Sign-in failed: The user did not approve access. The identified Matrx OAuth window showed Authorization error (400), Auth session missing!.",
+    "first_reload": "After full Chrome Extensions Reload, Settings showed admin@admin.com, role ADMIN, and organization ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete; all remained visible after 30 seconds.",
+    "second_reload": "After a second full Chrome Extensions Reload, Settings again showed admin@admin.com, role ADMIN, and the same organization."
+  },
+  "interpretation": "This result is consistent with successful hydration in the observed post-reload states, but cannot establish the mechanism behind the initial guest/error state or prove token persistence.",
+  "disposition": "Provisional only. EXT-D-0007 remains open; prior source findings and independent verification remain unresolved.",
+  "safety": "No sign-in/out, storage/devtools/token inspection, or settings/organization mutation. No screenshots committed. The sole cleanup was closing the identified failed Matrx OAuth error window."
+}
