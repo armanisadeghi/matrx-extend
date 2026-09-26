@@ -17,8 +17,8 @@
   ],
   "severity": "S2: misleading nonfunctional permission control",
   "priority": "P1: current Settings stabilization",
-  "state": "triaged",
-  "owner": "coordinator",
+  "state": "in-fix",
+  "owner": "/root/debugger_permission_fix",
   "transition_history": [
     {
       "at": "2026-09-26T05:33:37.760391+00:00",
@@ -31,6 +31,12 @@
       "from": "open",
       "to": "triaged",
       "reason": "Manifest declares debugger required while Settings offers runtime removal; implementation diagnosis pending."
+    },
+    {
+      "at": "2026-09-26T05:34:50.946394+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol medium implementation assigned; independent peer and fresh-build native retest required."
     }
   ]
 }
