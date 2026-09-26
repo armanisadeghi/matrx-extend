@@ -1,10 +1,12 @@
 {
   "task_id": "release-ci-parity",
   "status": "source_fix_complete_fixture_execution_pending",
-  "root_cause": "release.sh validated the exported release candidate with typecheck, unit tests, schema and other guards, but omitted the pnpm lint step required by .github/workflows/ci.yml. Biome formatting errors could therefore pass all release checks and be atomically published to main, then fail CI.",
+  "root_cause": "release.sh validated the exported release candidate with typecheck, unit tests, schema and other guards, but omitted the pnpm lint step required by .github/workflows/ci.yml. A release candidate with Biome errors could therefore pass those release checks and be atomically published to main, then fail CI.",
   "incident_evidence": {
     "failed_ci_run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/36245123204",
-    "published_sha": "ba0a4e35ea20e8d3dce6b725c9d604035b05578c",
+    "observed_failed_ci_sha": "ba0a4e35ea20e8d3dce6b725c9d604035b05578c",
+    "release_064_sha": "5d2b70e66af22959e957bf593fca9b2c3c8bb42c",
+    "causal_limit": "The observed failed CI commit is later than the 0.2.64 release tag and includes intervening commits. This CI failure does not establish that the exact 0.2.64 release candidate failed lint; it establishes a real missing prepublication gate and shows the class of violation CI rejects.",
     "first_failed_step": "Lint: pnpm lint (biome check .), Found 8 errors and 570 warnings, exit 1",
     "repair_commit": "5bf716c3f7e9c137f228ad7a6bf7bb9738f89ce1 formatted seven JSON reports and one browser test import; the next release 0.2.65 passed CI"
   },
