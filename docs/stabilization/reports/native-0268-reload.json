@@ -1,0 +1,62 @@
+{
+  "run_id": "native-0268-reload-001",
+  "status": "completed",
+  "started_at": "2026-09-26",
+  "finished_at": "2026-09-26",
+  "profile": "primary Chrome profile; unpacked development extension",
+  "resource_admission": {
+    "lease_id": "3161",
+    "owner_session": "92092",
+    "admitted_at_utc": "2026-09-26T15:42:56.961Z",
+    "resource_guard": "root GO received; watchdog healthy"
+  },
+  "acceptance_A": {
+    "verdict": "PASS for requested native reload, retained state, and delayed bridge observation",
+    "build": {
+      "version": "0.2.68",
+      "receipt_source_sha": "a86e15da662cddb60029b480c340e2ccfef40c1f",
+      "receipt_tree_sha256": "7d799987698fbbd727eff27593a4969438d8d0701044ccac776cb29c9148e887",
+      "file_count": 532,
+      "chrome_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "loaded_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+      "actual_side_panel_path": "chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html"
+    },
+    "checks": {
+      "pre_reload_baseline": "Chrome showed unpacked version 0.2.67, ID cihdmkcdjjckfhjpgoedmgfpoljebaml. Before reload, Settings showed admin@admin.com / ADMIN, selected organization ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete, Local engine port auto, all four optional permissions OFF, and the informational DevTools Protocol row. Desktop Bridge status was Connected (http). The separate Store copy was version 0.2.23 and Off.",
+      "reload_and_identity": "PASS: clicked Reload for the unpacked extension. Chrome showed version 0.2.68 and ID cihdmkcdjjckfhjpgoedmgfpoljebaml; Details showed source /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev. Reopened the actual side panel.",
+      "admin_account_and_org": "PASS: after reload Settings showed admin@admin.com with role ADMIN and the same selected organization, ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete. No sign-in, sign-out, account, or organization change occurred.",
+      "engine_port_and_delayed_status": "PASS: Local engine port remained auto. Immediately after reload Desktop Bridge showed Not connected. After waiting 30 seconds, it showed Connected (http) without pressing a connect control or changing any setting.",
+      "debugger_and_optional_permissions": "PASS: Advanced Agent Capabilities showed the informational DevTools Protocol debugger row, included with the extension and unavailable to turn off here. Cookies, Page archive (MHTML), Clipboard read, and Tab video capture were all OFF after reload. No permission toggles were changed.",
+      "about_identity": "PASS: About showed Browser Chrome, installed version 0.2.68, and extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml.",
+      "store_copy": "PASS: chrome://extensions showed the separate Matrx Extend Store copy at version 0.2.23, ID hnfolienncfklkgmdjjmhhegglimlamg, with its toggle Off. It was not changed."
+    },
+    "method": "Direct native Chrome accessibility-tree observations through CUA in the primary Chrome profile. The pre-reload side panel was observed first; after reload, the extension side panel and Chrome extension details/list were inspected, followed by a bounded 30-second wait and a fresh accessibility-tree observation.",
+    "limitations": [
+      "This verifies the requested build identity, retained account and organization, auto port value, required DevTools information row, four optional permission states, Store copy, and bridge status after a 30-second wait. It does not establish longer-term bridge reliability or exercise broader permission-denial/grant/removal scenarios."
+    ]
+  },
+  "provenance_B": {
+    "verdict": "PASS for release receipt and browser identity/path match; receipt tree hash was read from the release receipt and not independently recomputed in this lane",
+    "release_receipt": ".output/release-receipt.json",
+    "receipt_source_sha": "a86e15da662cddb60029b480c340e2ccfef40c1f",
+    "receipt_tree_sha256": "7d799987698fbbd727eff27593a4969438d8d0701044ccac776cb29c9148e887",
+    "file_count": 532,
+    "source_commit_present_and_ancestor_of_checkout": true,
+    "receipt_version": "0.2.68",
+    "receipt_publish_state": "pushed",
+    "receipt_destination_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "browser_source_path_matches_receipt": true,
+    "chrome_details_version_and_id_match_receipt_build": true
+  },
+  "state_preservation": {
+    "account_and_organization": "preserved; admin@admin.com and selected organization unchanged",
+    "optional_permissions": "preserved; Cookies, Page archive (MHTML), Clipboard read, and Tab video capture all observed OFF",
+    "required_devtools_permission": "informational row present; debugger permission is included and cannot be turned off in extension settings",
+    "engine_port": "auto before and after reload",
+    "engine_status": "Connected (http) before reload; Not connected immediately after reload; Connected (http) after a 30-second wait without intervention",
+    "store_copy": "preserved; version 0.2.23 and Off",
+    "sign_out_reset_chat_or_pilot": "not used"
+  },
+  "ui_stop": "Sent UI_STOP to root after all observations and before report creation/commit.",
+  "engineering_review": "Outside this lane."
+}
