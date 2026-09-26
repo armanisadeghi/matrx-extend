@@ -2,33 +2,47 @@
   "schema_version": 1,
   "reviewer": "/root/remote_stack_fix_peer",
   "reviewed_commits": ["cb6b85e6", "7dbd32d8"],
+  "followup_source_commit": "faab76c1",
   "method": "Independent source and existing receipt review. No test, build, browser, or release process launched by this lane.",
-  "a_vitest4_release_repair": {
-    "source_verdict": "PASS_WITH_RUNTIME_LIMIT",
-    "evidence": [
-      "Installed node_modules/vitest/package.json is 4.1.11; svg-caption-red-001 and svg-caption-green-001 logs show actual Vitest v4.1.11 executing with --maxWorkers=1.",
-      "release.sh's mandatory unit-tests row invokes pnpm -s exec vitest run --maxWorkers=1. Resource-policy allowlist, resource guard filtered-test prefix, and release fixture now agree on that command.",
-      "The resource guard's memory, CPU, disk, swap, process ownership, and exact-command admission logic is unchanged by cb6b85e6. Removing unsupported --minWorkers=1 does not expand worker count because --maxWorkers=1 remains required."
-    ],
-    "runtime_limit": "The scoped receipts execute the filtered scrape suite, not a full release.sh run. This review therefore confirms the actual Vitest 4 invocation and source wiring, but does not claim every mandatory release check completed.",
-    "followup": "Run the full guarded release check path on the current commit and retain a receipt showing the unit-tests row reached actual Vitest 4.1.11 and completed."
+  "vitest4_release_repair": {
+    "a_acceptance": {
+      "verdict": "PARTIAL_PASS",
+      "evidence": [
+        "Installed Vitest is 4.1.11. svg-caption-red-001 and svg-caption-green-001 logs show actual Vitest 4.1.11 executing with --maxWorkers=1.",
+        "release.sh's mandatory unit-tests row invokes pnpm -s exec vitest run --maxWorkers=1. The resource-policy allowlist, resource guard filtered-test prefix, and release fixture agree."
+      ],
+      "open": "The scoped receipts run only the scrape suite. No full release.sh receipt yet proves the mandatory unit-tests row and all other checks complete on the current integration. Root owns that run."
+    },
+    "b_doctrine_quality": {
+      "verdict": "PASS_WITH_RUNTIME_LIMIT",
+      "evidence": "cb6b85e6 leaves memory, CPU, disk, swap, process ownership, and exact-command admission logic unchanged. It removes only unsupported --minWorkers=1 while requiring --maxWorkers=1, so worker-count admission remains single-worker.",
+      "limit": "The release fixture matches the new command text but substitutes a fake pnpm response; it is not proof of Vitest execution. The separate red/green logs supply the actual CLI proof."
+    }
   },
-  "b_svg_caption_repair": {
-    "source_verdict": "PASS_FOR_SINGLE_FIGURE_WITH_COVERAGE_GAP",
-    "evidence": [
-      "svg-caption-red-001 records the actual runScrape/Defuddle test failing on the missing caption while the SVG image assertion had already passed: 1 failed, 14 passed.",
-      "svg-caption-green-001 records Vitest 4.1.11 passing the same suite on the changed source: 15 passed.",
-      "The repair replaces each protected SVG image in place with its token, then moves every child node of its enclosing figure to the figure's position. For one ordinary SVG figure this retains the caption and HTML sibling nodes for Defuddle in DOM order.",
-      "Earlier SVG suite cases still cover one standalone figure and one composite multi-SVG figure. The new caption case confirms caption and label presence through runScrape, DOMPurify, and Turndown."
-    ],
-    "coverage_gap": "The new test contains one figure and one protected SVG image, and its three toContain assertions do not assert relative order. No recorded run proves two captioned figures, SVG plus ordinary image siblings, or multi-SVG composite plus caption through final Markdown. Source iteration handles those cases plausibly, but this review cannot certify the full all-figures-and-order acceptance from the available evidence.",
-    "concrete_followup_cases": [
-      "Two separate inline-SVG figures, each with a distinct figcaption and HTML label, with normal paragraphs between: assert exactly two SVG data images and the complete interleaved Markdown order.",
-      "One figure with a composite two-or-more-SVG graphic, a caption, and an HTML label: assert one complete composite image followed by both distinct text nodes in source order.",
-      "One SVG figure with an ordinary img sibling and its caption, plus a separate ordinary non-SVG article: assert the ordinary image is retained and ordinary article extraction has no new image or text duplication."
-    ],
-    "ui_gap": "No independent extension UI capture or copy check on a real or clearly labeled owned local captioned article is recorded. The existing Mathspace reference establishes composite SVG handling, not caption preservation."
+  "svg_caption_repair": {
+    "a_acceptance": {
+      "verdict": "PARTIAL_PASS",
+      "evidence": [
+        "svg-caption-red-001 records runScrape/Defuddle losing the caption after the SVG image assertion passed: 1 failed, 14 passed.",
+        "svg-caption-green-001 records the repaired source passing that same suite on Vitest 4.1.11: 15 passed.",
+        "The repair replaces each protected SVG image in place with a token and moves every enclosing figure child to the figure's former position, preserving direct caption and HTML siblings in source order."
+      ],
+      "open": "No independent extension UI capture-and-copy check of a captioned article is recorded. The existing Mathspace reference establishes composite SVG handling, not caption preservation."
+    },
+    "b_doctrine_quality": {
+      "verdict": "PASS_WITH_COVERAGE_LIMIT",
+      "evidence": [
+        "The original regression uses the real runScrape pipeline and a pre-fix failing caption assertion, so it catches the observed data loss rather than only asserting an SVG was present.",
+        "faab76c1 adds source cases for two distinct captioned figures with image count, unique captions, and interleaved Markdown marker order, and for a layered SVG, caption, label, and separate regular article image. These were inspected as source follow-up only; this lane claims no run of them."
+      ],
+      "remaining_cases": [
+        "Run the new ordered multi-figure and layered SVG cases under the resource guard and retain their actual result receipt.",
+        "Add an ordinary img inside the same SVG figure, then assert both images, caption, and HTML label remain in source order without duplication; faab76c1's ordinary img is outside the figure.",
+        "Exercise an ordinary non-SVG article through the same pipeline to check for image or text duplication outside the protected-figure path."
+      ],
+      "test_limit": "The new layered case asserts caption and label presence, but does not assert graphic-to-caption-to-label order; the two-figure case does assert its listed marker sequence. Neither new case has a run receipt in this review."
+    }
   },
   "blocking_findings": [],
-  "acceptance_position": "Do not mark full remote-stack acceptance verified until the full release receipt, ordered multi-figure pipeline cases, and independent extension UI check are complete."
+  "acceptance_position": "Full remote-stack acceptance remains open for the integrated release run, guarded new-case results, and independent extension UI proof."
 }
