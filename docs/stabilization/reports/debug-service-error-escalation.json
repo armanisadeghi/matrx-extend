@@ -1,6 +1,6 @@
 {
   "lane": "Astra medium escalation",
-  "status": "READY_FOR_SCOPED_DIAGNOSTIC_RUN_AFTER_PEER",
+  "status": "READY_FOR_PEER_AND_ROOT_RUN",
   "scope": "Debug service-error native acceptance setup and safe observer diagnostics only",
   "preserved_006": {
     "result_path": "test-results/debug-log-controls-acceptance.json",
@@ -149,14 +149,14 @@
     }
   },
   "005_evidence": "Immutable docs/stabilization/runs/debug-log-controls-005.json confirms online success; no offline request/UI failure proof. Controls occurred after restoration, so outage dimensions remain unverified.",
-  "root_cause_status": "Runtime setup failure cause remains unproven. Confirmed diagnostic defect: online failures retained no network/UI predicate observations; structured reasons were discarded by catch.",
+  "root_cause_status": "007 proves an online success was rejected solely because the observer saw two health GETs. There is no product contract requiring exactly one background-inclusive GET.",
   "source_trace": [
     "BridgesView.onPing clears result, sets disabled, awaits pingHealth, then shows OK iff result is non-null.",
     "pingHealth performs healthCheck using real side-panel apiGet GET /health; no bridge/proxy owns this request.",
     "REST transport assembles bearer and organization before fetch; pre-dispatch session handling can therefore delay or prevent any observed /health request.",
     "Health GET can coexist with app-start/after-sign-in health requests. Exact-one-request assertion may reject concurrency, but 006 lacks evidence to confirm this hypothesis.",
     "Network observer is scoped to the owned side-panel CDP session and filters pathname /health.",
-    "Both existing proofs still require exactly one GET, online 200 plus loadingFinished and UI OK, then matching endpoint ERR_INTERNET_DISCONNECTED plus UI FAIL before/after controls."
+    "BackendSwitcher displays its resolved backend.url in the title of the span beside the manual health button. Runner reads that UI destination in memory and observes only same-session Fetch GET requests to its exact /health URL for proof."
   ],
   "hypotheses": [
     {
@@ -180,14 +180,210 @@
     "Preserve safe phase diagnostics before clicks, after successful proofs, and for all setup failures including online and Bridges readiness.",
     "Expose fixed request categories, numeric statuses, completed 200 counts, endpoint-matching offline counts, exact-one predicate, UI status/count/disabled, and allowlisted trusted-input failure.",
     "Retain per-request safe summaries without URLs, headers, bodies, request ids, initiator stacks or raw errors.",
-    "Keep all acceptance predicates, exact build binding, scoped network emulation, restore logic and outage dimensions unchanged."
+    "Keep all acceptance predicates, exact build binding, scoped network emulation, restore logic and outage dimensions unchanged.",
+    "007 repair: replace exact-one background-inclusive GET gate with at least one matching completed HTTP 200 Fetch GET plus real UI OK.",
+    "Bind intended endpoint from the real Debug backend display before observation; verify it remains unchanged before outage and after controls.",
+    "Offline before/after acceptance requires at least one same-session Fetch GET to that exact endpoint failing ERR_INTERNET_DISCONNECTED plus the real button UI FAIL; other health origins cannot satisfy it.",
+    "Add distinct health URL count and per-request selected_backend/other_health_endpoint category without disclosing raw URLs."
   ],
   "validation": {
-    "node_check": "Passed",
-    "biome": "Exact-path check passed",
+    "node_check": "Passed after 007 repair",
+    "biome": "Exact-path check passed after 007 repair",
     "browser": "Not launched; root holds sole admission.",
     "tests": "Not run."
   },
-  "next_diagnostic": "After peer review, root runs the existing service-error flag once. Read phaseDiagnostics at failure before choosing a network/UI repair. No second outage inference is justified by 006.",
-  "open_questions": []
+  "next_diagnostic": "Independent peer then root admitted run. 007 proves arbitrary cardinality defect; historical 005 offline cause still unknown. The next run must establish actual intended-endpoint offline failure and UI FAIL before and after controls.",
+  "open_questions": [],
+  "preserved_007": {
+    "result_sha256": "e4f1d5c400a28d050e2d730d11344e7c9c93ff3b9754bd478c07d6ed662ad03a",
+    "guard_log_sha256": "df8813f12106dccf8a96227d8c35ff6f22065dc574bde4e91ae4d766ad0902c2",
+    "acceptance": {
+      "schema": 1,
+      "feature": "EXT-F-1005",
+      "status": "partial",
+      "scenario": "real_panel_service_error",
+      "cases": [
+        {
+          "id": "EXT-F-1005-T14",
+          "status": "partial",
+          "scenario": "real_panel_service_error",
+          "expected": "Search matches message and detail values; unmatched text shows no-match state.",
+          "actual": "Positive count=1; original message-only row visible=true; unmatched count=0.",
+          "evidence": {
+            "warm": "unverified",
+            "reload": "unverified",
+            "serviceError": "unverified",
+            "messageSearch": "pass_via_trusted_input_on_row_without_detail",
+            "unmatchedState": "pass",
+            "detailSearch": "pass_via_natural_detail_primitive_absent_from_messages",
+            "searchReset": "pass_exact_prior_count"
+          }
+        },
+        {
+          "id": "EXT-F-1005-T15",
+          "status": "partial",
+          "scenario": "real_panel_service_error",
+          "expected": "Paused view stays frozen; resume displays naturally arriving events.",
+          "actual": "Visible counts before=71, held=71, resumed=81; total before=71, held=81.",
+          "evidence": {
+            "warm": "unverified",
+            "reload": "unverified",
+            "serviceError": "unverified"
+          }
+        },
+        {
+          "id": "EXT-F-1005-T17",
+          "status": "partial",
+          "scenario": "real_panel_service_error",
+          "expected": "Clear removes local events and shows the no-events state.",
+          "actual": "No-events state=true; row count=0.",
+          "evidence": {
+            "eventList": "pass",
+            "errorBadge": "pass",
+            "warm": "unverified",
+            "reload": "unverified",
+            "serviceError": "unverified",
+            "ownedDisposableProfile": true
+          }
+        },
+        {
+          "id": "EXT-F-1005-T22",
+          "status": "partial",
+          "scenario": "real_panel_service_error",
+          "expected": "Detail JSON expands/collapses; no-detail row is non-actionable; no-match and no-events states differ.",
+          "actual": "Expanded=true; collapsed=true; no-detail inert=true; no-match=true; no-events=true.",
+          "evidence": {
+            "warm": "unverified",
+            "reload": "unverified",
+            "serviceError": "unverified"
+          }
+        }
+      ],
+      "countsOnly": true,
+      "build": {
+        "version": "0.2.79",
+        "treeSha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0",
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+      },
+      "realAdminUi": true,
+      "serviceErrorObservation": {
+        "onlinePositiveControl": false,
+        "actualFailedRequest": false,
+        "visibleFailure": false,
+        "outagePersistedThroughControls": false,
+        "networkRestored": true,
+        "onlinePingClickDispatched": true,
+        "offlineSetApplied": false,
+        "offlinePingClickDispatched": false,
+        "status": "unverified",
+        "phaseDiagnostics": {
+          "online_before_click": {
+            "panelRequestCount": 0,
+            "healthPathRequestCount": 0,
+            "getCount": 0,
+            "preflightCount": 0,
+            "otherMethodCount": 0,
+            "responseCount": 0,
+            "successResponseCount": 0,
+            "finishedCount": 0,
+            "failedCount": 0,
+            "offlineFailureCount": 0,
+            "abortedCount": 0,
+            "genericFailureCount": 0,
+            "otherNetworkFailureCount": 0,
+            "otherFailureCount": 0,
+            "cacheServedCount": 0,
+            "serviceWorkerResponseCount": 0,
+            "redirectCount": 0,
+            "corsFailureCount": 0,
+            "blockedCount": 0,
+            "canceledCount": 0,
+            "healthRequests": [],
+            "observerAttached": true,
+            "exactOneGet": false,
+            "completed200GetCount": 0,
+            "matchingOfflineGetCount": 0,
+            "uiStatus": "unavailable",
+            "uiButtonCount": 1,
+            "uiPingDisabled": false,
+            "driverFailure": {
+              "present": false
+            },
+            "operation": "disable_panel_cache"
+          },
+          "service_error_online_control": {
+            "panelRequestCount": 12,
+            "healthPathRequestCount": 2,
+            "getCount": 2,
+            "preflightCount": 0,
+            "otherMethodCount": 0,
+            "responseCount": 2,
+            "successResponseCount": 2,
+            "finishedCount": 2,
+            "failedCount": 0,
+            "offlineFailureCount": 0,
+            "abortedCount": 0,
+            "genericFailureCount": 0,
+            "otherNetworkFailureCount": 0,
+            "otherFailureCount": 0,
+            "cacheServedCount": 0,
+            "serviceWorkerResponseCount": 0,
+            "redirectCount": 0,
+            "corsFailureCount": 0,
+            "blockedCount": 0,
+            "canceledCount": 0,
+            "healthRequests": [
+              {
+                "method": "GET",
+                "status": 200,
+                "finished": true,
+                "failureCategory": null,
+                "servedFromCache": false,
+                "fromServiceWorker": false,
+                "redirected": false,
+                "fetchResource": true,
+                "corsFailure": false,
+                "blocked": false,
+                "canceled": false
+              },
+              {
+                "method": "GET",
+                "status": 200,
+                "finished": true,
+                "failureCategory": null,
+                "servedFromCache": false,
+                "fromServiceWorker": false,
+                "redirected": false,
+                "fetchResource": true,
+                "corsFailure": false,
+                "blocked": false,
+                "canceled": false
+              }
+            ],
+            "observerAttached": true,
+            "exactOneGet": false,
+            "completed200GetCount": 2,
+            "matchingOfflineGetCount": 0,
+            "uiStatus": "ok",
+            "uiButtonCount": 1,
+            "uiPingDisabled": false,
+            "driverFailure": {
+              "present": false
+            },
+            "operation": "online_ping_wait"
+          }
+        },
+        "operation": "return_to_log",
+        "failureStage": "service_error_online_control"
+      },
+      "naturalEventObservation": {
+        "before": 53,
+        "after": 71,
+        "increased": true
+      },
+      "profileOwned": true
+    },
+    "interpretation": "Two completed HTTP 200 GETs and UI OK, zero cache/worker/failure observations. exactOneGet was the only false online proof predicate. URL identity was not retained, so same-vs-distinct endpoints remains unknowable retrospectively. Offline was never attempted.",
+    "raw_copy_path": "/tmp/matrx-debug-log-controls-007-acceptance-preserved.json"
+  }
 }

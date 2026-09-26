@@ -316,7 +316,7 @@ async function detailOnlySearchTerm(panel, rowText) {
   );
 }
 
-function observeHealthRequests(panel) {
+function observeHealthRequests(panel, expectedUrl) {
   const requests = new Map();
   const healthRequests = new Map();
   let panelRequestCount = 0;
@@ -388,13 +388,18 @@ function observeHealthRequests(panel) {
     if (request) request.servedFromCache = true;
   });
   return {
-    read: () => [...requests.values()],
+    // Only the backend shown by this owned panel can satisfy its ping proof.
+    read: () =>
+      [...requests.values()].filter((entry) => entry.url === expectedUrl && entry.fetchResource),
     diagnostic: () => {
       const entries = [...healthRequests.values()];
       const count = (predicate) => entries.filter(predicate).length;
       return {
         panelRequestCount,
         healthPathRequestCount: entries.length,
+        distinctHealthUrlCount: new Set(entries.map((entry) => entry.url)).size,
+        intendedBackendCount: count((entry) => entry.url === expectedUrl),
+        otherHealthEndpointCount: count((entry) => entry.url !== expectedUrl),
         getCount: count((entry) => entry.method === 'GET'),
         preflightCount: count((entry) => entry.method === 'OPTIONS'),
         otherMethodCount: count((entry) => !['GET', 'OPTIONS'].includes(entry.method)),
@@ -416,6 +421,7 @@ function observeHealthRequests(panel) {
         // Fixed categories and numeric statuses only: no URL, header, body,
         // initiator stack, request id or raw error leaves the owned observer.
         healthRequests: entries.map((entry) => ({
+          targetCategory: entry.url === expectedUrl ? 'selected_backend' : 'other_health_endpoint',
           method: ['GET', 'OPTIONS'].includes(entry.method) ? entry.method : 'other',
           status: Number.isInteger(entry.status) ? entry.status : null,
           finished: entry.finished,
@@ -438,6 +444,30 @@ function observeHealthRequests(panel) {
       offCache();
     },
   };
+}
+
+// Read the backend destination displayed by Debug's real BackendSwitcher.
+// Keep the URL in memory only; receipts expose target categories/cardinality.
+async function selectedBackendHealthUrl(panel) {
+  const base = await evaluate(
+    panel,
+    `(() => {
+    const controls = [...document.querySelectorAll('button[title="Ping /health/"]')];
+    if (controls.length !== 1) return null;
+    return controls[0].parentElement?.querySelector('span[title]')?.getAttribute('title') ?? null;
+  })()`,
+  );
+  if (typeof base !== 'string') throw new Error('selected_backend_ui_unavailable');
+  const url = new URL(`${base}/health`);
+  if (
+    !['https:', 'http:'].includes(url.protocol) ||
+    url.username ||
+    url.password ||
+    url.search ||
+    url.hash
+  )
+    throw new Error('selected_backend_ui_invalid');
+  return url.href;
 }
 
 async function bridgePingUi(panel) {
@@ -551,34 +581,41 @@ async function exerciseServiceError(panel) {
       (ui) => ui?.buttonCount === 1,
     );
     stage = 'service_error_online_control';
+    observed.operation = 'read_selected_backend';
+    onlineUrl = await selectedBackendHealthUrl(panel);
+    observed.selectedBackendBoundFromUi = true;
     observed.operation = 'enable_network_observer';
     await panel.send('Network.enable');
     networkEnabled = true;
     observed.operation = 'disable_panel_cache';
     await panel.send('Network.setCacheDisabled', { cacheDisabled: true });
     cacheDisabled = true;
-    probe = observeHealthRequests(panel);
+    probe = observeHealthRequests(panel, onlineUrl);
     await phaseDiagnostic('online_before_click');
     observed.operation = 'online_ping_click';
     await click(panel, 'button', 'Send test ping');
     observed.onlinePingClickDispatched = true;
     observed.operation = 'online_ping_wait';
-    const online = await waitFor(
+    await waitFor(
       'real_online_health_ping',
       async () => ({ requests: probe.read(), ui: await bridgePingUi(panel) }),
       (sample) =>
-        sample.requests.length === 1 &&
-        sample.requests[0].status === 200 &&
-        sample.requests[0].finished &&
+        sample.requests.some((request) => request.status === 200 && request.finished) &&
         sample.ui?.status === 'ok',
       15_000,
     );
     await phaseDiagnostic('online_accepted');
     observed.onlinePositiveControl = true;
-    onlineUrl = online.requests[0].url;
+    // Background app-start/after-sign-in health reads are legitimate; neither
+    // their presence nor a different health origin can replace the UI-bound proof.
     probe.stop();
-    probe = observeHealthRequests(panel);
+    probe = observeHealthRequests(panel, onlineUrl);
     stage = 'service_error_offline_control';
+    assert.equal(
+      await selectedBackendHealthUrl(panel),
+      onlineUrl,
+      'selected backend unchanged before outage',
+    );
     offlineAttempted = true;
     observed.operation = 'set_panel_offline';
     await panel.send('Network.emulateNetworkConditions', {
@@ -597,14 +634,11 @@ async function exerciseServiceError(panel) {
       'real_offline_health_ping',
       async () => ({ requests: probe.read(), ui: await bridgePingUi(panel) }),
       (sample) =>
-        sample.requests.length === 1 &&
-        sample.requests[0].url === onlineUrl &&
-        sample.requests[0].offlineFailure &&
-        sample.ui?.status === 'fail',
+        sample.requests.some((request) => request.offlineFailure) && sample.ui?.status === 'fail',
       15_000,
     );
     await phaseDiagnostic('offline_accepted');
-    observed.actualFailedRequest = failed.requests[0].offlineFailure;
+    observed.actualFailedRequest = failed.requests.some((request) => request.offlineFailure);
     observed.visibleFailure = failed.ui.status === 'fail';
     observed.status = 'outage_active_for_controls';
     serviceErrorProved = true;
@@ -646,8 +680,13 @@ async function exerciseServiceError(panel) {
           () => bridgePingUi(panel),
           (ui) => ui?.buttonCount === 1,
         );
+        assert.equal(
+          await selectedBackendHealthUrl(panel),
+          onlineUrl,
+          'selected backend unchanged after controls',
+        );
         probe?.stop();
-        probe = observeHealthRequests(panel);
+        probe = observeHealthRequests(panel, onlineUrl);
         await phaseDiagnostic('after_controls_before_click');
         observed.operation = 'after_controls_ping_click';
         await click(panel, 'button', 'Send test ping');
@@ -656,15 +695,14 @@ async function exerciseServiceError(panel) {
           'real_offline_health_ping_after_controls',
           async () => ({ requests: probe.read(), ui: await bridgePingUi(panel) }),
           (sample) =>
-            sample.requests.length === 1 &&
-            sample.requests[0].url === onlineUrl &&
-            sample.requests[0].offlineFailure &&
+            sample.requests.some((request) => request.offlineFailure) &&
             sample.ui?.status === 'fail',
           15_000,
         );
         await phaseDiagnostic('after_controls_accepted');
         observed.outagePersistedThroughControls =
-          persisted.requests[0].offlineFailure && persisted.ui.status === 'fail';
+          persisted.requests.some((request) => request.offlineFailure) &&
+          persisted.ui.status === 'fail';
         observed.status = 'verified_during_controls';
       } catch (error) {
         observed.status = 'unverified_after_controls';
