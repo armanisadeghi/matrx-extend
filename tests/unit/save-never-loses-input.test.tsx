@@ -54,6 +54,7 @@ import type { SoupResult } from '@/lib/scrape/pipeline';
 import {
   UNSAVED_CAPTURES_KEY,
   listUnsavedCaptures,
+  discardUnsavedCapture,
   retryUnsavedCapture,
   saveCaptureAsSource,
 } from '@/lib/sources/save-capture';
@@ -511,7 +512,7 @@ describe('Save never loses input', () => {
         content_markdown: '# Guide\n\nB revised the checklist after the first refusal.',
       },
     } as SoupResult;
-    expect((await saveCaptureAsSource(revised)).status).toBe('unsaved');
+    expect((await saveCaptureAsSource(revised, { articleEdited: true })).status).toBe('unsaved');
     const before = (await listUnsavedCaptures())[0];
     expect(before?.organizationId).toBe(OTHER_ORGANIZATION_ID);
 
@@ -523,4 +524,40 @@ describe('Save never loses input', () => {
       'B revised the checklist',
     );
   });
+  it.each(['land', 'discard'] as const)('an old refusal cannot resurrect a page after a newer %s', async (terminal) => {
+    mocks.apiPost.mockResolvedValueOnce({ ok: false, status: 0, error: 'Failed to fetch' });
+    const first = await saveCaptureAsSource(soup);
+    if (first.status !== 'unsaved') throw new Error('Expected queued capture');
+    const pending = deferredApiResponse();
+    mocks.apiPost.mockReturnValueOnce(pending.promise);
+    const oldRetry = retryUnsavedCapture(first.unsaved.id);
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(2));
+    if (terminal === 'land') {
+      mocks.apiPost.mockResolvedValueOnce(landedResponse);
+      expect((await saveCaptureAsSource(soup)).status).toBe('landed');
+    } else {
+      await discardUnsavedCapture(first.unsaved.id);
+    }
+    expect(await listUnsavedCaptures()).toEqual([]);
+    pending.resolve({ ok: false, status: 0, error: 'Failed to fetch' });
+    await oldRetry;
+    expect(await listUnsavedCaptures()).toEqual([]);
+    // A fresh explicit Save after the terminal action can still queue this page.
+    mocks.apiPost.mockResolvedValueOnce({ ok: false, status: 0, error: 'Failed to fetch' });
+    await saveCaptureAsSource(soup);
+    expect(await listUnsavedCaptures()).toHaveLength(1);
+  });
+
+  it('storage failure before dispatch returns the capture with an honest keep-panel-open remedy', async () => {
+    const set = vi.spyOn(chrome.storage.local, 'set').mockRejectedValueOnce(new Error('Device storage full'));
+    try {
+      const outcome = await saveCaptureAsSource(soup);
+      expect(outcome.status).toBe('unsaved');
+      if (outcome.status !== 'unsaved') throw new Error('Expected recoverable capture');
+      expect(outcome.unsaved.prepared.portions.map((p) => p.text).join(' ')).toContain('Intro.');
+      expect(outcome.unsaved.lastRefusal.message).toMatch(/keep this panel open/i);
+      expect(mocks.apiPost).not.toHaveBeenCalled();
+    } finally { set.mockRestore(); }
+  });
+
 });
