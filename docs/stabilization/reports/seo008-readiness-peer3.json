@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "review": "seo008-readiness-peer3",
+  "target_commit": "0812da2d6570fd1c598a6d5755ddb4af01849b5b",
+  "scope": "Fresh source-only narrow re-review of the two remaining seo-detail008-finalpeer findings and cumulative bounded guest-detail acceptance from e3eab0f1+a336fba5. No browser, heavy test, UI interaction, code change, child agent, or push.",
+  "runtime_verdict": {
+    "result": "PENDING",
+    "reason": "No native runtime evidence was examined. Source review cannot establish live page values, timing, navigation, rendering, or trusted pointer behavior."
+  },
+  "source_quality_verdict": {
+    "result": "PASS_WITH_LIMITS",
+    "prior_findings": [
+      {
+        "id": "readabilityname/evidence_honestlydisplay-only",
+        "result": "ADDRESSED",
+        "evidence": "The preparation target is now named guest_readability_display_is_populated_and_explained. Its oracle requires positive displayed word/sentence fields, a numeric Flesch score, and a named band with grade only when public body text exists. The passing target records metricValueCorrectness as unverified, the no-text path records the target unverified, and the limit explicitly says metric values are not proven to have been calculated from this page.",
+        "remaining": "The assertion establishes populated, plausible display and explanation only. It does not establish calculation correctness or page-specific values; the report and target now state that limit plainly."
+      },
+      {
+        "id": "microdataORJSONLD uniqueschemadoorsaccepted",
+        "result": "ADDRESSED",
+        "evidence": "The source oracle collects JSON-LD @type values with a JSON.parse reviver and collects microdata [itemtype] values independently. The former jsonLdTypeCount prerequisite is removed. Door activation now depends on a unique alternate and unique openable schema link, and the unverified reason names the absence of unique hreflang/openable schema candidates without requiring JSON-LD.",
+        "remaining": "The runtime door target remains unverified when the selected public document has no unique openable schema link or unique hreflang link, as stated in the preparation report."
+      }
+    ],
+    "cumulative_acceptance": {
+      "result": "RETAINED_AND_COHERENT",
+      "evidence": "The inherited sparse/rich detail checks and existing guest acceptance flow remain. The five bounded additions independently read the owned public DOM or Navigation Timing, compare link/image counts, bound readability claims, compare available performance fields, and compare all schema chip labels and destinations. The patch only narrows the readability claim and relaxes the schema-door precondition; it does not remove assertions or prior target emission. Static target IDs and the dynamic title/headings target path remain in the current runner.",
+      "remaining": "This remains a source-level review of the bounded guest batch; it is not full T09 acceptance or member/admin coverage."
+    },
+    "remaining_limits": [
+      "No native browser run was performed, so runtime behavior and live values are pending.",
+      "Readability values are checked for populated display and a named explanation, not independently recomputed or proven page-specific.",
+      "Optional outbound-door activation is intentionally unverified when live source data lacks a unique candidate.",
+      "The bounded guest batch does not cover deferred T09 controls, other T cases, or member/admin modes."
+    ]
+  },
+  "verification": {
+    "command": "pnpm exec biome check tests/browser/seo-guest-acceptance.mjs docs/stabilization/reports/seo-guest-details-prepare.json docs/stabilization/reports/seo008-readiness-peer3.json",
+    "result": "PASS"
+  },
+  "next_action": "Native runtime acceptance remains with the owning lane."
+}
