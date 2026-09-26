@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "report_id": "seo019-inventory-link",
+  "updated_at": "2026-09-26",
+  "feature_id": "EXT-F-1008",
+  "case_id": "EXT-F-1008-T09",
+  "linked_runs": [
+    {
+      "run_id": "seo-guest-018",
+      "receipt": "docs/stabilization/runs/seo-guest-018.json",
+      "status": "unverified",
+      "bounded_result": "16 passes and one unverified target before the metadata source-stability assertion stopped the run. The receipt does not enumerate the earlier target identities. The failure is retained as a harness-observed stability mismatch, not a product-defect conclusion."
+    },
+    {
+      "run_id": "seo-guest-019",
+      "receipt": "docs/stabilization/runs/seo-guest-019.json",
+      "independent_review": "docs/stabilization/reports/seo019-runtime-peer.json",
+      "status": "partial",
+      "bounded_result": "18 target records: 17 pass, one unverified. T09-specific list includes passed manual count/detail/readability-display/performance predicates, passed Airbnb hreflang/schema outbound action, and the still-unverified Wikipedia door target."
+    }
+  ],
+  "preserved_boundaries": [
+    "Existing prior run receipts and failure history remain intact.",
+    "EXT-F-1008 guest test_status remains unverified and retest_status remains not-run; T09 and the feature are not marked passed.",
+    "The Airbnb door subtarget passing does not imply automatic title exactness; title remains point-in-time unverified.",
+    "Readability display population is bounded evidence only; metricValueCorrectness remains unverified.",
+    "Member/admin modes and deferred T01-T14 behavior remain unverified."
+  ],
+  "validation": {
+    "inventory_json_parse": "pass",
+    "report_json_parse": "pass",
+    "ascii_escaping": "pass",
+    "biome_report": "pass",
+    "diff_check": "pass"
+  }
+}

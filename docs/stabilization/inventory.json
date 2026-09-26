@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T22:04:29+00:00",
+  "updated_at": "2026-09-26T22:16:26+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -10983,7 +10983,9 @@
             "seo-guest-014",
             "seo-guest-015",
             "seo-guest-016",
-            "seo-guest-017"
+            "seo-guest-017",
+            "seo-guest-018",
+            "seo-guest-019"
           ],
           "retest_status": "not-run"
         },
@@ -11528,6 +11530,127 @@
             }
           ],
           "limits": "Harness stability check stopped activation before pointer dispatch. No product defect is established; automatic exact data, readability metric correctness, full T09, and feature coverage remain unverified."
+        },
+        {
+          "run_id": "seo-guest-018",
+          "mode": "guest",
+          "status": "unverified",
+          "receipt": "docs/stabilization/runs/seo-guest-018.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "metadata_fixture_source_stability_around_manual_reaudit",
+              "status": "unverified",
+              "observation": "The run stopped on the source-stability assertion after 16 bounded passes and one unverified target. The stored failure is the metadata-fixture source stability predicate; this is not itself a product defect finding."
+            }
+          ],
+          "limits": "The receipt does not enumerate the 16 prior target identities or identify the one unverified target. Automatic title data remains point-in-time unverified; do not infer a case/feature pass or defect cause."
+        },
+        {
+          "run_id": "seo-guest-019",
+          "mode": "guest",
+          "status": "partial",
+          "receipt": "docs/stabilization/runs/seo-guest-019.json",
+          "independent_review": "docs/stabilization/reports/seo019-runtime-peer.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "page_0_title_and_headings",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "page_1_title_and_headings",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "sparse_public_detail_groups",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "rich_public_detail_groups_and_canonical_door",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "canonical_outbound_opens_expected_public_tab",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_link_counts_match_live_dom",
+              "status": "pass",
+              "observation": "1,785 internal and 410 external links matched the public DOM."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_image_alt_counts_match_live_dom",
+              "status": "pass",
+              "observation": "28 images total and 10 missing alt matched the public DOM."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_readability_display_is_populated_and_explained",
+              "status": "pass",
+              "observation": "The display was populated while public body text existed; the receipt explicitly leaves metricValueCorrectness unverified."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_performance_reflects_current_navigation",
+              "status": "pass",
+              "observation": "Observed status 200, navigation, 715 ms, and 123,751 transferred bytes; displayed duration was 715 ms and transfer 121 KB."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+              "status": "unverified",
+              "observation": "Wikipedia DOM exposed no unique hreflang and openable schema door candidates; target remains unverified."
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
+              "status": "pass",
+              "observation": "Airbnb public DOM hreflang es-US target and WebSite schema URL matched; trusted pointer activation opened the expected destination."
+            },
+            {
+              "case_id": "EXT-F-1008-T01",
+              "subtarget": "new_url_replaces_visible_title",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T01",
+              "subtarget": "reload_audits_current_url",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T02",
+              "subtarget": "manual_button_returns_to_current_page",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T03",
+              "subtarget": "about_blank_clear_error_without_stale_audit",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T03",
+              "subtarget": "public_page_recovers_after_restricted_url",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_role_gate_after_reload",
+              "status": "pass"
+            }
+          ],
+          "limits": "Seventeen of eighteen bounded targets pass; one T09 Wikipedia door target remains unverified. Automatic title exactness and readability metric value correctness remain unverified. Feature guest cell remains test_status unverified and retest_status not-run; no full case/feature pass."
         }
       ]
     },
