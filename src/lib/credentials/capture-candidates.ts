@@ -481,6 +481,9 @@ async function ensureSession(): Promise<boolean> {
           PENDING.set(row.tabId, candidate);
           if (candidate.stage === 'password' && candidate.state === 'ready') {
             setCaptureAssistance(candidate.tabId, 'save_pending');
+            // An open side panel can still render the pre-restart projection.
+            // Clear it while the server-approved lookup determines its next action.
+            broadcast(CHANNELS.CREDENTIAL_CAPTURE_CHANGED, { tabId: candidate.tabId });
             void refreshMatches(candidate);
           }
         }
@@ -503,9 +506,15 @@ async function refreshMatches(candidate: Candidate): Promise<void> {
   if (!candidate.actor || candidate.stage !== 'password') return;
   const baseline = epoch(candidate.tabId);
   const global = globalEpoch;
-  const matched = await fetchBrowserLoginMatches(candidate.loginUrl, undefined, {
-    expectedActor: candidate.actor,
-  });
+  let matched: Awaited<ReturnType<typeof fetchBrowserLoginMatches>>;
+  try {
+    matched = await fetchBrowserLoginMatches(candidate.loginUrl, undefined, {
+      expectedActor: candidate.actor,
+    });
+  } catch {
+    await queued(() => removeCandidate(candidate));
+    return;
+  }
   const [actor, enabled] = await Promise.all([currentActor(), readCaptureLoginsEnabled()]);
   if (!sameEpoch(candidate, baseline, global) || !sameActor(candidate.actor, actor) || !enabled)
     return;
@@ -901,6 +910,10 @@ async function beginMutation(
       ? dispatchFrozen(c, c.operation, expectedActor, baseline, global)
       : result('error');
   }
+  // A service-worker restart restores a ready candidate as non-actionable until
+  // its server-approved saved-login lookup completes. A stale panel decision
+  // must not create or update a Vault item during that interval.
+  if (c.state === 'ready' && !c.ready) return result('expired');
   let command: MutationCommand;
   if (decision.action === 'save') {
     const body = createBodyFor(c);
