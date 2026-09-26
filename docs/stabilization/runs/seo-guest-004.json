@@ -30,9 +30,9 @@
   "runtime_source": {
     "acceptance_runner_commit": "caf48ab2722a01458172dd8a3fa7acc541c9b44b",
     "prior_peer_commit": "658b6ea5",
-    "loaded_extension_source_commit": "6974350e5da022a07a5462e6037b74768f9f5310",
     "driver_state": "temporary-added-branch-restored-at-2026-09-26T16:51:46-before-admission",
-    "wrapper_pid": 17524
+    "driver_source_commit": "6974350e5da022a07a5462e6037b74768f9f5310",
+    "wrapper_session_id": 17524
   },
   "acceptance_result": {
     "schema_version": 1,

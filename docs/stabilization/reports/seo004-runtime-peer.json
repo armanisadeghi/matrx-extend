@@ -6,7 +6,7 @@
   "verdict_a": {
     "result": "PARTIAL_RUNTIME_PASS_TWO_NEW_RELOAD_SUBTARGETS",
     "evidence": [
-      "The guarded runtime log records RESOURCE_ADMITTED at 2026-09-26T16:52:04.814Z with no admission reasons and RESOURCE_JOB_EXIT at 16:52:10.182Z, child exit 0, signal null; wrapper PID 17524 was confirmed.",
+      "The guarded runtime log records RESOURCE_ADMITTED at 2026-09-26T16:52:04.814Z with no admission reasons and RESOURCE_JOB_EXIT at 16:52:10.182Z, child exit 0, signal null; wrapper session 17524 was confirmed.",
       "The runtime artifact records pass for reload_audits_current_url (current URL is IANA Reserved Domains; title/headings presence matched; reselected after reload) and guest_role_gate_after_reload (text and AI choices present, JSON absent). These are two new reload subtargets beyond the five previously passed warm-page targets.",
       "The exact acceptance artifact SHA-256 is 836f69de9485a345fcfb6da8818f8bf172b47a41dc5f06f4768d52e381f4e193 and the exact resource log SHA-256 is afdd28f51e0cbcb424cb0790cb0b74896bc5e53875159f74b6496131cef37c72.",
       "Loaded extension provenance is release 0.2.68, source SHA a86e15da662cddb60029b480c340e2ccfef40c1f, unpacked tree 7d799987698fbbd727eff27593a4969438d8d0701044ccac776cb29c9148e887. Artifact tree/receipt was unchanged from release-stabilization-023. Runner source was caf48ab2722a01458172dd8a3fa7acc541c9b44b with peer accepted safe clipboard removal at 658b6ea5. The loaded source tree corresponds to 6974350e5da022a07a5462e6037b74768f9f5310.",
@@ -35,6 +35,6 @@
     "docs/stabilization/reports/seo004-runtime-peer.json"
   ],
   "verification": {
-    "method": "Read-only comparison of runtime result, exact guarded log, release-stabilization-023 receipt, and EXT-F-1008 inventory. No test, build, browser launch, commit, push, or amend performed."
+    "method": "Source-evidence correction to the preserved runtime result and peer report. Runtime verdicts and evidence were not rerun; no test, build, or browser launch performed."
   }
 }
