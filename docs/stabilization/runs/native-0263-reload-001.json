@@ -1,0 +1,155 @@
+{
+  "id": "native-0263-reload-001",
+  "status": "pass",
+  "evidence": "docs/stabilization/reports/native-0263-reload.json",
+  "scope": "Independent actual primary Chrome extension reload and Settings state checks; no mutation beyond reload/navigation",
+  "resource_events": [
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:27:59.498Z",
+      "runId": "native-0263-reload-001",
+      "mode": "browser",
+      "policySchema": 1,
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.9,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.1612,
+        "swapUsedMiB": 2733.69,
+        "repoFreeGiB": 1675.9125366210938,
+        "profileFreeGiB": 22.44356918334961
+      },
+      "cpuBusySamples": [
+        0.10739999999999994, 0.3340000000000001, 0.17510000000000003, 0.09200000000000008,
+        0.11370000000000002, 0.09499999999999997, 0.21120000000000005
+      ],
+      "reasons": [],
+      "swapWindowSeconds": 60,
+      "code": "RESOURCE_ADMITTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:28:15.823Z",
+      "runId": "native-0263-reload-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.4,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.10150000000000003,
+        "swapUsedMiB": 2733.69,
+        "repoFreeGiB": 1675.9126434326172,
+        "profileFreeGiB": 22.444839477539062
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:28:32.148Z",
+      "runId": "native-0263-reload-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.64,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.18,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.11629999999999996,
+        "swapUsedMiB": 2733.69,
+        "repoFreeGiB": 1675.9126434326172,
+        "profileFreeGiB": 22.446556091308594
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:28:48.486Z",
+      "runId": "native-0263-reload-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.64,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.21310000000000007,
+        "swapUsedMiB": 2709.69,
+        "repoFreeGiB": 1675.9125289916992,
+        "profileFreeGiB": 22.42889404296875
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:29:04.836Z",
+      "runId": "native-0263-reload-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.48,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.08,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.23409999999999997,
+        "swapUsedMiB": 2709.69,
+        "repoFreeGiB": 1675.9126358032227,
+        "profileFreeGiB": 22.42392349243164
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:29:21.149Z",
+      "runId": "native-0263-reload-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.13,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.13480000000000003,
+        "swapUsedMiB": 2709.69,
+        "repoFreeGiB": 1675.9126358032227,
+        "profileFreeGiB": 22.438884735107422
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:29:37.492Z",
+      "runId": "native-0263-reload-001",
+      "reasons": [],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.8,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.19,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.24230000000000007,
+        "swapUsedMiB": 2693.69,
+        "repoFreeGiB": 1675.9126205444336,
+        "profileFreeGiB": 22.441299438476562
+      },
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:29:43.739Z",
+      "runId": "native-0263-reload-001",
+      "signal": "SIGINT",
+      "code": "RESOURCE_STOP_REQUESTED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-09-26T12:29:43.739Z",
+      "runId": "native-0263-reload-001",
+      "resourceInvalid": false,
+      "code": "RESOURCE_BROWSER_STOP_CONFIRMED"
+    }
+  ]
+}
