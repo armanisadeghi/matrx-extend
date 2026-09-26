@@ -1,5 +1,8 @@
 /**
- * Profile — user-controlled PII used by form-fill agents.
+ * Profile — user-controlled PII, saved for the person's own reference.
+ * No form-fill tool handler reads this yet (settings-truth-audit,
+ * 2026-09-25) — see src/lib/tools/handlers/forms.ts, which fills forms from
+ * page context, not from this profile.
  *
  * iOS-style: grouped cards, single-row controls, soft separators. Each
  * Collapsible section maps to one logical chunk of the user_form_profile
