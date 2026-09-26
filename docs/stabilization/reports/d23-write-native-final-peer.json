@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "report_id": "d23-write-native-final-peer",
+  "reviewed_source_commits": [
+    "1211b540",
+    "5b7e587b",
+    "9014a7b2"
+  ],
+  "source_review": {
+    "verdict": "ACCEPT",
+    "reason": "The runner creates a real text selection on a public page with the extension highlighter active while the real Settings UI shows no selected workspace. It arms transport observation immediately before mouseup, waits for the exact terminal no-workspace write notice before selecting the workspace, and requires both a completed membership RPC positive control and zero highlight-table POSTs. It then selects the approved existing workspace through the real picker and verifies the same failure notice remains visibly rendered with no later highlight POST. No Source-save or D22 checkpoint path is present.",
+    "evidence": [
+      "`workspaceState` requires Choose… and no stored active organization; no organization/session/storage values are injected, and sign-in and organization selection use real UI flows.",
+      "The user action is an actual pointer drag over the unique public Example Domain heading; the observer arms before mouseup, which is the highlighter's real persistence event.",
+      "Before workspace selection, exact visible notice text must say Highlight not saved, the no-workspace request was never sent, nothing was saved, and to pick a workspace. The observer requires at least one completed HTTP 200 /rest/v1/rpc/mbr_for_user request as a positive control and zero /wbx_highlight POSTs.",
+      "Only after that terminal notice does the runner choose the approved organization in the picker. After the bounded 2-second observation, the same unique notice must have non-hidden display/visibility/opacity, nonzero area, viewport intersection, and an unoccluded interior hit point; highlight POST count must remain zero.",
+      "The actual failure path is reachable: createHighlight catches the no-organization hold failure and failDbCall raises the typed notice; the runner waits up to 150 seconds against the production 120-second hold before it allows selection.",
+      "The script contains no Source Save/Delete action and does not read, create, or alter the D22 private attempt checkpoint. Failure screenshots use unique names, exclusive creation, and mode 0600."
+    ],
+    "limits": [
+      "No browser, test, or heavy runtime was run by this source-review lane; native acceptance remains unverified.",
+      "The 2-second post-selection interval proves bounded absence of automatic retry, not absence of any retry arbitrarily far in the future.",
+      "The test is scoped to admin mode and the Example Domain public fixture; it does not establish member-mode behavior."
+    ]
+  },
+  "runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "Source review only; no runtime/browser verification was performed."
+  }
+}
