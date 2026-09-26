@@ -1,6 +1,6 @@
 # Matrx Extend stabilization: resume here
 
-Updated 2026-09-26 17:12 UTC. Campaign incomplete. Inventory is the sole coverage authority; this file is a current operational index. Superseded checkpoints are preserved verbatim in `diagnostics/coordinator-history-20260926-1632.md`.
+Updated 2026-09-26 17:18 UTC. Campaign incomplete. Inventory is the sole coverage authority; this file is a current operational index. Superseded checkpoints are preserved verbatim in `diagnostics/coordinator-history-20260926-1632.md`.
 
 ## Mandate and operating constraints
 - User authorizes autonomous test → capture → fix → independent retest → green main → integration. Complete contained surfaces first; systematic Chat/Pilot work stays last. Every control × guest/member/admin applicability remains explicit.
@@ -11,6 +11,7 @@ Updated 2026-09-26 17:12 UTC. Campaign incomplete. Inventory is the sole coverag
 - No secrets/tokens/Vault values/raw auth URLs in reports/logs/commits. Real credentials at point of use; owned disposable profiles for destructive or alternate-auth checks. Never mutate roles/accounts to manufacture coverage.
 
 ## Current work and next action
+- 17:18 current: release024 wrapper55608 confirmedexit0, pushed v0.2.70 8742ff91 at17:16:57 after losing .69 tag race to contributor520f50c8 and fully revalidating. Main equalsorigin/main at launch. Nextsync deadline18:16UTC. Member007 root wrapper40243 activepreflight, onlyworkload; freshLuna release024_receipt_peer reviews receipts only. PrimaryChrome still unverified on.70; ownedprobe loads newartifact.
 - Current: release024 root wrapper55608 in resource preflight; no browser workload. Incoming ab45f7c1 content-ir0.19.8 merged cleanly, install025 wrapper0 confirmed. Consumer peer found published runtime/types byte-identical to0.19.7; report pending. Diagnostic peer46ce4b74 accepted source with bounded classification limitation; original Shared acceptance remains pending guarded007. Root accepts reduced generic sibling failure classification for diagnostic run only, not product health.
 - Superseded 17:06 checkpoint: sole active agent: fresh Sol medium `/root/pointer_diagnostics_peer` reviews diagnostic-only af6ff8e6 (driver+memberprobe), report pending. No active workload. Root install023 wrapper81045 confirmedexit0 after content-ir0.19.7. Next: complete peer, strict integration/release024 for incoming main, then guarded member006-successor and SEO restricted/recovery batch. Never overlap workloads.
 - Actual member run005 proved original pre-content spinner was missing device organization: before selectionfalse/pickerpending+visibletrue; exact known org choice → selectedtrue → Vault Mine ready. Independent runtimepeer4ac70380 accepts only this prerequisite conclusion. Not a Vault product bug. Known fixture label is `ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete` (label NOT deletion permission). Choose only through actual picker in ownedprofile; never fallback to first/personal/default.
