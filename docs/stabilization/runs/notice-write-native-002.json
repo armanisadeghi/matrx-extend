@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "run_id": "notice-write-native-002",
+  "defect_id": "EXT-D-0023",
+  "case_id": "EXT-F-2010-T02",
+  "source": {
+    "result_path": "test-results/notice-write-retention-acceptance.json",
+    "result_sha256": "274b4adb9f23acf1996171b4e6bc44b4b8df9652457e843832c0a3dde1706f25",
+    "runner_path": "tests/browser/notice-write-retention-acceptance.mjs",
+    "runner_sha256": "95bc1bddd128997defb2dedb3c28fcdcc7c6d2f517061afc0084040a26b53476",
+    "harness_path": "tests/browser/native-sidepanel-qa-harness.mjs",
+    "harness_sha256": "f599b6d982d3a39255ad3565b8ff06d68a0619e7c5e39307719d8457d5b5701a",
+    "guard_log_path": "/tmp/matrx-notice-write-native-002.log",
+    "guard_log_sha256": "471dd65f2a4baf2b4a756287bacd7ef7c7a9527d7f89cc6378188341c453f3bd"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T23:14:34.039Z",
+    "child_exit_at": "2026-09-26T23:16:46.054Z",
+    "child_exit_code": 0,
+    "wrapper_confirmed_exit_code": 0,
+    "stdout": "BOUNDED_PASS d23_notice_write_retention_native"
+  },
+  "build": {
+    "version": "0.2.79",
+    "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "owned_receipt_verified": true,
+    "binding": "The runner recorded receipt/manifest identity before the native harness, the harness hashed the released unpacked tree and Store ZIP before launching the owned browser, and the runner required unchanged receipt/manifest identity plus the same actual tree hash after all acceptance assertions."
+  },
+  "observations": {
+    "result_status": "bounded_pass",
+    "real_admin_ui_signin": true,
+    "no_workspace_before_action": true,
+    "public_page_highlighter_active": true,
+    "trusted_pointer_highlight_action": true,
+    "terminal_failed_write_notice_before_selection": true,
+    "approved_existing_workspace_selected_through_ui": true,
+    "same_failed_write_notice_retained_after_selection": true,
+    "retained_notice_count": 1,
+    "retained_notice_visible_unoccluded": true,
+    "retained_notice_visible_size": "336x177",
+    "membership_rpc_completed_200_count": 14,
+    "highlight_insert_post_count": 0,
+    "late_notice_after_selection": "not_observed",
+    "private_screenshot": "not_needed"
+  },
+  "interpretation": "On the exact recorded 0.2.79 release artifact, one real admin highlight attempt failed with no selected workspace before any insert. Its visible failure notice survived the later trusted workspace choice and bounded quiet interval. This is D23 write-boundary evidence, not full EXT-F-2010-T02 queue acceptance or Source Save proof."
+}

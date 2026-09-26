@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "report_id": "d23-native-write-002-peer",
+  "run_receipt": "docs/stabilization/runs/notice-write-native-002.json",
+  "A_runtime": {
+    "status": "BOUND_D23_WRITE_RETENTION_PASS",
+    "evidence": [
+      "The resource guard admitted the run at 23:14:34.039Z, recorded healthy watches, BOUNDED_PASS stdout, and child exit 0 at 23:16:46.054Z; the root separately confirmed wrapper exit 0. Raw result and guard-log SHA-256 values match the immutable receipt.",
+      "The result's build object names version 0.2.79, tree SHA-256 be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0, and the owned extension ID. Its ownedReceiptVerified flag is true. Source review confirms the native harness checked actual unpacked bytes before launch and the runner rechecked those bytes, receipt, and manifest after the run; this is materially stronger provenance than run 001.",
+      "The real admin panel began without a device workspace, activated the highlighter on a public page, and dispatched one trusted pointer selection. Exactly one typed failed-write notice appeared before organization selection. After trusted selection of the approved existing workspace, the same notice remained visibly rendered with nonzero area, viewport intersection, and an unoccluded hit point.",
+      "The side-panel observer recorded 14 completed HTTP 200 membership RPC requests after arming and zero highlight-table POSTs through the bounded post-selection interval. The positive transport observation makes the zero-insert claim credible for this path."
+    ]
+  },
+  "B_evidence_quality": {
+    "status": "CORROBORATED_DEFECT_SPECIFIC",
+    "combined_basis": [
+      "Source-workspace-009 independently captured the original read-side no-workspace notice before organization selection and its absence afterward on release 0.2.79; its D22 stop was diagnostic-only and sent no Save input. Its guard-log hash still matches its receipt.",
+      "The focused write-retention red receipt failed the two intended assertions on the old behavior. The green guarded two-file suite passed 26 tests, including preserved read retirement, existing and late failed-write retention, and database-refusal seam cases. Both raw guard-log hashes still match their receipts.",
+      "Independent source reviews traced lowercase no_organization classification, write notice non-retirement, the real highlight caller chain, the network positive control, the visible notice oracle, and this build-binding correction."
+    ],
+    "limits": [
+      "Late-arriving failed-write notices are covered by focused unit tests, not by a deliberately delayed native arrival in run 002.",
+      "The native result covers one real admin highlight write path and a bounded two-second post-selection interval; member mode, all write callers, and arbitrary future retries are outside it.",
+      "EXT-F-2010-T02 pending-handoff queue switching is not fully exercised, and EXT-D-0022 Source Save/open recognition remains open and was not retried."
+    ]
+  },
+  "closure_assessment": {
+    "EXT-D-0023": "CLOSE_ELIGIBLE at defect scope on source-reviewed red-to-green guard plus release-bound native read and write observations. This peer records the evidence and does not mutate status.",
+    "EXT-F-2010-T02": "NOT_FULLY_PASSED",
+    "EXT-F-2010": "NOT_FULLY_PASSED",
+    "EXT-D-0022": "OPEN"
+  }
+}
