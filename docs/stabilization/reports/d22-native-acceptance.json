@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "task_id": "d22-native-acceptance",
+  "defect_id": "EXT-D-0022",
+  "status": "prepared_waiting_for_root_go",
+  "scope": "Read-only primary-Chrome acceptance of organization-scoped Saved Source recognition after the designated rebuilt extension is ready.",
+  "prerequisites": [
+    "Root confirms the rebuilt extension is ready and grants the primary-Chrome/resource lease. The existing native-0273-reload report describes the baseline environment only; it is not evidence for D22.",
+    "Use the already signed-in admin@admin.com account, its currently selected organization, the existing auto local-engine port, and existing permissions. Keep the Store extension off.",
+    "Do not sign in or out, save/delete/edit a Source, create an organization, change roles, clear browser or extension storage, or change settings. Do not navigate to an arbitrary/private URL or record private organization names or URLs."
+  ],
+  "procedure": [
+    {
+      "step": 1,
+      "action": "After root grants GO, confirm in the primary Chrome profile that Matrx Extend is the designated rebuilt development extension. Record privately which organization is selected at entry so it can be restored. Confirm the account remains admin@admin.com, the local-engine port remains auto, the Store extension remains off, and all four optional permissions remain off. Stop if any baseline differs; do not repair it in this run.",
+      "expected": "The pre-run baseline is intact and the loaded extension is the designated candidate."
+    },
+    {
+      "step": 2,
+      "action": "Open Side panel → Scrape, then Saved captures. Find an existing capture whose URL is a clearly public page on IANA, Example, or Wikipedia. Open that existing public URL in the ordinary browser tab using the existing capture entry. Do not create or save anything. If there is no suitable existing public capture, stop and report the fixture unavailable.",
+      "expected": "The page URL is public and already has an existing Source in the initially selected organization."
+    },
+    {
+      "step": 3,
+      "action": "Return to Scrape on that same URL and wait for recognition to settle. Observe the selected organization label, recognition/check state, and any Saved/Open this Source control. Do not press Save, recapture, edit, or delete.",
+      "expected": "In the organization that already contains the Source, recognition settles to Saved for that existing Source."
+    },
+    {
+      "step": 4,
+      "action": "Use the extension's explicit organization picker to select another organization already listed for this account. Keep the browser tab on the same public URL. Observe the recognition UI immediately and again after its recheck settles. Do not change membership, roles, or organization settings.",
+      "expected": "The old organization's claim and Open this Source target clear immediately. A scoped check runs for the newly selected organization; it reports not saved when that organization has no matching Source, or reports the correct existing Source if one is already there. It never continues to show the prior organization's Source."
+    },
+    {
+      "step": 5,
+      "action": "Use the explicit picker to return to the organization confirmed to contain the existing Source, keeping the same URL open. Wait for recognition to settle.",
+      "expected": "The existing Source is recognized again under that organization, demonstrating the same-page switch recheck in both directions."
+    },
+    {
+      "step": 6,
+      "action": "Restore the organization recorded at entry using the explicit picker. Confirm admin@admin.com, the entry organization, auto port, Store-off state, and four optional-permission-off states remain as at entry. Close the panel without saving or changing anything.",
+      "expected": "The original baseline organization is selected and all protected baseline settings remain unchanged."
+    }
+  ],
+  "missing_organization_case": {
+    "status": "only_if_naturally_reachable",
+    "instruction": "If the actual UI reaches a missing/unreadable organization state without clearing or editing storage, observe whether Scrape shows a plain-language choose-organization remedy and no Saved claim. Otherwise mark this case unverified. Do not manufacture the state by clearing storage, signing out, or injecting session state."
+  },
+  "evidence_to_record": [
+    "Actual Chrome profile and extension version/build identity as shown in the UI, plus run time.",
+    "Pass/fail/unverified for each step, with sanitized observations limited to generic labels such as entry organization and comparison organization.",
+    "Whether an existing suitable public Source fixture was available; do not include its URL, Source id, or private organization names in this report.",
+    "Any deviation or unexpected write prompt; cancel it and stop the affected step without confirming a mutation."
+  ],
+  "current_result": "Not executed. Awaiting root GO and the designated rebuilt extension/resource lease.",
+  "limits": [
+    "No UI/browser action was performed while preparing this checklist.",
+    "This procedure cannot establish behavior for a missing organization unless that state is naturally reachable through the real UI without destructive setup.",
+    "Do not infer final behavior from source review, unit tests, or native-0273-reload."
+  ]
+}
