@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T10:27:37.933390+00:00",
+  "updated_at": "2026-09-26T10:41:34.825906+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -6219,10 +6219,21 @@
           ],
           "results": {
             "admin": {
-              "status": "pass",
+              "status": "unverified",
               "run_id": "admin-debug-filters-001",
-              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
-              "detail": "Switched Log \u2192 Bridges \u2192 Log. Both selected subviews rendered their intended content; Logs retained its current 113-row state when revisited, while Bridges showed its existing channel and health state. No bridge action was invoked."
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filters-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Switched Log \u2192 Bridges \u2192 Log. Both selected subviews rendered their intended content; Logs retained its current 113-row state when revisited, while Bridges showed its existing channel and health state. No bridge action was invoked.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
             }
           }
         },
@@ -6251,10 +6262,21 @@
           ],
           "results": {
             "admin": {
-              "status": "pass",
+              "status": "unverified",
               "run_id": "admin-debug-filters-001",
-              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
-              "detail": "Search for existing message text \u2018engine not found\u2019 returned 2 rows. Search for the existing detail value \u20181.4.204\u2019 returned 14 rows, demonstrating serialized details are searched. Clearing search restored the unfiltered set (114 rows after naturally arriving events)."
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filters-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Search for existing message text \u2018engine not found\u2019 returned 2 rows. Search for the existing detail value \u20181.4.204\u2019 returned 14 rows, demonstrating serialized details are searched. Clearing search restored the unfiltered set (114 rows after naturally arriving events).",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
             }
           }
         },
@@ -6283,10 +6305,21 @@
           ],
           "results": {
             "admin": {
-              "status": "pass",
+              "status": "unverified",
               "run_id": "admin-debug-filters-001",
-              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
-              "detail": "Paused at 114 displayed rows. After a 35-second wait the feed total advanced to 115 while the displayed count stayed at 114. Resume changed the displayed count to 115 and showed the newly arrived row."
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filters-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Paused at 114 displayed rows. After a 35-second wait the feed total advanced to 115 while the displayed count stayed at 114. Resume changed the displayed count to 115 and showed the newly arrived row.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
             }
           }
         },
@@ -6389,8 +6422,19 @@
             "admin": {
               "status": "unverified",
               "run_id": "admin-debug-filters-001",
-              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
-              "detail": "The current event set exposed no event-tag filter row or dynamic tag pills, so all/none and newly observed tag behavior could not be exercised. No event was created to manufacture a tag."
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filters-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "unverified",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "The current event set exposed no event-tag filter row or dynamic tag pills, so all/none and newly observed tag behavior could not be exercised. No event was created to manufacture a tag.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
             }
           }
         },
@@ -6421,8 +6465,19 @@
             "admin": {
               "status": "unverified",
               "run_id": "admin-debug-filters-001",
-              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
-              "detail": "Expanded and collapsed an existing event with details. Clicking a row without details left the accessibility tree unchanged. Source=none showed \u2018No events match the current filter.\u2019 The distinct \u2018No events yet\u2019 state was not exercised because clearing logs is excluded."
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filters-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "unverified",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Expanded and collapsed an existing event with details. Clicking a row without details left the accessibility tree unchanged. Source=none showed \u2018No events match the current filter.\u2019 The distinct \u2018No events yet\u2019 state was not exercised because clearing logs is excluded.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
             }
           }
         },
@@ -6498,7 +6553,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "The selected auth pill removed two rows and restored the full set when re-enabled.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T25",
@@ -6522,7 +6596,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "The selected api pill removed eight rows and restored the full set when re-enabled.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T26",
@@ -6546,7 +6639,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "unverified",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Pill interaction was exercised; no positive stream rows were available to verify row removal/restoration.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T27",
@@ -6570,7 +6682,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "unverified",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Pill interaction was exercised; no positive pilot-stream rows were available to verify row removal/restoration.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T28",
@@ -6594,7 +6725,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "unverified",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Pill interaction was exercised; no positive pilot rows were available to verify row removal/restoration.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T29",
@@ -6618,7 +6768,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "The selected scrape pill removed one row and restored the full set when re-enabled.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T30",
@@ -6642,7 +6811,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "The selected desktop pill removed 63 rows and restored the full set when re-enabled.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T31",
@@ -6666,7 +6854,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "unverified",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Pill interaction was exercised; no positive matching rows were available to verify row removal/restoration.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T32",
@@ -6690,7 +6897,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "unverified",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Pill interaction was exercised; no positive matching rows were available to verify row removal/restoration.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T33",
@@ -6714,7 +6940,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "unverified",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Pill interaction was exercised; no positive matching rows were available to verify row removal/restoration.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T34",
@@ -6738,7 +6983,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "unverified",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Pill interaction was exercised; no positive matching rows were available to verify row removal/restoration.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T35",
@@ -6762,7 +7026,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "unverified",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Pill interaction was exercised; no positive matching rows were available to verify row removal/restoration.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T36",
@@ -6786,7 +7069,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "The selected msg pill removed 56 rows and restored the full set when re-enabled.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T37",
@@ -6810,7 +7112,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "unverified",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Pill interaction was exercised; no positive matching rows were available to verify row removal/restoration.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T38",
@@ -6834,7 +7155,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "The selected sys pill removed two rows and restored the full set when re-enabled.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T39",
@@ -6861,10 +7201,21 @@
           ],
           "results": {
             "admin": {
-              "status": "pass",
+              "status": "unverified",
               "run_id": "admin-debug-filters-001",
-              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
-              "detail": "Source=all restored all source pills and the 113-row filtered set after the source=none check."
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filters-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Source=all restored all source pills and the 113-row filtered set after the source=none check.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
             }
           }
         },
@@ -6893,10 +7244,21 @@
           ],
           "results": {
             "admin": {
-              "status": "pass",
+              "status": "unverified",
               "run_id": "admin-debug-filters-001",
-              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
-              "detail": "Source=none deselected all source pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019"
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filters-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Source=none deselected all source pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
             }
           }
         },
@@ -6922,7 +7284,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "The selected info pill removed 126 rows and restored the full set when re-enabled.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T41",
@@ -6946,7 +7327,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "The selected success pill removed six rows and restored the full set when re-enabled.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T42",
@@ -6970,7 +7370,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "unverified",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Pill interaction was exercised; no positive warn events were available to verify row removal/restoration.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T43",
@@ -6994,7 +7413,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "admin-debug-filter-matrix-001",
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filter-matrix-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "unverified",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Pill interaction was exercised; no positive error events were available to verify row removal/restoration.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1005-T44",
@@ -7021,10 +7459,21 @@
           ],
           "results": {
             "admin": {
-              "status": "pass",
+              "status": "unverified",
               "run_id": "admin-debug-filters-001",
-              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
-              "detail": "Level=all showed all four level pills selected and restored the 113-row set."
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filters-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Level=all showed all four level pills selected and restored the 113-row set.",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
             }
           }
         },
@@ -7053,10 +7502,21 @@
           ],
           "results": {
             "admin": {
-              "status": "pass",
+              "status": "unverified",
               "run_id": "admin-debug-filters-001",
-              "evidence": "docs/stabilization/runs/admin-debug-filters-001.json",
-              "detail": "Level=none deselected all four level pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019"
+              "evidence": [
+                "docs/stabilization/runs/admin-debug-filters-001.json",
+                "docs/stabilization/reports/debug-acceptance-peer.json"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "detail": "Level=none deselected all four level pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019",
+              "remaining_criteria": [
+                "Reload and service-error observations required for the declared dimensions."
+              ]
             }
           }
         },
@@ -7366,7 +7826,8 @@
           "test_status": "unverified",
           "defect_ids": [],
           "run_ids": [
-            "admin-debug-filters-001"
+            "admin-debug-filters-001",
+            "admin-debug-filter-matrix-001"
           ],
           "retest_status": "not-run"
         }
