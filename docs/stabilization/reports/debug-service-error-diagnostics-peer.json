@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "report_id": "debug-service-error-diagnostics-peer",
+  "feature_id": "EXT-F-1005",
+  "reviewed_source_commit": "0ce9895c",
+  "scope": ["EXT-F-1005-T14", "EXT-F-1005-T15", "EXT-F-1005-T17", "EXT-F-1005-T22"],
+  "A_runtime": {
+    "verdict": "UNVERIFIED_FOR_SERVICE_ERROR",
+    "evidence": "docs/stabilization/runs/debug-log-controls-005.json",
+    "reason": "Run 005 had an online /health positive control but did not observe the initial offline failed request or visible FAIL. It restored the panel network before the ordinary control battery, so none of the four service-error dimensions passed. The revised diagnostic source has not yet run."
+  },
+  "B_source": {
+    "verdict": "ACCEPT_DIAGNOSTIC_SOURCE",
+    "finding": "The revision adds counts and allowlisted categories for panel requests, /health methods, response/finish/failure/cache events, plus fixed OK/FAIL/unavailable UI state and ping-button readiness. It records whether the target-scoped offline command and trusted ping click returned. These observations can distinguish no request, preflight, cache, non-disconnection failure, and UI timing without declaring any of them the cause before runtime.",
+    "oracle_preserved": "Both initial and final service-error gates still require exactly one same-URL /health GET with net::ERR_INTERNET_DISCONNECTED and visible FAIL. Diagnostic counts never satisfy or relax that predicate; the initial failure restores network and leaves serviceError unverified, while a missing final proof downgrades recorded serviceError evidence.",
+    "safety_and_privacy": "Only the owned side-panel CDP target is toggled offline; the existing outer finally restores network/cache/observation after controls or failure. The public page remains a separate target. URLs stay in memory for exact matching, and no raw URL, status text, response body, event text, credential, or exception is written to the result. No mocked response, log injection, database write, Chat/Pilot, or Source Save input is added.",
+    "remaining_limit": "Source review cannot establish why run 005 lacked offline proof, whether the new categories identify it, or whether the four controls work during a proved outage. Those require the next guarded native run; a silent health failure alone still proves no error row or badge."
+  },
+  "reviewed_paths": [
+    "tests/browser/debug-log-controls-acceptance.mjs",
+    "docs/stabilization/reports/debug-log-controls-prepare.json",
+    "docs/stabilization/runs/debug-log-controls-005.json"
+  ]
+}
