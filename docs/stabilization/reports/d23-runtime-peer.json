@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "report_id": "d23-runtime-peer",
+  "run_id": "source-workspace-007",
+  "A_product_reproduction": {
+    "verdict": "BOUNDED_D23_ACCEPTANCE_OBSERVED",
+    "evidence": [
+      "The runner observed the typed no-workspace Capture notice before selecting the approved existing organization through the real admin UI.",
+      "After selection, its exact typed notice count reached zero; the runner did not manually dismiss the notice.",
+      "After public capture, one unique enabled visible Save button with nonzero clipped geometry was found in the active Scrape pane; center and all eight other tested interior points hit the target.",
+      "The runner's readOnlyAcceptance field is derived from those three predicates and records observed."
+    ],
+    "boundary": "This closes the requested D23 read-only reproduction leg only. It does not exercise the pending-handoff queue contract in EXT-F-2010-T02 and used an admin identity, not a member identity. The run sent no Save input and establishes no Source creation/open result; D22 remains ambiguous."
+  },
+  "B_evidence_quality": {
+    "verdict": "DIAGNOSTIC_EXIT_IS_EXPECTED_AND_EVIDENCE_IS_BOUNDED",
+    "details": [
+      "The runner explicitly documents the existing Save attempt as ambiguous and prohibits another Save input; the source path records save_pointer_input as not attempted.",
+      "It labels the result diagnostic_only and stops at read_only_save_pointer_diagnostic by deliberately raising prior_save_absent_pointer_diagnosed_no_retry after collecting D23 observations.",
+      "The resource log independently records admission, a healthy watch sample, stdout DIAGNOSTIC_ONLY, and childExitCode 1. Therefore wrapper exit 1 is the expected D22 diagnostic stop, not D23 runtime failure.",
+      "I checked the raw ignored acceptance JSON against the runner's observation and gating code and matched its hashes. The evidence is sanitized: no organization name, credential, private screenshot, or raw pointer sample is included here.",
+      "This runtime does not test unrelated-notice preservation; the focused guard and source review cover that separate requirement."
+    ]
+  },
+  "closure_assessment": {
+    "EXT-D-0023": "CLOSE-ELIGIBLE on the combined evidence: red-to-green focused guard (24 tests), independent source review, and this bounded native read-only reproduction satisfy the D23-specific closure requirement. This peer records evidence and does not edit defect state.",
+    "EXT-F-2010-T02": "NOT PASSED; actual pending-item organization-switch queue behavior and member-mode coverage remain unverified.",
+    "EXT-D-0022": "OPEN; no Save retry, saved/open Source proof, or resolution of the prior ambiguous Save result."
+  },
+  "validation": {
+    "acceptance_json_sha256_matched": true,
+    "runner_source_reviewed": true,
+    "guard_child_exit_semantics_matched": true,
+    "no_product_or_status_edit": true
+  }
+}

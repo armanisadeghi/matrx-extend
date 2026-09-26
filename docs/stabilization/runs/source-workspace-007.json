@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "run_id": "source-workspace-007",
+  "defect_id": "EXT-D-0023",
+  "related_defect_id": "EXT-D-0022",
+  "source": {
+    "result_path": "test-results/source-workspace-acceptance.json",
+    "result_sha256": "71f222cb5eec42a0396c2bb0094e1af3cf1e2877496a5c4df785d57866c9f443",
+    "runner_path": "tests/browser/source-workspace-acceptance.mjs",
+    "runner_sha256": "36345451b8677a4c974f51ac4c1814727936f2096727133c3b1dacdf1ce9acdf",
+    "guard_log_path": "/tmp/matrx-source-workspace-007.log",
+    "guard_log_sha256": "14c08305c63453bfa71cc721e6911e8c47bfcc14f2af14aa62c1cfcdf0f31f18"
+  },
+  "guard": {
+    "admitted_at": "2026-09-26T21:58:51.678Z",
+    "healthy_watch_at": "2026-09-26T21:59:08.090Z",
+    "child_exit_at": "2026-09-26T21:59:09.585Z",
+    "child_exit_code": 1,
+    "wrapper_stdout": "DIAGNOSTIC_ONLY d22_source_workspace_native",
+    "semantics": "The guarded child intentionally stopped at the read-only D22 pointer diagnostic. Exit 1 records that D22 acceptance did not complete; it is not a failed D23 reproduction."
+  },
+  "build": {
+    "version": "0.2.78",
+    "tree_sha256": "b126815ce6f93fe761d9559d0148922dbcffbe74217a25f92bc566e954790f7d"
+  },
+  "scope": {
+    "mode": "real_admin_ui",
+    "organization": "approved existing organization selected through UI; identity/name omitted",
+    "operation": "read_only_recovery; no Save pointer input"
+  },
+  "d23_observations": {
+    "no_workspace_notice_before_selection": "observed",
+    "organization_selection": "approved existing organization selected and stored",
+    "no_workspace_notice_after_selection": "absent",
+    "public_capture_ready": true,
+    "save_pointer_after_capture": "hit_testable",
+    "viewport": "360x421",
+    "save_target": {
+      "unique_visible_enabled": true,
+      "has_clipped_area": true,
+      "rectangle": { "x": 12, "y": 365, "width": 336, "height": 36 },
+      "tested_interior_hit_count": 9,
+      "center_hits_target": true
+    },
+    "runner_read_only_acceptance": "observed"
+  },
+  "d22_boundary": {
+    "prior_save_result": "ambiguous_no_retry",
+    "recovery_lookup": "none",
+    "save_input": "not_attempted",
+    "saved_and_open_source": "unverified",
+    "checkpoint": "existing_reserved_unchanged"
+  },
+  "interpretation": "Bounded D23 original-reproduction acceptance is observed: the known no-workspace notice was present before org selection, absent afterward, and the enabled public-capture Save target was hit-testable at all nine sampled interior points. This does not show preservation of an unrelated live notice in this runtime session; that preservation is covered by the focused notice guard and independent source review. It does not complete EXT-F-2010-T02 pending-handoff queue behavior or prove any Source save."
+}
