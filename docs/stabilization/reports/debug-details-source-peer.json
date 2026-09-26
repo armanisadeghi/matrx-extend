@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "report_id": "debug-details-source-peer",
+  "reviewed_source_commit": "cd3215df0aefae5dac13be9d2baef519d0c80fdb",
+  "runner": "tests/browser/debug-log-controls-acceptance.mjs",
+  "A_runtime": {
+    "status": "UNVERIFIED",
+    "reason": "This independent lane did not launch a browser, build, or tests. Natural detail-bearing and no-detail rows, an error badge, and build stability still require the admitted native run."
+  },
+  "B_source": {
+    "status": "ACCEPTED_FOR_RUNTIME_VERIFICATION",
+    "findings": [
+      "T14 keeps its message-only natural-row positive control. The added detail search first expands a unique natural detail row, extracts a rendered JSON key absent from visible messages, then uses trusted Search input and requires the original detail row to remain visible with a matching counter. The detail-search claim remains unverified if no suitable natural key or earlier T14 positive control exists; reload and service-error dimensions are not promoted.",
+      "T22 requires a unique natural detail row to change from zero to one rendered pre block and back to zero after separate trusted row clicks. It also requires a naturally rendered no-detail row, the distinct no-match state, and the post-clear no-events state before marking the warm dimension pass. The product handler synchronously guards toggleExpand with hasDetail, so its no-detail row is a no-op in reviewed source.",
+      "T15 retains the observed frozen rows, growing total, and resumed rows positive control. Its status is now partial even on warm success; reload and service-error remain unverified.",
+      "T17 requires a previously nonempty natural log, a trusted Clear click, zero rendered and total rows, the no-events state, and no rendered error badge. A badge-clear pass is reported only when a badge was present before Clear and absent after; an absent pre-clear badge is explicitly unverified for that dimension. The badge selector matches the actual Debug tab badge rendered by App.",
+      "The runner checks matching release receipt and dev manifest versions plus a 64-character receipt tree hash before and after its owned-profile native run. It exposes the observed version, hash, and extension ID in the result. The native harness independently verifies the artifact hash at startup."
+    ],
+    "limits": [
+      "The no-detail inert assertion samples immediately after the trusted click. That covers the reviewed synchronous handler and visible expansion behavior, but it would not detect a future delayed effect after that sample. A bounded next-paint comparison of row detail, counter, and expanded state would strengthen the regression oracle; this is not evidence of a current product defect.",
+      "Start/end identity compares receipt and manifest content; the source does not rehash artifact bytes at the end. The defensible claim is startup artifact verification and stable receipt/manifest identity, not immutable artifact bytes for the entire run.",
+      "Even if every warm control succeeds, T14, T15, T17, and T22 are partial rather than full inventory acceptance because reload and service-error dimensions remain open. A run with no verified cases remains unverified and exits nonzero."
+    ]
+  }
+}
