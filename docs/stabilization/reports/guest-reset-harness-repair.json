@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "defect": "EXT-D-0009",
+  "case": "EXT-F-1003-T49",
+  "status": "source_repaired_runtime_pending",
+  "rootCause": "native-sidepanel-qa-harness.mjs loaded Playwright at module import through /Users/armanisadeghi/code/matrx-frontend/package.json, a different checkout absent on this host. The acceptance runner failed with MODULE_NOT_FOUND before its receipt or UI checks.",
+  "originalRedEvidence": {
+    "log": "/tmp/matrx-guest-reset-001.log",
+    "error": "Cannot find module 'playwright'",
+    "requireStack": "/Users/armanisadeghi/code/matrx-frontend/package.json"
+  },
+  "siblingCensus": {
+    "pattern": "browser harnesses resolving Playwright through a sibling checkout",
+    "matches": [
+      "tests/browser/capture-ladder-e2e.mjs",
+      "tests/browser/capture-ladder-capture.mjs",
+      "tests/browser/records-agent-turn-e2e.mjs",
+      "tests/browser/saved-captures-e2e.mjs",
+      "tests/browser/side-panel-opens-on-our-click.mjs",
+      "tests/browser/side-panel-gesture-spike.mjs",
+      "tests/browser/capture-handoff-carries-the-workspace.mjs"
+    ],
+    "disposition": "outside the owned native sidepanel harness lane; parent tracks the broader browser-runner class"
+  },
+  "change": "Load repo-installed Playwright lazily, or use MATRX_PLAYWRIGHT_MODULE for an existing host runtime. Resolve Chrome-for-Testing from MATRX_CHROME_PATH or Playwright and fail with an actionable error when unavailable. Release artifact verification still precedes runtime resolution and browser launch.",
+  "hostRuntime": {
+    "MATRX_PLAYWRIGHT_MODULE": "/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+    "MATRX_CHROME_PATH": "/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
+  },
+  "checks": {
+    "nodeCheck": "pass: node --check tests/browser/native-sidepanel-qa-harness.mjs",
+    "diffCheck": "pass: git diff --check -- tests/browser/native-sidepanel-qa-harness.mjs",
+    "runtimePaths": "pass: both configured files exist; Chrome executable is executable",
+    "browserAcceptance": "pending parent admitted run"
+  },
+  "acceptanceCommand": "MATRX_PLAYWRIGHT_MODULE='/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs' MATRX_CHROME_PATH='/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing' node tests/browser/settings-local-reset-acceptance.mjs",
+  "preservedGates": [
+    "released artifact receipt, unpacked tree, and store zip hashes",
+    "new disposable profile and owned CDP endpoint",
+    "spawned browser, profile lock, and expected extension identity",
+    "real Playwright click to open the native side panel",
+    "distinct SIDE_PANEL runtime context and screenshots"
+  ]
+}
