@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "d22-final-source-peer",
+  "defect_id": "EXT-D-0022",
+  "reviewed_commits": ["deb577e8", "e36bf683", "8f554e64"],
+  "scope": "Independent source review of selected-workspace Source recognition and local Saved/Open/retry behavior; no browser or test execution in this lane",
+  "verdict_live_acceptance": "UNVERIFIED",
+  "verdict_source_quality": "FAIL",
+  "confirmed_from_source": [
+    "Recognition returns unknown when no workspace is selected or its selection cannot be read, and only queries docproc with an exact organization_id predicate (queries.ts:620-655).",
+    "The recognition hook clears an old claim on workspace changes and ignores late lookup answers; a broadcast only triggers a fresh lookup (use-page-recognition.ts:33-100).",
+    "The local Saved button and Open this Source link require the landed organization's id to match the selected workspace and the same unedited capture (ScrapeView.tsx:88-100, 716-740).",
+    "A late landed Save in A stays hidden while B is selected, and the capture remains in memory. The added guards cover this success ordering (save-never-loses-input.test.tsx:384-458)."
+  ],
+  "findings": [
+    {
+      "severity": "important",
+      "kind": "Unresolved race",
+      "title": "An older refused Save can overwrite a newer workspace's retry capture",
+      "evidence": "ScrapeView.tsx:124-131 releases the Save control on a workspace switch, allowing B to Save while A remains in flight. On refusal, saveCaptureAsSource always calls upsertUnsaved (save-capture.ts:291-302). upsertUnsaved keys solely by canonical URL and replaces the stored row with whichever refusal completes last (save-capture.ts:208-224). Thus A starts, the person switches to B and edits/saves, B refuses and queues the B version, then A refuses late: the queue now contains A's older prepared content and organizationId. The current guard at save-never-loses-input.test.tsx:433-458 resolves A successfully, so it does not cover this ordering. retryUnsavedCapture's refusal also unconditionally upserts its stale row (save-capture.ts:315-333).",
+      "required_repair": "Give queued attempts a monotonic revision or equivalent compare-and-swap rule so a late earlier refusal cannot replace a newer capture or workspace retry. Cover A-late-refusal after B-refusal with changed article text, assert the queued body and organization remain B, and cover stale retry refusal against a newer queued edit."
+    }
+  ],
+  "runtime_limits": [
+    "Authenticated two-workspace localhost exercise has not yet been observed by this reviewer; source inspection cannot establish live acceptance.",
+    "Root owns the central test/browser run. This lane did not rerun tests or the UI."
+  ],
+  "next_verification": "After repairing the queue race, independently exercise one URL in workspace A, switch to B, edit and fail a Save, resolve A's older refusal last, and confirm B's edited capture and retry survive; then verify A/B recognition and Saved/Open in the authenticated panel."
+}
