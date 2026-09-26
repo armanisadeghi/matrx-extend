@@ -28,7 +28,7 @@ importers:
         version: 0.8.7(react@19.2.5)
       '@ai-matrx/records':
         specifier: latest
-        version: 0.58.21(react@19.2.5)
+        version: 0.58.22(react@19.2.5)
       '@ai-matrx/tap-target':
         specifier: latest
         version: 0.2.14(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -281,8 +281,8 @@ packages:
       react-native:
         optional: true
 
-  '@ai-matrx/records@0.58.21':
-    resolution: {integrity: sha512-jnuKt+kkjBooo/bSODO3C1OSIMqWQoh79jtOQUjFD/ym0r+jvXKoP6RyxOgTDLYkWv/aRN2HuN8pNnVcwOGl9w==}
+  '@ai-matrx/records@0.58.22':
+    resolution: {integrity: sha512-8CE4Dcseh5MRfmcVws71Va1I+y37ADWB+Pjz2bytS9OhW/tGce6K2ZWzgikge2/SZL7OM6XGxmE+X+bt7mJAjw==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -5832,7 +5832,7 @@ snapshots:
     optionalDependencies:
       react: 19.2.5
 
-  '@ai-matrx/records@0.58.21(react@19.2.5)':
+  '@ai-matrx/records@0.58.22(react@19.2.5)':
     dependencies:
       xlsx: 0.18.5
     optionalDependencies:
