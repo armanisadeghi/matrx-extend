@@ -260,7 +260,7 @@ export function SavedCapturesView() {
                 </button>
                 <div className="mt-2 flex items-center justify-between">
                   <span className="text-[10px] text-muted-foreground">
-                    {capture.kept_at ? 'Kept' : 'Saved'}
+                    {captureHost(capture.url)}
                   </span>
                   <div className="flex items-center gap-1">
                     <Button
@@ -504,7 +504,6 @@ function SavedCaptureDetail({
             <TabsContent value="details" className="space-y-3 text-xs">
               <DetailRow label="Captured" value={new Date(capture.captured_at).toLocaleString()} />
               <DetailRow label="Updated" value={new Date(capture.updated_at).toLocaleString()} />
-              <DetailRow label="Kept" value={capture.kept_at ? 'Yes' : 'Not yet'} />
               <DetailRow label="Language" value={lang} />
               <DetailRow label="Words" value={String(words ?? 0)} />
               <DetailRow
@@ -527,7 +526,7 @@ function SavedCaptureDetail({
                 label="Original"
                 value={
                   originalState === 'ready'
-                    ? 'Kept'
+                    ? 'Saved in your files'
                     : originalState === 'loading'
                       ? 'Loading…'
                       : originalState === 'failed'

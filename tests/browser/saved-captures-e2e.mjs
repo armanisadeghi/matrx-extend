@@ -206,14 +206,14 @@ async function main() {
     await panel.screenshot({ path: join(shots, '2-saved-captures-list.png') });
     await panel.getByText(onlineTitle, { exact: true }).click();
     await panel.getByRole('tab', { name: 'Details' }).click();
-    await panel.getByText('Kept', { exact: true }).first().waitFor({ timeout: 20_000 });
+    await panel.getByText('Words', { exact: true }).first().waitFor({ timeout: 20_000 });
     await panel.locator('text=Original').first().waitFor();
     await panel.waitForFunction(() => !document.body.innerText.includes('Loading…'), null, {
       timeout: 20_000,
     });
     await panel.screenshot({ path: join(shots, '3-saved-capture-details.png') });
     const detailsText = await panel.locator('body').innerText();
-    if (!/Original\s*\n?\s*Kept/.test(detailsText))
+    if (!/Original\s*\n?\s*Saved in your files/.test(detailsText))
       fail('Details did not read the original back from storage.');
     console.log('✓ Saved captures listed the Source and Details read the original from S3');
 
