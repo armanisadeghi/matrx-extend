@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "report_id": "seo-015-corrections-peer",
+  "reviewed_source_commit": "0d893b3d869810ac6a1d1b646dded3ef89ef6fbd",
+  "prior_review_commit": "2a0f72d0",
+  "prior_report": "docs/stabilization/reports/seo-015-geometry-peer.json",
+  "source_review": {
+    "verdict": "ORIGINAL_FINDINGS_ADDRESSED_WITH_RESIDUAL_CLASSIFICATION_GAP",
+    "finding_results": [
+      {
+        "prior_finding": "A fixed screenshot path could overwrite an existing permissive file or follow its symlink despite writeFile mode 0600.",
+        "status": "ADDRESSED_IN_SOURCE",
+        "evidence": "The catch path now includes randomUUID(), and open(path, 'wx', 0o600) exclusively creates the final file before writeFile and sync through that handle. Existing files and final-path symlinks cause exclusive creation to fail; no existing bytes are overwritten. The handle closes in finally. A failed capture is reported as capture_unavailable without raw error text."
+      },
+      {
+        "prior_finding": "Initial uniqueness, destination, and target assertions could fail with sampleFailure null.",
+        "status": "ADDRESSED_IN_SOURCE",
+        "evidence": "Before the initial assertions, sampleFailure is assigned one of initial_candidate_count, initial_destination, initial_target, or null after a passing sample. It is preassigned initial_sample_unavailable before awaiting the sample. Thus each initial assertion failure has a fixed category and the three original assertions remain in place."
+      }
+    ],
+    "followup_categories": "Before each followup sample, sampleFailure is followup_sample_unavailable. A returned sample is classified as followup_candidate_count, hit, area, position_stability, or null. The original hit, area, and position assertions and two 50 ms samples are unchanged.",
+    "residual_concern": "The sample function returns null when the SEO pane is unlinked. A resolved null overwrites *_sample_unavailable with *_candidate_count because null?.count !== 1. The failure remains visible and the assertions still fail, but the category misleadingly says candidate count rather than unavailable. A thrown sample retains the unavailable category.",
+    "assertion_preservation": "The source diff retains exact href and target assertions, followup hit/positive-area/position assertions, pointer press and release, new-page wait, and destination URL assertion. No retry, changed threshold, or passing fallback was introduced.",
+    "screenshot_limits": "The source guarantees exclusive final-file creation with creation mode 0600 under the existing test-results directory. Filesystem behavior and final mode were not exercised in this review; a pre-existing symlink on the parent directory was outside the original finding and was not checked by this implementation."
+  },
+  "runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "Independent source rereview only. No browser or heavy test was run, and no later root-owned runtime result is claimed."
+  }
+}
