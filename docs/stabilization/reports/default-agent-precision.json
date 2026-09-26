@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "default-agent-precision",
+  "status": "passed",
+  "run_record": "docs/stabilization/runs/admin-default-agent-002.json",
+  "feature_controls_cases": [
+    {
+      "feature_id": "EXT-F-1003",
+      "case_ids": ["EXT-F-1003-T09"],
+      "status": "passed"
+    }
+  ],
+  "A_behavior_verdict": "Passed: the inspected Quick Test Agent was selected in Settings and remained selected after Chrome reloaded extension 0.2.51; Matrx Browser Agent was restored afterward.",
+  "B_quality_interpretation_verdict": "EXT-L-0007 wrong-agent/name-mismatch lead refuted. The visible row name was Quick Test Agent; the separate 2 badge represented its orchestra's two members. Details for that row showed the same name, two members, and ID b32f2079-4fa5-4613-a01d-726f1243ebe5. Accessibility concatenated name and badge into Quick Test Agent 2; screen-reader clarity is an unassessed quality concern, not evidence of a different selected agent.",
+  "evidence": [
+    "Native Chrome UI, signed in as admin@admin.com, explicit organization ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete.",
+    "Picker screenshot showed a separate orchestra badge marked 2; details showed Orchestra · supervisor · 2 members.",
+    "Settings showed Quick Test Agent after Select and again after actual extension Reload and organization loading settled.",
+    "Settings showed Matrx Browser Agent after restoration. No agent was run."
+  ],
+  "resource_lease": "guest-settings-007, coordinator-held session 76318",
+  "state_left": "Signed in as admin@admin.com; explicit throwaway fixture selected; Matrx Browser Agent restored; Settings open.",
+  "ui_stopped": true
+}
