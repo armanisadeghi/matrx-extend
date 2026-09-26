@@ -1,0 +1,10 @@
+{
+  "id": "merged-compile-021",
+  "status": "pass",
+  "command": "pnpm compile",
+  "admitted_at": "2026-09-26T16:11:34.645Z",
+  "exited_at": "2026-09-26T16:11:36.433Z",
+  "result": "Merged graph TypeScript check exit0",
+  "source_log": "/tmp/matrx-merged-compile-021.log",
+  "merged_source": "79f5cdeb"
+}
