@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "task_id": "d22-source-peer",
+  "defect_id": "EXT-D-0022",
+  "reviewed_commits": ["f6280e23", "deb577e8"],
+  "scope": "Independent source review of workspace-correct Source recognition; no live browser execution",
+  "verdict_a_spec": "PARTIAL",
+  "verdict_b_quality": "PARTIAL",
+  "confirmed": [
+    "Guest lookup returns none before a docproc read (queries.ts:623).",
+    "Missing or unreadable device organization returns unknown before a docproc read; a selected organization is an exact organization_id predicate (queries.ts:629-655).",
+    "The recognition hook subscribes to organization storage changes, immediately invalidates old lookups, clears the old claim, and rechecks the current URL. Cleanup unsubscribes from both organization and broadcast listeners (use-page-recognition.ts:31-100).",
+    "PAGE_ALREADY_CAPTURED has no organization identity; the hook treats it only as a recheck trigger, so the payload id cannot directly restore an old Source (use-page-recognition.ts:88-100).",
+    "The Scrape missing-workspace banner uses the typed organization_unselected cause and shows a selection remedy. It does not render arbitrary backend reason text (ScrapeView.tsx:235-253).",
+    "The red guard failed the two missing/unreadable organization cases while its guest and selected-organization controls passed; source-org-red-001.json records that result. source-org-green-001.json records 13 passing tests before the later broadcast change."
+  ],
+  "findings": [
+    {
+      "severity": "important",
+      "kind": "Missing",
+      "title": "A local Saved claim survives a workspace switch",
+      "evidence": "ScrapeView.tsx:84-87 owns independent saved/savedSource state. It sets both after handleSave (lines 180-190), and its only clearing paths are recapture, URL navigation, edits, or another save. There is no organization-change subscription. After saving a Source in workspace A, switching to B on the same URL clears usePageRecognition but leaves the Save button reading Saved and leaves Open this Source pointing to A's id (lines 669-686). A save promise that resolves after the switch can also set these old-workspace values late.",
+      "required_repair": "Bind the local save confirmation and its Source id to the organization that received the save. Clear or invalidate them immediately on organization change, and reject a late save completion from an earlier organization. Cover same-URL switch and late completion with a focused guard."
+    }
+  ],
+  "checks": [
+    {
+      "command": "pnpm exec biome check src/lib/supabase/queries.ts src/lib/supabase/queries.recognition.test.ts src/hooks/use-page-recognition.ts src/hooks/use-page-recognition.test.tsx src/features/scrape/ScrapeView.tsx",
+      "result": "PASS: checked five files, no fixes applied"
+    }
+  ],
+  "runtime_verdict": "PENDING",
+  "runtime_limits": [
+    "The latest late-broadcast hook guard was added after the recorded 13-test green run; its final focused green run is still needed.",
+    "Typecheck and authenticated, real two-organization browser verification were not run in this source-review lane.",
+    "Live acceptance must save and recognize a Source in organization A, switch to B on the same page, see neither the old recognition claim nor local Saved/Open controls, exercise an old lookup and old broadcast resolving late, then switch back to A and see the scoped Source. Repeat with missing/unreadable selection and confirm no docproc request and a plain-language remedy."
+  ]
+}
