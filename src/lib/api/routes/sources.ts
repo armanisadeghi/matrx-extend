@@ -14,7 +14,7 @@
  * validates the response with Zod rather than trusting it.
  */
 
-import { type ApiResult, apiPost } from '@/lib/api/client';
+import { type ApiResult, type ApiRequestOptions, apiPost } from '@/lib/api/client';
 import type { SectionPortion } from '@/lib/sources/portions';
 import { z } from 'zod';
 
@@ -174,10 +174,10 @@ export function refusalFromResult(result: { status: number; error: string }): La
   };
 }
 
-async function post(path: string, body: unknown): Promise<LandingOutcome> {
+async function post(path: string, body: unknown, options?: ApiRequestOptions): Promise<LandingOutcome> {
   let result: ApiResult<unknown>;
   try {
-    result = await apiPost<unknown>(path, body);
+    result = await apiPost<unknown>(path, body, undefined, options);
   } catch (err) {
     return {
       ok: false,
@@ -204,7 +204,9 @@ async function post(path: string, body: unknown): Promise<LandingOutcome> {
 
 /** Land one capture as a Source. */
 export function landSource(body: SourceLandingBody): Promise<LandingOutcome> {
-  return post('/sources/land', body);
+  return post('/sources/land', body, {
+    expectedActor: { userId: body.provenance.user_id, organizationId: body.organization_id },
+  });
 }
 
 /** Save an edit beside the original (the original capture is never overwritten). */

@@ -36,6 +36,7 @@ function portionsFromEditedMarkdown(soup: SoupResult): CapturePortions {
 
 export const UNSAVED_CAPTURES_KEY = 'matrx.sources.unsaved';
 const UNSAVED_REVISION_KEY = 'matrx.sources.unsaved_revision';
+const UNSAVED_TERMINALS_KEY = 'matrx.sources.unsaved_terminals';
 
 /** A landing body before the send-time fields (organization, person) are stamped on. */
 export type PreparedLanding = Omit<SourceLandingBody, 'organization_id' | 'provenance'> & {
@@ -58,7 +59,7 @@ export interface UnsavedCapture {
 
 export type SaveOutcome =
   | { status: 'landed'; landed: LandedSource; organizationId: string }
-  | { status: 'unsaved'; unsaved: UnsavedCapture }
+  | { status: 'unsaved'; unsaved: UnsavedCapture; persisted?: boolean }
   | { status: 'empty'; message: string };
 
 function utf8ToBase64(text: string): string {
@@ -243,15 +244,23 @@ async function reserveQueueRevision(): Promise<number> {
   });
 }
 
+/** Durable tombstones survive panel reload and deletion of the queue row. */
+async function terminalRevisions(): Promise<Record<string, number>> {
+  const stored = await chrome.storage.local.get(UNSAVED_TERMINALS_KEY);
+  return stored[UNSAVED_TERMINALS_KEY] ?? {};
+}
+
 /**
  * The queue is keyed by the page's canonical URL: one entry per page. A
  * re-save of a page already waiting REPLACES its entry (newest content, same
  * id, attempts counted) — it never adds a second card for the same page.
  */
-async function upsertUnsaved(row: UnsavedCapture): Promise<UnsavedCapture> {
+async function upsertUnsaved(row: UnsavedCapture): Promise<UnsavedCapture | null> {
   return withQueueLock(async () => {
     const rows = await listUnsavedCaptures();
     const key = canonicalUrl(row.url);
+    const terminals = await terminalRevisions();
+    if ((terminals[key] ?? 0) >= (row.revision ?? 0)) return null;
     const prior = rows.find((r) => r.id === row.id || canonicalUrl(r.url) === key);
     if (prior && (prior.revision ?? 0) > (row.revision ?? 0)) return prior;
     const merged = prior
@@ -281,6 +290,8 @@ async function dropUnsavedForUrl(
     const rows = await listUnsavedCaptures();
     const key = canonicalUrl(url);
     const queued = rows.find((r) => canonicalUrl(r.url) === key);
+    const terminals = await terminalRevisions();
+    const completed = { ...terminals, [key]: Math.max(terminals[key] ?? 0, revision) };
     if (
       queued &&
       (queued.revision ?? 0) <= revision &&
@@ -288,15 +299,33 @@ async function dropUnsavedForUrl(
         queued.organizationId === organizationId ||
         queued.id === retryRowId)
     ) {
-      await writeUnsaved(rows.filter((r) => r.id !== queued.id));
+      await chrome.storage.local.set({
+        [UNSAVED_CAPTURES_KEY]: rows.filter((r) => r.id !== queued.id),
+        [UNSAVED_TERMINALS_KEY]: completed,
+      });
+    } else {
+      await chrome.storage.local.set({ [UNSAVED_TERMINALS_KEY]: completed });
     }
+  }).catch((err) => {
+    throw new Error(`The Source landed, but its retry state could not be updated on this device (${String(err)}). Keep this panel open and retry once device storage is available.`);
   });
 }
 
 export async function discardUnsavedCapture(id: string): Promise<void> {
   await withQueueLock(async () => {
     const rows = await listUnsavedCaptures();
-    await writeUnsaved(rows.filter((r) => r.id !== id));
+    const row = rows.find((r) => r.id === id);
+    if (!row) return;
+    const stored = await chrome.storage.local.get(UNSAVED_REVISION_KEY);
+    const terminals = await terminalRevisions();
+    const key = canonicalUrl(row.url);
+    await chrome.storage.local.set({
+      [UNSAVED_CAPTURES_KEY]: rows.filter((r) => r.id !== id),
+      [UNSAVED_TERMINALS_KEY]: {
+        ...terminals,
+        [key]: Math.max(terminals[key] ?? 0, stored[UNSAVED_REVISION_KEY] ?? 0, row.revision ?? 0),
+      },
+    });
   });
 }
 
@@ -332,10 +361,26 @@ export async function saveCaptureAsSource(
         'This capture has no article text, so there is nothing to save. Try "Scroll & capture" to load the page fully, then save again.',
     };
   }
-  const revision = await reserveQueueRevision();
+  let revision: number;
+  try {
+    revision = await reserveQueueRevision();
+  } catch (err) {
+    return {
+      status: 'unsaved', persisted: false,
+      unsaved: {
+        id: newId(), url: soup.url, title: prepared.name, prepared,
+        createdAt: Date.now(), attempts: 0,
+        lastRefusal: {
+          status: -3, code: 'device_storage_unavailable', retryable: true,
+          remedy: 'keep_panel_open_and_retry',
+          message: `This page was not sent or saved on this device because device storage is unavailable (${String(err)}). Keep this panel open and retry; your editable capture is still here.`,
+        },
+      },
+    };
+  }
   const result = await send(prepared);
   if (result.ok) {
-    await dropUnsavedForUrl(soup.url, revision, result.organizationId).catch(() => undefined);
+    await dropUnsavedForUrl(soup.url, revision, result.organizationId);
     return { status: 'landed', landed: result.landed, organizationId: result.organizationId };
   }
   let unsaved: UnsavedCapture = {
@@ -350,7 +395,9 @@ export async function saveCaptureAsSource(
     prepared,
   };
   try {
-    unsaved = await upsertUnsaved(unsaved);
+    const queued = await upsertUnsaved(unsaved);
+    if (!queued) return { status: 'empty', message: 'A newer save or discard already completed for this page.' };
+    unsaved = queued;
   } catch (err) {
     // The device store refused too (quota, storage disabled). The capture is
     // still open in the panel and the unsaved-edits guard stays armed; say so.
@@ -358,8 +405,9 @@ export async function saveCaptureAsSource(
       ...result.refusal,
       message: `${result.refusal.message} It could not be kept on this device either (${String(err)}), so keep this panel open and retry.`,
     };
+    return { status: 'unsaved', unsaved, persisted: false };
   }
-  return { status: 'unsaved', unsaved };
+  return { status: 'unsaved', unsaved, persisted: true };
 }
 
 /** Retry one unsaved capture. It leaves the queue only when it lands. */
@@ -381,5 +429,8 @@ export async function retryUnsavedCapture(id: string): Promise<SaveOutcome> {
     attempts: 1,
     lastRefusal: result.refusal,
   };
-  return { status: 'unsaved', unsaved: await upsertUnsaved(next) };
+  const queued = await upsertUnsaved(next);
+  return queued
+    ? { status: 'unsaved', unsaved: queued, persisted: true }
+    : { status: 'empty', message: 'A newer save or discard already completed for this page.' };
 }

@@ -560,4 +560,21 @@ describe('Save never loses input', () => {
     } finally { set.mockRestore(); }
   });
 
+  it('device storage refusal is visible at Save and the edited capture can land after recovery', async () => {
+    const set = vi.spyOn(chrome.storage.local, 'set').mockRejectedValueOnce(new Error('Device storage full'));
+    render(<ScrapeView />);
+    try {
+      fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+      expect(await screen.findByText(/not sent or saved on this device/)).toBeTruthy();
+      expect(screen.getByText(/Keep this panel open/)).toBeTruthy();
+      expect(useScrapeStore.getState().edited).toBe(true);
+      expect(useScrapeStore.getState().current?.article.content_markdown).toContain('Intro, edited.');
+      expect(mocks.apiPost).not.toHaveBeenCalled();
+    } finally { set.mockRestore(); }
+    mocks.apiPost.mockResolvedValueOnce(landedResponse);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    expect(await screen.findByRole('button', { name: /^Saved$/ })).toBeTruthy();
+    expect(mocks.apiPost.mock.calls[0]?.[1].portions.map((p: { text: string }) => p.text).join(' ')).toContain('Intro, edited.');
+  });
+
 });

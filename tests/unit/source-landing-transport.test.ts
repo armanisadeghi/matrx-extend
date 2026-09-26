@@ -30,7 +30,7 @@ const landed = { processed_document_id: '6b8c38dd-6d68-4824-b664-a380b7611627', 
 beforeEach(() => { state.org = body.organization_id; state.switchBeforeHeaders = false; });
 afterEach(() => vi.unstubAllGlobals());
 it('refuses a workspace switch between landing body creation and authorization headers', async () => {
-  const network = vi.fn(async () => new Response(JSON.stringify(landed), { status: 200 }));
+  const network = vi.fn(async () => new Response(JSON.stringify(landed), { status: 200, headers: { 'Content-Type': 'application/json' } }));
   vi.stubGlobal('fetch', network);
   state.switchBeforeHeaders = true;
   const result = await landSource(body);
@@ -43,7 +43,7 @@ it('keeps dispatched body and header in the original workspace when the response
     expect(headers.get('X-Organization-Id')).toBe(body.organization_id);
     expect(JSON.parse(String(init.body)).organization_id).toBe(body.organization_id);
     state.org = otherOrg;
-    return new Response(JSON.stringify(landed), { status: 200 });
+    return new Response(JSON.stringify(landed), { status: 200, headers: { 'Content-Type': 'application/json' } });
   });
   vi.stubGlobal('fetch', network);
   expect(await landSource(body)).toEqual({ ok: true, landed });

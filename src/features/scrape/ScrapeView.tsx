@@ -231,6 +231,8 @@ export function ScrapeView() {
           organizationId: outcome.organizationId,
           capture,
         });
+      } else if (outcome.status === 'unsaved' && outcome.persisted === false) {
+        setSaveError(outcome.unsaved.lastRefusal.message);
       } else if (outcome.status === 'empty' && organizationEpoch === organizationEpochRef.current) {
         setSaveError(outcome.message);
       }
