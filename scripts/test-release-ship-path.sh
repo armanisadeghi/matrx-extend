@@ -63,6 +63,7 @@ echo "\$*" >> "$SANDBOX/pnpm-calls"
 case " \$* " in
   *" update-api-types "*) [ -f "$SANDBOX/fail-generation" ] && exit 1 ;;
   *" catalog:tools:md "*) mkdir -p types; echo "regenerated catalog" > types/tool-catalog.md ;;
+  *" check:matrx-packages "*) [ -f "$SANDBOX/fail-matrx-packages" ] && exit 1 ;;
   *" exec vitest run --maxWorkers=1 --minWorkers=1 "*)
     git rev-parse HEAD >> "$SANDBOX/checked-shas"
     if [ -f "$SANDBOX/fail-tests" ]; then
@@ -93,8 +94,24 @@ mkdir -p .output/chrome-mv3-dev
 echo "installed prior release" > .output/chrome-mv3-dev/sentinel.txt
 printf 'prior Store zip\n' > .output/matrx-extend-0.1.0-store.zip
 printf 'prior local zip\n' > .output/matrx-extend-0.1.0-local.zip
-touch "$SANDBOX/fail-tests"
 REMOTE_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+touch "$SANDBOX/fail-matrx-packages"
+set +e
+PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/stale-packages-out" 2>&1
+STALE_PACKAGES_STATUS=$?
+set -e
+rm "$SANDBOX/fail-matrx-packages"
+if [[ $STALE_PACKAGES_STATUS -ne 0 ]] \
+    && grep -q 'matrx-packages failed' "$SANDBOX/stale-packages-out" \
+    && ! grep -q 'exec vitest run' "$SANDBOX/pnpm-calls" \
+    && [[ "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] \
+    && ! git ls-remote --tags origin | grep -q 'refs/tags/v0.1.2$'; then
+  echo '  ok    stale packages stop before unit tests and publication'
+else
+  echo '  FAIL  stale packages stop before unit tests and publication'
+  exit 1
+fi
+touch "$SANDBOX/fail-tests"
 set +e
 PATH="$SANDBOX/bin:$PATH" bash ship.sh "guard run" > "$SANDBOX/failed-out" 2>&1
 FAILED_STATUS=$?
@@ -190,6 +207,7 @@ check "failed second candidate kept remote version"   'git show origin/main:pack
 rm "$SANDBOX/fail-tests"
 
 # Pass: remote race forces a new candidate and a second complete validation.
+PKG_CALLS_BEFORE_RACE="$(grep -c 'check:matrx-packages' "$SANDBOX/pnpm-calls" || true)"
 RACE_CMD="grep -q 'Uncommitted checkout paths excluded' tmp/release-logs/latest.log && touch '$SANDBOX/exclusions-before-push'; [ -f '$SANDBOX/raced' ] || { touch '$SANDBOX/raced'; cd '$SANDBOX/other' && git pull -q origin main && echo race > race.txt && git add -A && git -c user.name=t -c user.email=t@t commit -qm race && git push -q origin main; }"
 set +e
 PATH="$SANDBOX/bin:$PATH" RELEASE_TEST_BEFORE_PUSH="$RACE_CMD" bash release.sh --message "guard run" > "$SANDBOX/passed-out" 2>&1
@@ -204,6 +222,7 @@ check "foreign push survived"                          'git cat-file -e origin/m
 check "local commit survived"                          'git cat-file -e origin/main:mine.txt'
 check "generated catalog shipped"                      'git show origin/main:types/tool-catalog.md | grep -q "regenerated catalog"'
 check "checks ran for both candidates"                 '[[ $(wc -l < "$SANDBOX/checked-shas") -ge 3 ]]'
+check "package freshness reran after race"            '[[ $(( $(grep -c "check:matrx-packages" "$SANDBOX/pnpm-calls") - PKG_CALLS_BEFORE_RACE )) -ge 2 ]]'
 check "schema gate reran after race"                   '[[ $(grep -c "check:schema-routing:strict" "$SANDBOX/pnpm-calls") -ge 2 ]]'
 check "Store package gate reran after race"           '[[ $(grep -c "scripts/check-store-package.mjs" "$SANDBOX/node-gates") -ge 2 ]]'
 check "Store risk gate reran after race"              '[[ $(grep -c "scripts/check-cws-release-risk.mjs" "$SANDBOX/node-gates") -ge 2 ]]'
