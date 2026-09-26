@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T05:33:37.760391+00:00",
+  "updated_at": "2026-09-26T05:37:12.284800+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "ec9f9ab26dc85b6958046d5c36258adb652d688d",
@@ -20784,6 +20784,49 @@
             "reload"
           ],
           "wave": "D"
+        },
+        {
+          "id": "EXT-F-2013-T06",
+          "title": "Reply read-aloud follows current platform voice preference",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2013-C102",
+            "EXT-F-2013-C103"
+          ],
+          "preconditions": [
+            "Deferred wave D only, after non-Chat/Pilot health baseline. Complete fresh build/reload including origin commit557adc2; record source SHA, extension identity and mode."
+          ],
+          "steps": [
+            "Read a reply aloud using the platform-selected Read-aloud voice; compare the actual selected voice and audio with that preference.",
+            "Change the authorized test account preference through its supported UI; repeat and verify current preference is consumed.",
+            "Exercise no preference and unavailable preference lookup for each applicable mode; verify documented default and recoverable behavior, then stop playback."
+          ],
+          "expected": [
+            "Reply speech uses the platform preference when available and the canonical documented default when absent; stop control stops playback. Failures and guest applicability are explicitly evidenced."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
+          "source_delta": "origin557adc2; systematic execution deferred wave D",
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "New remote behavior; loaded0.2.51 predates this source."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "New remote behavior; loaded0.2.51 predates this source."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New remote behavior; loaded0.2.51 predates this source."
+            }
+          }
         }
       ],
       "cells": {
