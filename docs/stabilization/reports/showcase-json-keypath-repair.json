@@ -1,0 +1,27 @@
+{
+  "defect_id": "EXT-D-0046",
+  "status": "SOURCE_CANDIDATE_READY",
+  "ownership": "source-only preparation; root owns runtime, peer review, integration, and closure",
+  "root_cause": "JsonTree concatenates object keys with dots, and Network and Framework split the resulting string on dots. Literal dotted keys and nested paths therefore become indistinguishable.",
+  "candidate": {
+    "patch": "/Volumes/Samsung2TB/code/.stabilization-scratch/d46-json-path/product.patch",
+    "test": "/Volumes/Samsung2TB/code/.stabilization-scratch/d46-json-path/tests/unit/showcase-json-key-path.test.tsx",
+    "changes": [
+      "Shared JSON key-path codec quotes keys containing dot, brackets, or backslash as JSON string bracket segments; ordinary dotted paths retain their previous meaning.",
+      "JsonTree emits the distinct path strings; Network resolves them through the shared parser.",
+      "Framework parses in the extension realm before chrome.scripting injection, then traverses the exact segments in the page realm. The persisted config remains the single key_path string."
+    ]
+  },
+  "source_evidence": {
+    "patch_applies": "git apply --check product.patch exited 0 against the shared checkout",
+    "runtime_tests": "Not run under source-only lane restriction",
+    "browser": "Not run under source-only lane restriction",
+    "save_reopen": "Candidate test serializes selected key_path through JSON before both consumers; live saved pattern and installed build remain for root to verify."
+  },
+  "compatibility_limit": "The single-string bracket grammar cannot distinguish an old legacy recipe whose literal key text already equals a syntactically valid bracket path, such as [\"feeds.news\"]. Ordinary legacy dotted strings, including feeds.news, retain nested traversal. Zero-collision historical compatibility would require persisted syntax metadata; root must decide whether this exotic collision warrants it before integration.",
+  "next_actions": [
+    "Integrate patch and test after overlapping D48 file ownership clears.",
+    "Run candidate red against pre-fix code, then green after integration, typecheck, and real installed development build on a public page containing both shapes.",
+    "Verify save/reopen and repeated extraction in both Network and Framework modes."
+  ]
+}
