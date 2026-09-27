@@ -114,6 +114,15 @@ export async function click(panel, kind, label) {
     let candidates;
     if (kind === 'title') candidates = [...document.querySelectorAll('button[title]')]
       .filter((el) => el.title === label);
+    else if (kind === 'screenshot-open') {
+      const tab=document.querySelector('button[role="tab"][title="Screenshots"][data-state="active"]');
+      const pane=tab?document.getElementById(tab.getAttribute('aria-controls')):null;
+      const cards=[...(pane?.querySelectorAll('div.group')??[])]
+        .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===2);
+      const buttons=cards.length===1?[...cards[0].querySelectorAll('button[title="Open in Files"]')]:[];
+      candidates=buttons.length===2 && (label==='thumbnail'||label==='icon')
+        ? [buttons[label==='thumbnail'?0:1]] : [];
+    }
     else if (kind === 'button-text') candidates = [...document.querySelectorAll('button')]
       .filter((el) => el.textContent.trim() === label);
     else if (kind === 'section') candidates = [...document.querySelectorAll('button[aria-expanded]')]

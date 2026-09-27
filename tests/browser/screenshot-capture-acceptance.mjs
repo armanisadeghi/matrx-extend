@@ -717,48 +717,14 @@ async function ownedTabs(panel) {
   );
 }
 
-// Both the thumbnail and icon have the same title. Select only the sole card
-// belonging to this fresh fixture, then use a genuine CDP pointer event.
-async function clickOwnedOpen(panel, index) {
-  const point = await evaluate(
-    panel,
-    `(() => {
-    const tab=document.querySelector('button[role="tab"][title="Screenshots"][data-state="active"]');
-    const pane=tab?document.getElementById(tab.getAttribute('aria-controls')):null;
-    const cards=[...(pane?.querySelectorAll('div.group')??[])]
-      .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===2);
-    const buttons=cards.length===1?[...cards[0].querySelectorAll('button[title="Open in Files"]')]:[];
-    const button=buttons[${index}];
-    button?.scrollIntoView({block:'center',inline:'center',behavior:'instant'});
-    const rect=button?.getBoundingClientRect();
-    const x=rect?.left+rect?.width/2,y=rect?.top+rect?.height/2;
-    const hit=Number.isFinite(x)&&Number.isFinite(y)?document.elementFromPoint(x,y):null;
-    return {unique:cards.length===1&&buttons.length===2,
-      hit:!!button&&!button.disabled&&(hit===button||button.contains(hit)),x,y};
-  })()`,
-  );
-  if (!point.unique || !point.hit) fail('owned_open_control_not_hit_tested');
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mousePressed',
-    x: point.x,
-    y: point.y,
-    button: 'left',
-    clickCount: 1,
-  });
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mouseReleased',
-    x: point.x,
-    y: point.y,
-    button: 'left',
-    clickCount: 1,
-  });
-}
-
-async function verifyOwnedFilesTab(panel, fixtureUrl, fileId, index) {
+async function verifyOwnedFilesTab(panel, fixtureUrl, row, index) {
   const before = await ownedTabs(panel);
   const original = before.find((tab) => tab.url === fixtureUrl);
   if (!original?.active || !Number.isInteger(original.id)) fail('owned_fixture_tab_not_active');
-  const exactPath = `/files/f/${encodeURIComponent(fileId)}`;
+  const card = await galleryResponseAgreement(panel, [row]);
+  if (card.cardCount !== 1 || !card.ordered || !card.distinct)
+    fail('owned_files_card_identity_unverified');
+  const exactPath = `/files/f/${encodeURIComponent(row.file_id)}`;
   const apex = `https://aimatrx.com${exactPath}`;
   // This deployed frontend returns a single 308 from apex to www on the
   // same Files route. The product creates the apex URL; Chrome reports the
@@ -793,7 +759,7 @@ async function verifyOwnedFilesTab(panel, fixtureUrl, fileId, index) {
     }
   };
   try {
-    await clickOwnedOpen(panel, index);
+    await click(panel, 'screenshot-open', index === 0 ? 'thumbnail' : 'icon');
     await observedWait(
       `files_tab_${index}`,
       async () => {
@@ -1002,10 +968,10 @@ async function exercise({ page, panel, panelTarget }) {
     });
 
     stage = 'thumbnail_open_in_files';
-    const thumbnail = await verifyOwnedFilesTab(panel, fixtureUrl, createdRow.file_id, 0);
+    const thumbnail = await verifyOwnedFilesTab(panel, fixtureUrl, createdRow, 0);
     await selectedGallery(panel, fixtureCanonical);
     stage = 'icon_open_in_files';
-    const icon = await verifyOwnedFilesTab(panel, fixtureUrl, createdRow.file_id, 1);
+    const icon = await verifyOwnedFilesTab(panel, fixtureUrl, createdRow, 1);
     await selectedGallery(panel, fixtureCanonical);
     report.cases.push({ id: 'EXT-F-1009-T04', status: 'pass', actual: { thumbnail, icon } });
 

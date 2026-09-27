@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-icon-driver-peer",
+  "scope": "Independent source-only review of EXT-D-0035; no browser or product click run.",
+  "A_readiness": "Ready for a fresh admitted native run: the screenshot-open branch selects the requested thumbnail/icon only from exactly one active Screenshots pane card with exactly two Open in Files buttons; acceptance rechecks that the rendered gallery agrees with the exact fresh owned response row before each click.",
+  "B_quality": "Sound repair: it retains clipped interior hit testing, stable samples, animation refusal, disabled-target refusal, and trusted CDP press/release. No force click or DOM click bypass found. Diagnostics remain fixed categories and geometry, with no page content or URL; preexisting tabs are preserved and only newly added tabs are closed.",
+  "limits": "Source review proves selector/guard structure only. Thumbnail passed in run 003; icon hit guard, Copy, and Cancel still lack product-click proof and require a fresh native run against a new build."
+}

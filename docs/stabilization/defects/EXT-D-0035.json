@@ -1,0 +1,47 @@
+{
+  "id": "EXT-D-0035",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T04", "EXT-F-1009-T05", "EXT-F-1009-T06"],
+  "surface": "Native screenshot acceptance pointer helper for the Open in Files icon",
+  "auth_mode": "real admin with approved organization and owned localhost fixture",
+  "reproduction": [
+    "Capture one owned Visible screenshot in the admitted native controls runner and pass warm Refresh and thumbnail Files navigation.",
+    "The runner restores the fixture tab and immediately tests the small Open in Files icon's center after one scrollIntoView call.",
+    "The runner reports owned_open_control_not_hit_tested before dispatching a click; recovery removes the exact new row."
+  ],
+  "expected": "The runner waits for a stable, visible, hit-tested point inside the exact owned card's icon, then dispatches a trusted pointer click and checks the new tab's exact owned Files URL.",
+  "actual": "A one-shot center hit test refuses the icon before a product click, so icon, Copy, and Cancel outcomes remain unverified.",
+  "evidence": [
+    "docs/stabilization/runs/screenshot-controls-dev094-003.json",
+    "docs/stabilization/reports/screenshot-icon-hit-repair.json",
+    "tests/browser/screenshot-capture-acceptance.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "src/features/screenshots/ScreenshotsView.tsx"
+  ],
+  "severity": "S3: acceptance pointer helper blocks control verification; no product defect established",
+  "priority": "P1: correct the helper before the next resource-admitted native run",
+  "state": "in-fix",
+  "owner": "/root/screenshot_controls_batch",
+  "fix_commits": [],
+  "transition_history": [
+    {
+      "at": "2026-09-27T11:16:03Z",
+      "from": null,
+      "to": "open",
+      "reason": "Admitted run stopped before icon click despite passing thumbnail Files navigation."
+    },
+    {
+      "at": "2026-09-27T11:16:03Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source trace identifies a one-shot center-only pointer helper, while the canonical driver uses clipped interior hit points and stable samples; precise occluder remains unknown."
+    },
+    {
+      "at": "2026-09-27T11:19:04Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "The runner now checks exact owned-card identity before using the established clipped and stable pointer driver for thumbnail and icon; browser verification remains pending."
+    }
+  ],
+  "closure_requirement": "Peer accepts the stable clipped hit guard and privacy-safe failure categories; a fresh admitted native run clicks icon and verifies its exact owned Files route, then reaches actual Copy and Cancel outcomes with exact owned cleanup."
+}

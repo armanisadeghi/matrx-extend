@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-icon-hit-repair",
+  "scope": "Source diagnosis of admitted controls-dev094-003; no browser rerun, private payload read, or product click replay.",
+  "observed": "Warm Refresh and thumbnail exact Files navigation passed. The next icon click stopped in the runner's own hit guard before dispatching a product click. Failure recovery confirmed exact owned-row deletion with a real read.",
+  "source_cause": "The runner samples only the button's center once immediately after scrollIntoView, then rejects if elementFromPoint misses. The real 24px icon is inside an overflow-y-auto gallery below the thumbnail; the established pointer driver instead clips through scroll ancestors, tests interior points, and requires stable samples after layout. Current sanitized evidence does not identify the precise occluder.",
+  "repair": "The runner now rechecks the sole card against the exact owned row before each Open action, then selects thumbnail or icon through a narrow screenshot-open branch in the established driver. That driver already clips to scroll ancestors, tests interior hit points, waits for stable samples, dispatches a trusted CDP pointer, and emits content-free pointer diagnostics on failure. Copy and Cancel already use the same driver.",
+  "status": "source repair ready; fresh peer and native run pending",
+  "next_verification": "Fresh source peer reviews the guard and safe diagnostics; only a resource-admitted native rerun can verify icon, Copy, and Cancel."
+}
