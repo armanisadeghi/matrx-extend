@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-27T05:09:07.539Z",
+  "generated_at": "2026-09-27T05:15:18.540Z",
   "purpose": "Machine-derived stabilization checklist. inventory.json remains the coverage authority; this report and CHECKLIST.md are derived views.",
   "source": {
-    "head": "380aa7aced737c13e79177f747835c4ab2885ebd",
+    "head": "68a0cb5f5fa19f50b19914e76d4ca76a871b3b04",
     "inventory": "docs/stabilization/inventory.json",
     "inventory_source_sha": "bcbf836bf7b1c959a6d54657aaf0487c1e3790ee",
     "inventory_updated_at": "2026-09-27T00:31:00+00:00",
@@ -40,11 +40,13 @@
   "release_context": {
     "source_version": "0.2.85",
     "artifact_identity_observed": "yes; fresh local development receipt test-results/source-dev-build-085.json binds source HEAD 36fa88fb to tree f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff",
-    "current_build_acceptance": "No current 0.2.85 D22 native case pass. Run 011 enumerated 98 accessible picker choices and scoped HTTP 200 list responses, but none of seven public-eligible pages met the runner's healthy exact-URL fixture rule; positive recognition remains unverified.",
+    "current_build_acceptance": "No accepted native D22 or Debug export case pass on the .85 artifact. D22 run 011 found no candidate meeting the exact-URL health rule within 98 observed workspaces; proper guarded Debug run 002 stopped at debug_open before case observations. The artifact predates the latest merged lockfile.",
     "evidence": "docs/stabilization/runs/baseline-main085.json",
     "latest_local_dev_artifact_version": "0.2.85",
     "latest_local_dev_artifact_tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff",
-    "current_lockfile_sha256": "4e5f896cf6d9bff99b9fd910c72f1fcade093b60f530fd2b4dabeef77840aeb7"
+    "current_lockfile_sha256": "75bd0defe7b64ece56195d87f94a0fa5eecc06a277238ac163466972a20c852e",
+    "artifact_lockfile_sha256": "4e5f896cf6d9bff99b9fd910c72f1fcade093b60f530fd2b4dabeef77840aeb7",
+    "current_lockfile_build_status": "Incoming lockfile updates after the .85 development build have not been installed, compiled, or rebuilt. The existing receipt is valid for its earlier tree only."
   },
   "coverage": {
     "recorded_results": {
@@ -576,14 +578,16 @@
     "classification": "Historical infrastructure refusal for run 005 only. Later child-started runs occurred; the latest D22 native attempt is run 011."
   },
   "latest_source_merge": {
-    "commit": "e1ba3ff7",
-    "remote_head": "cad28c26",
+    "commit": "68a0cb5f",
+    "remote_head": "55d24cdb",
+    "included_incoming_commit": "9b009106",
+    "prior_incoming_merge": "1d1e84cd",
     "changed_file": "pnpm-lock.yaml",
-    "changed_lines": 28,
-    "lockfile_sha256": "352aa8e19d45aff6968573f7552fd4bd89a9ed9f39a341574ce396370cd8c02a",
-    "dependency_state": "Merged lockfile was installed with --frozen-lockfile --ignore-scripts; compile and WXT development build passed under separate guards. The fresh .85 receipt binds the resulting unpacked tree.",
+    "changed_lines": 8,
+    "lockfile_sha256": "75bd0defe7b64ece56195d87f94a0fa5eecc06a277238ac163466972a20c852e",
+    "dependency_state": "Latest incoming lockfile updates are merged but not installed, compiled, or rebuilt. The 0.2.85 development artifact and earlier baseline receipt remain bound to the prior lockfile snapshot.",
     "baseline_receipt": "docs/stabilization/runs/baseline-main085.json",
-    "historical_lockfile_note": "This hash belongs to commit e1ba3ff7, not the current .85 baseline lockfile; the current hash is release_context.current_lockfile_sha256 and baseline-main085.json."
+    "baseline_lockfile_sha256": "4e5f896cf6d9bff99b9fd910c72f1fcade093b60f530fd2b4dabeef77840aeb7"
   },
   "focused_regression": {
     "commit": "777e7948",
@@ -606,5 +610,24 @@
     "workspace_enumeration": "98 actual picker choices observed",
     "successful_fixture_navigation": "none meeting exact-URL health rule; one redirected candidate pending canonical-equivalence audit",
     "evidence": "docs/stabilization/runs/d22-recognition-readonly-011.json"
-  }
+  },
+  "latest_debug_export_attempt": {
+    "run_id": "debug-export-dev085-002",
+    "status": "unverified",
+    "wrapper_exit_code": 1,
+    "child_exit_code": 1,
+    "version": "0.2.85",
+    "tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff",
+    "failure_stage": "debug_open",
+    "failure_code": "owned_harness_or_ui_stage_failed",
+    "case_results_recorded": 0,
+    "evidence": "docs/stabilization/runs/debug-export-dev085-002.json",
+    "prior_run_001": "docs/stabilization/runs/debug-export-dev085-001.json",
+    "prior_run_001_disposition": "Excluded from accepted coverage because the runner was separate from the guard-owned child; its partial observations remain historical diagnostics only."
+  },
+  "next_actions": [
+    "Diagnose the actual Debug opening failure with safe bounded error evidence before another properly guarded run.",
+    "Audit the one D22 redirected candidate against app canonical URL behavior before changing the exact-URL fixture oracle or retrying read-only recognition.",
+    "Install the latest merged lockfile, recheck types, and rebuild under the resource guard before claiming a native result for the current merged tree."
+  ]
 }
