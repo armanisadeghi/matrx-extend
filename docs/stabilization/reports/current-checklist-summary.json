@@ -1,0 +1,598 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-27T02:15:21Z",
+  "purpose": "Machine-derived stabilization checklist. Inventory remains the coverage authority; this report and CHECKLIST.md are derived views.",
+  "source": {
+    "head": "40585c3b2f0b",
+    "inventory": "docs/stabilization/inventory.json",
+    "inventory_source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
+    "inventory_updated_at": "2026-09-27T00:31:00+00:00",
+    "inventory_sha256": "731985fc713d4e9ad0a34414867383b961849e1150573df26b2523140b663255",
+    "feature_count": 205,
+    "test_case_count": 693,
+    "defect_files": 23,
+    "defect_source_sha256": {
+      "EXT-D-0001.json": "5379e519ec52292e41df498b14ec262265ebe5dbc3f7b0b6ffd3925fc0af9f01",
+      "EXT-D-0002.json": "b3e1d0b45e06abacfbc5afac6ed1e81c3cc2995cb5c927d8e3a1da6adcdbe3c5",
+      "EXT-D-0003.json": "5eb296662d1bd17b9c086828b84b67fc71879ba5bef3f10dd82c167488cb3570",
+      "EXT-D-0004.json": "8841795b0bae72eb68770fa308a46f11a6ac9610ee8837a871fe9bf211e7e39f",
+      "EXT-D-0005.json": "5d45165477c611ea795fdd3a5ec752263b5a9048c6adce347331b3263d560a06",
+      "EXT-D-0006.json": "be1206019ebd5e026b753d0daae665e3599389772f53d643b5de6445d5979977",
+      "EXT-D-0007.json": "99cbc7af0c0a81c0de91b5560276b37b8cb92a4e53a2c550e3f8839bd4b4fad1",
+      "EXT-D-0008.json": "d7546ad62f391cfa7e1c056c5bc4e334e16c19f812da46b67527701c47ed93bd",
+      "EXT-D-0009.json": "721eff56cfa6ec54484a5154938b99d8387c02c3f37e28cb828936e82532dbb7",
+      "EXT-D-0010.json": "ebbae010816eedcff2fa06162b06862caab5d70c52978eeba7039eae3b378c5d",
+      "EXT-D-0011.json": "ba49498d9d532f05b679e47d6159451a9ad2695205923060f5f32dfeb881040c",
+      "EXT-D-0012.json": "238f4060ccd9bc26117bac2b31ee809dfd8f5fce4b7e6eaa1f210c882163dd78",
+      "EXT-D-0013.json": "67e847672a4ef8a44bfcec1e8ac18c74b94ccac0542f52ebe2da37f895a27924",
+      "EXT-D-0014.json": "72f2e5d6d4d02759bf3e7236a80f956cefb34d6dd96ee3d510e1d6beba399afa",
+      "EXT-D-0015.json": "dcdef3037cc6b567d0e5a3e0f19648c3fd833c011d34913431d25eebde18e590",
+      "EXT-D-0016.json": "68aa5d826625cfb0a049d879c3b723ff20cbaf32648ec105125e5c0a521a9997",
+      "EXT-D-0017.json": "a8f4d881af7de957a7cd469de6b4655fcc71ab79505258d254f85c5cd3e5dcb6",
+      "EXT-D-0018.json": "e50a01fe12be3cd6d717ac1cc2df1ec1c2cf6e85ea0194aa90e2a8c855f03e4b",
+      "EXT-D-0019.json": "f10db4fdeebd28524c48f23695c3830ac9a076674ca50520f88bb8ba3baeea8e",
+      "EXT-D-0020.json": "22e678cc261c1a9d24066cf25c2dc37ca4c754496f509058b68d8a2fe7d1ff26",
+      "EXT-D-0021.json": "84da72ee5eb407a52f2ded8c039636069ef89cf93fd66d50db84638222c690c9",
+      "EXT-D-0022.json": "2cd51237f46e2b6aa0eae206d88fb39b167ef908d99993d7f97b06a17ef4e5ac",
+      "EXT-D-0023.json": "842aa05bdd6a9417bb9af217694963c7763981ca498735520f8a01da61e6e915"
+    }
+  },
+  "release_context": {
+    "source_version": "0.2.82",
+    "source_commit": "4877f106eafa362abcf13ce7dd9d484591260c57",
+    "engineering_build_verified": false,
+    "basis": "The latest code/source checkpoint is 0.2.82 per the D22 source assessment; no current engineering artifact or case pass is established by this inventory."
+  },
+  "coverage": {
+    "applicable_mode_case_slots": 1142,
+    "recorded_results": {
+      "not-applicable": 1,
+      "pass": 53,
+      "unverified": 76
+    },
+    "no_result_record": 1012,
+    "recorded_pass_count": 53,
+    "recorded_unverified_count": 76,
+    "recorded_not_applicable_count": 1,
+    "case_passes_explicitly_mentioning_0_2_79": [
+      {
+        "feature_id": "EXT-F-1005",
+        "case_id": "EXT-F-1005-T14",
+        "mode": "admin",
+        "run_id": "debug-log-controls-012"
+      }
+    ],
+    "applicable_feature_cells_by_test_status": {
+      "pass": 3,
+      "unverified": 391
+    },
+    "all_feature_cells_by_test_status": {
+      "not-applicable": 3,
+      "pass": 3,
+      "unverified": 609
+    },
+    "recorded_pass_build_provenance_counts": {
+      "not-explicitly-bound": 43,
+      "0.2.56": 1,
+      "0.2.57": 1,
+      "0.2.63": 4,
+      "0.2.79": 4
+    },
+    "recorded_passes_with_linked_build_receipt": 10,
+    "case_passes_explicitly_bound_to_0_2_79": [
+      {
+        "case_id": "EXT-F-1005-T14",
+        "mode": "admin",
+        "run_id": "debug-log-controls-012",
+        "build_version": "0.2.79",
+        "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0"
+      },
+      {
+        "case_id": "EXT-F-1005-T15",
+        "mode": "admin",
+        "run_id": "debug-log-controls-009",
+        "build_version": "0.2.79",
+        "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0"
+      },
+      {
+        "case_id": "EXT-F-1005-T17",
+        "mode": "admin",
+        "run_id": null,
+        "build_version": "0.2.79",
+        "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0"
+      },
+      {
+        "case_id": "EXT-F-1005-T22",
+        "mode": "admin",
+        "run_id": "debug-log-controls-009",
+        "build_version": "0.2.79",
+        "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0"
+      }
+    ],
+    "case_passes_explicitly_bound_to_0_2_82": [],
+    "no_result_record_note": "These 1,012 applicable matrix slots have no result object and therefore remain unverified coverage; they are not passes or implicit exclusions."
+  },
+  "defects": {
+    "state_counts": {
+      "closed": 22,
+      "in-fix": 1
+    },
+    "closed_ids": [
+      "EXT-D-0001",
+      "EXT-D-0002",
+      "EXT-D-0003",
+      "EXT-D-0004",
+      "EXT-D-0005",
+      "EXT-D-0006",
+      "EXT-D-0007",
+      "EXT-D-0008",
+      "EXT-D-0009",
+      "EXT-D-0010",
+      "EXT-D-0011",
+      "EXT-D-0012",
+      "EXT-D-0013",
+      "EXT-D-0014",
+      "EXT-D-0015",
+      "EXT-D-0016",
+      "EXT-D-0017",
+      "EXT-D-0018",
+      "EXT-D-0019",
+      "EXT-D-0020",
+      "EXT-D-0021",
+      "EXT-D-0023"
+    ],
+    "fixed_awaiting_retest_ids": [],
+    "open_or_in_fix": [
+      {
+        "id": "EXT-D-0022",
+        "state": "in-fix",
+        "severity": "S2: wrong-workspace Saved claim may reveal another RLS-visible organization's Source identity and misstate capture status",
+        "priority": "P1: close the organization boundary before claiming workspace-correct recognition",
+        "latest_transition": {
+          "at": "2026-09-26",
+          "from": "fixed",
+          "to": "in-fix",
+          "reason": "Fresh independent source review c4a55ff8 found a late A refusal or retry refusal can replace a newer B pending capture because the queue keeps whichever same-URL refusal finishes last. Regression tests were added before the queue repair."
+        },
+        "owner": "/root/source_recognition_org_fix",
+        "next_action": "After root admits a current build and resources are healthy, execute the already reviewed SOURCE_READONLY_SCOPE=1 path; preserve the reserved checkpoint unchanged and send no Save input. This proves only the bounded missing-workspace/scoped-negative native subset.",
+        "ui_retest": "pending",
+        "summary": "EXT-D-0022: organization-scoped recognition / stale-state and queue-order safeguards are implemented, but required native multi-workspace proof is incomplete; latest assessment established no new production defect.",
+        "action_source": "docs/stabilization/reports/d22-next-closure-path.json",
+        "action_source_sha256": "b7935dc2accb7e497ff4bc78fe784a3f7aa772bfdfe9930ef7cce4fde55d8615",
+        "next_actions_in_order": [
+          {
+            "action": "Root admits a fresh build bound to current source/dependencies, then runs the already independently reviewed SOURCE_READONLY_SCOPE=1 mode under the sole-heavy guard.",
+            "result": "Closes only the no-workspace/scoped-negative native subset. Preserve result and checkpoint hash before/after. No Save or capture required."
+          },
+          {
+            "action": "Prepare and independently review a strictly checkpoint-independent read-only recognition mode. Select a pre-existing extension Source for an approved public fixture in an approved existing workspace through actual UI/read-only lookup; never manufacture one.",
+            "result": "Compare returned Source identity with the actual Open target in memory; output only equality predicates. Switch to another approved workspace, require prior claim cleared and scoped result matching its real response, then restore and verify the original Source target."
+          },
+          {
+            "action": "In that read-only mode, add controlled timing of the real recognition GET: hold its authentic response, switch workspace through UI, finish the new lookup, then release the unchanged old response and verify it cannot restore old state. Independently review the interception and cleanup before running.",
+            "result": "Proves late recognition, not late Save. No forged responses, data changes, or broadcast injection."
+          },
+          {
+            "action": "For inventory T26, apply a reviewed target-scoped real network failure to recognition reads only, verify explicit could-not-check UI with no unsaved claim, restore connectivity, and require actual successful lookup plus corresponding UI.",
+            "result": "The current missing-workspace test is not evidence of actual service failure/recovery."
+          }
+        ],
+        "current_assessment_status": "OPEN_NATIVE_RECOGNITION_EVIDENCE_REQUIRED",
+        "checkpoint_disposition": "Immutable. Never reset, delete, reinitialize, advance, or retry Save.",
+        "recorded_defect_closure_requirement": "Focused red/green shared-query, hook, and real Scrape Save UI guards; typecheck; independent source review; and authenticated multi-organization UI verification."
+      }
+    ],
+    "all_records": [
+      {
+        "id": "EXT-D-0001",
+        "state": "closed",
+        "severity": "S0: complete sidepanel unavailable",
+        "priority": "P0: blocks all contained-surface UI testing",
+        "latest_transition": {
+          "at": "2026-09-26T02:09:49.207903+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Independent originalrepro+adjacent UI pass,1233automated tests pass(3explicit skips), compile/build/catalog pass; verifiedcandidate committedbb9f18f and pushedorigin/main."
+        }
+      },
+      {
+        "id": "EXT-D-0002",
+        "state": "closed",
+        "severity": "S0: red code can be published as main/tag and installed locally",
+        "priority": "P0: blocks safe release of stabilization work",
+        "latest_transition": {
+          "at": "2026-09-26T03:52:09.279Z",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Guarded release005 passed mandatory checks and published validated760c7a1 main/tag; artifact hashes independently verified."
+        }
+      },
+      {
+        "id": "EXT-D-0003",
+        "state": "closed",
+        "severity": "S1: strict release blocked despite safe resource arithmetic",
+        "priority": "P0: blocks publication of verified stabilization work",
+        "latest_transition": {
+          "at": "2026-09-26T03:52:09.279Z",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Guarded release005 passed mandatory checks and published validated760c7a1 main/tag; artifact hashes independently verified."
+        }
+      },
+      {
+        "id": "EXT-D-0004",
+        "state": "closed",
+        "severity": "S1: strict release cannot verify private catalog and migration state on this host",
+        "priority": "P0: blocks a truthful strict release",
+        "latest_transition": {
+          "at": "2026-09-26T03:52:09.279Z",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Guarded release005 passed mandatory checks and published validated760c7a1 main/tag; artifact hashes independently verified."
+        }
+      },
+      {
+        "id": "EXT-D-0005",
+        "state": "closed",
+        "severity": "S1: blocks strict release",
+        "priority": "P0: universal integration blocker",
+        "latest_transition": {
+          "at": "2026-09-26T03:52:09.279Z",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Guarded release005 passed mandatory checks and published validated760c7a1 main/tag; artifact hashes independently verified."
+        }
+      },
+      {
+        "id": "EXT-D-0006",
+        "state": "closed",
+        "severity": "S2: misleading nonfunctional permission control",
+        "priority": "P1: current Settings stabilization",
+        "latest_transition": {
+          "at": "2026-09-26T13:54:53.145926+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original reproduction and reviewed surrounding evidence accepted. Broader T55\u2013T59 cases remain partial/unverified; closure does not assert exhaustive permission coverage."
+        }
+      },
+      {
+        "id": "EXT-D-0007",
+        "state": "closed",
+        "severity": "S1: authenticated development testing blocked by missing identity",
+        "priority": "P0: baseline authentication blocker",
+        "latest_transition": {
+          "at": "2026-09-26T07:59:46.133282+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Independent source review and original reproduction retests passed; strict v0.2.56 integration passed all14 gates/1380 tests, remote main/tag verified. Final actual sidepanel artifact smoke passed; popup user workflow remains separately unverified."
+        }
+      },
+      {
+        "id": "EXT-D-0008",
+        "state": "closed",
+        "severity": "S2: integrated release validation blocked; no evidence of user-data deletion or broken native Capture UI.",
+        "priority": "P1: repair before next green integration",
+        "latest_transition": {
+          "at": "2026-09-26T07:59:46.133282+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Independent source review and original reproduction retests passed; strict v0.2.56 integration passed all14 gates/1380 tests, remote main/tag verified. Final actual sidepanel artifact smoke passed; popup user workflow remains separately unverified."
+        }
+      },
+      {
+        "id": "EXT-D-0009",
+        "state": "closed",
+        "severity": "S2 test infrastructure: guest reset acceptance unavailable; no product failure demonstrated",
+        "priority": "P1 restore contained Settings verification",
+        "latest_transition": {
+          "at": "2026-09-26T09:00:40.289165+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original reproduction retest passed, independent review recorded, strict merged0.2.57 integration passed and main pushed. Other product mode/case gaps remain tracked."
+        }
+      },
+      {
+        "id": "EXT-D-0010",
+        "state": "closed",
+        "severity": "S2: integration blocked; no native user failure demonstrated",
+        "priority": "P1: restore green integration",
+        "latest_transition": {
+          "at": "2026-09-26T09:00:40.289165+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original reproduction retest passed, independent review recorded, strict merged0.2.57 integration passed and main pushed. Other product mode/case gaps remain tracked."
+        }
+      },
+      {
+        "id": "EXT-D-0011",
+        "state": "closed",
+        "severity": "S2: blocks two acceptance cases; product failure not established",
+        "priority": "P1: restore trustworthy test execution",
+        "latest_transition": {
+          "at": "2026-09-26T09:21:03.751573+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Repairs and native evidence pushed as0631a43; product T46/T70 gaps remain unverified separately."
+        }
+      },
+      {
+        "id": "EXT-D-0012",
+        "state": "closed",
+        "severity": "S3: misleading stale validation after successful action",
+        "priority": "P2: contained Settings correctness before broader surfaces",
+        "latest_transition": {
+          "at": "2026-09-26T09:59:12.941268+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original same-view reproduction and persistence pass in guest-settings-local-005 and independent native-0258-port-verification; source peer and strict release008 passed."
+        }
+      },
+      {
+        "id": "EXT-D-0013",
+        "state": "closed",
+        "severity": "S3: unnecessary integration time/resource expenditure; publication stays safely blocked",
+        "priority": "P2: reduce recurring integration cost",
+        "latest_transition": {
+          "at": "2026-09-26T09:54:52.394889+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "All14gates passed,0.2.58 published d665898; no mandatory gate removed."
+        }
+      },
+      {
+        "id": "EXT-D-0014",
+        "state": "closed",
+        "severity": "S2: authenticated test setup unavailable; not a demonstrated product authentication defect",
+        "priority": "P1: unlock isolated authenticated coverage",
+        "latest_transition": {
+          "at": "2026-09-26T11:01:39.194517+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original defect resolved and source/runtime evidence verified; extension auth/setup remains separately unverified."
+        }
+      },
+      {
+        "id": "EXT-D-0015",
+        "state": "closed",
+        "severity": "S2: authenticated reset coverage blocked; no demonstrated product data-loss defect",
+        "priority": "P1: complete contained Settings acceptance",
+        "latest_transition": {
+          "at": "2026-09-26T12:57:22.376711+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original reproducible setup obstruction resolved and independently accepted. FullT51 remains unverified on separate post-reload preference-oracle reconciliation."
+        }
+      },
+      {
+        "id": "EXT-D-0016",
+        "state": "closed",
+        "severity": "S2: missing prepublication validation can publish CI-red main; exact v0.2.64 candidate failure is unproven",
+        "priority": "P1: enforce CI lint parity before publication",
+        "latest_transition": {
+          "at": "2026-09-26T14:12:10.844836+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original gate omission fixed, refusal and validated publication proven, published0.2.66 source52517fdb; no Storeupload or skippedDB health claim."
+        }
+      },
+      {
+        "id": "EXT-D-0017",
+        "state": "closed",
+        "severity": "S2: mandatory validation blocked after dependency upgrade",
+        "priority": "P1: synchronized integration prerequisite",
+        "latest_transition": {
+          "at": "2026-09-26T14:52:11.284598+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Corrected mandatory test invocation published in0.2.67 source79d1dba3 with unchanged worker cap. D18 native caption work remains separate."
+        }
+      },
+      {
+        "id": "EXT-D-0018",
+        "state": "closed",
+        "severity": "S2: captured article silently loses meaningful chart context",
+        "priority": "P1: confirmed source regression in incoming scrape changes",
+        "latest_transition": {
+          "at": "2026-09-26T15:26:00Z",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original caption-loss class verified fixed; fullfeature/mode/publicarticle coverage remains explicitlyunverified, not implied by closure."
+        }
+      },
+      {
+        "id": "EXT-D-0019",
+        "state": "closed",
+        "severity": "S3: intermittent false-red integration check; no demonstrated user data impact",
+        "priority": "P1: restore trustworthy green main before publication",
+        "latest_transition": {
+          "at": "2026-09-26T15:46:13.793976+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Reviewed readiness-only repair, focusedlocalpass and originalexternalCIenvironmentgreen meetclosure. Historicalracecause remainsinference; no productVaulthealthclaim."
+        }
+      },
+      {
+        "id": "EXT-D-0020",
+        "state": "closed",
+        "severity": "S3: unreliable integration gate; no product impact established",
+        "priority": "P1: restore trustworthy main",
+        "latest_transition": {
+          "at": "2026-09-26T17:56:54.115250+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original observed CI symptom absent on repaired merged candidate and surrounding suite passes. Historical recurrence retained; no guarantee of futureflakeelimination."
+        }
+      },
+      {
+        "id": "EXT-D-0021",
+        "state": "closed",
+        "severity": "S3: false-negative acceptance harness; no demonstrated SEO product failure or data loss",
+        "priority": "P1: restore trustworthy admin SEO history verification while retaining the one-write checkpoint",
+        "latest_transition": {
+          "at": "2026-09-26T18:47:56.699245+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original false-negative reproduction and surrounding history/reload paths pass; broader SEO coverage remains unverified."
+        }
+      },
+      {
+        "id": "EXT-D-0022",
+        "state": "in-fix",
+        "severity": "S2: wrong-workspace Saved claim may reveal another RLS-visible organization's Source identity and misstate capture status",
+        "priority": "P1: close the organization boundary before claiming workspace-correct recognition",
+        "latest_transition": {
+          "at": "2026-09-26",
+          "from": "fixed",
+          "to": "in-fix",
+          "reason": "Fresh independent source review c4a55ff8 found a late A refusal or retry refusal can replace a newer B pending capture because the queue keeps whichever same-URL refusal finishes last. Regression tests were added before the queue repair."
+        },
+        "owner": "/root/source_recognition_org_fix",
+        "next_action": "Focused red/green shared-query, hook, and real Scrape Save UI guards; typecheck; independent source review; and authenticated multi-organization UI verification.",
+        "ui_retest": "pending"
+      },
+      {
+        "id": "EXT-D-0023",
+        "state": "closed",
+        "severity": "S2: a resolved read notice can obstruct controls; an unperformed write notice can disappear after workspace selection, leaving an unsaved highlight or undeleted capture without its failure announcement",
+        "priority": "P1: make notice retirement depend on whether the operation's remedy is actually complete; keep unperformed write failures visible until a real retry or explicit dismissal",
+        "latest_transition": {
+          "at": "2026-09-26T23:20:13Z",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Closed at EXT-D-0023 scope after the focused red-to-green 26-test guard, independent source review, and release-bound native read/write evidence. Late-arriving write-notice behavior is covered by unit tests only, not a delayed native arrival; member mode and full EXT-F-2010-T02 pending-handoff queue semantics remain unverified. EXT-D-0022 remains open."
+        }
+      }
+    ],
+    "status_rule": "Counts reflect each defect JSON current state. EXT-D-0022 remains in-fix in that ledger; the newer read-only assessment says existing repairs are present but native recognition evidence remains incomplete. Closed defects are defect-scope closure only."
+  },
+  "priority_basis": "Outstanding defect with explicit in-fix/open state first; then case-level unverified or missing result records. This ranks work state, not severity beyond recorded defect priority.",
+  "pending_case_records": {
+    "unverified_result_count": 76,
+    "no_result_record_count": 1012,
+    "sample_missing_case_records": [
+      {
+        "feature_id": "EXT-F-0001",
+        "case_id": "EXT-F-0001-T01",
+        "mode": "member",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0001",
+        "case_id": "EXT-F-0001-T01",
+        "mode": "admin",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0001",
+        "case_id": "EXT-F-0001-T03",
+        "mode": "guest",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0001",
+        "case_id": "EXT-F-0001-T03",
+        "mode": "member",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0001",
+        "case_id": "EXT-F-0001-T03",
+        "mode": "admin",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0001",
+        "case_id": "EXT-F-0001-T04",
+        "mode": "guest",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0001",
+        "case_id": "EXT-F-0001-T04",
+        "mode": "member",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0001",
+        "case_id": "EXT-F-0001-T04",
+        "mode": "admin",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0001",
+        "case_id": "EXT-F-0001-T05",
+        "mode": "guest",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0001",
+        "case_id": "EXT-F-0001-T05",
+        "mode": "member",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0001",
+        "case_id": "EXT-F-0001-T05",
+        "mode": "admin",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0003",
+        "case_id": "EXT-F-0003-T09",
+        "mode": "guest",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0003",
+        "case_id": "EXT-F-0003-T09",
+        "mode": "member",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0003",
+        "case_id": "EXT-F-0003-T09",
+        "mode": "admin",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0003",
+        "case_id": "EXT-F-0003-T10",
+        "mode": "guest",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0003",
+        "case_id": "EXT-F-0003-T10",
+        "mode": "member",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-0003",
+        "case_id": "EXT-F-0003-T10",
+        "mode": "admin",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-1001",
+        "case_id": "EXT-F-1001-T01",
+        "mode": "guest",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-1001",
+        "case_id": "EXT-F-1001-T02",
+        "mode": "member",
+        "status": "no-result-record"
+      },
+      {
+        "feature_id": "EXT-F-1001",
+        "case_id": "EXT-F-1001-T03",
+        "mode": "admin",
+        "status": "no-result-record"
+      }
+    ],
+    "note": "The full missing matrix is derivable directly from inventory.json; this sample is only for readability, not a second authority.",
+    "no_result_record_meaning": "Unverified applicable coverage slots with no explicit result object."
+  }
+}
