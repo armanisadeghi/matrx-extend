@@ -139,9 +139,10 @@ describe('D43 nested-list picking', () => {
     expect(pattern?.list_root).toMatch(/briefDetails/);
     expect(pattern?.item_selector).toBe('li');
     const rows = runPickedPattern(requireResult());
-    expect(rows).toHaveLength(3);
+    // D44 excludes detail items where neither selected field exists.
+    expect(rows).toHaveLength(1);
     expect(rows[0]?.title).toBe('Neon Nights at Area15');
-    expect(rows[1]?.title).toBeNull();
+    expect(rows[0]?.url).toBe('/events/neon-nights');
   });
 
   it('warns on a missing seed and lets the new page choose and extract its own scope', () => {
