@@ -1,0 +1,66 @@
+{
+  "defect": "EXT-D-0047",
+  "lane": "independent source-only peer; zero product authorship and zero runtime permit",
+  "candidate": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-document-repair-20260927/d47.patch",
+  "verdict_a_live_outcome": "UNVERIFIED",
+  "verdict_b_quality": "CHANGES_REQUESTED",
+  "runtime_executed": false,
+  "product_edited": false,
+  "review_scope": [
+    "Candidate patch and manifest against current dispatcher, CDP client, Network tab, saved replay callers, approval host, and tests",
+    "No patch application, browser exercise, typecheck, or test execution"
+  ],
+  "findings": [
+    {
+      "id": "D47-P1",
+      "severity": "P1",
+      "title": "The document-start path still broadcasts each full response into page script listeners",
+      "evidence": "Candidate network-tap.ts post() calls the CDP binding, then unconditionally calls window.postMessage({__matrx_net:true,event}, window.location.origin). The event includes unredacted URL and response body before document-network-capture.ts applies its whitelist; any same-window message listener can receive it.",
+      "impact": "The new privileged capture leaks its response body and credential-bearing URL through the old page-message route even when no isolated relay is required for saved replay. Whitelisting only the subsequent CDP event does not close that route.",
+      "repair": "For binding-backed saved capture, send only through the binding. Preserve window.postMessage solely for the manual Network-tab relay, with a test that listens for message events and asserts absence of a credential canary during saved replay."
+    },
+    {
+      "id": "D47-P2",
+      "severity": "P1",
+      "title": "Approval identity allows a different SPA route in the same document",
+      "evidence": "Candidate data-patterns.ts prepare() hashes pattern fields, tab id, and chrome.scripting documentId, but not tab.url or the current route. fetchPatternsForDomain selects by host. A same-document history.pushState transition keeps documentId and host, so both pre- and post-approval snapshots can compare equal. The later run() reads its new tab URL as its starting page.",
+      "impact": "A privileged approval requested on one page can authorize a reload and capture on another same-host SPA page without renewed consent; the result can be attributed to the wrong saved route.",
+      "repair": "Bind the canonical current page URL or resolved saved route to the approved operation and recheck immediately before Page.reload, with a same-document route-change test through the actual dispatcher."
+    },
+    {
+      "id": "D47-P3",
+      "severity": "P1",
+      "title": "A sidepanel restart can strand a local approval without a visible card",
+      "evidence": "Candidate SavedReplayApprovalHost.tsx initializes requests to [] and subscribes only to future TOOL_CONFIRM_REQUEST broadcasts. It never loads pending confirms on mount. Candidate dispatch.ts persists before broadcasting, but the local recovery path discards a persisted local approval if a response arrives after SW restart.",
+      "impact": "If the sidepanel remounts during the five-minute approval window, the request can remain pending in the worker while the user has no card to answer. A restarted worker also cannot finish that local operation, so the UI needs an explicit cancellation/error path.",
+      "repair": "On host mount reconcile pending local requests or cancel them and surface a terminal error to the waiting run; prove both sidepanel and worker restart cases without a hanging promise."
+    },
+    {
+      "id": "D47-P4",
+      "severity": "P2",
+      "title": "Capture window begins before debugger setup and reload",
+      "evidence": "Candidate run-interactive.ts creates windowTimer before openDocumentNetworkCapture resolves. Candidate transport starts its own timeout before acquireSession, Page.enable, Runtime.enable, addBinding, script registration, and Page.reload. The existing default is a 20-second window.",
+      "impact": "Slow debugger attachment or script registration consumes the response capture window and can produce a false no-match immediately after the document starts.",
+      "repair": "Start the matching window from confirmed arming/reload while retaining a separate bounded setup timeout. Test delayed CDP setup followed by an immediate new-document response."
+    },
+    {
+      "id": "D47-P5",
+      "severity": "P2",
+      "title": "Proposed tests do not prove the complete privacy or saved UI result",
+      "evidence": "document-network-capture.test.ts asserts request_headers is absent from an emitted event but does not observe window.postMessage. document-network-dispatch.test.ts mocks runSavedPattern, so a green dispatcher test cannot establish that CDP installs before reload or that the saved result reaches PatternsTab/DataView. document-network-recovery.test.ts constructs its own identity directly from the persisted record and returns a stubbed row. No executed red-to-green or constant-return mutation evidence accompanies the scratch candidate.",
+      "impact": "The suite could pass with the page leak and with broken end-to-end capture or UI delivery.",
+      "repair": "Add a forcing boundary test for no page message, an actual saved-run UI path with CDP as the sole browser double, and a recovery test whose second prepare reads changed live recipe/document data. Demonstrate red on each targeted break."
+    }
+  ],
+  "positive_findings": [
+    "CDP addScriptToEvaluateOnNewDocument is awaited before Page.reload, addressing the known initial-request race in principle.",
+    "Runtime event handling rejects old and non-main-frame contexts and buffers early events until the new main frame commits.",
+    "Local port sends saved identity rather than caller-supplied approval/config, and the prepared operation requests privileged confirmation even in Act mode.",
+    "Candidate cleanup attempts to remove the document script and binding and release the debugger lease."
+  ],
+  "limitations": [
+    "All findings are source-derived; no live product or test result is claimed.",
+    "The adjacent D48 credential repair was still pending in the shared checkout; its final privacy behavior is not credited to D47.",
+    "No claim of runtime or TypeScript correctness is possible from this scratch candidate."
+  ]
+}
