@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "run_id": "gallery-d38-dev097-001",
+  "feature": "EXT-F-1009-T08",
+  "status": "unverified_guard_refused",
+  "build": {
+    "version": "0.2.97",
+    "tree_sha256": "aefca61f20fe24ba5cf172c7f9a4f4732bf9983cfe383269f37ab1eca4355820",
+    "source_receipt": "test-results/source-dev-build-097-screenshots-20260927.json",
+    "source_receipt_sha256": "2c0a724dd7563a11214b94446155ab9fe532814fe6e47940d89be98f99c8c76c"
+  },
+  "guard": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id gallery-d38-dev097-001 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- node tests/browser/screenshot-gallery-failure-acceptance.mjs",
+    "terminal": "RESOURCE_PREFLIGHT_REFUSED",
+    "reasons": ["RESOURCE_PRESSURE_UNSAFE", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+    "child_launched": false,
+    "child_exit_code": null,
+    "wrapper_exit_code": 2,
+    "sample": {
+      "pressure_level": 2,
+      "available_memory_gib": 6.08,
+      "one_minute_load": 10.24,
+      "logical_cpus": 10,
+      "cpu_busy_fraction": 0.7139571428571428,
+      "swap_used_mib": 3553.31
+    }
+  },
+  "product_assertions": "not_run",
+  "evidence": {
+    "private_log": "/Volumes/Samsung2TB/code/.stabilization-scratch/gallery-d38-dev097-001-private/wrapper.log",
+    "private_log_mode": "0600",
+    "private_log_sha256": "a5bc333c79af9e2be1e59d3c19ec2ff57308aa201a78491c8b16fca6d1209405",
+    "private_result": "/Volumes/Samsung2TB/code/.stabilization-scratch/gallery-d38-dev097-001-private/result.json",
+    "private_result_mode": "0600",
+    "private_result_sha256": "0ebd6154ba8b7485a5ff19ff695d30cadd3b19d6cf7b37f3364c961c574aeb94"
+  },
+  "scope_limit": "Guard refused before browser launch; no gallery behavior was observed and no product inference is made."
+}

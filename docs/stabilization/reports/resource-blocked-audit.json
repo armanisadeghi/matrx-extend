@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "at": "2026-09-27T12:41:07.742130+00:00",
+  "goal_status": "blocked",
+  "objective_complete": false,
+  "condition": "Host pressure and sustained CPU/load or swap growth prevent native admission under unchanged resource policy.",
+  "consecutive_goal_turns": 3,
+  "evidence": [
+    "docs/stabilization/runs/gallery-d38-dev096-001.json",
+    "docs/stabilization/runs/gallery-d38-dev096-002.json",
+    "docs/stabilization/runs/gallery-d38-dev096-003.json",
+    "docs/stabilization/reports/resource-attribution-20260927.json",
+    "docs/stabilization/runs/screenshot-dev097-build-001.json",
+    "docs/stabilization/runs/gallery-d38-dev097-001.json"
+  ],
+  "safe_alternatives_audited": [
+    "No campaign-owned live jobs/tokens/heavy lease found in read-only audit; old files do not prove live ownership.",
+    "Brief normal sample and successful build did not produce sustained browser admission.",
+    "No policy thresholds lowered or foreign processes terminated.",
+    "Pending D38/D36 source repairs already reviewed; target-native evidence is the required next step, further speculative source edits are unwarranted."
+  ],
+  "resume": "After resource availability changes, validate .97 receipt/current source, then guard one D38 gallery run; fullpage follows. Preserve entire inventory/mode scope and Chat/Pilot deferral."
+}

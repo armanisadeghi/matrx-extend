@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "run_id": "screenshot-dev097-build-001",
+  "status": "pass",
+  "scope": "One guarded .97 development build for Screenshot evidence preparation; no browser run.",
+  "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node scripts/stabilization-resource.mjs run --run-id screenshot-dev097-build-001 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec wxt build --mode development",
+  "source_sha": "c0c0ec346a4d0082551568119a6fcc0702125ce1",
+  "build": {
+    "version": "0.2.97",
+    "tree_sha256": "aefca61f20fe24ba5cf172c7f9a4f4732bf9983cfe383269f37ab1eca4355820",
+    "receipt_path": "test-results/source-dev-build-097-screenshots-20260927.json",
+    "receipt_sha256": "2c0a724dd7563a11214b94446155ab9fe532814fe6e47940d89be98f99c8c76c"
+  },
+  "runtime": {
+    "resource_admission": "RESOURCE_ADMITTED",
+    "admitted_at": "2026-09-27T12:36:50.163Z",
+    "terminal_event": "RESOURCE_JOB_EXIT",
+    "terminal_at": "2026-09-27T12:36:53.782Z",
+    "child_exit_code": 0,
+    "wrapper_exit_code": 0
+  },
+  "evidence": {
+    "private_wrapper_log": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-dev097-build-001-private/wrapper.log",
+    "private_wrapper_log_mode": "0600",
+    "private_wrapper_log_sha256": "d81ed6cb0eaec85ae604734c2d6b673dbdfb89efa7debd60495de5a28490e650"
+  },
+  "limits": ["No browser was launched; this records the guarded build only."]
+}
