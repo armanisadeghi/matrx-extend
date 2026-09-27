@@ -73,9 +73,6 @@ function fixtureClient(): AgentCatalogClient {
       if (fn === 'agx_search') return answer([]);
       return answer([]);
     },
-    schema: () => ({
-      from: () => ({ update: () => ({ eq: () => Promise.resolve({ error: null }) }) }),
-    }),
   };
 }
 

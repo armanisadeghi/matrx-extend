@@ -72,9 +72,6 @@ function fixtureClient(): AgentCatalogClient {
   };
   return {
     rpc: (fn: string) => (fn === 'agx_get_list_full' ? answer(ROWS) : answer([])),
-    schema: () => ({
-      from: () => ({ update: () => ({ eq: () => Promise.resolve({ error: null }) }) }),
-    }),
   };
 }
 
