@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "run_id": "screenshot-controls-dev094-003",
+  "status": "unverified",
+  "scope": "One resource-admitted owned native EXT-F-1009 Visible capture and controls attempt against a fresh localhost fixture.",
+  "runner": "tests/browser/screenshot-capture-acceptance.mjs",
+  "run_count": 1,
+  "build": {
+    "version": "0.2.94",
+    "tree_sha256": "8b359ead9dd0b4db1d404a26cb6b2fbfc3e3c10d79956638a2ec587d4a395665",
+    "receipt_path": "test-results/source-dev-build-094-capture-20260927.json",
+    "receipt_sha256": "43d4f38f41ab900643e4266e9ab17f3ad744229d98dd539abe66bf53e1327248",
+    "package_manifest_receipt_versions_matched": true,
+    "artifact_tree_matched_before_and_after": null,
+    "rebuild_performed": false
+  },
+  "runtime": {
+    "explicit_tmpdir_playwright_chrome_and_receipt_verified_before_launch": true,
+    "resource_admission": "RESOURCE_ADMITTED",
+    "admitted_at": "2026-09-27T11:12:07.269Z",
+    "terminal_at": "2026-09-27T11:12:28.335Z",
+    "child_exit_code": 1,
+    "lease_root_empty_after_run": true
+  },
+  "native_result": {
+    "runner_status": "unverified",
+    "exercise_callback_reached": true,
+    "admin_identity_and_approved_organization": true,
+    "fresh_fixture_capture_and_preview": "one real user row, loaded blob preview, positive dimensions, and all three fixture pixel bands matched",
+    "per_control": {
+      "EXT-F-1009-T01-warm-refresh": "pass: completed real gallery read preserved the exact owned row",
+      "EXT-F-1009-T04-thumbnail": "pass: exactly one new tab reached the exact owned Files route on canonical www after the verified redirect",
+      "EXT-F-1009-T04-icon": "failed at owned_open_control_not_hit_tested; no product click outcome established",
+      "EXT-F-1009-T05-copy": "unverified; runner stopped at icon hit-test failure",
+      "EXT-F-1009-T06-cancel": "unverified; runner stopped at icon hit-test failure",
+      "EXT-F-1009-T06-confirm": "exercised in failure recovery: visible enabled confirmation with retention consequence; exact owned-row removal and completed real gallery read verified"
+    },
+    "failure_stage": "icon_open_in_files",
+    "failure_code": "owned_open_control_not_hit_tested",
+    "failure_diagnostic": {
+      "timeout": false,
+      "assertion": false,
+      "driverCode": null,
+      "hitTarget": false
+    },
+    "owned_row_cleanup_attempted": true,
+    "owned_row_cleanup_verified": true,
+    "created_row_may_need_ui_cleanup": false
+  },
+  "evidence": {
+    "private_wrapper_log": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-controls-dev094-003-wrapper.log",
+    "private_wrapper_log_mode": "0600",
+    "private_wrapper_log_capture": "Sanitized summary copied from the exact guard output returned by the command tool after completion; full shell stdout was not redirected to disk.",
+    "private_wrapper_log_sha256": "be5e979cd8390cd7830b2f2ccbcf228dbb0dc9666ebca3891d86230744a2efda",
+    "immutable_result_path": "test-results/screenshot-controls-dev094-003.evidence.json",
+    "immutable_result_mode": "0600",
+    "immutable_result_sha256": "720620f79ccabf413a0f25b00a107878e827f6b078a9b3082bf1a11d1aef92e4",
+    "runner_result_path": "test-results/screenshot-capture-b127e6af-99cd-46ee-89a5-d4eb9afc06f0.json"
+  },
+  "source_peer": {
+    "d34_redirect_oracle_source_review": "accepted",
+    "runtime_failure_declaration": "matches native-runtime-failure.mjs exported signature and four allowlisted codes plus null"
+  },
+  "limits": [
+    "The native redirect oracle passed at the exact canonical www Files URL with the owned file path, but the next icon control did not pass its hit test.",
+    "Copy and Cancel remain unverified because the runner stopped at the icon hit-test failure.",
+    "The runner result has no after-build receipt, so no post-run artifact tree comparison is claimed.",
+    "No additional native run was performed."
+  ]
+}

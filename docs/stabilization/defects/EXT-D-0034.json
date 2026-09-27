@@ -16,13 +16,15 @@
     "docs/stabilization/reports/screenshot-files-open-diagnosis.json",
     "docs/stabilization/reports/screenshot-files-target-repair.json",
     "src/features/screenshots/ScreenshotsView.tsx",
-    "src/config/env.ts"
+    "src/config/env.ts",
+    "docs/stabilization/runs/screenshot-controls-dev094-003.json",
+    "docs/stabilization/reports/screenshot-files-redirect-peer.json"
   ],
   "severity": "S3: acceptance oracle misclassifies a real Files open; no product failure established",
   "priority": "P1: correct the oracle before the next resource-admitted native run",
-  "state": "in-fix",
-  "owner": "/root",
-  "fix_commits": [],
+  "state": "fixed",
+  "owner": "/root/screenshot_controls_batch",
+  "fix_commits": ["d450c7a2"],
   "transition_history": [
     {
       "at": "2026-09-27T11:05:00Z",
@@ -31,11 +33,25 @@
       "reason": "Source/build and read-only HTTP confirmed apex-to-www redirect behind the strict final-apex mismatch."
     },
     {
-      "at": "2026-09-27T11:15:00Z",
+      "at": "2026-09-27T11:05:00Z",
       "from": "open",
+      "to": "triaged",
+      "reason": "Reproduction and source evidence identified this as a test-infrastructure defect; triage transition backfilled during coordinator schema audit."
+    },
+    {
+      "at": "2026-09-27T11:06:32Z",
+      "from": "triaged",
       "to": "in-fix",
-      "reason": "The runner now accepts only the exact owned Files URL at apex or the verified 308 canonical www destination and records privacy-safe mismatch categories; native verification remains pending."
+      "reason": "The runner now accepts only the exact owned Files URL at apex or the verified 308 canonical www destination and records privacy-safe mismatch categories; native verification remains pending.",
+      "timestamp_basis": "Actual source-fix commit time; replaces erroneous future timestamp."
+    },
+    {
+      "at": "2026-09-27T11:11:32Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent source peer accepted exact owned route and verified canonical redirect; native retest active."
     }
   ],
-  "closure_requirement": "Exact owned final Files route at apex or the verified canonical www redirect is checked without exposing file ID/URL; icon and Copy are separately exercised; a fresh admitted native run passes, and only its owned row/tabs are cleaned."
+  "closure_requirement": "Exact owned final Files route at apex or the verified canonical www redirect is checked without exposing file ID/URL; icon and Copy are separately exercised; a fresh admitted native run passes, and only its owned row/tabs are cleaned.",
+  "retest_status": "Original thumbnail redirect check passed in native .94 run003. Keep fixed because closure also calls for separate icon/Copy verification; icon stopped before click on distinct D35 hit-target issue, Copy not reached."
 }

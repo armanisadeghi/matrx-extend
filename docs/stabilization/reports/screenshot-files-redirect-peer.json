@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-files-redirect-peer",
+  "scope": "Independent source and one-run verification of D34's Files URL oracle.",
+  "source_review": {
+    "verdict": "accepted",
+    "finding": "Product builds the apex Files URL. The oracle retains exact owned ID/path and accepts only that exact URL at apex or the verified canonical www origin, without query or hash. Copy remains separately exact to the product-generated apex URL.",
+    "runtime_failure_type_review": "native-runtime-failure.d.mts matches native-runtime-failure.mjs function signature and four allowlisted failure codes plus null."
+  },
+  "native_run": {
+    "run_id": "screenshot-controls-dev094-003",
+    "version": "0.2.94",
+    "resource_admitted": true,
+    "terminal_child_exit_code": 1,
+    "files_thumbnail": "pass: one new tab at canonical_www and owned_files, exactFilesUrl=true",
+    "icon": "unverified: owned_open_control_not_hit_tested",
+    "copy": "unverified: runner stopped at icon hit-test failure",
+    "cancel": "unverified: runner stopped at icon hit-test failure",
+    "owned_cleanup": "verified: recovery confirmation shown and owned row removed",
+    "overall": "unverified"
+  },
+  "evidence": "docs/stabilization/runs/screenshot-controls-dev094-003.json",
+  "evidence_limit": "The mode-0600 wrapper log is a sanitized summary of exact guard lines returned by the command tool; full shell stdout was not redirected to disk."
+}
