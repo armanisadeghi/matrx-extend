@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-installed-d45-001",
+  "status": "PARTIAL_LIVE_EVIDENCE",
+  "scope": "Installed unpacked Chrome extension D45 live verification on real public sites. No localhost or test server, no tests, no build, no source edits, and no dataset save.",
+  "artifact": {
+    "manifest_version": "0.2.109",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "build_source_commit": "141b11ac9079f7bfb3ec13717e529180107138e5",
+    "build_tree_sha256": "8cd579919c549c9b6429dce83933249f984dc1e6ad7523b8214874a665cdaebe",
+    "receipt": "docs/stabilization/runs/showcase-d45-dev109-001.json",
+    "reload_observation": "chrome://extensions initially showed 0.2.108; clicking the extension Reload button changed the visible version to 0.2.109. The real calendar was then refreshed and Showcase reopened."
+  },
+  "resource_guard": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id showcase-installed-d45-001 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "exec_session_id": 8900,
+    "admission": "RESOURCE_ADMITTED at 2026-09-27T22:22:47.147Z",
+    "terminal": "Ctrl-C after UI_STOP emitted RESOURCE_STOP_REQUESTED and RESOURCE_BROWSER_STOP_CONFIRMED at 2026-09-27T22:31:57.574Z; subsequent terminal poll returned exit_code 0.",
+    "current_state": "No owned UI run is active. Chrome remains the user's app; no claim is made about unrelated Chrome processes."
+  },
+  "pages": [
+    {
+      "url": "https://electronic.vegas/vegas-edm-event-calendar/",
+      "role": "primary real collection page",
+      "observed": "Calendar rendered numerous event cards. The browser AX page showed distinct events including DJ Pauly D and DJ Sourmilk with date/time and locality."
+    },
+    {
+      "url": "https://electronic.vegas/event/dj-pauly-d-omnia-dayclub-vegas-sep-27/",
+      "role": "same-host changed route",
+      "observed": "Opened by clicking the DJ Pauly D event link on the calendar. Showcase Patterns rendered saved-route guidance and kept Run available. Explicit Run showed 'No matching data was found. This page is outside the saved route; open the intended page or review the saved selectors.' No rows were displayed. The saved card continued to show its prior OK / 249-row successful health summary."
+    },
+    {
+      "url_attempt": "https://electronic.vegas/",
+      "observed": "Navigation returned to /vegas-edm-event-calendar/; it was not used as the changed-route result. The event-detail link supplied the verified route change."
+    }
+  ],
+  "results": {
+    "collection_and_fields": {
+      "status": "PASS_BOUNDED_SUBSTEP",
+      "root_selector": "#wideeventsList",
+      "item_selector": "div.wideeventwrapper",
+      "detected_count": 249,
+      "selected_fields": [
+        {
+          "name": "event_title",
+          "relative_selector": "li[itemtype=\"https://schema.org/Event\"] > ul.briefDetails > li.wideeventTitle:nth-of-type(1) > a[itemprop=\"url\"]",
+          "first_sample": "DJ Pauly D"
+        },
+        {
+          "name": "locality",
+          "relative_selector": "li[itemtype=\"https://schema.org/Event\"] > ul.briefDetails > li[itemtype=\"https://schema.org/Place\"] > span[itemtype=\"https://schema.org/PostalAddress\"] > span[itemprop=\"addressLocality\"]",
+          "first_sample": "Las Vegas"
+        }
+      ],
+      "extraction": "Showcase Extract displayed 249 rows. The first visible rows included DJ Pauly D / Las Vegas, DJ Sourmilk / Las Vegas, and DJ Stretch / Las Vegas.",
+      "visibility_limit": "UI explicitly displayed 'Showing first 200 of 249 rows — Copy and Save include all of them.' Only visible samples and the displayed count are verified; the remaining rows were not inspected."
+    },
+    "d45_cancel_changed_scope": {
+      "status": "PASS_BOUNDED_SUBSTEP",
+      "actions": "With collection A, two fields, and 249-row preview present: Pick more fields; page picker Restart; click an event; choose '3 list items (li)' nested candidate (B); click Cancel.",
+      "observed_after_cancel": "A remained #wideeventsList / div.wideeventwrapper with event_title and locality fields; the 249-row preview remained visible with the same first event samples."
+    },
+    "d45_same_scope_done_appends": {
+      "status": "PASS_BOUNDED_SUBSTEP",
+      "actions": "Pick more fields without changing A's scope; select the event date text; Done; name the new field event_datetime; Extract.",
+      "observed": "Selected field count increased from two to three while retaining event_title and locality. Extract displayed 249 rows; the first row showed Sunday, Sep. 27, 2026 at 11:00 am / DJ Pauly D / Las Vegas.",
+      "appended_field": {
+        "name": "event_datetime",
+        "relative_selector": "li[itemtype=\"https://schema.org/Event\"] > ul.briefDetails > li.wideeventDate:nth-of-type(2)",
+        "first_sample": "Sunday, Sep. 27, 2026 at 11:00 am"
+      }
+    },
+    "d45_changed_scope_done_zero_fields": {
+      "status": "PASS_BOUNDED_SUBSTEP",
+      "actions": "Pick more fields; Restart; click an event; select '3 list items (li)'; click Done without selecting a field.",
+      "observed": "Builder adopted root '#wideeventsList > div.wideeventwrapper:nth-of-type(1) > li[itemtype=\"https://schema.org/Event\"] > ul.briefDetails' and item selector 'li'. No fields appeared, Extract was disabled, and A's prior preview was absent."
+    },
+    "saved_recipe_reopen_and_replay": {
+      "status": "PASS_BOUNDED_SUBSTEP",
+      "fixture": {
+        "title": "Codex D45 fixture 20260927-2229Z",
+        "source_route": "/vegas-edm-event-calendar/",
+        "ui_record_id": "Not exposed in the Patterns UI; unknown.",
+        "retention": "Intentionally retained owned test fixture; no cleanup attempted.",
+        "saved_at_observed_utc": "2026-09-27T22:29:53Z was read immediately after the UI showed 'Pattern saved'; the UI did not expose a record-created timestamp."
+      },
+      "actions": "Saved a List recipe with event_title and locality, left the builder, opened Patterns, observed the exact title as LIST / never run, and clicked its Run pattern control.",
+      "observed": "Patterns rendered LAST RUN for the exact fixture title, 249 rows, and the same first visible values: DJ Pauly D / Las Vegas, DJ Sourmilk / Las Vegas, DJ Stretch / Las Vegas. UI then stated first 200 of 249 rows are shown."
+    },
+    "off_route_explicit_run": {
+      "status": "PASS_BOUNDED_SUBSTEP",
+      "observed": "On the event-detail page, saved-route guidance said this page was outside the saved route and that Run/review remained available. Explicit Run completed with the no-matching-data message and no result rows. Previous saved OK / 249-row health stayed visible as prior verified health."
+    },
+    "whole_case": {
+      "status": "PARTIAL",
+      "not_proven": [
+        "No complete audit of all 249 extracted rows; only first visible rows and UI row count were checked.",
+        "No saved-record ID or database-created timestamp was exposed in the UI.",
+        "No deletion or cleanup was performed; the exact fixture remains intentionally retained.",
+        "No formal independent review or broader Showcase case closure is implied by these bounded substeps."
+      ]
+    }
+  },
+  "interaction_errors_and_recovery": [
+    {
+      "error": "An app.pressKey call was given an element index plus 'Return'; native app pressKey accepts only the key and raised 'e.key.trim is not a function'.",
+      "recovery": "The preceding setValue had applied the event_title name. I reread the UI, set locality directly, and verified both names; no ambiguous repeated save occurred."
+    },
+    {
+      "error": "A save-dialog Cancel click using an old accessibility element ID returned 'The element ID is no longer valid'.",
+      "recovery": "I refreshed the accessibility tree. The dialog had already closed; the List recipe was present in Patterns under the unique title. I did not click Save again."
+    }
+  ],
+  "limitations": [
+    "This is installed-extension evidence for the exact .109 artifact only; it does not verify later builds.",
+    "The table display cap prevents claiming full 249-row correctness from the visible table.",
+    "No Network pattern was saved or tested."
+  ]
+}
