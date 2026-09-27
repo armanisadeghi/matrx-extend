@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "report_id": "debug-search-restoration-peer",
+  "feature_id": "EXT-F-1005",
+  "reviewed_source_commit": "3dc31a21",
+  "scope": "T14 message and detail search reset restoration",
+  "A_runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "This peer performed source review only. The stronger reset oracle has not yet run in an owned native browser profile. No browser, test, or build was launched here."
+  },
+  "B_source": {
+    "verdict": "ACCEPT_SOURCE_WITH_RUNTIME_UNVERIFIED",
+    "forcing_oracle": "Before filtering, the runner captures an ordered signature for every visible Debug row and requires the unfiltered search and counters to cover the entire feed. After reset, all prior signatures must occur as an unchanged suffix in the same order and multiplicity; only new leading rows are allowed, and visible/total counters must agree with the added count. Equal counts with substituted, reordered, altered, or missing rows cannot pass.",
+    "production_alignment": "DebugView renders filtered events in store order. The debug store prepends natural events and caps retention at 1500. A cap eviction therefore fails restoration rather than silently passing; this is conservative and could need runtime diagnosis if reached. Visually identical rows are intentionally indistinguishable but remain counted with multiplicity; the oracle does not claim internal event-ID preservation.",
+    "both_paths": "The message/no-match path invokes the exact-row reset gate after clearing search. The detail-only path takes a fresh baseline after closing the detail row and invokes the same gate after clearing its search. The no-message-positive path also checks reset but leaves T14 unverified for its missing positive search control.",
+    "privacy": "DOM row text is read only into runner memory to compute SHA-256 signatures. Neither raw row text nor signatures are returned by the reset wait observation or assigned to the receipt. Durable evidence contains fixed verdict strings, booleans, and row counts only; detail search terms and natural event narratives are not serialized.",
+    "limits": "The signatures cover the visible button fields, style class, and detail affordance while rows are collapsed; they do not attest to hidden detail JSON. This source review does not establish that real event supply, UI selectors, or the post-reset rendering succeed at runtime."
+  },
+  "reviewed_paths": [
+    "tests/browser/debug-log-controls-acceptance.mjs",
+    "src/features/debug/DebugView.tsx",
+    "src/lib/debug/log.ts",
+    "docs/stabilization/reports/debug-service-error-escalation.json"
+  ]
+}
