@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "runId": "auth-role-failure-dev093-001",
+  "status": "pass",
+  "caseId": "EXT-F-1015-T35",
+  "defectId": "EXT-D-0029",
+  "sourceHeadAtRun": "4e1fed4c20a57707cc035edc368dfd0f5393751f",
+  "artifactSourceHead": "356c07d57c58795361e2afd04f245d21086ad15d",
+  "build": {
+    "receipt": "test-results/source-dev-build-093-contained-20260927.json",
+    "version": "0.2.93",
+    "treeSha256": "6b2f5a0cff151755e3de140592f6f92148ee184e95746cf07c9c539e3f62cb76",
+    "receiptSha256": "6a213156ca241be1cd59bfb02fc1a6095f3dd2c5ee2cd9c16e9b10309465da41",
+    "identityMatchedBeforeAndAfter": true
+  },
+  "runtimeEnvironment": {
+    "requiredVariablesExportedAndAssertedBeforeLaunch": true,
+    "guardChildInheritsProcessEnvironment": true,
+    "receiptAcceptedAndNativeHarnessCompleted": true
+  },
+  "guard": {
+    "resourceAdmission": "RESOURCE_ADMITTED",
+    "pressureLevel": 1,
+    "availableMemoryGiB": 12.16,
+    "requiredMemoryGiB": 4,
+    "oneMinuteLoad": 8.81,
+    "logicalCpus": 10,
+    "cpuBusyFraction": 0.46485714285714286,
+    "swapUsedMiB": 2724.56,
+    "childExitCode": 0,
+    "leaseReleased": true,
+    "terminalAt": "2026-09-27T10:00:38.979Z"
+  },
+  "observed": {
+    "realAdminAndWorkerGateInitiallyTrue": true,
+    "matchingRoleReadRequestsFailed": 4,
+    "unrelatedRoleReadRequestsContinued": 0,
+    "sameAccountRemainedSignedInDuringFailure": true,
+    "adminRoleVisibleDuringFailure": false,
+    "adminControlsVisibleDuringFailure": false,
+    "specificRoleErrorVisible": true,
+    "singleEnabledRetryVisible": true,
+    "workerReadableGateDuringFailure": false,
+    "sameAccountRecoveredAfterProductRetry": true,
+    "adminRoleRecoveredAfterProductRetry": true,
+    "workerReadableGateAfterRetry": true
+  },
+  "immutableResult": {
+    "sourcePath": "test-results/auth-role-failure-acceptance.json",
+    "path": "test-results/auth-role-failure-dev093-001.evidence.json",
+    "mode": "0600",
+    "sha256": "3c1bdd6c920a01ea079b2a2741301dbe28601796f49ba8353f5ca1bcd034e354"
+  },
+  "privateWrapperLog": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/auth-role-failure-dev093-001-wrapper.log",
+    "mode": "0600",
+    "sha256": "43bb50fd86f329784e2c4614770003e60e0b0310a81af8f64362fabb8ba0f2b7"
+  },
+  "notRun": [
+    "Safari callback, cancellation, and timeout paths (T37).",
+    "Simultaneous storage set/remove failure and cross-context write races (T39).",
+    "A real member-role transition and server-side role revocation."
+  ]
+}

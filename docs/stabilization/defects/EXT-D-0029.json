@@ -20,11 +20,12 @@
     "docs/stabilization/reports/admin-role-storage-repair.json",
     "docs/stabilization/reports/admin-role-final-peer.json",
     "docs/stabilization/runs/d26-d29-native092.json",
-    "docs/stabilization/reports/auth-integration-peer.json"
+    "docs/stabilization/reports/auth-integration-peer.json",
+    "docs/stabilization/runs/auth-role-failure-dev093-001.json"
   ],
   "severity": "S2: stale background privilege gate can outlive verified admin UI; no unauthorized action demonstrated",
   "priority": "P1: repair shared authentication before broader authenticated acceptance",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/admin_navigation_repair",
   "fix_commits": ["c9abb17e", "0b1ef207", "110809f3", "31204376"],
   "transition_history": [
@@ -51,8 +52,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Six original stored-role failures plus Safari/storage-set recovery now covered by24passingguardedtests; fresh sourcepeerpassed scopedrepair. Native acceptance and simultaneousstorageoutage/crossrealm dimensions remain unverified."
+    },
+    {
+      "at": "2026-09-27T10:00:38.979Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent native development-extension role-read failure and actual product retry passed; original six failure regressions and surrounding 24 targeted tests previously passed. Storage-outage/cross-context and Safari native dimensions remain explicitly unverified."
+    },
+    {
+      "at": "2026-09-27T10:00:38.979Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent native development-extension role-read failure and actual product retry passed; original six failure regressions and surrounding 24 targeted tests previously passed. Storage-outage/cross-context and Safari native dimensions remain explicitly unverified."
     }
   ],
   "closure_requirement": "Independent review plus original failure-path regressions, stale-work and valid-session recovery checks, and fresh scoped browser acceptance; retain any unverified storage-outage/cross-context dimensions explicitly.",
-  "retest_status": "All 24 targeted tests and independent source review passed. Native normal admin sign-in and navigation passed, but native failure paths and cross-context/storage-outage case T39 remain unverified. Keep fixed awaiting retest."
+  "retest_status": "Scoped original defect retest passed: real admin role lookup failure cleared UI admin controls and worker-readable gate, preserved same-account sign-in, and product retry restored both. 24 targeted regressions and independent source review passed. Native Safari, real member/revocation, and simultaneous storage-outage/cross-context T39 remain unverified; this is not whole-feature certification."
 }

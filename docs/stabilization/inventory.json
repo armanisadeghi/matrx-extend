@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-27T09:59:16.193587+00:00",
+  "updated_at": "2026-09-27T10:00:38.979Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -17792,7 +17792,21 @@
           ],
           "defect_ids": [
             "EXT-D-0029"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "auth-role-failure-dev093-001",
+              "verified_substeps": [
+                "Native role-read failure preserves signed-in account, removes admin controls and worker admin gate, and exposes one enabled retry.",
+                "Actual product retry restores same account, admin controls and worker gate."
+              ],
+              "remaining_criteria": [
+                "Sign-in endpoint failure and remaining warm/reload/auth-transition dimensions of this full case are not certified by the scoped role-read run."
+              ],
+              "evidence": "docs/stabilization/runs/auth-role-failure-dev093-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1015-T36",
@@ -17976,9 +17990,13 @@
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
-          "run_ids": [],
-          "retest_status": "not-run"
+          "defect_ids": [
+            "EXT-D-0029"
+          ],
+          "run_ids": [
+            "auth-role-failure-dev093-001"
+          ],
+          "retest_status": "partial"
         }
       },
       "inventory_status": "complete",
