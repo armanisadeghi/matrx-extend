@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1009-T03",
+  "status": "source_ready_live_unverified",
+  "runner": "tests/browser/screenshot-full-page-acceptance.mjs",
+  "checks": {
+    "biome_targeted": "pass",
+    "node_syntax": "pass",
+    "diff_whitespace": "pass",
+    "native_browser": "not_run_in_this_lane"
+  },
+  "coverage": {
+    "tall_owned_page_persistence": "implemented_unverified",
+    "beyond_viewport_pixels": "implemented_unverified",
+    "exact_owned_row_cleanup": "implemented_unverified",
+    "unsupported_page": "unverified",
+    "persistence_failure": "unverified",
+    "tile_cap": "unverified"
+  },
+  "receipt_override_env": "SCREENSHOT_CAPTURE_DEV_BUILD_RECEIPT",
+  "next_action": "Independent guarded native execution and source review"
+}
