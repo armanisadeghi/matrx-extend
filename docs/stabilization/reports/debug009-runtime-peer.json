@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "report_id": "debug009-runtime-peer",
+  "run_id": "debug-log-controls-009",
+  "source_receipt": "docs/stabilization/runs/debug-log-controls-009.json",
+  "A_acceptance_verdict": {
+    "status": "THREE_SERVICE_ERROR_DIMENSIONS_SUPPORTED_T14_PARTIAL",
+    "case_findings": {
+      "EXT-F-1005-T14": "Service-error message search, natural detail-only primitive search, no-match state, and clearing the query were exercised through trusted input. Reset waits for the previous row count only; it does not verify restoration of the previous row identities or values required by the inventory's prior-set assertion. Keep T14 service-error partial and the full case unverified.",
+      "EXT-F-1005-T15": "Service-error dimension pass: displayed rows held at 71 while total rows rose 71 to 81, then Resume displayed 81. The source requires consistent row counters and naturally arriving events; prior warm and reload dimensions are separately recorded in the inventory.",
+      "EXT-F-1005-T17": "Service-error dimension pass by adjudication: a real pre-clear error badge was present because the runner's errorBadge field is pass only when beforeClear.errorBadge is true and the post-clear badge is absent. Clear also produced zero rows, zero total, and the no-events state. Its raw serviceError=partial is a conservative hardcoded label, not an unmet listed assertion. Prior warm and reload dimensions are separately recorded in the inventory.",
+      "EXT-F-1005-T22": "Service-error dimension pass: a natural detail row expanded and collapsed, a no-detail row remained inert, and no-match and no-events states were observed distinctly. Prior warm and reload dimensions are separately recorded in the inventory."
+    },
+    "scope": "This run exercises the real-panel service-error dimension on an admin session. It does not rerun warm or reload dimensions, and does not establish full EXT-F-1005 acceptance. The raw top-level partial status is appropriate."
+  },
+  "B_evidence_quality_verdict": {
+    "status": "ACCEPT_WITH_T14_ORACLE_GAP",
+    "checks": [
+      "The generated immutable receipt's SHA-256 values match the current sanitized raw result and guard log. The guard records resource admission, healthy watch, PARTIAL stdout, and child exit 0 at 2026-09-26T23:58:27.686Z; coordinator confirmation supplies wrapper exit 0 while the receipt accurately says wrapper completion cannot be proven from the guard log alone.",
+      "The owned harness signs in through the real web form and extension UI, verifies admin account identity, and binds the extension to release 0.2.79 tree be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0 and extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml. The runner reads release and manifest identity at start and end; the harness verifies the unpacked tree and Store ZIP. The raw result reports realAdminUi=true and profileOwned=true.",
+      "The selected health URL is read from the Debug panel, kept only in memory, and required unchanged before and after controls. Network observations show one exact-target Fetch GET completed 200 with UI OK online; the same target then failed net::ERR_INTERNET_DISCONNECTED with UI FAIL before controls and again after them. Other membership, organization, and database requests continued with 200 responses. The outage rule was scoped to the selected health URL and removed; network observer and cache override were restored.",
+      "The sanitized result contains counts, fixed categories, statuses, and booleans without backend URL, credentials, event payloads, headers, or raw errors. This peer reviewed saved evidence and source only, not a second browser execution."
+    ],
+    "actionable_gap": "For T14, a search reset can regain the same row count with a different set of natural events. A future forcing-function check should compare stable identities or a sufficiently specific ordered row snapshot before search and after reset, allowing for explicitly accounted new arrivals; the current exact-count check does not prove the inventory's prior-set wording."
+  }
+}
