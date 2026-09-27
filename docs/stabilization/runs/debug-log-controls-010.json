@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "run_id": "debug-log-controls-010",
+  "source": {
+    "guard_log_path": "/tmp/matrx-debug-log-controls-010.log",
+    "guard_log_sha256": "09027544b90f53525c18d7d1ff479f0df0d4a65c89dabbcb8dbd2e7aec32bc11",
+    "raw_result_path": "test-results/debug-log-controls-acceptance.json",
+    "raw_result_sha256": "3f4fb215cd63ba477ff04e50e3fca2c238c2a9f19c0dd1c7b0ef9731b121ba95"
+  },
+  "guard": {
+    "admitted_at": "2026-09-27T00:05:11.121Z",
+    "child_exit_at": "2026-09-27T00:05:29.190Z",
+    "child_exit_code": 0
+  },
+  "raw_result": {
+    "status": "partial",
+    "build": {
+      "version": "0.2.79",
+      "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0"
+    }
+  },
+  "execution_evidence": {
+    "child_exit": "zero",
+    "wrapper_completion": "unverified_from_guard_log",
+    "overall_acceptance": "not_adjudicated"
+  }
+}
