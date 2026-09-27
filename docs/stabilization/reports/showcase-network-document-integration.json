@@ -4,7 +4,10 @@
   "base_commit": "de819649845c299c47ee27566b849c91d90bead1",
   "scratch_repository": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-integrated-20260927/repo",
   "candidate_patch": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-integrated-20260927/d47-on-de819649.patch",
-  "candidate_patch_sha256": "bc4e1b48bf6822122cceb6ebc6ba7f9799f78b0ba72370f588e30ad755c618a4",
+  "candidate_patch_sha256": "5c627dab4482f2dd23097e40d8cfc623deb7a962c2347d6acd547c1c4176072e",
+  "scratch_construction": "Two separate git clone --shared --no-checkout repositories, each checked out detached at de819649; no git worktree or branch was created and neither clone was removed.",
+  "baseline_probe": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-integrated-20260927/apply-check/tests/unit/network-replay-integrity.test.ts",
+  "baseline_probe_scope": "The added test calls the old runSavedPattern Network path directly and emits the first response during Chrome reload before onUpdated loading. Its expected row is absent under the old listener timing. It imports no D47 module, and remains unrun pending runtime permission.",
   "source_resolution": [
     "Resolved the two run-interactive.ts rejects by replacing post-loading event subscription with document-scoped capture, while retaining D48 sanitized URL matching, transient credential fingerprint identity and sanitized no-match text.",
     "Resolved the dispatch.ts reject by adding the recovered-operation field alongside D48's early Network save sanitizer; both dispatch and WebMCP sanitization remain.",
@@ -12,7 +15,8 @@
   ],
   "static_evidence": [
     "git diff --check succeeded in the scratch repository.",
-    "A fresh detached checkout at de819649 accepted git apply --check for the generated patch.",
+    "A separate detached clone at de819649 accepted git apply --check for the regenerated patch.",
+    "Static review corrected two candidate test hoist initializers that referenced their own variable before initialization; no runtime result is claimed.",
     "No live source, product runtime, build, tests, browser or database was changed by this lane."
   ],
   "guarded_test_plan": [
