@@ -29,7 +29,9 @@
     "src/lib/data-pattern/document-network-transport.ts",
     "src/lib/data-pattern/network-tap.ts",
     "src/lib/data-pattern/run-interactive.ts",
-    "tests/unit/document-network-capture.test.ts"
+    "tests/unit/document-network-capture.test.ts",
+    "tests/unit/document-network-lease.test.ts",
+    "tests/unit/document-network-port.test.ts"
   ],
   "prepared_tests": [
     "Initial binding response before frame commit survives; delayed old context is rejected; registration precedes reload; sensitive header canaries omitted.",
@@ -37,7 +39,7 @@
     "Same-URL replacement context cancels capture and cannot contribute rows."
   ],
   "blocking_integration_work": [
-    "Existing cdp_attach is privileged and admin-only; data_patterns is action-tier. Scratch transport currently lacks authorization integration. Reuse the existing debugger approval/admin/Pilot checks before acquireSession; never deploy this adapter as written.",
+    "Current approval contract cannot authorize this private-port replay as written. No authorization bypass implemented. See authorization_assessment for exact durable recovery mismatch and viable integration.",
     "Core and adapters are not typechecked or executed. Review CDP attach/detach lease races, unsupported uniqueId behavior, frame/context ordering and cleanup failure propagation.",
     "Complete actual runNetworkCapturePattern caller, private-port and shared-lease tests; existing core tests alone are not sufficient assurance."
   ],
@@ -67,5 +69,31 @@
     "https://developer.chrome.com/docs/extensions/reference/api/debugger",
     "https://developer.chrome.com/docs/extensions/reference/api/scripting"
   ],
-  "closure": "D47 remains open. This checkpoint is design and unrun scratch code only; no correctness or live success claim."
+  "closure": "D47 remains open. This checkpoint is design and unrun scratch code only; no correctness or live success claim.",
+  "authorization_assessment": {
+    "verdict": "Current approval contract cannot authorize this private-port replay as written. No authorization bypass implemented.",
+    "binding_issue": [
+      "dispatch.requestConfirmation is private and persists toolName/args/runId/callId for recoverPersistedConfirm, which re-executes that registered tool through handleCall after a worker restart.",
+      "Borrowing cdp_attach confirmation would bind approval to attachment, not capture/reload/cleanup. Restart recovery could attach with no capture owner. Calling the handler directly bypasses admin, Pilot and privileged approval.",
+      "handleWebmcpCall intentionally rejects privileged handlers. It is not a back door for an extension port. Manual ToolsView directly invokes handlers but its user-initiated exception does not authorize autonomous data_patterns replay.",
+      "Private port sender.id and absence of sender.tab identify an extension page only; they do not prove user approval or agent authority. Never accept approval booleans, permission modes or Pilot exemption from port payload.",
+      "An existing debugger attachment proves ownership state, not fresh permission for this capture. Borrowing must still traverse the proper authorization contract."
+    ],
+    "viable_integration": "Bind the actual capture operation to the existing durable confirmation mechanism, including tabId, captureId, byte/window options and trusted initiating run context. Extend its persisted operation discriminator and recovery branch narrowly: a disconnected/restarted panel request expires rather than replaying an orphan action; agent recovery must retain original run/Pilot context and resume the real capture owner. Reuse the existing admin/browser/permission/Pilot checks and privileged prompt; do not fabricate a cdp_attach tool call. This is a required contract change beyond a safe transport-only adapter, not a new approval service.",
+    "alternative": "A registered privileged capture handler could use the current tool-bound dispatcher and recovery model without generic capability approval, but requires canonical DB tool definition/binding and user-facing initiation integration. It must own capture and cleanup itself; a separate approved attach followed by unapproved port capture is insufficient.",
+    "no_blanket_change": "Do not mark every data_patterns action admin/privileged. DOM recipes and explicit Run behavior retain their existing policy. Only this debugger-backed operation needs its existing capability authorization.",
+    "next_tests": [
+      "Denied/expired approval causes zero attach/reload.",
+      "Non-admin and Pilot-outside-tab reject before attach using trusted state.",
+      "Same-extension port cannot self-approve or forge run context.",
+      "Worker restart never recovers as cdp_attach or leaves an orphan attachment.",
+      "Concurrent tab captures cannot consume each other's approval."
+    ],
+    "lease_fix": "Detach invalidates the old lease generation. Its stale send/release cannot touch a subsequent attachment. Prepared tests also cover owned, borrowed and concurrently retained attachments.",
+    "executed": false
+  },
+  "additional_prepared_tests": [
+    "Four actual CDP client lease tests, including stale lease versus replacement attachment.",
+    "Three actual private-port host tests: sender authority, disconnect during pending setup, cleanup error delivery."
+  ]
 }
