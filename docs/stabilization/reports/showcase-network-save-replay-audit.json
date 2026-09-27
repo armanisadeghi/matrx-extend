@@ -22,5 +22,11 @@
     "resource_deferral": "D42 three-file guarded retry showcase-d42-focus-after-helper-001 was refused before child at 2026-09-27T16:26:57.655Z for pressure level 2, swap growth, and high-load CPU busy; retry -002 at 2026-09-27T16:29:30.728Z was refused before child for pressure level 2 and swap growth. No further admission attempted. Read-only attribution found the /var/tmp/matrx-stabilization-resource-501 lease root empty, this lane's external profile directory empty, and no identified campaign-owned active guard process. System Chrome/ChatGPT processes and an unrelated node chain were visible by executable name only; their ownership and pressure contribution are unknown. Nothing was terminated or deleted.",
     "live": "No installed-extension Network capture/save/reopen/rerun verdict yet."
   },
+  "peer_followup": {
+    "finding": "Independent source review at docs/stabilization/reports/showcase-network-peer.json found that the default matcher drops query parameters and wildcards numeric or UUID path segments. The actual replay runner accepts every matching URL/method and chooses the largest body, so a same-path or numeric-path sibling may replace the selected dataset.",
+    "prepared_regression": "/tmp/showcase-d41-query-red/showcase-network-save-replay.test.tsx; SHA-256 e9a3df37094fb416141831d2665cf74430a87c82544b3b50e795877a8c50c61f. The test passes saved UI config to the real runNetworkCapturePattern for two query dates and two numeric resources. It is held outside test discovery.",
+    "guard_attempt": "showcase-d41-query-red-001 refused before child launch at 2026-09-27T16:44:50.565Z for RESOURCE_PRESSURE_UNSAFE; no red verdict, product repair, or new green claim. The shared test file was restored to HEAD immediately afterward.",
+    "remaining": "When the resource guard next admits a serial run, prove the prepared regression red before changing Network code. Default to the exact selected URL, including query and numeric path; keep explicit editable broader matchers and honest guidance. Then green, compile, and independent installed-extension replay remain required."
+  },
   "closure": "Focused red→green, compile/build receipt, then independent real captured request→saved recipe→reopened interactive replay and row identity proof. No source-only result closes the defect."
 }
