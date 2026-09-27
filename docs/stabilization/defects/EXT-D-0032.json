@@ -17,7 +17,9 @@
     "tests/browser/settings-panel-driver.mjs",
     "src/features/screenshots/ScreenshotsView.tsx",
     "src/lib/destructive/confirm.tsx",
-    "docs/stabilization/runs/screenshot-capture-dev094-001.json"
+    "docs/stabilization/runs/screenshot-capture-dev094-001.json",
+    "docs/stabilization/runs/screenshot-capture-dev094-002.json",
+    "docs/stabilization/reports/screenshot-capture-retest-peer.json"
   ],
   "severity": "S2: acceptance recovery may leave a newly created test index row when an earlier assertion fails; exact cleanup remains unverified",
   "priority": "P1: require consequence and complete bounded cleanup on the next owned run",
@@ -50,5 +52,6 @@
       "reason": "Source correction is in place and syntax-checked; peer review and guarded native retest remain pending."
     }
   ],
-  "closure_requirement": "Independent peer verifies exact-card identity guard and dialog wait; guarded native retest reaches confirmed deletion and an exact row-absent real read."
+  "closure_requirement": "Independent peer verifies exact-card identity guard and dialog wait; guarded native retest reaches confirmed deletion and an exact row-absent real read.",
+  "retest_status": "Source peer and disabled/enabled probes passed for both branches. Native normal deletion passed, but original error-recovery cleanup branch was not exercised; keep fixed awaiting its native retest."
 }
