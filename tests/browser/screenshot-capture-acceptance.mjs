@@ -825,7 +825,9 @@ async function exercise({ page, panel }) {
           `(() => {const dialog=document.querySelector('[role="alertdialog"],[role="dialog"]');
         return {visible:!!dialog, consequence:!!dialog?.innerText.includes(
           'The image file itself stays in your Files'), confirmButton:
-          [...(dialog?.querySelectorAll('button')??[])].some(button=>button.textContent.trim()==='Delete')};})()`,
+          [...(dialog?.querySelectorAll('button')??[])].some(button=>
+            button.textContent.trim()==='Delete'&&button.disabled===false&&
+            !button.matches(':disabled'))};})()`,
         ),
       (state) => state?.visible && state.consequence && state.confirmButton,
     );
@@ -901,7 +903,8 @@ async function exercise({ page, panel }) {
                 return {visible:!!dialog,consequence:dialog?.innerText.includes(
                   'The image file itself stays in your Files')===true,
                   confirmButton:[...(dialog?.querySelectorAll('button')??[])]
-                    .some(button=>button.textContent.trim()==='Delete')};})()`,
+                    .some(button=>button.textContent.trim()==='Delete'&&
+                      button.disabled===false&&!button.matches(':disabled'))};})()`,
             ),
             (state) => state?.visible && state.consequence && state.confirmButton,
           );
