@@ -1,0 +1,45 @@
+{
+  "run_id": "d22-recognition-readonly-008",
+  "status": "unverified",
+  "wrapper_exit_code": 1,
+  "child_started": true,
+  "child_exit_code": 1,
+  "build": {
+    "kind": "local_dev_unpacked",
+    "version": "0.2.85",
+    "tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff",
+    "receipt_path": "test-results/source-dev-build-085.json"
+  },
+  "guard": {
+    "admitted_at": "2026-09-27T04:39:39.081Z",
+    "watch_healthy_at": "2026-09-27T04:39:55.438Z",
+    "job_exit_at": "2026-09-27T04:39:55.897Z",
+    "heavy_lease_released": true,
+    "log_path": "/tmp/matrx-d22-recognition-readonly-008.log",
+    "log_sha256": "9ed8aa67a917f2a7edaa53b037bd10b17dc90da477ca6e21bdc0350ba377349a"
+  },
+  "raw_result": {
+    "path": "/tmp/matrx-d22-recognition-readonly-008-result.json",
+    "mode": "0600",
+    "sha256": "506f8dd5ac72f34adb2560bf379024182d8089869e42105fe84ab5affb459e01"
+  },
+  "safe_observations": {
+    "real_admin_ui": true,
+    "workspace_cleanup": "pass",
+    "attempted_workspaces": 1,
+    "picker_choices_enumerated": false,
+    "source_list_pages": 1,
+    "source_list_rows": 1,
+    "public_eligible_rows": 1,
+    "candidate_pages_attempted": 1,
+    "candidate_pages_healthy": 0,
+    "candidate_page_http_status_counts": {
+      "500": 1
+    },
+    "first_workspace_list_exhausted": true,
+    "failure_stage": "discover_existing_public_source",
+    "failure_code": "stage_not_observed",
+    "late_inflight_save": "unverified"
+  },
+  "classification": "The first genuine Source candidate was rejected as an HTTP 500 page. The runner stopped before enumerating picker choices or searching another accessible workspace; the remaining failure has only a generic stage code. This attempt proves neither full bounded discovery nor positive Source recognition. No Save or checkpoint action was performed."
+}
