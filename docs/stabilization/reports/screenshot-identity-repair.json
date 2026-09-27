@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-identity-repair",
+  "feature_id": "EXT-F-1009",
+  "defect_id": "EXT-D-0035",
+  "scope": "Source-only repair of the owned native screenshot controls runner after the .95 thumbnail pass; no browser or build launched.",
+  "evidence": {
+    "sanitized_run": "docs/stabilization/runs/screenshot-controls-dev095-001.json",
+    "first_failure": "The separate Files icon was not clicked: immediate pre-click gallery identity failed after the thumbnail opened the exact owned Files tab.",
+    "private_result_safe_fields": "After recovery reselected Screenshots, cardCount=1, ordered=true, distinct=true; fresh read proved the exact owned row absent after targeted cleanup.",
+    "lifecycle": "ScreenshotsView reloads on active-tab URL change and retains existing rows while the new page read is loading. The old runner restored the fixture tab and immediately judged card identity without requiring that restoration read to complete.",
+    "limit": "The .95 failure did not record which agreement field failed. The recovery pass followed a Screenshots reselect, so the specific cause and passive convergence remain unconfirmed until a fresh native run."
+  },
+  "repair": [
+    "Record only safe cardCount, signatureMatches, titleMatches, ordered, and distinct agreement fields; no row IDs, URLs, titles, or screenshot bytes leave the panel.",
+    "After each Files tab closes, require one completed real gallery read for the restored fixture and the exact owned row and file identity, then wait for the rendered card to agree before the next control.",
+    "The pre-click check remains exact-owned-card gated; a permanent mismatch or missing restored read fails before the icon click. Existing stable clipped trusted pointer dispatch is unchanged."
+  ],
+  "verification": {
+    "red": "The focused guard failed both scenarios with a deliberately permissive return-true identity predicate: it accepted the transient stale card on the first read and accepted a permanent wrong row.",
+    "green": "node --test tests/browser/screenshot-owned-card-identity.test.mjs: 2/2 pass; node --check tests/browser/screenshot-capture-acceptance.mjs: pass.",
+    "native": "Pending one fresh resource-admitted peer run. The repair has no native claim for the icon, Copy, Cancel, or final Delete."
+  },
+  "privacy": "Only fixed booleans and counts are persisted. The prior private result remains in its protected directory; no private screenshot or reserved Source checkpoint was accessed."
+}

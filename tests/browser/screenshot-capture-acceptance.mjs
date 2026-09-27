@@ -12,6 +12,7 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { nativeRuntimeFailureCode } from './native-runtime-failure.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { ownedScreenshotCardMatches } from './screenshot-owned-card-identity.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -486,10 +487,12 @@ async function galleryResponseAgreement(panel, rows, previousRows = []) {
       const currentKeys=expected.map(signature),priorKeys=prior.map(signature);
       const distinct=new Set(currentKeys).size===currentKeys.length;
       const crossUrlDistinct=currentKeys.every(key=>!priorKeys.includes(key));
-      const ordered=observed.length===expected.length&&observed.every((card,index)=>
-        card.signature===currentKeys[index]&&
-        (card.title===null||card.title===(expected[index].page_title??'screenshot')));
-      return {cardCount:cards.length,ordered,distinct,crossUrlDistinct};
+      const signatureMatches=observed.length===expected.length&&observed.every((card,index)=>
+        card.signature===currentKeys[index]);
+      const titleMatches=observed.length===expected.length&&observed.every((card,index)=>
+        card.title===null||card.title===(expected[index].page_title??'screenshot'));
+      return {cardCount:cards.length,ordered:signatureMatches&&titleMatches,
+        signatureMatches,titleMatches,distinct,crossUrlDistinct};
     })()`,
   );
 }
@@ -717,13 +720,20 @@ async function ownedTabs(panel) {
   );
 }
 
-async function verifyOwnedFilesTab(panel, fixtureUrl, row, index) {
+async function verifyOwnedFilesTab(panel, journal, fixtureUrl, fixtureCanonical, row, index) {
   const before = await ownedTabs(panel);
   const original = before.find((tab) => tab.url === fixtureUrl);
   if (!original?.active || !Number.isInteger(original.id)) fail('owned_fixture_tab_not_active');
-  const card = await galleryResponseAgreement(panel, [row]);
-  if (card.cardCount !== 1 || !card.ordered || !card.distinct)
+  try {
+    await observedWait(
+      `owned_files_card_identity_${index}`,
+      () => galleryResponseAgreement(panel, [row]),
+      (card) => ownedScreenshotCardMatches([row], row, card),
+      30_000,
+    );
+  } catch {
     fail('owned_files_card_identity_unverified');
+  }
   const exactPath = `/files/f/${encodeURIComponent(row.file_id)}`;
   const apex = `https://aimatrx.com${exactPath}`;
   // This deployed frontend returns a single 308 from apex to www on the
@@ -758,6 +768,7 @@ async function verifyOwnedFilesTab(panel, fixtureUrl, row, index) {
       return { originClass: 'invalid_url', routeClass: 'invalid_url', exactFilesUrl: false };
     }
   };
+  let restoreMarker;
   try {
     await click(panel, 'screenshot-open', index === 0 ? 'thumbnail' : 'icon');
     await observedWait(
@@ -776,6 +787,7 @@ async function verifyOwnedFilesTab(panel, fixtureUrl, row, index) {
     const added = (await ownedTabs(panel)).filter(
       (tab) => !before.some((prior) => prior.id === tab.id),
     );
+    restoreMarker = journal.marker();
     await evaluate(
       panel,
       `(async()=>{
@@ -784,6 +796,26 @@ async function verifyOwnedFilesTab(panel, fixtureUrl, row, index) {
       await chrome.tabs.update(${original.id},{active:true});
     })()`,
     );
+  }
+  // Switching back from Files changes the active page. Require the product's
+  // completed read for this fixture before accepting the restored card.
+  const restoredRead = await completedRead(journal, restoreMarker, fixtureCanonical);
+  if (
+    restoredRead.rows.length !== 1 ||
+    restoredRead.rows[0].id !== row.id ||
+    restoredRead.rows[0].file_id !== row.file_id
+  )
+    fail('restored_fixture_read_lost_owned_row');
+  await selectedGallery(panel, fixtureCanonical);
+  try {
+    await observedWait(
+      `restored_owned_files_card_identity_${index}`,
+      () => galleryResponseAgreement(panel, restoredRead.rows),
+      (card) => ownedScreenshotCardMatches(restoredRead.rows, row, card),
+      30_000,
+    );
+  } catch {
+    fail('restored_owned_files_card_identity_unverified');
   }
   return { exactFilesUrlAtApexOrCanonicalWww: true, newTabCount: 1, closedOwnedTab: true };
 }
@@ -968,11 +1000,23 @@ async function exercise({ page, panel, panelTarget }) {
     });
 
     stage = 'thumbnail_open_in_files';
-    const thumbnail = await verifyOwnedFilesTab(panel, fixtureUrl, createdRow, 0);
-    await selectedGallery(panel, fixtureCanonical);
+    const thumbnail = await verifyOwnedFilesTab(
+      panel,
+      journal,
+      fixtureUrl,
+      fixtureCanonical,
+      createdRow,
+      0,
+    );
     stage = 'icon_open_in_files';
-    const icon = await verifyOwnedFilesTab(panel, fixtureUrl, createdRow, 1);
-    await selectedGallery(panel, fixtureCanonical);
+    const icon = await verifyOwnedFilesTab(
+      panel,
+      journal,
+      fixtureUrl,
+      fixtureCanonical,
+      createdRow,
+      1,
+    );
     report.cases.push({ id: 'EXT-F-1009-T04', status: 'pass', actual: { thumbnail, icon } });
 
     stage = 'copy_durable_files_url';

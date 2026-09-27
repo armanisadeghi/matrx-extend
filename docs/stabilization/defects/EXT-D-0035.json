@@ -7,22 +7,25 @@
   "reproduction": [
     "Capture one owned Visible screenshot in the admitted native controls runner and pass warm Refresh and thumbnail Files navigation.",
     "The runner restores the fixture tab and immediately tests the small Open in Files icon's center after one scrollIntoView call.",
-    "The runner reports owned_open_control_not_hit_tested before dispatching a click; recovery removes the exact new row."
+    "The .94 runner reports owned_open_control_not_hit_tested before dispatching a click; recovery removes the exact new row.",
+    "The .95 runner passes thumbnail Files navigation, then reports owned_files_card_identity_unverified before the icon click; recovery reselects Screenshots, matches the owned card, and removes the exact row."
   ],
-  "expected": "The runner waits for a stable, visible, hit-tested point inside the exact owned card's icon, then dispatches a trusted pointer click and checks the new tab's exact owned Files URL.",
-  "actual": "A one-shot center hit test refuses the icon before a product click, so icon, Copy, and Cancel outcomes remain unverified.",
+  "expected": "After thumbnail navigation, the runner observes a completed real read for the restored fixture and matches the exact owned row to the rendered card. It then waits for a stable hit-tested point inside that card's icon, dispatches a trusted click, and checks the new tab's exact owned Files URL.",
+  "actual": "The .94 one-shot center hit test was repaired, but the .95 runner's immediate card-identity recheck fails during post-navigation restoration. Icon, Copy, and Cancel outcomes remain unverified.",
   "evidence": [
     "docs/stabilization/runs/screenshot-controls-dev094-003.json",
     "docs/stabilization/reports/screenshot-icon-hit-repair.json",
     "tests/browser/screenshot-capture-acceptance.mjs",
     "tests/browser/settings-panel-driver.mjs",
     "src/features/screenshots/ScreenshotsView.tsx",
-    "docs/stabilization/reports/screenshot-icon-driver-peer.json"
+    "docs/stabilization/reports/screenshot-icon-driver-peer.json",
+    "docs/stabilization/runs/screenshot-controls-dev095-001.json",
+    "docs/stabilization/reports/screenshot-identity-repair.json"
   ],
   "severity": "S3: acceptance pointer helper blocks control verification; no product defect established",
   "priority": "P1: correct the helper before the next resource-admitted native run",
   "state": "fixed",
-  "owner": "/root/screenshot_controls_batch",
+  "owner": "/root/screenshot_identity_repair",
   "fix_commits": ["84d63d0e"],
   "transition_history": [
     {
@@ -49,7 +52,25 @@
       "to": "fixed",
       "reason": "Independent source peer accepted canonical stable/clipped pointer dispatch and exact owned-card guard; syntax/format passed. Fresh .95 native retest required.",
       "timestamp_basis": "Recorded after source fix commit 84d63d0e; native retest not performed."
+    },
+    {
+      "at": "2026-09-27T11:35:27Z",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Fresh .95 native run passed thumbnail exact Files navigation but stopped at a one-shot owned-card identity check before the separate icon click. Exact failed agreement field was not recorded; cleanup later reselected Screenshots, matched the owned card, and removed the exact row."
+    },
+    {
+      "at": "2026-09-27T11:35:27Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "The gallery reloads on active-tab URL change and retains prior rows while loading. Repair the harness synchronization boundary using a completed fixture read plus exact rendered-card agreement, with safe agreement-field diagnostics. Root cause remains provisional until native retest."
+    },
+    {
+      "at": "2026-09-27T11:35:27Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source runner now requires a completed real read of the restored fixture and exact owned-row/card agreement before the next Files control. A permanent wrong row still fails closed. Focused no-browser guard and syntax pass; fresh native proof and independent peer review remain pending."
     }
   ],
-  "closure_requirement": "Peer accepts the stable clipped hit guard and privacy-safe failure categories; a fresh admitted native run clicks icon and verifies its exact owned Files route, then reaches actual Copy and Cancel outcomes with exact owned cleanup."
+  "closure_requirement": "Fresh peer accepts the restored-fixture read and privacy-safe identity diagnostics, then an admitted native run clicks the separate icon and verifies its exact owned Files route, reaches actual Copy and Cancel outcomes, and proves exact owned cleanup."
 }
