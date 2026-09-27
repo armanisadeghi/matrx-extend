@@ -8,5 +8,8 @@
   "evidence_quality": "Stable feature/control/case IDs are globally unique in inventory (no collisions). wait_for's two catalog rows are explicitly represented as legacy shadowed and canonical entries; catalog itself has those two rows, but the source registry resolves only canonical, so this is not two executable handlers.",
   "procedure_gap": "Existing EXT-F-4058-T01 has empty steps and EXT-F-4156-T01 is explicitly marked as requiring fixture-specific canonical procedures; neither should be dispatched as ready. New reconciliation cases reviewed are executable in principle; EXT-F-2014-T05 correctly remains Wave D.",
   "gate_recommendation": "Accept source-path coverage only; retain independent dynamic-control/native-visibility census as an open gate. Add the generated type delta to reconciliation accounting before calling the overall source reconciliation complete.",
-  "limits": ["Read-only review; no build, tests, browser, or live role visibility.", "The 82-row live roster supports active-definition/binding counts only, not UI visibility, permissions, or execution."]
+  "limits": [
+    "Read-only review; no build, tests, browser, or live role visibility.",
+    "The 82-row live roster supports active-definition/binding counts only, not UI visibility, permissions, or execution."
+  ]
 }

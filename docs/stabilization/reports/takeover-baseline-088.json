@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "report_id": "takeover-baseline-088",
+  "status": "current_local_dev_088_built_runtime_unverified",
+  "summary": "Merged 0.2.88 source compiled and produced a development extension under separate clean resource admissions. Frozen dependencies and WXT preparation from the prior baseline remain valid because the lockfile is unchanged. The exact artifact has an immutable local receipt.",
+  "source_commit": "f68305815b2327ef282f96ea3083cbf1a8475fe4",
+  "lockfile_sha256": "70bf6f2f0d8606b1a1b1ac6613d7e52c9715d347b03cf1848c3293702db39611",
+  "build_receipt": "test-results/source-dev-build-088-takeover-20260927.json",
+  "build_tree_sha256": "f8b38190f2d3759462f80ff6775d7a3ce5bf0ff8ab7e566612225062960c686a",
+  "resource_refusals": 0,
+  "guard_or_job_alive_at_close": false,
+  "native_test_status": "not_started_census_gate",
+  "next_action": "Once the census gate passes, bind native setup and tests to the 0.2.88 receipt and verify the installed extension ID and runtime freshness."
+}
