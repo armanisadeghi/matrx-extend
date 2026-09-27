@@ -1,0 +1,43 @@
+{
+  "task_id": "EXT-D-0025-independent-review",
+  "lane": "independent implementation review",
+  "status": "behavior-verified-with-test-quality-finding",
+  "behavioral_defect_verdict": "PASS for updated guarded launches across TMPDIR and for an existing registered external legacy holder. A late launch from obsolete guard code remains outside the new guard's mutual exclusion: it can take its old lock after the new guard's one-time legacy scan. This requires continuing to launch obsolete code after cutover; no overlapping heavy workload was launched or observed.",
+  "code_quality_verdict": "The lock-root repair is small and preserves the existing admission and cleanup path. The focused suite is not portable because its registered-external-root assertion hardcodes UID 501 and a machine-specific volume path; it also passes the same lock argument to both reservation children, so that test alone cannot prove the real guard chooses a shared path. The bounded real-guard probe supplies that missing integration evidence on this host. Repair the portable fixture before treating the test as a durable guard.",
+  "evidence": [
+    {
+      "case": "original defect red, no workload",
+      "result": "PASS: two separate Node processes using the HEAD root expression and distinct scratch TMPDIR values each created a heavy directory; their paths differed. This proves the original independent reservation namespaces. The probe removed its scratch roots."
+    },
+    {
+      "case": "focused regression",
+      "command": "node --test scripts/test-stabilization-resource-lease.mjs",
+      "result": "4 pass, 0 fail"
+    },
+    {
+      "case": "real guard default holder versus external TMPDIR contender",
+      "result": "Default check held /var/tmp/matrx-stabilization-resource-501/heavy with owner.json. External TMPDIR check exited 2 with RESOURCE_HEAVY_BUSY before preflight. The first check completed its 60-second measurement, emitted RESOURCE_ADMITTED with no reasons, exited 0, and removed heavy. No child workload was launched."
+    },
+    {
+      "case": "registered old external holder versus new default caller",
+      "result": "A harmless heavy directory at the registered old external root caused the real new default-TMPDIR check to exit 2 with RESOURCE_LEGACY_HEAVY_BUSY. The probe removed only its marker. Both old and new roots were empty afterward."
+    },
+    {
+      "case": "post-probe cleanup census",
+      "result": "No stabilization-resource.mjs process or heavy directory remained in the new or registered old root. No owner token was exposed in report output."
+    }
+  ],
+  "transition_scope": {
+    "already_running_old_holder": "Blocked by known legacy lease directory and by old-runner/process census, as independently checked for the registered external root.",
+    "obsolete_code_started_after_new_scan": "Not blocked: the obsolete guard does not know the new /var/tmp lock. Preventing that scenario would require a separate cutover discipline or a backward-compatibility bridge. It is not evidence of failure among updated callers.",
+    "machine_specific_legacy_path": "Reasonable as a temporary registration of the documented local external profile for this one cutover. It is not a portable permanent policy value and should be retired once old leases cannot be active."
+  },
+  "blockers": [
+    "Make the final legacy-discovery test use temporary directories and the current UID so it runs on other hosts."
+  ],
+  "limitations": [
+    "No real build, browser test, or other heavy child was launched.",
+    "The preflight result measures this host at probe time only; it is not product verification.",
+    "No obsolete runner was launched concurrently with the new runner."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "defect": "EXT-D-0025",
+  "feature": "EXT-F-0002",
+  "status": "fixed-locally-pending-independent-review",
+  "root_cause": "The heavy lease root used os.tmpdir(), which follows TMPDIR. The approved external release profile and the default shell therefore reserved distinct heavy directories for the same user and host.",
+  "original_path_evidence": {
+    "source": "HEAD:scripts/stabilization-resource.mjs used join(tmpdir(), `matrx-stabilization-resource-${userInfo().uid}`)",
+    "default_root": "/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/matrx-stabilization-resource-501",
+    "external_root": "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032/matrx-stabilization-resource-501",
+    "result": "Two independent mkdir heavy reservations were possible. No workload was launched to reproduce the split."
+  },
+  "repair": "Use /var/tmp/matrx-stabilization-resource-<uid> for all new admissions. Before preflight, fail closed when a known old TMPDIR lease or unsafe hold remains, when another old runner exists, or when a detached resource-owned process exists. The documented external TMPDIR is registered as a legacy root; its state is inspected from a default TMPDIR invocation. Existing legacy state is never removed by the new guard.",
+  "red_green": {
+    "test": "node --test scripts/test-stabilization-resource-lease.mjs",
+    "red": "The default-TMPDIR legacy discovery test failed before adding the external legacy root to the policy (3 pass, 1 fail).",
+    "green": "All four focused tests pass (4 pass, 0 fail)."
+  },
+  "bounded_integration": {
+    "scope": "Two check-mode processes only; no build, browser, or test workload.",
+    "first": "Default TMPDIR check created /var/tmp/matrx-stabilization-resource-501/heavy/owner.json and held the preflight.",
+    "second": "External TMPDIR check exited 2 with RESOURCE_HEAVY_BUSY before sampling or launching work.",
+    "first_exit": "After the full 60-second preflight, the first check emitted RESOURCE_ADMITTED with reasons=[] and exited 0; its heavy owner file was released."
+  },
+  "verification_limits": "The check-mode probe verifies cross-TMPDIR admission. It does not certify extension behavior. The legacy bridge covers registered previous TMPDIRs, live old runners, and discoverable owner-token descendants; it does not claim indefinite compatibility with a separately started old script copy after its census or infer an unknown dead legacy root on an arbitrary volume. Independent review and final source reconciliation remain with the root owner."
+}

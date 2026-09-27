@@ -1,0 +1,56 @@
+{
+  "id": "EXT-D-0025",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T02"],
+  "control_ids": ["EXT-F-0002-C02"],
+  "surface": "Testing infrastructure: single-heavy-job guard",
+  "auth_mode": "auth-independent (guest/member/admin)",
+  "reproduction": [
+    "Use two otherwise equivalent guard launches with different TMPDIR values, as the documented internal/external profile workflows permit.",
+    "Compare their heavy-lock paths before starting any actual build/browser workload.",
+    "Verify whether the second lease acquisition contends with the first; use harmless isolated acquisition probes, not two real heavy jobs."
+  ],
+  "expected": "Every launch by the same OS user on the same host shares one heavy-job admission lock independent of TMPDIR, checkout, or profile volume.",
+  "actual": "Before repair, os.tmpdir() allowed independent reservations across TMPDIR values. Updated callers now share a host-stable lock; independent real-guard contender refused RESOURCE_HEAVY_BUSY and existing registered legacy holder refused RESOURCE_LEGACY_HEAVY_BUSY.",
+  "evidence": [
+    "scripts/stabilization-resource.mjs",
+    "docs/stabilization/HANDOFF.md",
+    "docs/stabilization/reports/resource-lock-diagnosis.json",
+    "docs/stabilization/reports/resource-lock-peer.json",
+    "docs/stabilization/reports/resource-lock-quality-peer.json"
+  ],
+  "severity": "S1: guard can fail to enforce machine-wide heavy concurrency, allowing resource-induced false defects",
+  "priority": "P0: restore trustworthy admission before additional browser launches",
+  "state": "fixed",
+  "owner": "/root/resource_lock_fix",
+  "reproduction_status": "reproduced with harmless independent process probes; no overlapping heavy workloads",
+  "fix_commits": [],
+  "ui_retest": "not-applicable: infrastructure defect; independent process/lease retest required",
+  "transition_history": [
+    {
+      "at": "2026-09-27T07:40:54.777250+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Root found TMPDIR-sensitive guard lock while moving census to external profile; new heavy launches held."
+    },
+    {
+      "at": "2026-09-27T07:56:10.157799+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Safe original-formula probes reproduced two independent lock namespaces; infrastructure severity and blocking priority confirmed."
+    },
+    {
+      "at": "2026-09-27T07:56:10.157799+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol implemented a host-stable lease root and existing-owner migration checks."
+    },
+    {
+      "at": "2026-09-27T07:56:10.157799+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Implementation complete; independent process review and fresh portable-regression review passed. Tracking final independent retest closure after fix commit."
+    }
+  ],
+  "closure_requirement": "Independent proof of fail-before/pass-after cross-TMPDIR contention; adjacent same-root contention, stale recovery and old-owner preservation remain safe; no unsafe real workloads."
+}

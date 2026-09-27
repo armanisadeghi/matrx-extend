@@ -1,0 +1,19 @@
+{
+  "task": "EXT-D-0025 fresh independent quality review",
+  "lane": "independent review / Luna medium",
+  "test_verdict": "PASS",
+  "command": "node --test scripts/test-stabilization-resource-lease.mjs",
+  "result": "4 passed, 0 failed; completed in 0.33s with probe-only children and no real user lease/workload.",
+  "quality_verdict": "PASS_PORTABLE_FIXTURE_AND_REAL_HELPER_PATH",
+  "evidence": [
+    "Distinct temporary TMPDIR child processes call the production resolver and resolve the same current-user root.",
+    "Reservation contention uses the real resolver and reserveHeavyDirectory with a unique probe UUID under /var/tmp; only that probe root is removed in finally.",
+    "Legacy-holder markers are scoped beneath test scratch, use the current UID, and cleanup is registered for scratch. External discovery exercises the passed temporary directory.",
+    "Production guard calls resourceLeaseRoot() without the probe identity; the optional identity parameter is exercised only by tests. No test-only bypass is added."
+  ],
+  "limitations": [
+    "Guarded launches remain held pending allowlist repair and fresh final review.",
+    "takeover-visible-census.mjs still pins receipt filename/version/tree to 0.2.88; package.json is now 0.2.89. Its receipt binding validates the exact artifact, but it cannot run against the new build until its expected identity is deliberately refreshed; execution is not ready."
+  ],
+  "ui_verdict": "NOT_APPLICABLE_NO_BROWSER_LAUNCH"
+}

@@ -23,16 +23,22 @@ import {
   statfs,
   writeFile,
 } from 'node:fs/promises';
-import { platform, tmpdir, userInfo } from 'node:os';
+import { platform } from 'node:os';
 import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
+import {
+  assertNoLegacyLease,
+  legacyLeaseRoots,
+  reserveHeavyDirectory,
+  resourceLeaseRoot,
+} from './stabilization-resource-lease.mjs';
 
 const run = promisify(execFile);
 const repo = resolve(import.meta.dirname, '..');
 const policy = JSON.parse(
   await readFile(join(repo, 'docs/stabilization/resource-policy.json'), 'utf8'),
 );
-const root = join(tmpdir(), `matrx-stabilization-resource-${userInfo().uid}`);
+const root = resourceLeaseRoot();
 const lock = join(root, 'heavy');
 const reclaimLock = join(root, 'reclaim');
 const holdPath = join(root, 'unsafe-hold.json');
@@ -69,6 +75,8 @@ const positive = (key) => Number.isFinite(policy[key]) && policy[key] > 0;
 function validatePolicy() {
   if (
     policy.schema !== 1 ||
+    !Array.isArray(policy.legacyTempDirectories) ||
+    !policy.legacyTempDirectories.every((dir) => typeof dir === 'string' && dir.startsWith('/')) ||
     !Array.isArray(policy.allowedCommands) ||
     !policy.allowedCommands.length ||
     !policy.allowedCommands.every(
@@ -354,7 +362,7 @@ async function readOwner() {
 
 async function acquire(owner) {
   try {
-    await mkdir(lock, { mode: 0o700 });
+    await reserveHeavyDirectory(lock);
   } catch (error) {
     if (error.code !== 'EEXIST') throw error;
     // A fixed reclaim mutex makes stale retirement and reacquisition serial.
@@ -386,7 +394,7 @@ async function acquire(owner) {
         throw new Error('RESOURCE_GROUP_STILL_RUNNING');
       const retired = join(root, `retired-${prior.nonce}`);
       await rename(lock, retired);
-      await mkdir(lock, { mode: 0o700 });
+      await reserveHeavyDirectory(lock);
       await rm(retired, { recursive: true });
     } finally {
       await rm(reclaimLock, { recursive: true });
@@ -400,6 +408,37 @@ async function acquire(owner) {
   } catch (error) {
     throw new Error(`RESOURCE_OWNER_WRITE_FAILED:${error.code ?? error.message}`);
   }
+}
+
+async function assertNoLegacyWork() {
+  await assertNoLegacyLease(await legacyLeaseRoots(undefined, policy.legacyTempDirectories));
+  // Existing runners may have used an arbitrary external TMPDIR. Refuse while
+  // one is alive, even when its old lease directory is outside our known roots.
+  const processes = await output('/bin/ps', ['-axo', 'pid=,command=']);
+  if (
+    processes.split('\n').some((line) => {
+      const match = line.trim().match(/^(\d+)\s+(.+)$/);
+      return (
+        match &&
+        Number(match[1]) !== process.pid &&
+        /(?:^|\/)node(?:\s|$)/.test(match[2]) &&
+        /(?:^|\/)stabilization-resource\.mjs(?:\s|$)/.test(match[2])
+      );
+    })
+  )
+    throw new Error('RESOURCE_LEGACY_RUNNER_BUSY');
+  // A dead old holder can leave detached owned work. Never admit over it.
+  const environment = await output('/bin/ps', ['eww', '-axo', 'pid=,stat=,command=']);
+  if (
+    environment
+      .split('\n')
+      .some(
+        (line) =>
+          /(?:^|\s)MATRX_RESOURCE_OWNER=[0-9a-f-]{36}(?:\s|$)/.test(line) &&
+          !/^\s*\d+\s+Z/.test(line),
+      )
+  )
+    throw new Error('RESOURCE_LEGACY_OWNED_PROCESS_BUSY');
 }
 
 async function release(owner) {
@@ -519,6 +558,7 @@ async function main() {
   process.on('SIGINT', () => stopSignal('SIGINT'));
   process.on('SIGTERM', () => stopSignal('SIGTERM'));
   try {
+    await assertNoLegacyWork();
     if (!(await recoverHold(profileDir))) return;
     const pre = await preflight(profileDir);
     if (pre.reasons.length) {

@@ -1,5 +1,8 @@
 {
   "schema": 1,
+  "legacyTempDirectories": [
+    "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032"
+  ],
   "watchIntervalSeconds": 15,
   "swapWindowSeconds": 60,
   "unsafeSamplesToStop": 2,
