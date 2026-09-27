@@ -3,6 +3,20 @@
 Updated after D22 native run 011 and guarded Debug export run 002. Campaign incomplete; `inventory.json` is coverage authority (205 features, 693 cases).
 Read [the stabilization handoff](HANDOFF.md) for the plain-English done/pending map, evidence limits, and guarded restart example; this checkpoint and the inventory/defects remain the current status authority.
 
+## Active takeover — 2026-09-27
+
+User approved TAKEOVER-PLAN.md and requested an ongoing testing/fix/integration loop. Goal is active in this chat. Non-Chat/Pilot first remains binding. Pilot follows the user's tab and loses context: EXT-D-0024 is open/untriaged user evidence, linked to EXT-F-2014-T05; no current reproduction claimed.
+
+Current source 528ea0b0 after fresh fast-forward from origin/main. Historical build/status below is preserved as historical; current baseline is being established. Planning document, Pilot record and inventory links are in active editing pending the first verified integration checkpoint.
+
+Active lanes (flat; no child delegation):
+- /root/inventory_delta — Luna medium, read-only current-source census delta; owns reports/takeover-inventory-delta.json. No behavioral tests.
+- /root/baseline_setup — Sol medium, exclusive heavy admission owner; sequential guarded dependency install/preparation/compile/development build. Owns runs/takeover-baseline-087.json and reports/takeover-baseline.json. No behavioral tests.
+
+Root owns inventory, defect IDs, integration and pushes. At most one lightweight worker alongside the sole heavy run. No other agent may launch tests/builds until baseline_setup returns admission ownership. Prior review queue lookup through the verified canonical project returned no repair feedback or campaign rows. Existing hourly sync automation is ACTIVE on its own chat; it is synchronization only, not a QA worker.
+
+Next: independently reconcile census, inspect current build receipt and guard cleanup, then narrow Luna contained-surface tests. Diagnose Debug runner setup before retrying it; preserve Source/SEO checkpoints. Newly authorized Pilot report does not bypass wave D. Frontend's current folder name is ai-matrx (older matrx-frontend paths must be translated, not reported missing).
+
 ## Current truth and next actions
 
 - **Source/build:** The frozen lockfile at source HEAD `36fa88fb` was installed; `pnpm compile` and `pnpm exec wxt build --mode development` passed under separate guards. Its local `.85` artifact is tree `f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff`, receipt `test-results/source-dev-build-085.json`. Later incoming lockfile changes are merged but not installed, compiled, or rebuilt; the old artifact does not represent the current merged lockfile. Focused regressions passed 62 tests with 1 explicit cross-client parity skip (`777e7948`). This is not browser acceptance or a release; the historical locally verified release receipt is 0.2.79. Incoming release commit `4767ed43` now sets source version 0.2.86; that version has not been locally built or tested in this campaign.

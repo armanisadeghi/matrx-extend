@@ -1,0 +1,584 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-27T07:27:08.875Z",
+  "scope": "Read-only active non-deleted tool definitions with active chrome-extension bindings; source/runtime reconciliation only, no execution or access-control verdict",
+  "canonical_database": "https://db.matrxserver.com",
+  "canonical_target_evidence": "reports/review-queue-access-repair.json verifies connector ref/domain correspondence",
+  "count": 82,
+  "tools": [
+    {
+      "name": "ai",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "capture_prospect",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "capture_study_set",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "cdp_a11y_tree",
+      "admin_only": false,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "cdp_emulate",
+      "admin_only": true,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "cdp_full_page_screenshot",
+      "admin_only": false,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "cdp_input_click_xy",
+      "admin_only": false,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "cdp_input_type",
+      "admin_only": false,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "cdp_network_capture_drain",
+      "admin_only": false,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "cdp_network_capture_start",
+      "admin_only": false,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "cdp_network_capture_stop",
+      "admin_only": false,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "cdp_network_get_body",
+      "admin_only": false,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "cdp_perf_metrics",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "cdp_print_pdf",
+      "admin_only": false,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "cdp_session",
+      "admin_only": true,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "chrome_batch",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "chrome_bookmarks",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "chrome_cookies",
+      "admin_only": true,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "chrome_history",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "chrome_recently_closed",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "chrome_record_gif",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "chrome_record_tab_video",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "chrome_save_page_as_mhtml",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "chrome_tab_audio_inspect",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "chrome_webmcp",
+      "admin_only": true,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "clipboard",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "computer",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "credential_login",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "data_patterns",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "delete_demo",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "delete_guidance_item",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "describe_demo",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "desktop_run_command",
+      "admin_only": false,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "downloads",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "drop_file",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "extract_microdata",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "extract_table",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "fetch_url_as_markdown",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "find",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "find_text_on_page",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "form_input",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "get_computed_style",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "get_element_at_point",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "get_element_details",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "get_form_fields",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "get_guidance_item",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "get_page_links",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "get_page_selection",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "get_page_text",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "get_request_body",
+      "admin_only": false,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "google_email_send",
+      "admin_only": false,
+      "tier": "ask-user",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "inspect_element",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "list_chrome_categories",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "list_demos",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "list_guidance",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "list_highlights",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "mutation_watch",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "navigate",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "query_elements",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "read_active_page",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "read_console_messages",
+      "admin_only": false,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "read_network_requests",
+      "admin_only": false,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "read_page",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "read_pdf",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "record_demo",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "records",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "remember_for_domain",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "replay_demo",
+      "admin_only": false,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "request_user_takeover",
+      "admin_only": false,
+      "tier": "ask-user",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "resize_window",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "save_guidance_note",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "screenshot_region",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "sleep",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "stylesheet",
+      "admin_only": false,
+      "tier": "privileged",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "submit_form",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "tab_groups",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "tabs",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "update_plan",
+      "admin_only": false,
+      "tier": "ask-user",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "upload_file",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "user",
+      "admin_only": false,
+      "tier": "ask-user",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "user_todos",
+      "admin_only": false,
+      "tier": "action",
+      "definition_active": true,
+      "binding_active": true
+    },
+    {
+      "name": "wait_for",
+      "admin_only": false,
+      "tier": "read",
+      "definition_active": true,
+      "binding_active": true
+    }
+  ]
+}

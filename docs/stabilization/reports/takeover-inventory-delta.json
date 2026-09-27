@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "status": "source_delta_audited_inventory_update_recommended",
+  "comparison": {
+    "inventory_source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
+    "current_origin_main_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+    "checkout_head_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+    "scope": "Source-only comparison of user controls, mode applicability and registered-tool roster/behavior; no build, test, browser, credentials, DB or sibling-repository inspection."
+  },
+  "findings": [
+    {
+      "feature_id": "EXT-F-1007",
+      "feature": "Scrape / capture and save current page",
+      "kind": "changed_and_new_controls",
+      "delta": [
+        "Save is now organization-bound Source landing with refusal/outage retention and retry behavior; state is bound to the organization and capture, and stale asynchronous completions must not claim a save in a switched workspace.",
+        "The page can show a 'Not yet a Source' prompt with Capture or Save action; the unsaved retry card owns the sole save action for a held URL.",
+        "After a successful landing, a new optional FileSourcePanel allows filing into registered places and choosing a media-catalog Library; filing is a separate post-save action and can be closed without filing."
+      ],
+      "coverage_to_add_or_revise": [
+        "EXT-F-1007-T21/T22/T23 from inventory-remote-delta.json remain relevant, but add positive/negative optional filing coverage: close without filing; select/remove multiple registered targets; choose/no Library; refusal and retry; verify filing cannot precede or undo Source landing.",
+        "Add source-delta cases for organization switch during in-flight Save, duplicate-control suppression while the retry card owns the URL, stale saved badge clearing across organizations, and optional filing request/result notices.",
+        "Reconcile source/page recognition plus current selected organization, including unknown/failed recognition and guest sign-in remedy."
+      ],
+      "evidence": [
+        "src/features/scrape/ScrapeView.tsx",
+        "src/features/scrape/UnsavedCapturesCard.tsx",
+        "src/features/scrape/FileSourcePanel.tsx",
+        "src/lib/sources/save-capture.ts",
+        "src/lib/api/routes/sources.ts",
+        "src/lib/sources/save-source-logic.ts"
+      ],
+      "mode_notes": "Guest, member and admin distinctions matter: Scrape is visible to guests; landing requires authentication and the selected device organization. Filing/library controls are shown after landing and need member/admin authorization coverage."
+    },
+    {
+      "feature_id": "EXT-F-2009",
+      "feature": "Search and manage saved captures / workspace Sources",
+      "kind": "changed_controls_and_semantics",
+      "delta": [
+        "Saved Captures now presents organization Sources; list rows identify the capturing person as 'you', their name, or 'another member'.",
+        "Deletion is organization-wide for all members and removes the Source from the organization, while leaving the original web page unaffected; the confirmation copy now states this scope.",
+        "Source terminology and empty/error states changed; edit semantics represent Source portions while original capture remains distinct."
+      ],
+      "coverage_to_add_or_revise": [
+        "Revise T03/T05 proposals in inventory-remote-delta.json for organization-wide Source semantics and current copy; verify captured-by identity and unreadable-name fallback.",
+        "Add an authorized member deletion case with a second member positive control confirming organization-wide removal; confirm original page is unaffected. Use real permission fixture and do not infer RLS behavior from extension code.",
+        "Retire or mark stale title/description standalone control IDs if still present; the editor now uses unified article-text editing."
+      ],
+      "evidence": [
+        "src/features/saved-captures/SavedCapturesView.tsx",
+        "src/lib/supabase/queries.ts"
+      ],
+      "mode_notes": "Saved Captures tab is signed-in only. Member and admin behavior both require current device organization and backend authorization; guest is a negative visibility case."
+    },
+    {
+      "feature_id": "EXT-F-2011",
+      "feature": "Vault saved-login matching and fill",
+      "kind": "changed_controls_and_failure_states",
+      "delta": [
+        "Vault candidate lookup now distinguishes failure from a successful empty match list, gives a visible failure explanation and Retry, clears stale matches while retrying, and keys matching to the panel's resolved page URL.",
+        "Site matches are intersected with panel matches; the create-login form uses the resolved page URL."
+      ],
+      "coverage_to_add_or_revise": [
+        "Add case: saved-login lookup outage is visibly distinct from no matching login; Retry recovers; stale candidates are not actionable during retry or after URL/tab changes.",
+        "Verify panel-resolved URL and current tab/actor matching agree, with positive exact-site match and negative non-match controls; preserve credential secrecy and never capture field values."
+      ],
+      "evidence": [
+        "src/features/vault/VaultView.tsx",
+        "src/features/vault/useVault.ts",
+        "src/lib/api/routes/vault.ts"
+      ],
+      "mode_notes": "Vault tab is signed-in only; exercise ordinary member and admin. Access and protected-field outcomes need the existing Vault contract and real backend authorization; no credentials were accessed for this audit."
+    },
+    {
+      "feature_id": "EXT-F-2004",
+      "feature": "Agenda task creation and organization-scoped education capture",
+      "kind": "changed_failure_controls_and_write_context",
+      "delta": [
+        "Agenda task-create failure now appears inline with an organization-selection remedy instead of only in debug logging.",
+        "Education study-set capture resolves and sends the active organization explicitly; missing selection returns a visible organization-required result."
+      ],
+      "coverage_to_add_or_revise": [
+        "Add task-create failure/retry case with no organization selected and a positive case after selecting one; verify inline alert disappears/updates after recovery.",
+        "Add manual capture_study_set case proving missing organization does not write and selected organization is attached to the import; confirm tool result communicates remedy."
+      ],
+      "evidence": [
+        "src/features/agenda/AgendaView.tsx",
+        "src/lib/agenda/queries.ts",
+        "src/lib/tools/handlers/education.ts"
+      ],
+      "mode_notes": "Agenda is signed-in for member/admin; guest tab is omitted. Tool authorization still follows tool permissions and organization requirements. Backend persistence was not checked."
+    },
+    {
+      "feature_id": "EXT-F-2013",
+      "feature": "General chat model choice and account-default model setting",
+      "kind": "changed_default_control",
+      "delta": [
+        "The composer’s default model row now reads 'Your default' and resolves the account-level chat_default_model for general chat when no local override is selected; built agents retain their own model.",
+        "Read-aloud voice resolution now uses the shared platform-knob reader, replacing a feature-local resolver/cache."
+      ],
+      "coverage_to_add_or_revise": [
+        "Add cases for account default applied to general chat, explicit composer override taking precedence, built agent retaining its own model, unset account choice leaving the agent model intact, and read-aloud following the account voice setting/default.",
+        "Check organization selection, settings-read failure and recovery produce an honest result; source-only evidence does not certify platform-knob precedence or live model availability."
+      ],
+      "evidence": [
+        "src/features/chat/ChatView.tsx",
+        "src/lib/settings/default-chat-model.ts",
+        "src/lib/settings/platform-knobs.ts",
+        "src/lib/tts/read-aloud-voice.ts",
+        "src/hooks/use-chat-stream.ts",
+        "src/hooks/use-pilot-chat-stream.ts"
+      ],
+      "mode_notes": "Chat is available to guest/member/admin, but account settings and authenticated model execution differ by role. Existing chat/pilot full acceptance remains pending."
+    },
+    {
+      "feature_id": "EXT-F-1003",
+      "feature": "Settings / engine-port recovery",
+      "kind": "changed_control_outcome",
+      "delta": [
+        "Removing the desktop engine-port override now clears the stale visible error as well as rediscovering the engine."
+      ],
+      "coverage_to_add_or_revise": [
+        "Keep EXT-D-0012 closure linked, and ensure any previously unverified Settings reset/recovery case includes error-clear then rediscovery behavior; old run evidence does not prove current source."
+      ],
+      "evidence": [
+        "src/features/settings/SettingsView.tsx"
+      ],
+      "mode_notes": "Settings visibility is source-audience based; inventory currently marks guest/member/admin applicable. Confirm exact Settings availability by mode from current App gate before claiming runtime access."
+    }
+  ],
+  "tool_roster": {
+    "inventory_tool_feature_entries": 169,
+    "catalog_total_at_current_source": 169,
+    "catalog_diff_since_inventory_sha": "Generated timestamp only; no roster membership/count change detected in types/tool-catalog.md.",
+    "tool_behavior_deltas": [
+      {
+        "tool_or_handler": "credential_login",
+        "delta": "Adds value-free execution-stage receipts through an optional onStage callback, including probe, materialization, fill, submit, wait and post-submit observation stages; no tool definition/argument roster change was found.",
+        "coverage": "Existing credential-login outcomes should be considered stale for progress/stage diagnostics, but do not infer changed user-facing credential behavior solely from instrumentation. Verify refusal, success and no-secret-egress using the existing sensitive-flow contract when that lane runs.",
+        "evidence": [
+          "src/lib/tools/handlers/credential-login.ts"
+        ]
+      },
+      {
+        "tool_or_handler": "capture_study_set",
+        "delta": "Now requires the active organization and supplies p_organization_id; missing selection returns organization_required with a remedy.",
+        "coverage": "Covered as EXT-F-2004 recommendation above; no registered tool addition/removal detected.",
+        "evidence": [
+          "src/lib/tools/handlers/education.ts"
+        ]
+      }
+    ],
+    "stale_coverage": "No inventory pass should be promoted from this source comparison. The existing 169 registered-tool feature entries remain a source roster count; tool descriptions live in the DB and this audit did not query the live DB."
+  },
+  "stale_coverage_recommendation": {
+    "rule": "Preserve prior case IDs, run receipts and history. Mark materially changed/new controls and cases unverified against current origin/main; do not transfer source, unit, old-build or historical browser passes to current behavior.",
+    "priority": [
+      "P0: EXT-F-1007 Source landing, workspace-switch races, unsaved retry ownership and post-save optional filing; the earlier remote delta omits FileSourcePanel and latest control-state changes.",
+      "P0: EXT-F-2009 organization-wide Source deletion and cross-member effects; it is an organization-data destructive action even though UI confirmation exists.",
+      "P1: EXT-F-2011 Vault match error/retry and stale candidate invalidation.",
+      "P1: EXT-F-2004 organization-required task creation and study-set import.",
+      "P1: EXT-F-2013 account default model and read-aloud voice setting propagation.",
+      "P2: EXT-F-1003 engine-port reset clears stale error."
+    ],
+    "specific_prior_artifact": "docs/stabilization/reports/inventory-remote-delta.json targets EXT-F-1007/EXT-F-2009 at ec9f9ab and has an application receipt there; it does not cover the later FileSourcePanel filing controls or the full delta to 528ea0b."
+  },
+  "completeness_limits": [
+    "This is a source census, not runtime acceptance. No tests/build/browser launched and no live app, Supabase, backend or sibling repo was consulted.",
+    "The inventory source_sha is more than 150 commits behind current origin/main; many commits are infrastructure, bug fixes, tests or docs. This report prioritizes user-visible control and mode changes and cannot certify that every commit-level behavioral effect has been mapped to an inventory case.",
+    "Current tool catalog reports 169 tools and same membership/count versus its baseline diff; DB-only descriptions/bindings, runtime permission gates and backend tool availability were not checked.",
+    "Dynamic content, role-dependent gates, browser/platform API behavior, backend/RLS semantics, account knob values, and real user data may reveal controls or mode differences absent from static source inspection.",
+    "Some listed behaviors may already be represented by current inventory cases or later reports; this report recommends reconciliation against case/control IDs rather than blindly duplicating cases."
+  ],
+  "evidence_reviewed": [
+    "git status and HEAD/origin/main SHA; origin/main == checkout HEAD",
+    "git diff --name-status/stat from inventory source_sha to origin/main, scoped to src plus types/tool-catalog.md",
+    "git log --oneline from inventory source_sha to origin/main for user-surface changes",
+    "docs/stabilization/inventory.json current features/mode applicability; source_sha remains fb71764a6a7fe05bcc6e85be678d617f5174833b",
+    "docs/stabilization/reports/inventory-remote-delta.json and current changed source files listed per finding"
+  ],
+  "unresolved_questions": [
+    "None required to record this audit. Inventory owner should reconcile proposed cases with all existing control/case IDs and preserve prior run histories.",
+    "Validate Sources landing/keep/library and organization-wide deletion against matching aidream/backend and database contracts before interpreting source changes as persistence or access guarantees."
+  ]
+}
