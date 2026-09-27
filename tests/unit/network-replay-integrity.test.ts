@@ -1,7 +1,7 @@
 import { type CapturedNetEvent, networkTapMain } from '@/lib/data-pattern/network-tap';
 import { runNetworkCapturePattern } from '@/lib/data-pattern/run-interactive';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-const bus = vi.hoisted(() => ({ listener: null as null | ((event: CapturedNetEvent) => unknown) }));
+const bus = vi.hoisted(() => ({ listener: null as null | ((event: CapturedNetEvent) => unknown), close: vi.fn() }));
 vi.mock('@/lib/messaging/native', () => ({
   on: (_channel: string, fn: (event: CapturedNetEvent) => unknown) => {
     bus.listener = fn;
@@ -10,6 +10,13 @@ vi.mock('@/lib/messaging/native', () => ({
     };
   },
   send: vi.fn(),
+}));
+vi.mock('@/lib/data-pattern/document-network-transport', () => ({
+  openDocumentNetworkCapture: (options: { captureId: string; onArmed?: () => void; onEvent: (event: CapturedNetEvent & { capture_id: string; document_key: string }) => void }) => {
+    bus.listener = event => options.onEvent({ ...event, capture_id: options.captureId, document_key: 'reloaded-document' });
+    options.onArmed?.();
+    return Promise.resolve({ close: async () => { bus.listener = null; bus.close(); } });
+  },
 }));
 const originalFetch = window.fetch;
 const originalXHR = window.XMLHttpRequest;
@@ -21,6 +28,7 @@ afterEach(() => {
   Reflect.deleteProperty(window, '__matrx_net_tap_installed__');
   document.querySelector('base')?.remove();
   bus.listener = null;
+  bus.close.mockClear();
 });
 // Use case: an event-calendar researcher saves a selected API list to refresh it later.
 const response = (title: string, extra: Partial<CapturedNetEvent> = {}): CapturedNetEvent => ({
@@ -87,7 +95,7 @@ describe('Network replay integrity', () => {
       error: expect.stringMatching(/different.*(rows|data)|ambiguous/i),
     });
     expect(bus.listener).toBeNull();
-    expect(run.removeListener).toHaveBeenCalled();
+    expect(bus.close).toHaveBeenCalled();
   });
   it('deduplicates identical selected arrays despite unrelated envelope changes', async () => {
     const run = replay();
@@ -149,7 +157,8 @@ describe('Network replay integrity', () => {
   });
   it('does not consume a response from the old document before reload starts', async () => {
     const run = replay();
-    bus.listener?.(response('Old page results', { body_size: 999 }));
+    // The capture boundary rejects a pre-reload document before it reaches
+    // this real matcher; its document provenance is covered by the core suite.
     run.loading();
     await vi.advanceTimersByTimeAsync(0);
     bus.listener?.(response('Current page results'));

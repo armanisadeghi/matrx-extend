@@ -1,0 +1,75 @@
+import { afterEach, expect, it, vi } from 'vitest';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+const h = vi.hoisted(() => ({ handlers: new Map<string, Array<(p: any) => unknown>>(), broadcasts: vi.fn(), run: vi.fn(), post: vi.fn(), admin: true, group: -1, document: 'original-document', url: 'https://calendar.invalid/calendar' }));
+vi.mock('@/lib/messaging/native', () => ({
+  on: (kind: string, fn: (p: any) => unknown) => { const list = h.handlers.get(kind) ?? []; list.push(fn); h.handlers.set(kind, list); return () => { h.handlers.set(kind, list.filter(item => item !== fn)); }; },
+  broadcast: (kind: string, payload: unknown) => { h.broadcasts(kind, payload); for (const fn of [...(h.handlers.get(kind) ?? [])]) fn(payload); }, send: vi.fn(),
+}));
+vi.mock('@/lib/tools/registry', async () => { const { data_patterns } = await import('@/lib/tools/handlers/data-patterns'); return { lookup: (name: string) => name === 'data_patterns' ? data_patterns : undefined, allToolNames: () => ['data_patterns'] }; });
+vi.mock('@/lib/supabase/queries', () => ({ PATTERN_KINDS: ['network_capture'], fetchPatternsForDomain: async () => [{ id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', kind: 'network_capture', name: 'Events', config: { url_filter: 'https://calendar.invalid/api', url_match: 'exact', body_match: 'ignore' }, fields: [], route_pattern: '/calendar', list_root_selector: null }], bumpPatternRun: vi.fn(), savePattern: vi.fn(), deletePattern: vi.fn(), renamePattern: vi.fn() }));
+vi.mock('@/lib/tools/handlers/cdp', () => ({ cdp_attach: { admin_only: true, supportedBrowsers: ['chrome'], required_optional_permissions: ['debugger'] } }));
+vi.mock('@/lib/auth/is-admin', () => ({ readIsAdminFromStorage: async () => h.admin }));
+vi.mock('@/lib/permissions/optional', () => ({ hasOptionalPermissions: async () => true, missingPermissionRemedy: () => 'missing debugger permission' }));
+vi.mock('@/state/pilot', () => ({ getPilotSessionSnapshotAsync: async () => ({ active: h.group !== -1, groupId: h.group }) }));
+vi.mock('@/lib/tools/descriptions', () => ({ primeToolDescriptions: vi.fn(), getToolDescription: () => 'Saved recipe' }));
+vi.mock('@/lib/audit/log', () => ({ appendReceipt: vi.fn(), recordAuditFailure: vi.fn() }));
+vi.mock('@/lib/audit/receipt', () => ({ PENDING_OUTPUT: {}, buildReceipt: vi.fn(async () => ({})) }));
+vi.mock('@/lib/api/routes/tool-results', () => ({ postToolResults: (...args: unknown[]) => h.post(...args) }));
+vi.mock('@/lib/recording/state', () => ({ recordToolEvent: vi.fn() }));
+vi.mock('@/hooks/use-active-tab', () => ({ useActiveTab: () => ({ id: 37, url: h.url }) }));
+vi.mock('@/lib/destructive/confirm', () => ({ confirmDestructive: vi.fn() }));
+import { PatternsTab } from '@/features/showcase/tabs/PatternsTab';
+import { SavedReplayApprovalHost } from '@/features/showcase/SavedReplayApprovalHost';
+import { registerDocumentNetworkCaptureHost } from '@/lib/data-pattern/document-network-transport';
+import { startToolDispatcher } from '@/lib/tools/dispatch';
+// Browser APIs and DB/auth are boundary doubles. Actual PatternsTab, saved runner,
+// port host, dispatcher, preparation, CDP client, capture core and row parser run.
+afterEach(() => { cleanup(); vi.useRealTimers(); vi.clearAllMocks(); });
+it('saved UI renders current CDP rows after a full window despite slow setup, never old-document rows', async () => {
+  vi.useFakeTimers();
+  let stored: Record<string, unknown> = {};
+  Object.assign(chrome.storage, { session: { get: async () => structuredClone(stored), set: async (v: object) => { stored = { ...stored, ...structuredClone(v) }; } } });
+  const connections = new Set<(port: chrome.runtime.Port) => void>();
+  Object.assign(chrome, { runtime: { id: 'extension', onConnect: { addListener: (fn: (p: chrome.runtime.Port) => void) => connections.add(fn) }, connect: () => {
+    const clientMessages = new Set<(v: unknown) => void>(); const serverMessages = new Set<(v: unknown) => void>(); const disconnects = new Set<() => void>(); let closed = false;
+    const disconnect = () => { if (closed) return; closed = true; for (const fn of disconnects) fn(); };
+    const endpoint = (input: Set<(v: unknown) => void>, output: Set<(v: unknown) => void>) => ({ postMessage: (v: unknown) => { for (const fn of output) fn(v); }, disconnect,
+      onMessage: { addListener: (fn: (v: unknown) => void) => input.add(fn) }, onDisconnect: { addListener: (fn: () => void) => disconnects.add(fn) } });
+    const client = endpoint(clientMessages, serverMessages); const server = { ...endpoint(serverMessages, clientMessages), name: 'matrx:document-network-capture', sender: { id: 'extension' } };
+    for (const fn of connections) fn(server as unknown as chrome.runtime.Port);
+    return client;
+  } } });
+  const events = new Set<(source: object, method: string, params: object) => void>();
+  const emit = (method: string, params: object) => { for (const fn of events) fn({ tabId: 37 }, method, params); };
+  const context = (id: number, uniqueId: string) => emit('Runtime.executionContextCreated', { context: { id, uniqueId, auxData: { frameId: 'main', isDefault: true } } });
+  let binding = ''; let registered = false; let releaseSetup!: () => void;
+  const attach = vi.fn(async () => {}); const detach = vi.fn(async () => {});
+  const sendCommand = vi.fn(async (_target, method, params) => {
+    if (method === 'Page.getFrameTree') return { frameTree: { frame: { id: 'main', url: h.url } } };
+    if (method === 'Runtime.enable') context(1, 'old');
+    if (method === 'Runtime.addBinding') binding = params.name;
+    if (method === 'Page.addScriptToEvaluateOnNewDocument') { await new Promise<void>(resolve => { releaseSetup = resolve; }); registered = true; return { identifier: 'script' }; }
+    if (method === 'Page.reload') {
+      expect(registered).toBe(true); context(2, 'new');
+      const packet = (id: number, title: string, sequence: number) => emit('Runtime.bindingCalled', { name: binding, executionContextId: id, payload: JSON.stringify({ source: 'fetch', url: 'https://calendar.invalid/api', method: 'GET', body: JSON.stringify([{ title }]), status: 200, request_body_key: 'none', request_sequence: sequence, ts_ms: 1, body_size: 100, body_truncated: false }) });
+      packet(1, 'STALE_DOCUMENT_ROW', 999); packet(2, 'CURRENT_DOCUMENT_ROW', 1);
+      emit('Page.frameNavigated', { frame: { id: 'main', url: h.url } });
+    }
+    return {};
+  });
+  Object.assign(chrome, { debugger: { attach, detach, sendCommand, onEvent: { addListener: (fn: any) => events.add(fn), removeListener: (fn: any) => events.delete(fn) }, onDetach: { addListener: vi.fn(), removeListener: vi.fn() } }, tabs: { get: async () => ({ id: 37, groupId: 1, url: h.url }) }, scripting: { executeScript: async () => [{ result: null, documentId: 'original-document' }] } });
+  startToolDispatcher({ defaultPermissionMode: () => 'act' }); registerDocumentNetworkCaptureHost();
+  const drain = async () => { for (let i = 0; i < 100; i++) await Promise.resolve(); };
+  render(<><PatternsTab /><SavedReplayApprovalHost signedIn /></>);
+  await act(drain); fireEvent.click(screen.getByTitle('Run pattern'));
+  await vi.dynamicImportSettled(); await act(drain);
+  expect(attach).not.toHaveBeenCalled(); fireEvent.click(screen.getByRole('button', { name: 'Allow' })); await act(drain);
+  expect(releaseSetup).toBeTypeOf('function');
+  await act(async () => { await vi.advanceTimersByTimeAsync(10000); releaseSetup(); await drain(); });
+  expect(sendCommand.mock.calls.some(call => call[1] === 'Page.reload')).toBe(true);
+  await act(async () => { await vi.advanceTimersByTimeAsync(10000); await drain(); });
+  expect(screen.queryByText('CURRENT_DOCUMENT_ROW')).toBeNull();
+  await act(async () => { await vi.advanceTimersByTimeAsync(10000); await drain(); });
+  expect(screen.getByText('CURRENT_DOCUMENT_ROW')).toBeTruthy();
+  expect(screen.queryByText('STALE_DOCUMENT_ROW')).toBeNull(); expect(detach).toHaveBeenCalledOnce();
+});

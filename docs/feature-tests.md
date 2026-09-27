@@ -3291,3 +3291,10 @@ Test with the root-admitted isolated commands `bash scripts/test-release-ship-pa
 ### Saved replay provenance (EXT-D-0044)
 
 In Structured data or Showcase Patterns, run a saved pattern, then switch pages or switch to a second tab at the same URL before completion. Old rows, errors, and progress must not appear as the new page's output. Copy for AI retains the executed pattern name and source page. A manual CSS or List Pattern recipe whose selected fields all miss (including a list with no fields configured) shows no match; a matched element with empty text keeps its empty value. Explicit off-route Run remains available, but neither off-route failure nor zero rows changes the last verified saved health. Automatic extraction must run independently for tabs sharing a URL.
+
+### Saved Network replay captures the first document request (EXT-D-0047)
+
+- **What it does:** A saved Network recipe installs document-start capture on its assigned tab, asks for privileged debugger approval, reloads, and accepts response rows only from that reload's document.
+- **Where to test:** The installed extension on a real public page whose first fetch/XHR fires in its initial script; use Showcase Patterns, Data, and the manual Tools runner.
+- **Steps:** Save the request as a Network recipe. Run it and deny approval; verify there is no debugger attach or reload and a visible denial. Run again and allow; verify the first response appears, the capture window starts after setup, and all rows reach the UI. Repeat with a delayed response from the prior document, then navigate to the same URL or change the SPA route during approval or capture.
+- **Expected:** Prior-document responses never replace current rows. A changed page ends replay visibly. Closing the panel or tab cancels pending or active capture and removes owned hooks and attachment; an independently retained debugger session survives. Remounting during approval restores the card or shows a clear expiration. A saved capture never relays credential-bearing response data through page messages.

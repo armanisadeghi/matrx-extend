@@ -1,3 +1,4 @@
+import { registerDocumentNetworkCaptureHost } from '@/lib/data-pattern/document-network-transport';
 /**
  * Background SW initialization. Called SYNCHRONOUSLY from
  * entrypoints/background.ts so onMessage handlers are registered before
@@ -534,6 +535,7 @@ function registerHandlers(): void {
   });
 
   registerListPickerRelays();
+  registerDocumentNetworkCaptureHost();
 
   // Demo recording: in-page event-capture function calls
   // chrome.runtime.sendMessage with a DEMO_EVENT envelope. We forward to

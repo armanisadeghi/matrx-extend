@@ -22,6 +22,7 @@ import { useMemo, useState } from 'react';
  * their own assistant asked for it.
  */
 const EXTERNAL_INITIATOR_LABELS: Partial<Record<ConfirmInitiator, string>> = {
+  extension: "Your saved recipe",
   page: 'Requested by the web page you have open — NOT by your agent.',
   frontend: 'Requested by aimatrx.com — NOT by your agent in this chat.',
   desktop: 'Requested by the Matrx desktop app — NOT by your agent in this chat.',

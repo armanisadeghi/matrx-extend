@@ -36,16 +36,27 @@ export interface CapturedNetEvent {
  * Runs in MAIN world. Patches fetch + XMLHttpRequest. Idempotent — uses a
  * sentinel on window to avoid double-patching if executed multiple times.
  */
-export function networkTapMain(maxBodyBytes = 1_000_000): void {
+export function networkTapMain(maxBodyBytes = 1_000_000, bindingName?: string): void {
   const SENTINEL = '__matrx_net_tap_installed__';
-  type W = Window & { [K in typeof SENTINEL]?: boolean };
+  type W = Window & { [K in typeof SENTINEL]?: { manual: boolean } };
   const w = window as W;
-  if (w[SENTINEL]) return;
-  w[SENTINEL] = true;
+  if (w[SENTINEL]) {
+    if (!bindingName) w[SENTINEL].manual = true;
+    return;
+  }
+  w[SENTINEL] = { manual: !bindingName };
 
+  let active = true;
   const post = (event: Record<string, unknown>) => {
+    if (!active) return;
     try {
-      window.postMessage({ __matrx_net: true, event }, window.location.origin);
+      if (bindingName) {
+        const binding = (window as unknown as Record<string, unknown>)[bindingName];
+        if (typeof binding === 'function') binding(JSON.stringify(event));
+      }
+      // A saved privileged capture has no page-message recipient. Only an
+      // explicitly started manual capture may use the legacy isolated relay.
+      if (w[SENTINEL]?.manual) window.postMessage({ __matrx_net: true, event }, window.location.origin);
     } catch {
       // ignore
     }
@@ -156,7 +167,7 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
 
   // ── fetch patch ─────────────────────────────────────────────────────────
   const origFetch = window.fetch;
-  window.fetch = async function (...args) {
+  const patchedFetch: typeof window.fetch = async function (...args) {
     const t0 = Date.now();
     const sequence = ++requestSequence;
     const input = args[0];
@@ -171,7 +182,7 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
 
     let res: Response;
     try {
-      res = await origFetch.apply(this, args);
+      res = await origFetch.apply(window, args);
     } catch (err) {
       void identity.then((request_body_key) =>
         post({
@@ -206,7 +217,7 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
           url: reqUrl,
           status: res.status,
           status_text: res.statusText,
-          response_headers: headersToObj(res.headers),
+          ...(bindingName ? {} : { response_headers: headersToObj(res.headers) }),
           body: t.body,
           body_truncated: t.truncated,
           body_size: t.sizeBytes,
@@ -219,6 +230,8 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
 
     return res;
   };
+
+  window.fetch = patchedFetch;
 
   // ── XHR patch ───────────────────────────────────────────────────────────
   const OrigXHR = window.XMLHttpRequest;
@@ -263,7 +276,7 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
               ? xhr.responseText
               : '';
         const t = truncate(respText);
-        const headersRaw = xhr.getAllResponseHeaders();
+        const headersRaw = bindingName ? '' : xhr.getAllResponseHeaders();
         const responseHeaders: Record<string, string> = {};
         for (const line of headersRaw.split('\r\n')) {
           const colon = line.indexOf(':');
@@ -279,11 +292,11 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
           url: requestUrl,
           status: responseStatus,
           status_text: responseStatusText,
-          response_headers: responseHeaders,
+          ...(bindingName ? {} : { response_headers: responseHeaders }),
           body: t.body,
           body_truncated: t.truncated,
           body_size: t.sizeBytes,
-          content_type: responseHeaders['content-type'],
+          content_type: bindingName ? xhr.getResponseHeader('content-type') : responseHeaders['content-type'],
         });
       } catch {
         // ignore
@@ -294,6 +307,21 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
   PatchedXHR.prototype = OrigXHR.prototype;
   (window as unknown as { XMLHttpRequest: typeof XMLHttpRequest }).XMLHttpRequest =
     PatchedXHR as unknown as typeof XMLHttpRequest;
+  if (bindingName) {
+    const cleanupKey = `${bindingName}_cleanup`;
+    Object.defineProperty(window, cleanupKey, { configurable: true, value: () => {
+      if (w[SENTINEL]?.manual) {
+        bindingName = undefined;
+        delete (window as unknown as Record<string, unknown>)[cleanupKey];
+        return;
+      }
+      active = false;
+      if (window.fetch === patchedFetch) window.fetch = origFetch;
+      if (window.XMLHttpRequest === (PatchedXHR as unknown as typeof XMLHttpRequest)) window.XMLHttpRequest = OrigXHR;
+      delete w[SENTINEL];
+      delete (window as unknown as Record<string, unknown>)[cleanupKey];
+    } });
+  }
 }
 
 /**

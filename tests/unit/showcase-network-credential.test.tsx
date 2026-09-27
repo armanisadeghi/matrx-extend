@@ -43,6 +43,7 @@ const mocks = vi.hoisted(() => {
     baseEvents: events,
     events: [...events],
     listeners: new Map<string, (event: unknown) => unknown>(),
+    captureArmed: vi.fn(),
     savePattern: vi.fn(async (_input: unknown) => ({
       id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
     })),
@@ -93,6 +94,13 @@ vi.mock('@/lib/messaging/native', () => ({
     return () => mocks.listeners.delete(channel);
   },
   send: vi.fn(),
+}));
+vi.mock('@/lib/data-pattern/document-network-transport', () => ({
+  openDocumentNetworkCapture: (options: { captureId: string; onArmed?: () => void; onEvent: (event: unknown) => void }) => {
+    mocks.listeners.set('net-capture:event', event => options.onEvent({ ...(event as object), capture_id: options.captureId, document_key: 'reloaded-document' }));
+    mocks.captureArmed(); options.onArmed?.();
+    return Promise.resolve({ close: async () => { mocks.listeners.delete('net-capture:event'); } });
+  },
 }));
 vi.mock('@/components/ui/json-tree', () => ({
   JsonTree: ({ onSelectPath }: { onSelectPath: (path: string) => void }) => (
@@ -268,7 +276,6 @@ describe('D48 credential-safe Network request identity', () => {
       initiation: 'user', timeoutMs: 5_000,
     });
     void replay.catch(() => undefined);
-    addListener.mock.calls[0]?.[0](37, { status: 'loading' });
     await vi.advanceTimersByTimeAsync(0);
     const emit = mocks.listeners.get(CHANNELS.NET_CAPTURE_EVENT);
     if (!emit) throw new Error('Network replay listener was not installed');
@@ -300,7 +307,6 @@ describe('D48 credential-safe Network request identity', () => {
       url_match: 'exact', method: 'GET', body_match: 'ignore', key_path: 'events',
     }, 37, { initiation: 'user', timeoutMs: 5_000 });
     void replay.catch(() => undefined);
-    addListener.mock.calls[0]?.[0](37, { status: 'loading' });
     await vi.advanceTimersByTimeAsync(0);
     const emit = mocks.listeners.get(CHANNELS.NET_CAPTURE_EVENT);
     if (!emit) throw new Error('Network replay listener was not installed');

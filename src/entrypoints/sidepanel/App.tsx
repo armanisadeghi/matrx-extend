@@ -1,3 +1,4 @@
+import { SavedReplayApprovalHost } from '@/features/showcase/SavedReplayApprovalHost';
 import { AuthGate } from '@/components/AuthGate';
 import { NoticeHost } from '@/components/NoticeHost';
 import { PermissionPromptModal } from '@/components/PermissionPromptModal';
@@ -360,6 +361,7 @@ export function App() {
         <div className="flex h-full flex-col bg-background text-foreground">
           <AuthGate>
             <LocalBrowserApprovalHost signedIn={signedIn} />
+            <SavedReplayApprovalHost signedIn={signedIn} />
             {popupCaptureClaimFailed && (
               <div
                 role="alert"

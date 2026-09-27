@@ -43,6 +43,7 @@ const mocks = vi.hoisted(() => {
     baseEvents: events,
     events: [...events],
     listeners: new Map<string, (event: unknown) => unknown>(),
+    captureArmed: vi.fn(),
     savePattern: vi.fn(async (_input: unknown) => ({
       id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
     })),
@@ -94,6 +95,13 @@ vi.mock('@/lib/messaging/native', () => ({
   },
   send: vi.fn(),
 }));
+vi.mock('@/lib/data-pattern/document-network-transport', () => ({
+  openDocumentNetworkCapture: (options: { captureId: string; onArmed?: () => void; onEvent: (event: unknown) => void }) => {
+    mocks.listeners.set('net-capture:event', event => options.onEvent({ ...(event as object), capture_id: options.captureId, document_key: 'reloaded-document' }));
+    mocks.captureArmed(); options.onArmed?.();
+    return Promise.resolve({ close: async () => { mocks.listeners.delete('net-capture:event'); } });
+  },
+}));
 vi.mock('@/components/ui/json-tree', () => ({
   JsonTree: ({ onSelectPath }: { onSelectPath: (path: string) => void }) => (
     <button type="button" onClick={() => onSelectPath('events')}>
@@ -134,6 +142,7 @@ afterEach(() => {
   vi.useRealTimers();
   mocks.events.splice(0, mocks.events.length, ...mocks.baseEvents);
   mocks.listeners.clear();
+  mocks.captureArmed.mockClear();
 });
 
 describe('Network saved request replay', () => {
@@ -277,14 +286,13 @@ describe('Network saved request replay', () => {
       });
       const emit = mocks.listeners.get(CHANNELS.NET_CAPTURE_EVENT);
       if (!emit) throw new Error('Network replay listener was not installed');
-      addListener.mock.calls[0]?.[0](37, { status: 'loading' });
       await vi.advanceTimersByTimeAsync(0);
       emit(selected);
       emit(other);
       await vi.advanceTimersByTimeAsync(5_000);
 
       await expect(replay).resolves.toEqual([{ title: variant.selectedTitle }]);
-      expect(chrome.tabs.reload).toHaveBeenCalledWith(37);
+      expect(mocks.captureArmed).toHaveBeenCalledOnce();
       expect(mocks.listeners.has(CHANNELS.NET_CAPTURE_EVENT)).toBe(false);
     },
   );

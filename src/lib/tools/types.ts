@@ -59,7 +59,16 @@ export interface ToolProgressUpdate {
   data?: unknown;
 }
 
+export interface PreparedToolCall {
+  snapshotKey: string;
+  tier: ToolTier;
+  requirements: { admin_only?: boolean; required_optional_permissions?: string[]; supportedBrowsers?: BrowserSet };
+  run(signal: AbortSignal): Promise<unknown>;
+}
+
 export interface ToolContext {
+  /** Created only by the authenticated extension-page dispatcher. */
+  localInvocation?: boolean;
   /** Pilot session conversation_id — needed to POST results back. */
   conversationId: string | null;
   /** Originating SSE runId. Used for filtering replies. */
@@ -113,6 +122,7 @@ export interface ToolHandler<TArgs, TResult> {
    * still the catalog-level default for advertising / docs.
    */
   tierFor?: (args: TArgs) => ToolTier;
+  prepare?: (args: TArgs, ctx: ToolContext) => Promise<PreparedToolCall | null>;
   /**
    * If true, this tool is excluded from non-admin users' bundle and won't be
    * advertised to their agents. The user can still see it in the Tools tab
@@ -212,7 +222,7 @@ export interface PendingConfirmRequest {
   initiator?: ConfirmInitiator;
 }
 
-export type ConfirmInitiator = 'agent' | 'page' | 'frontend' | 'desktop';
+export type ConfirmInitiator = 'agent' | 'page' | 'frontend' | 'desktop' | 'extension';
 
 export interface ConfirmResponse {
   callId: string;

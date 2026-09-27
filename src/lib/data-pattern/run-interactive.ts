@@ -30,15 +30,21 @@ import type { ExtractionPattern } from '@/lib/supabase/queries';
 // twins with no correct owner until kit became one.
 import { formatDurationMs } from '@ai-matrx/kit/format';
 import { aiExtractCapturePage } from './modes/ai-extract';
-import { type CapturedNetEvent, networkRelayIsolated, networkTapMain } from './network-tap';
+import type { CapturedNetEvent } from './network-tap';
+import { openDocumentNetworkCapture } from './document-network-transport';
 import { runPattern } from './run-pattern';
 import type { ExtractedRow } from './types';
 
 export interface InteractiveRunOptions {
   /** Live progress notes for the UI ("Reloading page…", "Listening…"). */
   onProgress?: (note: string) => void;
-  /** Hard cap for the whole interactive run. */
+  /** Interactive response window; Network setup is separately bounded by the same budget. */
   timeoutMs?: number;
+  signal?: AbortSignal;
+  maxBodyBytes?: number;
+  /** Set only by the canonical prepared operation in the service worker. */
+  captureApproved?: boolean;
+  expectedPage?: { url: string; documentId: string };
   /**
    * REQUIRED provenance attestation for any AI request this run opens — see
    * `AgentStartRequest.initiation`. No default: a saved pattern is run BOTH
@@ -339,7 +345,10 @@ export async function runNetworkCapturePattern(
     let latest: CapturedNetEvent | null = null;
     let matchedIdentity: string | null = null;
     let matchCount = 0;
-    let accepting = false;
+    const captureId = crypto.randomUUID();
+    const captureAbort = new AbortController();
+    let capture: Promise<{ close: () => Promise<void> }> | null = null;
+    let captureReady = false;
     let finished = false;
 
     const cleanup: Array<() => void> = [];
@@ -347,7 +356,14 @@ export async function runNetworkCapturePattern(
       if (finished) return;
       finished = true;
       for (const c of cleanup) c();
-      fn();
+      if (!captureReady) captureAbort.abort();
+      void (async () => {
+        try { await (await capture)?.close(); } catch (error) {
+          reject(new NetworkNoMatchError(error instanceof Error ? error.message : String(error)));
+          return;
+        }
+        fn();
+      })();
     };
 
     const concludeWithMatches = () => {
@@ -366,8 +382,8 @@ export async function runNetworkCapturePattern(
       });
     };
 
-    const offEvents = on<CapturedNetEvent, { ack: true }>(CHANNELS.NET_CAPTURE_EVENT, (event) => {
-      if (finished || !accepting) return { ack: true };
+    const consumeEvent = (event: CapturedNetEvent & { capture_id: string; document_key: string }) => {
+      if (finished || event.capture_id !== captureId || !event.document_key) return { ack: true };
       if (event.tab_id !== tabId) return { ack: true };
       if (!matchesUrlFilter(event.url, url_filter, url_match, credential_query_keys)) return { ack: true };
       if (method && event.method.toUpperCase() !== method.toUpperCase()) return { ack: true };
@@ -447,60 +463,35 @@ export async function runNetworkCapturePattern(
         `Matched ${matchCount} request${matchCount === 1 ? '' : 's'}; checking for other matches until the capture window ends…`,
       );
       return { ack: true };
-    });
-    cleanup.push(offEvents);
-
-    // Install the taps the moment the reloaded document starts — waiting for
-    // load-complete would miss the data requests fired during hydration.
-    const onUpdated = (updatedTabId: number, info: chrome.tabs.TabChangeInfo) => {
-      if (updatedTabId !== tabId || info.status !== 'loading') return;
-      chrome.tabs.onUpdated.removeListener(onUpdated);
-      accepting = true;
-      void (async () => {
-        try {
-          // Relay first: the very first tapped response must have a listener.
-          await chrome.scripting.executeScript({
-            target: { tabId },
-            injectImmediately: true,
-            func: networkRelayIsolated,
-          });
-          if (finished) return;
-          await chrome.scripting.executeScript({
-            target: { tabId },
-            world: 'MAIN',
-            injectImmediately: true,
-            func: networkTapMain,
-            args: [1_000_000],
-          });
-          if (finished) return;
-          opts.onProgress?.('Listening for matching requests…');
-        } catch (e) {
-          finish(() => reject(e instanceof Error ? e : new Error(String(e))));
-        }
-      })();
     };
-    chrome.tabs.onUpdated.addListener(onUpdated);
-    cleanup.push(() => chrome.tabs.onUpdated.removeListener(onUpdated));
+    let windowTimer: ReturnType<typeof setTimeout> | undefined;
+    const startWindow = () => {
+      if (finished) return;
+      windowTimer = setTimeout(() => {
+        if (latest) {
+          concludeWithMatches();
+        } else {
+          finish(() => reject(new NetworkNoMatchError(
+            `No successful request matching "${sanitizeNetworkUrl(url_filter, credential_query_keys)}" and the saved body identity was captured within ${formatDurationMs(windowMs, { style: 'long' })} of reloading. Run again and interact with the page (scroll or open the list) while it listens. Document-start interception was armed before reload; if the request needs an interaction, trigger it while capture listens.`,
+          )));
+        }
+      }, windowMs);
+    };
+    cleanup.push(() => { if (windowTimer !== undefined) clearTimeout(windowTimer); });
 
-    const windowTimer = setTimeout(() => {
-      if (latest) {
-        concludeWithMatches();
-      } else {
-        finish(() =>
-          reject(
-            new NetworkNoMatchError(
-              `No successful request matching "${sanitizeNetworkUrl(url_filter, credential_query_keys)}" and the saved body identity was captured within ${formatDurationMs(windowMs, { style: 'long' })} of reloading. Run again and interact with the page (scroll or open the list) while it listens. Requests fired before the reload listener installs cannot be captured.`,
-            ),
-          ),
-        );
-      }
-    }, windowMs);
-    cleanup.push(() => clearTimeout(windowTimer));
-
-    opts.onProgress?.('Reloading page…');
-    void chrome.tabs
-      .reload(tabId)
-      .catch((e) => finish(() => reject(e instanceof Error ? e : new Error(String(e)))));
+    const cancel = () => { captureAbort.abort(); finish(() => reject(new NetworkNoMatchError('Network replay was cancelled.'))); };
+    opts.signal?.addEventListener('abort', cancel, { once: true });
+    cleanup.push(() => opts.signal?.removeEventListener('abort', cancel));
+    opts.onProgress?.('Preparing document-start capture before reloading…');
+    capture = openDocumentNetworkCapture({
+      tabId, captureId, maxBodyBytes: opts.maxBodyBytes ?? 1_000_000, timeoutMs: windowMs,
+      signal: captureAbort.signal, onEvent: consumeEvent, onArmed: startWindow,
+      ...(opts.expectedPage && { expectedPage: opts.expectedPage }),
+      onFailure: (error) => finish(() => reject(new NetworkNoMatchError(error.message))),
+    });
+    void capture.then(() => { captureReady = true; if (!finished) opts.onProgress?.('Listening in the reloaded document…'); },
+      (error: unknown) => finish(() => reject(new NetworkNoMatchError(error instanceof Error ? error.message : String(error)))));
+    if (opts.signal?.aborted) cancel();
   });
 }
 
@@ -515,6 +506,15 @@ export async function runSavedPattern(
 ): Promise<ExtractedRow[]> {
   if (pattern.kind === 'ai_extract') return runAiExtractPattern(pattern.config, tabId, opts);
   if (pattern.kind === 'network_capture') {
+    if (!opts.captureApproved) {
+      const { openSavedPatternOperation } = await import('./document-network-transport');
+      const result = await openSavedPatternOperation(pattern.id, tabId, opts) as { ok: boolean; rows?: ExtractedRow[]; reason?: string; retryable?: boolean };
+      if (!result.ok) {
+        if (result.retryable) throw new NetworkNoMatchError(result.reason ?? 'Replay did not match.');
+        throw new Error(result.reason ?? 'Saved replay failed.');
+      }
+      return result.rows ?? [];
+    }
     return runNetworkCapturePattern(pattern.config, tabId, opts);
   }
   return runPattern(pattern, tabId);

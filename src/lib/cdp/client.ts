@@ -19,6 +19,17 @@
 
 const PROTOCOL_VERSION = '1.3';
 
+// SW-only scoped leases. Ordinary CDP consumers retain their existing idle ownership.
+const leases = new Map<number, { count: number; detachWhenUnused: boolean }>();
+const attachPending = new Map<number, Promise<{ ok: boolean; reason?: string }>>();
+const retainedTabs = new Set<number>();
+const detachPending = new Map<number, Promise<{ ok: boolean; reason?: string }>>();
+function retain(tabId: number): void {
+  retainedTabs.add(tabId);
+  const lease = leases.get(tabId);
+  if (lease) lease.detachWhenUnused = false;
+}
+
 const attachedTabs = new Set<number>();
 const networkBuffers = new Map<number, NetworkRecord[]>();
 const networkRequests = new Map<number, Map<string, Partial<NetworkRecord>>>();
@@ -72,7 +83,8 @@ function touchIdleTimer(tabId: number): void {
     tabId,
     setTimeout(() => {
       idleTimers.delete(tabId);
-      void detach(tabId);
+      if (leases.has(tabId)) touchIdleTimer(tabId);
+      else void detach(tabId);
     }, IDLE_DETACH_MS),
   );
 }
@@ -113,6 +125,8 @@ function installListeners() {
   chrome.debugger.onDetach.addListener((source, _reason) => {
     if (typeof source.tabId === 'number') {
       attachedTabs.delete(source.tabId);
+      leases.delete(source.tabId);
+      retainedTabs.delete(source.tabId);
       networkBuffers.delete(source.tabId);
       networkRequests.delete(source.tabId);
       consoleBuffers.delete(source.tabId);
@@ -172,6 +186,7 @@ function handleConsoleEvent(tabId: number, method: string, params: Record<string
 }
 
 export async function startConsoleCapture(tabId: number): Promise<void> {
+  retain(tabId);
   installListeners();
   if (!attachedTabs.has(tabId)) {
     const r = await attach(tabId);
@@ -253,20 +268,71 @@ export function attachedTabsList(): number[] {
   return Array.from(attachedTabs);
 }
 
-export async function attach(tabId: number): Promise<{ ok: boolean; reason?: string }> {
+async function attachShared(tabId: number): Promise<{ ok: boolean; reason?: string }> {
   installListeners();
+  const detaching = detachPending.get(tabId);
+  if (detaching) await detaching;
   if (attachedTabs.has(tabId)) return { ok: true };
-  try {
-    await chrome.debugger.attach({ tabId }, PROTOCOL_VERSION);
-    attachedTabs.add(tabId);
-    touchIdleTimer(tabId);
-    return { ok: true };
-  } catch (err) {
-    return { ok: false, reason: (err as Error).message ?? String(err) };
+  const pending = attachPending.get(tabId);
+  if (pending) return pending;
+  const attaching = (async () => {
+    try {
+      await chrome.debugger.attach({ tabId }, PROTOCOL_VERSION);
+      attachedTabs.add(tabId);
+      touchIdleTimer(tabId);
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, reason: err instanceof Error ? err.message : String(err) };
+    } finally {
+      attachPending.delete(tabId);
+    }
+  })();
+  attachPending.set(tabId, attaching);
+  return attaching;
+}
+
+export async function attach(tabId: number): Promise<{ ok: boolean; reason?: string }> {
+  retain(tabId);
+  return attachShared(tabId);
+}
+
+export async function acquireSession(tabId: number) {
+  let state = leases.get(tabId);
+  if (!state) {
+    state = { count: 0, detachWhenUnused: !attachedTabs.has(tabId) && !retainedTabs.has(tabId) };
+    leases.set(tabId, state);
   }
+  state.count += 1;
+  const attached = await attachShared(tabId);
+  if (!attached.ok) {
+    if (--state.count === 0 && leases.get(tabId) === state) leases.delete(tabId);
+    throw new Error(`Debugger capture is unavailable: ${attached.reason ?? 'attachment failed'}`);
+  }
+  const leaseState = state;
+  let released = false;
+  return {
+    async send<T = unknown>(method: string, params?: Record<string, unknown>): Promise<T> {
+      if (released || leases.get(tabId) !== leaseState || !attachedTabs.has(tabId)) throw new Error('The debugger capture was detached.');
+      touchIdleTimer(tabId);
+      return await chrome.debugger.sendCommand({ tabId }, method, params) as T;
+    },
+    async release(): Promise<void> {
+      if (released) return;
+      released = true;
+      if (--leaseState.count !== 0 || leases.get(tabId) !== leaseState) return;
+      leases.delete(tabId);
+      if (leaseState.detachWhenUnused && !retainedTabs.has(tabId) && attachedTabs.has(tabId)) await detach(tabId);
+    },
+  };
 }
 
 export async function detach(tabId: number): Promise<{ ok: boolean; reason?: string }> {
+  const pending = detachPending.get(tabId);
+  if (pending) return pending;
+  attachedTabs.delete(tabId);
+  leases.delete(tabId);
+  const detaching = (async () => {
+  retainedTabs.delete(tabId);
   const timer = idleTimers.get(tabId);
   if (timer) {
     clearTimeout(timer);
@@ -289,6 +355,9 @@ export async function detach(tabId: number): Promise<{ ok: boolean; reason?: str
     consoleBuffers.delete(tabId);
     return { ok: false, reason: (err as Error).message ?? String(err) };
   }
+  })();
+  detachPending.set(tabId, detaching);
+  try { return await detaching; } finally { detachPending.delete(tabId); }
 }
 
 export async function send<T = unknown>(
@@ -296,8 +365,9 @@ export async function send<T = unknown>(
   method: string,
   params?: Record<string, unknown>,
 ): Promise<T> {
-  if (!attachedTabs.has(tabId)) {
-    const r = await attach(tabId);
+  retain(tabId);
+  {
+    const r = await attachShared(tabId);
     if (!r.ok) throw new Error(`attach failed: ${r.reason}`);
   }
   touchIdleTimer(tabId);
@@ -306,6 +376,7 @@ export async function send<T = unknown>(
 }
 
 export async function startNetworkCapture(tabId: number): Promise<void> {
+  retain(tabId);
   installListeners();
   if (!attachedTabs.has(tabId)) {
     const r = await attach(tabId);

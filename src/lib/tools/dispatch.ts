@@ -1,3 +1,4 @@
+import { executePreparedOperation, type PreparedOperation, type RecoveredApproval } from './prepared-tool-operation';
 import { resolveToolTier } from '@/lib/tools/tier-policy';
 /**
  * SW-side tool dispatcher.
@@ -701,6 +702,7 @@ async function handleCall(
      * user just gave would be hostile.
      */
     preApproved?: boolean;
+    recoveredOperation?: RecoveredApproval;
   } = {},
 ): Promise<void> {
   // Normalize credential-bearing Network saves before any durable observer.
@@ -748,6 +750,10 @@ async function handleCall(
     return fail(`args failed schema: ${JSON.stringify(parsed.error.format())}`);
   }
 
+  let prepared: PreparedOperation<unknown> | null;
+  try { prepared = await prepareOperation(handler, parsed.data, ctx); }
+  catch (error) { return fail(error instanceof Error ? error.message : String(error)); }
+  if (!prepared) {
   // Admin gate — enforced at EXECUTION time, not just advertisement time.
   // Advertisement filtering (`visible()` in registry.ts + the server-side
   // discovery handler reading the self-reported `is_admin`) decides what the
@@ -831,6 +837,8 @@ async function handleCall(
     }
   }
 
+  }
+
   // Wire incremental progress emission for long-running handlers. Optional —
   // a handler that never calls `ctx.reportProgress` behaves exactly as before.
   // Each call broadcasts a TOOL_TIMELINE_EVENT carrying `progress` (phase stays
@@ -850,7 +858,7 @@ async function handleCall(
   // Run.
   let result: unknown;
   try {
-    result = await handler.run(parsed.data as never, ctx);
+    result = prepared ? await runPrepared(handler, parsed.data, ctx, meta, prepared, new AbortController().signal, gateOpts.recoveredOperation) : await handler.run(parsed.data as never, ctx);
   } catch (err) {
     return fail((err as Error)?.message ?? String(err));
   }
@@ -1098,12 +1106,12 @@ interface ConfirmResult {
  */
 const liveConfirmWaiters = new Set<string>();
 
-function requestConfirmation(
+async function requestConfirmation(
   handler: AnyToolHandler,
   args: unknown,
   ctx: ToolContext,
   meta: RunMeta | undefined,
-  opts: { effectiveTier: ToolTier; initiator: ConfirmInitiator },
+  opts: { effectiveTier: ToolTier; initiator: ConfirmInitiator; signal?: AbortSignal; preparedOperation?: { snapshotKey: string; delivery: 'agent' | 'local' } },
 ): Promise<ConfirmResult> {
   // Auto-allow if user has trusted this domain for the conversation.
   // (Domain trust is opportunistic — only meaningful if args has a `url`.)
@@ -1137,7 +1145,7 @@ function requestConfirmation(
   // fail-close stale requests instead of leaving them answerable forever.
   const expiresAt = Date.now() + 5 * 60_000;
   liveConfirmWaiters.add(ctx.callId);
-  void persistPendingConfirm({
+  await persistPendingConfirm({
     callId: ctx.callId,
     toolName: handler.name,
     args,
@@ -1147,10 +1155,15 @@ function requestConfirmation(
     permissionMode: ctx.permissionMode,
     assignedTabId: ctx.assignedTabId,
     effectiveTier: opts.effectiveTier,
+    ...(opts.preparedOperation && { preparedOperation: opts.preparedOperation }),
     initiator: opts.initiator,
     expiresAt,
   });
 
+  if (opts.signal?.aborted) {
+    liveConfirmWaiters.delete(ctx.callId); await removePendingConfirm(ctx.callId);
+    return { allow: false, reason: 'Replay cancelled.' };
+  }
   return new Promise<ConfirmResult>((resolve) => {
     let resolved = false;
     const finish = (out: ConfirmResult) => {
@@ -1158,6 +1171,7 @@ function requestConfirmation(
       resolved = true;
       off();
       clearTimeout(timer);
+      opts.signal?.removeEventListener('abort', abort);
       liveConfirmWaiters.delete(ctx.callId);
       void removePendingConfirm(ctx.callId);
       resolve(out);
@@ -1188,6 +1202,12 @@ function requestConfirmation(
       finish({ allow: false, reason: 'Approval timed out' });
     }, 5 * 60_000);
 
+    const abort = () => {
+      broadcast(CHANNELS.TOOL_CONFIRM_EXPIRED, { callId: ctx.callId, reason: 'Replay cancelled.' });
+      finish({ allow: false, reason: 'Replay cancelled.' });
+    };
+    opts.signal?.addEventListener('abort', abort, { once: true });
+    if (opts.signal?.aborted) { abort(); return; }
     const req: PendingConfirmRequest = {
       callId: ctx.callId,
       conversationId: ctx.conversationId,
@@ -1214,6 +1234,10 @@ function requestConfirmation(
 async function recoverPersistedConfirm(payload: ConfirmResponse): Promise<void> {
   const rec = await takePendingConfirm(payload.callId);
   if (!rec) return; // never persisted, or already claimed — nothing to do
+  if (rec.preparedOperation?.delivery === 'local') {
+    broadcast(CHANNELS.TOOL_CONFIRM_EXPIRED, { callId: rec.callId, reason: 'The replay connection ended. Run again.' });
+    return;
+  }
   const handler = lookupTool(rec.toolName);
   const ctx: ToolContext = {
     conversationId: rec.conversationId,
@@ -1255,7 +1279,13 @@ async function recoverPersistedConfirm(payload: ConfirmResponse): Promise<void> 
       }
     }
   }
-  await handleCall(handler, rec.args, ctx, meta, { preApproved: true });
+  await handleCall(handler, rec.args, ctx, meta, {
+    preApproved: true,
+    ...(rec.preparedOperation && { recoveredOperation: {
+      identity: { toolName: rec.toolName, callId: rec.callId, runId: rec.runId, assignedTabId: rec.assignedTabId!, snapshotKey: rec.preparedOperation.snapshotKey },
+      tier: rec.effectiveTier, delivery: rec.preparedOperation.delivery, expiresAt: rec.expiresAt,
+    } }),
+  });
 }
 
 /**
@@ -1274,6 +1304,7 @@ async function sweepExpiredConfirms(): Promise<void> {
       callId: rec.callId,
       reason: 'Approval timed out',
     });
+    if (claimed.preparedOperation?.delivery === 'local') continue;
     const handler = lookupTool(rec.toolName);
     if (!handler) continue;
     const ctx: ToolContext = {
@@ -1586,4 +1617,57 @@ async function detectOrigin(ctx: ToolContext): Promise<ReceiptOrigin> {
     return 'pilot';
   }
   return 'agent';
+}
+
+/** Existing policy gates reused by prepared operation and local saved-run entry. */
+async function checkOperationRequirements(handler: AnyToolHandler, args: unknown, ctx: ToolContext, tier: ToolTier): Promise<void> {
+  if (handler.admin_only && !(await readIsAdminFromStorage())) throw new Error('admin_only: debugger capture requires an admin account.');
+  if (!isBrowserSupported(handler.supportedBrowsers)) throw new Error('Debugger capture is unavailable in this browser.');
+  if (handler.required_optional_permissions?.length && !(await hasOptionalPermissions(handler.required_optional_permissions as OptionalPermission[]))) {
+    throw new Error(missingPermissionRemedy(handler.required_optional_permissions));
+  }
+  const error = await enforcePilotGroupScope(ctx, args, tier);
+  if (error) throw new Error(error);
+}
+async function prepareOperation(handler: AnyToolHandler, args: unknown, ctx: ToolContext): Promise<PreparedOperation<unknown> | null> {
+  const prepared = await handler.prepare?.(args, ctx);
+  if (!prepared) return null;
+  if (ctx.assignedTabId == null) throw new Error('No assigned tab for prepared operation.');
+  const policy = { ...handler, ...prepared.requirements };
+  return {
+    identity: { toolName: handler.name, callId: ctx.callId, runId: ctx.runId, assignedTabId: ctx.assignedTabId, snapshotKey: prepared.snapshotKey },
+    tier: prepared.tier,
+    checkRequirements: () => checkOperationRequirements(policy, args, ctx, prepared.tier),
+    run: prepared.run,
+  };
+}
+async function runPrepared(handler: AnyToolHandler, args: unknown, ctx: ToolContext, meta: RunMeta | undefined, first: PreparedOperation<unknown>, signal: AbortSignal, recovered?: RecoveredApproval): Promise<unknown> {
+  let initial = true;
+  return executePreparedOperation({
+    permissionMode: ctx.permissionMode, signal,
+    ...(recovered && { recovered }),
+    prepare: async () => {
+      if (initial) { initial = false; return first; }
+      const next = await prepareOperation(handler, args, ctx);
+      if (!next) throw new Error('The saved recipe changed while awaiting approval. Run again.');
+      return next;
+    },
+    confirm: async (identity, tier, abortSignal) => (await requestConfirmation(handler, args, ctx, meta, {
+      effectiveTier: tier, initiator: ctx.localInvocation ? 'extension' : 'agent', signal: abortSignal,
+      preparedOperation: { snapshotKey: identity.snapshotKey, delivery: ctx.localInvocation ? 'local' : 'agent' },
+    })).allow,
+  });
+}
+/** Called only by the authenticated saved-operation port host, never by page payload. */
+export async function runLocalSavedPattern(patternId: string, tabId: number, signal: AbortSignal, progress: (note: string) => void): Promise<unknown> {
+  const handler = lookupTool('data_patterns');
+  if (!handler) throw new Error('Saved recipe tool is unavailable.');
+  const parsed = handler.argsSchema.parse({ action: 'run', pattern_id: patternId });
+  const ctx: ToolContext = { callId: crypto.randomUUID(), runId: crypto.randomUUID(), conversationId: null, agentName: null, permissionMode: 'act', assignedTabId: tabId, localInvocation: true,
+    reportProgress: value => { const label = typeof value === 'string' ? value : value.label; if (label) progress(label); } };
+  const prepared = await prepareOperation(handler, parsed, ctx);
+  if (prepared) return runPrepared(handler, parsed, ctx, undefined, prepared, signal);
+  await checkOperationRequirements(handler, parsed, ctx, resolveToolTier(handler, parsed));
+  if (signal.aborted) throw new Error('Replay cancelled.');
+  return handler.run(parsed, ctx);
 }

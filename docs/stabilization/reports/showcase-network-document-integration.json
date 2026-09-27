@@ -1,5 +1,5 @@
 {
-  "status": "scratch_rebased_source_only_unverified",
+  "status": "engineering_self_verified_awaiting_independent_review_and_browser",
   "defect": "EXT-D-0047",
   "base_commit": "de819649845c299c47ee27566b849c91d90bead1",
   "scratch_repository": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-integrated-20260927/repo",
@@ -19,6 +19,12 @@
     "Static review corrected two candidate test hoist initializers that referenced their own variable before initialization; no runtime result is claimed.",
     "No live source, product runtime, build, tests, browser or database was changed by this lane."
   ],
+  "execution_evidence": [
+    "Baseline probe on untouched de819649 called old runSavedPattern and failed: first request emitted during reload was rejected with NetworkNoMatchError saying requests before the reload listener installs cannot be captured. Initial scratch setup needed the existing .wxt tsconfig link; that transform failure was not counted as a behavioral red.",
+    "Integrated candidate: 22 focused D47, D41 and D48 test files passed, 100 tests total. Existing matcher tests retain real runNetworkCapturePattern and use a capture-boundary double; the saved UI test runs PatternsTab, port, dispatcher, handler, real runner, CDP client/core, row parser and rendered result.",
+    "pnpm compile, pnpm catalog:tools:md, pnpm docs:tools and git diff --check passed after integration.",
+    "Mutation in a separate scratch source copy removed the old/new document context rejection; the actual saved UI test failed because CURRENT_DOCUMENT_ROW was absent. The scratch mutation was restored; live source was never mutated."
+  ],
   "guarded_test_plan": [
     "Under the coordinator's single runtime permit, first run pnpm compile and pnpm catalog:tools:md on the integrated candidate; resolve any static errors and regenerate required catalog docs.",
     "Run pnpm test tests/unit/document-network-authorization.test.ts tests/unit/document-network-dispatch.test.ts tests/unit/document-network-recovery.test.ts tests/unit/document-network-port.test.ts tests/unit/document-network-capture.test.ts tests/unit/document-network-lease.test.ts tests/unit/document-network-page-privacy.test.ts.",
@@ -27,8 +33,8 @@
     "With installed Chrome, check early initial request, old-document late response, same-URL navigation, denied approval, port disconnect, and owned versus borrowed debugger attachment cleanup. No localhost is authorized for this lane."
   ],
   "outstanding": [
-    "The candidate is mechanically rebased only. Type, runtime, mutation, installed-browser and independent review evidence remain open.",
-    "Before shipping, append the scratch feature-tests-addendum.md to docs/feature-tests.md and update the existing canonical data_patterns description in the database to explain debugger approval and reload; neither write belongs to this source-only checkpoint.",
+    "Installed-browser verification and independent source review remain open. Root owns build and push after fresh peer verdict.",
+    "The feature-test addendum is integrated. The existing canonical data_patterns description still needs a database update explaining debugger approval and reload before shipping.",
     "Preserve D48 privacy and matcher behavior when any later edit touches run-interactive.ts, dispatch.ts or ToolsView.tsx."
   ]
 }

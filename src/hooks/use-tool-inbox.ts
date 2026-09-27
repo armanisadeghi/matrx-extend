@@ -182,6 +182,7 @@ export function useToolInbox$Subscribe(): void {
     const offConfirm = on<PendingConfirmRequest, { ack: true }>(
       CHANNELS.TOOL_CONFIRM_REQUEST,
       (payload) => {
+        if (payload.initiator === 'extension') return { ack: true };
         // The SW dispatcher injects ctx.conversationId into the payload.
         // Prefer that — it correctly routes Pilot-spawned cards to the
         // Pilot surface and Assistant-spawned cards to the Chat surface.

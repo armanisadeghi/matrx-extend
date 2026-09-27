@@ -33,7 +33,7 @@ import {
   savePattern,
 } from '@/lib/supabase/queries';
 import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
-import type { ToolHandler, ToolTier } from '@/lib/tools/types';
+import type { ToolContext, ToolHandler, ToolTier } from '@/lib/tools/types';
 import { z } from 'zod';
 
 const FieldSchema = z.object({
@@ -76,6 +76,10 @@ const DataPatternsArgs = z
   });
 type DataPatternsArgs = z.infer<typeof DataPatternsArgs>;
 
+const preparedPatterns = new WeakMap<ToolContext, Awaited<ReturnType<typeof fetchPatternsForDomain>>[number]>();
+const preparedPages = new WeakMap<ToolContext, { url: string; documentId: string }>();
+const preparedSignals = new WeakMap<ToolContext, AbortSignal>();
+
 const READ_ACTIONS = new Set<DataPatternsArgs['action']>(['list', 'describe', 'recipes']);
 const DEFAULT_ROWS_LIMIT = 100;
 
@@ -102,6 +106,36 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
   tier: 'action',
   tierFor: (args): ToolTier => (READ_ACTIONS.has(args.action) ? 'read' : 'action'),
   argsSchema: DataPatternsArgs,
+  prepare: async (args, ctx) => {
+    if (args.action !== 'run') return null;
+    const tab = await getAssignedTab(ctx);
+    if (tab?.id == null || !tab.url) throw new Error('No assigned page to run on.');
+    const patterns = await fetchPatternsForDomain(new URL(tab.url).host);
+    const pattern = patterns.find(p => p.id === args.pattern_id);
+    if (!pattern) throw new Error('The saved pattern no longer exists on this site.');
+    if (pattern.kind !== 'network_capture') return null;
+    const [{ documentId } = {}] = await chrome.scripting.executeScript({ target: { tabId: tab.id }, func: () => null });
+    if (!documentId) throw new Error('Chrome did not provide source document identity. Run again in a supported Chrome version.');
+    const bytes = new TextEncoder().encode(JSON.stringify([pattern.id, pattern.kind, pattern.config, pattern.fields, pattern.list_root_selector, tab.id, tab.url, documentId]));
+    const digest = await crypto.subtle.digest('SHA-256', bytes);
+    const snapshotKey = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
+    // Read capability policy from the existing canonical handler, not its approval identity.
+    const { cdp_attach } = await import('./cdp');
+    return {
+      snapshotKey, tier: 'privileged',
+      requirements: {
+        ...(cdp_attach.admin_only !== undefined && { admin_only: cdp_attach.admin_only }),
+        ...(cdp_attach.required_optional_permissions && { required_optional_permissions: cdp_attach.required_optional_permissions }),
+        ...(cdp_attach.supportedBrowsers && { supportedBrowsers: cdp_attach.supportedBrowsers }),
+      },
+      run: async signal => {
+        preparedPatterns.set(ctx, pattern); preparedSignals.set(ctx, signal);
+        preparedPages.set(ctx, { url: tab.url!, documentId });
+        try { return await data_patterns.run(args, ctx); }
+        finally { preparedPatterns.delete(ctx); preparedSignals.delete(ctx); preparedPages.delete(ctx); }
+      },
+    };
+  },
   run: async (args, ctx) => {
     if (args.action === 'list') {
       const domain = await resolveDomain(args, ctx);
@@ -153,10 +187,14 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
       const tabId = tab.id;
       const domain = hostOf(tab.url ?? undefined);
       if (!domain) return { ok: false, reason: 'Assigned tab has no usable URL.' };
-      const patterns = await fetchPatternsForDomain(domain);
+      const prepared = preparedPatterns.get(ctx);
+      const patterns = prepared ? [prepared] : await fetchPatternsForDomain(domain);
       const pattern = patterns.find((p) => p.id === args.pattern_id);
       if (!pattern) {
         return { ok: false, reason: `No pattern ${args.pattern_id} under ${domain}.` };
+      }
+      if (pattern.kind === 'network_capture' && !prepared) {
+        return { ok: false, reason: 'Network replay requires the saved-run approval dispatcher.' };
       }
       const pageIsCurrent = async () => {
         try {
@@ -179,12 +217,13 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
         // model's decision, not a second human action.
         const rows = await runSavedPattern(pattern, tabId, {
           onProgress: (note) => ctx.reportProgress?.(note),
-          initiation: 'auto',
+          initiation: ctx.localInvocation ? 'user' : 'auto',
+          ...(prepared && { captureApproved: true, signal: preparedSignals.get(ctx)!, expectedPage: preparedPages.get(ctx)! }),
         });
         if (!(await pageIsCurrent())) return pageChanged;
         const outcome = classifySavedRun(pattern, tab.url ?? '', rows);
-        if (outcome.kind === 'matched') void bumpPatternRun(pattern.id, 'ok', rows.length);
-        const limit = args.rows_limit ?? DEFAULT_ROWS_LIMIT;
+        if (!ctx.localInvocation && outcome.kind === 'matched') void bumpPatternRun(pattern.id, 'ok', rows.length);
+        const limit = ctx.localInvocation ? rows.length : args.rows_limit ?? DEFAULT_ROWS_LIMIT;
         return {
           ok: true,
           outcome: outcome.kind,
@@ -200,7 +239,7 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
           // Circumstantial, not a broken pattern — give the agent guidance.
           return { ok: false, reason: err.message, retryable: true };
         }
-        if (urlMatchesPattern(tab.url ?? '', pattern)) {
+        if (!ctx.localInvocation && urlMatchesPattern(tab.url ?? '', pattern)) {
           void bumpPatternRun(pattern.id, 'broken', 0);
         }
         return {

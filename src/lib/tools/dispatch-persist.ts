@@ -58,6 +58,8 @@ export interface PersistedPendingConfirm {
   permissionMode: 'ask' | 'act';
   assignedTabId: number | null;
   effectiveTier: ToolTier;
+  /** Prepared operation approval, bound to actual tool + snapshot. */
+  preparedOperation?: { snapshotKey: string; delivery: 'agent' | 'local' };
   initiator: ConfirmInitiator;
   /** Absolute deadline — mirrors the in-memory 5-minute timeout. */
   expiresAt: number;
@@ -122,7 +124,23 @@ function pruneRuns(all: Record<string, PersistedRunMeta>): void {
 
 /* ── Pending confirmations ────────────────────────────────────────── */
 
-export async function persistPendingConfirm(record: PersistedPendingConfirm): Promise<void> {
+let confirmMutation: Promise<unknown> = Promise.resolve();
+function mutateConfirms<T>(write: () => Promise<T>): Promise<T> {
+  const result = confirmMutation.then(write, write);
+  confirmMutation = result.then(() => undefined, () => undefined);
+  return result;
+}
+export function persistPendingConfirm(record: PersistedPendingConfirm): Promise<void> {
+  return mutateConfirms(() => persistPendingConfirmUnlocked(record));
+}
+export function removePendingConfirm(callId: string): Promise<void> {
+  return mutateConfirms(() => removePendingConfirmUnlocked(callId));
+}
+export function takePendingConfirm(callId: string): Promise<PersistedPendingConfirm | null> {
+  return mutateConfirms(() => takePendingConfirmUnlocked(callId));
+}
+
+async function persistPendingConfirmUnlocked(record: PersistedPendingConfirm): Promise<void> {
   const store = sessionStore();
   if (!store) return;
   try {
@@ -134,7 +152,7 @@ export async function persistPendingConfirm(record: PersistedPendingConfirm): Pr
   }
 }
 
-export async function removePendingConfirm(callId: string): Promise<void> {
+async function removePendingConfirmUnlocked(callId: string): Promise<void> {
   const store = sessionStore();
   if (!store) return;
   try {
@@ -153,7 +171,7 @@ export async function removePendingConfirm(callId: string): Promise<void> {
  * claimed it. Used by the post-restart recovery listener so a response can't
  * execute twice.
  */
-export async function takePendingConfirm(callId: string): Promise<PersistedPendingConfirm | null> {
+async function takePendingConfirmUnlocked(callId: string): Promise<PersistedPendingConfirm | null> {
   const store = sessionStore();
   if (!store) return null;
   try {
