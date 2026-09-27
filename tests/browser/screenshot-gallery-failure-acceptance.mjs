@@ -43,6 +43,13 @@ function safeFailure(error) {
       : null,
   };
 }
+function safeErrorClass(error) {
+  if (error?.code === 'ERR_ASSERTION') return 'AssertionError';
+  if (error?.name === 'TimeoutError') return 'TimeoutError';
+  if (error?.name === 'TypeError') return 'TypeError';
+  if (error?.name === 'ReferenceError') return 'ReferenceError';
+  return 'other';
+}
 async function buildIdentity() {
   if (
     !process.env.SCREENSHOT_GALLERY_DEV_BUILD_RECEIPT ||
@@ -241,7 +248,13 @@ async function watchReads(panel, expected) {
       /* Other browser traffic carries no proof. */
     }
     if (listRequest(request, expected))
-      reads.set(requestId, { requestId, status: null, failed: false, rows: null });
+      reads.set(requestId, {
+        requestId,
+        status: null,
+        failed: false,
+        rows: null,
+        bodyState: 'not_finished',
+      });
   });
   const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
     const entry = reads.get(requestId);
@@ -254,22 +267,32 @@ async function watchReads(panel, expected) {
   const offFinished = panel.on('Network.loadingFinished', ({ requestId }) => {
     const entry = reads.get(requestId);
     if (!entry || entry.status !== 200) return;
+    entry.bodyState = 'reading';
     void panel
       .send('Network.getResponseBody', { requestId })
       .then(({ body, base64Encoded }) => {
         const rows = JSON.parse(
           base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body,
         );
-        if (Array.isArray(rows) && rows.every((row) => row.page_url_canonical === expected))
+        if (Array.isArray(rows) && rows.every((row) => row.page_url_canonical === expected)) {
           entry.rows = rows;
+          entry.bodyState = 'matching_rows';
+        } else entry.bodyState = 'invalid_rows';
       })
       .catch(() => {
-        /* An unreadable response cannot establish recovery. */
+        entry.bodyState = 'unreadable';
       });
   });
   return {
     marker: () => reads.size,
     after: (marker) => [...reads.values()].slice(marker),
+    safeReadState: (marker) =>
+      [...reads.values()].slice(marker).map((entry) => ({
+        status: Number.isInteger(entry.status) ? entry.status : null,
+        failed: entry.failed,
+        bodyState: entry.bodyState,
+        rowCount: Array.isArray(entry.rows) ? entry.rows.length : null,
+      })),
     writeCount: () => screenshotWrites,
     stop: () => {
       offRequest();
@@ -329,31 +352,51 @@ async function exercise({ page, panel }) {
     journal = await watchReads(panel, expected);
     stage = 'initial_real_empty_read';
     const initialMarker = journal.marker();
-    await click(panel, 'title', 'Screenshots');
-    await waitFor(
-      'initial_real_zero_rows',
-      () => journal.after(initialMarker),
-      (reads) =>
-        reads.length === 1 &&
-        reads[0].status === 200 &&
-        Array.isArray(reads[0].rows) &&
-        reads[0].rows.length === 0,
-      30_000,
-    );
-    await waitFor(
-      'initial_owned_empty_ui',
-      () => gallery(panel, expected),
-      (state) =>
-        state.active &&
-        state.selected &&
-        state.linked &&
-        state.canonical &&
-        state.refresh &&
-        state.empty &&
-        !state.error &&
-        state.cards === 0,
-      30_000,
-    );
+    let initialStep = 'screenshots_tab_click';
+    try {
+      await click(panel, 'title', 'Screenshots');
+      initialStep = 'initial_real_zero_rows';
+      await waitFor(
+        'initial_real_zero_rows',
+        () => journal.after(initialMarker),
+        (reads) =>
+          reads.length === 1 &&
+          reads[0].status === 200 &&
+          Array.isArray(reads[0].rows) &&
+          reads[0].rows.length === 0,
+        30_000,
+      );
+      initialStep = 'initial_owned_empty_ui';
+      await waitFor(
+        'initial_owned_empty_ui',
+        () => gallery(panel, expected),
+        (state) =>
+          state.active &&
+          state.selected &&
+          state.linked &&
+          state.canonical &&
+          state.refresh &&
+          state.empty &&
+          !state.error &&
+          state.cards === 0,
+        30_000,
+      );
+    } catch (error) {
+      report.failure = {
+        stage,
+        code: 'initial_gallery_read_unverified',
+        step: initialStep,
+        errorClass: safeErrorClass(error),
+        diagnostic: safeFailure(error),
+        matchingReads: journal.safeReadState(initialMarker),
+      };
+      try {
+        report.failure.gallery = await gallery(panel, expected);
+      } catch {
+        report.failure.gallery = { available: false };
+      }
+      throw new Error('initial_gallery_read_unverified');
+    }
 
     // Fail only the exact gallery GET once. Every other paused request continues unchanged.
     stage = 'targeted_list_failure';

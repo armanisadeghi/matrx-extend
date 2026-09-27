@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "run_id": "gallery-org-diag-dev096-001",
+  "feature": "EXT-F-1009-T08",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.96",
+    "tree_sha256": "a5abc189bcef64e66a3365c44eb29a08c66d0111692d9dee9be8b8f58c96d77d",
+    "receipt": "test-results/source-dev-build-096-screenshots-20260927.json"
+  },
+  "resource_guard": {
+    "admission": "RESOURCE_ADMITTED",
+    "terminal": "RESOURCE_JOB_EXIT",
+    "child_exit_code": 1
+  },
+  "organization_selection": "passed_to_next_stage_on_current_runner; earlier pointer failure not reproduced or explained",
+  "first_failure": {
+    "stage": "initial_real_empty_read",
+    "code": "owned_harness_or_ui_stage_failed",
+    "timeout": false,
+    "assertion": false,
+    "pointer_code": null,
+    "matching_request_count": "unmeasured_by_this_runner_version",
+    "exact_failed_step": "unmeasured_by_this_runner_version"
+  },
+  "private_evidence": {
+    "log_path": "/Volumes/Samsung2TB/code/.stabilization-scratch/gallery-org-diag-dev096-001.private.log",
+    "log_mode": "0600",
+    "log_sha256": "2db14a5865d08d5aee4e054cf77aa7740e776f776bacc805d606587ddd5c6405",
+    "result_path": "test-results/screenshot-gallery-failure-a0f542c4-5be7-4b71-9655-72d907f5bdac.json",
+    "result_mode": "0600",
+    "result_sha256": "eaa8ca9df368430e7e1dbd8fe2398fc15ee236935b4babaf8448ed8ed4554664"
+  },
+  "scope_limit": "No gallery failure or Refresh recovery verdict; no second native run."
+}

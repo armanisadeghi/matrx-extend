@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0037",
+  "scope": "Shared organization-selection harness diagnosis and screenshot gallery initial-read evidence",
+  "historical_org_failure": "The 0.2.95 full-page and gallery receipts both stop at select_approved_organization with pointer_target_not_unique, but neither records the failing click or target count. The current gallery runner already records those fields after fd700b6b. The 0.2.96 native diagnostic run passed organization selection, so the earlier failure is not reproduced and its cause remains unproven.",
+  "pointer_call_census": [
+    "Settings title button",
+    "Account section button when expanded",
+    "Organization section button when collapsed",
+    "Acting as row combobox",
+    "exact approved organization option"
+  ],
+  "current_native_run": "docs/stabilization/runs/gallery-org-diag-dev096-001.json",
+  "current_failure": "At initial_real_empty_read, the runner reported only owned_harness_or_ui_stage_failed with timeout=false, assertion=false and pointerCode=null. It omitted the failed wait step and the matching GET observations held in its watcher, so no network or product cause is assigned.",
+  "initial_read_contract_census": [
+    "The trusted Screenshots title click requires one visible button[title=Screenshots] and a stable hit target; a pointer failure would carry a driver code.",
+    "The first wait requires exactly one matching GET whose canonical URL filter matches the owned page, HTTP 200, a parsed array of rows, and zero rows.",
+    "The second wait requires the active and selected Screenshots tab, a linked panel, one owned canonical label, an enabled Refresh button, empty state, no error, and zero cards.",
+    "The prior generic catch erased which of these three contracts failed and the watcher response state. A JavaScript exception was also possible because timeout=false here only means the error name was not TimeoutError."
+  ],
+  "change": "The gallery runner now emits fixed initial-read step, allowlisted error class, matching GET status/failure/body outcome/row count, and content-free gallery state if that stage fails. It keeps the exact approved organization selection and the acceptance predicates unchanged.",
+  "verification": {
+    "node_check": "pass",
+    "focused_biome": "pass",
+    "diff_check": "pass",
+    "new_diagnostic_native_run": "not_run_by_instruction"
+  },
+  "open": [
+    "A fresh native run of the changed runner is required to distinguish missing GET, non-200 response, unreadable or invalid body, nonempty rows, and UI mismatch.",
+    "The historical organization pointer failure remains unproven; a future recurrence should use the existing gallery step and pointer counts."
+  ]
+}
