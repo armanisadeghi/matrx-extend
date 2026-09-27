@@ -1,7 +1,9 @@
 {
   "id": "EXT-D-0047",
   "feature_id": "EXT-F-1012",
-  "case_ids": ["EXT-F-1012-T57"],
+  "case_ids": [
+    "EXT-F-1012-T57"
+  ],
   "surface": "Showcase Network replay capture timing and document provenance",
   "auth_mode": "admin",
   "reproduction": [
@@ -18,9 +20,9 @@
   ],
   "severity": "S2: important; replay can miss intended initial data or return stale data from the prior document.",
   "priority": "P1: saved Network replay must identify the intended request and source document.",
-  "state": "open",
-  "reproduction_status": "source-confirmed; live behavior unverified",
-  "verification_status": "D41 focused green 30 and types passed on pre-merge .108 source, but the fresh peer found these gaps. No D47-specific test or installed-extension run has been performed.",
+  "state": "in-fix",
+  "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
+  "verification_status": "Initial candidate focused tests/types passed; fresh peer c49edf98 found reload timeout and approval-content defects. F2 source fixed; F1 first repair failed end-to-end peer because cleanup remained unbounded. Second cleanup repair passes focused real-caller tests; integrated tests/types/lint and fresh reverify remain pending. Do not claim installed D47 health.",
   "source_report": "docs/stabilization/reports/showcase-network-final-peer.json",
   "transition_history": [
     {
@@ -28,6 +30,18 @@
       "from": null,
       "to": "open",
       "reason": "Fresh independent D41 source peer identified post-loading old-document acceptance and the gap between navigation loading and two-step tap injection; no runtime result claimed."
+    },
+    {
+      "at": "2026-09-27T23:45:56Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Reconciled tracking: independent source reviews and original runner baseline red confirmed initial-request/document defects; see showcase-network-document-integration.json."
+    },
+    {
+      "at": "2026-09-27T23:45:56Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Reconciled tracking: source checkpoints 3cb72bd0 and 10640dbe implement repair; peer-triggered cleanup correction is active. This timestamp records state reconciliation, not an invented historical implementation time."
     }
   ],
   "closure_requirement": "Add regression coverage for an initial request racing tap installation and a delayed old-document response arriving after navigation loading; prove current-document attribution and honest retrigger guidance. Then verify saved request replay on a real public website using an installed build."
