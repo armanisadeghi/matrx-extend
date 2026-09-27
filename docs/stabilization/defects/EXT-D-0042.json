@@ -1,0 +1,51 @@
+{
+  "id": "EXT-D-0042",
+  "feature_id": "EXT-F-1012",
+  "case_ids": [],
+  "surface": "Showcase List Pattern picker start, cancel, restart, and result relay",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Open Showcase List Pattern on a regular page with repeating event cards and start picker A.",
+    "Hold A's outgoing ITEM_DETECTED, RESULT, or EXIT message at the runtime delivery boundary; test each channel separately.",
+    "Cancel A from the sidepanel, then start picker B without changing the browser tab or URL.",
+    "Deliver A's held message through the service worker's stamped rebroadcast while B is active.",
+    "Check whether A's selectors appear or B leaves picking mode. As the positive control, deliver B's own detection and result and extract the selected field.",
+    "For cancellation ordering, defer A's cancellation injection, start B, then execute the held cancellation and verify B remains usable.",
+    "For reinjection cleanup, inject a second content context, then click one card; require exactly one detection event and normal page clicking after the active picker closes."
+  ],
+  "expected": "Only the current session may populate or close its builder. Old cancellation targets only the session that requested it. Replaced picker contexts remove their DOM listeners.",
+  "actual": "Guarded real consumer/producer regression reproduced all three stale event channels, replacement cancellation, and duplicate listeners. Six new assertions failed while nine existing handoff cases passed; source repair is now written and unverified.",
+  "evidence": [
+    "docs/stabilization/reports/showcase-picker-session-fix.json",
+    "src/features/showcase/tabs/ListPatternTab.tsx",
+    "src/lib/data-pattern/list-picker.ts",
+    "src/lib/background/bootstrap.ts",
+    "src/entrypoints/list-picker.content.ts"
+  ],
+  "severity": "S2: a superseded picker may overwrite the current extraction definition or terminate the current pick",
+  "priority": "P1: Showcase reliable detection and extraction lifecycle",
+  "state": "in-fix",
+  "reproduction_status": "boundary-red-confirmed",
+  "transition_history": [
+    {
+      "at": "2026-09-27",
+      "from": null,
+      "to": "open",
+      "reason": "Read-only escalation identified an unscoped picker session boundary. Source/test edits and reproduction await the frozen D40 build receipt."
+    },
+    {
+      "at": "2026-09-27T16:07:44.754Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Guarded boundary red reproduced stale same-tab same-URL events, untargeted cancel, and cross-context listeners before production changes."
+    },
+    {
+      "at": "2026-09-27T16:29:30Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Source repair and19/19 focused pass exist; subsequent combined compile exposed test helper compatibility, corrected without product changes. Final reruns refused before launch; no fixed/closed claim."
+    }
+  ],
+  "closure_requirement": "Prove the delayed old-session boundary red before repair, then prove current-session detection and extraction plus old-session rejection green. Check identity through every SW relay, delayed cancellation, pending injection, and cross-context listener teardown. Run changed types and obtain independent installed-extension verification against real page data before closure.",
+  "verification_status": "original-focused-green-19-of-19; test-helper follow-up unverified; combined types blocked by resource admission; independent UI pending"
+}

@@ -87,6 +87,8 @@ function TestSurface() {
 }
 
 beforeEach(() => {
+  // The page installation is external to this sidepanel consumer regression.
+  Object.assign(window, { __matrxListPickerStart: () => {}, __matrxListPickerCancel: () => {} });
   const fixture = document.createElement('main');
   fixture.dataset.showcaseHandoffFixture = 'true';
   fixture.innerHTML = `<div class="event-list">
@@ -126,6 +128,52 @@ afterEach(() => {
 });
 
 describe('Showcase Doctor recommendation handoff', () => {
+  it.each([
+    CHANNELS.LIST_PICKER_ITEM_DETECTED,
+    CHANNELS.LIST_PICKER_RESULT,
+    CHANNELS.LIST_PICKER_EXIT,
+  ])('keeps a replacement picker intact when the canceled session delivers %s', async (channel) => {
+    render(<ListPatternTab />);
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: /Pick an example item/i })),
+    );
+    const priorSession = page.executeScript.mock.calls
+      .slice()
+      .reverse()
+      .find(([request]) => typeof request.args?.[0] === 'string')?.[0].args?.[0];
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: /^Cancel$/i })));
+    await act(async () =>
+      fireEvent.click(screen.getByRole('button', { name: /Pick an example item/i })),
+    );
+    const currentSession = page.executeScript.mock.calls
+      .slice()
+      .reverse()
+      .find(([request]) => typeof request.args?.[0] === 'string')?.[0].args?.[0];
+    await act(async () => {
+      pickerListeners.get(channel)?.({
+        tab_id: 77,
+        session_id: priorSession,
+        list_root: detectedRoot,
+        item_selector: detectedItem,
+        item_count: 5,
+        field_paths: [{ name: 'event', rel_selector: '[itemprop="name"]' }],
+      });
+    });
+    expect(screen.queryByText(detectedRoot)).toBeNull();
+    expect(screen.queryByRole('button', { name: /^Cancel$/i })).not.toBeNull();
+    await act(async () => {
+      pickerListeners.get(CHANNELS.LIST_PICKER_RESULT)?.({
+        tab_id: 77,
+        session_id: currentSession,
+        list_root: detectedRoot,
+        item_selector: detectedItem,
+        field_paths: [{ name: 'event', rel_selector: '[itemprop="name"]' }],
+      });
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Extract$/i }));
+    expect(await screen.findByText(/\[\{"event":"Neon Nights at Area15"/)).toBeTruthy();
+  });
+
   it('carries detected list selectors into the builder while still requiring field selection', async () => {
     render(<TestSurface />);
     fireEvent.click(await screen.findByRole('button', { name: /5 repeating cards detected/i }));

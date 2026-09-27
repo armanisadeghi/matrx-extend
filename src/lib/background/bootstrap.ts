@@ -25,6 +25,7 @@ import { refreshAccessToken } from '@/lib/auth/flow';
 import { logExtensionIdentityOnce } from '@/lib/auth/identity';
 import { registerSafariAuthorizationBackground } from '@/lib/auth/safari-background';
 import { reconcileOnBoot as reconcileCdpOnBoot } from '@/lib/cdp/client';
+import { registerListPickerRelays } from '@/lib/data-pattern/list-picker-relay';
 import { hydrateBridgeTrafficEnabled, recordBridgeTraffic } from '@/lib/debug/bridge-traffic';
 import { log, startDebugRelay } from '@/lib/debug/log';
 import type { CapturedEvent } from '@/lib/demos/event-capture';
@@ -532,35 +533,7 @@ function registerHandlers(): void {
     return { ack: true };
   });
 
-  // Picker relays carry the sender tab id so a sidepanel only consumes
-  // results from the tab IT started picking on — with two windows open,
-  // window A's pick must not land in window B's builder (audit M1).
-  on<Record<string, unknown>, { ack: true }>(CHANNELS.LIST_PICKER_RESULT, (payload, sender) => {
-    if (!sender.tab) return { ack: true }; // loop guard (broadcast self-delivery)
-    broadcast(CHANNELS.LIST_PICKER_RESULT, {
-      ...payload,
-      tab_id: sender.tab.id ?? null,
-    });
-    return { ack: true };
-  });
-
-  on<unknown, { ack: true }>(CHANNELS.LIST_PICKER_EXIT, (_payload, sender) => {
-    if (!sender.tab) return { ack: true }; // loop guard (broadcast self-delivery)
-    broadcast(CHANNELS.LIST_PICKER_EXIT, { tab_id: sender.tab.id ?? null });
-    return { ack: true };
-  });
-
-  on<Record<string, unknown>, { ack: true }>(
-    CHANNELS.LIST_PICKER_ITEM_DETECTED,
-    (payload, sender) => {
-      if (!sender.tab) return { ack: true }; // loop guard (broadcast self-delivery)
-      broadcast(CHANNELS.LIST_PICKER_ITEM_DETECTED, {
-        ...payload,
-        tab_id: sender.tab.id ?? null,
-      });
-      return { ack: true };
-    },
-  );
+  registerListPickerRelays();
 
   // Demo recording: in-page event-capture function calls
   // chrome.runtime.sendMessage with a DEMO_EVENT envelope. We forward to

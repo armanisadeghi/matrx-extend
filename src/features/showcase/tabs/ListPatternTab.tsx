@@ -7,6 +7,11 @@ import {
   type CardInspection,
   inspectCardInPage,
 } from '@/lib/data-pattern/card-inspector';
+import {
+  type ListPickerIdentity,
+  cancelListPickerSession,
+  startListPickerSession,
+} from '@/lib/data-pattern/list-picker-session';
 import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -53,6 +58,7 @@ export function ListPatternTab() {
   const lastPageKeyRef = useRef(pageKey);
   const pickPageKeyRef = useRef<string | null>(null);
   const pickerSessionSeqRef = useRef(0);
+  const pickerSessionIdRef = useRef<string | null>(null);
   const inspectorSeqRef = useRef(0);
   const runSeqRef = useRef(0);
   const sampleSeqRef = useRef(0);
@@ -85,11 +91,21 @@ export function ListPatternTab() {
   const [sampleValues, setSampleValues] = useState<Record<string, string | null>>({});
 
   const closePickerSession = useCallback(() => {
+    const tabId = pickTabRef.current;
+    const sessionId = pickerSessionIdRef.current;
     pickerSessionSeqRef.current += 1;
+    pickerSessionIdRef.current = null;
     pickTabRef.current = null;
     pickPageKeyRef.current = null;
     setPicking(false);
+    if (tabId !== null && sessionId !== null) {
+      // Navigated/closed pages may no longer accept an injection. The local
+      // session is already invalidated; cancellation can affect only its ID.
+      void cancelListPickerSession(tabId, sessionId).catch(() => {});
+    }
   }, []);
+
+  useEffect(() => () => closePickerSession(), [closePickerSession]);
 
   const invalidateBuilderWork = useCallback(() => {
     inspectorSeqRef.current += 1;
@@ -146,14 +162,16 @@ export function ListPatternTab() {
     // script delivery (tab_id absent) reaches every sidepanel directly —
     // accepting it processed each pick TWICE and let window A's pick land
     // in window B's builder.
-    const fromOurPick = (tabId: unknown) =>
-      typeof tabId === 'number' &&
-      tabId === pickTabRef.current &&
+    const fromOurPick = (payload: Partial<ListPickerIdentity> | null | undefined) =>
+      typeof payload?.tab_id === 'number' &&
+      payload.tab_id === pickTabRef.current &&
+      typeof payload.session_id === 'string' &&
+      payload.session_id === pickerSessionIdRef.current &&
       pickPageKeyRef.current === latestPageKeyRef.current;
-    const offResult = on<ListPickerResult & { tab_id?: number | null }, { ack: true }>(
+    const offResult = on<ListPickerResult & ListPickerIdentity, { ack: true }>(
       CHANNELS.LIST_PICKER_RESULT,
       (payload) => {
-        if (!fromOurPick(payload?.tab_id)) return { ack: true };
+        if (!fromOurPick(payload)) return { ack: true };
         const sessionPageKey = pickPageKeyRef.current;
         closePickerSession();
         if (payload?.list_root && payload.item_selector) {
@@ -166,7 +184,11 @@ export function ListPatternTab() {
                   ...prev,
                   field_paths: [...prev.field_paths, ...payload.field_paths],
                 }
-              : payload,
+              : {
+                  list_root: payload.list_root,
+                  item_selector: payload.item_selector,
+                  field_paths: payload.field_paths,
+                },
           );
           setConfigPageKey(sessionPageKey);
           setError(null);
@@ -181,11 +203,11 @@ export function ListPatternTab() {
      * suggestions OR keep clicking in the page; final Done merges both.
      */
     const offDetected = on<
-      { list_root: string; item_selector: string; item_count: number },
+      { list_root: string; item_selector: string; item_count: number } & ListPickerIdentity,
       { ack: true }
     >(CHANNELS.LIST_PICKER_ITEM_DETECTED, (payload) => {
       if (!payload?.list_root || !payload.item_selector) return { ack: true };
-      if (!fromOurPick((payload as { tab_id?: number | null }).tab_id)) return { ack: true };
+      if (!fromOurPick(payload)) return { ack: true };
       invalidateBuilderWork();
       setConfig((prev) =>
         prev && prev.list_root === payload.list_root && prev.item_selector === payload.item_selector
@@ -200,14 +222,11 @@ export function ListPatternTab() {
       setError(null);
       return { ack: true };
     });
-    const offExit = on<{ tab_id?: number | null }, { ack: true }>(
-      CHANNELS.LIST_PICKER_EXIT,
-      (payload) => {
-        if (!fromOurPick(payload?.tab_id)) return { ack: true };
-        closePickerSession();
-        return { ack: true };
-      },
-    );
+    const offExit = on<ListPickerIdentity, { ack: true }>(CHANNELS.LIST_PICKER_EXIT, (payload) => {
+      if (!fromOurPick(payload)) return { ack: true };
+      closePickerSession();
+      return { ack: true };
+    });
     return () => {
       offResult();
       offDetected();
@@ -318,15 +337,14 @@ export function ListPatternTab() {
   const enterPicker = async () => {
     if (!tab.id || picking) return;
     const session = ++pickerSessionSeqRef.current;
+    const sessionId = crypto.randomUUID();
+    pickerSessionIdRef.current = sessionId;
     setPicking(true);
     setError(null);
     pickTabRef.current = tab.id;
     pickPageKeyRef.current = pageKey;
     try {
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ['content-scripts/list-picker.js'],
-      });
+      await startListPickerSession(tab.id, sessionId);
     } catch (err) {
       if (session === pickerSessionSeqRef.current) {
         closePickerSession();
@@ -337,19 +355,7 @@ export function ListPatternTab() {
 
   /** Sidepanel-side cancel — recovers a stuck pick without touching the page UI. */
   const cancelPicker = async () => {
-    const tabId = pickTabRef.current;
     closePickerSession();
-    if (!tabId) return;
-    try {
-      await chrome.scripting.executeScript({
-        target: { tabId },
-        func: () => {
-          (window as { __matrxListPickerCancel?: () => void }).__matrxListPickerCancel?.();
-        },
-      });
-    } catch {
-      // Page may be gone — local state is already cleared.
-    }
   };
 
   const captureSampleHtml = useCallback(async (): Promise<string[]> => {

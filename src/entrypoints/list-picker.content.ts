@@ -1,3 +1,5 @@
+import { mountListPicker } from '@/lib/data-pattern/list-picker';
+import type { ListPickerWindow } from '@/lib/data-pattern/list-picker-session';
 import { defineContentScript } from 'wxt/utils/define-content-script';
 
 /**
@@ -9,8 +11,8 @@ export default defineContentScript({
   matches: ['<all_urls>'],
   registration: 'runtime',
   runAt: 'document_idle',
-  async main() {
-    const { mountListPicker } = await import('@/lib/data-pattern/list-picker');
-    mountListPicker();
+  main() {
+    // Install synchronously; the caller starts it with its own session identity.
+    (window as ListPickerWindow).__matrxListPickerStart = mountListPicker;
   },
 });

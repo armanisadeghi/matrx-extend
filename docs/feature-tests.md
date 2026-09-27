@@ -1275,6 +1275,23 @@ Every entry follows this shape:
   orphaned page overlay; chrome:// pages get a friendly "this page type
   doesn't allow picking" error.
 
+### Showcase — List Pattern replacement sessions (EXT-D-0042)
+- **What it does:** Keeps each pick tied to its own session, including delayed
+  page messages and cancellation, and removes replaced picker listeners.
+- **Where to test:** Showcase → List Pattern on a regular page with repeated
+  cards or rows.
+- **Steps:** Start picking, Cancel, then immediately start again on the same
+  tab and URL. Select a new sample, select a field, finish, and Extract. Repeat
+  after leaving and returning to List Pattern while a pick is active. Finally,
+  cancel and click ordinary page links/buttons to check that interception ends.
+- **Expected:** The replacement pick stays active until its own completion or
+  cancellation; delayed events cannot restore the previous selection or close
+  the replacement. Only one overlay handles each page click. Current-session
+  fields still extract, and normal page interaction resumes after cancellation.
+  Deterministic delayed-message and reinjection cases are covered by the
+  handoff, list-picker-session, and list-picker-relay unit tests; these guards
+  do not replace the installed-extension check.
+
 ### Showcase — Network tab
 - **What it does:** Captures top-frame fetch/XHR while you interact; pick a
   response, drill into the JSON, and save its request URL matcher and key path

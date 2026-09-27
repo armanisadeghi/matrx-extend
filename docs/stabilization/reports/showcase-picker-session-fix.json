@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "inventory_id": "F1012",
+  "status": "Source checkpoint in-fix: original boundary red6 and focused green19/19 recorded. Test-helper-only Array.findLast compatibility change has not rerun; combined compile pending resource admission. No verified completion or UI claim.",
+  "hypotheses": [
+    {
+      "cause": "Missing message session identity",
+      "prediction": "Holding tab and URL constant while varying only session identity permits old events today; checking an end-to-end session token rejects old events and accepts current ones."
+    },
+    {
+      "cause": "Incorrect sender tab",
+      "prediction": "Changing only sender tab rejects the same delayed event; this cannot explain same-tab replacement."
+    },
+    {
+      "cause": "Stale page identity",
+      "prediction": "Changing only page URL rejects the same delayed event; this cannot explain same-URL replacement."
+    },
+    {
+      "cause": "Untargeted cancellation",
+      "prediction": "Executing A's queued stop after B mounts removes B today; targeting the cancellation to A preserves B."
+    }
+  ],
+  "sibling_census": "All three list-picker channels need identity. LIST_PICKER_EXIT currently discards payload during SW relay. List picker lacks the field picker's cross-context teardown hook: reinjecting a bundle removes the old host without removing the old bundle's capture listeners. The field picker already has cross-context teardown; other picker message protocols are separate consumers and are not silently changed in this bounded repair.",
+  "proposed_repair": "Caller-minted UUID carried through isolated-world start, producer events, SW relays, and consumer checks; targeted stop; idempotent content installation and teardown reuse. A picker-specific serialized injection chain is added only if a deferred-injection boundary test demonstrates its necessity.",
+  "planned_guard": "Exercise the real ListPatternTab and picker DOM producer across start A, cancel A, start B at identical tab and URL; delay each A event separately and require B to remain intact, then require current B detection and extraction to succeed. Hold A's cancellation injection until B starts to prove cancellation targeting. Reinject the picker content context and verify a page click emits exactly one detection and cancellation restores normal page clicks.",
+  "verification": [
+    {
+      "run_id": "showcase-d42-red-001",
+      "result": "Guard refused before child launch: owned scratch profile directory absent; created that directory for the next run."
+    },
+    {
+      "run_id": "showcase-d42-red-002",
+      "admitted_at": "2026-09-27T16:07:43.187Z",
+      "terminal_at": "2026-09-27T16:07:44.754Z",
+      "result": "6 regression assertion failures, 9 existing passes; child exit 1, guard process exit 1. Old detection/result set the canceled root in replacement picker; old EXIT closed replacement; old cancel terminated replacement; two content contexts emitted duplicate detection; producer omitted session identity. Happy-dom shadow-button dispatch in first producer case corrected separately before green."
+    },
+    {
+      "run_id": "showcase-d42-green-001",
+      "admitted_at": "2026-09-27T16:19:19.355Z",
+      "terminal_at": "2026-09-27T16:19:21.433Z",
+      "result": "19/19 tests across consumer, producer and shared SW relay files passed. Child and guard process both exit 0; no resource stop. Deferred installation ordering positive passes; sequencing removal mutation remains unproven."
+    },
+    {
+      "result": "Combined D41+D42 compile found Array.findLast unavailable in configured target lib at both new token lookups; replaced with slice().reverse().find(). No product change; final rerun pending."
+    },
+    {
+      "at": "2026-09-27T16:29:30Z",
+      "result": "Final focused retry refused by resource guard before child launch for pressure level 2 and swap growth, per coordinator receipt. No new test result. Earlier combined compile failure remains unresolved by a passing rerun."
+    }
+  ],
+  "product_claim": "No behavioral or live pass is claimed by source inspection. D39 handoff and D40 preview snapshot fixes remain separately owned and verified.",
+  "prepared_regression_artifact": {
+    "patch_path": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d42-prepared-20260927/d42-only-tests.patch",
+    "sha256": "aa8de13fdb03ba6075485153c0d619d3dd9fbcc3967914d16788483521dcdd40",
+    "preserved_new_test": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d42-prepared-20260927/list-picker-session.test.ts.preserved",
+    "tracked_test_base": "dc67ce846d0bd4657c4aebe1c002f3056136e6d7",
+    "restoration": "Removed only the D42-owned parameterized regression; tracked test matches current HEAD exactly. New test moved intact outside repository. No tests executed."
+  },
+  "root_cause": "ListPatternTab accepts picker messages using only sender tab and current page. Its local generation protects injection rejection but is not sent to the producer or checked on messages. Cancel followed by a new pick on the same tab and URL therefore cannot distinguish old ITEM_DETECTED, RESULT, or EXIT messages. Cancellation invokes an unqualified global hook, so delayed cancellation can terminate the replacement session.",
+  "repair": "Caller UUID travels through synchronous content installation and explicit start, every producer event, shared SW relay, and consumer filtering. Cancellation targets UUID. Cross-context teardown removes listeners. A picker-specific per-tab promise chain orders the two injection stages, stop, and replacement start; deferred-install guard and mutation proof pending.",
+  "production_paths": [
+    "src/features/showcase/tabs/ListPatternTab.tsx",
+    "src/lib/data-pattern/list-picker.ts",
+    "src/lib/data-pattern/list-picker-session.ts",
+    "src/lib/data-pattern/list-picker-relay.ts",
+    "src/entrypoints/list-picker.content.ts",
+    "src/lib/background/bootstrap.ts"
+  ],
+  "test_paths": [
+    "tests/unit/showcase-doctor-list-handoff.test.tsx",
+    "tests/unit/list-picker-session.test.ts",
+    "tests/unit/list-picker-relay.test.ts"
+  ],
+  "remaining_verification": [
+    "Rerun focused three-file suite after test helper compatibility adjustment",
+    "Combined D41+D42 TypeScript compile when resource admission permits",
+    "Independent installed-extension lifecycle verification after D43 integration"
+  ],
+  "queue_mutation_status": "Not performed; coordinator explicitly prohibited extra heavy mutation jobs. Deferred-install positive case passed in original19/19 run; no queue-removal red proof is claimed.",
+  "d43_extension_contract": "Keep sessionId mandatory and separate from optional seed configuration. Add optional seed as another start/mount argument; preserve session_id on every result/detection/exit and retain cancellation by session ID."
+}

@@ -12,6 +12,7 @@
  * share their visual idiom.
  */
 
+import type { ListPickerWindow } from './list-picker-session';
 import { inferListPattern, relativeFieldSelector } from './selector-resilience';
 
 const HOST_ID = 'matrx-list-picker-host';
@@ -33,13 +34,20 @@ let listRootSel: string | null = null;
 let itemSel: string | null = null;
 let sampleItem: Element | null = null;
 const picked: PickedField[] = [];
+let sessionId: string | null = null;
 
-export function mountListPicker(): void {
+export function mountListPicker(id: string): void {
   // Re-entry mounts FRESH: a previous overlay may be orphaned (sidepanel
   // unmounted mid-pick) or mid-phase-2 — stale state must not leak into a
   // new session. Also remove any DOM remnant from an older script context.
   if (host) unmountListPicker();
+  // Reinjection creates a new module context. Removing the old host alone
+  // leaves its document capture listeners intercepting all page clicks.
+  const pickerWindow = window as ListPickerWindow;
+  pickerWindow.__matrxListPickerTeardown?.();
   document.getElementById(HOST_ID)?.remove();
+  sessionId = id;
+  pickerWindow.__matrxListPickerTeardown = unmountListPicker;
   host = document.createElement('div');
   host.id = HOST_ID;
   host.style.cssText =
@@ -94,12 +102,17 @@ export function mountListPicker(): void {
   // Sidepanel-driven cancel: the Showcase tab executes a tiny script that
   // calls this hook (same ISOLATED world), so a stuck pick is recoverable
   // without touching the page UI.
-  (window as { __matrxListPickerCancel?: () => void }).__matrxListPickerCancel = () =>
-    finish('cancel');
+  pickerWindow.__matrxListPickerCancel = (targetSession) => {
+    if (targetSession === sessionId) finish('cancel');
+  };
 }
 
 export function unmountListPicker(): void {
-  delete (window as { __matrxListPickerCancel?: () => void }).__matrxListPickerCancel;
+  const pickerWindow = window as ListPickerWindow;
+  if (pickerWindow.__matrxListPickerTeardown === unmountListPicker) {
+    delete pickerWindow.__matrxListPickerCancel;
+    delete pickerWindow.__matrxListPickerTeardown;
+  }
   document.removeEventListener('mouseover', onHover, true);
   document.removeEventListener('click', onClick, true);
   clearSiblingHighlights();
@@ -112,6 +125,7 @@ export function unmountListPicker(): void {
   itemSel = null;
   sampleItem = null;
   picked.length = 0;
+  sessionId = null;
 }
 
 function isOurNode(t: Element | null): boolean {
@@ -167,6 +181,7 @@ function onClick(e: Event) {
       __matrx: true,
       kind: 'data:list-picker-item-detected',
       payload: {
+        session_id: sessionId,
         list_root: listRootSel,
         item_selector: itemSel,
         item_count: inferred.itemCount,
@@ -291,11 +306,12 @@ function finish(reason: 'done' | 'cancel') {
     payload:
       reason === 'done' && listRootSel && itemSel
         ? {
+            session_id: sessionId,
             list_root: listRootSel,
             item_selector: itemSel,
             field_paths: picked.map((p) => ({ name: p.name, rel_selector: p.rel_selector })),
           }
-        : null,
+        : { session_id: sessionId },
   });
   unmountListPicker();
 }
