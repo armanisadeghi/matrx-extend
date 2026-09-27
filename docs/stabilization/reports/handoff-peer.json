@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "6e05f436c84bdd0c3be6b0d1e01e6815e7a98b88",
+  "reviewer_lane": "independent structured document verification",
+  "verdict_a_completeness_accuracy": "PASS",
+  "verdict_b_quality_safe_instructions": "PASS_WITH_MINOR",
+  "findings": [
+    {
+      "severity": "minor",
+      "finding": "The resumption sequence says to install the merged lockfile and rebuild under separate resource permits, but does not give the exact allowed install invocation or a receipt example. A successor must consult PLAN/resource-policy to reconstruct the command and may lose time at the first step.",
+      "evidence": "HANDOFF.md step 3; docs/stabilization/resource-policy.json allows pnpm install --frozen-lockfile --ignore-scripts, pnpm exec wxt prepare, pnpm compile, and pnpm exec wxt build --mode development.",
+      "recommendation": "Add a compact example using scripts/stabilization-resource.mjs run with a fresh run ID and the real owned profile for frozen install, then separate guarded prepare/compile/build invocations; point to the immutable receipt fields already in the existing run records."
+    }
+  ],
+  "independent_checks": {
+    "inventory_counts": {
+      "features": 205,
+      "controls": 1287,
+      "cases": 693,
+      "mode_case_slots": 1142,
+      "cases_without_steps": 168,
+      "cases_without_expected_outcomes": 167,
+      "cases_without_control_ids": 30,
+      "chat": 9,
+      "pilot": 4
+    },
+    "defect_records": "All 23 IDs EXT-D-0001 through EXT-D-0023 are accounted for; 22 closed and D22 fixed awaiting native retest matches current summary/defect records.",
+    "relative_links": "All 35 unique local links resolve.",
+    "source_and_build_boundary": "package.json is 0.2.86; the cited .85 artifact receipt is tree-bound and predates merged release/lockfile changes. No current-build or Store acceptance claim is made.",
+    "historical_bounds": "0.2.79 Debug passes, incidental Chat mount, prior builds, source/unit/CI evidence, and bounded D22/Debug attempts are explicitly limited to their exact scope.",
+    "surface_and_mode_coverage": "Guest/member/admin gaps, all major contained surface groups, registered tools, bridges, and deferred Chat/Pilot are named; inventory and linked checklist remain the case-level authority.",
+    "checkpoint_and_secret_safety": "Reserved Source and SEO one-write checkpoints, private fixture handling, resource admission/refusal semantics, and no-secret evidence constraints are stated without asking to expose protected values."
+  },
+  "limitations": "Document-only review. No browser, database, checkpoint, or product execution was performed or needed for this request."
+}
