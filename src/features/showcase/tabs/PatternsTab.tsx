@@ -1,4 +1,5 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { urlMatchesPattern } from '@/lib/data-pattern/matcher';
 import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
 import { confirmDestructive } from '@/lib/destructive/confirm';
 import {
@@ -25,7 +26,7 @@ import {
   X,
   XCircle,
 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
 
 const KIND_LABELS: Record<string, string> = {
@@ -50,6 +51,13 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
   const [runNote, setRunNote] = useState<string | null>(null);
   const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
   const [activeName, setActiveName] = useState<string | null>(null);
+  const [runInfo, setRunInfo] = useState<string | null>(null);
+  const pageKey = `${tab.id ?? 'none'}|${tab.url ?? ''}`;
+  const currentPageKey = useRef(pageKey);
+  const previousPageKey = useRef(pageKey);
+  const loadSeq = useRef(0);
+  const runSeq = useRef(0);
+  currentPageKey.current = pageKey;
 
   const host = (() => {
     try {
@@ -61,16 +69,41 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
 
   const refresh = useCallback(async () => {
     if (!host) return;
+    const seq = ++loadSeq.current;
     setLoading(true);
     setLoadError(null);
     try {
-      setPatterns(await fetchPatternsForDomain(host));
+      const found = await fetchPatternsForDomain(host);
+      if (seq === loadSeq.current && currentPageKey.current === pageKey) setPatterns(found);
     } catch (err) {
-      setLoadError(err instanceof Error ? err.message : String(err));
+      if (seq === loadSeq.current && currentPageKey.current === pageKey) {
+        setLoadError(err instanceof Error ? err.message : String(err));
+      }
     } finally {
-      setLoading(false);
+      if (seq === loadSeq.current && currentPageKey.current === pageKey) setLoading(false);
     }
-  }, [host]);
+  }, [host, pageKey]);
+
+  useEffect(() => {
+    if (previousPageKey.current === pageKey) return;
+    previousPageKey.current = pageKey;
+    loadSeq.current += 1;
+    runSeq.current += 1;
+    setPatterns(null);
+    setLoading(false);
+    setLoadError(null);
+    setRunningId(null);
+    setRunNote(null);
+    setRunError(null);
+    setRunInfo(null);
+    setRows(null);
+    setActiveName(null);
+  }, [pageKey]);
+
+  useEffect(() => () => {
+    loadSeq.current += 1;
+    runSeq.current += 1;
+  }, []);
 
   // Re-fetch whenever this tab becomes the visible one — picks up patterns
   // saved from sibling tabs without a manual refresh.
@@ -80,20 +113,33 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
 
   const handleRun = async (p: ExtractionPattern) => {
     if (!tab.id) return;
+    const runPageKey = pageKey;
+    const seq = ++runSeq.current;
+    const isCurrent = () => seq === runSeq.current && currentPageKey.current === runPageKey;
+    const onSavedRoute = urlMatchesPattern(tab.url ?? '', p);
     setRunningId(p.id);
     setActiveName(p.name);
     setRows(null);
     setRunError(null);
     setRunNote(null);
+    setRunInfo(null);
     try {
       // 'user': handleRun is the Run control on a pattern row.
       const data = await runSavedPattern(p, tab.id, {
-        onProgress: setRunNote,
+        onProgress: (note) => { if (isCurrent()) setRunNote(note); },
         initiation: 'user',
       });
+      if (!isCurrent()) return;
       setRows(data);
-      void bumpPatternRun(p.id, 'ok', data.length);
+      if (data.length === 0) {
+        setRunInfo('No matching data was found on this page. Check the saved route and selectors, then run again.');
+      } else if (!onSavedRoute) {
+        setRunInfo('This run was outside the saved route. Review these rows before treating them as the intended data.');
+      } else {
+        void bumpPatternRun(p.id, 'ok', data.length);
+      }
     } catch (err) {
+      if (!isCurrent()) return;
       if (err instanceof NetworkNoMatchError) {
         // Circumstantial — the page may just not have fired that API on
         // reload. Guidance only; don't mark the pattern broken.
@@ -103,9 +149,11 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
         void bumpPatternRun(p.id, 'broken', 0);
       }
     } finally {
-      setRunningId(null);
-      setRunNote(null);
-      void refresh();
+      if (isCurrent()) {
+        setRunningId(null);
+        setRunNote(null);
+        void refresh();
+      }
     }
   };
 
@@ -156,6 +204,12 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
           </div>
         )}
 
+        {runInfo && (
+          <div className="rounded-xl bg-secondary px-3 py-2 text-xs text-muted-foreground">
+            {runInfo}
+          </div>
+        )}
+
         {!loadError && patterns && patterns.length === 0 && (
           <div className="grid place-items-center rounded-xl bg-secondary/40 px-4 py-8 text-center text-sm text-muted-foreground">
             No saved patterns for this host yet. Save one from any tab.
@@ -171,6 +225,7 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
                 running={runningId === p.id}
                 runNote={runningId === p.id ? runNote : null}
                 canRun={Boolean(tab.id)}
+                routeMatches={urlMatchesPattern(tab.url ?? '', p)}
                 onRun={() => void handleRun(p)}
                 onChanged={() => void refresh()}
               />
@@ -178,7 +233,7 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
           </div>
         )}
 
-        {rows && (
+        {rows && rows.length > 0 && (
           <div className="space-y-1">
             <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
               Last run: {activeName ?? '—'}
@@ -196,6 +251,7 @@ function PatternRow({
   running,
   runNote,
   canRun,
+  routeMatches,
   onRun,
   onChanged,
 }: {
@@ -203,6 +259,7 @@ function PatternRow({
   running: boolean;
   runNote?: string | null;
   canRun: boolean;
+  routeMatches: boolean;
   onRun: () => void;
   onChanged: () => void;
 }) {
@@ -354,6 +411,11 @@ function PatternRow({
           </Button>
         </div>
       </div>
+      {!routeMatches && p.route_pattern && (
+        <div className="text-[11px] text-amber-700 dark:text-amber-400">
+          Saved for {p.route_pattern}; this page is outside that route. You can still Run and review the result.
+        </div>
+      )}
       {running && runNote && (
         <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
           <Loader2 className="size-3 animate-spin" />

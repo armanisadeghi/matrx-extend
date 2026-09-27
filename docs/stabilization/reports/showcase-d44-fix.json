@@ -1,7 +1,7 @@
 {
   "id": "EXT-D-0044-prepared",
-  "status": "source-prepared; paused for higher-priority Network replay identity regression and resource guard",
-  "evidence_level": "source-only; no D44 red, product edit, compile, build, or live run",
+  "status": "source repaired and focused green; combined compile resource-deferred; installed-extension verification pending",
+  "evidence_level": "guarded source-boundary red/green; no combined compile, build, or installed-extension D44 run",
   "source_report": "docs/stabilization/reports/showcase-replay-scope-audit.json",
   "root_causes": [
     "list_pattern.runInPage and probeFirstRowInPage fall back to document when a configured list_root is absent, widening the saved recipe to unrelated elements.",
@@ -15,7 +15,15 @@
     "sha256": "6b72b6afd54414b57dcd9996e31c74b5a2ed7f34aaccd2325f780fa93347a567",
     "repository_copy_sha256": "6b72b6afd54414b57dcd9996e31c74b5a2ed7f34aaccd2325f780fa93347a567",
     "coverage": "Real list mode and probe on a DOM with missing configured root and unrelated cards; shared runPattern/runMode distinguish absent serialized result from explicit empty array.",
-    "status": "prepared outside test discovery; not run"
+    "status": "installed in tests/unit/showcase-replay-scope-mode.test.ts and run under the resource guard"
   },
-  "next_action": "After D41 selected-request replay identity is red/green and the coordinator transfers the sole guard permit, prepare a focused PatternsTab route/no-match/stale-page regression, then prove D44 red before editing the shared runner, mode, probe, or UI. Coordinate list-pattern mode ownership with D43."
+  "red_receipts": [
+    "showcase-d44-mode-red-001 admitted and ended 2026-09-27T21:17:20.674Z, child exit 1, 2/2 intended failures: missing root extracted unrelated card; absent Chrome result resolved as [].",
+    "showcase-d44-ui-red-001 ended 2026-09-27T21:19:32.610Z before test assertions because of a malformed local icon mock; fixture corrected without a product edit.",
+    "showcase-d44-ui-red-002 admitted and ended 2026-09-27T21:21:00.094Z, child exit 1, 2/2 intended failures: route guidance absent and old-page rows installed after same-host navigation."
+  ],
+  "repair": "A configured missing or invalid list root yields no rows in both mode and first-row probe. Shared runPattern/runMode reject absent Chrome extraction results while preserving explicit empty arrays. PatternsTab scopes fetch/run completion to the current tab and URL, clears old results on navigation, shows nonblocking saved-route guidance, labels legitimate zero rows as no matching data, and withholds ok health updates for zero or off-route rows.",
+  "green_receipt": "showcase-d44-green-001 admitted and ended 2026-09-27T21:22:50.324Z, child exit 0, 4/4 focused tests across two files.",
+  "compile_attempt": "showcase-d44-compile-001 refused before child launch at 2026-09-27T21:22:57.865Z with RESOURCE_LEGACY_RUNNER_BUSY; no compile verdict. No further child launch attempted in this lane.",
+  "next_action": "When sole guarded permit is available, run combined compile on frozen D44 source, then exact-path commit and independent installed-extension verification. A build and real-site replay remain required before D44 closure."
 }

@@ -12,6 +12,16 @@ function safeArg(v: unknown): unknown {
   return v === undefined ? {} : v;
 }
 
+function extractionRows(
+  result: chrome.scripting.InjectionResult<ExtractedRow[]>[],
+): ExtractedRow[] {
+  const rows = result?.[0]?.result;
+  if (!Array.isArray(rows)) {
+    throw new Error('The page did not return an extraction result. Try running the pattern again.');
+  }
+  return rows;
+}
+
 /**
  * Thrown when a saved pattern's kind can't be re-run via a plain in-page pass
  * (ai_extract, network_capture). Surfaces catch this to route the pattern to
@@ -60,7 +70,7 @@ export async function runPattern(
     args: [safeArg(config)],
   });
 
-  return (result?.[0]?.result ?? []) as ExtractedRow[];
+  return extractionRows(result);
 }
 
 export async function detectModeInPage(
@@ -104,5 +114,5 @@ export async function runMode(
     func: mode.runInPage as (cfg: unknown) => ExtractedRow[],
     args: [safeArg(config)],
   });
-  return (result?.[0]?.result ?? []) as ExtractedRow[];
+  return extractionRows(result);
 }

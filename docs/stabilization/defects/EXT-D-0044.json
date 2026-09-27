@@ -24,9 +24,9 @@
   ],
   "severity": "S2: saved recipes can silently produce unrelated data or misrepresent no matching data as a successful intended replay.",
   "priority": "P1: directly affects reliable reopen-and-repeat behavior in the requested Showcase workflow.",
-  "state": "triaged",
-  "reproduction_status": "source-confirmed; runtime scenarios pending",
-  "verification_status": "source-only; installed-extension behavior and stale-completion race unverified",
+  "state": "in-fix",
+  "reproduction_status": "source-boundary red confirmed for absent-root widening, missing Chrome result, route guidance, and stale run completion; installed-extension scenarios pending",
+  "verification_status": "guarded focused green 4/4 across two files; combined compile refused pre-child by resource guard; installed-extension behavior pending",
   "transition_history": [
     {
       "at": "2026-09-27",
@@ -39,6 +39,12 @@
       "from": "open",
       "to": "triaged",
       "reason": "Confirmed source paths for route omission, document-wide fallback and zero-row success handling; no runtime result claimed. Root ruled route guidance must remain nonblocking and empty results must be labeled honestly."
+    },
+    {
+      "at": "2026-09-27T21:21:00.094Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Guarded mode/probe regression failed 2/2 at the intended boundaries, and guarded Patterns UI regression failed 2/2 for missing route guidance and stale old-page rows. Focused repairs are underway."
     }
   ],
   "closure_requirement": "Add meaningful red/green coverage for route guidance with explicit Run still enabled, absent-root no-widening, truthful zero-row outcomes and current-page completion provenance. Then verify with an owned uniquely named pattern on real same-host pages using the installed build; confirm intended rows, no unrelated rows, honest no-match display, and navigation behavior. Preserve guest/member denial evidence under existing EXT-F-1012-T38 rather than duplicating it."

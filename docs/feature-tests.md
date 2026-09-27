@@ -1351,9 +1351,17 @@ Every entry follows this shape:
   3. Run an ai_extract pattern → agent re-extracts the current page.
   4. Rename to a name that already exists → inline collision error.
   5. Delete: first click arms (red), second click deletes; arms off in 3s.
+  6. Reopen a pattern saved for `/calendar/` while viewing another route on
+     the same host. Verify the route notice appears and Run remains enabled.
+     Run a list pattern whose saved root is missing while unrelated matching
+     cards exist elsewhere; then run a saved pattern with legitimate zero rows.
+     Navigate while a run is pending and confirm old-page rows do not appear.
 - **Expected:** Supabase outages show an error banner with Retry — NEVER the
   "no saved patterns" empty state; a no-match network re-run shows guidance
-  and does NOT mark the pattern broken.
+  and does NOT mark the pattern broken. An absent configured list root never
+  widens to the document. Zero rows say "No matching data" rather than
+  reporting success; off-route rows are presented for review without an ok
+  health mark. Old-page runs and pattern lists never replace the new page.
 
 ### Showcase — preview configuration survives later edits
 - **What it does:** Saving a preview keeps the exact settings that produced

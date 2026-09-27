@@ -51,8 +51,14 @@ export const listPatternMode: ExtractionMode<ListPatternConfig> = {
 
     let scope: ParentNode = document;
     if (cfg.list_root) {
-      const root = document.querySelector(cfg.list_root);
-      if (root) scope = root;
+      let root: Element | null = null;
+      try {
+        root = document.querySelector(cfg.list_root);
+      } catch {
+        return [];
+      }
+      if (!root) return [];
+      scope = root;
     }
 
     let items: Element[] = [];
@@ -125,8 +131,14 @@ export function probeFirstRowInPage(
 
   let scope: ParentNode = document;
   if (cfg.list_root) {
-    const root = document.querySelector(cfg.list_root);
-    if (root) scope = root;
+    let root: Element | null = null;
+    try {
+      root = document.querySelector(cfg.list_root);
+    } catch {
+      return null;
+    }
+    if (!root) return null;
+    scope = root;
   }
   let item: Element | null;
   try {
