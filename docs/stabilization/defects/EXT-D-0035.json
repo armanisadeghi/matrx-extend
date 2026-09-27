@@ -16,13 +16,14 @@
     "docs/stabilization/reports/screenshot-icon-hit-repair.json",
     "tests/browser/screenshot-capture-acceptance.mjs",
     "tests/browser/settings-panel-driver.mjs",
-    "src/features/screenshots/ScreenshotsView.tsx"
+    "src/features/screenshots/ScreenshotsView.tsx",
+    "docs/stabilization/reports/screenshot-icon-driver-peer.json"
   ],
   "severity": "S3: acceptance pointer helper blocks control verification; no product defect established",
   "priority": "P1: correct the helper before the next resource-admitted native run",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "/root/screenshot_controls_batch",
-  "fix_commits": [],
+  "fix_commits": ["84d63d0e"],
   "transition_history": [
     {
       "at": "2026-09-27T11:16:03Z",
@@ -41,6 +42,13 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "The runner now checks exact owned-card identity before using the established clipped and stable pointer driver for thumbnail and icon; browser verification remains pending."
+    },
+    {
+      "at": null,
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent source peer accepted canonical stable/clipped pointer dispatch and exact owned-card guard; syntax/format passed. Fresh .95 native retest required.",
+      "timestamp_basis": "Recorded after source fix commit 84d63d0e; native retest not performed."
     }
   ],
   "closure_requirement": "Peer accepts the stable clipped hit guard and privacy-safe failure categories; a fresh admitted native run clicks icon and verifies its exact owned Files route, then reaches actual Copy and Cancel outcomes with exact owned cleanup."
