@@ -1,6 +1,6 @@
 # Matrx Extend stabilization: resume here
 
-Checkpoint: 2026-09-27. Goal active and incomplete. This turn made progress: real warm Screenshot Refresh and thumbnail Files navigation passed; real failure-recovery deletion passed and D32 closed; missing-runtime reporting repair passed independent negative-path verification and D33 closed. Remaining Screenshot controls and all broader mode coverage are still open.
+Checkpoint: 2026-09-27. Goal active and incomplete. Latest turn repaired D35 synchronization and passed independent source review, but the native retest was refused by the resource guard. Earlier verified progress: real warm Screenshot Refresh and thumbnail Files navigation passed; real failure-recovery deletion passed and D32 closed; missing-runtime reporting repair passed independent negative-path verification and D33 closed. Remaining Screenshot controls and all broader mode coverage are still open.
 
 ## Source and runtime
 
@@ -23,13 +23,13 @@ Inventory is authoritative:205 features,1297 controls,702 cases. The added auth 
 
 ## Next actions
 
-Diagnose the new owned-card identity failure in .95 controls001 before any further browser run. Sol medium lane `/root/screenshot_identity_repair` owns a bounded harness repair and focused regression; no browser/build authority yet. D35 stable pointer source repair has not received runtime icon proof. The repeated blockage requires a changed evidence-backed approach, not another blind retry. After the repair, use a fresh independent peer and one guarded native run. Separate Files icon, actual Copy URL, Cancel retaining exact row, final Delete and broader modes remain open.
+D35 follow-up b41ac842 now requires a completed real read for the restored fixture and exact owned row/file plus rendered-card agreement. Focused guard red/green passed2/2; independent source peer accepted. Native retest controls-dev095-002 DID NOT LAUNCH: resource guard refused pressure level2 (required1) and swap growth above256MiB. No Chrome or harness process remained. Recovery requires3 healthy15-second samples under existing policy; do not lower limits or kill foreign processes. When resources recover, run one guarded .95 controls verification with the still-valid receipt. No further source repair is indicated by a preflight refusal. Separate icon, Copy, Cancel and normal final Delete remain pending. Report: `reports/screenshot-identity-native-peer.json`.
 
 D34 FIXED awaiting remaining icon/Copy targets: thumbnail redirect oracle passed .94 controls003; apex redirects308 to www on same exact Files path. Copy correctly expects product apex URL without navigation. D35 FIXED awaiting native icon retest; .94 failed its old one-shot center hit test before product click. D32 CLOSED: .94 controls002 and003 both exercised real error recovery and proved exact owned-row deletion by fresh read. D33 CLOSED: actual missing explicit module gave expected code browser_runtime_playwright_unavailable, zero cases and no Chrome launch; unknown text is excluded by allowlist and positive native runtime remains functional.
 
 F1009T01/T02/T04/T06/T07 contain only verified warm-admin substeps, not whole-case passes. Keep Copy/Cancel and full-page capture open. Historical .93/.94 first capture rows have unknown disposition because exact recovery identity was not retained; never delete by title/recency. Future owned fixtures should retain a private recovery identity before assertions so cleanup can be targeted after a failure; this is a follow-up, not implemented yet. Never reuse the reserved Source checkpoint.
 
-The .95 native runner is terminal; the bounded identity-repair lane is active at this intermediate checkpoint. No guarded job should remain; confirm actual process/agent state before launch. Default Luna medium for narrow execution, Sol medium for implementation. Last Luna omitted required runtime env and was rerouted; always explicitly export and assert the exact paths in the same launch shell. Root owns integration. Primary channel switch and ordinary-member access remain unresolved, with other actionable guest/admin testing still available.
+The .95 runners, repair lane and independent source/native peer are terminal. No browser job was launched by controls002; all dispatched work is accounted for. No guarded job should remain; confirm actual process/agent state before launch. Default Luna medium for narrow execution, Sol medium for implementation. Last Luna omitted required runtime env and was rerouted; always explicitly export and assert the exact paths in the same launch shell. Root owns integration. Primary channel switch and ordinary-member access remain unresolved, with other actionable guest/admin testing still available.
 
 ## Runtime and resource requirements
 

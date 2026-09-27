@@ -1,7 +1,11 @@
 {
   "id": "EXT-D-0035",
   "feature_id": "EXT-F-1009",
-  "case_ids": ["EXT-F-1009-T04", "EXT-F-1009-T05", "EXT-F-1009-T06"],
+  "case_ids": [
+    "EXT-F-1009-T04",
+    "EXT-F-1009-T05",
+    "EXT-F-1009-T06"
+  ],
   "surface": "Native screenshot acceptance pointer helper for the Open in Files icon",
   "auth_mode": "real admin with approved organization and owned localhost fixture",
   "reproduction": [
@@ -20,13 +24,18 @@
     "src/features/screenshots/ScreenshotsView.tsx",
     "docs/stabilization/reports/screenshot-icon-driver-peer.json",
     "docs/stabilization/runs/screenshot-controls-dev095-001.json",
-    "docs/stabilization/reports/screenshot-identity-repair.json"
+    "docs/stabilization/reports/screenshot-identity-repair.json",
+    "docs/stabilization/runs/screenshot-controls-dev095-002.json",
+    "docs/stabilization/reports/screenshot-identity-native-peer.json"
   ],
   "severity": "S3: acceptance pointer helper blocks control verification; no product defect established",
   "priority": "P1: correct the helper before the next resource-admitted native run",
   "state": "fixed",
   "owner": "/root/screenshot_identity_repair",
-  "fix_commits": ["84d63d0e"],
+  "fix_commits": [
+    "84d63d0e",
+    "b41ac842"
+  ],
   "transition_history": [
     {
       "at": "2026-09-27T11:16:03Z",
@@ -72,5 +81,6 @@
       "reason": "Source runner now requires a completed real read of the restored fixture and exact owned-row/card agreement before the next Files control. A permanent wrong row still fails closed. Focused no-browser guard and syntax pass; fresh native proof and independent peer review remain pending."
     }
   ],
-  "closure_requirement": "Fresh peer accepts the restored-fixture read and privacy-safe identity diagnostics, then an admitted native run clicks the separate icon and verifies its exact owned Files route, reaches actual Copy and Cancel outcomes, and proves exact owned cleanup."
+  "closure_requirement": "Fresh peer accepts the restored-fixture read and privacy-safe identity diagnostics, then an admitted native run clicks the separate icon and verifies its exact owned Files route, reaches actual Copy and Cancel outcomes, and proves exact owned cleanup.",
+  "native_retest_status": "Pending: resource guard refused before browser launch; not a product failure."
 }

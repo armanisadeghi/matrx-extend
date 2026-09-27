@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "run_id": "screenshot-controls-dev095-002",
+  "feature": "EXT-F-1009 owned native screenshot controls",
+  "source": {
+    "reviewed_commit": "b41ac8427b0ca1410b558b7eb7ce1588390502b8",
+    "dev_build_receipt": "test-results/source-dev-build-095-controls-20260927.json",
+    "dev_build_tree_sha256": "ea3bdb7c38ea99b3f01dcba3850480b58f86973cabaa2e8b12455dae42064d46",
+    "receipt_sha256": "c361e561500f428a39904287a56d60d93246abd4ec5bf62bd03768441da4a546",
+    "receipt_tree_matches": true
+  },
+  "native_run": {
+    "command": "node tests/browser/screenshot-capture-acceptance.mjs",
+    "resource_guard_admitted": false,
+    "resource_guard_terminal": "RESOURCE_PREFLIGHT_REFUSED",
+    "child_launched": false,
+    "status": "unverified",
+    "cases": {
+      "EXT-F-1009-T01": "unverified: native harness did not launch",
+      "EXT-F-1009-T04-thumbnail": "unverified: native harness did not launch",
+      "EXT-F-1009-T04-icon": "unverified: native harness did not launch",
+      "EXT-F-1009-T05": "unverified: native harness did not launch",
+      "EXT-F-1009-T06-cancel": "unverified: native harness did not launch",
+      "EXT-F-1009-T02-final-delete": "unverified: native harness did not launch"
+    },
+    "first_failure": {
+      "stage": "resource_preflight",
+      "code": "RESOURCE_PREFLIGHT_REFUSED",
+      "safe_diagnostics": {
+        "pressureLevel": 2,
+        "requiredPressureLevel": 1,
+        "swapGrowthExceededMiB": 256
+      }
+    },
+    "recovery": {
+      "healthySamplesRequired": 3,
+      "sampleIntervalSeconds": 15
+    },
+    "process_cleanup": "No resource guard, browser, or harness child remained after terminal refusal.",
+    "private_evidence": {
+      "directory": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-controls-dev095-002-private",
+      "stdout_sha256": "35d303f9c300cb7ee3d219adbb1e29ecfc00bdc219ee93beb0c92a2d2838dbfc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "file_mode": "0600",
+      "directory_mode": "0700"
+    }
+  },
+  "additional_capture_or_retry": false
+}

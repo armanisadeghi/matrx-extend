@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-identity-native-peer",
+  "feature_id": "EXT-F-1009",
+  "defect_id": "EXT-D-0035",
+  "source_verdict": {
+    "status": "accepted",
+    "reviewed_commit": "b41ac8427b0ca1410b558b7eb7ce1588390502b8",
+    "basis": "The runner waits for a completed gallery read for the fixture page after each Files tab closes, checks the exact owned row identity, then waits for the rendered card identity before allowing the next control click. The pre-click gate remains fail-closed. The .95 development artifact receipt matches the current unpacked tree and its recorded SHA-256."
+  },
+  "live_acceptance_verdict": {
+    "status": "unverified",
+    "reason": "The only guarded native invocation was refused at resource preflight before the browser or harness child launched. No target control was exercised.",
+    "first_failure_stage": "resource_preflight",
+    "safe_diagnostics": {
+      "pressureLevel": 2,
+      "requiredPressureLevel": 1,
+      "swapGrowthExceededMiB": 256,
+      "healthySamplesRequiredForRecovery": 3,
+      "sampleIntervalSeconds": 15
+    }
+  },
+  "evidence": {
+    "sanitized_run": "docs/stabilization/runs/screenshot-controls-dev095-002.json",
+    "private_stdout_sha256": "35d303f9c300cb7ee3d219adbb1e29ecfc00bdc219ee93beb0c92a2d2838dbfc",
+    "private_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "privacy": "Only fixed status fields, policy thresholds, counts, and cryptographic hashes are public; private logs remain mode 0600 in a mode 0700 directory. No URLs, row identifiers, credentials, clipboard contents, or screenshot bytes were recorded here."
+}
