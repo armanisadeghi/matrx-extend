@@ -13,11 +13,13 @@
   "actual": "Generic owned_harness_or_ui_stage_failed erases the failing operation; product versus test defect cannot be determined.",
   "evidence": [
     "docs/stabilization/runs/gallery-org-diag-dev096-001.json",
-    "docs/stabilization/reports/orgselection-shared-diagnosis.json"
+    "docs/stabilization/reports/orgselection-shared-diagnosis.json",
+    "docs/stabilization/runs/gallery-d37-dev096-001.json",
+    "docs/stabilization/reports/gallery-d37-peer.json"
   ],
   "severity": "S3: test diagnostic loss prevents reproducible triage",
   "priority": "P1: needed before next gallery run",
-  "state": "in-fix",
+  "state": "closed",
   "fix_commits": ["6ce22a41"],
   "transition_history": [
     {
@@ -37,6 +39,24 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Fixed allowlisted diagnostics committed; independent source/native peer active."
+    },
+    {
+      "at": "2026-09-27T12:20:02.479726+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh source peer accepted bounded diagnostics and unchanged acceptance checks."
+    },
+    {
+      "at": "2026-09-27T12:20:02.479726+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Admitted native run precisely identified initial_owned_empty_ui, HTTP200 zero rows and canonical=false with safe boundary evidence."
+    },
+    {
+      "at": "2026-09-27T12:20:02.479726+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Diagnostic-loss defect verified repaired; gallery behavior remains unverified at a separate marker precondition."
     }
   ],
   "closure_requirement": "Independent review confirms no private values leak; native run either passes target or returns precise safe failure-boundary evidence."

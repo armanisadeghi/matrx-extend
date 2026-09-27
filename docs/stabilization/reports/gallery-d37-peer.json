@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "run_id": "gallery-d37-dev096-001",
+  "source_sha": "780fb578a26895eb9208602d578d82119ef310c4",
+  "source_verdict": "PASS",
+  "native_verdict": "UNVERIFIED",
+  "source_review": {
+    "assertions_retained": [
+      "one exact real list GET failure",
+      "visible gallery error",
+      "trusted Refresh causes a new real HTTP 200 zero-row response",
+      "recovered empty UI",
+      "zero screenshot writes"
+    ],
+    "privacy": "report stores bounded booleans/counts and fixed safe error classes; excludes URLs, IDs, organization name, credentials, response body and images",
+    "assessment": "Initial real empty read remains a strict precondition; no acceptance assertion was loosened."
+  },
+  "native": {
+    "terminal": "RESOURCE_JOB_EXIT",
+    "child_exit_code": 1,
+    "stage": "initial_real_empty_read",
+    "step": "initial_owned_empty_ui",
+    "error_class": "other",
+    "matching_read_count": 1,
+    "status": 200,
+    "body_state": "matching_rows",
+    "row_count": 0,
+    "gallery": {
+      "active": true,
+      "selected": true,
+      "linked": true,
+      "canonical": false,
+      "refresh": true,
+      "error": false,
+      "empty": true,
+      "loading": false,
+      "cards": 0
+    },
+    "interpretation": "The real list read was valid and empty. Active/selected/linked gallery, Refresh, empty state, no error, no loading, and zero cards were observed; canonical marker was false. The failure-injection and recovery phases did not run."
+  },
+  "private_evidence": {
+    "log_path": "/Volumes/Samsung2TB/code/.stabilization-scratch/gallery-d37-dev096-001.private.log",
+    "log_mode": "600",
+    "log_sha256": "d4aa7df7495658f107e41c85b7149c66061ebe87677a9c7a499e5e0f60b9c97d",
+    "result_path": "test-results/screenshot-gallery-failure-4fd375b1-b53a-427d-b7da-8586ea495dbc.json",
+    "result_mode": "600",
+    "result_sha256": "d761d56855327c5fb222710535a165e3d86cbefacba64da43f1d39fbfb1d0c5b"
+  }
+}

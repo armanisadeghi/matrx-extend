@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "run_id": "gallery-d37-dev096-001",
+  "source_sha": "780fb578a26895eb9208602d578d82119ef310c4",
+  "feature": "EXT-F-1009-T08",
+  "status": "unverified",
+  "verdicts": {
+    "source": "PASS",
+    "native": "FAIL_AT_INITIAL_EMPTY_UI_PRECONDITION"
+  },
+  "build": {
+    "version": "0.2.96",
+    "tree_sha256": "a5abc189bcef64e66a3365c44eb29a08c66d0111692d9dee9be8b8f58c96d77d",
+    "receipt": "test-results/source-dev-build-096-screenshots-20260927.json"
+  },
+  "resource_guard": {
+    "admission": "RESOURCE_ADMITTED",
+    "terminal": "RESOURCE_JOB_EXIT",
+    "child_exit_code": 1
+  },
+  "first_failure": {
+    "stage": "initial_real_empty_read",
+    "code": "initial_gallery_read_unverified",
+    "step": "initial_owned_empty_ui",
+    "error_class": "other",
+    "diagnostic": {
+      "timeout": false,
+      "assertion": false,
+      "pointerCode": null
+    },
+    "matching_read_count": 1,
+    "matching_reads": [
+      {
+        "status": 200,
+        "failed": false,
+        "bodyState": "matching_rows",
+        "rowCount": 0
+      }
+    ],
+    "gallery": {
+      "active": true,
+      "selected": true,
+      "linked": true,
+      "canonical": false,
+      "refresh": true,
+      "error": false,
+      "empty": true,
+      "loading": false,
+      "cards": 0
+    }
+  },
+  "scope_limit": "Failure injection, visible error behavior, and Refresh recovery were not exercised because the initial empty-gallery UI lacked the canonical marker.",
+  "private_evidence": {
+    "log_path": "/Volumes/Samsung2TB/code/.stabilization-scratch/gallery-d37-dev096-001.private.log",
+    "log_mode": "600",
+    "log_sha256": "d4aa7df7495658f107e41c85b7149c66061ebe87677a9c7a499e5e0f60b9c97d",
+    "result_path": "test-results/screenshot-gallery-failure-4fd375b1-b53a-427d-b7da-8586ea495dbc.json",
+    "result_mode": "600",
+    "result_sha256": "d761d56855327c5fb222710535a165e3d86cbefacba64da43f1d39fbfb1d0c5b"
+  }
+}
