@@ -1,0 +1,48 @@
+{
+  "runId": "screenshot-fullpage-dev095-002",
+  "status": "unverified",
+  "scope": "One guarded native EXT-F-1009-T03 full-page capture acceptance run.",
+  "checkoutHead": "a9ed97cb45999b134ed42a3c3c5264963e1ef23d",
+  "build": {
+    "version": "0.2.95",
+    "treeSha256": "ea3bdb7c38ea99b3f01dcba3850480b58f86973cabaa2e8b12455dae42064d46",
+    "receiptPath": "test-results/source-dev-build-095-controls-20260927.json",
+    "receiptSha256": "c361e561500f428a39904287a56d60d93246abd4ec5bf62bd03768441da4a546"
+  },
+  "resourceRun": {
+    "admission": "RESOURCE_ADMITTED",
+    "runnerStarted": true,
+    "terminalCode": "RESOURCE_JOB_EXIT",
+    "childExitCode": 1,
+    "childSignal": null,
+    "terminalWrapperExitCode": 1
+  },
+  "assertions": {
+    "tallPersistence": "unverified",
+    "unsupportedPage": "unverified",
+    "persistenceFailure": "unverified",
+    "tileCap": "unverified"
+  },
+  "firstFailure": {
+    "stage": "real_full_page_capture",
+    "code": "full_page_stage_failed",
+    "timeout": false,
+    "assertion": false,
+    "pointerCodePresent": false
+  },
+  "cleanup": {
+    "exactOwnedRowAbsentAfterRealRead": true,
+    "createdRowMayNeedUiCleanup": false,
+    "resourceGuardProcessTerminal": true,
+    "resourceLeaseRootEmptyAfterTerminal": true,
+    "resourceHeavyLeaseAbsentAfterTerminal": true
+  },
+  "evidence": {
+    "privateAcceptanceResultPath": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-fullpage-dev095-002.acceptance-result.private.json",
+    "privateAcceptanceResultMode": "0600",
+    "privateAcceptanceResultSha256": "22a42e6f352f37f3626e4edee14beab9a945b238bd9debb7d69ea0838855ec7a",
+    "privateWrapperLogPath": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-fullpage-dev095-002.private.log",
+    "privateWrapperLogMode": "0600",
+    "privateWrapperLogSha256": "1d2459fdcf04fb94fe2f1a3fd47981f3fae22715657b6ccca3f3a7545661ce56"
+  }
+}

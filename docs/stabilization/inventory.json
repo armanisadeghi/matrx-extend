@@ -12717,11 +12717,11 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "screenshot-fullpage-dev095-001",
-              "evidence": "docs/stabilization/runs/screenshot-fullpage-dev095-001.json",
+              "run_id": "screenshot-fullpage-dev095-002",
+              "evidence": "docs/stabilization/runs/screenshot-fullpage-dev095-002.json",
               "verified_substeps": [],
               "remaining_criteria": [
-                "Native launch refused by resource guard before Chrome; no product behavior exercised.",
+                "Native capture-stage failure full_page_stage_failed requires diagnosis; owned-row cleanup verified. No full-page assertion passed.",
                 "Full-page warm, unsupported page, persistence failure, tile cap, reload and member mode remain unverified."
               ]
             }
@@ -12999,7 +12999,8 @@
             "screenshot-controls-dev095-001",
             "screenshot-controls-dev095-002",
             "screenshot-controls-dev095-003",
-            "screenshot-fullpage-dev095-001"
+            "screenshot-fullpage-dev095-001",
+            "screenshot-fullpage-dev095-002"
           ],
           "retest_status": "partial"
         }
