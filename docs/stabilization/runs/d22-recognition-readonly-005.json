@@ -1,0 +1,24 @@
+{
+  "run_id": "d22-recognition-readonly-005",
+  "status": "resource_refused",
+  "wrapper_exit_code": 2,
+  "child_started": false,
+  "build": {
+    "version": "0.2.85",
+    "tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff"
+  },
+  "raw_result": null,
+  "log_path": "/tmp/matrx-d22-recognition-readonly-005.log",
+  "log_sha256": "d311ec240f3a57180e645cd1e5ba9dab782650fd1fb16137fc33f4c00e2b916e",
+  "guard_event": {
+    "at": "2026-09-27T04:21:20.782Z",
+    "code": "RESOURCE_PREFLIGHT_REFUSED",
+    "pressure_level": 2,
+    "available_memory_gib": 5.28,
+    "required_memory_gib": 4,
+    "reasons": ["RESOURCE_PRESSURE_UNSAFE", "RESOURCE_SWAP_GROWTH"]
+  },
+  "raw_result_preservation": "not_applicable_child_not_started",
+  "lease": "absent_after_refusal",
+  "classification": "Infrastructure refusal only; no browser run, Source lookup, product result, or acceptance verdict."
+}
