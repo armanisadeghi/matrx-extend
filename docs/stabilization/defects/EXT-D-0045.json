@@ -1,0 +1,42 @@
+{
+  "id": "EXT-D-0045",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T23", "EXT-F-1012-T24", "EXT-F-1012-T51"],
+  "surface": "Showcase List Pattern picker cancellation after changing a configured draft scope",
+  "auth_mode": "admin",
+  "reproduction": [
+    "On a repeated-card page, configure collection A with a title or URL field and run Extract so a useful preview is visible.",
+    "Click Pick more fields, press Restart inside the page overlay, click an element inside a different repeated collection B, and explicitly choose B's scope.",
+    "Press Cancel inside the overlay without pressing Done. Inspect the List Pattern editor and prior preview."
+  ],
+  "expected": "Cancel discards the entire in-progress picker transaction. Collection A, its selected fields, and its prior preview remain usable. Explicit Done may commit B even with zero fields so the existing inspector workflow can suggest fields for B.",
+  "actual_source_confirmed": "Choosing B emits data:list-picker-item-detected immediately. ListPatternTab handles it before Done by invalidating the preview and replacing A plus its fields with B plus an empty field_paths array. Cancel emits only data:list-picker-exit and the sidepanel handler merely closes the session; A and its preview are not restored. This affects the unsaved builder draft, not a previously persisted saved pattern record.",
+  "root_cause_source_confirmed": "The picker sends an early scope event to populate suggested fields, while the sidepanel treats that provisional event as a committed config replacement. No session-local draft/commit boundary exists between scope selection and Done.",
+  "source_evidence": [
+    "src/lib/data-pattern/list-picker.ts:185-209 selectScope announces B before Done",
+    "src/features/showcase/tabs/ListPatternTab.tsx:201-225 detected handler replaces a mismatched collection and clears preview",
+    "src/lib/data-pattern/list-picker.ts:368-399 Restart is picker-local and Cancel sends exit only",
+    "src/features/showcase/tabs/ListPatternTab.tsx:227-230 exit handler only closes the session",
+    "docs/stabilization/inventory.json EXT-F-1012-T23 expects Cancel without applying picks"
+  ],
+  "runtime_evidence_limit": "Installed 0.2.108 run showcase-installed-d43-001 observed Restart/Cancel after choosing the correct scope in a fresh picker. It did not start with a configured A plus fields and did not exercise replacement by B; this stronger loss scenario is source-confirmed but not yet live-reproduced.",
+  "severity": "S2: Cancel can irreversibly discard an unsaved list definition and its preview.",
+  "priority": "P1: core detect, select, extract workflow and an explicit existing Cancel contract.",
+  "state": "triaged",
+  "transition_history": [
+    {
+      "at": "2026-09-27",
+      "from": null,
+      "to": "open",
+      "reason": "Source trace identified a configured-draft loss scenario behind the live picker cancellation observation."
+    },
+    {
+      "at": "2026-09-27",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Confirmed the pre-Done item-detected handler mutates the committed editor while Cancel only closes the picker; distinguished unsaved draft loss from persisted data."
+    }
+  ],
+  "repair_direction": "Stage provisional picker scope/fields within the active session and use the staged scope to display suggested fields without replacing the committed editor or preview. Commit on Done, discard on Cancel. Keep zero-field Done as a valid explicit scope selection, and retain D42 page/session nonce guards.",
+  "red_guard_plan": "A component test must start with A+field+preview, enter the actual Pick more fields session, Restart, select B using the real page picker, Cancel, and assert A+field+preview survive. Sibling assertions: Done B commits B with zero fields; same-scope Done appends a field; late or wrong-session/page events cannot apply the staged scope. Run the guard red before product edits, then green and inspect the installed extension on real nested lists."
+}

@@ -15497,6 +15497,9 @@
           "expected": [
             "Picker overlay opens on active tab and cancel returns without applying picks."
           ],
+          "defect_ids": [
+            "EXT-D-0045"
+          ],
           "dimensions": [
             "warm",
             "reload",
@@ -15521,6 +15524,9 @@
           ],
           "expected": [
             "Done transfers candidates into editor; Restart clears current picker selection and begins again."
+          ],
+          "defect_ids": [
+            "EXT-D-0045"
           ],
           "dimensions": [
             "warm",
@@ -16288,7 +16294,8 @@
             "cancel"
           ],
           "defect_ids": [
-            "EXT-D-0043"
+            "EXT-D-0043",
+            "EXT-D-0045"
           ],
           "results": {
             "admin": {
