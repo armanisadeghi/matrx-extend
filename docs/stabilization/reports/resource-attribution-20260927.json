@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "at": "2026-09-27T12:31:10Z",
+  "scope": "Read-only attribution for gallery-d38-dev096-001 and gallery-d38-dev096-002 prelaunch refusals",
+  "source_evidence": {
+    "run_001": "docs/stabilization/runs/gallery-d38-dev096-001.json",
+    "run_002": "docs/stabilization/runs/gallery-d38-dev096-002.json",
+    "policy": "docs/stabilization/resource-policy.json",
+    "ownership_contract": "scripts/stabilization-resource.mjs"
+  },
+  "run_refusals": {
+    "run_001": ["RESOURCE_PRESSURE_UNSAFE", "RESOURCE_SWAP_GROWTH"],
+    "run_002": ["RESOURCE_PRESSURE_UNSAFE"],
+    "both_children_launched": false
+  },
+  "current_host_sample": {
+    "pressure_level": 1,
+    "normal_pressure_level": 1,
+    "available_memory_gib_guard_metric": 12.06,
+    "required_memory_gib": 4,
+    "swap_used_mib": 5012.19,
+    "swap_total_mib": 6144,
+    "one_minute_load": 4.47,
+    "logical_cpus": 10,
+    "load_per_logical_cpu": 0.447,
+    "cpu_busy_fraction_single_sample": 0.4171,
+    "cpu_sample_caveat": "Single instantaneous sample, not the guard's 60-second admission average.",
+    "sampled_at_local": "2026-09-27 05:31:10 America/Los_Angeles"
+  },
+  "ownership_attribution": {
+    "campaign_owned_live_jobs_proven": 0,
+    "resource_owner_tokens_found": 0,
+    "guard_heavy_lease_present": false,
+    "unsafe_hold_present": false,
+    "lease_root_empty": true,
+    "finding": "No live campaign-owned job or guard lease is contributing at inspection time. Existing old profile directories and run logs do not establish live ownership. The two D38 children were never launched, so neither created browser/test jobs.",
+    "historical_profile_directories_observed": 5,
+    "historical_profile_directories_note": "Five old profile directories from unrelated dev089/contained-navigation/SEO/debug-export runs exist under scratch; they are not proof of live jobs or ownership and are not active D38 profile paths."
+  },
+  "resource_conclusion": "The historical guard refusal cannot be attributed to campaign-owned leftovers from available live ownership evidence. The host is currently at normal pressure and above the configured available-memory threshold; swap occupancy is high (about 5.0 of 6.0 GiB), but no present run-specific swap growth can be inferred from a single sample. Current evidence points to a transient/external host resource condition at refusal time, with attribution to a specific external process unproven.",
+  "safe_next_action": "Wait for resource admission conditions to remain healthy; then perform one explicitly authorized guarded D38 run. Keep the guard thresholds unchanged and do not terminate unrelated processes."
+}
