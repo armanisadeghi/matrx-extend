@@ -12644,7 +12644,10 @@
               ],
               "evidence": "docs/stabilization/runs/screenshot-controls-dev094-002.json"
             }
-          }
+          },
+          "defect_ids": [
+            "EXT-D-0033"
+          ]
         },
         {
           "id": "EXT-F-1009-T02",
@@ -12735,7 +12738,26 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "defect_ids": [
+            "EXT-D-0033",
+            "EXT-D-0034",
+            "EXT-D-0035"
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "screenshot-controls-dev094-003",
+              "verified_substeps": [
+                "Thumbnail opens exactly one new tab at exact owned Files route and ID on verified canonical www host."
+              ],
+              "remaining_criteria": [
+                "Separate icon failed test hit targeting before product click; D35 source repair awaits native retest.",
+                "Reload, service-error and member dimensions remain unverified."
+              ],
+              "evidence": "docs/stabilization/runs/screenshot-controls-dev094-003.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1009-T05",
@@ -12760,6 +12782,10 @@
             "warm",
             "reload",
             "service-error"
+          ],
+          "defect_ids": [
+            "EXT-D-0033",
+            "EXT-D-0034"
           ]
         },
         {
@@ -12802,7 +12828,8 @@
             }
           },
           "defect_ids": [
-            "EXT-D-0032"
+            "EXT-D-0032",
+            "EXT-D-0033"
           ]
         },
         {
@@ -12933,14 +12960,18 @@
           "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0031",
-            "EXT-D-0032"
+            "EXT-D-0032",
+            "EXT-D-0033",
+            "EXT-D-0034",
+            "EXT-D-0035"
           ],
           "run_ids": [
             "screenshot-capture-dev093-001",
             "screenshot-capture-dev094-001",
             "screenshot-capture-dev094-002",
             "screenshot-controls-dev094-001",
-            "screenshot-controls-dev094-002"
+            "screenshot-controls-dev094-002",
+            "screenshot-controls-dev094-003"
           ],
           "retest_status": "partial"
         }
