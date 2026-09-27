@@ -1,10 +1,7 @@
 {
   "id": "EXT-D-0043",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T24",
-    "EXT-F-1012-T29"
-  ],
+  "case_ids": ["EXT-F-1012-T24", "EXT-F-1012-T29"],
   "surface": "Showcase List Pattern manual field picking after Doctor recommends event cards",
   "auth_mode": "admin",
   "reproduction": [
