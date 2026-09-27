@@ -15,11 +15,13 @@
     "test-results/screenshot-capture-9e937791-f9e6-4a7a-b8c5-7c08b3ad26f2.json",
     "test-results/screenshot-capture-9e937791-f9e6-4a7a-b8c5-7c08b3ad26f2.fixture-failure.png (private local image; do not commit)",
     "tests/browser/screenshot-capture-acceptance.mjs",
-    "docs/stabilization/runs/screenshot-capture-dev094-001.json"
+    "docs/stabilization/runs/screenshot-capture-dev094-001.json",
+    "docs/stabilization/runs/screenshot-capture-dev094-002.json",
+    "docs/stabilization/reports/screenshot-capture-retest-peer.json"
   ],
   "severity": "S3: acceptance infrastructure falsely rejects a real capture; no product capture defect established",
   "priority": "P1: unblock owned native capture verification",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/screenshot_capture_repair",
   "fix_commits": ["bc55f7bd"],
   "transition_history": [
@@ -46,6 +48,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source correction is in place and syntax-checked; peer review and guarded native retest remain pending."
+    },
+    {
+      "at": "2026-09-27T10:41:23.500Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent native .94 capture decoded actual persisted preview and all three fixture bands matched under unchanged color tolerance; normal owned-row deletion also passed."
+    },
+    {
+      "at": "2026-09-27T10:41:23.500Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Fresh independent native .94 capture decoded actual persisted preview and all three fixture bands matched under unchanged color tolerance; normal owned-row deletion also passed."
     }
   ],
   "closure_requirement": "Independent peer verifies strip geometry and pixel assertion; guarded native retest proves three real decoded preview bands match."
