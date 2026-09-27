@@ -174,6 +174,31 @@ describe('Showcase preview provenance', () => {
     expect(hook.result.current.previewConfig).toEqual({ table_index: 0 });
   });
 
+  it('discards a pending extraction when a picker restart resets the preview', async () => {
+    let releaseRun: ((rows: { pickup_day: string }[]) => void) | undefined;
+    mocks.runMode.mockImplementationOnce(
+      () =>
+        new Promise<{ pickup_day: string }[]>((resolve) => {
+          releaseRun = resolve;
+        }),
+    );
+    const hook = renderHook(() => useExtraction('list_pattern', { autoDetect: false }));
+
+    let runPromise: Promise<Record<string, unknown>[]> | undefined;
+    act(() => {
+      runPromise = hook.result.current.run({ item_selector: 'article' });
+    });
+    act(() => hook.result.current.reset());
+    await act(async () => {
+      releaseRun?.([{ pickup_day: 'Friday' }]);
+      await runPromise;
+    });
+
+    expect(hook.result.current.running).toBe(false);
+    expect(hook.result.current.rows).toBeNull();
+    expect(hook.result.current.previewConfig).toBeNull();
+  });
+
   // Regression: saving the live table selector after an earlier preview wrote
   // a different table_index while appending the old preview's rows.
   it.each([

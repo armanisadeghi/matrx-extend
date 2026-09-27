@@ -126,7 +126,11 @@ export function useExtraction(modeId: string, options?: { autoDetect?: boolean }
   }, [autoDetect, detect, tab.id, tab.url]);
 
   const reset = useCallback(() => {
+    // Picking a new list on the same page invalidates a pending extraction.
+    // Its completion must neither restore old rows nor leave the spinner on.
+    runSeq.current += 1;
     setRows(null);
+    setRunning(false);
     setDetectError(null);
     setRunError(null);
     setSource(null);

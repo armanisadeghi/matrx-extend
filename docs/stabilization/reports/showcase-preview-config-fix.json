@@ -2,28 +2,31 @@
   "schema_version": 1,
   "defect_id": "EXT-D-0040",
   "recorded_at": "2026-09-27T15:28:24Z",
-  "status": "source repair written; hook-race red proven; table red/green and installed-extension verification pending resource admission",
+  "updated_at": "2026-09-27T15:55:40Z",
+  "status": "source repair and focused regression verified; installed-extension verification pending",
   "root_cause": "Preview rows and source were retained, but the executed mode configuration was not. SaveAsPattern received the current controls, which could change after extraction. Detection also shared a sequence counter with extraction, so tab activation could suppress a pending run's completion.",
   "repair": [
     "useExtraction now retains the executed config with preview rows and source, masks old-page results synchronously, and separates detection and run generations.",
     "Snapshot, JSON-LD, Microdata, Tables, and Framework pass previewConfig to SaveAsPattern; config-derived default names also use previewConfig.",
     "AI Extract captures the submitted agent/mandate, description, schema, and captured page; save and AI-to-list request consume that snapshot. Late capture/start failures and streamed responses cannot update a navigated page.",
-    "Recipes and Framework dump completions are guarded by page identity so a prior page cannot install a late preview or tree."
+    "Recipes and Framework dump completions are guarded by page identity so a prior page cannot install a late preview or tree.",
+    "List Pattern now saves the executed preview config, invalidates pending local work on Restart or picker replacement, and ignores delayed picker messages after Cancel. The shared reset also invalidates pending runs on the same page."
   ],
-  "regression": "tests/unit/save-as-pattern-organization-race.test.tsx contains two opposite Table selection changes through the real Tables tab and SaveAsPattern, asserting saved table_index and appended preview rows. A separate hook case checks that tab activation detection does not strand an in-flight extraction.",
+  "regression": "tests/unit/save-as-pattern-organization-race.test.tsx covers two opposite Table selection changes through TablesTab and SaveAsPattern, the tab-activation detection race, and reset during an in-flight run. tests/unit/showcase-doctor-list-handoff.test.tsx covers List Pattern restart/cancel lifecycle alongside its Doctor handoff.",
   "checks_completed": [
     "biome on changed TypeScript files",
     "git diff --check",
     "JSON syntax for defect record",
-    "Guarded baseline scratch run showcase-d40-red-002: hook activation race failed its behavior assertion with running=true on pre-fix source. The Table cases reached a missing PlayCircle test mock, now corrected."
+    "Guarded baseline scratch run showcase-d40-red-002: hook activation race failed its behavior assertion with running=true on pre-fix source.",
+    "Guarded baseline scratch run showcase-d40-table-red-004: both Table directions failed on the intended saved table_index mismatch; two existing organization cases passed.",
+    "Guarded final focused run showcase-d40-final-focused-002: 15/15 tests passed across the D39 and D40 files.",
+    "Guarded final compile showcase-d40-final-compile-002: tsc --noEmit exited 0."
   ],
   "checks_pending": [
-    "Guarded baseline scratch run showcase-d40-red-003 refused before Vitest child launch for RESOURCE_CPU_HIGH_LOAD_BUSY; Table red remains unproven",
-    "red/green focused Vitest after resource admission",
-    "changed-type compile",
+    "guarded development build and source receipt",
     "installed-extension save/reopen/rerun against real data",
     "independent verifier receipt"
   ],
-  "ownership_boundary": "ListPatternTab is being edited by the D39 lane; its required useExtraction.previewConfig wiring was sent to that worker. Network saved URL matching is the separate planned EXT-D-0041 repair. Route-scoped replay is a separate later defect.",
+  "ownership_boundary": "Network saved URL matching is the separate planned EXT-D-0041 repair. Same-page picker session identity is the preexisting EXT-D-0042 class and remains open; it does not change the D39 original-repro UI target. Route-scoped replay is a separate later defect.",
   "product_claim": "No live save/reopen/replay pass is claimed by this source repair."
 }

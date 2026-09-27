@@ -52,8 +52,10 @@ export function ListPatternTab() {
   latestPageKeyRef.current = pageKey;
   const lastPageKeyRef = useRef(pageKey);
   const pickPageKeyRef = useRef<string | null>(null);
+  const pickerSessionSeqRef = useRef(0);
   const inspectorSeqRef = useRef(0);
   const runSeqRef = useRef(0);
+  const sampleSeqRef = useRef(0);
   const listRecommendation = useShowcaseTabStore((s) => s.listRecommendation);
   const clearListRecommendation = useShowcaseTabStore((s) => s.clearListRecommendation);
   const [picking, setPicking] = useState(false);
@@ -82,20 +84,34 @@ export function ListPatternTab() {
   /** Live per-field sample values, probed using the SAME logic as the runner. */
   const [sampleValues, setSampleValues] = useState<Record<string, string | null>>({});
 
-  useEffect(() => {
-    if (lastPageKeyRef.current === pageKey) return;
-    lastPageKeyRef.current = pageKey;
+  const closePickerSession = useCallback(() => {
+    pickerSessionSeqRef.current += 1;
+    pickTabRef.current = null;
+    pickPageKeyRef.current = null;
+    setPicking(false);
+  }, []);
+
+  const invalidateBuilderWork = useCallback(() => {
     inspectorSeqRef.current += 1;
     runSeqRef.current += 1;
-    setConfig(null);
-    setConfigPageKey(null);
+    sampleSeqRef.current += 1;
     resetExtraction();
-    setError(null);
+    setInspecting(false);
     setCandidates(null);
     setInspectionStatus('idle');
     setSampleValues({});
     setSampleHtml([]);
-  }, [pageKey, resetExtraction]);
+  }, [resetExtraction]);
+
+  useEffect(() => {
+    if (lastPageKeyRef.current === pageKey) return;
+    lastPageKeyRef.current = pageKey;
+    closePickerSession();
+    invalidateBuilderWork();
+    setConfig(null);
+    setConfigPageKey(null);
+    setError(null);
+  }, [pageKey, closePickerSession, invalidateBuilderWork]);
 
   useEffect(() => {
     if (!listRecommendation) return;
@@ -106,15 +122,24 @@ export function ListPatternTab() {
       );
       return;
     }
+    closePickerSession();
+    invalidateBuilderWork();
     setConfig({
       list_root: listRecommendation.listRoot,
       item_selector: listRecommendation.itemSelector,
       field_paths: [],
     });
     setConfigPageKey(pageKey);
-    resetExtraction();
     setError(null);
-  }, [listRecommendation, clearListRecommendation, tab.id, tab.url, pageKey, resetExtraction]);
+  }, [
+    listRecommendation,
+    clearListRecommendation,
+    tab.id,
+    tab.url,
+    pageKey,
+    closePickerSession,
+    invalidateBuilderWork,
+  ]);
 
   useEffect(() => {
     // STRICT: only the SW's stamped rebroadcast counts. The raw content-
@@ -122,13 +147,17 @@ export function ListPatternTab() {
     // accepting it processed each pick TWICE and let window A's pick land
     // in window B's builder.
     const fromOurPick = (tabId: unknown) =>
-      typeof tabId === 'number' && tabId === pickTabRef.current;
+      typeof tabId === 'number' &&
+      tabId === pickTabRef.current &&
+      pickPageKeyRef.current === latestPageKeyRef.current;
     const offResult = on<ListPickerResult & { tab_id?: number | null }, { ack: true }>(
       CHANNELS.LIST_PICKER_RESULT,
       (payload) => {
         if (!fromOurPick(payload?.tab_id)) return { ack: true };
-        setPicking(false);
+        const sessionPageKey = pickPageKeyRef.current;
+        closePickerSession();
         if (payload?.list_root && payload.item_selector) {
+          invalidateBuilderWork();
           // Merge any newly-picked field_paths into existing config (so "Pick more
           // fields" appends rather than replaces).
           setConfig((prev) =>
@@ -139,8 +168,7 @@ export function ListPatternTab() {
                 }
               : payload,
           );
-          setConfigPageKey(pickPageKeyRef.current);
-          resetExtraction();
+          setConfigPageKey(sessionPageKey);
           setError(null);
         }
         return { ack: true };
@@ -158,6 +186,7 @@ export function ListPatternTab() {
     >(CHANNELS.LIST_PICKER_ITEM_DETECTED, (payload) => {
       if (!payload?.list_root || !payload.item_selector) return { ack: true };
       if (!fromOurPick((payload as { tab_id?: number | null }).tab_id)) return { ack: true };
+      invalidateBuilderWork();
       setConfig((prev) =>
         prev && prev.list_root === payload.list_root && prev.item_selector === payload.item_selector
           ? prev
@@ -168,7 +197,6 @@ export function ListPatternTab() {
             },
       );
       setConfigPageKey(pickPageKeyRef.current);
-      resetExtraction();
       setError(null);
       return { ack: true };
     });
@@ -176,7 +204,7 @@ export function ListPatternTab() {
       CHANNELS.LIST_PICKER_EXIT,
       (payload) => {
         if (!fromOurPick(payload?.tab_id)) return { ack: true };
-        setPicking(false);
+        closePickerSession();
         return { ack: true };
       },
     );
@@ -185,7 +213,7 @@ export function ListPatternTab() {
       offDetected();
       offExit();
     };
-  }, [resetExtraction]);
+  }, [closePickerSession, invalidateBuilderWork]);
 
   // Auto-run card inspector whenever the item selector changes.
   const runInspector = useCallback(async () => {
@@ -232,9 +260,11 @@ export function ListPatternTab() {
    */
   useEffect(() => {
     if (!tab.id || !config || config.field_paths.length === 0) {
+      sampleSeqRef.current += 1;
       setSampleValues({});
       return;
     }
+    const request = ++sampleSeqRef.current;
     const tid = tab.id;
     const cfgSnapshot = config;
     const handle = setTimeout(() => {
@@ -246,13 +276,18 @@ export function ListPatternTab() {
             args: [cfgSnapshot],
           });
           const row = (result?.[0]?.result as Record<string, string | null> | null) ?? {};
-          if (pageKey === latestPageKeyRef.current) setSampleValues(row ?? {});
+          if (request === sampleSeqRef.current && pageKey === latestPageKeyRef.current)
+            setSampleValues(row ?? {});
         } catch {
-          if (pageKey === latestPageKeyRef.current) setSampleValues({});
+          if (request === sampleSeqRef.current && pageKey === latestPageKeyRef.current)
+            setSampleValues({});
         }
       })();
     }, 300);
-    return () => clearTimeout(handle);
+    return () => {
+      clearTimeout(handle);
+      if (request === sampleSeqRef.current) sampleSeqRef.current += 1;
+    };
   }, [tab.id, config, pageKey]);
 
   // The content-script picker dies silently when the page navigates or the
@@ -263,13 +298,13 @@ export function ListPatternTab() {
     const onUpdated = (tabId: number, info: chrome.tabs.TabChangeInfo) => {
       if (tabId !== pickTab) return;
       if (info.status === 'loading' || info.url) {
-        setPicking(false);
+        closePickerSession();
         setError('The page navigated while picking — the picker closed. Pick again to continue.');
       }
     };
     const onRemoved = (tabId: number) => {
       if (tabId !== pickTab) return;
-      setPicking(false);
+      closePickerSession();
       setError('The tab closed while picking.');
     };
     chrome.tabs.onUpdated.addListener(onUpdated);
@@ -278,10 +313,11 @@ export function ListPatternTab() {
       chrome.tabs.onUpdated.removeListener(onUpdated);
       chrome.tabs.onRemoved.removeListener(onRemoved);
     };
-  }, [picking]);
+  }, [picking, closePickerSession]);
 
   const enterPicker = async () => {
     if (!tab.id || picking) return;
+    const session = ++pickerSessionSeqRef.current;
     setPicking(true);
     setError(null);
     pickTabRef.current = tab.id;
@@ -292,15 +328,17 @@ export function ListPatternTab() {
         files: ['content-scripts/list-picker.js'],
       });
     } catch (err) {
-      setPicking(false);
-      setError(friendlyPickError(err));
+      if (session === pickerSessionSeqRef.current) {
+        closePickerSession();
+        setError(friendlyPickError(err));
+      }
     }
   };
 
   /** Sidepanel-side cancel — recovers a stuck pick without touching the page UI. */
   const cancelPicker = async () => {
     const tabId = pickTabRef.current;
-    setPicking(false);
+    closePickerSession();
     if (!tabId) return;
     try {
       await chrome.scripting.executeScript({
@@ -658,10 +696,8 @@ export function ListPatternTab() {
                 onClick={() => {
                   setConfig(null);
                   setConfigPageKey(null);
-                  resetExtraction();
-                  setSampleHtml([]);
-                  setCandidates(null);
-                  setInspectionStatus('idle');
+                  closePickerSession();
+                  invalidateBuilderWork();
                 }}
                 className="rounded-full"
               >
@@ -702,7 +738,7 @@ export function ListPatternTab() {
           />
         )}
 
-        {rows && rows.length > 0 && previewConfig && (
+        {rows && rows.length > 0 && previewConfig != null && (
           <div className="flex justify-end">
             <SaveAsPattern
               kind="list_pattern"

@@ -6,6 +6,9 @@ const page = vi.hoisted(() => ({
   url: 'https://electronic.vegas/vegas-edm-event-calendar/',
   executeScript: vi.fn(),
 }));
+const pickerListeners = vi.hoisted(
+  () => new Map<string, (payload: Record<string, unknown>) => unknown>(),
+);
 
 vi.mock('@/hooks/use-active-tab', () => ({
   useActiveTab: () => ({ id: page.id, url: page.url, title: 'Vegas EDM Event Calendar' }),
@@ -13,7 +16,12 @@ vi.mock('@/hooks/use-active-tab', () => ({
 vi.mock('@/lib/storage/zustand-adapter', () => ({
   chromeLocalStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },
 }));
-vi.mock('@/lib/messaging/native', () => ({ on: () => () => {} }));
+vi.mock('@/lib/messaging/native', () => ({
+  on: (channel: string, handler: (payload: Record<string, unknown>) => unknown) => {
+    pickerListeners.set(channel, handler);
+    return () => pickerListeners.delete(channel);
+  },
+}));
 vi.mock('@/components/CopyMenu', () => ({ CopyMenu: () => null, CopyButton: () => null }));
 vi.mock('@/features/showcase/components/SaveAsPattern', () => ({
   SaveAsPattern: ({ config }: { config: unknown }) => (
@@ -32,6 +40,7 @@ vi.mock('@ai-matrx/design-system', () => ({
 
 import { DoctorTab } from '@/features/showcase/tabs/DoctorTab';
 import { ListPatternTab } from '@/features/showcase/tabs/ListPatternTab';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import { useShowcaseTabStore } from '@/state/showcase-tab';
 
 const detectedRoot = 'main > div.event-list';
@@ -93,7 +102,8 @@ beforeEach(() => {
   page.executeScript
     .mockReset()
     .mockImplementation(
-      async ({ func, args }: { func: (...values: unknown[]) => unknown; args?: unknown[] }) => {
+      async ({ func, args }: { func?: (...values: unknown[]) => unknown; args?: unknown[] }) => {
+        if (!func) return [];
         if (func.name === 'pageDiagnosticInPage') return [{ result: diagnostic }];
         return [{ result: func(...(args ?? [])) }];
       },
@@ -112,6 +122,7 @@ afterEach(() => {
   cleanup();
   document.querySelector('[data-showcase-handoff-fixture]')?.remove();
   vi.clearAllMocks();
+  pickerListeners.clear();
 });
 
 describe('Showcase Doctor recommendation handoff', () => {
@@ -139,6 +150,55 @@ describe('Showcase Doctor recommendation handoff', () => {
     fireEvent.change(screen.getByDisplayValue('name'), { target: { value: 'renamed_event' } });
     expect(screen.getByDisplayValue('renamed_event')).toBeTruthy();
     expect(JSON.parse(savedConfig.textContent ?? '{}').field_paths[0].name).toBe('name');
+  });
+
+  it('does not capture an old run sample after Restart', async () => {
+    render(<TestSurface />);
+    fireEvent.click(await screen.findByRole('button', { name: /5 repeating cards detected/i }));
+    fireEvent.click(await screen.findByRole('button', { name: /name Neon Nights at Area15/i }));
+    const normalExecute = page.executeScript.getMockImplementation();
+    let resolveRun: ((result: { result: Record<string, unknown>[] }[]) => void) | undefined;
+    page.executeScript.mockImplementation(
+      (request: { func?: (...values: unknown[]) => unknown; args?: unknown[] }) => {
+        if (request.func?.name === 'runInPage') {
+          return new Promise((resolve) => {
+            resolveRun = resolve;
+          });
+        }
+        return normalExecute?.(request);
+      },
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /^Extract$/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^Restart$/i }));
+    expect(await screen.findByRole('button', { name: /Pick an example item/i })).toBeTruthy();
+    const callsAfterRestart = page.executeScript.mock.calls.length;
+    await act(async () => resolveRun?.([{ result: [{ name: 'old result' }] }]));
+    expect(page.executeScript.mock.calls.length).toBe(callsAfterRestart);
+    expect(screen.queryByTestId('saved-pattern-config')).toBeNull();
+  });
+
+  it('ignores delayed stamped picker messages after Cancel', async () => {
+    render(<ListPatternTab />);
+    fireEvent.click(screen.getByRole('button', { name: /Pick an example item/i }));
+    fireEvent.click(await screen.findByRole('button', { name: /^Cancel$/i }));
+    act(() => {
+      pickerListeners.get(CHANNELS.LIST_PICKER_ITEM_DETECTED)?.({
+        tab_id: 77,
+        list_root: detectedRoot,
+        item_selector: detectedItem,
+        item_count: 5,
+      });
+      pickerListeners.get(CHANNELS.LIST_PICKER_RESULT)?.({
+        tab_id: 77,
+        list_root: detectedRoot,
+        item_selector: detectedItem,
+        field_paths: [],
+      });
+    });
+
+    expect(screen.getByRole('button', { name: /Pick an example item/i })).toBeTruthy();
+    expect(screen.queryByText(detectedRoot)).toBeNull();
   });
 
   it('rejects a recommendation after the active page changes', async () => {

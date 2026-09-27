@@ -1145,6 +1145,9 @@ Every entry follows this shape:
   tab change, the old List Pattern config/preview disappears. If the detected
   root or items are gone, the suggested-fields area says so and offers a fresh
   probe or manual pick; an inspector failure never claims all fields were selected.
+  Start Extract and click Restart before it finishes: no old preview or sample
+  returns. Start the picker and click Cancel: delayed picker messages do not
+  fill the builder.
 - **Edge cases:** giant pages (50k+ elements) still probe quickly — the
   repeating-group scan is capped at 20k elements.
 - **Byte sizes come from the package, including inside the recommendations
