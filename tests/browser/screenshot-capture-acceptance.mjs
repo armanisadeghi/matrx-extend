@@ -60,6 +60,14 @@ function safeObservation(value) {
       'network_failure',
       'body_invalid',
       'body_unavailable',
+      'apex',
+      'canonical_www',
+      'other_origin',
+      'owned_files',
+      'other_file',
+      'login',
+      'other_route',
+      'invalid_url',
     ].includes(value)
       ? value
       : { valuePresent: value.length > 0 };
@@ -750,7 +758,40 @@ async function verifyOwnedFilesTab(panel, fixtureUrl, fileId, index) {
   const before = await ownedTabs(panel);
   const original = before.find((tab) => tab.url === fixtureUrl);
   if (!original?.active || !Number.isInteger(original.id)) fail('owned_fixture_tab_not_active');
-  const expected = `https://aimatrx.com/files/f/${encodeURIComponent(fileId)}`;
+  const exactPath = `/files/f/${encodeURIComponent(fileId)}`;
+  const apex = `https://aimatrx.com${exactPath}`;
+  // This deployed frontend returns a single 308 from apex to www on the
+  // same Files route. The product creates the apex URL; Chrome reports the
+  // navigated URL. Both permitted URLs still require this exact file ID.
+  const canonicalWww = `https://www.aimatrx.com${exactPath}`;
+  const classify = (value) => {
+    if (typeof value !== 'string')
+      return { originClass: 'invalid_url', routeClass: 'invalid_url', exactFilesUrl: false };
+    try {
+      const url = new URL(value);
+      const originClass =
+        url.origin === 'https://aimatrx.com'
+          ? 'apex'
+          : url.origin === 'https://www.aimatrx.com'
+            ? 'canonical_www'
+            : 'other_origin';
+      const routeClass =
+        url.pathname === exactPath && !url.search && !url.hash
+          ? 'owned_files'
+          : url.pathname.startsWith('/files/f/')
+            ? 'other_file'
+            : url.pathname === '/login'
+              ? 'login'
+              : 'other_route';
+      return {
+        originClass,
+        routeClass,
+        exactFilesUrl: value === apex || value === canonicalWww,
+      };
+    } catch {
+      return { originClass: 'invalid_url', routeClass: 'invalid_url', exactFilesUrl: false };
+    }
+  };
   try {
     await clickOwnedOpen(panel, index);
     await observedWait(
@@ -758,9 +799,9 @@ async function verifyOwnedFilesTab(panel, fixtureUrl, fileId, index) {
       async () => {
         const tabs = await ownedTabs(panel);
         const added = tabs.filter((tab) => !before.some((prior) => prior.id === tab.id));
-        return { count: added.length, exactCanonicalFilesUrl: added[0]?.url === expected };
+        return { count: added.length, ...classify(added[0]?.url) };
       },
-      (state) => state.count === 1 && state.exactCanonicalFilesUrl,
+      (state) => state.count === 1 && state.exactFilesUrl,
       30_000,
     );
   } finally {
@@ -778,7 +819,7 @@ async function verifyOwnedFilesTab(panel, fixtureUrl, fileId, index) {
     })()`,
     );
   }
-  return { exactCanonicalFilesUrl: true, newTabCount: 1, closedOwnedTab: true };
+  return { exactFilesUrlAtApexOrCanonicalWww: true, newTabCount: 1, closedOwnedTab: true };
 }
 
 async function copiedFilesUrl(page, panel, panelTarget, fileId) {

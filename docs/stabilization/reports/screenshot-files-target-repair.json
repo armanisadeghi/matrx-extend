@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-files-target-repair",
+  "scope": "Source/build and read-only HTTP diagnosis of controls-dev094-002; no browser rerun or runner edit.",
+  "cause": "The built ScreenshotsView uses ENV.FRONTEND_URL fallback https://aimatrx.com and opens /files/f/<encoded file id>. The runner expects that exact apex URL from chrome.tabs.query after navigation, but apex /files/f/probe returns 308 to www with the same route, which then returns 200.",
+  "evidence": {
+    "source": "src/features/screenshots/ScreenshotsView.tsx builds the Files URL from ENV.FRONTEND_URL and calls chrome.tabs.create; src/config/env.ts defaults FRONTEND_URL to the apex origin.",
+    "build": "The active 0.2.94 build's compiled FRONTEND_URL getter resolves to the apex fallback; no build-time WXT_FRONTEND_URL value is embedded.",
+    "http": "A read-only HEAD request to a non-file probe route on the apex returned 308 to www on the same Files route; the www route returned 200. No file ID, credentials, headers, or private response content were read or logged.",
+    "native": "The admitted native run observed exactly one new tab after trusted thumbnail click but failed strict apex equality during its 30-second wait; owned-row cleanup was verified."
+  },
+  "repair": "Keep the one-new-tab and exact encoded file ID/path oracle. Accept the exact final Files URL at the configured apex origin or its verified single-hop canonical www origin, using privacy-safe apex/www/other-origin and Files/login/other-route diagnostics. Source confirms the product's initial apex target and a read-only HEAD confirms the 308 redirect; no interception framework is needed. Copy must still equal the product-generated apex URL because clipboard text does not navigate. Close only the new tab and restore the owned fixture tab.",
+  "runner_owner": "D33 owns the runner until root releases it; this report makes no runner edit.",
+  "status": "D34 source oracle repaired; fresh native browser verification pending"
+}

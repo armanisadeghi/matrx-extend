@@ -1,0 +1,41 @@
+{
+  "id": "EXT-D-0034",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T04", "EXT-F-1009-T05"],
+  "surface": "Native screenshot Files target and Copy URL oracle",
+  "auth_mode": "real admin with approved organization and owned localhost fixture",
+  "reproduction": [
+    "Use the admitted 0.2.94 native screenshot controls runner to capture one owned screenshot and click its thumbnail.",
+    "The product opens one tab at the built apex Files URL, which redirects 308 to www on the same Files route.",
+    "The runner waits for final chrome.tabs.query URL to equal the pre-redirect apex URL and reports thumbnail_open_in_files unverified."
+  ],
+  "expected": "The runner verifies one new tab and its exact final Files URL, including the owned file ID, at the configured apex origin or its verified single-hop canonical www origin; Copy compares the un-navigated product apex URL.",
+  "actual": "One new tab was observed, but strict final-apex equality failed before icon, Copy, and Cancel could run.",
+  "evidence": [
+    "docs/stabilization/runs/screenshot-controls-dev094-002.json",
+    "docs/stabilization/reports/screenshot-files-open-diagnosis.json",
+    "docs/stabilization/reports/screenshot-files-target-repair.json",
+    "src/features/screenshots/ScreenshotsView.tsx",
+    "src/config/env.ts"
+  ],
+  "severity": "S3: acceptance oracle misclassifies a real Files open; no product failure established",
+  "priority": "P1: correct the oracle before the next resource-admitted native run",
+  "state": "in-fix",
+  "owner": "/root",
+  "fix_commits": [],
+  "transition_history": [
+    {
+      "at": "2026-09-27T11:05:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Source/build and read-only HTTP confirmed apex-to-www redirect behind the strict final-apex mismatch."
+    },
+    {
+      "at": "2026-09-27T11:15:00Z",
+      "from": "open",
+      "to": "in-fix",
+      "reason": "The runner now accepts only the exact owned Files URL at apex or the verified 308 canonical www destination and records privacy-safe mismatch categories; native verification remains pending."
+    }
+  ],
+  "closure_requirement": "Exact owned final Files route at apex or the verified canonical www redirect is checked without exposing file ID/URL; icon and Copy are separately exercised; a fresh admitted native run passes, and only its owned row/tabs are cleaned."
+}
