@@ -8,6 +8,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { nativeRuntimeFailureCode } from './native-runtime-failure.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
@@ -373,9 +374,12 @@ try {
   report.build.after = { ...buildAtEnd, extensionId: run.extensionId };
   report.build.artifactTreeMatchedAfter = true;
   report.profileOwned = run.verified === true;
-} catch {
+} catch (error) {
   report.status = 'unverified';
-  report.failure ??= { stage, driverFailure: { code: 'owned_harness_failed' } };
+  report.failure ??= {
+    stage,
+    driverFailure: { code: nativeRuntimeFailureCode(error) ?? 'owned_harness_failed' },
+  };
 }
 await mkdir(dirname(OUTPUT), { recursive: true });
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });

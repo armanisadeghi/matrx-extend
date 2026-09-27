@@ -14,9 +14,9 @@ export async function resolveBrowserRuntime({ chromeExecutable } = {}) {
   if (modulePath) {
     try {
       ({ chromium } = await import(pathToFileURL(resolve(modulePath))));
-    } catch (error) {
+    } catch {
       throw new Error(
-        `browser_runtime_playwright_unavailable: MATRX_PLAYWRIGHT_MODULE must name an installed Playwright module (${error.message})`,
+        'browser_runtime_playwright_unavailable: MATRX_PLAYWRIGHT_MODULE must name an installed Playwright module',
       );
     }
   } else {

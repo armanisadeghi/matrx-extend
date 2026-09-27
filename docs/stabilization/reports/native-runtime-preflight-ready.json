@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "scope": "EXT-D-0033 native runtime diagnostic; source fixed, native retry pending",
+  "cause": "Shared resolver refused missing Playwright before profile creation; native acceptance catches erased its code.",
+  "fix": "Allowlist four browser_runtime codes in capture, admin-readonly, guest, and debug native reports; strip raw import error text from resolver.",
+  "guard": "Resource-admitted Vitest tests/unit/native-runtime-failure.test.ts: 3 passed, including missing module and valid executable resolution without Chrome launch; node --check passed on four runners and helper.",
+  "failed_rounds": [
+    "First fixture probe failed when Vitest intercepted a dynamically created module path; hypothesis was fixture timing.",
+    "Second child probe failed because Vitest rewrote import.meta.url to http://localhost:3000; hypothesis changed to URL rewriting. Third probe used process.cwd() file URL and passed."
+  ],
+  "limits": "No new native UI case run for this infrastructure fix; screenshot-controls-dev094-002 reached real controls but has a separate thumbnail_open_in_files failure under D34.",
+  "files": [
+    "tests/browser/browser-runtime.mjs",
+    "tests/browser/native-runtime-failure.mjs",
+    "tests/unit/native-runtime-failure.test.ts",
+    "tests/browser/screenshot-capture-acceptance.mjs",
+    "tests/browser/screenshot-admin-readonly-acceptance.mjs",
+    "tests/browser/screenshot-guest-acceptance.mjs",
+    "tests/browser/debug-log-export-acceptance.mjs"
+  ]
+}

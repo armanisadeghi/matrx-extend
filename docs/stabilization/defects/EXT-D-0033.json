@@ -1,0 +1,46 @@
+{
+  "id": "EXT-D-0033",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T01", "EXT-F-1009-T04", "EXT-F-1009-T05", "EXT-F-1009-T06"],
+  "surface": "Native browser acceptance infrastructure: missing runtime diagnostic",
+  "auth_mode": "setup before browser launch",
+  "reproduction": [
+    "Run the current Screenshot controls native acceptance command without a resolvable Playwright module.",
+    "The shared resolver refuses before creating a profile with browser_runtime_playwright_missing.",
+    "The acceptance runner maps the error to owned_harness_or_ui_stage_failed and reports no safe runtime code, leaving zero product cases observed."
+  ],
+  "expected": "The result reports the allowlisted browser runtime prerequisite code without exposing exception text or host paths.",
+  "actual": "The result reports only a generic owned-profile failure after a resource-guarded attempt.",
+  "evidence": [
+    "docs/stabilization/runs/screenshot-controls-dev094-001.json",
+    "docs/stabilization/reports/screenshot-controls-setup-diagnosis.json",
+    "tests/browser/browser-runtime.mjs",
+    "tests/browser/screenshot-capture-acceptance.mjs"
+  ],
+  "severity": "S3: test infrastructure wastes a guarded native run and obscures setup failure; no product failure shown",
+  "priority": "P1: preserve safe setup reason before next native acceptance run",
+  "state": "fixed",
+  "owner": "/root/native_runtime_preflight",
+  "fix_commits": [],
+  "transition_history": [
+    {
+      "at": "2026-09-27T11:00:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "The controls run exited at owned_native_profile with zero cases and a null diagnostic code."
+    },
+    {
+      "at": "2026-09-27T11:00:00Z",
+      "from": "open",
+      "to": "in-fix",
+      "reason": "Source trace and isolated resolver reproduction identify the erased runtime prerequisite code; shared allowlist mapping is being added."
+    },
+    {
+      "at": "2026-09-27T11:03:29Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Known runtime codes now survive the native runner boundary without serializing exception text; the real resolver missing and valid-runtime probes passed under the resource guard. Native retry remains pending."
+    }
+  ],
+  "closure_requirement": "A missing-runtime case reports the exact allowlisted code before Chrome launch; a valid runtime still proceeds, and unknown exception text cannot enter the report."
+}

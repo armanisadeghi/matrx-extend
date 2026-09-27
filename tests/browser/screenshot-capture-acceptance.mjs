@@ -10,6 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
+import { nativeRuntimeFailureCode } from './native-runtime-failure.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
@@ -82,6 +83,7 @@ function safeFailure(error) {
     'pointer_release_dispatch_failed',
   ]);
   return {
+    runtimeCode: nativeRuntimeFailureCode(error),
     timeout: error?.name === 'TimeoutError',
     assertion: error?.code === 'ERR_ASSERTION',
     driverCode: codes.has(pointer?.code) ? pointer.code : null,
@@ -1187,7 +1189,10 @@ try {
 } catch (error) {
   report.status = 'unverified';
   report.failureDiagnostic = safeFailure(error);
-  report.failure ??= { stage, code: 'owned_harness_or_ui_stage_failed' };
+  report.failure ??= {
+    stage,
+    code: nativeRuntimeFailureCode(error) ?? 'owned_harness_or_ui_stage_failed',
+  };
 }
 await mkdir(dirname(OUTPUT), { recursive: true });
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });

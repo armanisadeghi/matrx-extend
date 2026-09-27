@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
+import { nativeRuntimeFailureCode } from './native-runtime-failure.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
@@ -816,9 +817,12 @@ try {
   report.build.after = { ...after, extensionId: run.extensionId };
   report.build.artifactTreeMatchedAfter = true;
   report.profileOwned = true;
-} catch {
+} catch (error) {
   report.status = 'unverified';
-  report.failure ??= { stage, code: 'owned_harness_or_ui_stage_failed' };
+  report.failure ??= {
+    stage,
+    code: nativeRuntimeFailureCode(error) ?? 'owned_harness_or_ui_stage_failed',
+  };
 }
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
 process.stdout.write(`${report.status.toUpperCase()} debug_log_export_acceptance\n`);

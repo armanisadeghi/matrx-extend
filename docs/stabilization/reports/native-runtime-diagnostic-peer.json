@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "scope": "EXT-D-0033 native runtime diagnostic delta only",
+  "result": "scoped_acceptance_with_test_scope_note",
+  "scoped_acceptance": {
+    "accepted": true,
+    "findings": [
+      "The helper returns only the four exact browser_runtime codes and rejects non-Error values or unknown prefixes; resolver import failures no longer include raw exception messages or paths.",
+      "The configured MATRX_PLAYWRIGHT_MODULE path and repository-local Playwright fallback remain intact.",
+      "The helper is wired into the catch/report paths for capture, admin-readonly, guest, and debug-log-export acceptance runners.",
+      "The focused tests cover missing configured import, valid module resolution and executable selection without launching Chrome, and strict code filtering. Child probes receive process.env, preserving inherited resource-owner environment values."
+    ]
+  },
+  "quality": {
+    "assessment": "The implementation is small and scoped; persisted diagnostics expose only an allowlisted code. Existing reports retain their fallback codes when the error is not a known runtime failure.",
+    "test_scope_note": "The subprocess test inherits the resource-owner environment but does not assert a particular owner identifier. Reported guarded suite result was 3/3 passed; not rerun for this peer review.",
+    "limitations": [
+      "No native UI retry was run for this infrastructure-only delta.",
+      "This report makes no product-health or browser-acceptance claim."
+    ]
+  },
+  "reviewed_files": [
+    "tests/browser/browser-runtime.mjs",
+    "tests/browser/native-runtime-failure.mjs",
+    "tests/unit/native-runtime-failure.test.ts",
+    "tests/browser/screenshot-capture-acceptance.mjs",
+    "tests/browser/screenshot-admin-readonly-acceptance.mjs",
+    "tests/browser/screenshot-guest-acceptance.mjs",
+    "tests/browser/debug-log-export-acceptance.mjs"
+  ]
+}
