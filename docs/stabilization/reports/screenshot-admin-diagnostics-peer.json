@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-admin-diagnostics-peer",
+  "reviewed_commit": "cc385003",
+  "feature_id": "EXT-F-1009",
+  "source_verdict": "accepted_for_guarded_diagnostic_runtime",
+  "runtime_verdict": "unverified_not_run_by_source_peer",
+  "prior_run_truth": "Admin run 002 ended within first_public_page with no gallery cases. That stage previously combined navigation, Screenshots click, network read, mounted UI, and response agreement; its exact failing boundary and any product root cause remain unproven.",
+  "checks": [
+    {
+      "name": "failure_boundary_resolution",
+      "result": "accepted_source",
+      "evidence": "The runner now labels first-page navigation, Screenshots click, real read wait, mounted gallery, and response agreement separately. Refresh, URL switch, real reload, and post-reload refresh receive corresponding stages. The failure report records the last fixed operation and category-only pointer or timeout fields."
+    },
+    {
+      "name": "acceptance_and_timing_preserved",
+      "result": "accepted_source",
+      "evidence": "observedWait delegates to the same waitFor with the same predicates and timeout arguments. completedRead still requires at least one completed matching request and exactly one at return. The trusted clicks, public fixtures, response-to-UI agreement, release checks, and overall partial/unverified outcomes are unchanged."
+    },
+    {
+      "name": "private_evidence_boundary",
+      "result": "accepted_source",
+      "evidence": "safeSurface returns page/active-tab match booleans, document readiness, selected-tab flags, avatar/dialog counts, and gallery counts/categories. The journal exposes request totals, expected-page booleans, HTTP status, finished flag, and fixed outcome categories. Observed wait states are fixed booleans/counts or string presence; no raw URL, request ID, organization/file ID, row body, credential, or exception message is written to the report."
+    },
+    {
+      "name": "interaction_boundary",
+      "result": "accepted_source",
+      "evidence": "The patch adds read-only CDP/DOM observations and no auth or tab-state injection, screenshot capture, clipboard, delete, gallery mutation, or database write action. Existing real sign-in and approved-workspace UI choice remain the only state-changing setup steps."
+    }
+  ],
+  "remaining": "A root-owned guarded diagnostic run is needed to identify the failing boundary. These source changes do not establish a product defect or change the unverified status of run 002."
+}
