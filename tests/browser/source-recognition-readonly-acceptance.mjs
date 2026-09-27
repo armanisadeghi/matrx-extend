@@ -501,6 +501,7 @@ async function probeExistingPublicPage(page, session, identity, deadline) {
       return { healthy: false, reason: 'http_not_success', status: documentStatus };
     const code = safeFailureCategory(error);
     if (UNAVAILABLE_PAGE_CODES.has(code)) return { healthy: false, reason: code };
+    report.failureCode ??= code;
     throw error;
   } finally {
     session.off('Network.requestWillBeSent', onRequest);
@@ -598,7 +599,9 @@ async function discoverFixture(panel, page, fixtureSession, reads, organizationI
       if (category === 'eligible') {
         diagnostics.publicEligible += 1;
         diagnostics.candidatePages.attempted += 1;
+        stage = 'candidate_public_page_navigation';
         const pageResult = await probeExistingPublicPage(page, fixtureSession, row.url, deadline);
+        stage = 'discover_existing_public_source';
         if (pageResult.healthy) {
           diagnostics.candidatePages.healthy += 1;
           return { fixture: row, origin: list.origin };
