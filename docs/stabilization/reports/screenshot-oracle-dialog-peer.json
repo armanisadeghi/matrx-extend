@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "review": "screenshot-oracle-dialog-peer",
+  "reviewer_role": "independent source peer",
+  "reviewed_commits": ["bc55f7bd47d8205197b9b8c25c88bcb70c6f767a", "8ed23029a4f644d5b66307a21af5daeae885218d"],
+  "acceptance": {
+    "status": "source_review_pass_guarded_run_pending",
+    "finding": "D31 geometry is sound: a fixed 24 CSS-pixel bottom strip overlays fixture content and the oracle samples at naturalHeight - 8, within the strip. Samples at 16%, 50%, and 84% remain well inside the three respective thirds. Per-channel tolerance 32 accommodates image conversion while the distinctive three-band fingerprint rejects ordinary incorrect surfaces.",
+    "dialog_and_cleanup": "D32 now bounded-waits for a visible dialog, the explicit file-retention consequence, and a Delete control. Recovery remains guarded by the fresh fixture URL plus the sole rendered card matching the sole row from the completed real read; after confirmation it requires another completed real read with the exact captured row absent and no rows remaining.",
+    "run_evidence": "No guarded run was performed in this peer review. Neither commit is product-pass evidence; the requested one guarded native run must still establish the three decoded bands, enabled confirmation, and exact-row cleanup."
+  },
+  "code_quality": {
+    "status": "change_required_before_acceptance",
+    "findings": [
+      {
+        "severity": "P1",
+        "location": "tests/browser/screenshot-capture-acceptance.mjs:820-832 and :896-909",
+        "finding": "Both normal confirmation and recovery accept any matching Delete button, including a disabled button. The acceptance requirement calls for an enabled Delete control. Include button.disabled === false (and ideally !button.closest('[disabled]')) in the wait predicate before dispatching confirmation."
+      }
+    ],
+    "checks": ["node --check tests/browser/screenshot-capture-acceptance.mjs passed"]
+  }
+}

@@ -12660,7 +12660,7 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "screenshot-capture-dev093-001",
+              "run_id": "screenshot-capture-dev094-001",
               "verified_substeps": [
                 "Actual Visible click produced one real user gallery row and loaded image preview."
               ],
@@ -12668,9 +12668,12 @@
                 "Captured image failed owned-page pixel oracle; product versus oracle cause unresolved.",
                 "All other mode/error/reload/busy dimensions remain unverified."
               ],
-              "evidence": "docs/stabilization/runs/screenshot-capture-dev093-001.json"
+              "evidence": "docs/stabilization/runs/screenshot-capture-dev094-001.json"
             }
-          }
+          },
+          "defect_ids": [
+            "EXT-D-0031"
+          ]
         },
         {
           "id": "EXT-F-1009-T03",
@@ -12774,15 +12777,18 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "screenshot-capture-dev093-001",
+              "run_id": "screenshot-capture-dev094-001",
               "verified_substeps": [],
               "remaining_criteria": [
                 "Attempted exact-owned-row cleanup was not verified; original row disposition unresolved and recovery identity unavailable.",
                 "No deletion by broad title/recency query permitted."
               ],
-              "evidence": "docs/stabilization/runs/screenshot-capture-dev093-001.json"
+              "evidence": "docs/stabilization/runs/screenshot-capture-dev094-001.json"
             }
-          }
+          },
+          "defect_ids": [
+            "EXT-D-0032"
+          ]
         },
         {
           "id": "EXT-F-1009-T07",
@@ -12910,9 +12916,13 @@
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0031",
+            "EXT-D-0032"
+          ],
           "run_ids": [
-            "screenshot-capture-dev093-001"
+            "screenshot-capture-dev093-001",
+            "screenshot-capture-dev094-001"
           ],
           "retest_status": "partial"
         }

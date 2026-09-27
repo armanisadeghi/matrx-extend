@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "runId": "screenshot-capture-dev094-001",
+  "status": "unverified",
+  "scope": "One guarded EXT-F-1009 warm admin Visible capture attempt with owned localhost fixture, preview oracle, and owned-row cleanup; partial F1009 controls only.",
+  "sourceHead": "8fc02d9096d9ec82619897f73413064462d4c021",
+  "runnerHead": "8fc02d9096d9ec82619897f73413064462d4c021",
+  "build": {
+    "version": "0.2.94",
+    "treeSha256": "8b359ead9dd0b4db1d404a26cb6b2fbfc3e3c10d79956638a2ec587d4a395665",
+    "receiptPath": "test-results/source-dev-build-094-capture-20260927.json",
+    "receiptSha256": "43d4f38f41ab900643e4266e9ab17f3ad744229d98dd539abe66bf53e1327248",
+    "extensionIdentityVerifiedBeforeRun": true,
+    "extensionIdentityAfterRun": null
+  },
+  "resourceRun": {
+    "buildRunId": "screenshot-capture-dev094-build-001",
+    "buildAdmission": "RESOURCE_ADMITTED",
+    "buildChildExitCode": 0,
+    "runId": "screenshot-capture-dev094-001",
+    "admittedAt": "2026-09-27T10:31:43.467Z",
+    "admission": "RESOURCE_ADMITTED",
+    "childExitCode": 1,
+    "terminalAt": "2026-09-27T10:32:03.337Z",
+    "leaseReleased": true,
+    "wrapperLogPath": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-capture-dev094-001-wrapper.log",
+    "wrapperLogMode": "0600",
+    "wrapperLogSha256": "7f8c6667b8eb3db5bc5f4521101e49adf7e8565a0028bc72e35efa75a7696864"
+  },
+  "observations": {
+    "approvedOrganizationSelected": true,
+    "baselineGalleryReads": "one completed HTTP 200 read; other observed reads included a pending request",
+    "mountedGalleryCardCount": 1,
+    "capturePreview": {
+      "cardCount": 1,
+      "sourceIsCurrentUser": true,
+      "blobImage": true,
+      "loaded": true,
+      "dimensionsPresent": true,
+      "error": false
+    },
+    "pixelOracle": {
+      "decoded": true,
+      "fingerprint": false,
+      "bandsMatched": 1,
+      "bandMatches": [false, false, true]
+    },
+    "failure": {
+      "stage": "visible_user_capture",
+      "operation": "owned_capture_preview",
+      "code": "captured_pixels_do_not_match_owned_fixture",
+      "fixtureOnly": true
+    },
+    "privateImageInspection": "Owned localhost fixture was confirmed before inspection. The retained image shows the expected three broad color bands and the fixture text. The current pixel samples at vertical fraction 0.62 overlap white paragraph text, so the failed fingerprint is consistent with an oracle sampling defect; this is an inference, not a product root-cause finding.",
+    "cleanup": {
+      "createdRowMayNeedUiCleanup": true,
+      "cleanupStage": "delete_consequence",
+      "cleanupCode": "owned_ui_cleanup_failed",
+      "ownedUiCleanupVerified": false,
+      "rowDisposition": "Unresolved; no further cleanup or retry performed."
+    }
+  },
+  "evidence": {
+    "immutableResultPath": "test-results/screenshot-capture-9e937791-f9e6-4a7a-b8c5-7c08b3ad26f2.json",
+    "immutableResultMode": "0600",
+    "immutableResultSha256": "d9da41eb6919f22f416cef03b82219ad2fa7fe88c842b667081d1da4086944b7",
+    "privateFixtureFailureImagePath": "test-results/screenshot-capture-9e937791-f9e6-4a7a-b8c5-7c08b3ad26f2.fixture-failure.png",
+    "privateFixtureFailureImageMode": "0600",
+    "privateFixtureFailureImageSha256": "8a38ecebbe0e5c9a5ea4bfc46530cb425c679d3d2ba8f0d8b8246dbbdccf2db7"
+  },
+  "limits": [
+    "No full EXT-F-1009 acceptance claim; only this bounded run was attempted.",
+    "The screenshot row cleanup outcome remains unresolved.",
+    "No product capture defect has been established; the pixel oracle likely samples text, based on private fixture inspection.",
+    "No retry or additional capture was performed."
+  ]
+}
