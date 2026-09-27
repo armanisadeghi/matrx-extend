@@ -1,6 +1,8 @@
 {
   "defect": "EXT-D-0045",
-  "status": "source-fixed; direct development build and installed real-site acceptance pending",
+  "status": "source-fixed and direct development build recorded; installed real-site acceptance pending",
+  "source_commit": "141b11ac9079f7bfb3ec13717e529180107138e5",
+  "source_head_unchanged_during_build": true,
   "baseline": "The actual Pick more fields entry started with A, one URL field, and five preview rows. Restart plus explicit nested B selection followed by Cancel lost A before the patch.",
   "red": {
     "run_id": "showcase-d45-red-001",
@@ -19,6 +21,16 @@
     "run_id": "showcase-d45-install-001",
     "result": "frozen-lock install passed; @ai-matrx/kit 0.16.12 changelog says metadata-only and no Consumer action"
   },
+  "build": {
+    "run_id": "showcase-d45-build-001",
+    "command": "pnpm exec wxt build --mode development",
+    "result": "guarded direct build passed without a localhost server",
+    "version": "0.2.109",
+    "extension_dir": ".output/chrome-mv3-dev",
+    "receipt": "docs/stabilization/runs/showcase-d45-dev109-001.json",
+    "original_receipt": "test-results/showcase-d45-dev109-001.json",
+    "tree_sha256": "8cd579919c549c9b6429dce83933249f984dc1e6ad7523b8214874a665cdaebe"
+  },
   "sibling_alignment": "D43 nested detail extraction now expects one row with the selected title and URL. D44 correctly omits two other nested li elements whose selected fields are absent; the test still verifies the explicit three-item nested scope choice.",
   "source_files": [
     "src/features/showcase/tabs/ListPatternTab.tsx",
@@ -26,5 +38,5 @@
     "docs/feature-tests.md",
     "docs/stabilization/defects/EXT-D-0045.json"
   ],
-  "pending": "Guarded direct development build, uniquely recorded source/build receipt, and independent installed Chrome test on real nested lists. No localhost UI is authorized."
+  "pending": "Independent installed Chrome test on real nested lists. No localhost UI is authorized."
 }
