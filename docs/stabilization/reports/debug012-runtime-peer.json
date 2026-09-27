@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "report_id": "debug012-runtime-peer",
+  "run_id": "debug-log-controls-012",
+  "source_receipt": "docs/stabilization/runs/debug-log-controls-012.json",
+  "preserved_raw_result": {
+    "path": "/tmp/matrx-debug-log-controls-012-result.json",
+    "sha256": "f440d66dad5c3567f5fea442687cc467d93bc580fc8ebf2e0eac9bc42622f3c3",
+    "permission": "0600"
+  },
+  "A_acceptance_verdict": {
+    "status": "T14_WARM_DIMENSION_PASS_AND_THREE_DIMENSIONS_SUPPORTED",
+    "warm_finding": "In the real admin warm panel, trusted message-only search retained its original natural row; an unmatched query displayed zero rows and the distinct no-match state; natural detail-only primitive search found its detail row. Clearing message search restored the exact prior ordered visible-row signature sequence of 65/65, and clearing detail search restored 75/75. Both resets report unfiltered search, priorRowsRestored, countersMatch, and arrivalCountMatches true, with zero new arrivals.",
+    "cross_run_adjudication": "Independent Debug 010 review accepted the same strengthened T14 assertion under a real persistent selected-backend outage; independent Debug 011 review accepted it after a real new-document panel reload and restored admin identity, including one accounted new row. With this warm run, T14's inventory dimensions warm, reload, and service-error are supported on release 0.2.79. T14 is eligible for case acceptance when the inventory owner links those immutable receipts; this peer does not edit inventory or claim full EXT-F-1005 acceptance.",
+    "partial_label": "The runner hardcodes a partial case and dimension label after passing its individual search assertions; top-level partial is intentional because it does not aggregate independent runs. These labels alone do not negate the bounded warm observation or the three-run T14 case evidence.",
+    "other_cases": "The warm result also records natural pause/resume 65 visible held while total rises to 75, detail and empty-state checks, and a positive pre-clear error badge that clears with the event list. Those are corroborating observations, not the new acceptance target of this report."
+  },
+  "B_source_runtime_quality_verdict": {
+    "status": "ACCEPT_WITH_SCOPE_LIMITS",
+    "checks": [
+      "The preserved 0600 raw result and unique guard log SHA-256 values match the generated Debug 012 receipt. The guard records resource admission, healthy watch, PARTIAL stdout, and child exit 0 at 2026-09-27T00:13:21.108Z; coordinator confirmation supplies wrapper exit 0 while the receipt accurately leaves that fact unverified from the guard log alone.",
+      "Source commit 3dc31a21 captures every unfiltered visible row's rendered fields, class, and detail affordance as SHA-256 signatures in runner memory. After reset, it requires the prior ordered sequence and multiplicity as an unchanged suffix, allows only counted new leading rows, and checks counters against visible rows. Both message and detail paths use this oracle. Equal counts with substituted or reordered rows cannot pass.",
+      "The runner enters the real admin UI through the web form and extension sign-in; raw realAdminUi and profileOwned are true. Owned harness/release checks bind the run to version 0.2.79, tree be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0, and extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml. The raw artifact contains fixed verdicts, booleans, and counts rather than credentials, row text, signatures, detail terms, or event payloads."
+    ],
+    "limits": "This is saved-artifact and source review, not a second browser execution. The row oracle proves rendered visible-row restoration, not internal event IDs or hidden detail JSON byte identity; the independent natural detail-only search covers the detail-search behavior. Full EXT-F-1005 has other cases outside T14."
+  }
+}
