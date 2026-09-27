@@ -20,9 +20,9 @@
  */
 
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
+import { urlMatchesPattern } from '@/lib/data-pattern/matcher';
 import { loadRecipes, recipesForUrl } from '@/lib/data-pattern/recipes';
 import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
-import { urlMatchesPattern } from '@/lib/data-pattern/matcher';
 import { classifySavedRun } from '@/lib/data-pattern/saved-run-outcome';
 import {
   type ExtractionPatternField,
@@ -150,6 +150,7 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
     if (args.action === 'run') {
       const tab = await getAssignedTab(ctx);
       if (!tab?.id) return { ok: false, reason: 'No assigned tab to run on.' };
+      const tabId = tab.id;
       const domain = hostOf(tab.url ?? undefined);
       if (!domain) return { ok: false, reason: 'Assigned tab has no usable URL.' };
       const patterns = await fetchPatternsForDomain(domain);
@@ -159,19 +160,24 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
       }
       const pageIsCurrent = async () => {
         try {
-          const current = await chrome.tabs.get(tab.id!);
+          const current = await chrome.tabs.get(tabId);
           return current.url === tab.url;
         } catch {
           return false;
         }
       };
-      const pageChanged = { ok: false, reason: 'The assigned page changed or closed during extraction. Run the saved pattern again on the intended page.', retryable: true };
+      const pageChanged = {
+        ok: false,
+        reason:
+          'The assigned page changed or closed during extraction. Run the saved pattern again on the intended page.',
+        retryable: true,
+      };
       try {
         if (!(await pageIsCurrent())) return pageChanged;
         // 'auto': an AGENT called this tool. The person's gesture was the
         // parent chat send, already attested there; this nested AI run is the
         // model's decision, not a second human action.
-        const rows = await runSavedPattern(pattern, tab.id, {
+        const rows = await runSavedPattern(pattern, tabId, {
           onProgress: (note) => ctx.reportProgress?.(note),
           initiation: 'auto',
         });

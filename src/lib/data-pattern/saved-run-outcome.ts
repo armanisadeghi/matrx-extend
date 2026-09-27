@@ -23,7 +23,8 @@ export function classifySavedRun(
   if (!onSavedRoute) {
     return {
       kind: 'off_route',
-      message: 'This run was outside the saved route. Review these rows before treating them as the intended data.',
+      message:
+        'This run was outside the saved route. Review these rows before treating them as the intended data.',
     };
   }
   return { kind: 'matched', message: null };

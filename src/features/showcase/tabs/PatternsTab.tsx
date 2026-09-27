@@ -112,10 +112,13 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
     setResultPageKey(null);
   }, [pageKey]);
 
-  useEffect(() => () => {
-    loadSeq.current += 1;
-    runSeq.current += 1;
-  }, []);
+  useEffect(
+    () => () => {
+      loadSeq.current += 1;
+      runSeq.current += 1;
+    },
+    [],
+  );
 
   // Re-fetch whenever this tab becomes the visible one — picks up patterns
   // saved from sibling tabs without a manual refresh.
@@ -139,7 +142,9 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
     try {
       // 'user': handleRun is the Run control on a pattern row.
       const data = await runSavedPattern(p, tab.id, {
-        onProgress: (note) => { if (isCurrent()) setRunNote(note); },
+        onProgress: (note) => {
+          if (isCurrent()) setRunNote(note);
+        },
         initiation: 'user',
       });
       if (!isCurrent()) return;
@@ -424,7 +429,8 @@ function PatternRow({
       </div>
       {!routeMatches && p.route_pattern && (
         <div className="text-[11px] text-amber-700 dark:text-amber-400">
-          Saved for {p.route_pattern}; this page is outside that route. You can still Run and review the result.
+          Saved for {p.route_pattern}; this page is outside that route. You can still Run and review
+          the result.
         </div>
       )}
       {running && runNote && (
