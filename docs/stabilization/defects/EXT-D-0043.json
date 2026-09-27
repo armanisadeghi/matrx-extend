@@ -1,0 +1,50 @@
+{
+  "id": "EXT-D-0043",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T24", "EXT-F-1012-T29"],
+  "surface": "Showcase List Pattern manual field picking after Doctor recommends event cards",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Use the fresh 0.2.101 unpacked extension on https://electronic.vegas/vegas-edm-event-calendar/ and follow Doctor's repeating-card recommendation.",
+    "Confirm the builder is seeded with root #wideeventsList and item div.wideeventwrapper (Doctor reported 249 cards).",
+    "Click Pick more fields, then click the DJ Pauly D title inside the first event rather than the outer card wrapper.",
+    "The picker reports 3 similar items; add suggested name and URL fields, finish, and Extract.",
+    "Observe the builder has changed to a root inside the first card: #wideeventsList > div.wideeventwrapper:nth-of-type(1) > li[itemtype=Event] > ul.briefDetails, item li. The result label says 3 rows but the visible table shows only DJ Pauly D and its URL as meaningful event data."
+  ],
+  "expected": "Pick more fields extends the detected event-card pattern. Choosing a title inside a card adds a relative title field and preserves the 249-card root/item, so extraction can produce meaningful rows for the event cards.",
+  "actual": "Live .101 user-seat run confirmed the preseeded card selectors were replaced by a nested 3-li pattern inside the first event. The row label was 3, but only one DJ Pauly D row with its URL was visible; the saved row contents were not captured, so whether the other two were blank or merely outside the visible viewport remains unverified. No data was saved.",
+  "root_cause_source_confirmed": "ListPatternTab's Pick more fields always injects a fresh list picker without passing its existing config. mountListPicker starts in item phase. inferListPattern walks upward from the clicked title and returns the first ancestor with two matching direct children, so the nested briefDetails li group wins before the outer event cards. The item-detected/result handlers replace the builder selectors with that nested scope; runInPage then extracts from those 3 li elements.",
+  "classification": "Product scope-selection failure triggered by an understandable title click while the UI says Pick more fields. The picker did what its smallest-sibling algorithm specifies; the driver did not select the outer card. The algorithm and seeded-picker handoff do not support the user's repeated-event outcome.",
+  "evidence": [
+    "docs/stabilization/runs/showcase-live-retest-001.json",
+    "src/features/showcase/tabs/ListPatternTab.tsx",
+    "src/lib/data-pattern/list-picker.ts",
+    "src/lib/data-pattern/selector-resilience.ts",
+    "src/lib/data-pattern/modes/list-pattern.ts",
+    "src/features/showcase/components/ResultPreview.tsx"
+  ],
+  "severity": "S2: the picker can silently replace a broad detected list with a nested list from one card and present incomplete event data as a successful extraction",
+  "priority": "P1: original detect-to-extract user outcome",
+  "state": "triaged",
+  "transition_history": [
+    {
+      "at": "2026-09-27T16:04:33.982Z",
+      "from": null,
+      "to": "open",
+      "reason": "Fresh installed-extension user-seat run observed the card pattern being replaced by a nested 3-item pattern."
+    },
+    {
+      "at": "2026-09-27",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Read-only source trace found the preseeded config is not passed into the picker and smallest-ancestor inference selects the nested list."
+    }
+  ],
+  "red_test_plan": [
+    "Use a realistic DOM with five repeating event cards, each containing a nested brief-details list of at least three li elements, and a title inside the first card.",
+    "Through the ListPatternTab Pick more fields entry, start from a seeded event-card config, click that title, and assert the resulting field path is relative to the event card while root/item stay on all five cards; current code fails because it switches to the nested li list.",
+    "Run the resulting config against that DOM and assert five distinct event titles and URLs rather than three details from one event. Include a fresh manual pick with nested candidate scopes, requiring an explicit way to choose the event-card scope rather than silently committing the smallest one."
+  ],
+  "implementation_boundary": "Coordinate with EXT-D-0042 picker-session identity work before editing start/payload/relay contracts; no product code or test was changed in this read-only triage.",
+  "closure_requirement": "Focused red/green guards must prove seeded Pick more fields preserves the broad card scope and an unseeded nested-list pick offers correct scope selection. Rebuild/reload the installed extension and independently extract multiple distinct event rows on the real calendar; inspect all extracted rows, not only the row count, before closing."
+}
