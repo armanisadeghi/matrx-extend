@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "run_id": "guest-settings-dev089-001",
+  "review_status": "partial_acceptance",
+  "method": "Independent read-only review of the sanitized run and exact-hash acceptance result, development receipt/tree, inventory cases, runner, native panel harness, and trusted-input driver. No browser, build, or tests were run.",
+  "evidence": {
+    "result_receipt": {
+      "path": "test-results/settings-local-controls-acceptance.json",
+      "sha256": "a8301d5b3b8a8521eea420cc0b8f37e3c05a71d003fe5342525892df6a410bd0",
+      "matches_sanitized_run": true
+    },
+    "build": {
+      "receipt": "test-results/source-dev-build-089-takeover-20260927.json",
+      "version": "0.2.89",
+      "tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+      "independently_recomputed_tree_matches_receipt": true
+    },
+    "native_ui": "Harness source proves the run launches Chrome-for-Testing with a new disposable profile, verifies the expected extension worker and SIDE_PANEL target, waits for a settled signed-out guest panel, and drives product actions through CDP pointer/keyboard input. Runner and harness contain no API/result stubs for these cases. Runtime observations are collected from the actual panel and worker; the two retained screenshots are harness captures, though not post-interaction screenshots.",
+    "exit": "Sanitized run records processExitCode=0 and childExitCode=0 with no signal. No guardcleanexit-specific local log or receipt was found, so only these recorded exits are verified."
+  },
+  "case_verdicts": [
+    {
+      "case_id": "EXT-F-1003-T22",
+      "verdict": "pass",
+      "basis": "Warm and full-reload DOM observations from the guest panel show Advanced agent capabilities absent, advancedText=false, and no admin controls."
+    },
+    {
+      "case_id": "EXT-F-1003-T37",
+      "verdict": "pass_limited_to_preference",
+      "basis": "Real switch input changed persisted preference across reload and the coming-soon hint remained visible. This proves preference presentation/persistence only; it does not prove or claim deep-clean behavior executes."
+    },
+    {
+      "case_id": "EXT-F-1003-T46",
+      "verdict": "pass_limited_to_rediscovery",
+      "basis": "Save is the trusted input boundary. The runner observes exactly one owned worker handler entry and post-probe availability broadcast after Save, both debugger pauses resume successfully, and the isolated selected port receives a health request. Valid/invalid/blank values and reload persistence are observed. The port deliberately returns 503; no healthy desktop connection is claimed."
+    },
+    {
+      "case_id": "EXT-F-1003-T70",
+      "verdict": "unverified",
+      "basis": "Identity/readiness, observed no-update result, and reload criteria pass. API-unavailable, update-available, throttled, error, and update-API-unavailable branches are explicitly unverified and were not fabricated."
+    }
+  ],
+  "allowed_inventory_updates": [
+    {
+      "case_id": "EXT-F-1003-T22",
+      "guest_status": "pass",
+      "run_id": "guest-settings-dev089-001",
+      "evidence": [
+        "docs/stabilization/runs/guest-settings-dev089-001.json",
+        "test-results/settings-local-controls-acceptance.json"
+      ],
+      "detail": "Real isolated Chrome-for-Testing signed-out guest; Advanced agent capabilities/admin controls absent warm and after reload; local development build 0.2.89 receipt/tree verified."
+    },
+    {
+      "case_id": "EXT-F-1003-T37",
+      "guest_status": "pass",
+      "run_id": "guest-settings-dev089-001",
+      "evidence": [
+        "docs/stabilization/runs/guest-settings-dev089-001.json",
+        "test-results/settings-local-controls-acceptance.json"
+      ],
+      "detail": "Visible coming-soon preference toggles, persists across reload, and is restored; this covers preference state only, not functional deep-clean behavior."
+    },
+    {
+      "case_id": "EXT-F-1003-T46",
+      "guest_status": "pass",
+      "run_id": "guest-settings-dev089-001",
+      "evidence": [
+        "docs/stabilization/runs/guest-settings-dev089-001.json",
+        "test-results/settings-local-controls-acceptance.json"
+      ],
+      "detail": "Valid Save triggers exactly one Save-bounded worker rediscovery entry/post-probe broadcast with successful debugger resumes; valid override persists, invalid range retains the saved value, blank clears override/error and remains cleared after reload. The isolated health probe returns 503; healthy desktop connectivity is not claimed."
+    },
+    {
+      "case_id": "EXT-F-1003-T70",
+      "guest_status": "unverified",
+      "run_id": "guest-settings-dev089-001",
+      "evidence": [
+        "docs/stabilization/runs/guest-settings-dev089-001.json",
+        "test-results/settings-local-controls-acceptance.json"
+      ],
+      "detail": "Identity/readiness, real no-update outcome, and reload verified. Alternate API/update branches remain unverified."
+    }
+  ],
+  "open_questions": [
+    "T70's explicitly unverified alternate API/update branches remain open; do not mark the full T70 case passing.",
+    "No guardcleanexit-specific log was available; sanitized process and Chrome child exit codes are both zero."
+  ],
+  "reviewed_files": [
+    "docs/stabilization/runs/guest-settings-dev089-001.json",
+    "test-results/settings-local-controls-acceptance.json",
+    "test-results/source-dev-build-089-takeover-20260927.json",
+    "docs/stabilization/inventory.json",
+    "tests/browser/settings-local-controls-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/settings-panel-driver.mjs"
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "runId": "guest-settings-dev089-001",
+  "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+  "resource": {
+    "childExitCode": 0,
+    "childSignal": null
+  },
+  "processExitCode": 0,
+  "result": {
+    "status": "unverified",
+    "build": {
+      "version": "0.2.89",
+      "kind": "local_dev_unpacked",
+      "treeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+      "verified": true
+    },
+    "cases": [
+      {
+        "id": "EXT-F-1003-T22",
+        "status": "pass",
+        "criteria": [
+          {
+            "name": "warm admin section and controls absent",
+            "status": "pass"
+          },
+          {
+            "name": "reload admin section and controls absent",
+            "status": "pass"
+          }
+        ]
+      },
+      {
+        "id": "EXT-F-1003-T37",
+        "status": "pass",
+        "criteria": [
+          {
+            "name": "visible coming-soon hint",
+            "status": "pass"
+          },
+          {
+            "name": "toggle changes state",
+            "status": "pass"
+          },
+          {
+            "name": "state and coming-soon hint persist after reload",
+            "status": "pass"
+          }
+        ]
+      },
+      {
+        "id": "EXT-F-1003-T46",
+        "status": "pass",
+        "criteria": [
+          {
+            "name": "valid port saved",
+            "status": "pass"
+          },
+          {
+            "name": "saved port triggers desktop worker rediscovery",
+            "status": "pass"
+          },
+          {
+            "name": "valid override persists after reload",
+            "status": "pass"
+          },
+          {
+            "name": "invalid range shows error and retains saved port",
+            "status": "pass"
+          },
+          {
+            "name": "blank clears override and stale error",
+            "status": "pass"
+          },
+          {
+            "name": "cleared override persists after reload",
+            "status": "pass"
+          }
+        ]
+      },
+      {
+        "id": "EXT-F-1003-T70",
+        "status": "unverified",
+        "criteria": [
+          {
+            "name": "identity matches running browser, manifest, receipt and runtime ID",
+            "status": "pass"
+          },
+          {
+            "name": "password-flow API readiness label and remedy",
+            "status": "pass"
+          },
+          {
+            "name": "password-flow API unavailable branch",
+            "status": "unverified"
+          },
+          {
+            "name": "observed browser update result shown accurately",
+            "status": "pass"
+          },
+          {
+            "name": "no-update outcome",
+            "status": "pass"
+          },
+          {
+            "name": "update available branch",
+            "status": "unverified"
+          },
+          {
+            "name": "throttled branch",
+            "status": "unverified"
+          },
+          {
+            "name": "update error branch",
+            "status": "unverified"
+          },
+          {
+            "name": "update API unavailable branch",
+            "status": "unverified"
+          },
+          {
+            "name": "identity and API readiness remain current after reload",
+            "status": "pass"
+          }
+        ]
+      }
+    ]
+  },
+  "artifacts": {
+    "testResultSha256": "a8301d5b3b8a8521eea420cc0b8f37e3c05a71d003fe5342525892df6a410bd0"
+  }
+}

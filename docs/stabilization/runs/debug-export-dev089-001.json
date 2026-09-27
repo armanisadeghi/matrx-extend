@@ -1,0 +1,57 @@
+{
+  "run_id": "debug-export-dev089-001",
+  "scope": "Admin Debug export and verbose-console native acceptance on the 0.2.89 local development build",
+  "status": "partial",
+  "guard": {
+    "mode": "run",
+    "admitted": true,
+    "child_started": true,
+    "child_exit_code": 0,
+    "wrapper_exit_code": 0,
+    "owned_process_cleanup": "The run wrapper exited zero after RESOURCE_JOB_EXIT. Its run-mode finally block requires owned-process/group cleanup before release; a subsequent resource check returned RESOURCE_ADMITTED.",
+    "private_log_path": "/Volumes/Samsung2TB/code/.stabilization-scratch/debug-export-dev089-001.private.log",
+    "private_log_mode": "0600",
+    "private_log_sha256": "7545747ad1d93936962f725eb6cf726ce701b18b16cd3e59cc298d7ba0df27b9"
+  },
+  "raw_result": {
+    "path": "test-results/debug-log-export-8dc14f56-adf9-480b-bbbb-a117d2682372.json",
+    "mode": "0600",
+    "sha256": "462349122799533127610a457c3d27b1d4403c5373384fb5c6577303c1de9720"
+  },
+  "build": {
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "version": "0.2.89",
+    "tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "receipt_path": "test-results/source-dev-build-089-takeover-20260927.json",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_tree_matched_after": true,
+    "profile_owned": true
+  },
+  "debug_open": "passed; the prior debug_open setup failure did not reproduce",
+  "cases": [
+    {
+      "id": "EXT-F-1005-T16",
+      "status": "unverified",
+      "natural_row_count": 64,
+      "filtered_row_count": 11,
+      "chronological_order_checked": true,
+      "download_exact": true,
+      "download_bytes": 802,
+      "clipboard_read_available": false,
+      "clipboard_exact": false,
+      "copy_feedback": false,
+      "boundary": "The native environment could not read the clipboard, so Copy all exactness and feedback were not verified. The exact Download .log result is bounded supporting evidence, not full T16 acceptance."
+    },
+    {
+      "id": "EXT-F-1005-T18",
+      "status": "partial",
+      "real_admin": true,
+      "persisted_after_real_reload": true,
+      "visible_feed_sequence_unchanged_while_paused": true,
+      "verbose_setting_restored": true,
+      "console_mirroring": "unverified_no_natural_level_matched_console_control"
+    }
+  ],
+  "classification": "The guard-owned child completed the Debug UI flow on the exact 0.2.89 artifact. Neither case is a full pass and no product defect is established. The one authorized attempt is complete; no retry was launched."
+}

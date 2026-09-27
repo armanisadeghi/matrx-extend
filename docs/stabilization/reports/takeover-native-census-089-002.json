@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "task_id": "takeover-native-census-089-002",
+  "lane": "structured execution / Luna medium",
+  "status": "GUEST_VISIBLE_CONTROLS_OBSERVED",
+  "summary": "A receipt-bound 0.2.89 development extension ran in an admitted isolated Chrome-for-Testing guest profile. The native side panel showed the five guest navigation tabs and 11 recognized Settings section labels. These are visibility observations only.",
+  "runner_source_sha": "76a879cb",
+  "build_source_commit": "4083a889",
+  "inventory_counts": {
+    "features": 205,
+    "controls": 1297,
+    "cases": 701,
+    "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b"
+  },
+  "run_evidence": "docs/stabilization/runs/takeover-visible-census-089-002.json",
+  "verification": [
+    {
+      "feature_id": "EXT-F-1001",
+      "case_id": "guest navigation visibility observation",
+      "run_id": "takeover-visible-census-089-002",
+      "verdict": "OBSERVED_NOT_BEHAVIOR_PASS",
+      "evidence": "Chat, Scrape, Data, SEO and Settings were the five visible navigation buttons, matching source audience 'everyone'. Other roles/tabs were not exercised."
+    },
+    {
+      "feature_id": "EXT-F-1003",
+      "case_id": "guest Settings visibility observation",
+      "run_id": "takeover-visible-census-089-002",
+      "verdict": "OBSERVED_NOT_BEHAVIOR_PASS",
+      "evidence": "11 expected guest section labels and 14 known labels were visible. The query found 16 visible button[aria-expanded] elements total; five were unclassified by the fixed label list and are not established as section headers. Per-section descendant counts are in the run receipt and are not authoritative control counts."
+    }
+  ],
+  "role_matrix": {
+    "guest": "Navigation and visible Settings labels observed in a fresh isolated profile.",
+    "member": "unverified",
+    "admin": "unverified"
+  },
+  "build_and_guard": {
+    "artifact_receipt": "test-results/source-dev-build-089-takeover-20260927.json",
+    "version": "0.2.89",
+    "tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "resource_guard": "admitted on external scratch; child exit 0; lease released"
+  },
+  "limitations": [
+    "The primary Chrome installation and Store extension state remain unverified because primary-profile free disk was below the guard minimum.",
+    "The five unclassified expanded-state buttons were counted without returning their labels; no claim is made that they are section headings.",
+    "Visibility does not prove control behavior, persistence, permission behavior, or backend effects. No behavioral pass was recorded.",
+    "A fresh profile provided no member/admin state; no user profile was copied and no credentials were entered."
+  ],
+  "changed_files": [
+    "docs/stabilization/runs/takeover-visible-census-089-002.json",
+    "docs/stabilization/reports/takeover-native-census-089-002.json"
+  ],
+  "next_action": "Root reconciles these observations with EXT-F-1001 and EXT-F-1003. The source/visible inventory gate remains open for unclassified controls and member/admin coverage; only root may open behavioral testing."
+}

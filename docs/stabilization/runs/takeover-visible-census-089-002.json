@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "run_id": "takeover-visible-census-089-002",
+  "status": "GUEST_VISIBILITY_OBSERVED",
+  "observed_at": "2026-09-27T08:05:07.485Z",
+  "runner_source_sha": "76a879cb",
+  "build_source_commit": "4083a889",
+  "artifact": {
+    "receipt": "test-results/source-dev-build-089-takeover-20260927.json",
+    "kind": "local_dev_unpacked",
+    "version": "0.2.89",
+    "tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2"
+  },
+  "guard": {
+    "result": "RESOURCE_ADMITTED",
+    "mode": "run",
+    "profile_dir": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+    "tmpdir": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+    "sample": {
+      "pressure_level": 1,
+      "available_memory_gib": 9.76,
+      "required_memory_gib": 4,
+      "cpu_busy_fraction": 0.43305714285714286,
+      "one_minute_load": 6.18,
+      "logical_cpus": 10,
+      "swap_used_mib": 1923.5,
+      "repo_free_gib": 1675.7486839294434,
+      "profile_free_gib": 1675.7486839294434
+    },
+    "job_exit": {
+      "result": "RESOURCE_JOB_EXIT",
+      "child_exit_code": 0,
+      "child_signal": null,
+      "lease_released": true
+    }
+  },
+  "runner_code": "CENSUS_GUEST_NATIVE_OBSERVED",
+  "emitted_payload": {
+    "schema_version": 1,
+    "code": "CENSUS_GUEST_NATIVE_OBSERVED",
+    "at": "2026-09-27T08:05:07.485Z",
+    "role": "guest",
+    "profile": "fresh external scratch profile",
+    "artifact": {
+      "version": "0.2.89",
+      "tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2"
+    },
+    "runtime_identity": {
+      "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "version": "0.2.89"
+    },
+    "navigation": {
+      "known": ["Chat", "Scrape", "Data", "SEO", "Settings"],
+      "total": 5
+    },
+    "sections": {
+      "known": [
+        "Account",
+        "Organization",
+        "Appearance",
+        "Chat",
+        "Privacy",
+        "Scrape",
+        "Data",
+        "SEO",
+        "Desktop bridge",
+        "Data & reset",
+        "About"
+      ],
+      "total": 16
+    },
+    "controls_by_section": {
+      "Account": { "open": true, "animating": false, "known": [], "total": 1 },
+      "Organization": { "open": true, "animating": false, "known": [], "total": 1 },
+      "Appearance": { "open": true, "animating": false, "known": ["Theme"], "total": 3 },
+      "Chat": {
+        "open": true,
+        "animating": false,
+        "known": ["Default agent", "Default mode", "Default speed"],
+        "total": 9
+      },
+      "Privacy": {
+        "open": true,
+        "animating": false,
+        "known": [
+          "Share page identity & email content",
+          "Offer to save logins to the Vault",
+          "Offer saved logins on sign-in forms",
+          "Show password suggestions on websites"
+        ],
+        "total": 16
+      },
+      "Scrape": {
+        "open": true,
+        "animating": false,
+        "known": ["Deep clean", "Auto-scrape on load", "Auto-scrape mode"],
+        "total": 12
+      },
+      "Data": { "open": true, "animating": false, "known": [], "total": 0 },
+      "SEO": { "open": true, "animating": false, "known": [], "total": 0 },
+      "Desktop bridge": {
+        "open": true,
+        "animating": false,
+        "known": ["Local engine port"],
+        "total": 5
+      },
+      "Data & reset": {
+        "open": true,
+        "animating": false,
+        "known": ["Clear local data on this device"],
+        "total": 2
+      },
+      "About": {
+        "open": true,
+        "animating": false,
+        "known": ["Check for extension update"],
+        "total": 6
+      }
+    },
+    "native_panel_verified": true,
+    "member_admin": "unverified"
+  },
+  "native_panel_verified": true,
+  "runtime_identity": {
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.89"
+  },
+  "visibility": {
+    "role": "guest",
+    "navigation": {
+      "known_labels": ["Chat", "Scrape", "Data", "SEO", "Settings"],
+      "visible_button_count": 5,
+      "inventory_reference": "EXT-F-1001-C01 records 21 direct tabs plus Profile via user menu. Source audience table has five `everyone` tabs; current guest visible labels match those five. This is a visibility observation, not a behavior pass."
+    },
+    "settings": {
+      "known_section_labels": [
+        "Account",
+        "Organization",
+        "Appearance",
+        "Chat",
+        "Privacy",
+        "Scrape",
+        "Data",
+        "SEO",
+        "Desktop bridge",
+        "Data & reset",
+        "About"
+      ],
+      "visible_button_aria_expanded_count": 16,
+      "unclassified_aria_expanded_count": 5,
+      "interpretation": "Runner selector counts all visible button[aria-expanded] elements, not only section headings. The five unclassified elements are not established as section headers; their runtime labels were deliberately not emitted.",
+      "visible_descendant_query_counts_by_section": {
+        "Account": 1,
+        "Organization": 1,
+        "Appearance": 3,
+        "Chat": 9,
+        "Privacy": 16,
+        "Scrape": 12,
+        "Data": 0,
+        "SEO": 0,
+        "Desktop bridge": 5,
+        "Data & reset": 2,
+        "About": 6
+      },
+      "descendant_count_limit": "Counts of queried visible button/switch/combobox/span elements; not an authoritative control count."
+    },
+    "known_control_labels_visible": [
+      "Theme",
+      "Default agent",
+      "Default mode",
+      "Default speed",
+      "Share page identity & email content",
+      "Offer to save logins to the Vault",
+      "Offer saved logins on sign-in forms",
+      "Show password suggestions on websites",
+      "Deep clean",
+      "Auto-scrape on load",
+      "Auto-scrape mode",
+      "Local engine port",
+      "Clear local data on this device",
+      "Check for extension update"
+    ],
+    "settings_visibility": "Guest sign-in prompt was recognized as a boolean; no account, organization, or page text was recorded.",
+    "member": "unverified",
+    "admin": "unverified"
+  },
+  "actions_and_boundaries": {
+    "performed": "Opened the isolated guest side panel, navigated to Settings, and opened allowlisted section headers for visibility inspection.",
+    "not_performed": [
+      "No Save, settings value, switch, input, reset, account, or organization action",
+      "No authentication or credential entry",
+      "No primary Chrome or Store extension inspection/change",
+      "No behavioral test or acceptance pass"
+    ],
+    "cleanup": "Canonical harness closed its owned browser and removed its temporary profile. The exact harness screenshot artifact directory in external scratch was removed after confirming it contained only the two generated PNGs; no screenshots were added to Git."
+  }
+}
