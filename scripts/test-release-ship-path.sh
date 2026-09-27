@@ -132,7 +132,7 @@ else
 fi
 touch "$SANDBOX/fail-tests"
 set +e
-PATH="$SANDBOX/bin:$PATH" bash ship.sh "guard run" > "$SANDBOX/failed-out" 2>&1
+PATH="$SANDBOX/bin:$PATH" bash release.sh --message "guard run" > "$SANDBOX/failed-out" 2>&1
 FAILED_STATUS=$?
 set -e
 FAILED=0
@@ -175,8 +175,6 @@ check "prior local zip is intact"                     'grep -q "prior local zip"
 check "failed candidate created no upload zip"        '[[ ! -e .output/matrx-extend-0.1.2-store.zip ]]'
 check "candidate was checked before any publication"  '[[ -s "$SANDBOX/checked-shas" ]] && grep -q "nothing was pushed" "$SANDBOX/failed-out"'
 check "local uncommitted work remains"                 'grep -q "uncommitted work" shared.txt'
-check "refused release still pulled GitHub's main"    '[[ -f theirs.txt ]] && git merge-base --is-ancestor "$REMOTE_BASE" HEAD'
-check "ship reports its pull for ship-all"            'grep -q "ship.sh: sync exit 0, release exit" "$SANDBOX/failed-out"'
 
 # Failed generation and failed package build are equally publication-blocking.
 rm "$SANDBOX/fail-tests"
@@ -206,12 +204,12 @@ check "Store package gate exits nonzero"             '[[ $STORE_CHECK_STATUS -ne
 check "Store package gate leaves main untouched"     '[[ "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
 check "failed prep preserved prior zips"              'grep -q "prior Store zip" .output/matrx-extend-0.1.0-store.zip && grep -q "prior local zip" .output/matrx-extend-0.1.0-local.zip'
 
-# --no-push must reach the release preview without the old sync-main pre-push.
+# --no-push is a release preview.
 set +e
-PATH="$SANDBOX/bin:$PATH" bash ship.sh --no-push > "$SANDBOX/no-push-out" 2>&1
+PATH="$SANDBOX/bin:$PATH" bash release.sh --no-push > "$SANDBOX/no-push-out" 2>&1
 NO_PUSH_STATUS=$?
 set -e
-check "ship --no-push only previews"                   '[[ $NO_PUSH_STATUS -eq 0 && "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+check "release --no-push only previews"                  '[[ $NO_PUSH_STATUS -eq 0 && "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
 
 # A foreign branch push invalidates the checked first candidate. If the new
 # candidate fails, its tag and main update must both be refused.
@@ -317,7 +315,32 @@ set -e
 check "merge conflict refused publication"             '[[ $CONFLICT_STATUS -ne 0 && "$CONFLICT_REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
 check "local conflicting commit was preserved"         'git -C "$SANDBOX/conflict" show HEAD:shared.txt | grep -q "local version"'
 check "remote conflicting commit was preserved"        'git --git-dir="$SANDBOX/origin.git" show main:shared.txt | grep -q "remote version"'
+# ship.sh = Arman's rule (2026-09-24, restated 2026-09-26): commit ALL, pull ALL, push ALL, then
+# release. A refused release must never leave local work unpushed or GitHub's commits unpulled.
+git_q clone "$SANDBOX/origin.git" "$SANDBOX/shipper"
+( cd "$SANDBOX/other" && git pull -q origin main && echo "from github" > github-side.txt \
+  && git_q add github-side.txt && git_q commit -m "github side" && git_q push origin main )
+cd "$SANDBOX/shipper"
+git config user.name test; git config user.email test@test; git config core.hooksPath /dev/null
+cp "$HARNESS_ROOT/ship.sh" ship.sh; cp "$SCRIPT_UNDER_TEST" release.sh
+mkdir -p scripts; cp "$HARNESS_ROOT/scripts/sync-main.py" "$HARNESS_ROOT/scripts/check-conflict-markers.py" scripts/
+git_q reset -q --hard origin/main~1 2>/dev/null || true
+echo "agent work nobody committed" > uncommitted-agent-work.txt
+touch "$SANDBOX/fail-tests"
+set +e
+PATH="$SANDBOX/bin:$PATH" bash ship.sh "ship guard" > "$SANDBOX/ship-out" 2>&1
+set -e
+rm -f "$SANDBOX/fail-tests"
+git fetch -q origin 2>/dev/null || true
+echo "ship.sh — commit all, pull all, push all, even when the release is refused"
+check "uncommitted work was committed and pushed"     'git show origin/main:uncommitted-agent-work.txt | grep -q "agent work nobody committed"'
+check "GitHub's commits were pulled"                  '[[ -f github-side.txt ]]'
+check "checkout equals GitHub's main"                 '[[ "$(git rev-parse HEAD)" == "$(git rev-parse origin/main)" ]]'
+check "ship reports its sync for ship-all"            'grep -q "ship.sh: sync exit 0, release exit" "$SANDBOX/ship-out"'
+cd "$SANDBOX/checkout"
+
 if [[ $FAILED -ne 0 ]]; then
+  echo "--- ship output ---"; tail -30 "$SANDBOX/ship-out" 2>/dev/null
   echo "--- failed release output ---"; tail -30 "$SANDBOX/failed-out"
   echo "--- passed release output ---"; tail -30 "$SANDBOX/passed-out"
   echo "--- failed second candidate output ---"; tail -20 "$SANDBOX/race-failed-out" 2>/dev/null
