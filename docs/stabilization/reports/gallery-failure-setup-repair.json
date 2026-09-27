@@ -2,13 +2,14 @@
   "schema_version": 1,
   "scope": "EXT-F-1009-T08 gallery failure runner organization setup",
   "inherited_run": "docs/stabilization/runs/gallery-failure-dev095-002.json",
+  "sibling_setup_signal": "docs/stabilization/runs/screenshot-fullpage-dev095-003.json also stopped in select_approved_organization before its feature behavior; the exact failed selector remains unmeasured here.",
   "observed_failure": {
     "stage": "select_approved_organization",
     "pointer_code": "pointer_target_not_unique",
     "gallery_request_started": false,
     "exact_failing_click": "unmeasured_in_prior_report"
   },
-  "source_finding": "The gallery runner clicked Acting as immediately after opening Organization. The previously proven native admin and Source paths wait for exactly one Acting as combobox after the section expands. The missing readiness check is a concrete runner gap, but the prior receipt does not prove it was the failed click.",
+  "source_finding": "The gallery runner clicked Acting as immediately after opening Organization. The previously proven native admin and Source paths wait for exactly one Acting as combobox after the section expands. The missing readiness check is a concrete runner gap, but neither failed receipt proves this was the failed click. The sibling failure calls for shared-path diagnosis using exact selector evidence before another retry.",
   "repair": "Require exactly one Acting as combobox before the trusted pointer click; retain exact approved-option and stored-organization checks. If setup fails again, record the fixed step, pointer match counts and safe DOM element counts without names or IDs.",
   "verification": {
     "source_syntax": "pass_node_check",
