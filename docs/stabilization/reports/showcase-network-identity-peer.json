@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0041",
+  "status": "DONE_WITH_CONCERNS — source review complete; live outcome unverified",
+  "reviewed_commit": "3c49bb0459fcef252f05a1b9db48b9f13f0011bb",
+  "A_live_outcome": "UNVERIFIED: no installed extension, real capture, persisted reopen, or replay was exercised in this source-only lane; final compile/build also remain outside this lane.",
+  "B_source_quality": "PARTIAL: NetworkTab now saves the selected full URL, including query and numeric path, and runNetworkCapturePattern compares unstarred absolute http(s) filters exactly. Its real runner path in the focused guard rejects a larger distinct-URL sibling, but two identity classes remain ambiguous.",
+  "blocker_relative_url": "CONFIRMED FROM SOURCE: networkTapMain records fetch('/api/events?id=12') and fetch('/api/events?id=123') as relative strings (network-tap.ts:85-90,120-125); NetworkTab saves the first verbatim (NetworkTab.tsx:33-40,257-264); matchesUrlFilter uses substring for non-http filters (run-interactive.ts:251-261), so both match and the larger second body wins (run-interactive.ts:343-350,331-337).",
+  "blocker_same_url": "CONFIRMED FROM SOURCE: two POST /graphql responses with different request bodies have identical saved URL/method; the tap does not capture request body (network-tap.ts:14-29,81-139), and replay chooses the larger response (run-interactive.ts:331-350). A user can select one response and replay the other's rows even with an exact URL.",
+  "root_cause_and_siblings": "The shared replay identity is only URL/method, with URL semantics changing by string shape and body size used as a tie-breaker; PatternsTab, DataView and the data_patterns tool all consume runSavedPattern, so each inherits wrong-row replay (run-interactive.ts:413-423).",
+  "forcing_test_assessment": "Reported guarded red 2/4 then green 4/4 was not rerun here. The committed two new cases pass saved UI config to the real runner and force distinct absolute URL/query and numeric-ID selection against a larger sibling, a meaningful narrow regression. They mock capture/persistence/reload, emit before any onUpdated injection, and omit relative and same-URL/body siblings; they cannot prove installed replay or the full identity class.",
+  "hypotheses_not_proven": "Whether a target site emits relative capture URLs or same-URL distinct-body requests, and whether Chrome injection catches its first hydration request, require live evidence; no UI verdict follows from source tests.",
+  "files": ["src/features/showcase/tabs/NetworkTab.tsx", "src/lib/data-pattern/run-interactive.ts", "src/lib/data-pattern/network-tap.ts", "src/features/showcase/components/SaveAsPattern.tsx", "src/features/showcase/tabs/PatternsTab.tsx", "tests/unit/showcase-network-save-replay.test.tsx"],
+  "open_questions": ["Will the replay contract distinguish requests sharing URL and method using request payload or another user-visible discriminator, and reject unresolved ambiguity instead of silently selecting the largest response?", "Does a fresh installed-extension save/reopen/replay return the selected real rows when sibling requests fire?"]
+}
