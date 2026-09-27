@@ -14,8 +14,11 @@ import { click, evaluate, openSection, waitFor } from './settings-panel-driver.m
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
-const RECEIPT = resolve(REPO, process.env.SCREENSHOT_CAPTURE_DEV_BUILD_RECEIPT ??
-  'test-results/source-dev-build-093-contained-20260927.json');
+const RECEIPT = resolve(
+  REPO,
+  process.env.SCREENSHOT_CAPTURE_DEV_BUILD_RECEIPT ??
+    'test-results/source-dev-build-093-contained-20260927.json',
+);
 const OUTPUT = join(REPO, 'test-results', `screenshot-full-page-${randomUUID()}.json`);
 const RECOVERY = OUTPUT.replace(/\.json$/, '.private-recovery.json');
 const PRIVATE_CONFIG = join(REPO, 'test-results', 'd22-private-config.json');
@@ -29,20 +32,35 @@ section:nth-child(2){background:#ed567b}section:nth-child(3){background:#39c78e}
 <section><h1>Harbor Dental appointment guide</h1><p>Bring your insurance card.</p></section>
 <section><h2>At the clinic</h2><p>Tell the care team about current medicines.</p></section>
 <section><h2>Before leaving</h2><p>Confirm your follow-up appointment.</p></section>`;
-const report = { schema_version: 1, feature: 'EXT-F-1009-T03', status: 'unverified',
+const report = {
+  schema_version: 1,
+  feature: 'EXT-F-1009-T03',
+  status: 'unverified',
   scope: 'owned localhost three-screen full-page capture and persisted gallery image',
-  cases: { tallPersistence: 'unverified', unsupportedPage: 'unverified',
-    persistenceFailure: 'unverified', tileCap: 'unverified' } };
+  cases: {
+    tallPersistence: 'unverified',
+    unsupportedPage: 'unverified',
+    persistenceFailure: 'unverified',
+    tileCap: 'unverified',
+  },
+};
 let stage = 'build_identity';
-function fail(code) { report.failure = { stage, code }; throw new Error(code); }
+function fail(code) {
+  report.failure = { stage, code };
+  throw new Error(code);
+}
 function canonical(url) {
   const parsed = new URL(url);
   return `${parsed.host.toLowerCase().replace(/^www\./, '')}${parsed.pathname.replace(/\/$/, '')}${parsed.search}`;
 }
 function safeFailure(error) {
-  return { timeout: error?.name === 'TimeoutError', assertion: error?.code === 'ERR_ASSERTION',
+  return {
+    timeout: error?.name === 'TimeoutError',
+    assertion: error?.code === 'ERR_ASSERTION',
     pointerCode: /^pointer_[a-z_]+$/.test(error?.driverFailure?.code ?? '')
-      ? error.driverFailure.code : null };
+      ? error.driverFailure.code
+      : null,
+  };
 }
 async function buildIdentity() {
   if (dirname(RECEIPT) !== join(REPO, 'test-results')) fail('receipt_path_refused');
@@ -52,10 +70,19 @@ async function buildIdentity() {
     readFile(join(REPO, 'package.json'), 'utf8').then(JSON.parse),
   ]);
   requireLocalDevReceipt(receipt, EXTENSION_DIR);
-  if (!manifest.key || manifest.version !== pkg.version || manifest.version !== receipt.version ||
-      hashReleaseTree(EXTENSION_DIR) !== receipt.treeSha256) fail('dev_build_identity_mismatch');
-  return { kind: receipt.kind, publishState: receipt.publish_state,
-    version: receipt.version, treeSha256: receipt.treeSha256 };
+  if (
+    !manifest.key ||
+    manifest.version !== pkg.version ||
+    manifest.version !== receipt.version ||
+    hashReleaseTree(EXTENSION_DIR) !== receipt.treeSha256
+  )
+    fail('dev_build_identity_mismatch');
+  return {
+    kind: receipt.kind,
+    publishState: receipt.publish_state,
+    version: receipt.version,
+    treeSha256: receipt.treeSha256,
+  };
 }
 async function approvedOrganization() {
   const stat = await lstat(PRIVATE_CONFIG).catch(() => fail('approved_config_missing'));
@@ -83,75 +110,135 @@ async function signIn(page, panel) {
     await web.locator('input[name="email"]').fill(ADMIN_EMAIL);
     await web.locator('input[name="password"]').fill(values.AI_ADMIN_PASSWORD);
     await Promise.all([
-      web.waitForURL(url => url.origin === WEB_ORIGIN && url.pathname === '/dashboard',
-        { timeout: 90_000 }),
+      web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname === '/dashboard', {
+        timeout: 90_000,
+      }),
       web.getByRole('button', { name: 'Sign in', exact: true }).click(),
     ]);
     await click(panel, 'button', 'Sign in');
-    await waitFor('admin_identity', () => evaluate(panel, `(() =>
-      document.querySelectorAll('button[title="${ADMIN_EMAIL}"]').length)()`),
-    count => count === 1, 90_000);
-  } finally { await web.close(); }
+    await waitFor(
+      'admin_identity',
+      () =>
+        evaluate(
+          panel,
+          `(() =>
+      document.querySelectorAll('button[title="${ADMIN_EMAIL}"]').length)()`,
+        ),
+      (count) => count === 1,
+      90_000,
+    );
+  } finally {
+    await web.close();
+  }
 }
 async function selectOrganization(panel, approved) {
   stage = 'select_approved_organization';
   await click(panel, 'title', 'Settings');
-  const account = await evaluate(panel, `(() => [...document.querySelectorAll('button[aria-expanded]')]
-    .filter(el => el.textContent.trim()==='Account').map(el => el.getAttribute('aria-expanded')))()`);
+  const account = await evaluate(
+    panel,
+    `(() => [...document.querySelectorAll('button[aria-expanded]')]
+    .filter(el => el.textContent.trim()==='Account').map(el => el.getAttribute('aria-expanded')))()`,
+  );
   if (account?.length !== 1) fail('account_section_not_unique');
   if (account[0] === 'true') await click(panel, 'section', 'Account');
-  await waitFor('account_collapsed', () => evaluate(panel, `(() => [...document.querySelectorAll(
+  await waitFor(
+    'account_collapsed',
+    () =>
+      evaluate(
+        panel,
+        `(() => [...document.querySelectorAll(
     'button[aria-expanded]')].find(el => el.textContent.trim()==='Account')
-    ?.getAttribute('aria-expanded'))()`), value => value === 'false');
+    ?.getAttribute('aria-expanded'))()`,
+      ),
+    (value) => value === 'false',
+  );
   await openSection(panel, 'Organization');
   await click(panel, 'organization', 'Acting as');
-  const choices = await evaluate(panel, `(() => [...document.querySelectorAll('[role="option"]')]
-    .filter(el => el.textContent.trim()===${JSON.stringify(approved)}).length)()`);
+  const choices = await evaluate(
+    panel,
+    `(() => [...document.querySelectorAll('[role="option"]')]
+    .filter(el => el.textContent.trim()===${JSON.stringify(approved)}).length)()`,
+  );
   if (choices !== 1) fail('approved_option_not_unique');
   await click(panel, 'option', approved);
-  await waitFor('approved_organization_selected', () => evaluate(panel, `(async () => {
+  await waitFor(
+    'approved_organization_selected',
+    () =>
+      evaluate(
+        panel,
+        `(async () => {
     const row=[...document.querySelectorAll('span')].find(el => el.textContent.trim()==='Acting as');
     const buttons=[...(row?.parentElement?.parentElement?.querySelectorAll('button[role="combobox"]')??[])];
     const active=(await chrome.storage.local.get('matrx.org.active'))['matrx.org.active'];
     return buttons.length===1 && buttons[0].textContent.trim()===${JSON.stringify(approved)} &&
       active?.name===${JSON.stringify(approved)} && typeof active?.id==='string';
-  })()`), value => value === true, 30_000);
+  })()`,
+      ),
+    (value) => value === true,
+    30_000,
+  );
 }
 function watchRows(panel, expectedCanonical) {
   const requests = new Map();
   const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
     try {
       const url = new URL(request?.url);
-      if (request?.method !== 'GET' || !url.pathname.endsWith('/wbx_screenshot') ||
-          url.searchParams.get('page_url_canonical') !== `eq.${expectedCanonical}`) return;
+      if (
+        request?.method !== 'GET' ||
+        !url.pathname.endsWith('/wbx_screenshot') ||
+        url.searchParams.get('page_url_canonical') !== `eq.${expectedCanonical}`
+      )
+        return;
       requests.set(requestId, { status: null, rows: null });
-    } catch { /* unrelated traffic */ }
+    } catch {
+      /* unrelated traffic */
+    }
   });
   const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
-    const entry = requests.get(requestId); if (entry) entry.status = response?.status;
+    const entry = requests.get(requestId);
+    if (entry) entry.status = response?.status;
   });
   const offFinished = panel.on('Network.loadingFinished', ({ requestId }) => {
-    const entry = requests.get(requestId); if (!entry || entry.status !== 200) return;
-    void panel.send('Network.getResponseBody', { requestId }).then(({ body, base64Encoded }) => {
-      const rows = JSON.parse(base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body);
-      if (Array.isArray(rows) && rows.every(row => row.page_url_canonical === expectedCanonical))
-        entry.rows = rows;
-    }).catch(() => {});
+    const entry = requests.get(requestId);
+    if (!entry || entry.status !== 200) return;
+    void panel
+      .send('Network.getResponseBody', { requestId })
+      .then(({ body, base64Encoded }) => {
+        const rows = JSON.parse(
+          base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body,
+        );
+        if (
+          Array.isArray(rows) &&
+          rows.every((row) => row.page_url_canonical === expectedCanonical)
+        )
+          entry.rows = rows;
+      })
+      .catch(() => {});
   });
   return {
     marker: () => requests.size,
-    rowsAfter: index => [...requests.values()].slice(index).filter(entry => entry.rows),
-    allRows: () => [...requests.values()].filter(entry => entry.rows),
-    stop: () => { offRequest(); offResponse(); offFinished(); },
+    rowsAfter: (index) => [...requests.values()].slice(index).filter((entry) => entry.rows),
+    allRows: () => [...requests.values()].filter((entry) => entry.rows),
+    stop: () => {
+      offRequest();
+      offResponse();
+      offFinished();
+    },
   };
 }
 async function nextRead(journal, marker, length) {
-  const result = await waitFor('real_gallery_read', () => journal.rowsAfter(marker),
-    reads => reads.some(read => read.status === 200 && read.rows.length === length), 45_000);
-  return result.find(read => read.status === 200 && read.rows.length === length).rows;
+  const result = await waitFor(
+    'real_gallery_read',
+    () => journal.rowsAfter(marker),
+    (reads) => reads.some((read) => read.status === 200 && read.rows.length === length),
+    45_000,
+  );
+  return result.find((read) => read.status === 200 && read.rows.length === length).rows;
 }
 async function cardState(panel) {
-  return evaluate(panel, `(() => {
+  return evaluate(
+    panel,
+    `(() => {
     const tab=document.querySelector('button[role="tab"][title="Screenshots"][data-state="active"]');
     const pane=tab&&document.getElementById(tab.getAttribute('aria-controls'));
     const cards=[...(pane?.querySelectorAll('div.group')??[])]
@@ -174,58 +261,91 @@ async function cardState(panel) {
       middle:near(sample(.50),[237,86,123]), last:near(sample(.84),[57,199,142]),
       sourceYou:cards[0]?.querySelector('span[title="Source"]')?.textContent.trim()==='You',
       warning:!!pane?.innerText.includes('Captured, but failed to save')};
-  })()`);
+  })()`,
+  );
 }
 async function cleanup(panel, journal, row, fixtureUrl, fixtureCanonical, page) {
   stage = 'exact_owned_row_cleanup';
-  if (page.url() !== fixtureUrl) await page.goto(fixtureUrl, { waitUntil:'domcontentloaded' });
+  if (page.url() !== fixtureUrl) await page.goto(fixtureUrl, { waitUntil: 'domcontentloaded' });
   if (canonical(page.url()) !== fixtureCanonical) fail('cleanup_page_identity_lost');
   await click(panel, 'title', 'Screenshots');
-  const present = await waitFor('owned_card_ready', () => cardState(panel),
-    state => state.cardCount === 1 && state.decoded, 30_000);
+  const present = await waitFor(
+    'owned_card_ready',
+    () => cardState(panel),
+    (state) => state.cardCount === 1 && state.decoded,
+    30_000,
+  );
   if (present.cardCount !== 1) fail('cleanup_card_not_unique');
-  const prior = journal.allRows().find(read => read.rows.length === 1 &&
-    read.rows[0].id === row.id && read.rows[0].file_id === row.file_id);
+  const prior = journal
+    .allRows()
+    .find(
+      (read) =>
+        read.rows.length === 1 &&
+        read.rows[0].id === row.id &&
+        read.rows[0].file_id === row.file_id,
+    );
   if (!prior) fail('cleanup_row_identity_missing');
   await click(panel, 'title', 'Delete');
-  const confirmation = await waitFor('owned_delete_confirmation', () => evaluate(panel, `(() => {
+  const confirmation = await waitFor(
+    'owned_delete_confirmation',
+    () =>
+      evaluate(
+        panel,
+        `(() => {
     const dialog=document.querySelector('[role="alertdialog"],[role="dialog"]');
     return !!dialog?.innerText.includes('The image file itself stays in your Files') &&
       [...dialog.querySelectorAll('button')].some(button => button.textContent.trim()==='Delete'
         && !button.disabled);
-  })()`), value => value === true);
+  })()`,
+      ),
+    (value) => value === true,
+  );
   if (!confirmation) fail('delete_consequence_missing');
   const marker = journal.marker();
   await click(panel, 'button-text', 'Delete');
   const rows = await nextRead(journal, marker, 0);
-  if (rows.some(entry => entry.id === row.id)) fail('owned_row_still_present');
+  if (rows.some((entry) => entry.id === row.id)) fail('owned_row_still_present');
   return true;
 }
 async function exercise({ page, panel }) {
-  let server, journal, fixtureUrl, fixtureCanonical, ownedRow;
-  let captureClicked = false, cleaned = false;
+  let server;
+  let journal;
+  let fixtureUrl;
+  let fixtureCanonical;
+  let ownedRow;
+  let captureClicked = false;
+  let cleaned = false;
   try {
     const approved = await approvedOrganization();
     await signIn(page, panel);
     await selectOrganization(panel, approved);
-    server = createServer((_request, response) => response.writeHead(200,
-      { 'content-type':'text/html; charset=utf-8', 'cache-control':'no-store' }).end(HTML));
+    server = createServer((_request, response) =>
+      response
+        .writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' })
+        .end(HTML),
+    );
     await new Promise((resolveListen, reject) => {
-      server.once('error', reject); server.listen(0, '127.0.0.1', resolveListen);
+      server.once('error', reject);
+      server.listen(0, '127.0.0.1', resolveListen);
     });
     fixtureUrl = `http://127.0.0.1:${server.address().port}/harbor-dental/appointment-guide/${randomUUID()}`;
     stage = 'owned_tall_page';
-    await page.goto(fixtureUrl, { waitUntil:'domcontentloaded' });
-    if (page.url() !== fixtureUrl || await page.title() !== 'Harbor Dental appointment guide')
+    await page.goto(fixtureUrl, { waitUntil: 'domcontentloaded' });
+    if (page.url() !== fixtureUrl || (await page.title()) !== 'Harbor Dental appointment guide')
       fail('fixture_identity_unverified');
-    const metrics = await page.evaluate(() => ({ innerHeight, scrollHeight:document.documentElement.scrollHeight,
-      scrollY }));
-    if (metrics.innerHeight < 100 || metrics.scrollHeight < metrics.innerHeight*2.9)
+    const metrics = await page.evaluate(() => ({
+      innerHeight,
+      scrollHeight: document.documentElement.scrollHeight,
+      scrollY,
+    }));
+    if (metrics.innerHeight < 100 || metrics.scrollHeight < metrics.innerHeight * 2.9)
       fail('fixture_not_three_viewports');
     fixtureCanonical = canonical(fixtureUrl);
-    await mkdir(dirname(RECOVERY), { recursive:true });
-    await writeFile(RECOVERY, JSON.stringify({ fixtureUrl, fixtureCanonical }),
-      { mode:0o600, flag:'wx' });
+    await mkdir(dirname(RECOVERY), { recursive: true });
+    await writeFile(RECOVERY, JSON.stringify({ fixtureUrl, fixtureCanonical }), {
+      mode: 0o600,
+      flag: 'wx',
+    });
     await panel.send('Network.enable');
     journal = watchRows(panel, fixtureCanonical);
     const beforeMarker = journal.marker();
@@ -238,74 +358,131 @@ async function exercise({ page, panel }) {
     captureClicked = true;
     await click(panel, 'button-text', 'Full page');
     const after = await nextRead(journal, captureMarker, 1);
-    if (after.length === 1 && typeof after[0]?.id === 'string' &&
-        typeof after[0]?.file_id === 'string') ownedRow = after[0];
-    if (ownedRow) await writeFile(RECOVERY, JSON.stringify({ fixtureUrl, fixtureCanonical,
-      screenshotId:ownedRow.id, fileId:ownedRow.file_id }), { mode:0o600 });
-    if (!ownedRow || ownedRow.source !== 'user' || !(ownedRow.width > 0) ||
-        !(ownedRow.height > ownedRow.width) ||
-        Math.abs(ownedRow.width/ownedRow.height -
-          page.viewportSize().width/metrics.scrollHeight) > .08)
+    if (
+      after.length === 1 &&
+      typeof after[0]?.id === 'string' &&
+      typeof after[0]?.file_id === 'string'
+    )
+      ownedRow = after[0];
+    if (ownedRow)
+      await writeFile(
+        RECOVERY,
+        JSON.stringify({
+          fixtureUrl,
+          fixtureCanonical,
+          screenshotId: ownedRow.id,
+          fileId: ownedRow.file_id,
+        }),
+        { mode: 0o600 },
+      );
+    if (
+      !ownedRow ||
+      ownedRow.source !== 'user' ||
+      !(ownedRow.width > 0) ||
+      !(ownedRow.height > ownedRow.width) ||
+      Math.abs(
+        ownedRow.width / ownedRow.height - page.viewportSize().width / metrics.scrollHeight,
+      ) > 0.08
+    )
       fail('persisted_full_page_dimensions_wrong');
-    const image = await waitFor('fresh_persisted_full_page_thumbnail', () => cardState(panel),
-      state => state.decoded && state.first && state.middle && state.last && state.sourceYou &&
-        !state.warning, 45_000);
-    if (image.height <= image.width || image.cardCount !== 1)
-      fail('persisted_image_not_tall');
+    const image = await waitFor(
+      'fresh_persisted_full_page_thumbnail',
+      () => cardState(panel),
+      (state) =>
+        state.decoded &&
+        state.first &&
+        state.middle &&
+        state.last &&
+        state.sourceYou &&
+        !state.warning,
+      45_000,
+    );
+    if (image.height <= image.width || image.cardCount !== 1) fail('persisted_image_not_tall');
     const finalScroll = await page.evaluate(() => scrollY);
     if (Math.abs(finalScroll - metrics.scrollY) > 2) fail('original_scroll_not_restored');
     report.cases.tallPersistence = 'pass';
-    report.evidence = { realZeroRowBaseline:true, persistedOwnedRow:true,
-      imageLoadedFromGallery:true, topMiddleBottomPixelsMatched:true,
-      tallImage:true, originalScrollRestored:true };
+    report.evidence = {
+      realZeroRowBaseline: true,
+      persistedOwnedRow: true,
+      imageLoadedFromGallery: true,
+      topMiddleBottomPixelsMatched: true,
+      tallImage: true,
+      originalScrollRestored: true,
+    };
     cleaned = await cleanup(panel, journal, ownedRow, fixtureUrl, fixtureCanonical, page);
     report.cleanup = { exactOwnedRowAbsentAfterRealRead: cleaned };
     await rm(RECOVERY);
     report.status = 'partial';
   } catch (error) {
-    report.failure ??= { stage, code:'full_page_stage_failed' };
+    report.failure ??= { stage, code: 'full_page_stage_failed' };
     report.failure.diagnostic = safeFailure(error);
     if (!ownedRow && captureClicked) {
       // The capture may have saved even when its automatic gallery read failed.
       // Ask the real gallery for this run's unique URL before conceding cleanup.
       if (journal && fixtureUrl && fixtureCanonical) {
         try {
-          if (page.url() !== fixtureUrl) await page.goto(fixtureUrl, { waitUntil:'domcontentloaded' });
+          if (page.url() !== fixtureUrl)
+            await page.goto(fixtureUrl, { waitUntil: 'domcontentloaded' });
           if (canonical(page.url()) === fixtureCanonical) {
             await click(panel, 'title', 'Screenshots');
             const marker = journal.marker();
             await click(panel, 'title', 'Refresh');
-            await waitFor('recovery_gallery_read', () => journal.rowsAfter(marker),
-              reads => reads.some(read => read.status === 200), 30_000);
+            await waitFor(
+              'recovery_gallery_read',
+              () => journal.rowsAfter(marker),
+              (reads) => reads.some((read) => read.status === 200),
+              30_000,
+            );
           }
-        } catch { /* retain private URL for exact manual recovery */ }
+        } catch {
+          /* retain private URL for exact manual recovery */
+        }
       }
-      const candidates = journal?.allRows().flatMap(entry => entry.rows) ?? [];
-      const unique = [...new Map(candidates.filter(row => row?.id && row?.file_id)
-        .map(row => [row.id, row])).values()];
+      const candidates = journal?.allRows().flatMap((entry) => entry.rows) ?? [];
+      const unique = [
+        ...new Map(
+          candidates.filter((row) => row?.id && row?.file_id).map((row) => [row.id, row]),
+        ).values(),
+      ];
       if (unique.length === 1) ownedRow = unique[0];
     }
-    if (ownedRow) await writeFile(RECOVERY, JSON.stringify({ fixtureUrl, fixtureCanonical,
-      screenshotId:ownedRow.id, fileId:ownedRow.file_id }), { mode:0o600 }).catch(() => {});
+    if (ownedRow)
+      await writeFile(
+        RECOVERY,
+        JSON.stringify({
+          fixtureUrl,
+          fixtureCanonical,
+          screenshotId: ownedRow.id,
+          fileId: ownedRow.file_id,
+        }),
+        { mode: 0o600 },
+      ).catch(() => {});
     if (ownedRow && !cleaned) {
-      try { cleaned = await cleanup(panel, journal, ownedRow, fixtureUrl, fixtureCanonical, page); }
-      catch { report.cleanup = { exactOwnedRowAbsentAfterRealRead:false }; }
+      try {
+        cleaned = await cleanup(panel, journal, ownedRow, fixtureUrl, fixtureCanonical, page);
+      } catch {
+        report.cleanup = { exactOwnedRowAbsentAfterRealRead: false };
+      }
     }
-    if (cleaned) report.cleanup = { exactOwnedRowAbsentAfterRealRead:true };
+    if (cleaned) report.cleanup = { exactOwnedRowAbsentAfterRealRead: true };
     if (cleaned) await rm(RECOVERY).catch(() => {});
     report.failure.createdRowMayNeedUiCleanup = captureClicked && !cleaned;
     throw error;
   } finally {
     journal?.stop();
-    if (server) await new Promise(resolveClose => server.close(resolveClose));
+    if (server) await new Promise((resolveClose) => server.close(resolveClose));
   }
 }
 try {
   const before = await buildIdentity();
-  report.build = { version:before.version, treeSha256:before.treeSha256 };
+  report.build = { version: before.version, treeSha256: before.treeSha256 };
   stage = 'owned_native_profile';
-  const run = await runNativeSidepanelQa({ extensionDir:EXTENSION_DIR, expectedRelease:before,
-    localDevReceiptPath:RECEIPT, exercisePanel:exercise });
+  const run = await runNativeSidepanelQa({
+    extensionDir: EXTENSION_DIR,
+    expectedRelease: before,
+    localDevReceiptPath: RECEIPT,
+    exercisePanel: exercise,
+  });
   assert.equal(run.verified, true);
   stage = 'build_end';
   const after = await buildIdentity();
@@ -314,10 +491,10 @@ try {
   report.profileOwned = true;
 } catch (error) {
   report.status = 'unverified';
-  report.failure ??= { stage, code:'owned_harness_or_ui_stage_failed' };
+  report.failure ??= { stage, code: 'owned_harness_or_ui_stage_failed' };
   report.failure.diagnostic ??= safeFailure(error);
 }
-await mkdir(dirname(OUTPUT), { recursive:true });
-await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode:0o600, flag:'wx' });
+await mkdir(dirname(OUTPUT), { recursive: true });
+await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600, flag: 'wx' });
 process.stdout.write(`${report.status.toUpperCase()} screenshot_full_page\n`);
 if (report.status === 'unverified') process.exitCode = 1;
