@@ -1,0 +1,56 @@
+{
+  "defect": "EXT-D-0047",
+  "lane": "fresh zero-authorship implementation peer; source only",
+  "snapshot": "2026-09-27; live uncommitted shared-main candidate",
+  "verdict_a_installed_live": "UNVERIFIED",
+  "verdict_b_source_quality": "CHANGES_REQUESTED",
+  "runtime_executed": false,
+  "product_edited": false,
+  "source_hashes_sha256": {
+    "src/lib/data-pattern/document-network-capture.ts": "1b2d67d7dc0cde879caf70a11c5f0ebacc74e27eeac74a9a6031219298f239f5",
+    "src/lib/data-pattern/document-network-transport.ts": "a291f37400282885cb1455438d797cb3564677fde39e0458fbcf2e2befb6a7a7",
+    "src/lib/data-pattern/network-tap.ts": "57084705a43d1c8c5fdf051a5f23fc33f2947b9a56c930b185390e5082101f44",
+    "src/lib/data-pattern/run-interactive.ts": "f981543356423c8984aa45a91b76434cf3814db556fe8007ea3a21e1dfeb4120",
+    "src/lib/tools/dispatch.ts": "576257f5c1923e81e2d070dccfcf96f97be19b47b4429a80e0fbec4f394907ac",
+    "src/lib/tools/handlers/data-patterns.ts": "9b4bb9a7923654cf98d22874b6cb4535ed38267aba5dfe6b6730326efe70d778",
+    "src/features/showcase/SavedReplayApprovalHost.tsx": "275c5ce21249ae96768015cb2e970237d8e46bfc1534af97a0fafe9ba4957",
+    "src/features/chat/AgentApprovalCard.tsx": "a0ea862ca6abba42d2388df6a1359e14859042495ba820c41c99c6e6b0217717"
+  },
+  "prior_findings": {
+    "D47-P1": "ADDRESSED FOR SAVED-ONLY CAPTURE: binding-backed capture does not post page messages. Explicitly starting the independent manual Network capture during the same document enables its preexisting page relay; this is a separate user-started capture, not proof that saved replay itself leaks.",
+    "D47-P2": "ADDRESSED IN SOURCE: approved identity hashes tab URL and document ID and checks them again immediately before reload.",
+    "D47-P3": "PARTIAL: approval host hydrates persisted local cards and reports expiry; remount cancellation and worker disconnect are source-visible, but no installed restart proof is present.",
+    "D47-P4": "ADDRESSED FOR SLOW SETUP: matching timer starts at onArmed after script registration. Page.reload itself lacks a bounded command lifetime (finding F1).",
+    "D47-P5": "PARTIAL: new page privacy, dispatcher, remount, lease and real PatternsTab caller tests improve the guard. Tests do not cover never-settling Page.reload or the user's approval target comprehension; no mutation or installed evidence was run in this lane."
+  },
+  "findings": [
+    {
+      "id": "D47-F1",
+      "severity": "P1",
+      "title": "A stalled Page.reload can strand capture and cancellation without a terminal result",
+      "evidence": "document-network-capture.ts:184-189 calls onArmed (which clears the setup deadline in document-network-transport.ts:35) before awaiting lease.send('Page.reload'). The runner's window timer in run-interactive.ts:470-493 calls finish, whose line 361 awaits the unresolved capture promise before invoking reject. The core's abort close also awaits setupSettled, which is resolved only by the same arm() finally after Page.reload settles.",
+      "impact": "If the CDP Page.reload command stalls, the capture window expiring, port cancellation, and sidepanel disconnect cannot produce the promised visible terminal error or release the lease. The run remains pending after the bounded timer.",
+      "repair": "Keep a bounded reload-command deadline independent of the matching window and make the caller settle on timeout or abort without waiting for the command. Preserve late cleanup when Chrome eventually returns. Add a controlled unresolved-reload test exercising timeout and cancel."
+    },
+    {
+      "id": "D47-F2",
+      "severity": "P2",
+      "title": "The privileged approval card does not tell the person which page and recipe will reload",
+      "evidence": "dispatch.ts:1655 sends the parsed args { action:'run', pattern_id } to requestConfirmation; data-patterns.ts:111-125 keeps the actual name, URL and document in the internal snapshot. AgentApprovalCard.tsx:75-114 renders tool name, description and those opaque args, so the target page and reload action are not visible on the card. The planned DB description update is still outstanding in the integration report.",
+      "impact": "A person cannot assess the specific privileged debugger/reload action from the approval request despite its exact internal binding.",
+      "repair": "Present the saved recipe name and approved page URL, plus the debugger/reload effect, on the local card using the already prepared operation; keep credentials out of the display. Preserve the exact snapshot recheck after approval."
+    }
+  ],
+  "positive_evidence": [
+    "The saved UI path runs through real PatternsTab -> runSavedPattern -> saved port -> dispatcher -> prepared data_patterns handler -> document capture; its test uses CDP as a browser boundary double and checks the rendered current row.",
+    "The dispatcher enforces privileged confirmation even in Act mode and re-prepares the saved pattern after approval; tab URL, document ID, and pattern fields enter the snapshot hash.",
+    "The core registers the new-document script before Page.reload; main-frame Runtime context and unique ID reject old and replacement document events, including same-URL replacement.",
+    "The CDP lease distinguishes owned from borrowed attachment and tests preserving the borrowed attachment on normal release."
+  ],
+  "limitations": [
+    "No test, build, installed extension, mutation, browser, or DB action was run by this peer.",
+    "Explicitly starting manual Network capture during an active saved replay switches the shared tap to the manual page relay. This is expected from a separate user-started capture; I do not count it as a saved-only privacy defect. A combined-mode live observation would settle any ownership concern.",
+    "Source hashes identify the reviewed moving shared-checkout snapshot; later builder edits require a scoped recheck.",
+    "Verdict A cannot pass until a fresh installed Chrome run exercises initial fetch/XHR, stale and same-URL response rejection, approval, disconnection, and debugger cleanup."
+  ]
+}
