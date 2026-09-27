@@ -14625,7 +14625,7 @@
     },
     {
       "id": "EXT-F-1012",
-      "name": "Explore showcase pattern and extraction demos",
+      "name": "Discover, save and replay site extraction patterns",
       "surface": "Showcase",
       "entry_points": [
         "Showcase tab (admin gated)"
@@ -14820,6 +14820,21 @@
           "id": "EXT-F-1012-C38",
           "label": "Restricted audience access gate",
           "action": "Attempt to open the restricted surface from excluded audience using navigation and stale selection."
+        },
+        {
+          "id": "EXT-F-1012-C39",
+          "label": "Save pattern configuration",
+          "action": "Name and save the exact successful preview configuration."
+        },
+        {
+          "id": "EXT-F-1012-C40",
+          "label": "Pattern dataset destination",
+          "action": "Choose none, new or existing dataset; verify explicit row persistence and partial failures."
+        },
+        {
+          "id": "EXT-F-1012-C41",
+          "label": "Result preview and export",
+          "action": "Toggle table/JSON and use JSON/TSV/AI copy and explicit agent handoff."
         }
       ],
       "source_anchors": [
@@ -14992,7 +15007,17 @@
             "reload",
             "auth-transition",
             "service-error"
-          ]
+          ],
+          "defect_ids": [
+            "EXT-D-0039"
+          ],
+          "results": {
+            "admin": {
+              "status": "fail",
+              "run_id": "showcase-live-discovery-001",
+              "evidence": "docs/stabilization/runs/showcase-live-discovery-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T05",
@@ -15843,6 +15868,325 @@
             "reload",
             "role-change"
           ]
+        },
+        {
+          "id": "EXT-F-1012-T39",
+          "title": "manual_css: preview/save/reopen/replay round trip",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C39"
+          ],
+          "preconditions": [
+            "Fresh development build, real accessible page with relevant data; manual_css originates in Data.",
+            "Owned uniquely named test pattern; exact record identity retained for cleanup."
+          ],
+          "steps": [
+            "Run method and inspect actual fields/values.",
+            "Save executed config; change draft controls and verify saved config cannot silently drift from preview.",
+            "Leave or reload, reopen saved pattern and rerun on applicable route.",
+            "Change source data or navigate/tab switch; verify source identity and honest result/error."
+          ],
+          "expected": [
+            "Persisted kind/config/source match successful preview; replay returns correct current data with matching fields.",
+            "Wrong route or missing required structure cannot silently return unrelated data as successful."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T40",
+          "title": "json_ld: preview/save/reopen/replay round trip",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C39"
+          ],
+          "preconditions": [
+            "Fresh development build, real accessible page with relevant data; manual_css originates in Data.",
+            "Owned uniquely named test pattern; exact record identity retained for cleanup."
+          ],
+          "steps": [
+            "Run method and inspect actual fields/values.",
+            "Save executed config; change draft controls and verify saved config cannot silently drift from preview.",
+            "Leave or reload, reopen saved pattern and rerun on applicable route.",
+            "Change source data or navigate/tab switch; verify source identity and honest result/error."
+          ],
+          "expected": [
+            "Persisted kind/config/source match successful preview; replay returns correct current data with matching fields.",
+            "Wrong route or missing required structure cannot silently return unrelated data as successful."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T41",
+          "title": "og_meta: preview/save/reopen/replay round trip",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C39"
+          ],
+          "preconditions": [
+            "Fresh development build, real accessible page with relevant data; manual_css originates in Data.",
+            "Owned uniquely named test pattern; exact record identity retained for cleanup."
+          ],
+          "steps": [
+            "Run method and inspect actual fields/values.",
+            "Save executed config; change draft controls and verify saved config cannot silently drift from preview.",
+            "Leave or reload, reopen saved pattern and rerun on applicable route.",
+            "Change source data or navigate/tab switch; verify source identity and honest result/error."
+          ],
+          "expected": [
+            "Persisted kind/config/source match successful preview; replay returns correct current data with matching fields.",
+            "Wrong route or missing required structure cannot silently return unrelated data as successful."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T42",
+          "title": "auto_table: preview/save/reopen/replay round trip",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C39"
+          ],
+          "preconditions": [
+            "Fresh development build, real accessible page with relevant data; manual_css originates in Data.",
+            "Owned uniquely named test pattern; exact record identity retained for cleanup."
+          ],
+          "steps": [
+            "Run method and inspect actual fields/values.",
+            "Save executed config; change draft controls and verify saved config cannot silently drift from preview.",
+            "Leave or reload, reopen saved pattern and rerun on applicable route.",
+            "Change source data or navigate/tab switch; verify source identity and honest result/error."
+          ],
+          "expected": [
+            "Persisted kind/config/source match successful preview; replay returns correct current data with matching fields.",
+            "Wrong route or missing required structure cannot silently return unrelated data as successful."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T43",
+          "title": "next_data: preview/save/reopen/replay round trip",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C39"
+          ],
+          "preconditions": [
+            "Fresh development build, real accessible page with relevant data; manual_css originates in Data.",
+            "Owned uniquely named test pattern; exact record identity retained for cleanup."
+          ],
+          "steps": [
+            "Run method and inspect actual fields/values.",
+            "Save executed config; change draft controls and verify saved config cannot silently drift from preview.",
+            "Leave or reload, reopen saved pattern and rerun on applicable route.",
+            "Change source data or navigate/tab switch; verify source identity and honest result/error."
+          ],
+          "expected": [
+            "Persisted kind/config/source match successful preview; replay returns correct current data with matching fields.",
+            "Wrong route or missing required structure cannot silently return unrelated data as successful."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T44",
+          "title": "ai_extract: preview/save/reopen/replay round trip",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C39"
+          ],
+          "preconditions": [
+            "Fresh development build, real accessible page with relevant data; manual_css originates in Data.",
+            "Owned uniquely named test pattern; exact record identity retained for cleanup."
+          ],
+          "steps": [
+            "Run method and inspect actual fields/values.",
+            "Save executed config; change draft controls and verify saved config cannot silently drift from preview.",
+            "Leave or reload, reopen saved pattern and rerun on applicable route.",
+            "Change source data or navigate/tab switch; verify source identity and honest result/error."
+          ],
+          "expected": [
+            "Persisted kind/config/source match successful preview; replay returns correct current data with matching fields.",
+            "Wrong route or missing required structure cannot silently return unrelated data as successful."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T45",
+          "title": "list_pattern: preview/save/reopen/replay round trip",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C39"
+          ],
+          "preconditions": [
+            "Fresh development build, real accessible page with relevant data; manual_css originates in Data.",
+            "Owned uniquely named test pattern; exact record identity retained for cleanup."
+          ],
+          "steps": [
+            "Run method and inspect actual fields/values.",
+            "Save executed config; change draft controls and verify saved config cannot silently drift from preview.",
+            "Leave or reload, reopen saved pattern and rerun on applicable route.",
+            "Change source data or navigate/tab switch; verify source identity and honest result/error."
+          ],
+          "expected": [
+            "Persisted kind/config/source match successful preview; replay returns correct current data with matching fields.",
+            "Wrong route or missing required structure cannot silently return unrelated data as successful."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T46",
+          "title": "microdata: preview/save/reopen/replay round trip",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C39"
+          ],
+          "preconditions": [
+            "Fresh development build, real accessible page with relevant data; manual_css originates in Data.",
+            "Owned uniquely named test pattern; exact record identity retained for cleanup."
+          ],
+          "steps": [
+            "Run method and inspect actual fields/values.",
+            "Save executed config; change draft controls and verify saved config cannot silently drift from preview.",
+            "Leave or reload, reopen saved pattern and rerun on applicable route.",
+            "Change source data or navigate/tab switch; verify source identity and honest result/error."
+          ],
+          "expected": [
+            "Persisted kind/config/source match successful preview; replay returns correct current data with matching fields.",
+            "Wrong route or missing required structure cannot silently return unrelated data as successful."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T47",
+          "title": "network_capture: preview/save/reopen/replay round trip",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C39"
+          ],
+          "preconditions": [
+            "Fresh development build, real accessible page with relevant data; manual_css originates in Data.",
+            "Owned uniquely named test pattern; exact record identity retained for cleanup."
+          ],
+          "steps": [
+            "Run method and inspect actual fields/values.",
+            "Save executed config; change draft controls and verify saved config cannot silently drift from preview.",
+            "Leave or reload, reopen saved pattern and rerun on applicable route.",
+            "Change source data or navigate/tab switch; verify source identity and honest result/error."
+          ],
+          "expected": [
+            "Persisted kind/config/source match successful preview; replay returns correct current data with matching fields.",
+            "Wrong route or missing required structure cannot silently return unrelated data as successful."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T48",
+          "title": "Saved result destination and explicit append recovery",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C40"
+          ],
+          "preconditions": [
+            "Owned dataset and pattern only."
+          ],
+          "steps": [
+            "Save preview with none/new/existing destination.",
+            "Reopen actual dataset and compare stored values; test partial append failure and explicit recovery.",
+            "Rerun saved pattern and persist output through explicit supported action; verify no implicit duplicate writes."
+          ],
+          "expected": [
+            "Recipe-save and row-persistence outcomes are accurately distinguished."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T49",
+          "title": "Result view/copy and shared execution consumers",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C41"
+          ],
+          "steps": [
+            "Toggle table/JSON; verify complete exported rows in JSON/TSV/AI copy.",
+            "Verify Data manual rerun, tool replay and existing automatic extraction use same saved config/route/outcome contracts.",
+            "Check explicit agent handoff preserves source metadata without sending automatically."
+          ],
+          "expected": [
+            "Shared consumers agree; output retains correct values and source."
+          ],
+          "dimensions": [
+            "warm",
+            "navigation",
+            "service-error"
+          ]
         }
       ],
       "cells": {
@@ -15859,15 +16203,22 @@
           "retest_status": "not-run"
         },
         "admin": {
-          "test_status": "unverified",
-          "defect_ids": [],
-          "run_ids": [],
+          "test_status": "fail",
+          "defect_ids": [
+            "EXT-D-0039"
+          ],
+          "run_ids": [
+            "showcase-live-discovery-001"
+          ],
           "retest_status": "not-run"
         }
       },
       "inventory_status": "complete",
       "missing_items": [],
-      "source_complete": true
+      "source_complete": true,
+      "notes": [
+        "2026-09-27 user elevated Showcase to current priority; added shared-save and per-kind roundtrip acceptance before testing. Every added case starts unverified; admin-only product audience retained, guest/member denial remains separately tracked."
+      ]
     },
     {
       "id": "EXT-F-1013",

@@ -1,0 +1,37 @@
+{
+  "id": "EXT-D-0039",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T04", "EXT-F-1012-T23"],
+  "surface": "Showcase Doctor \u2192 List Pattern",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Observe Showcase Doctor on existing real public calendar page.",
+    "Doctor recommendation reports249 div.wideeventwrapper cards and promises List Pattern pre-seeding.",
+    "Click that actual recommendation.",
+    "Observe List Pattern heading/instructions and only Pick an example item button; no prefilled config."
+  ],
+  "expected": "Detected list/root selectors initialize List Pattern while preserving an explicit field-selection step.",
+  "actual": "Navigation discards detection config and leaves blank initial picker screen despite promise to pre-seed.",
+  "evidence": [
+    "docs/stabilization/runs/showcase-live-discovery-001.json",
+    "docs/stabilization/reports/showcase-detect-audit.json"
+  ],
+  "severity": "S2: core discover-to-extract workflow loses detected pattern and forces manual restart",
+  "priority": "P1: first Showcase vertical repair",
+  "state": "triaged",
+  "transition_history": [
+    {
+      "at": "2026-09-27T15:17:46.172311+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Observed recommendation and blank target in live unpacked UI."
+    },
+    {
+      "at": "2026-09-27T15:17:46.172311+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source DoctorTab calls only setSubTab; detected config is not carried to ListPatternTab."
+    }
+  ],
+  "closure_requirement": "Independent verifier uses Doctor recommendation on real calendar; detected selectors arrive, field selection/extract works; wrong-page stale handoff rejected; guest/member behavior remains tracked."
+}

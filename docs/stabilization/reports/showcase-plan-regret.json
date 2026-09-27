@@ -1,0 +1,35 @@
+{
+  "lane": "REGRET",
+  "plan_snapshot": "docs/stabilization/SHOWCASE-PLAN.md at 4d52ac3a working-tree snapshot supplied by owner",
+  "verdict": "FIX-FIRST",
+  "coverage": "5/6 owner outcomes explicit: detect repeated data, extract by supported methods, preview, save, reopen/rerun. Durable handling of rerun results is unmapped; the current Save dialog offers a target dataset but saved rerun only previews rows.",
+  "live_constraint": "Primary Chrome is under root's pending manual-browser guard; no browser action was taken. Independent grounding used the Showcase tab tree, inventory EXT-F-1012, saved-pattern UI, shared runner, and auto-extraction source. The plan's electronic.vegas observation remains unverified here.",
+  "blocking": [
+    {
+      "id": "REGRET-01",
+      "finding": "The plan's saved replay acceptance checks fields and values but never checks what happens to newly extracted rows when the saved pattern has a target dataset. SaveAsPattern persists target_user_table_id and appends the first preview; PatternsTab reruns to an in-memory ResultPreview and never uses target_user_table_id. Its save failure text even tells the user to append from Patterns, where no append action exists.",
+      "anchors": [
+        "src/features/showcase/components/SaveAsPattern.tsx:154",
+        "src/features/showcase/components/SaveAsPattern.tsx:204",
+        "src/features/showcase/tabs/PatternsTab.tsx:82",
+        "src/features/showcase/tabs/PatternsTab.tsx:182"
+      ],
+      "remedy": "Add a manual saved-rerun acceptance case for a pattern bound to a real test dataset: rerun after source data changes, inspect preview, explicitly append or otherwise persist those new rows, verify exact values in the dataset after reopening, and make partial-save/append failure recoverable. Keep automatic extraction from appending without opt-in."
+    },
+    {
+      "id": "REGRET-02",
+      "finding": "The plan scopes acceptance to Showcase controls while shared saved-pattern behavior also runs in Data and the app-wide auto-extract hook. A fix to selector fallback, route matching, or run status can pass Showcase and still misreport a broken or zero-row extraction elsewhere; manual_css creation is in Data, not Showcase, although it is one of the nine promised kinds.",
+      "anchors": [
+        "src/features/data/DataView.tsx:150",
+        "src/features/data/DataView.tsx:185",
+        "src/hooks/use-auto-extract.ts:78",
+        "src/lib/data-pattern/run-pattern.ts:41",
+        "src/lib/supabase/queries.ts:872"
+      ],
+      "remedy": "For every shared-runner fix, add Data manual rerun and automatic matched-route checks, including status on missing root/zero rows. Prove manual_css creation in Data and reopening/rerun in Showcase; state explicitly if a kind has no Showcase creation door."
+    }
+  ],
+  "advisory": [],
+  "owner_only": [],
+  "note": "No new table or schedule is implied. This is a coverage correction to the existing user-approved repair scope."
+}

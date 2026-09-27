@@ -1,0 +1,86 @@
+{
+  "case_id": "EXT-F-1012",
+  "lane": "save-persist-list-rerun",
+  "evidence_level": "source-only; no browser, build, database, or test run",
+  "scope": "Showcase result saves across JSON-LD, Microdata, Snapshot, Tables, Framework, AI Extract, List Pattern, Network, and Recipes; shared pattern query and runners; Data and tool replay consumers",
+  "flow": [
+    "Mode tab extracts preview rows; SaveAsPattern receives mode kind, current config, rows, and source.",
+    "savePattern inserts into extend.wbx_pattern; fetchPatternsForDomain reads by host and Zod parses records.",
+    "Patterns tab, Data tab, and data_patterns tool call runSavedPattern; DOM modes use runPattern, AI and network use interactive runners."
+  ],
+  "findings": [
+    {
+      "id": "SRA-1",
+      "severity": "high",
+      "title": "Network preview filter is persisted as a URL matcher even when it matched only content type",
+      "evidence": [
+        "src/features/showcase/tabs/NetworkTab.tsx:20-29 filters captured events by URL OR content_type; :217-223 saves filter || urlPattern(selected.url) as url_filter.",
+        "src/lib/data-pattern/run-interactive.ts:246-266 matches url_filter against event.url only; :337-354 rejects with NetworkNoMatchError when none match."
+      ],
+      "repro": "On a page making JSON responses whose URLs do not contain 'json', capture an event; enter 'json' in the Network filter, select a JSON event, save the pattern, then run it from Patterns. The preview has rows, but the replay listens for URL containing 'json' and reports no match.",
+      "regression_seam": "Component-to-runner test: save config after filtering a fixture event by content_type, round-trip the persisted config through the same pattern shape, and feed an event with that URL to runNetworkCapturePattern. Assert replay produces the preview rows. This must initially fail on url_filter='json'."
+    },
+    {
+      "id": "SRA-2",
+      "severity": "high",
+      "title": "Saved config can differ from the config that produced the preview rows",
+      "evidence": [
+        "src/hooks/use-extraction.ts:58-77 stores rows and source, but not the run config.",
+        "src/features/showcase/tabs/JsonLdTab.tsx:57-81; MicrodataTab.tsx:79-82; TablesTab.tsx:48-75; FrameworkTab.tsx:134-160 pass live controls to SaveAsPattern after extraction.",
+        "src/features/showcase/tabs/AiExtractTab.tsx:87-103,343-356 also builds a save config from live description/schema/agent controls; src/features/showcase/components/SaveAsPattern.tsx:154-165 persists it with existing rows."
+      ],
+      "repro": "Extract table 0 from a page with two different tables, select Table 1 without pressing Extract again, then Save. The popover displays rows from table 0 but stores table_index 1; Patterns Run returns table 1. Equivalent drift is possible for JSON-LD/Microdata filters, framework source/path, and AI request controls.",
+      "regression_seam": "Drive the extraction hook/Showcase tab with a page containing two distinguishable tables; run with index 0, change control to 1, save, and assert persisted config and preview rows refer to the same run. Guard the shared provenance boundary so all tabs inherit it."
+    },
+    {
+      "id": "SRA-3",
+      "severity": "medium",
+      "title": "Patterns and agent replay ignore the saved route scope",
+      "evidence": [
+        "src/features/showcase/components/SaveAsPattern.tsx:79-86,154-165 stores source pathname as route_pattern.",
+        "src/lib/data-pattern/matcher.ts:6-16 defines urlMatchesPattern, including host and route.",
+        "src/features/showcase/tabs/PatternsTab.tsx:54-95 loads by host and runs any row on current tab; src/lib/tools/handlers/data-patterns.ts:146-172 does the same; src/lib/data-pattern/run-interactive.ts:388-398 does not check route."
+      ],
+      "repro": "Save a table or list pattern on example.test/products, navigate within that host to /account, open Patterns, and press Run. It is offered and executed there; an empty result is recorded as ok with zero rows, even though its saved route does not match.",
+      "regression_seam": "Test both Patterns and data_patterns run entry points against same-host wrong-path fixtures. Assert an explicit route-mismatch explanation without execution or health mutation; ensure the reusable /products/** route still works."
+    },
+    {
+      "id": "SRA-4",
+      "severity": "medium",
+      "title": "Mode config schemas are declared but never used at save or replay",
+      "evidence": [
+        "src/lib/data-pattern/types.ts:29 requires configSchema and every mode declares one; a source search finds no parse/safeParse invocation for configSchema.",
+        "src/lib/tools/handlers/data-patterns.ts:41-57 accepts arbitrary config record for any kind; :196-212 saves it; src/lib/data-pattern/run-pattern.ts:54-69 sends persisted config to runInPage unchecked."
+      ],
+      "repro": "Call data_patterns(save) for auto_table with config {table_index:'one'}, then run it. Save accepts the value; replay behavior depends on loose in-page coercion rather than the declared auto_table schema.",
+      "regression_seam": "Test the shared save/replay boundary with valid configs for every PatternKind and one invalid config per mode. Invalid data must return a named validation failure before persistence or execution; valid JSON round trips must preserve mode-specific values."
+    },
+    {
+      "id": "SRA-5",
+      "severity": "medium",
+      "title": "Malformed persisted pattern rows vanish from the saved list without a user-visible count",
+      "evidence": [
+        "src/lib/supabase/queries.ts:69-94 parseRowsSafe drops invalid rows and returns badCount; :941-943 discards badCount for fetchPatternsForDomain.",
+        "src/features/showcase/tabs/PatternsTab.tsx:162-166 renders 'No saved patterns' when the returned array is empty."
+      ],
+      "repro": "Supply one malformed wbx_pattern row in a controlled query fixture. fetchPatternsForDomain returns [], and Patterns displays 'No saved patterns' although a persisted row exists; the admin log alone records the validation issue.",
+      "regression_seam": "At fetchPatternsForDomain with a controlled response containing one invalid and one valid row, assert valid pattern remains available and a nonzero badCount reaches a visible list warning."
+    }
+  ],
+  "method_coverage": {
+    "direct_save_tabs": [
+      "Snapshot: og_meta",
+      "JSON-LD: json_ld",
+      "Microdata: microdata",
+      "Tables: auto_table",
+      "Framework: next_data",
+      "AI Extract: ai_extract and converted list_pattern",
+      "List Pattern: list_pattern",
+      "Network: network_capture",
+      "Recipes: recipe kind"
+    ],
+    "replay_switch": "runSavedPattern routes ai_extract/network_capture to interactive runners and all other registered kinds to runPattern.",
+    "unverified": "No source-only claim of live persistence, database schema agreement, or installed-extension behavior."
+  },
+  "next_action": "Create a deterministic red loop for SRA-1 and SRA-2 at the shared save/replay provenance seam; then verify source-independent installed UI against two distinct tables and a JSON network response. Do not treat source inspection as a passing product check."
+}

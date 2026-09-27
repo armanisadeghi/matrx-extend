@@ -1,0 +1,53 @@
+{
+  "lane": "BUILDABILITY",
+  "reviewer": "independent source-only",
+  "plan": "docs/stabilization/SHOWCASE-PLAN.md snapshot supplied with base 4d52ac3a",
+  "verdict": "FIX-FIRST",
+  "coverage": "9/9 registered kinds have a runner; 8/9 have a Showcase creation path; manual_css is created in DataView. No browser, DB, build, or tests were run because the root's manual-browser guard is pending.",
+  "blocking": [
+    {
+      "id": "B1",
+      "finding": "Define replay scope and enforce it at the shared run entry point. PatternsTab and data_patterns fetch by host, then run any returned ID; route_pattern is saved but neither caller nor runSavedPattern checks it. matcher.ts already defines urlMatchesPattern. A pattern saved for one route can execute and be marked healthy on another route.",
+      "anchors": [
+        "src/features/showcase/tabs/PatternsTab.tsx:67",
+        "src/features/showcase/tabs/PatternsTab.tsx:86",
+        "src/lib/tools/handlers/data-patterns.ts:153",
+        "src/lib/data-pattern/run-interactive.ts:412",
+        "src/lib/data-pattern/matcher.ts:7"
+      ],
+      "fix": "Plan one shared route decision (match or explicit override), apply to both UI and tool paths, and test same-host wrong-route replay."
+    },
+    {
+      "id": "B2",
+      "finding": "Set the repeat-run data destination contract. SaveAsPattern writes preview rows once and persists target_user_table_id; PatternsTab and data_patterns reruns only return rows and update status. If 'save, remember, repeat' includes accumulating rows in the selected dataset, the planned vertical acceptance can pass while that dataset never receives repeat results.",
+      "anchors": [
+        "src/features/showcase/components/SaveAsPattern.tsx:165",
+        "src/features/showcase/components/SaveAsPattern.tsx:193",
+        "src/features/showcase/tabs/PatternsTab.tsx:93",
+        "src/lib/tools/handlers/data-patterns.ts:162"
+      ],
+      "fix": "State whether replay appends automatically or offers an explicit append action, with duplicate/error behavior; test the chosen contract on rerun."
+    },
+    {
+      "id": "B3",
+      "finding": "Resolve the nine-kind versus Showcase-only creation scope. manual_css is registered and rerunnable but has no Showcase creation control; its creation path is DataView. The plan's 'all nine saved kinds and every Showcase control' cannot be proven by Showcase-only creation tests.",
+      "anchors": [
+        "src/lib/data-pattern/registry.ts:18",
+        "src/features/data/DataView.tsx:161",
+        "src/features/showcase/ShowcaseView.tsx:43"
+      ],
+      "fix": "Specify cross-surface DataView creation plus Showcase reopen/replay acceptance for manual_css, or add its creation path to Showcase if that is the intended product behavior."
+    }
+  ],
+  "advisory": [
+    {
+      "id": "A1",
+      "finding": "SaveAsPattern tells every method 'Backend can re-run on schedule', while network_capture explicitly says scheduled reruns require backend support; the plan excludes backend work. Make the save copy method-accurate while completing interactive replay.",
+      "anchors": [
+        "src/features/showcase/components/SaveAsPattern.tsx:244",
+        "src/lib/data-pattern/modes/network-capture.ts:17"
+      ]
+    }
+  ],
+  "owner_only": []
+}

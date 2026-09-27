@@ -1,0 +1,143 @@
+{
+  "lane": "showcase-detect-audit",
+  "feature_id": "EXT-F-1012",
+  "scope": "Source-only discovery of Doctor, List Pattern picker, extraction preview, save, and saved rerun. Guest/member/admin remain in the requested acceptance scope.",
+  "verification": "source-confirmed only; no browser, build, test, database mutation, or credential output in this pass",
+  "paths": [
+    {
+      "flow": "Detect and choose an approach",
+      "contract": "ShowcaseView force-mounts 12 tabs; DoctorTab executes pageDiagnosticInPage in the active tab, renders recommendations, and recommendation click only calls setSubTab(target). The diagnostic returns a list_pattern config containing list_root and item_selector.",
+      "anchors": [
+        "src/features/showcase/ShowcaseView.tsx:86",
+        "src/features/showcase/tabs/DoctorTab.tsx:42",
+        "src/features/showcase/tabs/DoctorTab.tsx:144",
+        "src/lib/data-pattern/page-diagnostic.ts:353"
+      ]
+    },
+    {
+      "flow": "Pick a repeating list",
+      "contract": "ListPatternTab injects list-picker.content.ts; the picker calls inferListPattern and relativeFieldSelector, emits item-detected then result/exit; background/bootstrap stamps sender tab_id and rebroadcasts; ListPatternTab receives only the stamped session tab.",
+      "anchors": [
+        "src/features/showcase/tabs/ListPatternTab.tsx:61",
+        "src/features/showcase/tabs/ListPatternTab.tsx:212",
+        "src/entrypoints/list-picker.content.ts:8",
+        "src/lib/data-pattern/list-picker.ts:139",
+        "src/lib/background/bootstrap.ts:535",
+        "src/lib/data-pattern/selector-resilience.ts:189"
+      ]
+    },
+    {
+      "flow": "Preview, save, rerun",
+      "contract": "ListPatternTab calls runMode('list_pattern') via executeScript and offers SaveAsPattern only after nonempty rows. SaveAsPattern inserts wbx_pattern in Supabase; PatternsTab fetches by domain and calls runSavedPattern, which delegates DOM modes to runPattern/executeScript and updates health to ok on any returned array.",
+      "anchors": [
+        "src/features/showcase/tabs/ListPatternTab.tsx:270",
+        "src/features/showcase/tabs/ListPatternTab.tsx:633",
+        "src/features/showcase/components/SaveAsPattern.tsx:154",
+        "src/lib/supabase/queries.ts:967",
+        "src/features/showcase/tabs/PatternsTab.tsx:81",
+        "src/lib/data-pattern/run-interactive.ts:412",
+        "src/lib/data-pattern/run-pattern.ts:41"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "SHOWCASE-DETECT-01",
+      "priority": "P1",
+      "confidence": "source-confirmed; runtime unverified",
+      "symptom": "Doctor says a detected repeating group will pre-seed List Pattern, but clicking its recommendation only opens that subtab. Its generated selectors are discarded, leaving the builder at Pick an example item.",
+      "cause": "The diagnostic result contains recommendation.config; DoctorTab uses only mode and reason, while ListPatternTab has no intake for that config.",
+      "anchors": [
+        "src/lib/data-pattern/page-diagnostic.ts:357",
+        "src/features/showcase/tabs/DoctorTab.tsx:151",
+        "src/features/showcase/tabs/ListPatternTab.tsx:49",
+        "src/features/showcase/tabs/ListPatternTab.tsx:422"
+      ],
+      "reproduction": "On a page with at least five repeating cards, open Showcase > Doctor, select its List Pattern recommendation, and observe that the root/item selectors are absent from the List Pattern builder.",
+      "first_red_capable_guard": "Happy DOM component test: render DoctorTab with a diagnostic result carrying list_pattern config; click recommendation; assert ListPatternTab displays that root/item and can inspect suggested fields. Test must fail on current wiring and pass through the real shared state path."
+    },
+    {
+      "id": "SHOWCASE-DETECT-02",
+      "priority": "P1",
+      "confidence": "source-confirmed; runtime unverified",
+      "symptom": "A saved list pattern whose root selector stops matching can extract same-tag elements elsewhere on the page, or return zero rows, while the saved run is marked ok.",
+      "cause": "listPatternMode.runInPage silently changes scope from the missing configured root to document. probeFirstRowInPage repeats the same fallback. PatternsTab and DataView mark every successful array result ok without checking root match.",
+      "anchors": [
+        "src/lib/data-pattern/modes/list-pattern.ts:52",
+        "src/lib/data-pattern/modes/list-pattern.ts:126",
+        "src/features/showcase/tabs/PatternsTab.tsx:90",
+        "src/features/data/DataView.tsx:195"
+      ],
+      "reproduction": "Save a list pattern rooted under #target, then rerun after replacing #target with a new container while leaving unrelated matching cards elsewhere. The runner searches document and returns unrelated rows with ok status.",
+      "first_red_capable_guard": "Direct runInPage test in Happy DOM using two card containers: configure a missing root and a matching item selector, assert the runner reports a root mismatch rather than rows from the unrelated container. Exercise runPattern/PatternsTab status handling in the integration guard."
+    },
+    {
+      "id": "SHOWCASE-DETECT-03",
+      "priority": "P2",
+      "confidence": "source-confirmed; runtime unverified",
+      "symptom": "Restart inside the page picker does not clear the partially detected list in the side panel. Cancel after item detection also leaves that config available for field suggestions and extraction.",
+      "cause": "The item-detected event immediately commits config. Picker restart emits no reset event; exit only clears picking.",
+      "anchors": [
+        "src/lib/data-pattern/list-picker.ts:272",
+        "src/lib/data-pattern/list-picker.ts:287",
+        "src/features/showcase/tabs/ListPatternTab.tsx:102",
+        "src/features/showcase/tabs/ListPatternTab.tsx:115"
+      ],
+      "reproduction": "Pick a list item, press Restart or Cancel on the page overlay, and inspect the side panel header: it retains the prior root/item until another pick or side-panel Restart.",
+      "first_red_capable_guard": "Component state test drives item-detected followed by restart/exit and asserts the old in-progress config is removed while a previously completed config, if any, is preserved."
+    }
+  ],
+  "inventory_census": {
+    "source_tabs": [
+      "doctor",
+      "recipes",
+      "prepare",
+      "snapshot",
+      "json_ld",
+      "microdata",
+      "tables",
+      "framework",
+      "ai_extract",
+      "list_pattern",
+      "network",
+      "patterns"
+    ],
+    "extraction_modes": [
+      "manual_css",
+      "json_ld",
+      "og_meta",
+      "auto_table",
+      "next_data",
+      "ai_extract",
+      "list_pattern",
+      "microdata",
+      "network_capture"
+    ],
+    "existing_case_ids_for_core_flow": [
+      "EXT-F-1012-T02",
+      "EXT-F-1012-T04",
+      "EXT-F-1012-T23",
+      "EXT-F-1012-T24",
+      "EXT-F-1012-T27",
+      "EXT-F-1012-T29",
+      "EXT-F-1012-T36"
+    ],
+    "gaps_or_inaccuracies": [
+      "No inventory assertion checks that Doctor recommendation.config reaches the selected extraction tab; C04 only checks navigation.",
+      "C28 names a List Pattern picker Clear control, but the list picker overlay exposes Done, Cancel, Restart; Clear belongs to another picker.",
+      "No saved-rerun case mutates the DOM so the configured list root disappears while unrelated matching items remain; T36 covers progress/no-match/failure generically.",
+      "No case checks Restart/Cancel after item-detected and before Done for stale side-panel config.",
+      "Guest/member/admin applicability is retained for acceptance per the user instruction despite inventory's admin-only applicability flags."
+    ]
+  },
+  "test_census": {
+    "direct_existing_tests": [
+      "tests/unit/data-pattern-matcher.test.ts",
+      "tests/unit/run-interactive.test.ts",
+      "tests/unit/save-as-pattern-organization-race.test.tsx",
+      "tests/unit/framework-dump.test.ts"
+    ],
+    "observed_gap": "No direct selector-resilience, list-picker event state, Doctor recommendation handoff, or missing-root list-pattern runner test found in tests/ source search."
+  },
+  "next_action": "With implementation authority, write the missing-root failing guard first, fix the runner and shared saved-run status contract, then wire Doctor config into the List Pattern builder and verify picker lifecycle in localhost from the user seat."
+}
