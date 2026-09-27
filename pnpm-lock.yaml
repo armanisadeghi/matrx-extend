@@ -11,6 +11,9 @@ importers:
       '@ai-matrx/agents':
         specifier: latest
         version: 0.14.3(@supabase/supabase-js@2.117.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@ai-matrx/associations':
+        specifier: latest
+        version: 0.13.2(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/content-ir':
         specifier: latest
         version: 0.19.17
@@ -235,6 +238,18 @@ packages:
       react-native:
         optional: true
       react-native-svg:
+        optional: true
+
+  '@ai-matrx/associations@0.13.2':
+    resolution: {integrity: sha512-c2gFSmMZT+AesVwu+tcbNfzKq29ZDQasPY2wiKy3Bb0/M35DJC9ecSTqIoqjw2kYgh+uD8eDpdSrUYaNUQWgew==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
         optional: true
 
   '@ai-matrx/content-ir-react@0.11.11':
@@ -4364,6 +4379,17 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
       - react-dom
+
+  '@ai-matrx/associations@0.13.2(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+    dependencies:
+      '@ai-matrx/design-system': 0.46.4(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@ai-matrx/kit': 0.16.7(react@19.3.0)
+    optionalDependencies:
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
 
   '@ai-matrx/content-ir-react@0.11.11(react@19.3.0)':
     dependencies:
