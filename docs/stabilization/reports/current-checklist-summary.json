@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-27T04:22:58Z",
+  "generated_at": "2026-09-27T05:09:07.539Z",
   "purpose": "Machine-derived stabilization checklist. inventory.json remains the coverage authority; this report and CHECKLIST.md are derived views.",
   "source": {
-    "head": "b0828d0f2e697608c13b6b3e7575e6138e3ded88",
+    "head": "380aa7aced737c13e79177f747835c4ab2885ebd",
     "inventory": "docs/stabilization/inventory.json",
     "inventory_source_sha": "bcbf836bf7b1c959a6d54657aaf0487c1e3790ee",
     "inventory_updated_at": "2026-09-27T00:31:00+00:00",
@@ -40,10 +40,11 @@
   "release_context": {
     "source_version": "0.2.85",
     "artifact_identity_observed": "yes; fresh local development receipt test-results/source-dev-build-085.json binds source HEAD 36fa88fb to tree f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff",
-    "current_build_acceptance": "not established; D22 run 005 was refused at resource preflight before child start. The last child-started native run was run 003 on .83 and remains unverified.",
+    "current_build_acceptance": "No current 0.2.85 D22 native case pass. Run 011 enumerated 98 accessible picker choices and scoped HTTP 200 list responses, but none of seven public-eligible pages met the runner's healthy exact-URL fixture rule; positive recognition remains unverified.",
     "evidence": "docs/stabilization/runs/baseline-main085.json",
     "latest_local_dev_artifact_version": "0.2.85",
-    "latest_local_dev_artifact_tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff"
+    "latest_local_dev_artifact_tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff",
+    "current_lockfile_sha256": "4e5f896cf6d9bff99b9fd910c72f1fcade093b60f530fd2b4dabeef77840aeb7"
   },
   "coverage": {
     "recorded_results": {
@@ -114,11 +115,11 @@
     "fixed_awaiting_retest": [
       {
         "id": "EXT-D-0022",
-        "summary": "Engineering repairs are present; native retest is pending. Run 003 on .83 found one eligible public Source in the originally selected workspace but left workspace enumeration, successful navigation, and positive recognition unverified. Run 005 on .85 was refused before child start; it yielded no product result.",
+        "summary": "Engineering repairs are present and EXT-D-0022 remains fixed awaiting retest. Run 011 on .85 searched 98 observed accessible workspaces and found seven public-eligible candidate pages; none met the runner's healthy exact-URL requirement (one HTTP 500, five HTTP 404, one redirect). Positive recognition was not reached; no product failure or global fixture absence is established.",
         "audit": "docs/stabilization/reports/d22-state-audit.json",
-        "latest_native_attempt": "docs/stabilization/runs/d22-recognition-readonly-003.json",
-        "next_source": "Discovery peer reports/d22-discovery-final-peer.json accepted bounded pagination/deadline/network source repairs; diagnostic peer 4a3ad173 accepted scoped discovery and cleanup diagnostics. Workspace enumeration and positive recognition remain unverified.",
-        "next_action": "Wait for healthy resource conditions and root admission before run 006 using the fresh .85 receipt. Preserve the reserved checkpoint and send no Save input."
+        "latest_native_attempt": "docs/stabilization/runs/d22-recognition-readonly-011.json",
+        "next_source": "The bounded run 011 receipt and independent peer report establish the observed list and candidate counts only. Audit the redirect against app canonical URL behavior; keep positive recognition, Open identity, workspace switching, late responses and service failure/recovery unverified.",
+        "next_action": "Independently audit canonical URL equivalence, then seek a healthy existing fixture through an admitted read-only native retest; do not touch the reserved Save checkpoint."
       }
     ],
     "all_records": [
@@ -406,17 +407,25 @@
     "status_rule": "Defect state counts come from each defect JSON current state. fixed means engineering repairs are present and retest is pending; it is not closed. Defect closure does not pass its related case or feature."
   },
   "latest_d22_attempt": {
-    "run_id": "d22-recognition-readonly-005",
-    "status": "resource_refused",
-    "wrapper_exit_code": 2,
-    "child_started": false,
+    "run_id": "d22-recognition-readonly-011",
+    "status": "unverified",
+    "wrapper_exit_code": 1,
+    "child_started": true,
+    "child_exit_code": 1,
     "version": "0.2.85",
     "tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff",
-    "code": "RESOURCE_PREFLIGHT_REFUSED",
-    "pressure_level": 2,
-    "reasons": ["RESOURCE_PRESSURE_UNSAFE", "RESOURCE_SWAP_GROWTH"],
-    "evidence": "docs/stabilization/runs/d22-recognition-readonly-005.json",
-    "classification": "No browser child started, no Source lookup occurred, and no raw result was copied. This is infrastructure refusal only, not product evidence."
+    "evidence": "docs/stabilization/runs/d22-recognition-readonly-011.json",
+    "peer": "docs/stabilization/reports/d22-readonly011-peer.json",
+    "observed_accessible_workspaces": 98,
+    "scoped_http200_list_pages": 98,
+    "public_eligible_candidate_pages": 7,
+    "healthy_exact_url_candidates": 0,
+    "http_status_counts": {
+      "404": 5,
+      "500": 1
+    },
+    "redirects_rejected_by_exact_url_rule": 1,
+    "classification": "Bounded observed fixture search only; positive recognition and native acceptance remain unverified. One redirect needs canonical-equivalence audit; no global absence or product failure claim."
   },
   "priority_basis": "Fixed-awaiting-retest work first, then explicit unverified and no-result coverage. This is work-state order, not a claim of new product severity.",
   "pending_case_records": {
@@ -548,9 +557,10 @@
   },
   "source_audits": {
     "d22_state_audit_sha256": "4c6f4f53f645a2b3d37ea157da596d74877a604fac936bc96f89f4c92b4b5c7a",
-    "fixture_discovery_assessment_sha256": "c2668a09004d53335e9425e5381f071cb99fed2ab53e8b13a2a818a63071d409",
-    "fixture_discovery_status": "SOURCE_REPAIR_ACCEPTED_BOUNDED_RUNTIME_UNVERIFIED",
-    "discovery_source_peer_sha256": "c13462f9a069b9fe1b9bf14d4ce0c9dd0e0c6b3e8c2160d53e0ff41ab1a15609"
+    "fixture_discovery_assessment_sha256": "00ddbc2d2c48c8d78f29fbd9772dcc6030fe44064da907c956f9df0b02c99b6f",
+    "fixture_discovery_status": "BOUNDED_011_NO_EXACT_URL_HEALTHY_FIXTURE_RUNTIME_UNVERIFIED",
+    "discovery_source_peer_sha256": "c13462f9a069b9fe1b9bf14d4ce0c9dd0e0c6b3e8c2160d53e0ff41ab1a15609",
+    "readonly011_peer_sha256": "82717bdace16dd75f485010549a5846229e814a2e3cb64d855aa3ad27f0f7004"
   },
   "latest_resource_refusal": {
     "run_id": "d22-recognition-readonly-005",
@@ -563,7 +573,7 @@
     "log_sha256": "d311ec240f3a57180e645cd1e5ba9dab782650fd1fb16137fc33f4c00e2b916e",
     "evidence": "docs/stabilization/runs/d22-recognition-readonly-005.json",
     "prior_run_004": "docs/stabilization/runs/d22-recognition-readonly-004.json",
-    "classification": "Infrastructure refusal only. Run 006 remains pending healthy resource conditions and root admission."
+    "classification": "Historical infrastructure refusal for run 005 only. Later child-started runs occurred; the latest D22 native attempt is run 011."
   },
   "latest_source_merge": {
     "commit": "e1ba3ff7",
@@ -572,7 +582,8 @@
     "changed_lines": 28,
     "lockfile_sha256": "352aa8e19d45aff6968573f7552fd4bd89a9ed9f39a341574ce396370cd8c02a",
     "dependency_state": "Merged lockfile was installed with --frozen-lockfile --ignore-scripts; compile and WXT development build passed under separate guards. The fresh .85 receipt binds the resulting unpacked tree.",
-    "baseline_receipt": "docs/stabilization/runs/baseline-main085.json"
+    "baseline_receipt": "docs/stabilization/runs/baseline-main085.json",
+    "historical_lockfile_note": "This hash belongs to commit e1ba3ff7, not the current .85 baseline lockfile; the current hash is release_context.current_lockfile_sha256 and baseline-main085.json."
   },
   "focused_regression": {
     "commit": "777e7948",
@@ -586,14 +597,14 @@
     "limit": "Focused unit tests do not establish native browser behavior or promote inventory case coverage."
   },
   "latest_d22_native_child_attempt": {
-    "run_id": "d22-recognition-readonly-003",
+    "run_id": "d22-recognition-readonly-011",
     "status": "unverified",
-    "version": "0.2.83",
-    "tree_sha256": "8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8",
-    "failure_stage": "positive_workspace_recognition",
-    "failure_code": "stage_not_observed",
-    "workspace_enumeration": "unverified",
-    "successful_fixture_navigation": "unverified",
-    "evidence": "docs/stabilization/runs/d22-recognition-readonly-003.json"
+    "version": "0.2.85",
+    "tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff",
+    "failure_stage": "discovery_scoped_list_response",
+    "failure_code": "no_healthy_fixture_in_examined_accessible_workspaces",
+    "workspace_enumeration": "98 actual picker choices observed",
+    "successful_fixture_navigation": "none meeting exact-URL health rule; one redirected candidate pending canonical-equivalence audit",
+    "evidence": "docs/stabilization/runs/d22-recognition-readonly-011.json"
   }
 }
