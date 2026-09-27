@@ -1,0 +1,19 @@
+{
+  "run_id": "d22-recognition-readonly-004",
+  "wrapper_exit_code": 2,
+  "status": "resource_refused",
+  "refused_at": "2026-09-27T02:56:49.364Z",
+  "reason": "RESOURCE_PRESSURE_UNSAFE",
+  "child_started": false,
+  "raw_result": null,
+  "log_path": "/tmp/matrx-d22-recognition-readonly-004.log",
+  "log_sha256": "933c65f4c2dd361a7c3811a945fc82d86696ae296718dcc562ef1187e6e0a1f4",
+  "guard_event": {
+    "code": "RESOURCE_PREFLIGHT_REFUSED",
+    "pressure_level": 2,
+    "available_memory_gib": 7.2,
+    "required_memory_gib": 4,
+    "reasons": ["RESOURCE_PRESSURE_UNSAFE"]
+  },
+  "next_action": "Wait for a healthy resource preflight; keep guard thresholds unchanged."
+}
