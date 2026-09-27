@@ -3,13 +3,15 @@
   "reviewed_commit": "6e05f436c84bdd0c3be6b0d1e01e6815e7a98b88",
   "reviewer_lane": "independent structured document verification",
   "verdict_a_completeness_accuracy": "PASS",
-  "verdict_b_quality_safe_instructions": "PASS_WITH_MINOR",
+  "verdict_b_quality_safe_instructions": "PASS",
   "findings": [
     {
       "severity": "minor",
       "finding": "The resumption sequence says to install the merged lockfile and rebuild under separate resource permits, but does not give the exact allowed install invocation or a receipt example. A successor must consult PLAN/resource-policy to reconstruct the command and may lose time at the first step.",
       "evidence": "HANDOFF.md step 3; docs/stabilization/resource-policy.json allows pnpm install --frozen-lockfile --ignore-scripts, pnpm exec wxt prepare, pnpm compile, and pnpm exec wxt build --mode development.",
-      "recommendation": "Add a compact example using scripts/stabilization-resource.mjs run with a fresh run ID and the real owned profile for frozen install, then separate guarded prepare/compile/build invocations; point to the immutable receipt fields already in the existing run records."
+      "recommendation": "Add a compact example using scripts/stabilization-resource.mjs run with a fresh run ID and the real owned profile for frozen install, then separate guarded prepare/compile/build invocations; point to the immutable receipt fields already in the existing run records.",
+      "status": "addressed",
+      "resolution": "HANDOFF.md now gives separate guarded install, prepare, compile, development-build, immutable local receipt, and read-only D22 commands. Every wrapped command exactly matches resource-policy.json; the read-only runner has no Save/checkpoint imports or access. The sequence requires manual invocation, checks lease/child completion between commands, and states it is not an automatic retry script."
     }
   ],
   "independent_checks": {
@@ -31,5 +33,12 @@
     "surface_and_mode_coverage": "Guest/member/admin gaps, all major contained surface groups, registered tools, bridges, and deferred Chat/Pilot are named; inventory and linked checklist remain the case-level authority.",
     "checkpoint_and_secret_safety": "Reserved Source and SEO one-write checkpoints, private fixture handling, resource admission/refusal semantics, and no-secret evidence constraints are stated without asking to expose protected values."
   },
-  "limitations": "Document-only review. No browser, database, checkpoint, or product execution was performed or needed for this request."
+  "limitations": "Document-only review. No browser, database, checkpoint, or product execution was performed or needed for this request.",
+  "reviewed_remediation_commit": "bab3fc2a",
+  "followup_checks": {
+    "resource_policy_commands": "All five wrapped commands exactly match allowedCommands in docs/stabilization/resource-policy.json.",
+    "receipt": "record-local-dev-build.mjs writes a unique test-results path with exclusive create and validates manifest version/tree; invocation is after the guarded build.",
+    "automation": "Commands are separate code blocks with explicit per-command human sequencing and stop-on-refusal/nonzero instructions; no loop or automatic heavy launch.",
+    "save_path": "The D22 command invokes source-recognition-readonly-acceptance.mjs, whose source states no save/checkpoint imports or access; the handoff explicitly says it does not authorize the reserved Save path."
+  }
 }
