@@ -9,6 +9,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
@@ -32,7 +33,8 @@ let stage = 'build_start';
 const report = {
   schema_version: 1,
   feature: 'EXT-F-1009',
-  scope: 'admin Visible capture on owned localhost fixture; preview, gallery, owned-row cleanup',
+  scope:
+    'admin Visible capture on owned localhost fixture; refresh, Files links, copy, cancel and cleanup',
   status: 'unverified',
   build: null,
   cases: [],
@@ -697,14 +699,136 @@ async function preserveOwnedFixturePreview(page, panel, expectedCanonical) {
   return true;
 }
 
-async function exercise({ page, panel }) {
+async function ownedTabs(panel) {
+  return evaluate(
+    panel,
+    `(async()=> (await chrome.tabs.query({currentWindow:true}))
+    .map(tab=>({id:tab.id,active:tab.active,url:tab.url})))()`,
+  );
+}
+
+// Both the thumbnail and icon have the same title. Select only the sole card
+// belonging to this fresh fixture, then use a genuine CDP pointer event.
+async function clickOwnedOpen(panel, index) {
+  const point = await evaluate(
+    panel,
+    `(() => {
+    const tab=document.querySelector('button[role="tab"][title="Screenshots"][data-state="active"]');
+    const pane=tab?document.getElementById(tab.getAttribute('aria-controls')):null;
+    const cards=[...(pane?.querySelectorAll('div.group')??[])]
+      .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===2);
+    const buttons=cards.length===1?[...cards[0].querySelectorAll('button[title="Open in Files"]')]:[];
+    const button=buttons[${index}];
+    button?.scrollIntoView({block:'center',inline:'center',behavior:'instant'});
+    const rect=button?.getBoundingClientRect();
+    const x=rect?.left+rect?.width/2,y=rect?.top+rect?.height/2;
+    const hit=Number.isFinite(x)&&Number.isFinite(y)?document.elementFromPoint(x,y):null;
+    return {unique:cards.length===1&&buttons.length===2,
+      hit:!!button&&!button.disabled&&(hit===button||button.contains(hit)),x,y};
+  })()`,
+  );
+  if (!point.unique || !point.hit) fail('owned_open_control_not_hit_tested');
+  await panel.send('Input.dispatchMouseEvent', {
+    type: 'mousePressed',
+    x: point.x,
+    y: point.y,
+    button: 'left',
+    clickCount: 1,
+  });
+  await panel.send('Input.dispatchMouseEvent', {
+    type: 'mouseReleased',
+    x: point.x,
+    y: point.y,
+    button: 'left',
+    clickCount: 1,
+  });
+}
+
+async function verifyOwnedFilesTab(panel, fixtureUrl, fileId, index) {
+  const before = await ownedTabs(panel);
+  const original = before.find((tab) => tab.url === fixtureUrl);
+  if (!original?.active || !Number.isInteger(original.id)) fail('owned_fixture_tab_not_active');
+  const expected = `https://aimatrx.com/files/f/${encodeURIComponent(fileId)}`;
+  try {
+    await clickOwnedOpen(panel, index);
+    await observedWait(
+      `files_tab_${index}`,
+      async () => {
+        const tabs = await ownedTabs(panel);
+        const added = tabs.filter((tab) => !before.some((prior) => prior.id === tab.id));
+        return { count: added.length, exactCanonicalFilesUrl: added[0]?.url === expected };
+      },
+      (state) => state.count === 1 && state.exactCanonicalFilesUrl,
+      30_000,
+    );
+  } finally {
+    // Close only tabs absent from our pre-click snapshot, even when URL
+    // verification fails. Never close the fixture or preexisting tabs.
+    const added = (await ownedTabs(panel)).filter(
+      (tab) => !before.some((prior) => prior.id === tab.id),
+    );
+    await evaluate(
+      panel,
+      `(async()=>{
+      const ids=${JSON.stringify(added.map((tab) => tab.id))};
+      if(ids.length) await chrome.tabs.remove(ids);
+      await chrome.tabs.update(${original.id},{active:true});
+    })()`,
+    );
+  }
+  return { exactCanonicalFilesUrl: true, newTabCount: 1, closedOwnedTab: true };
+}
+
+async function copiedFilesUrl(page, panel, panelTarget, fileId) {
+  const browserSession = await page.context().browser().newBrowserCDPSession();
+  const evidence = {};
+  try {
+    // The product sees its original permission during the trusted click.
+    await click(panel, 'title', 'Copy durable Files URL');
+    await panel.send('Page.bringToFront');
+    const copied = await withClipboardReadPermission({
+      browserSession,
+      panel,
+      panelUrl: panelTarget.url,
+      evidence,
+      read: () =>
+        waitFor(
+          'actual_clipboard_write',
+          async () => {
+            const response = await panel.send('Runtime.evaluate', {
+              expression: 'navigator.clipboard.readText()',
+              awaitPromise: true,
+              returnByValue: true,
+            });
+            if (response.exceptionDetails || typeof response.result?.value !== 'string')
+              fail('clipboard_read_unavailable');
+            return response.result.value;
+          },
+          (value) => value === `https://aimatrx.com/files/f/${encodeURIComponent(fileId)}`,
+          5000,
+        ),
+    });
+    if (copied !== `https://aimatrx.com/files/f/${encodeURIComponent(fileId)}`)
+      fail('copied_files_url_not_canonical');
+    return {
+      actualClipboardMatched: true,
+      observationPermissionRestored: evidence.clipboardObservationPermissionRestored === true,
+    };
+  } finally {
+    await browserSession.detach();
+  }
+}
+
+async function exercise({ page, panel, panelTarget }) {
   let journal;
   let server;
   let createdRow;
   let fixtureCanonical;
+  let fixtureUrl;
   let cleaned = false;
   let captureClicked = false;
   let fixtureViewport;
+  let fixtureTabId;
   try {
     const approved = await approvedOrganization();
     await signIn(page, panel);
@@ -721,7 +845,7 @@ async function exercise({ page, panel }) {
       server.once('error', reject);
       server.listen(0, '127.0.0.1', resolve);
     });
-    const fixtureUrl = `http://127.0.0.1:${server.address().port}/harbor-dental/appointment-guide/${randomUUID()}`;
+    fixtureUrl = `http://127.0.0.1:${server.address().port}/harbor-dental/appointment-guide/${randomUUID()}`;
     stage = 'owned_fixture_navigation';
     await page.goto(fixtureUrl, { waitUntil: 'domcontentloaded' });
     assert.equal(page.url(), fixtureUrl);
@@ -730,6 +854,8 @@ async function exercise({ page, panel }) {
     if (!(fixtureViewport.width > 30 && fixtureViewport.height > 30))
       fail('fixture_viewport_unavailable');
     fixtureCanonical = canonical(fixtureUrl);
+    fixtureTabId = (await ownedTabs(panel)).find((tab) => tab.url === fixtureUrl)?.id;
+    if (!Number.isInteger(fixtureTabId)) fail('owned_fixture_tab_missing');
     journal = await watchGalleryReads(panel);
     const beforeMarker = journal.marker();
     stage = 'gallery_before_capture';
@@ -815,6 +941,77 @@ async function exercise({ page, panel }) {
       fail('captured_pixels_do_not_match_owned_fixture');
     }
 
+    stage = 'warm_refresh';
+    const refreshMarker = journal.marker();
+    await click(panel, 'title', 'Refresh');
+    const refreshedRead = await completedRead(journal, refreshMarker, fixtureCanonical);
+    const refreshed = await selectedGallery(panel, fixtureCanonical);
+    await requireGalleryAgreement(panel, refreshed, refreshedRead.rows);
+    if (refreshedRead.rows.length !== 1 || refreshedRead.rows[0].id !== createdRow.id)
+      fail('warm_refresh_lost_owned_row');
+    report.cases.push({
+      id: 'EXT-F-1009-T01',
+      status: 'pass',
+      actual: {
+        warmRefreshIssuedRealRead: refreshedRead.status === 200,
+        exactOwnedRowPreserved: true,
+      },
+    });
+
+    stage = 'thumbnail_open_in_files';
+    const thumbnail = await verifyOwnedFilesTab(panel, fixtureUrl, createdRow.file_id, 0);
+    await selectedGallery(panel, fixtureCanonical);
+    stage = 'icon_open_in_files';
+    const icon = await verifyOwnedFilesTab(panel, fixtureUrl, createdRow.file_id, 1);
+    await selectedGallery(panel, fixtureCanonical);
+    report.cases.push({ id: 'EXT-F-1009-T04', status: 'pass', actual: { thumbnail, icon } });
+
+    stage = 'copy_durable_files_url';
+    const copy = await copiedFilesUrl(page, panel, panelTarget, createdRow.file_id);
+    report.cases.push({ id: 'EXT-F-1009-T05', status: 'pass', actual: copy });
+
+    stage = 'owned_capture_delete_cancel';
+    await click(panel, 'title', 'Delete');
+    await observedWait(
+      'cancel_confirmation_visible',
+      () =>
+        evaluate(
+          panel,
+          `(() => {
+        const dialog=document.querySelector('[role="alertdialog"],[role="dialog"]');
+        return {visible:!!dialog,consequence:dialog?.innerText.includes(
+          'The image file itself stays in your Files')===true,
+          cancel:[...(dialog?.querySelectorAll('button')??[])]
+            .some(button=>button.textContent.trim()==='Cancel'&&!button.disabled)};
+      })()`,
+        ),
+      (state) => state?.visible && state.consequence && state.cancel,
+    );
+    await click(panel, 'button-text', 'Cancel');
+    await observedWait(
+      'cancel_dialog_closed',
+      () =>
+        evaluate(
+          panel,
+          `(() => !document.querySelector(
+        '[role="alertdialog"],[role="dialog"]'))()`,
+        ),
+      (closed) => closed === true,
+    );
+    const cancelMarker = journal.marker();
+    await click(panel, 'title', 'Refresh');
+    const cancelRead = await completedRead(journal, cancelMarker, fixtureCanonical);
+    const cancelled = await selectedGallery(panel, fixtureCanonical);
+    await requireGalleryAgreement(panel, cancelled, cancelRead.rows);
+    if (cancelRead.rows.length !== 1 || cancelRead.rows[0].id !== createdRow.id)
+      fail('cancel_changed_owned_row');
+    report.cases.push({
+      id: 'EXT-F-1009-T06',
+      subcase: 'cancel_preserves_row',
+      status: 'pass',
+      actual: { cancelled: true, exactOwnedRowPreservedAfterRealRead: true },
+    });
+
     stage = 'owned_capture_delete_prompt';
     await click(panel, 'title', 'Delete');
     const confirmation = await observedWait(
@@ -880,6 +1077,17 @@ async function exercise({ page, panel }) {
       // empty-before-capture URL. A row or page mismatch leaves it for review.
       try {
         report.failure.ownedUiCleanupStage = 'page_identity';
+        if (canonical(page.url()) !== fixtureCanonical)
+          await page.goto(fixtureUrl, {
+            waitUntil: 'domcontentloaded',
+          });
+        await evaluate(panel, `(async()=>chrome.tabs.update(${fixtureTabId},{active:true}))()`);
+        const dialogOpen = await evaluate(
+          panel,
+          `(() => !!document.querySelector('[role="alertdialog"],[role="dialog"]'))()`,
+        );
+        if (!dialogOpen) await click(panel, 'title', 'Screenshots');
+        await selectedGallery(panel, fixtureCanonical);
         if (canonical(page.url()) !== fixtureCanonical) throw new Error('page_changed');
         report.failure.ownedUiCleanupStage = 'card_identity';
         const identity = await galleryResponseAgreement(panel, [createdRow]);

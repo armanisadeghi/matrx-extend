@@ -1,0 +1,8 @@
+{
+  "feature": "EXT-F-1009",
+  "scope": "One owned Visible capture covers warm Refresh, both Files opens, Copy, Cancel, and confirmed cleanup.",
+  "status": "source_ready_browser_unverified",
+  "source_checks": "node --check pass; Biome --write pass with existing safeSurface warning; git diff --check pass",
+  "limitations": "Fresh peer root admission required before native browser run; new targets unverified by source review.",
+  "files": "tests/browser/screenshot-capture-acceptance.mjs; docs/feature-tests.md; docs/stabilization/reports/screenshot-controls-batch-ready.json"
+}
