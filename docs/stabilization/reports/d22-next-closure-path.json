@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-next-closure-path",
+  "defect_id": "EXT-D-0022",
+  "status": "OPEN_NATIVE_RECOGNITION_EVIDENCE_REQUIRED",
+  "scope": "Read-only source/evidence assessment; no browser, tests, product edits, data writes, or checkpoint mutation.",
+  "source_commit": "4877f106eafa362abcf13ce7dd9d484591260c57",
+  "source_version": "0.2.82",
+  "existing_artifact_version": "0.2.79",
+  "checkpoint": {
+    "path": "test-results/d22-source-save-attempt.json",
+    "sha256": "0e91ccf2543a445e476af2955e045d758133bbafdea4d68fd7c3b449ef4b84c8",
+    "phase": "reserved",
+    "has_source_id": false,
+    "mtime": "2026-09-26T20:57:22.982Z",
+    "disposition": "Immutable. Never reset, delete, reinitialize, advance, or retry Save."
+  },
+  "completed_engineering": {
+    "finding": "No new production defect established by this assessment. Existing repairs cover organization-scoped recognition, stale lookup/broadcast rejection, actor-pinned transport, queue revision ordering/terminal suppression, and visible storage refusal.",
+    "evidence": [
+      "docs/stabilization/runs/source-org-boundary-green-001.json",
+      "docs/stabilization/runs/source-org-refusal-green-001.json",
+      "docs/stabilization/reports/d22-refusal-message-peer.json",
+      "docs/stabilization/runs/source-ci-refusal-green-001.json"
+    ],
+    "limits": "These historical focused results are not a current .82 native UI pass. The defect fix_commits list predates later boundary/refusal repairs; a short list does not imply the repairs remain undone."
+  },
+  "latest_native_evidence": {
+    "receipt": "docs/stabilization/runs/source-workspace-009.json",
+    "finding": "Reserved attempt recovery returned none; no saved Source/link or Save input was observed. The diagnostic run is not acceptance.",
+    "peer": "docs/stabilization/reports/source-workspace-009-runtime-peer.json"
+  },
+  "current_runner": {
+    "file": "tests/browser/source-workspace-acceptance.mjs",
+    "safe_existing_mode": "SOURCE_READONLY_SCOPE=1 branches before checkpoint access and performs real UI workspace selection plus read-only recognition.",
+    "bounded_coverage": [
+      "No workspace: explicit unknown/choose-workspace UI and zero processed_documents GETs.",
+      "Approved workspace: exact scoped lookup completes HTTP 200 with empty result and UI says not saved."
+    ],
+    "missing_coverage": [
+      "Existing Source recognition and matching Open target.",
+      "Workspace switch clears prior Source and restores correct recognition on return.",
+      "Late prior-workspace recognition completion cannot restore stale state.",
+      "Real lookup service failure and recovery required by inventory T26.",
+      "Late inflight Save outcome."
+    ],
+    "default_mode_hazard": "Default reserved-attempt recovery calls recordObservedSourceId when it finds a Source and no checkpoint sourceId exists. This advances the immutable checkpoint. Do not run the default path for this task.",
+    "late_save_oracle": "lateInflightSave is initialized unverified and has no assignment proving it; no current runner mode can earn this claim."
+  },
+  "next_actions_in_order": [
+    {
+      "action": "Root admits a fresh build bound to current source/dependencies, then runs the already independently reviewed SOURCE_READONLY_SCOPE=1 mode under the sole-heavy guard.",
+      "result": "Closes only the no-workspace/scoped-negative native subset. Preserve result and checkpoint hash before/after. No Save or capture required."
+    },
+    {
+      "action": "Prepare and independently review a strictly checkpoint-independent read-only recognition mode. Select a pre-existing extension Source for an approved public fixture in an approved existing workspace through actual UI/read-only lookup; never manufacture one.",
+      "result": "Compare returned Source identity with the actual Open target in memory; output only equality predicates. Switch to another approved workspace, require prior claim cleared and scoped result matching its real response, then restore and verify the original Source target."
+    },
+    {
+      "action": "In that read-only mode, add controlled timing of the real recognition GET: hold its authentic response, switch workspace through UI, finish the new lookup, then release the unchanged old response and verify it cannot restore old state. Independently review the interception and cleanup before running.",
+      "result": "Proves late recognition, not late Save. No forged responses, data changes, or broadcast injection."
+    },
+    {
+      "action": "For inventory T26, apply a reviewed target-scoped real network failure to recognition reads only, verify explicit could-not-check UI with no unsaved claim, restore connectivity, and require actual successful lookup plus corresponding UI.",
+      "result": "The current missing-workspace test is not evidence of actual service failure/recovery."
+    }
+  ],
+  "hard_limits": {
+    "missing_positive_fixture": "If no qualifying pre-existing Source exists, read-only saved recognition cannot be proved. Record the empty lookup honestly; do not loop on or retry the reserved Save.",
+    "late_save": "An old reserved checkpoint is not a live inflight request. No read-only operation can recreate an actual late Save completion. Native late-Save proof requires a separately authorized new mutation scenario with its own fresh fixture/attempt identity; this assessment authorizes none. Keep this dimension unverified while using existing forcing tests only for their engineering scope.",
+    "closure": "Do not close D22 solely after bounded read-only scope passes. Its recorded closure requires authenticated multi-workspace UI verification. Parent must reconcile the completed engineering evidence with the precise remaining native predicates; broader inventory coverage and native late Save must not be silently relabeled passed."
+  },
+  "recommendation": "Finish read-only recognition proof on the current build; preserve all existing repairs and the immutable attempt. Treat absence of native proof as an evidence gap, not grounds for another speculative production rewrite."
+}
