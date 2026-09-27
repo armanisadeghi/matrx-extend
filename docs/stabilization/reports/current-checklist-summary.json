@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-27T02:33:03Z",
+  "generated_at": "2026-09-27T02:35:59Z",
   "purpose": "Machine-derived stabilization checklist. inventory.json remains the coverage authority; this report and CHECKLIST.md are derived views.",
   "source": {
-    "head": "b26c742c81d3",
+    "head": "7c25e1dc7e3b",
     "inventory": "docs/stabilization/inventory.json",
     "inventory_source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
     "inventory_updated_at": "2026-09-27T00:31:00+00:00",
@@ -33,16 +33,17 @@
       "EXT-D-0019.json": "f10db4fdeebd28524c48f23695c3830ac9a076674ca50520f88bb8ba3baeea8e",
       "EXT-D-0020.json": "22e678cc261c1a9d24066cf25c2dc37ca4c754496f509058b68d8a2fe7d1ff26",
       "EXT-D-0021.json": "84da72ee5eb407a52f2ded8c039636069ef89cf93fd66d50db84638222c690c9",
-      "EXT-D-0022.json": "dc7c263f689ffc6d04ded338920d356c281d0a55d7a553864462f459c1543a7b",
+      "EXT-D-0022.json": "633f7c00d5dc6f3b27cf78dbfbbc9a7c441997a7ecedc8db84528877a2d1d16c",
       "EXT-D-0023.json": "842aa05bdd6a9417bb9af217694963c7763981ca498735520f8a01da61e6e915"
     }
   },
   "release_context": {
-    "source_version": "0.2.82",
-    "current_local_dev_tree_sha256": "9066e69fc13f5c35bd9650aa2540288045a40331012620def87faef4405d9611",
-    "artifact_identity_observed": "yes; receipt-bound native attempt records version and exact tree",
-    "current_build_acceptance": "not established; native attempt is unverified at fixture discovery",
-    "evidence": "docs/stabilization/runs/d22-recognition-readonly-001.json"
+    "source_version": "0.2.83",
+    "artifact_identity_observed": "yes for the historical 0.2.82 native attempt only; no 0.2.83 build is recorded",
+    "current_build_acceptance": "not established for 0.2.83; the 0.2.82 native attempt was unverified at fixture discovery",
+    "evidence": "docs/stabilization/runs/d22-recognition-readonly-001.json",
+    "last_tested_local_dev_version": "0.2.82",
+    "last_tested_local_dev_tree_sha256": "9066e69fc13f5c35bd9650aa2540288045a40331012620def87faef4405d9611"
   },
   "coverage": {
     "applicable_mode_case_slots": 1142,
@@ -110,11 +111,11 @@
     "fixed_awaiting_retest": [
       {
         "id": "EXT-D-0022",
-        "summary": "Engineering repairs are present; native multi-workspace retest is still pending. The latest positive-fixture attempt found no eligible existing public Source and is unverified, not a product failure.",
+        "summary": "Engineering repairs are present; native multi-workspace retest is pending. The last 0.2.82 attempt found no eligible fixture in its bounded first-page, three-host search; workspace-wide absence and product failure were not established.",
         "audit": "docs/stabilization/reports/d22-state-audit.json",
         "latest_native_attempt": "docs/stabilization/runs/d22-recognition-readonly-001.json",
-        "next_source": "tests/browser/source-recognition-readonly-acceptance.mjs; bounded fixture discovery currently awaits independent source review before any new run.",
-        "next_action": "Obtain independent review of the bounded discovery revision, then root may admit one guarded current-build native run. Preserve the reserved checkpoint and send no Save input."
+        "next_source": "tests/browser/source-recognition-readonly-acceptance.mjs: c90c93fa was rejected by independent review b26c742c; corrected 4b8e1d0f awaits fresh independent source review.",
+        "next_action": "Obtain fresh review of corrected fixture discovery, then root may admit a guarded read-only native run against a fresh 0.2.83 build receipt. Preserve the reserved checkpoint and send no Save input."
       }
     ],
     "all_records": [
@@ -187,7 +188,7 @@
           "at": "2026-09-26T13:54:53.145926+00:00",
           "from": "retest-pass",
           "to": "closed",
-          "reason": "Original reproduction and reviewed surrounding evidence accepted. Broader T55\u2013T59 cases remain partial/unverified; closure does not assert exhaustive permission coverage."
+          "reason": "Original reproduction and reviewed surrounding evidence accepted. Broader T55–T59 cases remain partial/unverified; closure does not assert exhaustive permission coverage."
         }
       },
       {
@@ -409,7 +410,7 @@
     "tree_sha256": "9066e69fc13f5c35bd9650aa2540288045a40331012620def87faef4405d9611",
     "failure_stage": "discover_existing_public_source",
     "failure_code": "no_existing_public_positive_fixture_in_visible_page",
-    "classification": "No eligible existing public Source fixture found in the visible list; evidence gap, not product failure. No Source write or checkpoint action."
+    "classification": "The bounded first-page, three-host search found no eligible fixture; this does not prove workspace-wide absence or product failure. No Source write or checkpoint action."
   },
   "priority_basis": "Fixed-awaiting-retest work first, then explicit unverified and no-result coverage. This is work-state order, not a claim of new product severity.",
   "pending_case_records": {
@@ -541,7 +542,7 @@
   },
   "source_audits": {
     "d22_state_audit_sha256": "4c6f4f53f645a2b3d37ea157da596d74877a604fac936bc96f89f4c92b4b5c7a",
-    "fixture_discovery_assessment_sha256": "e90f8452948bf5706b2bc82938ccf0a71d6feff4b0b5bc4dcc6404e3060931a3",
-    "fixture_discovery_status": "AWAITING_INDEPENDENT_SOURCE_REVIEW_AND_ROOT_ADMISSION"
+    "fixture_discovery_assessment_sha256": "a68b8b4fc0bcc931ef165a06c839da33b6b8612fefb30e0819282a6048509e66",
+    "fixture_discovery_status": "CORRECTED_4B8_AWAITING_FRESH_SOURCE_REVIEW"
   }
 }
