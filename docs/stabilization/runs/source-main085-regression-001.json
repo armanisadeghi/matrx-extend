@@ -1,0 +1,50 @@
+{
+  "id": "source-main085-regression-001",
+  "scope": "Focused D22 source recognition, actor-bound save and queue, and overlapping file-source and saved-capture regressions on the 0.2.85 development baseline.",
+  "status": "pass-with-explicit-skip",
+  "resource_guard": {
+    "admitted_at": "2026-09-27T04:17:53.916Z",
+    "job_exit_at": "2026-09-27T04:17:59.412Z",
+    "wrapper_exit_code": 0,
+    "child_exit_code": 0,
+    "heavy_lease_released": true,
+    "tmpdir": "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032",
+    "profile_dir": "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032"
+  },
+  "command": [
+    "pnpm",
+    "exec",
+    "vitest",
+    "run",
+    "--maxWorkers=1",
+    "src/lib/supabase/queries.recognition.test.ts",
+    "src/hooks/use-page-recognition.test.tsx",
+    "src/lib/chat/context/page-source.test.ts",
+    "src/lib/api/client-expected-actor.test.ts",
+    "src/lib/api/routes/sources.test.ts",
+    "tests/unit/source-landing-transport.test.ts",
+    "tests/unit/save-never-loses-input.test.tsx",
+    "tests/unit/not-yet-a-source.test.tsx",
+    "src/features/scrape/FileSourcePanel.test.tsx",
+    "src/lib/sources/save-source-logic.test.ts",
+    "src/features/saved-captures/SavedCapturesView.test.tsx"
+  ],
+  "result": {
+    "test_files_passed": 11,
+    "tests_passed": 62,
+    "tests_skipped": 1,
+    "tests_total": 63
+  },
+  "skip": {
+    "file": "src/lib/sources/save-source-logic.test.ts",
+    "reason": "The cross-client parity case uses it.skipIf(!existsSync(WEB_PATH)). MATRX_FRONTEND_DIR was unset and the default sibling frontend path did not exist; parity remains unverified."
+  },
+  "log": {
+    "path": "/tmp/matrx-source-main085-regression-001.log",
+    "sha256": "caec50509f23afdc333bc0ae6914f2076680b8bcb8af515c4672f7bccabe7347"
+  },
+  "limitations": [
+    "This focused unit run does not establish native browser behavior or D22 live acceptance.",
+    "The skipped cross-client parity case is not counted as passed."
+  ]
+}
