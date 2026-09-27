@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 /** Real read-only D22 recognition. No save/checkpoint imports or access. */
+import { lookup } from 'node:dns/promises';
 import { lstat, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { BlockList, isIP } from 'node:net';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
@@ -16,8 +18,9 @@ const EMAIL = 'admin@admin.com';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const EXTENSION = join(REPO, '.output/chrome-mv3-dev');
 const OUTPUT = join(REPO, 'test-results/source-recognition-readonly-acceptance.json');
-// Only public reference pages; discovery never navigates arbitrary private Source URLs.
-const PUBLIC_HOSTS = new Set(['example.com', 'www.iana.org', 'en.wikipedia.org']);
+const DISCOVERY_MAX_PAGES = Number(process.env.SOURCE_DISCOVERY_MAX_PAGES ?? 5);
+const DNS_TIMEOUT_MS = Number(process.env.SOURCE_DNS_TIMEOUT_MS ?? 5000);
+const DISCOVERY_TIMEOUT_MS = Number(process.env.SOURCE_DISCOVERY_TIMEOUT_MS ?? 60000);
 let stage = 'build_identity';
 const report = {
   schema_version: 1,
@@ -249,6 +252,208 @@ async function sourceIdFromRealUi(panel, page, label) {
   }
 }
 
+// Classification values alone are persisted. Source URLs/IDs and DNS answers stay private.
+const privateV4 = new BlockList();
+for (const [address, prefix] of [
+  ['0.0.0.0', 8],
+  ['10.0.0.0', 8],
+  ['100.64.0.0', 10],
+  ['127.0.0.0', 8],
+  ['169.254.0.0', 16],
+  ['172.16.0.0', 12],
+  ['192.0.0.0', 24],
+  ['192.0.2.0', 24],
+  ['192.168.0.0', 16],
+  ['198.18.0.0', 15],
+  ['198.51.100.0', 24],
+  ['203.0.113.0', 24],
+  ['224.0.0.0', 3],
+])
+  privateV4.addSubnet(address, prefix, 'ipv4');
+const publicV6 = new BlockList();
+publicV6.addSubnet('2000::', 3, 'ipv6');
+const specialV6 = new BlockList();
+specialV6.addSubnet('2001::', 23, 'ipv6');
+specialV6.addSubnet('2001:db8::', 32, 'ipv6');
+function publicAddress(address) {
+  const family = isIP(address);
+  return family === 4
+    ? !privateV4.check(address, 'ipv4')
+    : family === 6 && publicV6.check(address, 'ipv6') && !specialV6.check(address, 'ipv6');
+}
+async function publicReadCategory(value, document = true) {
+  let url;
+  try {
+    url = new URL(value);
+  } catch {
+    return 'malformed_url';
+  }
+  if (url.protocol !== 'https:') return 'non_https';
+  if (url.username || url.password) return 'embedded_credentials';
+  if (url.port && url.port !== '443') return 'nonstandard_port';
+  const host = url.hostname
+    .replace(/^\[|\]$/g, '')
+    .replace(/\.$/, '')
+    .toLowerCase();
+  if (
+    (!isIP(host) && !host.includes('.')) ||
+    /(?:^|\.)(?:localhost|local|internal|lan|home|test|invalid|onion)$/.test(host)
+  )
+    return 'private_hostname';
+  if (document) {
+    let path;
+    try {
+      path = decodeURIComponent(url.pathname);
+    } catch {
+      return 'malformed_url';
+    }
+    if (
+      /(?:^|[/_.-])(?:logout|signout|unsubscribe|delete|remove|revoke|checkout|purchase|confirm|activate|callback)(?:$|[/_.-])/i.test(
+        path,
+      ) ||
+      [...url.searchParams.keys()].some((key) =>
+        /^(?:action|do|cmd|token|access_token|auth|password|secret|signature|code)$/i.test(key),
+      )
+    )
+      return 'action_or_secret_url';
+  }
+  if (isIP(host)) return publicAddress(host) ? 'eligible' : 'private_address';
+  let timer;
+  try {
+    const addresses = await Promise.race([
+      lookup(host, { all: true }),
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error('dns_timeout')), DNS_TIMEOUT_MS);
+      }),
+    ]);
+    return addresses.length && addresses.every((entry) => publicAddress(entry.address))
+      ? 'eligible'
+      : 'private_address';
+  } catch {
+    return 'dns_unavailable';
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function installPublicReadGuard(page) {
+  const blocked = {};
+  report.observations.publicPageBlockedRequests = blocked;
+  await page.route('**/*', async (route) => {
+    const request = route.request();
+    const category = !['GET', 'HEAD'].includes(request.method())
+      ? 'non_read_method'
+      : await publicReadCategory(request.url(), request.isNavigationRequest());
+    if (category === 'eligible') await route.continue();
+    else {
+      blocked[category] = (blocked[category] ?? 0) + 1;
+      await route.abort('blockedbyclient');
+    }
+  });
+}
+
+async function discoverFixture(panel, reads, organizationId) {
+  if (
+    !Number.isInteger(DISCOVERY_MAX_PAGES) ||
+    DISCOVERY_MAX_PAGES < 1 ||
+    !Number.isFinite(DNS_TIMEOUT_MS) ||
+    DNS_TIMEOUT_MS <= 0 ||
+    !Number.isFinite(DISCOVERY_TIMEOUT_MS) ||
+    DISCOVERY_TIMEOUT_MS <= 0
+  )
+    fail('invalid_discovery_bounds');
+  const diagnostics = {
+    pages: 0,
+    rows: 0,
+    totalReturnedRows: 0,
+    urlPresent: 0,
+    httpUrls: 0,
+    publicEligible: 0,
+    categories: {},
+    listPages: [],
+    pagination: [],
+    exhausted: false,
+  };
+  report.observations.fixtureDiscovery = diagnostics;
+  let since = 0;
+  const deadline = Date.now() + DISCOVERY_TIMEOUT_MS;
+  const seen = new Set();
+  for (let index = 0; index < DISCOVERY_MAX_PAGES; index += 1) {
+    const list = await waitFor(
+      'existing_sources_read',
+      () =>
+        reads.records
+          .slice(since)
+          .find((r) => r.org === `eq.${organizationId}` && !r.identity && r.done),
+      (r) => r?.done === true,
+      30_000,
+    );
+    if (list.failed || list.status !== 200 || !Array.isArray(list.rows))
+      fail('source_list_read_failed');
+    diagnostics.pages += 1;
+    diagnostics.totalReturnedRows += list.rows.length;
+    diagnostics.listPages.push({
+      status: list.status,
+      rowCount: list.rows.length,
+      urlAliasSelected: list.listUrlAlias,
+      cursorPresent: list.cursorPresent,
+      limit: list.limit,
+    });
+    if (!list.listUrlAlias) fail('source_list_query_contract_mismatch');
+    for (const row of list.rows) {
+      if (Date.now() >= deadline) fail('source_discovery_time_budget_exhausted');
+      if (!row || typeof row !== 'object' || Array.isArray(row)) {
+        diagnostics.categories.invalid_row = (diagnostics.categories.invalid_row ?? 0) + 1;
+        diagnostics.rows += 1;
+        continue;
+      }
+      if (seen.has(row.id)) continue;
+      seen.add(row.id);
+      diagnostics.rows += 1;
+      if (typeof row.url === 'string' && row.url.length) diagnostics.urlPresent += 1;
+      if (typeof row.url === 'string' && /^https?:\/\//i.test(row.url)) diagnostics.httpUrls += 1;
+      // listSavedCaptures aliases url:canonical_identity. Point lookups remain unaliased.
+      const category = UUID.test(row.id ?? '')
+        ? await publicReadCategory(row.url)
+        : 'invalid_source_id';
+      diagnostics.categories[category] = (diagnostics.categories[category] ?? 0) + 1;
+      if (category === 'eligible') {
+        diagnostics.publicEligible += 1;
+        return { fixture: row, origin: list.origin };
+      }
+    }
+    const pagination = await waitFor(
+      'source_list_page_settled',
+      () =>
+        evaluate(
+          panel,
+          `(() => {
+      const pane = document.querySelector('[data-state="active"][role="tabpanel"]');
+      const more = [...(pane?.querySelectorAll('button') ?? [])].filter((b) => b.textContent.trim() === 'Load more');
+      const refresh = [...(pane?.querySelectorAll('button') ?? [])].find((b) => b.textContent.includes('Refresh saved captures'));
+      return { ready: !!refresh && !refresh.querySelector('.animate-spin'), count: more.length, disabled: more[0]?.disabled ?? false };
+    })()`,
+        ),
+      (state) => state?.ready && !state.disabled,
+      30_000,
+    );
+    diagnostics.pagination.push({
+      loadMoreCount: pagination.count,
+      enabled: pagination.count === 1 && !pagination.disabled,
+      pageSettled: pagination.ready,
+    });
+    if (pagination.count === 0) {
+      diagnostics.exhausted = true;
+      fail('no_eligible_existing_source_in_workspace');
+    }
+    if (pagination.count !== 1) fail('source_pagination_ambiguous');
+    if (index + 1 === DISCOVERY_MAX_PAGES) fail('source_discovery_page_budget_exhausted');
+    since = reads.records.length;
+    await click(panel, 'button', 'Load more');
+  }
+  fail('source_discovery_unverified');
+}
+
 async function buildIdentity() {
   const receiptPath = process.env.SOURCE_DEV_BUILD_RECEIPT;
   if (!receiptPath) fail('development_receipt_required');
@@ -293,6 +498,9 @@ function sourceQuery(request) {
       origin: url.origin,
       org: q.get('organization_id'),
       identity: q.get('canonical_identity'),
+      listUrlAlias: (q.get('select') ?? '').split(',').includes('url:canonical_identity'),
+      cursorPresent: q.has('or'),
+      limit: /^\d+$/.test(q.get('limit') ?? '') ? Number(q.get('limit')) : null,
     };
   } catch {
     return null;
@@ -473,36 +681,10 @@ try {
       try {
         stage = 'discover_existing_public_source';
         await click(panel, 'title', 'Saved captures');
-        const list = await waitFor(
-          'existing_sources_read',
-          () =>
-            reads.records.find((r) => r.org === `eq.${approved.storedId}` && !r.identity && r.done),
-          (r) => r?.done === true,
-          30_000,
-        );
-        if (list.failed || list.status !== 200 || !Array.isArray(list.rows))
-          fail('source_list_read_failed');
-        const fixture = list.rows.find((row) => {
-          try {
-            // listSavedCaptures selects url:canonical_identity; point lookups do not alias it.
-            const url = new URL(row.url);
-            return (
-              UUID.test(row.id ?? '') &&
-              url.protocol === 'https:' &&
-              PUBLIC_HOSTS.has(url.hostname) &&
-              !url.username &&
-              !url.password &&
-              !url.search &&
-              !url.hash
-            );
-          } catch {
-            return false;
-          }
-        });
-        if (!fixture) fail('no_existing_public_positive_fixture_in_visible_page');
+        const { fixture, origin } = await discoverFixture(panel, reads, approved.storedId);
         report.observations.existingFixtureFound = true;
         const identity = fixture.url;
-        const origin = list.origin;
+        await installPublicReadGuard(page);
         stage = 'approved_positive_recognition';
         let since = reads.records.length;
         await page.goto(identity, { waitUntil: 'load', timeout: 60_000 });

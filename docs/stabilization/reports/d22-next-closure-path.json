@@ -76,7 +76,7 @@
     "status": "AWAITING_INDEPENDENT_SOURCE_REVIEW_AND_ROOT_ADMISSION",
     "execution": "SOURCE_DEV_BUILD_RECEIPT=<current private local-development receipt> node tests/browser/source-recognition-readonly-acceptance.mjs; guarded execution only",
     "build_binding": "Requires keyed development build, package/manifest/receipt version agreement, receipt/tree hash agreement before and after run, and shared native harness exact identity validation. Uses actual helper localDevReceiptPath parameter.",
-    "fixture": "Observes actual RLS-scoped Saved captures list after real admin sign-in and approved UI workspace selection. Uses a genuine existing HTTPS Source on example.com, www.iana.org, or en.wikipedia.org without query/fragment. Only first visible page searched; no qualifying row yields explicit unverified, never creates one. Source IDs, URLs, row bodies, names and credentials stay in memory.",
+    "fixture": "Reads actual RLS-scoped Saved captures UI list and Load more pages, bounded by SOURCE_DISCOVERY_MAX_PAGES (default 5) and SOURCE_DISCOVERY_TIMEOUT_MS (default 60000); per-host DNS bound SOURCE_DNS_TIMEOUT_MS (default 5000). Accepts genuine ordinary public HTTPS Source URLs across hosts, including read-only query identities. Rejects malformed rows/URLs, credentials, nonstandard ports, private/reserved DNS/IP addresses, known action/secret paths or query keys. No creation or database mutation.",
     "oracles": [
       "Actual scoped HTTP200 response and real Open target identity agreement.",
       "Distinct existing accessible comparison organization selected by UI; corresponding HTTP200 empty or different Source result agrees with UI.",
@@ -89,7 +89,8 @@
       "No native run or forcing test executed in this lane. Node syntax and targeted Biome only.",
       "No Source Save, capture, mutation, checkpoint path/import/read/write or default recovery.",
       "Late Save stays unverified; actual service-failure/recovery and immediate intermediate-state clearing are not claimed by this runner.",
-      "Existing positive fixture might be absent or redirect; that remains unverified rather than synthetic coverage."
+      "Existing positive fixture might be absent or redirect; that remains unverified rather than synthetic coverage.",
+      "Native late Save and service-failure recovery remain unverified. Public-page routing may block normal non-read traffic; inaccessible or redirecting fixtures remain unverified, not a Source product failure."
     ],
     "alias_repair": {
       "peer": "docs/stabilization/reports/d22-readonly-source-peer.json",
@@ -97,6 +98,37 @@
       "cause": "Saved captures list selects url:canonical_identity, but initial discovery read canonical_identity and rejected every real list row.",
       "change": "Discovery reads row.url and fixture.url. Point lookup still requires row.canonical_identity matching exact selected page identity. Public-host/query/fragment constraints remain unchanged.",
       "validation": "Targeted Biome and node --check only; independent repair review and native execution remain pending. No claim that this source repair proves live fixture availability."
+    },
+    "discovery_repair": {
+      "cause": "Three arbitrary reference hosts excluded all returned first-page candidates; original output cannot distinguish empty list from disallowed-host rows.",
+      "diagnostics": "Counts pages, total returned rows, examined unique rows, URL-present rows, HTTP(S) rows, examined public-eligible rows and rejection categories. Each actual list response records only HTTP status, row count, alias selected, cursor presence, numeric limit; each UI pagination step records only readiness and Load more count/enabled state. No URLs/IDs/hostnames/bodies.",
+      "pagination": "Actual trusted Load more click; next completed scoped list response must be observed. Exhausted list and configurable page-budget exhaustion have different unverified codes. Search is unnecessary because pagination traverses the existing list without guessed terms.",
+      "network_safety": "Node DNS lookup rejects any nonpublic answer; page request routing rechecks public HTTPS endpoints and rejects non-GET/HEAD methods. This is conservative read-only navigation, not a DNS-rebinding security guarantee; browser resolution may differ from preflight. Known action URL rejection is conservative, not proof every GET endpoint is side-effect-free. No forms or page actions clicked.",
+      "runtime": "Not run; source review required before root admission. No claim that existing qualifying rows will be available."
     }
+  },
+  "readonly_001_preserved": {
+    "sha256": "d4e49cff77e88bbcf52059c4265efc6e159f51b41e94249a2acc044aa066db29",
+    "result": {
+      "schema_version": 1,
+      "defect_id": "EXT-D-0022",
+      "status": "unverified",
+      "scope": "Existing Source recognition, workspace switching, authentic delayed lookup; no Source writes",
+      "observations": {
+        "lateInflightSave": "unverified",
+        "realAdminUi": true,
+        "workspaceCleanup": "pass"
+      },
+      "build": {
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.82",
+        "treeSha256": "9066e69fc13f5c35bd9650aa2540288045a40331012620def87faef4405d9611"
+      },
+      "failureCode": "no_existing_public_positive_fixture_in_visible_page",
+      "failureStage": "discover_existing_public_source"
+    },
+    "receipt": "docs/stabilization/runs/d22-recognition-readonly-001.json",
+    "classification": "Real admin login and scoped list read reached; three-host selection found no eligible first-page fixture. This is harness fixture selection failure, not evidence of a product failure or empty workspace. Prior result did not retain category counts, so exact rejected-row distribution is unknown."
   }
 }
