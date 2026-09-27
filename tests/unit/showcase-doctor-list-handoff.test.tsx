@@ -15,7 +15,11 @@ vi.mock('@/lib/storage/zustand-adapter', () => ({
 }));
 vi.mock('@/lib/messaging/native', () => ({ on: () => () => {} }));
 vi.mock('@/components/CopyMenu', () => ({ CopyMenu: () => null, CopyButton: () => null }));
-vi.mock('@/features/showcase/components/SaveAsPattern', () => ({ SaveAsPattern: () => null }));
+vi.mock('@/features/showcase/components/SaveAsPattern', () => ({
+  SaveAsPattern: ({ config }: { config: unknown }) => (
+    <pre data-testid="saved-pattern-config">{JSON.stringify(config)}</pre>
+  ),
+}));
 vi.mock('@/features/showcase/components/ResultPreview', () => ({
   ResultPreview: ({ rows }: { rows: Record<string, unknown>[] }) => (
     <pre>{JSON.stringify(rows)}</pre>
@@ -122,6 +126,19 @@ describe('Showcase Doctor recommendation handoff', () => {
     fireEvent.click(await screen.findByRole('button', { name: /name Neon Nights at Area15/i }));
     fireEvent.click(screen.getByRole('button', { name: /^Extract$/i }));
     expect(await screen.findByText(/\[\{"name":"Neon Nights at Area15"/)).toBeTruthy();
+  });
+
+  it('saves the executed field selection while later editor changes await another extraction', async () => {
+    render(<TestSurface />);
+    fireEvent.click(await screen.findByRole('button', { name: /5 repeating cards detected/i }));
+    fireEvent.click(await screen.findByRole('button', { name: /name Neon Nights at Area15/i }));
+    fireEvent.click(screen.getByRole('button', { name: /^Extract$/i }));
+
+    const savedConfig = await screen.findByTestId('saved-pattern-config');
+    expect(JSON.parse(savedConfig.textContent ?? '{}').field_paths[0].name).toBe('name');
+    fireEvent.change(screen.getByDisplayValue('name'), { target: { value: 'renamed_event' } });
+    expect(screen.getByDisplayValue('renamed_event')).toBeTruthy();
+    expect(JSON.parse(savedConfig.textContent ?? '{}').field_paths[0].name).toBe('name');
   });
 
   it('rejects a recommendation after the active page changes', async () => {

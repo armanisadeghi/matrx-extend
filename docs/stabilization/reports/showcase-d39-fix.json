@@ -1,0 +1,14 @@
+{
+  "lane": "showcase-detect-audit",
+  "defect": "EXT-D-0039",
+  "state": "fixed, awaiting independent live retest",
+  "baseline": "Unpacked 0.2.97 on https://electronic.vegas/vegas-edm-event-calendar/: Doctor's repeating-card recommendation opened a blank List Pattern builder.",
+  "engineering_receipts": [
+    "showcase-d39-red-001: focused real-DOM handoff guard failed on the blank builder before repair",
+    "showcase-d39-final-focused-001: 6/6 focused guards passed, including field selection and usable extracted rows",
+    "showcase-d39-compile-002: TypeScript compile passed on 0.2.101"
+  ],
+  "fix": "Doctor carries root/item selectors through ephemeral Showcase state scoped to tab ID and URL. List Pattern seeds selectors, still requires explicit field selection, rejects stale handoffs and async page results, and explains missing roots or inspection failures.",
+  "integration_exception": "Another writer committed and pushed the shared D39 and D40 changes together as cb47afa0 while this lane was preparing an exact-path commit. Shared history was preserved; no duplicate D39 commit was made.",
+  "follow_up": "List Pattern now consumes the shared extraction hook and saves its executed previewConfig, with a focused regression for editor changes after preview. Independent fresh 0.2.101 build/reload and user-seat UI retest remain open; source checks do not establish live product health."
+}

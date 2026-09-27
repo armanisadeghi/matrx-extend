@@ -1299,7 +1299,7 @@ Every entry follows this shape:
 ### Showcase — preview configuration survives later edits
 - **What it does:** Saving a preview keeps the exact settings that produced
   its rows, even if the controls are edited before Save is clicked.
-- **Where to test:** Showcase → JSON-LD, Microdata, Tables, Framework, AI Extract,
+- **Where to test:** Showcase → List Pattern, JSON-LD, Microdata, Tables, Framework, AI Extract,
   then Patterns. Use pages with two distinguishable result sets.
 - **Steps:** Extract the first type/table/path or AI request, edit the control to
   a different choice without extracting again, save the displayed preview,

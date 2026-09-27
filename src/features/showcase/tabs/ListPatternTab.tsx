@@ -1,6 +1,6 @@
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { useActiveTab } from '@/hooks/use-active-tab';
-import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
+import { useExtraction } from '@/hooks/use-extraction';
 import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
 import {
   type CandidateField,
@@ -8,7 +8,6 @@ import {
   inspectCardInPage,
 } from '@/lib/data-pattern/card-inspector';
 import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
-import { runMode } from '@/lib/data-pattern/run-pattern';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { cn } from '@/lib/utils';
@@ -63,8 +62,15 @@ export function ListPatternTab() {
   const [rawConfig, setConfig] = useState<ListPickerResult | null>(null);
   const [configPageKey, setConfigPageKey] = useState<string | null>(null);
   const config = configPageKey === pageKey ? rawConfig : null;
-  const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
-  const [running, setRunning] = useState(false);
+  const {
+    rows,
+    running,
+    error: extractionError,
+    source,
+    previewConfig,
+    run,
+    reset: resetExtraction,
+  } = useExtraction('list_pattern', { autoDetect: false });
   const [error, setError] = useState<string | null>(null);
   const [candidates, setCandidates] = useState<CandidateField[] | null>(null);
   const [inspectionStatus, setInspectionStatus] = useState<
@@ -75,7 +81,6 @@ export function ListPatternTab() {
   const [expandedFieldIdx, setExpandedFieldIdx] = useState<number | null>(null);
   /** Live per-field sample values, probed using the SAME logic as the runner. */
   const [sampleValues, setSampleValues] = useState<Record<string, string | null>>({});
-  const [source, setSource] = useState<ExtractionSource | null>(null);
 
   useEffect(() => {
     if (lastPageKeyRef.current === pageKey) return;
@@ -84,15 +89,13 @@ export function ListPatternTab() {
     runSeqRef.current += 1;
     setConfig(null);
     setConfigPageKey(null);
-    setRows(null);
-    setSource(null);
+    resetExtraction();
     setError(null);
     setCandidates(null);
     setInspectionStatus('idle');
     setSampleValues({});
     setSampleHtml([]);
-    setRunning(false);
-  }, [pageKey]);
+  }, [pageKey, resetExtraction]);
 
   useEffect(() => {
     if (!listRecommendation) return;
@@ -109,9 +112,9 @@ export function ListPatternTab() {
       field_paths: [],
     });
     setConfigPageKey(pageKey);
-    setRows(null);
+    resetExtraction();
     setError(null);
-  }, [listRecommendation, clearListRecommendation, tab.id, tab.url, pageKey]);
+  }, [listRecommendation, clearListRecommendation, tab.id, tab.url, pageKey, resetExtraction]);
 
   useEffect(() => {
     // STRICT: only the SW's stamped rebroadcast counts. The raw content-
@@ -137,7 +140,7 @@ export function ListPatternTab() {
               : payload,
           );
           setConfigPageKey(pickPageKeyRef.current);
-          setRows(null);
+          resetExtraction();
           setError(null);
         }
         return { ack: true };
@@ -165,7 +168,7 @@ export function ListPatternTab() {
             },
       );
       setConfigPageKey(pickPageKeyRef.current);
-      setRows(null);
+      resetExtraction();
       setError(null);
       return { ack: true };
     });
@@ -182,7 +185,7 @@ export function ListPatternTab() {
       offDetected();
       offExit();
     };
-  }, []);
+  }, [resetExtraction]);
 
   // Auto-run card inspector whenever the item selector changes.
   const runInspector = useCallback(async () => {
@@ -340,25 +343,14 @@ export function ListPatternTab() {
     if (!tab.id || !config) return;
     const request = ++runSeqRef.current;
     const pageAtStart = pageKey;
-    setRunning(true);
     setError(null);
-    setRows(null);
-    const sourceAtRun = sourceFromUrl(tab.url);
-    try {
-      const data = await runMode('list_pattern', tab.id, config);
-      if (request !== runSeqRef.current || pageAtStart !== latestPageKeyRef.current) return;
-      setRows(data);
-      setSource(sourceAtRun);
+    const data = await run(config);
+    if (request !== runSeqRef.current || pageAtStart !== latestPageKeyRef.current) return;
+    if (data.length > 0) {
       // Snapshot 1-2 cards' HTML for later AI-paste.
       const samples = await captureSampleHtml();
       if (request === runSeqRef.current && pageAtStart === latestPageKeyRef.current)
         setSampleHtml(samples);
-    } catch (err) {
-      if (request === runSeqRef.current && pageAtStart === latestPageKeyRef.current)
-        setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      if (request === runSeqRef.current && pageAtStart === latestPageKeyRef.current)
-        setRunning(false);
     }
   };
 
@@ -666,7 +658,7 @@ export function ListPatternTab() {
                 onClick={() => {
                   setConfig(null);
                   setConfigPageKey(null);
-                  setRows(null);
+                  resetExtraction();
                   setSampleHtml([]);
                   setCandidates(null);
                   setInspectionStatus('idle');
@@ -696,9 +688,9 @@ export function ListPatternTab() {
           </div>
         )}
 
-        {error && (
+        {(error || extractionError) && (
           <div className="rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
-            {error}
+            {error || extractionError}
           </div>
         )}
 
@@ -710,11 +702,11 @@ export function ListPatternTab() {
           />
         )}
 
-        {rows && rows.length > 0 && config && (
+        {rows && rows.length > 0 && previewConfig && (
           <div className="flex justify-end">
             <SaveAsPattern
               kind="list_pattern"
-              config={config}
+              config={previewConfig}
               rows={rows}
               source={source}
               defaultName={`List on ${(() => {
