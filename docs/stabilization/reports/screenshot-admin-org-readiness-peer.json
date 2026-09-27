@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-admin-org-readiness-peer",
+  "reviewed_commit": "4d18d68a",
+  "source_verdict": "accepted_for_guarded_runtime",
+  "runtime_verdict": "unverified_not_run_by_source_peer",
+  "run_001_truth": "Run 001 stopped at select_approved_organization with no gallery cases and a generic failure record. Its exact failed UI action and product state were not captured, so this review does not assign a product root cause or reclassify that run.",
+  "checks": [
+    {
+      "name": "readiness_and_actual_ui",
+      "result": "accepted_source",
+      "evidence": "After trusted Settings navigation, the runner observes one Account section and its exact collapsed state, opens Organization, waits for one mounted Acting as combobox, and only then uses the existing hit-tested trusted click driver. These are concrete readiness states missing from the earlier runner and match the established Source selection sequence."
+    },
+    {
+      "name": "exact_approved_workspace",
+      "result": "accepted_source",
+      "evidence": "The previously approved name is read from a mode-0600 private config; the runner requires exactly one matching real option, clicks that option, then verifies both displayed name and stored device organization name with a nonempty ID. It does not choose the first organization, use an account default, create an organization, or inject storage."
+    },
+    {
+      "name": "safe_failure_diagnostics",
+      "result": "accepted_source",
+      "evidence": "Generic selection failure now records a fixed step, one of the click driver's fixed pointer codes or non_pointer_failure, hit/count booleans, and Settings/Organization counts plus expanded-state attributes. The approved name and ID, credentials, row content, DOM text, and raw exception message are not serialized. Explicit fail codes remain fixed categories; the surface sample is best-effort."
+    },
+    {
+      "name": "scope_and_prior_oracle_repair",
+      "result": "accepted_source",
+      "evidence": "This patch changes the organization-selection preparation and diagnostics only. It does not add screenshot capture, upload, clipboard, delete, Source/SEO checkpoint mutation, or backend write actions. The earlier gallery row-identity and empty-state oracle repair remains in the runner."
+    }
+  ],
+  "remaining": "A new root-owned guarded browser run must identify whether the approved option becomes available and whether the gallery cases proceed. Run 001 stays unverified."
+}
