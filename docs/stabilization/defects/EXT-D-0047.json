@@ -1,0 +1,34 @@
+{
+  "id": "EXT-D-0047",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T57"],
+  "surface": "Showcase Network replay capture timing and document provenance",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Save a Network recipe for a real page request that fires during initial document load and run it through Patterns.",
+    "The replay waits for tabs.onUpdated status=loading, then enables event acceptance and sequentially injects the isolated relay and MAIN-world tap.",
+    "Separately, leave a response pending in the old document; after loading begins, let the old response relay before or alongside the new document response."
+  ],
+  "expected": "Replay reliably captures the relevant request, or clearly explains that initial requests may precede interception and offers a retrigger path. A prior document's response cannot satisfy or overwrite a run for the new document; trusted document identity is required in addition to tab identity.",
+  "actual": "Requests completed before the loading callback's relay/tap injection are not observed and cannot be recovered. Once the loading callback sets `accepting = true`, a late old-document response can pass the replay's tab-only filter because the relay stamps tab_id but no document identity. If URL/method/body identity match and the old document's local request_sequence sorts later, its rows can be selected as current output.",
+  "source_evidence": [
+    "src/lib/data-pattern/run-interactive.ts:361-365 filters by tab id, then :444-466 arms acceptance on the loading callback and injects relay/tap sequentially; :476-484 reports no-match only after the capture window.",
+    "src/lib/background/bootstrap.ts:551-556 stamps sender.tab.id and rebroadcasts without trusted document identity.",
+    "src/lib/data-pattern/network-tap.ts:14-33 event schema has tab_id and a document-local request_sequence but no document identity; :85,159-161 starts the sequence per injected document."
+  ],
+  "severity": "S2: important; replay can miss intended initial data or return stale data from the prior document.",
+  "priority": "P1: saved Network replay must identify the intended request and source document.",
+  "state": "open",
+  "reproduction_status": "source-confirmed; live behavior unverified",
+  "verification_status": "D41 focused green 30 and types passed on pre-merge .108 source, but the fresh peer found these gaps. No D47-specific test or installed-extension run has been performed.",
+  "source_report": "docs/stabilization/reports/showcase-network-final-peer.json",
+  "transition_history": [
+    {
+      "at": "2026-09-27T21:50:30Z",
+      "from": null,
+      "to": "open",
+      "reason": "Fresh independent D41 source peer identified post-loading old-document acceptance and the gap between navigation loading and two-step tap injection; no runtime result claimed."
+    }
+  ],
+  "closure_requirement": "Add regression coverage for an initial request racing tap installation and a delayed old-document response arriving after navigation loading; prove current-document attribution and honest retrigger guidance. Then verify saved request replay on a real public website using an installed build."
+}

@@ -1,0 +1,34 @@
+{
+  "id": "EXT-D-0048",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T58"],
+  "surface": "Showcase Network selection → Save as pattern persistence",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Capture a GET response whose URL contains a credential-bearing query parameter; use only a harmless synthetic canary in any regression, never a real credential.",
+    "Select the response and save with the default exact matcher and URL-derived pattern name.",
+    "Inspect the persisted recipe's config and name for the synthetic canary; do not copy or log any real URL or secret."
+  ],
+  "expected": "Before persistence, credential-bearing URL values are removed from saved configuration and name, or saving is refused with a safe remedy. No actual credentials, token values, raw sensitive URLs, or headers are stored or logged. Non-sensitive URL matching remains available, with honest guidance if removing a credential prevents replay.",
+  "actual": "Selecting a response initializes replayUrlFilter from event.url. Save config stores that matcher, while defaultName includes a shortened form of the selected URL; shortenUrl keeps query text when it fits and may retain the tail of a longer query. SaveAsPattern forwards both fields to savePattern, which persists name and config in the pattern record. No credential redaction or refusal exists in this path.",
+  "source_evidence": [
+    "src/features/showcase/tabs/NetworkTab.tsx:39-45 copies event.url into replayUrlFilter; :287-302 sends savedUrlFilter in config and derives defaultName from shortenUrl(selected.url, 40); :312-321 includes pathname and query in the shortened text.",
+    "src/features/showcase/components/SaveAsPattern.tsx:154-166 passes name and config to savePattern.",
+    "src/lib/supabase/queries.ts:974-987 inserts name and config into extend.wbx_pattern without URL-value sanitization."
+  ],
+  "severity": "S2: important; credential-bearing request URLs can be durably exposed in recipe configuration and name.",
+  "priority": "P1: persisted secrets violate the safe-save contract.",
+  "state": "open",
+  "reproduction_status": "source-confirmed; live behavior unverified",
+  "verification_status": "D41 focused green 30 and types passed on pre-merge .108 source, but the fresh peer found this privacy gap. No real credential was used; no D48-specific test or installed-extension run has been performed.",
+  "source_report": "docs/stabilization/reports/showcase-network-final-peer.json",
+  "transition_history": [
+    {
+      "at": "2026-09-27T21:50:30Z",
+      "from": null,
+      "to": "open",
+      "reason": "Fresh independent D41 source peer confirmed the selected request URL reaches persisted config and a URL-derived pattern name without sanitization; no actual credential or runtime outcome was used."
+    }
+  ],
+  "closure_requirement": "Add a regression with a harmless synthetic canary proving neither config nor name persists sensitive query values, with a safe visible remedy. Then verify the installed Showcase save/reopen UI on a real public page without ever using or recording a real credential."
+}

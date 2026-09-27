@@ -14860,6 +14860,16 @@
           "id": "EXT-F-1012-C46",
           "label": "JSON literal dotted-key path selection",
           "action": "Select a JSON object key whose literal name contains dots and preserve it as one path segment in Network and Framework extraction."
+        },
+        {
+          "id": "EXT-F-1012-C47",
+          "label": "Network replay capture start and document identity",
+          "action": "Arm request interception before relevant document requests and accept only responses from the replay's current document."
+        },
+        {
+          "id": "EXT-F-1012-C48",
+          "label": "Network credential-bearing URL save handling",
+          "action": "Prevent credential-bearing request URLs from being persisted in a saved matcher or pattern name; offer a safe remedy without writing credential values."
         }
       ],
       "source_anchors": [
@@ -16503,6 +16513,72 @@
             "warm",
             "reload",
             "navigation",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T57",
+          "title": "Network replay captures initial request and isolates document provenance",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C31",
+            "EXT-F-1012-C36",
+            "EXT-F-1012-C42",
+            "EXT-F-1012-C47"
+          ],
+          "defect_ids": [
+            "EXT-D-0047"
+          ],
+          "preconditions": [
+            "Fresh development build; verify receipt and reload the extension and page in Chrome. Use a real public website with a reproducible request during initial document load and an owned recipe. No localhost/test server. Guest/member denial uses EXT-F-1012-T38."
+          ],
+          "steps": [
+            "Save a Network recipe for a request that fires during initial page load, run it, and verify the request is captured or the product gives honest guidance that it began listening too late and how to retrigger it.",
+            "Start a replay with an old document response pending; after navigation begins and the new document starts, release the old response and then the current document response.",
+            "Compare source provenance and output; verify a delayed response from the prior document cannot satisfy or overwrite the current replay, even when URL, method, request identity, and local sequence values overlap."
+          ],
+          "expected": [
+            "Initial requests are captured when possible; otherwise the UI states the limitation and provides a clear retrigger action rather than silently suggesting the full initial-load replay succeeded.",
+            "Only a response proven to originate from the current replay document can supply its rows; tab identity alone is insufficient across navigation."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T58",
+          "title": "Network saved matcher and name do not retain credential-bearing URLs",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C42",
+            "EXT-F-1012-C48"
+          ],
+          "defect_ids": [
+            "EXT-D-0048"
+          ],
+          "preconditions": [
+            "Fresh installed development build and a real public page; use only a harmless synthetic canary string, never an actual credential, in a credential-shaped URL value. Keep an owned uniquely named recipe. Guest/member denial uses EXT-F-1012-T38.",
+            "Do not place raw URL values, credentials, headers, or tokens in reports, logs, clipboard, or cleanup records."
+          ],
+          "steps": [
+            "Capture a request and exercise the selected full URL/default name path with a nonsecret canary in a credential-bearing query parameter; save or observe the safe refusal/remedy.",
+            "Reopen the saved recipe and verify neither config.url_filter nor its name retains the canary or raw sensitive query value.",
+            "Use any offered sanitized or explicitly edited matcher and verify the user can still save a safe recipe without silently claiming the credential-dependent request will replay."
+          ],
+          "expected": [
+            "The product redacts credential-bearing values or refuses persistence with a clear safe remedy before writing; neither saved config nor name contains them.",
+            "No actual credentials are used, persisted, or logged, and safe noncredential URL matching remains available."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
             "service-error"
           ]
         }
