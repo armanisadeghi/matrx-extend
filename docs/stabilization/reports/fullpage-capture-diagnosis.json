@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1009-T03",
+  "status": "source_repair_live_unverified",
+  "run": "docs/stabilization/runs/screenshot-fullpage-dev095-002.json",
+  "confirmed": [
+    "The native run passed the real empty-gallery baseline before full-page capture and verified exact-owned-row deletion after failure.",
+    "The runner's generic catch erased the failing operation; private report and wrapper log do not distinguish product failure from harness failure.",
+    "The full-page runner dereferenced page.viewportSize().width after capture, whereas the shared CDP harness does not set a viewport and the passing control runner measures innerWidth inside the page."
+  ],
+  "source_change": [
+    "Use the already-observed page innerWidth for the persisted image aspect oracle and require a valid fixture width.",
+    "Record fixed capture substages before trusted click, real gallery read, row contract, image-pixel oracle, and scroll restoration."
+  ],
+  "remaining_uncertainty": "Run 002 did not record its exception or substage, so the viewport dereference is a source-proven hazard but not a proven explanation of that run. A guarded native rerun must decide.",
+  "checks": {
+    "node_syntax": "pass",
+    "biome_targeted": "pass",
+    "json_parse": "pass",
+    "diff_whitespace": "pass",
+    "native_browser": "not_run_in_this_lane",
+    "original_pixel_oracle": "preserved",
+    "exact_owned_cleanup": "preserved"
+  },
+  "defect": "EXT-D-0036"
+}

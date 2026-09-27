@@ -1,0 +1,46 @@
+{
+  "id": "EXT-D-0036",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T03"],
+  "surface": "Native full-page acceptance runner failure capture",
+  "auth_mode": "real admin with approved organization and owned localhost fixture",
+  "reproduction": [
+    "Run the admitted native full-page acceptance with the exact 0.2.95 development receipt.",
+    "The runner reaches real_full_page_capture and exits with full_page_stage_failed after an empty real gallery baseline; exact-owned-row cleanup succeeds.",
+    "Inspect the private result and wrapper log: neither records the failing capture substage or a safe error class."
+  ],
+  "expected": "The private result identifies a fixed capture substage and safe error category while preserving the exact identity, image-pixel, and cleanup oracles.",
+  "actual": "The generic catch erased the failing operation. The product versus harness outcome of run 002 cannot be determined from its saved evidence.",
+  "evidence": [
+    "docs/stabilization/runs/screenshot-fullpage-dev095-002.json",
+    "tests/browser/screenshot-full-page-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/screenshot-capture-acceptance.mjs"
+  ],
+  "severity": "S3: acceptance infrastructure loses a failure boundary; no product defect established",
+  "priority": "P1: restore actionable diagnostics before the next admitted native run",
+  "state": "in-fix",
+  "owner": "/root/fullpage_capture_diagnosis",
+  "fix_commits": [],
+  "transition_history": [
+    {
+      "at": "2026-09-27T11:59:40Z",
+      "from": null,
+      "to": "open",
+      "reason": "Run 002 failed after an empty real gallery baseline, but the saved fixed code gave no capture substage."
+    },
+    {
+      "at": "2026-09-27T11:59:40Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "The runner catch replaces every non-pointer, non-assertion exception with one generic code; private evidence contains no raw exception or safe substitute."
+    },
+    {
+      "at": "2026-09-27T11:59:40Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "The source now names the active capture substage with fixed codes; a fresh admitted native run is required to classify the original failure."
+    }
+  ],
+  "closure_requirement": "An admitted native full-page run either passes the original pixel and exact-row oracles or returns a fixed, actionable capture substage with exact-owned cleanup; independently review the recorded result."
+}

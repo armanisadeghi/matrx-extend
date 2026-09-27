@@ -45,6 +45,7 @@ const report = {
   },
 };
 let stage = 'build_identity';
+let capturePhase = null;
 function fail(code) {
   report.failure = { stage, code };
   throw new Error(code);
@@ -334,11 +335,16 @@ async function exercise({ page, panel }) {
     if (page.url() !== fixtureUrl || (await page.title()) !== 'Harbor Dental appointment guide')
       fail('fixture_identity_unverified');
     const metrics = await page.evaluate(() => ({
+      innerWidth,
       innerHeight,
       scrollHeight: document.documentElement.scrollHeight,
       scrollY,
     }));
-    if (metrics.innerHeight < 100 || metrics.scrollHeight < metrics.innerHeight * 2.9)
+    if (
+      metrics.innerWidth < 100 ||
+      metrics.innerHeight < 100 ||
+      metrics.scrollHeight < metrics.innerHeight * 2.9
+    )
       fail('fixture_not_three_viewports');
     fixtureCanonical = canonical(fixtureUrl);
     await mkdir(dirname(RECOVERY), { recursive: true });
@@ -354,9 +360,11 @@ async function exercise({ page, panel }) {
     const before = await nextRead(journal, beforeMarker, 0);
     if (before.length !== 0) fail('fresh_fixture_not_empty');
     stage = 'real_full_page_capture';
+    capturePhase = 'trusted_click';
     const captureMarker = journal.marker();
     captureClicked = true;
     await click(panel, 'button-text', 'Full page');
+    capturePhase = 'persisted_gallery_read';
     const after = await nextRead(journal, captureMarker, 1);
     if (
       after.length === 1 &&
@@ -375,16 +383,16 @@ async function exercise({ page, panel }) {
         }),
         { mode: 0o600 },
       );
+    capturePhase = 'persisted_row_contract';
     if (
       !ownedRow ||
       ownedRow.source !== 'user' ||
       !(ownedRow.width > 0) ||
       !(ownedRow.height > ownedRow.width) ||
-      Math.abs(
-        ownedRow.width / ownedRow.height - page.viewportSize().width / metrics.scrollHeight,
-      ) > 0.08
+      Math.abs(ownedRow.width / ownedRow.height - metrics.innerWidth / metrics.scrollHeight) > 0.08
     )
       fail('persisted_full_page_dimensions_wrong');
+    capturePhase = 'persisted_image_pixels';
     const image = await waitFor(
       'fresh_persisted_full_page_thumbnail',
       () => cardState(panel),
@@ -398,6 +406,7 @@ async function exercise({ page, panel }) {
       45_000,
     );
     if (image.height <= image.width || image.cardCount !== 1) fail('persisted_image_not_tall');
+    capturePhase = 'scroll_restoration';
     const finalScroll = await page.evaluate(() => scrollY);
     if (Math.abs(finalScroll - metrics.scrollY) > 2) fail('original_scroll_not_restored');
     report.cases.tallPersistence = 'pass';
@@ -414,7 +423,13 @@ async function exercise({ page, panel }) {
     await rm(RECOVERY);
     report.status = 'partial';
   } catch (error) {
-    report.failure ??= { stage, code: 'full_page_stage_failed' };
+    report.failure ??= {
+      stage,
+      code:
+        stage === 'real_full_page_capture' && capturePhase
+          ? `full_page_${capturePhase}_failed`
+          : 'full_page_stage_failed',
+    };
     report.failure.diagnostic = safeFailure(error);
     if (!ownedRow && captureClicked) {
       // The capture may have saved even when its automatic gallery read failed.
