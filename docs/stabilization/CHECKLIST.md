@@ -1,37 +1,27 @@
 # Stabilization checklist (derived)
 
-> Generated from `inventory.json`, `defects/*.json`, and the linked D22 closure-path assessment. Those records remain authoritative. Latest source checkpoint is 0.2.82; no current engineering artifact is verified here.
+> Generated 2026-09-27T02:33:03Z. Source version is 0.2.82; the current receipt-bound tree is `9066e69fc13f5c35bd9650aa2540288045a40331012620def87faef4405d9611`. This does not turn the latest unverified native attempt into a pass. `inventory.json` and defect records remain authoritative.
 
-## Coverage status
+## Coverage
 
-- [x] Inventory records 205 features and 693 test cases.
-- [ ] Case-level coverage is incomplete: 1,142 applicable mode-specific slots; 53 have a recorded pass, 76 are explicitly unverified, 1 is not applicable, and 1,012 have no result object and remain unverified.
-- [ ] Current 0.2.82 engineering-build verification: not established by the inventory. Of the 53 recorded passes, 43 lack a linked build receipt; 10 are bound to earlier builds (0.2.56: 1, 0.2.57: 1, 0.2.63: 4, 0.2.79: 4).
-- [ ] The four .79 Debug passes (EXT-F-1005-T14, T15, T17, T22) are historical and are not .82 retests.
+- [x] Inventory contains 205 features and 693 cases.
+- [ ] Case coverage remains incomplete: 1142 applicable mode-specific slots; 53 recorded pass, 76 explicit unverified, 1 not applicable, and 1012 slots without a result record (unverified coverage).
+- [ ] Current-tree acceptance: no current 0.2.82 case pass is recorded. The read-only native attempt on tree `9066e69fc13f5c35bd9650aa2540288045a40331012620def87faef4405d9611` exited 1 and is unverified at `discover_existing_public_source` (`no_existing_public_positive_fixture_in_visible_page`). No eligible existing public Source fixture was found; this is a fixture/evidence gap, not evidence of product failure.
+- [ ] The four explicit 0.2.79 Debug passes (EXT-F-1005-T14/T15/T17/T22) remain historical, not 0.2.82 retests.
 
-## Known defects
+## Defects
 
-- [x] 22 defect records explicitly say `closed` (defect scope only; related features may still have pending cases).
-- [ ] EXT-D-0022 remains `in-fix` in its ledger. There are no defects currently in explicit `fixed` awaiting retest state.
+- [x] 22 defects are explicitly closed.
+- [ ] EXT-D-0022 is `fixed` and awaiting retest; it is not closed. No other defect is currently open, in-fix, or fixed-awaiting-retest.
 
-### EXT-D-0022 — native recognition evidence incomplete
+### EXT-D-0022 - native retest pending
 
-Priority P1 / severity S2 in the defect ledger. The latest bounded source/evidence assessment found no new production defect and says the existing organization-scope, stale-result, and queue-order repairs are present. The ledger remains `in-fix` until its remaining evidence is reconciled.
+Independent state audit `reports/d22-state-audit.json` supports recording the engineering repair as fixed after the scoped-query, stale-result, actor-boundary, queue-order, and refusal repairs and their focused green receipts. The latest native attempt verified its `.82` tree but could not test positive recognition because no eligible existing public Source was found. Keep `ui_retest` pending and do not mark EXT-F-1007-T26 passed.
 
-**Next:** after root admits a current build and resources are healthy, run the already-reviewed `SOURCE_READONLY_SCOPE=1` path. Preserve the reserved checkpoint exactly and send no Save input. This covers only the no-workspace/scoped-negative native subset; it is not full closure.
+**Next:** obtain independent source review of the bounded multi-page fixture-discovery revision in `tests/browser/source-recognition-readonly-acceptance.mjs`. It must use actual existing Sources through the scoped list, constrain navigation to public read-only pages, and keep URLs/IDs private. Only after review and root admission may one guarded native run proceed.
 
-**Then:** independently review a checkpoint-independent read-only path using a pre-existing Source in an approved workspace. Prove the actual matching Open target, workspace switch invalidation/restoration, and stale lookup rejection using real UI and scoped read-only responses. If no qualifying existing Source is available, record that evidence gap; do not create one.
-
-**Also pending:** inventory T26 requires actual scoped recognition service-failure and recovery proof. Late in-flight Save cannot be proved by this read-only route; keep that dimension unverified. Never reset, delete, reinitialize, advance, or retry the reserved checkpoint.
-
-## Next checklist
-
-- [ ] Root completes/admit current engineering build and resource guard; no browser action from this documentation lane.
-- [ ] Run bounded reviewed read-only scope without Save and compare checkpoint hash before/after.
-- [ ] Prepare/peer-review the positive existing-Source multi-workspace read-only case plus scoped service-failure/recovery case; no synthetic data or forged responses.
-- [ ] Keep the full feature and any late-Save dimension unverified until their own exact criteria and authorized evidence are met.
-- [ ] Record fresh .82-bound receipts for cases being retested; do not promote historical case passes to .82.
+**Still unverified:** actual positive Source/Open identity agreement across workspaces, stale-response rejection, service-failure/recovery, and late in-flight Save. The read-only runner cannot prove late Save. Preserve the reserved Save checkpoint exactly; do not read, advance, reset, reinitialize, retry, capture, or Save.
 
 ## Status definitions
 
-`pass` means the inventory explicitly records a case result with its original evidence; it does not imply current-build verification. `unverified` means a result object exists but criteria remain. An applicable slot with no result object is also unverified coverage. Defect `closed`, `fixed`, and `in-fix` counts come from the defect file current `state`; the newer D22 assessment supplies current next steps without silently changing that ledger state.
+`pass` is the inventory's recorded case result with its original evidence and build boundary; it is not a current-build pass by default. An explicit `unverified` result and an applicable slot with no result object are both pending coverage. Defect `fixed` means engineering work is present and retest remains; only an explicit `closed` defect record is closed.

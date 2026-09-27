@@ -27,7 +27,7 @@
   ],
   "severity": "S2: wrong-workspace Saved claim may reveal another RLS-visible organization's Source identity and misstate capture status",
   "priority": "P1: close the organization boundary before claiming workspace-correct recognition",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "/root/source_recognition_org_fix",
   "transition_history": [
     {
@@ -65,9 +65,15 @@
       "from": "fixed",
       "to": "in-fix",
       "reason": "Fresh independent source review c4a55ff8 found a late A refusal or retry refusal can replace a newer B pending capture because the queue keeps whichever same-URL refusal finishes last. Regression tests were added before the queue repair."
+    },
+    {
+      "at": "2026-09-27T02:33:03Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent audit docs/stabilization/reports/d22-state-audit.json (7cb1ec35) reconciled the earlier queue-race finding against the later scoped-query, stale-result, actor-boundary, queue-order and refusal repairs plus focused green receipts; no later source-confirmed D22 production defect is established. This means engineering fixed, awaiting retest only, never closed. The latest current-build native attempt docs/stabilization/runs/d22-recognition-readonly-001.json exited nonzero/unverified at positive-fixture discovery because no eligible pre-existing public Source was found; that is a fixture/evidence gap, not a product failure. Keep ui_retest pending, do not pass EXT-F-1007-T26, and preserve the reserved Save checkpoint unchanged."
     }
   ],
-  "fix_commits": ["deb577e8", "e36bf683", "8c0e8a19"],
+  "fix_commits": ["deb577e8", "e36bf683", "8c0e8a19", "560efb66", "f6161e26", "9022e59a"],
   "ui_retest": "pending",
   "closure_requirement": "Focused red/green shared-query, hook, and real Scrape Save UI guards; typecheck; independent source review; and authenticated multi-organization UI verification."
 }
