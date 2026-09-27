@@ -1,7 +1,10 @@
 {
   "id": "EXT-D-0034",
   "feature_id": "EXT-F-1009",
-  "case_ids": ["EXT-F-1009-T04", "EXT-F-1009-T05"],
+  "case_ids": [
+    "EXT-F-1009-T04",
+    "EXT-F-1009-T05"
+  ],
   "surface": "Native screenshot Files target and Copy URL oracle",
   "auth_mode": "real admin with approved organization and owned localhost fixture",
   "reproduction": [
@@ -18,13 +21,16 @@
     "src/features/screenshots/ScreenshotsView.tsx",
     "src/config/env.ts",
     "docs/stabilization/runs/screenshot-controls-dev094-003.json",
-    "docs/stabilization/reports/screenshot-files-redirect-peer.json"
+    "docs/stabilization/reports/screenshot-files-redirect-peer.json",
+    "docs/stabilization/runs/screenshot-controls-dev095-003.json"
   ],
   "severity": "S3: acceptance oracle misclassifies a real Files open; no product failure established",
   "priority": "P1: correct the oracle before the next resource-admitted native run",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/screenshot_controls_batch",
-  "fix_commits": ["d450c7a2"],
+  "fix_commits": [
+    "d450c7a2"
+  ],
   "transition_history": [
     {
       "at": "2026-09-27T11:05:00Z",
@@ -50,8 +56,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Independent source peer accepted exact owned route and verified canonical redirect; native retest active."
+    },
+    {
+      "at": "2026-09-27T11:46:15.178286+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent guarded native .95 controls003 passed thumbnail, separate icon, actual Copy, Cancel, confirm-delete and exact owned cleanup; source reviews accepted."
+    },
+    {
+      "at": "2026-09-27T11:46:15.178286+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original reproduction and required surrounding controls now pass. Broader feature dimensions remain tracked unverified."
     }
   ],
   "closure_requirement": "Exact owned final Files route at apex or the verified canonical www redirect is checked without exposing file ID/URL; icon and Copy are separately exercised; a fresh admitted native run passes, and only its owned row/tabs are cleaned.",
-  "retest_status": "Original thumbnail redirect check passed in native .94 run003. Keep fixed because closure also calls for separate icon/Copy verification; icon stopped before click on distinct D35 hit-target issue, Copy not reached."
+  "retest_status": "pass: bounded closure criteria in docs/stabilization/runs/screenshot-controls-dev095-003.json"
 }
