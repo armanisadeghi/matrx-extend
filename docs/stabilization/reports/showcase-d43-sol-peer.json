@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0043",
+  "review_type": "fresh independent source review of preserved product patch",
+  "scope": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d43-product.patch (SHA-256 71eb140e8f764bec28d4e8dbe537ae38023d5c4b62ea054a216d1f3b2b13d6cf), plus prepared scratch tests",
+  "authorship": "No product or test authorship; no patch applied, build, test, or browser run.",
+  "verdict_a_live": {
+    "status": "UNVERIFIED",
+    "reason": "The proposed patch is held outside the checkout after resource preflight refused the green run. Source review cannot establish installed-extension behavior, extracted row contents, recipe save/reopen/replay, or D42 lifecycle behavior.",
+    "required_proof": "After integration, independently use the installed extension on the real event calendar: from Doctor's detected card list add title and URL, extract and inspect multiple distinct event rows, save, reopen and replay; separately start a fresh nested click and choose the intended scope, then cancel/restart while checking stale-session rejection."
+  },
+  "verdict_b_source": {
+    "status": "PASS_WITH_GAPS",
+    "confirmed": [
+      "The patch does seed Pick more fields: ListPatternTab passes the current root and item selector to startListPickerSession; the session bridge passes JSON-serializable seed ?? null into mountListPicker (patch lines 25-34, 63-85). The restored checkout's unseeded caller is not evidence against this patch.",
+      "A valid seeded scope enters field selection without emitting a new detection event; result merging retains old fields only when both root and item selector match. A changed scope clears fields at detection (patch lines 5-24, 139-163, 194-219).",
+      "A fresh click now enumerates nested and outer repeated ancestors and waits for an explicit scope button when there are multiple matches; only scope selection emits detection. Field clicks can come from any matching item (patch lines 180-240, 255-300, 339-370).",
+      "D42's per-tab start/cancel sequence, target-session cancel check, producer session IDs, and ListPatternTab tab/session/page filters are not removed by this patch. This is source compatibility, not a regression result."
+    ],
+    "findings": [
+      {
+        "severity": "important_before_commit",
+        "location": "docs/feature-tests.md:1267-1289; product patch file list",
+        "finding": "The patch changes the user-visible List Pattern flow but contains no update to the required feature test recipe. Add a concrete seeded Pick more fields and fresh nested-scope recipe with expected distinct row values before committing."
+      },
+      {
+        "severity": "test_gap",
+        "location": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d43-regression.test.ts:144-159",
+        "finding": "The page-change case unmounts the seeded picker and mounts a new picker without a seed. It proves clean remount, not the new invalid-seed fallback. Add a case passing a now-missing seed to mountListPicker and assert the warning, fresh scope choice, and correct new-page extraction."
+      },
+      {
+        "severity": "test_gap",
+        "location": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d43-entry.test.tsx",
+        "finding": "The strengthened component test connects the entry button, session start, page producer, stamped consumer, merge, and extraction through simulated Chrome messaging. Its DOM and SW relay are still doubles; it cannot substitute for the required installed-extension check, and this review did not run it."
+      }
+    ],
+    "evidence": "Read the complete preserved patch and surrounding source; git apply --check passed on the clean restored checkout. No execution evidence is claimed."
+  },
+  "files_reviewed": [
+    "src/features/showcase/tabs/ListPatternTab.tsx",
+    "src/lib/data-pattern/list-picker-session.ts",
+    "src/lib/data-pattern/list-picker.ts",
+    "src/lib/data-pattern/selector-resilience.ts",
+    "src/lib/data-pattern/modes/list-pattern.ts",
+    "src/entrypoints/list-picker.content.ts",
+    "docs/stabilization/defects/EXT-D-0043.json",
+    "docs/feature-tests.md"
+  ],
+  "open_questions": []
+}
