@@ -1,0 +1,11 @@
+{
+  "scope": "EXT-F-1005-T16 Copy all and T18 console mirroring native runner repair",
+  "status": "source_ready_for_independent_review_no_runtime_claim",
+  "confirmed_cause": "The prior runner attempted navigator.clipboard.readText before Copy all and skipped the entire trusted click/feedback block when that observation failed. It also hardcoded T18 console mirroring as unverified without listening to the owned browser console. The exact prior clipboard rejection class was not captured and remains unknown until the next guarded run.",
+  "changes": {
+    "tests/browser/debug-log-export-acceptance.mjs": "The preflight now records only an allowlisted read rejection category and panel focus/visibility. If Chrome reports NotAllowedError while the panel is focused and visible, the disposable browser grants clipboard-read for the extension origin solely for observation, then retries the in-memory snapshot. Copy all remains a trusted UI click; exact content comparison, feedback observation and conditional clipboard restoration remain unchanged. For T18, the runner observes consoleAPICalled in the owned sidepanel target and uses the visible Re-discover button to produce a natural sidepanel info event under both verbose states. It matches that event to a rendered Debug row and records counts and SHA-256 only, then restores the setting.",
+    "tests/browser/settings-panel-driver.mjs": "Adds one button-text target resolver to the existing trusted/stable CDP click driver. It is needed because the actual Debug subview and Re-discover controls have visible labels but no title or other supported driver selector. Existing target kinds and pointer behavior are unchanged; peer review should include this shared driver."
+  },
+  "self_check": "node --check passed for both edited modules; git diff --check passed. No browser, build, resource guard or behavioral test ran pending peer gate.",
+  "acceptance_needed": "A fresh guard-owned run on a receipt-bound build must show the real Copy click, exact clipboard output and feedback with successful conditional restoration for T16; actual matching console output when verbose is on and no matching info output when off, each backed by a natural Debug row, for T18. Other case dimensions remain separate inventory work. A failed or missing natural event remains unverified, not a product defect by itself."
+}

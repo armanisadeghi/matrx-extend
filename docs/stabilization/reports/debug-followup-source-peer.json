@@ -1,0 +1,34 @@
+{
+  "verdict": "PASS_WITH_LIMITS",
+  "scope": "Independent source review of the Debug acceptance runner and shared settings-panel click driver against EXT-F-1005-T16/T18 inventory requirements and privacy boundaries. No browser, build, or harness was launched.",
+  "findings": [],
+  "evidence": {
+    "T16": "The initial clipboard read records only a bounded error name/code plus focused and visible booleans; clipboard contents stay in process memory. The fallback is attempted only for a focused, visible NotAllowedError and grants only clipboard-read for the owned extension origin. It never seeds clipboard data. Copy all is invoked through the existing stable, hit-tested CDP mouse press/release path; the observed clipboard is compared to the independently reconstructed rendered-filtered-row oracle and the real Copied UI icon. Cleanup restores the old text only if a fresh read still equals the export. No unrelated clipboard contents are inserted into the product DOM, acceptance report, or logs.",
+    "T18": "The runner captures Runtime.consoleAPICalled on the session-scoped owned side-panel CDP target. It starts with natural UI events, triggers the actual Bridges → Re-discover control twice, requires the corresponding new Debug-feed row, compares the new console message to the row-derived message and records match counts plus SHA-256. Probes run once at each verbosity setting; no synthetic product event or fake logger call is used. Original verbosity is restored through the UI, with finally cleanup if an earlier step fails.",
+    "shared_driver": "The only shared-driver change is an additive exact-trimmed-button-text selector used only by this follow-up. All existing selector branches, candidate visibility rules, hit-testing, stable target checks, and trusted CDP mouse dispatch are unchanged.",
+    "preservation": "Scoped diff adds the clipboard failure classification/fallback and natural console probes; it does not remove the T16 oracle, copy feedback predicate, download byte oracle, admin login/identity verification, settings persistence check, real reload, feed-sequence comparison, or conditional clipboard/verbosity restoration.",
+    "checks": [
+      "node --check tests/browser/debug-log-export-acceptance.mjs — passed",
+      "node --check tests/browser/settings-panel-driver.mjs — passed",
+      "git diff --check -- tests/browser/debug-log-export-acceptance.mjs tests/browser/settings-panel-driver.mjs — passed"
+    ]
+  },
+  "inventory_limits": {
+    "T16": "Source supports a real warm Copy all plus Download check when clipboard read succeeds. If focused/visible permission observation still fails, the case remains unverified and does not issue Copy all. Reload and service-error dimensions are not exercised here; no full inventory pass is claimed.",
+    "T18": "The new probes cover naturally generated info-level mirroring in both verbosity states and visible new feed rows. Warning/error mirroring in both modes, service-error behavior, reload dimension event retention, and the full inventory matrix remain unverified; the existing result remains partial and must not be promoted to a full pass from this source change."
+  },
+  "reviewed_files": [
+    "tests/browser/debug-log-export-acceptance.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "src/features/debug/BridgesView.tsx",
+    "src/features/debug/DebugView.tsx",
+    "src/lib/debug/log.ts",
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/runs/debug-export-dev089-001.json",
+    "docs/stabilization/reports/debug-export-dev089-001-peer.json"
+  ],
+  "open_questions": [
+    "Runtime evidence is still required to establish clipboard observation availability, actual copied bytes/feedback, natural console matching, and the limits listed above."
+  ]
+}

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Owned-profile, natural-event Debug export and verbosity observations. */
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { chmod, readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -345,7 +345,62 @@ async function selectNaturalFilteredSubset(panel, total) {
 }
 
 async function readClipboard(panel) {
-  return evaluate(panel, 'navigator.clipboard.readText()');
+  const response = await panel.send('Runtime.evaluate', {
+    expression: `(async () => {
+      const focused=document.hasFocus(), visible=document.visibilityState==='visible';
+      try { return {ok:true,text:await navigator.clipboard.readText(),focused,visible}; }
+      catch (error) { return {ok:false,name:error?.name,focused,visible}; }
+    })()`,
+    awaitPromise: true,
+    returnByValue: true,
+  });
+  const result = response.result?.value;
+  if (response.exceptionDetails || !result || typeof result !== 'object')
+    throw Object.assign(new Error('clipboard_read_unavailable'), {
+      clipboardDiagnostic: { code: 'runtime_exception' },
+    });
+  if (result.ok === true && typeof result.text === 'string') return result.text;
+  const names = new Set(['NotAllowedError', 'SecurityError', 'NotFoundError', 'AbortError']);
+  throw Object.assign(new Error('clipboard_read_unavailable'), {
+    clipboardDiagnostic: {
+      code: names.has(result.name) ? result.name : 'other_rejection',
+      focused: result.focused === true,
+      visible: result.visible === true,
+    },
+  });
+}
+
+async function observedClipboardSnapshot(page, panel, panelTarget, evidence) {
+  try {
+    await panel.send('Page.bringToFront');
+  } catch {
+    evidence.panelFocusRequest = 'unavailable';
+  }
+  try {
+    return await readClipboard(panel);
+  } catch (error) {
+    evidence.clipboardReadDiagnostic = error.clipboardDiagnostic ?? { code: 'transport_error' };
+    if (
+      evidence.clipboardReadDiagnostic.code !== 'NotAllowedError' ||
+      !evidence.clipboardReadDiagnostic.focused ||
+      !evidence.clipboardReadDiagnostic.visible
+    )
+      return null;
+  }
+  // The permission changes only the owned browser's ability to inspect the
+  // clipboard. Copy all still receives a real trusted click and performs its
+  // own write; no fixture writes the expected export to the clipboard.
+  try {
+    await page.context().grantPermissions(['clipboard-read'], {
+      origin: new URL(panelTarget.url).origin,
+    });
+    evidence.clipboardReadPermissionForObservation = true;
+    return await readClipboard(panel);
+  } catch (error) {
+    evidence.clipboardReadAfterGrant =
+      error.clipboardDiagnostic?.code ?? 'grant_or_transport_error';
+    return null;
+  }
 }
 
 async function downloadFile(artifacts) {
@@ -387,11 +442,84 @@ async function verboseState(panel) {
   );
 }
 
-async function exercise({ page, panel, artifacts }) {
+async function naturalRediscoveryRows(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+      const search=document.querySelector('input[placeholder="Search…"]');
+      const list=search?.closest('div.flex.h-full.flex-col')?.lastElementChild;
+      return [...(list?.children??[])].map(row=>row.firstElementChild)
+        .filter(button=>button?.matches('button'))
+        .map(button=>[...button.children])
+        .filter(fields=>fields[2]?.textContent==='sidepanel' &&
+          fields[3]?.textContent==='desktop' &&
+          fields.at(-1)?.textContent?.startsWith('bridges: re-discover → '))
+        .map(fields=>fields.at(-1).textContent);
+    })()`,
+  );
+}
+
+async function probeNaturalConsoleMirror(panel, consoleMessages, enabled) {
+  const beforeRows = await naturalRediscoveryRows(panel);
+  const beforeConsole = consoleMessages.length;
+  await click(panel, 'button-text', 'Bridges');
+  await click(panel, 'button-text', 'Re-discover');
+  await waitFor(
+    'rediscovery_control_settled',
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+      const button=[...document.querySelectorAll('button')]
+        .find(item=>item.textContent.trim()==='Re-discover');
+      return !!button&&!button.disabled;
+    })()`,
+      ),
+    (ready) => ready === true,
+    15_000,
+  );
+  await click(panel, 'button-text', 'Log');
+  const rows = await waitFor(
+    'natural_rediscovery_log_row',
+    () => naturalRediscoveryRows(panel),
+    (found) => found.length > beforeRows.length,
+    10_000,
+  );
+  // The logger writes its console call synchronously before the matching UI
+  // row can be observed. A CDP evaluation on the same target is the fence.
+  await panel.send('Runtime.evaluate', { expression: '0', returnByValue: true });
+  const message = rows.at(-1);
+  const expected = `[matrx-extend][sidepanel/desktop] ${message}`;
+  const matching = consoleMessages.slice(beforeConsole).filter((item) => item === expected);
+  return {
+    verboseEnabled: enabled,
+    naturalRowObserved: true,
+    consoleMatches: matching.length,
+    eventSha256: createHash('sha256').update(expected).digest('hex'),
+  };
+}
+
+async function toggleVerbose(panel, current) {
+  await click(
+    panel,
+    'title',
+    current
+      ? 'DevTools console: everything (click for warnings + errors only)'
+      : 'DevTools console: warnings + errors only (click for everything)',
+  );
+  await waitFor(
+    'verbose_persisted',
+    () => verboseState(panel),
+    (value) => value?.enabled === !current && (current ? value.off : value.on) === 1,
+  );
+}
+
+async function exercise({ page, panel, panelTarget, artifacts }) {
   let priorClipboard;
   let exportedClipboard;
   let originalVerbose;
   let toggledVerbose = false;
+  let stopConsole;
   try {
     await signIn(page, panel);
     stage = 'debug_open';
@@ -455,11 +583,8 @@ async function exercise({ page, panel, artifacts }) {
         downloadExact: false,
       };
       stage = 'clipboard_snapshot';
-      try {
-        priorClipboard = await readClipboard(panel);
-      } catch {
-        exportEvidence.clipboardUnavailable = true;
-      }
+      priorClipboard = await observedClipboardSnapshot(page, panel, panelTarget, exportEvidence);
+      if (typeof priorClipboard !== 'string') exportEvidence.clipboardUnavailable = true;
       if (typeof priorClipboard === 'string') {
         stage = 'copy_filtered_rows';
         await click(panel, 'title', 'Copy all');
@@ -526,6 +651,29 @@ async function exercise({ page, panel, artifacts }) {
       afterToggleRows.visible === beforeToggleRows.visible &&
       afterToggleRows.total === beforeToggleRows.total &&
       JSON.stringify(await visibleRowSequence(panel)) === JSON.stringify(beforeToggleSequence);
+    stage = 'natural_console_mirroring';
+    await setSearch(panel, '');
+    await click(panel, 'title', 'Resume');
+    const consoleMessages = [];
+    stopConsole = panel.on('Runtime.consoleAPICalled', (event) => {
+      const message = event?.args?.[0]?.value;
+      if (
+        event?.type === 'log' &&
+        typeof message === 'string' &&
+        message.startsWith('[matrx-extend][sidepanel/desktop] bridges: re-discover → ')
+      )
+        consoleMessages.push(message);
+    });
+    await panel.send('Runtime.enable');
+    const consoleProbes = [];
+    consoleProbes.push(await probeNaturalConsoleMirror(panel, consoleMessages, !originalVerbose));
+    await toggleVerbose(panel, !originalVerbose);
+    consoleProbes.push(await probeNaturalConsoleMirror(panel, consoleMessages, originalVerbose));
+    await toggleVerbose(panel, originalVerbose);
+    const consoleMirroringObserved = consoleProbes.every(
+      (probe) =>
+        probe.naturalRowObserved && probe.consoleMatches === (probe.verboseEnabled ? 1 : 0),
+    );
     stage = 'verbose_real_reload';
     const loaderBefore = (await panel.send('Page.getFrameTree'))?.frameTree?.frame?.loaderId;
     if (!loaderBefore) fail('panel_loader_missing');
@@ -565,7 +713,8 @@ async function exercise({ page, panel, artifacts }) {
         realAdmin: true,
         persistedAfterRealReload: reloadedVerbose.enabled === !originalVerbose,
         visibleFeedSequenceUnchangedWhilePaused: feedUnchanged,
-        consoleMirroring: 'unverified_no_natural_level_matched_console_control',
+        consoleMirroring: consoleMirroringObserved ? 'observed_natural_info_gate' : 'unverified',
+        consoleProbes,
       },
     });
     report.status = report.cases.some((item) => item.status === 'fail')
@@ -574,6 +723,7 @@ async function exercise({ page, panel, artifacts }) {
         ? 'partial'
         : 'unverified';
   } finally {
+    stopConsole?.();
     if (toggledVerbose && typeof originalVerbose === 'boolean') {
       try {
         const current = await verboseState(panel);
