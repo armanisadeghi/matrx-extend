@@ -20,6 +20,7 @@
  */
 
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
+import { sanitizeNetworkUrl } from '@/lib/credentials/network-urls';
 import { urlMatchesPattern } from '@/lib/data-pattern/matcher';
 import { loadRecipes, recipesForUrl } from '@/lib/data-pattern/recipes';
 import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
@@ -76,7 +77,10 @@ const DataPatternsArgs = z
   });
 type DataPatternsArgs = z.infer<typeof DataPatternsArgs>;
 
-const preparedPatterns = new WeakMap<ToolContext, Awaited<ReturnType<typeof fetchPatternsForDomain>>[number]>();
+const preparedPatterns = new WeakMap<
+  ToolContext,
+  Awaited<ReturnType<typeof fetchPatternsForDomain>>[number]
+>();
 const preparedPages = new WeakMap<ToolContext, { url: string; documentId: string }>();
 const preparedSignals = new WeakMap<ToolContext, AbortSignal>();
 
@@ -111,28 +115,57 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
     const tab = await getAssignedTab(ctx);
     if (tab?.id == null || !tab.url) throw new Error('No assigned page to run on.');
     const patterns = await fetchPatternsForDomain(new URL(tab.url).host);
-    const pattern = patterns.find(p => p.id === args.pattern_id);
+    const pattern = patterns.find((p) => p.id === args.pattern_id);
     if (!pattern) throw new Error('The saved pattern no longer exists on this site.');
     if (pattern.kind !== 'network_capture') return null;
-    const [{ documentId } = {}] = await chrome.scripting.executeScript({ target: { tabId: tab.id }, func: () => null });
-    if (!documentId) throw new Error('Chrome did not provide source document identity. Run again in a supported Chrome version.');
-    const bytes = new TextEncoder().encode(JSON.stringify([pattern.id, pattern.kind, pattern.config, pattern.fields, pattern.list_root_selector, tab.id, tab.url, documentId]));
+    const [{ documentId } = {}] = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: () => null,
+    });
+    if (!documentId)
+      throw new Error(
+        'Chrome did not provide source document identity. Run again in a supported Chrome version.',
+      );
+    const bytes = new TextEncoder().encode(
+      JSON.stringify([
+        pattern.id,
+        pattern.kind,
+        pattern.config,
+        pattern.fields,
+        pattern.list_root_selector,
+        tab.id,
+        tab.url,
+        documentId,
+      ]),
+    );
     const digest = await crypto.subtle.digest('SHA-256', bytes);
-    const snapshotKey = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
+    const snapshotKey = Array.from(new Uint8Array(digest), (b) =>
+      b.toString(16).padStart(2, '0'),
+    ).join('');
     // Read capability policy from the existing canonical handler, not its approval identity.
     const { cdp_attach } = await import('./cdp');
     return {
-      snapshotKey, tier: 'privileged',
+      snapshotKey,
+      tier: 'privileged',
+      approvalPreview: { recipeName: pattern.name, pageUrl: sanitizeNetworkUrl(tab.url) },
       requirements: {
         ...(cdp_attach.admin_only !== undefined && { admin_only: cdp_attach.admin_only }),
-        ...(cdp_attach.required_optional_permissions && { required_optional_permissions: cdp_attach.required_optional_permissions }),
+        ...(cdp_attach.required_optional_permissions && {
+          required_optional_permissions: cdp_attach.required_optional_permissions,
+        }),
         ...(cdp_attach.supportedBrowsers && { supportedBrowsers: cdp_attach.supportedBrowsers }),
       },
-      run: async signal => {
-        preparedPatterns.set(ctx, pattern); preparedSignals.set(ctx, signal);
+      run: async (signal) => {
+        preparedPatterns.set(ctx, pattern);
+        preparedSignals.set(ctx, signal);
         preparedPages.set(ctx, { url: tab.url!, documentId });
-        try { return await data_patterns.run(args, ctx); }
-        finally { preparedPatterns.delete(ctx); preparedSignals.delete(ctx); preparedPages.delete(ctx); }
+        try {
+          return await data_patterns.run(args, ctx);
+        } finally {
+          preparedPatterns.delete(ctx);
+          preparedSignals.delete(ctx);
+          preparedPages.delete(ctx);
+        }
       },
     };
   },
@@ -218,12 +251,17 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
         const rows = await runSavedPattern(pattern, tabId, {
           onProgress: (note) => ctx.reportProgress?.(note),
           initiation: ctx.localInvocation ? 'user' : 'auto',
-          ...(prepared && { captureApproved: true, signal: preparedSignals.get(ctx)!, expectedPage: preparedPages.get(ctx)! }),
+          ...(prepared && {
+            captureApproved: true,
+            signal: preparedSignals.get(ctx)!,
+            expectedPage: preparedPages.get(ctx)!,
+          }),
         });
         if (!(await pageIsCurrent())) return pageChanged;
         const outcome = classifySavedRun(pattern, tab.url ?? '', rows);
-        if (!ctx.localInvocation && outcome.kind === 'matched') void bumpPatternRun(pattern.id, 'ok', rows.length);
-        const limit = ctx.localInvocation ? rows.length : args.rows_limit ?? DEFAULT_ROWS_LIMIT;
+        if (!ctx.localInvocation && outcome.kind === 'matched')
+          void bumpPatternRun(pattern.id, 'ok', rows.length);
+        const limit = ctx.localInvocation ? rows.length : (args.rows_limit ?? DEFAULT_ROWS_LIMIT);
         return {
           ok: true,
           outcome: outcome.kind,

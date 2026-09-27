@@ -386,21 +386,26 @@ function ToolDetail({
     });
     try {
       const runArgs = validated.data as { action?: string; pattern_id?: string };
-      const isSavedRun = handler.name === 'data_patterns' && runArgs.action === 'run' && runArgs.pattern_id;
-      const savedRunTab = isSavedRun ? await (await import('@/lib/chat/active-tab')).resolveActiveTab() : null;
+      const isSavedRun =
+        handler.name === 'data_patterns' && runArgs.action === 'run' && runArgs.pattern_id;
+      const savedRunTab = isSavedRun
+        ? await (await import('@/lib/chat/active-tab')).resolveActiveTab()
+        : null;
       if (isSavedRun && savedRunTab?.id == null) throw new Error('No active tab for saved replay.');
       const out = isSavedRun
-        ? await (await import('@/lib/data-pattern/document-network-transport')).openSavedPatternOperation(runArgs.pattern_id!, savedRunTab!.id!)
+        ? await (
+            await import('@/lib/data-pattern/document-network-transport')
+          ).openSavedPatternOperation(runArgs.pattern_id!, savedRunTab!.id!)
         : await handler.run(validated.data as never, {
-        conversationId: null,
-        runId: 'manual-test',
-        callId,
-        agentName: 'manual',
-        permissionMode: 'act',
-        // Tools-tab "Run" button targets whatever tab is currently
-        // focused — there is no agent assignment to honor here.
-        assignedTabId: null,
-      });
+            conversationId: null,
+            runId: 'manual-test',
+            callId,
+            agentName: 'manual',
+            permissionMode: 'act',
+            // Tools-tab "Run" button targets whatever tab is currently
+            // focused — there is no agent assignment to honor here.
+            assignedTabId: null,
+          });
       setResult(out);
       broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
         callId,

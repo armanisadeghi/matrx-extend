@@ -1,4 +1,3 @@
-import { SavedReplayApprovalHost } from '@/features/showcase/SavedReplayApprovalHost';
 import { AuthGate } from '@/components/AuthGate';
 import { NoticeHost } from '@/components/NoticeHost';
 import { PermissionPromptModal } from '@/components/PermissionPromptModal';
@@ -8,6 +7,7 @@ import { captureTabShortLabel } from '@/features/capture-ladder/queue-sentences'
 import { useCapturePickup } from '@/features/capture-ladder/use-capture-pickup';
 import { useNeedsYouCount } from '@/features/capture-ladder/use-needs-you-count';
 import { OrganizationPickerDialog } from '@/features/org/OrganizationPickerDialog';
+import { SavedReplayApprovalHost } from '@/features/showcase/SavedReplayApprovalHost';
 import { LocalBrowserApprovalHost } from '@/features/vault/LocalBrowserApprovalHost';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAgendaListener } from '@/hooks/use-agenda-listener';

@@ -96,10 +96,25 @@ vi.mock('@/lib/messaging/native', () => ({
   send: vi.fn(),
 }));
 vi.mock('@/lib/data-pattern/document-network-transport', () => ({
-  openDocumentNetworkCapture: (options: { captureId: string; onArmed?: () => void; onEvent: (event: unknown) => void }) => {
-    mocks.listeners.set('net-capture:event', event => options.onEvent({ ...(event as object), capture_id: options.captureId, document_key: 'reloaded-document' }));
-    mocks.captureArmed(); options.onArmed?.();
-    return Promise.resolve({ close: async () => { mocks.listeners.delete('net-capture:event'); } });
+  openDocumentNetworkCapture: (options: {
+    captureId: string;
+    onArmed?: () => void;
+    onEvent: (event: unknown) => void;
+  }) => {
+    mocks.listeners.set('net-capture:event', (event) =>
+      options.onEvent({
+        ...(event as object),
+        capture_id: options.captureId,
+        document_key: 'reloaded-document',
+      }),
+    );
+    mocks.captureArmed();
+    options.onArmed?.();
+    return Promise.resolve({
+      close: async () => {
+        mocks.listeners.delete('net-capture:event');
+      },
+    });
   },
 }));
 vi.mock('@/components/ui/json-tree', () => ({

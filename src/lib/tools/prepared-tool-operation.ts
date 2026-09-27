@@ -2,7 +2,7 @@
  * Only dispatcher-owned code constructs Boundary; no member crosses a port.
  * The approval identity is the real data_patterns call and immutable operation.
  */
-import type { ToolTier } from './types';
+import type { SavedNetworkReplayApproval, ToolTier } from './types';
 export interface OperationIdentity {
   toolName: string;
   callId: string;
@@ -13,6 +13,7 @@ export interface OperationIdentity {
 export interface PreparedOperation<T> {
   identity: OperationIdentity;
   tier: ToolTier;
+  approvalPreview?: SavedNetworkReplayApproval;
   /** Calls existing admin/browser/permission/Pilot checks with resolved policy. */
   checkRequirements(): Promise<void>;
   run(signal: AbortSignal): Promise<T>;
@@ -34,8 +35,13 @@ export interface DispatchBoundary<T> {
   recovered?: RecoveredApproval;
 }
 function same(a: OperationIdentity, b: OperationIdentity): boolean {
-  return a.toolName === b.toolName && a.callId === b.callId && a.runId === b.runId &&
-    a.assignedTabId === b.assignedTabId && a.snapshotKey === b.snapshotKey;
+  return (
+    a.toolName === b.toolName &&
+    a.callId === b.callId &&
+    a.runId === b.runId &&
+    a.assignedTabId === b.assignedTabId &&
+    a.snapshotKey === b.snapshotKey
+  );
 }
 function cancelled(signal: AbortSignal): void {
   if (signal.aborted) throw new Error('Saved replay was cancelled.');
@@ -45,16 +51,21 @@ export async function executePreparedOperation<T>(boundary: DispatchBoundary<T>)
   const operation = await boundary.prepare();
   await operation.checkRequirements();
   cancelled(boundary.signal);
-  const needsConfirm = operation.tier === 'privileged' ||
+  const needsConfirm =
+    operation.tier === 'privileged' ||
     (operation.tier === 'action' && boundary.permissionMode === 'ask');
   if (boundary.recovered) {
     const recovered = boundary.recovered;
-    if (recovered.delivery === 'local') throw new Error('The replay connection ended. Run the saved recipe again.');
+    if (recovered.delivery === 'local')
+      throw new Error('The replay connection ended. Run the saved recipe again.');
     if (recovered.expiresAt <= Date.now()) throw new Error('Approval timed out.');
     if (recovered.tier !== operation.tier || !same(recovered.identity, operation.identity)) {
       throw new Error('The saved recipe or source document changed since approval. Run it again.');
     }
-  } else if (needsConfirm && !(await boundary.confirm(operation.identity, operation.tier, boundary.signal))) {
+  } else if (
+    needsConfirm &&
+    !(await boundary.confirm(operation.identity, operation.tier, boundary.signal))
+  ) {
     throw new Error('User denied this action.');
   }
   cancelled(boundary.signal);

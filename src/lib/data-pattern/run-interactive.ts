@@ -20,8 +20,8 @@ import {
   agentExecutePath,
   mandateExecutePath,
 } from '@/lib/api/routes/ai';
-import { newId } from '@/lib/id';
 import { sanitizeNetworkUrl, transientCredentialFingerprint } from '@/lib/credentials/network-urls';
+import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import type { ExtractionPattern } from '@/lib/supabase/queries';
@@ -29,9 +29,9 @@ import type { ExtractionPattern } from '@/lib/supabase/queries';
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
 import { formatDurationMs } from '@ai-matrx/kit/format';
+import { openDocumentNetworkCapture } from './document-network-transport';
 import { aiExtractCapturePage } from './modes/ai-extract';
 import type { CapturedNetEvent } from './network-tap';
-import { openDocumentNetworkCapture } from './document-network-transport';
 import { runPattern } from './run-pattern';
 import type { ExtractedRow } from './types';
 
@@ -326,8 +326,15 @@ export async function runNetworkCapturePattern(
   tabId: number,
   opts: InteractiveRunOptions,
 ): Promise<ExtractedRow[]> {
-  const { url_filter, url_match, credential_query_keys, request_body_key, body_match, method, key_path } = (config ??
-    {}) as SavedNetConfig;
+  const {
+    url_filter,
+    url_match,
+    credential_query_keys,
+    request_body_key,
+    body_match,
+    method,
+    key_path,
+  } = (config ?? {}) as SavedNetConfig;
   if (!url_filter) {
     throw new Error('This network pattern has no url_filter — re-save it from the Network tab.');
   }
@@ -358,7 +365,9 @@ export async function runNetworkCapturePattern(
       for (const c of cleanup) c();
       if (!captureReady) captureAbort.abort();
       void (async () => {
-        try { await (await capture)?.close(); } catch (error) {
+        try {
+          await (await capture)?.close();
+        } catch (error) {
           reject(new NetworkNoMatchError(error instanceof Error ? error.message : String(error)));
           return;
         }
@@ -382,10 +391,13 @@ export async function runNetworkCapturePattern(
       });
     };
 
-    const consumeEvent = (event: CapturedNetEvent & { capture_id: string; document_key: string }) => {
+    const consumeEvent = (
+      event: CapturedNetEvent & { capture_id: string; document_key: string },
+    ) => {
       if (finished || event.capture_id !== captureId || !event.document_key) return { ack: true };
       if (event.tab_id !== tabId) return { ack: true };
-      if (!matchesUrlFilter(event.url, url_filter, url_match, credential_query_keys)) return { ack: true };
+      if (!matchesUrlFilter(event.url, url_filter, url_match, credential_query_keys))
+        return { ack: true };
       if (method && event.method.toUpperCase() !== method.toUpperCase()) return { ack: true };
       if (
         body_match !== 'ignore' &&
@@ -471,26 +483,48 @@ export async function runNetworkCapturePattern(
         if (latest) {
           concludeWithMatches();
         } else {
-          finish(() => reject(new NetworkNoMatchError(
-            `No successful request matching "${sanitizeNetworkUrl(url_filter, credential_query_keys)}" and the saved body identity was captured within ${formatDurationMs(windowMs, { style: 'long' })} of reloading. Run again and interact with the page (scroll or open the list) while it listens. Document-start interception was armed before reload; if the request needs an interaction, trigger it while capture listens.`,
-          )));
+          finish(() =>
+            reject(
+              new NetworkNoMatchError(
+                `No successful request matching "${sanitizeNetworkUrl(url_filter, credential_query_keys)}" and the saved body identity was captured within ${formatDurationMs(windowMs, { style: 'long' })} of reloading. Run again and interact with the page (scroll or open the list) while it listens. Document-start interception was armed before reload; if the request needs an interaction, trigger it while capture listens.`,
+              ),
+            ),
+          );
         }
       }, windowMs);
     };
-    cleanup.push(() => { if (windowTimer !== undefined) clearTimeout(windowTimer); });
+    cleanup.push(() => {
+      if (windowTimer !== undefined) clearTimeout(windowTimer);
+    });
 
-    const cancel = () => { captureAbort.abort(); finish(() => reject(new NetworkNoMatchError('Network replay was cancelled.'))); };
+    const cancel = () => {
+      captureAbort.abort();
+      finish(() => reject(new NetworkNoMatchError('Network replay was cancelled.')));
+    };
     opts.signal?.addEventListener('abort', cancel, { once: true });
     cleanup.push(() => opts.signal?.removeEventListener('abort', cancel));
     opts.onProgress?.('Preparing document-start capture before reloading…');
     capture = openDocumentNetworkCapture({
-      tabId, captureId, maxBodyBytes: opts.maxBodyBytes ?? 1_000_000, timeoutMs: windowMs,
-      signal: captureAbort.signal, onEvent: consumeEvent, onArmed: startWindow,
+      tabId,
+      captureId,
+      maxBodyBytes: opts.maxBodyBytes ?? 1_000_000,
+      timeoutMs: windowMs,
+      signal: captureAbort.signal,
+      onEvent: consumeEvent,
+      onArmed: startWindow,
       ...(opts.expectedPage && { expectedPage: opts.expectedPage }),
       onFailure: (error) => finish(() => reject(new NetworkNoMatchError(error.message))),
     });
-    void capture.then(() => { captureReady = true; if (!finished) opts.onProgress?.('Listening in the reloaded document…'); },
-      (error: unknown) => finish(() => reject(new NetworkNoMatchError(error instanceof Error ? error.message : String(error)))));
+    void capture.then(
+      () => {
+        captureReady = true;
+        if (!finished) opts.onProgress?.('Listening in the reloaded document…');
+      },
+      (error: unknown) =>
+        finish(() =>
+          reject(new NetworkNoMatchError(error instanceof Error ? error.message : String(error))),
+        ),
+    );
     if (opts.signal?.aborted) cancel();
   });
 }
@@ -508,9 +542,15 @@ export async function runSavedPattern(
   if (pattern.kind === 'network_capture') {
     if (!opts.captureApproved) {
       const { openSavedPatternOperation } = await import('./document-network-transport');
-      const result = await openSavedPatternOperation(pattern.id, tabId, opts) as { ok: boolean; rows?: ExtractedRow[]; reason?: string; retryable?: boolean };
+      const result = (await openSavedPatternOperation(pattern.id, tabId, opts)) as {
+        ok: boolean;
+        rows?: ExtractedRow[];
+        reason?: string;
+        retryable?: boolean;
+      };
       if (!result.ok) {
-        if (result.retryable) throw new NetworkNoMatchError(result.reason ?? 'Replay did not match.');
+        if (result.retryable)
+          throw new NetworkNoMatchError(result.reason ?? 'Replay did not match.');
         throw new Error(result.reason ?? 'Saved replay failed.');
       }
       return result.rows ?? [];

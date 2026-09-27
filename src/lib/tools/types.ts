@@ -62,8 +62,19 @@ export interface ToolProgressUpdate {
 export interface PreparedToolCall {
   snapshotKey: string;
   tier: ToolTier;
-  requirements: { admin_only?: boolean; required_optional_permissions?: string[]; supportedBrowsers?: BrowserSet };
+  approvalPreview?: SavedNetworkReplayApproval;
+  requirements: {
+    admin_only?: boolean;
+    required_optional_permissions?: string[];
+    supportedBrowsers?: BrowserSet;
+  };
   run(signal: AbortSignal): Promise<unknown>;
+}
+
+/** Context shown on the privileged saved Network approval, never used as authority. */
+export interface SavedNetworkReplayApproval {
+  recipeName: string;
+  pageUrl: string;
 }
 
 export interface ToolContext {
@@ -204,6 +215,7 @@ export interface PendingConfirmRequest {
    * name + args.
    */
   description?: string | undefined;
+  approvalPreview?: SavedNetworkReplayApproval;
   /** Args the agent supplied — surfaced verbatim so the user sees what's about to happen. */
   args: unknown;
   /**

@@ -1,7 +1,10 @@
 import { type CapturedNetEvent, networkTapMain } from '@/lib/data-pattern/network-tap';
 import { runNetworkCapturePattern } from '@/lib/data-pattern/run-interactive';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-const bus = vi.hoisted(() => ({ listener: null as null | ((event: CapturedNetEvent) => unknown), close: vi.fn() }));
+const bus = vi.hoisted(() => ({
+  listener: null as null | ((event: CapturedNetEvent) => unknown),
+  close: vi.fn(),
+}));
 vi.mock('@/lib/messaging/native', () => ({
   on: (_channel: string, fn: (event: CapturedNetEvent) => unknown) => {
     bus.listener = fn;
@@ -12,10 +15,24 @@ vi.mock('@/lib/messaging/native', () => ({
   send: vi.fn(),
 }));
 vi.mock('@/lib/data-pattern/document-network-transport', () => ({
-  openDocumentNetworkCapture: (options: { captureId: string; onArmed?: () => void; onEvent: (event: CapturedNetEvent & { capture_id: string; document_key: string }) => void }) => {
-    bus.listener = event => options.onEvent({ ...event, capture_id: options.captureId, document_key: 'reloaded-document' });
+  openDocumentNetworkCapture: (options: {
+    captureId: string;
+    onArmed?: () => void;
+    onEvent: (event: CapturedNetEvent & { capture_id: string; document_key: string }) => void;
+  }) => {
+    bus.listener = (event) =>
+      options.onEvent({
+        ...event,
+        capture_id: options.captureId,
+        document_key: 'reloaded-document',
+      });
     options.onArmed?.();
-    return Promise.resolve({ close: async () => { bus.listener = null; bus.close(); } });
+    return Promise.resolve({
+      close: async () => {
+        bus.listener = null;
+        bus.close();
+      },
+    });
   },
 }));
 const originalFetch = window.fetch;

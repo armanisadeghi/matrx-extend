@@ -22,7 +22,7 @@ import { useMemo, useState } from 'react';
  * their own assistant asked for it.
  */
 const EXTERNAL_INITIATOR_LABELS: Partial<Record<ConfirmInitiator, string>> = {
-  extension: "Your saved recipe",
+  extension: 'Your saved recipe',
   page: 'Requested by the web page you have open — NOT by your agent.',
   frontend: 'Requested by aimatrx.com — NOT by your agent in this chat.',
   desktop: 'Requested by the Matrx desktop app — NOT by your agent in this chat.',
@@ -85,7 +85,7 @@ export function AgentApprovalCard({
           </div>
           {req.description ? (
             <div className="mt-0.5 text-xs text-muted-foreground">{req.description}</div>
-          ) : (
+          ) : !req.approvalPreview ? (
             // No live description (DB cache cold / offline / RLS hiccup) —
             // say so explicitly rather than silently omitting it. Approving
             // a privileged tool on name alone is blind approval (audit
@@ -93,9 +93,20 @@ export function AgentApprovalCard({
             <div className="mt-0.5 text-xs italic text-amber-700 dark:text-amber-400">
               Description unavailable (offline?) — review the arguments below carefully.
             </div>
-          )}
+          ) : null}
         </div>
       </div>
+
+      {req.approvalPreview && (
+        <div className="mt-2 rounded-md border border-amber-300/70 bg-background/60 p-2 text-xs dark:border-amber-700/60">
+          <div className="font-medium">Saved Network recipe: {req.approvalPreview.recipeName}</div>
+          <div className="mt-1 break-all">Page: {req.approvalPreview.pageUrl}</div>
+          <div className="mt-1">
+            Allowing this uses Chrome debugger, reloads this page, and captures matching Network
+            responses.
+          </div>
+        </div>
+      )}
 
       {desktopCommand && (
         <div className="mt-2 rounded-md border border-rose-300/70 bg-rose-50/60 p-2 dark:border-rose-700/60 dark:bg-rose-950/30">

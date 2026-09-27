@@ -312,16 +312,18 @@ export async function acquireSession(tabId: number) {
   let released = false;
   return {
     async send<T = unknown>(method: string, params?: Record<string, unknown>): Promise<T> {
-      if (released || leases.get(tabId) !== leaseState || !attachedTabs.has(tabId)) throw new Error('The debugger capture was detached.');
+      if (released || leases.get(tabId) !== leaseState || !attachedTabs.has(tabId))
+        throw new Error('The debugger capture was detached.');
       touchIdleTimer(tabId);
-      return await chrome.debugger.sendCommand({ tabId }, method, params) as T;
+      return (await chrome.debugger.sendCommand({ tabId }, method, params)) as T;
     },
     async release(): Promise<void> {
       if (released) return;
       released = true;
       if (--leaseState.count !== 0 || leases.get(tabId) !== leaseState) return;
       leases.delete(tabId);
-      if (leaseState.detachWhenUnused && !retainedTabs.has(tabId) && attachedTabs.has(tabId)) await detach(tabId);
+      if (leaseState.detachWhenUnused && !retainedTabs.has(tabId) && attachedTabs.has(tabId))
+        await detach(tabId);
     },
   };
 }
@@ -332,32 +334,36 @@ export async function detach(tabId: number): Promise<{ ok: boolean; reason?: str
   attachedTabs.delete(tabId);
   leases.delete(tabId);
   const detaching = (async () => {
-  retainedTabs.delete(tabId);
-  const timer = idleTimers.get(tabId);
-  if (timer) {
-    clearTimeout(timer);
-    idleTimers.delete(tabId);
-  }
-  try {
-    await chrome.debugger.detach({ tabId });
-    attachedTabs.delete(tabId);
-    networkBuffers.delete(tabId);
-    networkRequests.delete(tabId);
-    // Console buffers too (audit P2-7) — they held captured page output
-    // (request bodies, auth headers, console text) keyed only by tabId,
-    // drainable by a LATER conversation on the same tab.
-    consoleBuffers.delete(tabId);
-    return { ok: true };
-  } catch (err) {
-    attachedTabs.delete(tabId);
-    networkBuffers.delete(tabId);
-    networkRequests.delete(tabId);
-    consoleBuffers.delete(tabId);
-    return { ok: false, reason: (err as Error).message ?? String(err) };
-  }
+    retainedTabs.delete(tabId);
+    const timer = idleTimers.get(tabId);
+    if (timer) {
+      clearTimeout(timer);
+      idleTimers.delete(tabId);
+    }
+    try {
+      await chrome.debugger.detach({ tabId });
+      attachedTabs.delete(tabId);
+      networkBuffers.delete(tabId);
+      networkRequests.delete(tabId);
+      // Console buffers too (audit P2-7) — they held captured page output
+      // (request bodies, auth headers, console text) keyed only by tabId,
+      // drainable by a LATER conversation on the same tab.
+      consoleBuffers.delete(tabId);
+      return { ok: true };
+    } catch (err) {
+      attachedTabs.delete(tabId);
+      networkBuffers.delete(tabId);
+      networkRequests.delete(tabId);
+      consoleBuffers.delete(tabId);
+      return { ok: false, reason: (err as Error).message ?? String(err) };
+    }
   })();
   detachPending.set(tabId, detaching);
-  try { return await detaching; } finally { detachPending.delete(tabId); }
+  try {
+    return await detaching;
+  } finally {
+    detachPending.delete(tabId);
+  }
 }
 
 export async function send<T = unknown>(

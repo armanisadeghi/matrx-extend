@@ -36,7 +36,8 @@ export interface CapturedNetEvent {
  * Runs in MAIN world. Patches fetch + XMLHttpRequest. Idempotent — uses a
  * sentinel on window to avoid double-patching if executed multiple times.
  */
-export function networkTapMain(maxBodyBytes = 1_000_000, bindingName?: string): void {
+export function networkTapMain(maxBodyBytes = 1_000_000, initialBindingName?: string): void {
+  let bindingName = initialBindingName;
   const SENTINEL = '__matrx_net_tap_installed__';
   type W = Window & { [K in typeof SENTINEL]?: { manual: boolean } };
   const w = window as W;
@@ -56,7 +57,8 @@ export function networkTapMain(maxBodyBytes = 1_000_000, bindingName?: string): 
       }
       // A saved privileged capture has no page-message recipient. Only an
       // explicitly started manual capture may use the legacy isolated relay.
-      if (w[SENTINEL]?.manual) window.postMessage({ __matrx_net: true, event }, window.location.origin);
+      if (w[SENTINEL]?.manual)
+        window.postMessage({ __matrx_net: true, event }, window.location.origin);
     } catch {
       // ignore
     }
@@ -167,7 +169,7 @@ export function networkTapMain(maxBodyBytes = 1_000_000, bindingName?: string): 
 
   // ── fetch patch ─────────────────────────────────────────────────────────
   const origFetch = window.fetch;
-  const patchedFetch: typeof window.fetch = async function (...args) {
+  const patchedFetch: typeof window.fetch = async (...args) => {
     const t0 = Date.now();
     const sequence = ++requestSequence;
     const input = args[0];
@@ -296,7 +298,9 @@ export function networkTapMain(maxBodyBytes = 1_000_000, bindingName?: string): 
           body: t.body,
           body_truncated: t.truncated,
           body_size: t.sizeBytes,
-          content_type: bindingName ? xhr.getResponseHeader('content-type') : responseHeaders['content-type'],
+          content_type: bindingName
+            ? xhr.getResponseHeader('content-type')
+            : responseHeaders['content-type'],
         });
       } catch {
         // ignore
@@ -309,18 +313,22 @@ export function networkTapMain(maxBodyBytes = 1_000_000, bindingName?: string): 
     PatchedXHR as unknown as typeof XMLHttpRequest;
   if (bindingName) {
     const cleanupKey = `${bindingName}_cleanup`;
-    Object.defineProperty(window, cleanupKey, { configurable: true, value: () => {
-      if (w[SENTINEL]?.manual) {
-        bindingName = undefined;
+    Object.defineProperty(window, cleanupKey, {
+      configurable: true,
+      value: () => {
+        if (w[SENTINEL]?.manual) {
+          bindingName = undefined;
+          delete (window as unknown as Record<string, unknown>)[cleanupKey];
+          return;
+        }
+        active = false;
+        if (window.fetch === patchedFetch) window.fetch = origFetch;
+        if (window.XMLHttpRequest === (PatchedXHR as unknown as typeof XMLHttpRequest))
+          window.XMLHttpRequest = OrigXHR;
+        delete w[SENTINEL];
         delete (window as unknown as Record<string, unknown>)[cleanupKey];
-        return;
-      }
-      active = false;
-      if (window.fetch === patchedFetch) window.fetch = origFetch;
-      if (window.XMLHttpRequest === (PatchedXHR as unknown as typeof XMLHttpRequest)) window.XMLHttpRequest = OrigXHR;
-      delete w[SENTINEL];
-      delete (window as unknown as Record<string, unknown>)[cleanupKey];
-    } });
+      },
+    });
   }
 }
 

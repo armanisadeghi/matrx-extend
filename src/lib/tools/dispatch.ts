@@ -1,5 +1,9 @@
-import { executePreparedOperation, type PreparedOperation, type RecoveredApproval } from './prepared-tool-operation';
 import { resolveToolTier } from '@/lib/tools/tier-policy';
+import {
+  type PreparedOperation,
+  type RecoveredApproval,
+  executePreparedOperation,
+} from './prepared-tool-operation';
 /**
  * SW-side tool dispatcher.
  *
@@ -31,8 +35,8 @@ import { postToolResults } from '@/lib/api/routes/tool-results';
 import { appendReceipt, recordAuditFailure } from '@/lib/audit/log';
 import { PENDING_OUTPUT, type ReceiptOrigin, buildReceipt } from '@/lib/audit/receipt';
 import { readIsAdminFromStorage } from '@/lib/auth/is-admin';
-import { sanitizeNetworkToolSaveArgs } from '@/lib/credentials/network-urls';
 import { BROWSER, isBrowserSupported } from '@/lib/browser/detect';
+import { sanitizeNetworkToolSaveArgs } from '@/lib/credentials/network-urls';
 import { log } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -61,6 +65,7 @@ import type {
   ConfirmInitiator,
   ConfirmResponse,
   PendingConfirmRequest,
+  SavedNetworkReplayApproval,
   ToolContext,
   ToolTier,
 } from '@/lib/tools/types';
@@ -691,7 +696,7 @@ async function postUnknownToolError(
 
 async function handleCall(
   handler: AnyToolHandler,
-  rawArgs: unknown,
+  inputArgs: unknown,
   ctx: ToolContext,
   meta: RunMeta | undefined,
   gateOpts: {
@@ -707,7 +712,7 @@ async function handleCall(
 ): Promise<void> {
   // Normalize credential-bearing Network saves before any durable observer.
   // This includes timeline, approval storage, recording, and signed receipts.
-  rawArgs = sanitizeNetworkToolSaveArgs(handler.name, rawArgs);
+  const rawArgs = sanitizeNetworkToolSaveArgs(handler.name, inputArgs);
   const startedAt = Date.now();
   log.info('sw', `tool ${handler.name} call_id=${ctx.callId}`, rawArgs);
   broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
@@ -751,92 +756,95 @@ async function handleCall(
   }
 
   let prepared: PreparedOperation<unknown> | null;
-  try { prepared = await prepareOperation(handler, parsed.data, ctx); }
-  catch (error) { return fail(error instanceof Error ? error.message : String(error)); }
+  try {
+    prepared = await prepareOperation(handler, parsed.data, ctx);
+  } catch (error) {
+    return fail(error instanceof Error ? error.message : String(error));
+  }
   if (!prepared) {
-  // Admin gate — enforced at EXECUTION time, not just advertisement time.
-  // Advertisement filtering (`visible()` in registry.ts + the server-side
-  // discovery handler reading the self-reported `is_admin`) decides what the
-  // model SEES; this gate decides what actually RUNS. Without it, a server
-  // bug / stale toolset / confused agent delegating an admin tool to a
-  // non-admin would execute it — the client both computed and self-reported
-  // its own admin status with no local backstop. Fail-closed: storage errors
-  // read as not-admin. See docs/AUDIT_2026_06_10.md P0-2.
-  if (handler.admin_only) {
-    const isAdmin = await readIsAdminFromStorage();
-    if (!isAdmin) {
+    // Admin gate — enforced at EXECUTION time, not just advertisement time.
+    // Advertisement filtering (`visible()` in registry.ts + the server-side
+    // discovery handler reading the self-reported `is_admin`) decides what the
+    // model SEES; this gate decides what actually RUNS. Without it, a server
+    // bug / stale toolset / confused agent delegating an admin tool to a
+    // non-admin would execute it — the client both computed and self-reported
+    // its own admin status with no local backstop. Fail-closed: storage errors
+    // read as not-admin. See docs/AUDIT_2026_06_10.md P0-2.
+    if (handler.admin_only) {
+      const isAdmin = await readIsAdminFromStorage();
+      if (!isAdmin) {
+        return fail(
+          `admin_only: tool '${handler.name}' is restricted to admin accounts and cannot run for this user.`,
+        );
+      }
+    }
+
+    // Browser-support gate. Defense-in-depth — registry filters already drop
+    // unsupported tools from advertised bundles, but if a stale catalog ever
+    // re-advertises (e.g. after a server-side cache lag), reject cleanly here
+    // instead of crashing inside a Chrome-only API call.
+    if (!isBrowserSupported(handler.supportedBrowsers)) {
       return fail(
-        `admin_only: tool '${handler.name}' is restricted to admin accounts and cannot run for this user.`,
+        `tool '${handler.name}' is not supported on ${BROWSER}. Supported browsers: ${(handler.supportedBrowsers ?? []).join(', ') || 'none'}.`,
       );
     }
-  }
 
-  // Browser-support gate. Defense-in-depth — registry filters already drop
-  // unsupported tools from advertised bundles, but if a stale catalog ever
-  // re-advertises (e.g. after a server-side cache lag), reject cleanly here
-  // instead of crashing inside a Chrome-only API call.
-  if (!isBrowserSupported(handler.supportedBrowsers)) {
-    return fail(
-      `tool '${handler.name}' is not supported on ${BROWSER}. Supported browsers: ${(handler.supportedBrowsers ?? []).join(', ') || 'none'}.`,
-    );
-  }
-
-  // Optional-permission gate. Tools that depend on optional Chrome
-  // permissions (e.g. `cookies`, `pageCapture`, `tabCapture`) declare
-  // `required_optional_permissions`. The dispatcher itself can't request
-  // them — `chrome.permissions.request` requires a user gesture which
-  // the SW context lacks — so when the perm isn't granted yet we return
-  // a structured error that GUIDES the agent to ask the user, with
-  // enough detail that the next agent turn can call `user` with the
-  // exact remediation. The user-facing prompt happens through that path
-  // (or via the in-app toggle in Settings → Advanced), never by us
-  // refusing them outright.
-  if (handler.required_optional_permissions?.length) {
-    const granted = await hasOptionalPermissions(
-      handler.required_optional_permissions as OptionalPermission[],
-    );
-    if (!granted) {
-      const perms = handler.required_optional_permissions.join(', ');
-      return fail(
-        `permission_not_yet_granted: this tool needs Chrome permission(s) [${perms}]. ${missingPermissionRemedy(handler.required_optional_permissions)}`,
+    // Optional-permission gate. Tools that depend on optional Chrome
+    // permissions (e.g. `cookies`, `pageCapture`, `tabCapture`) declare
+    // `required_optional_permissions`. The dispatcher itself can't request
+    // them — `chrome.permissions.request` requires a user gesture which
+    // the SW context lacks — so when the perm isn't granted yet we return
+    // a structured error that GUIDES the agent to ask the user, with
+    // enough detail that the next agent turn can call `user` with the
+    // exact remediation. The user-facing prompt happens through that path
+    // (or via the in-app toggle in Settings → Advanced), never by us
+    // refusing them outright.
+    if (handler.required_optional_permissions?.length) {
+      const granted = await hasOptionalPermissions(
+        handler.required_optional_permissions as OptionalPermission[],
       );
+      if (!granted) {
+        const perms = handler.required_optional_permissions.join(', ');
+        return fail(
+          `permission_not_yet_granted: this tool needs Chrome permission(s) [${perms}]. ${missingPermissionRemedy(handler.required_optional_permissions)}`,
+        );
+      }
     }
-  }
 
-  // Effective tier — mega-tool routers (computer, tabs, …) declare a
-  // `tierFor(args)` so a `screenshot` sub-action can be 'read' while
-  // `left_click` stays 'action' under the same tool name. Resolved BEFORE
-  // the pilot gate so both the sandbox and the confirm card see the tier
-  // of THIS call, not the catalog default.
-  const effectiveTier = resolveToolTier(handler, parsed.data);
+    // Effective tier — mega-tool routers (computer, tabs, …) declare a
+    // `tierFor(args)` so a `screenshot` sub-action can be 'read' while
+    // `left_click` stays 'action' under the same tool name. Resolved BEFORE
+    // the pilot gate so both the sandbox and the confirm card see the tier
+    // of THIS call, not the catalog default.
+    const effectiveTier = resolveToolTier(handler, parsed.data);
 
-  // Pilot group sandbox (roadmap item #9). When a Pilot session is active
-  // every action-tier (or privileged) tool MUST target a tab that lives
-  // inside the session's tab group. The Pilot surface advertises the full
-  // read+action+ask kit; without this gate, an action call from a Pilot
-  // run could mutate the user's unrelated work tabs.
-  //
-  // Read-tier tools are allowed everywhere — they don't mutate state, and
-  // restricting them would block introspection (e.g. the agent reading a
-  // reference page outside the group to inform an action inside it).
-  const pilotErr = await enforcePilotGroupScope(ctx, parsed.data, effectiveTier);
-  if (pilotErr) {
-    return fail(pilotErr);
-  }
-
-  // Permission gate.
-  const needsConfirm =
-    effectiveTier === 'privileged' || (effectiveTier === 'action' && ctx.permissionMode === 'ask');
-  if (needsConfirm && !gateOpts.preApproved) {
-    const allowed = await requestConfirmation(handler, parsed.data, ctx, meta, {
-      effectiveTier,
-      initiator: 'agent',
-    });
-    if (!allowed.allow) {
-      return fail(allowed.reason ?? 'User denied this action');
+    // Pilot group sandbox (roadmap item #9). When a Pilot session is active
+    // every action-tier (or privileged) tool MUST target a tab that lives
+    // inside the session's tab group. The Pilot surface advertises the full
+    // read+action+ask kit; without this gate, an action call from a Pilot
+    // run could mutate the user's unrelated work tabs.
+    //
+    // Read-tier tools are allowed everywhere — they don't mutate state, and
+    // restricting them would block introspection (e.g. the agent reading a
+    // reference page outside the group to inform an action inside it).
+    const pilotErr = await enforcePilotGroupScope(ctx, parsed.data, effectiveTier);
+    if (pilotErr) {
+      return fail(pilotErr);
     }
-  }
 
+    // Permission gate.
+    const needsConfirm =
+      effectiveTier === 'privileged' ||
+      (effectiveTier === 'action' && ctx.permissionMode === 'ask');
+    if (needsConfirm && !gateOpts.preApproved) {
+      const allowed = await requestConfirmation(handler, parsed.data, ctx, meta, {
+        effectiveTier,
+        initiator: 'agent',
+      });
+      if (!allowed.allow) {
+        return fail(allowed.reason ?? 'User denied this action');
+      }
+    }
   }
 
   // Wire incremental progress emission for long-running handlers. Optional —
@@ -858,7 +866,17 @@ async function handleCall(
   // Run.
   let result: unknown;
   try {
-    result = prepared ? await runPrepared(handler, parsed.data, ctx, meta, prepared, new AbortController().signal, gateOpts.recoveredOperation) : await handler.run(parsed.data as never, ctx);
+    result = prepared
+      ? await runPrepared(
+          handler,
+          parsed.data,
+          ctx,
+          meta,
+          prepared,
+          new AbortController().signal,
+          gateOpts.recoveredOperation,
+        )
+      : await handler.run(parsed.data as never, ctx);
   } catch (err) {
     return fail((err as Error)?.message ?? String(err));
   }
@@ -1111,7 +1129,16 @@ async function requestConfirmation(
   args: unknown,
   ctx: ToolContext,
   meta: RunMeta | undefined,
-  opts: { effectiveTier: ToolTier; initiator: ConfirmInitiator; signal?: AbortSignal; preparedOperation?: { snapshotKey: string; delivery: 'agent' | 'local' } },
+  opts: {
+    effectiveTier: ToolTier;
+    initiator: ConfirmInitiator;
+    signal?: AbortSignal;
+    preparedOperation?: {
+      snapshotKey: string;
+      delivery: 'agent' | 'local';
+      approvalPreview?: SavedNetworkReplayApproval;
+    };
+  },
 ): Promise<ConfirmResult> {
   // Auto-allow if user has trusted this domain for the conversation.
   // (Domain trust is opportunistic — only meaningful if args has a `url`.)
@@ -1161,7 +1188,8 @@ async function requestConfirmation(
   });
 
   if (opts.signal?.aborted) {
-    liveConfirmWaiters.delete(ctx.callId); await removePendingConfirm(ctx.callId);
+    liveConfirmWaiters.delete(ctx.callId);
+    await removePendingConfirm(ctx.callId);
     return { allow: false, reason: 'Replay cancelled.' };
   }
   return new Promise<ConfirmResult>((resolve) => {
@@ -1207,7 +1235,10 @@ async function requestConfirmation(
       finish({ allow: false, reason: 'Replay cancelled.' });
     };
     opts.signal?.addEventListener('abort', abort, { once: true });
-    if (opts.signal?.aborted) { abort(); return; }
+    if (opts.signal?.aborted) {
+      abort();
+      return;
+    }
     const req: PendingConfirmRequest = {
       callId: ctx.callId,
       conversationId: ctx.conversationId,
@@ -1215,6 +1246,9 @@ async function requestConfirmation(
       // Live from the DB (tool_def), never hardcoded — undefined until the
       // cache warms, in which case the card falls back to name + args. (Rule 4.)
       description: getToolDescription(handler.name),
+      ...(opts.preparedOperation?.approvalPreview && {
+        approvalPreview: opts.preparedOperation.approvalPreview,
+      }),
       args,
       // The tier of THIS call (tierFor-resolved) so a privileged sub-action
       // of an action-catalog router renders its privileged badge.
@@ -1235,7 +1269,10 @@ async function recoverPersistedConfirm(payload: ConfirmResponse): Promise<void> 
   const rec = await takePendingConfirm(payload.callId);
   if (!rec) return; // never persisted, or already claimed — nothing to do
   if (rec.preparedOperation?.delivery === 'local') {
-    broadcast(CHANNELS.TOOL_CONFIRM_EXPIRED, { callId: rec.callId, reason: 'The replay connection ended. Run again.' });
+    broadcast(CHANNELS.TOOL_CONFIRM_EXPIRED, {
+      callId: rec.callId,
+      reason: 'The replay connection ended. Run again.',
+    });
     return;
   }
   const handler = lookupTool(rec.toolName);
@@ -1281,10 +1318,20 @@ async function recoverPersistedConfirm(payload: ConfirmResponse): Promise<void> 
   }
   await handleCall(handler, rec.args, ctx, meta, {
     preApproved: true,
-    ...(rec.preparedOperation && { recoveredOperation: {
-      identity: { toolName: rec.toolName, callId: rec.callId, runId: rec.runId, assignedTabId: rec.assignedTabId!, snapshotKey: rec.preparedOperation.snapshotKey },
-      tier: rec.effectiveTier, delivery: rec.preparedOperation.delivery, expiresAt: rec.expiresAt,
-    } }),
+    ...(rec.preparedOperation && {
+      recoveredOperation: {
+        identity: {
+          toolName: rec.toolName,
+          callId: rec.callId,
+          runId: rec.runId,
+          assignedTabId: rec.assignedTabId!,
+          snapshotKey: rec.preparedOperation.snapshotKey,
+        },
+        tier: rec.effectiveTier,
+        delivery: rec.preparedOperation.delivery,
+        expiresAt: rec.expiresAt,
+      },
+    }),
   });
 }
 
@@ -1432,7 +1479,10 @@ export async function handleWebmcpCall(
   try {
     observedArgs = sanitizeNetworkToolSaveArgs(handler.name, args);
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : 'Invalid Network capture recipe.' };
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : 'Invalid Network capture recipe.',
+    };
   }
   const parsed = handler.argsSchema.safeParse(observedArgs);
   if (!parsed.success) {
@@ -1620,51 +1670,109 @@ async function detectOrigin(ctx: ToolContext): Promise<ReceiptOrigin> {
 }
 
 /** Existing policy gates reused by prepared operation and local saved-run entry. */
-async function checkOperationRequirements(handler: AnyToolHandler, args: unknown, ctx: ToolContext, tier: ToolTier): Promise<void> {
-  if (handler.admin_only && !(await readIsAdminFromStorage())) throw new Error('admin_only: debugger capture requires an admin account.');
-  if (!isBrowserSupported(handler.supportedBrowsers)) throw new Error('Debugger capture is unavailable in this browser.');
-  if (handler.required_optional_permissions?.length && !(await hasOptionalPermissions(handler.required_optional_permissions as OptionalPermission[]))) {
+async function checkOperationRequirements(
+  handler: AnyToolHandler,
+  args: unknown,
+  ctx: ToolContext,
+  tier: ToolTier,
+): Promise<void> {
+  if (handler.admin_only && !(await readIsAdminFromStorage()))
+    throw new Error('admin_only: debugger capture requires an admin account.');
+  if (!isBrowserSupported(handler.supportedBrowsers))
+    throw new Error('Debugger capture is unavailable in this browser.');
+  if (
+    handler.required_optional_permissions?.length &&
+    !(await hasOptionalPermissions(handler.required_optional_permissions as OptionalPermission[]))
+  ) {
     throw new Error(missingPermissionRemedy(handler.required_optional_permissions));
   }
   const error = await enforcePilotGroupScope(ctx, args, tier);
   if (error) throw new Error(error);
 }
-async function prepareOperation(handler: AnyToolHandler, args: unknown, ctx: ToolContext): Promise<PreparedOperation<unknown> | null> {
+async function prepareOperation(
+  handler: AnyToolHandler,
+  args: unknown,
+  ctx: ToolContext,
+): Promise<PreparedOperation<unknown> | null> {
   const prepared = await handler.prepare?.(args, ctx);
   if (!prepared) return null;
   if (ctx.assignedTabId == null) throw new Error('No assigned tab for prepared operation.');
   const policy = { ...handler, ...prepared.requirements };
   return {
-    identity: { toolName: handler.name, callId: ctx.callId, runId: ctx.runId, assignedTabId: ctx.assignedTabId, snapshotKey: prepared.snapshotKey },
+    identity: {
+      toolName: handler.name,
+      callId: ctx.callId,
+      runId: ctx.runId,
+      assignedTabId: ctx.assignedTabId,
+      snapshotKey: prepared.snapshotKey,
+    },
     tier: prepared.tier,
+    ...(prepared.approvalPreview && { approvalPreview: prepared.approvalPreview }),
     checkRequirements: () => checkOperationRequirements(policy, args, ctx, prepared.tier),
     run: prepared.run,
   };
 }
-async function runPrepared(handler: AnyToolHandler, args: unknown, ctx: ToolContext, meta: RunMeta | undefined, first: PreparedOperation<unknown>, signal: AbortSignal, recovered?: RecoveredApproval): Promise<unknown> {
+async function runPrepared(
+  handler: AnyToolHandler,
+  args: unknown,
+  ctx: ToolContext,
+  meta: RunMeta | undefined,
+  first: PreparedOperation<unknown>,
+  signal: AbortSignal,
+  recovered?: RecoveredApproval,
+): Promise<unknown> {
   let initial = true;
   return executePreparedOperation({
-    permissionMode: ctx.permissionMode, signal,
+    permissionMode: ctx.permissionMode,
+    signal,
     ...(recovered && { recovered }),
     prepare: async () => {
-      if (initial) { initial = false; return first; }
+      if (initial) {
+        initial = false;
+        return first;
+      }
       const next = await prepareOperation(handler, args, ctx);
       if (!next) throw new Error('The saved recipe changed while awaiting approval. Run again.');
       return next;
     },
-    confirm: async (identity, tier, abortSignal) => (await requestConfirmation(handler, args, ctx, meta, {
-      effectiveTier: tier, initiator: ctx.localInvocation ? 'extension' : 'agent', signal: abortSignal,
-      preparedOperation: { snapshotKey: identity.snapshotKey, delivery: ctx.localInvocation ? 'local' : 'agent' },
-    })).allow,
+    confirm: async (identity, tier, abortSignal) =>
+      (
+        await requestConfirmation(handler, args, ctx, meta, {
+          effectiveTier: tier,
+          initiator: ctx.localInvocation ? 'extension' : 'agent',
+          signal: abortSignal,
+          preparedOperation: {
+            snapshotKey: identity.snapshotKey,
+            delivery: ctx.localInvocation ? 'local' : 'agent',
+            ...(first.approvalPreview && { approvalPreview: first.approvalPreview }),
+          },
+        })
+      ).allow,
   });
 }
 /** Called only by the authenticated saved-operation port host, never by page payload. */
-export async function runLocalSavedPattern(patternId: string, tabId: number, signal: AbortSignal, progress: (note: string) => void): Promise<unknown> {
+export async function runLocalSavedPattern(
+  patternId: string,
+  tabId: number,
+  signal: AbortSignal,
+  progress: (note: string) => void,
+): Promise<unknown> {
   const handler = lookupTool('data_patterns');
   if (!handler) throw new Error('Saved recipe tool is unavailable.');
   const parsed = handler.argsSchema.parse({ action: 'run', pattern_id: patternId });
-  const ctx: ToolContext = { callId: crypto.randomUUID(), runId: crypto.randomUUID(), conversationId: null, agentName: null, permissionMode: 'act', assignedTabId: tabId, localInvocation: true,
-    reportProgress: value => { const label = typeof value === 'string' ? value : value.label; if (label) progress(label); } };
+  const ctx: ToolContext = {
+    callId: crypto.randomUUID(),
+    runId: crypto.randomUUID(),
+    conversationId: null,
+    agentName: null,
+    permissionMode: 'act',
+    assignedTabId: tabId,
+    localInvocation: true,
+    reportProgress: (value) => {
+      const label = typeof value === 'string' ? value : value.label;
+      if (label) progress(label);
+    },
+  };
   const prepared = await prepareOperation(handler, parsed, ctx);
   if (prepared) return runPrepared(handler, parsed, ctx, undefined, prepared, signal);
   await checkOperationRequirements(handler, parsed, ctx, resolveToolTier(handler, parsed));

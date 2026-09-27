@@ -22,7 +22,7 @@
  */
 
 import { log } from '@/lib/debug/log';
-import type { ConfirmInitiator, ToolTier } from '@/lib/tools/types';
+import type { ConfirmInitiator, SavedNetworkReplayApproval, ToolTier } from '@/lib/tools/types';
 
 const RUNS_KEY = 'matrx.dispatch.runs';
 const CONFIRMS_KEY = 'matrx.dispatch.pendingConfirms';
@@ -59,7 +59,11 @@ export interface PersistedPendingConfirm {
   assignedTabId: number | null;
   effectiveTier: ToolTier;
   /** Prepared operation approval, bound to actual tool + snapshot. */
-  preparedOperation?: { snapshotKey: string; delivery: 'agent' | 'local' };
+  preparedOperation?: {
+    snapshotKey: string;
+    delivery: 'agent' | 'local';
+    approvalPreview?: SavedNetworkReplayApproval;
+  };
   initiator: ConfirmInitiator;
   /** Absolute deadline — mirrors the in-memory 5-minute timeout. */
   expiresAt: number;
@@ -127,7 +131,10 @@ function pruneRuns(all: Record<string, PersistedRunMeta>): void {
 let confirmMutation: Promise<unknown> = Promise.resolve();
 function mutateConfirms<T>(write: () => Promise<T>): Promise<T> {
   const result = confirmMutation.then(write, write);
-  confirmMutation = result.then(() => undefined, () => undefined);
+  confirmMutation = result.then(
+    () => undefined,
+    () => undefined,
+  );
   return result;
 }
 export function persistPendingConfirm(record: PersistedPendingConfirm): Promise<void> {

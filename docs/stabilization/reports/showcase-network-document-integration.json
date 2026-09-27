@@ -25,6 +25,13 @@
     "pnpm compile, pnpm catalog:tools:md, pnpm docs:tools and git diff --check passed after integration.",
     "Mutation in a separate scratch source copy removed the old/new document context rejection; the actual saved UI test failed because CURRENT_DOCUMENT_ROW was absent. The scratch mutation was restored; live source was never mutated."
   ],
+  "peer_repair": {
+    "review": "Fresh peer c49edf98 requested two changes: terminal cleanup for a never-settling Page.reload and a specific saved-recipe/page/effect approval card.",
+    "f1_red": "Two new core tests left Page.reload unresolved; neither timeout nor cancellation settled or released the lease before repair.",
+    "f1_green": "The caller's per-run duration now bounds Page.reload independently; abort also interrupts it. Setup resources become closable before awaiting reload, so both tests settle and release the lease even if Chrome never answers.",
+    "f2_red": "The actual PatternsTab approval lacked recipe name, target page and debugger/reload effect.",
+    "f2_green": "The prepared operation carries a sanitized page URL and recipe name only for display, persists them for remount, and the actual saved UI and remount tests assert the visible details. Approval authority still comes solely from the immutable snapshot recheck."
+  },
   "guarded_test_plan": [
     "Under the coordinator's single runtime permit, first run pnpm compile and pnpm catalog:tools:md on the integrated candidate; resolve any static errors and regenerate required catalog docs.",
     "Run pnpm test tests/unit/document-network-authorization.test.ts tests/unit/document-network-dispatch.test.ts tests/unit/document-network-recovery.test.ts tests/unit/document-network-port.test.ts tests/unit/document-network-capture.test.ts tests/unit/document-network-lease.test.ts tests/unit/document-network-page-privacy.test.ts.",
