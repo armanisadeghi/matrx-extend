@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "report_id": "gallery-d38-peer",
+  "defect_id": "EXT-D-0038",
+  "scope": "Independent source review and single guarded native gallery attempt.",
+  "source_verdict": "accept",
+  "source_finding": "The source change repairs the predicate mismatch: ScreenshotsView displays canonicalUrl in span text and puts the raw tab URL in title. Both affected runners now compare exact canonical text while retaining their linked, selected Screenshots pane constraints. The gallery runner also preserves exact fixture URL, exact-filtered GET, failure visibility, and Refresh recovery checks.",
+  "native_run": {
+    "run_id": "gallery-d38-dev096-001",
+    "resource_admitted": false,
+    "resource_guard_terminal": "RESOURCE_PREFLIGHT_REFUSED",
+    "child_started": false,
+    "first_failure": "RESOURCE_PRESSURE_UNSAFE and RESOURCE_SWAP_GROWTH preflight refusal",
+    "gallery_acceptance": "unverified"
+  },
+  "evidence": "docs/stabilization/runs/gallery-d38-dev096-001.json",
+  "private_evidence": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/gallery-d38-dev096-001.private.log",
+    "mode": "0600",
+    "sha256": "564f4b1abb888d03fbbbb1321c3eb47ee07b67f883486d59db06fbafafb45e3e"
+  },
+  "terminal_truth": "No native acceptance result exists because the guarded command refused to start the child. This single run was not retried."
+}

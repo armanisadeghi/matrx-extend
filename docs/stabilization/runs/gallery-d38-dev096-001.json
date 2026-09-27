@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "run_id": "gallery-d38-dev096-001",
+  "source_sha": "46eaeecfb648b3b765a295af1b0883b48df52831",
+  "feature": "EXT-F-1009-T08",
+  "status": "unverified",
+  "verdicts": {
+    "source": "PASS",
+    "native": "UNVERIFIED_RESOURCE_PREFLIGHT_REFUSED"
+  },
+  "build": {
+    "version": "0.2.96",
+    "receipt": "test-results/source-dev-build-096-screenshots-20260927.json"
+  },
+  "resource_guard": {
+    "admission": "RESOURCE_PREFLIGHT_REFUSED",
+    "terminal": "RESOURCE_PREFLIGHT_REFUSED",
+    "at": "2026-09-27T12:24:47.492Z",
+    "reasons": ["RESOURCE_PRESSURE_UNSAFE", "RESOURCE_SWAP_GROWTH"],
+    "child_started": false
+  },
+  "source_review": {
+    "product_dom": "ScreenshotsView renders the canonical URL as span text and uses the raw tab URL for title.",
+    "gallery_failure_predicate": "Exact expected canonical text count remains scoped to the Screenshots tab's aria-controls pane; selected, linked, active, refresh, error, empty and card checks remain present.",
+    "admin_readonly_predicate": "Exact expected canonical text count remains scoped to the Screenshots tab's aria-controls pane; selected, linked, active, visibility, refresh, loading and admin checks remain present.",
+    "fixture_identity": "Runner checks exact fixture URL and title before observing requests; list GET filter and returned row canonical values are exact.",
+    "first_failure": null
+  },
+  "private_artifacts": {
+    "log": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/gallery-d38-dev096-001.private.log",
+      "mode": "0600",
+      "bytes": 523,
+      "sha256": "564f4b1abb888d03fbbbb1321c3eb47ee07b67f883486d59db06fbafafb45e3e"
+    },
+    "result": null
+  },
+  "evidence_limit": "Native gallery behavior was not exercised because resource preflight refused admission; no retry was authorized."
+}

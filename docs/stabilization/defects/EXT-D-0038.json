@@ -13,11 +13,13 @@
   "actual": "Two test runners compare raw tooltip against canonical URL, falsely failing a correctly rendered empty gallery.",
   "severity": "S3: test oracle blocks native acceptance; no product failure established",
   "priority": "P1: unblock gallery error and recovery verification",
-  "state": "in-fix",
+  "state": "fixed",
   "fix_commits": ["46eaeecf"],
   "evidence": [
     "docs/stabilization/runs/gallery-d37-dev096-001.json",
-    "docs/stabilization/reports/gallery-canonical-marker-d38.json"
+    "docs/stabilization/reports/gallery-canonical-marker-d38.json",
+    "docs/stabilization/reports/gallery-d38-peer.json",
+    "docs/stabilization/runs/gallery-d38-dev096-001.json"
   ],
   "transition_history": [
     {
@@ -37,6 +39,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Two affected predicates repaired; peer review and native retest active."
+    },
+    {
+      "at": "2026-09-27T12:26:37.116107+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent source peer accepted exact canonical-text identity; native attempt refused before child launch for memory pressure/swap growth."
     }
   ],
   "closure_requirement": "Fresh peer accepts exactlinkedpane identity; native gallery run passes initial canonical check and reaches target failure/recovery assertions."
