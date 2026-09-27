@@ -2,7 +2,10 @@
   "schema_version": 1,
   "review": "screenshot-oracle-dialog-peer",
   "reviewer_role": "independent source peer",
-  "reviewed_commits": ["bc55f7bd47d8205197b9b8c25c88bcb70c6f767a", "8ed23029a4f644d5b66307a21af5daeae885218d"],
+  "reviewed_commits": [
+    "bc55f7bd47d8205197b9b8c25c88bcb70c6f767a",
+    "8ed23029a4f644d5b66307a21af5daeae885218d"
+  ],
   "acceptance": {
     "status": "source_review_pass_guarded_run_pending",
     "finding": "D31 geometry is sound: a fixed 24 CSS-pixel bottom strip overlays fixture content and the oracle samples at naturalHeight - 8, within the strip. Samples at 16%, 50%, and 84% remain well inside the three respective thirds. Per-channel tolerance 32 accommodates image conversion while the distinctive three-band fingerprint rejects ordinary incorrect surfaces.",
