@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-fullpage-peer",
+  "feature_id": "EXT-F-1009-T03",
+  "review_mode": "independent source and guarded preflight review; no product UI interaction",
+  "A_live_acceptance": {
+    "verdict": "UNVERIFIED_GUARD_REFUSED",
+    "evidence": "The sole guarded invocation terminated before child launch with RESOURCE_PREFLIGHT_REFUSED / RESOURCE_PRESSURE_UNSAFE. The .95 receipt and unpacked tree matched in a separate read-only identity check. No native profile or browser was created, so no UI or persisted-row assertion ran.",
+    "cleanup": "No row cleanup was required because capture never ran; reserved D22 checkpoint was not accessed."
+  },
+  "B_quality_privacy": {
+    "verdict": "SEMANTIC_SOURCE_SOUND_FORMATTING_FAIL",
+    "evidence": "Source asserts a real zero-row baseline, tall persisted dimensions proportional to scroll height, decoded persisted gallery image, three distinct vertical pixel samples, restored scroll position, exact captured row/file identity, and a real zero-row read after delete. Failures remain unverified and never become pass. Recovery identity is private mode 0600 and removed only after verified cleanup; no raw image, URL, row identifier, credentials, or clipboard is put in the report.",
+    "focused_biome": "Failed: formatter differences and two useSingleVarDeclarator findings in the runner. docs/stabilization/resource-policy.json passed."
+  },
+  "unresolved": "Live acceptance remains unverified. This lane performed no retry."
+}

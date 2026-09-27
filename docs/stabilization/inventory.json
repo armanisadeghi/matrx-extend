@@ -12713,7 +12713,19 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "screenshot-fullpage-dev095-001",
+              "evidence": "docs/stabilization/runs/screenshot-fullpage-dev095-001.json",
+              "verified_substeps": [],
+              "remaining_criteria": [
+                "Native launch refused by resource guard before Chrome; no product behavior exercised.",
+                "Full-page warm, unsupported page, persistence failure, tile cap, reload and member mode remain unverified."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1009-T04",
@@ -12986,7 +12998,8 @@
             "screenshot-controls-dev094-003",
             "screenshot-controls-dev095-001",
             "screenshot-controls-dev095-002",
-            "screenshot-controls-dev095-003"
+            "screenshot-controls-dev095-003",
+            "screenshot-fullpage-dev095-001"
           ],
           "retest_status": "partial"
         }

@@ -1,0 +1,42 @@
+{
+  "runId": "screenshot-fullpage-dev095-001",
+  "status": "unverified",
+  "scope": "One guarded native acceptance attempt for EXT-F-1009-T03; no UI behavior claim.",
+  "sourceHead": "c0c7d113494c35c9c5cc4e9bb8c4665183a80ab8",
+  "checkoutHead": "d86c6038d16f93e48760d7a4090f6fada841c925",
+  "build": {
+    "version": "0.2.95",
+    "treeSha256": "ea3bdb7c38ea99b3f01dcba3850480b58f86973cabaa2e8b12455dae42064d46",
+    "receiptPath": "test-results/source-dev-build-095-controls-20260927.json",
+    "receiptSha256": "c361e561500f428a39904287a56d60d93246abd4ec5bf62bd03768441da4a546",
+    "identityVerifiedReadOnly": true
+  },
+  "resourceRun": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id screenshot-fullpage-dev095-001 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- node tests/browser/screenshot-full-page-acceptance.mjs",
+    "admission": "RESOURCE_PREFLIGHT_REFUSED",
+    "terminalExitCode": 2,
+    "reason": "RESOURCE_PRESSURE_UNSAFE",
+    "runnerStarted": false,
+    "browserLaunched": false,
+    "leaseDirectoryEmptyAfterTerminal": true
+  },
+  "observations": {
+    "sourceSemanticOracle": "sound by independent review: three viewport fixture, persisted dimensions, decoded gallery blob pixel samples at top/middle/bottom, original scroll restoration, fresh zero-row baseline, exact row identity and post-delete zero-row verification; status cannot be credited because browser did not launch.",
+    "focusedBiome": "failed on runner formatting and two useSingleVarDeclarator findings; resource-policy JSON clean"
+  },
+  "cleanup": {
+    "productCleanupRequired": false,
+    "basis": "preflight refusal before child launch; no capture or owned row created by this attempt",
+    "d22CheckpointUntouched": true
+  },
+  "evidence": {
+    "privateImmutableResultPath": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-fullpage-dev095-001.acceptance-result.immutable.json",
+    "privateImmutableResultMode": "0400",
+    "privateImmutableResultSha256": "0fe78497f539518776e8d553652c687b9cc2a158016cea95c392a07ef2e56de2",
+    "privateWrapperLog": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-fullpage-dev095-001-wrapper.raw.log",
+      "mode": "0400",
+      "sha256": "cec3f7f0e21b7fc9b49fef48371e27aebed409f2f3e0559abe2f18e6195d04d1"
+    }
+  }
+}
