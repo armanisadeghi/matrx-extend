@@ -1,7 +1,9 @@
 {
   "schema_version": 1,
   "report_id": "screenshot-admin-next-batch",
-  "status": "READY_FOR_SOURCE_REVIEW",
+  "status": "RUNNER_READY_FOR_INDEPENDENT_SOURCE_REVIEW",
+  "runner": "tests/browser/screenshot-admin-readonly-acceptance.mjs",
+  "guard_command": ["node", "tests/browser/screenshot-admin-readonly-acceptance.mjs"],
   "basis": {
     "inventory": "docs/stabilization/inventory.json EXT-F-1009-T01 through T08",
     "accepted_guest_boundary": "docs/stabilization/reports/screenshot-guest-003-peer.json",
