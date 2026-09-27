@@ -1,0 +1,19 @@
+{
+  "id": "EXT-D-0044-prepared",
+  "status": "source-prepared; paused for higher-priority Network replay identity regression and resource guard",
+  "evidence_level": "source-only; no D44 red, product edit, compile, build, or live run",
+  "source_report": "docs/stabilization/reports/showcase-replay-scope-audit.json",
+  "root_causes": [
+    "list_pattern.runInPage and probeFirstRowInPage fall back to document when a configured list_root is absent, widening the saved recipe to unrelated elements.",
+    "runPattern and runMode coerce an absent Chrome executeScript result to [], making execution failure indistinguishable from legitimate zero rows.",
+    "PatternsTab loads all host patterns without route guidance, records every resolved result as ok including zero rows, and lets old-page fetch/run promises update the new page after navigation."
+  ],
+  "contract": "A missing configured root must produce no unrelated rows. Zero legitimate rows are visible no-match information, not a broken pattern. Route mismatch is visible guidance and does not block an explicit Run. Off-route output cannot be called verified data or update saved health as ok. Superseded fetch and run results cannot install under a new tab or URL.",
+  "prepared_test": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d41-d44-prepared/showcase-replay-scope-mode.test.ts",
+    "sha256": "6b72b6afd54414b57dcd9996e31c74b5a2ed7f34aaccd2325f780fa93347a567",
+    "coverage": "Real list mode and probe on a DOM with missing configured root and unrelated cards; shared runPattern/runMode distinguish absent serialized result from explicit empty array.",
+    "status": "prepared outside test discovery; not run"
+  },
+  "next_action": "After D41 selected-request replay identity is red/green and the coordinator transfers the sole guard permit, prepare a focused PatternsTab route/no-match/stale-page regression, then prove D44 red before editing the shared runner, mode, probe, or UI. Coordinate list-pattern mode ownership with D43."
+}

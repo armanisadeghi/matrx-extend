@@ -24,7 +24,7 @@
   },
   "peer_followup": {
     "finding": "Independent source review at docs/stabilization/reports/showcase-network-peer.json found that the default matcher drops query parameters and wildcards numeric or UUID path segments. The actual replay runner accepts every matching URL/method and chooses the largest body, so a same-path or numeric-path sibling may replace the selected dataset.",
-    "prepared_regression": "/tmp/showcase-d41-query-red/showcase-network-save-replay.test.tsx; SHA-256 e9a3df37094fb416141831d2665cf74430a87c82544b3b50e795877a8c50c61f. The test passes saved UI config to the real runNetworkCapturePattern for two query dates and two numeric resources. It is held outside test discovery.",
+    "prepared_regression": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d41-d44-prepared/showcase-network-save-replay.test.tsx; SHA-256 e9a3df37094fb416141831d2665cf74430a87c82544b3b50e795877a8c50c61f. The test passes saved UI config to the real runNetworkCapturePattern for two query dates and two numeric resources. It is held outside test discovery.",
     "guard_attempt": "showcase-d41-query-red-001 refused before child launch at 2026-09-27T16:44:50.565Z for RESOURCE_PRESSURE_UNSAFE; no red verdict, product repair, or new green claim. The shared test file was restored to HEAD immediately afterward.",
     "remaining": "When the resource guard next admits a serial run, prove the prepared regression red before changing Network code. Default to the exact selected URL, including query and numeric path; keep explicit editable broader matchers and honest guidance. Then green, compile, and independent installed-extension replay remain required."
   },
