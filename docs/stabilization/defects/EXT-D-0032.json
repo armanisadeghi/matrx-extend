@@ -16,18 +16,39 @@
     "tests/browser/screenshot-capture-acceptance.mjs",
     "tests/browser/settings-panel-driver.mjs",
     "src/features/screenshots/ScreenshotsView.tsx",
-    "src/lib/destructive/confirm.tsx"
+    "src/lib/destructive/confirm.tsx",
+    "docs/stabilization/runs/screenshot-capture-dev094-001.json"
   ],
   "severity": "S2: acceptance recovery may leave a newly created test index row when an earlier assertion fails; exact cleanup remains unverified",
   "priority": "P1: require consequence and complete bounded cleanup on the next owned run",
   "state": "fixed",
   "owner": "/root/screenshot_capture_repair",
-  "fix_commits": [],
+  "fix_commits": ["8ed23029", "118bbfb1"],
   "transition_history": [
-    {"at": "2026-09-27T10:35:03Z", "from": null, "to": "open", "reason": "The .94 run failed at delete_consequence after the exact owned card was found."},
-    {"at": "2026-09-27T10:35:03Z", "from": "open", "to": "triaged", "reason": "The CDP pointer helper returns after mouse release without waiting for React to mount; normal cleanup waits for the dialog while recovery reads it once."},
-    {"at": "2026-09-27T10:35:03Z", "from": "triaged", "to": "in-fix", "reason": "Recovery now waits for the same visible consequence and confirm button required by normal cleanup."},
-    {"at": "2026-09-27T10:35:03Z", "from": "in-fix", "to": "fixed", "reason": "Source correction is in place and syntax-checked; peer review and guarded native retest remain pending."}
+    {
+      "at": "2026-09-27T10:35:03Z",
+      "from": null,
+      "to": "open",
+      "reason": "The .94 run failed at delete_consequence after the exact owned card was found."
+    },
+    {
+      "at": "2026-09-27T10:35:03Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "The CDP pointer helper returns after mouse release without waiting for React to mount; normal cleanup waits for the dialog while recovery reads it once."
+    },
+    {
+      "at": "2026-09-27T10:35:03Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Recovery now waits for the same visible consequence and confirm button required by normal cleanup."
+    },
+    {
+      "at": "2026-09-27T10:35:03Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source correction is in place and syntax-checked; peer review and guarded native retest remain pending."
+    }
   ],
   "closure_requirement": "Independent peer verifies exact-card identity guard and dialog wait; guarded native retest reaches confirmed deletion and an exact row-absent real read."
 }
