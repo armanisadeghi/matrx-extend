@@ -3,6 +3,8 @@
   "status": "engineering fixed; independent installed-extension acceptance pending",
   "patch_base_sha": "71a13590",
   "current_head_at_freeze": "1961afeb195a27898030a9a7d8e2aa907331e01b",
+  "product_commit": "19f13e58e071250fc9d5ccf64e9648746ff006f0",
+  "build_receipt": "docs/stabilization/runs/showcase-d43-dev108-build.json: direct development build into installed unpacked path; version 0.2.108; treeSha256 db05d3c385d55199ecea7c3b70761f476bb5a42755647c0f49586bba6e23739c; guard child exit 0",
   "changes_prepared": [
     "Pass an optional existing list root/item through the D42 session start into the picker; begin directly in field selection when that scope still exists.",
     "For a fresh nested click, enumerate repeated ancestor groups and offer an explicit scope choice before changing the builder.",
@@ -22,12 +24,12 @@
     "entry_test": "158390ab613cf5c26e9a70b9084583a6352f8f1b412f6a356a06fc49768480ab",
     "feature_tests_patch": "2a1c54c7e55aae5b2622a885b93d1cd2c43d029fe4e8e334bf1a873b94e026fd"
   },
-  "round1_source_review": "The first peer misread restored source as the preserved patch; the patch does seed the ListPatternTab entry. A second independent peer confirmed the seed connection and reported source PASS_WITH_GAPS. The focused test now selects distinct title and URL elements, tests a missing seed against a different nested-card page with warning, scope choice, and extracted rows, and a component test drives Pick more fields through startListPickerSession, mountListPicker, simulated SW-stamped delivery, merge, and five rows. These corrected tests have not run under a guard.",
+  "round1_source_review": "The first peer misread restored source as the preserved patch; the patch does seed the ListPatternTab entry. A second independent peer confirmed the seed connection and reported source PASS_WITH_GAPS. The focused test now selects distinct title and URL elements, tests a missing seed against a different nested-card page with warning, scope choice, and extracted rows, and a component test drives Pick more fields through startListPickerSession, mountListPicker, simulated SW-stamped delivery, merge, and five rows. These corrected tests passed under guard.",
   "pending_docs": "The preserved feature-tests.patch was applied to docs/feature-tests.md after the real-site acceptance preamble landed; the procedure covers seeded Pick more fields, nested scope choice, distinct rows, and invalid-seed navigation.",
   "apply_instructions": "Historical resume instructions: both preserved patches applied cleanly on 0.2.108 source after package reconciliation; both .pending tests were copied into tests/unit/ and verified. Retain pending artifacts as the reviewed basis; do not apply them a second time.",
   "credential_scan": "No credential-like literal was found by the scoped pending-artifact scan for password assignments, Authorization headers, Bearer tokens, or provider sk- keys.",
   "shared_checkout": "Only D43 product files, its two tests, its feature-test procedure, and D43 evidence were changed for this repair. Package declarations and lockfile remained at the current latest-pinned state.",
   "package_reconciliation": "Resource-admitted frozen-lockfile install updated installed design-system 0.48.11, kit 0.16.10, records 0.58.30, and agents 0.16.18 to match current main. Consumer actions were read: no D43 picker host migration; agents 0.16.0 favorites change is outside this surface.",
   "source_review_basis": "Independent fresh Sol review of the preserved product patch reported PASS_WITH_GAPS; those gaps were a human feature-test recipe and missing-seed/entry-path test coverage, added before the passing guarded run. Final changed source has not yet had a new independent review or installed-extension test.",
-  "next_verification": "Build the development extension directly without a localhost server, record source/version/output identity, reload the installed unpacked extension, and independently exercise the real calendar and a second nested-list site. Confirm several distinct event titles and URLs, deliberate inner/outer scope choices, invalid-seed recovery, and D42 cancel/session behavior before closing."
+  "next_verification": "Reload the installed unpacked extension from the recorded build, then independently exercise the real calendar and a second nested-list site. Confirm several distinct event titles and URLs, deliberate inner/outer scope choices, invalid-seed recovery, and D42 cancel/session behavior before closing."
 }

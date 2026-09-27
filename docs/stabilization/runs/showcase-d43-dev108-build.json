@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0043",
+  "kind": "local_dev_unpacked",
+  "publish_state": "not_published",
+  "source_sha": "19f13e58e071250fc9d5ccf64e9648746ff006f0",
+  "command": "pnpm exec wxt build --mode development",
+  "guard_run_id": "showcase-d43-build-001",
+  "guard_result": "RESOURCE_ADMITTED; RESOURCE_JOB_EXIT childExitCode=0",
+  "observedAt": "2026-09-27T20:58:39.525Z",
+  "extensionDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+  "version": "0.2.108",
+  "treeSha256": "db05d3c385d55199ecea7c3b70761f476bb5a42755647c0f49586bba6e23739c",
+  "chrome_reload_and_live_retest": "pending"
+}
