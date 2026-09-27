@@ -21,6 +21,7 @@ import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
 
@@ -53,7 +54,23 @@ function requireReleaseReceipt(receipt) {
   return receipt;
 }
 
-function resolveExpectedRelease({ receipt, extensionDir, expectedRelease }) {
+function resolveExpectedRelease({ receipt, extensionDir, expectedRelease, localDev = false }) {
+  if (localDev) {
+    if (!extensionDir) throw new Error('native_sidepanel_local_build_path_required');
+    const dev = requireLocalDevReceipt(receipt, extensionDir);
+    if (
+      !expectedRelease ||
+      expectedRelease.treeSha256 !== dev.treeSha256 ||
+      expectedRelease.version !== dev.version
+    )
+      throw new Error('native_sidepanel_local_build_provenance_refused');
+    return Object.freeze({
+      kind: 'local_dev_unpacked',
+      extensionDir: resolve(extensionDir),
+      treeSha256: dev.treeSha256,
+      version: dev.version,
+    });
+  }
   const released = requireReleaseReceipt(receipt);
   if (extensionDir !== undefined) {
     if (
@@ -81,8 +98,11 @@ async function verifyReleasedArtifact(expected) {
   }
   if (manifest.version !== expected.version)
     throw new Error('native_sidepanel_release_version_refused');
+  if (expected.kind === 'local_dev_unpacked' && !manifest.key)
+    throw new Error('native_sidepanel_local_build_key_refused');
   if (hashReleaseTree(expected.extensionDir) !== expected.treeSha256)
     throw new Error('native_sidepanel_release_tree_refused');
+  if (expected.kind === 'local_dev_unpacked') return;
   let zip;
   try {
     zip = await readFile(expected.storeZipPath);
@@ -306,6 +326,7 @@ export async function runNativeSidepanelQa({
   headed = false,
   extensionDir,
   expectedRelease,
+  localDevReceiptPath,
   releaseReceiptPath = RELEASE_RECEIPT,
   chromeExecutable,
   expectedExtensionId = EXPECTED_EXTENSION_ID,
@@ -314,11 +335,20 @@ export async function runNativeSidepanelQa({
 } = {}) {
   let receipt;
   try {
-    receipt = JSON.parse(await readFile(releaseReceiptPath, 'utf8'));
+    receipt = JSON.parse(await readFile(localDevReceiptPath ?? releaseReceiptPath, 'utf8'));
   } catch {
-    throw new Error('native_sidepanel_release_receipt_missing');
+    throw new Error(
+      localDevReceiptPath
+        ? 'native_sidepanel_local_build_receipt_missing'
+        : 'native_sidepanel_release_receipt_missing',
+    );
   }
-  const expected = resolveExpectedRelease({ receipt, extensionDir, expectedRelease });
+  const expected = resolveExpectedRelease({
+    receipt,
+    extensionDir,
+    expectedRelease,
+    localDev: localDevReceiptPath !== undefined,
+  });
   await verifyReleasedArtifact(expected);
   const browserRuntime = await resolveBrowserRuntime({ chromeExecutable });
   chromeExecutable = browserRuntime.executablePath;

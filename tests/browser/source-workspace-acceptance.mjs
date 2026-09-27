@@ -9,11 +9,14 @@ import { createHash, randomUUID } from 'node:crypto';
 import { lstat, mkdir, open, readFile, rename, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
+import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
 const SOURCE_READONLY_SCOPE = process.env.SOURCE_READONLY_SCOPE === '1';
+const SOURCE_DEV_BUILD_RECEIPT = process.env.SOURCE_DEV_BUILD_RECEIPT;
 const OUTPUT = join(
   REPO,
   'test-results',
@@ -26,6 +29,7 @@ const ATTEMPT = join(REPO, 'test-results', 'd22-source-save-attempt.json');
 const PRIVATE_POINTER_SCREENSHOT = join(REPO, 'test-results', 'd22-save-pointer-private.png');
 const RELEASE_RECEIPT = join(REPO, '.output', 'release-receipt.json');
 const MANIFEST = join(REPO, '.output', 'chrome-mv3-dev', 'manifest.json');
+const DEV_EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const SOURCE_ORIGINS = new Set(['https://aimatrx.com', WEB_ORIGIN]);
@@ -783,6 +787,26 @@ async function recordObservedSourceId(id) {
 }
 
 async function readBuildIdentity() {
+  if (SOURCE_DEV_BUILD_RECEIPT) {
+    if (!SOURCE_READONLY_SCOPE) fail('local_dev_build_requires_readonly_scope');
+    const [receipt, manifest] = await Promise.all([
+      readFile(SOURCE_DEV_BUILD_RECEIPT, 'utf8').then(JSON.parse),
+      readFile(join(DEV_EXTENSION_DIR, 'manifest.json'), 'utf8').then(JSON.parse),
+    ]);
+    requireLocalDevReceipt(receipt, DEV_EXTENSION_DIR);
+    if (
+      receipt.version !== manifest.version ||
+      !manifest.key ||
+      hashReleaseTree(DEV_EXTENSION_DIR) !== receipt.treeSha256
+    )
+      fail('local_dev_build_identity_mismatch');
+    return {
+      kind: receipt.kind,
+      publishState: receipt.publish_state,
+      version: receipt.version,
+      treeSha256: receipt.treeSha256,
+    };
+  }
   const [receipt, manifest] = await Promise.all([
     readFile(RELEASE_RECEIPT, 'utf8').then(JSON.parse),
     readFile(MANIFEST, 'utf8').then(JSON.parse),
@@ -796,6 +820,11 @@ try {
   report.build = await readBuildIdentity();
   const buildAtStart = report.build;
   const nativeResult = await runNativeSidepanelQa({
+    ...(SOURCE_DEV_BUILD_RECEIPT && {
+      extensionDir: DEV_EXTENSION_DIR,
+      expectedRelease: buildAtStart,
+      localDevReceiptPath: SOURCE_DEV_BUILD_RECEIPT,
+    }),
     exercisePanel: async ({ page, panel }) => {
       stage = 'real_admin_signin';
       await click(panel, 'title', 'Settings');

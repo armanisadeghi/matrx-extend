@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "report_id": "current-dev-build-readiness",
+  "status": "SOURCE_ONLY_RUNTIME_UNVERIFIED",
+  "reason": "The 0.2.79 pushed-release receipt remains historical evidence while package.json and local source are 0.2.82. A new development build must not be labeled as that published release or require a Store ZIP.",
+  "exact_build_command": "pnpm exec wxt build --mode development",
+  "build_environment": "MATRX_CWS_BUILD must be unset. WXT development mode writes the keyed local extension to .output/chrome-mv3-dev; the helper refuses a missing key or a manifest version different from package.json.",
+  "exact_receipt_command": "node scripts/record-local-dev-build.mjs --extension-dir .output/chrome-mv3-dev --output test-results/source-dev-build-082.json",
+  "exact_d22_readonly_command": "SOURCE_READONLY_SCOPE=1 SOURCE_DEV_BUILD_RECEIPT=/Volumes/Samsung2TB/code/matrx-extend/test-results/source-dev-build-082.json node tests/browser/source-workspace-acceptance.mjs",
+  "receipt_contract": "The helper observes the actual unpacked bytes twice and exclusively writes a mode-0600 local_dev_unpacked receipt under ignored test-results. It records observed time, absolute extension path, manifest/package version and whole-tree SHA-256, with publish_state not_published. It never writes or renames .output/release-receipt.json, claims a source commit, supplies a Store ZIP, or changes the package version.",
+  "native_binding": "Only the Source runner with SOURCE_READONLY_SCOPE=1 and SOURCE_DEV_BUILD_RECEIPT set opts into the local receipt. It validates the receipt and keyed manifest, hashes the tree before and after, and passes the exact directory, version and digest to the native harness. The harness repeats manifest/tree checks before launching its owned Chrome and still requires the expected extension ID. All other native runners retain their published-release receipt and Store-ZIP checks.",
+  "historical_boundary": "Earlier 0.2.79 native receipts stay bound to their original release tree. A local development build may replace .output/chrome-mv3-dev bytes; it does not revise those immutable receipts or make the new tree a release. Until a new release is published, default release-bound native runners rightly refuse the mismatched local tree.",
+  "verification": "Source-level Node syntax and exact-file Biome checks only. The root owns the current resource-guarded WXT build, receipt creation, and native Source run; this lane launched no heavy command, browser, or test."
+}
