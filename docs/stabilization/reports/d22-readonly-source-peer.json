@@ -2,24 +2,51 @@
   "schema_version": 1,
   "report_id": "d22-readonly-source-peer",
   "defect_id": "EXT-D-0022",
-  "reviewed_source_commits": ["7f1fdb5b", "72de7258"],
-  "reviewed_integrated_head": "ef03ecef",
+  "reviewed_source_commits": ["7f1fdb5b", "72de7258", "c90c93fa"],
   "A_runtime": {
     "verdict": "UNVERIFIED",
-    "reason": "Independent source review only; no browser, build, or test was launched. No actual existing fixture, organization-scoped response, UI recognition, or delayed-response behavior has been observed by this peer."
+    "reason": "Source review only; no browser, build or tests ran in this lane. The earlier d22-recognition-readonly-001 receipt exited nonzero before this change and did not establish a positive fixture or UI acceptance."
   },
   "B_source": {
-    "verdict": "ACCEPT_BOUNDED_SOURCE_WITH_RUNTIME_UNVERIFIED",
-    "prior_rejection": "The original runner read row.canonical_identity from the Saved captures list even though SOURCE_SUMMARY_COLUMNS aliases that field to url. This caused every real fixture candidate to be rejected before positive recognition.",
-    "repair_verified": "72de7258 changes only list discovery to new URL(row.url) and identity = fixture.url. The real list select returns that alias, while lookupCapturedByUrl selects canonical_identity without an alias and the point-lookup validation still uses row.canonical_identity. Public-host, HTTPS, credential-free, no-query/fragment restrictions and the first-page-only limit remain. No deterministic fixture-shape blocker remains in this path.",
-    "accepted_boundaries": "The runner uses real admin web-form sign-in and UI workspace selection, a keyed local development build receipt, real processed_documents GET observations, and real Source Open link IDs held in memory. It does not invoke Capture or Save, read the reserved checkpoint, write database rows, synthesize responses, or inject fixtures. Credentials, organization names/IDs, Source IDs, URLs, and response bodies do not enter the JSON report.",
-    "late_response_oracle": "The Fetch Response-stage hook targets an actual approved-workspace GET and releases it with Fetch.continueRequest(requestId), without replacing URL, status, body, or headers. The observer then requires a completed HTTP 200 old-workspace read and checks the current workspace UI/link. The 1500 ms post-delivery observation is bounded UI evidence, not proof against every later scheduler delay; late Save and service-failure recovery remain explicitly unverified.",
-    "additional_limit": "The observer filters by origin learned from the real list query and organization/canonical query values. Comparison-workspace proof depends on a qualifying pre-existing Source in the first visible list page, a distinct accessible existing workspace, and completed scoped results; absence of any remains unverified. The incoming FileSourcePanel integration reviewed at 418e8bb3 does not change these query shapes or the runner's read-only selectors. It does not establish filing behavior, service-failure recovery, immediate intermediate-state clearing, or a late Save result."
+    "verdict": "CHANGES_REQUIRED_BEFORE_NATIVE_ADMISSION",
+    "positive_evidence": [
+      "The runner reads the real Saved captures list after real UI organization selection, uses the list's url:canonical_identity alias, and clicks the actual Load more button for later pages. Point recognition still requires an unaliased canonical_identity and matching real Open target.",
+      "Discovery reports only fixed categories, counts and query-shape booleans; Source IDs, URLs, hostnames, DNS answers, organization names and response bodies remain in memory. The loop has a configurable page count cap and reports a separate page-budget outcome.",
+      "Candidate navigation requires HTTPS, no embedded credentials or nonstandard port, and public DNS answers. The page route rejects non-GET/HEAD page requests and checks redirect destinations. Redirect or exact-identity mismatch remains unverified rather than accepted. No Capture, Save, checkpoint access or database write is added."
+    ],
+    "findings": [
+      {
+        "severity": "blocking_for_claim",
+        "title": "Absent Load more does not prove the backend list is exhausted",
+        "evidence": "discoverFixture sets exhausted=true and emits no_eligible_existing_source_in_workspace whenever the UI has zero Load more buttons. SavedCapturesView shows Load more only in its nonempty captures branch, while listSavedCaptures can return a full 40-row page with every row filtered as superseded or unreadable. That state has no button despite a full backend page and possible later Sources. The runner already records rowCount and limit but ignores them for this classification.",
+        "required_repair": "Set exhausted only when the observed backend page is shorter than its limit. If a full page has no usable Load more control, report a distinct pagination-blocked/unverified result, without claiming no eligible Source exists."
+      },
+      {
+        "severity": "important",
+        "title": "A second list response is not proven to be the requested cursor page",
+        "evidence": "After clicking Load more, discoverFixture accepts the first completed same-organization list GET after since. sourceQuery records cursorPresent but the loop never requires it on page 2 or later, nor validates the captured limit. A concurrent refresh can be counted as a new page and make pages/rows/categories describe repeated first-page data.",
+        "required_repair": "For pages after the first, require the actual completed query to contain the expected keyset cursor and page limit; classify any unrelated response or unavailable cursor as unverified."
+      },
+      {
+        "severity": "important",
+        "title": "The discovery-time budget is narrower than the reported bound",
+        "evidence": "The 60-second deadline is checked only inside the row loop. Each list-response and UI-settled wait independently allows 30 seconds, and DNS promises may still be in flight after their Promise.race timeout; five pages can substantially exceed SOURCE_DISCOVERY_TIMEOUT_MS while still discovering a fixture.",
+        "required_repair": "Use remaining deadline for every list/pagination wait and candidate classification; state any separate DNS-operation bound accurately. A budget expiry must remain unverified."
+      },
+      {
+        "severity": "safety_boundary",
+        "title": "Page-scoped routing alone does not establish a no-write browsing guarantee",
+        "evidence": "installPublicReadGuard registers page.route, then navigates an arbitrary eligible public Source URL. The owned Chromium context does not block site service workers, and this guard has no context-wide or worker-request check. The code therefore proves only that intercepted page requests use GET/HEAD; it cannot justify an unconditional claim that all page-origin requests are read-only.",
+        "required_repair": "Constrain navigation to a demonstrated read-only page context or add a reviewed worker-aware network boundary. Keep the report's claim scoped to observed/intercepted requests until that is proven."
+      }
+    ],
+    "limits": "The expanded host/DNS filter is a conservative preflight, not a DNS-rebinding guarantee or proof every GET URL is side-effect-free. No actual qualifying row, later page, redirect, or workspace transition was observed in this review. Late Save and real service-failure recovery remain unverified."
   },
   "reviewed_paths": [
     "tests/browser/source-recognition-readonly-acceptance.mjs",
+    "src/features/saved-captures/SavedCapturesView.tsx",
     "src/lib/supabase/queries.ts",
-    "docs/stabilization/reports/d22-next-closure-path.json",
-    "docs/stabilization/reports/incoming-file-source-d22-impact.json"
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "docs/stabilization/reports/d22-next-closure-path.json"
   ]
 }
