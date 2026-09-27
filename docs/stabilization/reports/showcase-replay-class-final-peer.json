@@ -1,0 +1,31 @@
+{
+  "lane": "fresh independent D44 source review; no D44 authorship",
+  "reviewed_commits": ["db1b55f8", "f7730783"],
+  "reviewed_source_head": "fa2058c1",
+  "A_live_user_outcome": {
+    "status": "UNVERIFIED",
+    "reason": "No installed-extension save/reopen/replay or real page was exercised in this review; focused tests and source checks cannot establish the requested live result."
+  },
+  "B_source_verdict": "FAIL_IMPORTANT: caller provenance and ordinary no-match handling improved, but a nonempty List Pattern result with no matching fields is still classified as matched and can mark a saved pattern healthy.",
+  "confirmed_improvements": [
+    "PatternsTab keeps Run available off-route with guidance, binds visible rows and messages to tab ID plus URL, and drops stale completions before rendering or bumping health.",
+    "DataView captures the run page URL/title/name for copied rows, hides rows immediately when tab ID or URL changes, and drops stale completions; data_patterns rechecks its pinned tab URL before and after the run.",
+    "Auto-extract keys and displays cached rows by tab ID plus URL; zero rows and off-route rows do not promote saved health. Manual CSS emits a row only when at least one field selector matched an element, without treating a legitimate empty element value as absence."
+  ],
+  "finding": {
+    "severity": "Important",
+    "title": "List Pattern can promote rows with no extracted fields as a healthy saved replay",
+    "source_reproduction": "On the saved route, use a list_pattern whose root and item selectors match repeated cards but whose selected relative field selector matches no element (or whose field_paths is empty). listPatternMode.runInPage maps every item to a row containing only null field values (or {} for no fields). classifySavedRun tests rows.length only, returns matched, and PatternsTab, DataView, useAutoExtract, and data_patterns can bump last_status=ok and display a positive row count despite no requested data.",
+    "evidence": [
+      "src/lib/data-pattern/modes/list-pattern.ts:64-70 selects items; :96-107 emits one row per item even when every field lookup misses or no fields were configured.",
+      "src/lib/data-pattern/saved-run-outcome.ts:14-29 classifies every nonempty on-route array as matched without field-match evidence.",
+      "src/features/showcase/tabs/PatternsTab.tsx:147-151, src/features/data/DataView.tsx:225-228, src/hooks/use-auto-extract.ts:102-114, and src/lib/tools/handlers/data-patterns.ts:174-188 all consume that classification and/or promote ok.",
+      "tests/unit/saved-run-manual-selector-evidence.test.ts covers manual_css; the saved-run caller tests mock populated List Pattern rows rather than running its no-field-match path."
+    ],
+    "boundary": "Source-confirmed behavior of the real in-page List Pattern runner and shared outcome contract; no live incidence claimed.",
+    "recommended_guard": "Run a saved List Pattern on a DOM with matching cards but stale relative field selectors, then assert no-match guidance, no ok health bump, and no fabricated usable rows through a real caller. Include a second fixture where a field element exists with an empty value so the guard does not confuse blank-but-matched data with an absent selector. Reuse actual runner match evidence rather than truthiness of values."
+  },
+  "remaining_provenance_limit": "Tab ID plus URL guards do not distinguish two documents at the identical URL after reload; the D44 evidence explicitly limits coverage to tab ID and URL changes. No same-URL document claim is made here.",
+  "not_run": ["tests", "build", "compile", "browser", "localhost"],
+  "files_changed": ["docs/stabilization/reports/showcase-replay-class-final-peer.json"]
+}
