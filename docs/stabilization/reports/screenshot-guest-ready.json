@@ -1,0 +1,30 @@
+{
+  "feature_id": "EXT-F-1009",
+  "case_ids": [
+    "EXT-F-1009-T01",
+    "EXT-F-1009-T02",
+    "EXT-F-1009-T03",
+    "EXT-F-1009-T04",
+    "EXT-F-1009-T05",
+    "EXT-F-1009-T06",
+    "EXT-F-1009-T07",
+    "EXT-F-1009-T08",
+    "EXT-F-1009-T09"
+  ],
+  "mapped_controls": [
+    "EXT-F-1009-C01",
+    "EXT-F-1009-C02",
+    "EXT-F-1009-C03",
+    "EXT-F-1009-C04",
+    "EXT-F-1009-C05",
+    "EXT-F-1009-C06",
+    "EXT-F-1009-C07",
+    "EXT-F-1009-C08",
+    "EXT-F-1009-C09"
+  ],
+  "runner": "tests/browser/screenshot-guest-acceptance.mjs; supports SCREENSHOT_GUEST_DEV_BUILD_RECEIPT plus optional SCREENSHOT_GUEST_RELOAD=1 and SCREENSHOT_ROLE_CHANGE=1",
+  "existing_coverage": "Prior screenshot-guest-003 evidence covers bounded guest T09 warm navigation, real reload, and real admin sign-out recovery; arbitrary direct/persisted inaccessible state remains unverified.",
+  "this_run_proves": "One guarded native guest profile run can verify protected Screenshots absence during public navigation, with optional real reload and actual admin sign-in/select/sign-out transition; build identity is bound to reviewed local dev receipt or release receipt.",
+  "not_covered": "T01-T08 capture/gallery controls; member/admin controls; full control-by-mode matrix; arbitrary malformed/direct tab state. All remain unverified; partial T09 evidence cannot promote any full case or feature pass.",
+  "readiness": "ready_for_one_guarded_run"
+}

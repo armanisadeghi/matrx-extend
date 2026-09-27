@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-receipt-peer",
+  "scope": "Independent source review of the screenshot guest runner local-development receipt path and readiness report. No browser run or build was performed.",
+  "A_runtime": {
+    "status": "NOT_RUN",
+    "reason": "This lane did not perform resource preflight, build, or native/browser execution. The report is readiness guidance, not runtime evidence."
+  },
+  "B_source": {
+    "status": "ACCEPTED_WITH_ARTIFACT_PROVENANCE_LIMIT",
+    "runner": "tests/browser/screenshot-guest-acceptance.mjs",
+    "findings": [
+      {
+        "finding": "The opt-in local-dev path validates the receipt kind/schema, not-published state, fixed unpacked path, timestamp, and SHA format via requireLocalDevReceipt; then requires a keyed manifest whose version matches both package.json and the receipt and whose unpacked tree hash matches the receipt. The same identity is read again after the native harness and the tree is rehashed, so a changed build cannot be recorded as a successful run.",
+        "assessment": "Receipt and tested artifact tree are bound before and after the run."
+      },
+      {
+        "finding": "The dev receipt binds a package version and artifact tree, but does not contain or prove a source commit. Known tested artifact provenance is source c9abb17e; current app source is 3c74ebc8 and has a subsequent identifier/internal registry app diff. The readiness report therefore cannot mean that every current source change was built or exercised.",
+        "assessment": "Any resulting runtime record must identify the exact receipt/tree and label it as local unpacked development QA. It must not call this current source universally tested or claim release/published acceptance."
+      },
+      {
+        "finding": "The readiness report's claim boundary matches inventory-local: EXT-F-1009-T01 through T08 and controls C01 through C08 apply to member/admin; guest screenshot capture/gallery is explicitly inapplicable. The runner's guest assertions only test the T09 denial gate.",
+        "assessment": "No capture, gallery, save, copy, preview, or delete acceptance may be promoted from this guest run."
+      },
+      {
+        "finding": "T09 inventory expects warm, reload, and role-change dimensions, and its steps include persisted/direct state. The runner always checks fresh guest initial state and public Settings/SEO navigation; real reload and real admin sign-in, Screenshots selection, and sign-out recovery are optional environment flags. No arbitrary malformed/direct persisted tab state is tested.",
+        "assessment": "Keep each unrequested optional subcase and arbitrary direct-state behavior unverified. Even with both flags, do not promote the whole T09 or feature without adjudicating the full inventory dimensions and direct-state gap."
+      },
+      {
+        "finding": "The ready report describes capability/readiness for one guarded run, not evidence that a run occurred. Prior screenshot-guest-003 evidence belongs to version 0.2.79 and tree be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0; it remains historical and cannot stand in for a fresh receipt-bound run.",
+        "assessment": "Do not merge prior runtime observations into a new run's artifact identity or status."
+      }
+    ],
+    "claim_limits": [
+      "No native runtime verdict from this peer review.",
+      "A local development receipt proves the tested unpacked bytes and package/manifest version, not their source commit or release status.",
+      "No EXT-F-1009-T01-T08 or guest capture/gallery behavior is covered.",
+      "T09 remains dimensioned partial/unverified where reload, role change, or arbitrary direct/persisted state was not actually exercised."
+    ]
+  }
+}

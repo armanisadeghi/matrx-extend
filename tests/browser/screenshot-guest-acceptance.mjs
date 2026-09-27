@@ -6,6 +6,7 @@ import { mkdir, open, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
@@ -14,6 +15,8 @@ const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const OUTPUT = join(REPO, 'test-results', `screenshot-guest-acceptance-${randomUUID()}.json`);
 const EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
 const RELEASE_RECEIPT = join(REPO, '.output', 'release-receipt.json');
+const DEV_BUILD_RECEIPT = process.env.SCREENSHOT_GUEST_DEV_BUILD_RECEIPT;
+const RECEIPT = DEV_BUILD_RECEIPT ?? RELEASE_RECEIPT;
 const MANIFEST = join(EXTENSION_DIR, 'manifest.json');
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const WEB_ORIGIN = 'https://www.aimatrx.com';
@@ -33,9 +36,26 @@ const report = {
 
 async function readBuildIdentity() {
   const [receipt, manifest] = await Promise.all([
-    readFile(RELEASE_RECEIPT, 'utf8').then(JSON.parse),
+    readFile(RECEIPT, 'utf8').then(JSON.parse),
     readFile(MANIFEST, 'utf8').then(JSON.parse),
   ]);
+  if (DEV_BUILD_RECEIPT !== undefined) {
+    const pkg = JSON.parse(await readFile(join(REPO, 'package.json'), 'utf8'));
+    requireLocalDevReceipt(receipt, EXTENSION_DIR);
+    if (
+      !manifest.key ||
+      manifest.version !== pkg.version ||
+      manifest.version !== receipt.version ||
+      hashReleaseTree(EXTENSION_DIR) !== receipt.treeSha256
+    )
+      throw new Error('screenshot_guest_development_build_identity_mismatch');
+    return {
+      kind: receipt.kind,
+      publishState: receipt.publish_state,
+      version: manifest.version,
+      treeSha256: receipt.treeSha256,
+    };
+  }
   if (receipt.version !== manifest.version || !/^[a-f0-9]{64}$/.test(receipt.treeSha256 ?? ''))
     throw new Error('screenshot_guest_release_manifest_identity_mismatch');
   return { version: manifest.version, treeSha256: receipt.treeSha256 };

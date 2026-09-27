@@ -1,0 +1,52 @@
+{
+  "scope": "Read-only bounded check for campaign-owned disposable Chrome profiles under the current user's OS temporary directory. No deletion, mutation, browser launch, preflight, credential or user-data inspection occurred.",
+  "observed_at_local_date": "2026-09-27",
+  "disk": {
+    "filesystem": "/dev/disk3s5",
+    "mount": "/System/Volumes/Data",
+    "available_kib": 12616812,
+    "available_gib": 12.03,
+    "capacity_percent": 94,
+    "required_floor_gib": 20,
+    "approximate_shortfall_gib": 7.97,
+    "measurement": "df -k /System/Volumes/Data"
+  },
+  "search": {
+    "current_user": "armanisadeghi",
+    "uid": 501,
+    "os_temp_directory": "/private/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T",
+    "temp_directory_owner_uid": 501,
+    "verified_profile_prefixes": [
+      {
+        "prefix": "matrx-native-sidepanel-qa-",
+        "source": "tests/browser/native-sidepanel-qa-harness.mjs:356, 379",
+        "ownership_and_cleanup": "The harness creates its root with mkdtemp under os.tmpdir(), launches Chrome with profile=<root>/profile, stops only its spawned ChildProcess, and removes exactly that root in finally (line 475)."
+      },
+      {
+        "prefix": "matrx-native-diag-",
+        "source": "tests/browser/vault-username-first-native-extension-diagnostic.mjs:145-146, 238",
+        "ownership_and_cleanup": "The diagnostic creates the root with mkdtemp under os.tmpdir(), puts its persistent Chrome profile under root/profile, closes its own context, then removes exactly its root in finally (line 471)."
+      },
+      {
+        "prefix": "matrx-username-first-panel-",
+        "source": "tests/browser/vault-username-first-panel-diagnostic.mjs:73-74, 169-172",
+        "ownership_and_cleanup": "The diagnostic creates the persistent Chrome profile with mkdtemp under os.tmpdir(), closes its own context and removes exactly that profile in finally."
+      }
+    ],
+    "candidate_directory_limit": 20,
+    "candidate_directories_found": 0,
+    "candidate_directories_inspected": 0,
+    "candidate_sizes": [],
+    "candidate_reclaimable_bytes": 0,
+    "live_process_check": {
+      "method": "Read current user's process command-line metadata only and match the three exact campaign prefixes; raw command lines were not emitted.",
+      "matching_processes": 0,
+      "result": "No live current-user process command line references a verified campaign prefix in this OS temp directory."
+    }
+  },
+  "conclusion": "No safely attributable campaign-owned disposable Chrome profile remains under the current user's internal OS temp directory. There is no candidate space to reclaim from these verified prefixes; the internal volume remains about 7.97 GiB below the 20 GiB floor.",
+  "limitations": [
+    "The check is intentionally limited to the current user's OS temp directory and three source-verified campaign prefixes. It does not infer ownership of arbitrary directories or inspect browser userdata contents.",
+    "Candidates were absent, so there were no candidate sizes to measure."
+  ]
+}
