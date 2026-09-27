@@ -1111,6 +1111,15 @@ Every entry follows this shape:
     floating over the header and overlapping the History icon.
 
 ### Showcase — shell (tab strip, persistence, forceMount)
+- **Acceptance setup (owner ruling, 2026-09-27):** build the development
+  extension, verify its build receipt and loaded version, reload the unpacked
+  extension in Chrome, refresh the target page, and reopen the Showcase panel.
+  Exercise Showcase UI on real public websites, including the electronic.vegas
+  event calendar and a structurally different site. Do not use localhost or a
+  test server for Showcase UI acceptance. `tests/fixtures/showcase-replay/` and
+  unit tests may support focused code regressions only; they are not installed-
+  extension acceptance and cannot close live coverage. Keep historical fixture
+  reports as historical evidence.
 - **What it does:** Hosts the 12 extraction sub-tabs. The strip is its own
   horizontal scroller; every sub-tab stays mounted so work survives switches.
 - **Where to test:** Side panel → Showcase (admin).

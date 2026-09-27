@@ -2,6 +2,14 @@
 
 Current priority (2026-09-27): finish Showcase detect → extract → save → reopen → repeat, per latest owner request. SHOWCASE-PLAN.md and inventory EXT-F-1012 own scope. Broad stabilization remains incomplete; old blocked goal-tool state reflects historical resource refusals, not the current active repair.
 
+**Owner ruling (2026-09-27): Showcase UI acceptance uses the built development
+extension in Chrome on real public websites. Verify build identity, reload the
+unpacked extension, refresh the page, reopen Showcase, and exercise the actual
+controls. Do not launch localhost/test-server UI acceptance or use
+`tests/fixtures/showcase-replay/` as its substitute. Controlled fixtures and
+unit tests remain focused code-regression evidence only; they never replace
+installed-extension live proof. Preserve existing fixture evidence as history.**
+
 ## Latest checkpoint (2026-09-27 16:50 UTC)
 
 Runtime verification is resource-blocked: last guarded launch refused before child16:44:50Z; OS pressure still2 at16:48:17Z. No owned heavy process remains. Do not retry on a timer without safe admission; never weaken the guard or terminate foreign work.

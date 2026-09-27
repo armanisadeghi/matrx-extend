@@ -12,6 +12,19 @@ Primary reference: Apify's explicit reusable input/run/structured-output contrac
 
 ## Scope and verification
 
+**Acceptance environment (owner ruling, 2026-09-27):** build the development
+extension, verify the build receipt and loaded extension version, explicitly
+reload the unpacked extension in Chrome, refresh the target page, reopen the
+Showcase panel, and exercise the actual controls on real public websites. Do
+not use localhost pages or a test server as Showcase UI acceptance. Use the
+electronic.vegas calendar plus a structurally different real site. The
+`tests/fixtures/showcase-replay/` fixture and other controlled fixtures may
+support focused code regressions, but fixture/server results are never
+installed-extension acceptance. Unit tests establish code regression evidence
+only; they do not substitute for the installed-extension workflow. Preserve
+historical fixture reports as historical evidence without promoting them to
+live proof.
+
 1. Map all existing extraction methods to their live controls, exact serialized configuration, executor, persistence door and inventory cases. Audit gaps are findings, not passes.
 2. Prove first broken user path quickly: capture a red reproduction, fix the common cause, peer review, rebuild/reload and retest. Avoid new harness frameworks; reuse existing native harness/driver or the current real Chrome UI under the manual browser resource permit.
 3. Complete the vertical workflow: detect → select list/fields or structured method → preview real rows → save the exact executed configuration → leave/reload → reopen saved pattern → rerun with matching fields and accurate values. Then test changed data, tab/navigation switching, empty/unsupported/error/cancel outcomes.
