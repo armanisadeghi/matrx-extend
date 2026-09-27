@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "run_id": "gallery-failure-dev095-002",
+  "scope": "EXT-F-1009-T08 native screenshot gallery failure recovery",
+  "guard_verdict": "RESOURCE_ADMITTED",
+  "runner_verdict": "UNVERIFIED",
+  "terminal": {
+    "stage": "select_approved_organization",
+    "code": "owned_harness_or_ui_stage_failed",
+    "pointer_code": "pointer_target_not_unique",
+    "timed_out": false,
+    "assertion_failure": false
+  },
+  "gallery_failure_observed": false,
+  "refresh_recovery_observed": false,
+  "cleanup": "runner exited; no owned browser or runner process remains",
+  "private_evidence": {
+    "raw_wrapper_log": "gallery-failure-dev095-002-wrapper.raw.log",
+    "raw_wrapper_log_sha256": "e961b503120bc9fd6a0b1ec7cbbc9f3f667f51c625e07d301261bd4367aeeb28",
+    "immutable_guard_result": "gallery-failure-dev095-002.acceptance-result.immutable.json",
+    "immutable_guard_result_sha256": "e961b503120bc9fd6a0b1ec7cbbc9f3f667f51c625e07d301261bd4367aeeb28",
+    "permissions": "0600"
+  },
+  "limitation": "Native gallery failure and Refresh recovery remain unverified because the harness stopped before reaching those UI assertions."
+}

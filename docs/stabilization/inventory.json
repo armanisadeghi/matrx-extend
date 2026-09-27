@@ -12725,7 +12725,10 @@
                 "Full-page warm, unsupported page, persistence failure, tile cap, reload and member mode remain unverified."
               ]
             }
-          }
+          },
+          "defect_ids": [
+            "EXT-D-0036"
+          ]
         },
         {
           "id": "EXT-F-1009-T04",
@@ -12917,7 +12920,19 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "gallery-failure-dev095-002",
+              "evidence": "docs/stabilization/runs/gallery-failure-dev095-002.json",
+              "verified_substeps": [],
+              "remaining_criteria": [
+                "Organization-selection pointer target was ambiguous; target gallery-error and recovery behavior not reached.",
+                "All loading/no-page/list-error/Refresh-recovery and member dimensions remain open."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1009-T09",
@@ -12987,7 +13002,8 @@
             "EXT-D-0032",
             "EXT-D-0033",
             "EXT-D-0034",
-            "EXT-D-0035"
+            "EXT-D-0035",
+            "EXT-D-0036"
           ],
           "run_ids": [
             "screenshot-capture-dev093-001",
@@ -13000,7 +13016,8 @@
             "screenshot-controls-dev095-002",
             "screenshot-controls-dev095-003",
             "screenshot-fullpage-dev095-001",
-            "screenshot-fullpage-dev095-002"
+            "screenshot-fullpage-dev095-002",
+            "gallery-failure-dev095-002"
           ],
           "retest_status": "partial"
         }

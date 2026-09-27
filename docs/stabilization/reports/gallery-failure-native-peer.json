@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "run_id": "gallery-failure-dev095-001",
+  "scope": "EXT-F-1009-T08 native screenshot gallery failure recovery",
+  "live_verdict": "UNVERIFIED_NOT_STARTED",
+  "source_verdict": "PASS_SOURCE_REVIEW",
+  "source_evidence": [
+    "Runner requires the supplied local dev receipt and verifies manifest version, unpacked tree hash, and build identity before and after the owned-profile run.",
+    "It observes one exact gallery GET failure for the owned fixture URL, requires the gallery error to remain visible, then requires a trusted Refresh to produce a new real HTTP 200 empty response and recovered empty UI.",
+    "The runner does not serialize the fixture URL, organization name or ID, credentials, response content, or intercepted request URL into its report; it records bounded booleans and fixed failure categories."
+  ],
+  "attempt": {
+    "guard_result": "RESOURCE_COMMAND_NOT_ALLOWED",
+    "child_started": false,
+    "product_failure_observed": false,
+    "cleanup": "No native child or owned profile was started; the resource guard rejected the command during validation before acquiring the heavy lease."
+  },
+  "private_evidence": {
+    "raw_wrapper_log": "gallery-failure-dev095-001-wrapper.raw.log",
+    "raw_wrapper_log_sha256": "8c3262181de67968209237e88bb251533dd4451d12ac9f39f87cdf099c7ddcb8",
+    "immutable_guard_result": "gallery-failure-dev095-001.acceptance-result.immutable.json",
+    "immutable_guard_result_sha256": "37908a4dbf6b4c8c2ae30eaff39d57b9259af2a2d98f26e758e8d0911c7cfecb",
+    "permissions": "0600"
+  },
+  "limitation": "Native UI behavior remains unverified because this runner command is absent from the resource policy allowlist."
+}
