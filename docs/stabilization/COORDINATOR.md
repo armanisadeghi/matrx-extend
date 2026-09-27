@@ -10,22 +10,19 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
-## Current checkpoint (2026-09-27 21:51 UTC)
+## Current checkpoint (2026-09-27; refreshed after D45 installed run)
 
-**ACTIVE OWNER: Astra's `showcase_replay_class_escalation` owns the sole heavy permit for D44 after remote .109 merge `9063881c`. Refresh dependencies first, then run the assigned regression and class repair. Do not start another heavy/browser job or capture active mutants.** An external sync writer twice stashed active edits and temporarily changed branches; source was preserved and recovered. This checkout is currently on `main`. Do not stash, reset, or switch branches; preserve the active uncommitted D44 edits below.
+**Installed acceptance target:** Chrome was explicitly reloaded from unpacked extension 0.2.108 to 0.2.109, then the real public calendar page was refreshed and Showcase reopened. The immutable build is source `141b11ac9079f7bfb3ec13717e529180107138e5`, tree SHA `8cd579919c549c9b6429dce83933249f984dc1e6ad7523b8214874a665cdaebe`, receipt `runs/showcase-d45-dev109-001.json`. Live evidence is `runs/showcase-installed-d45-001.json`; guard session 8900 was admitted and stopped with confirmation/exit 0. No owned UI run is active. Acceptance continues to mean installed Chrome on real websites; no localhost/test-server UI substitution.
 
-Showcase acceptance remains the installed extension in Chrome on real public websites only. Verify the exact receipt and loaded version, reload the unpacked extension, refresh the page, reopen Showcase, and exercise actual controls. No localhost/test-server UI acceptance. The last actual real-site UI artifact is 0.2.108: `docs/stabilization/runs/showcase-d43-dev108-build.json` and partial calendar evidence `docs/stabilization/runs/showcase-installed-d43-001.json`. It showed Doctor handoff, selection of the 249-card event scope, sampled distinct title/href rows, and old-result clearing on navigation; the visible table showed only 200 rows and did not test saved List Pattern replay. Shared source has since advanced through the remote .109 merge; no .109 installed UI claim exists. D39 is closed for its bounded Doctor-to-List handoff. D43 remains fixed with partial retest, not closed.
+The .109 run verified bounded List Pattern behavior on `https://electronic.vegas/vegas-edm-event-calendar/`: outer event scope, distinct title/locality/date extraction, Cancel preservation, same-scope field append, changed nested scope with zero fields, save/reopen/replay, and same-host event-detail route guidance with explicit no-match. The UI showed the first 200 of 249 rows only. The uniquely titled recipe `Codex D45 fixture 20260927-2229Z` remains intentionally retained; UI record ID was not exposed, and the observed post-save time is not a verified creation timestamp. No full 249-row audit or deletion is claimed. Inventory cases T23, T24, T29, T36, T45, T51, and T52 now link this report as partial admin evidence; the overall Showcase feature remains incomplete.
 
-- **D41:** source restored and committed as `56fdac28`; focused 30 checks and typecheck passed on pre-merge .108 source. Fresh peer `78898cc5` returned FAIL_IMPORTANT. New source-confirmed, live-unverified defects D47 (capture-start/document provenance) and D48 (credential-bearing URL persistence) are linked in inventory T57/T58. Do not treat ordinary query rotation as a separate defect: exact matching may no-match, and the editable broad matcher is the explicit user choice when that behavior is desired.
-- **D44:** Astra owns the sole heavy permit as stated above. No compile/installed .109 result is claimed until that guarded work completes. Preserve current dirty source/test drafts; do not stash, reset, switch branches, or inspect mutants during the active repair.
-- **D45:** source patch `a1eed929` remains the next picker transaction repair after the active D44 permit. Tests remain outside discovery; no installed confirmation.
-- **D46:** source-confirmed, runtime-unverified JSON literal dotted-key ambiguity in Network and Framework; T56 remains unverified.
-- **D42:** source peer found no blocker but recorded composition gaps; current-session installed runtime proof remains pending.
-- **D40:** engineering and partial real Microdata replay evidence exist; Table dataset append and full lifecycle/method coverage remain open.
+- **D45:** closed by root in `beaedac1`. The .109 live run supplies bounded picker and List Pattern evidence; broader inventory cases remain partial.
+- **D44:** fix has partial live retest only. Native in-flight completion and sibling-caller coverage remain open; do not claim defect-class closure.
+- **D48:** Sol owns the sole heavy permit for red/repair. Do not start browser/heavy work or edit D48 artifacts/tests during that ownership.
+- **D47:** scratch work is paused; no test or live result is claimed.
+- **D46:** remains open and runtime-unverified.
 
-Inventory EXT-F-1012 is authoritative. C44-C45/T53-T55 track D41 matcher/replay semantics; C46/T56 track D46; C47/T57 track D47; C48/T58 track D48. New cases are unverified and no cell was promoted. Guest/member denial remains existing T38. The saved Microdata Event test recipe is retained; deletion remains unverified. No whole-feature pass is claimed.
-
-After Astra's D44 guarded run: address peer-confirmed D47/D48 within D41 ownership, complete D45 transaction tests/repair, and obtain D42 runtime proof. Then rebuild the final shared source and retest on real sites, including save/reopen/replay. Preserve all active source edits; no foreign-process cleanup, guard weakening, or retries on a timer. The D44 refusal attribution remains unknown; no one has authority to infer a process owner from it. Reserved `d22-source-save-attempt.json` remains untouched.
+Inventory EXT-F-1012 remains authoritative. Guest/member denial remains the existing T38 case and is unverified by this run. Network, dataset persistence, deletion, complete row-by-row audit, cross-tab/caller provenance, and broader reload/error coverage are not established here. Preserve the retained recipe until an authorized cleanup lane has a uniquely exposed record identity; never touch reserved `d22-source-save-attempt.json`.
 
 ## Historical baseline (superseded environment and sequencing)
 
@@ -33,7 +30,7 @@ After Astra's D44 guarded run: address peer-confirmed D47/D48 within D41 ownersh
 
 Shared main has merged remote release .95 (8ab844de) in bffe07be. Source test fixes: D33 safe runtime diagnostics25f81f14 plus declaratione8a393e5 (focused tests3/3, independent source peer, guarded compile passed); D34 canonical Files redirectd450c7a2; D35 stable driver84d63d0e (native controls003 passed). Two earlier focused D33 fixture attempts and one compile type failure were corrected and recorded, not discarded. Check latest integrated CI before next green claim.
 
-Current development artifact .97: `test-results/source-dev-build-097-screenshots-20260927.json`, tree `aefca61f20fe24ba5cf172c7f9a4f4732bf9983cfe383269f37ab1eca4355820`, sourcec0c0ec34; receipt SHA `2c0a724dd7563a11214b94446155ab9fe532814fe6e47940d89be98f99c8c76c`. Build admitted and exited0, recorded `runs/screenshot-dev097-build-001.json`. Subsequent browser run `gallery-d38-dev097-001` refused before launch. .95/.96 receipts historical. Primary Chrome installation and Store verification remain unclaimed.
+At this historical checkpoint, the development artifact was .97: `test-results/source-dev-build-097-screenshots-20260927.json`, tree `aefca61f20fe24ba5cf172c7f9a4f4732bf9983cfe383269f37ab1eca4355820`, sourcec0c0ec34; receipt SHA `2c0a724dd7563a11214b94446155ab9fe532814fe6e47940d89be98f99c8c76c`. Build admitted and exited0, recorded `runs/screenshot-dev097-build-001.json`. Subsequent browser run `gallery-d38-dev097-001` refused before launch. .95/.96 receipts historical. Primary Chrome installation and Store verification remain unclaimed.
 
 ## Accepted findings and remaining work
 
@@ -60,7 +57,7 @@ D34 and D35 CLOSED after independent real .95 controls003 passed original target
 
 F1009T01/T02/T04/T06/T07 contain only verified warm-admin substeps, not whole-case passes. Warm-admin Copy/Cancel now pass; their failure/reload/member dimensions and full-page capture remain open. Historical .93/.94 first capture rows have unknown disposition because exact recovery identity was not retained; never delete by title/recency. Future owned fixtures should retain a private recovery identity before assertions so cleanup can be targeted after a failure; this is a follow-up, not implemented yet. Never reuse the reserved Source checkpoint.
 
-All lanes are terminal; no guard/browser job remains. Heavy concurrency stays1.  Default Luna medium for narrow execution, Sol medium for implementation. Last Luna omitted required runtime env and was rerouted; always explicitly export and assert the exact paths in the same launch shell. Root owns integration. Primary channel switch and ordinary-member access remain unresolved, with other actionable guest/admin testing still available.
+At that historical checkpoint, all then-assigned lanes were terminal and no owned guard/browser job remained. Heavy concurrency stays1.  Default Luna medium for narrow execution, Sol medium for implementation. Last Luna omitted required runtime env and was rerouted; always explicitly export and assert the exact paths in the same launch shell. Root owns integration. Primary channel switch and ordinary-member access remain unresolved, with other actionable guest/admin testing still available.
 
 ## Runtime and resource requirements
 
