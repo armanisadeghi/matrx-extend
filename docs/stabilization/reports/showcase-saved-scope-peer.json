@@ -1,0 +1,51 @@
+{
+  "id": "EXT-D-0044-peer-source-review",
+  "status": "DONE_WITH_CONCERNS",
+  "reviewed_commit": "801588edb364452a4ebf1c26908a2f7ff54d2610",
+  "verdict_a_live_surface": {
+    "status": "UNVERIFIED",
+    "evidence": "No installed extension, intended real-site replay, browser execution, or localhost UI was run in this source-only lane. The 4/4 focused green result is a builder report, not a live-surface verdict.",
+    "targets": [
+      "Save and reopen a uniquely named List pattern on the intended route, then confirm intended rows.",
+      "Run explicitly on another same-host route and on a page without the saved root; confirm nonblocking guidance, no unrelated rows, and visible no-match status.",
+      "Navigate during and after a run and confirm no previous-page rows or saved pattern list appears under the new page."
+    ]
+  },
+  "verdict_b_source_quality": {
+    "status": "FAIL",
+    "confirmed_improvements": [
+      "The saved List config flows through SaveAsPattern to runSavedPattern/runPattern without replacing selectors; list_pattern run and first-row probe now return no result when a configured root is missing or invalid.",
+      "runPattern and runMode now reject an absent Chrome executeScript result while retaining a legitimate explicit [] result.",
+      "PatternsTab computes saved-route guidance without disabling Run, avoids an ok health bump on empty or off-route rows, and checks captured tab/URL before accepting asynchronous fetch and run completions."
+    ],
+    "findings": [
+      {
+        "severity": "Important",
+        "title": "The same saved pattern is still marked healthy with zero rows through sibling replay surfaces",
+        "reproduction": "Save a pattern for a calendar route, then invoke it from DataView or the data_patterns agent tool on the same host where the selector finds no rows; each caller unconditionally executes bumpPatternRun(pattern.id, 'ok', 0). Auto-extract does the same on a matching route with no content. The health badge/queue can then say ok despite no intended data. DataView can also render an empty result without the new Showcase no-match guidance.",
+        "source": ["src/features/data/DataView.tsx:195-201", "src/lib/tools/handlers/data-patterns.ts:162-174", "src/hooks/use-auto-extract.ts:102-112", "src/lib/supabase/queries.ts:1048-1064"],
+        "root_cause": "The result-to-health policy remains separately implemented at every caller. The D44 policy change was applied only inside PatternsTab instead of a shared replay outcome path.",
+        "recommendation": "Make one shared classification for extracted rows and saved-route applicability, then have every saved-pattern caller report a true no-match without marking the pattern ok or broken; add caller-level forcing tests."
+      },
+      {
+        "severity": "Important",
+        "title": "Previous-page rows and patterns can render for one commit after navigation",
+        "reproduction": "Complete a Patterns-tab run with visible rows on route A, then navigate the same tab to route B while PatternsTab stays mounted. The render with the new tab URL still uses unkeyed rows/patterns state from route A; lines 87-101 clear it only in a passive useEffect after that render. The async completion guard prevents a later overwrite, but it does not prevent this stale render.",
+        "source": ["src/features/showcase/tabs/PatternsTab.tsx:50-60", "src/features/showcase/tabs/PatternsTab.tsx:87-112", "src/features/showcase/tabs/PatternsTab.tsx:213-241"],
+        "root_cause": "Result and fetched-list state have no page identity attached at render time.",
+        "recommendation": "Store the originating page key with rows and fetched patterns and render them only when it matches the current key; retain effect cleanup for abandoned work."
+      },
+      {
+        "severity": "Important test gap",
+        "title": "The stale-run regression assertion can pass before the promise settles",
+        "reproduction": "The test calls resolveRun at line 99, then waits for runSaved to have been called once at line 100. That call count was already one before resolution, so waitFor can return immediately. The subsequent absence assertions may run before handleRun's continuation. A defective implementation that installs old-page rows after resolution can still pass this test.",
+        "source": ["tests/unit/showcase-patterns-replay-provenance.test.tsx:87-103"],
+        "root_cause": "The test waits on its mock invocation rather than an observable completion of the asynchronous work.",
+        "recommendation": "Wait for the run to settle through a user-visible or completion signal, then assert old rows and health remain absent; execute a mutation that removes the page guard to prove the test turns red. Add a successful in-route row case with a distinct expected outcome so the UI test cannot be satisfied by always returning no match."
+      }
+    ],
+    "test_assessment": "The missing-root and missing-Chrome-result tests exercise real mode and runner boundaries with external Chrome stubbed. They cover the named defects, although the UI test combines guidance and zero-row policy, and the stale-run case lacks a forcing wait. The reported red/green receipts were read from the builder report; this lane ran no tests or mutations.",
+    "sibling_assessment": "Saved-pattern execution also enters through DataView, the data_patterns agent tool, and auto-extract. Their zero-row status handling remains inconsistent with the D44 Showcase repair."
+  },
+  "scope_note": "Source-only independent review of the worker's exact D44 commit; no test, build, browser, server, product edit, credential, or push operation was performed."
+}
