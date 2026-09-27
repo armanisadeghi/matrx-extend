@@ -1,5 +1,5 @@
 {
-  "status": "integrated_scratch_candidate_unrun",
+  "status": "peer_repaired_scratch_candidate_unrun",
   "defect": "EXT-D-0047",
   "case": "EXT-F-1012-T57",
   "lane": "Astra medium; source/scratch only",
@@ -39,12 +39,15 @@
     "src/lib/tools/handlers/data-patterns.ts",
     "src/lib/tools/prepared-tool-operation.ts",
     "src/lib/tools/types.ts",
+    "tests/unit/document-network-approval-remount.test.tsx",
     "tests/unit/document-network-authorization.test.ts",
     "tests/unit/document-network-capture.test.ts",
     "tests/unit/document-network-dispatch.test.ts",
     "tests/unit/document-network-lease.test.ts",
+    "tests/unit/document-network-page-privacy.test.ts",
     "tests/unit/document-network-port.test.ts",
-    "tests/unit/document-network-recovery.test.ts"
+    "tests/unit/document-network-recovery.test.ts",
+    "tests/unit/document-network-saved-ui.test.tsx"
   ],
   "prepared_tests": [
     "Initial binding response before frame commit survives; delayed old context is rejected; registration precedes reload; sensitive header canaries omitted.",
@@ -82,7 +85,7 @@
     "https://developer.chrome.com/docs/extensions/reference/api/debugger",
     "https://developer.chrome.com/docs/extensions/reference/api/scripting"
   ],
-  "closure": "D47 remains open. Integrated scratch candidate and executable caller tests are prepared; no guarded red/green, compile or installed Chrome result claimed.",
+  "closure": "D47 remains open. Peer source fixes and expanded real-caller test candidates exist only in scratch. No runtime/type/browser proof, no live source application, no push.",
   "authorization_assessment": {
     "verdict": "Operation-bound adapters implemented in scratch; still unrun, no privileged bypass intended.",
     "binding_issue": [
@@ -138,6 +141,47 @@
     "command": "git apply --check /Volumes/Samsung2TB/code/.stabilization-scratch/d47-document-repair-20260927/d47.patch",
     "exit_code": 0,
     "applied": false,
-    "meaning": "Patch mechanically applies to the checkout at this boundary; not runtime/type correctness and must be rechecked after D48 lands."
-  }
+    "meaning": "Patch mechanically applies to the checkout at this boundary; not runtime/type correctness and must be rechecked after D48 lands.",
+    "scope": "Prior candidate only; revised patch must be rechecked after D48 integration."
+  },
+  "fresh_peer_response": {
+    "peer_commit": "c13b4c37",
+    "live_verdict": "UNVERIFIED",
+    "source_status": "All five findings accepted; confirmed source defects repaired in scratch. New tests unrun.",
+    "items": [
+      {
+        "id": "D47-P1",
+        "assessment": "confirmed",
+        "repair": "Binding-backed saved capture no longer posts to window; only explicit manual capture enables the legacy relay. Added actual tap test observing both binding and page-message channels with canaries."
+      },
+      {
+        "id": "D47-P2",
+        "assessment": "confirmed",
+        "repair": "Approval digest includes exact current URL. Prepared page URL/documentId passes to capture; after CDP setup both are checked immediately before reload. Same-document navigation events cancel. Actual dispatcher route-change/recovery and core pre-reload mismatch tests added."
+      },
+      {
+        "id": "D47-P3",
+        "assessment": "confirmed",
+        "repair": "Global saved approval presenter subscribes before hydrating existing pending local records; settled IDs cannot be resurrected. Expiry/disconnected recovery is visible. Host remount and actual global dispatcher local-recovery tests added. Boot expiry of local records now terminates locally without synthetic agent delivery."
+      },
+      {
+        "id": "D47-P4",
+        "assessment": "confirmed",
+        "repair": "Matching timer starts onArmed immediately before prepared Page.reload. Separate setup budget uses the existing per-run duration, with cancellation race returning promptly if Chrome setup stalls and late core resources still cleaned. No new timing constant/global cap."
+      },
+      {
+        "id": "D47-P5",
+        "assessment": "confirmed coverage gap; proof remains pending by instruction",
+        "repair": "Added real PatternsTab -> saved-run port -> dispatcher/approval -> actual data_patterns -> real runner -> CDP client/core -> row parser -> UI candidate. Browser transport/CDP and DB/auth boundaries are doubled, not runner or result UI. Delayed setup preserves full post-arming window; old-document row must never render. Added real page-message privacy and changed live route recovery candidates. Red/green and mutation runs remain forbidden/unrun."
+      }
+    ],
+    "removed_guard_note": "Removed window-existence heuristic from internal transport; ownership is enforced by the saved-operation port and canonical prepared dispatcher. No raw capture endpoint is exposed. This permits the actual SW operation to be exercised in the shared DOM test process without mocking the runner."
+  },
+  "patch_sha256": "7b2523ba61845d2c5259d87fcfd3ac3e8547a060119a706884a590d9d3851deb",
+  "D48_rebase_paths": [
+    "src/lib/data-pattern/run-interactive.ts",
+    "src/lib/tools/dispatch.ts",
+    "src/features/tools/ToolsView.tsx"
+  ],
+  "feature_test_addendum": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-document-repair-20260927/feature-tests-addendum.md"
 }

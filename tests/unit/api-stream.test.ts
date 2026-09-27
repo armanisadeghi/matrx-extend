@@ -36,7 +36,7 @@ function fragmentedResponse(parts: Uint8Array[]): Response {
 }
 
 describe('streamFetch public NDJSON kernel integration', () => {
-  it('preserves fragmented UTF-8, trailing input, malformed visibility, and exact raw observation', async () => {
+  it('preserves fragmented UTF-8 and trailing input while diagnostics retain only structure', async () => {
     const wire =
       '{"e":"c","t":"café"}\n' +
       'not-json\n' +
@@ -71,24 +71,23 @@ describe('streamFetch public NDJSON kernel integration', () => {
     ]);
     expect(logMock.info).toHaveBeenCalledWith(
       'stream',
-      'raw event #1',
-      { e: 'c', t: 'café' },
+      'event #1',
+      { event: 'chunk' },
       'chunk',
     );
     expect(logMock.info).toHaveBeenCalledWith(
       'stream',
-      'raw event #4',
-      { event: 'reasoning_chunk', data: { text: 'think' } },
+      'event #4',
+      { event: 'reasoning_chunk' },
       'reasoning_chunk',
     );
     expect(logMock.warn).toHaveBeenCalledWith(
       'stream',
       'unparseable line #2',
-      expect.objectContaining({ raw: 'not-json' }),
+      expect.objectContaining({ error: expect.any(String) }),
     );
-    expect(logMock.warn).toHaveBeenCalledWith('stream', 'unknown JSON envelope', {
-      other: true,
-    });
+    expect(logMock.warn).toHaveBeenCalledWith('stream', 'unknown JSON envelope');
+    expect(JSON.stringify([logMock.info.mock.calls, logMock.warn.mock.calls])).not.toContain('café');
   });
 
   it('keeps HTTP failures typed and emits one terminal event', async () => {
@@ -168,7 +167,7 @@ describe('streamFetch public NDJSON kernel integration', () => {
       userMessage: 'The chat service is temporarily unavailable. Try again.',
     },
   ])(
-    'reports $name with a retryable user message while Debug keeps the response detail',
+    'reports $name with a retryable user message while Debug keeps status, not response text',
     async ({ status, body, userMessage }) => {
       vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(body, { status })));
       const events: StreamEvent[] = [];
@@ -185,8 +184,9 @@ describe('streamFetch public NDJSON kernel integration', () => {
       expect(logMock.error).toHaveBeenCalledWith(
         'stream',
         `✗ https://example.test/stream ${status}`,
-        body,
+        expect.objectContaining({ status }),
       );
+      expect(JSON.stringify(logMock.error.mock.calls)).not.toContain('must-never-reach-chat');
     },
   );
 });

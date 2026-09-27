@@ -20,6 +20,7 @@ import { CopyButton } from '@/components/CopyMenu';
 import { RecorderPane } from '@/features/tools/RecorderPane';
 import { SmartTestsView } from '@/features/tools/SmartTestsView';
 import { useToolDescriptions } from '@/hooks/use-tool-descriptions';
+import { sanitizeNetworkToolSaveArgs } from '@/lib/credentials/network-urls';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { broadcast } from '@/lib/messaging/native';
@@ -363,7 +364,14 @@ function ToolDetail({
       setError(`Invalid JSON: ${(e as Error).message}`);
       return;
     }
-    const validated = handler.argsSchema.safeParse(parsedArgs);
+    let observedArgs: unknown;
+    try {
+      observedArgs = sanitizeNetworkToolSaveArgs(handler.name, parsedArgs);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Invalid Network capture recipe.');
+      return;
+    }
+    const validated = handler.argsSchema.safeParse(observedArgs);
     if (!validated.success) {
       setError(`Schema mismatch:\n${JSON.stringify(validated.error.format(), null, 2)}`);
       return;

@@ -1,6 +1,7 @@
 import { JsonTree } from '@/components/ui/json-tree';
 import { useNetworkCapture } from '@/hooks/use-network-capture';
 import type { CapturedNetEvent } from '@/lib/data-pattern/network-tap';
+import { isCredentialQueryKey, networkPatternDefaultName, queryKeysInNetworkUrl, safeRequestBodyKey, sanitizeNetworkUrl } from '@/lib/credentials/network-urls';
 import { matchesUrlFilter, rowsFromBody } from '@/lib/data-pattern/run-interactive';
 import { cn } from '@/lib/utils';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
@@ -19,6 +20,7 @@ export function NetworkTab() {
   const [selectedEvent, setSelectedEvent] = useState<CapturedNetEvent | null>(null);
   const [extractKeyPath, setExtractKeyPath] = useState('');
   const [replayUrlFilter, setReplayUrlFilter] = useState('');
+  const [extraCredentialKeys, setExtraCredentialKeys] = useState<string[]>([]);
   const [urlMatch, setUrlMatch] = useState<'exact' | 'filter'>('exact');
   const [matchRequestBody, setMatchRequestBody] = useState(true);
 
@@ -34,12 +36,20 @@ export function NetworkTab() {
   // Search only changes the visible list. Keep the preview pinned to the
   // captured response itself, including when the search hides it.
   const selected = selectedEvent && events.includes(selectedEvent) ? selectedEvent : null;
-  const savedUrlFilter = selected ? replayUrlFilter.trim() || selected.url : '';
+  const savedUrlFilter = selected
+    ? sanitizeNetworkUrl(replayUrlFilter.trim() || selected.url, extraCredentialKeys)
+    : '';
+  const safeSelectedUrl = selected ? sanitizeNetworkUrl(selected.url, extraCredentialKeys) : '';
+  const queryKeys = selected
+    ? [...new Set([...queryKeysInNetworkUrl(selected.url), ...queryKeysInNetworkUrl(replayUrlFilter)])]
+    : [];
+  const selectedBodyKey = selected ? safeRequestBodyKey(selected.request_body_key) : undefined;
 
   const selectEvent = (event: CapturedNetEvent) => {
     setSelectedEvent(event);
     setExtractKeyPath('');
     setReplayUrlFilter(event.url);
+    setExtraCredentialKeys([]);
     setUrlMatch('exact');
     setMatchRequestBody(true);
   };
@@ -174,7 +184,7 @@ export function NetworkTab() {
               >
                 <StatusBadge status={e.status} />
                 <span className="w-8 shrink-0 text-muted-foreground">{e.method}</span>
-                <span className="flex-1 truncate">{shortenUrl(e.url)}</span>
+                <span className="flex-1 truncate">{shortenUrl(sanitizeNetworkUrl(e.url, selected === e ? extraCredentialKeys : []))}</span>
                 <span className="shrink-0 text-muted-foreground">
                   {formatFileSize(e.body_size)}
                 </span>
@@ -186,7 +196,7 @@ export function NetworkTab() {
         {selected && (
           <div className="space-y-2 rounded-xl bg-secondary/40 p-3">
             <div className="space-y-1 text-[11px]">
-              <div className="font-mono break-all">{selected.url}</div>
+              <div className="font-mono break-all">{safeSelectedUrl}</div>
               <div className="text-muted-foreground">
                 {selected.method} · {selected.status}
                 {selected.status_text ? ` ${selected.status_text}` : ''} ·{' '}
@@ -204,11 +214,30 @@ export function NetworkTab() {
               </label>
               <Input
                 id="network-replay-url-filter"
-                value={replayUrlFilter}
+                value={sanitizeNetworkUrl(replayUrlFilter, extraCredentialKeys)}
                 onChange={(event) => setReplayUrlFilter(event.target.value)}
-                placeholder={selected.url}
+                placeholder={safeSelectedUrl}
                 className="h-8 rounded-full bg-background text-xs"
               />
+              {queryKeys.length > 0 && (
+                <div className="space-y-1 text-[10px] text-muted-foreground">
+                  <div>Known credential values are masked. Review every query key; unknown keys may still contain a credential.</div>
+                  {queryKeys.map((key) => (
+                    <label key={key} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        aria-label={`Treat ${key} as credential`}
+                        checked={isCredentialQueryKey(key, extraCredentialKeys)}
+                        disabled={isCredentialQueryKey(key)}
+                        onChange={(event) => setExtraCredentialKeys((current) => event.target.checked
+                          ? [...current, key]
+                          : current.filter((entry) => entry !== key))}
+                      />
+                      Treat {key} as credential{isCredentialQueryKey(key) ? ' (recognized)' : ''}
+                    </label>
+                  ))}
+                </div>
+              )}
               <label className="flex items-center gap-2 text-[11px]">
                 URL matching
                 <select
@@ -234,19 +263,20 @@ export function NetworkTab() {
               <div className="text-[10px] text-muted-foreground">
                 Exact URL includes the query and literal * characters. Partial matching uses text or
                 * wildcards. Body matching saves only an opaque digest, never the request body.
-                Rerun uses the newest successful request of the same identity and checks the full
-                capture window. Search above only filters this list.
+                Masked credential values may rotate between runs. If different credential values
+                match within one capture window, rerun reports ambiguity instead of choosing one.
+                Rerun checks the full capture window. Search above only filters this list.
               </div>
               {(!matchRequestBody ||
-                selected.request_body_key === 'unavailable' ||
-                selected.request_body_key === undefined) && (
+                selectedBodyKey === 'unavailable' ||
+                selectedBodyKey === undefined) && (
                 <div className="text-[10px] text-amber-700 dark:text-amber-400">
                   {matchRequestBody
                     ? 'This capture has no stable body identity. Start a fresh capture, or turn off body matching to explicitly use URL and method only.'
                     : 'URL and method only may include different operations. If multiple request identities match, rerun will ask you to narrow the matcher instead of choosing one.'}
                 </div>
               )}
-              {!matchesUrlFilter(selected.url, savedUrlFilter, urlMatch) && (
+              {!matchesUrlFilter(selected.url, savedUrlFilter, urlMatch, extraCredentialKeys) && (
                 <div className="text-[10px] text-amber-700 dark:text-amber-400">
                   This matcher does not include the selected response. Rerun may capture different
                   data or find no request.
@@ -288,17 +318,18 @@ export function NetworkTab() {
                   kind="network_capture"
                   config={{
                     url_filter: savedUrlFilter,
+                    credential_query_keys: extraCredentialKeys,
                     url_match: urlMatch,
                     body_match: matchRequestBody ? 'exact' : 'ignore',
                     ...(matchRequestBody && {
-                      request_body_key: selected.request_body_key ?? 'unavailable',
+                      request_body_key: selectedBodyKey ?? 'unavailable',
                     }),
                     method: selected.method,
                     key_path: extractKeyPath,
                   }}
                   rows={extractedRows}
                   source={source}
-                  defaultName={`Network: ${shortenUrl(selected.url, 40)}`}
+                  defaultName={networkPatternDefaultName(selected.url, extraCredentialKeys)}
                 />
               </div>
             )}

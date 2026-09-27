@@ -1368,6 +1368,21 @@ Every entry follows this shape:
   recording and its tooltip says to start again. The buffer caps at 500 events
   with a dropped notice; events survive switching Showcase sub-tabs. Replay
   removes its event listener, tab listener and timer on completion or failure.
+- **Credential-aware URL save and replay:** On a real public page or test endpoint,
+  use only harmless synthetic query values. Capture a JSON request with `date`,
+  `page`, and `access_token`; inspect the capture list, selected URL, editable
+  matcher, default name, and saved recipe. Reopen and rerun after rotating only
+  the synthetic credential; a different `date` must not match. Repeat with an
+  unknown `proof` key: mark it as a credential, including when adding it in
+  the editable matcher. Debug stream/message details and exports must omit
+  synthetic values while retaining event tags and status. The Chat tool row
+  must also omit them during a live agent save and after reopening that
+  conversation; the manual Tools runner's started row must be safe as well.
+  Two different
+  matching credential values in one capture window must report ambiguity.
+  An invalid body fingerprint is labelled unavailable and never saved raw.
+  Unknown keys require the person's explicit review; the UI does not promise
+  to recognize every credential name.
 - **Still requires independent installed-Chrome proof:** Replay currently installs
   on tab loading, not document start. Very early hydration requests can be missed,
   and delayed messages lack trusted document identity. Guidance to interact while

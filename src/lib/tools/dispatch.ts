@@ -30,6 +30,7 @@ import { postToolResults } from '@/lib/api/routes/tool-results';
 import { appendReceipt, recordAuditFailure } from '@/lib/audit/log';
 import { PENDING_OUTPUT, type ReceiptOrigin, buildReceipt } from '@/lib/audit/receipt';
 import { readIsAdminFromStorage } from '@/lib/auth/is-admin';
+import { sanitizeNetworkToolSaveArgs } from '@/lib/credentials/network-urls';
 import { BROWSER, isBrowserSupported } from '@/lib/browser/detect';
 import { log } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
@@ -702,6 +703,9 @@ async function handleCall(
     preApproved?: boolean;
   } = {},
 ): Promise<void> {
+  // Normalize credential-bearing Network saves before any durable observer.
+  // This includes timeline, approval storage, recording, and signed receipts.
+  rawArgs = sanitizeNetworkToolSaveArgs(handler.name, rawArgs);
   const startedAt = Date.now();
   log.info('sw', `tool ${handler.name} call_id=${ctx.callId}`, rawArgs);
   broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
@@ -1393,7 +1397,13 @@ export async function handleWebmcpCall(
     }
   }
 
-  const parsed = handler.argsSchema.safeParse(args);
+  let observedArgs: unknown;
+  try {
+    observedArgs = sanitizeNetworkToolSaveArgs(handler.name, args);
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : 'Invalid Network capture recipe.' };
+  }
+  const parsed = handler.argsSchema.safeParse(observedArgs);
   if (!parsed.success) {
     return {
       ok: false,

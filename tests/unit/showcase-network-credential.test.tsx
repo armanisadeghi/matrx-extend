@@ -202,6 +202,46 @@ describe('D48 credential-safe Network request identity', () => {
     expect(saved.config.url_filter).toContain('page=2');
   });
 
+  it('offers the same credential choice for a key typed into the editable matcher', async () => {
+    const base = mocks.baseEvents[0];
+    if (!base) throw new Error('Network capture fixture is incomplete');
+    mocks.events.splice(0, mocks.events.length, base);
+    const user = userEvent.setup();
+    render(<NetworkTab />);
+    await user.click(screen.getByRole('button', { name: /api\/events/ }));
+    const input = screen.getByLabelText('Request URL to match on rerun') as HTMLInputElement;
+    await user.clear(input);
+    await user.type(input, 'https://electronic.vegas/api/events?date=2026-09-27&proof=SYNTHETIC_TYPED_SECRET&page=2');
+    await user.click(screen.getByRole('checkbox', { name: 'Treat proof as credential' }));
+    expect(input.value).not.toContain('SYNTHETIC_TYPED_SECRET');
+    await user.click(screen.getByRole('button', { name: 'Select events path' }));
+    await user.click(screen.getByRole('button', { name: /^Save$/ }));
+    await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(1));
+    const saved = mocks.savePattern.mock.calls[0]?.[0] as { config: { url_filter: string } };
+    expect(JSON.stringify(saved)).not.toContain('SYNTHETIC_TYPED_SECRET');
+    expect(saved.config.url_filter).toContain('date=2026-09-27');
+    expect(saved.config.url_filter).toContain('proof=[credential]');
+  });
+
+  it('marks malformed request body identity unavailable before save', async () => {
+    const base = mocks.baseEvents[0];
+    if (!base) throw new Error('Network capture fixture is incomplete');
+    mocks.events.splice(0, mocks.events.length, {
+      ...base,
+      request_body_key: 'Bearer SYNTHETIC_BODY_SECRET',
+    });
+    const user = userEvent.setup();
+    render(<NetworkTab />);
+    await user.click(screen.getByRole('button', { name: /api\/events/ }));
+    expect(screen.getByText(/no stable body identity/i)).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Select events path' }));
+    await user.click(screen.getByRole('button', { name: /^Save$/ }));
+    await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(1));
+    const saved = mocks.savePattern.mock.calls[0]?.[0] as { config: { request_body_key: string } };
+    expect(saved.config.request_body_key).toBe('unavailable');
+    expect(JSON.stringify(saved)).not.toContain('SYNTHETIC_BODY_SECRET');
+  });
+
   it('replays the selected operation after its query credential rotates without accepting another date', async () => {
     const base = mocks.baseEvents[0];
     if (!base) throw new Error('Network capture fixture is incomplete');
@@ -227,7 +267,7 @@ describe('D48 credential-safe Network request identity', () => {
     const replay = runNetworkCapturePattern(saved.config, 37, {
       initiation: 'user', timeoutMs: 5_000,
     });
-    const expectedReplay = expect(replay).resolves.toEqual([{ title: 'Harbor Night at Pier Hall' }]);
+    void replay.catch(() => undefined);
     addListener.mock.calls[0]?.[0](37, { status: 'loading' });
     await vi.advanceTimersByTimeAsync(0);
     const emit = mocks.listeners.get(CHANNELS.NET_CAPTURE_EVENT);
@@ -243,7 +283,7 @@ describe('D48 credential-safe Network request identity', () => {
       request_sequence: 3,
     });
     await vi.advanceTimersByTimeAsync(5_000);
-    await expectedReplay;
+    await expect(replay).resolves.toEqual([{ title: 'Harbor Night at Pier Hall' }]);
   });
 
   it('reports two different credential-bearing identities in one window as ambiguous', async () => {
@@ -259,13 +299,14 @@ describe('D48 credential-safe Network request identity', () => {
       url_filter: 'https://electronic.vegas/api/events?date=2026-09-27&access_token=[credential]',
       url_match: 'exact', method: 'GET', body_match: 'ignore', key_path: 'events',
     }, 37, { initiation: 'user', timeoutMs: 5_000 });
-    const rejected = expect(replay).rejects.toThrow(/ambiguous/i);
+    void replay.catch(() => undefined);
     addListener.mock.calls[0]?.[0](37, { status: 'loading' });
     await vi.advanceTimersByTimeAsync(0);
     const emit = mocks.listeners.get(CHANNELS.NET_CAPTURE_EVENT);
     if (!emit) throw new Error('Network replay listener was not installed');
     emit({ ...base, url: 'https://electronic.vegas/api/events?date=2026-09-27&access_token=SYNTHETIC_ONE', request_sequence: 1 });
     emit({ ...base, url: 'https://electronic.vegas/api/events?date=2026-09-27&access_token=SYNTHETIC_TWO', request_sequence: 2 });
-    await rejected;
+    await vi.advanceTimersByTimeAsync(5_000);
+    await expect(replay).rejects.toThrow(/ambiguous/i);
   });
 });

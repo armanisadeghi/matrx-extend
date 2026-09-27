@@ -21,6 +21,7 @@ import {
   mandateExecutePath,
 } from '@/lib/api/routes/ai';
 import { newId } from '@/lib/id';
+import { sanitizeNetworkUrl, transientCredentialFingerprint } from '@/lib/credentials/network-urls';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import type { ExtractionPattern } from '@/lib/supabase/queries';
@@ -241,6 +242,7 @@ interface SavedNetConfig {
   request_body_key?: string;
   body_match?: 'exact' | 'ignore';
   url_filter?: string;
+  credential_query_keys?: string[];
   method?: string;
   key_path?: string;
 }
@@ -251,19 +253,25 @@ interface SavedNetConfig {
  * Display-list searches are never
  * saved here because they can match content type instead of request URL.
  */
-export function matchesUrlFilter(url: string, filter: string, match?: 'exact' | 'filter'): boolean {
-  if (match === 'exact') return url === filter;
-  const f = filter.trim();
+export function matchesUrlFilter(
+  url: string,
+  filter: string,
+  match?: 'exact' | 'filter',
+  extraCredentialKeys: readonly string[] = [],
+): boolean {
+  const candidate = sanitizeNetworkUrl(url, extraCredentialKeys);
+  const f = sanitizeNetworkUrl(filter.trim(), extraCredentialKeys);
+  if (match === 'exact') return candidate === f;
   if (!f) return true;
   if (!f.includes('*'))
-    return match !== 'filter' && /^https?:\/\//i.test(f) ? url === f : url.includes(f);
+    return match !== 'filter' && /^https?:\/\//i.test(f) ? candidate === f : candidate.includes(f);
   const re = new RegExp(
     f
       .split('*')
       .map((part) => part.replace(/[.+?^${}()|[\]\\]/g, '\\$&'))
       .join('.*'),
   );
-  return re.test(url);
+  return re.test(candidate);
 }
 
 /** Walk a dotted key path (numeric segments index arrays) and shape rows. */
@@ -312,7 +320,7 @@ export async function runNetworkCapturePattern(
   tabId: number,
   opts: InteractiveRunOptions,
 ): Promise<ExtractedRow[]> {
-  const { url_filter, url_match, request_body_key, body_match, method, key_path } = (config ??
+  const { url_filter, url_match, credential_query_keys, request_body_key, body_match, method, key_path } = (config ??
     {}) as SavedNetConfig;
   if (!url_filter) {
     throw new Error('This network pattern has no url_filter — re-save it from the Network tab.');
@@ -361,7 +369,7 @@ export async function runNetworkCapturePattern(
     const offEvents = on<CapturedNetEvent, { ack: true }>(CHANNELS.NET_CAPTURE_EVENT, (event) => {
       if (finished || !accepting) return { ack: true };
       if (event.tab_id !== tabId) return { ack: true };
-      if (!matchesUrlFilter(event.url, url_filter, url_match)) return { ack: true };
+      if (!matchesUrlFilter(event.url, url_filter, url_match, credential_query_keys)) return { ack: true };
       if (method && event.method.toUpperCase() !== method.toUpperCase()) return { ack: true };
       if (
         body_match !== 'ignore' &&
@@ -389,7 +397,8 @@ export async function runNetworkCapturePattern(
       const bodyKey = event.request_body_key;
       // An unavailable payload has no provable equality with another request.
       const identity = JSON.stringify([
-        event.url,
+        sanitizeNetworkUrl(event.url, credential_query_keys),
+        transientCredentialFingerprint(event.url, credential_query_keys),
         event.method.toUpperCase(),
         bodyKey === 'unavailable'
           ? ['unknown', event.request_sequence, event.ts_ms, matchCount]
@@ -480,7 +489,7 @@ export async function runNetworkCapturePattern(
         finish(() =>
           reject(
             new NetworkNoMatchError(
-              `No successful request matching "${url_filter}" and the saved body identity was captured within ${formatDurationMs(windowMs, { style: 'long' })} of reloading. Run again and interact with the page (scroll or open the list) while it listens. Requests fired before the reload listener installs cannot be captured.`,
+              `No successful request matching "${sanitizeNetworkUrl(url_filter, credential_query_keys)}" and the saved body identity was captured within ${formatDurationMs(windowMs, { style: 'long' })} of reloading. Run again and interact with the page (scroll or open the list) while it listens. Requests fired before the reload listener installs cannot be captured.`,
             ),
           ),
         );
