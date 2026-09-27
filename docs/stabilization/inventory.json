@@ -16345,12 +16345,17 @@
             "On the same host, remove the saved root while leaving the item selector elsewhere and rerun; verify no unrelated rows are returned as the saved list.",
             "Run a saved Microdata type on a page without that itemtype; verify a truthful no-matching-data outcome, not a successful-looking extraction claim or exception.",
             "Start a replay and navigate before completion; check whether prior-page rows appear after the URL changes and whether their source is clearly identified.",
+            "Repeat saved replay through Structured Data, automatic extraction, and the data_patterns tool; compare latest outcome and saved health for matching rows, no match, off-route runs, and failures.",
+            "Open the same source URL in two tabs with independently distinguishable page data; verify automatic extraction and Structured Data never reuse the other tab's cached rows or label its rows with the current tab's source.",
+            "Run a saved manual CSS recipe when every configured selector misses; verify no fabricated all-null row is reported as matched. Keep genuinely matched empty or null values valid.",
             "Record the exact owned pattern identity and remove only that test fixture after verification."
           ],
           "expected": [
             "Route mismatch gives visible, nonblocking applicability guidance; an explicit user Run remains available.",
             "A missing root never broadens extraction to document scope. Matching configured data replays accurately; legitimate zero rows are labeled as no matching data without treating zero itself as an exception.",
-            "A completion from an earlier page is not represented as data from the current page; source provenance stays clear."
+            "A completion from an earlier page is not represented as data from the current page; source provenance stays clear.",
+            "Every shared caller preserves tab and page provenance during completion, rendering, copy, and automatic cache reuse.",
+            "Total selector miss is truthful no-match; valid matched empty values remain data. No-match or off-route results do not overwrite the previous verified health with ok or broken."
           ],
           "dimensions": [
             "warm",
