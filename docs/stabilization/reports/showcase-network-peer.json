@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "review_type": "independent source verification",
+  "reviewed_commit": "fa9841ecd49ca0e23eef1ee6f9fefe51db7e531b",
+  "reviewer_context": "Zero D41 product authorship; reused prior Showcase live-review seat. Read-only inspection only: no tests, browser, build, or source edits.",
+  "status": "source improvement verified with residual replay identity gap; live outcome unverified",
+  "A_live_outcome": {
+    "verdict": "unverified",
+    "evidence": "No installed-extension or real-page replay was performed in this lane.",
+    "required_acceptance": "Capture two real JSON requests, search by content type, select one, change the display search so that response is hidden, save, reopen, rerun on the actual page, and compare request identity plus intended rows. Include query-distinguished same-path requests and honest no-match behavior."
+  },
+  "B_source_quality": {
+    "verdict": "partial",
+    "what_changed": [
+      "NetworkTab stores the selected CapturedNetEvent object instead of an index into the filtered list; changing the display search no longer changes which event supplies the preview or save config (src/features/showcase/tabs/NetworkTab.tsx:17-40,167-178).",
+      "The selected request's method and key path are saved with a separate editable replay URL matcher. Default Save uses that matcher, not the exploratory list filter, and warns when the matcher does not include the selected event (NetworkTab.tsx:32-40,198-220,254-263).",
+      "Saved network replay reloads the open tab, installs capture hooks at navigation start, filters events by tab, URL matcher and method, then extracts the saved key path. No matching request produces NetworkNoMatchError guidance (src/lib/data-pattern/run-interactive.ts:310-400)."
+    ],
+    "confirmed_residual_risk": {
+      "reproduction": [
+        "Capture two GET JSON requests on the same page: /api/events?date=2026-09-27 and /api/events?date=2026-09-28, each with a distinct events array.",
+        "Select the first request and save without editing the default matcher.",
+        "Rerun the saved pattern while both requests fire, with the second response body larger."
+      ],
+      "expected": "The recipe selects the saved request identity or clearly exposes that its default matcher intentionally covers multiple variants; the rerun returns the intended date's rows or asks for a narrower matcher.",
+      "actual_from_source": "urlPattern builds the default from host + pathname only and discards URL search parameters (NetworkTab.tsx:269-280). runNetworkCapturePattern collects every URL/method/body match for its settle window and resolves the largest body (run-interactive.ts:317-357). Thus query variants on the same path are indistinguishable under the default; if the other response is largest, the saved recipe returns that response's rows. The exact live request sequence is not verified here.",
+      "assessment": "Source-confirmed matcher ambiguity for same-path query variants; the changed code permits a user to edit the matcher, but the default selected-request recipe does not preserve that distinction."
+    },
+    "test_coverage_review": [
+      "The new component tests assert the saved matcher is for /api/events rather than /api/venues when display search is 'json', and assert the selected response stays pinned after a filter change (tests/unit/showcase-network-save-replay.test.tsx:125-173).",
+      "Those tests mock captured events and savePattern, then test matchesUrlFilter; they do not call the real runNetworkCapturePattern, reload a page, observe a real request, persist/reopen a recipe, or compare replayed rows.",
+      "The two mocked endpoints differ by pathname and have no query strings, so they cannot expose the default matcher dropping query identity or the largest-match choice among same-path variants."
+    ],
+    "source_blockers": [
+      "Default URL generalization omits query parameters while replay treats one URL matcher as the identity boundary and chooses a largest-body match among every request it accepts. A narrower default or a clear nonblocking ambiguity signal plus replay check is needed for query-distinguished data."
+    ],
+    "limitations": "The selected-versus-display-filter fix is source-supported, but there is no genuine replay evidence in this review. Do not mark EXT-D-0041 fully verified based on the added component tests alone."
+  },
+  "files_reviewed": [
+    "src/features/showcase/tabs/NetworkTab.tsx",
+    "src/lib/data-pattern/run-interactive.ts",
+    "src/lib/data-pattern/modes/network-capture.ts",
+    "src/features/showcase/components/SaveAsPattern.tsx",
+    "tests/unit/showcase-network-save-replay.test.tsx"
+  ],
+  "open_questions": [
+    "Does the product intend the default matcher to preserve exact query data, or to generalize it? If it generalizes, how will it prevent a different same-path variant from winning the largest-body heuristic?",
+    "Does fresh installed-extension replay preserve selected request identity and return the intended real rows after the exploratory filter changes?"
+  ]
+}
