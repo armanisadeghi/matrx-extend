@@ -237,6 +237,9 @@ export async function runAiExtractPattern(
 
 /** Saved network_capture pattern.config shape. */
 interface SavedNetConfig {
+  url_match?: 'exact' | 'filter';
+  request_body_key?: string;
+  body_match?: 'exact' | 'ignore';
   url_filter?: string;
   method?: string;
   key_path?: string;
@@ -248,10 +251,12 @@ interface SavedNetConfig {
  * Display-list searches are never
  * saved here because they can match content type instead of request URL.
  */
-export function matchesUrlFilter(url: string, filter: string): boolean {
+export function matchesUrlFilter(url: string, filter: string, match?: 'exact' | 'filter'): boolean {
+  if (match === 'exact') return url === filter;
   const f = filter.trim();
   if (!f) return true;
-  if (!f.includes('*')) return /^https?:\/\//i.test(f) ? url === f : url.includes(f);
+  if (!f.includes('*'))
+    return match !== 'filter' && /^https?:\/\//i.test(f) ? url === f : url.includes(f);
   const re = new RegExp(
     f
       .split('*')
@@ -291,9 +296,9 @@ export function rowsFromBody(body: string, keyPath?: string): ExtractedRow[] {
 }
 
 /**
- * Thrown when the re-capture window closed with zero matching requests.
- * This is circumstantial (the page may simply not have fired that API on
- * reload) — callers should NOT mark the pattern broken for it.
+ * Circumstantial capture outcome: no matching request, ambiguous identities,
+ * or an unavailable identity requiring recapture/an explicit broader matcher.
+ * Callers should show the remedy without marking the saved pattern broken.
  */
 export class NetworkNoMatchError extends Error {
   constructor(message: string) {
@@ -307,18 +312,27 @@ export async function runNetworkCapturePattern(
   tabId: number,
   opts: InteractiveRunOptions,
 ): Promise<ExtractedRow[]> {
-  const { url_filter, method, key_path } = (config ?? {}) as SavedNetConfig;
+  const { url_filter, url_match, request_body_key, body_match, method, key_path } = (config ??
+    {}) as SavedNetConfig;
   if (!url_filter) {
     throw new Error('This network pattern has no url_filter — re-save it from the Network tab.');
   }
   const windowMs = opts.timeoutMs ?? 20_000;
-  /** After the first match, keep listening briefly for a better (larger) one. */
-  const settleMs = 2_000;
+  if (
+    body_match !== 'ignore' &&
+    (request_body_key === 'unavailable' || (body_match === 'exact' && !request_body_key))
+  ) {
+    throw new NetworkNoMatchError(
+      'This request body cannot be matched reliably. Reopen Network capture and explicitly choose URL and method only, or select a request with a stable payload.',
+    );
+  }
 
   return new Promise<ExtractedRow[]>((resolve, reject) => {
-    const matches: CapturedNetEvent[] = [];
+    let latest: CapturedNetEvent | null = null;
+    let matchedIdentity: string | null = null;
+    let matchCount = 0;
+    let accepting = false;
     let finished = false;
-    let settleTimer: ReturnType<typeof setTimeout> | null = null;
 
     const cleanup: Array<() => void> = [];
     const finish = (fn: () => void) => {
@@ -329,11 +343,15 @@ export async function runNetworkCapturePattern(
     };
 
     const concludeWithMatches = () => {
+      const event = latest;
+      if (!event) return;
       finish(() => {
-        // Prefer the largest body — list endpoints carry the most data.
-        const best = matches.reduce((a, b) => (b.body_size > a.body_size ? b : a));
         try {
-          resolve(rowsFromBody(best.body, key_path));
+          if (event.body_truncated)
+            throw new Error(
+              'The matched response was truncated. Capture a smaller response or narrow the request on the page, then save it again.',
+            );
+          resolve(rowsFromBody(event.body, key_path));
         } catch (e) {
           reject(e instanceof Error ? e : new Error(String(e)));
         }
@@ -341,28 +359,103 @@ export async function runNetworkCapturePattern(
     };
 
     const offEvents = on<CapturedNetEvent, { ack: true }>(CHANNELS.NET_CAPTURE_EVENT, (event) => {
-      if (finished) return { ack: true };
+      if (finished || !accepting) return { ack: true };
       if (event.tab_id !== tabId) return { ack: true };
-      if (!matchesUrlFilter(event.url, url_filter)) return { ack: true };
+      if (!matchesUrlFilter(event.url, url_filter, url_match)) return { ack: true };
       if (method && event.method.toUpperCase() !== method.toUpperCase()) return { ack: true };
-      if (!event.body) return { ack: true };
-      matches.push(event);
-      opts.onProgress?.(`Matched ${matches.length} request${matches.length === 1 ? '' : 's'}…`);
-      if (settleTimer) clearTimeout(settleTimer);
-      settleTimer = setTimeout(concludeWithMatches, settleMs);
+      if (
+        body_match !== 'ignore' &&
+        request_body_key !== undefined &&
+        event.request_body_key !== request_body_key
+      )
+        return { ack: true };
+      if (
+        body_match !== 'ignore' &&
+        request_body_key === undefined &&
+        event.request_body_key &&
+        event.request_body_key !== 'none'
+      ) {
+        finish(() =>
+          reject(
+            new NetworkNoMatchError(
+              'This saved pattern has no body identity for this request. Capture and save it again, or explicitly choose URL and method only in Network capture.',
+            ),
+          ),
+        );
+        return { ack: true };
+      }
+      // Failed requests do not replace the newest successful response.
+      if (event.status < 200 || event.status >= 300) return { ack: true };
+      const bodyKey = event.request_body_key;
+      // An unavailable payload has no provable equality with another request.
+      const identity = JSON.stringify([
+        event.url,
+        event.method.toUpperCase(),
+        bodyKey === 'unavailable'
+          ? ['unknown', event.request_sequence, event.ts_ms, matchCount]
+          : (bodyKey ?? 'none'),
+      ]);
+      if (matchedIdentity !== null && identity !== matchedIdentity) {
+        finish(() =>
+          reject(
+            new NetworkNoMatchError(
+              'This matcher captured different request identities and is ambiguous. Narrow the URL matcher or include the selected request body identity in Network capture, then save again.',
+            ),
+          ),
+        );
+        return { ack: true };
+      }
+      matchedIdentity = identity;
+      matchCount += 1;
+      if (
+        !latest ||
+        (event.request_sequence ?? event.ts_ms) > (latest.request_sequence ?? latest.ts_ms)
+      ) {
+        latest = event;
+      } else if (
+        (event.request_sequence ?? event.ts_ms) === (latest.request_sequence ?? latest.ts_ms) &&
+        event.body !== latest.body
+      ) {
+        // Older captures without an ordering field cannot resolve a tie safely.
+        try {
+          if (
+            JSON.stringify(rowsFromBody(event.body, key_path)) !==
+            JSON.stringify(rowsFromBody(latest.body, key_path))
+          ) {
+            finish(() =>
+              reject(
+                new NetworkNoMatchError(
+                  'Matching responses returned different rows without a reliable request order. Start a fresh capture and save the request again.',
+                ),
+              ),
+            );
+          }
+        } catch (e) {
+          finish(() => reject(e instanceof Error ? e : new Error(String(e))));
+        }
+      }
+      opts.onProgress?.(
+        `Matched ${matchCount} request${matchCount === 1 ? '' : 's'}; checking for other matches until the capture window ends…`,
+      );
       return { ack: true };
     });
-    cleanup.push(offEvents, () => {
-      if (settleTimer) clearTimeout(settleTimer);
-    });
+    cleanup.push(offEvents);
 
     // Install the taps the moment the reloaded document starts — waiting for
     // load-complete would miss the data requests fired during hydration.
     const onUpdated = (updatedTabId: number, info: chrome.tabs.TabChangeInfo) => {
       if (updatedTabId !== tabId || info.status !== 'loading') return;
       chrome.tabs.onUpdated.removeListener(onUpdated);
+      accepting = true;
       void (async () => {
         try {
+          // Relay first: the very first tapped response must have a listener.
+          await chrome.scripting.executeScript({
+            target: { tabId },
+            injectImmediately: true,
+            func: networkRelayIsolated,
+          });
+          if (finished) return;
           await chrome.scripting.executeScript({
             target: { tabId },
             world: 'MAIN',
@@ -370,11 +463,7 @@ export async function runNetworkCapturePattern(
             func: networkTapMain,
             args: [1_000_000],
           });
-          await chrome.scripting.executeScript({
-            target: { tabId },
-            injectImmediately: true,
-            func: networkRelayIsolated,
-          });
+          if (finished) return;
           opts.onProgress?.('Listening for matching requests…');
         } catch (e) {
           finish(() => reject(e instanceof Error ? e : new Error(String(e))));
@@ -385,13 +474,13 @@ export async function runNetworkCapturePattern(
     cleanup.push(() => chrome.tabs.onUpdated.removeListener(onUpdated));
 
     const windowTimer = setTimeout(() => {
-      if (matches.length > 0) {
+      if (latest) {
         concludeWithMatches();
       } else {
         finish(() =>
           reject(
             new NetworkNoMatchError(
-              `No request matching "${url_filter}" fired within ${formatDurationMs(windowMs, { style: 'long' })} of reloading. Interact with the page (scroll, open the list) and run again — the listener installs on reload.`,
+              `No successful request matching "${url_filter}" and the saved body identity was captured within ${formatDurationMs(windowMs, { style: 'long' })} of reloading. Run again and interact with the page (scroll or open the list) while it listens. Requests fired before the reload listener installs cannot be captured.`,
             ),
           ),
         );

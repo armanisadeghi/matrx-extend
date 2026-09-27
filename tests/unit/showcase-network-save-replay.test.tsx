@@ -8,6 +8,8 @@ const mocks = vi.hoisted(() => {
       ts_ms: 1_726_000_000_000,
       source: 'fetch' as const,
       method: 'GET',
+      request_body_key: 'none',
+      request_sequence: 1,
       url: 'https://electronic.vegas/api/events',
       status: 200,
       status_text: 'OK',
@@ -23,6 +25,8 @@ const mocks = vi.hoisted(() => {
       ts_ms: 1_726_000_000_001,
       source: 'fetch' as const,
       method: 'GET',
+      request_body_key: 'none',
+      request_sequence: 1,
       url: 'https://electronic.vegas/api/venues',
       status: 200,
       status_text: 'OK',
@@ -159,6 +163,32 @@ describe('Network saved request replay', () => {
     );
   });
 
+  it('saves explicit broader URL and body choices without blocking an excluded selected response', async () => {
+    const user = userEvent.setup();
+    render(<NetworkTab />);
+    await user.click(screen.getByRole('button', { name: /api\/events/ }));
+    await user.click(screen.getByRole('button', { name: 'Select events path' }));
+    await user.selectOptions(screen.getByRole('combobox', { name: 'URL matching' }), 'filter');
+    await user.click(screen.getByRole('checkbox', { name: 'Match the selected request body' }));
+    const matcher = screen.getByLabelText('Request URL to match on rerun');
+    await user.clear(matcher);
+    await user.type(matcher, '/other-calendar/*');
+    expect(screen.getByText(/does not include the selected response/)).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: /^Save$/ }));
+    await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(1));
+    expect(mocks.savePattern.mock.calls[0]?.[0]).toMatchObject({
+      config: {
+        url_filter: '/other-calendar/*',
+        url_match: 'filter',
+        body_match: 'ignore',
+        key_path: 'events',
+      },
+    });
+    expect(
+      (mocks.savePattern.mock.calls[0]?.[0] as { config: Record<string, unknown> }).config,
+    ).not.toHaveProperty('request_body_key');
+  });
+
   it('keeps the selected response when the list search changes before Save', async () => {
     const user = userEvent.setup();
     render(<NetworkTab />);
@@ -234,6 +264,7 @@ describe('Network saved request replay', () => {
       const addListener = vi.fn();
       const removeListener = vi.fn();
       Object.assign(chrome, {
+        scripting: { executeScript: vi.fn(async () => []) },
         tabs: {
           onUpdated: { addListener, removeListener },
           reload: vi.fn(async () => {}),
@@ -246,9 +277,11 @@ describe('Network saved request replay', () => {
       });
       const emit = mocks.listeners.get(CHANNELS.NET_CAPTURE_EVENT);
       if (!emit) throw new Error('Network replay listener was not installed');
+      addListener.mock.calls[0]?.[0](37, { status: 'loading' });
+      await vi.advanceTimersByTimeAsync(0);
       emit(selected);
       emit(other);
-      await vi.advanceTimersByTimeAsync(2_000);
+      await vi.advanceTimersByTimeAsync(5_000);
 
       await expect(replay).resolves.toEqual([{ title: variant.selectedTitle }]);
       expect(chrome.tabs.reload).toHaveBeenCalledWith(37);
