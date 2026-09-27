@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "run_id": "screenshot-controls-dev094-002",
+  "status": "unverified",
+  "scope": "One resource-admitted owned native EXT-F-1009 Visible capture and controls attempt against a fresh localhost fixture.",
+  "runner": "tests/browser/screenshot-capture-acceptance.mjs",
+  "run_count": 1,
+  "build": {
+    "version": "0.2.94",
+    "tree_sha256": "8b359ead9dd0b4db1d404a26cb6b2fbfc3e3c10d79956638a2ec587d4a395665",
+    "receipt_path": "test-results/source-dev-build-094-capture-20260927.json",
+    "receipt_sha256": "43d4f38f41ab900643e4266e9ab17f3ad744229d98dd539abe66bf53e1327248",
+    "package_manifest_receipt_versions_matched": true,
+    "artifact_tree_matched_before_and_after": true,
+    "rebuild_performed": false
+  },
+  "runtime": {
+    "explicit_tmpdir_playwright_chrome_and_receipt_verified_before_launch": true,
+    "resource_admission": "RESOURCE_ADMITTED",
+    "admitted_at": "2026-09-27T10:56:14.118Z",
+    "terminal_at": "2026-09-27T10:57:06.043Z",
+    "child_exit_code": 1,
+    "lease_root_empty_after_run": true
+  },
+  "native_result": {
+    "runner_status": "unverified",
+    "exercise_callback_reached": true,
+    "admin_identity_and_approved_organization": true,
+    "fresh_fixture_capture_and_preview": "one real user row, loaded blob preview, positive dimensions, and all three fixture pixel bands matched",
+    "per_control": {
+      "EXT-F-1009-T01-warm-refresh": "pass: completed real gallery read preserved the exact owned row",
+      "EXT-F-1009-T04-thumbnail": "failed: one new tab appeared but its observed URL did not equal the expected canonical Files URL within the wait",
+      "EXT-F-1009-T04-icon": "unverified; runner stopped at thumbnail",
+      "EXT-F-1009-T05-copy": "unverified; runner stopped at thumbnail",
+      "EXT-F-1009-T06-cancel": "unverified; runner stopped at thumbnail",
+      "EXT-F-1009-T06-confirm": "exercised in failure recovery: visible enabled confirmation with file-retention consequence, then exact owned-row removal verified by completed real gallery read"
+    },
+    "failure_stage": "thumbnail_open_in_files",
+    "failure_code": "owned_capture_stage_failed",
+    "failure_diagnostic": {
+      "timeout": false,
+      "assertion": false,
+      "driverCode": null
+    },
+    "owned_row_cleanup_attempted": true,
+    "owned_row_cleanup_verified": true,
+    "created_row_may_need_ui_cleanup": false
+  },
+  "evidence": {
+    "private_wrapper_log": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-controls-dev094-002-wrapper.log",
+    "private_wrapper_log_mode": "0600",
+    "private_wrapper_log_sha256": "2a43a48ecb5690ced5ee8e329373c8e4c350e5f98358f1248f99c1223b679df6",
+    "immutable_result_path": "test-results/screenshot-controls-dev094-002.evidence.json",
+    "immutable_result_mode": "0600",
+    "immutable_result_sha256": "9c68fe8703e2f86b07b172e119bce5177a27cf89a44f99ad97e7b944c268034e",
+    "runner_result_path": "test-results/screenshot-capture-77bfac1d-b52b-4df3-914c-879829f85dfc.json"
+  },
+  "limits": [
+    "A new tab with a nonmatching URL is observed; the sanitized record does not preserve the URL or the underlying thrown exception, so this run alone does not distinguish product routing, redirect, or an overstrict oracle.",
+    "No additional native run was performed."
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1009",
+  "scope": "Independent review of the screenshot controls source delta and one guarded native attempt.",
+  "source_review": {
+    "verdict": "acceptable",
+    "checks": {
+      "runner_and_clipboard_helper_syntax": "pass",
+      "git_diff_check": "pass",
+      "current_dev_artifact_matches_receipt": true
+    },
+    "native_targets": {
+      "T01_warm_refresh": "unverified; native runner failed before exercise",
+      "T04_thumbnail_and_icon_files_links": "unverified; native runner failed before exercise",
+      "T05_copy_durable_files_url": "unverified; native runner failed before exercise",
+      "T06_cancel_preserves_row": "unverified; native runner failed before exercise",
+      "T06_confirmed_cleanup": "unverified in this attempt; earlier dev094-002 evidence remains separate"
+    },
+    "quality": {
+      "tab_ownership": "The checks snapshot current-window tabs and close only newly added tab IDs, then restore the previously active owned fixture tab.",
+      "copy_permission": "The product Copy click occurs before the temporary read grant. Read observation is bounded to five seconds, compares only in memory, and restores the queried original permission in finally.",
+      "row_ownership": "Refresh and cancellation checks require a unique real gallery read and the exact created row ID; cleanup remains scoped to the sole fresh fixture row.",
+      "report_privacy": "The runner emits booleans/counts and fixed failure codes; it does not persist the Files URL, file ID, clipboard contents, credentials, or raw exception text."
+    },
+    "limits": [
+      "The native run did not reach the exercise callback, so it proves none of the newly added control behavior.",
+      "No source-level blocker was found in the reviewed delta; native harness setup failure remains unexplained by its sanitized output."
+    ]
+  },
+  "native_attempt": {
+    "run_id": "screenshot-controls-dev094-001",
+    "admission": "RESOURCE_ADMITTED",
+    "admission_reasons": [],
+    "child_exit_code": 1,
+    "runner_status": "unverified",
+    "runner_stage": "owned_native_profile",
+    "runner_failure_code": "owned_harness_or_ui_stage_failed",
+    "sanitized_driver_failure": {
+      "timeout": false,
+      "assertion": false,
+      "driverCode": null,
+      "hitTarget": false,
+      "matchedTargetCount": null,
+      "visibleMatchCount": null
+    },
+    "exercise_callback_reached": false,
+    "cases_observed": 0,
+    "lease_released": true,
+    "resource_lease_root_empty_after_run": true,
+    "build": {
+      "version": "0.2.94",
+      "tree_sha256": "8b359ead9dd0b4db1d404a26cb6b2fbfc3e3c10d79956638a2ec587d4a395665",
+      "receipt_path": "test-results/source-dev-build-094-capture-20260927.json",
+      "receipt_sha256": "43d4f38f41ab900643e4266e9ab17f3ad744229d98dd539abe66bf53e1327248",
+      "tree_hash_after_run_matches": true,
+      "rebuild_performed": false
+    },
+    "source": {
+      "head_at_run": "1edea4485982ffe8bc7d3fe9c473c3e3331afea1",
+      "runner": "tests/browser/screenshot-capture-acceptance.mjs"
+    },
+    "sanitized_runner_evidence": {
+      "path": "test-results/screenshot-capture-92ac4e39-8a71-4335-b3c3-9fb56ac5d1d4.json",
+      "mode": "0600"
+    },
+    "resource_output": [
+      "RESOURCE_ADMITTED at 2026-09-27T10:51:13.162Z; pressure 1; available memory 12.16 GiB; sampled CPU busy 0.4045; no admission reasons.",
+      "RESOURCE_JOB_EXIT at 2026-09-27T10:51:13.385Z; child exit code 1. Guard exited normally and its lease root was empty afterward."
+    ]
+  }
+}

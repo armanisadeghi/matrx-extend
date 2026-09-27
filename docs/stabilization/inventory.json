@@ -12631,7 +12631,20 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "screenshot-controls-dev094-002",
+              "verified_substeps": [
+                "Actual warm Refresh completed real gallery read and preserved exact owned row."
+              ],
+              "remaining_criteria": [
+                "Pending prior-page responses, reload, failure/retry, no-page and member mode remain unverified."
+              ],
+              "evidence": "docs/stabilization/runs/screenshot-controls-dev094-002.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1009-T02",
@@ -12776,15 +12789,16 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "screenshot-capture-dev094-002",
+              "run_id": "screenshot-controls-dev094-002",
               "verified_substeps": [
-                "Normal exact-owned-row Delete shows consequence and enabled confirmation; real post-delete read proves row absent and gallery empty."
+                "Normal exact-owned-row Delete shows consequence and enabled confirmation; real post-delete read proves row absent and gallery empty.",
+                "Failure-recovery Delete also verified exact owned row absent after completed real gallery read."
               ],
               "remaining_criteria": [
                 "Cancel/service-failure cases remain unverified.",
-                "Original failed-run rows have unknown disposition; error-recovery cleanup branch still needs native retest."
+                "Historical .93/.94 capture001 rows have unknown disposition and no retained exact recovery identity."
               ],
-              "evidence": "docs/stabilization/runs/screenshot-capture-dev094-002.json"
+              "evidence": "docs/stabilization/runs/screenshot-controls-dev094-002.json"
             }
           },
           "defect_ids": [
@@ -12924,7 +12938,9 @@
           "run_ids": [
             "screenshot-capture-dev093-001",
             "screenshot-capture-dev094-001",
-            "screenshot-capture-dev094-002"
+            "screenshot-capture-dev094-002",
+            "screenshot-controls-dev094-001",
+            "screenshot-controls-dev094-002"
           ],
           "retest_status": "partial"
         }

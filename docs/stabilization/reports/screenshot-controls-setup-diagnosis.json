@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-controls-setup-diagnosis",
+  "scope": "Read-only source and sanitized-evidence diagnosis of screenshot-controls-dev094-001; no browser, heavy command, retry, private log, or auth data inspected.",
+  "observed": {
+    "run_status": "unverified",
+    "stage": "owned_native_profile",
+    "cases": 0,
+    "driver_diagnostic": "timeout=false, assertion=false, driverCode=null",
+    "resource_guard": "admitted; child exited 1 about 223 ms later; lease released",
+    "build": "The same 0.2.94 artifact tree had a previous successful capture run; the failed run's receipt override was inherited through the resource wrapper."
+  },
+  "cause": {
+    "classification": "native runtime setup prerequisite missing in the failed invocation; original exception category erased by acceptance runner catch",
+    "evidence": [
+      "The failed invocation set SCREENSHOT_CAPTURE_DEV_BUILD_RECEIPT only. The resource wrapper copies process.env into the child.",
+      "In this environment MATRX_PLAYWRIGHT_MODULE and MATRX_CHROME_PATH are unset, and neither playwright nor playwright-core resolves from this repository.",
+      "A read-only call to resolveBrowserRuntime without those variables reproduced browser_runtime_playwright_missing; the same call with the known installed Playwright module and Chrome-for-Testing paths returned runtime_resolved.",
+      "runNativeSidepanelQa verifies the dev artifact, then calls resolveBrowserRuntime before creating an owned profile or Chrome child. The 223 ms failure is consistent with this immediate prerequisite error."
+    ],
+    "certainty": "High-confidence reproduction of the setup failure mechanism, but the original exception cannot be proven byte-for-byte because the runner did not retain a safe setup error code.",
+    "not_established": "No screenshot control or product UI behavior was exercised; the prior successful capture does not cover the new controls."
+  },
+  "diagnostic_gap": "The screenshot acceptance runner's outer catch maps every non-driver setup error to owned_harness_or_ui_stage_failed and safeFailure only knows timeout, assertion, and pointer-driver codes. It discards browser_runtime_playwright_missing and other safe native harness codes.",
+  "next_action": "For one resource-admitted controls rerun, pass the verified MATRX_PLAYWRIGHT_MODULE and MATRX_CHROME_PATH paths explicitly alongside SCREENSHOT_CAPTURE_DEV_BUILD_RECEIPT. Retain the same dev artifact receipt and profile ownership gate. If setup still fails, add an allowlisted native setup error code to the runner's sanitized failure output, without logging raw exception text or private paths; then diagnose that code before any further retry.",
+  "verification": {
+    "without_explicit_runtime": "browser_runtime_playwright_missing",
+    "with_explicit_runtime": "runtime_resolved",
+    "browser_launched": false,
+    "runner_modified": false
+  }
+}

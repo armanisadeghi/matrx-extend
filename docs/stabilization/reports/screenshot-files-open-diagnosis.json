@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-files-open-diagnosis",
+  "scope": "Source-only follow-up to the one admitted screenshot-controls-dev094-002 native run; no rerun, browser interaction, or runner edit.",
+  "observed_first_failure": {
+    "stage": "thumbnail_open_in_files",
+    "observation": "The trusted thumbnail click produced exactly one newly opened tab, but the tab's observed URL did not equal the runner's expected Files URL during a 30-second wait.",
+    "runner_error": "files_tab_0_not_observed from the shared waitFor helper is the likely thrown literal; the outer catch retained only owned_capture_stage_failed and discarded the exception message.",
+    "product_boundary": "The screenshot card builds its URL from ENV.FRONTEND_URL plus /files/f/<encoded file id>, and its thumbnail onClick calls chrome.tabs.create with that URL.",
+    "runner_boundary": "verifyOwnedFilesTab requires strict string equality with https://aimatrx.com/files/f/<encoded file id> against chrome.tabs.query's current tab URL. It does not record a safe redirect category or initial versus final navigation state.",
+    "classification": "Unresolved URL mismatch after a real new tab opened. It may be a frontend redirect, authenticated route behavior, build-time frontend origin difference, or a product URL bug; the sanitized evidence cannot distinguish these. It is not evidence that the thumbnail failed to open a tab."
+  },
+  "ranked_source_hypotheses": [
+    {
+      "hypothesis": "The target navigates from the apex Files URL to a www, auth, or other frontend route, while the runner compares the final tab URL to the unredirected apex URL.",
+      "prediction": "A privacy-safe observation of origin class and route class would show a different final host or route even though the initial chrome.tabs.create URL matched the product-generated Files URL."
+    },
+    {
+      "hypothesis": "The built ENV.FRONTEND_URL differs from the runner's hardcoded apex expectation.",
+      "prediction": "The configured build-time origin class would differ before navigation; no redirect is needed to explain the mismatch."
+    },
+    {
+      "hypothesis": "The clicked UI or tab query associated a new tab with a different action.",
+      "prediction": "An owned-tab creation event would show an initial URL class other than Files despite one new tab."
+    }
+  ],
+  "next_action": "The runner owner should add bounded, privacy-safe initial/final tab URL classification (expected Files route, same route on www, login redirect, other route, or other origin) and a safe exception code at this seam, then use the next authorized native run to determine whether the product or oracle needs repair. Do not loosen the equality oracle until the navigation is explained.",
+  "cleanup": "Failure recovery confirmed the owned row's deletion with an exact-card confirmation and completed real gallery read; no historical row cleanup is justified."
+}

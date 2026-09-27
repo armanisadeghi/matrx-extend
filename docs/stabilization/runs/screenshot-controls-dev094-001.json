@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "run_id": "screenshot-controls-dev094-001",
+  "status": "unverified",
+  "scope": "One guarded native startup attempt for EXT-F-1009 controls; the runner failed before its exercise callback.",
+  "source_head": "1edea4485982ffe8bc7d3fe9c473c3e3331afea1",
+  "runner": "tests/browser/screenshot-capture-acceptance.mjs",
+  "build": {
+    "version": "0.2.94",
+    "tree_sha256": "8b359ead9dd0b4db1d404a26cb6b2fbfc3e3c10d79956638a2ec587d4a395665",
+    "receipt_path": "test-results/source-dev-build-094-capture-20260927.json",
+    "receipt_sha256": "43d4f38f41ab900643e4266e9ab17f3ad744229d98dd539abe66bf53e1327248",
+    "tree_hash_matched_after_run": true,
+    "rebuild_performed": false
+  },
+  "resource_guard": {
+    "admission": "RESOURCE_ADMITTED",
+    "admission_reasons": [],
+    "child_exit_code": 1,
+    "terminal_at": "2026-09-27T10:51:13.385Z",
+    "lease_released": true,
+    "lease_root_empty_after_run": true
+  },
+  "native_result": {
+    "runner_status": "unverified",
+    "stage": "owned_native_profile",
+    "code": "owned_harness_or_ui_stage_failed",
+    "exercise_callback_reached": false,
+    "cases_observed": 0,
+    "sanitized_driver_failure": {
+      "timeout": false,
+      "assertion": false,
+      "driverCode": null,
+      "hitTarget": false,
+      "matchedTargetCount": null,
+      "visibleMatchCount": null
+    },
+    "per_control": {
+      "EXT-F-1009-T01": "unverified",
+      "EXT-F-1009-T04-thumbnail": "unverified",
+      "EXT-F-1009-T04-icon": "unverified",
+      "EXT-F-1009-T05": "unverified",
+      "EXT-F-1009-T06-cancel": "unverified"
+    },
+    "capture_or_row_created": false
+  },
+  "evidence": {
+    "sanitized_result_path": "test-results/screenshot-capture-92ac4e39-8a71-4335-b3c3-9fb56ac5d1d4.json",
+    "sanitized_result_mode": "0600"
+  },
+  "limits": [
+    "No control behavior was exercised; the native setup failure is not a target failure.",
+    "The sanitized runner output does not identify the underlying native setup cause."
+  ]
+}
