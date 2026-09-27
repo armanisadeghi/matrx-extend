@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-27T00:10:00+00:00",
+  "updated_at": "2026-09-27T00:15:00+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -6715,7 +6715,7 @@
           ],
           "results": {
             "admin": {
-              "status": "unverified",
+              "status": "pass",
               "run_id": "admin-debug-filters-001",
               "evidence": [
                 "docs/stabilization/runs/admin-debug-filters-001.json",
@@ -6729,24 +6729,24 @@
                 "docs/stabilization/runs/debug-log-controls-010.json",
                 "docs/stabilization/reports/debug010-runtime-peer.json",
                 "docs/stabilization/runs/debug-log-controls-011.json",
-                "docs/stabilization/reports/debug011-runtime-peer.json"
+                "docs/stabilization/reports/debug011-runtime-peer.json",
+                "docs/stabilization/runs/debug-log-controls-012.json",
+                "docs/stabilization/reports/debug012-runtime-peer.json"
               ],
               "dimension_results": {
-                "warm": "partial",
+                "warm": "pass",
                 "reload": "pass",
                 "service-error": "pass"
               },
-              "detail": "Reload and service-error searches restored the exact ordered visible-row signature sequence, including counted natural arrivals. The warm runs still compare count only, so the warm reset dimension remains partial and T14 remains unverified.",
-              "remaining_criteria": [
-                "Repeat the strong prior-row identity/order reset oracle in the warm dimension; keep T14 unverified until all declared dimensions meet the prior-set expectation."
-              ],
+              "detail": "Warm Debug 012, reload Debug 011, and service-error Debug 010 each restored the exact ordered visible-row signature sequence after message and natural detail-only searches, accounting for arrivals. T14 case acceptance is supported on release 0.2.79; signatures prove rendered visible rows, not hidden event IDs or detail JSON byte identity.",
               "run_ids": [
                 "admin-debug-filters-001",
                 "debug-log-controls-003",
                 "debug-log-controls-004",
                 "debug-log-controls-009",
                 "debug-log-controls-010",
-                "debug-log-controls-011"
+                "debug-log-controls-011",
+                "debug-log-controls-012"
               ]
             }
           }
@@ -8346,7 +8346,8 @@
             "debug-log-controls-006",
             "debug-log-controls-009",
             "debug-log-controls-010",
-            "debug-log-controls-011"
+            "debug-log-controls-011",
+            "debug-log-controls-012"
           ],
           "retest_status": "not-run"
         }
@@ -8540,6 +8541,32 @@
             }
           ],
           "limits": "T14 case remains unverified because its warm reset dimension is partial. Feature/admin cell remains unverified."
+        },
+        {
+          "run_id": "debug-log-controls-012",
+          "combined_run_ids": [
+            "debug-log-controls-010",
+            "debug-log-controls-011",
+            "debug-log-controls-012"
+          ],
+          "mode": "admin",
+          "build": "0.2.79",
+          "status": "bounded-pass",
+          "receipt": "docs/stabilization/runs/debug-log-controls-012.json",
+          "independent_review": "docs/stabilization/reports/debug012-runtime-peer.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1005-T14",
+              "dimensions": {
+                "warm": "pass",
+                "reload": "pass",
+                "service-error": "pass"
+              },
+              "status": "pass",
+              "observation": "Across three exact-build runs, trusted message/detail search, distinct no-match, and exact ordered visible-row restoration passed, accounting for natural arrivals."
+            }
+          ],
+          "limits": "Bounded T14 case acceptance only. Rendered visible-row restoration does not prove internal event IDs or hidden detail JSON byte identity. EXT-F-1005 admin feature cell remains unverified."
         }
       ]
     },

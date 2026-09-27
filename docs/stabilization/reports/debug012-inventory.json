@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "report_id": "debug012-inventory",
+  "source_runs": [
+    "docs/stabilization/runs/debug-log-controls-010.json",
+    "docs/stabilization/runs/debug-log-controls-011.json",
+    "docs/stabilization/runs/debug-log-controls-012.json"
+  ],
+  "independent_peers": [
+    "docs/stabilization/reports/debug010-runtime-peer.json",
+    "docs/stabilization/reports/debug011-runtime-peer.json",
+    "docs/stabilization/reports/debug012-runtime-peer.json"
+  ],
+  "feature_id": "EXT-F-1005",
+  "case_id": "EXT-F-1005-T14",
+  "mode": "admin",
+  "build": {
+    "version": "0.2.79",
+    "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0"
+  },
+  "dimensions": {
+    "warm": "pass",
+    "reload": "pass",
+    "service-error": "pass"
+  },
+  "case_status": "pass",
+  "evidence_summary": "Debug 012 warm, Debug 011 reload, and Debug 010 service-error runs each passed trusted message/detail search, distinct no-match, and exact ordered visible-row signature restoration, accounting for natural arrivals.",
+  "status_boundary": "T14 is accepted at case scope only. EXT-F-1005 admin feature cell remains unverified.",
+  "limits": [
+    "Rendered visible-row signatures do not prove internal event IDs or hidden detail JSON byte identity.",
+    "No full EXT-F-1005 feature acceptance is claimed.",
+    "No tests or browser work were performed for this inventory update."
+  ],
+  "validation": {
+    "inventory_json_parse": "pass",
+    "report_json_parse": "pass",
+    "ascii": "pass"
+  }
+}
