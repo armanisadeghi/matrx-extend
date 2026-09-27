@@ -1,0 +1,45 @@
+{
+  "id": "EXT-D-0044",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T52"],
+  "surface": "Showcase saved-pattern applicability and user-triggered replay outcome",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Save a List Pattern on host H for route /calendar/ with list_root '#events', item_selector '.event-card', and a title field.",
+    "On the same host, open Showcase > Patterns at /search/ where '.event-card' exists elsewhere but '#events' does not; observe route applicability guidance and click Run explicitly.",
+    "Repeat with same-route content where the saved root is absent but the item selector appears elsewhere; then run a saved Microdata type on a page with no matching itemscopes.",
+    "Separately start a saved-pattern run, navigate the tab before it completes, and check whether prior-page rows are still presented as current-page output."
+  ],
+  "expected": "The UI clearly says when the current route differs from the saved route and may recommend the applicable page, but the person can still explicitly Run. Explicit execution preserves the saved selectors and never widens a missing list root to document scope. A legitimate zero-row outcome is labeled as no matching data, not thrown as an exception and not silently marked as evidence that intended data was found. Any completion whose source page is no longer current is not presented as current-page output.",
+  "actual": "Source confirms the Showcase Patterns entry loads recipes by host and invokes the selected recipe without checking route_pattern. In list_pattern execution, a missing list_root falls back to document scope; matching item_selector elements elsewhere can become rows, while no matches return []. A filtered Microdata recipe with no matching itemtype also returns []. PatternsTab treats every resolved [] as status ok with zero rows. A separate sourced audit lead is that PatternsTab has no page-key guard on async run completion and does not clear result state on navigation; whether navigation races produce visibly stale results requires runtime verification.",
+  "root_ruling": "A route mismatch must offer visible applicability guidance but must not prohibit an explicit user Run. Validation offers, never blocks. A legitimate zero-row result is not itself an exception: label no matching data honestly, never silently widen scope or claim evidence of intended data.",
+  "source_evidence": [
+    "src/features/showcase/tabs/PatternsTab.tsx:54-73 fetches by current host; :81-108 runs without route matching, stores every result and bumps ok even when data.length is zero.",
+    "src/features/showcase/components/SaveAsPattern.tsx:84-90 and :154-164 capture source pathname into route_pattern.",
+    "src/lib/data-pattern/matcher.ts:3-16 defines route matching; src/features/data/DataView.tsx:214 and src/hooks/use-auto-extract.ts:79-81 use it, but Showcase Patterns does not.",
+    "src/lib/data-pattern/modes/list-pattern.ts:52-65 falls back to document when list_root is absent, then queries item_selector.",
+    "src/lib/data-pattern/modes/microdata.ts:111-124 filters by configured type and returns an empty array when none match.",
+    "src/lib/data-pattern/run-pattern.ts:41-63 runs config on the supplied tab and normalizes missing results to an empty array.",
+    "Stale-completion audit lead: src/features/showcase/tabs/PatternsTab.tsx:81-108 has no captured URL/page identity check before setting rows after await; user-visible race outcome remains unverified."
+  ],
+  "severity": "S2: saved recipes can silently produce unrelated data or misrepresent no matching data as a successful intended replay.",
+  "priority": "P1: directly affects reliable reopen-and-repeat behavior in the requested Showcase workflow.",
+  "state": "triaged",
+  "reproduction_status": "source-confirmed; runtime scenarios pending",
+  "verification_status": "source-only; installed-extension behavior and stale-completion race unverified",
+  "transition_history": [
+    {
+      "at": "2026-09-27",
+      "from": null,
+      "to": "open",
+      "reason": "Independent source audit found missing route applicability and missing-root scope fallback in saved Showcase replay."
+    },
+    {
+      "at": "2026-09-27",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Confirmed source paths for route omission, document-wide fallback and zero-row success handling; no runtime result claimed. Root ruled route guidance must remain nonblocking and empty results must be labeled honestly."
+    }
+  ],
+  "closure_requirement": "Add meaningful red/green coverage for route guidance with explicit Run still enabled, absent-root no-widening, truthful zero-row outcomes and current-page completion provenance. Then verify with an owned uniquely named pattern on real same-host pages using the installed build; confirm intended rows, no unrelated rows, honest no-match display, and navigation behavior. Preserve guest/member denial evidence under existing EXT-F-1012-T38 rather than duplicating it."
+}

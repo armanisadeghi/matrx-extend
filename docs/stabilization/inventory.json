@@ -16290,6 +16290,44 @@
           "defect_ids": [
             "EXT-D-0043"
           ]
+        },
+        {
+          "id": "EXT-F-1012-T52",
+          "title": "Saved pattern route guidance, exact scope and truthful no-match replay",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C33",
+            "EXT-F-1012-C36",
+            "EXT-F-1012-C39"
+          ],
+          "defect_ids": [
+            "EXT-D-0044"
+          ],
+          "preconditions": [
+            "Fresh installed development build; use real same-host pages with distinguishable routes and a saved uniquely named List Pattern recipe with a recorded identity.",
+            "Include one page with the saved list root and item selector, one same-host route without that root but with a matching selector elsewhere, and a page with no configured Microdata type."
+          ],
+          "steps": [
+            "Save/reopen the owned recipe and run it on its applicable route; compare actual fields and values with the original preview.",
+            "Navigate to a different route on the same host; refresh/reopen Patterns and verify visible applicability guidance while the explicit Run control remains enabled.",
+            "Choose Run explicitly on the mismatched route. Verify the saved scope is honored and selectors are not silently widened to the whole document; if no intended matches exist, report no matching data without throwing or claiming intended rows were found.",
+            "On the same host, remove the saved root while leaving the item selector elsewhere and rerun; verify no unrelated rows are returned as the saved list.",
+            "Run a saved Microdata type on a page without that itemtype; verify a truthful no-matching-data outcome, not a successful-looking extraction claim or exception.",
+            "Start a replay and navigate before completion; check whether prior-page rows appear after the URL changes and whether their source is clearly identified.",
+            "Record the exact owned pattern identity and remove only that test fixture after verification."
+          ],
+          "expected": [
+            "Route mismatch gives visible, nonblocking applicability guidance; an explicit user Run remains available.",
+            "A missing root never broadens extraction to document scope. Matching configured data replays accurately; legitimate zero rows are labeled as no matching data without treating zero itself as an exception.",
+            "A completion from an earlier page is not represented as data from the current page; source provenance stays clear."
+          ],
+          "dimensions": [
+            "warm",
+            "navigation",
+            "service-error"
+          ]
         }
       ],
       "cells": {
@@ -16312,7 +16350,8 @@
             "EXT-D-0040",
             "EXT-D-0041",
             "EXT-D-0042",
-            "EXT-D-0043"
+            "EXT-D-0043",
+            "EXT-D-0044"
           ],
           "run_ids": [
             "showcase-live-discovery-001",

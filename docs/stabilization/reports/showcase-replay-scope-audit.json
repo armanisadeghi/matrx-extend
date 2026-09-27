@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "title": "Showcase saved-pattern replay scope audit",
+  "review_scope": "Read-only source trace of user-triggered Showcase Patterns replay for saved DOM extraction patterns, with source elements/page route changing or disappearing.",
+  "review_status": "source-confirmed defect class; live-unverified",
+  "reviewer_context": "Reused reviewer research seat; not fresh independent acceptance. No tests, browser, build, product edits, or defect/case ID assignment.",
+  "applicability": {
+    "surface": "Showcase > Patterns > Run pattern",
+    "role": "Admin-only Showcase surface",
+    "methods_confirmed": [
+      "list_pattern",
+      "microdata",
+      "manual_css (shared DOM runner path)"
+    ],
+    "other_methods": "AI and Network dispatch to interactive runners; their changed-route behavior was not traced deeply enough here to claim the same observed result."
+  },
+  "source_reproduction": {
+    "status": "conditional behavior proven from current source; no runtime reproduction in this audit",
+    "steps": [
+      "Save a list_pattern recipe on host H with route_pattern /calendar/, list_root '#events', item_selector '.event-card', and a field selecting each card's title.",
+      "On the same host, run that recipe from Showcase > Patterns while the current page is /search/ and contains '.event-card' outside '#events'.",
+      "Repeat after same-route content changes remove '#events' while leaving another '.event-card' elsewhere in the document. A related simpler branch uses a Microdata recipe filtered to Event on a page that has no Event itemscopes."
+    ],
+    "expected": "The recipe is eligible only on its saved route/source scope; when its required root/type is absent, the UI reports a clear no-match or source-changed state and does not mark unrelated/empty output as a successful replay.",
+    "actual_from_source": "PatternsTab fetches every pattern for the current host and its Run handler invokes runSavedPattern without checking route_pattern. The shared matcher exists but is used by DataView and auto-extract, not this user-triggered Showcase list. For list_pattern, a missing configured list_root falls back to document; if item_selector matches elsewhere, those elements are returned as rows. If no items match, runPattern converts the result to []; PatternsTab displays the result and records status ok even when row count is zero. Microdata filters candidates by configured itemtype and maps an empty candidate set to []; the same handler likewise records ok/0."
+  },
+  "source_evidence": [
+    "src/features/showcase/tabs/PatternsTab.tsx:54-73,81-108 loads by host and runs without route matching; every resolved result is shown and bumpPatternRun is called with ok, including zero rows.",
+    "src/features/showcase/components/SaveAsPattern.tsx:84-90,154-164 captures the source pathname into route_pattern, so replay has stored route intent.",
+    "src/lib/data-pattern/matcher.ts:3-16 implements exact-host plus route_pattern matching; src/features/data/DataView.tsx:214 and src/hooks/use-auto-extract.ts:79-81 use it, while PatternsTab does not.",
+    "src/lib/data-pattern/run-pattern.ts:41-63 executes the kind's runInPage function and treats missing serialized result as an empty array.",
+    "src/lib/data-pattern/modes/list-pattern.ts:52-65 falls back to document when list_root is absent, then queries item_selector and returns rows or an empty list.",
+    "src/lib/data-pattern/modes/microdata.ts:111-124 filters by configured itemtype and returns candidates.map(extractItem), which is an empty array when that type is absent."
+  ],
+  "finding_assessment": {
+    "source_verdict": "Confirmed missing scope gate and silent zero-row success path in the user-triggered Showcase Patterns DOM replay path.",
+    "runtime_verdict": "The exact wrong-route/unrelated-row outcome is unverified; it depends on current DOM structure. The source guarantees route_pattern is not consulted by this entry point, and the described conditional list fallback/zero-row outcomes follow from its implementation.",
+    "severity": "S2: replay can silently return unrelated rows or present no matching data as a successful run, undermining saved-recipe trust.",
+    "priority": "P1: directly affects the requested core workflow of reopening and repeating saved recipes against intended page data.",
+    "confidence_limits": "Do not claim that any particular live site currently has the matching unrelated selector or absent microdata type. Do not generalize this finding to AI/Network interactive replay without separate source/runtime review."
+  },
+  "existing_route_scoped_paths": "The shared URL matcher is already used by DataView and auto-extract, where patterns are filtered by current URL. That provides a source sibling for the route-scope contract; no behavior change was made.",
+  "next_proof_needed": [
+    "Use a controlled same-host two-route fixture where the saved route does not match and the item selector appears elsewhere; verify Showcase Run refuses or clearly scopes the recipe rather than extracting unrelated cards.",
+    "Remove the saved root on its matching route while retaining the item selector elsewhere; verify no document-wide fallback is treated as the recipe's successful result.",
+    "Run a configured Microdata Event pattern on a page with no Event itemscopes; verify a clear no-match result rather than successful zero-row status.",
+    "Repeat on current installed build with a uniquely owned disposable pattern and record its exact identity; keep live results separate from this source audit."
+  ],
+  "ownership": "No new defect/case ID assigned; root to allocate before testing. Existing D39-D43 IDs are not duplicated or expanded by this report.",
+  "defect_allocation": {
+    "defect_id": "EXT-D-0044",
+    "case_id": "EXT-F-1012-T52",
+    "state": "triaged",
+    "record": "docs/stabilization/defects/EXT-D-0044.json"
+  },
+  "owner_ruling": {
+    "quoted_ruling": "Route mismatch must give visible applicability guidance, NOT prohibit an explicit user Run. Validation offers never blocks. Legitimate zero rows are not themselves an exception; label no matching data honestly and never silently widen scope or claim evidence of intended data.",
+    "application": "T52 must verify applicability guidance is nonblocking, explicit Run remains available, missing structure does not broaden selectors, zero rows are represented truthfully, and any result surviving navigation retains honest source provenance."
+  },
+  "stale_completion_audit_lead": {
+    "source_evidence": "src/features/showcase/tabs/PatternsTab.tsx:81-108 awaits runSavedPattern and then sets rows without comparing a captured URL/page identity; no navigation reset of rows is present in this component.",
+    "status": "Source gap observed; whether a browser navigation can race with executeScript completion and visibly show stale output is not established here. Test as a separate lead, not a confirmed live outcome."
+  },
+  "test_case_allocation": {
+    "id": "EXT-F-1012-T52",
+    "uses_controls": [
+      "EXT-F-1012-C33",
+      "EXT-F-1012-C36",
+      "EXT-F-1012-C39"
+    ],
+    "audience": "admin",
+    "guest_member_denial": "Existing EXT-F-1012-T38 / EXT-F-1012-C38; do not duplicate."
+  }
+}
