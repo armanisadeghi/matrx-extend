@@ -210,6 +210,73 @@ async function selectedGallery(panel, expectedCanonical) {
   );
 }
 
+// Compare every rendered card with metadata from the completed real GET,
+// including its order. All private row values stay inside this read-only
+// evaluation; only booleans leave the panel, and IDs are never serialized.
+async function galleryResponseAgreement(panel, rows, previousRows = []) {
+  const identity = (row) => ({
+    captured_at: row.captured_at,
+    width: row.width,
+    height: row.height,
+    source: row.source,
+    page_title: row.page_title,
+  });
+  return evaluate(
+    panel,
+    `(() => {
+      const expected=${JSON.stringify(rows.map(identity))};
+      const prior=${JSON.stringify(previousRows.map(identity))};
+      const signature=row=>{
+        const date=new Date(row.captured_at);
+        const full=Number.isNaN(date.getTime())?row.captured_at:date.toLocaleString();
+        const dimension=row.width&&row.height?String(row.width)+'×'+String(row.height):'';
+        const source=row.source==='agent'?'Agent':row.source==='user'?'You':'Unknown';
+        return JSON.stringify([full,dimension,source]);
+      };
+      const tab=document.querySelector('button[role="tab"][title="Screenshots"][data-state="active"]');
+      const pane=tab?document.getElementById(tab.getAttribute('aria-controls')):null;
+      const cards=[...(pane?.querySelectorAll('div.group')??[])]
+        .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===2);
+      const observed=cards.map(card=>{
+        const full=card.querySelector('span.ml-auto[title]')?.title??null;
+        const dimension=card.querySelector('div.border-t span[title]')?.title??null;
+        const source=card.querySelector('span[title="Source"]')?.textContent.trim()??null;
+        const title=card.querySelector('img')?.alt??null;
+        return {signature:JSON.stringify([full,dimension,source]),title};
+      });
+      const currentKeys=expected.map(signature),priorKeys=prior.map(signature);
+      const distinct=new Set(currentKeys).size===currentKeys.length;
+      const crossUrlDistinct=currentKeys.every(key=>!priorKeys.includes(key));
+      const ordered=observed.length===expected.length&&observed.every((card,index)=>
+        card.signature===currentKeys[index]&&
+        (card.title===null||card.title===(expected[index].page_title??'screenshot')));
+      return {cardCount:cards.length,ordered,distinct,crossUrlDistinct};
+    })()`,
+  );
+}
+
+async function requireGalleryAgreement(panel, state, rows, previousRows = []) {
+  if (
+    state.cardCount !== rows.length ||
+    state.empty !== (rows.length === 0) ||
+    state.error ||
+    state.noPage
+  )
+    fail('gallery_empty_or_count_disagrees_with_real_read');
+  const identity = await galleryResponseAgreement(panel, rows, previousRows);
+  if (
+    identity.cardCount !== rows.length ||
+    !identity.ordered ||
+    !identity.distinct ||
+    !identity.crossUrlDistinct
+  )
+    fail('gallery_identity_unverified_or_mismatched');
+  return {
+    responseToUiIdentityMatched: rows.length > 0 ? true : 'not_applicable_empty',
+    emptyStateMatchesResponse: true,
+  };
+}
+
 async function watchGalleryReads(panel) {
   await panel.send('Network.enable');
   const requests = new Map();
@@ -367,13 +434,17 @@ async function exercise({ page, panel }) {
     await click(panel, 'title', 'Screenshots');
     const initialRead = await completedRead(journal, firstMarker, firstCanonical);
     const initial = await selectedGallery(panel, firstCanonical);
-    if (initial.cardCount !== initialRead.rows.length || initial.error || initial.noPage)
-      fail('first_gallery_does_not_match_read');
+    const initialAgreement = await requireGalleryAgreement(panel, initial, initialRead.rows);
     report.cases.push({
       id: 'EXT-F-1009-T08',
       subcase: 'admin_initial_settled_gallery',
       status: 'pass',
-      actual: { rowCount: initial.cardCount, empty: initial.empty, readStatus: initialRead.status },
+      actual: {
+        rowCount: initial.cardCount,
+        empty: initial.empty,
+        readStatus: initialRead.status,
+        ...initialAgreement,
+      },
     });
 
     stage = 'refresh_first_page';
@@ -381,13 +452,16 @@ async function exercise({ page, panel }) {
     await click(panel, 'title', 'Refresh');
     const refreshedRead = await completedRead(journal, refreshMarker, firstCanonical);
     const refreshed = await selectedGallery(panel, firstCanonical);
-    if (refreshed.cardCount !== refreshedRead.rows.length || refreshed.error)
-      fail('refreshed_gallery_does_not_match_read');
+    const refreshAgreement = await requireGalleryAgreement(panel, refreshed, refreshedRead.rows);
     report.cases.push({
       id: 'EXT-F-1009-T01',
       subcase: 'current_url_refresh',
       status: 'pass',
-      actual: { realReadStatus: refreshedRead.status, rowCount: refreshed.cardCount },
+      actual: {
+        realReadStatus: refreshedRead.status,
+        rowCount: refreshed.cardCount,
+        ...refreshAgreement,
+      },
     });
 
     stage = 'switch_public_page';
@@ -398,15 +472,22 @@ async function exercise({ page, panel }) {
     if (secondCanonical !== canonical(PAGES[1])) fail('second_public_page_redirected');
     const secondRead = await completedRead(journal, switchMarker, secondCanonical);
     const second = await selectedGallery(panel, secondCanonical);
-    if (second.cardCount !== secondRead.rows.length || second.error)
-      fail('second_gallery_does_not_match_read');
+    const secondAgreement = await requireGalleryAgreement(
+      panel,
+      second,
+      secondRead.rows,
+      refreshedRead.rows,
+    );
     report.cases.push({
       id: 'EXT-F-1009-T01',
       subcase: 'page_switch_settled',
-      status: 'pass',
+      status: secondRead.rows.length > 0 ? 'pass' : 'unverified',
       actual: {
         realReadStatus: secondRead.status,
         rowCount: second.cardCount,
+        ...secondAgreement,
+        emptyToEmptyRowCorrespondence:
+          secondRead.rows.length === 0 ? 'unverified' : 'not_applicable',
         stale_response_race: firstReadPendingAtSwitch ? 'observed_pending_only' : 'unverified',
       },
     });
@@ -424,8 +505,12 @@ async function exercise({ page, panel }) {
     );
     const reloadRead = await completedRead(journal, reloadMarker, secondCanonical);
     const reloaded = await selectedGallery(panel, secondCanonical);
-    if (reloaded.cardCount !== reloadRead.rows.length || reloaded.error)
-      fail('reloaded_gallery_does_not_match_read');
+    const reloadAgreement = await requireGalleryAgreement(
+      panel,
+      reloaded,
+      reloadRead.rows,
+      refreshedRead.rows,
+    );
     report.cases.push({
       id: 'EXT-F-1009-T01',
       subcase: 'real_panel_reload',
@@ -434,6 +519,7 @@ async function exercise({ page, panel }) {
         newDocument: true,
         realReadStatus: reloadRead.status,
         rowCount: reloaded.cardCount,
+        ...reloadAgreement,
       },
     });
 
@@ -442,13 +528,21 @@ async function exercise({ page, panel }) {
     await click(panel, 'title', 'Refresh');
     const afterReloadRead = await completedRead(journal, afterReloadMarker, secondCanonical);
     const afterReload = await selectedGallery(panel, secondCanonical);
-    if (afterReload.cardCount !== afterReloadRead.rows.length || afterReload.error)
-      fail('post_reload_refresh_mismatch');
+    const afterReloadAgreement = await requireGalleryAgreement(
+      panel,
+      afterReload,
+      afterReloadRead.rows,
+      refreshedRead.rows,
+    );
     report.cases.push({
       id: 'EXT-F-1009-T01',
       subcase: 'refresh_after_real_reload',
       status: 'pass',
-      actual: { realReadStatus: afterReloadRead.status, rowCount: afterReload.cardCount },
+      actual: {
+        realReadStatus: afterReloadRead.status,
+        rowCount: afterReload.cardCount,
+        ...afterReloadAgreement,
+      },
     });
 
     const firstRow = afterReloadRead.rows[0];

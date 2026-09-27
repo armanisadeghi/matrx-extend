@@ -4,6 +4,7 @@
   "status": "RUNNER_READY_FOR_INDEPENDENT_SOURCE_REVIEW",
   "runner": "tests/browser/screenshot-admin-readonly-acceptance.mjs",
   "guard_command": ["node", "tests/browser/screenshot-admin-readonly-acceptance.mjs"],
+  "source_peer_repair": "The runner now compares ordered, uniqueness-checked visible card metadata against the completed real GET response only in private memory; rendered empty state must agree exactly with a zero-row response. An empty-to-empty URL switch leaves row correspondence unverified. No IDs or row content enter public results.",
   "basis": {
     "inventory": "docs/stabilization/inventory.json EXT-F-1009-T01 through T08",
     "accepted_guest_boundary": "docs/stabilization/reports/screenshot-guest-003-peer.json",
