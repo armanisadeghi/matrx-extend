@@ -17,14 +17,16 @@
     "test-results/debug-log-export-9b53131c-e362-401c-8647-4e3d3b0eb28a.json",
     "tests/browser/debug-log-export-acceptance.mjs",
     "docs/stabilization/reports/clipboard-escalation.json",
-    "docs/stabilization/reports/clipboard-fix-peer.json"
+    "docs/stabilization/reports/clipboard-fix-peer.json",
+    "docs/stabilization/runs/debug-export-dev090-001.json",
+    "docs/stabilization/reports/debug-export-dev090-001-peer.json"
   ],
   "severity": "S3: test infrastructure blocks Copy verification; no product Copy defect established",
   "priority": "P1: unblock contained Debug acceptance",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/clipboard_escalation",
-  "reproduction_status": "Astra confirmed actual installed Playwright origin normalization and standard URL behavior; runtime repair pending.",
-  "fix_commits": ["6b8e7d28"],
+  "reproduction_status": "Original .89 focused visible clipboard-read permission failure no longer reproduces in guarded .90 run: temporary owned-origin permission enabled observation, real Copy/feedback/readback passed and permission/clipboard were restored. Independent peer confirmed immutable evidence. Broader T16 dimensions remain unverified.",
+  "fix_commits": ["6b8e7d28", "91b610da"],
   "transition_history": [
     {
       "at": "2026-09-27T08:46:14.508641+00:00",
@@ -49,6 +51,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Independent source review and focused lifetime/mutation checks passed; committed6b8e7d28, native retest pending."
+    },
+    {
+      "at": "2026-09-27T09:02:53.173758+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Guarded native .90 run reproduced denied initial read then successfully recovered via owned-origin permission; actual Copy, exact content/feedback/download and restoration passed."
+    },
+    {
+      "at": "2026-09-27T09:02:53.173758+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent runtime reviewer confirmed original reproduction resolved and surrounding scoped download/verbose checks pass; full Debug coverage is not implied."
     }
   ],
   "closure_requirement": "Fresh source review and guarded real native run verify snapshot/readback/restore and actual trusted Copy+feedback under original app permissions; no clipboard contents in shared artifacts."

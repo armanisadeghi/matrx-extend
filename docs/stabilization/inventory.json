@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-27T08:55:42+00:00",
+  "updated_at": "2026-09-27T09:02:53.173758+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -6956,12 +6956,13 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "debug-export-dev089-002",
+              "run_id": "debug-export-dev090-001",
               "prior_run_ids": [
-                "debug-export-dev089-001"
+                "debug-export-dev089-001",
+                "debug-export-dev089-002"
               ],
               "dimension_results": {
-                "warm": "partial",
+                "warm": "pass",
                 "reload": "unverified",
                 "service-error": "unverified"
               },
@@ -6969,19 +6970,21 @@
                 {
                   "id": "filtered_download_chronology_and_content",
                   "status": "pass",
-                  "detail": "For 66 natural rows, the 12-row filtered download matched the chronological filtered-row oracle."
+                  "detail": "Exact chronological 802-byte export of 11 filtered natural rows."
                 },
                 {
                   "id": "clipboard_exactness_and_copy_feedback",
-                  "status": "unverified",
-                  "detail": "Focused/visible clipboard read was denied; scoped read permission failed and Copy all was skipped."
+                  "status": "pass",
+                  "detail": "Actual Copy succeeded under original app permissions; observation override restored before product action, exact readback and original clipboard restoration independently verified."
                 }
               ],
-              "detail": "Download evidence supports only the filtered .log branch. Clipboard content and Copied feedback were not observed because safe pre-copy clipboard observation failed; this is not a product failure. T16 remains unverified overall; reload and service-error dimensions were not run.",
+              "detail": "Verified .90 real trusted Copy all: exact 11 filtered rows of 63 natural rows, Copied feedback and exact 802-byte download; temporary observation permission and prior clipboard restored. Original D27 observation failure resolved. Full case remains unverified because reload and service-error dimensions were not exercised.",
               "evidence": [
                 "docs/stabilization/runs/debug-export-dev089-002.json",
                 "test-results/debug-log-export-9b53131c-e362-401c-8647-4e3d3b0eb28a.json",
-                "docs/stabilization/reports/debug-seo-dev089-002-peer.json"
+                "docs/stabilization/reports/debug-seo-dev089-002-peer.json",
+                "docs/stabilization/runs/debug-export-dev090-001.json",
+                "docs/stabilization/reports/debug-export-dev090-001-peer.json"
               ]
             }
           },
@@ -7099,7 +7102,9 @@
               "evidence": [
                 "docs/stabilization/runs/debug-export-dev089-002.json",
                 "test-results/debug-log-export-9b53131c-e362-401c-8647-4e3d3b0eb28a.json",
-                "docs/stabilization/reports/debug-seo-dev089-002-peer.json"
+                "docs/stabilization/reports/debug-seo-dev089-002-peer.json",
+                "docs/stabilization/runs/debug-export-dev090-001.json",
+                "docs/stabilization/reports/debug-export-dev090-001-peer.json"
               ]
             }
           },

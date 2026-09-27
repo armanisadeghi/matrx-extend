@@ -1,3 +1,9 @@
+## Current checkpoint — .90 native Debug retest
+
+Verified progress this turn: merged concurrent .90 release, repaired EXT-D-0027 clipboard observation (6b8e7d28/91b610da), built fresh .90 under guard, and independently verified the original failure resolved in native Chrome. D27 is closed; this is a test-infrastructure fix, not a product Copy fix. T16 warm Copy/download passed, full T16 and T18 remain incomplete. Receipt `test-results/source-dev-build-090-takeover-20260927.json`, tree `23d12768a3a27ca3cd44c339bd833c68f5319ac44e5825d0b8329e4c1127edf3`; run and peer `debug-export-dev090-001`. Previous run003 correctly refused .89/package.90 before browser launch. Current latest reviewed code CI91b610da and evidence ca2508e9 both passed.
+
+Next: return to contained product coverage and bounded reproduction of D26 admin role/navigation lifecycle, then its root-cause fix if reproduced; retain strict21-tab oracle. Also route the discovered native harness test old-checkout-path assertion under F0001T01; do not let test scaffolding displace feature testing. Primary profile disk constraint and ordinary-member access remain unresolved; Chat/Pilot stay deferred with D24 open. No current heavy job remains; no agents should be assumed active after this checkpoint. Preserve the Source Save checkpoint unchanged.
+
 # Matrx Extend stabilization: resume here
 
 Updated after guarded navigation, Debug export, and guest SEO run 002. Campaign incomplete; `inventory.json` is coverage authority (205 features, 693 cases).

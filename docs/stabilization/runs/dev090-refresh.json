@@ -1,0 +1,42 @@
+{
+  "id": "dev090-refresh",
+  "status": "pass",
+  "source_sha": "91b610da50532fc52e381dde10e857b2145d3a23",
+  "source_tree_sha": "bfe166ee5dad1435eef31e49b5050f783931b1a4",
+  "version": "0.2.90",
+  "package_lock_sha256": "70bf6f2f0d8606b1a1b1ac6613d7e52c9715d347b03cf1848c3293702db39611",
+  "command": "pnpm exec wxt build --mode development",
+  "guard": {
+    "run_id": "dev090-refresh",
+    "code": "RESOURCE_ADMITTED",
+    "pressure_level": 1,
+    "available_memory_gib": 12.64,
+    "required_memory_gib": 4,
+    "one_minute_load": 7.86,
+    "logical_cpus": 10,
+    "cpu_busy_fraction": 0.29082857142857144,
+    "swap_used_mib": 2820.56,
+    "repo_free_gib": 1674.7402038574219,
+    "profile_free_gib": 1674.7402038574219,
+    "child_exit_code": 0,
+    "lease_released": true
+  },
+  "artifact": {
+    "receipt": "test-results/source-dev-build-090-takeover-20260927.json",
+    "extension_dir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "tree_sha256": "23d12768a3a27ca3cd44c339bd833c68f5319ac44e5825d0b8329e4c1127edf3",
+    "receipt_sha256": "0c833bc5dad1eb8b29f7d5193b6cbb492f78a4f19426f18adeed3d7129e31d00"
+  },
+  "wrapper_log": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/dev090-refresh-wrapper.log",
+    "mode": "0600",
+    "sha256": "43b86f0859dd53e4fd0bdb88fe1210fa0d85622e24038024abbff0704fc45cd5"
+  },
+  "warnings": ["Four bundler INEFFECTIVE_DYNAMIC_IMPORT warnings; build completed successfully."],
+  "limitations": [
+    "Local development artifact only; not published and not a release verification.",
+    "No browser acceptance was performed.",
+    "Dependencies were already present; no install or package update was run.",
+    "No tracked source or package/lockfile diff exists against source HEAD."
+  ]
+}

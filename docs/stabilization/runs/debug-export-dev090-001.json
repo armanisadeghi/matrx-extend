@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "runId": "debug-export-dev090-001",
+  "scope": "One guarded native Debug export and verbose-console acceptance attempt against the receipt-verified local development build",
+  "outcome": {
+    "status": "partial",
+    "wrapperExitCode": 0,
+    "childExitCode": 0,
+    "childSignal": null,
+    "resourceAdmission": "RESOURCE_ADMITTED",
+    "leaseReleased": true,
+    "terminalAt": "2026-09-27T08:59:57.732Z"
+  },
+  "source": {
+    "headAtResult": "ca2508e94ac983881fd744a6357161c05fe5b459",
+    "workingTreeChangesToSource": false
+  },
+  "build": {
+    "receipt": "/Volumes/Samsung2TB/code/matrx-extend/test-results/source-dev-build-090-takeover-20260927.json",
+    "version": "0.2.90",
+    "treeSha256": "23d12768a3a27ca3cd44c339bd833c68f5319ac44e5825d0b8329e4c1127edf3",
+    "treeMatchedAfterRun": true
+  },
+  "resource": {
+    "pressureLevel": 1,
+    "availableMemoryGiB": 12.64,
+    "requiredMemoryGiB": 4,
+    "oneMinuteLoad": 6.15,
+    "logicalCpus": 10,
+    "cpuBusyFraction": 0.5464,
+    "swapUsedMiB": 2812.56
+  },
+  "boundedCases": [
+    {
+      "id": "EXT-F-1005-T16",
+      "status": "partial",
+      "naturalRowCount": 63,
+      "filteredRowCount": 11,
+      "chronologicalOrderChecked": true,
+      "copyButtonClicked": true,
+      "copyFeedbackObserved": true,
+      "actualClipboardExactObserved": true,
+      "downloadExactObserved": true,
+      "downloadBytes": 802,
+      "clipboardReadPermissionRestored": true,
+      "priorClipboardRestored": true
+    },
+    {
+      "id": "EXT-F-1005-T18",
+      "status": "partial",
+      "verboseSettingPersistedAfterRealAdminReload": true,
+      "visibleFeedSequenceUnchangedWhilePaused": true,
+      "naturalConsoleMirrorObservedWithVerboseOn": true,
+      "naturalConsoleMirrorSuppressedWithVerboseOff": true,
+      "verboseSettingRestored": true
+    }
+  ],
+  "immutableTestResult": {
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/debug-log-export-0b45c931-b873-42eb-9d1f-dd2e44e04035.json",
+    "mode": "0600",
+    "sha256": "0bbaf2700447fe5565ef72aa45e15ae9f275dbab300538842948cf16abece0fd"
+  },
+  "privateWrapperLog": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/debug-export-dev090-001-wrapper.log",
+    "mode": "0600",
+    "sha256": "497a6d0cf5bb351b7f8f0db0af490046014acbd41fbb37bb91ee83be990b0e1a"
+  },
+  "unverified": [
+    "All broader Debug feature criteria outside these bounded T16/T18 observations remain unverified."
+  ]
+}

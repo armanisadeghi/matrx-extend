@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "review": "independent evidence review",
+  "run_id": "debug-export-dev090-001",
+  "status": "pass_scoped_evidence",
+  "evidence": {
+    "source": "91b610da (build source); runner result HEAD ca2508e9; no source/package/lock changes in run",
+    "build_version": "0.2.90",
+    "build_tree_sha256": "23d12768a3a27ca3cd44c339bd833c68f5319ac44e5825d0b8329e4c1127edf3",
+    "artifact_tree_matches_receipt_before_after_and_current": true,
+    "build_receipt_sha256": "0c833bc5dad1eb8b29f7d5193b6cbb492f78a4f19426f18adeed3d7129e31d00",
+    "run_wrapper_exit": 0,
+    "run_child_exit": 0,
+    "resource_admitted_and_lease_released": true,
+    "t16": {
+      "status": "partial",
+      "natural_rows": 63,
+      "filtered_rows": 11,
+      "trusted_copy_all_exact_content_and_feedback": true,
+      "initial_read_failure": "focused_visible_NotAllowedError",
+      "owned_extension_origin_read_fallback_succeeded": true,
+      "clipboard_read_permission_restored": true,
+      "prior_clipboard_restored": true,
+      "exact_download": true,
+      "download_bytes": 802
+    },
+    "t18": {
+      "status": "partial",
+      "verbose_persisted_after_real_admin_reload": true,
+      "visible_feed_sequence_unchanged_while_paused": true,
+      "same_natural_event_hash_mirrored_on_off": true,
+      "console_matches_on_off": [1, 0],
+      "verbose_setting_restored": true
+    },
+    "clipboard_observation_helper_review": "clipboard-read permission is scoped to the owned chrome-extension origin and restored in finally; no copy/write action occurs under the temporary grant"
+  },
+  "files": {
+    "run_receipt": "docs/stabilization/runs/debug-export-dev090-001.json",
+    "immutable_raw_result": "test-results/debug-log-export-0b45c931-b873-42eb-9d1f-dd2e44e04035.json",
+    "immutable_raw_sha256": "0bbaf2700447fe5565ef72aa45e15ae9f275dbab300538842948cf16abece0fd",
+    "immutable_raw_mode": "0600",
+    "build_receipt": "test-results/source-dev-build-090-takeover-20260927.json"
+  },
+  "gaps": [
+    "The clipboard-observation infrastructure failure is resolved for this run; this does not establish full T16 acceptance.",
+    "T16 and T18 remain partial; broader Debug inventory dimensions and full-case acceptance remain unverified."
+  ]
+}
