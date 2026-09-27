@@ -1,6 +1,7 @@
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { useLayoutEffect } from 'react';
 
 const mocks = vi.hoisted(() => ({
   page: { id: 37, url: 'https://electronic.vegas/search/' },
@@ -96,9 +97,46 @@ describe('Showcase saved pattern replay provenance', () => {
 
     mocks.page.url = 'https://electronic.vegas/other/';
     view.rerender(<PatternsTab />);
-    resolveRun([{ title: 'Old page event' }]);
-    await waitFor(() => expect(mocks.runSaved).toHaveBeenCalledTimes(1));
+    await act(async () => {
+      resolveRun([{ title: 'Old page event' }]);
+      await mocks.runSaved.mock.results[0]!.value;
+    });
     expect(screen.queryByText(/Old page event/)).toBeNull();
     expect(mocks.bumpRun).not.toHaveBeenCalledWith(pattern.id, 'ok', 1);
+  });
+
+  it('shows successful same-route rows but never renders old rows or list in a new-page commit', async () => {
+    const beforeEffects: string[] = [];
+    function LayoutProbe({ page }: { page: string }) {
+      useLayoutEffect(() => {
+        beforeEffects.push(document.body.textContent ?? '');
+      }, [page]);
+      return null;
+    }
+
+    mocks.page.url = 'https://electronic.vegas/vegas-edm-event-calendar/';
+    mocks.fetchPatterns.mockResolvedValue([pattern]);
+    mocks.runSaved.mockResolvedValue([{ title: 'Intended calendar event' }]);
+    const view = render(
+      <>
+        <PatternsTab />
+        <LayoutProbe page={mocks.page.url} />
+      </>,
+    );
+    await screen.findByText('Calendar events');
+    await userEvent.click(screen.getByTitle('Run pattern'));
+    expect(await screen.findByText(/Intended calendar event/)).toBeTruthy();
+    expect(mocks.bumpRun).toHaveBeenCalledWith(pattern.id, 'ok', 1);
+
+    mocks.page.url = 'https://electronic.vegas/search/';
+    view.rerender(
+      <>
+        <PatternsTab />
+        <LayoutProbe page={mocks.page.url} />
+      </>,
+    );
+    const newPageFirstCommit = beforeEffects[beforeEffects.length - 1] ?? '';
+    expect(newPageFirstCommit).not.toContain('Intended calendar event');
+    expect(newPageFirstCommit).not.toContain('Calendar events');
   });
 });
