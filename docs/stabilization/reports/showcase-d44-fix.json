@@ -11,7 +11,9 @@
   "contract": "A missing configured root must produce no unrelated rows. Zero legitimate rows are visible no-match information, not a broken pattern. Route mismatch is visible guidance and does not block an explicit Run. Off-route output cannot be called verified data or update saved health as ok. Superseded fetch and run results cannot install under a new tab or URL.",
   "prepared_test": {
     "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d41-d44-prepared/showcase-replay-scope-mode.test.ts",
+    "repository_recovery_path": "docs/stabilization/pending/EXT-D-0044/showcase-replay-scope-mode.test.ts.pending",
     "sha256": "6b72b6afd54414b57dcd9996e31c74b5a2ed7f34aaccd2325f780fa93347a567",
+    "repository_copy_sha256": "6b72b6afd54414b57dcd9996e31c74b5a2ed7f34aaccd2325f780fa93347a567",
     "coverage": "Real list mode and probe on a DOM with missing configured root and unrelated cards; shared runPattern/runMode distinguish absent serialized result from explicit empty array.",
     "status": "prepared outside test discovery; not run"
   },
