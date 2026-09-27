@@ -1,12 +1,8 @@
 {
   "id": "EXT-D-0024",
   "feature_id": "EXT-F-2014",
-  "case_ids": [
-    "EXT-F-2014-T05"
-  ],
-  "control_ids": [
-    "EXT-F-2014-C62"
-  ],
+  "case_ids": ["EXT-F-2014-T05"],
+  "control_ids": ["EXT-F-2014-C62"],
   "surface": "Pilot",
   "auth_mode": "not established for user report; admin reproduction planned under current source applicability",
   "reproduction": [

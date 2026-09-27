@@ -25,539 +25,362 @@
   "path_census": [
     {
       "path": "src/components/NoticeHost.tsx",
-      "feature_ids": [
-        "EXT-F-1015",
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1015", "EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/entrypoints/sidepanel/App.tsx",
-      "feature_ids": [
-        "EXT-F-1002",
-        "EXT-F-1001"
-      ],
+      "feature_ids": ["EXT-F-1002", "EXT-F-1001"],
       "kind": "source"
     },
     {
       "path": "src/features/agenda/AgendaView.tsx",
-      "feature_ids": [
-        "EXT-F-2004"
-      ],
+      "feature_ids": ["EXT-F-2004"],
       "kind": "source"
     },
     {
       "path": "src/features/chat/ChatView.tsx",
-      "feature_ids": [
-        "EXT-F-2013",
-        "EXT-F-2014"
-      ],
+      "feature_ids": ["EXT-F-2013", "EXT-F-2014"],
       "kind": "source"
     },
     {
       "path": "src/features/saved-captures/SavedCapturesView.test.tsx",
-      "feature_ids": [
-        "EXT-F-2009"
-      ],
+      "feature_ids": ["EXT-F-2009"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/features/saved-captures/SavedCapturesView.tsx",
-      "feature_ids": [
-        "EXT-F-2009"
-      ],
+      "feature_ids": ["EXT-F-2009"],
       "kind": "source"
     },
     {
       "path": "src/features/scrape/FileSourcePanel.test.tsx",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/features/scrape/FileSourcePanel.tsx",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/features/scrape/ScrapeView.tsx",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/features/scrape/UnsavedCapturesCard.tsx",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/features/seo/SeoView.tsx",
-      "feature_ids": [
-        "EXT-F-1008"
-      ],
+      "feature_ids": ["EXT-F-1008"],
       "kind": "source"
     },
     {
       "path": "src/features/settings/SettingsView.about.test.tsx",
-      "feature_ids": [
-        "EXT-F-1003"
-      ],
+      "feature_ids": ["EXT-F-1003"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/features/settings/SettingsView.tsx",
-      "feature_ids": [
-        "EXT-F-1003"
-      ],
+      "feature_ids": ["EXT-F-1003"],
       "kind": "source"
     },
     {
       "path": "src/features/vault/VaultView.focused-frame.test.tsx",
-      "feature_ids": [
-        "EXT-F-2011"
-      ],
+      "feature_ids": ["EXT-F-2011"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/features/vault/VaultView.match-errors.test.tsx",
-      "feature_ids": [
-        "EXT-F-2011"
-      ],
+      "feature_ids": ["EXT-F-2011"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/features/vault/VaultView.tsx",
-      "feature_ids": [
-        "EXT-F-2011"
-      ],
+      "feature_ids": ["EXT-F-2011"],
       "kind": "source"
     },
     {
       "path": "src/features/vault/useVault.ts",
-      "feature_ids": [
-        "EXT-F-2011"
-      ],
+      "feature_ids": ["EXT-F-2011"],
       "kind": "source"
     },
     {
       "path": "src/hooks/use-auth.entrypoints.test.tsx",
-      "feature_ids": [
-        "EXT-F-1015"
-      ],
+      "feature_ids": ["EXT-F-1015"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/hooks/use-auth.strict-mode.test.tsx",
-      "feature_ids": [
-        "EXT-F-1015"
-      ],
+      "feature_ids": ["EXT-F-1015"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/hooks/use-auth.ts",
-      "feature_ids": [
-        "EXT-F-1015"
-      ],
+      "feature_ids": ["EXT-F-1015"],
       "kind": "source"
     },
     {
       "path": "src/hooks/use-chat-stream.ts",
-      "feature_ids": [
-        "EXT-F-2013",
-        "EXT-F-2014"
-      ],
+      "feature_ids": ["EXT-F-2013", "EXT-F-2014"],
       "kind": "source"
     },
     {
       "path": "src/hooks/use-page-recognition.test.tsx",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/hooks/use-page-recognition.ts",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/hooks/use-pilot-chat-stream.ts",
-      "feature_ids": [
-        "EXT-F-2013",
-        "EXT-F-2014"
-      ],
+      "feature_ids": ["EXT-F-2013", "EXT-F-2014"],
       "kind": "source"
     },
     {
       "path": "src/hooks/use-scrape.ts",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/lib/agenda/create-task-organization.test.ts",
-      "feature_ids": [
-        "EXT-F-2004"
-      ],
+      "feature_ids": ["EXT-F-2004"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/lib/agenda/queries.ts",
-      "feature_ids": [
-        "EXT-F-2004"
-      ],
+      "feature_ids": ["EXT-F-2004"],
       "kind": "source"
     },
     {
       "path": "src/lib/api/FEATURE.md",
-      "feature_ids": [
-        "EXT-F-1015"
-      ],
+      "feature_ids": ["EXT-F-1015"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/lib/api/client-expected-actor.test.ts",
-      "feature_ids": [
-        "EXT-F-1015",
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1015", "EXT-F-1007"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/lib/api/client-organization-hold.test.ts",
-      "feature_ids": [
-        "EXT-F-1015",
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1015", "EXT-F-1007"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/lib/api/client-organization-no-memberships.test.ts",
-      "feature_ids": [
-        "EXT-F-1015",
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1015", "EXT-F-1007"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/lib/api/client.ts",
-      "feature_ids": [
-        "EXT-F-1015",
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1015", "EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/lib/api/routes/local-browser-commands.test.ts",
-      "feature_ids": [
-        "EXT-F-4089",
-        "EXT-F-2014"
-      ],
+      "feature_ids": ["EXT-F-4089", "EXT-F-2014"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/lib/api/routes/local-browser-commands.ts",
-      "feature_ids": [
-        "EXT-F-4089",
-        "EXT-F-2014"
-      ],
+      "feature_ids": ["EXT-F-4089", "EXT-F-2014"],
       "kind": "source"
     },
     {
       "path": "src/lib/api/routes/sources.ts",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/lib/auth/identity.ts",
-      "feature_ids": [
-        "EXT-F-1015"
-      ],
+      "feature_ids": ["EXT-F-1015"],
       "kind": "source"
     },
     {
       "path": "src/lib/background/bootstrap.ts",
-      "feature_ids": [
-        "EXT-F-2013",
-        "EXT-F-2014",
-        "EXT-F-1006"
-      ],
+      "feature_ids": ["EXT-F-2013", "EXT-F-2014", "EXT-F-1006"],
       "kind": "source"
     },
     {
       "path": "src/lib/capture-ladder/queue.ts",
-      "feature_ids": [
-        "EXT-F-1007",
-        "EXT-F-2001"
-      ],
+      "feature_ids": ["EXT-F-1007", "EXT-F-2001"],
       "kind": "source"
     },
     {
       "path": "src/lib/chat/context/page-source.test.ts",
-      "feature_ids": [
-        "EXT-F-2013",
-        "EXT-F-2014"
-      ],
+      "feature_ids": ["EXT-F-2013", "EXT-F-2014"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/lib/chat/context/page-source.ts",
-      "feature_ids": [
-        "EXT-F-2013",
-        "EXT-F-2014"
-      ],
+      "feature_ids": ["EXT-F-2013", "EXT-F-2014"],
       "kind": "source"
     },
     {
       "path": "src/lib/chat/context/v1-flat.ts",
-      "feature_ids": [
-        "EXT-F-2013",
-        "EXT-F-2014"
-      ],
+      "feature_ids": ["EXT-F-2013", "EXT-F-2014"],
       "kind": "source"
     },
     {
       "path": "src/lib/chat/context/v2-bundled.ts",
-      "feature_ids": [
-        "EXT-F-2013",
-        "EXT-F-2014"
-      ],
+      "feature_ids": ["EXT-F-2013", "EXT-F-2014"],
       "kind": "source"
     },
     {
       "path": "src/lib/chat/decision-answers.ts",
-      "feature_ids": [
-        "EXT-F-2013",
-        "EXT-F-2014"
-      ],
+      "feature_ids": ["EXT-F-2013", "EXT-F-2014"],
       "kind": "source"
     },
     {
       "path": "src/lib/desktop/local-browser/controller.test.ts",
-      "feature_ids": [
-        "EXT-F-4089",
-        "EXT-F-2014"
-      ],
+      "feature_ids": ["EXT-F-4089", "EXT-F-2014"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/lib/desktop/local-browser/controller.ts",
-      "feature_ids": [
-        "EXT-F-4089",
-        "EXT-F-2014"
-      ],
+      "feature_ids": ["EXT-F-4089", "EXT-F-2014"],
       "kind": "source"
     },
     {
       "path": "src/lib/destructive/operations.ts",
-      "feature_ids": [
-        "EXT-F-2004",
-        "EXT-F-1002"
-      ],
+      "feature_ids": ["EXT-F-2004", "EXT-F-1002"],
       "kind": "source"
     },
     {
       "path": "src/lib/org/active-org.ts",
-      "feature_ids": [
-        "EXT-F-1015"
-      ],
+      "feature_ids": ["EXT-F-1015"],
       "kind": "source"
     },
     {
       "path": "src/lib/panel/launch-intent.ts",
-      "feature_ids": [
-        "EXT-F-1002",
-        "EXT-F-1001"
-      ],
+      "feature_ids": ["EXT-F-1002", "EXT-F-1001"],
       "kind": "source"
     },
     {
       "path": "src/lib/scrape/pipeline.ts",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/lib/settings/default-chat-model.ts",
-      "feature_ids": [
-        "EXT-F-2013"
-      ],
+      "feature_ids": ["EXT-F-2013"],
       "kind": "source"
     },
     {
       "path": "src/lib/settings/platform-knobs.ts",
-      "feature_ids": [
-        "EXT-F-2013"
-      ],
+      "feature_ids": ["EXT-F-2013"],
       "kind": "source"
     },
     {
       "path": "src/lib/sources/associations-store.ts",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/lib/sources/canonical.ts",
-      "feature_ids": [
-        "EXT-F-1007",
-        "EXT-F-2009"
-      ],
+      "feature_ids": ["EXT-F-1007", "EXT-F-2009"],
       "kind": "source"
     },
     {
       "path": "src/lib/sources/portions.test.ts",
-      "feature_ids": [
-        "EXT-F-1007",
-        "EXT-F-2009"
-      ],
+      "feature_ids": ["EXT-F-1007", "EXT-F-2009"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/lib/sources/portions.ts",
-      "feature_ids": [
-        "EXT-F-1007",
-        "EXT-F-2009"
-      ],
+      "feature_ids": ["EXT-F-1007", "EXT-F-2009"],
       "kind": "source"
     },
     {
       "path": "src/lib/sources/save-capture.ts",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/lib/sources/save-source-logic.test.ts",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/lib/sources/save-source-logic.ts",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/lib/sources/web-app-link.test.ts",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/lib/sources/web-app-link.ts",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/lib/stream/offscreen-proxy.ts",
-      "feature_ids": [
-        "EXT-F-2013",
-        "EXT-F-2014",
-        "EXT-F-1006"
-      ],
+      "feature_ids": ["EXT-F-2013", "EXT-F-2014", "EXT-F-1006"],
       "kind": "source"
     },
     {
       "path": "src/lib/supabase/FEATURE.md",
-      "feature_ids": [
-        "EXT-F-1015",
-        "EXT-F-2009"
-      ],
+      "feature_ids": ["EXT-F-1015", "EXT-F-2009"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/lib/supabase/db-failure.ts",
-      "feature_ids": [
-        "EXT-F-1015",
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1015", "EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/lib/supabase/queries.recognition.test.ts",
-      "feature_ids": [
-        "EXT-F-2009",
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-2009", "EXT-F-1007"],
       "kind": "test_or_doc"
     },
     {
       "path": "src/lib/supabase/queries.ts",
-      "feature_ids": [
-        "EXT-F-2009",
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-2009", "EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/lib/supabase/user-profile.ts",
-      "feature_ids": [
-        "EXT-F-1015"
-      ],
+      "feature_ids": ["EXT-F-1015"],
       "kind": "source"
     },
     {
       "path": "src/lib/tools/handlers/credential-login.ts",
-      "feature_ids": [
-        "EXT-F-4089"
-      ],
+      "feature_ids": ["EXT-F-4089"],
       "kind": "source"
     },
     {
       "path": "src/lib/tools/handlers/education.ts",
-      "feature_ids": [
-        "EXT-F-4091"
-      ],
+      "feature_ids": ["EXT-F-4091"],
       "kind": "source"
     },
     {
       "path": "src/lib/tts/read-aloud-voice.ts",
-      "feature_ids": [
-        "EXT-F-2013"
-      ],
+      "feature_ids": ["EXT-F-2013"],
       "kind": "source"
     },
     {
       "path": "src/state/notices.ts",
-      "feature_ids": [
-        "EXT-F-1015",
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1015", "EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/state/scrape.ts",
-      "feature_ids": [
-        "EXT-F-1007"
-      ],
+      "feature_ids": ["EXT-F-1007"],
       "kind": "source"
     },
     {
       "path": "src/styles/globals.css",
-      "feature_ids": [
-        "EXT-F-1001"
-      ],
+      "feature_ids": ["EXT-F-1001"],
       "kind": "source"
     }
   ],
@@ -602,11 +425,7 @@
       "EXT-F-4089-T02",
       "EXT-F-4091-T01"
     ],
-    "strengthened_procedures": [
-      "EXT-F-2013-T08",
-      "EXT-F-4089-T02",
-      "EXT-F-4091-T01"
-    ],
+    "strengthened_procedures": ["EXT-F-2013-T08", "EXT-F-4089-T02", "EXT-F-4091-T01"],
     "pilot_user_report_preserved": {
       "defect_id": "EXT-D-0024",
       "case_id": "EXT-F-2014-T05",
@@ -986,10 +805,7 @@
   ],
   "generated_contract_accounting": {
     "path": "types/python-generated/stream-events.ts",
-    "feature_ids": [
-      "EXT-F-2013",
-      "EXT-F-2014"
-    ],
+    "feature_ids": ["EXT-F-2013", "EXT-F-2014"],
     "wave": "D",
     "changes": [
       "Additive cutover typed data payloads",

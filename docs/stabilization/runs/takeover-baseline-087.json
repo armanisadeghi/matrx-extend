@@ -11,10 +11,30 @@
   "package_json_sha256": "515007e7f19db15f08d84d2d45c80ffb0382e118f8294265af36eaa20082d8be",
   "profile_volume": "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032",
   "resource_runs": [
-    { "id": "takeover087-install-20260927", "command": "pnpm install --frozen-lockfile --ignore-scripts", "guard": "admitted", "child_exit_code": 0 },
-    { "id": "takeover087-prepare-20260927", "command": "pnpm exec wxt prepare", "guard": "admitted", "child_exit_code": 0 },
-    { "id": "takeover087-compile-20260927", "command": "pnpm compile", "guard": "admitted", "child_exit_code": 0 },
-    { "id": "takeover087-devbuild-20260927", "command": "pnpm exec wxt build --mode development", "guard": "admitted", "child_exit_code": 0 }
+    {
+      "id": "takeover087-install-20260927",
+      "command": "pnpm install --frozen-lockfile --ignore-scripts",
+      "guard": "admitted",
+      "child_exit_code": 0
+    },
+    {
+      "id": "takeover087-prepare-20260927",
+      "command": "pnpm exec wxt prepare",
+      "guard": "admitted",
+      "child_exit_code": 0
+    },
+    {
+      "id": "takeover087-compile-20260927",
+      "command": "pnpm compile",
+      "guard": "admitted",
+      "child_exit_code": 0
+    },
+    {
+      "id": "takeover087-devbuild-20260927",
+      "command": "pnpm exec wxt build --mode development",
+      "guard": "admitted",
+      "child_exit_code": 0
+    }
   ],
   "resource_refusals": [],
   "artifact": {

@@ -122,9 +122,7 @@
       "coverage_to_add_or_revise": [
         "Keep EXT-D-0012 closure linked, and ensure any previously unverified Settings reset/recovery case includes error-clear then rediscovery behavior; old run evidence does not prove current source."
       ],
-      "evidence": [
-        "src/features/settings/SettingsView.tsx"
-      ],
+      "evidence": ["src/features/settings/SettingsView.tsx"],
       "mode_notes": "Settings visibility is source-audience based; inventory currently marks guest/member/admin applicable. Confirm exact Settings availability by mode from current App gate before claiming runtime access."
     }
   ],
@@ -137,17 +135,13 @@
         "tool_or_handler": "credential_login",
         "delta": "Adds value-free execution-stage receipts through an optional onStage callback, including probe, materialization, fill, submit, wait and post-submit observation stages; no tool definition/argument roster change was found.",
         "coverage": "Existing credential-login outcomes should be considered stale for progress/stage diagnostics, but do not infer changed user-facing credential behavior solely from instrumentation. Verify refusal, success and no-secret-egress using the existing sensitive-flow contract when that lane runs.",
-        "evidence": [
-          "src/lib/tools/handlers/credential-login.ts"
-        ]
+        "evidence": ["src/lib/tools/handlers/credential-login.ts"]
       },
       {
         "tool_or_handler": "capture_study_set",
         "delta": "Now requires the active organization and supplies p_organization_id; missing selection returns organization_required with a remedy.",
         "coverage": "Covered as EXT-F-2004 recommendation above; no registered tool addition/removal detected.",
-        "evidence": [
-          "src/lib/tools/handlers/education.ts"
-        ]
+        "evidence": ["src/lib/tools/handlers/education.ts"]
       }
     ],
     "stale_coverage": "No inventory pass should be promoted from this source comparison. The existing 169 registered-tool feature entries remain a source roster count; tool descriptions live in the DB and this audit did not query the live DB."
