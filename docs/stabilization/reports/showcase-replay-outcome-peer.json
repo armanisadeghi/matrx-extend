@@ -1,0 +1,64 @@
+{
+  "id": "EXT-D-0044-source-peer",
+  "reviewed_commits": ["801588ed", "49e4b3de"],
+  "review_scope": "Independent source-only review of saved-pattern replay and its callers; no product code authored, no test/build/browser command run.",
+  "verdict_a_live": {
+    "status": "UNVERIFIED",
+    "reason": "The user forbade localhost UI testing. No installed-extension or live-page replay was performed by this lane.",
+    "targets": {
+      "saved_pattern_repeats_intended_data": "UNVERIFIED",
+      "zero_rows_and_off_route_are_truthful": "UNVERIFIED",
+      "old_page_results_absent_after_navigation": "UNVERIFIED"
+    }
+  },
+  "verdict_b_source": {
+    "status": "FAIL",
+    "positive_evidence": [
+      "src/lib/data-pattern/modes/list-pattern.ts now returns [] when a configured root is missing or invalid, rather than widening the scan to document.",
+      "src/lib/data-pattern/run-pattern.ts now rejects an absent or non-array Chrome result instead of treating it as a legitimate zero-row extraction.",
+      "src/features/showcase/tabs/PatternsTab.tsx keys fetched patterns and displayed run output to tab id plus URL, keeps explicit off-route Run available, and updates saved health only for classified on-route nonempty results.",
+      "src/lib/data-pattern/saved-run-outcome.ts centralizes no_match, off_route, and matched classification; the tool handler returns outcome and explanatory message."
+    ],
+    "findings": [
+      {
+        "severity": "important",
+        "title": "DataView can install an old-page run after navigation and attribute it to the new page",
+        "evidence": [
+          "src/features/data/DataView.tsx:41-48 clears rows in a passive URL-change effect, but handleRun at :188-217 has no captured tab/URL or sequence check before setRows, setRunInfo, and health updates.",
+          "A run started on page A can settle after the person moves to page B. Its rows then render at :445-488, and Copy for AI constructs source.url from the current tab at :465-476, falsely labeling A rows as B data."
+        ],
+        "repair": "Gate completion, errors, progress, and health writes on the originating page and run identity; render rows only when their saved provenance equals the current tab id and URL. Guard the first new-page commit and late promise settlement."
+      },
+      {
+        "severity": "important",
+        "title": "DataView still marks an explicit off-route failure as a broken saved pattern",
+        "evidence": [
+          "src/features/data/DataView.tsx:381-438 allows Run for every saved host pattern, including those outside the saved route.",
+          "The catch at :208-213 unconditionally calls bumpPatternRun(pattern.id, 'broken', 0) for a non-network error. PatternsTab and data_patterns now check urlMatchesPattern before this write."
+        ],
+        "repair": "Keep the off-route failure visible to the person, but preserve the last verified pattern health. Cover both on-route and off-route failures in a caller test."
+      },
+      {
+        "severity": "important",
+        "title": "A manual CSS selector miss can still be recorded as a healthy intended extraction",
+        "evidence": [
+          "src/lib/data-pattern/modes/manual-css.ts:45-47 defaults an unrooted pattern to document; :85-97 always maps that scope to one row, assigning null for every missing scalar selector.",
+          "src/lib/data-pattern/saved-run-outcome.ts:14-29 classifies any on-route nonempty array as matched. A saved manual pattern with no matching selectors therefore yields one all-null row and bumps last_status='ok' in all four callers, despite finding no selected element."
+        ],
+        "repair": "Carry actual selector-match evidence from manual CSS extraction into outcome classification. Preserve genuinely matched empty or null field values; value truthiness alone is not evidence of a selector miss. Add a real-mode regression with one selector-miss page and one genuinely matched page."
+      },
+      {
+        "severity": "important",
+        "title": "Committed tests do not yet force the caller and navigation guarantees",
+        "evidence": [
+          "tests/unit/showcase-patterns-replay-provenance.test.tsx:87-103 resolves a stale run, then waitFor checks an already true runSaved call count; the assertion can execute before the promise continuation and a late stale-row render.",
+          "The only committed outcome tests exercise Showcase and list-mode/Chrome boundary. The DataView, auto-extract, tool-handler, and first-new-page-commit tests remain *.pending under docs/stabilization/pending/EXT-D-0044, outside test discovery. These have not been run by this lane."
+        ],
+        "repair": "Install focused caller tests into test discovery, await stale promise settlement, cover first new-page commit, and prove representative wrong branches fail under the sole authorized runtime permit."
+      }
+    ],
+    "test_strength": "The committed list-root and absent-Chrome-result tests assert meaningful failures. The committed Showcase stale-run test is timing-weak; pending caller tests are not executable as named. No mutation or live verification is claimed."
+  },
+  "open_questions": [],
+  "integration_note": "No push from this lane; owner integrates exact-path docs commit. Shared tree contained unrelated in-progress files, which this lane did not stage."
+}
