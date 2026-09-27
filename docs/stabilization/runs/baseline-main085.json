@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "status": "stopped_before_install",
+  "status": "development_baseline_pass",
   "source": {
-    "head": "36fa88fb7cb88bd8233a510fbf1d1bff3beba449",
+    "head": "953a96dafdcf5c61243428ddc45093dc350fbd9a",
     "version": "0.2.85",
     "lockfile_sha256": "4e5f896cf6d9bff99b9fd910c72f1fcade093b60f530fd2b4dabeef77840aeb7"
   },
@@ -16,11 +16,52 @@
       "at": "2026-09-27T04:09:08.999Z",
       "guard_log": "/tmp/matrx-baseline-main085-install-001.log",
       "guard_log_sha256": "385aa695a66c056dc218f418ad21da4241262c12a6e2f0595bbec40d166d9a7d"
+    },
+    {
+      "run_id": "baseline-main085-install-002",
+      "command": ["pnpm", "install", "--frozen-lockfile", "--ignore-scripts"],
+      "wrapper_exit_code": 0,
+      "child_exit_code": 0,
+      "resource_admitted_at": "2026-09-27T04:11:30.567Z",
+      "child_exit_at": "2026-09-27T04:11:32.410Z",
+      "guard_log": "/tmp/matrx-baseline-main085-install-002.log",
+      "guard_log_sha256": "457033992f353538eaf678fde5017819ba8b8ed848cfdaf864f6b9fa8492b985",
+      "result": "Frozen lockfile installed; 5 packages added and 3 removed, including updates to three Matrx packages."
+    },
+    {
+      "run_id": "baseline-main085-compile-001",
+      "command": ["pnpm", "compile"],
+      "wrapper_exit_code": 0,
+      "child_exit_code": 0,
+      "resource_admitted_at": "2026-09-27T04:13:05.888Z",
+      "child_exit_at": "2026-09-27T04:13:07.661Z",
+      "guard_log": "/tmp/matrx-baseline-main085-compile-001.log",
+      "guard_log_sha256": "4cc0ee02845a69e7db1fda98adc133fe1c74bded42d84b0b1ceab26ea28b2ffb"
+    },
+    {
+      "run_id": "baseline-main085-devbuild-001",
+      "command": ["pnpm", "exec", "wxt", "build", "--mode", "development"],
+      "wrapper_exit_code": 0,
+      "child_exit_code": 0,
+      "resource_admitted_at": "2026-09-27T04:14:43.746Z",
+      "child_exit_at": "2026-09-27T04:14:46.730Z",
+      "guard_log": "/tmp/matrx-baseline-main085-devbuild-001.log",
+      "guard_log_sha256": "0bb78b35b1be5ca12153043fd514a49f3dc834201dea888db3429e3b30cb0bf7"
     }
   ],
   "compile": "not_run_after_install_refusal",
   "development_build": "not_run_after_install_refusal",
-  "local_dev_receipt": null,
-  "lease": "absent_after_refusal",
-  "next_action": "Stop. The requested install command is not admitted by the resource policy; do not change it or continue the sequence without new authorization."
+  "local_dev_receipt": {
+    "schema_version": 1,
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "observedAt": "2026-09-27T04:15:07.746Z",
+    "extensionDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "version": "0.2.85",
+    "treeSha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff"
+  },
+  "lease": "absent after each guarded command",
+  "next_action": "No browser or native acceptance was run in this lane.",
+  "wxt_prepare": "not run; development build completed without it",
+  "local_dev_receipt_path": "test-results/source-dev-build-085.json"
 }
