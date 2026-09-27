@@ -1328,13 +1328,15 @@ Every entry follows this shape:
   distinct URLs fire, search for `json` by content type, select one response,
   click its array node, and Save pattern. Change the list search before saving
   to confirm the selected response and preview stay pinned. Reopen the saved
-  pattern in Patterns and Run on the same open page; test an edited matcher
+  pattern in Patterns and Run on the same open page. Capture two sibling URLs
+  distinguished only by query date or numeric path ID; the saved default must
+  retain the selected full URL and replay its rows. Test an edited matcher
   that excludes the selected URL, too.
 - **Expected:** Only the captured tab's requests appear (another tab's
   traffic never pollutes the list); Reload stops the recording state;
   buffer caps at 500 events with a "dropped" notice; events survive
   switching to another sub-tab and back. The saved URL matcher targets the
-  selected request rather than the display search, and rerun reloads the
+  exact selected request including query rather than the display search, and rerun reloads the
   page and returns rows from that request when it fires. A matcher that omits
   the selected URL warns without blocking Save; no-match rerun explains how
   to trigger the request again. No scheduled replay is claimed.

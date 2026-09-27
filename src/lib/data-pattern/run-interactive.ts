@@ -243,15 +243,15 @@ interface SavedNetConfig {
 }
 
 /**
- * url_filter matching: globs (with *) when present, substring otherwise.
- * Saved filters look like "api.site.com/v1/items/*" (urlPattern output) or
- * an explicitly edited request URL matcher. Display-list searches are never
+ * url_filter matching: complete request URLs are exact, while deliberately
+ * edited partial filters retain substring matching and * supports globs.
+ * Display-list searches are never
  * saved here because they can match content type instead of request URL.
  */
 export function matchesUrlFilter(url: string, filter: string): boolean {
   const f = filter.trim();
   if (!f) return true;
-  if (!f.includes('*')) return url.includes(f);
+  if (!f.includes('*')) return /^https?:\/\//i.test(f) ? url === f : url.includes(f);
   const re = new RegExp(
     f
       .split('*')

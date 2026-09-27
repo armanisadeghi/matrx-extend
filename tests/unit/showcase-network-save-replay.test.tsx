@@ -36,7 +36,9 @@ const mocks = vi.hoisted(() => {
     },
   ];
   return {
-    events,
+    baseEvents: events,
+    events: [...events],
+    listeners: new Map<string, (event: unknown) => unknown>(),
     savePattern: vi.fn(async (_input: unknown) => ({
       id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
     })),
@@ -81,6 +83,13 @@ vi.mock('@/lib/supabase/user-tables', () => ({
   unionRowKeys: vi.fn(),
 }));
 vi.mock('@/lib/supabase/db-failure', () => ({ isDbFailureError: () => false }));
+vi.mock('@/lib/messaging/native', () => ({
+  on: (channel: string, callback: (event: unknown) => unknown) => {
+    mocks.listeners.set(channel, callback);
+    return () => mocks.listeners.delete(channel);
+  },
+  send: vi.fn(),
+}));
 vi.mock('@/components/ui/json-tree', () => ({
   JsonTree: ({ onSelectPath }: { onSelectPath: (path: string) => void }) => (
     <button type="button" onClick={() => onSelectPath('events')}>
@@ -112,11 +121,15 @@ vi.mock('lucide-react', () => ({
 }));
 
 import { NetworkTab } from '@/features/showcase/tabs/NetworkTab';
-import { matchesUrlFilter } from '@/lib/data-pattern/run-interactive';
+import { matchesUrlFilter, runNetworkCapturePattern } from '@/lib/data-pattern/run-interactive';
+import { CHANNELS } from '@/lib/messaging/schemas';
 
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
+  vi.useRealTimers();
+  mocks.events.splice(0, mocks.events.length, ...mocks.baseEvents);
+  mocks.listeners.clear();
 });
 
 describe('Network saved request replay', () => {
@@ -172,4 +185,74 @@ describe('Network saved request replay', () => {
       false,
     );
   });
+
+  it.each([
+    {
+      selectedUrl: 'https://electronic.vegas/api/events?date=2026-09-27',
+      otherUrl: 'https://electronic.vegas/api/events?date=2026-09-28',
+      selectedTitle: 'Tonight at Pier Hall',
+      otherTitle: 'Tomorrow at Harbor Hall',
+    },
+    {
+      selectedUrl: 'https://electronic.vegas/api/resources/123',
+      otherUrl: 'https://electronic.vegas/api/resources/456',
+      selectedTitle: 'Resource 123',
+      otherTitle: 'Resource 456',
+    },
+  ])(
+    'replays the selected request identity when sibling URLs share a path or numeric shape: $selectedTitle',
+    async (variant) => {
+      const [first, second] = mocks.baseEvents;
+      if (!first || !second) throw new Error('Network capture fixtures are incomplete');
+      const selected = {
+        ...first,
+        url: variant.selectedUrl,
+        body: JSON.stringify({ events: [{ title: variant.selectedTitle }] }),
+        body_size: 48,
+      };
+      const other = {
+        ...second,
+        url: variant.otherUrl,
+        body: JSON.stringify({ events: [{ title: variant.otherTitle }, { title: 'Extra row' }] }),
+        body_size: 120,
+      };
+      mocks.events.splice(0, mocks.events.length, selected, other);
+
+      const user = userEvent.setup();
+      render(<NetworkTab />);
+      await user.type(screen.getByPlaceholderText(/Filter by URL or content-type/), 'json');
+      await user.click(screen.getByRole('button', { name: /2026-09-27|resources\/123/ }));
+      await user.click(screen.getByRole('button', { name: 'Select events path' }));
+      await screen.findByText(new RegExp(variant.selectedTitle));
+      await user.click(screen.getByRole('button', { name: /^Save$/ }));
+      await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(1));
+      const saved = mocks.savePattern.mock.calls[0]?.[0] as {
+        config: { url_filter: string; method: string; key_path: string };
+      };
+      expect(saved.config.url_filter).toBe(variant.selectedUrl);
+
+      const addListener = vi.fn();
+      const removeListener = vi.fn();
+      Object.assign(chrome, {
+        tabs: {
+          onUpdated: { addListener, removeListener },
+          reload: vi.fn(async () => {}),
+        },
+      });
+      vi.useFakeTimers();
+      const replay = runNetworkCapturePattern(saved.config, 37, {
+        initiation: 'user',
+        timeoutMs: 5_000,
+      });
+      const emit = mocks.listeners.get(CHANNELS.NET_CAPTURE_EVENT);
+      if (!emit) throw new Error('Network replay listener was not installed');
+      emit(selected);
+      emit(other);
+      await vi.advanceTimersByTimeAsync(2_000);
+
+      await expect(replay).resolves.toEqual([{ title: variant.selectedTitle }]);
+      expect(chrome.tabs.reload).toHaveBeenCalledWith(37);
+      expect(mocks.listeners.has(CHANNELS.NET_CAPTURE_EVENT)).toBe(false);
+    },
+  );
 });

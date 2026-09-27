@@ -9,7 +9,7 @@
     "Search the captured list for the content type json, select one response, select its array key path, and save the pattern.",
     "Reopen the saved pattern and rerun it on the same page while the selected request fires."
   ],
-  "expected": "The saved request matcher targets the selected response URL, independent of the list search. Rerun reloads the open page and extracts the selected JSON path when that request fires; a search change cannot silently switch the selected response.",
+  "expected": "The saved request matcher targets the selected response URL including query and path identity, independent of the list search. Rerun reloads the open page and extracts the selected JSON path when that request fires; a search change cannot silently switch the selected response.",
   "actual": "Source before repair saves the display search term json as config.url_filter. The runner matches that filter against request URLs only, so a URL without json cannot match and the rerun times out. Selection is also an index into the filtered list, so changing the search can silently point Save at a different response. Installed-extension reproduction remains pending.",
   "evidence": [
     "src/features/showcase/tabs/NetworkTab.tsx",
@@ -20,7 +20,7 @@
   "priority": "P1: Showcase selected-data save/replay reliability",
   "state": "fixed",
   "reproduction_status": "source-boundary-red-confirmed",
-  "verification_status": "focused-green-2-of-2; combined guarded compile passed; independent installed-extension replay pending",
+  "verification_status": "original focused-green-2-of-2 and combined compile passed; identity follow-up guarded red 2-of-4 then green 4-of-4; final combined compile/build and independent installed-extension replay pending",
   "transition_history": [
     {
       "at": "2026-09-27T16:04:41Z",
@@ -45,6 +45,24 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Guarded focused Network regression passed 2/2 and combined pnpm compile passed on frozen D41+D42 source. Engineering repair is ready; independent installed-extension save/reopen/rerun and build remain pending before closure."
+    },
+    {
+      "at": "2026-09-27T21:13:10Z",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Independent source finding reproduced in guarded real runner regression: 2/4 tests failed because selected query was stripped and numeric path ID was wildcarded before saving."
+    },
+    {
+      "at": "2026-09-27T21:13:10Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Narrow follow-up changed the default to the selected full URL and exact matching for complete unstarred URLs while retaining user-edited partial and glob filters."
+    },
+    {
+      "at": "2026-09-27T21:14:59.747Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Guarded focused Network regression passed 4/4, including selected saved config through real runner with same-path query and numeric-path sibling requests. Final combined compile/build and independent installed-extension replay remain pending."
     }
   ],
   "closure_requirement": "Run the focused regression red on pre-repair source and green on repaired source, compile and build, then have an independent verifier capture a real JSON request, search by content type, save its recipe, reopen and rerun on the same open page, and confirm returned rows and matching request identity. Include a filter-change selection check and honest no-match guidance."

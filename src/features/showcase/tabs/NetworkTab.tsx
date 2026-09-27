@@ -32,12 +32,12 @@ export function NetworkTab() {
   // Search only changes the visible list. Keep the preview pinned to the
   // captured response itself, including when the search hides it.
   const selected = selectedEvent && events.includes(selectedEvent) ? selectedEvent : null;
-  const savedUrlFilter = selected ? replayUrlFilter.trim() || urlPattern(selected.url) : '';
+  const savedUrlFilter = selected ? replayUrlFilter.trim() || selected.url : '';
 
   const selectEvent = (event: CapturedNetEvent) => {
     setSelectedEvent(event);
     setExtractKeyPath('');
-    setReplayUrlFilter(urlPattern(event.url));
+    setReplayUrlFilter(event.url);
   };
 
   const parsedBody = useMemo<unknown | null>(() => {
@@ -207,12 +207,13 @@ export function NetworkTab() {
                 id="network-replay-url-filter"
                 value={replayUrlFilter}
                 onChange={(event) => setReplayUrlFilter(event.target.value)}
-                placeholder={urlPattern(selected.url)}
+                placeholder={selected.url}
                 className="h-8 rounded-full bg-background text-xs"
               />
               <div className="text-[10px] text-muted-foreground">
-                The saved run reloads this page and listens for a matching fetch/XHR request. Use *
-                for changing URL segments. Search above only filters this list.
+                The selected request URL is matched exactly by default, including its query. Edit
+                this matcher to reuse a broader request; * matches changing URL segments. Search
+                above only filters this list.
               </div>
               {!matchesUrlFilter(selected.url, savedUrlFilter) && (
                 <div className="text-[10px] text-amber-700 dark:text-amber-400">
@@ -281,21 +282,6 @@ function shortenUrl(url: string, maxLen = 80): string {
       : `${u.host}${tail}`;
   } catch {
     return url.slice(0, maxLen);
-  }
-}
-
-function urlPattern(url: string): string {
-  // Generalize a URL into a glob: replace digits/uuids with *.
-  try {
-    const u = new URL(url);
-    let path = u.pathname.replace(
-      /\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/?/gi,
-      '/*/',
-    );
-    path = path.replace(/\/\d+(?=\/|$)/g, '/*');
-    return `${u.host}${path}`;
-  } catch {
-    return url;
   }
 }
 
