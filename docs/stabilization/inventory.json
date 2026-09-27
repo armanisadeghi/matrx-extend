@@ -15530,7 +15530,17 @@
             "reload",
             "auth-transition",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-installed-d45-001",
+              "evidence": [
+                "docs/stabilization/runs/showcase-installed-d45-001.json"
+              ],
+              "detail": "The .109 live run entered Pick more fields, restarted the picker, selected a nested candidate, then canceled. Existing outer-list root/item selectors, both fields, and the 249-row preview remained. This is partial evidence for cancel preservation only; general picker entry, other states, reload, and error dimensions remain unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T24",
@@ -15562,8 +15572,15 @@
           "results": {
             "admin": {
               "status": "partial",
-              "run_id": "showcase-installed-d43-001",
-              "evidence": "docs/stabilization/runs/showcase-installed-d43-001.json"
+              "run_id": "showcase-installed-d45-001",
+              "evidence": [
+                "docs/stabilization/runs/showcase-installed-d43-001.json",
+                "docs/stabilization/runs/showcase-installed-d45-001.json"
+              ],
+              "detail": "The .109 live run exercised Restart and Done. Same-scope Done appended event_datetime while preserving the two existing fields and yielded 249 rows. A changed nested scope with zero fields committed its root/item selectors, left Extract disabled, and cleared the old preview; Cancel retained the original scope and preview. Partial D45 substeps only; the broader picker flow and reload/error dimensions remain unverified.",
+              "prior_run_ids": [
+                "showcase-installed-d43-001"
+              ]
             }
           }
         },
@@ -15694,8 +15711,15 @@
           "results": {
             "admin": {
               "status": "partial",
-              "run_id": "showcase-installed-d43-001",
-              "evidence": "docs/stabilization/runs/showcase-installed-d43-001.json"
+              "run_id": "showcase-installed-d45-001",
+              "evidence": [
+                "docs/stabilization/runs/showcase-installed-d43-001.json",
+                "docs/stabilization/runs/showcase-installed-d45-001.json"
+              ],
+              "detail": "On the real calendar, extraction of the configured outer event list displayed 249 rows with sampled distinct event titles/localities. Reopened saved List Pattern replay displayed 249 rows with the same first visible samples. On a same-host event-detail route, explicit Run returned no matching data and no rows. The UI showed only the first 200 of 249; source-change, full-row audit, reload, and other failure dimensions remain unverified.",
+              "prior_run_ids": [
+                "showcase-installed-d43-001"
+              ]
             }
           }
         },
@@ -15872,7 +15896,17 @@
             "reload",
             "auth-transition",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-installed-d45-001",
+              "evidence": [
+                "docs/stabilization/runs/showcase-installed-d45-001.json"
+              ],
+              "detail": "The owned List Pattern was reopened in Patterns and Run pattern returned 249 rows with the same first visible title/locality samples as the preview. An explicit run on the same-host event-detail route returned a no-matching-data message and no rows while retaining the prior OK/249-row health summary. Partial evidence only: first 200 rows were visible; broader run states and reload remain unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T37",
@@ -16136,8 +16170,15 @@
           "results": {
             "admin": {
               "status": "partial",
-              "run_id": "showcase-installed-d43-001",
-              "evidence": "docs/stabilization/runs/showcase-installed-d43-001.json"
+              "run_id": "showcase-installed-d45-001",
+              "evidence": [
+                "docs/stabilization/runs/showcase-installed-d43-001.json",
+                "docs/stabilization/runs/showcase-installed-d45-001.json"
+              ],
+              "detail": "Saved List Pattern recipe \u201cCodex D45 fixture 20260927-2229Z\u201d on /vegas-edm-event-calendar/, left the builder, reopened Patterns, and replayed 249 rows with the same first visible event_title/locality samples. The UI exposed no record ID; 2026-09-27T22:29:53Z is the observed time immediately after \u201cPattern saved,\u201d not a verified creation timestamp. Fixture remains intentionally retained. Partial: only 200 rows were visible, no reload or changed-source replay was tested, and deletion/cleanup was not tested.",
+              "prior_run_ids": [
+                "showcase-installed-d43-001"
+              ]
             }
           }
         },
@@ -16325,8 +16366,15 @@
           "results": {
             "admin": {
               "status": "partial",
-              "run_id": "showcase-installed-d43-001",
-              "evidence": "docs/stabilization/runs/showcase-installed-d43-001.json"
+              "run_id": "showcase-installed-d45-001",
+              "evidence": [
+                "docs/stabilization/runs/showcase-installed-d43-001.json",
+                "docs/stabilization/runs/showcase-installed-d45-001.json"
+              ],
+              "detail": "The .109 live run kept the outer #wideeventsList / div.wideeventwrapper scope and existing fields when Canceling a nested-scope pick; same-scope Done appended event_datetime and extracted 249 rows. Explicitly Done-ing a selected nested scope with zero fields adopted that scope and cleared the prior preview. Partial evidence for scope retention, field addition, and scope choice; Doctor-seeded flow, actual extraction from the alternate nested scope, and full rows remain unverified.",
+              "prior_run_ids": [
+                "showcase-installed-d43-001"
+              ]
             }
           }
         },
@@ -16371,7 +16419,17 @@
             "warm",
             "navigation",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-installed-d45-001",
+              "evidence": [
+                "docs/stabilization/runs/showcase-installed-d45-001.json"
+              ],
+              "detail": "On the same-host event-detail route, Patterns showed saved-route applicability guidance while Run remained available. Explicit Run returned the visible no-matching-data message and no rows; the saved card retained its prior OK/249-row health summary. This is partial route-guidance/no-match evidence only. Missing-root broadening elsewhere, Microdata no-match, stale completions, sibling callers, and exact cleanup remain unverified; the owned recipe is intentionally retained because no UI record ID was exposed."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T53",
