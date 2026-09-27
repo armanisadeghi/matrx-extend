@@ -15,6 +15,18 @@
  */
 
 import { log } from '@/lib/debug/log';
+import { CHANNELS } from '@/lib/messaging/schemas';
+
+// These messages carry captured URLs or delegated tool arguments. The receiver
+// still gets the complete payload; diagnostic stores only record the kind.
+const privatePayloadKinds = new Set<string>([
+  CHANNELS.NET_CAPTURE_EVENT,
+  CHANNELS.STREAM_CHUNK,
+  CHANNELS.COLD_RESUME_CALL,
+  CHANNELS.TOOL_TIMELINE_EVENT,
+  CHANNELS.TOOL_CONFIRM_REQUEST,
+  CHANNELS.WEBMCP_CALL,
+]);
 
 export interface Envelope<T = unknown> {
   __matrx: true;
@@ -56,7 +68,7 @@ export async function send<TReq, TRes>(
   options: SendOptions = {},
 ): Promise<TRes> {
   const env: Envelope<TReq> = { __matrx: true, kind, payload };
-  log.info('msg', `→ send ${kind}`, payload);
+  log.info('msg', `→ send ${kind}`, privatePayloadKinds.has(kind) ? undefined : payload);
   try {
     const response = (await chrome.runtime.sendMessage(env)) as
       | { __error: string }
@@ -172,7 +184,7 @@ export function on<TReq, TRes>(kind: string, handler: AsyncHandler<TReq, TRes>):
     sendResponse: (response?: unknown) => void,
   ): boolean | undefined => {
     if (!isEnvelope(msg) || msg.kind !== kind) return false;
-    log.info('msg', `← receive ${kind}`, msg.payload);
+    log.info('msg', `← receive ${kind}`, privatePayloadKinds.has(kind) ? undefined : msg.payload);
     let result: Promise<TRes> | TRes;
     try {
       result = handler(msg.payload as TReq, sender);

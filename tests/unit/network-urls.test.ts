@@ -1,6 +1,8 @@
 import {
   isCredentialQueryKey,
+  safeRequestBodyKey,
   sanitizeNetworkUrl,
+  sanitizeNetworkToolSaveArgs,
   transientCredentialFingerprint,
 } from '@/lib/credentials/network-urls';
 import { describe, expect, it } from 'vitest';
@@ -30,5 +32,32 @@ describe('D48 credential-aware Network URL identity', () => {
     expect(sanitizeNetworkUrl(first)).toBe(sanitizeNetworkUrl(second));
     expect(transientCredentialFingerprint(first)).not.toBe(transientCredentialFingerprint(second));
     expect(transientCredentialFingerprint(first)).toBe(transientCredentialFingerprint(first));
+  });
+
+  it('accepts only producer body fingerprints and sanitizes agent network saves before observation', () => {
+    expect(safeRequestBodyKey(`sha256:${'a'.repeat(64)}`)).toBe(`sha256:${'a'.repeat(64)}`);
+    expect(safeRequestBodyKey('Bearer SYNTHETIC_BODY_SECRET')).toBe('unavailable');
+    const safe = sanitizeNetworkToolSaveArgs('data_patterns', {
+      action: 'save', kind: 'network_capture',
+      name: 'Network: https://user:SYNTHETIC_PASSWORD@calendar.invalid/api?access_token=SYNTHETIC_TOKEN',
+      domain: 'calendar.invalid',
+      fields: [],
+      config: {
+        url_filter: 'https://user:SYNTHETIC_PASSWORD@calendar.invalid/api?access_token=SYNTHETIC_TOKEN&date=2026-09-27',
+        body_match: 'ignore',
+        raw_body: 'SYNTHETIC_BODY_SECRET',
+      },
+    });
+    expect(JSON.stringify(safe)).not.toMatch(/SYNTHETIC_(PASSWORD|TOKEN|BODY_SECRET)/);
+    expect(JSON.stringify(safe)).toContain('date=2026-09-27');
+    expect((safe as { domain: string }).domain).toBe('calendar.invalid');
+    expect(() => sanitizeNetworkToolSaveArgs('data_patterns', {
+      action: 'save', kind: 'network_capture', name: 'Network capture',
+      fields: [{ name: 'raw', selector: 'SYNTHETIC_FIELD_SECRET' }],
+    })).toThrow(/do not use CSS fields/i);
+    expect(() => sanitizeNetworkToolSaveArgs('data_patterns', {
+      action: 'save', kind: 'network_capture', name: 'Network capture',
+      domain: 'https://user:SYNTHETIC_PASSWORD@calendar.invalid/api',
+    })).toThrow(/domain must be a hostname/i);
   });
 });

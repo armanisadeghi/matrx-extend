@@ -1,8 +1,10 @@
 {
   "id": "EXT-D-0048",
   "feature_id": "EXT-F-1012",
-  "case_ids": ["EXT-F-1012-T58"],
-  "surface": "Showcase Network selection → Save as pattern persistence",
+  "case_ids": [
+    "EXT-F-1012-T58"
+  ],
+  "surface": "Showcase Network selection \u2192 Save as pattern persistence",
   "auth_mode": "admin",
   "reproduction": [
     "Capture a GET response whose URL contains a credential-bearing query parameter; use only a harmless synthetic canary in any regression, never a real credential.",
@@ -18,9 +20,9 @@
   ],
   "severity": "S2: important; credential-bearing request URLs can be durably exposed in recipe configuration and name.",
   "priority": "P1: persisted secrets violate the safe-save contract.",
-  "state": "open",
-  "reproduction_status": "source-confirmed; live behavior unverified",
-  "verification_status": "D41 focused green 30 and types passed on pre-merge .108 source, but the fresh peer found this privacy gap. No real credential was used; no D48-specific test or installed-extension run has been performed.",
+  "state": "fixed",
+  "reproduction_status": "Source-confirmed and synthetic-canary regressions red before repair; installed-extension behavior unverified.",
+  "verification_status": "Guarded D48 red: showcase-d48-red-001 and showcase-d48-boundary-red-002; chat consumer red showcase-d48-chat-red-001. Guarded green: showcase-d48-chat-green-001 (13 files/56 tests), showcase-d48-manual-green-001 (1/1), showcase-d48-utility-final-001 (4/4). Compile showcase-d48-compile-final-001 exit 0; catalog showcase-d48-catalog-001 exit 0 with only generated timestamps. Installed Chrome/network save and replay remain unverified.",
   "source_report": "docs/stabilization/reports/showcase-network-final-peer.json",
   "transition_history": [
     {
@@ -28,7 +30,25 @@
       "from": null,
       "to": "open",
       "reason": "Fresh independent D41 source peer confirmed the selected request URL reaches persisted config and a URL-derived pattern name without sanitization; no actual credential or runtime outcome was used."
+    },
+    {
+      "at": "2026-09-27T22:56:56Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Actual save sink, UI, native logging, and dispatcher tests reproduced synthetic credential leakage; independent peer identified the class at observation boundaries."
+    },
+    {
+      "at": "2026-09-27T23:02:00Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Applied credential-aware shared URL/save normalization and boundary repairs after intended red assertions."
+    },
+    {
+      "at": "2026-09-27T23:16:37Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Synthetic canary regressions pass at the save sink, live/hydrated chat state, native/stream/WebMCP/manual boundaries, and replay; compile and catalog pass. Awaiting independent installed-extension acceptance."
     }
   ],
-  "closure_requirement": "Add a regression with a harmless synthetic canary proving neither config nor name persists sensitive query values, with a safe visible remedy. Then verify the installed Showcase save/reopen UI on a real public page without ever using or recording a real credential."
+  "closure_requirement": "Build and reload the repaired unpacked extension, then independently verify Network save/reopen/rotated replay and Debug/chat observation on a real public page using only synthetic test values. Do not close until installed-Chrome evidence is recorded; server-origin tool-argument storage is outside this extension-only claim."
 }

@@ -33,6 +33,7 @@
 
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { decisionAnswersText } from '@/lib/chat/decision-answers';
+import { networkToolArgsForObservation, sanitizeNetworkPatternFields } from '@/lib/credentials/network-urls';
 import { log } from '@/lib/debug/log';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { canonicalUrl } from '@/lib/sources/canonical';
@@ -329,7 +330,14 @@ export async function fetchConversationToolCalls(
     });
     throw new Error(`Could not load conversation tool calls: ${error.message}`);
   }
-  return parseRowsSafe(ToolCallRowSchema, (data ?? []) as unknown[], 'fetchConversationToolCalls');
+  const parsed = parseRowsSafe(ToolCallRowSchema, (data ?? []) as unknown[], 'fetchConversationToolCalls');
+  return {
+    ...parsed,
+    rows: parsed.rows.map((row) => ({
+      ...row,
+      arguments: networkToolArgsForObservation(row.tool_name, row.arguments),
+    })),
+  };
 }
 
 /**
@@ -537,7 +545,7 @@ export function dbMessagesToChatMessages(
           kind,
           callId,
           toolName,
-          args: block.arguments,
+          args: networkToolArgsForObservation(toolName, block.arguments),
           phase: 'started' as const,
           startedAt: createdAt,
         };
@@ -967,10 +975,15 @@ export type SavePatternInput = {
 export async function savePattern(p: SavePatternInput): Promise<{ id: string } | null> {
   const organizationId = requireOrganizationContext(p.organization_id);
   const c = supabaseForActor(p.authored_by);
+  const network = p.kind === 'network_capture'
+    ? sanitizeNetworkPatternFields(p.name, p.config)
+    : null;
+  const safeConfig = network?.config ?? p.config ?? {};
+  const safeName = network?.name ?? p.name;
   // UNIQUE(created_by, domain, name) — on a name collision, auto-suffix
   // "name (2)", "name (3)", … instead of failing the save (decision D3).
   for (let attempt = 0; attempt < 5; attempt++) {
-    const name = attempt === 0 ? p.name : `${p.name} (${attempt + 1})`;
+    const name = attempt === 0 ? safeName : `${safeName} (${attempt + 1})`;
     const { data, error } = await c
       .schema(EXTEND_SCHEMA)
       .from('wbx_pattern')
@@ -982,7 +995,7 @@ export async function savePattern(p: SavePatternInput): Promise<{ id: string } |
         list_root_selector: p.list_root_selector,
         fields: p.fields,
         kind: p.kind ?? 'manual_css',
-        config: p.config ?? {},
+        config: safeConfig,
         target_user_table_id: p.target_user_table_id ?? null,
       })
       .select('id')

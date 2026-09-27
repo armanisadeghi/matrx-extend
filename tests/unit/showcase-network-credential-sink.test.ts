@@ -74,4 +74,52 @@ describe('D48 actual network_capture save sink', () => {
     expect(payload.config.url_filter).toContain('proof=[credential]');
     expect(payload.config.credential_query_keys).toEqual(['proof']);
   });
+
+  it('removes URL userinfo from the direct save name and config even without a config object', async () => {
+    const canary = 'SYNTHETIC_PASSWORD';
+    await savePattern({
+      ...common,
+      name: `Network: https://user:${canary}@calendar.invalid/api/events?access_token=SYNTHETIC_TOKEN`,
+      config: { url_filter: `https://user:${canary}@calendar.invalid/api/events?access_token=SYNTHETIC_TOKEN` },
+    });
+    await savePattern({
+      ...common,
+      name: `Network: https://user:${canary}@calendar.invalid/api/events?access_token=SYNTHETIC_TOKEN`,
+      config: undefined,
+    });
+    expect(recorder.insert).toHaveBeenCalledTimes(2);
+    for (const [payload] of recorder.insert.mock.calls) {
+      expect(JSON.stringify(payload)).not.toContain(canary);
+      expect(JSON.stringify(payload)).not.toContain('SYNTHETIC_TOKEN');
+      expect((payload as { name: string }).name).toContain('calendar.invalid/api/events');
+    }
+  });
+
+  it('rejects malformed body identity before persisting a Network recipe', async () => {
+    await expect(savePattern({
+      ...common,
+      name: 'Network: calendar.invalid/api/events',
+      config: {
+        url_filter: 'https://calendar.invalid/api/events',
+        body_match: 'exact',
+        request_body_key: 'Bearer SYNTHETIC_BODY_SECRET',
+      },
+    })).rejects.toThrow(/body identity is invalid/i);
+    expect(recorder.insert).not.toHaveBeenCalled();
+  });
+
+  it('drops a malformed body identity when URL-and-method-only matching is explicit', async () => {
+    await savePattern({
+      ...common,
+      name: 'Network: calendar.invalid/api/events',
+      config: {
+        url_filter: 'https://calendar.invalid/api/events?date=2026-09-27',
+        body_match: 'ignore',
+        request_body_key: 'Bearer SYNTHETIC_BODY_SECRET',
+      },
+    });
+    const payload = recorder.insert.mock.calls[0]?.[0] as { config: { request_body_key?: string } };
+    expect(payload.config.request_body_key).toBeUndefined();
+    expect(JSON.stringify(payload)).not.toContain('SYNTHETIC_BODY_SECRET');
+  });
 });

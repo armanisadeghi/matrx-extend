@@ -9,11 +9,12 @@
  *   - Standard events use `{ event: "<name>", data: { ... } }`
  *   - Both are normalized by the public `@ai-matrx/agents` wire kernel
  *
- * Every raw line is logged for Debug while user-facing events receive only
- * safe recovery copy. Backend errors can echo rejected request context.
+ * Stream envelopes can contain delegated Network recipe arguments and captured
+ * URLs. Debug records metadata, never raw envelope/body text.
  */
 
 import { log } from '@/lib/debug/log';
+import { sanitizeNetworkUrl } from '@/lib/credentials/network-urls';
 import { fetchWithMatrxProtocolFallback } from '@ai-matrx/agents/matrx';
 import { type MatrxStreamEnvelope, readMatrxNdjsonStream } from '@ai-matrx/agents/stream/ndjson';
 
@@ -59,9 +60,10 @@ export interface StreamFetchOptions {
 }
 
 export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
-  log.info('stream', `→ POST ${opts.url}`, {
+  const diagnosticUrl = sanitizeNetworkUrl(opts.url);
+  log.info('stream', `→ POST ${diagnosticUrl}`, {
     auth: !!opts.headers.Authorization,
-    body: opts.body,
+    hasBody: opts.body !== undefined,
   });
 
   let res: Response;
@@ -97,13 +99,15 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
         totalTimeoutMs: null,
         throwOnHttpError: false,
         onDowngrade: ({ url, reason, status }) => {
-          log.warn('stream', `ai_v2_downgrade → retrying on v1: ${url}`, { reason, status });
+          log.warn('stream', `ai_v2_downgrade → retrying on v1: ${sanitizeNetworkUrl(url)}`, { reason, status });
         },
       },
     );
     res = response;
   } catch (err) {
-    log.error('stream', `✗ ${opts.url} network error`, err);
+    log.error('stream', `✗ ${diagnosticUrl} network error`, {
+      error: err instanceof Error ? err.name : 'NetworkError',
+    });
     opts.onEvent({ type: 'error', message: streamErrorMessage(0), status: 0 });
     opts.onEvent({ type: 'done' });
     return;
@@ -112,7 +116,10 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
   if (!res.ok) {
     const errText = await res.text().catch(() => res.statusText);
     const code = streamErrorCode(res.status, errText);
-    log.error('stream', `✗ ${opts.url} ${res.status}`, errText);
+    log.error('stream', `✗ ${diagnosticUrl} ${res.status}`, {
+      code: code ?? 'http_error',
+      status: res.status,
+    });
     opts.onEvent({
       type: 'error',
       message: streamErrorMessage(res.status),
@@ -125,7 +132,7 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
   const requestId = res.headers.get('X-Request-ID');
   const conversationId = res.headers.get('X-Conversation-ID');
   const contentType = res.headers.get('content-type');
-  log.success('stream', `← ${opts.url} ${res.status} stream open`, {
+  log.success('stream', `← ${diagnosticUrl} ${res.status} stream open`, {
     requestId,
     conversationId,
     contentType,
@@ -145,22 +152,21 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
   try {
     for await (const event of readMatrxNdjsonStream(res.body, {
       ...(opts.signal !== undefined ? { signal: opts.signal } : {}),
-      onMalformedLine: ({ line, error, lineNumber }) => {
+      onMalformedLine: ({ error, lineNumber }) => {
         lineCount = Math.max(lineCount, lineNumber);
         log.warn('stream', `unparseable line #${lineNumber}`, {
-          raw: line.slice(0, 500),
-          error: error instanceof Error ? error.message : String(error),
+          error: error instanceof Error ? error.name : 'ParseError',
         });
       },
-      onUnknownEnvelope: (raw) => {
-        log.warn('stream', 'unknown JSON envelope', raw);
+      onUnknownEnvelope: () => {
+        log.warn('stream', 'unknown JSON envelope');
       },
-      onValidEnvelope: ({ raw, envelope, lineNumber }) => {
+      onValidEnvelope: ({ envelope, lineNumber }) => {
         lineCount = Math.max(lineCount, lineNumber);
         parsedCount++;
-        // The package owns framing; Extend retains exact wire diagnostics via
-        // its explicit raw-observation hook instead of a second JSON parser.
-        log.info('stream', `raw event #${lineNumber}`, raw, envelope.event);
+        // Keep the event kind for diagnostics. Raw payloads may contain URLs,
+        // request bodies, or delegated save arguments with live credentials.
+        log.info('stream', `event #${lineNumber}`, { event: envelope.event }, envelope.event);
       },
     })) {
       dispatch(event, opts.onEvent);
@@ -169,7 +175,7 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
     if (opts.signal?.aborted || (err as Error).name === 'AbortError') {
       log.info('stream', 'aborted by client');
     } else {
-      log.error('stream', 'read failed', err);
+      log.error('stream', 'read failed', { error: err instanceof Error ? err.name : 'StreamError' });
       opts.onEvent({ type: 'error', message: streamErrorMessage() });
     }
   } finally {
@@ -192,11 +198,7 @@ function dispatch(event: MatrxStreamEnvelope, onEvent: (e: StreamEvent) => void)
     return;
   }
   if (event.event === 'error') {
-    const diagnostic =
-      (typeof data.user_message === 'string' && data.user_message) ||
-      (typeof data.message === 'string' && data.message) ||
-      'unknown error';
-    log.error('stream', 'server emitted an error event', diagnostic);
+    log.error('stream', 'server emitted an error event');
     onEvent({
       type: 'error',
       message: streamErrorMessage(),
