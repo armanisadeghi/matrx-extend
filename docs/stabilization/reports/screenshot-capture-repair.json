@@ -1,0 +1,29 @@
+{
+  "task_id": "screenshot-capture-dev094-repair",
+  "scope": "Source repair of two native acceptance assertions after the owned .94 admin Visible capture run; no additional native run or data cleanup in this lane.",
+  "current_truth": "The .94 capture persisted one user row and loaded its blob preview. The capture product path passed the observed read and preview checks; the native case remains unverified until guarded rerun. The .94 row may remain because exact cleanup was not verified, and its identity was intentionally not retained.",
+  "pixel_oracle": {
+    "defect": "EXT-D-0031",
+    "cause": "At 62% image height, left and middle sample points intersected the fixture paragraph. The private 370×405 preview visibly shows the owned three-band page, and measured bottom pixels match all expected colors within the original 32-channel tolerance.",
+    "fix": "The owned fixture paints a fixed 24px bottom calibration strip in its existing three colors, and the decoded preview is sampled 8px above the bottom. The independent RGB expectations and tolerance are unchanged.",
+    "commit": "bc55f7bd"
+  },
+  "cleanup": {
+    "defect": "EXT-D-0032",
+    "cause": "The failure recovery path read the confirmation dialog once immediately after CDP mouse release. Normal cleanup already waited for the React dialog; the .94 receipt stopped at delete_consequence after exact-card identity succeeded.",
+    "fix": "Recovery waits for a visible dialog containing the exact file-retention consequence and a Delete button before confirming. Exact-card and fresh-read row-absence guards remain required.",
+    "commit": "pending"
+  },
+  "verification": {
+    "node_check": "passed",
+    "json_parse": "passed",
+    "git_diff_check": "passed",
+    "native": "pending root authorization and independent peer gate",
+    "product_defect_proved": false
+  },
+  "open_actions": [
+    "Independent peer review of both exact deltas.",
+    "One resource-guarded native rerun to verify real pixels, delete consequence, and row-absent real read.",
+    "Do not delete historical .93 or .94 rows by title or recency; exact identities were not retained."
+  ]
+}

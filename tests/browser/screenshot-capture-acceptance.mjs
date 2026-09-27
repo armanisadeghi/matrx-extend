@@ -893,12 +893,19 @@ async function exercise({ page, panel }) {
             await click(panel, 'title', 'Delete');
           }
           report.failure.ownedUiCleanupStage = 'delete_consequence';
-          const consequence = await evaluate(
-            panel,
-            `(() => document.querySelector('[role="alertdialog"],[role="dialog"]')
-              ?.innerText.includes('The image file itself stays in your Files')===true)()`,
+          const confirmation = await observedWait(
+            'owned_cleanup_confirmation',
+            () => evaluate(
+              panel,
+              `(() => {const dialog=document.querySelector('[role="alertdialog"],[role="dialog"]');
+                return {visible:!!dialog,consequence:dialog?.innerText.includes(
+                  'The image file itself stays in your Files')===true,
+                  confirmButton:[...(dialog?.querySelectorAll('button')??[])]
+                    .some(button=>button.textContent.trim()==='Delete')};})()`,
+            ),
+            (state) => state?.visible && state.consequence && state.confirmButton,
           );
-          if (!consequence) throw new Error('consequence_not_visible');
+          if (!confirmation.consequence) throw new Error('consequence_not_visible');
           report.failure.ownedUiCleanupStage = 'delete_confirm_click';
           await click(panel, 'button-text', 'Delete');
           report.failure.ownedUiCleanupAttempted = true;

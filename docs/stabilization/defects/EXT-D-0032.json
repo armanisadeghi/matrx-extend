@@ -1,0 +1,33 @@
+{
+  "id": "EXT-D-0032",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T06"],
+  "surface": "Screenshot admin native acceptance: exact owned-row cleanup after capture assertion failure",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Run the owned .94 admin Visible capture on the fresh Harbor Dental localhost fixture through the native sidepanel harness.",
+    "The pixel assertion fails after the sole new row is claimed. Recovery verifies the exact card and dispatches a real pointer click on its Delete control.",
+    "Recovery immediately reads the dialog consequence once. The .94 receipt records failure at delete_consequence, with no confirmation click or fresh deletion read, although normal cleanup already waits for that same dialog state."
+  ],
+  "expected": "Recovery waits for the exact owned card's visible confirmation, named consequence, and Delete button before confirming; a fresh real gallery read proves the owned row absent.",
+  "actual": "A one-shot dialog read can run before the React confirmation has mounted and abort exact-row recovery, leaving cleanup unverified.",
+  "evidence": [
+    "test-results/screenshot-capture-9e937791-f9e6-4a7a-b8c5-7c08b3ad26f2.json",
+    "tests/browser/screenshot-capture-acceptance.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "src/features/screenshots/ScreenshotsView.tsx",
+    "src/lib/destructive/confirm.tsx"
+  ],
+  "severity": "S2: acceptance recovery may leave a newly created test index row when an earlier assertion fails; exact cleanup remains unverified",
+  "priority": "P1: require consequence and complete bounded cleanup on the next owned run",
+  "state": "fixed",
+  "owner": "/root/screenshot_capture_repair",
+  "fix_commits": [],
+  "transition_history": [
+    {"at": "2026-09-27T10:35:03Z", "from": null, "to": "open", "reason": "The .94 run failed at delete_consequence after the exact owned card was found."},
+    {"at": "2026-09-27T10:35:03Z", "from": "open", "to": "triaged", "reason": "The CDP pointer helper returns after mouse release without waiting for React to mount; normal cleanup waits for the dialog while recovery reads it once."},
+    {"at": "2026-09-27T10:35:03Z", "from": "triaged", "to": "in-fix", "reason": "Recovery now waits for the same visible consequence and confirm button required by normal cleanup."},
+    {"at": "2026-09-27T10:35:03Z", "from": "in-fix", "to": "fixed", "reason": "Source correction is in place and syntax-checked; peer review and guarded native retest remain pending."}
+  ],
+  "closure_requirement": "Independent peer verifies exact-card identity guard and dialog wait; guarded native retest reaches confirmed deletion and an exact row-absent real read."
+}
