@@ -1,10 +1,10 @@
 #!/usr/bin/env node
+import { readFile } from 'node:fs/promises';
 /**
  * Local-only Showcase replay fixture server. No external requests or dependencies.
  * Serves realistic synthetic event pages and query-distinct network responses.
  */
 import { createServer } from 'node:http';
-import { readFile } from 'node:fs/promises';
 import { dirname, extname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -84,7 +84,9 @@ const server = createServer(async (request, response) => {
 
   const relativePath = pages.get(url.pathname);
   if (!relativePath) {
-    response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }).end('Fixture route not found.');
+    response
+      .writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' })
+      .end('Fixture route not found.');
     return;
   }
 
@@ -93,14 +95,17 @@ const server = createServer(async (request, response) => {
     response.writeHead(400).end();
     return;
   }
-  const contentType = extname(filePath) === '.html' ? 'text/html; charset=utf-8' : 'application/octet-stream';
+  const contentType =
+    extname(filePath) === '.html' ? 'text/html; charset=utf-8' : 'application/octet-stream';
   try {
     const body = await readFile(filePath, 'utf8');
     const origin = `http://127.0.0.1:${actualPort}`;
     response.writeHead(200, { 'Content-Type': contentType });
     response.end(body.replaceAll('http://127.0.0.1:4179', origin));
   } catch {
-    response.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' }).end('Fixture file unavailable.');
+    response
+      .writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' })
+      .end('Fixture file unavailable.');
   }
 });
 

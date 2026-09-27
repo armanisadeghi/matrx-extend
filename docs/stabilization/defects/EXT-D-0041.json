@@ -1,10 +1,7 @@
 {
   "id": "EXT-D-0041",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T47",
-    "EXT-F-1012-T50"
-  ],
+  "case_ids": ["EXT-F-1012-T47", "EXT-F-1012-T50"],
   "surface": "Showcase Network capture → Save pattern → Patterns replay",
   "auth_mode": "admin",
   "reproduction": [

@@ -7,11 +7,7 @@
   "applicability": {
     "surface": "Showcase > Patterns > Run pattern",
     "role": "Admin-only Showcase surface",
-    "methods_confirmed": [
-      "list_pattern",
-      "microdata",
-      "manual_css (shared DOM runner path)"
-    ],
+    "methods_confirmed": ["list_pattern", "microdata", "manual_css (shared DOM runner path)"],
     "other_methods": "AI and Network dispatch to interactive runners; their changed-route behavior was not traced deeply enough here to claim the same observed result."
   },
   "source_reproduction": {
@@ -63,11 +59,7 @@
   },
   "test_case_allocation": {
     "id": "EXT-F-1012-T52",
-    "uses_controls": [
-      "EXT-F-1012-C33",
-      "EXT-F-1012-C36",
-      "EXT-F-1012-C39"
-    ],
+    "uses_controls": ["EXT-F-1012-C33", "EXT-F-1012-C36", "EXT-F-1012-C39"],
     "audience": "admin",
     "guest_member_denial": "Existing EXT-F-1012-T38 / EXT-F-1012-C38; do not duplicate."
   }

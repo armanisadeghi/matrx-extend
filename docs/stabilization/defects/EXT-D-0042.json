@@ -1,10 +1,7 @@
 {
   "id": "EXT-D-0042",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T24",
-    "EXT-F-1012-T51"
-  ],
+  "case_ids": ["EXT-F-1012-T24", "EXT-F-1012-T51"],
   "surface": "Showcase List Pattern picker start, cancel, restart, and result relay",
   "auth_mode": "admin",
   "reproduction": [

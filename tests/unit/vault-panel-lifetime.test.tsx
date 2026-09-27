@@ -387,7 +387,8 @@ it('clears and restores Shared-scope metadata through the rendered Vault control
     item.textContent?.startsWith('Shared ('),
   );
   expect(shared).toBeTruthy();
-  await act(async () => void (await userEvent.click(shared!)));
+  if (!shared) throw new Error('Shared vault tab was not rendered');
+  await act(async () => void (await userEvent.click(shared)));
   expect(node.textContent).toContain('Previously shared login');
 
   deps.shared.mockResolvedValueOnce({ ok: false, failure: { kind: 'forbidden' } });
@@ -408,12 +409,14 @@ it('selects Vault Refresh from the active Vault panel when another mounted view 
   await act(async () => {
     root.render(
       <>
-        <button id="vault-trigger" title="Vault" data-state="active" />
+        <button type="button" id="vault-trigger" title="Vault" data-state="active" />
         <div role="tabpanel" data-state="active" aria-labelledby="vault-trigger">
           <VaultView />
         </div>
         <div role="tabpanel" data-state="inactive" aria-labelledby="screenshots-trigger">
-          <button title="Refresh">Other view refresh</button>
+          <button type="button" title="Refresh">
+            Other view refresh
+          </button>
         </div>
       </>,
     );
