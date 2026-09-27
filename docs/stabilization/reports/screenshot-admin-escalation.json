@@ -1,0 +1,78 @@
+{
+  "lane": "Astra medium source escalation",
+  "status": "READY_FOR_DIAGNOSTIC_PEER",
+  "preserved_002": {
+    "raw_result_path": "test-results/screenshot-admin-readonly-e6672c0d-8e10-44c5-95e0-9ba24c5e5289.json",
+    "raw_result_sha256": "838bc5f8b69b44f6d3dad695af1c7e446670fc5369863308531d16e124c411db",
+    "result": {
+      "schema_version": 1,
+      "feature": "EXT-F-1009",
+      "scope": "admin gallery read path; no capture, clipboard, delete, or induced failure",
+      "status": "unverified",
+      "build": {
+        "version": "0.2.79",
+        "treeSha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0",
+        "before": {
+          "version": "0.2.79",
+          "treeSha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0"
+        },
+        "after": null
+      },
+      "cases": [],
+      "failure": {
+        "stage": "first_public_page",
+        "code": "owned_harness_or_ui_stage_failed"
+      }
+    },
+    "guard_log": "/tmp/matrx-screenshot-admin-readonly-002.log",
+    "guard_log_sha256": "b63492991478141816bd8862b7a631ab4d90d2fc1e8fa677be5a95c31d8380a7",
+    "wrapper_confirmed_exit_code": 1,
+    "child_exit_at": "2026-09-27T00:16:22.034Z"
+  },
+  "diagnosis": {
+    "confirmed": "Failure observability conflated first-page navigation, Screenshots click, real GET completion, mounted gallery readiness and response agreement into first_public_page. 002 does not identify which boundary failed.",
+    "source_checks": [
+      "Runner canonical identity matches production normalizeUrl rules for these fixtures.",
+      "Production ScreenshotsView reloads from useActiveTab; read path is GET wbx_screenshot filtered by page_url_canonical. Observer matches this path and filter.",
+      "Initial marker is captured while Settings is selected, before Screenshots mount; no proven missed-initial-read cause.",
+      "Native harness starts the owned tab; sign-in opens/closes separate web tab. Whether active-tab identity differed at failure is unknown and now observed without exposing the URL.",
+      "42-second total run is compatible with a 30-second helper timeout after setup but does not identify the timed-out helper."
+    ]
+  },
+  "hypotheses": [
+    {
+      "cause": "Public navigation or active-tab identity not ready",
+      "prediction": "New navigation stage or safe activeTabMatchesExpected/publicDocument booleans isolate failure before gallery read."
+    },
+    {
+      "cause": "Tab click fails or protected pane never mounts",
+      "prediction": "Allowlisted trusted-pointer diagnostic or selected/linked/visible gallery flags fails at explicit tab/mount stage."
+    },
+    {
+      "cause": "No matching GET, denied/network response, or response body unavailable",
+      "prediction": "Journal total/matching/other-page counts and fixed HTTP/outcome categories identify exact boundary."
+    },
+    {
+      "cause": "Read succeeds but UI/oracle does not agree",
+      "prediction": "Completed-read count passes, followed by explicit mounted-UI or response-agreement stage failure."
+    }
+  ],
+  "changes": [
+    "Split stage markers for navigation, click, real-read wait, mounted UI, and response agreement across initial/refresh/switch/reload paths; finer sign-in stages.",
+    "Record fixed safe observations during every helper wait, including timeouts, without persisting private row data or identifiers.",
+    "Observe owned public-page readiness, active Chrome tab identity match, selected tabs, admin avatar count, and scoped gallery state before context cleanup.",
+    "Record request counts, canonical-match booleans and status/outcome categories; completed-read waits use safe summaries instead of raw response rows."
+  ],
+  "unchanged": [
+    "No timeout increases, retries, fixture substitution or acceptance relaxation.",
+    "Real approved-org selection, no state injection; exact released artifact checks.",
+    "No capture, clipboard, delete, gallery mutation, DB writes or induced failure."
+  ],
+  "validation": {
+    "node_check": "Passed",
+    "biome": "Exact-path check passed",
+    "runtime": "Not launched; independent peer and root admission needed."
+  },
+  "blocking_evidence": "Existing receipt cannot prove a product defect or navigation/readiness cause. One diagnostic run on reviewed runner is needed before any behavioral repair.",
+  "open_questions": []
+}

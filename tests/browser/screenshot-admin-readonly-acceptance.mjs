@@ -35,6 +35,121 @@ function fail(code) {
   throw new Error('screenshot_admin_readonly_unverified');
 }
 
+// Fixed UI/count diagnostics only. Never persist exception messages, URLs,
+// credentials, request IDs, file IDs, response rows or visible private text.
+function safeObservation(value) {
+  if (value === null || typeof value === 'boolean' || typeof value === 'number') return value;
+  if (typeof value === 'string')
+    return [
+      'true',
+      'false',
+      'pending',
+      'complete',
+      'http_failure',
+      'network_failure',
+      'body_invalid',
+      'body_unavailable',
+    ].includes(value)
+      ? value
+      : { valuePresent: value.length > 0 };
+  if (Array.isArray(value)) return value.map(safeObservation);
+  if (value && typeof value === 'object')
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [key, safeObservation(item)]),
+    );
+  return null;
+}
+
+function safeFailure(error) {
+  const pointer = error?.driverFailure;
+  const codes = new Set([
+    'pointer_initial_evaluation_failed',
+    'pointer_page_sample_failed',
+    'pointer_target_not_unique',
+    'pointer_followup_evaluation_failed',
+    'pointer_stable_hit_not_observed',
+    'pointer_press_dispatch_failed',
+    'pointer_release_dispatch_failed',
+  ]);
+  return {
+    timeout: error?.name === 'TimeoutError',
+    assertion: error?.code === 'ERR_ASSERTION',
+    driverCode: codes.has(pointer?.code) ? pointer.code : null,
+    hitTarget: pointer?.hitTarget === true,
+    matchedTargetCount: Number.isInteger(pointer?.matchedTargetCount)
+      ? pointer.matchedTargetCount
+      : null,
+    visibleMatchCount: Number.isInteger(pointer?.visibleMatchCount)
+      ? pointer.visibleMatchCount
+      : null,
+  };
+}
+
+async function observedWait(label, read, accept, timeoutMs) {
+  report.operation = label;
+  return waitFor(
+    label,
+    async () => {
+      try {
+        const state = await read();
+        report.observations ??= {};
+        report.observations[label] = safeObservation(state);
+        return state;
+      } catch (error) {
+        report.observations ??= {};
+        report.observations[label] = { readFailed: true, ...safeFailure(error) };
+        throw error;
+      }
+    },
+    accept,
+    timeoutMs,
+  );
+}
+
+async function safeSurface(page, panel, expectedCanonical) {
+  const result = { pageClosed: page.isClosed() };
+  if (!result.pageClosed) {
+    try {
+      result.publicPageMatchesExpected = canonical(page.url()) === expectedCanonical;
+    } catch {
+      result.publicPageMatchesExpected = false;
+    }
+    try {
+      result.publicDocument = await page.evaluate(() => ({
+        domReady: document.readyState === 'interactive' || document.readyState === 'complete',
+        bodyPresent: !!document.body,
+      }));
+    } catch {
+      result.publicDocument = { available: false };
+    }
+  }
+  try {
+    result.panel = await evaluate(
+      panel,
+      `(async()=>{
+      const tabs=await chrome.tabs.query({active:true,currentWindow:true});
+      const expected=${JSON.stringify(expectedCanonical)};
+      const canonical=url=>{try{
+        const parsed=new URL(url),host=parsed.host.toLowerCase().replace(/^www[.]/,'');
+        const path=parsed.pathname.length>1?parsed.pathname.replace(/[/]$/,''):parsed.pathname;
+        return host+path+parsed.search;
+      }catch{return null}};
+      const screen=document.querySelector('button[role="tab"][title="Screenshots"]');
+      return {activeTabCount:tabs.length,
+        activeTabMatchesExpected:tabs.length===1&&canonical(tabs[0].url)===expected,
+        screenshotTabPresent:!!screen,screenshotTabSelected:screen?.getAttribute('aria-selected')==='true',
+        settingsTabSelected:document.querySelector('button[role="tab"][title="Settings"]')?.getAttribute('aria-selected')==='true',
+        adminAvatarCount:document.querySelectorAll('button[title="${ADMIN_EMAIL}"]').length,
+        dialogCount:document.querySelectorAll('[role="dialog"],[role="alertdialog"]').length};
+    })()`,
+    );
+    result.gallery = await gallery(panel, expectedCanonical);
+  } catch {
+    result.panelObservationUnavailable = true;
+  }
+  return result;
+}
+
 async function buildIdentity() {
   const [receipt, manifest] = await Promise.all([
     readFile(RECEIPT, 'utf8').then(JSON.parse),
@@ -57,15 +172,20 @@ async function approvedOrganization() {
 
 async function signIn(page, panel) {
   stage = 'real_admin_signin';
+  report.operation = stage;
   await click(panel, 'title', 'Settings');
   await openSection(panel, 'Account');
   const web = await page.context().newPage();
   try {
+    stage = 'admin_web_login_navigation';
+    report.operation = stage;
     await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
     const route = new URL(web.url());
     if (route.origin !== WEB_ORIGIN || route.pathname !== '/login') fail('login_route_unverified');
     // Mirrors the real web-form/extension flow in screenshot-guest-acceptance.mjs.
     // Credentials are read only after the login form is present.
+    stage = 'admin_web_credentials';
+    report.operation = stage;
     const variables = {};
     for (const line of (await readFile(ADMIN_ENV, 'utf8')).split(/\r?\n/)) {
       const found = /^\s*(AI_ADMIN_USERNAME|AI_ADMIN_PASSWORD)\s*=\s*(.*?)\s*$/.exec(line);
@@ -80,16 +200,24 @@ async function signIn(page, panel) {
     }
     if (variables.AI_ADMIN_USERNAME !== ADMIN_EMAIL || !variables.AI_ADMIN_PASSWORD)
       fail('admin_credentials_unavailable');
+    stage = 'admin_web_form_fill';
+    report.operation = stage;
     await web.locator('input[name="email"]').fill(ADMIN_EMAIL);
     await web.locator('input[name="password"]').fill(variables.AI_ADMIN_PASSWORD);
+    stage = 'admin_web_form_submit';
+    report.operation = stage;
     await Promise.all([
       web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname === '/dashboard', {
         timeout: 90_000,
       }),
       web.getByRole('button', { name: 'Sign in', exact: true }).click(),
     ]);
+    stage = 'admin_extension_signin_click';
+    report.operation = stage;
     await click(panel, 'button', 'Sign in');
-    await waitFor(
+    stage = 'admin_extension_identity_wait';
+    report.operation = stage;
+    await observedWait(
       'admin_identity',
       () =>
         evaluate(
@@ -115,6 +243,7 @@ async function signIn(page, panel) {
 
 async function selectApprovedOrganization(panel, approved) {
   stage = 'select_approved_organization';
+  report.operation = stage;
   let step = 'settings_tab';
   try {
     await click(panel, 'title', 'Settings');
@@ -131,7 +260,7 @@ async function selectApprovedOrganization(panel, approved) {
     if (account[0] === 'true') await click(panel, 'section', 'Account');
     // The proven Source selection path waits for the actual collapsed state
     // before preparing the Organization combobox in this narrow panel.
-    await waitFor(
+    await observedWait(
       'account_collapsed_before_organization',
       () =>
         evaluate(
@@ -145,7 +274,7 @@ async function selectApprovedOrganization(panel, approved) {
     step = 'organization_section';
     await openSection(panel, 'Organization');
     step = 'organization_control_ready';
-    await waitFor(
+    await observedWait(
       'organization_control',
       () =>
         evaluate(
@@ -169,7 +298,7 @@ async function selectApprovedOrganization(panel, approved) {
     step = 'approved_option_click';
     await click(panel, 'option', approved);
     step = 'approved_organization_selected';
-    await waitFor(
+    await observedWait(
       'approved_organization_selected',
       () =>
         evaluate(
@@ -269,7 +398,7 @@ async function gallery(panel, expectedCanonical) {
 }
 
 async function selectedGallery(panel, expectedCanonical) {
-  return waitFor(
+  return observedWait(
     'mounted_admin_gallery',
     () => gallery(panel, expectedCanonical),
     (state) =>
@@ -358,12 +487,20 @@ async function requireGalleryAgreement(panel, state, rows, previousRows = []) {
 async function watchGalleryReads(panel) {
   await panel.send('Network.enable');
   const requests = new Map();
+  let panelRequestCount = 0;
+  let screenshotGetCount = 0;
+  let screenshotFilterMissingCount = 0;
   const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
+    panelRequestCount++;
     try {
       const url = new URL(request?.url);
       if (request?.method !== 'GET' || !url.pathname.endsWith('/wbx_screenshot')) return;
+      screenshotGetCount++;
       const identity = url.searchParams.get('page_url_canonical');
-      if (!identity?.startsWith('eq.')) return;
+      if (!identity?.startsWith('eq.')) {
+        screenshotFilterMissingCount++;
+        return;
+      }
       requests.set(requestId, {
         canonical: identity.slice(3),
         status: null,
@@ -417,6 +554,22 @@ async function watchGalleryReads(panel) {
   });
   return {
     marker: () => requests.size,
+    diagnostic: (expected) => ({
+      panelRequestCount,
+      screenshotGetCount,
+      screenshotFilterMissingCount,
+      observedGalleryReadCount: requests.size,
+      matchingPageCount: [...requests.values()].filter((request) => request.canonical === expected)
+        .length,
+      otherPageCount: [...requests.values()].filter((request) => request.canonical !== expected)
+        .length,
+      outcomes: [...requests.values()].map((request) => ({
+        expectedPage: request.canonical === expected,
+        status: request.status,
+        finished: request.finished,
+        outcome: request.outcome,
+      })),
+    }),
     completedAfter: (index, expected) =>
       [...requests.values()]
         .slice(index)
@@ -440,18 +593,24 @@ async function watchGalleryReads(panel) {
 }
 
 async function completedRead(journal, marker, expected) {
-  const requests = await waitFor(
+  await observedWait(
     'completed_real_gallery_read',
-    () => journal.completedAfter(marker, expected),
-    (value) => value.length >= 1,
+    () => ({
+      completedCount: journal.completedAfter(marker, expected).length,
+      requests: journal.summaryAfter(marker, expected),
+      allReads: journal.diagnostic(expected),
+    }),
+    (value) => value.completedCount >= 1,
     30_000,
   );
+  const requests = journal.completedAfter(marker, expected);
   if (requests.length !== 1) fail('gallery_read_not_unique');
   return requests[0];
 }
 
 async function openFirstExistingRow(page, panel, row) {
   stage = 'open_existing_row';
+  report.operation = stage;
   const position = await evaluate(
     panel,
     `(() => {
@@ -499,19 +658,33 @@ async function openFirstExistingRow(page, panel, row) {
 }
 
 async function exercise({ page, panel }) {
-  const approved = await approvedOrganization();
-  await signIn(page, panel);
-  await selectApprovedOrganization(panel, approved);
-  const journal = await watchGalleryReads(panel);
+  let journal;
+  let expectedCanonical = canonical(PAGES[0]);
   try {
-    stage = 'first_public_page';
+    const approved = await approvedOrganization();
+    await signIn(page, panel);
+    await selectApprovedOrganization(panel, approved);
+    stage = 'gallery_observer_setup';
+    report.operation = stage;
+    journal = await watchGalleryReads(panel);
+    stage = 'first_public_page_navigation';
+    report.operation = stage;
     await page.goto(PAGES[0], { waitUntil: 'domcontentloaded', timeout: 60_000 });
     const firstCanonical = canonical(page.url());
     if (firstCanonical !== canonical(PAGES[0])) fail('first_public_page_redirected');
+    report.firstPageNavigation = { expectedUrlMatched: true };
     const firstMarker = journal.marker();
+    stage = 'first_gallery_tab_click';
+    report.operation = stage;
     await click(panel, 'title', 'Screenshots');
+    stage = 'first_gallery_real_read';
+    report.operation = stage;
     const initialRead = await completedRead(journal, firstMarker, firstCanonical);
+    stage = 'first_gallery_mounted_ui';
+    report.operation = stage;
     const initial = await selectedGallery(panel, firstCanonical);
+    stage = 'first_gallery_response_agreement';
+    report.operation = stage;
     const initialAgreement = await requireGalleryAgreement(panel, initial, initialRead.rows);
     report.cases.push({
       id: 'EXT-F-1009-T08',
@@ -526,10 +699,17 @@ async function exercise({ page, panel }) {
     });
 
     stage = 'refresh_first_page';
+    report.operation = stage;
     const refreshMarker = journal.marker();
     await click(panel, 'title', 'Refresh');
+    stage = 'refresh_first_page_real_read';
+    report.operation = stage;
     const refreshedRead = await completedRead(journal, refreshMarker, firstCanonical);
+    stage = 'refresh_first_page_mounted_ui';
+    report.operation = stage;
     const refreshed = await selectedGallery(panel, firstCanonical);
+    stage = 'refresh_first_page_response_agreement';
+    report.operation = stage;
     const refreshAgreement = await requireGalleryAgreement(panel, refreshed, refreshedRead.rows);
     report.cases.push({
       id: 'EXT-F-1009-T01',
@@ -543,13 +723,21 @@ async function exercise({ page, panel }) {
     });
 
     stage = 'switch_public_page';
+    report.operation = stage;
     const switchMarker = journal.marker();
     const firstReadPendingAtSwitch = journal.pendingAt(0, firstCanonical);
+    expectedCanonical = canonical(PAGES[1]);
     await page.goto(PAGES[1], { waitUntil: 'domcontentloaded', timeout: 60_000 });
     const secondCanonical = canonical(page.url());
     if (secondCanonical !== canonical(PAGES[1])) fail('second_public_page_redirected');
+    stage = 'switch_public_page_real_read';
+    report.operation = stage;
     const secondRead = await completedRead(journal, switchMarker, secondCanonical);
+    stage = 'switch_public_page_mounted_ui';
+    report.operation = stage;
     const second = await selectedGallery(panel, secondCanonical);
+    stage = 'switch_public_page_response_agreement';
+    report.operation = stage;
     const secondAgreement = await requireGalleryAgreement(
       panel,
       second,
@@ -571,18 +759,23 @@ async function exercise({ page, panel }) {
     });
 
     stage = 'real_panel_reload';
+    report.operation = stage;
     const loaderBefore = (await panel.send('Page.getFrameTree'))?.frameTree?.frame?.loaderId;
     if (!loaderBefore) fail('loader_before_reload_missing');
     const reloadMarker = journal.marker();
     await panel.send('Page.reload', { ignoreCache: false });
-    await waitFor(
+    await observedWait(
       'new_panel_document',
       async () => (await panel.send('Page.getFrameTree'))?.frameTree?.frame?.loaderId,
       (loader) => Boolean(loader && loader !== loaderBefore),
       30_000,
     );
     const reloadRead = await completedRead(journal, reloadMarker, secondCanonical);
+    stage = 'real_panel_reload_mounted_ui';
+    report.operation = stage;
     const reloaded = await selectedGallery(panel, secondCanonical);
+    stage = 'real_panel_reload_response_agreement';
+    report.operation = stage;
     const reloadAgreement = await requireGalleryAgreement(
       panel,
       reloaded,
@@ -602,10 +795,17 @@ async function exercise({ page, panel }) {
     });
 
     stage = 'refresh_reloaded_page';
+    report.operation = stage;
     const afterReloadMarker = journal.marker();
     await click(panel, 'title', 'Refresh');
+    stage = 'refresh_reloaded_page_real_read';
+    report.operation = stage;
     const afterReloadRead = await completedRead(journal, afterReloadMarker, secondCanonical);
+    stage = 'refresh_reloaded_page_mounted_ui';
+    report.operation = stage;
     const afterReload = await selectedGallery(panel, secondCanonical);
+    stage = 'refresh_reloaded_page_response_agreement';
+    report.operation = stage;
     const afterReloadAgreement = await requireGalleryAgreement(
       panel,
       afterReload,
@@ -641,8 +841,15 @@ async function exercise({ page, panel }) {
       });
     }
     report.status = 'partial';
+  } catch (error) {
+    report.failure ??= { stage, code: 'owned_ui_stage_failed' };
+    report.failure.operation = report.operation ?? null;
+    report.failure.driver = safeFailure(error);
+    report.failure.surface = await safeSurface(page, panel, expectedCanonical);
+    if (journal) report.failure.galleryReads = journal.diagnostic(expectedCanonical);
+    throw new Error('screenshot_admin_readonly_stage_failed');
   } finally {
-    journal.stop();
+    journal?.stop();
   }
 }
 
@@ -650,9 +857,11 @@ try {
   const before = await buildIdentity();
   report.build = { version: before.version, treeSha256: before.treeSha256, before, after: null };
   stage = 'owned_native_profile';
+  report.operation = stage;
   const run = await runNativeSidepanelQa({ exercisePanel: exercise });
   assert.equal(run.verified, true);
   stage = 'build_end';
+  report.operation = stage;
   const after = await buildIdentity();
   if (
     after.version !== before.version ||
@@ -663,8 +872,9 @@ try {
   report.build.after = { ...after, extensionId: run.extensionId };
   report.build.artifactTreeMatchedAfter = true;
   report.profileOwned = true;
-} catch {
+} catch (error) {
   report.status = 'unverified';
+  report.failureDiagnostic = safeFailure(error);
   report.failure ??= { stage, code: 'owned_harness_or_ui_stage_failed' };
 }
 await mkdir(dirname(OUTPUT), { recursive: true });
