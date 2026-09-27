@@ -1,0 +1,27 @@
+{
+  "defect": "EXT-D-0047",
+  "lane": "fresh implementation peer; source-only, zero product authorship",
+  "checked_revision": "15f13d8f20f1c8f3fd476dcc02d98d2e35a85bdb plus shared-checkout edits identified by hashes",
+  "verdict_a_installed_live": "UNVERIFIED",
+  "verdict_b_source_quality": "ADDRESSED",
+  "finding_reverification": {
+    "rejected_detach": "ADDRESSED: acquireSession.release caches its promise and throws when detach returns ok:false. detach keeps attached and lease-owned tracking after a rejected Chrome command, allowing the next scoped lease to retry. document-network-capture.close converts release failure into an unconfirmed-cleanup error; run-interactive waits for close before resolving rows. The saved UI test asserts no captured row and no health update on rejected detach.",
+    "acknowledged_detach": "ADDRESSED: successful detach clears attachment and lease ownership. A replacement acquire waits for detachPending before choosing its generation, then attaches anew. The same generation cannot be released twice.",
+    "owned_borrowed_concurrent": "ADDRESSED: lease counts defer owned detach until the final release; ordinary attach/send retains a borrowed attachment. Ordinary network and console capture now await pending detach before enabling CDP domains. An old detached lease cannot send through or release its replacement.",
+    "finite_stall": "PRESERVED: setup/reload and close remain bounded at the saved caller; a stalled hook removal or debugger detach returns an unconfirmed-cleanup error rather than resolving rows. A command Chrome never settles cannot establish actual hook or debugger release."
+  },
+  "new_regression": "None established by this scoped source review.",
+  "source_hashes_sha256": {
+    "src/lib/cdp/client.ts": "d24b6f3393451b37bfe54e05a4e7266011af7b1af559a57dcbfb264fc2366cd3",
+    "src/lib/data-pattern/document-network-capture.ts": "337dd7a929eefb797cff45668ef0919ad66cef1532a3d13afe25c4a8a98ca621",
+    "src/lib/data-pattern/document-network-transport.ts": "ab114700df13fd181f6796ea4a7911ada2592663442d570426b7cee29306933d",
+    "src/lib/data-pattern/run-interactive.ts": "cb41a664130491e90f2313893d3647d95839bd10e3ccb93c7a5e58da200448db",
+    "tests/unit/document-network-lease.test.ts": "d22c859265b64066c4ae888b8dbc5b20d8d378088615b6e627175464f53dc58b",
+    "tests/unit/document-network-saved-ui.test.tsx": "2e6ef3d6cd0c40d341593e435b8b2b7820aa8372a9de538a83095e802a8f7647",
+    "tests/unit/document-network-capture.test.ts": "3293c341ec993c9665598ddabbf48ed88a19cf8b07087b6358b2daa1cb0e7f97"
+  },
+  "limits": [
+    "No product edits, runtime, tests, build, browser, or installed extension exercise in this peer lane.",
+    "The builder's reported test result was not independently rerun in this lane."
+  ]
+}
