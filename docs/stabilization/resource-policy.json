@@ -26,6 +26,8 @@
     ["pnpm", "exec", "wxt", "build"],
     ["pnpm", "exec", "wxt"],
     ["pnpm", "compile"],
+    ["pnpm", "catalog:tools:md"],
+    ["pnpm", "docs:tools"],
     ["pnpm", "exec", "tsc", "--noEmit"],
     ["pnpm", "exec", "vitest", "run", "--maxWorkers=1"],
     ["bash", "scripts/test-release-ship-path.sh"],
