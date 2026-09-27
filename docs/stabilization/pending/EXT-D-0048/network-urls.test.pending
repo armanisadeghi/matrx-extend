@@ -1,0 +1,34 @@
+import {
+  isCredentialQueryKey,
+  sanitizeNetworkUrl,
+  transientCredentialFingerprint,
+} from '@/lib/credentials/network-urls';
+import { describe, expect, it } from 'vitest';
+
+describe('D48 credential-aware Network URL identity', () => {
+  it('masks recognized case and encoded key spellings without weakening ordinary query identity', () => {
+    const raw = 'https://user:pass@calendar.invalid/api/events?date=2026-09-27&ACCESS%5FToken=SYNTHETIC_ONLY&page=2#fragment';
+    const safe = sanitizeNetworkUrl(raw);
+    expect(safe).toBe('https://calendar.invalid/api/events?date=2026-09-27&ACCESS%5FToken=[credential]&page=2');
+    expect(safe).not.toContain('SYNTHETIC_ONLY');
+    expect(safe).not.toContain('user:pass');
+    expect(isCredentialQueryKey('pageToken')).toBe(false);
+    expect(sanitizeNetworkUrl('https://calendar.invalid/api/events?date=2026-09-28&page=2'))
+      .not.toBe(sanitizeNetworkUrl('https://calendar.invalid/api/events?date=2026-09-27&page=2'));
+  });
+
+  it('masks only an explicitly selected unknown key and keeps other ordinary keys', () => {
+    const raw = 'https://calendar.invalid/api/events?proof=SYNTHETIC_ONLY&date=2026-09-27&page=2';
+    expect(sanitizeNetworkUrl(raw, ['proof']))
+      .toBe('https://calendar.invalid/api/events?proof=[credential]&date=2026-09-27&page=2');
+    expect(sanitizeNetworkUrl(raw)).toContain('proof=SYNTHETIC_ONLY');
+  });
+
+  it('uses only a transient discriminator to tell different credential values apart within one window', () => {
+    const first = 'https://calendar.invalid/api/events?date=2026-09-27&access_token=SYNTHETIC_ONE';
+    const second = 'https://calendar.invalid/api/events?date=2026-09-27&access_token=SYNTHETIC_TWO';
+    expect(sanitizeNetworkUrl(first)).toBe(sanitizeNetworkUrl(second));
+    expect(transientCredentialFingerprint(first)).not.toBe(transientCredentialFingerprint(second));
+    expect(transientCredentialFingerprint(first)).toBe(transientCredentialFingerprint(first));
+  });
+});

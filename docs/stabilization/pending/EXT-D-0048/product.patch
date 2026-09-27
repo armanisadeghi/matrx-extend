@@ -1,0 +1,390 @@
+--- /dev/null
++++ b/src/lib/credentials/network-urls.ts
+@@ -0,0 +1,125 @@
++/** Credential-aware Network request identity. Never persist or log raw credential values. */
++export const NETWORK_CREDENTIAL_MASK = '[credential]';
++
++const credentialKey = /^(?:token|accesstoken|refreshtoken|idtoken|authtoken|bearertoken|csrftoken|sessiontoken|apikey|xapikey|key|secret|clientsecret|password|passwd|pwd|authorization|auth|bearer|signature|sig|session|sessionid|jwt|credential|xamzcredential|xamzsignature|xgoogcredential|xgoogsignature)$/;
++
++function normalizedKey(key: string): string {
++  let decoded = key.replaceAll('+', ' ');
++  try { decoded = decodeURIComponent(decoded); } catch { /* Keep malformed key literal. */ }
++  return decoded.toLowerCase().replace(/[^a-z0-9]/g, '');
++}
++
++export function isCredentialQueryKey(key: string, extraKeys: readonly string[] = []): boolean {
++  const normalized = normalizedKey(key);
++  return credentialKey.test(normalized) || extraKeys.some((extra) => normalizedKey(extra) === normalized);
++}
++
++function splitUrl(raw: string): { prefix: string; query: string | null; userInfo: string } {
++  const withoutFragment = raw.split('#', 1)[0] ?? '';
++  const question = withoutFragment.indexOf('?');
++  const beforeQuery = question < 0 ? withoutFragment : withoutFragment.slice(0, question);
++  const query = question < 0 ? null : withoutFragment.slice(question + 1);
++  try {
++    if (!/^[a-z][\da-z+.-]*:\/\//i.test(beforeQuery)) return { prefix: beforeQuery, query, userInfo: '' };
++    const url = new URL(beforeQuery);
++    return {
++      prefix: `${url.protocol}//${url.host}${url.pathname}`,
++      query,
++      userInfo: `${url.username}:${url.password}`,
++    };
++  } catch {
++    return { prefix: beforeQuery.replace(/^([a-z][\da-z+.-]*:\/\/)[^/@]*@/i, '$1'), query, userInfo: '' };
++  }
++}
++
++function querySegments(raw: string): string[] {
++  return raw ? raw.split('&') : [];
++}
++
++/** Preserve ordinary query bytes/order while masking only credential values. */
++export function sanitizeNetworkUrl(raw: string, extraKeys: readonly string[] = []): string {
++  const { prefix, query } = splitUrl(raw);
++  if (query === null) {
++    return prefix.replace(/(^|&)([^=&]+)=([^&]*)/g, (whole, lead: string, key: string) =>
++      isCredentialQueryKey(key, extraKeys) ? `${lead}${key}=${NETWORK_CREDENTIAL_MASK}` : whole,
++    );
++  }
++  const safeQuery = querySegments(query).map((segment) => {
++    const equals = segment.indexOf('=');
++    const key = equals < 0 ? segment : segment.slice(0, equals);
++    return isCredentialQueryKey(key, extraKeys) ? `${key}=${NETWORK_CREDENTIAL_MASK}` : segment;
++  });
++  return `${prefix}?${safeQuery.join('&')}`;
++}
++
++export function queryKeysInNetworkUrl(raw: string): string[] {
++  const { query } = splitUrl(raw);
++  if (query === null) return [];
++  return [...new Set(querySegments(query).map((part) => part.split('=', 1)[0] ?? '').filter(Boolean))];
++}
++
++/** A safe default; caller can still supply a human label. */
++export function networkPatternDefaultName(raw: string, extraKeys: readonly string[] = []): string {
++  const safe = sanitizeNetworkUrl(raw, extraKeys);
++  try {
++    const parsed = new URL(safe);
++    return `Network: ${parsed.host}${parsed.pathname}`;
++  } catch {
++    return 'Network capture';
++  }
++}
++
++/** Sink defense for existing URL-derived names and direct save callers. */
++export function sanitizeNetworkPatternName(
++  name: string,
++  rawFilter: string,
++  extraKeys: readonly string[] = [],
++): string {
++  const { query } = splitUrl(rawFilter);
++  let safe = name;
++  if (query !== null) {
++    for (const segment of querySegments(query)) {
++      const equals = segment.indexOf('=');
++      if (equals < 0) continue;
++      const key = segment.slice(0, equals);
++      if (!isCredentialQueryKey(key, extraKeys)) continue;
++      const value = segment.slice(equals + 1);
++      if (value && value !== NETWORK_CREDENTIAL_MASK) {
++        safe = safe.replaceAll(value, NETWORK_CREDENTIAL_MASK);
++        try {
++          const decoded = decodeURIComponent(value.replaceAll('+', ' '));
++          if (decoded) safe = safe.replaceAll(decoded, NETWORK_CREDENTIAL_MASK);
++        } catch { /* Raw form was already replaced. */ }
++      }
++    }
++  }
++  safe = safe.replace(/(^|[?&\s])([^?&=\s]+)=([^&\s]*)/g, (whole, lead: string, key: string) =>
++    isCredentialQueryKey(key, extraKeys) ? `${lead}${key}=${NETWORK_CREDENTIAL_MASK}` : whole,
++  );
++  // Legacy defaults truncated from the tail of a URL can omit the key itself.
++  if (/^Network:/i.test(name) && name.includes('…') && queryKeysInNetworkUrl(rawFilter).some((key) => isCredentialQueryKey(key, extraKeys))) {
++    return networkPatternDefaultName(rawFilter, extraKeys);
++  }
++  return safe;
++}
++
++/** Non-reversible, run-local discriminator; never persisted or shown. */
++export function transientCredentialFingerprint(raw: string, extraKeys: readonly string[] = []): string {
++  const { query, userInfo } = splitUrl(raw);
++  const parts = userInfo !== ':' ? [userInfo] : [];
++  if (query !== null) {
++    for (const segment of querySegments(query)) {
++      const equals = segment.indexOf('=');
++      const key = equals < 0 ? segment : segment.slice(0, equals);
++      if (isCredentialQueryKey(key, extraKeys)) parts.push(segment);
++    }
++  }
++  // Two independent 64-bit FNV streams reduce accidental in-window collisions.
++  let a = 0xcbf29ce484222325n;
++  let b = 0x84222325cbf29ce4n;
++  for (const byte of new TextEncoder().encode(parts.join('\u0000'))) {
++    a = BigInt.asUintN(64, (a ^ BigInt(byte)) * 0x100000001b3n);
++    b = BigInt.asUintN(64, (b ^ BigInt(byte)) * 0x100000001b3n);
++  }
++  return `${a.toString(16).padStart(16, '0')}${b.toString(16).padStart(16, '0')}`;
++}
+--- a/src/features/showcase/tabs/NetworkTab.tsx
++++ b/src/features/showcase/tabs/NetworkTab.tsx
+@@ -1,6 +1,7 @@
+ import { JsonTree } from '@/components/ui/json-tree';
+ import { useNetworkCapture } from '@/hooks/use-network-capture';
+ import type { CapturedNetEvent } from '@/lib/data-pattern/network-tap';
++import { isCredentialQueryKey, networkPatternDefaultName, queryKeysInNetworkUrl, sanitizeNetworkUrl } from '@/lib/credentials/network-urls';
+ import { matchesUrlFilter, rowsFromBody } from '@/lib/data-pattern/run-interactive';
+ import { cn } from '@/lib/utils';
+ import { Button, BasicInput as Input } from '@ai-matrx/design-system';
+@@ -19,6 +20,7 @@
+   const [selectedEvent, setSelectedEvent] = useState<CapturedNetEvent | null>(null);
+   const [extractKeyPath, setExtractKeyPath] = useState('');
+   const [replayUrlFilter, setReplayUrlFilter] = useState('');
++  const [extraCredentialKeys, setExtraCredentialKeys] = useState<string[]>([]);
+   const [urlMatch, setUrlMatch] = useState<'exact' | 'filter'>('exact');
+   const [matchRequestBody, setMatchRequestBody] = useState(true);
+ 
+@@ -34,12 +36,17 @@
+   // Search only changes the visible list. Keep the preview pinned to the
+   // captured response itself, including when the search hides it.
+   const selected = selectedEvent && events.includes(selectedEvent) ? selectedEvent : null;
+-  const savedUrlFilter = selected ? replayUrlFilter.trim() || selected.url : '';
++  const savedUrlFilter = selected
++    ? sanitizeNetworkUrl(replayUrlFilter.trim() || selected.url, extraCredentialKeys)
++    : '';
++  const safeSelectedUrl = selected ? sanitizeNetworkUrl(selected.url, extraCredentialKeys) : '';
++  const queryKeys = selected ? queryKeysInNetworkUrl(selected.url) : [];
+ 
+   const selectEvent = (event: CapturedNetEvent) => {
+     setSelectedEvent(event);
+     setExtractKeyPath('');
+     setReplayUrlFilter(event.url);
++    setExtraCredentialKeys([]);
+     setUrlMatch('exact');
+     setMatchRequestBody(true);
+   };
+@@ -174,7 +181,7 @@
+               >
+                 <StatusBadge status={e.status} />
+                 <span className="w-8 shrink-0 text-muted-foreground">{e.method}</span>
+-                <span className="flex-1 truncate">{shortenUrl(e.url)}</span>
++                <span className="flex-1 truncate">{shortenUrl(sanitizeNetworkUrl(e.url))}</span>
+                 <span className="shrink-0 text-muted-foreground">
+                   {formatFileSize(e.body_size)}
+                 </span>
+@@ -186,7 +193,7 @@
+         {selected && (
+           <div className="space-y-2 rounded-xl bg-secondary/40 p-3">
+             <div className="space-y-1 text-[11px]">
+-              <div className="font-mono break-all">{selected.url}</div>
++              <div className="font-mono break-all">{safeSelectedUrl}</div>
+               <div className="text-muted-foreground">
+                 {selected.method} · {selected.status}
+                 {selected.status_text ? ` ${selected.status_text}` : ''} ·{' '}
+@@ -204,11 +211,30 @@
+               </label>
+               <Input
+                 id="network-replay-url-filter"
+-                value={replayUrlFilter}
++                value={sanitizeNetworkUrl(replayUrlFilter, extraCredentialKeys)}
+                 onChange={(event) => setReplayUrlFilter(event.target.value)}
+-                placeholder={selected.url}
++                placeholder={safeSelectedUrl}
+                 className="h-8 rounded-full bg-background text-xs"
+               />
++              {queryKeys.length > 0 && (
++                <div className="space-y-1 text-[10px] text-muted-foreground">
++                  <div>Known credential values are masked. Review every query key; unknown keys may still contain a credential.</div>
++                  {queryKeys.map((key) => (
++                    <label key={key} className="flex items-center gap-2">
++                      <input
++                        type="checkbox"
++                        aria-label={`Treat ${key} as credential`}
++                        checked={isCredentialQueryKey(key, extraCredentialKeys)}
++                        disabled={isCredentialQueryKey(key)}
++                        onChange={(event) => setExtraCredentialKeys((current) => event.target.checked
++                          ? [...current, key]
++                          : current.filter((entry) => entry !== key))}
++                      />
++                      Treat {key} as credential{isCredentialQueryKey(key) ? ' (recognized)' : ''}
++                    </label>
++                  ))}
++                </div>
++              )}
+               <label className="flex items-center gap-2 text-[11px]">
+                 URL matching
+                 <select
+@@ -234,8 +260,9 @@
+               <div className="text-[10px] text-muted-foreground">
+                 Exact URL includes the query and literal * characters. Partial matching uses text or
+                 * wildcards. Body matching saves only an opaque digest, never the request body.
+-                Rerun uses the newest successful request of the same identity and checks the full
+-                capture window. Search above only filters this list.
++                Masked credential values may rotate between runs. If different credential values
++                match within one capture window, rerun reports ambiguity instead of choosing one.
++                Rerun checks the full capture window. Search above only filters this list.
+               </div>
+               {(!matchRequestBody ||
+                 selected.request_body_key === 'unavailable' ||
+@@ -246,7 +273,7 @@
+                     : 'URL and method only may include different operations. If multiple request identities match, rerun will ask you to narrow the matcher instead of choosing one.'}
+                 </div>
+               )}
+-              {!matchesUrlFilter(selected.url, savedUrlFilter, urlMatch) && (
++              {!matchesUrlFilter(selected.url, savedUrlFilter, urlMatch, extraCredentialKeys) && (
+                 <div className="text-[10px] text-amber-700 dark:text-amber-400">
+                   This matcher does not include the selected response. Rerun may capture different
+                   data or find no request.
+@@ -288,6 +315,7 @@
+                   kind="network_capture"
+                   config={{
+                     url_filter: savedUrlFilter,
++                    credential_query_keys: extraCredentialKeys,
+                     url_match: urlMatch,
+                     body_match: matchRequestBody ? 'exact' : 'ignore',
+                     ...(matchRequestBody && {
+@@ -298,7 +326,7 @@
+                   }}
+                   rows={extractedRows}
+                   source={source}
+-                  defaultName={`Network: ${shortenUrl(selected.url, 40)}`}
++                  defaultName={networkPatternDefaultName(selected.url, extraCredentialKeys)}
+                 />
+               </div>
+             )}
+--- a/src/lib/data-pattern/run-interactive.ts
++++ b/src/lib/data-pattern/run-interactive.ts
+@@ -21,6 +21,7 @@
+   mandateExecutePath,
+ } from '@/lib/api/routes/ai';
+ import { newId } from '@/lib/id';
++import { sanitizeNetworkUrl, transientCredentialFingerprint } from '@/lib/credentials/network-urls';
+ import { on, send } from '@/lib/messaging/native';
+ import { CHANNELS } from '@/lib/messaging/schemas';
+ import type { ExtractionPattern } from '@/lib/supabase/queries';
+@@ -241,6 +242,7 @@
+   request_body_key?: string;
+   body_match?: 'exact' | 'ignore';
+   url_filter?: string;
++  credential_query_keys?: string[];
+   method?: string;
+   key_path?: string;
+ }
+@@ -251,19 +253,25 @@
+  * Display-list searches are never
+  * saved here because they can match content type instead of request URL.
+  */
+-export function matchesUrlFilter(url: string, filter: string, match?: 'exact' | 'filter'): boolean {
+-  if (match === 'exact') return url === filter;
+-  const f = filter.trim();
++export function matchesUrlFilter(
++  url: string,
++  filter: string,
++  match?: 'exact' | 'filter',
++  extraCredentialKeys: readonly string[] = [],
++): boolean {
++  const candidate = sanitizeNetworkUrl(url, extraCredentialKeys);
++  const f = sanitizeNetworkUrl(filter.trim(), extraCredentialKeys);
++  if (match === 'exact') return candidate === f;
+   if (!f) return true;
+   if (!f.includes('*'))
+-    return match !== 'filter' && /^https?:\/\//i.test(f) ? url === f : url.includes(f);
++    return match !== 'filter' && /^https?:\/\//i.test(f) ? candidate === f : candidate.includes(f);
+   const re = new RegExp(
+     f
+       .split('*')
+       .map((part) => part.replace(/[.+?^${}()|[\]\\]/g, '\\$&'))
+       .join('.*'),
+   );
+-  return re.test(url);
++  return re.test(candidate);
+ }
+ 
+ /** Walk a dotted key path (numeric segments index arrays) and shape rows. */
+@@ -312,7 +320,7 @@
+   tabId: number,
+   opts: InteractiveRunOptions,
+ ): Promise<ExtractedRow[]> {
+-  const { url_filter, url_match, request_body_key, body_match, method, key_path } = (config ??
++  const { url_filter, url_match, credential_query_keys, request_body_key, body_match, method, key_path } = (config ??
+     {}) as SavedNetConfig;
+   if (!url_filter) {
+     throw new Error('This network pattern has no url_filter — re-save it from the Network tab.');
+@@ -361,7 +369,7 @@
+     const offEvents = on<CapturedNetEvent, { ack: true }>(CHANNELS.NET_CAPTURE_EVENT, (event) => {
+       if (finished || !accepting) return { ack: true };
+       if (event.tab_id !== tabId) return { ack: true };
+-      if (!matchesUrlFilter(event.url, url_filter, url_match)) return { ack: true };
++      if (!matchesUrlFilter(event.url, url_filter, url_match, credential_query_keys)) return { ack: true };
+       if (method && event.method.toUpperCase() !== method.toUpperCase()) return { ack: true };
+       if (
+         body_match !== 'ignore' &&
+@@ -389,7 +397,8 @@
+       const bodyKey = event.request_body_key;
+       // An unavailable payload has no provable equality with another request.
+       const identity = JSON.stringify([
+-        event.url,
++        sanitizeNetworkUrl(event.url, credential_query_keys),
++        transientCredentialFingerprint(event.url, credential_query_keys),
+         event.method.toUpperCase(),
+         bodyKey === 'unavailable'
+           ? ['unknown', event.request_sequence, event.ts_ms, matchCount]
+@@ -480,7 +489,7 @@
+         finish(() =>
+           reject(
+             new NetworkNoMatchError(
+-              `No successful request matching "${url_filter}" and the saved body identity was captured within ${formatDurationMs(windowMs, { style: 'long' })} of reloading. Run again and interact with the page (scroll or open the list) while it listens. Requests fired before the reload listener installs cannot be captured.`,
++              `No successful request matching "${sanitizeNetworkUrl(url_filter, credential_query_keys)}" and the saved body identity was captured within ${formatDurationMs(windowMs, { style: 'long' })} of reloading. Run again and interact with the page (scroll or open the list) while it listens. Requests fired before the reload listener installs cannot be captured.`,
+             ),
+           ),
+         );
+--- a/src/lib/supabase/queries.ts
++++ b/src/lib/supabase/queries.ts
+@@ -33,6 +33,7 @@
+ 
+ import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
+ import { decisionAnswersText } from '@/lib/chat/decision-answers';
++import { sanitizeNetworkPatternName, sanitizeNetworkUrl } from '@/lib/credentials/network-urls';
+ import { log } from '@/lib/debug/log';
+ import { getActiveOrganizationId } from '@/lib/org/active-org';
+ import { canonicalUrl } from '@/lib/sources/canonical';
+@@ -967,10 +968,29 @@
+ export async function savePattern(p: SavePatternInput): Promise<{ id: string } | null> {
+   const organizationId = requireOrganizationContext(p.organization_id);
+   const c = supabaseForActor(p.authored_by);
++  const networkConfig = p.kind === 'network_capture' && p.config && typeof p.config === 'object'
++    ? p.config as Record<string, unknown>
++    : null;
++  const rawFilter = typeof networkConfig?.url_filter === 'string' ? networkConfig.url_filter : '';
++  const extraKeys = Array.isArray(networkConfig?.credential_query_keys)
++    ? networkConfig.credential_query_keys.filter((key): key is string => typeof key === 'string')
++    : [];
++  const safeConfig = networkConfig
++    ? {
++        url_filter: sanitizeNetworkUrl(rawFilter, extraKeys),
++        credential_query_keys: extraKeys,
++        ...(networkConfig.url_match === 'exact' || networkConfig.url_match === 'filter' ? { url_match: networkConfig.url_match } : {}),
++        ...(networkConfig.body_match === 'exact' || networkConfig.body_match === 'ignore' ? { body_match: networkConfig.body_match } : {}),
++        ...(typeof networkConfig.request_body_key === 'string' ? { request_body_key: networkConfig.request_body_key } : {}),
++        ...(typeof networkConfig.method === 'string' ? { method: networkConfig.method } : {}),
++        ...(typeof networkConfig.key_path === 'string' ? { key_path: networkConfig.key_path } : {}),
++      }
++    : p.config ?? {};
++  const safeName = networkConfig ? sanitizeNetworkPatternName(p.name, rawFilter, extraKeys) : p.name;
+   // UNIQUE(created_by, domain, name) — on a name collision, auto-suffix
+   // "name (2)", "name (3)", … instead of failing the save (decision D3).
+   for (let attempt = 0; attempt < 5; attempt++) {
+-    const name = attempt === 0 ? p.name : `${p.name} (${attempt + 1})`;
++    const name = attempt === 0 ? safeName : `${safeName} (${attempt + 1})`;
+     const { data, error } = await c
+       .schema(EXTEND_SCHEMA)
+       .from('wbx_pattern')
+@@ -982,7 +1002,7 @@
+         list_root_selector: p.list_root_selector,
+         fields: p.fields,
+         kind: p.kind ?? 'manual_css',
+-        config: p.config ?? {},
++        config: safeConfig,
+         target_user_table_id: p.target_user_table_id ?? null,
+       })
+       .select('id')
