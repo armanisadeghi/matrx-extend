@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-27T03:06:11Z",
+  "generated_at": "2026-09-27T04:22:58Z",
   "purpose": "Machine-derived stabilization checklist. inventory.json remains the coverage authority; this report and CHECKLIST.md are derived views.",
   "source": {
-    "head": "9ddd29f9f232f8ed717e87871bdf065c54afeb4f",
+    "head": "b0828d0f2e697608c13b6b3e7575e6138e3ded88",
     "inventory": "docs/stabilization/inventory.json",
     "inventory_source_sha": "bcbf836bf7b1c959a6d54657aaf0487c1e3790ee",
     "inventory_updated_at": "2026-09-27T00:31:00+00:00",
@@ -38,12 +38,12 @@
     }
   },
   "release_context": {
-    "source_version": "0.2.83",
-    "artifact_identity_observed": "yes; run 003 is bound to local development tree 8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8, observed before the latest lockfile-only merge",
-    "current_build_acceptance": "not established; run 003 found one eligible fixture in the originally selected workspace, but workspace enumeration and positive recognition remain unverified at positive_workspace_recognition / stage_not_observed; the merged lockfile has not been installed, rebuilt, or retested",
-    "evidence": "docs/stabilization/runs/d22-recognition-readonly-003.json",
-    "last_native_attempted_local_dev_version": "0.2.83",
-    "last_native_attempted_local_dev_tree_sha256": "8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8"
+    "source_version": "0.2.85",
+    "artifact_identity_observed": "yes; fresh local development receipt test-results/source-dev-build-085.json binds source HEAD 36fa88fb to tree f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff",
+    "current_build_acceptance": "not established; D22 run 005 was refused at resource preflight before child start. The last child-started native run was run 003 on .83 and remains unverified.",
+    "evidence": "docs/stabilization/runs/baseline-main085.json",
+    "latest_local_dev_artifact_version": "0.2.85",
+    "latest_local_dev_artifact_tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff"
   },
   "coverage": {
     "recorded_results": {
@@ -65,7 +65,7 @@
     "recorded_passes_with_linked_build_receipt": 10,
     "historical_0_2_79_passes": 4,
     "current_0_2_82_passes": 0,
-    "unverified_no_result_note": "Applicable matrix slots without result objects remain unverified coverage; 1142 mode-specific slots include 1 not-applicable result.",
+    "unverified_no_result_note": "Applicable matrix slots without result objects remain unverified coverage; 1142 mode-specific slots include 1 not-applicable result. Focused unit tests do not count as inventory case passes.",
     "applicable_feature_cells_by_test_status": {
       "pass": 3,
       "unverified": 391
@@ -77,7 +77,8 @@
     },
     "mode_case_slots": 1142,
     "not_applicable_results_within_mode_case_slots": 1,
-    "current_0_2_83_passes": 0
+    "current_0_2_83_passes": 0,
+    "current_0_2_85_passes": 0
   },
   "defects": {
     "state_counts": {
@@ -113,11 +114,11 @@
     "fixed_awaiting_retest": [
       {
         "id": "EXT-D-0022",
-        "summary": "Engineering repairs are present; native retest is pending. Run 003 found one eligible public Source in the originally selected workspace, but workspace enumeration and positive recognition remain unverified at stage_not_observed; run 004 was refused before child start. Neither establishes product failure or a case pass.",
+        "summary": "Engineering repairs are present; native retest is pending. Run 003 on .83 found one eligible public Source in the originally selected workspace but left workspace enumeration, successful navigation, and positive recognition unverified. Run 005 on .85 was refused before child start; it yielded no product result.",
         "audit": "docs/stabilization/reports/d22-state-audit.json",
         "latest_native_attempt": "docs/stabilization/runs/d22-recognition-readonly-003.json",
         "next_source": "Discovery peer reports/d22-discovery-final-peer.json accepted bounded pagination/deadline/network source repairs; diagnostic peer 4a3ad173 accepted scoped discovery and cleanup diagnostics. Workspace enumeration and positive recognition remain unverified.",
-        "next_action": "Wait for healthy resource preflight and root admission before run 005 using the receipt-bound 0.2.83 artifact. Preserve the reserved checkpoint and send no Save input."
+        "next_action": "Wait for healthy resource conditions and root admission before run 006 using the fresh .85 receipt. Preserve the reserved checkpoint and send no Save input."
       }
     ],
     "all_records": [
@@ -405,23 +406,17 @@
     "status_rule": "Defect state counts come from each defect JSON current state. fixed means engineering repairs are present and retest is pending; it is not closed. Defect closure does not pass its related case or feature."
   },
   "latest_d22_attempt": {
-    "run_id": "d22-recognition-readonly-003",
-    "child_exit_code": 1,
-    "status": "unverified",
-    "version": "0.2.83",
-    "tree_sha256": "8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8",
-    "list_responses": 1,
-    "eligible_sources_in_original_selected_workspace": 1,
-    "workspace_enumeration": "unverified",
-    "passed_stages": [
-      "real_admin_ui",
-      "scoped_lookup_organization_match",
-      "fixture_page_guard_installed",
-      "workspace_cleanup"
-    ],
-    "failure_stage": "positive_workspace_recognition",
-    "failure_code": "stage_not_observed",
-    "classification": "One eligible fixture was returned by the originally selected workspace list, but workspace enumeration, successful fixture navigation, and positive recognition were not established. No product failure or case pass is supported. No Source write, Save, capture, or checkpoint action."
+    "run_id": "d22-recognition-readonly-005",
+    "status": "resource_refused",
+    "wrapper_exit_code": 2,
+    "child_started": false,
+    "version": "0.2.85",
+    "tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff",
+    "code": "RESOURCE_PREFLIGHT_REFUSED",
+    "pressure_level": 2,
+    "reasons": ["RESOURCE_PRESSURE_UNSAFE", "RESOURCE_SWAP_GROWTH"],
+    "evidence": "docs/stabilization/runs/d22-recognition-readonly-005.json",
+    "classification": "No browser child started, no Source lookup occurred, and no raw result was copied. This is infrastructure refusal only, not product evidence."
   },
   "priority_basis": "Fixed-awaiting-retest work first, then explicit unverified and no-result coverage. This is work-state order, not a claim of new product severity.",
   "pending_case_records": {
@@ -558,26 +553,17 @@
     "discovery_source_peer_sha256": "c13462f9a069b9fe1b9bf14d4ce0c9dd0e0c6b3e8c2160d53e0ff41ab1a15609"
   },
   "latest_resource_refusal": {
-    "run_id": "d22-recognition-readonly-004",
+    "run_id": "d22-recognition-readonly-005",
     "wrapper_exit_code": 2,
     "child_started": false,
     "code": "RESOURCE_PREFLIGHT_REFUSED",
-    "reason": "RESOURCE_PRESSURE_UNSAFE",
     "pressure_level": 2,
-    "log_path": "/tmp/matrx-d22-recognition-readonly-004.log",
-    "evidence": "docs/stabilization/runs/d22-recognition-readonly-004.json",
-    "subsequent_recovery_check": {
-      "at": "2026-09-27T03:02:23.680Z",
-      "wrapper_session": 93013,
-      "wrapper_exit_code": 2,
-      "child_started": false,
-      "code": "RESOURCE_PREFLIGHT_REFUSED",
-      "pressure_level": 2,
-      "available_memory_gib": 6.24,
-      "log_path": "/tmp/matrx-resource-recovery-004.log",
-      "log_sha256": "b0e24f38fb2f14bb31e653686e36a734bcaf0a5224cc514106abb095ceb9cd46"
-    },
-    "classification": "Run 004 and its later recovery check were refused before child launch. Infrastructure evidence only; no product attempt or result. Do not install/rebuild or retry browser work until root admission."
+    "reasons": ["RESOURCE_PRESSURE_UNSAFE", "RESOURCE_SWAP_GROWTH"],
+    "log_path": "/tmp/matrx-d22-recognition-readonly-005.log",
+    "log_sha256": "d311ec240f3a57180e645cd1e5ba9dab782650fd1fb16137fc33f4c00e2b916e",
+    "evidence": "docs/stabilization/runs/d22-recognition-readonly-005.json",
+    "prior_run_004": "docs/stabilization/runs/d22-recognition-readonly-004.json",
+    "classification": "Infrastructure refusal only. Run 006 remains pending healthy resource conditions and root admission."
   },
   "latest_source_merge": {
     "commit": "e1ba3ff7",
@@ -585,6 +571,29 @@
     "changed_file": "pnpm-lock.yaml",
     "changed_lines": 28,
     "lockfile_sha256": "352aa8e19d45aff6968573f7552fd4bd89a9ed9f39a341574ce396370cd8c02a",
-    "dependency_state": "merged but not installed, rebuilt, or retested because resource preflight refused"
+    "dependency_state": "Merged lockfile was installed with --frozen-lockfile --ignore-scripts; compile and WXT development build passed under separate guards. The fresh .85 receipt binds the resulting unpacked tree.",
+    "baseline_receipt": "docs/stabilization/runs/baseline-main085.json"
+  },
+  "focused_regression": {
+    "commit": "777e7948",
+    "evidence": "docs/stabilization/runs/source-main085-regression-001.json",
+    "result": "pass-with-explicit-skip",
+    "test_files_passed": 11,
+    "tests_passed": 62,
+    "tests_skipped": 1,
+    "tests_total": 63,
+    "skip": "Cross-client parity case was skipped because the sibling frontend checkout was unavailable; parity remains unverified.",
+    "limit": "Focused unit tests do not establish native browser behavior or promote inventory case coverage."
+  },
+  "latest_d22_native_child_attempt": {
+    "run_id": "d22-recognition-readonly-003",
+    "status": "unverified",
+    "version": "0.2.83",
+    "tree_sha256": "8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8",
+    "failure_stage": "positive_workspace_recognition",
+    "failure_code": "stage_not_observed",
+    "workspace_enumeration": "unverified",
+    "successful_fixture_navigation": "unverified",
+    "evidence": "docs/stabilization/runs/d22-recognition-readonly-003.json"
   }
 }

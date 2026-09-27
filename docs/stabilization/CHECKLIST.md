@@ -1,13 +1,13 @@
 # Stabilization checklist (derived)
 
-> Updated 2026-09-27T03:06:11Z. The last observed local development artifact is 0.2.83 tree `8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8`; run 003 is bound to it. A later lockfile-only merge has not been installed or rebuilt, and native acceptance remains unverified. `inventory.json` and defect records remain authoritative.
+> Updated 2026-09-27T04:22:58Z. The frozen lockfile install, compile, and development build passed on source HEAD `36fa88fb`; the `.85` local artifact tree is `f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff`. Focused D22 regressions passed 62 tests with 1 explicit skip. Native acceptance remains unverified. `inventory.json` and defect records remain authoritative.
 
 ## Coverage
 
 - [x] Inventory contains 205 features and 693 cases.
 - [ ] Case coverage remains incomplete: 1142 mode-specific slots, including 1 not-applicable result; 53 recorded pass, 76 explicit unverified, and 1012 slots without a result record (unverified coverage).
-- [ ] Acceptance: no 0.2.83 case pass is recorded. Runs 002 and 003 bind to the last observed `.83` tree `8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8`, before the latest lockfile-only merge. Run 002 found an empty first page. Run 003 found one eligible public Source in the originally selected workspace, but positive recognition (`stage_not_observed`) and workspace enumeration remain unverified; fixture-page guard installation was observed, successful navigation was not established. Run 004 was refused before child launch. The merged lockfile has not been installed/rebuilt/retested. These results establish neither positive acceptance nor product failure.
-- [ ] The four explicit 0.2.79 Debug passes (EXT-F-1005-T14/T15/T17/T22) remain historical, not 0.2.83 retests.
+- [ ] Acceptance: the 62 focused unit tests do not count as inventory case passes; no current `.85` native case pass is recorded. Run 005 on `.85` was refused before child launch, so it produced no browser result. The last child-started native run, 003 on `.83`, found one eligible Source in the originally selected workspace but left successful fixture navigation, positive recognition, and workspace enumeration unverified. Run 004 was also refused before child launch.
+- [ ] The four explicit 0.2.79 Debug passes (EXT-F-1005-T14/T15/T17/T22) remain historical, not 0.2.85 retests.
 
 ## Defects
 
@@ -18,7 +18,7 @@
 
 Independent state audit `reports/d22-state-audit.json` supports recording the engineering repair as fixed after the scoped-query, stale-result, actor-boundary, queue-order, and refusal repairs and their focused green receipts. Discovery peer `reports/d22-discovery-final-peer.json` accepted the bounded source repair; diagnostic peer `4a3ad173` accepted scoped discovery/cleanup diagnostics. Run 003 found one eligible fixture in the originally selected workspace but could not establish workspace enumeration or positive recognition. Keep `ui_retest` pending and do not mark EXT-F-1007-T26 passed.
 
-**Next:** Run 005 is pending a healthy resource preflight and root admission. Run 004 and its recovery check were refused at pressure level 2; no browser lease is authorized now. Use the existing receipt-bound `.83` artifact only when root admits a run; use actual existing Sources, keep URLs/IDs private, and send no Save input. Both refusals are infrastructure evidence, not product results.
+**Next:** Run 006 is pending healthy resource conditions and root admission. Use the fresh receipt-bound `.85` artifact only after admission; use actual existing Sources, keep URLs/IDs private, and send no Save input. Run 005 was refused at preflight and is infrastructure evidence, not a product result.
 
 **Still unverified:** actual positive Source/Open identity agreement across workspaces, stale-response rejection, service-failure/recovery, and late in-flight Save. The read-only runner cannot prove late Save. Preserve the reserved Save checkpoint exactly; do not read, advance, reset, reinitialize, retry, capture, or Save.
 
