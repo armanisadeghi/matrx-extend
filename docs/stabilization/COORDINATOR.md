@@ -1,13 +1,13 @@
 # Matrx Extend stabilization: resume here
 
-Updated 2026-09-27T02:35:59Z. Campaign incomplete; `inventory.json` is coverage authority (205 features, 693 cases).
+Updated 2026-09-27T03:02:23Z. Campaign incomplete; `inventory.json` is coverage authority (205 features, 693 cases).
 
 ## Current truth and next actions
 
-- **Source/build:** Merged source is 0.2.83 after the dependency update; no 0.2.83 build or native acceptance is recorded. Baseline 0.2.82 gates recorded on `086b0423` passed. The last native-tested development artifact was 0.2.82 tree `9066e69fc13f5c35bd9650aa2540288045a40331012620def87faef4405d9611`, bound in `d22-recognition-readonly-001` but without product acceptance. The latest published release remains 0.2.79.
-- **D22 state:** Independent audit `7cb1ec35` supports `in-fix` to `fixed` awaiting retest, never closed. The guarded .82 read-only attempt exited 1/unverified after its bounded first-page, three-host fixture search found no eligible Source; it did not establish global fixture absence or a product failure. Keep the reserved `d22-source-save-attempt.json` immutable and never read/recover through the default path, advance, reset, delete, reinitialize, retry, or click Save.
-- **Next D22 step:** Independent review `b26c742c` rejected multi-page discovery `c90c93fa` on pagination, time-bound and network-boundary evidence. Corrected revision `4b8e1d0f` awaits fresh review by `/root/seo_public_metadata_fixture`. Root's guarded dependency install for merged 0.2.83 is active; no browser lease may start. After review and a fresh receipt-bound build, root may admit one guarded read-only native run; do not present the prior 0.2.82 tree as a 0.2.83 build or manufacture a fixture.
-- **Remaining evidence:** Positive Source/Open identity across workspaces, workspace-change stale-state behavior, late response rejection, service-failure/recovery, and late in-flight Save remain unverified. The latest missing-fixture result cannot pass or fail product behavior. EXT-F-1007-T26 remains unpassed. Checklist `63547bf8` is superseded by the current 22-closed/1-fixed-awaiting-retest view. Chat/Pilot remain last; do not claim full health or a Store upload.
+- **Source/build:** Current local development artifact is 0.2.83, tree `8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8`. Run 003 bound to this tree; latest published release remains 0.2.79. No 0.2.83 acceptance is established.
+- **D22 state:** Independent audit `7cb1ec35` supports `fixed` awaiting retest, never closed. Diagnostic peer `4a3ad173` accepted bounded multi-workspace cleanup diagnostics. Run 003 found one eligible public Source in the originally selected workspace; workspace enumeration and positive recognition remained unverified at `positive_workspace_recognition` / `stage_not_observed`. Run 004 was refused at preflight (`RESOURCE_PRESSURE_UNSAFE`, pressure level 2), with no child. Neither is a product failure or a case pass. Keep the reserved `d22-source-save-attempt.json` immutable; never read/recover through the default path, advance, reset, delete, reinitialize, retry, or click Save.
+- **Next D22 step:** Run 005 is pending healthy resource preflight and root admission. Run 004 and the subsequent recovery check were both refused with `RESOURCE_PRESSURE_UNSAFE` at pressure level 2; recovery log `/tmp/matrx-resource-recovery-004.log` SHA-256 `b0e24f38fb2f14bb31e653686e36a734bcaf0a5224cc514106abb095ceb9cd46`. No browser lease is authorized now. Do not retry until root admits it, manufacture a fixture, or broaden the acceptance claim beyond the stage observed.
+- **Remaining evidence:** Workspace enumeration, positive Source/Open identity across workspaces, workspace-change stale-state behavior, late response rejection, service-failure/recovery, and late in-flight Save remain unverified. Run 003's eligible fixture did not prove positive recognition. EXT-F-1007-T26 remains unpassed; defect counts remain 22 closed and 1 fixed-awaiting-retest. Chat/Pilot remain last; do not claim full health or a Store upload.
 
 ## Operating constraints
 
@@ -27,5 +27,5 @@ Updated 2026-09-27T02:35:59Z. Campaign incomplete; `inventory.json` is coverage 
 
 - Inventory/checklist: `inventory.json`, `CHECKLIST.md`, `reports/current-checklist-summary.json`.
 - D22 state/fixture assessment: `defects/EXT-D-0022.json`, `reports/d22-state-audit.json`, `reports/d22-next-closure-path.json`.
-- Native attempt: `runs/d22-recognition-readonly-001.json`; local dev identity review: `reports/local-dev-build-source-peer.json`.
+- Native attempts: `runs/d22-recognition-readonly-002.json` (empty first page), `runs/d22-recognition-readonly-003.json` (fixture found; stage unverified), and `runs/d22-recognition-readonly-004.json` (resource refused; no child). Discovery source review: `reports/d22-discovery-final-peer.json`; local dev identity review: `reports/local-dev-build-source-peer.json`.
 - Incoming merge review: `reports/incoming-file-source-d22-impact.json`.
