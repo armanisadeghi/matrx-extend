@@ -27,11 +27,16 @@
       "debug-log-controls-012": "0.2.79/be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0"
     },
     "screenshot_guest_003_build": "0.2.79/be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0",
-    "all_reviewed_runtime_evidence_is_bound_to_source_0_2_79_not_unbuilt_0_2_80": true
+    "all_reviewed_runtime_evidence_is_bound_to_source_0_2_79_not_unbuilt_0_2_80": true,
+    "promoted_case_primary_run_ids_point_to_accepted_current_build_receipts": true
   },
   "status_review": {
     "EXT-F-1005-T14": {
-      "inventory_dimensions": { "warm": "pass", "reload": "pass", "service-error": "pass" },
+      "inventory_dimensions": {
+        "warm": "pass",
+        "reload": "pass",
+        "service-error": "pass"
+      },
       "case_status": "pass",
       "feature_admin_cell": "unverified",
       "peer_links": [
@@ -42,23 +47,39 @@
       "boundary": "The promoted case aggregates the three peer-accepted dimensions; inventory detail preserves that visible-row signatures do not prove hidden event IDs or detail JSON byte identity."
     },
     "EXT-F-1005-T15": {
-      "inventory_dimensions": { "warm": "pass", "reload": "pass", "service-error": "pass" },
+      "inventory_dimensions": {
+        "warm": "pass",
+        "reload": "pass",
+        "service-error": "pass"
+      },
       "case_status": "pass",
       "feature_admin_cell": "unverified"
     },
     "EXT-F-1005-T17": {
-      "inventory_dimensions": { "warm": "pass", "reload": "pass", "service-error": "pass" },
+      "inventory_dimensions": {
+        "warm": "pass",
+        "reload": "pass",
+        "service-error": "pass"
+      },
       "case_status": "pass",
       "feature_admin_cell": "unverified",
       "boundary": "Debug 009 peer adjudicates the pre-clear error badge and clearing assertions; raw runner substatus was conservative."
     },
     "EXT-F-1005-T22": {
-      "inventory_dimensions": { "warm": "pass", "reload": "pass", "service-error": "pass" },
+      "inventory_dimensions": {
+        "warm": "pass",
+        "reload": "pass",
+        "service-error": "pass"
+      },
       "case_status": "pass",
       "feature_admin_cell": "unverified"
     },
     "EXT-F-1009-T09": {
-      "bounded_guest_dimensions": { "warm": "pass", "reload": "pass", "role-change": "pass" },
+      "bounded_guest_dimensions": {
+        "warm": "pass",
+        "reload": "pass",
+        "role-change": "pass"
+      },
       "arbitrary_direct_state": "unverified",
       "feature_guest_cell": "unverified",
       "boundary": "No full feature or signed-in capture/gallery acceptance is claimed."
@@ -67,15 +88,15 @@
   "findings": [
     {
       "id": "INV-LINK-1",
-      "classification": "traceability_ambiguity",
-      "detail": "T14, T15, and T22 retain results.admin.run_id=admin-debug-filters-001, whose receipt is a partial 0.2.58 run. Their run_ids/evidence arrays do link the accepted 0.2.79 runs and peers, so this does not erase the newer evidence, but the singular primary run_id conflicts with the promoted case status. T17 has no singular run_id, but its run_ids/evidence links include the relevant 0.2.79 runs.",
-      "suggested_resolution": "On the next inventory maintenance, point the primary run_id at the latest aggregate receipt or remove it when the result is assembled from multiple runs; retain historical run IDs in run_ids."
+      "classification": "resolved_traceability_ambiguity",
+      "detail": "Resolved: T14 now names debug-log-controls-012 as its primary aggregate receipt; T15 and T22 name debug-log-controls-009, their accepted service-error receipt. The older admin-debug-filters-001 0.2.58 history remains preserved in each applicable evidence/run_ids list; T17 retains its multi-run links without a singular run_id.",
+      "resolution": "No historical run IDs or evidence were removed."
     },
     {
       "id": "INV-HISTORY-1",
-      "classification": "historical_wording_ambiguity",
-      "detail": "Runtime evidence entries for Debug 009/010/011 say T14 remains unverified because the warm reset was partial. These statements describe their original state and are superseded by Debug 012, but are not labeled as historical snapshots alongside the current T14 case pass.",
-      "suggested_resolution": "Keep immutable per-run reports intact; clarify the old inventory limits as-of those runs or add a superseded-by-012 note during the next inventory edit."
+      "classification": "resolved_historical_wording_ambiguity",
+      "detail": "Resolved: the Debug 009/010/011 runtime-evidence limits now identify their T14-unverified statements as as-of-run snapshots and note that Debug 012 later completed the warm dimension. Immutable peer reports remain unchanged.",
+      "resolution": "Historical limitation preserved with explicit chronology; current T14 status is pass at case scope."
     }
   ],
   "acceptance_boundary": "This is a mechanical link/schema audit of inventory and cited artifacts, not independent behavioral acceptance. It makes no new runtime claim and does not promote either full feature cell.",
@@ -83,5 +104,14 @@
     "json_parse": "pass",
     "ascii": "pass",
     "biome": "pass"
+  },
+  "post_repair_audit": {
+    "T14_primary_run_id": "debug-log-controls-012",
+    "T15_primary_run_id": "debug-log-controls-009",
+    "T22_primary_run_id": "debug-log-controls-009",
+    "historical_run_ids_preserved": true,
+    "f1005_admin_feature_cell": "unverified",
+    "f1009_guest_feature_cell": "unverified",
+    "f1009_arbitrary_direct_state": "unverified"
   }
 }

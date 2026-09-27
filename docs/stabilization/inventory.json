@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-27T00:15:00+00:00",
+  "updated_at": "2026-09-27T00:31:00+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -6716,7 +6716,7 @@
           "results": {
             "admin": {
               "status": "pass",
-              "run_id": "admin-debug-filters-001",
+              "run_id": "debug-log-controls-012",
               "evidence": [
                 "docs/stabilization/runs/admin-debug-filters-001.json",
                 "docs/stabilization/reports/debug-acceptance-peer.json",
@@ -6777,7 +6777,7 @@
           "results": {
             "admin": {
               "status": "pass",
-              "run_id": "admin-debug-filters-001",
+              "run_id": "debug-log-controls-009",
               "evidence": [
                 "docs/stabilization/runs/admin-debug-filters-001.json",
                 "docs/stabilization/reports/debug-acceptance-peer.json",
@@ -6968,7 +6968,7 @@
           "results": {
             "admin": {
               "status": "pass",
-              "run_id": "admin-debug-filters-001",
+              "run_id": "debug-log-controls-009",
               "evidence": [
                 "docs/stabilization/runs/admin-debug-filters-001.json",
                 "docs/stabilization/reports/debug-acceptance-peer.json",
@@ -8506,7 +8506,7 @@
               "observation": "Detail expanded/collapsed, no-detail row stayed inert, and no-match/no-events remained distinct; combined warm/reload dimensions pass."
             }
           ],
-          "limits": "Raw run and feature remain partial. Admin feature cell stays unverified. T14 remains unverified across dimensions until prior-set restoration is proved; no full EXT-F-1005 acceptance is claimed."
+          "limits": "As of Debug 009, T14 remained unverified pending a strong prior-row reset oracle; Debug 010/011/012 later completed service-error, reload, and warm dimensions respectively. The run itself remains partial. The admin feature cell is still unverified."
         },
         {
           "run_id": "debug-log-controls-010",
@@ -8523,7 +8523,7 @@
               "observation": "Under the verified selected-backend outage, message and detail search, no-match, and exact ordered visible-row restoration passed; natural arrivals were counted."
             }
           ],
-          "limits": "T14 case remains unverified because its warm reset dimension is partial. Feature/admin cell remains unverified."
+          "limits": "As of debug-log-controls-010, T14 remained unverified pending the warm reset dimension; Debug 012 later completed the warm dimension. This run's supported dimension remains recorded above. The admin feature cell is still unverified."
         },
         {
           "run_id": "debug-log-controls-011",
@@ -8540,7 +8540,7 @@
               "observation": "After a real panel document reload and restored admin identity, message/detail search and no-match passed; exact prior ordered visible-row restoration allowed one counted new arrival."
             }
           ],
-          "limits": "T14 case remains unverified because its warm reset dimension is partial. Feature/admin cell remains unverified."
+          "limits": "As of debug-log-controls-011, T14 remained unverified pending the warm reset dimension; Debug 012 later completed the warm dimension. This run's supported dimension remains recorded above. The admin feature cell is still unverified."
         },
         {
           "run_id": "debug-log-controls-012",
