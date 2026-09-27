@@ -2,22 +2,24 @@
   "schema_version": 1,
   "report_id": "d22-readonly-source-peer",
   "defect_id": "EXT-D-0022",
-  "reviewed_source_commit": "7f1fdb5b",
+  "reviewed_source_commits": ["7f1fdb5b", "72de7258"],
+  "reviewed_integrated_head": "ef03ecef",
   "A_runtime": {
     "verdict": "UNVERIFIED",
     "reason": "Independent source review only; no browser, build, or test was launched. No actual existing fixture, organization-scoped response, UI recognition, or delayed-response behavior has been observed by this peer."
   },
   "B_source": {
-    "verdict": "REJECT_PENDING_FIXTURE_ALIAS_REPAIR",
-    "blocking_finding": "The real listSavedCaptures query selects SOURCE_SUMMARY_COLUMNS with the PostgREST alias url:canonical_identity. Its response rows therefore have row.url, not row.canonical_identity. Fixture discovery calls new URL(row.canonical_identity), catches the invalid URL, and rejects every row. The run stops at no_existing_public_positive_fixture_in_visible_page even if a qualifying Source exists, so it cannot prove recognition, workspace switching, or the late lookup.",
-    "required_repair": "Read the actual list response's url field and keep its public-host and no-query constraints. Preserve the separate point-lookup assertion against canonical_identity, because lookupCapturedByUrl selects that unaliased field. After repair, independently review before guarded native execution; missing qualifying rows on the first visible list page must still be reported unverified without creating one.",
+    "verdict": "ACCEPT_BOUNDED_SOURCE_WITH_RUNTIME_UNVERIFIED",
+    "prior_rejection": "The original runner read row.canonical_identity from the Saved captures list even though SOURCE_SUMMARY_COLUMNS aliases that field to url. This caused every real fixture candidate to be rejected before positive recognition.",
+    "repair_verified": "72de7258 changes only list discovery to new URL(row.url) and identity = fixture.url. The real list select returns that alias, while lookupCapturedByUrl selects canonical_identity without an alias and the point-lookup validation still uses row.canonical_identity. Public-host, HTTPS, credential-free, no-query/fragment restrictions and the first-page-only limit remain. No deterministic fixture-shape blocker remains in this path.",
     "accepted_boundaries": "The runner uses real admin web-form sign-in and UI workspace selection, a keyed local development build receipt, real processed_documents GET observations, and real Source Open link IDs held in memory. It does not invoke Capture or Save, read the reserved checkpoint, write database rows, synthesize responses, or inject fixtures. Credentials, organization names/IDs, Source IDs, URLs, and response bodies do not enter the JSON report.",
     "late_response_oracle": "The Fetch Response-stage hook targets an actual approved-workspace GET and releases it with Fetch.continueRequest(requestId), without replacing URL, status, body, or headers. The observer then requires a completed HTTP 200 old-workspace read and checks the current workspace UI/link. The 1500 ms post-delivery observation is bounded UI evidence, not proof against every later scheduler delay; late Save and service-failure recovery remain explicitly unverified.",
-    "additional_limit": "The observer filters by origin learned from the real list query and organization/canonical query values. Comparison-workspace proof depends on a distinct accessible existing workspace and a completed scoped result; absence of either must remain unverified. The source currently cannot reach those gates because of the alias mismatch."
+    "additional_limit": "The observer filters by origin learned from the real list query and organization/canonical query values. Comparison-workspace proof depends on a qualifying pre-existing Source in the first visible list page, a distinct accessible existing workspace, and completed scoped results; absence of any remains unverified. The incoming FileSourcePanel integration reviewed at 418e8bb3 does not change these query shapes or the runner's read-only selectors. It does not establish filing behavior, service-failure recovery, immediate intermediate-state clearing, or a late Save result."
   },
   "reviewed_paths": [
     "tests/browser/source-recognition-readonly-acceptance.mjs",
     "src/lib/supabase/queries.ts",
-    "docs/stabilization/reports/d22-next-closure-path.json"
+    "docs/stabilization/reports/d22-next-closure-path.json",
+    "docs/stabilization/reports/incoming-file-source-d22-impact.json"
   ]
 }
