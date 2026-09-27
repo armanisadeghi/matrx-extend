@@ -6,7 +6,7 @@
  * The root resource guard owns execution and the resulting native review.
  */
 import assert from 'node:assert/strict';
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
@@ -14,6 +14,8 @@ import { click, evaluate, openSection, waitFor } from './settings-panel-driver.m
 
 const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'isolated-admin-signin-acceptance.json');
+const RUN_ID = `isolated-admin-signin-${new Date().toISOString().replace(/[:.]/g, '-')}`;
+const SCREENSHOT_DIR = join(REPO, 'test-results', RUN_ID);
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const EXPECTED_ADMIN = 'admin@admin.com';
@@ -150,7 +152,41 @@ async function accountState(panel) {
   );
 }
 
+/** Safe auth-storage shape only: neither token values nor profile data leave the browser. */
+async function storedSessionShape(panel) {
+  return evaluate(
+    panel,
+    `(() => chrome.storage.local.get([
+      'matrx.auth.accessToken',
+      'matrx.auth.refreshTokenEnc',
+      'matrx.auth.refreshTokenIv',
+      'matrx.auth.expiresAt',
+      'matrx.user.profile',
+    ]).then((stored) => ({
+      accessToken: typeof stored['matrx.auth.accessToken'] === 'string',
+      refreshCiphertext: typeof stored['matrx.auth.refreshTokenEnc'] === 'string',
+      refreshIv: typeof stored['matrx.auth.refreshTokenIv'] === 'string',
+      expiry: typeof stored['matrx.auth.expiresAt'] === 'number',
+      profile: Boolean(stored['matrx.user.profile']?.id),
+      locks: typeof navigator.locks?.request === 'function',
+    })))()`,
+  );
+}
+
+/** Captures only the native extension document, never the Mac desktop or a web-auth window. */
+async function capturePanelScreenshot(panel, fileName) {
+  const screenshot = await panel.send('Page.captureScreenshot', {
+    format: 'png',
+    captureBeyondViewport: false,
+  });
+  const path = join(SCREENSHOT_DIR, fileName);
+  await writeFile(path, Buffer.from(screenshot.data, 'base64'), { mode: 0o600 });
+  return path;
+}
+
 try {
+  await mkdir(SCREENSHOT_DIR, { recursive: true, mode: 0o700 });
+  evidence.screenshots = [];
   stage = 'owned_profile';
   const result = await runNativeSidepanelQa({
     exercisePanel: async ({ page, panel }) => {
@@ -161,6 +197,7 @@ try {
       assert.equal(guest.signIn, true);
       assert.equal(guest.signOut, false);
       assert.equal(guest.advanced, false);
+      evidence.screenshots.push(await capturePanelScreenshot(panel, '01-before-guest.png'));
 
       const web = await signInOnRealWebPage(page);
       try {
@@ -195,7 +232,41 @@ try {
           adminRoleVisible: admin.adminRoleMatch,
           advancedCapabilitiesVisible: admin.advanced,
           signOutVisible: admin.signOut,
+          storageAfterSignIn: await storedSessionShape(panel),
         };
+        evidence.screenshots.push(await capturePanelScreenshot(panel, '02-action-signed-in.png'));
+        stage = 'extension_panel_reload';
+        await panel.send('Page.reload', { ignoreCache: true });
+        await waitFor(
+          'settings_navigation_after_real_panel_reload',
+          () =>
+            evaluate(
+              panel,
+              `(() => [...document.querySelectorAll('[title]')].some((node) => node.title === 'Settings'))()`,
+            ),
+          (ready) => ready === true,
+          30_000,
+        );
+        await click(panel, 'title', 'Settings');
+        await openSection(panel, 'Account');
+        stage = 'extension_admin_wait_after_reload';
+        try {
+          await waitFor(
+            'admin_settings_after_real_panel_reload',
+            () => accountState(panel),
+            (state) =>
+              state?.expectedEmailMatch && state.adminRoleMatch && state.signOut && state.advanced,
+            30_000,
+          );
+        } catch {
+          evidence.extension.storageAfterPanelReload = await storedSessionShape(panel);
+          fail('extension_admin_state_lost_after_reload');
+        }
+        evidence.extension.storageAfterPanelReload = await storedSessionShape(panel);
+        evidence.extension.retainedAfterPanelReload = true;
+        evidence.screenshots.push(
+          await capturePanelScreenshot(panel, '03-result-after-reload-signed-in.png'),
+        );
       } finally {
         await web.close();
       }

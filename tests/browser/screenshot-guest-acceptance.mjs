@@ -14,7 +14,10 @@ import { click, evaluate, openSection, waitFor } from './settings-panel-driver.m
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const OUTPUT = join(REPO, 'test-results', `screenshot-guest-acceptance-${randomUUID()}.json`);
-const EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
+const EXTENSION_DIR = resolve(
+  REPO,
+  process.env.SCREENSHOT_GUEST_EXTENSION_DIR ?? '.output/chrome-mv3-dev',
+);
 const RELEASE_RECEIPT = join(REPO, '.output', 'release-receipt.json');
 const DEV_BUILD_RECEIPT = process.env.SCREENSHOT_GUEST_DEV_BUILD_RECEIPT;
 const RECEIPT = DEV_BUILD_RECEIPT ?? RELEASE_RECEIPT;
@@ -71,6 +74,7 @@ async function guestNavigation(panel, targetTitle = null, viewMarker = null) {
     const list=lists.length===1?lists[0]:null;
     const tabs=list?[...list.querySelectorAll('[role="tab"]')].filter(n=>n.closest('[role="tablist"]')===list):[];
     const screenshotTabs=tabs.filter(n=>n.title==='Screenshots');
+    const chatTabs=tabs.filter(n=>n.title==='Chat');
     const targetTabs=targetTitle===null?[]:tabs.filter(n=>n.title===targetTitle);
     const targetTab=targetTabs.length===1?targetTabs[0]:null;
     const panes=[...document.querySelectorAll('[role="tabpanel"]')].filter(n=>!n.parentElement?.closest('[role="tabpanel"]'));
@@ -80,14 +84,17 @@ async function guestNavigation(panel, targetTitle = null, viewMarker = null) {
       pane.getAttribute('aria-labelledby')===targetTab.id&&pane.getBoundingClientRect().height>0;
     return {listCount:lists.length,tabCount:tabs.length,screenshotTriggerCount:screenshotTabs.length,
       screenshotTriggerVisible:screenshotTabs.some(n=>{const r=n.getBoundingClientRect();return r.width>0&&r.height>0}),
+      chatTriggerCount:chatTabs.length,
+      chatTriggerVisible:chatTabs.some(n=>{const r=n.getBoundingClientRect();return r.width>0&&r.height>0}),
       screenshotContentMounted:[...document.querySelectorAll('button')].some(n=>['Visible','Full page'].includes(n.textContent.trim())),
       screenshotPaneCount:panes.filter(n=>n.id.toLowerCase().includes('screenshots')).length,
       activePaneCount:active.length,activePaneIsScreenshots:active.some(n=>n.id.toLowerCase().includes('screenshots')),
       targetTabCount:targetTabs.length,targetSelected:targetTab?.getAttribute('aria-selected')==='true',
       linkedPaneVisible,viewMarkerPresent:viewMarker===null?null:
-        [...(pane?.querySelectorAll('span,h1,h2')??[])].some(n=>n.textContent.trim()===viewMarker),
+        [...(pane?.querySelectorAll('span,h1,h2,button')??[])].some(n=>n.textContent.trim()===viewMarker),
       suspenseFallback:!!pane?.querySelector('svg.animate-spin')&&!pane?.innerText?.trim(),
       chatComponentMounted:!!pane?.querySelector('button[title="New chat"]'),
+      chatPaneCount:panes.filter(n=>n.id.toLowerCase().includes('chat')).length,
       guestChatGuidancePresent:[...(pane?.querySelectorAll('span')??[])]
         .some(n=>n.textContent.trim()==='Sign in to choose an agent'),
       guestAvatarCount:document.querySelectorAll('button[title="Account"]').length,
@@ -103,12 +110,15 @@ function guestViewAccepted(value, title) {
     value.targetSelected &&
     value.activePaneCount === 1 &&
     value.linkedPaneVisible &&
-    (title === 'Chat'
-      ? value.chatComponentMounted && value.guestChatGuidancePresent
-      : value.viewMarkerPresent) &&
+    value.viewMarkerPresent !== false &&
     !value.suspenseFallback &&
     value.guestAvatarCount === 1 &&
     value.adminAvatarCount === 0 &&
+    value.chatTriggerCount === 0 &&
+    !value.chatTriggerVisible &&
+    value.chatPaneCount === 0 &&
+    !value.chatComponentMounted &&
+    !value.guestChatGuidancePresent &&
     value.screenshotTriggerCount === 0 &&
     value.screenshotPaneCount === 0 &&
     !value.screenshotContentMounted
@@ -184,8 +194,8 @@ async function signInAsAdmin(page, panel) {
   }
 }
 
-async function saveFailureScreenshot(panel, artifacts) {
-  const path = join(artifacts, `guest-gate-failure-${randomUUID()}.png`);
+async function saveScreenshot(panel, artifacts, label) {
+  const path = join(artifacts, `${label}-${randomUUID()}.png`);
   const image = await panel.send('Page.captureScreenshot', { format: 'png' });
   const handle = await open(path, 'wx', 0o600);
   try {
@@ -205,29 +215,43 @@ async function exercise({ page, panel, artifacts }) {
     assert.equal(initial.screenshotTriggerCount, 0);
     assert.equal(initial.screenshotContentMounted, false);
     assert.equal(initial.screenshotPaneCount, 0);
+    assert.equal(initial.chatTriggerCount, 0);
+    assert.equal(initial.chatPaneCount, 0);
+    assert.equal(initial.chatComponentMounted, false);
+    assert.equal(initial.guestChatGuidancePresent, false);
     assert.equal(initial.guestAvatarCount, 1);
     assert.equal(initial.adminAvatarCount, 0);
     report.cases.push({
       id: 'EXT-F-1009-T09',
       status: 'pass',
-      expected: 'Guest cannot see Screenshots navigation or protected content.',
+      expected: 'Guest cannot see Chat or Screenshots navigation or protected content.',
       actual: initial,
       evidence: 'role-scoped navigation and content booleans',
     });
+    report.screenshots = {
+      before: await saveScreenshot(panel, artifacts, 'guest-chat-gate-before'),
+      action: null,
+      result: null,
+    };
 
     stage = 'accessible_view_navigation';
+    const scrape = await selectedGuestView(panel, 'Scrape');
+    await click(panel, 'title', 'Data');
+    const data = await selectedGuestView(panel, 'Data', 'Structured data');
+    report.screenshots.action = await saveScreenshot(panel, artifacts, 'guest-chat-gate-action');
+    await click(panel, 'title', 'SEO');
+    const seo = await selectedGuestView(panel, 'SEO', 'SEO audit');
     await click(panel, 'title', 'Settings');
     const settings = await selectedGuestView(panel, 'Settings', 'Settings');
-    await click(panel, 'title', 'SEO');
-    const afterNavigation = await selectedGuestView(panel, 'SEO', 'SEO audit');
+    report.screenshots.result = await saveScreenshot(panel, artifacts, 'guest-chat-gate-result');
     report.cases.push({
       id: 'EXT-F-1009-T09',
       subcase: 'visible_navigation',
       status: 'pass',
-      expected: 'Moving through public tabs does not expose screenshot view.',
-      actual: { settings, seo: afterNavigation },
+      expected: 'Moving through every guest tab does not expose Chat or Screenshots.',
+      actual: { scrape, data, seo, settings },
       evidence:
-        'selected public trigger, linked visible pane, mounted target marker, and Screenshots absence at each transition',
+        'selected public trigger, linked visible pane, mounted target marker, and Chat/Screenshots absence at each transition',
     });
 
     if (GUEST_RELOAD) {
@@ -241,15 +265,15 @@ async function exercise({ page, panel, artifacts }) {
         (loader) => Boolean(loader && loader !== previousLoader),
         30_000,
       );
-      const reloaded = await selectedGuestView(panel, 'Chat');
+      const reloaded = await selectedGuestView(panel, 'Scrape');
       report.cases.push({
         id: 'EXT-F-1009-T09',
         subcase: 'guest_real_reload',
         status: 'pass',
-        expected: 'Real guest panel reload keeps Screenshots inaccessible.',
+        expected: 'Real guest panel reload returns to Scrape and keeps Chat and Screenshots inaccessible.',
         actual: { newDocument: true, guestView: reloaded },
         evidence:
-          'new loader identity; settled mounted public Chat pane and guest guidance; protected trigger/pane/content absent',
+          'new loader identity; settled mounted Scrape pane; Chat and Screenshots trigger/pane/content absent',
       });
     } else {
       report.cases.push({
@@ -296,18 +320,18 @@ async function exercise({ page, panel, artifacts }) {
       );
       await click(panel, 'button', 'Sign out');
       stage = 'guest_navigation_recovery_after_signout';
-      const recovered = await selectedGuestView(panel, 'Chat');
+      const recovered = await selectedGuestView(panel, 'Scrape');
       report.cases.push({
         id: 'EXT-F-1009-T09',
         subcase: 'stale_selection_after_real_signout',
         status: 'pass',
-        expected: 'Signing out from selected Screenshots returns to an accessible guest view.',
+        expected: 'Signing out from selected Screenshots returns to Scrape without exposing Chat.',
         actual: {
           adminScreenshotsSelected: selected.targetSelected && selected.linkedPaneVisible,
           guestRecovery: recovered,
         },
         evidence:
-          'same owned profile; real avatar Sign out; settled mounted public Chat pane with Screenshots trigger/pane/content absent',
+          'same owned profile; real avatar Sign out; settled mounted Scrape pane with Chat and Screenshots trigger/pane/content absent',
       });
     } else {
       report.cases.push({
@@ -323,7 +347,7 @@ async function exercise({ page, panel, artifacts }) {
     report.status = 'unverified';
     report.failure = { stage, driverFailure: safeFailure(error) };
     try {
-      report.failure.privateScreenshot = await saveFailureScreenshot(panel, artifacts);
+      report.failure.privateScreenshot = await saveScreenshot(panel, artifacts, 'guest-chat-gate-failure');
     } catch {
       report.failure.privateScreenshot = false;
     }

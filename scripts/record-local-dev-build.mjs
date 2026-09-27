@@ -7,6 +7,13 @@ import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DEFAULT_BUILD = resolve(REPO, '.output', 'chrome-mv3-dev');
+// `wxt dev` owns chrome-mv3-dev, while `wxt build` writes a separately keyed
+// local artifact to chrome-mv3. Both are safe for an owned-browser check; no
+// other output directory can be certified as a local artifact.
+const LOCAL_BUILD_DIRECTORIES = new Set([
+  DEFAULT_BUILD,
+  resolve(REPO, '.output', 'chrome-mv3'),
+]);
 const SHA256 = /^[a-f0-9]{64}$/;
 
 export function requireLocalDevReceipt(receipt, extensionDir) {
@@ -17,7 +24,7 @@ export function requireLocalDevReceipt(receipt, extensionDir) {
     typeof receipt.version !== 'string' ||
     !SHA256.test(receipt.treeSha256 ?? '') ||
     typeof receipt.extensionDir !== 'string' ||
-    resolve(extensionDir) !== DEFAULT_BUILD ||
+    !LOCAL_BUILD_DIRECTORIES.has(resolve(extensionDir)) ||
     resolve(receipt.extensionDir) !== resolve(extensionDir) ||
     !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(receipt.observedAt ?? '') ||
     !Number.isFinite(Date.parse(receipt.observedAt))
@@ -28,7 +35,7 @@ export function requireLocalDevReceipt(receipt, extensionDir) {
 
 export async function recordLocalDevBuild({ extensionDir = DEFAULT_BUILD, outputPath }) {
   const build = resolve(extensionDir);
-  if (build !== DEFAULT_BUILD) throw new Error('local_dev_build_path_refused');
+  if (!LOCAL_BUILD_DIRECTORIES.has(build)) throw new Error('local_dev_build_path_refused');
   if (typeof outputPath !== 'string' || !outputPath)
     throw new Error('local_dev_receipt_output_refused');
   const output = resolve(outputPath);

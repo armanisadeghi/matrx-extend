@@ -10,6 +10,12 @@ export default defineConfig({
   },
   test: {
     environment: 'happy-dom',
+    // Budgets for a BUSY machine, not an idle one. The release runs this suite while
+    // ship-all builds several repos at once; at Vitest's 5s default, tests that render
+    // the whole app or spawn a process timed out, and their leftover timers then failed
+    // the next test in the file. A hung test still fails; it just gets 30s to prove it.
+    testTimeout: 30_000,
+    hookTimeout: 30_000,
     setupFiles: ['./tests/setup.ts'],
     include: [
       'tests/unit/**/*.test.ts',

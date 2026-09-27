@@ -326,11 +326,12 @@ cp "$HARNESS_ROOT/ship.sh" ship.sh; cp "$SCRIPT_UNDER_TEST" release.sh
 mkdir -p scripts; cp "$HARNESS_ROOT/scripts/sync-main.py" "$HARNESS_ROOT/scripts/check-conflict-markers.py" scripts/
 git_q reset -q --hard origin/main~1 2>/dev/null || true
 echo "agent work nobody committed" > uncommitted-agent-work.txt
-touch "$SANDBOX/fail-tests"
+# The release only needs to be refused; fail its first check so this scenario stays cheap.
+touch "$SANDBOX/fail-matrx-packages"
 set +e
 PATH="$SANDBOX/bin:$PATH" bash ship.sh "ship guard" > "$SANDBOX/ship-out" 2>&1
 set -e
-rm -f "$SANDBOX/fail-tests"
+rm -f "$SANDBOX/fail-matrx-packages"
 git fetch -q origin 2>/dev/null || true
 echo "ship.sh — commit all, pull all, push all, even when the release is refused"
 check "uncommitted work was committed and pushed"     'git show origin/main:uncommitted-agent-work.txt | grep -q "agent work nobody committed"'

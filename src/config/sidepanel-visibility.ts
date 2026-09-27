@@ -10,7 +10,9 @@ import type { SidepanelTab } from '@/state/sidepanel-tab';
 export type SidepanelAudience = 'everyone' | 'signed-in' | 'admin';
 
 export const SIDEPANEL_TAB_AUDIENCE = {
-  chat: 'everyone',
+  // Guest Chat cannot currently start a reliable run. Keep the Store surface
+  // truthful until the guest start contract is repaired.
+  chat: 'signed-in',
   pilot: 'admin',
   tasks: 'signed-in',
   agenda: 'signed-in',
@@ -49,6 +51,6 @@ export function canAccessSidepanelTab(tab: SidepanelTab, viewer: SidepanelViewer
 }
 
 export function firstAccessibleSidepanelTab(viewer: SidepanelViewer): SidepanelTab {
-  const preferred: readonly SidepanelTab[] = ['chat', 'scrape', 'data', 'seo', 'settings'];
+  const preferred: readonly SidepanelTab[] = ['scrape', 'data', 'seo', 'settings', 'chat'];
   return preferred.find((tab) => canAccessSidepanelTab(tab, viewer)) ?? 'chat';
 }

@@ -385,9 +385,11 @@ export function App() {
             >
               <div className="flex shrink-0 items-center gap-1 px-2 py-1.5">
                 <TabsList className="flex min-w-0 flex-1 justify-start gap-0.5 overflow-x-auto bg-transparent p-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&_[role=tab]]:shrink-0">
-                  <TabsTrigger value="chat" className="size-7 p-0" title="Chat">
-                    <MessageSquare className="size-3.5" />
-                  </TabsTrigger>
+                  {canAccess('chat') && (
+                    <TabsTrigger value="chat" className="size-7 p-0" title="Chat">
+                      <MessageSquare className="size-3.5" />
+                    </TabsTrigger>
+                  )}
                   {canAccess('pilot') && (
                     <TabsTrigger
                       value="pilot"
@@ -565,15 +567,17 @@ export function App() {
                 dropped every chunk in the gap and orphaned the watchdog
                 (which later fired against the new run). Keep the chat
                 surfaces mounted; visibility via data-state. */}
-              <TabsContent
-                value="chat"
-                forceMount
-                className="flex-1 min-h-0 data-[state=inactive]:hidden"
-              >
-                <Suspense fallback={TabFallback}>
-                  <ChatView />
-                </Suspense>
-              </TabsContent>
+              {canAccess('chat') && (
+                <TabsContent
+                  value="chat"
+                  forceMount
+                  className="flex-1 min-h-0 data-[state=inactive]:hidden"
+                >
+                  <Suspense fallback={TabFallback}>
+                    <ChatView />
+                  </Suspense>
+                </TabsContent>
+              )}
               {canAccess('pilot') && (
                 <TabsContent
                   value="pilot"

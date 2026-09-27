@@ -176,15 +176,16 @@ describe('release.sh ship path', () => {
     delete env.RELEASE_LOG_FILE;
     // This guard performs several real local Git releases. Under the serial
     // 170+ file release suite it can outlast 120s without any failed check;
-    // keep the assertions and give the subprocess its own bounded wall.
+    // keep the assertions and give the subprocess its own bounded wall. It takes
+    // ~3.5 min on an idle machine; during ship-all several repos build at once.
     const guard = spawnSync('bash', ['scripts/test-release-ship-path.sh'], {
       cwd: repoRoot,
       env,
       encoding: 'utf8',
-      timeout: 240_000,
+      timeout: 480_000,
     });
     expect(guard.status, `${guard.stdout}\n${guard.stderr}`).toBe(0);
-  }, 270_000);
+  }, 510_000);
 });
 
 describe('release filesystem recovery', () => {
@@ -192,7 +193,8 @@ describe('release filesystem recovery', () => {
     const guard = spawnSync(process.execPath, ['--test', 'scripts/test-release-recovery.mjs'], {
       cwd: join(__dirname, '..', '..'),
       encoding: 'utf8',
+      timeout: 150_000,
     });
     expect(guard.status, `${guard.stdout}\n${guard.stderr}`).toBe(0);
-  });
+  }, 180_000);
 });

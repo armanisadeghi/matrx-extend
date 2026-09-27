@@ -408,7 +408,7 @@ try {
       advance('guest_tab_inventory');
       const guestTabs = await inventory(panel, 'guest');
       const guestTitles = guestTabs.map((tab) => tab.title);
-      assert.deepEqual(guestTitles.sort(), ['Chat', ...GUEST].sort());
+      assert.deepEqual(guestTitles.sort(), GUEST.sort());
       assert.equal(
         guestTabs.some((tab) => tab.captureIdentity),
         false,

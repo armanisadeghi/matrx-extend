@@ -148,10 +148,10 @@ function requireSidePanelContext(contexts, panelUrl) {
 function isSettledGuestPanel(state) {
   return (
     state?.ready === true &&
-    state?.guestBanner === true &&
     state?.signInControl === true &&
-    state?.composer === true &&
-    state?.visibleControls >= 3
+    state?.scrapeTrigger === true &&
+    state?.chatTrigger === false &&
+    state?.visibleControls >= 2
   );
 }
 
@@ -214,14 +214,15 @@ async function waitForSettledGuestPanel(cdp, targetId) {
       const style = getComputedStyle(element); const rect = element.getBoundingClientRect();
       return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none';
     };
-    const text = document.body?.innerText ?? '';
     const controls = [...document.querySelectorAll('button, input, textarea, [contenteditable="true"]')]
       .filter(visible);
     return {
       ready: document.readyState === 'complete',
-      guestBanner: /You're using Matrx as a guest\\./.test(text),
       signInControl: controls.some((element) => /^sign in$/i.test(element.textContent?.trim() ?? '')),
-      composer: /How can I help you today\\?/.test(text),
+      scrapeTrigger: [...document.querySelectorAll('button[role="tab"]')]
+        .some((element) => element.getAttribute('title') === 'Scrape' && visible(element)),
+      chatTrigger: [...document.querySelectorAll('button[role="tab"]')]
+        .some((element) => element.getAttribute('title') === 'Chat' && visible(element)),
       visibleControls: controls.length,
     };
   })()`;

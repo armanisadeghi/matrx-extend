@@ -11,6 +11,7 @@ import {
   requireSpawnedProfileOwner,
   resolveExpectedRelease,
 } from './native-sidepanel-qa-harness.mjs';
+import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 
 const profile = '/private/tmp/owned-profile';
 const expectedExtensionDir = resolve(
@@ -18,12 +19,34 @@ const expectedExtensionDir = resolve(
   '../..',
   '.output/chrome-mv3-dev',
 );
+const productionBuildDir = resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  '../..',
+  '.output/chrome-mv3',
+);
 const extensionId = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
 const receipt = {
   version: '0.2.44',
   treeSha256: 'a'.repeat(64),
   storeZip: { path: '/private/tmp/store.zip', sha256: 'b'.repeat(64) },
 };
+const localReceipt = {
+  schema_version: 1,
+  kind: 'local_dev_unpacked',
+  publish_state: 'not_published',
+  observedAt: '2026-09-27T12:00:00.000Z',
+  version: '0.2.104',
+  treeSha256: 'c'.repeat(64),
+  extensionDir: productionBuildDir,
+};
+
+// A normal `wxt build` must be eligible for owned-browser QA without copying
+// it onto the installed dev path. A sibling output directory must stay denied.
+assert.equal(requireLocalDevReceipt(localReceipt, productionBuildDir), localReceipt);
+assert.throws(
+  () => requireLocalDevReceipt({ ...localReceipt, extensionDir: '/private/tmp/foreign-build' }, '/private/tmp/foreign-build'),
+  /local_dev_build_receipt_refused/,
+);
 
 assert.throws(
   () =>
@@ -67,9 +90,9 @@ assert.throws(
 assert.equal(
   isSettledGuestPanel({
     ready: true,
-    guestBanner: true,
     signInControl: true,
-    composer: true,
+    scrapeTrigger: true,
+    chatTrigger: false,
     visibleControls: 4,
   }),
   true,
@@ -77,9 +100,19 @@ assert.equal(
 assert.equal(
   isSettledGuestPanel({
     ready: true,
-    guestBanner: true,
     signInControl: true,
-    composer: false,
+    scrapeTrigger: true,
+    chatTrigger: true,
+    visibleControls: 4,
+  }),
+  false,
+);
+assert.equal(
+  isSettledGuestPanel({
+    ready: true,
+    signInControl: false,
+    scrapeTrigger: true,
+    chatTrigger: false,
     visibleControls: 4,
   }),
   false,

@@ -263,22 +263,19 @@ Every entry follows this shape:
 
 ## Store-review guest path
 
-### Fresh-install guest conversation organization
-- **What it does:** Starts Chat without an account and resolves the fingerprint
-  guest's own organization (created at signup) only on the server, before the first persisted
-  conversation write.
-- **Where to test:** A fresh Chrome profile with the exact Store build loaded
-  and no AI Matrx sign-in.
+### Guest navigation while Chat is unavailable
+- **What it does:** hides the broken guest Chat surface while keeping the local
+  Scrape, Data, SEO, and Settings surfaces usable.
+- **Where to test:** a fresh isolated Chrome profile with no AI Matrx sign-in.
 - **Steps:**
-  1. Open `https://www.aimatrx.com/matrx-extend-demo`.
-  2. Open Matrx Extend → Chat.
-  3. Ask `What are the three workflow stages on this page?`.
-- **Expected:** The request carries `X-Fingerprint-ID`, omits
-  `organization_id`, and answers with Capture, Understand, and Use. There is
-  no `mbr_for_user` request, 422 body error, or stuck pending bubble.
-- **Edge cases worth poking:** A fingerprint request that supplies
-  `organization_id` is refused. The client never guesses, hardcodes, or reads
-  a fallback organization.
+  1. Open the Matrx Extend side panel.
+  2. Inspect the navigation, then open Scrape, Data, SEO, and Settings.
+  3. Reload the side panel while still signed out.
+- **Expected:** Chat has no trigger or mounted pane, and the panel defaults to
+  Scrape. Each listed guest surface has one selected trigger and its matching
+  visible pane after navigation and reload. Signing in restores Chat.
+- **Covered by:** `tests/unit/sidepanel-visibility.test.ts` and
+  `tests/browser/screenshot-guest-acceptance.mjs`.
 
 ### Chat stream failure recovery
 - **What it does:** Keeps backend diagnostics in the Debug log while Chat shows

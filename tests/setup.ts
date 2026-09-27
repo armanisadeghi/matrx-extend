@@ -1,3 +1,6 @@
+import { configure } from '@testing-library/react';
+import { vi } from 'vitest';
+
 /**
  * Test setup. Add chrome.* mocks here as we add tests that need them.
  * Pure-logic tests (PKCE, data-pattern matcher, schemas) don't need any mocks.
@@ -44,3 +47,15 @@ const _chromeOnChanged = {
 (globalThis as unknown as { chrome?: unknown }).chrome = {
   storage: { local: _chromeLocal, session: _chromeLocal, onChanged: _chromeOnChanged },
 };
+
+// Waits get the same busy-machine budget as tests (see vitest.config.ts). The 1s
+// defaults of vi.waitFor and Testing Library's findBy*/waitFor expired under load
+// during releases. A condition that never comes true still fails, after 10s.
+const WAIT_MS = 10_000;
+configure({ asyncUtilTimeout: WAIT_MS });
+const waitFor = vi.waitFor.bind(vi);
+vi.waitFor = ((callback, options) =>
+  waitFor(
+    callback,
+    typeof options === 'number' ? options : { ...options, timeout: options?.timeout ?? WAIT_MS },
+  )) as typeof vi.waitFor;

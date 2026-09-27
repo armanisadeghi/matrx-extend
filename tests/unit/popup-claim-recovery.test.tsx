@@ -15,7 +15,10 @@ vi.mock('@/features/vault/LocalBrowserApprovalHost', () => ({
   LocalBrowserApprovalHost: () => null,
 }));
 vi.mock('@/hooks/use-auth', () => ({
-  useAuth: () => ({ user: null, isAdmin: false }),
+  // This recovery path is about a captured-page handoff, not guest routing.
+  // Keep Chat available so the test continues to prove that a failed claim
+  // does not change the selected tab until the person chooses Open Scrape.
+  useAuth: () => ({ user: { id: 'member-1' }, isAdmin: false }),
 }));
 vi.mock('@/hooks/use-active-tab', () => ({
   useActiveTab: () => ({ id: null, url: null, title: null }),
@@ -91,13 +94,25 @@ describe('popup capture claim recovery', () => {
   });
 
   it('announces a quarantined claim failure and only routes after Open Scrape', async () => {
-    const { armCapturePagePanel, requestCapturePagePanel } = await import(
+    const { armCapturePagePanel, POPUP_LAUNCH_INTENT_KEY, requestCapturePagePanel } = await import(
       '@/lib/panel/launch-intent'
     );
     const request = requestCapturePagePanel(9);
     await request.write;
     await armCapturePagePanel(request, 'panel-9');
-    vi.spyOn(chrome.storage.session, 'remove').mockRejectedValueOnce(new Error('remove failed'));
+    // Fail only the claim's own delete. Other panel stores also delete session rows
+    // while the panel mounts; a bare mockRejectedValueOnce went to whichever delete
+    // ran first, so under load the claim succeeded and the test routed to Scrape.
+    const remove = chrome.storage.session.remove.bind(chrome.storage.session);
+    let claimDeleteFailed = false;
+    vi.spyOn(chrome.storage.session, 'remove').mockImplementation(((keys: string | string[]) => {
+      const list = Array.isArray(keys) ? keys : [keys];
+      if (!claimDeleteFailed && list.some((key) => key.startsWith(`${POPUP_LAUNCH_INTENT_KEY}.`))) {
+        claimDeleteFailed = true;
+        return Promise.reject(new Error('remove failed'));
+      }
+      return remove(keys);
+    }) as typeof chrome.storage.session.remove);
 
     const { useSidepanelTabStore } = await import('@/state/sidepanel-tab');
     useSidepanelTabStore.getState().setTab('chat');
