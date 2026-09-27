@@ -18,12 +18,14 @@
     "test-results/contained-navigation-dev089-002.evidence.json",
     "docs/stabilization/reports/contained-navigation-dev089-002-peer.json",
     "tests/browser/contained-navigation-acceptance.mjs",
-    "src/entrypoints/sidepanel/App.tsx"
+    "src/entrypoints/sidepanel/App.tsx",
+    "docs/stabilization/reports/admin-navigation-repair.json",
+    "docs/stabilization/reports/admin-auth-peer.json"
   ],
   "severity": "S2 provisional: admin-only controls absent at observed readiness; persistence/user impact not yet established",
   "priority": "P1: resolve contained admin navigation before broad authenticated coverage",
-  "state": "open",
-  "owner": "/root/contained_batch_ready",
+  "state": "fixed",
+  "owner": "/root/admin_navigation_repair",
   "reproduction_status": "Observed once in run001; not reproduced in run002's immediate first sample. Not fixed and not closed: run002 changed only diagnostic runner behavior, retained the exact 21-entry oracle, and used the same product tree. Cause remains unknown.",
   "fix_commits": [],
   "transition_history": [
@@ -32,6 +34,24 @@
       "from": null,
       "to": "open",
       "reason": "Guarded .89 navigation run failed exact admin roster assertion; preserve failed first observation while distinguishing hydration from persistent access failure."
+    },
+    {
+      "at": "2026-09-27T09:06:11.031943+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source diagnosis found synchronous auth notification self-delivery after sign-in clears isAdmin before asynchronous role recheck; deterministic lifecycle regression being constructed."
+    },
+    {
+      "at": "2026-09-27T09:06:11.031943+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol owns a minimal shared auth repair and fail-then-pass regression; native original reproduction remains to be independently retested."
+    },
+    {
+      "at": "2026-09-27T09:15:32.219093+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Mechanism regression failed before repair;8/8 targeted tests pass including two consumers and external role revocation. Independent source peer passes. Native roster retest pending."
     }
   ],
   "closure_requirement": "Keep the strict 21-tab oracle and classify the original 17-tab observation with further evidence if needed. Run002 is non-reproduction, not a fix or proof the earlier result cannot recur. Independently verify any required product fix; do not close on the added wait or weaken the roster."

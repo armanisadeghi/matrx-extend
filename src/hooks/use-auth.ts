@@ -31,6 +31,18 @@ let bootGeneration = 0;
 // be realm-wide rather than a hook ref: a sign-out or newer sign-in from one
 // surface cancels every older in-flight attempt in this extension context.
 let signInGeneration = 0;
+// Native broadcast fans out to this document synchronously. A sign-in that
+// this hook just verified is already committed here; rereading it on its own
+// notification briefly clears the admin role and hides admin navigation.
+let publishingAuthChange = false;
+function publishAuthChange(payload: { user: UserProfile | null; isAdmin: boolean }): void {
+  publishingAuthChange = true;
+  try {
+    broadcast(CHANNELS.AUTH_STATE_CHANGED, payload);
+  } finally {
+    publishingAuthChange = false;
+  }
+}
 export function resetAuthBootGuard(): void {
   bootRan = false;
   mountedAuthConsumers = 0;
@@ -183,6 +195,7 @@ export function useAuth() {
     return on<{ user: UserProfile | null; isAdmin?: boolean }, { ack: true }>(
       CHANNELS.AUTH_STATE_CHANGED,
       () => {
+        if (publishingAuthChange) return { ack: true };
         // A sign-in/sign-out from a different extension context supersedes
         // any local OAuth attempt still awaiting admin lookup.
         const event = ++signInGeneration;
@@ -214,7 +227,7 @@ export function useAuth() {
       if (attempt !== signInGeneration) return;
       const applied = await applyCanonicalSession(() => attempt === signInGeneration, profile.id);
       if (applied.kind !== 'authenticated' || attempt !== signInGeneration) return;
-      broadcast(CHANNELS.AUTH_STATE_CHANGED, {
+      publishAuthChange({
         user: applied.user,
         isAdmin: applied.isAdmin,
       });
@@ -245,7 +258,7 @@ export function useAuth() {
     if (attempt !== signInGeneration) return;
     setUser(null);
     setIsAdmin(false);
-    broadcast(CHANNELS.AUTH_STATE_CHANGED, { user: null, isAdmin: false });
+    publishAuthChange({ user: null, isAdmin: false });
     // Allow the next sign-in to re-run the one-time boot work.
     bootRan = false;
   }, [setUser, setIsAdmin]);

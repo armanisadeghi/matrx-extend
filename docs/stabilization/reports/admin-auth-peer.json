@@ -1,0 +1,40 @@
+{
+  "lane": "independent auth source peer",
+  "defect_id": "EXT-D-0026",
+  "reviewed_at": "2026-09-27",
+  "scope": "Source-only review of the current useAuth change, native messaging implementation, sidepanel and Settings consumers, background admin storage gate, and auth hook tests. No browser run or test rerun by this lane.",
+  "A_acceptance": {
+    "status": "partial pending native acceptance",
+    "source_assessment": "The repair fits the observed mechanism. native.broadcast calls dispatchLocal synchronously; useAuth now suppresses its own local auth notification after it has verified and committed the role. App and SettingsView both subscribe to the same Zustand auth store, so neither should lose isAdmin from that local notification. External notifications still enter the canonical session and role recheck path.",
+    "limits": "This source assessment does not prove that the original 17-tab observation recurs or is resolved in a real extension. The exact 21-tab post-sign-in roster and stable Settings/main navigation comparison remain required native acceptance."
+  },
+  "B_quality": {
+    "status": "D26 diff passes source review with native product acceptance pending; separate preexisting D29 sibling gap",
+    "findings": [
+      {
+        "severity": "high",
+        "title": "Preexisting D29: persisted admin gate can stay true after an unverified or failed role transition",
+        "evidence": "use-auth.ts applyCanonicalSession sets the UI store isAdmin=false before checkIsAdmin but writes STORAGE_KEYS.IS_ADMIN only when the role check returns a boolean. A null/throw leaves the previous true value in storage; guest paths also leave it. lib/auth/is-admin.ts and background/bootstrap.ts read that stored value as an execution/admin WebMCP gate. Existing strict-mode tests explicitly seed true for failed restore, mismatched bearer, and unverifiable bearer but assert only the UI store, not storage.",
+        "implication": "A failed role read or authentication transition can hide admin UI while leaving background admin capability authorized by the prior cached role. This violates fail-closed cross-context role behavior. The D26 diff does not introduce or worsen this path: it changes only locally generated notification handling after a successful role check, while the storage write behavior was already present. Track and repair this as separate D29. Clear or write false for the stored flag at the start of canonical revalidation/guest transition, with generation guarding so stale work cannot clear a newer session. Prove the storage gate under failed role read and changed bearer."
+      },
+      {
+        "severity": "test coverage",
+        "title": "Regression proves shared store behavior but does not render real navigation",
+        "evidence": "use-auth.entrypoints.test.tsx mounts two hook consumers and asserts user/isAdmin, with a mocked synchronous broadcast. It does not mount App's 21-tab roster or SettingsView's role and advanced controls. The native messaging source supports the sync mock, but real UI still requires the contained acceptance run.",
+        "implication": "Treat the unit regression as mechanism proof and the native roster comparison as product proof."
+      },
+      {
+        "severity": "test robustness",
+        "title": "External notification test relies on a call count and does not force an older role result to arrive last",
+        "evidence": "With two hook listeners, signInGeneration increments once per listener; the first scheduled canonical read can be cancelled before checkIsAdmin and only the second role read executes. The final test asserts two calls and resolves one pending false result. Existing strict-mode coverage cancels a pending boot role read on sign-out, but this new case does not explicitly settle an older external role read after a newer verified account/role change.",
+        "implication": "Keep behavioral assertions for external revocation. A targeted stale-result test would make the generation guarantee clearer than exact invocation counts."
+      }
+    ],
+    "positive_checks": [
+      "The module-wide publishing guard spans synchronous local fan-out and resets in finally.",
+      "A same-context sign-out publishes after clearing the shared UI store; external auth notifications still increment signInGeneration and reread canonical credentials.",
+      "The new test checks both independent hook consumers and verifies a later external role revocation can remove admin UI."
+    ]
+  },
+  "independent_verdict": "D26 mechanism and narrow source regression are credible; D26 native acceptance remains pending. The persisted-role gap is preexisting and separately tracked as D29; it does not block the D26 source verdict, but prevents a claim that shared auth security is fully verified."
+}

@@ -56,6 +56,14 @@
 - **Recovery case:** in an isolated profile, leave a saved account profile but remove its session keys, then reopen Settings. The account shows as signed out, an alert above Settings explains that the saved sign-in could not be restored and offers **Try again**, and admin-only tabs stay hidden. Restoring connectivity and reloading can retry without deleting the saved profile.
 - **Cross-context and role case:** complete sign-in from another extension context, then reopen the side panel; the shown account and admin access follow the verified stored session, even if an older sign-in or sign-out notice arrives afterward. A genuine sign-out clears the stored session and the panel shows a guest. If the admin-role read is temporarily unavailable, the account remains signed in, admin tabs stay hidden, the banner says the role check failed, and **Try again** repeats that check without opening OAuth.
 
+### Admin sign-in keeps the full sidepanel navigation
+
+- **What it does:** a sidepanel sign-in keeps the verified admin role visible in Settings and the main navigation at the same time, including during its own auth notification.
+- **Where to test:** a fresh keyed unpacked development build in an isolated Chrome profile, using the authorized admin test account. Reload the extension and reopen the sidepanel before starting; use the main navigation tablist, excluding tabs inside feature views.
+- **Steps:** start signed out, open Settings → Account, sign in through the real web flow and finish extension Sign in. As soon as Settings shows the admin role and Advanced agent capabilities, read the main navigation, then read it again after visiting another tab. Repeat after a full extension reload. For the role-change case, use a controlled account whose admin role is revoked outside this panel, notify or reopen the panel, and inspect Settings and navigation together.
+- **Expected:** at admin readiness and after navigation/reload, exactly 21 main tabs are present: Chat; Scrape, Data, SEO, Settings; Plan & tasks, Tasks, Agenda, Saved captures, Capture (its title varies with queue state), Highlights, Guidance, Notes, Files, Screenshots, Vault, Tools; Pilot, Showcase, Token broker, Debug. Settings must not show admin while those four admin-only tabs are absent. After external revocation, Settings must stop showing admin and all four admin-only tabs must disappear; a delayed earlier role read must not restore them.
+- **Verification status:** the auth lifecycle regression passed with separate navigation and Settings consumers. A fresh native-browser pass on the repaired build remains pending for EXT-D-0026; the earlier 17-tab browser observation has not been re-run against this change.
+
 ### Reload and transient-outage console hygiene
 
 - **What it does:** extension reloads and optional-context startup races do not leave

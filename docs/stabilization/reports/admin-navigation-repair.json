@@ -1,0 +1,29 @@
+{
+  "defect": "EXT-D-0026",
+  "status": "source_repaired_pending_independent_review_and_browser_verification",
+  "cause": "After the sidepanel verified an admin sign-in, useAuth broadcast AUTH_STATE_CHANGED. The native message bus synchronously delivers broadcasts to listeners in the sending document. Every mounted useAuth listener treated its own notice as an external auth transition and called applyCanonicalSession, which clears isAdmin before an asynchronous role check. During that interval App renders the 17 non-admin navigation entries despite Settings having already shown admin readiness.",
+  "source_evidence": [
+    "src/lib/messaging/native.ts: broadcast calls dispatchLocal synchronously",
+    "src/hooks/use-auth.ts: signIn published AUTH_STATE_CHANGED after successful admin check, while its listener called applyCanonicalSession",
+    "src/config/sidepanel-visibility.ts: four navigation tabs require isAdmin, yielding exactly 17 when that flag is temporarily false"
+  ],
+  "change": "Suppress only this hook's own synchronous local AUTH_STATE_CHANGED delivery. Other extension contexts still receive the notice; notices originating elsewhere still cause session and role revalidation. The same suppression covers sign-out's redundant local notification.",
+  "red": {
+    "runId": "d26-auth-regression-red2",
+    "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node scripts/stabilization-resource.mjs run --run-id d26-auth-regression-red2 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec vitest run --maxWorkers=1 src/hooks/use-auth.entrypoints.test.tsx",
+    "result": "Fail: after sign-in and synchronous local broadcast, admin role was false while the second role read remained pending. An earlier red attempt failed during fixture setup and was discarded."
+  },
+  "green": {
+    "runId": "d26-auth-regression-multiconsumer2",
+    "result": "8/8 tests passed. The guard mounts separate navigation and Settings auth consumers, confirms both retain admin after local sign-in broadcast, then confirms an external notification and denied role read clear both. A preceding expanded run failed an overly specific mock call count; the assertion was corrected without changing product code."
+  },
+  "static_checks": [
+    "pnpm exec biome check src/hooks/use-auth.ts src/hooks/use-auth.entrypoints.test.tsx: pass",
+    "git diff --check -- src/hooks/use-auth.ts src/hooks/use-auth.entrypoints.test.tsx: pass"
+  ],
+  "limits": [
+    "The original run001 raw artifact was overwritten before this investigation. Source plus the failing guard establish a path producing the exact 17-entry roster, but cannot prove the original browser run took that path.",
+    "No fresh browser run or independent review was performed in this lane. Keep the defect open until those checks complete.",
+    "A separate sibling risk exists: the storage-backed service-worker admin flag may remain true while a role recheck is pending or unavailable. This repair does not address that gate."
+  ]
+}

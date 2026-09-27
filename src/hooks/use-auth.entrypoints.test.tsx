@@ -73,6 +73,43 @@ beforeEach(async () => {
 });
 
 describe('useAuth canonical session entry points', () => {
+  it('keeps admin navigation available after its own sign-in broadcast while a second role read is pending', async () => {
+    dependencies.signIn.mockImplementation(async () => {
+      dependencies.verifiedUser.mockResolvedValue(admin);
+      await chrome.storage.local.set({ [STORAGE_KEYS.USER_PROFILE]: admin });
+      return { user: admin, tokens: { access_token: 'opaque', refresh_token: 'opaque' } };
+    });
+    let resolveSecondRole!: (value: boolean) => void;
+    dependencies.checkIsAdmin.mockResolvedValueOnce(true).mockImplementationOnce(
+      () =>
+        new Promise<boolean>((resolve) => {
+          resolveSecondRole = resolve;
+        }),
+    );
+    // The real native bus delivers broadcasts synchronously to this document.
+    dependencies.broadcast.mockImplementationOnce((channel: string, payload: unknown) => {
+      for (const listener of dependencies.listeners.get(channel) ?? []) void listener(payload);
+    });
+    const navigation = renderHook(() => useAuth());
+    const settings = renderHook(() => useAuth());
+    await waitFor(() => expect(navigation.result.current.status).toBe('signed-out'));
+
+    await act(async () => settings.result.current.signIn());
+    expect(navigation.result.current.user?.id).toBe(admin.id);
+    expect(settings.result.current.user?.id).toBe(admin.id);
+    expect(navigation.result.current.isAdmin).toBe(true);
+    expect(settings.result.current.isAdmin).toBe(true);
+    expect(dependencies.checkIsAdmin).toHaveBeenCalledTimes(1);
+    expect(resolveSecondRole).toBeUndefined();
+
+    // A notification from another context must still recheck a revoked role.
+    await broadcastAuth({ user: admin, isAdmin: true });
+    await waitFor(() => expect(dependencies.checkIsAdmin).toHaveBeenCalledTimes(2));
+    await act(async () => resolveSecondRole(false));
+    expect(navigation.result.current.isAdmin).toBe(false);
+    expect(settings.result.current.isAdmin).toBe(false);
+  });
+
   it('keeps interactive sign-in recoverable when session installation fails', async () => {
     dependencies.restore.mockResolvedValue(false);
     dependencies.signIn.mockImplementation(async () => {
