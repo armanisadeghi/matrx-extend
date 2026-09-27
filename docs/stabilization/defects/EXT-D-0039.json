@@ -1,7 +1,10 @@
 {
   "id": "EXT-D-0039",
   "feature_id": "EXT-F-1012",
-  "case_ids": ["EXT-F-1012-T04", "EXT-F-1012-T23"],
+  "case_ids": [
+    "EXT-F-1012-T04",
+    "EXT-F-1012-T23"
+  ],
   "surface": "Showcase Doctor \u2192 List Pattern",
   "auth_mode": "admin",
   "reproduction": [
@@ -15,11 +18,12 @@
   "evidence": [
     "docs/stabilization/runs/showcase-live-discovery-001.json",
     "docs/stabilization/reports/showcase-detect-audit.json",
-    "docs/stabilization/runs/showcase-live-retest-001.json"
+    "docs/stabilization/runs/showcase-live-retest-001.json",
+    "docs/stabilization/runs/showcase-installed-d43-001.json"
   ],
   "severity": "S2: core discover-to-extract workflow loses detected pattern and forces manual restart",
   "priority": "P1: first Showcase vertical repair",
-  "state": "retest-fail",
+  "state": "closed",
   "transition_history": [
     {
       "at": "2026-09-27T15:17:46.172311+00:00",
@@ -50,6 +54,30 @@
       "from": "fixed",
       "to": "retest-fail",
       "reason": "Fresh .101 live retest passes original Doctor handoff, but required surrounding Pick more fields/extraction replaces the detected event-card scope with nested detail items. Separate root cause tracked as EXT-D-0043; hold closure until this workflow retest passes."
+    },
+    {
+      "at": "2026-09-27T21:12:45.161935+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Ledger reconciliation: surrounding field-pick defect EXT-D-0043 repaired in19f13e58; original Doctor handoff repair retained."
+    },
+    {
+      "at": "2026-09-27T21:12:45.161935+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "D43 focused7/7 and sibling19/19 plus compile passed; exact .108 build was installed and reloaded."
+    },
+    {
+      "at": "2026-09-27T21:12:45.161935+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent actual .108 Doctor recommendation seeded event-card root/item; field selection plus title/href extraction preserved scope and matched current real records; navigation cleared prior-page state. Focused regression evidence also covers stale handoff rejection."
+    },
+    {
+      "at": "2026-09-27T21:12:45.161935+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original Doctor-to-List handoff defect and previously failing surrounding field flow now pass. Broader Doctor destinations/modes and D43 full-output coverage remain tracked separately, not declared healthy."
     }
   ],
   "engineering_evidence": [
@@ -58,5 +86,6 @@
     "showcase-d39-compile-002: resource-admitted tsc --noEmit passed on 0.2.101"
   ],
   "live_retest_prerequisites": "Baseline was installed unpacked 0.2.97 at https://electronic.vegas/vegas-edm-event-calendar/. Build current 0.2.101 source, reload that unpacked extension explicitly, then re-run the Doctor recommendation and List Pattern extraction in the user's seat.",
-  "closure_requirement": "Independent verifier uses Doctor recommendation on real calendar; detected selectors arrive, field selection/extract works; wrong-page stale handoff rejected; guest/member behavior remains tracked."
+  "closure_requirement": "Independent verifier uses Doctor recommendation on real calendar; detected selectors arrive, field selection/extract works; wrong-page stale handoff rejected; guest/member behavior remains tracked.",
+  "closure_scope": "Doctor-to-List Pattern configuration handoff only; no whole-feature, all-method or complete output audit claim."
 }
