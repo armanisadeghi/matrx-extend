@@ -31,6 +31,29 @@ let bootGeneration = 0;
 // be realm-wide rather than a hook ref: a sign-out or newer sign-in from one
 // surface cancels every older in-flight attempt in this extension context.
 let signInGeneration = 0;
+// The service worker gates admin tools from this key. Serialize writes so a
+// role result from an older auth generation cannot land after a newer clear.
+let adminStorageWrite: Promise<void> = Promise.resolve();
+function writeAdminGate(value: boolean | null, isCurrent: () => boolean): Promise<boolean> {
+  const write = adminStorageWrite.then(async () => {
+    if (!isCurrent()) return false;
+    if (value === null) await chrome.storage.local.remove([STORAGE_KEYS.IS_ADMIN]);
+    else if (value === false) {
+      try {
+        await chrome.storage.local.set({ [STORAGE_KEYS.IS_ADMIN]: false });
+      } catch {
+        // A rejected false write must not leave an older true gate readable.
+        await chrome.storage.local.remove([STORAGE_KEYS.IS_ADMIN]);
+      }
+    } else await chrome.storage.local.set({ [STORAGE_KEYS.IS_ADMIN]: true });
+    return isCurrent();
+  });
+  adminStorageWrite = write.then(
+    () => undefined,
+    () => undefined,
+  );
+  return write;
+}
 // Native broadcast fans out to this document synchronously. A sign-in that
 // this hook just verified is already committed here; rereading it on its own
 // notification briefly clears the admin role and hides admin navigation.
@@ -124,6 +147,17 @@ export function useAuth() {
 
   const applyCanonicalSession = useCallback(
     async (isCurrent: () => boolean, expectedUserId?: string): Promise<AppliedSession> => {
+      if (!isCurrent()) return { kind: 'stale' };
+      setIsAdmin(false);
+      try {
+        if (!(await writeAdminGate(false, isCurrent))) return { kind: 'stale' };
+      } catch {
+        if (isCurrent()) {
+          setUser(null);
+          setError('Could not clear the saved admin access. Reload to retry.');
+        }
+        return { kind: 'guest' };
+      }
       const session = await readCanonicalSession(expectedUserId);
       if (!isCurrent()) return { kind: 'stale' };
       if (session.kind === 'guest') {
@@ -147,12 +181,13 @@ export function useAuth() {
         setError('Could not check admin access. Try again to retry this account check.');
         return { kind: 'authenticated', user: session.user, isAdmin: false };
       }
-      setIsAdmin(admin);
       try {
-        await chrome.storage.local.set({ [STORAGE_KEYS.IS_ADMIN]: admin });
+        if (!(await writeAdminGate(admin, isCurrent)) || !isCurrent()) return { kind: 'stale' };
       } catch {
         if (isCurrent()) setError('Could not save the account role check. Try again to retry.');
+        return { kind: 'authenticated', user: session.user, isAdmin: false };
       }
+      setIsAdmin(admin);
       return { kind: 'authenticated', user: session.user, isAdmin: admin };
     },
     [setUser, setIsAdmin, setError],
@@ -209,12 +244,15 @@ export function useAuth() {
 
   useEffect(() => {
     return on<{ message: string }, { ack: true }>(CHANNELS.AUTH_SAFARI_FAILED, ({ message }) => {
-      signInGeneration += 1;
-      setError(message);
-      setStatus('signed-out');
+      const event = ++signInGeneration;
+      // A failed Safari attempt does not invalidate an earlier session. The
+      // new generation must revalidate it and close any stale admin gate.
+      void applyCanonicalSession(() => event === signInGeneration).then(() => {
+        if (event === signInGeneration) setError(message);
+      });
       return { ack: true };
     });
-  }, [setError, setStatus]);
+  }, [applyCanonicalSession, setError]);
 
   const signIn = useCallback(async () => {
     const attempt = ++signInGeneration;
@@ -254,7 +292,7 @@ export function useAuth() {
     const attempt = ++signInGeneration;
     await runSignOut();
     if (attempt !== signInGeneration) return;
-    await chrome.storage.local.remove([STORAGE_KEYS.IS_ADMIN]);
+    if (!(await writeAdminGate(null, () => attempt === signInGeneration))) return;
     if (attempt !== signInGeneration) return;
     setUser(null);
     setIsAdmin(false);

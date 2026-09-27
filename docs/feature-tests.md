@@ -64,6 +64,14 @@
 - **Expected:** at admin readiness and after navigation/reload, exactly 21 main tabs are present: Chat; Scrape, Data, SEO, Settings; Plan & tasks, Tasks, Agenda, Saved captures, Capture (its title varies with queue state), Highlights, Guidance, Notes, Files, Screenshots, Vault, Tools; Pilot, Showcase, Token broker, Debug. Settings must not show admin while those four admin-only tabs are absent. After external revocation, Settings must stop showing admin and all four admin-only tabs must disappear; a delayed earlier role read must not restore them.
 - **Verification status:** the auth lifecycle regression passed with separate navigation and Settings consumers. A fresh native-browser pass on the repaired build remains pending for EXT-D-0026; the earlier 17-tab browser observation has not been re-run against this change.
 
+### Stored admin gate follows the verified session
+
+- **What it does:** admin-only tool execution follows the current verified account and role; a saved admin flag closes before a session or role is rechecked.
+- **Where to test:** an isolated development extension profile with an authorized admin account and service-worker tool access.
+- **Steps:** sign in as admin, then separately exercise a failed session restore, a mismatched or unverifiable bearer, an unavailable admin-role read, and a successful role read that remains pending. Check the stored admin gate and an admin-only tool in each state. Repeat a failed Safari sign-in attempt with a still-valid prior admin session and with an invalid prior session.
+- **Expected:** the stored gate and admin-only execution are denied throughout unresolved or failed validation, including when a false storage write is rejected but key removal succeeds. A verified admin result restores access; a failed Safari attempt revalidates and preserves a still-valid prior session, while an invalid prior session becomes guest. A late result from an earlier auth generation cannot reopen the gate.
+- **Verification status:** focused auth lifecycle tests passed; native sidepanel and service-worker acceptance remains pending for EXT-D-0029.
+
 ### Reload and transient-outage console hygiene
 
 - **What it does:** extension reloads and optional-context startup races do not leave

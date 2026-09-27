@@ -1,0 +1,49 @@
+{
+  "defect_id": "EXT-D-0029",
+  "reviewer": "/root/auth_repair_final_peer",
+  "scope": "Independent source-only review of the D29 working-tree diff, the prior admin-role-storage-peer findings, auth generation/write ordering, Safari failure handling, and consumers of the persisted admin gate. No code changes, test/build/browser run, or network write in this lane.",
+  "prior_peer_findings": [
+    {
+      "title": "Safari failure cancels an in-flight gate close without revalidating",
+      "status": "ADDRESSED_IN_SOURCE",
+      "evidence": "The AUTH_SAFARI_FAILED listener in src/hooks/use-auth.ts now increments signInGeneration and invokes applyCanonicalSession with that generation predicate. The same path closes the persisted role before restore/profile/bearer/role checks. src/hooks/use-auth.entrypoints.test.tsx adds valid and invalid prior-session cases and checks both hook state and the persisted role."
+    },
+    {
+      "title": "A failed admin-gate clear leaves guest UI but a true execution gate",
+      "status": "ADDRESSED_FOR_FALSE_SET_FAILURE_WHEN_REMOVE_SUCCEEDS",
+      "evidence": "writeAdminGate(false) catches a rejected chrome.storage.local.set(false) and removes IS_ADMIN. The new strict-mode regression seeds true, rejects only false writes, and asserts readIsAdminFromStorage() is false after failed restore. That helper is the execution-time reader used by tool dispatch and the frontend bridge; background bootstrap also checks the same key as exact true."
+    }
+  ],
+  "verdict_a_acceptance": {
+    "status": "PARTIAL_SOURCE_PASS_NATIVE_PENDING",
+    "supported": [
+      "applyCanonicalSession immediately clears in-memory admin and serially closes the persisted gate before canonical session restore, verified-user matching, and role lookup. Failed restore, absent or mismatched profile, unverifiable bearer, unavailable/throwing role lookup, and pending role lookup therefore fail closed when the storage operation succeeds.",
+      "Serialized same-realm writes plus a current-generation check before each queued operation prevent an obsolete queued role result from overwriting a newer queued transition. Generation is checked again after the storage operation before UI role state is committed.",
+      "A failed false set falls back to removing the key, which makes the exact-true execution reader return false when removal succeeds.",
+      "Safari failure revalidates both the prior valid and invalid session cases in the new focused assertions.",
+      "D26 local broadcast suppression remains: publishAuthChange sets publishingAuthChange synchronously, and the local AUTH_STATE_CHANGED listener returns before starting canonical revalidation. The external listener still treats broadcasts as invalidation notices and reruns canonical identity and role validation, so external revocation continues to clear admin UI and the stored gate after successful operations."
+    ],
+    "limits": "No native/browser or service-worker acceptance was performed here. Source and test assertions do not establish the loaded extension behavior. The current repair also cannot guarantee a false gate if both set(false) and remove(IS_ADMIN) fail while the old true value remains readable; applyCanonicalSession reports a recoverable error and closes UI state, but the execution reader still trusts the old boolean. Cross-realm simultaneous transitions are not protected by this module-local queue/generation: a write already in flight in another extension context can complete after this context's clear. These storage and cross-context limits must remain explicit; this review makes no claim of complete security against them."
+  },
+  "verdict_b_quality": {
+    "status": "PASS_WITH_BOUNDED_FAILURE_LIMITS",
+    "findings": [],
+    "notes": [
+      "The false-write fallback assertion calls the actual readIsAdminFromStorage execution reader, rather than only inspecting hook state or raw storage.",
+      "The two Safari failure assertions verify the retained valid admin and the invalid guest outcomes, including persisted state.",
+      "The test source uses a per-test spy restored in finally, and the added helper type accepts boolean | null for role availability."
+    ],
+    "not_reverified": "The coordinator-reported 24/24 guarded test receipt was not rerun or independently audited in this lane."
+  },
+  "original_auth_final_peer_finding": {
+    "title": "Delayed sign-out broadcast can demote a newer signed-in session",
+    "status": "ADDRESSED_IN_SOURCE_AND_GUARD",
+    "evidence": "The AUTH_STATE_CHANGED listener ignores the payload as authority, increments signInGeneration, and invokes applyCanonicalSession, which reads the current verified identity and role. src/hooks/use-auth.entrypoints.test.tsx covers positive broadcast canonical revalidation; the final diff preserves the existing D26 synchronous self-publication guard. A stale external notice therefore requests a current canonical read rather than directly applying its null payload."
+  },
+  "remaining_limits": [
+    "Simultaneous failure of storage.set(false) and storage.remove(IS_ADMIN) can leave a true key that the execution-time boolean reader accepts.",
+    "The queue and generation counters are realm-local; an operation already in flight from a separate extension context can race a newer context's gate clear.",
+    "Native sidepanel and service-worker acceptance on the final build remains pending."
+  ],
+  "changed_files": ["docs/stabilization/reports/admin-role-final-peer.json"]
+}

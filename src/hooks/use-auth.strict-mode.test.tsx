@@ -1,4 +1,5 @@
 import { STORAGE_KEYS } from '@/config/env';
+import { readIsAdminFromStorage } from '@/lib/auth/is-admin';
 import type { UserProfile } from '@/lib/auth/types';
 import { useAuthStore } from '@/state/auth';
 import { act, renderHook, waitFor } from '@testing-library/react';
@@ -10,7 +11,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const dependencies = vi.hoisted(() => ({
   restore: vi.fn(async () => true),
   verifiedUser: vi.fn(),
-  checkIsAdmin: vi.fn(async () => false),
+  checkIsAdmin: vi.fn(async (): Promise<boolean | null> => false),
 }));
 
 vi.mock('@/lib/auth/flow', () => ({
@@ -111,6 +112,7 @@ describe('useAuth persisted-session boot', () => {
 
     const first = renderHook(() => useAuth());
     const remaining = renderHook(() => useAuth());
+    await waitFor(() => expect(dependencies.restore).toHaveBeenCalledTimes(1));
     first.unmount();
     releaseRestore();
 
@@ -162,6 +164,9 @@ describe('useAuth persisted-session boot', () => {
     expect(result.current.user).toBeNull();
     expect(result.current.isAdmin).toBe(false);
     expect(result.current.error).toMatch(/could not restore your saved sign-in/i);
+    expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
+      false,
+    );
     expect(
       (await chrome.storage.local.get(STORAGE_KEYS.USER_PROFILE))[STORAGE_KEYS.USER_PROFILE],
     ).toEqual(profile);
@@ -178,6 +183,9 @@ describe('useAuth persisted-session boot', () => {
     expect(result.current.user).toBeNull();
     expect(result.current.isAdmin).toBe(false);
     expect(dependencies.checkIsAdmin).not.toHaveBeenCalled();
+    expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
+      false,
+    );
   });
 
   it('refuses a saved profile that belongs to a different verified bearer', async () => {
@@ -195,6 +203,9 @@ describe('useAuth persisted-session boot', () => {
     expect(result.current.isAdmin).toBe(false);
     expect(result.current.error).toMatch(/does not match your saved account/i);
     expect(dependencies.checkIsAdmin).not.toHaveBeenCalled();
+    expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
+      false,
+    );
   });
 
   it('shows a recoverable guest state when restored credentials cannot be verified', async () => {
@@ -210,6 +221,9 @@ describe('useAuth persisted-session boot', () => {
     expect(result.current.user).toBeNull();
     expect(result.current.isAdmin).toBe(false);
     expect(result.current.error).toMatch(/could not verify your saved sign-in/i);
+    expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
+      false,
+    );
     expect(
       (await chrome.storage.local.get(STORAGE_KEYS.USER_PROFILE))[STORAGE_KEYS.USER_PROFILE],
     ).toEqual(profile);
@@ -230,4 +244,70 @@ describe('useAuth persisted-session boot', () => {
     expect(result.current.user?.id).toBe(profile.id);
     expect(result.current.status).toBe('signed-in');
   });
+
+  it('closes the stored gate while an admin role read is pending', async () => {
+    const profile = profiles[0]!;
+    dependencies.verifiedUser.mockResolvedValue(profile);
+    let releaseRole!: (value: boolean) => void;
+    dependencies.checkIsAdmin.mockImplementationOnce(
+      () =>
+        new Promise<boolean>((resolve) => {
+          releaseRole = resolve;
+        }),
+    );
+    await chrome.storage.local.set({
+      [STORAGE_KEYS.USER_PROFILE]: profile,
+      [STORAGE_KEYS.IS_ADMIN]: true,
+    });
+
+    const { result } = renderHook(() => useAuth());
+    await waitFor(() => expect(dependencies.checkIsAdmin).toHaveBeenCalledTimes(1));
+    expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
+      false,
+    );
+    expect(result.current.isAdmin).toBe(false);
+    await act(async () => releaseRole(true));
+    expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
+      true,
+    );
+    expect(result.current.isAdmin).toBe(true);
+  });
+
+  it('closes the execution gate when setting false is rejected but removal works', async () => {
+    await chrome.storage.local.set({ [STORAGE_KEYS.IS_ADMIN]: true });
+    dependencies.restore.mockResolvedValue(false);
+    const originalSet = chrome.storage.local.set.bind(chrome.storage.local);
+    const set = vi.spyOn(chrome.storage.local, 'set').mockImplementation(async (items) => {
+      if (items[STORAGE_KEYS.IS_ADMIN] === false) throw new Error('false write rejected');
+      await originalSet(items);
+    });
+    try {
+      const { result } = renderHook(() => useAuth());
+      await waitFor(() => expect(result.current.status).toBe('signed-out'));
+      expect(await readIsAdminFromStorage()).toBe(false);
+    } finally {
+      set.mockRestore();
+    }
+  });
+
+  it.each(['unavailable', 'throws'] as const)(
+    'clears the stored admin gate when role recheck $mode',
+    async (mode) => {
+      const profile = profiles[0]!;
+      dependencies.verifiedUser.mockResolvedValue(profile);
+      if (mode === 'unavailable') dependencies.checkIsAdmin.mockResolvedValue(null);
+      else dependencies.checkIsAdmin.mockRejectedValue(new Error('role read unavailable'));
+      await chrome.storage.local.set({
+        [STORAGE_KEYS.USER_PROFILE]: profile,
+        [STORAGE_KEYS.IS_ADMIN]: true,
+      });
+
+      const { result } = renderHook(() => useAuth());
+      await waitFor(() => expect(result.current.error).toMatch(/could not check admin access/i));
+      expect(result.current.isAdmin).toBe(false);
+      expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
+        false,
+      );
+    },
+  );
 });

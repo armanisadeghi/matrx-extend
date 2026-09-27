@@ -1,0 +1,56 @@
+{
+  "task_id": "EXT-D-0029",
+  "lane": "implementation",
+  "model": "Sol medium",
+  "status": "source_repaired_pending_independent_review_and_native_acceptance",
+  "feature_ids": ["EXT-F-1015"],
+  "defect_ids": ["EXT-D-0029"],
+  "summary": "The sidepanel now closes the background-readable admin gate before canonical session and role revalidation, serializes role writes across auth generations, and restores the gate only after a current verified admin result. A failed Safari sign-in revalidates the prior session rather than assuming it is invalid. If writing false is selectively rejected, the key is removed.",
+  "changed_files": [
+    "src/hooks/use-auth.ts",
+    "src/hooks/use-auth.strict-mode.test.tsx",
+    "src/hooks/use-auth.entrypoints.test.tsx",
+    "docs/feature-tests.md",
+    "docs/stabilization/reports/admin-role-storage-repair.json"
+  ],
+  "commit_shas": [],
+  "verification": [
+    {
+      "case_id": "EXT-F-1015-T35",
+      "run_id": "d29-storage-red",
+      "verdict": "red_before_fix",
+      "evidence": "Six exact storage assertions failed: failed restore, no profile, mismatched bearer, unverifiable bearer, null role, and thrown role all left the prior true gate readable."
+    },
+    {
+      "case_id": "EXT-F-1015-T35",
+      "run_id": "d29-storage-green2",
+      "verdict": "pass_after_fix",
+      "evidence": "21 of 21 focused auth tests passed, including a pending role read and a stale role result after sign-out. The first green run found an older test's assumption that restore started synchronously; its fixture now waits for that condition."
+    },
+    {
+      "case_id": "EXT-F-1015-T37",
+      "run_id": "d29-peer-red",
+      "verdict": "red_before_peer_fix",
+      "evidence": "Three exact assertions failed: Safari failure did not revalidate a valid or invalid prior session, and a selectively rejected false write left the execution gate true."
+    },
+    {
+      "case_id": "EXT-F-1015-T37",
+      "run_id": "d29-peer-green",
+      "verdict": "pass_after_peer_fix",
+      "evidence": "24 of 24 focused auth tests passed, including the prior D26 regression, Safari valid/invalid prior sessions, and the rejected-false-write fallback."
+    },
+    {
+      "case_id": "EXT-F-1015-T35",
+      "run_id": "d29-final",
+      "verdict": "pass_after_final_generation_check",
+      "evidence": "24 of 24 focused auth tests passed after the final current-generation check before restoring the UI admin role."
+    }
+  ],
+  "limitations": [
+    "No native extension or service-worker tool acceptance was run in this lane.",
+    "The original finding is source-derived; no live role mutation or account data change was performed.",
+    "If both setting false and removing the stored key fail while an older true key remains readable, a background reader can still see true. That distinct storage-service failure needs a gate design that verifies current identity and role at execution time; it is not claimed fixed here."
+  ],
+  "open_questions": [],
+  "next_action": "Obtain fresh independent source review, then guarded native acceptance before closing EXT-D-0029."
+}

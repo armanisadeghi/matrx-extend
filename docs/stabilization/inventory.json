@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-27T09:25:37.486111+00:00",
+  "updated_at": "2026-09-27T09:29:42.941073+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -17910,6 +17910,49 @@
               "detail": "Current-source procedure awaits receipt-bound native execution."
             }
           }
+        },
+        {
+          "id": "EXT-F-1015-T39",
+          "title": "Persisted admin gate across contexts and storage outages",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [],
+          "preconditions": [
+            "Fresh receipt-verified development build in owned profile; separate extension contexts; controlled storage failure fixture without changing shared account roles."
+          ],
+          "steps": [
+            "Revalidate account and role across separate extension contexts while an older storage write is pending.",
+            "Reject both role-clear write and key removal while reads remain available; inspect UI and execution-time gate."
+          ],
+          "expected": [
+            "Only currently verified admin authentication can authorize the execution-time gate; obsolete context writes cannot revive it.",
+            "Storage errors are visible and must not silently leave guest UI with an authorized background gate."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "service-error"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "Source review identified realm-local queue and simultaneous storage-operation failure limits; no native reproduction or pass claimed."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "Source review identified realm-local queue and simultaneous storage-operation failure limits; no native reproduction or pass claimed."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Source review identified realm-local queue and simultaneous storage-operation failure limits; no native reproduction or pass claimed."
+            }
+          },
+          "defect_ids": [
+            "EXT-D-0029"
+          ]
         }
       ],
       "cells": {

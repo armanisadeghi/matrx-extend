@@ -73,6 +73,38 @@ beforeEach(async () => {
 });
 
 describe('useAuth canonical session entry points', () => {
+  it.each([true, false])(
+    'revalidates a %s prior admin session after Safari sign-in fails',
+    async (stillValid) => {
+      dependencies.verifiedUser.mockResolvedValue(admin);
+      dependencies.checkIsAdmin.mockResolvedValue(true);
+      await chrome.storage.local.set({ [STORAGE_KEYS.USER_PROFILE]: admin });
+      const { result } = renderHook(() => useAuth());
+      await waitFor(() => expect(result.current.isAdmin).toBe(true));
+      if (!stillValid) dependencies.restore.mockResolvedValue(false);
+
+      await act(async () => {
+        for (const listener of dependencies.listeners.get(CHANNELS.AUTH_SAFARI_FAILED) ?? []) {
+          await listener({ message: 'Safari sign-in could not complete' });
+        }
+      });
+      if (stillValid) {
+        await waitFor(() => expect(dependencies.checkIsAdmin).toHaveBeenCalledTimes(2));
+        expect(result.current.status).toBe('signed-in');
+        expect(result.current.isAdmin).toBe(true);
+        expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
+          true,
+        );
+      } else {
+        await waitFor(() => expect(result.current.user).toBeNull());
+        expect(result.current.isAdmin).toBe(false);
+        expect((await chrome.storage.local.get(STORAGE_KEYS.IS_ADMIN))[STORAGE_KEYS.IS_ADMIN]).toBe(
+          false,
+        );
+      }
+    },
+  );
+
   it('keeps admin navigation available after its own sign-in broadcast while a second role read is pending', async () => {
     dependencies.signIn.mockImplementation(async () => {
       dependencies.verifiedUser.mockResolvedValue(admin);
