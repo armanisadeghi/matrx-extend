@@ -1,5 +1,5 @@
 {
-  "status": "paused_prepared_unverified_not_apply_ready",
+  "status": "integrated_scratch_candidate_unrun",
   "defect": "EXT-D-0047",
   "case": "EXT-F-1012-T57",
   "lane": "Astra medium; source/scratch only",
@@ -23,6 +23,11 @@
     "dynamic_content_scripts": "Not selected: registration matches URLs across tabs and needs static script/config coordination; weaker per-tab ownership than the existing CDP primitive."
   },
   "prepared_files": [
+    "src/entrypoints/sidepanel/App.tsx",
+    "src/features/chat/AgentApprovalCard.tsx",
+    "src/features/showcase/SavedReplayApprovalHost.tsx",
+    "src/features/tools/ToolsView.tsx",
+    "src/hooks/use-tool-inbox.ts",
     "src/lib/background/bootstrap.ts",
     "src/lib/cdp/client.ts",
     "src/lib/data-pattern/document-network-capture.ts",
@@ -30,9 +35,13 @@
     "src/lib/data-pattern/network-tap.ts",
     "src/lib/data-pattern/run-interactive.ts",
     "src/lib/tools/dispatch-persist.ts",
+    "src/lib/tools/dispatch.ts",
+    "src/lib/tools/handlers/data-patterns.ts",
     "src/lib/tools/prepared-tool-operation.ts",
+    "src/lib/tools/types.ts",
     "tests/unit/document-network-authorization.test.ts",
     "tests/unit/document-network-capture.test.ts",
+    "tests/unit/document-network-dispatch.test.ts",
     "tests/unit/document-network-lease.test.ts",
     "tests/unit/document-network-port.test.ts",
     "tests/unit/document-network-recovery.test.ts"
@@ -43,9 +52,9 @@
     "Same-URL replacement context cancels capture and cannot contribute rows."
   ],
   "blocking_integration_work": [
-    "Current approval contract cannot authorize this private-port replay as written. No authorization bypass implemented. See authorization_assessment for exact durable recovery mismatch and viable integration.",
-    "Core and adapters are not typechecked or executed. Review CDP attach/detach lease races, unsupported uniqueId behavior, frame/context ordering and cleanup failure propagation.",
-    "Complete actual runNetworkCapturePattern caller, private-port and shared-lease tests; existing core tests alone are not sufficient assurance."
+    "Rebase D48 matcher/identity and sink privacy changes before applying this scratch patch; preserve both repairs.",
+    "Obtain source review and guarded red/green, meaningful mutation proof and typecheck on the integrated candidate; no runtime proof claimed.",
+    "Exercise installed Chrome document-start ordering, approval outside chat, same-URL replacement, cancellation and attachment ownership."
   ],
   "acceptance": [
     "Guarded baseline red for early request and delayed old-document selection; fixed real-mode/caller green.",
@@ -73,9 +82,9 @@
     "https://developer.chrome.com/docs/extensions/reference/api/debugger",
     "https://developer.chrome.com/docs/extensions/reference/api/scripting"
   ],
-  "closure": "D47 remains open. This checkpoint is design and unrun scratch code only; no correctness or live success claim.",
+  "closure": "D47 remains open. Integrated scratch candidate and executable caller tests are prepared; no guarded red/green, compile or installed Chrome result claimed.",
   "authorization_assessment": {
-    "verdict": "Current approval contract cannot authorize this private-port replay as written. No authorization bypass implemented.",
+    "verdict": "Operation-bound adapters implemented in scratch; still unrun, no privileged bypass intended.",
     "binding_issue": [
       "dispatch.requestConfirmation is private and persists toolName/args/runId/callId for recoverPersistedConfirm, which re-executes that registered tool through handleCall after a worker restart.",
       "Borrowing cdp_attach confirmation would bind approval to attachment, not capture/reload/cleanup. Restart recovery could attach with no capture owner. Calling the handler directly bypasses admin, Pilot and privileged approval.",
@@ -106,5 +115,29 @@
   ],
   "selected_implementation": "Prepared data_patterns run through existing dispatcher and durable approval identity; no new tool or DB schema. Network operation alone resolves privileged debugger requirements.",
   "implementation_plan": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-document-repair-20260927/IMPLEMENTATION.md",
-  "remaining": "Full dispatcher/local-port adapter wiring and actual TOOL_CONFIRM_RESPONSE caller tests remain. Scratch executable seams are not integrated implementation or runtime proof. Pause for D48 priority source peer."
+  "remaining": "Rebase D48 matcher/privacy hunks before applying. Static/type defects may remain because execution was forbidden; guarded red/green/typecheck is next. No missing authorization contract remains merely as prose: adapters and tests are now implemented in scratch.",
+  "adapter_checkpoint": {
+    "source_changes": [
+      "ToolHandler optional prepare contract; actual data_patterns canonical recipe/document snapshot; privileged requirements reuse existing cdp_attach metadata without its identity.",
+      "Existing dispatcher skips ordinary gates only when prepared executor reuses all policy checks and actual confirmation; recovery persists/compares exact operation identity.",
+      "Local port now accepts only saved pattern ID and target tab; raw capture start removed. Local calls use same dispatcher, and disconnect aborts approval/capture.",
+      "Patterns/Data runSavedPattern routes Network through saved-operation port; manual Tools tab uses it too. Existing shared approval card gets a global local-run presenter, with extension approvals excluded from chat fallback.",
+      "Prepared handler preserves full rows for UI and avoids duplicate health bump; agent result envelope unchanged.",
+      "Serialized existing pending-confirm mutations; unique document context unsupported case is now explicit."
+    ],
+    "tests_prepared": [
+      "Actual startToolDispatcher TOOL_CONFIRM_RESPONSE local approval and denial, real data_patterns handler called after gates.",
+      "Actual persisted operation global recovery plus duplicate response; changed admin/Pilot/document after approval request refuses run.",
+      "Revised actual port-host tests reject content/foreign senders, raw-start endpoint and supplied approval/context/config; disconnect and cleanup-error behavior.",
+      "Existing prepared-operation, real persistence restart, CDP lease and document-start core tests retained."
+    ],
+    "unverified": "No tests, typecheck, build or browser executed. Tests still require guarded discovery/runtime. Lower capture is mocked in dispatcher tests, while core/CDP suites separately cover capture lifecycle; installed-browser proof remains mandatory.",
+    "remaining": "Rebase D48 matcher/privacy hunks before applying. Static/type defects may remain because execution was forbidden; guarded red/green/typecheck is next. No missing authorization contract remains merely as prose: adapters and tests are now implemented in scratch."
+  },
+  "static_apply_check": {
+    "command": "git apply --check /Volumes/Samsung2TB/code/.stabilization-scratch/d47-document-repair-20260927/d47.patch",
+    "exit_code": 0,
+    "applied": false,
+    "meaning": "Patch mechanically applies to the checkout at this boundary; not runtime/type correctness and must be rechecked after D48 lands."
+  }
 }
