@@ -15,13 +15,16 @@
     "docs/stabilization/runs/screenshot-controls-dev094-001.json",
     "docs/stabilization/reports/screenshot-controls-setup-diagnosis.json",
     "tests/browser/browser-runtime.mjs",
-    "tests/browser/screenshot-capture-acceptance.mjs"
+    "tests/browser/screenshot-capture-acceptance.mjs",
+    "docs/stabilization/runs/native-runtime-d33-missing-001.json",
+    "docs/stabilization/reports/native-runtime-diagnostic-peer.json",
+    "docs/stabilization/reports/native-runtime-preflight-ready.json"
   ],
   "severity": "S3: test infrastructure wastes a guarded native run and obscures setup failure; no product failure shown",
   "priority": "P1: preserve safe setup reason before next native acceptance run",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/native_runtime_preflight",
-  "fix_commits": [],
+  "fix_commits": ["25f81f14", "e8a393e5"],
   "transition_history": [
     {
       "at": "2026-09-27T11:00:00Z",
@@ -32,6 +35,12 @@
     {
       "at": "2026-09-27T11:00:00Z",
       "from": "open",
+      "to": "triaged",
+      "reason": "Reproduction and source evidence identified this as a test-infrastructure defect; triage transition backfilled during coordinator schema audit."
+    },
+    {
+      "at": "2026-09-27T11:00:00Z",
+      "from": "triaged",
       "to": "in-fix",
       "reason": "Source trace and isolated resolver reproduction identify the erased runtime prerequisite code; shared allowlist mapping is being added."
     },
@@ -40,7 +49,22 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Known runtime codes now survive the native runner boundary without serializing exception text; the real resolver missing and valid-runtime probes passed under the resource guard. Native retry remains pending."
+    },
+    {
+      "at": null,
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent actual runner negative-path reports exact allowlisted unavailable-module code with zero product cases before Chrome launch; three focused resolver/mapping tests and compile passed, and prior valid-runtime native controls ran. No product feature coverage implied.",
+      "timestamp_basis": "Independent retest record confirms terminal result but does not preserve a terminal timestamp."
+    },
+    {
+      "at": null,
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent actual runner negative-path reports exact allowlisted unavailable-module code with zero product cases before Chrome launch; three focused resolver/mapping tests and compile passed, and prior valid-runtime native controls ran. No product feature coverage implied.",
+      "timestamp_basis": "Independent retest record confirms terminal result but does not preserve a terminal timestamp."
     }
   ],
-  "closure_requirement": "A missing-runtime case reports the exact allowlisted code before Chrome launch; a valid runtime still proceeds, and unknown exception text cannot enter the report."
+  "closure_requirement": "A missing-runtime case reports the exact allowlisted code before Chrome launch; a valid runtime still proceeds, and unknown exception text cannot enter the report.",
+  "retest_status": "Independent actual runner negative-path reports exact allowlisted unavailable-module code with zero product cases before Chrome launch; three focused resolver/mapping tests and compile passed, and prior valid-runtime native controls ran. No product feature coverage implied."
 }

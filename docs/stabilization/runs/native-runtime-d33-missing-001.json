@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "run_id": "native-runtime-d33-missing-001",
+  "purpose": "single missing-explicit-module outer-runner negative-path retest",
+  "expected": {
+    "child_exit_code": 1,
+    "cases_count": 0,
+    "runtime_code": "browser_runtime_playwright_unavailable",
+    "raw_path_or_exception_text_in_acceptance_report": false,
+    "chrome_launch_expected": false
+  },
+  "actual": {
+    "child_exit_code": 1,
+    "cases_count": 0,
+    "status": "unverified",
+    "stage": "owned_native_profile",
+    "runtime_code": "browser_runtime_playwright_unavailable",
+    "failure_diagnostic_code": "browser_runtime_playwright_unavailable",
+    "exception_fields_present": false,
+    "chrome_launched": false
+  },
+  "guard": {
+    "admission": "RESOURCE_ADMITTED",
+    "terminal": "RESOURCE_JOB_EXIT",
+    "terminal_child_exit_code": 1,
+    "child_signal": null,
+    "lease_after_run": "released"
+  },
+  "evidence": {
+    "acceptance_result_copy": "/Volumes/Samsung2TB/code/.stabilization-scratch/native-runtime-d33-missing-001.acceptance-result.immutable.json",
+    "acceptance_result_sha256": "49f1e3060d431d578dac7c201167ee715199910f91cd3280988eda2a7426329c",
+    "wrapper_raw_log_mode": "0o600",
+    "wrapper_raw_log_sha256": "1d768d311e701e7b42589d8737e5abdad1c175dcb7e1aef175d82da971f15015",
+    "acceptance_result_mode": "0600"
+  },
+  "status": "pass_expected_setup_refusal"
+}
