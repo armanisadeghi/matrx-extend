@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-27T00:02:00+00:00",
+  "updated_at": "2026-09-27T00:10:00+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -6725,22 +6725,28 @@
                 "docs/stabilization/reports/debug-log-controls-003-runtime-peer.json",
                 "docs/stabilization/reports/debug-log-controls-004-runtime-peer.json",
                 "docs/stabilization/runs/debug-log-controls-009.json",
-                "docs/stabilization/reports/debug009-runtime-peer.json"
+                "docs/stabilization/reports/debug009-runtime-peer.json",
+                "docs/stabilization/runs/debug-log-controls-010.json",
+                "docs/stabilization/reports/debug010-runtime-peer.json",
+                "docs/stabilization/runs/debug-log-controls-011.json",
+                "docs/stabilization/reports/debug011-runtime-peer.json"
               ],
               "dimension_results": {
                 "warm": "partial",
-                "reload": "partial",
-                "service-error": "partial"
+                "reload": "pass",
+                "service-error": "pass"
               },
-              "detail": "Warm/reload message and detail search plus no-match observations exist, and service-error controls also exercised those filters. However, runs 003/004/009 only compare the restored row count, not the prior row identities or values required by the inventory; all dimensions remain partial and the case unverified.",
+              "detail": "Reload and service-error searches restored the exact ordered visible-row signature sequence, including counted natural arrivals. The warm runs still compare count only, so the warm reset dimension remains partial and T14 remains unverified.",
               "remaining_criteria": [
-                "After clearing search, prove restoration of the prior ordered row identities/values while accounting for naturally arriving events; retain warm, reload, and service-error coverage."
+                "Repeat the strong prior-row identity/order reset oracle in the warm dimension; keep T14 unverified until all declared dimensions meet the prior-set expectation."
               ],
               "run_ids": [
                 "admin-debug-filters-001",
                 "debug-log-controls-003",
                 "debug-log-controls-004",
-                "debug-log-controls-009"
+                "debug-log-controls-009",
+                "debug-log-controls-010",
+                "debug-log-controls-011"
               ]
             }
           }
@@ -8338,7 +8344,9 @@
             "debug-log-controls-003",
             "debug-log-controls-004",
             "debug-log-controls-006",
-            "debug-log-controls-009"
+            "debug-log-controls-009",
+            "debug-log-controls-010",
+            "debug-log-controls-011"
           ],
           "retest_status": "not-run"
         }
@@ -8498,9 +8506,42 @@
             }
           ],
           "limits": "Raw run and feature remain partial. Admin feature cell stays unverified. T14 remains unverified across dimensions until prior-set restoration is proved; no full EXT-F-1005 acceptance is claimed."
+        },
+        {
+          "run_id": "debug-log-controls-010",
+          "mode": "admin",
+          "build": "0.2.79",
+          "status": "partial",
+          "receipt": "docs/stabilization/runs/debug-log-controls-010.json",
+          "independent_review": "docs/stabilization/reports/debug010-runtime-peer.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1005-T14",
+              "dimension": "service-error",
+              "status": "pass",
+              "observation": "Under the verified selected-backend outage, message and detail search, no-match, and exact ordered visible-row restoration passed; natural arrivals were counted."
+            }
+          ],
+          "limits": "T14 case remains unverified because its warm reset dimension is partial. Feature/admin cell remains unverified."
+        },
+        {
+          "run_id": "debug-log-controls-011",
+          "mode": "admin",
+          "build": "0.2.79",
+          "status": "partial",
+          "receipt": "docs/stabilization/runs/debug-log-controls-011.json",
+          "independent_review": "docs/stabilization/reports/debug011-runtime-peer.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1005-T14",
+              "dimension": "reload",
+              "status": "pass",
+              "observation": "After a real panel document reload and restored admin identity, message/detail search and no-match passed; exact prior ordered visible-row restoration allowed one counted new arrival."
+            }
+          ],
+          "limits": "T14 case remains unverified because its warm reset dimension is partial. Feature/admin cell remains unverified."
         }
-      ],
-      "updated_at": null
+      ]
     },
     {
       "id": "EXT-F-1006",

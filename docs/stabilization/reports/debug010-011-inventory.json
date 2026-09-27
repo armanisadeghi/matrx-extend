@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "report_id": "debug010-011-inventory",
+  "source_runs": [
+    "docs/stabilization/runs/debug-log-controls-010.json",
+    "docs/stabilization/runs/debug-log-controls-011.json"
+  ],
+  "independent_peers": [
+    "docs/stabilization/reports/debug010-runtime-peer.json",
+    "docs/stabilization/reports/debug011-runtime-peer.json"
+  ],
+  "feature_id": "EXT-F-1005",
+  "case_id": "EXT-F-1005-T14",
+  "build": {
+    "version": "0.2.79",
+    "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0"
+  },
+  "dimensions": {
+    "warm": "partial",
+    "reload": "pass",
+    "service-error": "pass"
+  },
+  "status_boundary": "T14 remains unverified until the warm reset satisfies the exact prior-row-set oracle. The full EXT-F-1005 admin feature cell remains unverified.",
+  "limits": [
+    "Debug 010 proved count, order, and visible-row signature restoration under service error, accounting for new natural arrivals.",
+    "Debug 011 proved the same strong reset oracle after a real panel reload and restored admin identity, accounting for one natural arrival.",
+    "Warm runs 003, 004, and 009 check restored counts only; they do not prove prior row identities/order. No warm pass is claimed.",
+    "No full feature acceptance or browser/test execution was performed for this inventory update."
+  ],
+  "validation": {
+    "inventory_json_parse": "pass",
+    "report_json_parse": "pass",
+    "ascii": "pass"
+  }
+}
