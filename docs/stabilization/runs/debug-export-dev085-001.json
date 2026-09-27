@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "id": "debug-export-dev085-001",
+  "scope": "Native Debug export and verbose-setting QA against the keyed local 0.2.85 unpacked development build.",
+  "execution": {
+    "lease_command": [
+      "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032",
+      "node",
+      "scripts/stabilization-resource.mjs",
+      "browser",
+      "--run-id",
+      "debug-export-dev085-001",
+      "--profile-dir",
+      "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032"
+    ],
+    "runner_command": ["node", "tests/browser/debug-log-export-acceptance.mjs"],
+    "runner_environment": {
+      "TMPDIR": "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032",
+      "MATRX_PLAYWRIGHT_MODULE": "/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+      "MATRX_CHROME_PATH": "/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+      "DEBUG_DEV_BUILD_RECEIPT": "/Volumes/Samsung2TB/code/matrx-extend/test-results/source-dev-build-085.json"
+    },
+    "resource_guard": {
+      "admission": "RESOURCE_ADMITTED",
+      "admitted_at": "2026-09-27T05:07:56.225Z",
+      "mode": "browser",
+      "wrapper_exit_code": 0,
+      "stop_confirmation": "RESOURCE_BROWSER_STOP_CONFIRMED",
+      "lease_owner_absent_after_exit": true,
+      "browser_and_runner_processes_absent_after_exit": true,
+      "ownership_limit": "The runner ran separately while the browser lease holder monitored host resources; it was not spawned and process-group monitored by the wrapper's run mode. This does not meet required guarded-run ownership coverage."
+    },
+    "runner_exit_code": 0,
+    "raw_log_private_path": "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032/debug-export-dev085-001.raw.log",
+    "raw_log_mode": "0600",
+    "raw_log_sha256": "cb4bbcc2551dbb130ca7615fe9aa6d053863d703c827166d95a0c1597c0059f2"
+  },
+  "build": {
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "version": "0.2.85",
+    "tree_sha256_before": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff",
+    "tree_sha256_after": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff",
+    "artifact_tree_matched_after": true,
+    "extension_id_matched": true
+  },
+  "acceptance": {
+    "runner_status": "partial",
+    "result_path": "test-results/debug-log-export-bc85e37a-9a10-49b1-a3ba-d0759a3997f5.json",
+    "result_mode": "0600",
+    "result_sha256": "c9a66349135e0ab70965f7afe4de858094756820ea56343266fc58b0e446fefc",
+    "T16": {
+      "status": "unverified",
+      "natural_rows": 64,
+      "filtered_rows": 11,
+      "chronological_order_checked": true,
+      "clipboard_read_available": false,
+      "clipboard_exact": false,
+      "copy_feedback": false,
+      "download_exact": true,
+      "download_bytes": 802
+    },
+    "T18": {
+      "status": "partial",
+      "real_admin": true,
+      "persisted_after_real_reload": true,
+      "visible_feed_sequence_unchanged_while_paused": true,
+      "verbose_setting_restored": true,
+      "console_mirroring": "unverified_no_natural_level_matched_console_control"
+    }
+  },
+  "verdict": {
+    "guarded_acceptance": "unverified",
+    "reason": "The runner was not launched as a resource-guard run child, so the run lacks required wrapper process-group ownership even though an admitted browser lease overlapped it.",
+    "inventory_promotion": false,
+    "no_retry": true
+  }
+}
