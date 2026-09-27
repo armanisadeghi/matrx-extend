@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "lane": "implementation-tier / Sol medium",
+  "status": "SOURCE_READY_AWAITING_FRESH_PEER_AND_RESOURCE_ADMISSION",
+  "runner": "tests/browser/takeover-visible-census.mjs",
+  "design": "Uses runNativeSidepanelQa with the caller-selected, validated current local development artifact. The existing harness owns the fresh Chrome profile, CDP connection, native sidepanel verification, and cleanup. The caller must supply an external TMPDIR; the runner verifies its real path before launch and places screenshot artifacts there.",
+  "read_only_census": "After the harness proves a settled guest sidepanel, the callback observes fixed navigation labels, opens Settings and its section headers with the shared trusted pointer driver, records fixed control labels within each section, and verifies chrome.runtime.id and manifest version. No setting, authentication, reset, Save, or external action is clicked.",
+  "identity": {
+    "receipt_input": "CENSUS_DEV_BUILD_RECEIPT must name an absolute path inside this repo's test-results directory",
+    "version": "receipt version must equal the current package and manifest version",
+    "tree_sha256": "the unpacked extension tree must hash to the caller-selected validated receipt",
+    "expected_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "verification": {
+    "node_check": "passed",
+    "scoped_biome_format": "passed",
+    "browser_run": "not launched",
+    "resource_guard": "not launched"
+  },
+  "next_action": "Fresh peer review the revised source. After the resource-lock commit, root will allowlist the exact node runner command. Then launch it under stabilization-resource.mjs run with --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch and caller-provided TMPDIR and CENSUS_DEV_BUILD_RECEIPT. Treat the runtime census as guest visibility only; member/admin and primary Chrome Store/dev identity remain unverified."
+}

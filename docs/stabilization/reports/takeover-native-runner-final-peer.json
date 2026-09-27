@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "lane": "fresh independent readiness review / Luna medium",
+  "subject": "tests/browser/takeover-visible-census.mjs",
+  "source_safety_verdict": "PASS_STATIC_SOURCE_SAFETY",
+  "execution_readiness_verdict": "NOT_READY_STALE_PIN_AND_GUARDED_COMMAND",
+  "review_method": "Independent source/report inspection and node --check; no browser/build/guard launch.",
+  "evidence": [
+    "Runner and receipt agree on local dev 0.2.88, tree f8b38190f2d3759462f80ff6775d7a3ce5bf0ff8ab7e566612225062960c686a, and extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml.",
+    "Reuses runNativeSidepanelQa for fresh profile, owned CDP, extension/SIDE_PANEL validation, openPanel reply, and child cleanup; TMPDIR and artifacts are rooted under verified external scratch.",
+    "Requires resource owner/run/stop env and preserves inheritance. Shared trusted pointer driver only opens Settings and section headers; no settings/auth/reset/save/user-data action is clicked.",
+    "Output is allowlisted labels/counts and pinned runtime identity; failures expose fixed codes. Guest only; member/admin unverified. node --check passed."
+  ],
+  "blocking_readiness": "package.json is now 0.2.89, while the runner pins 0.2.88 and its old tree/receipt filename, so it cannot consume the upcoming build until deliberately refreshed. resource-policy.json also lacks the exact command allowlist. Then launch only through guarded run mode; no browser-mode/manual launch.",
+  "ui_verdict": "UNVERIFIED_NO_BROWSER_LAUNCH"
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "lane": "implementation-tier independent review / Sol medium",
+  "subject": "tests/browser/takeover-visible-census.mjs",
+  "source_safety_verdict": "REFUSE_LAUNCH_PENDING_REPAIR",
+  "actual_ui_verdict": "PLAUSIBLE_GUEST_ENTRY_BUT_UNVERIFIED",
+  "review_method": "Static source review and node --check only; no browser, build, test suite, or resource guard was launched.",
+  "positive_evidence": [
+    "The runner validates a local development receipt and exact build tree hash before launch, creates a fresh profile under the external scratch directory, and neither connects to CDP nor accesses an existing profile.",
+    "Its 127.0.0.1 page is covered by the manifest externally_connectable pattern and runtime origin allowlist, and the FRONTEND_RPC openPanel path is the same one used by the established native sidepanel harness."
+  ],
+  "blocking_findings": [
+    {
+      "id": "GUARD_COMMAND_AND_OWNER",
+      "evidence": "resource-policy.json allowedCommands does not list this runner. stabilization-resource.mjs browser mode holds a manual lease but does not launch the runner or supply MATRX_RESOURCE_OWNER; launching the runner separately would violate the launch contract and leave the child outside token census.",
+      "remedy": "Add a narrow allowed command for the runner and launch it through resource guard run mode against the external profile parent, with the inherited owner token unchanged. Do not use a separate browser-mode lease plus an unowned launch."
+    },
+    {
+      "id": "UNVERIFIED_WINDOW_AND_EXTENSION",
+      "evidence": "Lines 147-161 report CENSUS_NATIVE_WINDOW_READY after only 1.5 seconds without checking Chrome's window, loaded extension ID, or sidepanel. The local button does not inspect the response from openPanel.",
+      "remedy": "Reuse the native-sidepanel harness's owned-profile and expected-extension checks, or require an explicit CUA-observed window and successful panel-open response before recording any UI visibility. Retain a visible failure message on the local page."
+    },
+    {
+      "id": "INCOMPLETE_BROWSER_CLEANUP",
+      "evidence": "Lines 62-74 resolve cleanup immediately after sending SIGKILL at the 5-second deadline, without confirming exit or descendants are gone, then lines 168-171 remove the profile. A Chrome process can outlive profile removal or the lease.",
+      "remedy": "Wait for the direct child to exit after SIGKILL and have the resource guard confirm its owned process group and token census before releasing the lease. Keep the profile if ownership cannot be proved gone."
+    }
+  ],
+  "scope_limits": [
+    "The existing native-sidepanel harness verifies the real side panel through an owned CDP endpoint, but its default profile is under tmpdir on the primary volume and its flow closes the browser; it needs an external profile root and hold-open mode before serving this CUA census.",
+    "A fresh profile can establish guest visibility only. Member/admin visibility and the primary Chrome Store/dev switch remain unverified."
+  ]
+}

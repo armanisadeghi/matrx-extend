@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "lane": "fresh independent narrow verifier",
+  "subject": "tests/browser/takeover-visible-census.mjs",
+  "verdict": "PASS_STATIC_ACCEPTANCE_WITH_GUARDED_LAUNCH_DEPENDENCY",
+  "review_method": "Independent source inspection and Node syntax checks; no build, browser, or resource-guard launch.",
+  "acceptance": {
+    "canonical_harness": {
+      "result": "PASS",
+      "evidence": "Imports and invokes tests/browser/native-sidepanel-qa-harness.mjs runNativeSidepanelQa; no alternate browser launch or CDP attachment appears in census runner."
+    },
+    "caller_selected_current_dev_receipt": {
+      "result": "PASS",
+      "evidence": "Requires absolute CENSUS_DEV_BUILD_RECEIPT; realpath must be directly in repository test-results. No filename/version/tree constant. requireLocalDevReceipt binds receipt to .output/chrome-mv3-dev and its recorded tree; runner compares receipt version to package.json and manifest, requires manifest key, and hashes current unpacked tree against receipt. Harness repeats receipt/tree verification before launch."
+    },
+    "external_tmpdir": {
+      "result": "PASS",
+      "evidence": "Requires absolute caller TMPDIR, resolves it to /Volumes/Samsung2TB/code/.stabilization-scratch, requires directory, and confirms os.tmpdir() resolves to the same path; no host temp fallback."
+    },
+    "guest_visible_control_census": {
+      "result": "PASS",
+      "evidence": "Requires settled guest panel, navigates to Settings via trusted click, and opens only allowlisted section headers. Reads fixed labels/counts and runtime id/version. No Save, auth, reset, switch, input, or setting control is clicked or written. Raw account/page text is not returned; guest status check is a boolean."
+    },
+    "cleanup": {
+      "result": "PASS_BY_CANONICAL_HARNESS_INSPECTION",
+      "evidence": "Harness finally detaches its CDP connection, closes its local server, terminates only its spawned Chrome child (TERM then bounded KILL), and removes its fresh profile root. Exercise callback panel session is detached in finally. Browser.close is not used."
+    },
+    "guarded_run_precondition": {
+      "result": "PASS_WITH_WRAPPER_DEPENDENCY",
+      "evidence": "Preflight requires MATRX_RESOURCE_OWNER matching UUID-shaped syntax plus nonempty MATRX_RESOURCE_RUN_ID and MATRX_RESOURCE_STOP_FILE before launch. Resource wrapper is responsible for supplying these and admitting the exact command. This source-level presence check alone does not authenticate that wrapper invocation; guarded launch depends on the exact allowlist row and wrapper run mode."
+    }
+  },
+  "open_questions": [
+    "Resource policy exact-command allowlist row is pending separate root integration; no row was required in this peer artifact and the runner should not be rewritten for that absence.",
+    "No live runtime census was performed; member/admin behavior and Store/dev identity remain unverified."
+  ],
+  "checks": [
+    "node --check tests/browser/takeover-visible-census.mjs: PASS",
+    "node --check tests/browser/native-sidepanel-qa-harness.mjs: PASS"
+  ],
+  "files_reviewed": [
+    "tests/browser/takeover-visible-census.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "scripts/record-local-dev-build.mjs",
+    "scripts/stabilization-resource.mjs"
+  ],
+  "files_changed": ["docs/stabilization/reports/takeover-census-receipt-peer.json"]
+}

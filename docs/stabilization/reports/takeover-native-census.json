@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "task_id": "takeover-native-census",
+  "lane": "structured execution / Luna medium",
+  "status": "PRIMARY_PREFLIGHT_REFUSED_ISOLATED_CENSUS_RUNNER_PREPARED_FOR_REVIEW",
+  "observed_at": "2026-09-27T07:37:53.570Z",
+  "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+  "inventory": {
+    "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+    "features": 205,
+    "controls": 1297,
+    "cases": 701,
+    "guest_member_admin_matrix": "Present in inventory; no runtime visibility cell was observed in this attempt."
+  },
+  "development_artifact": {
+    "receipt": "test-results/source-dev-build-088-takeover-20260927.json",
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "extension_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "version": "0.2.88",
+    "tree_sha256": "f8b38190f2d3759462f80ff6775d7a3ce5bf0ff8ab7e566612225062960c686a",
+    "expected_dev_extension_id_from_source": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "expected_dev_redirect_uri_from_source": "https://cihdmkcdjjckfhjpgoedmgfpoljebaml.chromiumapp.org/",
+    "identity_verification": "Source and receipt only; the installed Chrome extension ID was not observed."
+  },
+  "resource_preflight": {
+    "run_id": "takeover-native-census-primary-088",
+    "mode": "manual browser lease",
+    "actual_profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "result": "RESOURCE_PREFLIGHT_REFUSED",
+    "profile_free_gib": 13.459075927734375,
+    "minimum_free_gib": 20,
+    "other_measurements": {
+      "pressure_level": 1,
+      "available_memory_gib": 11.36,
+      "required_memory_gib": 4,
+      "cpu_busy_fraction": 0.4295428571428571,
+      "one_minute_load": 5.17,
+      "logical_cpus": 10,
+      "swap_used_mib": 1923.5,
+      "repo_free_gib": 1676.202980041504
+    },
+    "disposition": "Guard lease process exited and released its permit. No Chrome UI was opened, no extension state was changed, and no behavior was tested."
+  },
+  "native_visibility": {
+    "chrome_channel_or_installed_id": "unverified",
+    "primary_app_inventory": "Native CUA inventory lists Google Chrome as running; no Chrome window or installed extension UI was inspected.",
+    "primary_store_extension_state": "unverified",
+    "development_extension_reload": "not performed",
+    "guest": "visibility unverified",
+    "member": "visibility unverified",
+    "admin": "visibility unverified",
+    "visible_control_census": "not started; isolated-profile runner is prepared and awaits independent review plus fresh guard admission.",
+    "first_local_behavior_cases": "Not selected; source and visible census gate is still closed."
+  },
+  "isolated_census_proposal": {
+    "runner": "tests/browser/takeover-visible-census.mjs",
+    "status": "source prepared; not launched",
+    "method": "Launch only the receipt-verified 0.2.88 development artifact in a new headed Chrome-for-Testing profile under external scratch. The operator opens the side panel from a local page; no acceptance assertions, product writes, screenshots, or credential entry are part of the runner.",
+    "profile_parent": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+    "expected_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "primary_profile_boundary": "This does not inspect or switch the primary Chrome installation. Its Store/dev channel and runtime ID remain unverified.",
+    "roles": "A fresh profile supports guest visibility only. Member/admin visibility remains unverified until real owned identities are available in an isolated profile; no primary profile state will be copied."
+  },
+  "gaps_and_next_action": [
+    "The guard refused because the actual primary Chrome profile volume has 13.459 GiB free, below the 20 GiB floor. The earlier disk-capacity report's 23.9 GiB observation is stale for this admission.",
+    "The primary profile path remains the truthful measurement target; thresholds will not be lowered. In parallel, the isolated runner needs independent review and a fresh guard admission on its external scratch profile before launch.",
+    "Use the admitted isolated UI to reconcile visible navigation and dynamic controls against inventory.json for guest mode. Member/admin cells remain explicitly unverified unless those roles can be established safely in isolated state.",
+    "The primary Chrome Store/dev switch remains an outstanding requirement. Do not begin behavioral testing until the source and visible census gate is explicitly opened."
+  ],
+  "files_changed": [
+    "docs/stabilization/reports/takeover-native-census.json",
+    "tests/browser/takeover-visible-census.mjs"
+  ],
+  "limitations": [
+    "The primary preflight was refused. The isolated runner has not been peer-reviewed, launched, or runtime-verified.",
+    "No extension installation, Store copy, authentication, organization, or user data was accessed.",
+    "The unreadable UI visibility and install identity are infrastructure-blocked, not product passes or failures."
+  ]
+}
