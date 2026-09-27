@@ -1,0 +1,69 @@
+{
+  "defect": "EXT-D-0041",
+  "lane": "Astra medium implementation escalation",
+  "status": "IN_PROGRESS: focused green; corrected type rerun pending; no native acceptance",
+  "baseline": "eed4a2e2; package 0.2.108 before remote .109 dependency integration",
+  "root_cause": "Saved identity lacked explicit URL semantics and request payload identity; tap retained relative URLs and ignored Request init method override; runner chose largest response after a short settling timer, conflating distinct operations and out-of-order polling.",
+  "implemented": [
+    "Normalize fetch string/URL/Request and XHR URLs against document.baseURI; preserve encoded query and numeric identity; use effective method override.",
+    "Compute bounded SHA-256 body identity inside producer; no raw request body or request header added to event or recipe. Multipart/stream/oversize/unavailable crypto emits unavailable.",
+    "Save explicit exact/filter URL choice and exact/ignore body choice. Save stays available; unsupported identity has actionable guidance and user opt-out.",
+    "Replay filters saved body digest; full-window distinct-identity matches raise actionable ambiguity. Same identity uses newest successful request initiation sequence, even if older larger response finishes later.",
+    "Reject truncated result as incomplete; normalize preview rows through same rowsFromBody helper used in replay.",
+    "Install relay before tap, ignore events before loading, clean listener/timer on terminal paths; correct Reload tooltip and hook failure state."
+  ],
+  "evidence": [
+    {
+      "run": "network-replay-integrity-red-001",
+      "verdict": "10 failed / 1 passed against unchanged product; intended wrong-row/identity/normalization/truncation assertions",
+      "wrapper_exit": 1,
+      "log": "/tmp/network-replay-integrity-red-001.log"
+    },
+    {
+      "run": "network-replay-integrity-green-001",
+      "verdict": "28 passed across 3 focused files",
+      "wrapper_exit": 0,
+      "log": "/tmp/network-replay-integrity-green-001.log"
+    },
+    {
+      "run": "network-replay-integrity-types-001",
+      "verdict": "one introduced XHR.send overload error; repaired with native Reflect.apply forwarding",
+      "wrapper_exit": 1,
+      "log": "/tmp/network-replay-integrity-types-001.log"
+    }
+  ],
+  "sibling_census": [
+    "NetworkTab \u2192 SaveAsPattern \u2192 network_capture config \u2192 runNetworkCapturePattern; shared runSavedPattern consumers PatternsTab, DataView, data_patterns tool inherit repaired replay.",
+    "fetch string, URL and Request with RequestInit override; XHR open/send including responseType=json.",
+    "Exact URL, explicit substring/glob, same URL distinct POST payload, identical POST payload updated data, out-of-order completion, delayed distinct identity, selected path, truncation, old pre-loading event."
+  ],
+  "known_separate_classes": [
+    {
+      "class": "Document-start capture and trusted document provenance",
+      "sources": [
+        "src/lib/data-pattern/run-interactive.ts: tabs.onUpdated loading injection",
+        "src/lib/data-pattern/network-tap.ts: relay/tap sentinels and window postMessage",
+        "src/lib/background/bootstrap.ts: NET_CAPTURE_EVENT stamps tab_id but not sender.documentId",
+        "src/hooks/use-network-capture.ts: start/reload lifecycle",
+        "src/lib/cdp/client.ts: attach/isAttached/send ownership"
+      ],
+      "impact": "Automatic replay can miss early hydration requests; old-document messages arriving after loading cannot be distinguished. Manual interaction guidance is temporary, not full acceptance.",
+      "proposed_bounded_repair": "Per-tab Page.addScriptToEvaluateOnNewDocument pre-arm through existing CDP send/attach helper before reload; bounded early-response queue flushed when isolated relay ready; per-run session token plus trusted sender.documentId; Page.removeScriptToEvaluateOnNewDocument cleanup on terminal/cancel/navigation/error; detach only own attachment and preserve debugger permission UX. Do not use CDP startNetworkCapture as-is, because it captures raw request headers.",
+      "collision": "Touches current Network tap/runner/hook plus background bootstrap and small lifecycle helper; serialize after this checkpoint."
+    },
+    {
+      "class": "Shared dotted JSON key selection",
+      "sources": [
+        "src/components/ui/json-tree.tsx: childPath joins literal keys with dots",
+        "src/features/showcase/tabs/NetworkTab.tsx",
+        "src/features/showcase/tabs/FrameworkTab.tsx",
+        "src/lib/data-pattern/modes/next-data.ts",
+        "src/lib/data-pattern/run-interactive.ts: rowsFromBody"
+      ],
+      "repro": "JSON with both a literal data.events key and nested data.events node produces the same selected dot path and can replay the wrong subtree.",
+      "routing": "Root explicitly separates shared-path defect; no Network-only callback or JsonTree change in this patch."
+    }
+  ],
+  "acceptance": "UNVERIFIED: no build, extension reload, actual Chrome website, persistence roundtrip, or independent UI verification in this lane. Controlled guard fixtures are regression evidence only.",
+  "questions": []
+}
