@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-readonly-source-peer",
+  "defect_id": "EXT-D-0022",
+  "reviewed_source_commit": "7f1fdb5b",
+  "A_runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "Independent source review only; no browser, build, or test was launched. No actual existing fixture, organization-scoped response, UI recognition, or delayed-response behavior has been observed by this peer."
+  },
+  "B_source": {
+    "verdict": "REJECT_PENDING_FIXTURE_ALIAS_REPAIR",
+    "blocking_finding": "The real listSavedCaptures query selects SOURCE_SUMMARY_COLUMNS with the PostgREST alias url:canonical_identity. Its response rows therefore have row.url, not row.canonical_identity. Fixture discovery calls new URL(row.canonical_identity), catches the invalid URL, and rejects every row. The run stops at no_existing_public_positive_fixture_in_visible_page even if a qualifying Source exists, so it cannot prove recognition, workspace switching, or the late lookup.",
+    "required_repair": "Read the actual list response's url field and keep its public-host and no-query constraints. Preserve the separate point-lookup assertion against canonical_identity, because lookupCapturedByUrl selects that unaliased field. After repair, independently review before guarded native execution; missing qualifying rows on the first visible list page must still be reported unverified without creating one.",
+    "accepted_boundaries": "The runner uses real admin web-form sign-in and UI workspace selection, a keyed local development build receipt, real processed_documents GET observations, and real Source Open link IDs held in memory. It does not invoke Capture or Save, read the reserved checkpoint, write database rows, synthesize responses, or inject fixtures. Credentials, organization names/IDs, Source IDs, URLs, and response bodies do not enter the JSON report.",
+    "late_response_oracle": "The Fetch Response-stage hook targets an actual approved-workspace GET and releases it with Fetch.continueRequest(requestId), without replacing URL, status, body, or headers. The observer then requires a completed HTTP 200 old-workspace read and checks the current workspace UI/link. The 1500 ms post-delivery observation is bounded UI evidence, not proof against every later scheduler delay; late Save and service-failure recovery remain explicitly unverified.",
+    "additional_limit": "The observer filters by origin learned from the real list query and organization/canonical query values. Comparison-workspace proof depends on a distinct accessible existing workspace and a completed scoped result; absence of either must remain unverified. The source currently cannot reach those gates because of the alias mismatch."
+  },
+  "reviewed_paths": [
+    "tests/browser/source-recognition-readonly-acceptance.mjs",
+    "src/lib/supabase/queries.ts",
+    "docs/stabilization/reports/d22-next-closure-path.json"
+  ]
+}
