@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-27T10:41:23.500Z",
+  "updated_at": "2026-09-27",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -16371,7 +16371,17 @@
             "reload",
             "navigation",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-installed-d48-network-001",
+              "evidence": [
+                "docs/stabilization/runs/showcase-installed-d48-network-001.json"
+              ],
+              "detail": "On JSONPlaceholder, selected the actual captured 200 GET /todos/1 response, saved its exact URL matcher as an owned Network pattern, left Network for Patterns, and ran it. Pattern Run reloaded the page; after clicking visible Run script, the product matched one request and returned one row with userId=1, id=1, title=delectus aut autem, completed=false, matching the captured preview. Partial same-host interactive GET evidence only; multiple requests, changed source/data, errors and broader reload dimensions remain unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T51",
@@ -16508,7 +16518,17 @@
             "reload",
             "navigation",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-installed-d48-network-001",
+              "evidence": [
+                "docs/stabilization/runs/showcase-installed-d48-network-001.json"
+              ],
+              "detail": "The selected GET preview displayed Exact URL mode and explanatory text that exact matching includes query and literal asterisks. A synthetic matcher edit showed credential masking controls, then the original exact noncredential URL was restored before save. No competing requests proved query, numeric path, relative URL or wildcard behavior; partial control/display evidence only."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T54",
@@ -16686,7 +16706,17 @@
             "warm",
             "reload",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-installed-d48-network-001",
+              "evidence": [
+                "docs/stabilization/runs/showcase-installed-d48-network-001.json"
+              ],
+              "detail": "Using only synthetic credential-shaped query values in the editable matcher, recognized api_key displayed as [credential] with checked disabled recognized-key control. An unfamiliar teamtoken key exposed a user-checkable Treat as credential option and displayed [credential] after selection. Matcher was restored to the observed public noncredential URL before saving; no credential-bearing pattern was persisted or reopened. Partial visible UI control evidence only; safe save/name persistence, rotation and ambiguity remain unverified."
+            }
+          }
         }
       ],
       "cells": {
@@ -16716,7 +16746,8 @@
             "showcase-live-discovery-001",
             "showcase-live-retest-001",
             "showcase-live-microdata-001",
-            "showcase-installed-d43-001"
+            "showcase-installed-d43-001",
+            "showcase-installed-d48-network-001"
           ],
           "retest_status": "fail"
         }
@@ -16732,7 +16763,8 @@
         "Fresh .101 live retest: original Doctor list seed arrives, but Pick more fields replaced event-card scope with one event\u2019s nested list and returned3 rows. D43 assigned for independent diagnosis; D39 remains open until surrounding field/extraction behavior passes. No saved recipe persistence yet tested.",
         "D40 real Microdata Event preview \u2192 unsent Place draft \u2192 saved pattern \u2192 reopened Patterns replay returned249 Event records with matching visible fields/sample values. T46 stays partial; full-value comparison/reload/errors and datasets remain unverified. Exact owned recipe retained as next persistence-test fixture.",
         "Installed .108 real-calendar retest: Doctor handoff and seeded/fresh scope selection now work; title+href extraction249rows had matching sampled records and navigation cleared state. T04/T24/T29/T45/T51 remain partial; full rows beyond200, alternate-scope extraction, persistence and other dimensions still pending. No localhost UI was used.",
-        "T53-T55 and C44-C45 added for EXT-D-0041 Network matcher/replay identity follow-up. These are unverified planning coverage only; no admin, guest, or member result was promoted. Guest/member denial remains the existing T38 case. Network evidence may record only sanitized fixed fields and local-producer digest presence; never raw request payload, credentials, or headers."
+        "T53-T55 and C44-C45 added for EXT-D-0041 Network matcher/replay identity follow-up. These are unverified planning coverage only; no admin, guest, or member result was promoted. Guest/member denial remains the existing T38 case. Network evidence may record only sanitized fixed fields and local-producer digest presence; never raw request payload, credentials, or headers.",
+        "Installed .109 D48 live run: one actual GET capture was saved, reopened from Patterns and interactively replayed with all four visible response values matching; recognized/unknown synthetic query-key masking controls were observed and the real matcher restored before save. T50/T53/T58 are partial only; no credential-bearing pattern was persisted or inspected, and D48 remains open pending full installed privacy acceptance."
       ]
     },
     {

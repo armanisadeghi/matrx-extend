@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-d48-network-live-001",
+  "status": "PARTIAL_LIVE_EVIDENCE",
+  "scope": "Installed unpacked Chrome extension Network capture, synthetic credential-query UI controls, and one saved/reopened/replayed public GET request. No localhost/test server, tests, source edits, dataset write, or deletion.",
+  "build": {
+    "source_commit": "de819649845c299c47ee27566b849c91d90bead1",
+    "source_basis": "HEAD was verified clean at this commit before the guarded build; artifact receipt records version and tree hash, not source commit.",
+    "version": "0.2.109",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_dir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "tree_sha256": "b0c4bd1c4ec5249aeb971df398b8d1148d8e743f99225ee22e614ae7d2056341",
+    "artifact_receipt": "test-results/source-dev-build-d48-20260927.json",
+    "artifact_receipt_sha256": "2a6b7c5f3cbdb42ef461f5d9c860137e532623feafce00a14a3c7332325fffae"
+  },
+  "build_guard": {
+    "run_id": "showcase-d48-dev-build-001",
+    "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node scripts/stabilization-resource.mjs run --run-id showcase-d48-dev-build-001 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec wxt build --mode development",
+    "admission": "RESOURCE_ADMITTED at 2026-09-27T23:21:34.911Z",
+    "terminal": "Child build exited 0; RESOURCE_JOB_EXIT at 2026-09-27T23:21:38.453Z; wrapper exited 0.",
+    "result": "WXT development build completed; only ineffective dynamic-import warnings."
+  },
+  "browser_guard": {
+    "run_id": "showcase-d48-network-live-001",
+    "command": "node scripts/stabilization-resource.mjs browser --run-id showcase-d48-network-live-001 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "exec_session_id": 44637,
+    "admission": "RESOURCE_ADMITTED at 2026-09-27T23:23:25.238Z; pressureLevel 1, no refusal reasons.",
+    "terminal": "Ctrl-C emitted RESOURCE_STOP_REQUESTED and RESOURCE_BROWSER_STOP_CONFIRMED at 2026-09-27T23:27:42.521Z (resourceInvalid false); terminal poll returned exit_code 0.",
+    "state": "No owned UI run remains active. Chrome remains the user's app; no claim about unrelated Chrome processes."
+  },
+  "installed_extension": {
+    "reload": "On chrome://extensions, Matrx Extend showed 0.2.109 before the click in this lane. Clicking explicit Reload produced visible \u201cReloaded\u201d; Details then showed version 0.2.109, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, and unpacked source path /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev. No .108-to-.109 transition is claimed.",
+    "page_refresh": "JSONPlaceholder was opened after extension reload. The saved Network Run control later reloaded the page; no separate manual refresh after navigation was recorded."
+  },
+  "public_page": {
+    "url": "https://jsonplaceholder.typicode.com/",
+    "observed_ui": "The real page exposed a visible Run script action documented as fetching https://jsonplaceholder.typicode.com/todos/1.",
+    "first_capture": {
+      "actions": "Started Showcase > Network capture, then clicked the page's visible Run script button.",
+      "observed_request": "200 GET https://jsonplaceholder.typicode.com/todos/1, application/json; charset=utf-8, 83 B.",
+      "response_fields": {
+        "userId": 1,
+        "id": 1,
+        "title": "delectus aut autem",
+        "completed": false
+      },
+      "ui": "Page rendered the same JSON and Network showed one captured response. Opening it showed the exact URL matcher and response fields."
+    }
+  },
+  "credential_ui": {
+    "recognized_key": "A synthetic api_key query displayed [credential] and a disabled, checked \u201cTreat api_key as credential (recognized)\u201d control.",
+    "unknown_key": "An unfamiliar teamtoken key showed an enabled, initially unchecked \u201cTreat teamtoken as credential\u201d control. Checking it masked the displayed value as [credential].",
+    "restore": "Restored the observed noncredential matcher https://jsonplaceholder.typicode.com/todos/1 before saving.",
+    "limits": "No synthetic credential-bearing pattern was saved. No actual credentials or raw synthetic canary values, headers, or request payloads are included. This verifies visible key controls only; credential-bearing save persistence, stored names/config, rotation, ambiguity, and safe replay guidance remain unverified."
+  },
+  "saved_replay": {
+    "status": "PASS_BOUNDED_SUBSTEP",
+    "fixture": {
+      "title": "Codex D48 JSONPlaceholder todos replay 20260927-2327Z",
+      "method": "Network",
+      "source_host": "jsonplaceholder.typicode.com",
+      "source_route": "/",
+      "matcher": "Exact URL: https://jsonplaceholder.typicode.com/todos/1",
+      "result_columns": [
+        "userId",
+        "id",
+        "title",
+        "completed"
+      ],
+      "ui_record_id": "Not exposed; unknown.",
+      "retention": "Intentionally retained owned test recipe; no cleanup attempted."
+    },
+    "observations": "Save displayed \u201cPattern saved\u201d. Leaving Network for Patterns showed exact title as NETWORK / never run. Run pattern reloaded the public page and showed \u201cListening for matching requests\u2026\u201d. Clicking Run script produced the same JSON. Runner first reported \u201cMatched 1 request; checking for other matches until the capture window ends\u2026\u201d; after closure, Patterns showed LAST RUN and one row.",
+    "replayed_row": {
+      "userId": 1,
+      "id": 1,
+      "title": "delectus aut autem",
+      "completed": false
+    },
+    "comparison": "All four displayed response fields and values matched the first live preview. One same-page, same-endpoint GET replay only."
+  },
+  "inventory_scope": {
+    "feature_id": "EXT-F-1012",
+    "partial_cases": [
+      {
+        "case_id": "EXT-F-1012-T50",
+        "supports": "Selected captured GET response, inspected exact URL matcher, saved uniquely named pattern, reopened Patterns, ran after page reload and interactive request, compared all visible fields.",
+        "remaining": "No competing response, changed route/data, broad-filter substitution, service error, or full matrix."
+      },
+      {
+        "case_id": "EXT-F-1012-T53",
+        "supports": "Observed Exact URL mode and UI text that exact matching includes query and literal asterisks.",
+        "remaining": "Actual query/path/numeric/wildcard semantics were not tested against competing requests."
+      },
+      {
+        "case_id": "EXT-F-1012-T58",
+        "supports": "Observed recognized-key redaction and user-selectable masking for one unknown query key, then restored normal URL before save.",
+        "remaining": "No credential-bearing save/reopen inspection, stored-name verification, rotation replay, ordinary query preservation, or ambiguous capture."
+      }
+    ],
+    "not_tested": [
+      "T54 POST/payload matching",
+      "T55 ambiguity/late response/reload/truncation",
+      "T57 initial-request and document-provenance isolation",
+      "guest/member denial T38",
+      "datasets",
+      "delete/cleanup",
+      "Debug/chat consumers"
+    ]
+  },
+  "limitations": [
+    "Version remained 0.2.109; exact reload and source path were observed.",
+    "One deterministic JSONPlaceholder GET only; no POST, competing request, alternate route, wildcard behavior, changed data, or error outcome.",
+    "Same values replayed once; this does not establish broad correctness or privacy-safe persistence of arbitrary credential URLs.",
+    "The owned Network recipe is intentionally retained; UI record ID was not exposed. No other pattern or dataset was changed."
+  ]
+}
