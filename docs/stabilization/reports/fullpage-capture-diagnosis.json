@@ -16,6 +16,8 @@
   "checks": {
     "node_syntax": "pass",
     "biome_targeted": "pass",
+    "aspect_contract_node_test": "pass",
+    "in_memory_wrong_width_and_always_accept_mutants": "both rejected by the contract test",
     "json_parse": "pass",
     "diff_whitespace": "pass",
     "native_browser": "not_run_in_this_lane",

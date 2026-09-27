@@ -9,6 +9,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { matchesFullPageAspect } from './full-page-aspect.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
@@ -384,13 +385,7 @@ async function exercise({ page, panel }) {
         { mode: 0o600 },
       );
     capturePhase = 'persisted_row_contract';
-    if (
-      !ownedRow ||
-      ownedRow.source !== 'user' ||
-      !(ownedRow.width > 0) ||
-      !(ownedRow.height > ownedRow.width) ||
-      Math.abs(ownedRow.width / ownedRow.height - metrics.innerWidth / metrics.scrollHeight) > 0.08
-    )
+    if (!ownedRow || ownedRow.source !== 'user' || !matchesFullPageAspect(ownedRow, metrics))
       fail('persisted_full_page_dimensions_wrong');
     capturePhase = 'persisted_image_pixels';
     const image = await waitFor(
