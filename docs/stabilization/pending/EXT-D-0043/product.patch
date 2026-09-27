@@ -1,0 +1,373 @@
+diff --git a/src/features/showcase/tabs/ListPatternTab.tsx b/src/features/showcase/tabs/ListPatternTab.tsx
+index 0d2cde30..6bc64061 100644
+--- a/src/features/showcase/tabs/ListPatternTab.tsx
++++ b/src/features/showcase/tabs/ListPatternTab.tsx
+@@ -179,7 +179,9 @@ export function ListPatternTab() {
+           // Merge any newly-picked field_paths into existing config (so "Pick more
+           // fields" appends rather than replaces).
+           setConfig((prev) =>
+-            prev && prev.list_root === payload.list_root
++            prev &&
++            prev.list_root === payload.list_root &&
++            prev.item_selector === payload.item_selector
+               ? {
+                   ...prev,
+                   field_paths: [...prev.field_paths, ...payload.field_paths],
+@@ -215,7 +217,7 @@ export function ListPatternTab() {
+           : {
+               list_root: payload.list_root,
+               item_selector: payload.item_selector,
+-              field_paths: prev?.field_paths ?? [],
++              field_paths: [],
+             },
+       );
+       setConfigPageKey(pickPageKeyRef.current);
+@@ -344,7 +346,11 @@ export function ListPatternTab() {
+     pickTabRef.current = tab.id;
+     pickPageKeyRef.current = pageKey;
+     try {
+-      await startListPickerSession(tab.id, sessionId);
++      await startListPickerSession(
++        tab.id,
++        sessionId,
++        config ? { list_root: config.list_root, item_selector: config.item_selector } : null,
++      );
+     } catch (err) {
+       if (session === pickerSessionSeqRef.current) {
+         closePickerSession();
+diff --git a/src/lib/data-pattern/list-picker-session.ts b/src/lib/data-pattern/list-picker-session.ts
+index 090df63a..78443534 100644
+--- a/src/lib/data-pattern/list-picker-session.ts
++++ b/src/lib/data-pattern/list-picker-session.ts
+@@ -1,10 +1,15 @@
+ /** The isolated-world picker hooks are installed by list-picker.content.ts. */
+ export interface ListPickerWindow {
+-  __matrxListPickerStart?: (sessionId: string) => void;
++  __matrxListPickerStart?: (sessionId: string, seed?: ListPickerSeed | null) => void;
+   __matrxListPickerCancel?: (sessionId: string) => void;
+   __matrxListPickerTeardown?: () => void;
+ }
+ 
++export interface ListPickerSeed {
++  list_root: string;
++  item_selector: string;
++}
++
+ export interface ListPickerIdentity {
+   session_id: string;
+   tab_id?: number | null;
+@@ -27,7 +32,11 @@ function sequence(tabId: number, operation: () => Promise<void>): Promise<void>
+   return current;
+ }
+ 
+-export function startListPickerSession(tabId: number, sessionId: string): Promise<void> {
++export function startListPickerSession(
++  tabId: number,
++  sessionId: string,
++  seed?: ListPickerSeed | null,
++): Promise<void> {
+   return sequence(tabId, async () => {
+     await chrome.scripting.executeScript({
+       target: { tabId },
+@@ -35,12 +44,12 @@ export function startListPickerSession(tabId: number, sessionId: string): Promis
+     });
+     await chrome.scripting.executeScript({
+       target: { tabId },
+-      func: (id: string) => {
++      func: (id: string, initial: ListPickerSeed | null) => {
+         const start = (window as ListPickerWindow).__matrxListPickerStart;
+         if (!start) throw new Error('The page picker could not start. Try picking again.');
+-        start(id);
++        start(id, initial);
+       },
+-      args: [sessionId],
++      args: [sessionId, seed ?? null],
+     });
+   });
+ }
+diff --git a/src/lib/data-pattern/list-picker.ts b/src/lib/data-pattern/list-picker.ts
+index 5ad16e48..80fc362e 100644
+--- a/src/lib/data-pattern/list-picker.ts
++++ b/src/lib/data-pattern/list-picker.ts
+@@ -13,7 +13,12 @@
+  */
+ 
+ import type { ListPickerWindow } from './list-picker-session';
+-import { inferListPattern, relativeFieldSelector } from './selector-resilience';
++import type { ListPickerSeed } from './list-picker-session';
++import {
++  type ListPatternCandidate,
++  inferListPatternCandidates,
++  relativeFieldSelector,
++} from './selector-resilience';
+ 
+ const HOST_ID = 'matrx-list-picker-host';
+ 
+@@ -35,8 +40,9 @@ let itemSel: string | null = null;
+ let sampleItem: Element | null = null;
+ const picked: PickedField[] = [];
+ let sessionId: string | null = null;
++let scopeCandidates: ListPatternCandidate[] = [];
+ 
+-export function mountListPicker(id: string): void {
++export function mountListPicker(id: string, seed?: ListPickerSeed | null): void {
+   // Re-entry mounts FRESH: a previous overlay may be orphaned (sidepanel
+   // unmounted mid-pick) or mid-phase-2 — stale state must not leak into a
+   // new session. Also remove any DOM remnant from an older script context.
+@@ -72,6 +78,9 @@ export function mountListPicker(id: string): void {
+       .picked { margin-top: 8px; max-height: 180px; overflow-y: auto; }
+       .picked-item { padding: 6px 8px; border-radius: 6px; background: #161616;
+                      margin-bottom: 4px; font-family: ui-monospace, monospace; font-size: 11px; }
++      .scope-choices { display: grid; gap: 5px; margin: 8px 0; }
++      .scope-choices button { display: block; width: calc(100% - 20px); text-align: left; }
++      .scope-choices small { display: block; color: #aaa; overflow-wrap: anywhere; }
+       .badge { display: inline-block; background: oklch(0.7 0.2 250); color: #000;
+                padding: 2px 8px; border-radius: 999px; font-weight: 600; font-size: 11px; }
+       .hl { position: fixed; pointer-events: none; border: 2px solid oklch(0.7 0.2 250);
+@@ -87,6 +96,7 @@ export function mountListPicker(id: string): void {
+         <button id="cancel">Cancel</button>
+         <button id="restart">Restart</button>
+       </div>
++      <div class="scope-choices" id="scope-choices"></div>
+       <div class="picked" id="picked"></div>
+     </div>
+     <div class="hl" id="hl" style="display:none"></div>
+@@ -105,6 +115,31 @@ export function mountListPicker(id: string): void {
+   pickerWindow.__matrxListPickerCancel = (targetSession) => {
+     if (targetSession === sessionId) finish('cancel');
+   };
++  if (seed?.list_root && seed.item_selector) {
++    try {
++      const root = document.querySelector(seed.list_root);
++      const items = root ? Array.from(root.querySelectorAll(seed.item_selector)) : [];
++      const firstItem = items[0];
++      if (firstItem) {
++        selectScope(
++          {
++            listRoot: seed.list_root,
++            itemSelector: seed.item_selector,
++            itemCount: items.length,
++            sampleItem: firstItem,
++          },
++          false,
++        );
++        setHint(
++          `${items.length} matching items. Click a field inside any highlighted item, then Done.`,
++        );
++      } else {
++        flashHint('The earlier list is no longer on this page. Click a new example item.', 'warn');
++      }
++    } catch {
++      flashHint('The earlier list selector is invalid. Click a new example item.', 'warn');
++    }
++  }
+ }
+ 
+ export function unmountListPicker(): void {
+@@ -125,18 +160,81 @@ export function unmountListPicker(): void {
+   itemSel = null;
+   sampleItem = null;
+   picked.length = 0;
++  scopeCandidates = [];
+   sessionId = null;
+ }
+ 
+ function isOurNode(t: Element | null): boolean {
+-  return !!t && (host?.contains(t) || (t as HTMLElement).id === HOST_ID);
++  return !!t && (host?.contains(t) || shadow?.contains(t) || (t as HTMLElement).id === HOST_ID);
++}
++
++function itemContaining(target: Element): Element | null {
++  if (!listRootSel || !itemSel) return null;
++  try {
++    const root = document.querySelector(listRootSel);
++    return (
++      Array.from(root?.querySelectorAll(itemSel) ?? []).find(
++        (item) => item === target || item.contains(target),
++      ) ?? null
++    );
++  } catch {
++    return null;
++  }
++}
++
++function selectScope(candidate: ListPatternCandidate, announce: boolean) {
++  scopeCandidates = [];
++  shadow?.querySelector('#scope-choices')?.replaceChildren();
++  listRootSel = candidate.listRoot;
++  itemSel = candidate.itemSelector;
++  sampleItem = candidate.sampleItem;
++  phase = 'fields';
++  highlightSiblings();
++  setBadge(`${candidate.itemCount} items`);
++  if (announce) {
++    flashHint(
++      `${candidate.itemCount} matching items selected. Click fields inside one item, then Done.`,
++      'ok',
++    );
++    void chrome.runtime.sendMessage({
++      __matrx: true,
++      kind: 'data:list-picker-item-detected',
++      payload: {
++        session_id: sessionId,
++        list_root: listRootSel,
++        item_selector: itemSel,
++        item_count: candidate.itemCount,
++      },
++    });
++  }
++}
++
++function showScopeChoices(candidates: ListPatternCandidate[]) {
++  scopeCandidates = candidates;
++  setHint('Several groups repeat here. Choose which group you want to extract.');
++  const container = shadow?.querySelector('#scope-choices');
++  if (!container) return;
++  container.replaceChildren();
++  for (const [index, candidate] of scopeCandidates.entries()) {
++    const button = document.createElement('button');
++    button.type = 'button';
++    button.dataset.scopeChoice = String(index);
++    const kind = candidate.sampleItem.tagName.toLowerCase() === 'li' ? 'list items' : 'cards';
++    const sample = (candidate.sampleItem.textContent ?? '').trim().slice(0, 48);
++    button.textContent = `${candidate.itemCount} ${kind} (${candidate.itemSelector})`;
++    const detail = document.createElement('small');
++    detail.textContent = `${candidate.listRoot}${sample ? ` · ${sample}` : ''}`;
++    button.appendChild(detail);
++    button.addEventListener('click', () => selectScope(candidate, true));
++    container.appendChild(button);
++  }
+ }
+ 
+ function onHover(e: Event) {
+   const t = e.target;
+   if (!(t instanceof Element) || isOurNode(t)) return;
+-  // In fields phase, hover only highlights elements inside the sample item.
+-  if (phase === 'fields' && sampleItem && !sampleItem.contains(t)) {
++  // A field may be chosen from any repeated item, not just the first sample.
++  if (phase === 'fields' && !itemContaining(t)) {
+     if (highlight) highlight.style.display = 'none';
+     return;
+   }
+@@ -157,42 +255,25 @@ function onClick(e: Event) {
+   e.stopPropagation();
+ 
+   if (phase === 'item') {
+-    const inferred = inferListPattern(t);
+-    if (!inferred) {
++    const candidates = inferListPatternCandidates(t);
++    if (candidates.length === 0) {
+       flashHint(
+         'No similar siblings found. Try clicking a higher-level wrapper (the whole card, not text inside it).',
+         'warn',
+       );
+       return;
+     }
+-    listRootSel = inferred.listRoot;
+-    itemSel = inferred.itemSelector;
+-    sampleItem = inferred.sampleItem;
+-    highlightSiblings();
+-    flashHint(
+-      `${inferred.itemCount} similar items detected. Click fields, OR add suggested fields in the side panel, then Done.`,
+-      'ok',
+-    );
+-    setBadge(`${inferred.itemCount} items`);
+-    phase = 'fields';
+-    // Notify the sidepanel right now — without waiting for Done — so the
+-    // Suggested Fields panel can populate immediately.
+-    void chrome.runtime.sendMessage({
+-      __matrx: true,
+-      kind: 'data:list-picker-item-detected',
+-      payload: {
+-        session_id: sessionId,
+-        list_root: listRootSel,
+-        item_selector: itemSel,
+-        item_count: inferred.itemCount,
+-      },
+-    });
++    const soleCandidate = candidates.length === 1 ? candidates[0] : undefined;
++    if (soleCandidate) selectScope(soleCandidate, true);
++    else showScopeChoices(candidates);
+     return;
+   }
+ 
+   if (phase === 'fields' && sampleItem) {
+-    if (!sampleItem.contains(t)) return;
+-    const rel = relativeFieldSelector(t, sampleItem);
++    const item = itemContaining(t);
++    if (!item) return;
++    sampleItem = item;
++    const rel = relativeFieldSelector(t, item);
+     if (!rel) return;
+     const text = (t.textContent ?? '').trim().slice(0, 80);
+     picked.push({
+@@ -286,6 +367,8 @@ function renderPicked() {
+ 
+ function restart() {
+   clearSiblingHighlights();
++  scopeCandidates = [];
++  shadow?.querySelector('#scope-choices')?.replaceChildren();
+   phase = 'item';
+   listRootSel = null;
+   itemSel = null;
+diff --git a/src/lib/data-pattern/selector-resilience.ts b/src/lib/data-pattern/selector-resilience.ts
+index 08fd8c35..b461d2e2 100644
+--- a/src/lib/data-pattern/selector-resilience.ts
++++ b/src/lib/data-pattern/selector-resilience.ts
+@@ -177,21 +177,16 @@ function listItemFingerprintCandidates(el: Element): string[] {
+   return Array.from(new Set(candidates));
+ }
+ 
+-/**
+- * Find the smallest list scope: walk up from `clicked` and at each ancestor
+- * check whether the structural pattern matches >=2 direct siblings. The
+- * first ancestor where the pattern matches multiple children is the
+- * list_root, and the relative item selector is the matching pattern.
+- *
+- * Tries progressively looser fingerprints at each level (e.g. tag.class.class
+- * → tag.class → tag for li/article/tr).
+- */
+-export function inferListPattern(clicked: Element): {
++export interface ListPatternCandidate {
+   listRoot: string;
+   itemSelector: string;
+   itemCount: number;
+   sampleItem: Element;
+-} | null {
++}
++
++/** Find each repeated group containing the click, nearest first. */
++export function inferListPatternCandidates(clicked: Element): ListPatternCandidate[] {
++  const groups: ListPatternCandidate[] = [];
+   let item: Element = clicked;
+   let parent: Element | null = clicked.parentElement;
+ 
+@@ -211,19 +206,25 @@ export function inferListPattern(clicked: Element): {
+         matches = [];
+       }
+       if (matches.length >= 2) {
+-        return {
++        groups.push({
+           listRoot: elementPathSelector(parent),
+           itemSelector: fp,
+           itemCount: matches.length,
+           sampleItem: item,
+-        };
++        });
++        break;
+       }
+     }
+     // Climb up: the previous "item" becomes a level deeper into the candidate.
+     item = parent;
+     parent = parent.parentElement;
+   }
+-  return null;
++  return groups;
++}
++
++/** Preserve the nearest-match contract for noninteractive callers. */
++export function inferListPattern(clicked: Element): ListPatternCandidate | null {
++  return inferListPatternCandidates(clicked)[0] ?? null;
+ }
+ 
+ /**

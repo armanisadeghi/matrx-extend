@@ -11,17 +11,21 @@
   "red_evidence": "showcase-d43-red-001: resource-admitted Vitest ran five cases; four intended behavior failures showed nested first-card root, premature detection, and absent scope choices; cancellation passed. Child exit 1.",
   "green_attempt": "showcase-d43-green-001: preflight refused before test child at 2026-09-27T16:39:57Z for RESOURCE_PRESSURE_UNSAFE and RESOURCE_SWAP_GROWTH; wrapper exit 2. No green or type claim.",
   "held_artifacts": [
-    "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d43-product.patch",
-    "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d43-regression.test.ts",
-    "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d43-entry.test.tsx"
+    "docs/stabilization/pending/EXT-D-0043/product.patch",
+    "docs/stabilization/pending/EXT-D-0043/showcase-d43-regression.test.pending",
+    "docs/stabilization/pending/EXT-D-0043/showcase-d43-entry.test.pending",
+    "docs/stabilization/pending/EXT-D-0043/feature-tests.patch"
   ],
   "artifact_sha256": {
     "product_patch": "71eb140e8f764bec28d4e8dbe537ae38023d5c4b62ea054a216d1f3b2b13d6cf",
-    "focused_test": "bc02fd5901d9cce45c675f176df358fba337ff3d0ea16758b689c29c01fff1a6",
-    "entry_test": "158390ab613cf5c26e9a70b9084583a6352f8f1b412f6a356a06fc49768480ab"
+    "focused_test": "2d7e4ce4f284a77821b5a6e913eab0db8de51f908fd3f5cd6832afc9112fbfb5",
+    "entry_test": "158390ab613cf5c26e9a70b9084583a6352f8f1b412f6a356a06fc49768480ab",
+    "feature_tests_patch": "2a1c54c7e55aae5b2622a885b93d1cd2c43d029fe4e8e334bf1a873b94e026fd"
   },
-  "round1_source_review": "The peer's claim that the proposed patch leaves ListPatternTab's start call unseeded is false for the preserved patch: its first hunk passes current config root/item as startListPickerSession's third argument. The peer read the intentionally restored current source as if it were the patch. Its test-coverage concern is valid: the direct picker test alone bypasses the caller and reused one selector. The focused scratch test now selects distinct title and URL elements; a new scratch component test drives ListPatternTab's Pick more fields through startListPickerSession, mountListPicker, simulated SW-stamped delivery, sidepanel merge, and five extracted title/URL rows. No guarded run of these corrections has occurred.",
-  "apply_instructions": "From /Volumes/Samsung2TB/code/matrx-extend, verify all three SHA-256 hashes; run git apply --check /Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d43-product.patch; then git apply that patch and copy showcase-d43-regression.test.ts and showcase-d43-entry.test.tsx into tests/unit/. Do this only after root grants the next sole guarded-test permit; preserve unrelated dirty files.",
+  "round1_source_review": "The first peer misread restored source as the preserved patch; the patch does seed the ListPatternTab entry. A second independent peer confirmed the seed connection and reported source PASS_WITH_GAPS. The focused test now selects distinct title and URL elements, tests a missing seed against a different nested-card page with warning, scope choice, and extracted rows, and a component test drives Pick more fields through startListPickerSession, mountListPicker, simulated SW-stamped delivery, merge, and five rows. These corrected tests have not run under a guard.",
+  "pending_docs": "A separate feature-tests.patch adds the required human procedure for seeded Pick more fields, fresh nested scope choice, distinct event rows, and invalid-seed navigation. It is not applied while product verification is pending.",
+  "apply_instructions": "From repo root, verify the four artifact hashes; run git apply --check docs/stabilization/pending/EXT-D-0043/product.patch and git apply --check docs/stabilization/pending/EXT-D-0043/feature-tests.patch. After sole guarded-test authority, apply both patches and copy the two .pending tests into tests/unit/ as .test.ts and .test.tsx, then run focused red/green follow-up and D42 regression before compile. Preserve unrelated dirty files.",
+  "credential_scan": "No credential-like literal was found by the scoped pending-artifact scan for password assignments, Authorization headers, Bearer tokens, or provider sk- keys.",
   "shared_checkout": "D43 source/test changes were removed from discovery after the guard refusal. Other lanes' files were preserved.",
   "next_verification": "When root grants a fresh sole heavy permit after resource recovery, reapply the exact patch, copy the focused test into discovery, run guarded D43 green, D42 session regression, and compile serially. Then obtain independent installed-extension extraction of multiple distinct real calendar events and inspect row contents before closing."
 }
