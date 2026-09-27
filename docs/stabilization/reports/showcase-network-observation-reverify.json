@@ -1,0 +1,29 @@
+{
+  "defect": "EXT-D-0048",
+  "reviewer": "network_observation_reverify; zero product authorship; source-only",
+  "basis": {
+    "prior_report_commit": "c4846ae0",
+    "reviewed_checkout_head": "1d17edc64c2da32dc350b407c1a54238f348ba85",
+    "runtime_or_tests_executed": false
+  },
+  "findings": [
+    {
+      "id": "D48-FINAL-1",
+      "verdict": "ADDRESSED",
+      "evidence": "The stream event handler passes delegated arguments through networkToolArgsForObservation before upsert (src/hooks/use-chat-stream.ts:265-267). Conversation hydration sanitizes both fetched chat.tool_call arguments (queries.ts:333-339) and assistant tool_call block.arguments (queries.ts:548); direct conversion test covers both raw input forms (tests/unit/showcase-network-credential-chat.test.ts:21-57). The wrapper catches sanitizer failures and substitutes a safe invalid-recipe row (network-urls.ts:175-188), so ordinary malformed JSON-derived config does not throw from either observation caller."
+    }
+  ],
+  "verdict_a_installed_live": "UNVERIFIED",
+  "verdict_b_source_quality": "ADDRESSED_WITH_TEST_GAP",
+  "quality_notes": [
+    "Stream test exercises exported handleToolEvent and asserts the resulting ToolPart args no longer contain canary secrets; hydration test runs dbMessagesToChatMessages with raw assistant-block and raw tool_call-row arguments. Neither test invokes fetchConversationToolCalls itself, so its raw-row mapping is source-reviewed but not boundary-tested.",
+    "Assertions inspect the ToolPart args that the timeline renderer/copy UI consumes, but do not render the actual component or invoke its copy action. Source review confirms ConfigurableToolRow renders/copies entry.args, so no raw alternate display path was found.",
+    "Malformed-config non-throw behavior follows the observation helper's catch boundary. The inspected tests do not supply malformed config through stream and hydration callers."
+  ],
+  "source_sha256": {
+    "src/hooks/use-chat-stream.ts": "d59e3a16d4f20254947f96319f44d8db847f37c1fd5e27d192eb62d7542d97e7",
+    "src/lib/supabase/queries.ts": "92aa1b372caa86c79e2003e45b3e459a88db8dd3cde166ab9df13736c20100a3",
+    "src/lib/credentials/network-urls.ts": "c4bfaf2d969d4f1cda43944c4adb196be7437522c1c2cc295123e04bc8f6508e",
+    "tests/unit/showcase-network-credential-chat.test.ts": "f9536e9e1d65b272f1e290f6d848b26b7e55d4e756a281cc1d3c46b1c668d928"
+  }
+}
