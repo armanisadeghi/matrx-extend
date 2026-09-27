@@ -1,10 +1,7 @@
 {
   "id": "EXT-D-0034",
   "feature_id": "EXT-F-1009",
-  "case_ids": [
-    "EXT-F-1009-T04",
-    "EXT-F-1009-T05"
-  ],
+  "case_ids": ["EXT-F-1009-T04", "EXT-F-1009-T05"],
   "surface": "Native screenshot Files target and Copy URL oracle",
   "auth_mode": "real admin with approved organization and owned localhost fixture",
   "reproduction": [
@@ -28,9 +25,7 @@
   "priority": "P1: correct the oracle before the next resource-admitted native run",
   "state": "closed",
   "owner": "/root/screenshot_controls_batch",
-  "fix_commits": [
-    "d450c7a2"
-  ],
+  "fix_commits": ["d450c7a2"],
   "transition_history": [
     {
       "at": "2026-09-27T11:05:00Z",
