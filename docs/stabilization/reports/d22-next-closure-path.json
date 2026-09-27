@@ -76,7 +76,7 @@
     "status": "AWAITING_INDEPENDENT_SOURCE_REVIEW_AND_ROOT_ADMISSION",
     "execution": "SOURCE_DEV_BUILD_RECEIPT=<current private local-development receipt> node tests/browser/source-recognition-readonly-acceptance.mjs; guarded execution only",
     "build_binding": "Requires keyed development build, package/manifest/receipt version agreement, receipt/tree hash agreement before and after run, and shared native harness exact identity validation. Uses actual helper localDevReceiptPath parameter.",
-    "fixture": "Reads actual RLS-scoped Saved captures UI list and Load more pages, bounded by SOURCE_DISCOVERY_MAX_PAGES (default 5) and SOURCE_DISCOVERY_TIMEOUT_MS (default 60000); per-host DNS bound SOURCE_DNS_TIMEOUT_MS (default 5000). Accepts genuine ordinary public HTTPS Source URLs across hosts, including read-only query identities. Rejects malformed rows/URLs, credentials, nonstandard ports, private/reserved DNS/IP addresses, known action/secret paths or query keys. No creation or database mutation.",
+    "fixture": "Genuine existing Source discovered by bounded explicit UI selection among already-accessible organizations; scoped Saved captures pagination and public-read eligibility checks apply separately to each. No creation, guessed organization ID, role change, or database mutation.",
     "oracles": [
       "Actual scoped HTTP200 response and real Open target identity agreement; public fixture page scripting is disabled for navigation safety, so this does not verify dynamic page rendering.",
       "Distinct existing accessible comparison organization selected by UI; corresponding HTTP200 empty or different Source result agrees with UI.",
@@ -112,6 +112,14 @@
         "protocol_evidence": "Installed playwright-core/types/protocol.d.ts documents Network.setBypassServiceWorker as bypassing service worker for each request, and Emulation.setScriptExecutionDisabled as disabling script execution. Applied only to the owned fixture page before navigation; native extension service worker remains active.",
         "runtime": "No browser or tests run in repair lane. Fixed categories/counts only in report; cursor IDs/dates/URLs and card labels remain in memory."
       }
+    },
+    "multi_workspace_discovery": {
+      "status": "Implemented; independent source review and native execution pending.",
+      "authorization": "Existing accessible organizations selected explicitly through real UI are within the multi-workspace test scope. The private approved organization remains original baseline and mandatory cleanup target; no production fallback or organization-selection policy is changed.",
+      "flow": "Search original workspace first. Only after its scoped list exhausts without a fixture, enumerate unique names from actual organization-picker options. Explicitly select each bounded candidate, read its stored selected ID, require scoped actual list response for that ID, and run existing page/cursor/URL guards. Genuine Source in candidate workspace becomes positive; original workspace becomes comparison. Every comparison still requires its own actual scoped point lookup, never assumes negative from earlier list alone.",
+      "bounds": "SOURCE_DISCOVERY_MAX_ORGS defaults to3 including original. SOURCE_DISCOVERY_TOTAL_MS defaults to180000 across picker/list/DNS operations; each workspace also keeps existing page and60000ms bounds. Missing fixture reports only bounded examined-workspace results.",
+      "diagnostics": "Only examined ordinal, original/not-original, UI-selection/query-match booleans, choice/attempt counts and existing safe per-workspace list/eligibility counts. Names, IDs, URLs and row bodies remain private in memory.",
+      "cleanup": "Outer finally always selects and verifies original approved workspace ID, including failed candidate selection or absent fixtures. Positive restoration is separately labeled positiveRecognitionRestored. No Source/checkpoint/capture/Save writes."
     }
   },
   "readonly_001_preserved": {
@@ -137,5 +145,49 @@
     },
     "receipt": "docs/stabilization/runs/d22-recognition-readonly-001.json",
     "classification": "Real admin login and scoped list read reached; three-host selection found no eligible first-page fixture. This is harness fixture selection failure, not evidence of a product failure or empty workspace. Prior result did not retain category counts, so exact rejected-row distribution is unknown."
+  },
+  "readonly_002_preserved": {
+    "sha256": "b54e11dbc85910ada5636b928366bbd3bff6dd88dd75719929d32f239fe4d968",
+    "result": {
+      "schema_version": 1,
+      "defect_id": "EXT-D-0022",
+      "status": "unverified",
+      "scope": "Existing Source recognition, workspace switching, authentic delayed lookup; no Source writes",
+      "observations": {
+        "lateInflightSave": "unverified",
+        "realAdminUi": true,
+        "fixtureDiscovery": {
+          "pages": 1,
+          "rows": 0,
+          "totalReturnedRows": 0,
+          "urlPresent": 0,
+          "httpUrls": 0,
+          "publicEligible": 0,
+          "categories": {},
+          "listPages": [
+            {
+              "status": 200,
+              "rowCount": 0,
+              "urlAliasSelected": true,
+              "cursorPresent": false,
+              "expectedCursorMatched": true,
+              "limit": 40
+            }
+          ],
+          "pagination": [],
+          "exhausted": true
+        },
+        "workspaceCleanup": "pass"
+      },
+      "build": {
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.83",
+        "treeSha256": "8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8"
+      },
+      "failureCode": "no_eligible_existing_source_in_observed_list",
+      "failureStage": "discover_existing_public_source"
+    },
+    "classification": "Actual scoped HTTP200 list with zero rows and limit40. Genuine empty RLS-visible selected-workspace result, not a URL filter or product failure; says nothing about other accessible workspaces."
   }
 }

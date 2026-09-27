@@ -18,6 +18,8 @@ const EMAIL = 'admin@admin.com';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const EXTENSION = join(REPO, '.output/chrome-mv3-dev');
 const OUTPUT = join(REPO, 'test-results/source-recognition-readonly-acceptance.json');
+const DISCOVERY_MAX_ORGS = Number(process.env.SOURCE_DISCOVERY_MAX_ORGS ?? 3);
+const DISCOVERY_TOTAL_MS = Number(process.env.SOURCE_DISCOVERY_TOTAL_MS ?? 180000);
 const DISCOVERY_MAX_PAGES = Number(process.env.SOURCE_DISCOVERY_MAX_PAGES ?? 5);
 const DNS_TIMEOUT_MS = Number(process.env.SOURCE_DNS_TIMEOUT_MS ?? 5000);
 const DISCOVERY_TIMEOUT_MS = Number(process.env.SOURCE_DISCOVERY_TIMEOUT_MS ?? 60000);
@@ -383,7 +385,7 @@ async function discoveryStep(deadline, operation) {
   }
 }
 
-async function discoverFixture(panel, reads, organizationId) {
+async function discoverFixture(panel, reads, organizationId, outerDeadline) {
   if (
     !Number.isInteger(DISCOVERY_MAX_PAGES) ||
     DISCOVERY_MAX_PAGES < 1 ||
@@ -406,7 +408,7 @@ async function discoverFixture(panel, reads, organizationId) {
     exhausted: false,
   };
   report.observations.fixtureDiscovery = diagnostics;
-  const deadline = Date.now() + DISCOVERY_TIMEOUT_MS;
+  const deadline = Math.min(Date.now() + DISCOVERY_TIMEOUT_MS, outerDeadline);
   let since = reads.records.length;
   let expectedCursor = null;
   let pageLimit = null;
@@ -479,7 +481,7 @@ async function discoverFixture(panel, reads, organizationId) {
     // rows leave no visible cards. A full page never earns that claim.
     if (list.rows.length < list.limit) {
       diagnostics.exhausted = true;
-      fail('no_eligible_existing_source_in_observed_list');
+      return { fixture: null, origin: list.origin };
     }
     const pagination = await discoveryStep(deadline, (remaining) =>
       waitFor(
@@ -547,6 +549,72 @@ async function discoverFixture(panel, reads, organizationId) {
     await discoveryStep(deadline, () => click(panel, 'button', 'Load more'));
   }
   fail('source_discovery_unverified');
+}
+
+async function discoverAcrossWorkspaces(panel, reads, originalName, original) {
+  if (
+    !Number.isInteger(DISCOVERY_MAX_ORGS) ||
+    DISCOVERY_MAX_ORGS < 1 ||
+    !Number.isFinite(DISCOVERY_TOTAL_MS) ||
+    DISCOVERY_TOTAL_MS <= 0
+  )
+    fail('invalid_workspace_discovery_bounds');
+  const deadline = Date.now() + DISCOVERY_TOTAL_MS;
+  const summary = {
+    accessibleUniqueChoices: 1,
+    attemptedWorkspaces: 0,
+    selectedOriginal: true,
+    workspaces: [],
+    scope: 'bounded_accessible_workspace_search',
+  };
+  report.observations.workspaceDiscovery = summary;
+  let candidates = [originalName];
+  const seenIds = new Set();
+  for (let index = 0; index < DISCOVERY_MAX_ORGS && index < candidates.length; index += 1) {
+    const name = candidates[index];
+    const selected =
+      index === 0
+        ? original
+        : await discoveryStep(deadline, () => chooseOrganization(panel, name, originalName));
+    if (!selected.storedId || seenIds.has(selected.storedId))
+      fail('workspace_discovery_identity_ambiguous');
+    seenIds.add(selected.storedId);
+    summary.attemptedWorkspaces += 1;
+    const result = await discoverFixture(panel, reads, selected.storedId, deadline);
+    summary.workspaces.push({
+      ordinal: index + 1,
+      original: index === 0,
+      selectedByUi: true,
+      scopedLookupOrganizationMatched: true,
+      discovery: report.observations.fixtureDiscovery,
+    });
+    if (result.fixture) {
+      summary.selectedOriginal = index === 0;
+      return { ...result, selected, positiveName: name };
+    }
+    if (index === 0) {
+      // Enumerate actual accessible options only after the original scoped list
+      // proves no eligible row. No stored fallback or organization inference.
+      await discoveryStep(deadline, () => click(panel, 'title', 'Settings'));
+      await discoveryStep(deadline, () => openSection(panel, 'Organization'));
+      await discoveryStep(deadline, () => click(panel, 'organization', 'Acting as'));
+      const offered = await discoveryStep(deadline, () => organizationState(panel, originalName));
+      if (offered.approvedOptionCount !== 1) fail('original_workspace_option_unavailable');
+      candidates = [
+        originalName,
+        ...offered.otherOptions.filter(
+          (name) => name && offered.otherOptions.filter((value) => value === name).length === 1,
+        ),
+      ];
+      summary.accessibleUniqueChoices = candidates.length;
+      await discoveryStep(deadline, () => click(panel, 'option', originalName));
+    }
+  }
+  fail(
+    candidates.length > DISCOVERY_MAX_ORGS
+      ? 'no_fixture_within_workspace_search_budget'
+      : 'no_fixture_in_examined_accessible_workspaces',
+  );
 }
 
 async function buildIdentity() {
@@ -772,16 +840,21 @@ try {
       }
       const approvedName = await privateApprovedOrganization();
       stage = 'approved_workspace';
-      const approved = await chooseOrganization(panel, approvedName, approvedName);
+      const originalApproved = await chooseOrganization(panel, approvedName, approvedName);
       const reads = await observeReads(panel);
       let hold;
       try {
         stage = 'discover_existing_public_source';
-        const { fixture, origin } = await discoverFixture(panel, reads, approved.storedId);
+        const {
+          fixture,
+          origin,
+          selected: approved,
+          positiveName,
+        } = await discoverAcrossWorkspaces(panel, reads, approvedName, originalApproved);
         report.observations.existingFixtureFound = true;
         const identity = fixture.url;
         await installPublicReadGuard(page);
-        stage = 'approved_positive_recognition';
+        stage = 'positive_workspace_recognition';
         let since = reads.records.length;
         await page.goto(identity, { waitUntil: 'load', timeout: 60_000 });
         if (page.url() !== identity) fail('existing_fixture_redirected');
@@ -796,9 +869,17 @@ try {
         await openSection(panel, 'Organization');
         await click(panel, 'organization', 'Acting as');
         const offered = await organizationState(panel, approvedName);
-        const otherName = offered.otherOptions.find(
-          (name) => name && offered.otherOptions.filter((n) => n === name).length === 1,
-        );
+        const otherName =
+          positiveName !== approvedName
+            ? offered.approvedOptionCount === 1
+              ? approvedName
+              : null
+            : offered.otherOptions.find(
+                (name) =>
+                  name &&
+                  name !== positiveName &&
+                  offered.otherOptions.filter((n) => n === name).length === 1,
+              );
         if (!otherName) fail('no_distinct_accessible_workspace');
         await click(panel, 'option', otherName);
         const other = await waitFor(
@@ -808,7 +889,7 @@ try {
         );
         report.observations.comparisonSelectedByUi = true;
         // Return to A before forcing a fresh A lookup to complete after B.
-        await chooseOrganization(panel, approvedName, approvedName);
+        await chooseOrganization(panel, positiveName, approvedName);
         await assertRecognition(panel, page, sourceId);
         stage = 'delay_authentic_approved_lookup';
         // Leave the fixture first so re-entry necessarily causes a new real lookup.
@@ -855,14 +936,14 @@ try {
         } while (Date.now() < until);
         await assertRecognition(panel, page, otherId);
         report.observations.lateLookupIgnored = 'pass';
-        stage = 'restore_approved_recognition';
+        stage = 'restore_positive_recognition';
         since = reads.records.length;
-        await chooseOrganization(panel, approvedName, approvedName);
+        await chooseOrganization(panel, positiveName, approvedName);
         await click(panel, 'title', 'Scrape');
         if ((await completedLookup(reads, since, origin, approved.storedId, identity)) !== sourceId)
           fail('restored_lookup_changed_source');
         await assertRecognition(panel, page, sourceId);
-        report.observations.approvedRecognitionRestored = 'pass';
+        report.observations.positiveRecognitionRestored = 'pass';
         report.status = 'bounded_pass';
       } finally {
         const precedingStage = stage;
@@ -872,7 +953,7 @@ try {
           reads.stop();
           stage = 'restore_workspace_cleanup';
           const restored = await chooseOrganization(panel, approvedName, approvedName);
-          if (restored.storedId !== approved.storedId) fail('workspace_cleanup_failed');
+          if (restored.storedId !== originalApproved.storedId) fail('workspace_cleanup_failed');
           report.observations.workspaceCleanup = 'pass';
           stage = precedingStage;
         }
