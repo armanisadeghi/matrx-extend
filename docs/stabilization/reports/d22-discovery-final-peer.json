@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-discovery-final-peer",
+  "defect_id": "EXT-D-0022",
+  "reviewed_commit": "4b8e1d0f",
+  "reviewed_against_peer_commit": "b26c742c",
+  "source_verdict": "REPAIRS_PRESENT_WITH_BOUNDED_LIMITS",
+  "runtime_verdict": "UNVERIFIED",
+  "scope": "Independent source review only; no browser, build, or tests were run.",
+  "checks": {
+    "short_page_exhaustion": {
+      "verdict": "addressed_in_source",
+      "evidence": "The runner marks exhaustion only after an observed response has fewer raw rows than its requested limit. A full page with no usable Load more control fails as pagination unavailable, and page-budget exhaustion remains distinct.",
+      "limit": "No live list response was observed; exhaustion behavior remains runtime-unverified."
+    },
+    "later_page_request_binding": {
+      "verdict": "addressed_at_request_shape",
+      "evidence": "Each captured list GET is checked for the URL alias, integer limit, exact created_at.desc,id.desc order, expected cursor, stable limit, and stable origin. The expected later-page cursor is derived from the last visible card and matched uniquely to a raw response row. The app query uses that same created_at/id keyset and page order.",
+      "limit": "No later-page response was observed. The runner skips duplicate IDs but does not independently prove response-page progression or disjointness; this review verifies the requested cursor/query contract, not backend cursor compliance."
+    },
+    "discovery_deadline": {
+      "verdict": "bounded_for_discovery_steps",
+      "evidence": "One deadline is created for discovery. List waits, settled-pagination waits, UI clicks/evaluation, and candidate DNS classification are raced against remaining time; each DNS timeout is capped by both the configured DNS limit and remaining discovery time.",
+      "limit": "Promise.race bounds the runner wait but does not cancel an underlying DNS lookup or operation. The separate fixture-navigation guard has its own DNS preflight and is outside the discovery deadline."
+    },
+    "readonly_scope": {
+      "verdict": "bounded_source_claim_supported",
+      "evidence": "The runner performs no Source Save/Capture action and imports no Source write or checkpoint path. Its filesystem writes are the local acceptance result. Before public fixture navigation, a fresh page has scripts disabled, service workers bypassed, and a route guard allowing only public HTTPS GET/HEAD requests after address checks.",
+      "limit": "This supports a scoped no-Source-write test design, not a general claim that every GET is side-effect-free or a DNS-rebinding guarantee. Authentication and organization selection are outside the public fixture page guard."
+    }
+  },
+  "runtime_evidence": "None in this review. Do not claim native D22 acceptance, a discovered qualifying fixture, a later-page pass, or defect closure from this source review."
+}
