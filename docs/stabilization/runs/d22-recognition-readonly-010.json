@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "run_id": "d22-recognition-readonly-010",
+  "source": {
+    "guard_log_path": "/tmp/matrx-d22-recognition-readonly-010.log",
+    "guard_log_sha256": "e030dd84e659c7753d84917d02779378e9435ecf16a7d5c3f7243fac3e809493",
+    "raw_result_path": "/tmp/matrx-d22-recognition-readonly-010-result.json",
+    "raw_result_sha256": "b4a6644fb36404b17e003efff904e5863c3d3c1b955ff72a7dd1ffcbff6717ee"
+  },
+  "guard": {
+    "admitted_at": "2026-09-27T04:52:03.964Z",
+    "child_exit_at": "2026-09-27T04:54:25.060Z",
+    "child_exit_code": 1,
+    "watch_healthy_at": "2026-09-27T04:54:14.626Z"
+  },
+  "raw_result": {
+    "status": "unverified",
+    "build": {
+      "version": "0.2.85",
+      "tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff"
+    }
+  },
+  "execution_evidence": {
+    "child_exit": "nonzero",
+    "wrapper_completion": "unverified_from_guard_log",
+    "overall_acceptance": "not_adjudicated"
+  },
+  "wrapper_exit_code": 1,
+  "lease": "absent_after_child_exit",
+  "observed": {
+    "real_admin_ui": true,
+    "workspace_cleanup": "pass",
+    "attempted_workspaces": 25,
+    "accessible_unique_choices": 98,
+    "source_list_pages_total": 25,
+    "source_list_rows_total": 1,
+    "public_eligible_rows_total": 1,
+    "candidate_pages_attempted": 1,
+    "candidate_http_status_counts": {
+      "500": 1
+    },
+    "fixture_mode": "scripts_disabled_service_workers_bypassed",
+    "failure_stage": "discovery_scoped_list_response",
+    "failure_code": "no_fixture_within_workspace_search_budget",
+    "late_inflight_save": "unverified",
+    "runtime_acceptance": "unverified"
+  },
+  "classification": "The runner enumerated the real picker and completed scoped reads across 25 selected workspaces. It found one eligible public candidate; that page returned HTTP 500. Workspace cleanup passed, but no positive Source/Open flow was reached. This run is unverified and establishes no product defect or positive recognition result; no Source Save or checkpoint action was performed."
+}
