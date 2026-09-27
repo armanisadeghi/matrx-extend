@@ -67,5 +67,29 @@
       }
     },
     "source_admission_recommendation": "Hold native admission for the bounded visible-option readiness repair and a separate source review. No runtime verdict is made here."
+  },
+  "followup_picker_repair_review": {
+    "reviewed_at": "2026-09-27T04:46:46Z",
+    "reviewed_source_commit": "3dbb1c1c",
+    "scope": "Narrow source-only review of the picker readiness finding and adjacent regressions; no browser, build, or tests were run.",
+    "verdicts": {
+      "A_visible_picker_readiness_finding": {
+        "verdict": "ACCEPTED_IN_SOURCE",
+        "evidence": [
+          "After the trusted Acting as click, openOrganizationPicker now uses the existing bounded waitFor helper until organizationState observes exactly one approved option among options passing the same visible/non-inert checks used by the trusted click driver.",
+          "Selection still performs its existing exact option-name count and trusted visible-target click. The visible filter also keeps hidden options from satisfying discovery enumeration."
+        ],
+        "prior_finding_addressed": true
+      },
+      "B_adjacent_safety_and_acceptance": {
+        "verdict": "NO_NEW_SOURCE_REGRESSION_FOUND",
+        "evidence": [
+          "The change adds no persisted option text, URL, organization name, identifier, or raw error. Existing safe exception classification and unverified-on-failure behavior remain intact.",
+          "Positive Source/Open and delayed-response predicates are unchanged; no Source writes or checkpoint access were added. Historical run 008 remains unknown and unchanged."
+        ],
+        "runtime": "UNVERIFIED"
+      }
+    },
+    "source_admission_recommendation": "Recommend root-admitted guarded native execution of this reviewed source. This peer review is not a runtime pass."
   }
 }
