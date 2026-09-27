@@ -1,0 +1,22 @@
+{
+  "observed_at": "2026-09-27T21:25:23Z",
+  "target_event": {
+    "run_id": "showcase-d44-compile-001",
+    "at": "2026-09-27T21:22:57.865Z",
+    "result": "refused before child launch",
+    "code": "RESOURCE_LEGACY_RUNNER_BUSY",
+    "evidence": "docs/stabilization/reports/showcase-d44-fix.json"
+  },
+  "guard_rule": {
+    "source": "scripts/stabilization-resource.mjs:413-430",
+    "meaning": "After checking known legacy lease directories, assertNoLegacyWork snapshots `ps -axo pid=,command=` and refuses if any other process has a node executable and a command argument matching scripts/stabilization-resource.mjs. This code does not expose the matching PID/command in the refusal record. The owned-process marker check would produce RESOURCE_LEGACY_OWNED_PROCESS_BUSY, a different code."
+  },
+  "read_only_attribution": {
+    "current_process_snapshot": "At 21:25:23Z, no process command matched stabilization-resource.mjs, and no non-zombie MATRX_RESOURCE_OWNER marker was present in the environment snapshot.",
+    "lease_state": "The known /var/tmp/matrx-stabilization-resource-501 directory exists but is empty. No owner.json or heavy lease was found under the inspected /var/tmp and temp search paths.",
+    "unrelated_processes": "Several ChatGPT CUA node/repl processes were visible, including a long-lived kernel.js worker. Their command lines do not match the guard's stabilization-resource.mjs predicate, so this evidence does not attribute the refusal to them.",
+    "conclusion": "The refusal code establishes that a matching legacy runner process was observed at admission time, but the available refusal report contains no PID or command snapshot from 21:22:57Z. The process source at that time is unknown. Current evidence shows no active matching runner and no obvious stale owned marker; it does not establish whether the earlier match was foreign, transient, or owned."
+  },
+  "action_taken": "Read-only inspection only. No preflight, test, compile, process termination, cleanup, lock mutation, or reserved D22 checkpoint access was performed.",
+  "related_inventory": "docs/stabilization/inventory.json EXT-F-1012 adds C44-C45 and T53-T55 for EXT-D-0041; all new cases remain unverified and no result/status was promoted."
+}

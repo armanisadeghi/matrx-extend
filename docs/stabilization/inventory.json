@@ -14845,6 +14845,16 @@
           "id": "EXT-F-1012-C43",
           "label": "List scope choice",
           "action": "Choose a repeated group during a fresh manual pick; keep the chosen list when adding fields."
+        },
+        {
+          "id": "EXT-F-1012-C44",
+          "label": "Network URL matching mode",
+          "action": "Choose exact selected-request URL matching or an explicitly edited broader URL filter; preserve relative URL resolution, query parameters, numeric path segments, and literal asterisks according to the chosen mode."
+        },
+        {
+          "id": "EXT-F-1012-C45",
+          "label": "Network request payload identity",
+          "action": "Choose whether replay must match the selected request payload or intentionally use broader matching; retain only a local digest for payload identity, never raw payload, credentials, or headers."
         }
       ],
       "source_anchors": [
@@ -16342,6 +16352,115 @@
             "navigation",
             "service-error"
           ]
+        },
+        {
+          "id": "EXT-F-1012-T53",
+          "title": "Network exact and explicit URL filter semantics",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C42",
+            "EXT-F-1012-C44"
+          ],
+          "defect_ids": [
+            "EXT-D-0041"
+          ],
+          "preconditions": [
+            "Fresh development build verified in Chrome; reload extension and target page; use real websites that emit distinguishable requests and an owned uniquely named recipe. Guest/member denial uses EXT-F-1012-T38.",
+            "Never persist or log raw request payload, credentials, or headers. Any payload identity is a digest computed locally by the producer."
+          ],
+          "steps": [
+            "Capture a selected request and save exact matching; verify a changed query value and numeric path segment do not match, while the selected request does.",
+            "Exercise a relative request URL and verify it resolves against the captured page origin before exact matching.",
+            "Edit an explicit broader filter and verify documented wildcard semantics, including a literal asterisk that must remain exact unless wildcard mode is intentionally selected.",
+            "Reopen each owned recipe and compare which request it accepts; confirm display-list search never changes selected request identity."
+          ],
+          "expected": [
+            "Exact mode preserves full URL identity including query and numeric path values; relative URLs are resolved consistently.",
+            "Broader matching occurs only after explicit user editing and explains its semantics; a literal asterisk is not silently treated as a wildcard.",
+            "Only sanitized matcher configuration is persisted; no raw request payload, credentials, or headers appear in storage or logs."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T54",
+          "title": "Network POST payload-bound replay and updated same-request data",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C42",
+            "EXT-F-1012-C45"
+          ],
+          "defect_ids": [
+            "EXT-D-0041"
+          ],
+          "preconditions": [
+            "Fresh installed development build; use a real website with a genuine POST request and safe, distinguishable same-endpoint activity. Keep a uniquely named owned recipe and do not inspect or record raw payload, credentials, or headers. Guest/member denial uses EXT-F-1012-T38.",
+            "Request payload identity is a local producer-computed digest only; no raw payload or digest of credentials/secrets may be persisted or logged."
+          ],
+          "steps": [
+            "Capture and save one POST request with payload identity matching enabled, then replay the same URL, method and request payload after its response data has changed; verify the matching request is selected and current response data is returned.",
+            "Cause a same-URL/method request with a different safe payload and verify it does not satisfy the exact payload-bound recipe.",
+            "Choose explicit broader matching and verify the UI makes the widened match policy clear before Run.",
+            "Reopen the saved recipes and inspect only sanitized config fields and digest-presence booleans; do not reveal raw payload or credentials."
+          ],
+          "expected": [
+            "Same URL/method with a distinct request payload cannot silently substitute for the selected request when payload binding is exact.",
+            "Updated response data for the matching request is returned on replay; stable request identity is distinct from response contents.",
+            "Broader matching is an explicit user choice with visible consequences; stored/logged evidence contains no raw payload, credentials, or headers."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T55",
+          "title": "Network ambiguous, late, reloaded and truncated replay outcomes",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C31",
+            "EXT-F-1012-C36",
+            "EXT-F-1012-C42",
+            "EXT-F-1012-C44",
+            "EXT-F-1012-C45"
+          ],
+          "defect_ids": [
+            "EXT-D-0041"
+          ],
+          "preconditions": [
+            "Fresh installed development build; exercise real website requests with an owned recipe. Guest/member denial uses EXT-F-1012-T38.",
+            "Use only fixed safe outcomes and sanitized metadata in reports; never persist/log raw request payload, credentials, or headers."
+          ],
+          "steps": [
+            "Trigger multiple requests matching the selected URL/method policy and verify the runner reports ambiguity or follows a clearly stated deterministic rule rather than silently selecting unrelated data.",
+            "Arrange a delayed prior-run request, reload, then start a new replay; verify the late old request cannot satisfy or overwrite the new run.",
+            "Exercise page reload during capture/replay and verify the UI explains whether capture restarts, stops, or needs a new request trigger.",
+            "Replay a response whose body is truncated or exceeds capture limits; verify partial data is explicitly labeled and is not presented as complete success.",
+            "Reopen the saved recipe and confirm all ambiguity, late-response, reload, and truncation outcomes retain source/request provenance without exposing private request data."
+          ],
+          "expected": [
+            "Ambiguous matches, late old requests, reload effects, and truncated bodies have distinct honest outcomes; none silently masquerades as the selected complete response.",
+            "Only current-run matching requests can satisfy replay, and any partial result remains visibly partial with source identity.",
+            "Reports and persistence contain sanitized fixed fields only; no raw request payload, credentials, or headers are retained."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ]
         }
       ],
       "cells": {
@@ -16386,7 +16505,8 @@
         "EXT-D-0041 reserved for selected Network request \u2192 saved URL matching \u2192 repeat extraction; source-only investigation assigned while frozen .101 D39/D40 live review runs. No result claimed.",
         "Fresh .101 live retest: original Doctor list seed arrives, but Pick more fields replaced event-card scope with one event\u2019s nested list and returned3 rows. D43 assigned for independent diagnosis; D39 remains open until surrounding field/extraction behavior passes. No saved recipe persistence yet tested.",
         "D40 real Microdata Event preview \u2192 unsent Place draft \u2192 saved pattern \u2192 reopened Patterns replay returned249 Event records with matching visible fields/sample values. T46 stays partial; full-value comparison/reload/errors and datasets remain unverified. Exact owned recipe retained as next persistence-test fixture.",
-        "Installed .108 real-calendar retest: Doctor handoff and seeded/fresh scope selection now work; title+href extraction249rows had matching sampled records and navigation cleared state. T04/T24/T29/T45/T51 remain partial; full rows beyond200, alternate-scope extraction, persistence and other dimensions still pending. No localhost UI was used."
+        "Installed .108 real-calendar retest: Doctor handoff and seeded/fresh scope selection now work; title+href extraction249rows had matching sampled records and navigation cleared state. T04/T24/T29/T45/T51 remain partial; full rows beyond200, alternate-scope extraction, persistence and other dimensions still pending. No localhost UI was used.",
+        "T53-T55 and C44-C45 added for EXT-D-0041 Network matcher/replay identity follow-up. These are unverified planning coverage only; no admin, guest, or member result was promoted. Guest/member denial remains the existing T38 case. Network evidence may record only sanitized fixed fields and local-producer digest presence; never raw request payload, credentials, or headers."
       ]
     },
     {
