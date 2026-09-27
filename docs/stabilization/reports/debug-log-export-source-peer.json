@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "report_id": "debug-log-export-source-peer",
+  "reviewed_commit": "6b5775a0",
+  "runner": "tests/browser/debug-log-export-acceptance.mjs",
+  "A_runtime_verdict": {
+    "status": "UNVERIFIED",
+    "reason": "This is an independent source review. No owned native browser run, clipboard observation, downloaded file, real reload, or console event was produced by this peer. Passing T16 or T18 cannot be inferred from source alone."
+  },
+  "B_source_verdict": {
+    "status": "ACCEPT_BOUNDED_SOURCE_FOR_NATIVE_RUN",
+    "T16_forcing_oracle": "The runner uses real public-page interaction to obtain natural rows, pauses the feed, and requires a nonempty proper filtered subset with consistent visible and total counters. It rejects any selected row with hidden detail JSON. It independently reconstructs chronological export lines from rendered row time, context, source, level style, optional tag, and message, then requires exact clipboard text plus the Copied icon and exact .log download bytes. Count-only, empty, whole-feed, wrong-order, or missing-copy-feedback results cannot pass the intended positive branch. A denied clipboard read leaves T16 unverified even if download bytes match.",
+    "T18_forcing_oracle": "The runner reads the real control and chrome.storage.local setting, requires agreement, clicks the control through the UI, and requires the opposite persisted value. While the feed is paused, it checks the visible row sequence and counts remain unchanged. It then sends Page.reload to the owned side panel, requires a changed main-frame loader, re-verifies admin identity, and checks UI and storage still show the toggled value. It restores the original setting through the UI. This establishes setting persistence and current-feed retention only; actual level-matched DevTools console mirroring is explicitly unverified, as are service-error behavior and the other inventory dimensions.",
+    "provenance_and_privacy": "The native harness creates an owned disposable profile and validates release receipt, unpacked artifact, Store ZIP, and extension ID. The runner checks receipt and manifest identity before and after and rehashes the unpacked extension tree. Admin credentials are read at point of use for the real web and extension sign-in and are not serialized. Raw natural rows and the reconstructed export remain in runner memory; the unique JSON result records bounded booleans, counts, fixed codes, and build identity. The download stays in the owned ignored artifact directory and is chmod 0600 before reading; no fixture, injected log row, mock response, Chat/Pilot input, or product data mutation is used.",
+    "clipboard_boundary": "The OS clipboard is global. The runner first tries to read its prior text; if that fails, it does not issue Copy all and cannot claim clipboard acceptance. After copying, it restores the prior text only when the current clipboard still equals its export, avoiding an obvious overwrite of another actor's different value. This comparison is best-effort ownership evidence, not a lock on concurrent clipboard users; the export temporarily resides on the system clipboard as the real control intends.",
+    "limits": "The T16 oracle intentionally covers no-detail rows, so it does not verify formatting of multiline detail JSON. T18's unchanged paused snapshot does not prove future info/success console emission or feed retention after reload. The source correctly keeps the overall run partial when bounded branches succeed and leaves service-error unverified."
+  },
+  "reviewed_paths": [
+    "tests/browser/debug-log-export-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "src/features/debug/DebugView.tsx",
+    "src/lib/debug/log.ts",
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/resource-policy.json"
+  ]
+}
