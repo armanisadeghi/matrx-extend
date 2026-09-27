@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-admin-readonly-final-source-peer",
+  "feature_id": "EXT-F-1009",
+  "reviewed_source_commits": ["4085ff9f", "dd7b2cf0"],
+  "A_runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "This independent peer reviewed source only. No browser, build, or test was launched; a native run must establish actual requests, data availability, UI rendering, and case outcomes."
+  },
+  "B_source": {
+    "verdict": "ACCEPT_BOUNDED_READ_ONLY_SOURCE",
+    "real_read_and_binding": "The owned panel observer requires a real GET for the expected canonical page, HTTP 200, loadingFinished, and a parsed array whose every row carries that canonical identity and a nonempty file ID. After initial mount, Refresh, URL switch, panel reload, and post-reload Refresh, the runner requires the settled linked Screenshots pane to have the matching canonical heading, exact card count, exact empty-state agreement, and cards in the completed response's order with matching displayed timestamp, dimensions, and source. It rejects duplicate rendered-metadata signatures and requires the second page's signatures to differ from the first page's when rows exist.",
+    "empty_and_claim_limits": "A zero-row GET must render zero cards and the explicit empty state. The empty-to-empty URL-switch row correspondence is unverified, as are a missing pre-existing-row Files navigation, no-page state, genuine list error/recovery, overlapping stale-response race, and disabled Refresh while loading unless directly observed. T08's initial subcase is an observed settled-gallery/empty-state slice, not proof of every T08 state.",
+    "identity_limit": "The row comparison proves visible metadata and order, not underlying file-ID identity for every card: a stale or wrong file with the same rendered timestamp, dimensions, source, and title can be observationally indistinguishable until opened. The optional first-row thumbnail click compares its new Files route with the real response file ID and verifies that one row only. The runtime report must not promote this bounded check to complete gallery identity, preview-byte correctness, or stale-race prevention.",
+    "auth_build_privacy": "A fresh owned profile uses real admin web sign-in, then selects only the exact previously approved existing organization through UI and confirms both displayed and stored choice. The runner binds release receipt to manifest before launch and checks version, tree digest, and unpacked tree after the run. Credentials, approved organization, response rows, file IDs, title values, and URL details remain in private runner memory; durable results carry bounded counts, statuses, booleans, and fixed stages.",
+    "read_only": "The route navigates public pages and opens a Files tab only for a genuine pre-existing row. It does not capture, upload, insert/delete screenshot rows, write clipboard content, intercept or synthesize responses, inject authentication or gallery data, use Chat/Pilot, or touch Source/SEO checkpoints."
+  },
+  "reviewed_paths": [
+    "tests/browser/screenshot-admin-readonly-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "src/features/screenshots/ScreenshotsView.tsx",
+    "src/lib/supabase/queries.ts",
+    "docs/stabilization/reports/screenshot-admin-next-batch.json"
+  ]
+}
