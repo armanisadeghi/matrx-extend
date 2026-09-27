@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "run_id": "screenshot-controls-dev095-001-20260927",
+  "feature": "EXT-F-1009 owned native screenshot controls",
+  "source": {
+    "head": "2f5c01919ac31e4de32ffe91589e55239293f2a5",
+    "dev_build_receipt": "test-results/source-dev-build-095-controls-20260927.json",
+    "dev_build_tree_sha256": "ea3bdb7c38ea99b3f01dcba3850480b58f86973cabaa2e8b12455dae42064d46"
+  },
+  "build": {
+    "command": "pnpm exec wxt build --mode development",
+    "resource_guard": "RESOURCE_JOB_EXIT",
+    "child_exit_code": 0,
+    "result": "success",
+    "receipt_sha256": "c361e561500f428a39904287a56d60d93246abd4ec5bf62bd03768441da4a546",
+    "private_evidence_sha256": "b67b35339319f69ce1bdc91fa227fc58d828f5b7e3948c21d6613aa4e2c768d3"
+  },
+  "native_run": {
+    "command": "node tests/browser/screenshot-capture-acceptance.mjs",
+    "tmpdir": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+    "resource_guard_admitted": true,
+    "resource_guard_terminal": "RESOURCE_JOB_EXIT",
+    "child_exit_code": 1,
+    "status": "unverified",
+    "cases": {
+      "EXT-F-1009-T01": "pass: warm Refresh issued a real read and preserved the exact owned row",
+      "EXT-F-1009-T04-thumbnail": "pass: thumbnail click opened and verified the exact owned Files tab",
+      "EXT-F-1009-T04-icon": "unverified: pre-click gallery identity recheck failed; icon was not clicked",
+      "EXT-F-1009-T05": "not reached",
+      "EXT-F-1009-T06": "not reached in normal flow"
+    },
+    "first_failure": {
+      "stage": "icon_open_in_files",
+      "code": "owned_files_card_identity_unverified",
+      "safe_diagnostics": {
+        "runtime_code_present": false,
+        "timeout": false,
+        "assertion": false,
+        "driver_code": null,
+        "hit_target": false,
+        "matched_target_count": null
+      }
+    },
+    "failure_cleanup": {
+      "fresh_read_verified_owned_row_absent": true
+    },
+    "private_evidence": {
+      "directory": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-controls-095-native.naljbf",
+      "command_log_sha256": "7bd0eca7650c99883d9bf72ef7eec37224bd5780ce623b88b013332e5327f475",
+      "harness_result_sha256": "27ac0fdf9907037cde0b873cee79c10960c6ac5488b295f4bfc93e8a6d0a6d7e",
+      "file_mode": "0600"
+    }
+  },
+  "product_failure_inferred": false,
+  "additional_capture_or_retry": false
+}

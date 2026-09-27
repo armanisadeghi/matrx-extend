@@ -12635,14 +12635,14 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "screenshot-controls-dev094-002",
+              "run_id": "screenshot-controls-dev095-001",
               "verified_substeps": [
                 "Actual warm Refresh completed real gallery read and preserved exact owned row."
               ],
               "remaining_criteria": [
                 "Pending prior-page responses, reload, failure/retry, no-page and member mode remain unverified."
               ],
-              "evidence": "docs/stabilization/runs/screenshot-controls-dev094-002.json"
+              "evidence": "docs/stabilization/runs/screenshot-controls-dev095-001.json"
             }
           },
           "defect_ids": [
@@ -12747,15 +12747,15 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "screenshot-controls-dev094-003",
+              "run_id": "screenshot-controls-dev095-001",
               "verified_substeps": [
                 "Thumbnail opens exactly one new tab at exact owned Files route and ID on verified canonical www host."
               ],
               "remaining_criteria": [
-                "Separate icon failed test hit targeting before product click; D35 source repair awaits native retest.",
+                "Separate icon remains unverified: .95 stopped at the pre-click owned-card identity check. No icon click occurred; diagnosis is active.",
                 "Reload, service-error and member dimensions remain unverified."
               ],
-              "evidence": "docs/stabilization/runs/screenshot-controls-dev094-003.json"
+              "evidence": "docs/stabilization/runs/screenshot-controls-dev095-001.json"
             }
           }
         },
@@ -12971,7 +12971,8 @@
             "screenshot-capture-dev094-002",
             "screenshot-controls-dev094-001",
             "screenshot-controls-dev094-002",
-            "screenshot-controls-dev094-003"
+            "screenshot-controls-dev094-003",
+            "screenshot-controls-dev095-001"
           ],
           "retest_status": "partial"
         }
