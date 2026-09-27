@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "reviewed_commit": null,
+  "lane": "independent source and focused-test review; no browser/runtime",
+  "scope": ["tests/browser/native-sidepanel-qa-harness.test.mjs", "EXT-D-0028"],
+  "A_acceptance": {
+    "result": "PASS_FOCUSED_GUARD_ONLY",
+    "evidence": [
+      {
+        "command": "node tests/browser/native-sidepanel-qa-harness.test.mjs",
+        "working_directory": "/Volumes/Samsung2TB/code/matrx-extend",
+        "result": "PASS",
+        "observation": "PASS native sidepanel harness refuses foreign CDP/browser identities"
+      },
+      {
+        "command": "node /Volumes/Samsung2TB/code/matrx-extend/tests/browser/native-sidepanel-qa-harness.test.mjs",
+        "working_directory": "/tmp",
+        "result": "PASS",
+        "observation": "The focused test also passes when launched outside the repository working directory."
+      }
+    ],
+    "limits": "This accepts only the focused portability guard. No browser, heavy build, broader suite, or product behavior was exercised."
+  },
+  "B_quality": {
+    "result": "PASS",
+    "finding": "The expected default extension directory is derived from the test module's own file location using import.meta.url and path resolution. It does not copy the relocated checkout's absolute path or import the implementation's RELEASED_EXTENSION_DIR constant. The test continues to exercise the complete resolved release receipt (tree hash, version, store zip path and hash), rejects extension-directory overrides without matching provenance, and accepts a receipt-matched override. Existing owned-command-line/profile, expected-extension, and side-panel-context rejection assertions remain present and unchanged. The portable expectation therefore addresses the checkout-specific false failure without relaxing the ownership or provenance gates.",
+    "minor_observation": "The test imports join from node:path but does not use it; harmless cleanup only, not an acceptance blocker."
+  },
+  "gaps": [
+    "No browser or product runtime acceptance is claimed; that is outside this path-portability defect."
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "task_id": "portable-harness-guard",
+  "lane": "structured execution Luna medium narrow repair",
+  "model": "Luna",
+  "status": "fixed_waiting_independent_review",
+  "feature_ids": ["EXT-F-0001"],
+  "defect_ids": ["EXT-D-0028"],
+  "summary": "Repaired the native sidepanel QA unit guard's relocated-checkout false failure by deriving the default extension directory independently from the test file's repository-relative path. Added EXT-D-0028. No production source, inventory, coordinator file, or browser code changed.",
+  "changes": [
+    "The test oracle computes the expected .output/chrome-mv3-dev location from import.meta.url via fileURLToPath, dirname, join, and resolve.",
+    "Existing checks for receipt values, refusal of unproven overrides, extension identity, and owned browser/profile properties remain in place."
+  ],
+  "files": [
+    "tests/browser/native-sidepanel-qa-harness.test.mjs",
+    "docs/stabilization/defects/EXT-D-0028.json",
+    "docs/stabilization/reports/portable-harness-guard.json"
+  ],
+  "evidence": [
+    {
+      "command": "node tests/browser/native-sidepanel-qa-harness.test.mjs (before repair)",
+      "verdict": "fail as expected",
+      "observation": "AssertionError: actual default path was /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev; stale expected path was /Users/armanisadeghi/code/matrx-extend/.output/chrome-mv3-dev."
+    },
+    {
+      "command": "node tests/browser/native-sidepanel-qa-harness.test.mjs (after repair)",
+      "verdict": "pass",
+      "observation": "PASS native sidepanel harness refuses foreign CDP/browser identities"
+    }
+  ],
+  "gaps": [
+    "Independent source review is pending.",
+    "No browser, heavy build, or broader test suite was run, as scoped."
+  ],
+  "commit_shas": [],
+  "next_action": "Root integrates after peer review and records any resulting inventory or coordinator update."
+}

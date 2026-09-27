@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   isSettledGuestPanel,
   requireExpectedExtension,
@@ -11,6 +13,11 @@ import {
 } from './native-sidepanel-qa-harness.mjs';
 
 const profile = '/private/tmp/owned-profile';
+const expectedExtensionDir = resolve(
+  dirname(fileURLToPath(import.meta.url)),
+  '../..',
+  '.output/chrome-mv3-dev',
+);
 const extensionId = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
 const receipt = {
   version: '0.2.44',
@@ -95,7 +102,7 @@ requireExpectedExtension(
 );
 requireSpawnedProfileOwner('host-7001', 7001);
 assert.deepEqual(resolveExpectedRelease({ receipt }), {
-  extensionDir: '/Users/armanisadeghi/code/matrx-extend/.output/chrome-mv3-dev',
+  extensionDir: expectedExtensionDir,
   treeSha256: receipt.treeSha256,
   version: receipt.version,
   storeZipPath: receipt.storeZip.path,

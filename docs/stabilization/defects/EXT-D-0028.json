@@ -1,0 +1,62 @@
+{
+  "id": "EXT-D-0028",
+  "feature_id": "EXT-F-0001",
+  "case_id": "EXT-F-0001-T01",
+  "surface": "Native sidepanel QA harness path portability guard",
+  "auth_mode": "guest/member/admin infrastructure; no browser or auth flow launched",
+  "reproduction": [
+    "From the relocated checkout /Volumes/Samsung2TB/code/matrx-extend, run `node tests/browser/native-sidepanel-qa-harness.test.mjs`.",
+    "Observe the assertion fail because the test expects /Users/armanisadeghi/code/matrx-extend/.output/chrome-mv3-dev while resolveExpectedRelease returns /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev."
+  ],
+  "expected": "The test independently derives the default unpacked extension path from its own repository-relative location and continues to assert the complete release receipt and provenance result.",
+  "actual": "The test hardcoded the previous /Users checkout path, so it failed on a valid relocated checkout before it could pass its otherwise valid release-resolution assertions.",
+  "evidence": [
+    "node tests/browser/native-sidepanel-qa-harness.test.mjs before repair: AssertionError at line 97; actual /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev, expected /Users/armanisadeghi/code/matrx-extend/.output/chrome-mv3-dev",
+    "node tests/browser/native-sidepanel-qa-harness.test.mjs after repair: PASS native sidepanel harness refuses foreign CDP/browser identities",
+    "docs/stabilization/reports/portable-harness-peer.json"
+  ],
+  "severity": "S3: test portability guard false-fails on relocated checkouts; no product failure demonstrated",
+  "priority": "P2: keep the native sidepanel harness guard usable across checkout locations",
+  "state": "closed",
+  "owner": "/root/portable_harness_guard",
+  "transition_history": [
+    {
+      "at": "2026-09-27T09:03:32Z",
+      "from": null,
+      "to": "open",
+      "reason": "Inventory F0001T01 follow-up identified a hardcoded old checkout path in the native harness test."
+    },
+    {
+      "at": "2026-09-27T09:03:32Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Focused node test reproduced the exact expected-versus-actual path mismatch on the relocated checkout."
+    },
+    {
+      "at": "2026-09-27T09:03:32Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Repair is limited to independently deriving the test oracle from its repository-relative location."
+    },
+    {
+      "at": "2026-09-27T09:04:56Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Focused guard passed after replacing the absolute path literal. Receipt and override provenance assertions remain intact; no browser was launched."
+    },
+    {
+      "at": "2026-09-27T09:07:19.967974+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh zero-authorship peer reran from relocated checkout and /tmp; ownership/provenance guards passed."
+    },
+    {
+      "at": "2026-09-27T09:07:19.967974+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent A acceptance and B source-quality both passed; unused import removed and focused checks rerun. No product coverage promotion."
+    }
+  ],
+  "fix_files": ["tests/browser/native-sidepanel-qa-harness.test.mjs"],
+  "closure_requirement": "Independent source review confirms the expected path is computed from the test's own location, and the focused command passes while existing release receipt and override provenance assertions remain unchanged."
+}
