@@ -74,9 +74,14 @@
   ],
   "remaining_verification": [
     "Rerun focused three-file suite after test helper compatibility adjustment",
-    "Combined D41+D42 TypeScript compile when resource admission permits",
     "Independent installed-extension lifecycle verification after D43 integration"
   ],
   "queue_mutation_status": "Not performed; coordinator explicitly prohibited extra heavy mutation jobs. Deferred-install positive case passed in original19/19 run; no queue-removal red proof is claimed.",
-  "d43_extension_contract": "Keep sessionId mandatory and separate from optional seed configuration. Add optional seed as another start/mount argument; preserve session_id on every result/detection/exit and retain cancellation by session ID."
+  "d43_extension_contract": "Keep sessionId mandatory and separate from optional seed configuration. Add optional seed as another start/mount argument; preserve session_id on every result/detection/exit and retain cancellation by session ID.",
+  "combined_compile": {
+    "run_id": "showcase-d41-d42-combined-compile-002",
+    "terminal_at": "2026-09-27T16:33:55Z",
+    "exit_code": 0,
+    "scope": "Frozen D41/D42 checkpoints, no D43 product changes; source .102."
+  }
 }

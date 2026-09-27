@@ -1,7 +1,10 @@
 {
   "id": "EXT-D-0042",
   "feature_id": "EXT-F-1012",
-  "case_ids": [],
+  "case_ids": [
+    "EXT-F-1012-T24",
+    "EXT-F-1012-T51"
+  ],
   "surface": "Showcase List Pattern picker start, cancel, restart, and result relay",
   "auth_mode": "admin",
   "reproduction": [
@@ -47,5 +50,5 @@
     }
   ],
   "closure_requirement": "Prove the delayed old-session boundary red before repair, then prove current-session detection and extraction plus old-session rejection green. Check identity through every SW relay, delayed cancellation, pending injection, and cross-context listener teardown. Run changed types and obtain independent installed-extension verification against real page data before closure.",
-  "verification_status": "original-focused-green-19-of-19; test-helper follow-up unverified; combined types blocked by resource admission; independent UI pending"
+  "verification_status": "Original focused19/19 green; combined D41+D42 compile passed at16:33:55Z. Helper-only focused rerun and independent UI still pending."
 }
