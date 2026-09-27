@@ -90,6 +90,13 @@
       "No Source Save, capture, mutation, checkpoint path/import/read/write or default recovery.",
       "Late Save stays unverified; actual service-failure/recovery and immediate intermediate-state clearing are not claimed by this runner.",
       "Existing positive fixture might be absent or redirect; that remains unverified rather than synthetic coverage."
-    ]
+    ],
+    "alias_repair": {
+      "peer": "docs/stabilization/reports/d22-readonly-source-peer.json",
+      "reviewed_rejection": "dde2796b",
+      "cause": "Saved captures list selects url:canonical_identity, but initial discovery read canonical_identity and rejected every real list row.",
+      "change": "Discovery reads row.url and fixture.url. Point lookup still requires row.canonical_identity matching exact selected page identity. Public-host/query/fragment constraints remain unchanged.",
+      "validation": "Targeted Biome and node --check only; independent repair review and native execution remain pending. No claim that this source repair proves live fixture availability."
+    }
   }
 }

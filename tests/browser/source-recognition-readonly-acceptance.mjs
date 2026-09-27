@@ -484,7 +484,8 @@ try {
           fail('source_list_read_failed');
         const fixture = list.rows.find((row) => {
           try {
-            const url = new URL(row.canonical_identity);
+            // listSavedCaptures selects url:canonical_identity; point lookups do not alias it.
+            const url = new URL(row.url);
             return (
               UUID.test(row.id ?? '') &&
               url.protocol === 'https:' &&
@@ -500,7 +501,7 @@ try {
         });
         if (!fixture) fail('no_existing_public_positive_fixture_in_visible_page');
         report.observations.existingFixtureFound = true;
-        const identity = fixture.canonical_identity;
+        const identity = fixture.url;
         const origin = list.origin;
         stage = 'approved_positive_recognition';
         let since = reads.records.length;
