@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-admin-readonly-source-peer",
+  "reviewed_commit": "4085ff9f",
+  "feature_id": "EXT-F-1009",
+  "source_verdict": "rejected_pending_gallery_oracle_repair",
+  "runtime_verdict": "unverified_not_run_by_source_peer",
+  "scope": "Authenticated admin gallery read, refresh, public-URL switch, real panel reload, and optional pre-existing-row Files navigation",
+  "blocking_findings": [
+    {
+      "location": "tests/browser/screenshot-admin-readonly-acceptance.mjs:361-438",
+      "problem": "The URL-switch and reload checks compare only visible card count to the completed GET row count. The header canonical URL changes independently of the gallery rows. If old and new URLs have the same number of rows, a stale old-URL gallery can satisfy every current assertion and be reported as a pass. The same issue weakens refresh proof when the row count stays constant.",
+      "required_repair": "Bind displayed card identity to the completed response without printing file IDs or other private row data, or limit the passing claim to a genuinely empty-to-empty state and leave nonempty row correspondence unverified. Keep the real completed GET positive control."
+    },
+    {
+      "location": "tests/browser/screenshot-admin-readonly-acceptance.mjs:370-381",
+      "problem": "T08's initial settled-gallery pass records the empty boolean but never requires empty to agree with the completed response. Zero rendered cards with no 'No screenshots yet' message, or a stale empty message alongside rows, still passes.",
+      "required_repair": "Require the actual empty-state message exactly when the completed response has zero rows, and require it absent when rows exist. Keep no-page and list-error states explicitly unverified unless their real conditions occur."
+    }
+  ],
+  "accepted_boundaries": [
+    "Fresh native profile, real admin sign-in, and exact approved existing organization are reached through UI; private configuration and credentials are read at point of use and their values are not written into public evidence.",
+    "The harness verifies the release receipt, manifest, unpacked tree, expected extension, and owned profile before launch; the runner records version/tree before and after and rehashes the tree at exit.",
+    "The network observer uses actual GET requests, HTTP 200 completion, and response-body validation for the expected canonical URL. It stores file IDs only in private runner memory and emits bounded request status/outcome and row counts.",
+    "The scripted route does not click capture, copy, or delete, inject rows or auth state, induce service failures, use Chat/Pilot inputs, or read Source/SEO checkpoint files. Opening a genuine existing row creates only a Files tab."
+  ],
+  "bounded_scope_notes": [
+    "The optional T04 path clicks only the first thumbnail. Its reported subcase is correctly named existing_row_thumbnail; the separate Open in Files button remains unverified even if a real row exists.",
+    "The watcher does not constrain response origin or PostgREST schema; the real product query is in extend.wbx_screenshot. A tighter target check would strengthen the positive control without logging the URL.",
+    "No service error is induced, so T08 list-error and recovery stay unverified."
+  ],
+  "next_step": "Repair the two gallery-oracle claims and obtain a fresh source review before a root-owned guarded browser run. Runtime remains unverified."
+}
