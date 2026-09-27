@@ -1,8 +1,13 @@
 /** The isolated-world picker hooks are installed by list-picker.content.ts. */
 export interface ListPickerWindow {
-  __matrxListPickerStart?: (sessionId: string) => void;
+  __matrxListPickerStart?: (sessionId: string, seed?: ListPickerSeed | null) => void;
   __matrxListPickerCancel?: (sessionId: string) => void;
   __matrxListPickerTeardown?: () => void;
+}
+
+export interface ListPickerSeed {
+  list_root: string;
+  item_selector: string;
 }
 
 export interface ListPickerIdentity {
@@ -27,7 +32,11 @@ function sequence(tabId: number, operation: () => Promise<void>): Promise<void> 
   return current;
 }
 
-export function startListPickerSession(tabId: number, sessionId: string): Promise<void> {
+export function startListPickerSession(
+  tabId: number,
+  sessionId: string,
+  seed?: ListPickerSeed | null,
+): Promise<void> {
   return sequence(tabId, async () => {
     await chrome.scripting.executeScript({
       target: { tabId },
@@ -35,12 +44,12 @@ export function startListPickerSession(tabId: number, sessionId: string): Promis
     });
     await chrome.scripting.executeScript({
       target: { tabId },
-      func: (id: string) => {
+      func: (id: string, initial: ListPickerSeed | null) => {
         const start = (window as ListPickerWindow).__matrxListPickerStart;
         if (!start) throw new Error('The page picker could not start. Try picking again.');
-        start(id);
+        start(id, initial);
       },
-      args: [sessionId],
+      args: [sessionId, seed ?? null],
     });
   });
 }

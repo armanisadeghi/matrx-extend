@@ -177,21 +177,16 @@ function listItemFingerprintCandidates(el: Element): string[] {
   return Array.from(new Set(candidates));
 }
 
-/**
- * Find the smallest list scope: walk up from `clicked` and at each ancestor
- * check whether the structural pattern matches >=2 direct siblings. The
- * first ancestor where the pattern matches multiple children is the
- * list_root, and the relative item selector is the matching pattern.
- *
- * Tries progressively looser fingerprints at each level (e.g. tag.class.class
- * → tag.class → tag for li/article/tr).
- */
-export function inferListPattern(clicked: Element): {
+export interface ListPatternCandidate {
   listRoot: string;
   itemSelector: string;
   itemCount: number;
   sampleItem: Element;
-} | null {
+}
+
+/** Find each repeated group containing the click, nearest first. */
+export function inferListPatternCandidates(clicked: Element): ListPatternCandidate[] {
+  const groups: ListPatternCandidate[] = [];
   let item: Element = clicked;
   let parent: Element | null = clicked.parentElement;
 
@@ -211,19 +206,25 @@ export function inferListPattern(clicked: Element): {
         matches = [];
       }
       if (matches.length >= 2) {
-        return {
+        groups.push({
           listRoot: elementPathSelector(parent),
           itemSelector: fp,
           itemCount: matches.length,
           sampleItem: item,
-        };
+        });
+        break;
       }
     }
     // Climb up: the previous "item" becomes a level deeper into the candidate.
     item = parent;
     parent = parent.parentElement;
   }
-  return null;
+  return groups;
+}
+
+/** Preserve the nearest-match contract for noninteractive callers. */
+export function inferListPattern(clicked: Element): ListPatternCandidate | null {
+  return inferListPatternCandidates(clicked)[0] ?? null;
 }
 
 /**

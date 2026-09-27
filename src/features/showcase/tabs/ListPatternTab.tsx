@@ -179,7 +179,9 @@ export function ListPatternTab() {
           // Merge any newly-picked field_paths into existing config (so "Pick more
           // fields" appends rather than replaces).
           setConfig((prev) =>
-            prev && prev.list_root === payload.list_root
+            prev &&
+            prev.list_root === payload.list_root &&
+            prev.item_selector === payload.item_selector
               ? {
                   ...prev,
                   field_paths: [...prev.field_paths, ...payload.field_paths],
@@ -215,7 +217,7 @@ export function ListPatternTab() {
           : {
               list_root: payload.list_root,
               item_selector: payload.item_selector,
-              field_paths: prev?.field_paths ?? [],
+              field_paths: [],
             },
       );
       setConfigPageKey(pickPageKeyRef.current);
@@ -344,7 +346,11 @@ export function ListPatternTab() {
     pickTabRef.current = tab.id;
     pickPageKeyRef.current = pageKey;
     try {
-      await startListPickerSession(tab.id, sessionId);
+      await startListPickerSession(
+        tab.id,
+        sessionId,
+        config ? { list_root: config.list_root, item_selector: config.item_selector } : null,
+      );
     } catch (err) {
       if (session === pickerSessionSeqRef.current) {
         closePickerSession();

@@ -1281,6 +1281,28 @@ Every entry follows this shape:
   orphaned page overlay; chrome:// pages get a friendly "this page type
   doesn't allow picking" error.
 
+### Showcase — add fields to a detected list and choose nested scope (EXT-D-0043)
+- **What it does:** Pick more fields continues the current repeated-card pattern;
+  a fresh title click that belongs to more than one repeated group asks which
+  group to extract before changing the builder.
+- **Where to test:** Showcase → Doctor → List Pattern on
+  https://electronic.vegas/vegas-edm-event-calendar/ and on a second page with
+  cards that contain a nested details list.
+- **Steps:** Follow Doctor's calendar recommendation and confirm root
+  `#wideeventsList` and item `div.wideeventwrapper`. Add a URL field, click
+  Pick more fields, then click the DJ Pauly D title inside a card and Done.
+  Extract and inspect the title and URL values in several distinct rows, not
+  just the row-count label. Start a fresh manual pick, click a title inside a
+  card with nested repeated details, deliberately choose the outer-card scope,
+  add title and URL, and extract. Repeat choosing the inner details scope.
+  Navigate to another page after starting a seeded pick, then try a new pick.
+- **Expected:** The seeded pick preserves its root, item selector, and existing
+  URL field while adding the title field; extraction returns distinct events
+  across the card list. The fresh pick shows understandable count/scope choices
+  before committing a pattern; the chosen outer scope returns card rows and
+  the chosen inner scope returns only its intended details. A missing seed on
+  the new page is explained and does not silently reuse old selectors.
+
 ### Showcase — List Pattern replacement sessions (EXT-D-0042)
 - **What it does:** Keeps each pick tied to its own session, including delayed
   page messages and cancellation, and removes replaced picker listeners.

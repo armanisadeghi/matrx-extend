@@ -25,7 +25,7 @@
   ],
   "severity": "S2: the picker can silently replace a broad detected list with a nested list from one card and present incomplete event data as a successful extraction",
   "priority": "P1: original detect-to-extract user outcome",
-  "state": "in-fix",
+  "state": "fixed",
   "transition_history": [
     {
       "at": "2026-09-27T16:04:33.982Z",
@@ -44,6 +44,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Guarded red reproduced four intended picker-scope failures; a proposed patch is preserved outside discovery after the first green attempt was refused by resource preflight before child launch. Green, compile, and live retest remain open."
+    },
+    {
+      "at": "2026-09-27T20:55:14Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Reconciled dependencies and applied the peer-reviewed source patch; D43 focused 7/7, D42 sibling 19/19, and TypeScript compile passed under separate admitted guards. Fresh installed-extension real-calendar acceptance remains required before closure."
     }
   ],
   "red_test_plan": [

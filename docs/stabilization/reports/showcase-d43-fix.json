@@ -1,6 +1,6 @@
 {
   "defect": "EXT-D-0043",
-  "status": "in-fix: red reproduced; proposed implementation held outside shared discovery after resource refusal",
+  "status": "engineering fixed; independent installed-extension acceptance pending",
   "patch_base_sha": "71a13590",
   "current_head_at_freeze": "1961afeb195a27898030a9a7d8e2aa907331e01b",
   "changes_prepared": [
@@ -9,7 +9,7 @@
     "Preserve previously selected fields only when both root and item selector match; clear them when the user chooses a different scope."
   ],
   "red_evidence": "showcase-d43-red-001: resource-admitted Vitest ran five cases; four intended behavior failures showed nested first-card root, premature detection, and absent scope choices; cancellation passed. Child exit 1.",
-  "green_attempt": "showcase-d43-green-001: preflight refused before test child at 2026-09-27T16:39:57Z for RESOURCE_PRESSURE_UNSAFE and RESOURCE_SWAP_GROWTH; wrapper exit 2. No green or type claim.",
+  "green_attempt": "Historical showcase-d43-green-001 preflight refused before child. On 0.2.108 source, showcase-d43-green-002 was admitted and passed 2 files/7 tests; showcase-d43-siblings-001 was admitted and passed D42 session, relay, and Doctor handoff 3 files/19 tests; showcase-d43-compile-001 was admitted and passed tsc --noEmit. Each wrapper reached RESOURCE_JOB_EXIT with child exit 0.",
   "held_artifacts": [
     "docs/stabilization/pending/EXT-D-0043/product.patch",
     "docs/stabilization/pending/EXT-D-0043/showcase-d43-regression.test.pending",
@@ -23,9 +23,11 @@
     "feature_tests_patch": "2a1c54c7e55aae5b2622a885b93d1cd2c43d029fe4e8e334bf1a873b94e026fd"
   },
   "round1_source_review": "The first peer misread restored source as the preserved patch; the patch does seed the ListPatternTab entry. A second independent peer confirmed the seed connection and reported source PASS_WITH_GAPS. The focused test now selects distinct title and URL elements, tests a missing seed against a different nested-card page with warning, scope choice, and extracted rows, and a component test drives Pick more fields through startListPickerSession, mountListPicker, simulated SW-stamped delivery, merge, and five rows. These corrected tests have not run under a guard.",
-  "pending_docs": "A separate feature-tests.patch adds the required human procedure for seeded Pick more fields, fresh nested scope choice, distinct event rows, and invalid-seed navigation. It is not applied while product verification is pending.",
-  "apply_instructions": "From repo root, verify the four artifact hashes; run git apply --check docs/stabilization/pending/EXT-D-0043/product.patch and git apply --check docs/stabilization/pending/EXT-D-0043/feature-tests.patch. After sole guarded-test authority, apply both patches and copy the two .pending tests into tests/unit/ as .test.ts and .test.tsx, then run focused red/green follow-up and D42 regression before compile. Preserve unrelated dirty files.",
+  "pending_docs": "The preserved feature-tests.patch was applied to docs/feature-tests.md after the real-site acceptance preamble landed; the procedure covers seeded Pick more fields, nested scope choice, distinct rows, and invalid-seed navigation.",
+  "apply_instructions": "Historical resume instructions: both preserved patches applied cleanly on 0.2.108 source after package reconciliation; both .pending tests were copied into tests/unit/ and verified. Retain pending artifacts as the reviewed basis; do not apply them a second time.",
   "credential_scan": "No credential-like literal was found by the scoped pending-artifact scan for password assignments, Authorization headers, Bearer tokens, or provider sk- keys.",
-  "shared_checkout": "D43 source/test changes were removed from discovery after the guard refusal. Other lanes' files were preserved.",
-  "next_verification": "When root grants a fresh sole heavy permit after resource recovery, reapply the exact patch, copy the focused test into discovery, run guarded D43 green, D42 session regression, and compile serially. Then obtain independent installed-extension extraction of multiple distinct real calendar events and inspect row contents before closing."
+  "shared_checkout": "Only D43 product files, its two tests, its feature-test procedure, and D43 evidence were changed for this repair. Package declarations and lockfile remained at the current latest-pinned state.",
+  "package_reconciliation": "Resource-admitted frozen-lockfile install updated installed design-system 0.48.11, kit 0.16.10, records 0.58.30, and agents 0.16.18 to match current main. Consumer actions were read: no D43 picker host migration; agents 0.16.0 favorites change is outside this surface.",
+  "source_review_basis": "Independent fresh Sol review of the preserved product patch reported PASS_WITH_GAPS; those gaps were a human feature-test recipe and missing-seed/entry-path test coverage, added before the passing guarded run. Final changed source has not yet had a new independent review or installed-extension test.",
+  "next_verification": "Build the development extension directly without a localhost server, record source/version/output identity, reload the installed unpacked extension, and independently exercise the real calendar and a second nested-list site. Confirm several distinct event titles and URLs, deliberate inner/outer scope choices, invalid-seed recovery, and D42 cancel/session behavior before closing."
 }

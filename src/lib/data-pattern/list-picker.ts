@@ -13,7 +13,12 @@
  */
 
 import type { ListPickerWindow } from './list-picker-session';
-import { inferListPattern, relativeFieldSelector } from './selector-resilience';
+import type { ListPickerSeed } from './list-picker-session';
+import {
+  type ListPatternCandidate,
+  inferListPatternCandidates,
+  relativeFieldSelector,
+} from './selector-resilience';
 
 const HOST_ID = 'matrx-list-picker-host';
 
@@ -35,8 +40,9 @@ let itemSel: string | null = null;
 let sampleItem: Element | null = null;
 const picked: PickedField[] = [];
 let sessionId: string | null = null;
+let scopeCandidates: ListPatternCandidate[] = [];
 
-export function mountListPicker(id: string): void {
+export function mountListPicker(id: string, seed?: ListPickerSeed | null): void {
   // Re-entry mounts FRESH: a previous overlay may be orphaned (sidepanel
   // unmounted mid-pick) or mid-phase-2 — stale state must not leak into a
   // new session. Also remove any DOM remnant from an older script context.
@@ -72,6 +78,9 @@ export function mountListPicker(id: string): void {
       .picked { margin-top: 8px; max-height: 180px; overflow-y: auto; }
       .picked-item { padding: 6px 8px; border-radius: 6px; background: #161616;
                      margin-bottom: 4px; font-family: ui-monospace, monospace; font-size: 11px; }
+      .scope-choices { display: grid; gap: 5px; margin: 8px 0; }
+      .scope-choices button { display: block; width: calc(100% - 20px); text-align: left; }
+      .scope-choices small { display: block; color: #aaa; overflow-wrap: anywhere; }
       .badge { display: inline-block; background: oklch(0.7 0.2 250); color: #000;
                padding: 2px 8px; border-radius: 999px; font-weight: 600; font-size: 11px; }
       .hl { position: fixed; pointer-events: none; border: 2px solid oklch(0.7 0.2 250);
@@ -87,6 +96,7 @@ export function mountListPicker(id: string): void {
         <button id="cancel">Cancel</button>
         <button id="restart">Restart</button>
       </div>
+      <div class="scope-choices" id="scope-choices"></div>
       <div class="picked" id="picked"></div>
     </div>
     <div class="hl" id="hl" style="display:none"></div>
@@ -105,6 +115,31 @@ export function mountListPicker(id: string): void {
   pickerWindow.__matrxListPickerCancel = (targetSession) => {
     if (targetSession === sessionId) finish('cancel');
   };
+  if (seed?.list_root && seed.item_selector) {
+    try {
+      const root = document.querySelector(seed.list_root);
+      const items = root ? Array.from(root.querySelectorAll(seed.item_selector)) : [];
+      const firstItem = items[0];
+      if (firstItem) {
+        selectScope(
+          {
+            listRoot: seed.list_root,
+            itemSelector: seed.item_selector,
+            itemCount: items.length,
+            sampleItem: firstItem,
+          },
+          false,
+        );
+        setHint(
+          `${items.length} matching items. Click a field inside any highlighted item, then Done.`,
+        );
+      } else {
+        flashHint('The earlier list is no longer on this page. Click a new example item.', 'warn');
+      }
+    } catch {
+      flashHint('The earlier list selector is invalid. Click a new example item.', 'warn');
+    }
+  }
 }
 
 export function unmountListPicker(): void {
@@ -125,18 +160,81 @@ export function unmountListPicker(): void {
   itemSel = null;
   sampleItem = null;
   picked.length = 0;
+  scopeCandidates = [];
   sessionId = null;
 }
 
 function isOurNode(t: Element | null): boolean {
-  return !!t && (host?.contains(t) || (t as HTMLElement).id === HOST_ID);
+  return !!t && (host?.contains(t) || shadow?.contains(t) || (t as HTMLElement).id === HOST_ID);
+}
+
+function itemContaining(target: Element): Element | null {
+  if (!listRootSel || !itemSel) return null;
+  try {
+    const root = document.querySelector(listRootSel);
+    return (
+      Array.from(root?.querySelectorAll(itemSel) ?? []).find(
+        (item) => item === target || item.contains(target),
+      ) ?? null
+    );
+  } catch {
+    return null;
+  }
+}
+
+function selectScope(candidate: ListPatternCandidate, announce: boolean) {
+  scopeCandidates = [];
+  shadow?.querySelector('#scope-choices')?.replaceChildren();
+  listRootSel = candidate.listRoot;
+  itemSel = candidate.itemSelector;
+  sampleItem = candidate.sampleItem;
+  phase = 'fields';
+  highlightSiblings();
+  setBadge(`${candidate.itemCount} items`);
+  if (announce) {
+    flashHint(
+      `${candidate.itemCount} matching items selected. Click fields inside one item, then Done.`,
+      'ok',
+    );
+    void chrome.runtime.sendMessage({
+      __matrx: true,
+      kind: 'data:list-picker-item-detected',
+      payload: {
+        session_id: sessionId,
+        list_root: listRootSel,
+        item_selector: itemSel,
+        item_count: candidate.itemCount,
+      },
+    });
+  }
+}
+
+function showScopeChoices(candidates: ListPatternCandidate[]) {
+  scopeCandidates = candidates;
+  setHint('Several groups repeat here. Choose which group you want to extract.');
+  const container = shadow?.querySelector('#scope-choices');
+  if (!container) return;
+  container.replaceChildren();
+  for (const [index, candidate] of scopeCandidates.entries()) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.dataset.scopeChoice = String(index);
+    const kind = candidate.sampleItem.tagName.toLowerCase() === 'li' ? 'list items' : 'cards';
+    const sample = (candidate.sampleItem.textContent ?? '').trim().slice(0, 48);
+    button.textContent = `${candidate.itemCount} ${kind} (${candidate.itemSelector})`;
+    const detail = document.createElement('small');
+    detail.textContent = `${candidate.listRoot}${sample ? ` · ${sample}` : ''}`;
+    button.appendChild(detail);
+    button.addEventListener('click', () => selectScope(candidate, true));
+    container.appendChild(button);
+  }
 }
 
 function onHover(e: Event) {
   const t = e.target;
   if (!(t instanceof Element) || isOurNode(t)) return;
-  // In fields phase, hover only highlights elements inside the sample item.
-  if (phase === 'fields' && sampleItem && !sampleItem.contains(t)) {
+  // A field may be chosen from any repeated item, not just the first sample.
+  if (phase === 'fields' && !itemContaining(t)) {
     if (highlight) highlight.style.display = 'none';
     return;
   }
@@ -157,42 +255,25 @@ function onClick(e: Event) {
   e.stopPropagation();
 
   if (phase === 'item') {
-    const inferred = inferListPattern(t);
-    if (!inferred) {
+    const candidates = inferListPatternCandidates(t);
+    if (candidates.length === 0) {
       flashHint(
         'No similar siblings found. Try clicking a higher-level wrapper (the whole card, not text inside it).',
         'warn',
       );
       return;
     }
-    listRootSel = inferred.listRoot;
-    itemSel = inferred.itemSelector;
-    sampleItem = inferred.sampleItem;
-    highlightSiblings();
-    flashHint(
-      `${inferred.itemCount} similar items detected. Click fields, OR add suggested fields in the side panel, then Done.`,
-      'ok',
-    );
-    setBadge(`${inferred.itemCount} items`);
-    phase = 'fields';
-    // Notify the sidepanel right now — without waiting for Done — so the
-    // Suggested Fields panel can populate immediately.
-    void chrome.runtime.sendMessage({
-      __matrx: true,
-      kind: 'data:list-picker-item-detected',
-      payload: {
-        session_id: sessionId,
-        list_root: listRootSel,
-        item_selector: itemSel,
-        item_count: inferred.itemCount,
-      },
-    });
+    const soleCandidate = candidates.length === 1 ? candidates[0] : undefined;
+    if (soleCandidate) selectScope(soleCandidate, true);
+    else showScopeChoices(candidates);
     return;
   }
 
   if (phase === 'fields' && sampleItem) {
-    if (!sampleItem.contains(t)) return;
-    const rel = relativeFieldSelector(t, sampleItem);
+    const item = itemContaining(t);
+    if (!item) return;
+    sampleItem = item;
+    const rel = relativeFieldSelector(t, item);
     if (!rel) return;
     const text = (t.textContent ?? '').trim().slice(0, 80);
     picked.push({
@@ -286,6 +367,8 @@ function renderPicked() {
 
 function restart() {
   clearSiblingHighlights();
+  scopeCandidates = [];
+  shadow?.querySelector('#scope-choices')?.replaceChildren();
   phase = 'item';
   listRootSel = null;
   itemSel = null;
