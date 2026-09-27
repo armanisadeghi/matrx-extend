@@ -131,14 +131,15 @@ async function organizationState(panel, approvedName) {
   );
 }
 
-async function chooseOrganization(panel, name, approvedName) {
-  let step = 'settings_tab';
+async function openOrganizationPicker(panel, approvedName) {
+  let step = 'organization_picker_settings_tab';
+  stage = step;
   try {
     await click(panel, 'title', 'Settings');
     // The no-workspace notice occupies the bottom of this narrow panel.
     // Collapse the real Account section to bring the Organization controls
     // above it, without dismissing the notice whose retirement we must test.
-    step = 'account_section_collapse';
+    stage = step = 'organization_picker_account_section_collapse';
     const account = await evaluate(
       panel,
       `(() => {
@@ -161,27 +162,38 @@ async function chooseOrganization(panel, name, approvedName) {
         ),
       (states) => states?.length === 1 && states[0] === 'false',
     );
-    step = 'organization_section';
+    stage = step = 'organization_picker_organization_section';
     await openSection(panel, 'Organization');
-    step = 'organization_control_ready';
+    stage = step = 'organization_picker_organization_control_ready';
     await waitFor(
       'organization_control',
       () => organizationState(panel, approvedName),
       (state) => state?.controlCount === 1,
     );
-    step = 'organization_control_click';
+    stage = step = 'organization_picker_organization_control_click';
     await click(panel, 'organization', 'Acting as');
-    step = 'approved_option_ready';
+    stage = step = 'organization_picker_approved_option_ready';
     const offered = await organizationState(panel, approvedName);
+    return offered;
+  } catch (error) {
+    report.observations.organizationSelectionFailure = { step, ...safeExceptionDetails(error) };
+    report.failureCode ??= safeFailureCategory(error);
+    throw error;
+  }
+}
+
+async function chooseOrganization(panel, name, approvedName) {
+  const offered = await openOrganizationPicker(panel, approvedName);
+  try {
     if (offered.approvedOptionCount !== 1) fail('approved_org_not_unique_or_absent');
     if (
       offered.otherOptions.filter((option) => option === name).length !==
       (name === approvedName ? 0 : 1)
     )
       fail('comparison_org_not_unique_or_absent');
-    step = 'organization_option_click';
+    stage = 'organization_option_click';
     await click(panel, 'option', name);
-    step = 'organization_selected';
+    stage = 'organization_selected';
     return await waitFor(
       'organization_selected',
       () => organizationState(panel, approvedName),
@@ -190,9 +202,13 @@ async function chooseOrganization(panel, name, approvedName) {
         Boolean(state.storedId) &&
         state.storedApproved === (name === approvedName),
     );
-  } catch {
-    report.observations.organizationSelectionFailure = { step };
-    fail('organization_selection_failed');
+  } catch (error) {
+    report.observations.organizationSelectionFailure = {
+      step: stage,
+      ...safeExceptionDetails(error),
+    };
+    report.failureCode ??= safeFailureCategory(error);
+    throw error;
   }
 }
 
@@ -257,6 +273,36 @@ function navigationErrorShape(error) {
   };
 }
 
+function safeExceptionDetails(error) {
+  const names = [
+    'Error',
+    'TimeoutError',
+    'TypeError',
+    'ReferenceError',
+    'RangeError',
+    'SyntaxError',
+    'TargetClosedError',
+  ];
+  const pointer = error?.driverFailure;
+  return {
+    errorClass: names.includes(error?.name) ? error.name : 'other',
+    category: safeFailureCategory(error),
+    pointer: pointer
+      ? {
+          visibleMatchCount: Number.isInteger(pointer.visibleMatchCount)
+            ? pointer.visibleMatchCount
+            : null,
+          matchedTargetCount: Number.isInteger(pointer.matchedTargetCount)
+            ? pointer.matchedTargetCount
+            : null,
+          hitTarget: pointer.hitTarget === true,
+          animating: pointer.animating === true,
+          targetDisabled: pointer.targetDisabled === true,
+        }
+      : null,
+  };
+}
+
 function safeFailureCategory(error) {
   const pointerCodes = [
     'pointer_initial_evaluation_failed',
@@ -275,6 +321,10 @@ function safeFailureCategory(error) {
   if (shape.protocolError) return 'navigation_protocol_error';
   if (shape.targetClosed) return 'navigation_target_closed';
   if (shape.interruptedNavigation) return 'navigation_interrupted';
+  if (error?.name === 'ReferenceError') return 'unexpected_reference_error';
+  if (error?.name === 'TypeError') return 'unexpected_type_error';
+  if (error?.name === 'SyntaxError') return 'unexpected_syntax_error';
+  if (error?.name === 'RangeError') return 'unexpected_range_error';
   if (error?.name === 'TimeoutError') return 'browser_timeout';
   if (message.startsWith('scoped_read_completed_not_observed:')) return 'lookup_wait_expired';
   if (message.startsWith('recognition_ui_matches_response_not_observed:'))
@@ -539,8 +589,10 @@ async function discoverFixture(panel, page, fixtureSession, reads, organizationI
   let pageLimit = null;
   let listOrigin = null;
   const seen = new Set();
+  stage = 'discovery_saved_captures_open';
   await discoveryUiStep(deadline, () => click(panel, 'title', 'Saved captures'));
   for (let index = 0; index < DISCOVERY_MAX_PAGES; index += 1) {
+    stage = 'discovery_scoped_list_response';
     const list = await discoveryStep(deadline, (remaining) =>
       waitFor(
         'existing_sources_read',
@@ -620,6 +672,7 @@ async function discoverFixture(panel, page, fixtureSession, reads, organizationI
       diagnostics.exhausted = true;
       return { fixture: null, origin: list.origin };
     }
+    stage = 'discovery_pagination_readiness';
     const pagination = await discoveryStep(deadline, (remaining) =>
       waitFor(
         'source_list_page_settled',
@@ -649,6 +702,7 @@ async function discoverFixture(panel, page, fixtureSession, reads, organizationI
     // Bind the next request to the last visible card, not the last raw row:
     // the UI filters superseded/unreadable rows before choosing its cursor.
     // Ambiguous presentation is unverified; no private labels leave memory.
+    stage = 'discovery_cursor_observation';
     const lastVisibleIndex = await discoveryStep(deadline, () =>
       evaluate(
         panel,
@@ -683,6 +737,7 @@ async function discoverFixture(panel, page, fixtureSession, reads, organizationI
       fail('source_cursor_unavailable');
     expectedCursor = `(created_at.lt.${last.captured_at},and(created_at.eq.${last.captured_at},id.lt.${last.id}))`;
     since = reads.records.length;
+    stage = 'discovery_load_more_click';
     await discoveryUiStep(deadline, () => click(panel, 'button', 'Load more'));
   }
   fail('source_discovery_unverified');
@@ -751,10 +806,9 @@ async function discoverAcrossWorkspaces(
     if (index === 0) {
       // Enumerate actual accessible options only after the original scoped list
       // proves no eligible row. No stored fallback or organization inference.
-      await discoveryUiStep(deadline, () => click(panel, 'title', 'Settings'));
-      await discoveryUiStep(deadline, () => openSection(panel, 'Organization'));
-      await discoveryUiStep(deadline, () => click(panel, 'organization', 'Acting as'));
-      const offered = await discoveryStep(deadline, () => organizationState(panel, originalName));
+      const offered = await discoveryUiStep(deadline, () =>
+        openOrganizationPicker(panel, originalName),
+      );
       if (offered.approvedOptionCount !== 1) fail('original_workspace_option_unavailable');
       candidates = [
         originalName,
@@ -764,6 +818,7 @@ async function discoverAcrossWorkspaces(
       ];
       summary.accessibleUniqueChoices = candidates.length;
       summary.choicesEnumeratedFromPicker = true;
+      stage = 'discovery_picker_dismiss_original';
       await discoveryUiStep(deadline, () => click(panel, 'option', originalName));
     }
   }
@@ -1157,10 +1212,7 @@ try {
         }
 
         stage = 'comparison_workspace_discovery';
-        await click(panel, 'title', 'Settings');
-        await openSection(panel, 'Organization');
-        await click(panel, 'organization', 'Acting as');
-        const offered = await organizationState(panel, approvedName);
+        const offered = await openOrganizationPicker(panel, approvedName);
         const otherName =
           positiveName !== approvedName
             ? offered.approvedOptionCount === 1
@@ -1254,10 +1306,11 @@ try {
   });
   const end = await buildIdentity();
   if (end.treeSha256 !== startBuild.treeSha256) fail('build_changed_during_run');
-} catch {
+} catch (error) {
   report.status = 'unverified';
   report.failureStage = stage;
-  report.failureCode ??= 'stage_not_observed';
+  report.exception = safeExceptionDetails(error);
+  report.failureCode ??= report.exception.category;
 } finally {
   await mkdir(join(REPO, 'test-results'), { recursive: true });
   await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });

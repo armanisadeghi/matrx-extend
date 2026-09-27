@@ -165,6 +165,22 @@
         }
       ],
       "verification": "Node syntax and targeted Biome passed. No runtime/test executed; root must obtain narrow peer and admit any diagnostic run. No positive/multi-workspace/late-lookup claim."
+    },
+    "post_probe_discovery_repair": {
+      "status": "Source repair and full path review completed; independent peer/native result pending.",
+      "concrete_source_findings": [
+        "Undeclared-variable Biome lint found no ReferenceError-class undeclared binding in the runner. Reviewed returned fixture/null branch, candidate counters, list cursor/limit and per-workspace deadline plumbing; no unbound variable identified.",
+        "Discovery enumeration and later comparison duplicated a raw Settings/open Organization/click picker path, omitting Account collapse and control-readiness checks used by chooseOrganization and successful cleanup. Settings Account Collapsible defaults to open; raw sibling path can therefore operate on a different narrow-panel layout.",
+        "Outer catch discarded every original exception as stage_not_observed, while chooseOrganization also replaced original errors. This prevented diagnosis across otherwise unrelated discovery phases."
+      ],
+      "repair": [
+        "Extracted existing successful picker preparation into openOrganizationPicker and reused it for selection, discovery enumeration and comparison. It retains real UI operations, Account-collapse and picker readiness; no role/state injection.",
+        "Safe exception class/category and bounded pointer counts/flags are captured at helper and outer boundary; original error is rethrown. ReferenceError/TypeError/SyntaxError/RangeError remain distinct without variable names or raw text.",
+        "Assigned fixed stages throughout list reading, page probing, pagination readiness, cursor observation, Load more, picker preparation and dismissal. Cleanup continues to join prior UI operations and restore original workspace."
+      ],
+      "causal_limit": "Picker-preparation divergence and exception-loss are confirmed source defects. Run008 lacked its original error and viewport evidence, so Account expansion is not claimed as its proven runtime cause. The common path repair is grounded in the successful sibling and removes this divergence; one peer-reviewed guarded run must resolve remaining uncertainty.",
+      "verification": "Node --check, targeted Biome check and explicit noUndeclaredVariables lint passed. No browser/tests/heavy run, Source mutation, Save/capture/checkpoint access, TLS bypass or timeout relaxation.",
+      "privacy": "Only fixed stage/category, safe exception-class enum, counts and booleans enter artifacts. No raw errors, identifiers, URLs, names, payloads or credentials."
     }
   },
   "readonly_001_preserved": {
@@ -446,5 +462,117 @@
     "source_change": "Within the existing page, workspace and discovery deadlines, each genuinely listed public-eligible Source is navigated read-only with scripts disabled and the public GET/HEAD route guard. Non-success HTTP responses and known unavailable-page transport failures are counted by fixed safe category, then discovery continues through real rows, pagination and accessible organizations. An unknown browser or runner error still fails the attempt.",
     "acceptance_boundary": "A selected fixture still needs a successful exact-URL page navigation, actual organization-scoped HTTP 200 Source lookup, matching saved UI and Open target, comparison workspace, late real response, and restoration. Candidate probing cannot satisfy these predicates or turn HTTP 500 into a healthy page.",
     "verification": "Source syntax and targeted Biome only. No guarded native run of this change yet; independent review and root resource admission remain required. No Save, capture, checkpoint access, fixture creation, or source product edit."
+  },
+  "readonly_008_preserved": {
+    "sha256": "506f8dd5ac72f34adb2560bf379024182d8089869e42105fe84ab5affb459e01",
+    "result": {
+      "schema_version": 1,
+      "defect_id": "EXT-D-0022",
+      "status": "unverified",
+      "scope": "Existing Source recognition, workspace switching, authentic delayed lookup; no Source writes",
+      "observations": {
+        "lateInflightSave": "unverified",
+        "realAdminUi": true,
+        "fixturePageMode": "scripts_disabled_service_workers_bypassed",
+        "publicPageGuardCounts": {
+          "intercepted": 1,
+          "continued": 1,
+          "blocked": 0
+        },
+        "publicPageBlockedRequests": {},
+        "workspaceDiscovery": {
+          "accessibleUniqueChoices": null,
+          "choicesEnumeratedFromPicker": false,
+          "attemptedWorkspaces": 1,
+          "unavailableCandidatePages": 1,
+          "selectedOriginal": true,
+          "workspaces": [
+            {
+              "ordinal": 1,
+              "original": true,
+              "selectedByUi": true,
+              "scopedLookupOrganizationMatched": true,
+              "discovery": {
+                "pages": 1,
+                "rows": 1,
+                "totalReturnedRows": 1,
+                "urlPresent": 1,
+                "httpUrls": 1,
+                "publicEligible": 1,
+                "categories": {
+                  "eligible": 1
+                },
+                "candidatePages": {
+                  "attempted": 1,
+                  "healthy": 0,
+                  "unavailable": {
+                    "http_not_success": 1
+                  },
+                  "httpStatusCounts": {
+                    "500": 1
+                  }
+                },
+                "listPages": [
+                  {
+                    "status": 200,
+                    "rowCount": 1,
+                    "urlAliasSelected": true,
+                    "cursorPresent": false,
+                    "expectedCursorMatched": true,
+                    "limit": 40
+                  }
+                ],
+                "pagination": [],
+                "exhausted": true
+              }
+            }
+          ],
+          "scope": "bounded_accessible_workspace_search"
+        },
+        "fixtureDiscovery": {
+          "pages": 1,
+          "rows": 1,
+          "totalReturnedRows": 1,
+          "urlPresent": 1,
+          "httpUrls": 1,
+          "publicEligible": 1,
+          "categories": {
+            "eligible": 1
+          },
+          "candidatePages": {
+            "attempted": 1,
+            "healthy": 0,
+            "unavailable": {
+              "http_not_success": 1
+            },
+            "httpStatusCounts": {
+              "500": 1
+            }
+          },
+          "listPages": [
+            {
+              "status": 200,
+              "rowCount": 1,
+              "urlAliasSelected": true,
+              "cursorPresent": false,
+              "expectedCursorMatched": true,
+              "limit": 40
+            }
+          ],
+          "pagination": [],
+          "exhausted": true
+        },
+        "workspaceCleanup": "pass"
+      },
+      "build": {
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.85",
+        "treeSha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff"
+      },
+      "failureStage": "discover_existing_public_source",
+      "failureCode": "stage_not_observed"
+    },
+    "classification": "Candidate probe correctly classified actual HTTP500 as unavailable and exhausted one scoped list. Failure occurred after workspace summary append and before picker enumeration count assignment. Healthy-resource wrapper exited1. Original exception was discarded by outer catch; exact thrown error cannot be recovered."
   }
 }
