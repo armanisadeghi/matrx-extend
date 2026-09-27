@@ -1277,13 +1277,22 @@ Every entry follows this shape:
 
 ### Showcase — Network tab
 - **What it does:** Captures top-frame fetch/XHR while you interact; pick a
-  response, drill into the JSON, save url_filter+key_path as a pattern.
-- **Steps:** Start capture on an SPA, scroll/click so API calls fire, select
-  a JSON response, click into the array node, Save pattern.
+  response, drill into the JSON, and save its request URL matcher and key path
+  as an interactive pattern.
+- **Steps:** Start capture on an SPA, scroll/click so two JSON API calls with
+  distinct URLs fire, search for `json` by content type, select one response,
+  click its array node, and Save pattern. Change the list search before saving
+  to confirm the selected response and preview stay pinned. Reopen the saved
+  pattern in Patterns and Run on the same open page; test an edited matcher
+  that excludes the selected URL, too.
 - **Expected:** Only the captured tab's requests appear (another tab's
   traffic never pollutes the list); Reload stops the recording state;
   buffer caps at 500 events with a "dropped" notice; events survive
-  switching to another sub-tab and back.
+  switching to another sub-tab and back. The saved URL matcher targets the
+  selected request rather than the display search, and rerun reloads the
+  page and returns rows from that request when it fires. A matcher that omits
+  the selected URL warns without blocking Save; no-match rerun explains how
+  to trigger the request again. No scheduled replay is claimed.
 
 ### Showcase — Patterns tab (lifecycle + re-run)
 - **What it does:** Lists every saved pattern for the host with health

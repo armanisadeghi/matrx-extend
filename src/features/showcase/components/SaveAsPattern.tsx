@@ -241,7 +241,9 @@ export function SaveAsPattern({
             Save pattern
           </div>
           <div className="text-xs text-muted-foreground">
-            Stored under {host}. Backend can re-run on schedule.
+            Save under {host}. Reopen and run it from Patterns.
+            {kind === 'network_capture' &&
+              ' Network reruns reload the open page and listen for a matching request.'}
           </div>
         </div>
 

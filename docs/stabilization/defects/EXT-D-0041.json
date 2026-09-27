@@ -1,0 +1,48 @@
+{
+  "id": "EXT-D-0041",
+  "feature_id": "EXT-F-1012",
+  "case_ids": [
+    "EXT-F-1012-T47",
+    "EXT-F-1012-T50"
+  ],
+  "surface": "Showcase Network capture → Save pattern → Patterns replay",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Capture two JSON fetch responses with distinct URLs on an interactive page.",
+    "Search the captured list for the content type json, select one response, select its array key path, and save the pattern.",
+    "Reopen the saved pattern and rerun it on the same page while the selected request fires."
+  ],
+  "expected": "The saved request matcher targets the selected response URL, independent of the list search. Rerun reloads the open page and extracts the selected JSON path when that request fires; a search change cannot silently switch the selected response.",
+  "actual": "Source before repair saves the display search term json as config.url_filter. The runner matches that filter against request URLs only, so a URL without json cannot match and the rerun times out. Selection is also an index into the filtered list, so changing the search can silently point Save at a different response. Installed-extension reproduction remains pending.",
+  "evidence": [
+    "src/features/showcase/tabs/NetworkTab.tsx",
+    "src/lib/data-pattern/run-interactive.ts",
+    "tests/unit/showcase-network-save-replay.test.tsx"
+  ],
+  "severity": "S2: a saved recipe can fail to recapture the selected data or silently target another response",
+  "priority": "P1: Showcase selected-data save/replay reliability",
+  "state": "in-fix",
+  "reproduction_status": "source-boundary-red-confirmed",
+  "verification_status": "focused-green-2-of-2; combined compile resource-deferred after D42 test type correction; independent installed-extension replay pending",
+  "transition_history": [
+    {
+      "at": "2026-09-27T16:04:41Z",
+      "from": null,
+      "to": "open",
+      "reason": "Source boundary confirmed; focused red/green and independent installed-extension selected request → saved recipe → rerun evidence pending."
+    },
+    {
+      "at": "2026-09-27T16:08:53Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Both intended pre-repair component-to-matcher regressions failed on the actual Network Save UI and runner matcher."
+    },
+    {
+      "at": "2026-09-27T16:27:14Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Reconciled state after the Network source repair and focused 2/2 green; combined TypeScript check and independent installed-extension replay remain pending."
+    }
+  ],
+  "closure_requirement": "Run the focused regression red on pre-repair source and green on repaired source, compile and build, then have an independent verifier capture a real JSON request, search by content type, save its recipe, reopen and rerun on the same open page, and confirm returned rows and matching request identity. Include a filter-change selection check and honest no-match guidance."
+}

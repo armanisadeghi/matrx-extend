@@ -245,7 +245,8 @@ interface SavedNetConfig {
 /**
  * url_filter matching: globs (with *) when present, substring otherwise.
  * Saved filters look like "api.site.com/v1/items/*" (urlPattern output) or
- * free text the user typed into the filter box.
+ * an explicitly edited request URL matcher. Display-list searches are never
+ * saved here because they can match content type instead of request URL.
  */
 export function matchesUrlFilter(url: string, filter: string): boolean {
   const f = filter.trim();

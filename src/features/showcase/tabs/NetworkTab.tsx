@@ -1,5 +1,7 @@
 import { JsonTree } from '@/components/ui/json-tree';
 import { useNetworkCapture } from '@/hooks/use-network-capture';
+import type { CapturedNetEvent } from '@/lib/data-pattern/network-tap';
+import { matchesUrlFilter } from '@/lib/data-pattern/run-interactive';
 import { cn } from '@/lib/utils';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { formatFileSize } from '@ai-matrx/kit/format';
@@ -14,8 +16,9 @@ export function NetworkTab() {
   const { capturing, events, error, installed, start, stop, reload, clear, source, dropped } =
     useNetworkCapture();
   const [filter, setFilter] = useState('');
-  const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<CapturedNetEvent | null>(null);
   const [extractKeyPath, setExtractKeyPath] = useState('');
+  const [replayUrlFilter, setReplayUrlFilter] = useState('');
 
   const filtered = useMemo(() => {
     if (!filter) return events;
@@ -26,7 +29,16 @@ export function NetworkTab() {
     );
   }, [events, filter]);
 
-  const selected = selectedIdx !== null ? filtered[selectedIdx] : null;
+  // Search only changes the visible list. Keep the preview pinned to the
+  // captured response itself, including when the search hides it.
+  const selected = selectedEvent && events.includes(selectedEvent) ? selectedEvent : null;
+  const savedUrlFilter = selected ? replayUrlFilter.trim() || urlPattern(selected.url) : '';
+
+  const selectEvent = (event: CapturedNetEvent) => {
+    setSelectedEvent(event);
+    setExtractKeyPath('');
+    setReplayUrlFilter(urlPattern(event.url));
+  };
 
   const parsedBody = useMemo<unknown | null>(() => {
     if (!selected) return null;
@@ -155,10 +167,10 @@ export function NetworkTab() {
                 // biome-ignore lint/suspicious/noArrayIndexKey: events are append-only.
                 key={i}
                 type="button"
-                onClick={() => setSelectedIdx(i)}
+                onClick={() => selectEvent(e)}
                 className={cn(
                   'flex w-full items-baseline gap-2 rounded-md px-2 py-1 text-left font-mono text-[10px] hover:bg-background/60',
-                  selectedIdx === i && 'bg-primary/10 ring-1 ring-primary/40',
+                  selected === e && 'bg-primary/10 ring-1 ring-primary/40',
                 )}
               >
                 <StatusBadge status={e.status} />
@@ -182,6 +194,32 @@ export function NetworkTab() {
                 {selected.content_type ?? 'unknown'} · {formatFileSize(selected.body_size)}
                 {selected.body_truncated && ' · truncated'}
               </div>
+            </div>
+
+            <div className="space-y-1">
+              <label
+                htmlFor="network-replay-url-filter"
+                className="text-[11px] font-medium text-muted-foreground"
+              >
+                Request URL to match on rerun
+              </label>
+              <Input
+                id="network-replay-url-filter"
+                value={replayUrlFilter}
+                onChange={(event) => setReplayUrlFilter(event.target.value)}
+                placeholder={urlPattern(selected.url)}
+                className="h-8 rounded-full bg-background text-xs"
+              />
+              <div className="text-[10px] text-muted-foreground">
+                The saved run reloads this page and listens for a matching fetch/XHR request. Use *
+                for changing URL segments. Search above only filters this list.
+              </div>
+              {!matchesUrlFilter(selected.url, savedUrlFilter) && (
+                <div className="text-[10px] text-amber-700 dark:text-amber-400">
+                  This matcher does not include the selected response. Rerun may capture different
+                  data or find no request.
+                </div>
+              )}
             </div>
 
             {parsedBody !== null ? (
@@ -217,7 +255,7 @@ export function NetworkTab() {
                 <SaveAsPattern
                   kind="network_capture"
                   config={{
-                    url_filter: filter || urlPattern(selected.url),
+                    url_filter: savedUrlFilter,
                     method: selected.method,
                     key_path: extractKeyPath,
                   }}
