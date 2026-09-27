@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "runId": "screenshot-guest-dev093-002",
+  "runnerStatus": "partial",
+  "case": "EXT-F-1009-T09",
+  "caseStatus": "partial",
+  "sourceHeadAtRun": "2de0364c38c4658d5ae37d7b422d0dddeade4ddc",
+  "artifactSourceBase": "356c07d57c58795361e2afd04f245d21086ad15d",
+  "scenario": {
+    "mode": "real_admin_to_guest_transition",
+    "guestPanelReloadRequested": true,
+    "realAdminToGuestSignOutRequested": true,
+    "ownedProfileVerified": true
+  },
+  "build": {
+    "receipt": "test-results/source-dev-build-093-contained-20260927.json",
+    "version": "0.2.93",
+    "treeSha256": "6b2f5a0cff151755e3de140592f6f92148ee184e95746cf07c9c539e3f62cb76",
+    "receiptSha256": "6a213156ca241be1cd59bfb02fc1a6095f3dd2c5ee2cd9c16e9b10309465da41",
+    "identityMatchedBeforeAndAfter": true
+  },
+  "guard": {
+    "resourceAdmission": "RESOURCE_ADMITTED",
+    "pressureLevel": 1,
+    "availableMemoryGiB": 12,
+    "requiredMemoryGiB": 4,
+    "oneMinuteLoad": 6.16,
+    "logicalCpus": 10,
+    "cpuBusyFraction": 0.39611428571428575,
+    "swapUsedMiB": 2724.56,
+    "childExitCode": 0,
+    "leaseReleased": true,
+    "terminalAt": "2026-09-27T10:07:18.924Z"
+  },
+  "subcases": [
+    {
+      "id": "initial_guest_protected_navigation",
+      "status": "pass",
+      "observed": {
+        "mainTabCount": 5,
+        "screenshotsTriggerCount": 0,
+        "screenshotsContentMounted": false,
+        "screenshotsPaneCount": 0,
+        "activePaneIsScreenshots": false,
+        "guestAvatarCount": 1,
+        "adminAvatarCount": 0
+      }
+    },
+    {
+      "id": "guest_public_navigation",
+      "status": "pass",
+      "views": ["Settings", "SEO"],
+      "selectedLinkedViewAndMarkerObserved": true,
+      "screenshotsTriggerAndContentAbsent": true
+    },
+    {
+      "id": "guest_real_panel_reload",
+      "status": "pass",
+      "newDocumentObserved": true,
+      "accessibleGuestChatRestored": true,
+      "guestGuidanceObserved": true,
+      "screenshotsTriggerAndContentAbsent": true
+    },
+    {
+      "id": "admin_screenshots_then_real_signout",
+      "status": "pass",
+      "adminScreenshotsSelectedBeforeSignout": true,
+      "realAvatarSignoutUsed": true,
+      "accessibleGuestChatRecovered": true,
+      "guestGuidanceObserved": true,
+      "screenshotsTriggerAndContentAbsentAfterSignout": true
+    }
+  ],
+  "immutableResult": {
+    "sourcePath": "test-results/screenshot-guest-acceptance-cbe57179-f499-4c88-86ea-a284b2cd2067.json",
+    "path": "test-results/screenshot-guest-dev093-002.evidence.json",
+    "mode": "0600",
+    "sha256": "f6c1b1a5af8bd514e3fe6a063436632adaf98826d31ba0e6b3f2a65f11fc8eea"
+  },
+  "privateWrapperLog": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-guest-dev093-002-wrapper.log",
+    "mode": "0600",
+    "sha256": "651a8d611e4df95476ff23dcae08e870c30a176a7340a7e03f661fb89badf881"
+  },
+  "coverageBoundary": "Four T09 subcases passed; full T09 remains partial because arbitrary direct/persisted state is unverified. Capture/gallery T01-T08 were not tested.",
+  "unverified": [
+    "Arbitrary direct or persisted inaccessible Screenshots state.",
+    "Member/admin controls and the full control-by-mode matrix.",
+    "All capture and gallery behavior in T01-T08."
+  ]
+}

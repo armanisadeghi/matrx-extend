@@ -16,13 +16,14 @@
     "docs/stabilization/runs/screenshot-guest-dev093-001.json",
     "docs/stabilization/reports/screenshot-guest-ready.json",
     "tests/browser/screenshot-guest-acceptance.mjs",
-    "docs/stabilization/reports/screenshot-wiring-peer.json"
+    "docs/stabilization/reports/screenshot-wiring-peer.json",
+    "docs/stabilization/runs/screenshot-guest-dev093-002.json"
   ],
   "severity": "S3: test infrastructure prevents guest Screenshot acceptance; no product failure shown",
   "priority": "P1: unblock contained native coverage",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/screenshot_guest_batch",
-  "fix_commits": [],
+  "fix_commits": ["2de0364c"],
   "transition_history": [
     {
       "at": "2026-09-27T09:59:16.193587+00:00",
@@ -47,6 +48,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Independent Sol peer traced all development provenance arguments through the actual harness call and verified default release and ownership checks remain intact. Native retry pending."
+    },
+    {
+      "at": "2026-09-27T10:07:18.924Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent guarded retry used verified owned .93 development profile and executed four intended guest/reload/sign-out subcases, all passing. Original setup failure no longer reproduces; full feature remains unverified."
+    },
+    {
+      "at": "2026-09-27T10:07:18.924Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent guarded retry used verified owned .93 development profile and executed four intended guest/reload/sign-out subcases, all passing. Original setup failure no longer reproduces; full feature remains unverified."
     }
   ],
   "closure_requirement": "Peer verifies the actual caller-to-harness provenance chain; guarded native retry enters the owned profile and executes its intended cases. Preserve all artifact/ownership guards."

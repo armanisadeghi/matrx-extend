@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-27T10:00:38.979Z",
+  "updated_at": "2026-09-27T10:07:18.924Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -12833,17 +12833,35 @@
           ],
           "defect_ids": [
             "EXT-D-0030"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": "screenshot-guest-dev093-002",
+              "verified_substeps": [
+                "Initial guest protected navigation and public Settings/SEO views keep Screenshots absent.",
+                "Actual panel reload restores accessible guest view.",
+                "Actual admin sign-out from Screenshots restores guest view without protected content."
+              ],
+              "remaining_criteria": [
+                "Arbitrary direct or persisted inaccessible Screenshots state."
+              ],
+              "evidence": "docs/stabilization/runs/screenshot-guest-dev093-002.json"
+            }
+          }
         }
       ],
       "cells": {
         "guest": {
           "test_status": "unverified",
-          "defect_ids": [],
-          "run_ids": [
-            "screenshot-guest-003"
+          "defect_ids": [
+            "EXT-D-0030"
           ],
-          "retest_status": "not-run"
+          "run_ids": [
+            "screenshot-guest-003",
+            "screenshot-guest-dev093-002"
+          ],
+          "retest_status": "partial"
         },
         "member": {
           "test_status": "unverified",
