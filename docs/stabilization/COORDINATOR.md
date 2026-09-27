@@ -1,6 +1,7 @@
 # Matrx Extend stabilization: resume here
 
 Updated after D22 native run 011 and guarded Debug export run 002. Campaign incomplete; `inventory.json` is coverage authority (205 features, 693 cases).
+Read [the stabilization handoff](HANDOFF.md) for the plain-English done/pending map, evidence limits, and guarded restart example; this checkpoint and the inventory/defects remain the current status authority.
 
 ## Current truth and next actions
 

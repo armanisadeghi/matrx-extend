@@ -71,4 +71,43 @@ The `Tools / registered executor` count is a source inventory count, not 169 run
 5. Continue contained surfaces through every control and every applicable guest/member/admin cell, recording no-result as unfinished. Route genuine reproducible bugs into a stable defect JSON, fix their class, obtain an independent reproduction/adjacent-case retest, and then close them. Defer systematic Chat/Pilot until the non-Chat/Pilot gate is actually green; log incidental findings immediately.
 6. Reconcile `main` regularly. Before publishing a code or evidence change, check the exact merged source, run relevant gates, and keep build-bound verdicts tied to their original tree. Use the existing [plan's lane and escalation thresholds](PLAN.md): Luna testing gets two failed attempts or 15 minutes before decomposition/reroute; Sol implementation gets two failed rounds, a repeated regression, or 30 minutes without verified progress before escalation. Independent peer review precedes integration.
 
+### Concrete guarded restart on this host
+
+For an **owned isolated profile**, the previous runs used the actual external temporary/profile directory below. Confirm it still exists and is writable, then set this variable once in the shell. Primary personal Chrome uses its real boot-volume profile for admission; never pass this external directory as a substitute for that profile.
+
+```sh
+stabilization_tmp='/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032'
+```
+
+Run each following command **separately**, after checking there is no active heavy lease. Use a fresh timestamped run ID for every launch. Confirm the wrapper exited zero, its child finished, and the lease cleared before starting the next command. Stop and diagnose any refusal or nonzero exit; these lines are not an automatic retry script. The install deliberately skips lifecycle scripts; run WXT preparation through its own guard if needed for the subsequent compile/build.
+
+```sh
+TMPDIR="$stabilization_tmp" node scripts/stabilization-resource.mjs run --run-id "resume-install-$(date -u +%Y%m%dT%H%M%SZ)-$$" --profile-dir "$stabilization_tmp" -- pnpm install --frozen-lockfile --ignore-scripts
+```
+
+```sh
+TMPDIR="$stabilization_tmp" node scripts/stabilization-resource.mjs run --run-id "resume-prepare-$(date -u +%Y%m%dT%H%M%SZ)-$$" --profile-dir "$stabilization_tmp" -- pnpm exec wxt prepare
+```
+
+```sh
+TMPDIR="$stabilization_tmp" node scripts/stabilization-resource.mjs run --run-id "resume-compile-$(date -u +%Y%m%dT%H%M%SZ)-$$" --profile-dir "$stabilization_tmp" -- pnpm compile
+```
+
+```sh
+TMPDIR="$stabilization_tmp" node scripts/stabilization-resource.mjs run --run-id "resume-devbuild-$(date -u +%Y%m%dT%H%M%SZ)-$$" --profile-dir "$stabilization_tmp" -- pnpm exec wxt build --mode development
+```
+
+Only after the build wrapper succeeds, record its **new, immutable** local artifact receipt. The recorder refuses an existing output file and a manifest/version mismatch; it never turns the dev build into a published release.
+
+```sh
+dev_receipt="test-results/source-dev-build-$(date -u +%Y%m%dT%H%M%SZ)-$$.json"
+node scripts/record-local-dev-build.mjs --extension-dir .output/chrome-mv3-dev --output "$dev_receipt"
+```
+
+After the redirect/oracle audit and a fresh runner review, a D22 **read-only** browser run is a single guard-owned child as below. Set `MATRX_PLAYWRIGHT_MODULE` and `MATRX_CHROME_PATH` to the installed paths required by [the native harness](../../tests/browser/native-sidepanel-qa-harness.mjs); keep credentials and private fixture values out of the shell log and committed evidence. Inspect the wrapper exit, child result and lease before adjudicating the run. This example does not authorize the reserved Save path.
+
+```sh
+SOURCE_DEV_BUILD_RECEIPT="$PWD/$dev_receipt" TMPDIR="$stabilization_tmp" node scripts/stabilization-resource.mjs run --run-id "resume-d22-readonly-$(date -u +%Y%m%dT%H%M%SZ)-$$" --profile-dir "$stabilization_tmp" -- node tests/browser/source-recognition-readonly-acceptance.mjs
+```
+
 Credentials are retrieved only at point of use from the authorized local source or authenticated vault UI; no password, token, auth URL, Source ID or private fixture value belongs in committed evidence. The admin account is the starting authenticated mode, not proof for ordinary members. The user can add random issues and preferences at any time; give each discovered behavior a feature/case link and each reproducible defect its own record, without replacing the incomplete baseline with a new informal list.
