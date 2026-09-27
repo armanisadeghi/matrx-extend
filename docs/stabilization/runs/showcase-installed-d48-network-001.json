@@ -61,12 +61,7 @@
       "source_host": "jsonplaceholder.typicode.com",
       "source_route": "/",
       "matcher": "Exact URL: https://jsonplaceholder.typicode.com/todos/1",
-      "result_columns": [
-        "userId",
-        "id",
-        "title",
-        "completed"
-      ],
+      "result_columns": ["userId", "id", "title", "completed"],
       "ui_record_id": "Not exposed; unknown.",
       "retention": "Intentionally retained owned test recipe; no cleanup attempted."
     },
