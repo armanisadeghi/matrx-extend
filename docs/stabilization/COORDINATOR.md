@@ -2,6 +2,16 @@
 
 Current priority (2026-09-27): finish Showcase detect → extract → save → reopen → repeat, per latest owner request. SHOWCASE-PLAN.md and inventory EXT-F-1012 own scope. Broad stabilization remains incomplete; old blocked goal-tool state reflects historical resource refusals, not the current active repair.
 
+## Latest checkpoint (2026-09-27 16:50 UTC)
+
+Runtime verification is resource-blocked: last guarded launch refused before child16:44:50Z; OS pressure still2 at16:48:17Z. No owned heavy process remains. Do not retry on a timer without safe admission; never weaken the guard or terminate foreign work.
+
+D43 fresh Sol source peer75d50030: PASS_WITH_GAPS, live unverified. The prior Luna missing-caller finding was refuted against the actual patch and corrected ine01c3f4c; do not reintroduce it. Patch already passes seed; entry/distinct-field tests strengthened in031196ec. Required user procedure and actual invalid-seed test were preserved with pending artifacts in5e1ced11. No D43 product patch is applied to current source.
+
+D41 initial display-selection repair and D42 session code were pushed by concurrent sync through71a13590. D41 query/path identity follow-up remains unrun and unimplemented. D44 missing-root/replay integrity has source findings and prepared red tests only. No defect is closed from these checkpoints. Preserve pending artifacts in docs/stabilization/pending; apply only exact owned patches after checking base/hash, under serial verification.
+
+Remote c5faabf3 updates @ai-matrx/agents0.15.1→0.16.18 and design-system0.48.5→0.48.6. It was merged without discarding either side, but installed node_modules are still0.15.1/0.48.5. Resume requires guarded dependency install and changed-package Consumer action review, followed by compile/regressions/build. Earlier combined compile passed against pre-update dependencies; do not label merged latest dependency state verified. Frozen primary Chrome .101 remains unchanged.
+
 ## Current source, build, and ownership
 
 Frozen build source dc67ce84 (0.2.101); shared source now .102 through129ac54a +D43 doc46d7848a: D39 handoff and D40 preview provenance/reset repairs. Final focused pair15/15 and guarded compile passed. Development build showcase-dev101-build-001 exited0 at15:58:03Z. Receipt test-results/source-dev-build-101-showcase-20260927.json records tree ea964f8ecde94b9ab66faa601adb9d63b3a5c12b5baadad37e9008c7362e1a10. This artifact is frozen; source-only workers must not rebuild/overwrite it during live review.
@@ -20,7 +30,7 @@ Concurrent writer committed/pushed both initial in-flight D39/D40 changes as cb4
 
 ## Next check order
 
-D41 query/path identity red→fix→green/types; D43 patch peer→reapply→green/D42 regressions/types; D44 replay integrity red→fix→green/types; then current development build and independent real UI retests. Integration checkpoints are local pending these review corrections. Exact patches remain recoverable; never claim a preflight refusal ran tests. D43 adds seed-preserving fields and explicit nested scope choice. Row-rendering absence was not proven and must not be reported as a separate bug.
+D41 query/path identity red→fix→green/types; D43 patch peer→reapply→green/D42 regressions/types; D44 replay integrity red→fix→green/types; then current development build and independent real UI retests. Initial D41/D42 checkpoints reached remote through concurrent sync; follow-up corrections remain pending verification. Exact patches remain recoverable; never claim a preflight refusal ran tests. D43 adds seed-preserving fields and explicit nested scope choice. Row-rendering absence was not proven and must not be reported as a separate bug.
 
 D40 ledger reconciled to fixed with partial live retest: engineering red/green/types/build and real Microdata saved Event replay are recorded; original Table dataset append and other method/lifecycle cases remain open. Never close based on partial evidence.
 
