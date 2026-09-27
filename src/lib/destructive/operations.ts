@@ -218,6 +218,11 @@ export const INTERNAL_ONLY: { fn: string; module: string; why: string }[] = [
     why: 'Drops the cached is-admin bit on sign-out. Re-derived on the next sign-in.',
   },
   {
+    fn: 'write',
+    module: 'src/hooks/use-auth.ts',
+    why: 'The serialized internal admin-gate write removes only the extension-owned role cache when the role is unknown or a false write is rejected; the next role recheck recreates it.',
+  },
+  {
     fn: 'invalidateEnginePortCache',
     module: 'src/lib/desktop/discovery.ts',
     why: 'Cached desktop-engine port. Rediscovered automatically on the next call.',
