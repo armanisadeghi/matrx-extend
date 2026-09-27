@@ -1,0 +1,41 @@
+{
+  "run_id": "d22-recognition-readonly-006",
+  "status": "unverified",
+  "wrapper_exit_code": 1,
+  "child_started": true,
+  "child_exit_code": 1,
+  "build": {
+    "kind": "local_dev_unpacked",
+    "version": "0.2.85",
+    "tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff",
+    "receipt_path": "test-results/source-dev-build-085.json"
+  },
+  "guard": {
+    "admitted_at": "2026-09-27T04:25:57.544Z",
+    "watch_unsafe_at": "2026-09-27T04:26:13.907Z",
+    "watch_unsafe_reasons": ["RESOURCE_PRESSURE_UNSAFE"],
+    "job_exit_at": "2026-09-27T04:26:13.907Z",
+    "heavy_lease_released": true,
+    "log_path": "/tmp/matrx-d22-recognition-readonly-006.log",
+    "log_sha256": "eb72430641af7e09f5d6b2fc362385e5a3c37e811f754576d1bb7b88a2b8d2bc"
+  },
+  "raw_result": {
+    "path": "/tmp/matrx-d22-recognition-readonly-006-result.json",
+    "mode": "0600",
+    "sha256": "9a5d43cf5fa37fe6097ec121a12770207e38e25b32fa0f864e26da0ec9b51582"
+  },
+  "safe_observations": {
+    "failure_stage": "positive_fixture_navigation",
+    "failure_code": "unclassified_exception",
+    "real_admin_ui": true,
+    "existing_fixture_found": true,
+    "public_eligible_rows": 1,
+    "picker_choices_enumerated": false,
+    "positive_navigation_started": true,
+    "positive_navigation_returned": false,
+    "positive_navigation_elapsed_ms": 253,
+    "workspace_cleanup": "pass",
+    "late_inflight_save": "unverified"
+  },
+  "classification": "The read-only native attempt reached the positive fixture navigation stage but did not establish recognition acceptance. The guard's later unsafe-resource event is recorded separately; this receipt does not attribute the navigation exception to a product defect or to resource pressure. No Save or checkpoint operation was performed."
+}
