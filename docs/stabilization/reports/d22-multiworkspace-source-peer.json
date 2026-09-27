@@ -9,7 +9,7 @@
     "reason": "The recorded 0.2.83 readonly_002 attempt saw a real scoped HTTP 200 empty list only in the original workspace. This revision has no native run and no positive Source/Open or delayed-response observation."
   },
   "B_source": {
-    "verdict": "CHANGES_REQUIRED_BEFORE_NATIVE_ADMISSION",
+    "verdict": "ACCEPT_NARROW_CLEANUP_FIX_FOR_GUARDED_NATIVE_ADMISSION",
     "accepted_boundaries": [
       "The runner first searches the privately approved organization selected through actual Settings UI; only a genuinely exhausted scoped list causes it to enumerate unique visible picker choices. It never invents an organization ID, uses an account default, elevates a role, or changes production organization selection policy.",
       "For each bounded candidate, chooseOrganization requires the selected UI name and device-stored ID to agree, and discoverFixture requires a completed list GET filtered to exactly that ID, extension origin, capture derivations and live rows. The positive fixture, if found, stays in memory; the original organization becomes an explicit comparison choice and later gets an actual scoped point lookup, not a presumed negative from the earlier list.",
@@ -19,14 +19,22 @@
       "severity": "native_admission_blocker",
       "title": "A discovery deadline can race the UI selection that cleanup is meant to undo",
       "evidence": "discoverAcrossWorkspaces wraps chooseOrganization(panel, candidate, originalName) in discoveryStep. discoveryStep uses Promise.race between that multi-step UI operation and a timer, but does not cancel or join the losing operation. If SOURCE_DISCOVERY_TOTAL_MS expires during a candidate selection, the outer finally begins chooseOrganization(originalName) while the first selection can still click the candidate or complete its wait afterward. The restored.storedId check can pass before the stale selection finishes, so workspaceCleanup='pass' does not guarantee the profile remains on the original organization.",
-      "required_repair": "Do not abandon an in-flight UI selection. Let the started selection settle before restoration, then check the deadline and report budget exhaustion; or use a cancellation mechanism that proves no later UI action can occur before the final original-ID check. Keep the overall bound claim honest if a non-cancellable operation may exceed it."
+      "required_repair": "Do not abandon an in-flight UI selection. Let the started selection settle before restoration, then check the deadline and report budget exhaustion; or use a cancellation mechanism that proves no later UI action can occur before the final original-ID check. Keep the overall bound claim honest if a non-cancellable operation may exceed it.",
+      "status": "RESOLVED_BY_56AAF372_SOURCE_REVIEW"
     },
-    "limits": "SOURCE_DISCOVERY_MAX_ORGS counts the original workspace and bounds attempted choices. The total timer limits when the caller gives up waiting, not the lifetime of an uncancelled selection. The read-only runner still cannot prove late Save or real recognition service-failure/recovery, and this review does not close D22 or pass EXT-F-1007-T26."
+    "limits": "SOURCE_DISCOVERY_MAX_ORGS counts the original workspace and bounds attempted choices. The total discovery deadline controls admission/result acceptance; a started UI action may overrun while being joined before cleanup. The read-only runner still cannot prove late Save or real recognition service-failure/recovery, and this source review does not close D22 or pass EXT-F-1007-T26.",
+    "repair_review": {
+      "finding_resolved": "Every discovery operation that can issue UI input now uses discoveryUiStep: it checks the deadline before starting, awaits the complete click/openSection/chooseOrganization operation, and only then checks expiry. A timed-out candidate selection cannot continue after outer cleanup starts.",
+      "no_other_abandoned_ui_input": "The remaining Promise.race calls observe list/network results, DNS eligibility, or DOM state; they do not dispatch a button click or workspace selection. A late read cannot change the selected organization after cleanup.",
+      "deadline_truth": "A started UI action may finish after the nominal deadline; its overrun is recorded in discoveryUiSettlementOverrunMs and the run becomes unverified before another discovery action. No hard wall-clock bound or fictional cancellation is claimed. A permanently stalled driver requires the root resource guard and earns no workspaceCleanup pass.",
+      "acceptance_boundary": "This resolves only the original-workspace restoration race. No native browser run, positive Source fixture, multi-workspace recognition, late response, late Save, service-failure recovery or full case pass is established."
+    }
   },
   "reviewed_paths": [
     "tests/browser/source-recognition-readonly-acceptance.mjs",
     "tests/browser/settings-panel-driver.mjs",
     "src/features/saved-captures/SavedCapturesView.tsx",
     "docs/stabilization/reports/d22-next-closure-path.json"
-  ]
+  ],
+  "reviewed_repair_commit": "56aaf372"
 }
