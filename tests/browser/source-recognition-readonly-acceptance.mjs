@@ -281,7 +281,7 @@ function publicAddress(address) {
     ? !privateV4.check(address, 'ipv4')
     : family === 6 && publicV6.check(address, 'ipv6') && !specialV6.check(address, 'ipv6');
 }
-async function publicReadCategory(value, document = true) {
+async function publicReadCategory(value, document = true, timeoutMs = DNS_TIMEOUT_MS) {
   let url;
   try {
     url = new URL(value);
@@ -323,7 +323,7 @@ async function publicReadCategory(value, document = true) {
     const addresses = await Promise.race([
       lookup(host, { all: true }),
       new Promise((_, reject) => {
-        timer = setTimeout(() => reject(new Error('dns_timeout')), DNS_TIMEOUT_MS);
+        timer = setTimeout(() => reject(new Error('dns_timeout')), timeoutMs);
       }),
     ]);
     return addresses.length && addresses.every((entry) => publicAddress(entry.address))
@@ -337,6 +337,13 @@ async function publicReadCategory(value, document = true) {
 }
 
 async function installPublicReadGuard(page) {
+  // This fresh owned page has not visited the fixture. Disable its scripts and
+  // bypass site service workers before navigation; extension/auth realms are untouched.
+  const session = await page.context().newCDPSession(page);
+  await session.send('Network.enable');
+  await session.send('Network.setBypassServiceWorker', { bypass: true });
+  await session.send('Emulation.setScriptExecutionDisabled', { value: true });
+  report.observations.fixturePageMode = 'scripts_disabled_service_workers_bypassed';
   const blocked = {};
   report.observations.publicPageBlockedRequests = blocked;
   await page.route('**/*', async (route) => {
@@ -350,6 +357,30 @@ async function installPublicReadGuard(page) {
       await route.abort('blockedbyclient');
     }
   });
+}
+
+function remainingDiscovery(deadline) {
+  const remaining = deadline - Date.now();
+  if (remaining <= 0) fail('source_discovery_time_budget_exhausted');
+  return remaining;
+}
+async function discoveryStep(deadline, operation) {
+  let timer;
+  try {
+    const result = await Promise.race([
+      operation(remainingDiscovery(deadline)),
+      new Promise((_, reject) => {
+        timer = setTimeout(() => {
+          report.failureCode = 'source_discovery_time_budget_exhausted';
+          reject(new Error('discovery_deadline'));
+        }, remainingDiscovery(deadline));
+      }),
+    ]);
+    remainingDiscovery(deadline);
+    return result;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 async function discoverFixture(panel, reads, organizationId) {
@@ -375,21 +406,41 @@ async function discoverFixture(panel, reads, organizationId) {
     exhausted: false,
   };
   report.observations.fixtureDiscovery = diagnostics;
-  let since = 0;
   const deadline = Date.now() + DISCOVERY_TIMEOUT_MS;
+  let since = reads.records.length;
+  let expectedCursor = null;
+  let pageLimit = null;
+  let listOrigin = null;
   const seen = new Set();
+  await discoveryStep(deadline, () => click(panel, 'title', 'Saved captures'));
   for (let index = 0; index < DISCOVERY_MAX_PAGES; index += 1) {
-    const list = await waitFor(
-      'existing_sources_read',
-      () =>
-        reads.records
-          .slice(since)
-          .find((r) => r.org === `eq.${organizationId}` && !r.identity && r.done),
-      (r) => r?.done === true,
-      30_000,
+    const list = await discoveryStep(deadline, (remaining) =>
+      waitFor(
+        'existing_sources_read',
+        () =>
+          reads.records
+            .slice(since)
+            .find((r) => r.org === `eq.${organizationId}` && !r.identity && r.done),
+        (r) => r?.done === true,
+        Math.min(30000, remaining),
+      ),
     );
     if (list.failed || list.status !== 200 || !Array.isArray(list.rows))
       fail('source_list_read_failed');
+    if (
+      !list.listUrlAlias ||
+      !Number.isInteger(list.limit) ||
+      list.limit < 1 ||
+      list.order !== 'created_at.desc,id.desc' ||
+      list.rows.length > list.limit
+    )
+      fail('source_list_query_contract_mismatch');
+    if (index === 0) {
+      pageLimit = list.limit;
+      listOrigin = list.origin;
+    }
+    if (list.cursor !== expectedCursor || list.limit !== pageLimit || list.origin !== listOrigin)
+      fail('source_list_unexpected_cursor_page');
     diagnostics.pages += 1;
     diagnostics.totalReturnedRows += list.rows.length;
     diagnostics.listPages.push({
@@ -397,11 +448,11 @@ async function discoverFixture(panel, reads, organizationId) {
       rowCount: list.rows.length,
       urlAliasSelected: list.listUrlAlias,
       cursorPresent: list.cursorPresent,
+      expectedCursorMatched: true,
       limit: list.limit,
     });
-    if (!list.listUrlAlias) fail('source_list_query_contract_mismatch');
     for (const row of list.rows) {
-      if (Date.now() >= deadline) fail('source_discovery_time_budget_exhausted');
+      remainingDiscovery(deadline);
       if (!row || typeof row !== 'object' || Array.isArray(row)) {
         diagnostics.categories.invalid_row = (diagnostics.categories.invalid_row ?? 0) + 1;
         diagnostics.rows += 1;
@@ -412,9 +463,10 @@ async function discoverFixture(panel, reads, organizationId) {
       diagnostics.rows += 1;
       if (typeof row.url === 'string' && row.url.length) diagnostics.urlPresent += 1;
       if (typeof row.url === 'string' && /^https?:\/\//i.test(row.url)) diagnostics.httpUrls += 1;
-      // listSavedCaptures aliases url:canonical_identity. Point lookups remain unaliased.
       const category = UUID.test(row.id ?? '')
-        ? await publicReadCategory(row.url)
+        ? await discoveryStep(deadline, (remaining) =>
+            publicReadCategory(row.url, true, Math.min(DNS_TIMEOUT_MS, remaining)),
+          )
         : 'invalid_source_id';
       diagnostics.categories[category] = (diagnostics.categories[category] ?? 0) + 1;
       if (category === 'eligible') {
@@ -422,34 +474,77 @@ async function discoverFixture(panel, reads, organizationId) {
         return { fixture: row, origin: list.origin };
       }
     }
-    const pagination = await waitFor(
-      'source_list_page_settled',
-      () =>
-        evaluate(
-          panel,
-          `(() => {
-      const pane = document.querySelector('[data-state="active"][role="tabpanel"]');
-      const more = [...(pane?.querySelectorAll('button') ?? [])].filter((b) => b.textContent.trim() === 'Load more');
-      const refresh = [...(pane?.querySelectorAll('button') ?? [])].find((b) => b.textContent.includes('Refresh saved captures'));
-      return { ready: !!refresh && !refresh.querySelector('.animate-spin'), count: more.length, disabled: more[0]?.disabled ?? false };
-    })()`,
-        ),
-      (state) => state?.ready && !state.disabled,
-      30_000,
+    remainingDiscovery(deadline);
+    // A short backend page proves exhaustion even when unreadable/superseded
+    // rows leave no visible cards. A full page never earns that claim.
+    if (list.rows.length < list.limit) {
+      diagnostics.exhausted = true;
+      fail('no_eligible_existing_source_in_observed_list');
+    }
+    const pagination = await discoveryStep(deadline, (remaining) =>
+      waitFor(
+        'source_list_page_settled',
+        () =>
+          evaluate(
+            panel,
+            `(() => {
+        const tab = document.querySelector('button[role="tab"][title="Saved captures"]');
+        const pane = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
+        const more = [...(pane?.querySelectorAll('button') ?? [])].filter((b) => b.textContent.trim() === 'Load more');
+        const refresh = [...(pane?.querySelectorAll('button') ?? [])].find((b) => b.textContent.includes('Refresh saved captures'));
+        return { ready: !!refresh && !refresh.querySelector('.animate-spin'), count: more.length, disabled: more[0]?.disabled ?? false };
+      })()`,
+          ),
+        (state) => state?.ready && !state.disabled,
+        Math.min(30000, remaining),
+      ),
     );
     diagnostics.pagination.push({
       loadMoreCount: pagination.count,
       enabled: pagination.count === 1 && !pagination.disabled,
       pageSettled: pagination.ready,
     });
-    if (pagination.count === 0) {
-      diagnostics.exhausted = true;
-      fail('no_eligible_existing_source_in_workspace');
-    }
+    if (pagination.count === 0) fail('source_full_page_pagination_unavailable');
     if (pagination.count !== 1) fail('source_pagination_ambiguous');
     if (index + 1 === DISCOVERY_MAX_PAGES) fail('source_discovery_page_budget_exhausted');
+    // Bind the next request to the last visible card, not the last raw row:
+    // the UI filters superseded/unreadable rows before choosing its cursor.
+    // Ambiguous presentation is unverified; no private labels leave memory.
+    const lastVisibleIndex = await discoveryStep(deadline, () =>
+      evaluate(
+        panel,
+        `(() => {
+      const rows = ${JSON.stringify(list.rows.map((r) => ({ url: r?.url, title: r?.title, captured_at: r?.captured_at })))};
+      const tab = document.querySelector('button[role="tab"][title="Saved captures"]');
+      const pane = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
+      const card = [...(pane?.querySelectorAll('article') ?? [])].at(-1);
+      const button = card?.querySelector('button');
+      const title = button?.children[0]?.textContent.trim();
+      const detail = button?.children[1]?.textContent.trim();
+      const matches = rows.flatMap((row, index) => {
+        if (typeof row.url !== 'string' || typeof row.captured_at !== 'string') return [];
+        let host; try { host = new URL(row.url).hostname; } catch { host = row.url; }
+        const name = (typeof row.title === 'string' ? row.title.trim() : '') || host;
+        return name === title && detail === host + ' · ' + new Date(row.captured_at).toLocaleString() ? [index] : [];
+      });
+      return matches.length === 1 ? matches[0] : -1;
+    })()`,
+      ),
+    );
+    const last =
+      Number.isInteger(lastVisibleIndex) && lastVisibleIndex >= 0
+        ? list.rows[lastVisibleIndex]
+        : null;
+    if (
+      !last ||
+      !UUID.test(last.id ?? '') ||
+      typeof last.captured_at !== 'string' ||
+      !/^\d{4}-\d{2}-\d{2}T[\d:.+Z-]+$/.test(last.captured_at)
+    )
+      fail('source_cursor_unavailable');
+    expectedCursor = `(created_at.lt.${last.captured_at},and(created_at.eq.${last.captured_at},id.lt.${last.id}))`;
     since = reads.records.length;
-    await click(panel, 'button', 'Load more');
+    await discoveryStep(deadline, () => click(panel, 'button', 'Load more'));
   }
   fail('source_discovery_unverified');
 }
@@ -500,6 +595,8 @@ function sourceQuery(request) {
       identity: q.get('canonical_identity'),
       listUrlAlias: (q.get('select') ?? '').split(',').includes('url:canonical_identity'),
       cursorPresent: q.has('or'),
+      cursor: q.get('or'),
+      order: q.get('order'),
       limit: /^\d+$/.test(q.get('limit') ?? '') ? Number(q.get('limit')) : null,
     };
   } catch {
@@ -680,7 +777,6 @@ try {
       let hold;
       try {
         stage = 'discover_existing_public_source';
-        await click(panel, 'title', 'Saved captures');
         const { fixture, origin } = await discoverFixture(panel, reads, approved.storedId);
         report.observations.existingFixtureFound = true;
         const identity = fixture.url;

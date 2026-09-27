@@ -78,7 +78,7 @@
     "build_binding": "Requires keyed development build, package/manifest/receipt version agreement, receipt/tree hash agreement before and after run, and shared native harness exact identity validation. Uses actual helper localDevReceiptPath parameter.",
     "fixture": "Reads actual RLS-scoped Saved captures UI list and Load more pages, bounded by SOURCE_DISCOVERY_MAX_PAGES (default 5) and SOURCE_DISCOVERY_TIMEOUT_MS (default 60000); per-host DNS bound SOURCE_DNS_TIMEOUT_MS (default 5000). Accepts genuine ordinary public HTTPS Source URLs across hosts, including read-only query identities. Rejects malformed rows/URLs, credentials, nonstandard ports, private/reserved DNS/IP addresses, known action/secret paths or query keys. No creation or database mutation.",
     "oracles": [
-      "Actual scoped HTTP200 response and real Open target identity agreement.",
+      "Actual scoped HTTP200 response and real Open target identity agreement; public fixture page scripting is disabled for navigation safety, so this does not verify dynamic page rendering.",
       "Distinct existing accessible comparison organization selected by UI; corresponding HTTP200 empty or different Source result agrees with UI.",
       "A real approved-workspace lookup HTTP200 response is held using CDP Fetch Response interception until comparison-workspace read and UI settle. Continue unchanged; require completed positive old response and current comparison UI/link unchanged through a bounded 1500ms observation.",
       "Restore original organization with a fresh scoped read and matching real Open target."
@@ -102,9 +102,16 @@
     "discovery_repair": {
       "cause": "Three arbitrary reference hosts excluded all returned first-page candidates; original output cannot distinguish empty list from disallowed-host rows.",
       "diagnostics": "Counts pages, total returned rows, examined unique rows, URL-present rows, HTTP(S) rows, examined public-eligible rows and rejection categories. Each actual list response records only HTTP status, row count, alias selected, cursor presence, numeric limit; each UI pagination step records only readiness and Load more count/enabled state. No URLs/IDs/hostnames/bodies.",
-      "pagination": "Actual trusted Load more click; next completed scoped list response must be observed. Exhausted list and configurable page-budget exhaustion have different unverified codes. Search is unnecessary because pagination traverses the existing list without guessed terms.",
-      "network_safety": "Node DNS lookup rejects any nonpublic answer; page request routing rechecks public HTTPS endpoints and rejects non-GET/HEAD methods. This is conservative read-only navigation, not a DNS-rebinding security guarantee; browser resolution may differ from preflight. Known action URL rejection is conservative, not proof every GET endpoint is side-effect-free. No forms or page actions clicked.",
-      "runtime": "Not run; source review required before root admission. No claim that existing qualifying rows will be available."
+      "pagination": "Only an observed backend page shorter than its captured limit earns exhausted=true. A full backend page without a usable Load more button reports source_full_page_pagination_unavailable. Later pages require the same origin/limit/order and exact expected keyset cursor derived from the uniquely matching last visible card. A refresh or unexpected cursor yields unverified; duplicate visible presentations cannot invent a cursor.",
+      "network_safety": "Before the fresh owned fixture page visits a Source URL, CDP disables its script execution and bypasses site service workers. Its page-route boundary rejects intercepted non-GET/HEAD requests and unsafe public-URL categories. Real sign-in/token exchange and extension recognition remain in separate realms and may legitimately use POST; this is not a claim of zero POSTs across the authenticated browser. The runner never invokes Source mutation/capture/filing controls. DNS preflight is not a rebinding guarantee, and URL classification cannot prove every GET endpoint is side-effect-free.",
+      "runtime": "Not run; source review required before root admission. No claim that existing qualifying rows will be available.",
+      "deadline": "One deadline starts before opening Saved captures. Every list/UI wait, Load more click, visible-cursor observation and candidate DNS classification is raced against remaining time. The underlying OS DNS lookup is not cancellable and may complete later, but cannot produce acceptance after timeout. Root/browser cleanup time is outside discovery budget.",
+      "peer_repair": {
+        "review": "b26c742c",
+        "status": "Source repairs implemented; independent re-review and native run pending.",
+        "protocol_evidence": "Installed playwright-core/types/protocol.d.ts documents Network.setBypassServiceWorker as bypassing service worker for each request, and Emulation.setScriptExecutionDisabled as disabling script execution. Applied only to the owned fixture page before navigation; native extension service worker remains active.",
+        "runtime": "No browser or tests run in repair lane. Fixed categories/counts only in report; cursor IDs/dates/URLs and card labels remain in memory."
+      }
     }
   },
   "readonly_001_preserved": {
