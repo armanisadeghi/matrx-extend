@@ -3,7 +3,7 @@ import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAuth } from '@/hooks/use-auth';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { rowsToTsv, stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
-import { findFirstMatch } from '@/lib/data-pattern/matcher';
+import { findFirstMatch, urlMatchesPattern } from '@/lib/data-pattern/matcher';
 import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
 import { classifySavedRun } from '@/lib/data-pattern/saved-run-outcome';
 import { on } from '@/lib/messaging/native';
@@ -23,7 +23,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 export function DataView() {
   const { user, status: authStatus, signIn } = useAuth();
   const tab = useActiveTab();
-  const [patterns, setPatterns] = useState<ExtractionPattern[] | null>(null);
+  const [patternSnapshot, setPatternSnapshot] = useState<{ host: string; patterns: ExtractionPattern[] } | null>(null);
   const [patternsLoading, setPatternsLoading] = useState(false);
   const [patternLoadError, setPatternLoadError] = useState<string | null>(null);
   const [patternLoadAttempt, setPatternLoadAttempt] = useState(0);
@@ -31,21 +31,38 @@ export function DataView() {
   const pickTabRef = useRef<number | null>(null);
   const [pickedFields, setPickedFields] = useState<{ name: string; selector: string }[]>([]);
   const [patternName, setPatternName] = useState('');
-  const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
-  const [running, setRunning] = useState(false);
+  const [extractedRows, setRows] = useState<Record<string, unknown>[] | null>(null);
+  const [runActive, setRunning] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [runNote, setRunNote] = useState<string | null>(null);
-  const [runInfo, setRunInfo] = useState<string | null>(null);
+  const [progressNote, setRunNote] = useState<string | null>(null);
+  const [outcomeInfo, setRunInfo] = useState<string | null>(null);
 
-  // Navigating the tab orphans any extracted rows on screen — they belonged
-  // to the previous page and rendered with zero indication of that.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: clear on URL change only
+  const pageKey = `${tab.id ?? 'none'}|${tab.url ?? ''}`;
+  const currentPage = useRef(pageKey);
+  const runSequence = useRef(0);
+  currentPage.current = pageKey;
+  const [runSource, setRunSource] = useState<{
+    pageKey: string; url: string | null; title: string | null; patternName: string;
+  } | null>(null);
+  const [runError, setRunError] = useState<string | null>(null);
+  const belongsToPage = runSource?.pageKey === pageKey;
+  const rows = belongsToPage ? extractedRows : null;
+  const running = belongsToPage && runActive;
+  const runNote = belongsToPage ? progressNote : null;
+  const runInfo = belongsToPage ? outcomeInfo : null;
+  const visibleError = error ?? (belongsToPage ? runError : null);
+
   useEffect(() => {
+    runSequence.current += 1;
+    setRunSource(null);
     setRows(null);
+    setRunning(false);
+    setRunError(null);
     setRunNote(null);
     setRunInfo(null);
-  }, [tab.url]);
+    return () => { runSequence.current += 1; };
+  }, [pageKey]);
 
   const host = (() => {
     try {
@@ -55,12 +72,14 @@ export function DataView() {
     }
   })();
 
+  const patterns = patternSnapshot?.host === host ? patternSnapshot.patterns : null;
+
   useEffect(() => {
     void patternLoadAttempt;
-    setPatterns(null);
+    setPatternSnapshot(null);
     setPatternLoadError(null);
     if (!host) {
-      setPatterns([]);
+      setPatternSnapshot({ host, patterns: [] });
       setPatternsLoading(false);
       return;
     }
@@ -70,7 +89,7 @@ export function DataView() {
       try {
         const p = await fetchPatternsForDomain(host);
         if (!cancelled) {
-          setPatterns(p);
+          setPatternSnapshot({ host, patterns: p });
           setPatternLoadError(null);
         }
       } catch (err) {
@@ -176,7 +195,7 @@ export function DataView() {
       setPatternName('');
       setPickedFields([]);
       const refreshed = await fetchPatternsForDomain(host);
-      setPatterns(refreshed);
+      setPatternSnapshot({ host, patterns: refreshed });
       setPatternLoadError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -187,33 +206,39 @@ export function DataView() {
 
   const handleRun = async (pattern: ExtractionPattern) => {
     if (!tab.id) return;
+    const sequence = ++runSequence.current;
+    const isCurrent = () => currentPage.current === pageKey && runSequence.current === sequence;
+    const source = { pageKey, url: tab.url, title: tab.title, patternName: pattern.name };
+    setRunSource(source);
     setRunning(true);
     setError(null);
-    // A failed run used to leave the PREVIOUS run's rows rendered under the
-    // error — clear up front so what's on screen always belongs to this run.
+    setRunError(null);
     setRows(null);
     setRunNote(null);
     setRunInfo(null);
     try {
-      // 'user': handleRun is the Run control on a pattern row.
       const data = await runSavedPattern(pattern, tab.id, {
-        onProgress: setRunNote,
+        onProgress: (note) => { if (isCurrent()) setRunNote(note); },
         initiation: 'user',
       });
+      if (!isCurrent()) return;
       setRows(data);
-      const outcome = classifySavedRun(pattern, tab.url ?? '', data);
+      const outcome = classifySavedRun(pattern, source.url ?? '', data);
       setRunInfo(outcome.message);
       if (outcome.kind === 'matched') void bumpPatternRun(pattern.id, 'ok', data.length);
     } catch (err) {
+      if (!isCurrent()) return;
       if (err instanceof NetworkNoMatchError) {
-        setError(err.message);
+        setRunError(err.message);
       } else {
-        setError(`"${pattern.name}" failed: ${err instanceof Error ? err.message : String(err)}`);
-        void bumpPatternRun(pattern.id, 'broken', 0);
+        setRunError(`"${pattern.name}" failed: ${err instanceof Error ? err.message : String(err)}`);
+        if (urlMatchesPattern(source.url ?? '', pattern)) void bumpPatternRun(pattern.id, 'broken', 0);
       }
     } finally {
-      setRunning(false);
-      setRunNote(null);
+      if (isCurrent()) {
+        setRunning(false);
+        setRunNote(null);
+      }
     }
   };
 
@@ -227,8 +252,8 @@ export function DataView() {
   const autoForUrl = useMemo(() => {
     const url = tab.url;
     if (!url) return [];
-    return Array.from(autoRecords.values()).filter((r) => r.url === url);
-  }, [autoRecords, tab.url]);
+    return Array.from(autoRecords.values()).filter((r) => r.tabId === tab.id && r.url === url);
+  }, [autoRecords, tab.id, tab.url]);
   const autoForMatched = matched ? autoForUrl.find((r) => r.pattern.id === matched.id) : undefined;
 
   return (
@@ -263,9 +288,9 @@ export function DataView() {
             </div>
           )}
 
-          {error && (
+          {visibleError && (
             <div className="rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
-              {error}
+              {visibleError}
             </div>
           )}
 
@@ -339,7 +364,7 @@ export function DataView() {
             </div>
           )}
 
-          {autoForMatched?.status === 'ok' && autoForMatched.rows.length > 0 && !rows && (
+          {autoForMatched?.status === 'ok' && autoForMatched.rows.length > 0 && !belongsToPage && (
             <Section label={`Auto-extracted (${autoForMatched.rows.length} rows)`}>
               <pre className="max-h-[320px] overflow-auto whitespace-pre rounded-xl bg-secondary/40 p-3 text-[11px]">
                 {JSON.stringify(autoForMatched.rows.slice(0, 50), null, 2)}
@@ -466,13 +491,13 @@ export function DataView() {
                           description:
                             'structured data extracted from a webpage using a saved pattern',
                           source: {
-                            url: tab.url ?? null,
+                            url: runSource?.url ?? null,
                             host,
-                            title: tab.title ?? null,
+                            title: runSource?.title ?? null,
                           },
                           meta: {
                             rowCount: rows.length,
-                            patternMatched: matched?.name ?? null,
+                            patternMatched: runSource?.patternName ?? null,
                           },
                           format: 'json',
                           content: stringifyJson(rows),

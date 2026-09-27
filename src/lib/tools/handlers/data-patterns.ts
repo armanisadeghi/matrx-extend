@@ -157,7 +157,17 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
       if (!pattern) {
         return { ok: false, reason: `No pattern ${args.pattern_id} under ${domain}.` };
       }
+      const pageIsCurrent = async () => {
+        try {
+          const current = await chrome.tabs.get(tab.id!);
+          return current.url === tab.url;
+        } catch {
+          return false;
+        }
+      };
+      const pageChanged = { ok: false, reason: 'The assigned page changed or closed during extraction. Run the saved pattern again on the intended page.', retryable: true };
       try {
+        if (!(await pageIsCurrent())) return pageChanged;
         // 'auto': an AGENT called this tool. The person's gesture was the
         // parent chat send, already attested there; this nested AI run is the
         // model's decision, not a second human action.
@@ -165,6 +175,7 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
           onProgress: (note) => ctx.reportProgress?.(note),
           initiation: 'auto',
         });
+        if (!(await pageIsCurrent())) return pageChanged;
         const outcome = classifySavedRun(pattern, tab.url ?? '', rows);
         if (outcome.kind === 'matched') void bumpPatternRun(pattern.id, 'ok', rows.length);
         const limit = args.rows_limit ?? DEFAULT_ROWS_LIMIT;
@@ -178,6 +189,7 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
           truncated: rows.length > limit,
         };
       } catch (err) {
+        if (!(await pageIsCurrent())) return pageChanged;
         if (err instanceof NetworkNoMatchError) {
           // Circumstantial, not a broken pattern — give the agent guidance.
           return { ok: false, reason: err.message, retryable: true };

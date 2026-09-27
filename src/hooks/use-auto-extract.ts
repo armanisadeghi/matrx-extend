@@ -38,21 +38,20 @@ export function useAutoExtract(): void {
   const setRecord = useAutoExtractStore((s) => s.setRecord);
   const pruneTo = useAutoExtractStore((s) => s.pruneTo);
 
-  // useRef to keep the last URL we kicked off, so React-strict-mode
-  // double-invocation doesn't fire two runs for the same URL.
-  const lastFiredUrlRef = useRef<string | null>(null);
+  const pageKey = `${tab.id ?? 'none'}|${tab.url ?? ''}`;
+  const currentPage = useRef(pageKey);
+  currentPage.current = pageKey;
 
   useEffect(() => {
     const url = tab.url ?? null;
-    pruneTo(url);
-  }, [tab.url, pruneTo]);
+    pruneTo(tab.id, url);
+  }, [tab.id, tab.url, pruneTo]);
 
   useEffect(() => {
     if (!signedIn) return;
     const tabId = tab.id;
     const url = tab.url;
     if (!tabId || !url) return;
-    if (lastFiredUrlRef.current === url) return;
 
     let host: string;
     try {
@@ -64,8 +63,7 @@ export function useAutoExtract(): void {
 
     let cancelled = false;
     const handle = setTimeout(async () => {
-      if (cancelled) return;
-      lastFiredUrlRef.current = url;
+      if (cancelled || currentPage.current !== pageKey) return;
 
       let patterns: ExtractionPattern[];
       try {
@@ -73,7 +71,7 @@ export function useAutoExtract(): void {
       } catch {
         return;
       }
-      if (cancelled) return;
+      if (cancelled || currentPage.current !== pageKey) return;
 
       // Interactive-only kinds (ai_extract, network_capture) are never run in
       // the background — no surprise reloads or agent spend without a click.
@@ -85,8 +83,8 @@ export function useAutoExtract(): void {
       // Fire each matching pattern in parallel.
       await Promise.all(
         matched.map(async (pattern) => {
-          if (cancelled) return;
-          const key = autoExtractKey(pattern.id, url);
+          if (cancelled || currentPage.current !== pageKey) return;
+          const key = autoExtractKey(pattern.id, tabId, url);
           const existing = records.get(key);
           if (existing && existing.status === 'ok' && Date.now() - existing.lastRunAt < TTL_MS) {
             return; // recent successful run — skip
@@ -94,6 +92,7 @@ export function useAutoExtract(): void {
           setRecord(key, {
             pattern,
             url,
+            tabId,
             rows: [],
             status: 'running',
             lastRunAt: Date.now(),
@@ -101,11 +100,12 @@ export function useAutoExtract(): void {
 
           try {
             const rows = await runPattern(pattern, tabId);
-            if (cancelled) return;
+            if (cancelled || currentPage.current !== pageKey) return;
             const outcome = classifySavedRun(pattern, url, rows);
             setRecord(key, {
               pattern,
               url,
+              tabId,
               rows,
               status: outcome.kind === 'matched' ? 'ok' : 'no_match',
               ...(outcome.message && { note: outcome.message }),
@@ -113,10 +113,11 @@ export function useAutoExtract(): void {
             });
             if (outcome.kind === 'matched') void bumpPatternRun(pattern.id, 'ok', rows.length);
           } catch (err) {
-            if (cancelled) return;
+            if (cancelled || currentPage.current !== pageKey) return;
             setRecord(key, {
               pattern,
               url,
+              tabId,
               rows: [],
               status: 'error',
               error: err instanceof Error ? err.message : String(err),
