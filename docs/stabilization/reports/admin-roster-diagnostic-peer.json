@@ -1,0 +1,27 @@
+{
+  "verdict": "PASS_WITH_LIMITS",
+  "scope": "Source-only review of the contained-navigation first admin-roster diagnostic for EXT-D0026. No browser or build run.",
+  "findings": [],
+  "assessment": {
+    "first_observation_preserved": "The initial inventory snapshot is retained separately in admin_tab_inventory and admin_roster_settling.firstTitles/firstReadiness/firstMatched. The first wait sample reuses that same snapshot, so a 17-tab result cannot be hidden by waiting for later convergence.",
+    "bounded_exact_oracle": "The existing shared waitFor remains bounded at its default 10 seconds with 100 ms polling. exactRoster still compares the same complete expected admin set (the four guest tabs, admin tabs, Chat, Pilot, and Capture) by exact sorted equality. The final settled roster is asserted again.",
+    "diagnostics": "The report records role-ready-to-first-observation elapsed milliseconds, settling attempts and elapsed time, first and last titles, first and last safe readiness booleans, convergence, and a roster snapshot after admin navigation. Timeout bubbles into the outer failure path, leaves the run unverified with nonzero exit, and preserves last observations; it cannot pass through normalization or a delayed-only success.",
+    "privacy": "Readiness observations reduce to expected-email/admin-role booleans, sign-in/sign-out/Advanced-presence booleans, and alert presence. Roster titles are static navigation labels plus the narrowly validated Capture accessible-label forms. No password, token, raw auth state, arbitrary DOM label, or alert text is included in the new diagnostic fields.",
+    "product_cause": "Unknown. Source confirms that App.tsx gates tabs with canAccessSidepanelTab using useAuth's user/isAdmin state; use-auth.ts applies a canonical session then awaits checkIsAdmin before setting isAdmin. It does not establish why the prior runtime snapshot had 17 tabs after the runner's reported role-ready predicate. Keep EXT-D0026 open pending the next admitted diagnostic."
+  },
+  "verified_source_paths": [
+    "tests/browser/contained-navigation-acceptance.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "src/entrypoints/sidepanel/App.tsx",
+    "src/hooks/use-auth.ts",
+    "src/lib/auth/flow.ts",
+    "src/lib/supabase/queries.ts",
+    "src/config/sidepanel-visibility.ts",
+    "@ai-matrx/design-system Tabs/TabsList/TabsTrigger (imported by App.tsx; package implementation not in this repo)"
+  ],
+  "checks": [
+    "node --check tests/browser/contained-navigation-acceptance.mjs — passed",
+    "git diff --check -- tests/browser/contained-navigation-acceptance.mjs — passed"
+  ],
+  "open_question": "Runtime must establish whether an exact roster eventually converges after role readiness or remains at 17; no source-only inference identifies the product cause."
+}

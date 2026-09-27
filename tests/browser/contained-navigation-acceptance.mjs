@@ -105,9 +105,11 @@ const report = {
       signInClickCompleted: false,
       lastObserved: null,
       observationReadFailed: false,
+      roleReadyObservedAtMs: null,
     },
   },
   admin_tab_inventory: null,
+  admin_roster_settling: null,
   profile_attempt: null,
   navigation_surfaces: {},
   build: null,
@@ -381,6 +383,7 @@ async function realAdminSignin(page, panel) {
       (v) => v?.expectedEmailMatch && v.adminRoleMatch && v.signOutPresent && v.advancedPresent,
       90_000,
     );
+    report.admin_prerequisite.extension.roleReadyObservedAtMs = Date.now();
     advance('extension_admin_observed');
     target('real-admin-signin', 'admin', 'prerequisite', {
       webDashboard: true,
@@ -435,21 +438,79 @@ try {
       await realAdminSignin(page, panel);
       advance('admin_tab_inventory');
       const adminTabs = await inventory(panel, 'admin');
+      const firstRosterObservedAtMs = Date.now();
       const adminTitles = adminTabs.map((tab) => tab.title);
       const captureTabs = adminTabs.filter((tab) => tab.captureIdentity);
+      const firstReadiness = await safeAdminState(panel);
       report.admin_tab_inventory = {
         titles: adminTitles,
         capture_identity_count: captureTabs.length,
         capture_title: captureTabs[0]?.title ?? null,
+        readiness: {
+          expectedEmailMatch: firstReadiness.expectedEmailMatch,
+          adminRoleMatch: firstReadiness.adminRoleMatch,
+          signOutPresent: firstReadiness.signOutPresent,
+          advancedPresent: firstReadiness.advancedPresent,
+          authAlertPresent: firstReadiness.authAlertPresent,
+        },
       };
       assert.equal(captureTabs.length, 1);
       assert.equal(isCaptureTitle(captureTabs[0].title), true);
       const expected = [...GUEST, ...ADMIN, 'Chat', 'Pilot (admin only — sandboxed tab group)'];
+      const exactRoster = (tabs) =>
+        Array.isArray(tabs) &&
+        JSON.stringify(tabs.map((tab) => (tab.captureIdentity ? 'Capture' : tab.title)).sort()) ===
+          JSON.stringify(expected.concat('Capture').sort());
+      const settling = {
+        firstMatched: exactRoster(adminTabs),
+        firstObservedAfterRoleReadyMs:
+          firstRosterObservedAtMs - report.admin_prerequisite.extension.roleReadyObservedAtMs,
+        firstTitles: adminTitles,
+        firstReadiness: report.admin_tab_inventory.readiness,
+        attempts: 0,
+        elapsedMs: null,
+        lastTitles: adminTitles,
+        lastReadiness: report.admin_tab_inventory.readiness,
+        converged: false,
+        afterNavigationTitles: null,
+      };
+      report.admin_roster_settling = settling;
+      let settledTabs = adminTabs;
+      const startedAt = Date.now();
+      advance('admin_roster_settling');
+      try {
+        await waitFor(
+          'exact_admin_roster',
+          async () => {
+            settling.attempts += 1;
+            const tabs = settling.attempts === 1 ? adminTabs : await inventory(panel, 'admin');
+            const readiness =
+              settling.attempts === 1 ? firstReadiness : await safeAdminState(panel);
+            settledTabs = tabs;
+            settling.lastTitles = tabs.map((tab) => tab.title);
+            settling.lastReadiness = {
+              expectedEmailMatch: readiness.expectedEmailMatch,
+              adminRoleMatch: readiness.adminRoleMatch,
+              signOutPresent: readiness.signOutPresent,
+              advancedPresent: readiness.advancedPresent,
+              authAlertPresent: readiness.authAlertPresent,
+            };
+            return tabs;
+          },
+          exactRoster,
+        );
+        settling.converged = true;
+      } finally {
+        settling.elapsedMs = Date.now() - startedAt;
+      }
       assert.deepEqual(
-        adminTabs.map((tab) => (tab.captureIdentity ? 'Capture' : tab.title)).sort(),
+        settledTabs.map((tab) => (tab.captureIdentity ? 'Capture' : tab.title)).sort(),
         expected.concat('Capture').sort(),
       );
-      target('admin-tab-inventory', 'admin', 'EXT-F-1001-C01', { titles: adminTitles });
+      target('admin-tab-inventory', 'admin', 'EXT-F-1001-C01', {
+        titles: settling.lastTitles,
+        initialMismatchObserved: !settling.firstMatched,
+      });
       advance('admin_avatar');
       await avatar(panel, 'admin', 'admin@admin.com');
       advance('admin_navigation');
@@ -477,6 +538,9 @@ try {
         status: 'partial',
         detail: capture,
       });
+      const afterNavigation = await inventory(panel, 'admin');
+      settling.afterNavigationTitles = afterNavigation.map((tab) => tab.title);
+      assert.equal(exactRoster(afterNavigation), true, 'admin roster persists through navigation');
       advance('complete');
     },
   });
