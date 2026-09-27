@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "runId": "d26-d29-native092",
+  "status": "partial",
+  "artifactSourceHead": "c9abb17e079bb0ac4829d2a4b294b3a2e312f5e4",
+  "nativeSourceHead": "0b1ef207973fa6fc496707588cc8d80615e5f22c",
+  "applicationSourceChangedAfterArtifactBuild": false,
+  "supersededCompileAttempt": {
+    "runId": "d26-d29-compile",
+    "sourceHead": "c9abb17e079bb0ac4829d2a4b294b3a2e312f5e4",
+    "resourceAdmission": "RESOURCE_ADMITTED",
+    "childExitCode": 1,
+    "failure": "TS7053 in src/hooks/use-auth.strict-mode.test.tsx:281; corrected test payload typing was later committed as 0b1ef207.",
+    "wrapperLog": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/d26-d29-compile-wrapper.log",
+      "mode": "0600",
+      "sha256": "15ec7bd5eb754a30b1df36851ef64d79343f4274558e8d170ca4e4b108fdea53"
+    }
+  },
+  "developmentBuild": {
+    "runId": "d26-d29-build",
+    "sourceHead": "c9abb17e079bb0ac4829d2a4b294b3a2e312f5e4",
+    "command": "pnpm exec wxt build --mode development",
+    "resourceAdmission": "RESOURCE_ADMITTED",
+    "childExitCode": 0,
+    "leaseReleased": true,
+    "wrapperLog": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/d26-d29-build-wrapper.log",
+      "mode": "0600",
+      "sha256": "53a9cf3a38edf7b9db0b52ec72859af18a50cca0eb7679b3942dd408b74ca956"
+    }
+  },
+  "developmentReceipt": {
+    "path": "test-results/source-dev-build-092-d26-d29-20260927.json",
+    "version": "0.2.92",
+    "treeSha256": "48b73b141ed7fe48cd4aac145ed518bb3b732891d1b31946fbc7a7f87b4b572c",
+    "sha256": "a5eed6ce6809628855593826183f9d49d2cbfd0897920ae6dee9ce14d5d73ac8"
+  },
+  "compile": {
+    "runId": "d26-d29-compile-final",
+    "command": "pnpm compile",
+    "resourceAdmission": "RESOURCE_ADMITTED",
+    "childExitCode": 0,
+    "leaseReleased": true,
+    "wrapperLog": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/d26-d29-compile-final-wrapper.log",
+      "mode": "0600",
+      "sha256": "a4e20a5d9161b430d2a3196fdfe9462335742f43627f8fb41feaa42ee9edfe21"
+    }
+  },
+  "nativeAcceptance": {
+    "resourceAdmission": "RESOURCE_ADMITTED",
+    "childExitCode": 0,
+    "leaseReleased": true,
+    "resultPath": "test-results/contained-navigation-d26-d29-native092.json",
+    "resultMode": "0600",
+    "resultSha256": "153787c99be190053f227d5b935f64f75924856bf46c471bfd7c36ceb323c19c",
+    "wrapperLog": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/d26-d29-native092-wrapper.log",
+      "mode": "0600",
+      "sha256": "2f0efa662472ed5c9c0898caeb629df941010eae2a80227aa8d59c0b5cdaf712"
+    }
+  },
+  "adminRoster": {
+    "roleReadyObserved": true,
+    "firstSample": {
+      "titleCount": 21,
+      "captureIdentityCount": 1,
+      "expectedEmailMatch": true,
+      "adminRoleMatch": true,
+      "signOutPresent": true,
+      "advancedPresent": true,
+      "authAlertPresent": false,
+      "matchedExactExpectedRoster": true,
+      "sampledAfterRoleReadyMs": 33
+    },
+    "settling": {
+      "attempts": 1,
+      "elapsedMs": 0,
+      "converged": true,
+      "postNavigationTitleCount": 21,
+      "postNavigationExactRoster": true
+    }
+  },
+  "targets": {
+    "pass": 37,
+    "partial": 1,
+    "unverified": 0,
+    "partialTarget": "capture-observed:admin",
+    "partialReason": "Capture was present with its accessible empty-state label and no badge; the bounded target remains partial."
+  },
+  "notExercised": [
+    "D29 failed or unverified role/session transition paths; normal sign-in does not prove these failure paths.",
+    "Role-transition and reload scenarios for persisted navigation state.",
+    "Ordinary member access and systematic Chat/Pilot actions.",
+    "Lazy-chunk failure and retry, and active Vault assistance."
+  ]
+}

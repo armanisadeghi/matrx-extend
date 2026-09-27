@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-27T09:29:42.941073+00:00",
+  "updated_at": "2026-09-27T09:42:34.462841+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -1689,18 +1689,21 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "contained-navigation-dev089-002",
-              "observed_assertion": "Run001 first post-readiness roster was 17/21; run002 first sample matched 21/21 at +22ms, one settling attempt, 0ms elapsed.",
-              "detail": "Run002 did not reproduce the immediate short roster: all 21 entries were present at the first post-role-ready sample; direct admin navigation/profile targets passed and the roster remained 21 after navigation. No product fix occurred; EXT-D-0026 remains open. Restricted persisted selection across lower-role transition/reload is unverified, so the full T03 case remains unverified.",
+              "run_id": "d26-d29-native092",
+              "observed_assertion": "All 21 tabs were present in the first sample, 33 ms after admin readiness, with all readiness flags true. The exact roster remained after navigation without a settling delay.",
+              "detail": "D26 is repaired, independently retested and closed. Scoped warm navigation passes; persisted selection across role transitions and reload remains unverified, so the full T03 case is not promoted.",
               "evidence": [
                 "docs/stabilization/runs/contained-navigation-dev089-001.json",
                 "docs/stabilization/runs/contained-navigation-dev089-002.json",
                 "test-results/contained-navigation-dev089-002.evidence.json",
                 "docs/stabilization/reports/contained-navigation-dev089-002-peer.json",
-                "docs/stabilization/defects/EXT-D-0026.json"
+                "docs/stabilization/defects/EXT-D-0026.json",
+                "docs/stabilization/runs/d26-d29-native092.json",
+                "docs/stabilization/reports/auth-integration-peer.json"
               ],
               "prior_run_ids": [
-                "contained-navigation-dev089-001"
+                "contained-navigation-dev089-001",
+                "contained-navigation-dev089-002"
               ],
               "dimension_results": {
                 "warm": "pass",

@@ -1,29 +1,30 @@
 # Matrx Extend stabilization: resume here
 
-Current checkpoint: 2026-09-27. Goal active and incomplete. Previous goal turn made verified progress: EXT-D-0027 repaired, native .90 retest independently accepted, records pushed. No claim of full feature health.
+Checkpoint: 2026-09-27. Goal remains active and incomplete. This goal turn made verified progress: repaired the actual D26 admin navigation regression, independently retested it in native Chrome, repaired D29 persisted-role failures with remaining native gaps tracked, and closed D28 harness portability. Do not infer whole-feature health from these repairs.
 
 ## Source and runtime
 
-Shared main now cf684f9a: D26 fix5224d583 plus concurrent version-only .92 release630e0f20 merged and pushed. Concurrent release 6886adde (.91) merged in26231182; changes were version/catalog timestamps plus generated CutoverFinalSwitchCopyAgainResultData, a deferred streaming contract. No application runtime implementation changed in that release. CI39b8ea8b and D28 commit189d6880 passed; current integration CI pending.
+Code commits: D26 5224d583; D29 c9abb17e, typing correction0b1ef207, internal cleanup registration110809f3. Concurrent main releases .91/.92 were merged without losing work. Another contributor fixed the same registry issue in32a6b944; merge31204376 reconciles both into the specific writeAuthRoleGate entry, preserving the shared intent. The targeted destructive-operation guard passed4/4. Final integrated CI still needs its current-head result checked; earlier CI failures were corrected, not ignored.
 
-Latest verified local development artifact is .90, not .91: receipt `test-results/source-dev-build-090-takeover-20260927.json`, tree `23d12768a3a27ca3cd44c339bd833c68f5319ac44e5825d0b8329e4c1127edf3`, source91b610da. Guarded build and native Debug run passed; see `runs/dev090-refresh.json`, `runs/debug-export-dev090-001.json`, and its peer report. Package .92 plus auth changes currently require a fresh build before the next native run; defer rebuilding until pending app changes are ready to avoid duplicate work.
+Latest verified development artifact is .92: `test-results/source-dev-build-092-d26-d29-20260927.json`, tree `48b73b141ed7fe48cd4aac145ed518bb3b732891d1b31946fbc7a7f87b4b572c`, application sourcec9abb17e. Native run used HEAD0b1ef207 (test typing only). The later function-name/registry correction has no runtime semantic change but is not in this artifact. Keep that distinction in build provenance. This is local unpacked verification, not a claim of a Store release or primary-profile installation.
 
-## Coverage and findings
+## Accepted findings and remaining work
 
-Inventory is the sole coverage authority: 205 features, 1297 controls, 701 cases. Source census independently reviewed; broad native visibility and exhaustive mode coverage remain incomplete. Historical passes are build-scoped, not proof of current whole-system health.
+Inventory is authoritative:205 features,1297 controls,702 cases. The added auth T39 explicitly tracks cross-context writes and simultaneous storage failure. Broad native visibility and exhaustive guest/member/admin coverage remain incomplete.
 
-- D27 closed after actual Copy feedback, exact filtered clipboard/download, owned-origin observation permission recovery and restoration passed independent review. This was a test-infrastructure fix; T16 warm passes, reload/service-error remain unverified. T18 remains partial.
-- D26 fixed awaiting native retest (5224d583; independent source review and two-consumer regression pass). Original: first admin-ready roster was17/21 in .89 run001; run002 first sample already21/21 and stayed21 after navigation. The causal shared-auth fix now suppresses its own synchronous notification; native21-tab acceptance still pending. Original raw run001 was overwritten: sanitized receipt and original worker attestation survive, never reconstruct a raw artifact. Immutable run002: `test-results/contained-navigation-dev089-002.evidence.json`. Preserve strict21-tab oracle; role transitions/reload remain unverified.
-- Guest Settings .89 T22/T37/T46 passed only their scoped criteria; T70 partial. Guest SEO run002 has16 passing subtargets and1 unverified subtarget, no full-case promotion. See inventory and reviewed run records.
-- D25 resource contention fix independently retested and closed; not a full infrastructure feature pass.
-- D22 fixed awaiting positive native retest. Reserved Source Save checkpoint `d22-source-save-attempt.json` is immutable: never read/recover through it, reset, advance, delete, reinitialize, retry, or click Save. Use no write runner as a substitute.
-- D24 Pilot follows user tabs and loses context: user-reported, open, deferred until contained surfaces healthy; only globally blocking defects justify early intervention.
+- D26 CLOSED: native run `runs/d26-d29-native092.json` captured all21 admin tabs at the first sample,33ms after actual Settings role readiness, with all readiness flags true and no alert. It required no settling delay and retained21 after navigation.37 surrounding targets passed; Capture remained partial. Fresh peer `reports/auth-integration-peer.json` verified actual hashes and the strict oracle. Full F1001T03 remains unverified for reload and role-transition dimensions.
+- D29 FIXED AWAITING RETEST: canonical revalidation now clears the persisted admin bit; queued writes check current generation; Safari failure revalidates an earlier session; a rejected false write falls back to removing only the cache key.24 targeted tests passed after demonstrated failures and independent source review passed. Native normal admin sign-in passed, but native error/role-transition paths are unverified. Both storage operations failing can leave stale true readable; separate realms do not share the queue. These limits are explicitly tracked in F1015T39, not certified as safe. Continue this work before declaring authentication healthy.
+- D28 CLOSED: portable harness assertion passed independent runs from the relocated checkout and another working directory; commit189d6880. No product coverage promotion.
+- D27 CLOSED: native .90 Copy feedback, exact filtered clipboard/download, observation permission recovery and restoration passed independent review. Broader Debug T16/T18 remain incomplete.
+- D25 CLOSED: host-wide resource lease contention fixed and independently retested; broader infrastructure cases remain unverified.
+- D22 FIXED AWAITING RETEST: positive Source recognition remains unverified. Reserved `d22-source-save-attempt.json` is immutable: never read/recover through it, reset, advance, delete, reinitialize, retry, or click Save.
+- D24 OPEN: Pilot follows user tabs and loses context. Preserve the user report; defer systematic Chat/Pilot until contained surfaces are healthy unless globally blocking.
 
-## Current routing
+## Next actions
 
-Implementation lane `/root/admin_navigation_repair` (Sol medium) now owns D29: persisted admin flag remains stale after failed/unverified role/session transitions. Separate shared-auth repair and guarded regressions are authorized; no browser/build yet. D28 harness portability is independently verified, closed and pushed189d6880. D26 is fixed awaiting native retest; D29 must clear independent review before combined fresh build. Root integrates, commits/pushes; fresh zero-authorship peers review before acceptance. No manager-only workers or worker pushes.
+Check final integrated CI and reconcile any new origin/main changes. Continue D29 native failure-path verification and its explicit storage/cross-context gaps, then expand contained Settings/SEO/Screenshot coverage. Primary Chrome channel switch and ordinary-member test access remain unresolved. Do not spend another cycle rebuilding process scaffolding. Existing prepared native runners and inventory cases are the starting point.
 
-Thresholds remain TAKEOVER-PLAN.md: two ineffective attempts trigger decomposing/rerouting, rare Astra escalation; bounded tasks and one heavy test/build at a time. Next priority is contained product testing and D26, not expanding infrastructure. Routing records here are snapshots; query actual agent/process state before treating work as live.
+All implementation, UI execution and peer lanes for this checkpoint are expected to be terminal; verify actual collaboration/process status before dispatch. No heavy job should remain after the accepted native/guard runs. Use Luna medium for narrow execution, Sol medium for code, a fresh peer before acceptance, and objective escalation thresholds in TAKEOVER-PLAN.md. Root owns exact-path integration and frequent pushes.
 
 ## Runtime and resource requirements
 

@@ -20,13 +20,15 @@
     "tests/browser/contained-navigation-acceptance.mjs",
     "src/entrypoints/sidepanel/App.tsx",
     "docs/stabilization/reports/admin-navigation-repair.json",
-    "docs/stabilization/reports/admin-auth-peer.json"
+    "docs/stabilization/reports/admin-auth-peer.json",
+    "docs/stabilization/runs/d26-d29-native092.json",
+    "docs/stabilization/reports/auth-integration-peer.json"
   ],
   "severity": "S2 provisional: admin-only controls absent at observed readiness; persistence/user impact not yet established",
   "priority": "P1: resolve contained admin navigation before broad authenticated coverage",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/admin_navigation_repair",
-  "reproduction_status": "Confirmed same-document auth self-notification clears shared admin state; deterministic pre-fix regression fails, two-consumer post-fix regression and source peer pass. Fix5224d583 awaiting fresh native21-tab retest.",
+  "reproduction_status": "The mechanism failed before repair and passed afterward. Independent native .92 retesting captured all 21 tabs in the first sample, 33 ms after admin readiness, before settling. All readiness flags were true and the exact roster remained after navigation. Broader reload and role-transition cases remain unverified.",
   "fix_commits": ["5224d583"],
   "transition_history": [
     {
@@ -52,6 +54,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Mechanism regression failed before repair;8/8 targeted tests pass including two consumers and external role revocation. Independent source peer passes. Native roster retest pending."
+    },
+    {
+      "at": "2026-09-27T09:42:34.462841+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent native Chrome testing resolved the original reproduction: 21/21 tabs on the first sample with readiness confirmed; one settling attempt, zero delay; 21/21 after navigation. Of the surrounding targets, 37 passed and Capture remained partial."
+    },
+    {
+      "at": "2026-09-27T09:42:34.462841+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "A fresh reviewer verified immutable result and receipt hashes and the strict roster oracle. Closure covers the self-notification defect, not the whole authentication or navigation feature."
     }
   ],
   "closure_requirement": "Keep the strict 21-tab oracle and classify the original 17-tab observation with further evidence if needed. Run002 is non-reproduction, not a fix or proof the earlier result cannot recur. Independently verify any required product fix; do not close on the added wait or weaken the roster."
