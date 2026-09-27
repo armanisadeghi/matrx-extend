@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "run_id": "debug-export-dev089-001",
+  "verdict": "partial_acceptance",
+  "method": "Independent read-only comparison of sanitized run, private result/log hashes and allowlisted guard metadata, EXT-F-1005-T16/T18 inventory criteria, and native runner/harness source. No browser, build, or tests were run; no raw log, DOM, clipboard, auth, or event text was emitted.",
+  "evidence": {
+    "raw_result": {
+      "path": "test-results/debug-log-export-8dc14f56-adf9-480b-bbbb-a117d2682372.json",
+      "mode": "0600",
+      "sha256_matches_run": true,
+      "sha256": "462349122799533127610a457c3d27b1d4403c5373384fb5c6577303c1de9720"
+    },
+    "private_guard_log": {
+      "mode": "0600",
+      "sha256_matches_run": true,
+      "sha256": "7545747ad1d93936962f725eb6cf726ce701b18b16cd3e59cc298d7ba0df27b9",
+      "allowlisted_records": [
+        "RESOURCE_ADMITTED in run mode with no admission reasons",
+        "RESOURCE_JOB_EXIT with childExitCode=0 and childSignal=null"
+      ],
+      "wrapper_exit": "wrapperExitCode=0 is recorded by the sanitized run; the private log has no independent wrapper-exit field."
+    },
+    "artifact": "Independently recomputed current 0.2.89 unpacked tree hash matches the named local-development receipt; the native runner also verifies the tree before and after its owned-profile run."
+  },
+  "case_verdicts": [
+    {
+      "case_id": "EXT-F-1005-T16",
+      "verdict": "unverified_overall",
+      "supported_observation": "Natural rows produced a proper filtered subset (64 natural rows, 11 filtered); chronological ordering was checked, and the downloaded .log exactly matched the rendered filtered-row oracle (802 bytes).",
+      "gap": "Clipboard read was unavailable. Runner source skips the Copy all action when the initial clipboard snapshot cannot be read; exact clipboard contents and Copied feedback therefore were not observed. Inventory acceptance requires both clipboard/download correctness and copy feedback."
+    },
+    {
+      "case_id": "EXT-F-1005-T18",
+      "verdict": "partial",
+      "supported_observation": "Real admin session; the storage-backed verbosity value changed through the UI, survived a real panel-document reload, and the currently visible paused feed sequence remained unchanged. Original verbosity was restored.",
+      "gap": "The run does not establish behavior under the inventory's service-error dimension or prove future/new event rows across levels remain visible after the toggle. Console mirroring itself is not an explicit expected clause in the current inventory row; its absence alone is not an inventory failure."
+    }
+  ],
+  "allowed_inventory_observations": [
+    {
+      "case_id": "EXT-F-1005-T16",
+      "record_as": "bounded supporting evidence only; leave overall case unverified",
+      "observation": "For a real natural-event filtered subset, Download .log exactly matched the independently reconstructed rendered-row oracle in chronological order. Copy all exactness and feedback remain unobserved because clipboard read was unavailable and Copy was not dispatched."
+    },
+    {
+      "case_id": "EXT-F-1005-T18",
+      "record_as": "partial warm/reload evidence only; do not mark the case full pass",
+      "observation": "Admin verbosity UI/storage agreed, changed, persisted after actual panel reload, and the existing paused feed sequence was unchanged. Service-error behavior and future event-level feed retention remain unverified. Console-mirroring is not required by the current inventory expected text."
+    }
+  ],
+  "open_questions": [
+    "T16 still needs an environment that can observe clipboard contents and copy feedback for full acceptance.",
+    "T18 still needs the missing service-error evidence and a forcing observation for feed retention as events arrive after verbosity changes."
+  ],
+  "reviewed_files": [
+    "docs/stabilization/runs/debug-export-dev089-001.json",
+    "test-results/debug-log-export-8dc14f56-adf9-480b-bbbb-a117d2682372.json",
+    "test-results/source-dev-build-089-takeover-20260927.json",
+    "docs/stabilization/inventory.json",
+    "tests/browser/debug-log-export-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/settings-panel-driver.mjs"
+  ]
+}
