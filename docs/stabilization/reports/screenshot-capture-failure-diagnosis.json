@@ -1,0 +1,23 @@
+{
+  "task_id": "screenshot-capture-dev093-001-source-diagnosis",
+  "scope": "Source-only investigation of the owned admin Visible capture failure; no browser, database write, capture, or cleanup was run in this lane.",
+  "observed_first_failure": {
+    "code": "captured_pixels_do_not_match_owned_fixture",
+    "stage": "visible_user_capture",
+    "established": "The fresh fixture URL had an empty real 200 gallery read, then a real user row, positive dimensions and expected aspect, ordered card metadata, and a loaded blob preview with matching dimensions.",
+    "unestablished": "The original receipt discarded the decoded pixel values and per-band matches. It does not distinguish a wrong-surface capture, a stale Chrome frame, an image transformation problem, or an overstrict pixel oracle. No product defect is proved by this receipt alone."
+  },
+  "cleanup": {
+    "observed": "The failure path claimed the row in memory and entered exact-card UI recovery, but reported ownedUiCleanupVerified=false and did not report ownedUiCleanupAttempted=true.",
+    "limit": "The old catch discarded its stage. It may have failed page/card identity, prompt, consequence, confirmation, or verification; absence of the attempted flag does not prove the row remains because the flag was set after the confirmation click.",
+    "original_row_recovery": "The receipt intentionally contains neither the unique localhost URL nor the row ID, and the disposable browser profile was closed. An exact-row target cannot be reconstructed from this sanitized evidence. Do not delete by page title, recency, or broad query."
+  },
+  "runner_change": "On a future admitted run, record only per-band match booleans. For a mismatch while the owned fixture remains the active tab, preserve the downloaded preview as a private mode-0600 PNG beside that run's JSON. Independently attempt exact-card cleanup and record the bounded stage and card-identity booleans, retaining failure if cleanup is unverified. A recovery read failure restores the original capture failure and records a separate bounded cleanup failure.",
+  "next_attempt": "Have an independent source peer review the runner and its image ownership guard, then ask the root resource guard to admit one fresh native run. Inspect the private fixture-failure image locally if produced; compare its visible content with the fixed three-band fixture to localize capture versus oracle. Use the cleanup stage and completed real read to repair any exact owned row only if identity is retained in that run. Never retry or delete the original row blindly.",
+  "verification": {
+    "node_check": "passed",
+    "git_diff_check": "passed",
+    "native_runtime": "not_run_in_this_lane",
+    "peer_finding": "The source peer found that completedRead could replace the primary failure during cleanup; the runner now preserves the primary object and separates the cleanup error. Runtime remains unverified."
+  }
+}

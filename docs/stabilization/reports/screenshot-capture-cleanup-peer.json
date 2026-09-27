@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-capture-cleanup-peer",
+  "scope": "Narrow source-only verification of cleanup failure preservation in the uncommitted owned screenshot runner; no browser, private config, credentials, or product data accessed.",
+  "A_prior_finding": {
+    "verdict": "ADDRESSED_IN_SOURCE",
+    "evidence": "The recovery catch saves the primary report.failure object before cleanup. If completedRead invokes fail and replaces report.failure, the catch restores the saved primary object and adds ownedUiCleanupFailure with a bounded stage, fixed code, and safeFailure fields. Ordinary thrown cleanup errors follow the same separate diagnostic path. The primary captured_pixels_do_not_match_owned_fixture stage/code therefore survives cleanup-read failure.",
+    "cleanup_truth": "createdRowMayNeedUiCleanup remains true unless a fresh real read confirms the exact created row absent and the result empty; failed recovery explicitly sets ownedUiCleanupVerified=false."
+  },
+  "B_delta_quality": {
+    "verdict": "IMPROVED; NARROW SOURCE REVIEW ACCEPTABLE",
+    "evidence": "Cleanup diagnostics preserve the original failure and expose bounded recovery stage and driver facts. safeFailure excludes messages and arbitrary error properties; cleanup exceptions are not serialized. No newly observed unsafe error suppression or sensitive-value path in this catch.",
+    "checks": { "node_check": "passed", "git_diff_check": "passed", "runtime": "not_run" }
+  },
+  "limits": [
+    "No runtime cleanup behavior or report serialization was exercised.",
+    "The cleanup stage remains in the primary failure object on successful recovery, which is diagnostic metadata and does not change the original failure code or unverified status."
+  ]
+}

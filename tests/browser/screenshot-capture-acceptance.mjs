@@ -652,9 +652,48 @@ async function fixturePixels(panel) {
       const pixel=ctx.getImageData(0,0,1,1).data;
       return expected[index].every((channel,i)=>Math.abs(pixel[i]-channel)<=32)&&pixel[3]===255;
     });
-    return {decoded:true,fingerprint:matches.every(Boolean),bandsMatched:matches.filter(Boolean).length};
+    return {decoded:true,fingerprint:matches.every(Boolean),bandsMatched:matches.filter(Boolean).length,
+      bandMatches:matches};
   })()`,
   );
+}
+
+async function preserveOwnedFixturePreview(page, panel, expectedCanonical) {
+  // A failed pixel oracle may have captured the wrong surface. Keep bytes
+  // locally private and only after both the page and Chrome's active tab
+  // still identify this run's fresh fixture.
+  if (canonical(page.url()) !== expectedCanonical) return false;
+  const fixture = await page.evaluate(() => ({
+    title: document.title,
+    marker: document.body?.innerText.includes('Bring your insurance card'),
+  }));
+  if (fixture.title !== 'Harbor Dental appointment guide' || !fixture.marker) return false;
+  const dataUrl = await evaluate(
+    panel,
+    `(() => {
+    const tabs=chrome.tabs.query({active:true,currentWindow:true});
+    return tabs.then(found=>{
+      if(found.length!==1 || found[0].url!==${JSON.stringify(page.url())}) return null;
+      const tab=document.querySelector('button[role="tab"][title="Screenshots"][data-state="active"]');
+      const pane=tab?document.getElementById(tab.getAttribute('aria-controls')):null;
+      const cards=[...(pane?.querySelectorAll('div.group')??[])]
+        .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===2);
+      const image=cards.length===1?cards[0].querySelector('img'):null;
+      if(!image?.complete || !image.src.startsWith('blob:')) return null;
+      const canvas=document.createElement('canvas');
+      canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
+      canvas.getContext('2d')?.drawImage(image,0,0);
+      return canvas.toDataURL('image/png');
+    });
+  })()`,
+  );
+  if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/png;base64,')) return false;
+  await writeFile(
+    OUTPUT.replace(/\.json$/, '.fixture-failure.png'),
+    Buffer.from(dataUrl.slice('data:image/png;base64,'.length), 'base64'),
+    { flag: 'wx', mode: 0o600 },
+  );
+  return true;
 }
 
 async function exercise({ page, panel }) {
@@ -760,8 +799,20 @@ async function exercise({ page, panel }) {
       30000,
     );
     const pixels = await fixturePixels(panel);
-    if (!pixels?.decoded || !pixels.fingerprint || pixels.bandsMatched !== 3)
+    report.observations ??= {};
+    report.observations.ownedFixturePixels = safeObservation(pixels);
+    if (!pixels?.decoded || !pixels.fingerprint || pixels.bandsMatched !== 3) {
+      try {
+        report.observations.ownedFixtureFailureImagePreserved = await preserveOwnedFixturePreview(
+          page,
+          panel,
+          fixtureCanonical,
+        );
+      } catch {
+        report.observations.ownedFixtureFailureImagePreserved = false;
+      }
       fail('captured_pixels_do_not_match_owned_fixture');
+    }
 
     stage = 'owned_capture_delete_prompt';
     await click(panel, 'title', 'Delete');
@@ -821,23 +872,33 @@ async function exercise({ page, panel }) {
     report.failure.fixtureOnly = !!fixtureCanonical;
     report.failure.createdRowMayNeedUiCleanup = captureClicked && !cleaned;
     if (createdRow && !cleaned) {
+      const primaryFailure = report.failure;
       // Recovery may touch only the sole card observed for this run's fresh,
       // empty-before-capture URL. A row or page mismatch leaves it for review.
       try {
+        report.failure.ownedUiCleanupStage = 'page_identity';
         if (canonical(page.url()) !== fixtureCanonical) throw new Error('page_changed');
+        report.failure.ownedUiCleanupStage = 'card_identity';
         const identity = await galleryResponseAgreement(panel, [createdRow]);
+        report.failure.ownedUiCleanupCardIdentity = safeObservation(identity);
         if (identity.cardCount === 1 && identity.ordered && identity.distinct) {
+          report.failure.ownedUiCleanupStage = 'dialog';
           const dialog = await evaluate(
             panel,
             `(() => !!document.querySelector('[role="alertdialog"],[role="dialog"]'))()`,
           );
-          if (!dialog) await click(panel, 'title', 'Delete');
+          if (!dialog) {
+            report.failure.ownedUiCleanupStage = 'delete_prompt_click';
+            await click(panel, 'title', 'Delete');
+          }
+          report.failure.ownedUiCleanupStage = 'delete_consequence';
           const consequence = await evaluate(
             panel,
             `(() => document.querySelector('[role="alertdialog"],[role="dialog"]')
               ?.innerText.includes('The image file itself stays in your Files')===true)()`,
           );
           if (!consequence) throw new Error('consequence_not_visible');
+          report.failure.ownedUiCleanupStage = 'delete_confirm_click';
           await click(panel, 'button-text', 'Delete');
           report.failure.ownedUiCleanupAttempted = true;
         } else if (identity.cardCount !== 0) {
@@ -846,7 +907,9 @@ async function exercise({ page, panel }) {
         // A click is not cleanup proof. Force a fresh real list read and
         // require the exact captured row absent before clearing the flag.
         const cleanupMarker = journal.marker();
+        report.failure.ownedUiCleanupStage = 'refresh_click';
         await click(panel, 'title', 'Refresh');
+        report.failure.ownedUiCleanupStage = 'verified_read';
         const cleanupRead = await completedRead(journal, cleanupMarker, fixtureCanonical);
         if (
           cleanupRead.rows.some((row) => row.id === createdRow.id) ||
@@ -856,7 +919,17 @@ async function exercise({ page, panel }) {
         cleaned = true;
         report.failure.createdRowMayNeedUiCleanup = false;
         report.failure.ownedUiCleanupVerified = true;
-      } catch {
+      } catch (cleanupError) {
+        const cleanupCode =
+          report.failure !== primaryFailure && report.failure?.code === 'gallery_read_not_unique'
+            ? 'gallery_read_not_unique'
+            : 'owned_ui_cleanup_failed';
+        report.failure = primaryFailure;
+        report.failure.ownedUiCleanupFailure = {
+          stage: primaryFailure.ownedUiCleanupStage ?? 'unknown',
+          code: cleanupCode,
+          driver: safeFailure(cleanupError),
+        };
         report.failure.ownedUiCleanupVerified = false;
       }
     }

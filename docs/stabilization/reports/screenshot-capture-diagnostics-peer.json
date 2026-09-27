@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-capture-diagnostics-peer",
+  "scope": "Source-only review of the uncommitted screenshot capture runner diagnostics and failure diagnosis; no browser, image, private configuration, or secret file was opened.",
+  "A_readiness": {
+    "verdict": "CONDITIONAL",
+    "findings": [
+      "The runner now records three per-band match booleans and can save a failed preview to a random, exclusive-create, mode-0600 PNG. It first requires the owned fixture URL and DOM marker on the page, the same URL as Chrome's active tab, one Screenshots card, and a loaded blob image. The image bytes are not placed in the JSON or stdout. Treat the private PNG as unverified content until inspected locally.",
+      "The failure path attempts exact-card cleanup regardless of the pixel result. It records the cleanup stage and bounded card identity, and marks cleanup verified only after a fresh real gallery read finds the captured row ID absent and the result empty. It retains unverified status if this proof fails.",
+      "The current package version is 0.2.94, while the runner's default local dev receipt path names 0.2.93. buildIdentity requires the receipt, manifest, and package versions to agree. A new 0.2.94 receipt and matching unpacked build, passed through SCREENSHOT_CAPTURE_DEV_BUILD_RECEIPT or set as the default, are required before native execution. The old 0.2.93 pixel receipt is historical evidence only."
+    ],
+    "runtime": "UNVERIFIED; source review does not establish capture behavior, deletion, or pixel correctness."
+  },
+  "B_code_quality": {
+    "verdict": "REPAIR_BEFORE_RUN",
+    "blocking_finding": {
+      "location": "tests/browser/screenshot-capture-acceptance.mjs:625 and :899",
+      "problem": "During recovery, completedRead can call fail('gallery_read_not_unique'). fail replaces report.failure, erasing the original captured_pixels_do_not_match_owned_fixture code and all cleanup-stage diagnostics. The surrounding catch then records only ownedUiCleanupVerified=false. The same overwrite is possible for a cleanup read's other fail path.",
+      "remedy": "Keep recovery failures separate from the primary failure: make completedRead return or throw a recovery-specific error without calling fail in this path, or preserve the original report.failure before recovery and restore it in the catch while adding a bounded cleanup error code/stage. Then verify a simulated duplicate or missing cleanup read retains both the pixel failure and cleanup stage."
+    },
+    "nonblocking_limit": "The PNG ownership guard identifies the current fixture and sole visible card, but it cannot prove the screenshot bytes themselves depict that fixture; discovering a wrong surface is the purpose of preserving the private evidence. Do not publish or inline the PNG before verifying it is nonsecret.",
+    "checks": {
+      "node_check": "passed",
+      "git_diff_check": "passed",
+      "native_runtime": "not_run"
+    }
+  }
+}
