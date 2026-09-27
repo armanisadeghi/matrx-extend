@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "report_id": "debug011-runtime-peer",
+  "run_id": "debug-log-controls-011",
+  "source_receipt": "docs/stabilization/runs/debug-log-controls-011.json",
+  "preserved_raw_result": {
+    "path": "/tmp/matrx-debug-log-controls-011-result.json",
+    "sha256": "ea3f44c0eb04c9faaa92159bbe6a9c66773d1a5014ffde0d6d04299cecb3644f",
+    "permission": "0600"
+  },
+  "A_acceptance_verdict": {
+    "status": "T14_RELOAD_DIMENSION_PASS_WITH_BOUNDED_SCOPE",
+    "finding": "After an actual side-panel document reload and restored admin identity, trusted message-only search retained the original natural row, a no-match query produced zero rows and the distinct no-match state, and natural detail-only primitive search found its detail row. Clearing each query restored the exact prior ordered visible-row signature sequence, not merely the prior count. The message reset retained all 20 prior rows as a suffix of 21, correctly accounting for one new natural arrival; detail reset restored 31 of 31. Both report unfiltered search, matching counters, and arrival accounting true.",
+    "label_adjudication": "The raw T14 reload field remains partial because the runner assigns partial without aggregating case dimensions. The listed reload assertions are supported by this run. Stronger warm-reset proof remains a separate pending run; Debug 010 provides the service-error dimension. This report does not mark full T14 or EXT-F-1005 accepted.",
+    "other_cases": "T15 again holds 21 visible rows while total rises to 31 and Resume shows 31. T22 records natural detail expand/collapse, inert no-detail row, and distinct empty states. T17 records zero rows/no-events and a positively present pre-clear error badge that cleared; its reload partial label is conservative for the listed assertion.",
+    "limits": "The exact reset oracle covers rendered visible row fields, style, and detail affordance, not hidden detail JSON byte identity or internal event IDs. The separate natural detail-only search establishes the detail search behavior."
+  },
+  "B_source_runtime_quality_verdict": {
+    "status": "ACCEPT_WITH_SCOPE_LIMITS",
+    "checks": [
+      "The preserved 0600 raw result and unique guard log hash to the values in the generated Debug 011 receipt. The guard records admission, PARTIAL stdout, and child exit 0 at 2026-09-27T00:08:23.997Z; the coordinator confirmed wrapper exit 0. The receipt leaves wrapper completion unverified from the guard log alone, which is accurate for that source.",
+      "The runner sends Page.reload to the owned side-panel target and requires a different main-frame loader ID. It then waits for Settings to remount, opens Account, and requires exact admin email, role, and Sign out before entering Debug. The raw result records actualPanelReload=true, adminIdentityRestored=true, realAdminUi=true, and profileOwned=true.",
+      "Source commit 3dc31a21 hashes every unfiltered visible row's rendered fields, style, and detail affordance in runner memory. The reset oracle requires the original ordered sequence and multiplicity as an unchanged suffix, allowing only counted new leading rows. The durable result exposes predicates and counts, not row text, signatures, detail terms, credentials, or event payloads.",
+      "The owned harness binds the run to release 0.2.79 tree be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0 and extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml. Runner receipt/manifest identity is checked at start and end; harness validation of the release artifact and disposable profile underlies profileOwned=true."
+    ],
+    "boundary": "This peer reviewed saved artifacts and source, not a second browser run. The top-level partial status reflects the runner's bounded mode and is not a failure of the supported reload assertions."
+  }
+}
