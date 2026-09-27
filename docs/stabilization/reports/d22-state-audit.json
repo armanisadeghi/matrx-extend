@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-state-audit",
+  "defect_id": "EXT-D-0022",
+  "scope": "Independent ledger-state audit from recorded source, guard, peer and native receipts; no product edit, browser run, test run or ledger transition.",
+  "ledger_state_observed": "in-fix",
+  "recommended_next_state": "fixed",
+  "recommended_state_meaning": "Engineering repair is present; authenticated multi-workspace native retest and remaining case predicates are pending. This is not retest-pass or closed.",
+  "basis": {
+    "red": [
+      "docs/stabilization/runs/source-org-red-001.json: missing/unreadable workspace assertions failed before scoped-query repair.",
+      "docs/stabilization/runs/source-org-local-red-001.json: stale Scrape Saved/Open controls failed on workspace switch and late A Save.",
+      "docs/stabilization/runs/source-org-queue-red-001.json: older Save/Retry refusals overwrote B's newer queued capture before revision repair."
+    ],
+    "green": [
+      "docs/stabilization/runs/source-org-green-002.json: 14/14 shared query, hook and chat tests passed after late-broadcast repair.",
+      "docs/stabilization/runs/source-org-local-green-001.json: 39/39 focused tests passed after Scrape workspace repair.",
+      "docs/stabilization/runs/source-org-boundary-green-001.json: 47/47 actor-binding, queue-order and storage-failure guards passed.",
+      "docs/stabilization/runs/source-org-refusal-green-001.json: 11/11 transport refusal tests passed; docs/stabilization/runs/source-ci-refusal-green-001.json: 16/16 original refusal UI and queue tests passed after mock-fidelity repair."
+    ],
+    "independent_review": [
+      "docs/stabilization/reports/d22-refusal-message-peer.json accepts the repaired local/server refusal distinction, with a documentation comment caveat; it does not claim runtime acceptance.",
+      "docs/stabilization/reports/d22-next-closure-path.json finds no new production defect and records the later boundary/refusal repairs omitted from the ledger's old fix_commits list.",
+      "docs/stabilization/reports/d22-readonly-source-peer.json accepts the repaired read-only recognition runner source at bounded scope; actual positive fixture and UI remain unverified.",
+      "docs/stabilization/reports/incoming-file-source-d22-impact.json establishes no D22 source rebreak from incoming filing changes, while requiring fresh build and regression gates."
+    ],
+    "ci_boundary": "docs/stabilization/reports/d22-ci-refusal-timing.json records CI 36269359553's 1-failure/15-pass test-harness regression and local reproduction; docs/stabilization/runs/source-ci-refusal-green-001.json records the subsequent local 16/16 repair. Neither proves a current integrated CI or native UI pass."
+  },
+  "native_evidence": {
+    "bounded_pass": "docs/stabilization/runs/source-workspace-008.json and docs/stabilization/reports/source-workspace-008-peer.json: real admin read-only no-workspace/no-docproc-read and selected-workspace HTTP 200 empty/not-saved observations on 0.2.79.",
+    "latest_attempt": "docs/stabilization/runs/d22-recognition-readonly-001.json: current 0.2.82 run exited nonzero and reports unverified; no positive saved Source or late-response acceptance may be claimed.",
+    "remaining": "Actual existing saved Source/Open identity across two organizations, late old-workspace response rejection, service-failure/recovery, and the separate late inflight Save dimension remain unverified; the original Save checkpoint stays reserved and ambiguous."
+  },
+  "ledger_reconciliation": "The current in-fix transition was justified by an independently found queue race, but later queue, actor-boundary and refusal repairs have guarded green receipts. No recorded later source-confirmed D22 defect requires further production editing. The truthful next lifecycle state is fixed, awaiting retest, while retaining ui_retest=pending and all open case evidence gaps. Update transition history and fix_commits only in a separate ledger action; this report does not mutate the ledger.",
+  "limits": "Historical focused greens and release 0.2.79 read-only scope do not substitute for exact-current-build full UI acceptance. The latest positive recognition attempt is unverified. This recommendation does not close D22 or mark EXT-F-1007-T26 passed."
+}
