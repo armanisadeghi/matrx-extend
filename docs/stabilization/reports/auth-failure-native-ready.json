@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "lane": "implementation / Sol medium",
+  "status": "SOURCE_READY_AWAITING_PEER_AND_RESOURCE_ADMISSION",
+  "base_commit": "3c74ebc82997435a637461103efd6e3e097fe343",
+  "runner": "tests/browser/auth-role-failure-acceptance.mjs",
+  "case": "EXT-F-1015-T35",
+  "defect": "EXT-D-0029",
+  "oracle": {
+    "initial": "Real admin signs in on aimatrx.com and the extension Settings panel; the account row, admin controls, and background-worker-read chrome.storage.local admin gate must all be true.",
+    "failed_role_read": "Reload starts canonical revalidation with a CDP Fetch.failRequest on the actual GET to the configured Supabase admin-schema /rest/v1/admins endpoint for the account verified immediately before the fault. At least one matching request must have been failed. The same account remains visible, the admin role and controls disappear, the specific AuthGate role-check error and its single enabled Try again control appear, and a fresh read from the service worker returns gate false.",
+    "recovery": "After removing the fault, trusted pointer input activates the product Try again button. The same account, admin role and controls, and worker-readable gate must all return to true."
+  },
+  "fault_fidelity": "Browser-level request failure at the exact configured HTTPS Supabase origin, GET /rest/v1/admins with Accept-Profile: admin, select=user_id, and user_id=eq.<the account verified by the real login>. The account ID stays only in runner memory. No auth state, role, outcome, or gate is fabricated or directly written by the runner.",
+  "artifact_identity": "Requires a caller-supplied validated local development build receipt; the harness verifies the unpacked tree before launch and the runner rechecks the same package, manifest and tree after execution.",
+  "verification": {
+    "node_check": "pass",
+    "scoped_biome_check": "pass",
+    "native_browser": "not_launched",
+    "resource_guard": "not_launched"
+  },
+  "evidence": "A future guarded run writes a sanitized, private test-results/auth-role-failure-acceptance.json receipt with stage-specific booleans and request counts. It excludes credential values, auth URLs, request bodies, storage contents, and raw browser exceptions.",
+  "gaps": [
+    "Safari callback, cancellation, and timeout paths remain unverified (T37).",
+    "Simultaneous storage set/remove outage and cross-context write race remain unverified (T39).",
+    "A real member-role transition and server-side role revocation remain unverified.",
+    "A source review and one resource-guarded native run remain required before case acceptance."
+  ],
+  "next_action": "Root reviews the source oracle and fault fidelity, allowlists the exact node runner command, then runs it once under stabilization-resource.mjs using the current validated dev receipt. A separate verifier inspects the sanitized result and artifact identity."
+}

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "lane": "independent source peer / Sol medium / zero authorship",
+  "reviewed_at": "2026-09-27",
+  "subject": "tests/browser/auth-role-failure-acceptance.mjs and docs/stabilization/reports/auth-failure-native-ready.json",
+  "source_sha256": "38c598c2d1d3429a8552f22eda551fab3fad399651f07a617e529b7224dab9bc",
+  "A_coverage": {
+    "verdict": "partial_source_ready_no_runtime_acceptance",
+    "supported": [
+      "The runner signs in through the real web login and extension UI in a fresh owned Chrome profile.",
+      "It arms CDP Fetch on the side-panel target, reloads the panel, and requires at least one failed GET /rest/v1/admins request before accepting visible auth failure and a false worker-readable admin gate.",
+      "It removes the interception in finally, uses trusted pointer input on the product Try again control, and requires the same email, admin role, controls, and worker gate to recover.",
+      "It does not directly write auth state, role state, or the gate, and its result excludes credentials, URLs, request bodies, storage values, and raw exceptions."
+    ],
+    "unverified": [
+      "No native run or result receipt exists for this runner; D29 failure-path acceptance cannot be marked pass from source review.",
+      "Safari failure/cancellation, simultaneous storage set/remove outage, cross-context write races, actual member transition, and server revocation remain outside this Chrome role-read scenario."
+    ],
+    "node_check": "pass"
+  },
+  "B_quality": {
+    "verdict": "conditional_requires_fault_match_tightening_before_guarded_run",
+    "findings": [
+      {
+        "severity": "blocking_for_exact_fault_claim",
+        "location": "armRoleFailure",
+        "finding": "The match checks configured origin, GET, /rest/v1/admins, select=user_id, and presence of user_id, but does not verify the admin schema request header or that the user_id predicate equals the account authenticated in this run. A different request with the same route/query shape could satisfy injected_role_requests. Bind the predicate to the verified account ID and require the request's Accept-Profile: admin header before recording a failed role read."
+      },
+      {
+        "severity": "bounded_limitation",
+        "location": "accountState",
+        "finding": "The UI oracle uses any role=alert and any Try again button on the panel. Scope both to the AuthGate alert or check the role-read failure message, so an unrelated alert cannot satisfy the failure oracle."
+      },
+      {
+        "severity": "provenance_limit",
+        "location": "buildIdentity",
+        "finding": "The receipt and tree hash bind an exact unpacked artifact before and after execution, not a source commit. The earlier 0.2.92 artifact was built from c9abb17e; current 356c07d5 also includes a version bump to 0.2.93, plus the writeAuthRoleGate name and internal removal registry entry, with no role-write runtime change in that diff. A fresh validated 0.2.93 receipt is required for the planned run; report artifact and source identities separately."
+      }
+    ],
+    "positive_checks": [
+      "The product query is adminDb().from('admins').select('user_id').eq('user_id', userId).limit(1), so the intended URL path and select predicate correspond to the real role lookup.",
+      "The AuthGate product renders a visible error and Try again button, and useAuth.retry revalidates the saved account; the runner does not inject their outcome.",
+      "The owned harness validates the child profile, CDP endpoint, extension ID, side-panel target, and worker target, and stops its own child on exit."
+    ]
+  },
+  "exact_allowlist_recommendation": {
+    "status": "after_the_two_oracle_tightenings_and_source_re_review",
+    "entry": ["node", "tests/browser/auth-role-failure-acceptance.mjs"],
+    "execution": "Run once through scripts/stabilization-resource.mjs run with AUTH_FAILURE_DEV_BUILD_RECEIPT set to the validated current local development receipt; preserve the resulting sanitized private receipt and wrapper admission record. Do not classify a resource refusal or setup failure as product failure."
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "task_id": "auth-fault-final-peer",
+  "reviewed_at": "2026-09-27",
+  "lane": "independent source peer / Luna medium / zero authorship",
+  "reviewed_commit": "356c07d5",
+  "subject": "tests/browser/auth-role-failure-acceptance.mjs",
+  "source_sha256": "1cfc4c4274de16efb9657693a3454307c8890766075be30e1b2b7333c2458291",
+  "verdict_a_runtime": {
+    "status": "PENDING_NATIVE_RUN",
+    "evidence": "No browser launch or runtime receipt was performed in this source-only lane. The native runner remains unverified until the root-owned guarded run and separate receipt inspection complete."
+  },
+  "verdict_b_source": {
+    "status": "SOURCE_ACCEPTED_WITH_PROVENANCE_LIMIT",
+    "addressed_prior_findings": [
+      {
+        "finding": "Fault match lacked admin-schema profile and account binding.",
+        "status": "ADDRESSED",
+        "evidence": "armRoleFailure requires GET, the exact configured HTTPS origin, /rest/v1/admins, select=user_id, user_id=eq.<accountId>, and Accept-Profile: admin before Fetch.failRequest. The configured accountId is read from the extension's persisted USER_PROFILE only after the live account UI shows admin@admin.com/admin; product applyCanonicalSession restores the bearer, cryptographically verifies its current subject, and rejects a profile whose id differs from that verified subject. The actual product query is adminDb().from('admins').select('user_id').eq('user_id', userId).limit(1) in src/lib/supabase/queries.ts."
+      },
+      {
+        "finding": "Failure UI oracle was broad and retry could be unrelated.",
+        "status": "ADDRESSED",
+        "evidence": "accountState requires the exact role-check error text inside a role=alert and counts enabled Try again buttons inside that alert; acceptance also requires exactly one Try again button overall and advanced controls absent. After fault removal, the runner uses the shared trusted pointer click driver on the product Try again button, then requires the same signed-in account, admin role/controls, and worker-readable gate to recover."
+      },
+      {
+        "finding": "No runner-written auth, role, or gate outcomes; sanitized result and cleanup.",
+        "status": "CONFIRMED",
+        "evidence": "The runner reads profile/gate state only; it injects a network failure using CDP Fetch and contains no auth/session/profile/admin-gate storage writes. The interception is disabled and listener removed in finally; worker and web page detach/close in finally, and the owned harness owns child cleanup. Errors are reduced to stage plus fixed failure codes; output contains only booleans/counts and artifact identity, not credentials, account ID, URL, request body, storage values, or raw exceptions."
+      }
+    ],
+    "remaining_limit": "Runtime receipt records the validated artifact identity but not the source revision. The peer report records source commit/hash separately; reviewers must keep artifact and source provenance distinct when interpreting the native result.",
+    "allowlist": {
+      "trusted_exact_command": ["node", "tests/browser/auth-role-failure-acceptance.mjs"],
+      "resource_policy_currently_contains_command": false,
+      "recommendation": "This exact foreground Node invocation is structurally compatible with the resource policy's exact argv allowlist and should be added as one explicit allowedCommands entry before root's guarded run. Do not allowlist a shell wrapper, wildcard, or environment-scrubbing launcher.",
+      "validation": "node --check tests/browser/auth-role-failure-acceptance.mjs passed. No browser/runtime/resource admission was attempted."
+    }
+  }
+}
