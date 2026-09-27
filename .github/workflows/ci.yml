@@ -23,6 +23,10 @@ name: CI
 on:
   push:
     branches: [main]
+    # Immutable release tags need their own verification lane. Their ref differs
+    # from main, so the existing ref-scoped concurrency rule cannot cancel this
+    # evidence when a later main commit lands.
+    tags: ['v*']
   pull_request:
 
 concurrency:
