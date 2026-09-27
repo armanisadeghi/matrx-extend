@@ -1,0 +1,14 @@
+{
+  "run_id": "resource-recovery-002",
+  "mode": "check_only",
+  "wrapper_session": 96437,
+  "wrapper_exit_code": 2,
+  "at": "2026-09-27T00:34:59.354Z",
+  "status": "resource_refused",
+  "reason": "RESOURCE_PRESSURE_UNSAFE",
+  "guard_log": "/tmp/matrx-resource-recovery-002.log",
+  "guard_log_sha256": "cbc6f804c9119c7514173e25dc761e3f69e66fbdf8681a33036c5fb37c751bf9",
+  "child_launched": false,
+  "product_acceptance": "not_run",
+  "next_action": "Do not launch heavy workloads until a fresh resource-only preflight and the actual launch guard pass. Do not relax thresholds or kill unrelated processes."
+}
