@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Harborline Live — October Calendar</title>
+    <meta name="description" content="Fictional October concert listings and venue schedule for the Showcase replay fixture.">
+    <meta property="og:title" content="Harborline Live — October Calendar">
+    <meta property="og:description" content="Three fictional live music events at independent Las Vegas venues.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://127.0.0.1:4179/calendar/">
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {"@type":"Event","name":"Moonlit Transit","startDate":"2026-10-16T20:00:00-07:00","location":{"@type":"Place","name":"Sagebrush Hall"}},
+          {"@type":"Event","name":"Velvet Current","startDate":"2026-10-16T21:15:00-07:00","location":{"@type":"Place","name":"Copperlight Pavilion"}},
+          {"@type":"Event","name":"Canyon Frequency","startDate":"2026-10-17T19:45:00-07:00","location":{"@type":"Place","name":"Mesa Lantern Room"}}
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <header>
+      <p>HARBORLINE LIVE · SYNTHETIC FIXTURE</p>
+      <h1>October concert calendar</h1>
+      <p>Fictional listings for checking repeatable extraction recipes.</p>
+    </header>
+
+    <main>
+      <section aria-labelledby="events-heading">
+        <h2 id="events-heading">Upcoming shows</h2>
+        <div id="events" class="event-list">
+          <article class="event-card" itemscope itemtype="https://schema.org/Event">
+            <ul class="brief-details">
+              <li class="event-title"><h3 itemprop="name">Moonlit Transit</h3></li>
+              <li><time itemprop="startDate" datetime="2026-10-16T20:00:00-07:00">Friday, October 16 · 8:00 PM</time></li>
+              <li itemprop="location" itemscope itemtype="https://schema.org/Place"><span itemprop="name">Sagebrush Hall</span></li>
+              <li>Doors: <span itemprop="doorTime">7:00 PM</span></li>
+              <li>Admission: <span itemprop="typicalAgeRange">21+</span></li>
+            </ul>
+            <p itemprop="description">A late set of atmospheric synth and live percussion.</p>
+          </article>
+          <article class="event-card" itemscope itemtype="https://schema.org/Event">
+            <ul class="brief-details">
+              <li class="event-title"><h3 itemprop="name">Velvet Current</h3></li>
+              <li><time itemprop="startDate" datetime="2026-10-16T21:15:00-07:00">Friday, October 16 · 9:15 PM</time></li>
+              <li itemprop="location" itemscope itemtype="https://schema.org/Place"><span itemprop="name">Copperlight Pavilion</span></li>
+              <li>Doors: <span itemprop="doorTime">8:15 PM</span></li>
+              <li>Admission: <span itemprop="typicalAgeRange">18+</span></li>
+            </ul>
+            <p itemprop="description">A live electronic trio with a midnight guest set.</p>
+          </article>
+          <article class="event-card" itemscope itemtype="https://schema.org/Event">
+            <ul class="brief-details">
+              <li class="event-title"><h3 itemprop="name">Canyon Frequency</h3></li>
+              <li><time itemprop="startDate" datetime="2026-10-17T19:45:00-07:00">Saturday, October 17 · 7:45 PM</time></li>
+              <li itemprop="location" itemscope itemtype="https://schema.org/Place"><span itemprop="name">Mesa Lantern Room</span></li>
+              <li>Doors: <span itemprop="doorTime">6:45 PM</span></li>
+              <li>Admission: <span itemprop="typicalAgeRange">21+</span></li>
+            </ul>
+            <p itemprop="description">A desert-inspired instrumental set and local opener.</p>
+          </article>
+        </div>
+      </section>
+
+      <section aria-labelledby="tables-heading">
+        <h2 id="tables-heading">Published schedules</h2>
+        <table id="event-schedule">
+          <caption>Event schedule</caption>
+          <thead><tr><th>Event</th><th>Start</th><th>Venue</th></tr></thead>
+          <tbody>
+            <tr><td>Moonlit Transit</td><td>2026-10-16 20:00</td><td>Sagebrush Hall</td></tr>
+            <tr><td>Velvet Current</td><td>2026-10-16 21:15</td><td>Copperlight Pavilion</td></tr>
+            <tr><td>Canyon Frequency</td><td>2026-10-17 19:45</td><td>Mesa Lantern Room</td></tr>
+          </tbody>
+        </table>
+        <table id="venue-capacity">
+          <caption>Venue room capacities</caption>
+          <thead><tr><th>Venue</th><th>Room</th><th>Standing capacity</th></tr></thead>
+          <tbody>
+            <tr><td>Sagebrush Hall</td><td>Juniper Room</td><td>460</td></tr>
+            <tr><td>Copperlight Pavilion</td><td>North Gallery</td><td>780</td></tr>
+            <tr><td>Mesa Lantern Room</td><td>Courtyard Stage</td><td>325</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section aria-labelledby="api-heading">
+        <h2 id="api-heading">Request-specific event data</h2>
+        <button type="button" data-date="2026-10-16">Load 16 October API result</button>
+        <button type="button" data-date="2026-10-17">Load 17 October API result</button>
+        <pre id="api-result" aria-live="polite">Choose a date to request its event list.</pre>
+      </section>
+    </main>
+
+    <script>
+      for (const button of document.querySelectorAll('button[data-date]')) {
+        button.addEventListener('click', async () => {
+          const response = await fetch(`/api/events?date=${encodeURIComponent(button.dataset.date)}`);
+          const data = await response.json();
+          document.querySelector('#api-result').textContent = JSON.stringify(data, null, 2);
+        });
+      }
+    </script>
+  </body>
+</html>
