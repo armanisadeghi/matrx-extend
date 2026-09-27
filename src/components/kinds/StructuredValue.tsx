@@ -54,7 +54,7 @@ function ValueBody({ value, depth }: { value: unknown; depth: number }) {
       <ul className="space-y-1.5">
         {value.map((entry, i) => (
           <li
-            key={i}
+            key={`${depth}-${typeof entry}-${String(entry)}-${i}`}
             className={cn(isPlainObject(entry) && 'rounded border border-border px-2 py-1.5')}
           >
             <ValueBody value={entry} depth={depth + 1} />

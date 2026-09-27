@@ -193,8 +193,9 @@ export function scanFile(file: string, raw: string): Finding[] {
   const seenLines = new Set<number>();
   for (const pattern of HARDCODED_PREDICATES) {
     const global = new RegExp(pattern.source, 'g');
-    let match: RegExpExecArray | null;
-    while ((match = global.exec(code)) !== null) {
+    while (true) {
+      const match = global.exec(code);
+      if (match === null) break;
       const window = chainWindow(code, match.index);
       if (anyMatch(window, WRITE_SIGNALS)) continue;
       if (anyMatch(window, SINGLE_RECORD_SIGNALS)) continue;

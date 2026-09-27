@@ -86,7 +86,7 @@ const COMPONENTS: Components = {
   ),
   img: ({ node: _n, alt, ...props }) => (
     // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
-    <img className="my-2 max-w-full rounded-lg" alt={alt ?? ''} loading="lazy" {...props} />
+    <img className="my-2 max-w-full rounded-lg" loading="lazy" {...props} alt={alt ?? ''} />
   ),
   code: ({ node: _n, className, children, ...props }) => {
     const isBlock = /language-/.test(className ?? '');

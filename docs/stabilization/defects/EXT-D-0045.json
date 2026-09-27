@@ -1,11 +1,7 @@
 {
   "id": "EXT-D-0045",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T23",
-    "EXT-F-1012-T24",
-    "EXT-F-1012-T51"
-  ],
+  "case_ids": ["EXT-F-1012-T23", "EXT-F-1012-T24", "EXT-F-1012-T51"],
   "surface": "Showcase List Pattern picker cancellation after changing a configured draft scope",
   "auth_mode": "admin",
   "reproduction": [

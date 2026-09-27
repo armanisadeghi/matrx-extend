@@ -76,7 +76,8 @@ afterEach(cleanup);
 function renderFixture(name: keyof typeof BLOCKS) {
   const block = readInboundRenderBlock(BLOCKS[name]);
   expect(block, `fixture "${String(name)}" did not survive the wire gate`).not.toBeNull();
-  return render(<RenderBlockView block={block!} />);
+  if (!block) throw new Error(`fixture "${String(name)}" did not survive the wire gate`);
+  return render(<RenderBlockView block={block} />);
 }
 
 describe('server-built render blocks reach real components', () => {
@@ -110,7 +111,8 @@ describe('server-built render blocks reach real components', () => {
     // fixture, not invented: the JSON is the fixture envelope's own value.
     const source = BLOCKS.flashcard_set;
     expect(source, 'the flashcard_set fixture is missing').toBeTruthy();
-    const metadata = source!.metadata as {
+    if (!source) throw new Error('the flashcard_set fixture is missing');
+    const metadata = source.metadata as {
       __ir: { root: { value: unknown } };
       __ir_partial: { state: string; kind: string };
     };
@@ -119,7 +121,7 @@ describe('server-built render blocks reach real components', () => {
     );
 
     const block = readInboundRenderBlock({
-      ...source!,
+      ...source,
       type: 'json',
       content: JSON.stringify(metadata.__ir.root.value),
       // No `__ir`: that is the whole point of the shadowed lane.
@@ -127,8 +129,8 @@ describe('server-built render blocks reach real components', () => {
     });
     expect(block).not.toBeNull();
     expect(block?.metadata?.__ir, 'no verified envelope may be present').toBeUndefined();
-
-    render(<RenderBlockView block={block!} />);
+    if (!block) throw new Error('shadowed fixture did not survive the wire gate');
+    render(<RenderBlockView block={block} />);
     // The deck, in the same frame — never the raw Shape JSON.
     expect(screen.getByText('What pigment absorbs light?')).toBeTruthy();
     expect(screen.getAllByText('Show answer').length).toBeGreaterThan(0);

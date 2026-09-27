@@ -32,8 +32,15 @@ const pattern = {
   route_pattern: '/calendar/',
   kind: 'list_pattern',
   config: { list_root: '#events', item_selector: '.event', field_paths: [] },
-  created_by: null, list_root_selector: '#events', fields: [], target_user_table_id: null,
-  last_used_at: null, last_run_at: null, last_status: null, last_run_count: null, created_at: '2026-09-27T00:00:00Z',
+  created_by: null,
+  list_root_selector: '#events',
+  fields: [],
+  target_user_table_id: null,
+  last_used_at: null,
+  last_run_at: null,
+  last_status: null,
+  last_run_count: null,
+  created_at: '2026-09-27T00:00:00Z',
 } satisfies ExtractionPattern;
 
 afterEach(() => {
@@ -60,9 +67,9 @@ it('records an auto-extract no-match locally without promoting saved health to o
     await vi.advanceTimersByTimeAsync(1_000);
   });
 
-  const record = useAutoExtractStore.getState().records.get(
-    `37|${pattern.id}|https://electronic.vegas/calendar/`,
-  );
+  const record = useAutoExtractStore
+    .getState()
+    .records.get(`37|${pattern.id}|https://electronic.vegas/calendar/`);
   expect(record?.status).toBe('no_match');
   expect(record?.note).toMatch(/no matching data/i);
   expect(mocks.bumpRun).not.toHaveBeenCalled();
@@ -89,14 +96,22 @@ it('still promotes a matched nonempty auto-extraction to ok', async () => {
 it('extracts independently when two tabs share the same URL', async () => {
   vi.useFakeTimers();
   mocks.fetchPatterns.mockResolvedValue([pattern]);
-  mocks.runPattern.mockImplementation(async (_pattern, tabId) => [{ venue: tabId === 37 ? 'Brooklyn Bowl' : 'Area15' }]);
+  mocks.runPattern.mockImplementation(async (_pattern, tabId) => [
+    { venue: tabId === 37 ? 'Brooklyn Bowl' : 'Area15' },
+  ]);
   useAuthStore.setState({ user: { id: 'user-1', email: null }, status: 'signed-in' });
   const view = renderHook(() => useAutoExtract());
-  await act(async () => { await vi.advanceTimersByTimeAsync(600); });
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(600);
+  });
   mocks.page.id = 38;
   view.rerender();
-  await act(async () => { await vi.advanceTimersByTimeAsync(600); });
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(600);
+  });
   const records = Array.from(useAutoExtractStore.getState().records.values());
-  expect(records.map((r) => ({ tabId: r.tabId, rows: r.rows }))).toEqual([{ tabId: 38, rows: [{ venue: 'Area15' }] }]);
+  expect(records.map((r) => ({ tabId: r.tabId, rows: r.rows }))).toEqual([
+    { tabId: 38, rows: [{ venue: 'Area15' }] },
+  ]);
   expect(mocks.runPattern.mock.calls.map((call) => call[1])).toEqual([37, 38]);
 });

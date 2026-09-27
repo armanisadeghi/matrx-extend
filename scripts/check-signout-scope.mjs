@@ -123,7 +123,7 @@ if (isMain) {
     console.error(
       'A SIGN-OUT ENDS ONLY THE DEVICE THAT ASKED — every signOut( names a literal local/others scope.',
     );
-    for (const f of findings) console.error('  ' + f);
+    for (const f of findings) console.error(`  ${f}`);
     console.error(
       '\nFix: signOut({ scope: "local" }) / `/auth/v1/logout?scope=local`. A global sign-out deletes every session the account holds, including the OAuth session Claude Code uses for the AI Dream MCP.',
     );
