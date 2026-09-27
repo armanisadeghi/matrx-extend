@@ -1,0 +1,28 @@
+{
+  "lane": "independent peer; source-only; zero authorship of product code",
+  "base": "cf684f9a",
+  "scope": "Reviewed use-auth.ts, strict-mode and entrypoint tests, the persisted admin readers in tool dispatch, WebMCP, background bootstrap, and debug log, plus auth flow and Safari failure broadcasts. No browser run, heavy test run, DB write, or product edit.",
+  "A_acceptance": {
+    "verdict": "PARTIAL_SOURCE_ONLY_NATIVE_PENDING",
+    "supported": "Canonical revalidation writes false to the persisted gate before session restore, bearer verification, or role lookup. Guest, mismatched bearer, null role, and thrown role paths therefore leave the background-readable key false when the write succeeds. A later verified true role restores it. The serialized queue and generation check prevent queued obsolete hook writes from overwriting a newer queued value. The own synchronous AUTH_STATE_CHANGED broadcast remains suppressed locally, preserving the D26 navigation repair.",
+    "limits": "This review does not prove native runtime acceptance, storage failure behavior, or transitions that never call applyCanonicalSession."
+  },
+  "B_quality": {
+    "verdict": "FAIL_WITH_ACTIONABLE_GAPS",
+    "findings": [
+      {
+        "priority": "P2",
+        "title": "Safari failure cancels an in-flight gate close without revalidating",
+        "evidence": "src/hooks/use-auth.ts:235-240 handles AUTH_SAFARI_FAILED by incrementing signInGeneration and setting error/status only. It does not clear the Zustand user/admin values, enqueue a false persisted role, or revalidate. If a boot or broadcast was already rechecking an unavailable/changed session and its false storage write had not started, this event makes that write stale; the old true value can remain indefinitely. src/lib/auth/safari-background.ts:48-55 emits this event for a failed attempt. A failed attempt alone does not prove an existing session invalid, so the correct role requires canonical revalidation.",
+        "requested_proof": "Hold the gate-clear queue behind a prior write, emit AUTH_SAFARI_FAILED, then release it and assert that canonical revalidation resolves the current session and storage gate. Cover both genuinely invalid and still-valid earlier sessions."
+      },
+      {
+        "priority": "P2",
+        "title": "A failed admin-gate clear leaves guest UI but a true execution gate",
+        "evidence": "src/hooks/use-auth.ts:142-149 catches a failed chrome.storage.local.set(false), sets user null, and returns guest. It does not make the background readers reject the old true key. src/lib/auth/is-admin.ts:17-20, src/lib/tools/dispatch.ts:756-757 and 1387-1388, and src/lib/background/bootstrap.ts:628-633 treat the unchanged true key as admin. A selectively rejected write therefore produces the exact split this repair addresses: guest UI and admin-capable background. The code reports the failure but does not fail closed at the execution gate.",
+        "requested_proof": "Seed true, reject the clear write while reads continue to work, classify a guest, and assert that the execution-time admin gate is false. This likely requires the background gate to bind the role to current verified auth state rather than trust a bare boolean."
+      }
+    ],
+    "note": "The background readers consume the boolean key alone. Their behavior makes a stale true value materially relevant even when sidepanel navigation hides admin controls. These are source-derived race paths; native reproducibility is unverified."
+  }
+}

@@ -26,8 +26,8 @@
   "priority": "P1: resolve contained admin navigation before broad authenticated coverage",
   "state": "fixed",
   "owner": "/root/admin_navigation_repair",
-  "reproduction_status": "Observed once in run001; not reproduced in run002's immediate first sample. Not fixed and not closed: run002 changed only diagnostic runner behavior, retained the exact 21-entry oracle, and used the same product tree. Cause remains unknown.",
-  "fix_commits": [],
+  "reproduction_status": "Confirmed same-document auth self-notification clears shared admin state; deterministic pre-fix regression fails, two-consumer post-fix regression and source peer pass. Fix5224d583 awaiting fresh native21-tab retest.",
+  "fix_commits": ["5224d583"],
   "transition_history": [
     {
       "at": "2026-09-27T08:31:32.312719+00:00",

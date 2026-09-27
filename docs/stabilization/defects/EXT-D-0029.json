@@ -1,0 +1,47 @@
+{
+  "id": "EXT-D-0029",
+  "feature_id": "EXT-F-1015",
+  "case_ids": ["EXT-F-1015-T35", "EXT-F-1015-T37", "EXT-F-1015-T32"],
+  "surface": "Canonical authentication and persisted background admin gate",
+  "auth_mode": "admin transitioning to unverified/guest/non-admin",
+  "reproduction": [
+    "At baseline cf684f9a, seed a previously verified admin session and STORAGE_KEYS.IS_ADMIN=true using the existing auth regression fixture.",
+    "Exercise canonical auth revalidation with failed restore, absent profile, mismatched bearer, unverifiable bearer, null role, or thrown role read.",
+    "Run the focused use-auth strict-mode suite through the resource guard with the added stored-role assertions; six assertions fail before the repair.",
+    "Observe the UI refuses admin while the stored IS_ADMIN flag remains true; shared execution-time admin readers consume that flag."
+  ],
+  "expected": "Unverified or revoked current authentication must not retain the prior admin gate; a valid earlier session after a cancelled login is canonically revalidated rather than discarded.",
+  "actual": "UI role clears, but six canonical failure paths retain stored true. Peer additionally identified Safari failure cancellation of revalidation and storage-clear failure recovery gaps.",
+  "evidence": [
+    "docs/stabilization/reports/admin-auth-peer.json",
+    "docs/stabilization/reports/admin-role-storage-peer.json",
+    "src/hooks/use-auth.strict-mode.test.tsx",
+    "src/lib/auth/is-admin.ts"
+  ],
+  "severity": "S2: stale background privilege gate can outlive verified admin UI; no unauthorized action demonstrated",
+  "priority": "P1: repair shared authentication before broader authenticated acceptance",
+  "state": "in-fix",
+  "owner": "/root/admin_navigation_repair",
+  "fix_commits": [],
+  "transition_history": [
+    {
+      "at": "2026-09-27T09:25:37.486111+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Independent D26 source review found persisted-role sibling gap."
+    },
+    {
+      "at": "2026-09-27T09:25:37.486111+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Guarded pre-fix regressions failed six exact stored-role assertions."
+    },
+    {
+      "at": "2026-09-27T09:25:37.486111+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Shared write ordering and transition repair under development; fresh peer requested Safari and storage-failure regressions."
+    }
+  ],
+  "closure_requirement": "Independent review plus original failure-path regressions, stale-work and valid-session recovery checks, and fresh scoped browser acceptance; retain any unverified storage-outage/cross-context dimensions explicitly."
+}
