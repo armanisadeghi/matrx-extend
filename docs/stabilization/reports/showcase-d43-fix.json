@@ -1,0 +1,24 @@
+{
+  "defect": "EXT-D-0043",
+  "status": "in-fix: red reproduced; proposed implementation held outside shared discovery after resource refusal",
+  "patch_base_sha": "71a13590",
+  "current_head_at_freeze": "1961afeb195a27898030a9a7d8e2aa907331e01b",
+  "changes_prepared": [
+    "Pass an optional existing list root/item through the D42 session start into the picker; begin directly in field selection when that scope still exists.",
+    "For a fresh nested click, enumerate repeated ancestor groups and offer an explicit scope choice before changing the builder.",
+    "Preserve previously selected fields only when both root and item selector match; clear them when the user chooses a different scope."
+  ],
+  "red_evidence": "showcase-d43-red-001: resource-admitted Vitest ran five cases; four intended behavior failures showed nested first-card root, premature detection, and absent scope choices; cancellation passed. Child exit 1.",
+  "green_attempt": "showcase-d43-green-001: preflight refused before test child at 2026-09-27T16:39:57Z for RESOURCE_PRESSURE_UNSAFE and RESOURCE_SWAP_GROWTH; wrapper exit 2. No green or type claim.",
+  "held_artifacts": [
+    "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d43-product.patch",
+    "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d43-regression.test.ts"
+  ],
+  "artifact_sha256": {
+    "product_patch": "71eb140e8f764bec28d4e8dbe537ae38023d5c4b62ea054a216d1f3b2b13d6cf",
+    "focused_test": "52d147d232b1824502277d5f6b63468801016a32c5480d68e51fb7eb72cb841e"
+  },
+  "apply_instructions": "From /Volumes/Samsung2TB/code/matrx-extend, verify both SHA-256 hashes; run git apply --check /Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d43-product.patch; then git apply that patch and copy showcase-d43-regression.test.ts into tests/unit/. Do this only after root grants the next sole guarded-test permit; preserve unrelated dirty files.",
+  "shared_checkout": "D43 source/test changes were removed from discovery after the guard refusal. Other lanes' files were preserved.",
+  "next_verification": "When root grants a fresh sole heavy permit after resource recovery, reapply the exact patch, copy the focused test into discovery, run guarded D43 green, D42 session regression, and compile serially. Then obtain independent installed-extension extraction of multiple distinct real calendar events and inspect row contents before closing."
+}

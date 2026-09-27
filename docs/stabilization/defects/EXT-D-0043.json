@@ -25,7 +25,7 @@
   ],
   "severity": "S2: the picker can silently replace a broad detected list with a nested list from one card and present incomplete event data as a successful extraction",
   "priority": "P1: original detect-to-extract user outcome",
-  "state": "triaged",
+  "state": "in-fix",
   "transition_history": [
     {
       "at": "2026-09-27T16:04:33.982Z",
@@ -38,6 +38,12 @@
       "from": "open",
       "to": "triaged",
       "reason": "Read-only source trace found the preseeded config is not passed into the picker and smallest-ancestor inference selects the nested list."
+    },
+    {
+      "at": "2026-09-27T16:39:57Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Guarded red reproduced four intended picker-scope failures; a proposed patch is preserved outside discovery after the first green attempt was refused by resource preflight before child launch. Green, compile, and live retest remain open."
     }
   ],
   "red_test_plan": [
