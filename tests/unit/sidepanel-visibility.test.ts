@@ -55,5 +55,6 @@ describe('sidepanel visibility', () => {
 
   it('returns a safe public fallback', () => {
     expect(firstAccessibleSidepanelTab({ signedIn: false, isAdmin: false })).toBe('scrape');
+    expect(firstAccessibleSidepanelTab({ signedIn: true, isAdmin: false })).toBe('chat');
   });
 });

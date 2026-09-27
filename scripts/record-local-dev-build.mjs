@@ -10,10 +10,7 @@ const DEFAULT_BUILD = resolve(REPO, '.output', 'chrome-mv3-dev');
 // `wxt dev` owns chrome-mv3-dev, while `wxt build` writes a separately keyed
 // local artifact to chrome-mv3. Both are safe for an owned-browser check; no
 // other output directory can be certified as a local artifact.
-const LOCAL_BUILD_DIRECTORIES = new Set([
-  DEFAULT_BUILD,
-  resolve(REPO, '.output', 'chrome-mv3'),
-]);
+const LOCAL_BUILD_DIRECTORIES = new Set([DEFAULT_BUILD, resolve(REPO, '.output', 'chrome-mv3')]);
 const SHA256 = /^[a-f0-9]{64}$/;
 
 export function requireLocalDevReceipt(receipt, extensionDir) {

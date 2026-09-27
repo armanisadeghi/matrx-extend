@@ -51,6 +51,6 @@ export function canAccessSidepanelTab(tab: SidepanelTab, viewer: SidepanelViewer
 }
 
 export function firstAccessibleSidepanelTab(viewer: SidepanelViewer): SidepanelTab {
-  const preferred: readonly SidepanelTab[] = ['scrape', 'data', 'seo', 'settings', 'chat'];
+  const preferred: readonly SidepanelTab[] = ['chat', 'scrape', 'data', 'seo', 'settings'];
   return preferred.find((tab) => canAccessSidepanelTab(tab, viewer)) ?? 'chat';
 }

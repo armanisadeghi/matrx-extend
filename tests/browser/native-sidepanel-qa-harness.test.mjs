@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import {
   isSettledGuestPanel,
   requireExpectedExtension,
@@ -11,7 +12,6 @@ import {
   requireSpawnedProfileOwner,
   resolveExpectedRelease,
 } from './native-sidepanel-qa-harness.mjs';
-import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 
 const profile = '/private/tmp/owned-profile';
 const expectedExtensionDir = resolve(
@@ -44,7 +44,11 @@ const localReceipt = {
 // it onto the installed dev path. A sibling output directory must stay denied.
 assert.equal(requireLocalDevReceipt(localReceipt, productionBuildDir), localReceipt);
 assert.throws(
-  () => requireLocalDevReceipt({ ...localReceipt, extensionDir: '/private/tmp/foreign-build' }, '/private/tmp/foreign-build'),
+  () =>
+    requireLocalDevReceipt(
+      { ...localReceipt, extensionDir: '/private/tmp/foreign-build' },
+      '/private/tmp/foreign-build',
+    ),
   /local_dev_build_receipt_refused/,
 );
 

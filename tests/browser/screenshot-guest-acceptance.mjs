@@ -103,7 +103,7 @@ async function guestNavigation(panel, targetTitle = null, viewMarker = null) {
   );
 }
 
-function guestViewAccepted(value, title) {
+function guestViewAccepted(value) {
   return (
     value?.listCount === 1 &&
     value.targetTabCount === 1 &&
@@ -129,7 +129,7 @@ async function selectedGuestView(panel, title, marker = null) {
   return waitFor(
     `guest_${title.toLowerCase()}_selected`,
     () => guestNavigation(panel, title, marker),
-    (value) => guestViewAccepted(value, title),
+    (value) => guestViewAccepted(value),
   );
 }
 
@@ -204,11 +204,21 @@ async function saveScreenshot(panel, artifacts, label) {
   } finally {
     await handle.close();
   }
-  return true;
+  return path;
+}
+
+async function setStoreAssetViewport(panel) {
+  await panel.send('Emulation.setDeviceMetricsOverride', {
+    width: 640,
+    height: 400,
+    deviceScaleFactor: 1,
+    mobile: false,
+  });
 }
 
 async function exercise({ page, panel, artifacts }) {
   try {
+    await setStoreAssetViewport(panel);
     stage = 'guest_initial_navigation';
     const initial = await guestNavigation(panel);
     assert.equal(initial.listCount, 1);
@@ -236,20 +246,54 @@ async function exercise({ page, panel, artifacts }) {
 
     stage = 'accessible_view_navigation';
     const scrape = await selectedGuestView(panel, 'Scrape');
+    await click(panel, 'button', 'Capture');
+    const capturedScrape = await waitFor(
+      'guest_scrape_capture_complete',
+      () =>
+        evaluate(
+          panel,
+          `(() => [...document.querySelectorAll('button[role="tab"]')]
+            .some(button => button.textContent.trim() === 'Article'))()`,
+        ),
+      (captured) => captured === true,
+      30_000,
+    );
+    report.storeAssets = {
+      scrape: await saveScreenshot(panel, artifacts, 'store-guest-scrape-article'),
+      seo: null,
+      settings: null,
+    };
     await click(panel, 'title', 'Data');
     const data = await selectedGuestView(panel, 'Data', 'Structured data');
     report.screenshots.action = await saveScreenshot(panel, artifacts, 'guest-chat-gate-action');
     await click(panel, 'title', 'SEO');
     const seo = await selectedGuestView(panel, 'SEO', 'SEO audit');
+    report.storeAssets.seo = await saveScreenshot(panel, artifacts, 'store-guest-seo-audit');
     await click(panel, 'title', 'Settings');
     const settings = await selectedGuestView(panel, 'Settings', 'Settings');
+    await openSection(panel, 'Scrape');
+    const autoCaptureOff = await waitFor(
+      'guest_auto_capture_off',
+      () =>
+        evaluate(
+          panel,
+          `document.querySelector('[role="switch"][aria-label="Auto-scrape on load"]')
+            ?.getAttribute('aria-checked')`,
+        ),
+      (checked) => checked === 'false',
+    );
+    report.storeAssets.settings = await saveScreenshot(
+      panel,
+      artifacts,
+      'store-guest-settings-auto-capture-off',
+    );
     report.screenshots.result = await saveScreenshot(panel, artifacts, 'guest-chat-gate-result');
     report.cases.push({
       id: 'EXT-F-1009-T09',
       subcase: 'visible_navigation',
       status: 'pass',
       expected: 'Moving through every guest tab does not expose Chat or Screenshots.',
-      actual: { scrape, data, seo, settings },
+      actual: { scrape, capturedScrape, data, seo, settings, autoCaptureOff },
       evidence:
         'selected public trigger, linked visible pane, mounted target marker, and Chat/Screenshots absence at each transition',
     });
@@ -270,7 +314,8 @@ async function exercise({ page, panel, artifacts }) {
         id: 'EXT-F-1009-T09',
         subcase: 'guest_real_reload',
         status: 'pass',
-        expected: 'Real guest panel reload returns to Scrape and keeps Chat and Screenshots inaccessible.',
+        expected:
+          'Real guest panel reload returns to Scrape and keeps Chat and Screenshots inaccessible.',
         actual: { newDocument: true, guestView: reloaded },
         evidence:
           'new loader identity; settled mounted Scrape pane; Chat and Screenshots trigger/pane/content absent',
@@ -347,7 +392,11 @@ async function exercise({ page, panel, artifacts }) {
     report.status = 'unverified';
     report.failure = { stage, driverFailure: safeFailure(error) };
     try {
-      report.failure.privateScreenshot = await saveScreenshot(panel, artifacts, 'guest-chat-gate-failure');
+      report.failure.privateScreenshot = await saveScreenshot(
+        panel,
+        artifacts,
+        'guest-chat-gate-failure',
+      );
     } catch {
       report.failure.privateScreenshot = false;
     }
