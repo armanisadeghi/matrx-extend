@@ -1,0 +1,35 @@
+{
+  "status": "baseline_checks_pass",
+  "source_version": "0.2.82",
+  "source_base": "4877f106eafa362abcf13ce7dd9d484591260c57",
+  "runs": [
+    {
+      "run_id": "baseline-main082-install-001",
+      "wrapper_session": 48073,
+      "wrapper_exit_code": 0,
+      "child_exit_at": "2026-09-27T02:12:09.615Z",
+      "child_exit_code": 0,
+      "guard_log": "/tmp/matrx-baseline-main082-install-001.log",
+      "sha256": "e321e5e98059644e17923c9e47295cba9114bf2e4a6fb7c50e306f551275e945"
+    },
+    {
+      "run_id": "baseline-main082-devbuild-001",
+      "wrapper_session": 52065,
+      "wrapper_exit_code": 0,
+      "child_exit_at": "2026-09-27T02:14:03.049Z",
+      "child_exit_code": 0,
+      "guard_log": "/tmp/matrx-baseline-main082-devbuild-001.log",
+      "sha256": "df578aae5455a8c04a0b1632aed167c4962185ca9b6b09e334dceeb0c39abe5a"
+    },
+    {
+      "run_id": "baseline-main082-types-001",
+      "wrapper_session": 22110,
+      "wrapper_exit_code": 0,
+      "child_exit_at": "2026-09-27T02:16:06.568Z",
+      "child_exit_code": 0,
+      "guard_log": "/tmp/matrx-baseline-main082-types-001.log",
+      "sha256": "3ca1a8288ad30da6cb0d81f5600d0d3a1745b30ae3a7b0b8e3725c2c18479735"
+    }
+  ],
+  "limits": "Development build and compile passed. No browser case acceptance or release/Store publication is implied."
+}
