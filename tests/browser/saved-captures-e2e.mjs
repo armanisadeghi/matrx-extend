@@ -54,7 +54,9 @@ async function request({ url, key, token, method = 'GET', body }) {
       'Content-Type': 'application/json',
       'Content-Profile': 'docproc',
       'Accept-Profile': 'docproc',
-      Prefer: 'return=representation',
+      // A PATCH asks for no row back: the soft-delete grant covers deleted_at, not a
+      // re-read of every column (return=representation is refused with 42501).
+      Prefer: method === 'PATCH' ? 'return=minimal' : 'return=representation',
     },
     ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
   });
