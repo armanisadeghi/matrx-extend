@@ -1,12 +1,12 @@
 # Stabilization checklist (derived)
 
-> Updated 2026-09-27T03:02:23Z. Current local development artifact is 0.2.83 tree `8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8`; run 003 is bound to it, but native acceptance is unverified. `inventory.json` and defect records remain authoritative.
+> Updated 2026-09-27T03:06:11Z. The last observed local development artifact is 0.2.83 tree `8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8`; run 003 is bound to it. A later lockfile-only merge has not been installed or rebuilt, and native acceptance remains unverified. `inventory.json` and defect records remain authoritative.
 
 ## Coverage
 
 - [x] Inventory contains 205 features and 693 cases.
 - [ ] Case coverage remains incomplete: 1142 mode-specific slots, including 1 not-applicable result; 53 recorded pass, 76 explicit unverified, and 1012 slots without a result record (unverified coverage).
-- [ ] Current-tree acceptance: no 0.2.83 case pass is recorded. Run 002 on tree `8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8` found an empty first page. Run 003 found one eligible public Source in the originally selected workspace, but remained unverified at `positive_workspace_recognition` (`stage_not_observed`); workspace enumeration was not established. Run 004 was resource-refused before child launch. These results establish neither positive acceptance nor product failure.
+- [ ] Acceptance: no 0.2.83 case pass is recorded. Runs 002 and 003 bind to the last observed `.83` tree `8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8`, before the latest lockfile-only merge. Run 002 found an empty first page. Run 003 found one eligible public Source in the originally selected workspace, but positive recognition (`stage_not_observed`) and workspace enumeration remain unverified; fixture-page guard installation was observed, successful navigation was not established. Run 004 was refused before child launch. The merged lockfile has not been installed/rebuilt/retested. These results establish neither positive acceptance nor product failure.
 - [ ] The four explicit 0.2.79 Debug passes (EXT-F-1005-T14/T15/T17/T22) remain historical, not 0.2.83 retests.
 
 ## Defects

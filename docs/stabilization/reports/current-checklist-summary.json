@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-27T03:02:23Z",
+  "generated_at": "2026-09-27T03:06:11Z",
   "purpose": "Machine-derived stabilization checklist. inventory.json remains the coverage authority; this report and CHECKLIST.md are derived views.",
   "source": {
-    "head": "345bc2beadf08edcdc3f754a960c376e81a88c4e",
+    "head": "9ddd29f9f232f8ed717e87871bdf065c54afeb4f",
     "inventory": "docs/stabilization/inventory.json",
     "inventory_source_sha": "bcbf836bf7b1c959a6d54657aaf0487c1e3790ee",
     "inventory_updated_at": "2026-09-27T00:31:00+00:00",
@@ -39,8 +39,8 @@
   },
   "release_context": {
     "source_version": "0.2.83",
-    "artifact_identity_observed": "yes; run 003 is bound to local development tree 8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8",
-    "current_build_acceptance": "not established; the originally selected workspace list included one eligible fixture, but workspace enumeration and positive recognition remain unverified at positive_workspace_recognition / stage_not_observed; run 004 was refused before child start",
+    "artifact_identity_observed": "yes; run 003 is bound to local development tree 8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8, observed before the latest lockfile-only merge",
+    "current_build_acceptance": "not established; run 003 found one eligible fixture in the originally selected workspace, but workspace enumeration and positive recognition remain unverified at positive_workspace_recognition / stage_not_observed; the merged lockfile has not been installed, rebuilt, or retested",
     "evidence": "docs/stabilization/runs/d22-recognition-readonly-003.json",
     "last_native_attempted_local_dev_version": "0.2.83",
     "last_native_attempted_local_dev_tree_sha256": "8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8"
@@ -416,12 +416,12 @@
     "passed_stages": [
       "real_admin_ui",
       "scoped_lookup_organization_match",
-      "fixture_page_guard",
+      "fixture_page_guard_installed",
       "workspace_cleanup"
     ],
     "failure_stage": "positive_workspace_recognition",
     "failure_code": "stage_not_observed",
-    "classification": "One eligible fixture was returned by the originally selected workspace list, but positive recognition and workspace enumeration were not established. No product failure or case pass is supported. No Source write, Save, capture, or checkpoint action."
+    "classification": "One eligible fixture was returned by the originally selected workspace list, but workspace enumeration, successful fixture navigation, and positive recognition were not established. No product failure or case pass is supported. No Source write, Save, capture, or checkpoint action."
   },
   "priority_basis": "Fixed-awaiting-retest work first, then explicit unverified and no-result coverage. This is work-state order, not a claim of new product severity.",
   "pending_case_records": {
@@ -577,6 +577,14 @@
       "log_path": "/tmp/matrx-resource-recovery-004.log",
       "log_sha256": "b0e24f38fb2f14bb31e653686e36a734bcaf0a5224cc514106abb095ceb9cd46"
     },
-    "classification": "Run 004 and its later recovery check were refused before child launch. Infrastructure evidence only; no product attempt or result. Do not retry until root admission."
+    "classification": "Run 004 and its later recovery check were refused before child launch. Infrastructure evidence only; no product attempt or result. Do not install/rebuild or retry browser work until root admission."
+  },
+  "latest_source_merge": {
+    "commit": "e1ba3ff7",
+    "remote_head": "cad28c26",
+    "changed_file": "pnpm-lock.yaml",
+    "changed_lines": 28,
+    "lockfile_sha256": "352aa8e19d45aff6968573f7552fd4bd89a9ed9f39a341574ce396370cd8c02a",
+    "dependency_state": "merged but not installed, rebuilt, or retested because resource preflight refused"
   }
 }
