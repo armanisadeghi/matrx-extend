@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "report_id": "local-dev-build-source-peer",
+  "reviewed_at": "2026-09-27T02:19:36Z",
+  "reviewed_commit": "40585c3b",
+  "verdict": "SOURCE_MECHANICS_PASS_RUNTIME_UNVERIFIED",
+  "scope": "Independent source and local-artifact-state review only. No browser, tests, build, product edit, Source save, or checkpoint operation was performed.",
+  "source_review": {
+    "files": [
+      "docs/stabilization/reports/current-dev-build-readiness.json",
+      "scripts/record-local-dev-build.mjs",
+      "tests/browser/native-sidepanel-qa-harness.mjs",
+      "tests/browser/source-workspace-acceptance.mjs",
+      "scripts/sync-unpacked-release.mjs"
+    ],
+    "build_receipt_writer": {
+      "extension_directory_restricted_to": ".output/chrome-mv3-dev",
+      "receipt_output_parent_restricted_to": "test-results",
+      "receipt_create_mode": "wx, mode 0600",
+      "checks": [
+        "manifest_version is 3",
+        "manifest key is present",
+        "manifest version equals package.json version",
+        "whole-tree SHA-256 computed twice and must match before the receipt is written"
+      ],
+      "writes_only": "Caller-supplied receipt file in test-results; no code path writes or renames .output/release-receipt.json."
+    },
+    "runner_identity_checks": [
+      "SOURCE_DEV_BUILD_RECEIPT is rejected unless SOURCE_READONLY_SCOPE is exactly 1.",
+      "Before native launch the runner checks local receipt kind/schema/publish_state, manifest version/key, and whole-tree digest.",
+      "The native harness revalidates receipt binding, manifest version/key, tree digest, and loaded development extension ID.",
+      "After the UI path, the runner re-reads local receipt/manifest/tree and fails if version or digest differs from run start."
+    ],
+    "readonly_path": {
+      "confirmed_early_return": true,
+      "control_flow": "The exact opt-in calls runReadOnlyScope and returns before the default branch that reads the reserved attempt, reserves a Save, clicks Save, or records a Source ID.",
+      "bounded_actions": [
+        "read-only no-workspace recognition check with zero unscoped/processed_documents GETs",
+        "select existing approved organization in the owned disposable browser profile",
+        "read-only scoped public-fixture lookup expecting HTTP 200 empty result and honest not-saved UI"
+      ],
+      "scope_limit": "This path does not verify positive saved-Source recognition, workspace switch/restoration behavior, real lookup outage/recovery, or late in-flight Save. It does not prove EXT-D-0022 closure.",
+      "storage_note": "Selecting the approved organization changes only the isolated extension profile state; no Source/database write is present in this path."
+    },
+    "publish_and_provenance": {
+      "publish_state": "not_published",
+      "store_zip_required_for_local_branch": false,
+      "receipt_contains_source_commit": false,
+      "receipt_claims_release_or_store_upload": false,
+      "historical_release_receipt_in_40585_diff": ".output/release-receipt.json is absent from the commit changed-path list."
+    }
+  },
+  "local_observations": {
+    "requested_local_dev_receipt_path": "test-results/source-dev-build-082.json",
+    "receipt_present_at_review": false,
+    "receipt_metadata": null,
+    "dev_manifest_path": ".output/chrome-mv3-dev/manifest.json",
+    "dev_manifest_observation": {
+      "manifest_version": 3,
+      "version": "0.2.82",
+      "key_present": true
+    },
+    "dev_tree_digest_measured": false,
+    "reason_digest_not_measured": "The current dev build may be active; the receipt path is absent, so a concurrent whole-tree hash would not be a stable artifact identity.",
+    "historical_release_receipt_path": ".output/release-receipt.json",
+    "historical_release_receipt_current_sha256": "17abd491f49295df5eb6e262ae7710e9dbf70cb4904af54d598e26040b8277d3",
+    "historical_release_receipt_cross_time_unchanged": "Not independently comparable: only the current local SHA was observed. Source change list and writer code do not modify it."
+  },
+  "runtime_status": {
+    "native_run": false,
+    "runtime_acceptance": "unverified",
+    "current_dev_artifact_identity": "not established without source-dev-build-082.json and a stable tree receipt"
+  },
+  "execution_notes": [
+    "Reviewed immutable source at 40585c3b, not a test run.",
+    "Current local dev manifest was observed at version 0.2.82 with a key, but no receipt was present and no tree digest was claimed.",
+    "The release receipt current on-disk SHA is recorded only as a snapshot; no before/after hash exists to assert it was unchanged over time.",
+    "The helper receipt is an integrity snapshot, not a signed build attestation or commit-provenance claim."
+  ]
+}
