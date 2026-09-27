@@ -1,0 +1,71 @@
+{
+  "status": "prepared_unverified_not_apply_ready",
+  "defect": "EXT-D-0047",
+  "case": "EXT-F-1012-T57",
+  "lane": "Astra medium; source/scratch only",
+  "live_source_modified": false,
+  "runtime_executed": false,
+  "comparison_base": "ad755d20662fe729c077a1c6caefe5013a7d238b",
+  "scratch_directory": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-document-repair-20260927",
+  "patch": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-document-repair-20260927/d47.patch",
+  "manifest": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-document-repair-20260927/manifest.json",
+  "root_cause": "Saved replay begins interception only after the loading event and accepts tab-only events. Initial requests can precede interception; delayed responses from the old document can satisfy the new run.",
+  "design": [
+    "Service-worker-owned scoped CDP lease installs Page.addScriptToEvaluateOnNewDocument and Runtime binding before Page.reload. No raw CDP Network capture.",
+    "Binding events are joined to Chrome Runtime executionContextId and system-unique uniqueId for the main default frame. Pre-reload contexts are rejected; a replacement document, including same-URL navigation, terminates the run.",
+    "A per-run early event queue bridges context creation and frame commit, budgeted from the existing maxBodyBytes option. Existing capture window bounds lifecycle; no new global cap or timing constant.",
+    "A private extension runtime Port avoids generic message payload logging. Port disconnect and cancellation release owned resources; the SW path uses the same owner directly.",
+    "Tap emits only whitelisted response data and hashed request identity; headers are omitted in binding mode. Cleanup preserves manual capture that reused the tap and CDP attachments retained by other clients."
+  ],
+  "alternatives": {
+    "late_relay": "Rejected: retains document-start race even with sender.documentId.",
+    "raw_cdp_network": "Rejected: exposes raw request headers/postData to the capture boundary.",
+    "dynamic_content_scripts": "Not selected: registration matches URLs across tabs and needs static script/config coordination; weaker per-tab ownership than the existing CDP primitive."
+  },
+  "prepared_files": [
+    "src/lib/background/bootstrap.ts",
+    "src/lib/cdp/client.ts",
+    "src/lib/data-pattern/document-network-capture.ts",
+    "src/lib/data-pattern/document-network-transport.ts",
+    "src/lib/data-pattern/network-tap.ts",
+    "src/lib/data-pattern/run-interactive.ts",
+    "tests/unit/document-network-capture.test.ts"
+  ],
+  "prepared_tests": [
+    "Initial binding response before frame commit survives; delayed old context is rejected; registration precedes reload; sensitive header canaries omitted.",
+    "Cancellation during deferred script registration removes the late script before releasing lease and never reloads.",
+    "Same-URL replacement context cancels capture and cannot contribute rows."
+  ],
+  "blocking_integration_work": [
+    "Existing cdp_attach is privileged and admin-only; data_patterns is action-tier. Scratch transport currently lacks authorization integration. Reuse the existing debugger approval/admin/Pilot checks before acquireSession; never deploy this adapter as written.",
+    "Core and adapters are not typechecked or executed. Review CDP attach/detach lease races, unsupported uniqueId behavior, frame/context ordering and cleanup failure propagation.",
+    "Complete actual runNetworkCapturePattern caller, private-port and shared-lease tests; existing core tests alone are not sufficient assurance."
+  ],
+  "acceptance": [
+    "Guarded baseline red for early request and delayed old-document selection; fixed real-mode/caller green.",
+    "Mutation removing document identity must fail downstream row/provenance assertions, not merely helper checks.",
+    "Borrowed/concurrently retained debugger attachment survives cleanup; owned attachment and new-document registration are removed on success, timeout, cancellation, tab close, navigation and partial setup failure.",
+    "Denied debugger approval never attaches or reloads and reports a truthful error.",
+    "Installed real Chrome repeat-run captures initial load request; old document high-sequence response never wins; same-URL navigation cannot be misattributed.",
+    "Typecheck and required handler catalog generation after integration; no build during freeze."
+  ],
+  "risks": [
+    "Top-frame fetch/XHR only; workers/subframes are not covered.",
+    "Cross-URL redirects are currently treated as navigation interruption; review intended redirect behavior.",
+    "Runtime uniqueContextId support and Chrome event ordering need actual-browser verification.",
+    "Per-run early byte budget may reject a burst; rejection must be explicit, never partial success.",
+    "Main-world binding cannot authenticate arbitrary hostile page content; trusted Chrome context identity proves document provenance only."
+  ],
+  "coordination": {
+    "D48": "Serialize integration. D48 owns credential URL helper/save/match identity work and may overlap run-interactive. Preserve D41 matching logic and D48 privacy changes.",
+    "D44": "URL/tab identity does not distinguish same-URL document replacement. Track document identity follow-up without modifying D44 in this lane.",
+    "artifact": "Parent reports .109 source141b11ac frozen for real List UI. No artifact was touched."
+  },
+  "sources": [
+    "https://chromedevtools.github.io/devtools-protocol/tot/Page/#method-addScriptToEvaluateOnNewDocument",
+    "https://github.com/ChromeDevTools/devtools-protocol/blob/master/json/js_protocol.json",
+    "https://developer.chrome.com/docs/extensions/reference/api/debugger",
+    "https://developer.chrome.com/docs/extensions/reference/api/scripting"
+  ],
+  "closure": "D47 remains open. This checkpoint is design and unrun scratch code only; no correctness or live success claim."
+}
