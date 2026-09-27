@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "runId": "screenshot-capture-dev094-002",
+  "status": "verified_partial",
+  "scope": "One guarded EXT-F-1009 warm admin Visible capture on a fresh owned localhost fixture; pixel oracle and exact owned-row cleanup only.",
+  "sourceHeadAtRun": "98ae046b319c5261495f3d087793b785a638997c",
+  "runner": "tests/browser/screenshot-capture-acceptance.mjs",
+  "build": {
+    "version": "0.2.94",
+    "treeSha256": "8b359ead9dd0b4db1d404a26cb6b2fbfc3e3c10d79956638a2ec587d4a395665",
+    "receiptPath": "test-results/source-dev-build-094-capture-20260927.json",
+    "receiptSha256": "43d4f38f41ab900643e4266e9ab17f3ad744229d98dd539abe66bf53e1327248",
+    "artifactTreeMatchedBeforeAndAfter": true,
+    "extensionIdentityVerifiedAfterRun": true,
+    "noRebuild": true
+  },
+  "sourceChecks": {
+    "enabledDeleteNormalConfirmation": "pass: disabled rejected; enabled accepted; visible dialog and explicit file-retention consequence required",
+    "enabledDeleteRecoveryConfirmation": "pass: disabled rejected; enabled accepted; visible dialog and explicit file-retention consequence required",
+    "nodeSyntax": "pass"
+  },
+  "resourceRun": {
+    "admission": "RESOURCE_ADMITTED",
+    "admittedAt": "2026-09-27T10:41:07.145Z",
+    "reasons": [],
+    "childExitCode": 0,
+    "terminalAt": "2026-09-27T10:41:23.500Z",
+    "leaseReleased": true,
+    "wrapperLogPath": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-capture-dev094-002-wrapper.log",
+    "wrapperLogMode": "0600",
+    "wrapperLogSha256": "2deeb4a8a95fc416f18fb5b10659c2194005bacb2fbb589eb172828b51baed6a"
+  },
+  "nativeAcceptance": {
+    "result": "pass for the bounded capture and cleanup cases",
+    "adminIdentityAndApprovedOrganization": true,
+    "freshFixtureBaseline": "one completed real gallery read; zero rows before capture",
+    "capture": "persisted user row, positive dimensions, loaded blob preview, source You",
+    "pixelOracle": {
+      "decoded": true,
+      "bandsMatched": 3,
+      "bandMatches": [true, true, true]
+    },
+    "confirmation": {
+      "visible": true,
+      "explicitFileRetentionConsequence": true,
+      "deleteEnabled": true
+    },
+    "exactOwnedRowCleanup": "pass: confirmed delete followed by real gallery read proved the created row absent and gallery empty; image file remains in Files by design"
+  },
+  "evidence": {
+    "immutableResultPath": "test-results/screenshot-capture-dev094-002.evidence.json",
+    "immutableResultMode": "0600",
+    "immutableResultSha256": "6360c66adc2d0d1760ecf090492ab3f4848e3d56b8b37aecf683528c6afb88dd",
+    "runnerOutputPath": "test-results/screenshot-capture-51824f06-9c13-4337-83bb-304ba1e68117.json",
+    "runnerOutputMode": "0600",
+    "privateFailureImage": "not emitted; pixel assertion passed"
+  },
+  "limits": [
+    "This is partial F1009 evidence only; it does not establish whole-feature health or coverage of other controls and auth modes.",
+    "Exactly one native run was performed.",
+    "Native run exercised normal deletion after successful capture, not the error-recovery cleanup branch. D32 recovery retest remains pending."
+  ]
+}

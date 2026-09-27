@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-27T10:20:20.391Z",
+  "updated_at": "2026-09-27T10:41:23.500Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -12660,15 +12660,14 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "screenshot-capture-dev094-001",
+              "run_id": "screenshot-capture-dev094-002",
               "verified_substeps": [
-                "Actual Visible click produced one real user gallery row and loaded image preview."
+                "Actual Visible capture persists a user row; decoded preview matches all three nontext fixture bands and viewport aspect."
               ],
               "remaining_criteria": [
-                "Captured image failed owned-page pixel oracle; product versus oracle cause unresolved.",
-                "All other mode/error/reload/busy dimensions remain unverified."
+                "No-tab, busy, reload, service-error and member mode remain unverified."
               ],
-              "evidence": "docs/stabilization/runs/screenshot-capture-dev094-001.json"
+              "evidence": "docs/stabilization/runs/screenshot-capture-dev094-002.json"
             }
           },
           "defect_ids": [
@@ -12777,13 +12776,15 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "screenshot-capture-dev094-001",
-              "verified_substeps": [],
-              "remaining_criteria": [
-                "Attempted exact-owned-row cleanup was not verified; original row disposition unresolved and recovery identity unavailable.",
-                "No deletion by broad title/recency query permitted."
+              "run_id": "screenshot-capture-dev094-002",
+              "verified_substeps": [
+                "Normal exact-owned-row Delete shows consequence and enabled confirmation; real post-delete read proves row absent and gallery empty."
               ],
-              "evidence": "docs/stabilization/runs/screenshot-capture-dev094-001.json"
+              "remaining_criteria": [
+                "Cancel/service-failure cases remain unverified.",
+                "Original failed-run rows have unknown disposition; error-recovery cleanup branch still needs native retest."
+              ],
+              "evidence": "docs/stabilization/runs/screenshot-capture-dev094-002.json"
             }
           },
           "defect_ids": [
@@ -12817,14 +12818,14 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "screenshot-capture-dev093-001",
+              "run_id": "screenshot-capture-dev094-002",
               "verified_substeps": [
-                "Actual captured image blob decoded and preview dimensions appeared."
+                "Real saved image preview loads and matches intended fixture pixels with correct dimensions."
               ],
               "remaining_criteria": [
-                "Fixture pixel mismatch unresolved; lazy/offscreen/failure and other modes remain unverified."
+                "Lazy/offscreen/failure behavior and member mode remain unverified."
               ],
-              "evidence": "docs/stabilization/runs/screenshot-capture-dev093-001.json"
+              "evidence": "docs/stabilization/runs/screenshot-capture-dev094-002.json"
             }
           }
         },
@@ -12922,7 +12923,8 @@
           ],
           "run_ids": [
             "screenshot-capture-dev093-001",
-            "screenshot-capture-dev094-001"
+            "screenshot-capture-dev094-001",
+            "screenshot-capture-dev094-002"
           ],
           "retest_status": "partial"
         }

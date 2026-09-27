@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "review": "screenshot-capture-retest-peer",
+  "reviewer_role": "independent source and native acceptance verifier",
+  "reviewed_source_head": "98ae046b319c5261495f3d087793b785a638997c",
+  "source_quality": {
+    "status": "accepted_for_guarded_retest",
+    "checks": [
+      "Normal confirmation rejects disabled Delete and waits for a visible dialog, explicit file-retention consequence, and enabled Delete.",
+      "Recovery confirmation applies the same enabled-delete predicate and consequence wait after exact-card identity checks.",
+      "Narrow disabled/enabled probes passed for both code paths.",
+      "node --check tests/browser/screenshot-capture-acceptance.mjs passed."
+    ]
+  },
+  "native_acceptance": {
+    "status": "pass_for_bounded_cases",
+    "run": "docs/stabilization/runs/screenshot-capture-dev094-002.json",
+    "buildIdentity": "The 0.2.94 receipt, package, manifest, and unpacked artifact hash agreed before launch; the runner rechecked the same artifact and extension identity after use.",
+    "pixelOracle": "The real persisted preview decoded and all three independent fixture bands matched.",
+    "cleanup": "The visible dialog stated the file-retention consequence and had enabled Delete; after confirmation a completed real gallery read proved the exact created row absent and no rows remaining.",
+    "guard": "One resource-admitted native run; child exit 0; lease released."
+  },
+  "evidence": {
+    "sanitizedRunRecord": "docs/stabilization/runs/screenshot-capture-dev094-002.json",
+    "immutableNativeResult": "test-results/screenshot-capture-dev094-002.evidence.json",
+    "immutableNativeResultSha256": "6360c66adc2d0d1760ecf090492ab3f4848e3d56b8b37aecf683528c6afb88dd",
+    "privateWrapperLog": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-capture-dev094-002-wrapper.log",
+    "privateWrapperLogSha256": "2deeb4a8a95fc416f18fb5b10659c2194005bacb2fbb589eb172828b51baed6a",
+    "privateFailureImage": "not emitted because the pixel assertion passed"
+  },
+  "limits": [
+    "No whole-feature F1009 health claim; evidence is limited to this admin capture, oracle, and cleanup path.",
+    "No additional native capture or broad cleanup was performed."
+  ]
+}
