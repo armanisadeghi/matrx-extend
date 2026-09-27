@@ -21,8 +21,8 @@
   "severity": "S2: important; credential-bearing request URLs can be durably exposed in recipe configuration and name.",
   "priority": "P1: persisted secrets violate the safe-save contract.",
   "state": "fixed",
-  "reproduction_status": "Source-confirmed and synthetic-canary regressions red before repair; installed-extension behavior unverified.",
-  "verification_status": "Guarded D48 red: showcase-d48-red-001 and showcase-d48-boundary-red-002; chat consumer red showcase-d48-chat-red-001. Guarded green: showcase-d48-chat-green-001 (13 files/56 tests), showcase-d48-manual-green-001 (1/1), showcase-d48-utility-final-001 (4/4). Compile showcase-d48-compile-final-001 exit 0; catalog showcase-d48-catalog-001 exit 0 with only generated timestamps. Installed Chrome/network save and replay remain unverified.",
+  "reproduction_status": "Synthetic-canary regression red/green verified; installed ordinary saved replay and masking controls passed, credential-bearing persisted replay still pending.",
+  "verification_status": "Guarded D48 red: showcase-d48-red-001 and showcase-d48-boundary-red-002; chat consumer red showcase-d48-chat-red-001. Guarded green: showcase-d48-chat-green-001 (13 files/56 tests), showcase-d48-manual-green-001 (1/1), showcase-d48-utility-final-001 (4/4). Compile showcase-d48-compile-final-001 exit 0; catalog showcase-d48-catalog-001 exit 0 with only generated timestamps. Installed Chrome/network save and replay remain unverified. Installed run showcase-installed-d48-network-001 on rebuilt .109 source de819649 confirms known/unknown masking controls and normal public GET save/reopen/replay. Synthetic canary matcher was restored before save; credential-bearing persistence, rotation, ambiguity and Debug/chat live proof remain unverified. State stays fixed.",
   "source_report": "docs/stabilization/reports/showcase-network-final-peer.json",
   "transition_history": [
     {
@@ -50,5 +50,6 @@
       "reason": "Synthetic canary regressions pass at the save sink, live/hydrated chat state, native/stream/WebMCP/manual boundaries, and replay; compile and catalog pass. Awaiting independent installed-extension acceptance."
     }
   ],
-  "closure_requirement": "Build and reload the repaired unpacked extension, then independently verify Network save/reopen/rotated replay and Debug/chat observation on a real public page using only synthetic test values. Do not close until installed-Chrome evidence is recorded; server-origin tool-argument storage is outside this extension-only claim."
+  "closure_requirement": "Build and reload the repaired unpacked extension, then independently verify Network save/reopen/rotated replay and Debug/chat observation on a real public page using only synthetic test values. Do not close until installed-Chrome evidence is recorded; server-origin tool-argument storage is outside this extension-only claim.",
+  "live_retest_report": "docs/stabilization/runs/showcase-installed-d48-network-001.json"
 }
