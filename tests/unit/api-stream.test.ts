@@ -69,12 +69,7 @@ describe('streamFetch public NDJSON kernel integration', () => {
       { type: 'reasoning', content: 'think' },
       { type: 'done' },
     ]);
-    expect(logMock.info).toHaveBeenCalledWith(
-      'stream',
-      'event #1',
-      { event: 'chunk' },
-      'chunk',
-    );
+    expect(logMock.info).toHaveBeenCalledWith('stream', 'event #1', { event: 'chunk' }, 'chunk');
     expect(logMock.info).toHaveBeenCalledWith(
       'stream',
       'event #4',
@@ -87,7 +82,9 @@ describe('streamFetch public NDJSON kernel integration', () => {
       expect.objectContaining({ error: expect.any(String) }),
     );
     expect(logMock.warn).toHaveBeenCalledWith('stream', 'unknown JSON envelope');
-    expect(JSON.stringify([logMock.info.mock.calls, logMock.warn.mock.calls])).not.toContain('café');
+    expect(JSON.stringify([logMock.info.mock.calls, logMock.warn.mock.calls])).not.toContain(
+      'café',
+    );
   });
 
   it('keeps HTTP failures typed and emits one terminal event', async () => {

@@ -696,7 +696,7 @@ async function postUnknownToolError(
 
 async function handleCall(
   handler: AnyToolHandler,
-  inputArgs: unknown,
+  incomingRawArgs: unknown,
   ctx: ToolContext,
   meta: RunMeta | undefined,
   gateOpts: {
@@ -712,7 +712,7 @@ async function handleCall(
 ): Promise<void> {
   // Normalize credential-bearing Network saves before any durable observer.
   // This includes timeline, approval storage, recording, and signed receipts.
-  const rawArgs = sanitizeNetworkToolSaveArgs(handler.name, inputArgs);
+  const rawArgs = sanitizeNetworkToolSaveArgs(handler.name, incomingRawArgs);
   const startedAt = Date.now();
   log.info('sw', `tool ${handler.name} call_id=${ctx.callId}`, rawArgs);
   broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {

@@ -1,5 +1,5 @@
 import { handleToolEvent } from '@/hooks/use-chat-stream';
-import { dbMessagesToChatMessages, type Message, type ToolCallRow } from '@/lib/supabase/queries';
+import { type Message, type ToolCallRow, dbMessagesToChatMessages } from '@/lib/supabase/queries';
 import { useChatStore } from '@/state/chat';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -9,7 +9,9 @@ vi.mock('@/lib/tools/registry', () => ({ lookup: () => ({ name: 'data_patterns' 
 afterEach(() => useChatStore.getState().reset());
 
 const args = {
-  action: 'save', kind: 'network_capture', domain: 'calendar.invalid',
+  action: 'save',
+  kind: 'network_capture',
+  domain: 'calendar.invalid',
   name: 'Network: https://user:SYNTHETIC_PASSWORD@calendar.invalid/api?access_token=SYNTHETIC_TOKEN',
   config: {
     url_filter: 'https://calendar.invalid/api?date=2026-09-27&access_token=SYNTHETIC_TOKEN',
@@ -19,9 +21,13 @@ const args = {
 
 describe('D48 chat observation of Network save arguments', () => {
   it('keeps raw delegated arguments out of the live tool row while preserving useful identity', () => {
-    useChatStore.setState({ messages: [{ id: 'assistant-d48', role: 'assistant', content: '', timestamp: 1 }] });
+    useChatStore.setState({
+      messages: [{ id: 'assistant-d48', role: 'assistant', content: '', timestamp: 1 }],
+    });
     handleToolEvent('assistant-d48', {
-      event: 'tool_delegated', call_id: 'call-d48', tool_name: 'data_patterns',
+      event: 'tool_delegated',
+      call_id: 'call-d48',
+      tool_name: 'data_patterns',
       data: { arguments: args },
     });
     const message = useChatStore.getState().messages[0];
@@ -36,14 +42,27 @@ describe('D48 chat observation of Network save arguments', () => {
     const message: Message = {
       id: '00000000-0000-4000-8000-000000000002',
       conversation_id: '00000000-0000-4000-8000-000000000001',
-      role: 'assistant', position: 1, status: 'completed', created_at: '2026-09-27T00:00:00Z', metadata: null,
+      role: 'assistant',
+      position: 1,
+      status: 'completed',
+      created_at: '2026-09-27T00:00:00Z',
+      metadata: null,
       content: [{ type: 'tool_call', call_id: 'call-d48', name: 'data_patterns', arguments: args }],
     };
     const row: ToolCallRow = {
-      call_id: 'call-d48', message_id: message.id, conversation_id: message.conversation_id,
-      tool_name: 'data_patterns', tool_type: 'local', status: 'delegated', arguments: args,
-      output: null, is_error: null, error_type: null, error_message: null,
-      duration_ms: null, created_at: '2026-09-27T00:00:00Z',
+      call_id: 'call-d48',
+      message_id: message.id,
+      conversation_id: message.conversation_id,
+      tool_name: 'data_patterns',
+      tool_type: 'local',
+      status: 'delegated',
+      arguments: args,
+      output: null,
+      is_error: null,
+      error_type: null,
+      error_message: null,
+      duration_ms: null,
+      created_at: '2026-09-27T00:00:00Z',
     };
     const { messages, badCount } = dbMessagesToChatMessages([message], [row]);
     expect(badCount).toBe(0);

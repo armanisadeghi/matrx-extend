@@ -29,7 +29,21 @@ vi.mock('@/lib/data-pattern/run-interactive', () => ({
 }));
 vi.mock('@/lib/messaging/native', () => ({ on: () => () => {}, send: vi.fn() }));
 vi.mock('@/lib/api/routes/auth', () => ({ requireRequestOrganizationId: vi.fn() }));
-vi.mock('@/components/CopyMenu', () => ({ CopyMenu: ({ title, options }: { title?: string; options: { label: string; getContent: () => string }[] }) => <button aria-label={title} onClick={() => { mocks.copied = options.find((o) => o.label === 'For AI agent')!.getContent(); }}>Copy agent</button> }));
+vi.mock('@/components/CopyMenu', () => ({
+  CopyMenu: ({
+    title,
+    options,
+  }: { title?: string; options: { label: string; getContent: () => string }[] }) => (
+    <button
+      aria-label={title}
+      onClick={() => {
+        mocks.copied = options.find((o) => o.label === 'For AI agent')!.getContent();
+      }}
+    >
+      Copy agent
+    </button>
+  ),
+}));
 vi.mock('@ai-matrx/design-system', () => ({
   Button: (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => <button {...props} />,
   BasicInput: (props: React.InputHTMLAttributes<HTMLInputElement>) => <input {...props} />,
@@ -97,35 +111,48 @@ it('still marks DataView healthy after a matching nonempty run', async () => {
 });
 
 // The host contract is persistence and current-page presentation; extraction is the external runner.
-it.each(['resolve', 'reject'] as const)('ignores stale DataView %s after a page switch', async (outcome) => {
-  let resolve!: (rows: Record<string, unknown>[]) => void;
-  let reject!: (error: Error) => void;
-  const pending = new Promise<Record<string, unknown>[]>((yes, no) => { resolve = yes; reject = no; });
-  mocks.fetchPatterns.mockResolvedValue([pattern]);
-  mocks.runSaved.mockReturnValue(pending);
-  const view = render(<DataView />);
-  await screen.findAllByText('Calendar events');
-  await userEvent.click(screen.getByRole('button', { name: 'Extract' }));
-  mocks.page.url = 'https://electronic.vegas/search/';
-  view.rerender(<DataView />);
-  await act(async () => {
-    if (outcome === 'resolve') resolve([{ title: 'Old calendar result' }]);
-    else reject(new Error('Old calendar failure'));
-    await pending.catch(() => {});
-  });
-  expect(document.body.textContent).not.toContain('Old calendar');
-  expect(mocks.bumpRun).not.toHaveBeenCalled();
-});
+it.each(['resolve', 'reject'] as const)(
+  'ignores stale DataView %s after a page switch',
+  async (outcome) => {
+    let resolve!: (rows: Record<string, unknown>[]) => void;
+    let reject!: (error: Error) => void;
+    const pending = new Promise<Record<string, unknown>[]>((yes, no) => {
+      resolve = yes;
+      reject = no;
+    });
+    mocks.fetchPatterns.mockResolvedValue([pattern]);
+    mocks.runSaved.mockReturnValue(pending);
+    const view = render(<DataView />);
+    await screen.findAllByText('Calendar events');
+    await userEvent.click(screen.getByRole('button', { name: 'Extract' }));
+    mocks.page.url = 'https://electronic.vegas/search/';
+    view.rerender(<DataView />);
+    await act(async () => {
+      if (outcome === 'resolve') resolve([{ title: 'Old calendar result' }]);
+      else reject(new Error('Old calendar failure'));
+      await pending.catch(() => {});
+    });
+    expect(document.body.textContent).not.toContain('Old calendar');
+    expect(mocks.bumpRun).not.toHaveBeenCalled();
+  },
+);
 
 it('hides completed DataView rows on the first commit for another tab at the same URL', async () => {
   const commits: string[] = [];
   function Probe({ id }: { id: number }) {
-    useLayoutEffect(() => { commits.push(document.body.textContent ?? ''); }, [id]);
+    useLayoutEffect(() => {
+      commits.push(document.body.textContent ?? '');
+    }, [id]);
     return null;
   }
   mocks.fetchPatterns.mockResolvedValue([pattern]);
   mocks.runSaved.mockResolvedValue([{ title: 'First tab event' }]);
-  const view = render(<><DataView /><Probe id={mocks.page.id} /></>);
+  const view = render(
+    <>
+      <DataView />
+      <Probe id={mocks.page.id} />
+    </>,
+  );
   await screen.findAllByText('Calendar events');
   await userEvent.click(screen.getByRole('button', { name: 'Extract' }));
   await screen.findByText(/First tab event/);
@@ -133,17 +160,29 @@ it('hides completed DataView rows on the first commit for another tab at the sam
   expect(mocks.copied).toContain('https://electronic.vegas/calendar/');
   expect(mocks.copied).toContain('Calendar events');
   mocks.page.id = 38;
-  view.rerender(<><DataView /><Probe id={mocks.page.id} /></>);
+  view.rerender(
+    <>
+      <DataView />
+      <Probe id={mocks.page.id} />
+    </>,
+  );
   expect(commits.at(-1)).not.toContain('First tab event');
 });
 
-it.each([['/calendar/', true], ['/search/', false]] as const)('preserves health for failure outside saved route %s', async (route, broken) => {
+it.each([
+  ['/calendar/', true],
+  ['/search/', false],
+] as const)('preserves health for failure outside saved route %s', async (route, broken) => {
   mocks.page.url = `https://electronic.vegas${route}`;
   mocks.fetchPatterns.mockResolvedValue([pattern]);
   mocks.runSaved.mockRejectedValue(new Error('Selector could not execute'));
   render(<DataView />);
   await screen.findAllByText('Calendar events');
-  await userEvent.click(route === '/calendar/' ? screen.getByRole('button', { name: 'Extract' }) : screen.getByTitle('Run pattern'));
+  await userEvent.click(
+    route === '/calendar/'
+      ? screen.getByRole('button', { name: 'Extract' })
+      : screen.getByTitle('Run pattern'),
+  );
   await screen.findByText(/Selector could not execute/);
   expect(mocks.bumpRun.mock.calls).toEqual(broken ? [[pattern.id, 'broken', 0]] : []);
 });

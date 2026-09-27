@@ -40,11 +40,7 @@
     "Database last_status retains prior verified health for no_match/off_route; latest run outcome is local/tool response without schema expansion."
   ],
   "next_action": "Owner integrates newer upstream dependency/formatting changes, runs its planned combined checks/build, and verifies saved replay in installed Chrome. No push or browser/build from this lane.",
-  "commits": [
-    "db1b55f8",
-    "f7730783",
-    "545367cd"
-  ],
+  "commits": ["db1b55f8", "f7730783", "545367cd"],
   "verified_source_sha256": {
     "src/features/data/DataView.tsx": "dfd768f988269e60eb51518e76eb25771e462f87f729f66c224003be81874bfe",
     "src/hooks/use-auto-extract.ts": "b42a5c6d12920011772bf3b66e5a701c1f1cf72c6532dab9270f091cb32f1485",

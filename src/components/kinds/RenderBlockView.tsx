@@ -71,11 +71,14 @@ export function RenderBlockView({ block }: { block: InboundRenderBlock }) {
 
   // `exactOptionalPropertyTypes` is on here: an OPTIONAL key is omitted,
   // never widened to `| undefined`.
-  const source: IrRenderBlock = {
-    type: block.type,
-    content: block.content ?? '',
-    ...(block.metadata !== undefined && { metadata: block.metadata }),
-  };
+  const source = useMemo<IrRenderBlock>(
+    () => ({
+      type: block.type,
+      content: block.content ?? '',
+      ...(block.metadata !== undefined && { metadata: block.metadata }),
+    }),
+    [block.type, block.content, block.metadata],
+  );
 
   // No React Compiler in this repo (WXT/Vite) — the routes are real function
   // calls and must not re-execute on every unrelated parent render.
@@ -84,12 +87,12 @@ export function RenderBlockView({ block }: { block: InboundRenderBlock }) {
   // changes it and only then does the decision get remade.
   const superseded = useMemo(
     () => resolveSupersededKindRender<IrRenderBlock>(source, contentIrRouteEnv),
-    [block.type, block.metadata, block.content, version],
+    [source, version],
   );
 
   const routed = useMemo(
     () => superseded?.block ?? applyIrKindRoute<IrRenderBlock>(source, contentIrRouteEnv),
-    [block.type, block.metadata, block.content, version, superseded],
+    [source, superseded, version],
   );
 
   const envelope = superseded?.envelope ?? verifiedEnvelope;

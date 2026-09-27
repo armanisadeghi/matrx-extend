@@ -1,0 +1,53 @@
+{
+  "defect": "EXT-D-0047",
+  "lane": "fresh zero-authorship narrow implementation reverify; source only",
+  "checked_revision": "15939d39c0b3697833b062c9f84723a2db559dee with uncommitted shared-checkout changes",
+  "verdict_a_installed_live": "UNVERIFIED",
+  "verdict_b_source_quality": "FAIL",
+  "overall": "OPEN: D47-F1",
+  "finding_reverification": [
+    {
+      "id": "D47-F1",
+      "status": "NOT ADDRESSED",
+      "evidence": "document-network-capture.ts:299-320 races Page.reload against abort and timeout, and :297 lets close pass setupSettled. But :65-80 sequentially awaits unbounded CDP cleanup sends and lease.release; :329 awaits close before rejecting. run-interactive.ts:362-375 also awaits capture.close before its terminal callback. A stalled cleanup command or owned detach still strands the visible timeout/cancel result and lease. This includes the common case in which a stalled debugger channel blocks Page.reload and later cleanup commands together.",
+      "test_gap": "document-network-capture.test.ts:85-128 makes only Page.reload never settle; all cleanup sends and the mocked release resolve immediately. It cannot turn red when a cleanup send or detach never settles."
+    },
+    {
+      "id": "D47-F2",
+      "status": "ADDRESSED IN SOURCE",
+      "evidence": "data-patterns.ts:145 builds an approval preview from the prepared saved recipe name and sanitized assigned-tab URL. dispatch.ts:1175-1188 persists it and :1242-1257 broadcasts it; SavedReplayApprovalHost.tsx:48-62 restores it; AgentApprovalCard.tsx:100-108 names the recipe, page, Chrome debugger, reload, and response capture. The prepared-operation snapshot still rechecks identity after approval.",
+      "test_gap": "No installed Chrome approval observation in this lane."
+    }
+  ],
+  "new_breakage_in_fix_diff": [
+    {
+      "severity": "Important",
+      "title": "Closing after reload timeout is unbounded and can also block a borrowed debugger session",
+      "evidence": "document-network-capture.ts:73-80 awaits Page.removeScriptToEvaluateOnNewDocument, Runtime.evaluate, and Runtime.removeBinding in series before release. cdp/client.ts:320-327 preserves borrowed attachment on release, but release is never reached if one prior command stalls. For an owned attachment, :344 awaits debugger.detach without a deadline. Cleanup errors are reported only after those awaits settle.",
+      "remedy": "Bound the caller's terminal result independently of cleanup; keep late cleanup attempts and attachment ownership correct. Exercise never-settling cleanup sends and detach with both owned and borrowed sessions."
+    }
+  ],
+  "verdict_b_details": {
+    "positive": "The Page.reload command now has a timeout and abort race, setupSettled is resolved before that command, and the approval preview is derived from prepared data and displayed on the local card.",
+    "important": "The cleanup and release path remains able to prevent a terminal result under stalled CDP; the new tests prove only a reload-only stall with responsive cleanup.",
+    "minor": "No second issue established by this source-only narrow review."
+  },
+  "source_hashes_sha256": {
+    "src/lib/data-pattern/document-network-capture.ts": "fcdf35dc5cbd8c3da839e830928e350290064e28c41fb38c06fa0a1474a34867",
+    "src/lib/data-pattern/document-network-transport.ts": "1f9d267efc47fd2023ff6bf9c14c34cfdc5c4923516ab076b359968b4c7a295e",
+    "src/lib/data-pattern/run-interactive.ts": "cb41a664130491e90f2313893d3647d95839bd10e3ccb93c7a5e58da200448db",
+    "src/lib/cdp/client.ts": "ca22aee61d97fa4e8ff7cb76f059e917d90e8483bc8f454fdfd05690c4aca25f",
+    "src/features/chat/AgentApprovalCard.tsx": "f132ad35647ae891ebd3e991ab96830d084535f9a23ba2e9d10f09e82703251b",
+    "src/features/showcase/SavedReplayApprovalHost.tsx": "ceeea15efd1622ff58dfb9d8a596db9709236978df9774cd1936ed28f1775846",
+    "src/lib/tools/dispatch.ts": "58469ac90fc701301209198f6cd9784da7fdccada054f55df151bb185d3ae316",
+    "src/lib/tools/handlers/data-patterns.ts": "779226a0bb443a7a275b51c33d5a502b472e3bd15aff6b9b0f906849f6ad54ae",
+    "tests/unit/document-network-capture.test.ts": "275efbe956fc5c511957fc54886b0423c4ff31ea27e4012c011e5da9d0cd32f2",
+    "tests/unit/document-network-lease.test.ts": "0327be559a03cc179e80ab878a57e62cb904e70be1f6d62a3fbc0bc86d9d01d1",
+    "tests/unit/document-network-approval-remount.test.tsx": "c88919d08803792d4c071da6acb0797a9687319c0408334f7e8b87afc86812cb"
+  },
+  "limits": [
+    "No product files, tests, browser, installed extension, or runtime resources were touched by this peer.",
+    "Verdict A requires an installed live run on the final artifact; source inspection cannot establish it.",
+    "Moving shared-main files were identified by their content hashes; later edits require a fresh scoped check."
+  ]
+}

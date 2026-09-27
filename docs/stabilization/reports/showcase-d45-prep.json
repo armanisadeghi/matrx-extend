@@ -11,6 +11,13 @@
   "proposed_behavior": "The picker edits a session-local config shown to the inspector while active. Cancel discards it and reveals the committed config and prior preview. Done merges same-scope fields or commits a new scope even with zero fields, then clears the old preview. In-flight inspector/sample work is invalidated when the session closes; page and session checks remain in place.",
   "peer_gap_resolution": "The pending component regression now includes same-scope page-picked field append with extraction of five distinct records, plus a late session-stamped result after Cancel. Existing D42/D43 session and navigation regressions remain in the planned combined run.",
   "red_command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node scripts/stabilization-resource.mjs run --run-id showcase-d45-red-001 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec vitest run --maxWorkers=1 tests/unit/showcase-d45-entry.test.tsx",
-  "combined_green_files": ["tests/unit/showcase-d45-entry.test.tsx", "tests/unit/showcase-d43-entry.test.tsx", "tests/unit/showcase-d43-regression.test.ts", "tests/unit/list-picker-session.test.ts", "tests/unit/list-picker-relay.test.ts", "tests/unit/showcase-doctor-list-handoff.test.tsx"],
+  "combined_green_files": [
+    "tests/unit/showcase-d45-entry.test.tsx",
+    "tests/unit/showcase-d43-entry.test.tsx",
+    "tests/unit/showcase-d43-regression.test.ts",
+    "tests/unit/list-picker-session.test.ts",
+    "tests/unit/list-picker-relay.test.ts",
+    "tests/unit/showcase-doctor-list-handoff.test.tsx"
+  ],
   "verification_limit": "git apply --check passed against main 3cb50822; no test, compile, build, browser, or product edit was launched under the active heavy-queue hold."
 }

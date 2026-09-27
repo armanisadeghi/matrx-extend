@@ -58,16 +58,13 @@ export function PermissionPromptModal() {
   const handle = (verdict: PermissionVerdict) => resolveActive(verdict);
 
   return (
-    <div
+    <dialog
+      open
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-3"
-      role="dialog"
       aria-modal="true"
       aria-label={`Permission needed: ${active.feature}`}
     >
-      <div
-        className="w-full max-w-md rounded-2xl border bg-card shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="w-full max-w-md rounded-2xl border bg-card shadow-xl">
         <div className="flex items-start justify-between gap-2 border-b px-4 py-3">
           <div className="min-w-0">
             <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
@@ -118,7 +115,7 @@ export function PermissionPromptModal() {
           </div>
         )}
       </div>
-    </div>
+    </dialog>
   );
 }
 

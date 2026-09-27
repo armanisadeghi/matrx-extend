@@ -765,4 +765,3 @@ _action · admin-only_
 Discover and invoke tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). Actions: 'check' (probe API + count tools), 'list' (enumerate page-registered tools), 'call' (invoke; pass `tool_name` and `arguments`). Admin-only experimental capability.
 
 **Parameters:** `action` (string, required) = ["check","list","call"]; `arguments` (any); `tool_name` (string)
-

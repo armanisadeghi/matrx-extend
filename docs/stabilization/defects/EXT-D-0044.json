@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0044",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T52"
-  ],
+  "case_ids": ["EXT-F-1012-T52"],
   "surface": "Showcase saved-pattern applicability and user-triggered replay outcome",
   "auth_mode": "admin",
   "reproduction": [
@@ -57,11 +55,7 @@
   ],
   "closure_requirement": "Add meaningful red/green coverage for route guidance with explicit Run still enabled, absent-root no-widening, truthful zero-row outcomes and current-page completion provenance. Then verify with an owned uniquely named pattern on real same-host pages using the installed build; confirm intended rows, no unrelated rows, honest no-match display, and navigation behavior. Preserve guest/member denial evidence under existing EXT-F-1012-T38 rather than duplicating it.",
   "class_repair": {
-    "commits": [
-      "db1b55f8",
-      "f7730783",
-      "545367cd"
-    ],
+    "commits": ["db1b55f8", "f7730783", "545367cd"],
     "report": "docs/stabilization/reports/showcase-replay-class-escalation.json",
     "contract": "Explicit Run stays available off-route. No-match/off-route retain last verified persisted health while returning current guidance. Rows and late side effects are bound to originating tab ID plus URL. Manual and List modes require actual selected elements, preserving existing empty values.",
     "remaining": "Continue native provenance and sibling-caller acceptance. Same-URL document reload identity remains unclaimed. Full-row inspection and retained test fixture cleanup are open."

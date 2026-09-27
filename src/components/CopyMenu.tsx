@@ -111,14 +111,15 @@ export function CopyMenu({
       setTimeout(() => setCopiedLabel(null), 1200);
       setOpen(false);
     } else {
-      setCopiedLabel(`✕ Copy failed — click the panel first, then retry`);
+      setCopiedLabel('✕ Copy failed — click the panel first, then retry');
       setTimeout(() => setCopiedLabel(null), 2000);
     }
   };
 
   // Single-option: render as a plain button, no popover noise.
   if (visible.length === 1) {
-    const only = visible[0]!;
+    const [only] = visible;
+    if (!only) return null;
     return (
       <button
         type="button"

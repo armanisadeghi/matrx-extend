@@ -489,7 +489,7 @@ export async function main(): Promise<number> {
   const RESET = isTTY ? '\x1b[0m' : '';
 
   console.log(
-    `Tool-DB drift check v3 — local catalog ↔ tool.{definition, binding, surface_defaults}`,
+    'Tool-DB drift check v3 — local catalog ↔ tool.{definition, binding, surface_defaults}',
   );
   console.log(
     `  local catalog tools (advertised): ${totalLocal}  ${DIM}(${localAll.length} total; absorbed handlers excluded via CANONICAL_SURFACE)${RESET}`,

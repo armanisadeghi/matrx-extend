@@ -64,7 +64,9 @@ function toMarkdown(manifest: ReturnType<typeof buildToolCatalogManifest>): stri
   lines.push('');
   const byTier: Record<string, typeof manifest.tools> = {};
   for (const t of manifest.tools) {
-    (byTier[t.tier] ??= []).push(t);
+    const tierTools = byTier[t.tier] ?? [];
+    tierTools.push(t);
+    byTier[t.tier] = tierTools;
   }
   for (const tier of ['read', 'action', 'ask-user', 'privileged'] as const) {
     const items = byTier[tier];
