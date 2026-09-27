@@ -117,6 +117,12 @@ async function organizationState(panel, approvedName) {
       const controls = rows.flatMap((span) =>
         [...span.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
       const options = [...document.querySelectorAll('[role="option"]')]
+        .filter((option) => {
+          const rect = option.getBoundingClientRect();
+          const style = getComputedStyle(option);
+          return rect.width > 0 && rect.height > 0 && style.display !== 'none' &&
+            style.visibility !== 'hidden' && !option.closest('[inert]');
+        })
         .map((option) => option.textContent.trim());
       const stored = (await chrome.storage.local.get('matrx.org.active'))['matrx.org.active'];
       return {
@@ -173,8 +179,11 @@ async function openOrganizationPicker(panel, approvedName) {
     stage = step = 'organization_picker_organization_control_click';
     await click(panel, 'organization', 'Acting as');
     stage = step = 'organization_picker_approved_option_ready';
-    const offered = await organizationState(panel, approvedName);
-    return offered;
+    return await waitFor(
+      'organization_picker_visible_approved_option',
+      () => organizationState(panel, approvedName),
+      (state) => state?.approvedOptionCount === 1,
+    );
   } catch (error) {
     report.observations.organizationSelectionFailure = { step, ...safeExceptionDetails(error) };
     report.failureCode ??= safeFailureCategory(error);

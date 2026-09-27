@@ -180,7 +180,13 @@
       ],
       "causal_limit": "Picker-preparation divergence and exception-loss are confirmed source defects. Run008 lacked its original error and viewport evidence, so Account expansion is not claimed as its proven runtime cause. The common path repair is grounded in the successful sibling and removes this divergence; one peer-reviewed guarded run must resolve remaining uncertainty.",
       "verification": "Node --check, targeted Biome check and explicit noUndeclaredVariables lint passed. No browser/tests/heavy run, Source mutation, Save/capture/checkpoint access, TLS bypass or timeout relaxation.",
-      "privacy": "Only fixed stage/category, safe exception-class enum, counts and booleans enter artifacts. No raw errors, identifiers, URLs, names, payloads or credentials."
+      "privacy": "Only fixed stage/category, safe exception-class enum, counts and booleans enter artifacts. No raw errors, identifiers, URLs, names, payloads or credentials.",
+      "option_readiness_peer_repair": {
+        "peer": "6c0b4967",
+        "change": "After trusted Acting as click, await the actual visible approved option count of exactly one using existing bounded waitFor. organizationState excludes hidden, zero-area and inert options. Selection/enumeration share the same awaited preparation. No fixed sleep.",
+        "deadline": "Discovery still awaits complete UI preparation before deadline check/cleanup; option wait uses existing bounded driver wait. No abandoned selection operation introduced.",
+        "limits": "Source-only repair; run008 cause remains unknown. Biome and Node syntax verified; native proof pending."
+      }
     }
   },
   "readonly_001_preserved": {
