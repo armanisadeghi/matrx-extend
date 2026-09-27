@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "run_id": "takeover-baseline-089",
+  "lane": "implementation/environment",
+  "status": "current_local_dev_artifact_built",
+  "source_commit_at_launch": "4083a889610675c1f61f55e29dbfb8085de888a3",
+  "later_local_head": "e165750220ca05739df1fd175894093657d1d68c",
+  "later_head_change_scope": "census runner and documentation; no app, package, or lockfile change",
+  "package_version": "0.2.89",
+  "lockfile_sha256": "70bf6f2f0d8606b1a1b1ac6613d7e52c9715d347b03cf1848c3293702db39611",
+  "package_json_sha256": "c2c2819444b99720e8e7357fafed12374b07a23071ff71e3ace8affd5fd5b8be",
+  "profile_volume": "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032",
+  "resource_lease_root": "/var/tmp/matrx-stabilization-resource-501",
+  "dependency_basis": "Frozen install and WXT prepare completed in takeover-baseline-087; lockfile unchanged across the 0.2.89 version merge.",
+  "resource_run": {
+    "id": "takeover089-devbuild-20260927",
+    "command": "pnpm exec wxt build --mode development",
+    "guard": "admitted",
+    "child_exit_code": 0
+  },
+  "resource_refusals": [],
+  "artifact": {
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "version": "0.2.89",
+    "tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "receipt": "test-results/source-dev-build-089-takeover-20260927.json",
+    "publish_state": "not_published"
+  },
+  "limitations": [
+    "No extension installation, browser identity, sign-in, or product behavior was tested in this lane.",
+    "The 0.2.89 build replaced the shared development output bytes; earlier receipts remain historical."
+  ],
+  "guard_or_job_alive_at_close": false
+}

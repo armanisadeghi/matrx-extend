@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "report_id": "takeover-baseline-089",
+  "status": "current_local_dev_089_built_runtime_unverified",
+  "summary": "Current 0.2.89 development extension built under the repaired canonical resource guard. The exact output has an immutable local receipt; no native product verdict follows.",
+  "source_commit": "4083a889610675c1f61f55e29dbfb8085de888a3",
+  "lockfile_sha256": "70bf6f2f0d8606b1a1b1ac6613d7e52c9715d347b03cf1848c3293702db39611",
+  "build_receipt": "test-results/source-dev-build-089-takeover-20260927.json",
+  "build_tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+  "resource_refusals": 0,
+  "guard_or_job_alive_at_close": false,
+  "native_test_status": "not_started_in_this_lane",
+  "next_action": "Bind the native census runner to the 0.2.89 receipt and independently verify installed extension identity and runtime freshness."
+}
