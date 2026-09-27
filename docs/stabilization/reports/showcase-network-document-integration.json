@@ -1,0 +1,30 @@
+{
+  "status": "scratch_rebased_source_only_unverified",
+  "defect": "EXT-D-0047",
+  "base_commit": "de819649845c299c47ee27566b849c91d90bead1",
+  "scratch_repository": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-integrated-20260927/repo",
+  "candidate_patch": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-integrated-20260927/d47-on-de819649.patch",
+  "candidate_patch_sha256": "bc4e1b48bf6822122cceb6ebc6ba7f9799f78b0ba72370f588e30ad755c618a4",
+  "source_resolution": [
+    "Resolved the two run-interactive.ts rejects by replacing post-loading event subscription with document-scoped capture, while retaining D48 sanitized URL matching, transient credential fingerprint identity and sanitized no-match text.",
+    "Resolved the dispatch.ts reject by adding the recovered-operation field alongside D48's early Network save sanitizer; both dispatch and WebMCP sanitization remain.",
+    "D48 ToolsView argument sanitization remains alongside the D47 saved-run route. The patch also includes the peer-repaired approval presenter, CDP lease, capture transport and real-caller test candidates."
+  ],
+  "static_evidence": [
+    "git diff --check succeeded in the scratch repository.",
+    "A fresh detached checkout at de819649 accepted git apply --check for the generated patch.",
+    "No live source, product runtime, build, tests, browser or database was changed by this lane."
+  ],
+  "guarded_test_plan": [
+    "Under the coordinator's single runtime permit, first run pnpm compile and pnpm catalog:tools:md on the integrated candidate; resolve any static errors and regenerate required catalog docs.",
+    "Run pnpm test tests/unit/document-network-authorization.test.ts tests/unit/document-network-dispatch.test.ts tests/unit/document-network-recovery.test.ts tests/unit/document-network-port.test.ts tests/unit/document-network-capture.test.ts tests/unit/document-network-lease.test.ts tests/unit/document-network-page-privacy.test.ts.",
+    "Run pnpm test tests/unit/document-network-saved-ui.test.tsx tests/unit/document-network-approval-remount.test.tsx plus the existing D48 credential/matcher tests. Ensure real PatternsTab, DataView and ToolsView consumers assert final rows and no attach or reload after denial.",
+    "Perform red/green mutation proof by removing document identity comparison in a source copy; a downstream rendered-row/provenance assertion must fail. Repeat after restoring the guard.",
+    "With installed Chrome, check early initial request, old-document late response, same-URL navigation, denied approval, port disconnect, and owned versus borrowed debugger attachment cleanup. No localhost is authorized for this lane."
+  ],
+  "outstanding": [
+    "The candidate is mechanically rebased only. Type, runtime, mutation, installed-browser and independent review evidence remain open.",
+    "Before shipping, append the scratch feature-tests-addendum.md to docs/feature-tests.md and update the existing canonical data_patterns description in the database to explain debugger approval and reload; neither write belongs to this source-only checkpoint.",
+    "Preserve D48 privacy and matcher behavior when any later edit touches run-interactive.ts, dispatch.ts or ToolsView.tsx."
+  ]
+}
