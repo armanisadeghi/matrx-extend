@@ -6,6 +6,7 @@ import { chmod, readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
@@ -14,6 +15,7 @@ const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const OUTPUT = join(REPO, 'test-results', `debug-log-export-${randomUUID()}.json`);
 const EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
 const RECEIPT = join(REPO, '.output', 'release-receipt.json');
+const DEV_BUILD_RECEIPT = process.env.DEBUG_DEV_BUILD_RECEIPT;
 const MANIFEST = join(EXTENSION_DIR, 'manifest.json');
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const ADMIN_EMAIL = 'admin@admin.com';
@@ -34,6 +36,28 @@ function fail(code) {
 }
 
 async function buildIdentity() {
+  if (DEV_BUILD_RECEIPT !== undefined) {
+    if (!DEV_BUILD_RECEIPT) fail('development_receipt_missing');
+    const [receipt, manifest, pkg] = await Promise.all([
+      readFile(DEV_BUILD_RECEIPT, 'utf8').then(JSON.parse),
+      readFile(MANIFEST, 'utf8').then(JSON.parse),
+      readFile(join(REPO, 'package.json'), 'utf8').then(JSON.parse),
+    ]);
+    requireLocalDevReceipt(receipt, EXTENSION_DIR);
+    if (
+      !manifest.key ||
+      manifest.version !== pkg.version ||
+      manifest.version !== receipt.version ||
+      hashReleaseTree(EXTENSION_DIR) !== receipt.treeSha256
+    )
+      fail('development_build_mismatch');
+    return {
+      kind: receipt.kind,
+      publishState: receipt.publish_state,
+      version: receipt.version,
+      treeSha256: receipt.treeSha256,
+    };
+  }
   const [receipt, manifest] = await Promise.all([
     readFile(RECEIPT, 'utf8').then(JSON.parse),
     readFile(MANIFEST, 'utf8').then(JSON.parse),
@@ -535,7 +559,15 @@ try {
   const before = await buildIdentity();
   report.build = { ...before, before, after: null };
   stage = 'owned_native_profile';
-  const run = await runNativeSidepanelQa({ headed: true, exercisePanel: exercise });
+  const run = await runNativeSidepanelQa({
+    headed: true,
+    ...(DEV_BUILD_RECEIPT !== undefined && {
+      extensionDir: EXTENSION_DIR,
+      expectedRelease: before,
+      localDevReceiptPath: DEV_BUILD_RECEIPT,
+    }),
+    exercisePanel: exercise,
+  });
   assert.equal(run.verified, true);
   stage = 'build_end';
   const after = await buildIdentity();
@@ -544,7 +576,7 @@ try {
     after.treeSha256 !== before.treeSha256 ||
     hashReleaseTree(EXTENSION_DIR) !== before.treeSha256
   )
-    fail('release_changed_during_run');
+    fail('build_changed_during_run');
   report.build.after = { ...after, extensionId: run.extensionId };
   report.build.artifactTreeMatchedAfter = true;
   report.profileOwned = true;
