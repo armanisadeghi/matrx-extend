@@ -82,18 +82,22 @@ export const manualCssMode: ExtractionMode<ManualCssConfig> = {
       return ((el as HTMLElement).innerText ?? el.textContent ?? '').trim();
     };
 
-    return root.map((scope) => {
+    return root.flatMap((scope) => {
+      let matchedElement = false;
       const out: Record<string, unknown> = {};
       for (const f of cfg.fields) {
         if (f.is_list) {
           const els = Array.from((scope as ParentNode).querySelectorAll(f.selector));
+          matchedElement ||= els.length > 0;
           out[f.name] = els.map((el) => readValue(el as Element, f.attr));
         } else {
           const el = tryQuery(scope, f);
+          matchedElement ||= el !== null;
           out[f.name] = el ? readValue(el, f.attr) : null;
         }
       }
-      return out;
+      // Match evidence comes from elements, never from value truthiness.
+      return matchedElement ? [out] : [];
     });
   },
 
