@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-installed-list-management-001",
+  "status": "PARTIAL_LIVE_EVIDENCE",
+  "scope": "Retained D45 List Pattern replay, Copy JSON menu action, rename persistence, and exact-fixture delete dialog on the real calendar. No build, tests, localhost, or source changes.",
+  "resource_guard": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id showcase-installed-list-management-001 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "exec_session_id": 99775,
+    "admission": "RESOURCE_ADMITTED at 2026-09-27T22:44:34.303Z",
+    "terminal": "Ctrl-C emitted RESOURCE_STOP_REQUESTED and RESOURCE_BROWSER_STOP_CONFIRMED at 2026-09-27T22:48:02.748Z; terminal poll returned exit_code 0.",
+    "state": "Owned UI run stopped cleanly. Chrome remains the user's app; no claim is made about unrelated Chrome processes."
+  },
+  "installed_artifact": {
+    "target": "Previously installed unpacked extension 0.2.109 from docs/stabilization/runs/showcase-d45-dev109-001.json, source 141b11ac9079f7bfb3ec13717e529180107138e5.",
+    "this_run_version_check": "Not repeated during this run; the run began in the existing Chrome session after the prior .109 acceptance lane."
+  },
+  "page_and_fixture": {
+    "url": "https://electronic.vegas/vegas-edm-event-calendar/",
+    "saved_recipe_before_rename": "Codex D45 fixture 20260927-2229Z",
+    "source_route": "/vegas-edm-event-calendar/",
+    "known_config": {
+      "method": "LIST",
+      "fields": ["event_title", "locality"],
+      "prior_run_count": 249
+    },
+    "single_visible_sample_before_mutation": {
+      "event_title": "DJ Pauly D",
+      "locality": "Las Vegas"
+    },
+    "other_saved_recipe_left_untouched": "Codex live Microdata Event replay 20260927-1612Z"
+  },
+  "observations": {
+    "saved_pattern_replay": {
+      "status": "PASS_BOUNDED_SUBSTEP",
+      "observed": "Clicked Run pattern for the exact List recipe on its source calendar route. The product showed 249 rows, fields event_title and locality, and visible samples DJ Pauly D / Las Vegas, DJ Sourmilk / Las Vegas, and DJ Stretch / Las Vegas.",
+      "limit": "Only the first 200 of 249 rows were rendered in the table; no full-row audit was performed."
+    },
+    "copy_json": {
+      "status": "UNVERIFIED",
+      "observed": "Copy menu offered Copy JSON with the description 'Pretty-printed JSON of all rows' and Copy TSV with the description 'Tab-separated, ready to paste into a spreadsheet.' Clicked Copy JSON; menu closed. No success toast or other visible copy confirmation appeared in the accessibility state. No download/export-to-file action was present in this menu.",
+      "limit": "Clipboard contents were not inspected. There is no verified copied output or downloadable artifact."
+    },
+    "rename_persistence": {
+      "status": "PASS_BOUNDED_SUBSTEP",
+      "renamed_title": "Codex D45 fixture 20260927-2229Z cleanup",
+      "observed": "Saved the new name, refreshed the Patterns list, left for the List Pattern subtab, then reopened Patterns. The exact renamed List recipe remained visible with OK status and its previous 249-row result."
+    },
+    "delete_confirmation": {
+      "status": "NOT_PERFORMED",
+      "target": "Codex D45 fixture 20260927-2229Z cleanup",
+      "observed_dialog": "The product asked 'Delete the pattern …?' and warned: 'The saved extraction pattern for electronic.vegas is deleted for good. Rows it already extracted into your tables are kept; the recipe that produced them is not. This cannot be undone.'",
+      "result": "Clicked Cancel. No deletion was performed; the renamed recipe remains visible. Absence-after-delete is unverified."
+    }
+  },
+  "limits": [
+    "No current-version check was repeated in this run; the installed artifact reference comes from the immediately preceding .109 lane.",
+    "No clipboard inspection or full 249-row audit; Copy JSON remains unverified.",
+    "No recipe delete was performed; only the exact fixture's warning dialog and Cancel were observed.",
+    "No other recipe, dataset, or Microdata fixture was modified."
+  ]
+}

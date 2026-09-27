@@ -15821,7 +15821,17 @@
             "reload",
             "auth-transition",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-installed-list-management-001",
+              "evidence": [
+                "docs/stabilization/runs/showcase-installed-list-management-001.json"
+              ],
+              "detail": "Patterns Refresh was clicked after rename and the refreshed list still showed the exact renamed owned recipe. Load-error retry was not exercised, so this is partial evidence for normal refresh only."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T34",
@@ -15846,7 +15856,17 @@
             "reload",
             "auth-transition",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-installed-list-management-001",
+              "evidence": [
+                "docs/stabilization/runs/showcase-installed-list-management-001.json"
+              ],
+              "detail": "Renamed the exact owned List recipe from \u201cCodex D45 fixture 20260927-2229Z\u201d to \u201cCodex D45 fixture 20260927-2229Z cleanup.\u201d The new title persisted after Patterns Refresh and after leaving/reopening Patterns; its LIST type, OK status, and 249-row last-run summary remained. No-op and Cancel rename paths remain unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T35",
@@ -15871,7 +15891,17 @@
             "reload",
             "auth-transition",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-installed-list-management-001",
+              "evidence": [
+                "docs/stabilization/runs/showcase-installed-list-management-001.json"
+              ],
+              "detail": "Opened Delete for the exact renamed owned List fixture after confirming its title, LIST type, source calendar route, event_title/locality config, and 249-row result. The dialog named that exact fixture and warned deletion was permanent; Cancel was clicked and the pattern remained in the refreshed/reopened list. Confirmed deletion and absence are not verified; the fixture remains intentionally retained."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T36",
@@ -15900,11 +15930,15 @@
           "results": {
             "admin": {
               "status": "partial",
-              "run_id": "showcase-installed-d45-001",
+              "run_id": "showcase-installed-list-management-001",
               "evidence": [
-                "docs/stabilization/runs/showcase-installed-d45-001.json"
+                "docs/stabilization/runs/showcase-installed-d45-001.json",
+                "docs/stabilization/runs/showcase-installed-list-management-001.json"
               ],
-              "detail": "The owned List Pattern was reopened in Patterns and Run pattern returned 249 rows with the same first visible title/locality samples as the preview. An explicit run on the same-host event-detail route returned a no-matching-data message and no rows while retaining the prior OK/249-row health summary. Partial evidence only: first 200 rows were visible; broader run states and reload remain unverified."
+              "detail": "The retained List Pattern was run on its source route and returned 249 rows with matching visible samples. Copy JSON was selected from the product menu, which advertised pretty-printed JSON of all rows, but no success feedback appeared and copied contents were not inspected. The table displayed only 200 rows. Broader run states and output correctness remain unverified.",
+              "prior_run_ids": [
+                "showcase-installed-d45-001"
+              ]
             }
           }
         },
@@ -16296,7 +16330,17 @@
             "warm",
             "navigation",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-installed-list-management-001",
+              "evidence": [
+                "docs/stabilization/runs/showcase-installed-list-management-001.json"
+              ],
+              "detail": "Patterns exposed Copy JSON (\u201cPretty-printed JSON of all rows\u201d) and Copy TSV (\u201cTab-separated, ready to paste into a spreadsheet\u201d). Copy JSON was clicked and the menu closed, but no copy confirmation appeared; clipboard/output content and complete export were not verified. JSON/table modes and other shared consumers remain unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T50",
