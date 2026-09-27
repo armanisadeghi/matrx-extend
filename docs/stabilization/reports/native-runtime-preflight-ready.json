@@ -12,10 +12,12 @@
   "files": [
     "tests/browser/browser-runtime.mjs",
     "tests/browser/native-runtime-failure.mjs",
+    "tests/browser/native-runtime-failure.d.mts",
     "tests/unit/native-runtime-failure.test.ts",
     "tests/browser/screenshot-capture-acceptance.mjs",
     "tests/browser/screenshot-admin-readonly-acceptance.mjs",
     "tests/browser/screenshot-guest-acceptance.mjs",
     "tests/browser/debug-log-export-acceptance.mjs"
-  ]
+  ],
+  "typecheck": "Adjacent native-runtime-failure.d.mts resolves TS7016; Biome passed; guarded pnpm compile exited 0 (native-runtime-d33-compile-002, private 0600 log, lease released)."
 }
