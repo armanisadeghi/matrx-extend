@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "review": "showcase-picker-transaction-peer",
+  "scope": "Independent, source-only review of the prepared EXT-D-0045 patch and pending component regression. Patch was not applied; no tests, browser, build, or product edits were performed. The installed 0.2.108 artifact predates D45.",
+  "source_verdict": "PATCH_ALIGNS_WITH_REQUESTED_TRANSACTION_SEMANTICS_WITH_TEST_GAPS",
+  "live_outcome": "UNVERIFIED",
+  "findings": [
+    {
+      "result": "aligned_in_prepared_patch",
+      "evidence": "The patch snapshots the active config into stagedConfig on picker entry. ITEM_DETECTED updates only stagedConfig, so choosing scope B does not replace committed scope A or clear its extraction rows. While picking, displayRows hides the prior preview so A's rows are not presented as B output. closePickerSession clears stagedConfig; the result handler snapshots stagedConfigRef before closing and commits it only for a valid matching picker result. A valid Done result for B with zero field_paths therefore commits B, while Cancel/EXIT drops B and returns to committed A and its retained rows.",
+      "source_refs": ["docs/stabilization/pending/EXT-D-0045/product.patch:1-61", "docs/stabilization/pending/EXT-D-0045/product.patch:80-129", "docs/stabilization/pending/EXT-D-0045/product.patch:224-263"]
+    },
+    {
+      "result": "aligned_in_prepared_patch",
+      "evidence": "The result merge uses stagedConfig as its base when its root/item selectors match the Done payload and appends payload.field_paths. Same-scope Done therefore retains staged fields and appends picked fields; a different explicit scope uses the payload config, including an empty field list. Existing fromOurPick tab/session/page checks remain in place, and navigation still closes the picker and invalidates extraction state.",
+      "source_refs": ["docs/stabilization/pending/EXT-D-0045/product.patch:40-79", "src/features/showcase/tabs/ListPatternTab.tsx:111-130", "src/features/showcase/tabs/ListPatternTab.tsx:160-178"]
+    },
+    {
+      "result": "regression_coverage_gap",
+      "evidence": "The pending D45 test has two cases: changed-scope Cancel preserving A+field+preview, and changed-scope Done committing B with zero fields. It does not assert same-scope Done appends newly picked fields to existing/staged fields, nor that a late or wrong-session/page result cannot commit staged B. Those are named in the defect's red-guard plan and should be added before this guard is treated as complete.",
+      "source_refs": ["docs/stabilization/pending/EXT-D-0045/showcase-d45-entry.test.pending:113-164", "docs/stabilization/defects/EXT-D-0045.json:repair_direction"]
+    }
+  ],
+  "limitations": [
+    "This is a review of an unapplied patch, not a test result or installed-extension verification.",
+    "The current source still has the pre-D45 behavior; the prepared regression is intentionally undiscoverable with its .pending suffix.",
+    "No runtime conclusion is made about React effect ordering or the content-script picker event sequence."
+  ],
+  "reviewer_note": "No confirmed source blocker was found in the requested Cancel/Done transaction paths in the prepared patch. Promote only after the missing same-scope and stale-session assertions are included and the authorized red/green plus installed-extension checks are performed."
+}
