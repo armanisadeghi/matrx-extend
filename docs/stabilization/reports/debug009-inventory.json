@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "report_id": "debug009-inventory",
+  "source_run": "docs/stabilization/runs/debug-log-controls-009.json",
+  "independent_peer": "docs/stabilization/reports/debug009-runtime-peer.json",
+  "independent_peer_commit": "a99ff85d",
+  "feature_id": "EXT-F-1005",
+  "build": {
+    "version": "0.2.79",
+    "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0"
+  },
+  "case_findings": {
+    "EXT-F-1005-T14": {
+      "warm": "partial",
+      "reload": "partial",
+      "service-error": "partial",
+      "case": "unverified",
+      "reason": "Runs 003, 004, and 009 compare restored row count only; they do not prove the inventory-required prior row identities/values were restored. Earlier warm/reload dimension claims were narrowed for the same gap."
+    },
+    "EXT-F-1005-T15": {
+      "warm": "pass",
+      "reload": "pass",
+      "service-error": "pass",
+      "case": "pass"
+    },
+    "EXT-F-1005-T17": {
+      "warm": "pass",
+      "reload": "pass",
+      "service-error": "pass",
+      "case": "pass"
+    },
+    "EXT-F-1005-T22": {
+      "warm": "pass",
+      "reload": "pass",
+      "service-error": "pass",
+      "case": "pass"
+    }
+  },
+  "status_boundary": "EXT-F-1005 raw result remains partial and the admin feature cell remains unverified. No full-feature acceptance is claimed.",
+  "validation": {
+    "inventory_json_parse": "pass",
+    "report_biome": "pass",
+    "inventory_biome": "ignored_by_configuration",
+    "report_ascii": "pass",
+    "no_browser_or_tests": true
+  }
+}

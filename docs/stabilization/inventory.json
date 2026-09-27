@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-26T23:56:00+00:00",
+  "updated_at": "2026-09-27T00:02:00+00:00",
   "inventory_gate": "open-source-census-reviewed",
   "scope_complete": true,
   "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
@@ -6723,21 +6723,24 @@
                 "docs/stabilization/runs/debug-log-controls-003.json",
                 "docs/stabilization/runs/debug-log-controls-004.json",
                 "docs/stabilization/reports/debug-log-controls-003-runtime-peer.json",
-                "docs/stabilization/reports/debug-log-controls-004-runtime-peer.json"
+                "docs/stabilization/reports/debug-log-controls-004-runtime-peer.json",
+                "docs/stabilization/runs/debug-log-controls-009.json",
+                "docs/stabilization/reports/debug009-runtime-peer.json"
               ],
               "dimension_results": {
-                "warm": "pass",
-                "reload": "pass",
-                "service-error": "unverified"
+                "warm": "partial",
+                "reload": "partial",
+                "service-error": "partial"
               },
-              "detail": "Warm message/detail search and clearing to the prior set were previously observed. Run 004 repeated trusted message search after a real panel reload, found a natural detail-only primitive absent from messages, observed the no-match state, and restored search. Service-error remains open.",
+              "detail": "Warm/reload message and detail search plus no-match observations exist, and service-error controls also exercised those filters. However, runs 003/004/009 only compare the restored row count, not the prior row identities or values required by the inventory; all dimensions remain partial and the case unverified.",
               "remaining_criteria": [
-                "Service-error behavior remains unverified."
+                "After clearing search, prove restoration of the prior ordered row identities/values while accounting for naturally arriving events; retain warm, reload, and service-error coverage."
               ],
               "run_ids": [
                 "admin-debug-filters-001",
                 "debug-log-controls-003",
-                "debug-log-controls-004"
+                "debug-log-controls-004",
+                "debug-log-controls-009"
               ]
             }
           }
@@ -6767,7 +6770,7 @@
           ],
           "results": {
             "admin": {
-              "status": "unverified",
+              "status": "pass",
               "run_id": "admin-debug-filters-001",
               "evidence": [
                 "docs/stabilization/runs/admin-debug-filters-001.json",
@@ -6775,21 +6778,21 @@
                 "docs/stabilization/runs/debug-log-controls-003.json",
                 "docs/stabilization/runs/debug-log-controls-004.json",
                 "docs/stabilization/reports/debug-log-controls-003-runtime-peer.json",
-                "docs/stabilization/reports/debug-log-controls-004-runtime-peer.json"
+                "docs/stabilization/reports/debug-log-controls-004-runtime-peer.json",
+                "docs/stabilization/runs/debug-log-controls-009.json",
+                "docs/stabilization/reports/debug009-runtime-peer.json"
               ],
               "dimension_results": {
                 "warm": "pass",
                 "reload": "pass",
-                "service-error": "unverified"
+                "service-error": "pass"
               },
-              "detail": "Warm pause/resume evidence is retained from earlier runs. Run 004, after the actual panel reload, held displayed rows at 21 while total rose to 31; Resume displayed 31. Service-error remains open.",
-              "remaining_criteria": [
-                "Service-error behavior remains unverified."
-              ],
+              "detail": "Pause held 71 visible rows while the total rose to 81 during a real selected-backend outage; Resume then displayed 81. Combined with the accepted warm and real-reload runs, all declared case dimensions pass.",
               "run_ids": [
                 "admin-debug-filters-001",
                 "debug-log-controls-003",
-                "debug-log-controls-004"
+                "debug-log-controls-004",
+                "debug-log-controls-009"
               ]
             }
           }
@@ -6843,26 +6846,26 @@
           ],
           "results": {
             "admin": {
-              "status": "unverified",
+              "status": "pass",
               "dimension_results": {
                 "warm": "pass",
                 "reload": "pass",
-                "service-error": "unverified"
+                "service-error": "pass"
               },
               "evidence": [
                 "docs/stabilization/runs/debug-log-controls-003.json",
                 "docs/stabilization/runs/debug-log-controls-004.json",
                 "docs/stabilization/reports/debug-log-controls-003-runtime-peer.json",
-                "docs/stabilization/reports/debug-log-controls-004-runtime-peer.json"
+                "docs/stabilization/reports/debug-log-controls-004-runtime-peer.json",
+                "docs/stabilization/runs/debug-log-controls-009.json",
+                "docs/stabilization/reports/debug009-runtime-peer.json"
               ],
               "run_ids": [
                 "debug-log-controls-003",
-                "debug-log-controls-004"
+                "debug-log-controls-004",
+                "debug-log-controls-009"
               ],
-              "detail": "Runs 003 and 004 observed Clear produce the no-events state and zero displayed/total rows; both record the error-badge clearing predicate as pass. Run 004 exercised this after a real panel reload. Service-error remains open.",
-              "remaining_criteria": [
-                "Service-error behavior remains unverified."
-              ]
+              "detail": "Clear produced zero displayed/total rows and the no-events state during a real selected-backend outage. The pre-clear error badge was present and the reviewed positive predicate confirms it cleared. Combined with accepted warm and reload runs, all declared case dimensions pass."
             }
           }
         },
@@ -6958,7 +6961,7 @@
           ],
           "results": {
             "admin": {
-              "status": "unverified",
+              "status": "pass",
               "run_id": "admin-debug-filters-001",
               "evidence": [
                 "docs/stabilization/runs/admin-debug-filters-001.json",
@@ -6966,20 +6969,20 @@
                 "docs/stabilization/runs/debug-log-controls-003.json",
                 "docs/stabilization/runs/debug-log-controls-004.json",
                 "docs/stabilization/reports/debug-log-controls-003-runtime-peer.json",
-                "docs/stabilization/reports/debug-log-controls-004-runtime-peer.json"
+                "docs/stabilization/reports/debug-log-controls-004-runtime-peer.json",
+                "docs/stabilization/runs/debug-log-controls-009.json",
+                "docs/stabilization/reports/debug009-runtime-peer.json"
               ],
               "dimension_results": {
                 "warm": "pass",
                 "reload": "pass",
-                "service-error": "unverified"
+                "service-error": "pass"
               },
-              "detail": "Runs 003 and 004 verified detail expand/collapse, no-detail row inertness, and distinct no-match/no-events states; run 004 exercised these after a real panel reload. Service-error remains open.",
-              "remaining_criteria": [
-                "Service-error behavior remains unverified."
-              ],
+              "detail": "During a real selected-backend outage, a natural detail row expanded/collapsed, a no-detail row remained inert, and no-match/no-events states remained distinct. Combined with accepted warm and reload runs, all declared case dimensions pass.",
               "run_ids": [
                 "debug-log-controls-003",
-                "debug-log-controls-004"
+                "debug-log-controls-004",
+                "debug-log-controls-009"
               ]
             }
           }
@@ -8334,7 +8337,8 @@
             "debug-log-controls-002",
             "debug-log-controls-003",
             "debug-log-controls-004",
-            "debug-log-controls-006"
+            "debug-log-controls-006",
+            "debug-log-controls-009"
           ],
           "retest_status": "not-run"
         }
@@ -8459,8 +8463,44 @@
           "receipt": "docs/stabilization/runs/debug-log-controls-006.json",
           "independent_review": "docs/stabilization/reports/debug-log-controls-006-runtime-peer.json",
           "limits": "Online health positive control failed during service_error_online_control. No offline conditions were applied and no offline ping was dispatched; service-error behavior remains unverified. Four ordinary case outputs remain partial; case and feature-cell statuses are unchanged."
+        },
+        {
+          "run_id": "debug-log-controls-009",
+          "mode": "admin",
+          "build": "0.2.79",
+          "status": "partial",
+          "receipt": "docs/stabilization/runs/debug-log-controls-009.json",
+          "independent_review": "docs/stabilization/reports/debug009-runtime-peer.json",
+          "case_links": [
+            {
+              "case_id": "EXT-F-1005-T14",
+              "dimension": "service-error",
+              "status": "partial",
+              "observation": "Trusted message/detail search and no-match were observed; count-only reset does not establish restoration of the prior set. Earlier warm/reload claims are narrowed for the same oracle gap."
+            },
+            {
+              "case_id": "EXT-F-1005-T15",
+              "dimension": "service-error",
+              "status": "pass",
+              "observation": "Rows held at 71 while total rose to 81, then Resume displayed 81; combined warm/reload dimensions pass."
+            },
+            {
+              "case_id": "EXT-F-1005-T17",
+              "dimension": "service-error",
+              "status": "pass",
+              "observation": "With a real pre-clear error badge, Clear produced zero rows/total and no-events state and removed the badge; combined warm/reload dimensions pass."
+            },
+            {
+              "case_id": "EXT-F-1005-T22",
+              "dimension": "service-error",
+              "status": "pass",
+              "observation": "Detail expanded/collapsed, no-detail row stayed inert, and no-match/no-events remained distinct; combined warm/reload dimensions pass."
+            }
+          ],
+          "limits": "Raw run and feature remain partial. Admin feature cell stays unverified. T14 remains unverified across dimensions until prior-set restoration is proved; no full EXT-F-1005 acceptance is claimed."
         }
-      ]
+      ],
+      "updated_at": null
     },
     {
       "id": "EXT-F-1006",
