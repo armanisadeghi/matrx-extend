@@ -115,42 +115,120 @@ async function signIn(page, panel) {
 
 async function selectApprovedOrganization(panel, approved) {
   stage = 'select_approved_organization';
-  await click(panel, 'title', 'Settings');
-  const account = await evaluate(
-    panel,
-    `(() => [...document.querySelectorAll('button[aria-expanded]')]
-      .filter(button=>button.textContent.trim()==='Account')
-      .map(button=>button.getAttribute('aria-expanded')))()`,
-  );
-  if (account?.length !== 1) fail('account_section_not_unique');
-  if (account[0] === 'true') await click(panel, 'section', 'Account');
-  await openSection(panel, 'Organization');
-  await click(panel, 'organization', 'Acting as');
-  const offered = await evaluate(
-    panel,
-    `(() => [...document.querySelectorAll('[role="option"]')]
-      .filter(option=>option.textContent.trim()===${JSON.stringify(approved)}).length)()`,
-  );
-  if (offered !== 1) fail('approved_option_not_unique');
-  await click(panel, 'option', approved);
-  await waitFor(
-    'approved_organization_selected',
-    () =>
-      evaluate(
+  let step = 'settings_tab';
+  try {
+    await click(panel, 'title', 'Settings');
+    step = 'account_section_state';
+    const account = await evaluate(
+      panel,
+      `(() => [...document.querySelectorAll('button[aria-expanded]')]
+        .filter(button=>button.textContent.trim()==='Account')
+        .map(button=>button.getAttribute('aria-expanded')))()`,
+    );
+    if (account?.length !== 1 || !['true', 'false'].includes(account[0]))
+      fail('account_section_not_unique');
+    step = 'account_section_collapse';
+    if (account[0] === 'true') await click(panel, 'section', 'Account');
+    // The proven Source selection path waits for the actual collapsed state
+    // before preparing the Organization combobox in this narrow panel.
+    await waitFor(
+      'account_collapsed_before_organization',
+      () =>
+        evaluate(
+          panel,
+          `(() => [...document.querySelectorAll('button[aria-expanded]')]
+            .filter(button=>button.textContent.trim()==='Account')
+            .map(button=>button.getAttribute('aria-expanded')))()`,
+        ),
+      (states) => states?.length === 1 && states[0] === 'false',
+    );
+    step = 'organization_section';
+    await openSection(panel, 'Organization');
+    step = 'organization_control_ready';
+    await waitFor(
+      'organization_control',
+      () =>
+        evaluate(
+          panel,
+          `(() => [...document.querySelectorAll('span')]
+            .filter(span=>span.textContent.trim()==='Acting as')
+            .flatMap(span=>[...span.parentElement.parentElement.querySelectorAll(
+              'button[role="combobox"]')]).length)()`,
+        ),
+      (count) => count === 1,
+    );
+    step = 'organization_control_click';
+    await click(panel, 'organization', 'Acting as');
+    step = 'approved_option_ready';
+    const offered = await evaluate(
+      panel,
+      `(() => [...document.querySelectorAll('[role="option"]')]
+        .filter(option=>option.textContent.trim()===${JSON.stringify(approved)}).length)()`,
+    );
+    if (offered !== 1) fail('approved_option_not_unique');
+    step = 'approved_option_click';
+    await click(panel, 'option', approved);
+    step = 'approved_organization_selected';
+    await waitFor(
+      'approved_organization_selected',
+      () =>
+        evaluate(
+          panel,
+          `(async () => {
+            const row=[...document.querySelectorAll('span')]
+              .find(span=>span.textContent.trim()==='Acting as');
+            const controls=[...(row?.parentElement?.parentElement?.querySelectorAll(
+              'button[role="combobox"]')??[])];
+            const stored=(await chrome.storage.local.get('matrx.org.active'))['matrx.org.active'];
+            return {count:controls.length,displayed:controls[0]?.textContent.trim()===
+              ${JSON.stringify(approved)},stored:stored?.name===${JSON.stringify(approved)}&&
+              typeof stored?.id==='string'};
+          })()`,
+        ),
+      (state) => state?.count === 1 && state.displayed && state.stored,
+    );
+  } catch (error) {
+    const pointer = error?.driverFailure;
+    report.failure ??= {
+      stage,
+      code: 'approved_organization_selection_failed',
+      step,
+      driverCode: pointer?.code ?? 'non_pointer_failure',
+      pointerHitTarget: pointer?.hitTarget === true,
+      matchedTargetCount: Number.isInteger(pointer?.matchedTargetCount)
+        ? pointer.matchedTargetCount
+        : null,
+      visibleMatchCount: Number.isInteger(pointer?.visibleMatchCount)
+        ? pointer.visibleMatchCount
+        : null,
+    };
+    try {
+      report.failure.surface = await evaluate(
         panel,
-        `(async () => {
-          const row=[...document.querySelectorAll('span')]
-            .find(span=>span.textContent.trim()==='Acting as');
-          const controls=[...(row?.parentElement?.parentElement?.querySelectorAll(
-            'button[role="combobox"]')??[])];
-          const stored=(await chrome.storage.local.get('matrx.org.active'))['matrx.org.active'];
-          return {count:controls.length,displayed:controls[0]?.textContent.trim()===
-            ${JSON.stringify(approved)},stored:stored?.name===${JSON.stringify(approved)}&&
-            typeof stored?.id==='string'};
+        `(() => {
+          const settings=document.querySelector('button[role="tab"][title="Settings"]');
+          const account=[...document.querySelectorAll('button[aria-expanded]')]
+            .filter(button=>button.textContent.trim()==='Account');
+          const organization=[...document.querySelectorAll('button[aria-expanded]')]
+            .filter(button=>button.textContent.trim()==='Organization');
+          const rows=[...document.querySelectorAll('span')]
+            .filter(span=>span.textContent.trim()==='Acting as');
+          const controls=rows.flatMap(row=>[...row.parentElement.parentElement.querySelectorAll(
+            'button[role="combobox"]')]);
+          return {settingsTabActive:settings?.getAttribute('data-state')==='active',
+            accountSectionCount:account.length,accountExpanded:account[0]?.getAttribute('aria-expanded')??null,
+            organizationSectionCount:organization.length,
+            organizationExpanded:organization[0]?.getAttribute('aria-expanded')??null,
+            actingAsRowCount:rows.length,organizationControlCount:controls.length,
+            approvedOptionCount:[...document.querySelectorAll('[role="option"]')]
+              .filter(option=>option.textContent.trim()===${JSON.stringify(approved)}).length};
         })()`,
-      ),
-    (state) => state?.count === 1 && state.displayed && state.stored,
-  );
+      );
+    } catch {
+      report.failure.surface = { available: false };
+    }
+    throw new Error('screenshot_admin_org_selection_unverified');
+  }
 }
 
 function canonical(url) {
