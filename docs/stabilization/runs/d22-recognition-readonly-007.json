@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "run_id": "d22-recognition-readonly-007",
+  "source": {
+    "guard_log_path": "/tmp/matrx-d22-recognition-readonly-007.log",
+    "guard_log_sha256": "b13d9fc79fc4c48a1b1fc95a82ca587f01f6f46a8c1303c5bb646d0f1fa6832e",
+    "raw_result_path": "/tmp/matrx-d22-recognition-readonly-007-result.json",
+    "raw_result_sha256": "e81b68f9e19f9885d7dcbe615392b3a9e90d785aeed564ed068689f51551feb2"
+  },
+  "guard": {
+    "admitted_at": "2026-09-27T04:31:14.370Z",
+    "child_exit_at": "2026-09-27T04:31:31.483Z",
+    "child_exit_code": 1
+  },
+  "raw_result": {
+    "status": "unverified",
+    "build": {
+      "version": "0.2.85",
+      "tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff"
+    }
+  },
+  "execution_evidence": {
+    "child_exit": "nonzero",
+    "wrapper_completion": "unverified_from_guard_log",
+    "overall_acceptance": "not_adjudicated"
+  },
+  "wrapper_exit_code": 1,
+  "lease": "absent_after_child_exit",
+  "observed": {
+    "real_admin_ui": true,
+    "original_workspace_selected": true,
+    "workspace_picker_enumeration": "unverified",
+    "scoped_lookup_organization_match": true,
+    "source_list": {
+      "pages": 1,
+      "rows": 1,
+      "eligible_rows": 1,
+      "categories": {
+        "eligible": 1
+      }
+    },
+    "fixture_page_mode": "scripts_disabled_service_workers_bypassed",
+    "fixture_page_guard": {
+      "intercepted": 1,
+      "continued": 1,
+      "blocked": 0
+    },
+    "workspace_cleanup": "pass",
+    "positive_fixture_boundary": {
+      "failed_at": "positive_fixture_navigation",
+      "navigation_started": true,
+      "navigation_returned": false,
+      "navigation_http_status": 500,
+      "failure_category": "ERR_HTTP_RESPONSE_CODE_FAILURE",
+      "scoped_source_reads": 0,
+      "scrape_ui_linked": false
+    },
+    "late_inflight_save": "unverified"
+  },
+  "failure": {
+    "stage": "positive_fixture_navigation",
+    "code": "ERR_HTTP_RESPONSE_CODE_FAILURE",
+    "classification": "Navigation failed with an HTTP 500 response; this run establishes no positive recognition result and does not by itself establish a product defect."
+  }
+}
