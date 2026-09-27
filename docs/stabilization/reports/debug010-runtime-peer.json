@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "report_id": "debug010-runtime-peer",
+  "run_id": "debug-log-controls-010",
+  "source_receipt": "docs/stabilization/runs/debug-log-controls-010.json",
+  "preserved_raw_result": {
+    "path": "/tmp/matrx-debug-log-controls-010-result.json",
+    "sha256": "3f4fb215cd63ba477ff04e50e3fca2c238c2a9f19c0dd1c7b0ef9731b121ba95",
+    "permission": "0600",
+    "receipt_commit": "0fed5724"
+  },
+  "A_acceptance_verdict": {
+    "status": "T14_SERVICE_ERROR_DIMENSION_PASS_WITH_BOUNDED_SCOPE",
+    "finding": "The prior reset gap is closed. Under the observed persistent service outage, trusted message-only search retained its original natural row, a no-match query displayed zero rows and the distinct no-match state, and a natural detail-only primitive absent from messages found its original detail row. After each search was cleared, the runner required the exact ordered sequence and multiplicity of all prior visible row signatures, with any new arrivals counted only as a prefix. The raw result records priorRowsRestored, countersMatch, and arrivalCountMatches true for message reset 71 to 71 and detail reset 81 to 81.",
+    "label_adjudication": "The raw T14 status and serviceError field remain partial because the runner assigns partial without aggregating prior dimensions. No listed T14 service-error assertion remains unmet in this saved run. Prior warm and reload results are separate inventory evidence; this review does not rerun them or declare the whole feature accepted.",
+    "other_cases": "T15 and T22 again satisfy their service-error assertions. T17 again shows eventList=pass and errorBadge=pass, so its service-error partial label remains conservative as adjudicated in Debug 009; this report's new finding is the strengthened T14 reset proof.",
+    "limits": "The reset proof concerns visible row content and order, not internal event IDs or hidden JSON byte identity. The detail-only query separately proves search reaches a natural serialized detail primitive. Arbitrary row mutations after the bounded observation are outside this run."
+  },
+  "B_source_runtime_quality_verdict": {
+    "status": "ACCEPT_WITH_SCOPE_LIMITS",
+    "checks": [
+      "The unique Debug 010 guard log and preserved 0600 raw-result copy hash to the values in immutable receipt commit 0fed5724. The copy is byte-identical to the default result before its next-run overwrite. The guard records resource admission, healthy watch, PARTIAL stdout, and child exit 0 at 2026-09-27T00:05:29.190Z. The coordinator confirmed wrapper exit 0; the receipt accurately leaves wrapper completion unverified from the guard log alone.",
+      "Source commit 3dc31a21 captures each unfiltered visible row's rendered fields, class, and detail affordance into SHA-256 signatures held only in runner memory. Both message and detail resets call waitForExactSearchReset; it rejects substitutions, reordering, missing prior rows, and unaccounted extra rows. The durable result retains booleans and counts, not row text, signatures, search terms, event payloads, backend URL, or credentials.",
+      "The owned admin panel reports release 0.2.79 tree be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0 and extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml. The runner checks receipt/manifest identity at start and end and the owned harness verifies the unpacked release and Store ZIP; raw realAdminUi and profileOwned are true.",
+      "The selected backend URL comes from the Debug UI and remains unchanged. Online same-target health GETs completed 200 with UI OK; an exact-target Fetch GET then failed internet_disconnected with UI FAIL before controls and another did so after controls. The rule was limited to that endpoint; membership and organization calls still completed 200. The result records outagePersistedThroughControls and networkRestored true. Two online GETs are valid positive controls; no exact-one online count is required by the accepted source oracle."
+    ],
+    "boundary": "This peer independently reviewed existing runtime artifacts and source; it did not execute another browser run. Top-level partial is a deliberately bounded runner status and should not be read as a failed service-error assertion or as full EXT-F-1005 acceptance."
+  }
+}
