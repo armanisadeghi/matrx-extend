@@ -9,7 +9,7 @@
     "reason": "The earlier readonly_003 result failed at a composite positive stage. This diagnostic revision has not run natively and establishes no Source/Open or workspace acceptance."
   },
   "B_source": {
-    "native_admission_verdict": "NARROW_CORRECTION_REQUIRED",
+    "native_admission_verdict": "ACCEPT_NARROW_DIAGNOSTICS_FOR_GUARDED_NATIVE_ADMISSION",
     "accepted_diagnostics": [
       "The formerly composite positive stage now separates navigation, Scrape click, scoped lookup, UI state and real Open-link boundaries. It records fixed start/return booleans, numeric HTTP status, exact-fixture equality, bounded counts and elapsed time; the original scoped HTTP 200, canonical identity, saved UI and Open target equality predicates remain.",
       "safeFailureCategory maps only known pointer codes, Chromium network codes and fixed timeout/runtime categories. The catch/finally paths persist neither raw exception text nor Source URL, organization ID, Source ID, credentials, headers or response body. scrapeState contributes only booleans; the new tab diagnostic contributes count and active state.",
@@ -19,7 +19,9 @@
       "severity": "evidence_integrity",
       "title": "An observed-choice count is still initialized before choices are observed",
       "evidence": "discoverAcrossWorkspaces initializes accessibleUniqueChoices: 1 before opening or reading the picker. A fixture found in the original workspace returns with choicesEnumeratedFromPicker:false but still serializes accessibleUniqueChoices:1. The boolean prevents a careful reader from claiming a full census, yet the count's name and value independently claim an accessible unique choice was enumerated. This repeats the misleading field in readonly_003.",
-      "required_repair": "Initialize accessibleUniqueChoices to null/unverified and assign the actual count only after picker options are read. If the selected original must be counted before enumeration, use a separately named knownSelectedWorkspaces count. Keep choicesEnumeratedFromPicker:false until the real enumeration."
+      "required_repair": "Initialize accessibleUniqueChoices to null/unverified and assign the actual count only after picker options are read. If the selected original must be counted before enumeration, use a separately named knownSelectedWorkspaces count. Keep choicesEnumeratedFromPicker:false until the real enumeration.",
+      "status": "RESOLVED_BY_84ADEE61",
+      "resolution": "The only runner code change initializes accessibleUniqueChoices to null; the existing picker-enumeration branch alone assigns a numeric count and choicesEnumeratedFromPicker=true. No recognition, Open, workspace, or cleanup acceptance predicate changed."
     },
     "limits": "This is a narrow diagnostic evidence correction, not a production Source defect or a change to the previously accepted read-only discovery/cleanup mechanics. Positive recognition, Open identity, multi-workspace behavior, late response, service-failure/recovery and late Save remain unverified until their own native evidence exists."
   },
@@ -27,5 +29,6 @@
     "tests/browser/source-recognition-readonly-acceptance.mjs",
     "docs/stabilization/reports/d22-next-closure-path.json",
     "docs/stabilization/runs/d22-recognition-readonly-003.json"
-  ]
+  ],
+  "reviewed_correction_commit": "84adee61"
 }
