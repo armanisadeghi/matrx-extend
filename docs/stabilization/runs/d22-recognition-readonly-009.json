@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "run_id": "d22-recognition-readonly-009",
+  "source": {
+    "guard_log_path": "/tmp/matrx-d22-recognition-readonly-009.log",
+    "guard_log_sha256": "9b87ad2a082c395a000ab788f05b4c10e1387bda3df0877cee27c81905933128",
+    "raw_result_path": "/tmp/matrx-d22-recognition-readonly-009-result.json",
+    "raw_result_sha256": "7c2642fb4d6212eb5f4f2d808e1fc6117bc3b132947d1375dea91e69fad508d9"
+  },
+  "guard": {
+    "admitted_at": "2026-09-27T04:48:41.831Z",
+    "child_exit_at": "2026-09-27T04:49:08.265Z",
+    "child_exit_code": 1,
+    "watch_healthy_at": "2026-09-27T04:48:58.151Z"
+  },
+  "raw_result": {
+    "status": "unverified",
+    "build": {
+      "version": "0.2.85",
+      "tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff"
+    }
+  },
+  "execution_evidence": {
+    "child_exit": "nonzero",
+    "wrapper_completion": "unverified_from_guard_log",
+    "overall_acceptance": "not_adjudicated"
+  },
+  "wrapper_exit_code": 1,
+  "lease": "absent_after_child_exit",
+  "observed": {
+    "real_admin_ui": true,
+    "workspace_cleanup": "pass",
+    "attempted_workspaces": 3,
+    "accessible_unique_choices": 98,
+    "source_list_pages_total": 3,
+    "source_list_rows_total": 1,
+    "candidate_pages_attempted": 1,
+    "candidate_http_status_counts": {
+      "500": 1
+    },
+    "fixture_mode": "scripts_disabled_service_workers_bypassed",
+    "failure_stage": "discovery_scoped_list_response",
+    "failure_code": "no_fixture_within_workspace_search_budget",
+    "late_inflight_save": "unverified",
+    "runtime_acceptance": "unverified"
+  },
+  "classification": "The real picker enumerated accessible choices and the runner performed bounded scoped reads across three selected workspaces. The sole eligible public candidate returned HTTP 500; no positive Source/Open flow was reached. Workspace restoration passed. This run is unverified and establishes no product defect or positive recognition result; no Source Save or checkpoint action was performed."
+}
