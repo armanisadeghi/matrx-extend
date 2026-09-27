@@ -1,0 +1,36 @@
+{
+  "run_id": "debug-export-dev085-002",
+  "status": "unverified",
+  "wrapper_exit_code": 1,
+  "child_started": true,
+  "child_exit_code": 1,
+  "build": {
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "version": "0.2.85",
+    "tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff",
+    "receipt_path": "test-results/source-dev-build-085.json",
+    "post_run_identity_observed": false,
+    "boundary": "This run used the existing .85 local development artifact. A lockfile merge occurred during the run; this receipt makes no claim about a build from the subsequently merged lockfile."
+  },
+  "guard": {
+    "admitted_at": "2026-09-27T05:12:22.634Z",
+    "job_exit_at": "2026-09-27T05:12:28.636Z",
+    "heavy_lease_released": true,
+    "log_path": "/tmp/matrx-debug-export-dev085-002.log",
+    "log_sha256": "5dc2f42af28efc098814fdf388689567051a2fb6879935b9b9bff475cd8abadb"
+  },
+  "raw_result": {
+    "path": "/tmp/matrx-debug-export-dev085-002-result.json",
+    "mode": "0600",
+    "sha256": "9c716b46b3657ed3123897e815b642f8f34e91f26ff6c5f18e74c038cd87b5f2"
+  },
+  "safe_observations": {
+    "failure_stage": "debug_open",
+    "failure_code": "owned_harness_or_ui_stage_failed",
+    "case_results_recorded": 0,
+    "copy_and_download": "unverified",
+    "verbose_console": "unverified"
+  },
+  "classification": "The resource-guarded native child reached the Debug opening stage, then exited unverified before export or verbose case observations. The generic failure code does not establish a product defect, and no inventory result is promoted. No Source Save or checkpoint action was performed."
+}
