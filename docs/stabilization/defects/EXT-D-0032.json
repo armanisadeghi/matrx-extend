@@ -19,11 +19,12 @@
     "src/lib/destructive/confirm.tsx",
     "docs/stabilization/runs/screenshot-capture-dev094-001.json",
     "docs/stabilization/runs/screenshot-capture-dev094-002.json",
-    "docs/stabilization/reports/screenshot-capture-retest-peer.json"
+    "docs/stabilization/reports/screenshot-capture-retest-peer.json",
+    "docs/stabilization/runs/screenshot-controls-dev094-002.json"
   ],
   "severity": "S2: acceptance recovery may leave a newly created test index row when an earlier assertion fails; exact cleanup remains unverified",
   "priority": "P1: require consequence and complete bounded cleanup on the next owned run",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/screenshot_capture_repair",
   "fix_commits": ["8ed23029", "118bbfb1"],
   "transition_history": [
@@ -50,8 +51,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source correction is in place and syntax-checked; peer review and guarded native retest remain pending."
+    },
+    {
+      "at": "2026-09-27T10:57:06.043Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Actual thumbnail-stage failure reached recovery; recovery waited for visible enabled confirmation and completed a real read proving the exact newly-created row deleted. Original recovery path now independently verified; historical failed-run row disposition remains unknown."
+    },
+    {
+      "at": "2026-09-27T10:57:06.043Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Actual thumbnail-stage failure reached recovery; recovery waited for visible enabled confirmation and completed a real read proving the exact newly-created row deleted. Original recovery path now independently verified; historical failed-run row disposition remains unknown."
     }
   ],
   "closure_requirement": "Independent peer verifies exact-card identity guard and dialog wait; guarded native retest reaches confirmed deletion and an exact row-absent real read.",
-  "retest_status": "Source peer and disabled/enabled probes passed for both branches. Native normal deletion passed, but original error-recovery cleanup branch was not exercised; keep fixed awaiting its native retest."
+  "retest_status": "Actual thumbnail-stage failure reached recovery; recovery waited for visible enabled confirmation and completed a real read proving the exact newly-created row deleted. Original recovery path now independently verified; historical failed-run row disposition remains unknown."
 }
