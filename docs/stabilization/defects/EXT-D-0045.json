@@ -22,7 +22,9 @@
   "runtime_evidence_limit": "Installed 0.2.108 run showcase-installed-d43-001 observed Restart/Cancel after choosing the correct scope in a fresh picker. It did not start with a configured A plus fields and did not exercise replacement by B; this stronger loss scenario is source-confirmed but not yet live-reproduced.",
   "severity": "S2: Cancel can irreversibly discard an unsaved list definition and its preview.",
   "priority": "P1: core detect, select, extract workflow and an explicit existing Cancel contract.",
-  "state": "triaged",
+  "state": "fixed",
+  "reproduction_status": "Guarded component regression failed on the original source at the intended Cancel assertions (2 of 4 failed); the previously configured A root was replaced by nested B before Done.",
+  "verification_status": "Guarded D45/D43/D42/D44 focused run passed 35 of 35 assertions across 8 files; pnpm compile passed. Direct development build and installed real-site verification remain pending.",
   "transition_history": [
     {
       "at": "2026-09-27",
@@ -35,8 +37,14 @@
       "from": "open",
       "to": "triaged",
       "reason": "Confirmed the pre-Done item-detected handler mutates the committed editor while Cancel only closes the picker; distinguished unsaved draft loss from persisted data."
+    },
+    {
+      "at": "2026-09-27",
+      "from": "triaged",
+      "to": "fixed",
+      "reason": "Staged picker scope and field edits until Done; Cancel retains the committed draft and preview. Deterministic red/green and TypeScript checks passed. Installed-extension acceptance remains open."
     }
   ],
   "repair_direction": "Stage provisional picker scope/fields within the active session and use the staged scope to display suggested fields without replacing the committed editor or preview. Commit on Done, discard on Cancel. Keep zero-field Done as a valid explicit scope selection, and retain D42 page/session nonce guards.",
-  "red_guard_plan": "A component test must start with A+field+preview, enter the actual Pick more fields session, Restart, select B using the real page picker, Cancel, and assert A+field+preview survive. Sibling assertions: Done B commits B with zero fields; same-scope Done appends a field; late or wrong-session/page events cannot apply the staged scope. Run the guard red before product edits, then green and inspect the installed extension on real nested lists."
+  "red_guard_plan": "A component test starts with A+field+preview, enters the actual Pick more fields session, Restarts, selects B using the real page picker, Cancels, and asserts A+field+preview survive. Sibling assertions cover Done B with zero fields, same-scope field append with five distinct extracted records, and late stamped results after Cancel. D42/D43 regressions retain page/session nonce checks. Installed-extension real-site acceptance remains pending."
 }

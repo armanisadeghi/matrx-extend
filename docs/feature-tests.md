@@ -1320,6 +1320,22 @@ Every entry follows this shape:
   handoff, list-picker-session, and list-picker-relay unit tests; these guards
   do not replace the installed-extension check.
 
+### Showcase — List Pattern picker Cancel keeps the prior draft (EXT-D-0045)
+- **What it does:** Picker changes remain provisional until Done. Cancel keeps the
+  earlier list definition, selected fields, and extraction preview.
+- **Where to test:** Showcase → List Pattern on a real page with nested repeated
+  groups, such as https://electronic.vegas/vegas-edm-event-calendar/.
+- **Steps:** Configure outer event cards with title or URL and Extract; note
+  distinct preview rows. Choose Pick more fields, press Restart in the page
+  overlay, click an event title, choose the inner details group, then Cancel.
+  Repeat but press Done. Finally choose the original card group and add a field
+  before Done.
+- **Expected:** Cancel restores the original selectors, field, and exact prior
+  preview. Done commits the chosen inner group even with zero fields; its
+  suggestions appear, Extract waits for a field, and the old preview is hidden.
+  Same-scope Done appends the chosen field. Navigation or a canceled session
+  cannot apply late picker messages.
+
 ### Showcase — Network tab
 - **What it does:** Captures top-frame fetch/XHR while you interact; pick a
   response, drill into JSON, and save its request identity and selected path

@@ -1,0 +1,30 @@
+{
+  "defect": "EXT-D-0045",
+  "status": "source-fixed; direct development build and installed real-site acceptance pending",
+  "baseline": "The actual Pick more fields entry started with A, one URL field, and five preview rows. Restart plus explicit nested B selection followed by Cancel lost A before the patch.",
+  "red": {
+    "run_id": "showcase-d45-red-001",
+    "result": "2 of 4 failed at intended Cancel assertions; old source showed nested B instead of #wideeventsList after Cancel"
+  },
+  "repair": "ListPatternTab keeps picker scope and field changes in a session-local draft. Done commits the draft, including an intentional zero-field B scope; Cancel discards it and preserves A plus its preview. Page, tab, and session guards remain active.",
+  "green": {
+    "run_id": "showcase-d45-green-002",
+    "result": "8 files, 35 tests passed, including D45, D42/D43 picker siblings and D44 settled provenance/list caller cases"
+  },
+  "compile": {
+    "run_id": "showcase-d45-compile-002",
+    "result": "pnpm compile passed"
+  },
+  "dependency_sync": {
+    "run_id": "showcase-d45-install-001",
+    "result": "frozen-lock install passed; @ai-matrx/kit 0.16.12 changelog says metadata-only and no Consumer action"
+  },
+  "sibling_alignment": "D43 nested detail extraction now expects one row with the selected title and URL. D44 correctly omits two other nested li elements whose selected fields are absent; the test still verifies the explicit three-item nested scope choice.",
+  "source_files": [
+    "src/features/showcase/tabs/ListPatternTab.tsx",
+    "tests/unit/showcase-d45-entry.test.tsx",
+    "docs/feature-tests.md",
+    "docs/stabilization/defects/EXT-D-0045.json"
+  ],
+  "pending": "Guarded direct development build, uniquely recorded source/build receipt, and independent installed Chrome test on real nested lists. No localhost UI is authorized."
+}

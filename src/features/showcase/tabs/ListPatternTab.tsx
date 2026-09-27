@@ -69,7 +69,13 @@ export function ListPatternTab() {
   const pickTabRef = useRef<number | null>(null);
   const [rawConfig, setConfig] = useState<ListPickerResult | null>(null);
   const [configPageKey, setConfigPageKey] = useState<string | null>(null);
-  const config = configPageKey === pageKey ? rawConfig : null;
+  const committedConfig = configPageKey === pageKey ? rawConfig : null;
+  // The picker can announce a scope before Done so suggested fields are live.
+  // Keep that entire editing session provisional until Done; Cancel discards it.
+  const [stagedConfig, setStagedConfig] = useState<ListPickerResult | null>(null);
+  const stagedConfigRef = useRef<ListPickerResult | null>(null);
+  const config =
+    picking && pickPageKeyRef.current === pageKey && stagedConfig ? stagedConfig : committedConfig;
   const {
     rows,
     running,
@@ -90,6 +96,11 @@ export function ListPatternTab() {
   /** Live per-field sample values, probed using the SAME logic as the runner. */
   const [sampleValues, setSampleValues] = useState<Record<string, string | null>>({});
 
+  const stageConfig = useCallback((next: ListPickerResult | null) => {
+    stagedConfigRef.current = next;
+    setStagedConfig(next);
+  }, []);
+
   const closePickerSession = useCallback(() => {
     const tabId = pickTabRef.current;
     const sessionId = pickerSessionIdRef.current;
@@ -97,13 +108,19 @@ export function ListPatternTab() {
     pickerSessionIdRef.current = null;
     pickTabRef.current = null;
     pickPageKeyRef.current = null;
+    stageConfig(null);
+    inspectorSeqRef.current += 1;
+    sampleSeqRef.current += 1;
+    setCandidates(null);
+    setInspectionStatus('idle');
+    setSampleValues({});
     setPicking(false);
     if (tabId !== null && sessionId !== null) {
       // Navigated/closed pages may no longer accept an injection. The local
       // session is already invalidated; cancellation can affect only its ID.
       void cancelListPickerSession(tabId, sessionId).catch(() => {});
     }
-  }, []);
+  }, [stageConfig]);
 
   useEffect(() => () => closePickerSession(), [closePickerSession]);
 
@@ -173,25 +190,27 @@ export function ListPatternTab() {
       (payload) => {
         if (!fromOurPick(payload)) return { ack: true };
         const sessionPageKey = pickPageKeyRef.current;
+        const staged = stagedConfigRef.current;
         closePickerSession();
         if (payload?.list_root && payload.item_selector) {
           invalidateBuilderWork();
           // Merge any newly-picked field_paths into existing config (so "Pick more
           // fields" appends rather than replaces).
-          setConfig((prev) =>
-            prev &&
-            prev.list_root === payload.list_root &&
-            prev.item_selector === payload.item_selector
+          setConfig((prev) => {
+            const base = staged ?? prev;
+            return base &&
+              base.list_root === payload.list_root &&
+              base.item_selector === payload.item_selector
               ? {
-                  ...prev,
-                  field_paths: [...prev.field_paths, ...payload.field_paths],
+                  ...base,
+                  field_paths: [...base.field_paths, ...payload.field_paths],
                 }
               : {
                   list_root: payload.list_root,
                   item_selector: payload.item_selector,
                   field_paths: payload.field_paths,
-                },
-          );
+                };
+          });
           setConfigPageKey(sessionPageKey);
           setError(null);
         }
@@ -199,10 +218,8 @@ export function ListPatternTab() {
       },
     );
     /**
-     * Fires from the picker the MOMENT Phase 1 succeeds — before the user
-     * clicks Done. Sets up the config with no fields so the Suggested Fields
-     * panel populates immediately. The user can then add fields via one-click
-     * suggestions OR keep clicking in the page; final Done merges both.
+     * Fires when the picker chooses a scope, before Done. Stage it for live
+     * suggestions but do not replace the committed editor/preview on Cancel.
      */
     const offDetected = on<
       { list_root: string; item_selector: string; item_count: number } & ListPickerIdentity,
@@ -210,8 +227,13 @@ export function ListPatternTab() {
     >(CHANNELS.LIST_PICKER_ITEM_DETECTED, (payload) => {
       if (!payload?.list_root || !payload.item_selector) return { ack: true };
       if (!fromOurPick(payload)) return { ack: true };
-      invalidateBuilderWork();
-      setConfig((prev) =>
+      inspectorSeqRef.current += 1;
+      sampleSeqRef.current += 1;
+      setCandidates(null);
+      setInspectionStatus('idle');
+      setSampleValues({});
+      const prev = stagedConfigRef.current;
+      stageConfig(
         prev && prev.list_root === payload.list_root && prev.item_selector === payload.item_selector
           ? prev
           : {
@@ -220,7 +242,6 @@ export function ListPatternTab() {
               field_paths: [],
             },
       );
-      setConfigPageKey(pickPageKeyRef.current);
       setError(null);
       return { ack: true };
     });
@@ -234,7 +255,7 @@ export function ListPatternTab() {
       offDetected();
       offExit();
     };
-  }, [closePickerSession, invalidateBuilderWork]);
+  }, [closePickerSession, invalidateBuilderWork, stageConfig]);
 
   // Auto-run card inspector whenever the item selector changes.
   const runInspector = useCallback(async () => {
@@ -341,6 +362,7 @@ export function ListPatternTab() {
     const session = ++pickerSessionSeqRef.current;
     const sessionId = crypto.randomUUID();
     pickerSessionIdRef.current = sessionId;
+    stageConfig(config);
     setPicking(true);
     setError(null);
     pickTabRef.current = tab.id;
@@ -406,23 +428,27 @@ export function ListPatternTab() {
 
   const updateField = (i: number, patch: Partial<FieldPath>) => {
     if (!config) return;
-    setConfig({
+    const next = {
       ...config,
       field_paths: config.field_paths.map((f, idx) => (idx === i ? { ...f, ...patch } : f)),
-    });
+    };
+    if (pickerSessionIdRef.current) stageConfig(next);
+    else setConfig(next);
   };
 
   const removeField = (i: number) => {
     if (!config) return;
-    setConfig({
+    const next = {
       ...config,
       field_paths: config.field_paths.filter((_, idx) => idx !== i),
-    });
+    };
+    if (pickerSessionIdRef.current) stageConfig(next);
+    else setConfig(next);
   };
 
   const addCandidate = (c: CandidateField) => {
     if (!config) return;
-    setConfig({
+    const next = {
       ...config,
       field_paths: [
         ...config.field_paths,
@@ -433,7 +459,9 @@ export function ListPatternTab() {
           transform: c.transform,
         },
       ],
-    });
+    };
+    if (pickerSessionIdRef.current) stageConfig(next);
+    else setConfig(next);
   };
 
   const fields = config?.field_paths ?? [];
@@ -447,6 +475,9 @@ export function ListPatternTab() {
     if (!candidates) return [];
     return candidates.filter((c) => !usedSelectors.has(`${c.rel_selector}|${c.attr ?? 'text'}`));
   }, [candidates, usedSelectors]);
+  // A pending scope can differ from the executed preview. Keep the previous
+  // preview intact for Cancel, but never present it as output for that draft.
+  const displayRows = picking ? null : rows;
 
   // ── Copy options for the pattern config + samples + rows ────────────────
   const patternCopyOptions = useMemo(() => {
@@ -464,7 +495,7 @@ export function ListPatternTab() {
         ai: true,
         getContent: async () => {
           // Capture fresh samples if we don't have them yet.
-          let samples = sampleHtml;
+          let samples = picking ? [] : sampleHtml;
           if (samples.length === 0) samples = await captureSampleHtml();
 
           const sections: string[] = [];
@@ -482,11 +513,11 @@ export function ListPatternTab() {
               sections.push('```');
             }
           }
-          if (rows && rows.length > 0) {
+          if (displayRows && displayRows.length > 0) {
             sections.push('');
-            sections.push(`## Extracted rows (showing first 5 of ${rows.length})`);
+            sections.push(`## Extracted rows (showing first 5 of ${displayRows.length})`);
             sections.push('```json');
-            sections.push(stringifyJson(rows.slice(0, 5)));
+            sections.push(stringifyJson(displayRows.slice(0, 5)));
             sections.push('```');
           }
           if (candidates && candidates.length > 0) {
@@ -501,7 +532,7 @@ export function ListPatternTab() {
               'a List-Pattern extraction config from the matrx-extend Chrome extension, along with the sample HTML, the rows we extracted, and any candidate fields the inspector found that the user has not yet selected',
             source: { url: tab.url, title: tab.title },
             meta: {
-              row_count: rows?.length ?? 0,
+              row_count: displayRows?.length ?? 0,
               field_count: config.field_paths.length,
               candidate_count: candidates?.length ?? 0,
             },
@@ -516,7 +547,8 @@ export function ListPatternTab() {
   }, [
     config,
     sampleHtml,
-    rows,
+    displayRows,
+    picking,
     candidates,
     unusedCandidates,
     tab.url,
@@ -742,20 +774,20 @@ export function ListPatternTab() {
           </div>
         )}
 
-        {rows && (
+        {displayRows && (
           <ResultPreview
-            rows={rows}
+            rows={displayRows}
             source={{ url: tab.url, title: tab.title }}
             description="extracted rows from a List-Pattern config in matrx-extend"
           />
         )}
 
-        {rows && rows.length > 0 && previewConfig != null && (
+        {displayRows && displayRows.length > 0 && previewConfig != null && (
           <div className="flex justify-end">
             <SaveAsPattern
               kind="list_pattern"
               config={previewConfig}
-              rows={rows}
+              rows={displayRows}
               source={source}
               defaultName={`List on ${(() => {
                 try {
