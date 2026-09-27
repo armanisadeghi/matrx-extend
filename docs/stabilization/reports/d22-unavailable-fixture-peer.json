@@ -40,5 +40,32 @@
     }
   },
   "source_admission_recommendation": "Recommend one root-admitted guarded native run of the reviewed repair. Source review is not runtime acceptance; require the actual positive Source/Open, comparison-workspace and delayed-response predicates before any pass.",
-  "runtime_boundary": "Run 007's HTTP 500 is an unavailable public fixture observation, not a product defect. It does not establish fixture-probe acceptance or positive Source recognition."
+  "runtime_boundary": "Run 007's HTTP 500 is an unavailable public fixture observation, not a product defect. It does not establish fixture-probe acceptance or positive Source recognition.",
+  "followup_picker_review": {
+    "reviewed_at": "2026-09-27T04:45:21Z",
+    "reviewed_source_commit": "9d25e013",
+    "scope": "Bounded source-only review of unified organization-picker preparation and safe exception reporting; no browser, build, or tests were run.",
+    "verdicts": {
+      "A_picker_preparation_and_reuse": {
+        "verdict": "PARTIALLY_ACCEPTED_WITH_READINESS_GAP",
+        "positive_evidence": [
+          "The same openOrganizationPicker helper is reused for original-workspace discovery, comparison selection, and final restore; it uses the actual Settings tab, verifies/collapses the real Account section, opens Organization, waits for one real Acting as control, and uses the trusted click helper.",
+          "The existing outer finally still releases the read hold, stops lookup observation, restores the original selected organization, and verifies its stored ID. No Source Save, Capture, or checkpoint path was added or accessed."
+        ],
+        "finding": "After the trusted Acting as click, the helper labels the next step approved_option_ready but calls organizationState exactly once. It does not wait for the option list or approved option to become observable. This can classify a still-opening picker as missing/ambiguous; the readiness label is stronger than the source predicate.",
+        "required_repair": "Before source admission, use a bounded wait for the actual visible picker/options state and the expected approved option, preserving the existing uniqueness and selection checks. Do not broaden labels or acceptance predicates."
+      },
+      "B_safe_exception_diagnostics_and_acceptance_boundary": {
+        "verdict": "ACCEPTED_IN_SOURCE",
+        "evidence": [
+          "Persisted exceptions contain only a fixed error-class allowlist, safe category, and pointer count/boolean fields; raw messages, URLs, organization names, IDs, and DOM text are not copied.",
+          "Unknown exceptions retain an unclassified safe category and the run remains unverified. The positive Source/Open predicates are unchanged; discovery availability cannot pass them.",
+          "The historical run 008 exception remains unknown; this source change does not rewrite that receipt or infer its cause."
+        ],
+        "acceptance_logic_changed": false,
+        "runtime": "UNVERIFIED"
+      }
+    },
+    "source_admission_recommendation": "Hold native admission for the bounded visible-option readiness repair and a separate source review. No runtime verdict is made here."
+  }
 }
