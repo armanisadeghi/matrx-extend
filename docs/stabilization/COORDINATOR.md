@@ -1,3 +1,5 @@
+Current sync note: after the successful .90 native retest, origin/main advanced to .91 (6886adde) with version/catalog timestamps and generated stream-event types. Merged without conflict in26231182 and pushed. The successful retest remains specifically .90; .91 has not been built or browser-tested here. Inspect incoming generated contracts before the next fresh build; do not reinterpret old evidence as .91.
+
 ## Current checkpoint — .90 native Debug retest
 
 Verified progress this turn: merged concurrent .90 release, repaired EXT-D-0027 clipboard observation (6b8e7d28/91b610da), built fresh .90 under guard, and independently verified the original failure resolved in native Chrome. D27 is closed; this is a test-infrastructure fix, not a product Copy fix. T16 warm Copy/download passed, full T16 and T18 remain incomplete. Receipt `test-results/source-dev-build-090-takeover-20260927.json`, tree `23d12768a3a27ca3cd44c339bd833c68f5319ac44e5825d0b8329e4c1127edf3`; run and peer `debug-export-dev090-001`. Previous run003 correctly refused .89/package.90 before browser launch. Current latest reviewed code CI91b610da and evidence ca2508e9 both passed.
