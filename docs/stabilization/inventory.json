@@ -16570,11 +16570,15 @@
           "steps": [
             "Capture a request and exercise the selected full URL/default name path with a nonsecret canary in a credential-bearing query parameter; save or observe the safe refusal/remedy.",
             "Reopen the saved recipe and verify neither config.url_filter nor its name retains the canary or raw sensitive query value.",
-            "Use any offered sanitized or explicitly edited matcher and verify the user can still save a safe recipe without silently claiming the credential-dependent request will replay."
+            "Use any offered sanitized or explicitly edited matcher and verify the user can still save a safe recipe without silently claiming the credential-dependent request will replay.",
+            "Compare a recognized credential key with an unfamiliar key; mark the unfamiliar key Treat as credential before save, and confirm the displayed and persisted value is masked while ordinary date/page query values remain exact.",
+            "Rerun after changing only a harmless synthetic credential value and confirm the intended date/page still matches. In a single capture window, present two otherwise identical requests with different synthetic credential values and confirm the runner reports ambiguity rather than choosing arbitrary rows."
           ],
           "expected": [
             "The product redacts credential-bearing values or refuses persistence with a clear safe remedy before writing; neither saved config nor name contains them.",
-            "No actual credentials are used, persisted, or logged, and safe noncredential URL matching remains available."
+            "No actual credentials are used, persisted, or logged, and safe noncredential URL matching remains available.",
+            "Unknown query keys require an explicit per-key credential choice and honest guidance; a finite key classifier is not presented as universal detection.",
+            "Credential rotation across runs does not require the old value, but two distinct credential-bearing identities inside one capture window remain ambiguous; different ordinary date/page values do not silently match."
           ],
           "dimensions": [
             "warm",
