@@ -23,7 +23,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 export function DataView() {
   const { user, status: authStatus, signIn } = useAuth();
   const tab = useActiveTab();
-  const [patternSnapshot, setPatternSnapshot] = useState<{ host: string; patterns: ExtractionPattern[] } | null>(null);
+  const [patternSnapshot, setPatternSnapshot] = useState<{
+    host: string;
+    patterns: ExtractionPattern[];
+  } | null>(null);
   const [patternsLoading, setPatternsLoading] = useState(false);
   const [patternLoadError, setPatternLoadError] = useState<string | null>(null);
   const [patternLoadAttempt, setPatternLoadAttempt] = useState(0);
@@ -43,7 +46,10 @@ export function DataView() {
   const runSequence = useRef(0);
   currentPage.current = pageKey;
   const [runSource, setRunSource] = useState<{
-    pageKey: string; url: string | null; title: string | null; patternName: string;
+    pageKey: string;
+    url: string | null;
+    title: string | null;
+    patternName: string;
   } | null>(null);
   const [runError, setRunError] = useState<string | null>(null);
   const belongsToPage = runSource?.pageKey === pageKey;
@@ -61,7 +67,9 @@ export function DataView() {
     setRunError(null);
     setRunNote(null);
     setRunInfo(null);
-    return () => { runSequence.current += 1; };
+    return () => {
+      runSequence.current += 1;
+    };
   }, [pageKey]);
 
   const host = (() => {
@@ -218,7 +226,9 @@ export function DataView() {
     setRunInfo(null);
     try {
       const data = await runSavedPattern(pattern, tab.id, {
-        onProgress: (note) => { if (isCurrent()) setRunNote(note); },
+        onProgress: (note) => {
+          if (isCurrent()) setRunNote(note);
+        },
         initiation: 'user',
       });
       if (!isCurrent()) return;
@@ -231,8 +241,11 @@ export function DataView() {
       if (err instanceof NetworkNoMatchError) {
         setRunError(err.message);
       } else {
-        setRunError(`"${pattern.name}" failed: ${err instanceof Error ? err.message : String(err)}`);
-        if (urlMatchesPattern(source.url ?? '', pattern)) void bumpPatternRun(pattern.id, 'broken', 0);
+        setRunError(
+          `"${pattern.name}" failed: ${err instanceof Error ? err.message : String(err)}`,
+        );
+        if (urlMatchesPattern(source.url ?? '', pattern))
+          void bumpPatternRun(pattern.id, 'broken', 0);
       }
     } finally {
       if (isCurrent()) {
@@ -343,9 +356,9 @@ export function DataView() {
                     ? 'Auto-extracted on page load — no click needed.'
                     : autoForMatched?.status === 'no_match'
                       ? (autoForMatched.note ?? 'No matching data was found on this page.')
-                    : autoForMatched?.status === 'error'
-                      ? (autoForMatched.error ?? 'Auto-extract failed')
-                      : 'Matches this URL'}
+                      : autoForMatched?.status === 'error'
+                        ? (autoForMatched.error ?? 'Auto-extract failed')
+                        : 'Matches this URL'}
                 </div>
               </div>
               <Button

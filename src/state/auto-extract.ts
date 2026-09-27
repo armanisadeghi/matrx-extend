@@ -64,4 +64,5 @@ export const useAutoExtractStore = create<AutoExtractState>((set, get) => ({
   },
 }));
 
-export const autoExtractKey = (patternId: string, tabId: number, url: string): string => `${tabId}|${patternId}|${url}`;
+export const autoExtractKey = (patternId: string, tabId: number, url: string): string =>
+  `${tabId}|${patternId}|${url}`;
