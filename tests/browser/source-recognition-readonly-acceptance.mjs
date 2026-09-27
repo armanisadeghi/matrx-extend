@@ -232,6 +232,31 @@ async function scrapeState(panel) {
   );
 }
 
+// Chromium's error identifier is safe only at its documented error-text position.
+// Never search the whole message: a fixture URL could contain ERR_* text.
+function chromiumErrorCode(message) {
+  if (typeof message !== 'string') return null;
+  return (
+    /^net::(ERR_[A-Z0-9_]{1,64})$/.exec(message)?.[1] ??
+    /^page\.goto: net::(ERR_[A-Z0-9_]{1,64})(?: at |\r?\n|$)/.exec(message)?.[1] ??
+    null
+  );
+}
+function navigationErrorShape(error) {
+  const message = typeof error?.message === 'string' ? error.message : '';
+  return {
+    errorClass: ['Error', 'TimeoutError', 'TypeError', 'TargetClosedError'].includes(error?.name)
+      ? error.name
+      : 'other',
+    chromiumCode: chromiumErrorCode(message),
+    protocolError: /^page\.goto: Protocol error/.test(message),
+    targetClosed: /^page\.goto: Target page, context or browser has been closed/.test(message),
+    interruptedNavigation:
+      /^page\.goto: Navigation to .* is interrupted by another navigation/.test(message),
+    hasGotoPrefix: message.startsWith('page.goto:'),
+  };
+}
+
 function safeFailureCategory(error) {
   const pointerCodes = [
     'pointer_initial_evaluation_failed',
@@ -244,17 +269,12 @@ function safeFailureCategory(error) {
   ];
   if (pointerCodes.includes(error?.driverFailure?.code)) return error.driverFailure.code;
   const message = typeof error?.message === 'string' ? error.message : '';
-  for (const code of [
-    'ERR_ABORTED',
-    'ERR_BLOCKED_BY_CLIENT',
-    'ERR_NAME_NOT_RESOLVED',
-    'ERR_CONNECTION_REFUSED',
-    'ERR_CONNECTION_RESET',
-    'ERR_TIMED_OUT',
-    'ERR_CERT_AUTHORITY_INVALID',
-  ]) {
-    if (message.includes(`net::${code}`)) return code;
-  }
+  const chromiumCode = chromiumErrorCode(message);
+  if (chromiumCode) return chromiumCode;
+  const shape = navigationErrorShape(error);
+  if (shape.protocolError) return 'navigation_protocol_error';
+  if (shape.targetClosed) return 'navigation_target_closed';
+  if (shape.interruptedNavigation) return 'navigation_interrupted';
   if (error?.name === 'TimeoutError') return 'browser_timeout';
   if (message.startsWith('scoped_read_completed_not_observed:')) return 'lookup_wait_expired';
   if (message.startsWith('recognition_ui_matches_response_not_observed:'))
@@ -381,18 +401,25 @@ async function installPublicReadGuard(page) {
   await session.send('Emulation.setScriptExecutionDisabled', { value: true });
   report.observations.fixturePageMode = 'scripts_disabled_service_workers_bypassed';
   const blocked = {};
+  const guard = { intercepted: 0, continued: 0, blocked: 0 };
+  report.observations.publicPageGuardCounts = guard;
   report.observations.publicPageBlockedRequests = blocked;
   await page.route('**/*', async (route) => {
     const request = route.request();
+    guard.intercepted += 1;
     const category = !['GET', 'HEAD'].includes(request.method())
       ? 'non_read_method'
       : await publicReadCategory(request.url(), request.isNavigationRequest());
-    if (category === 'eligible') await route.continue();
-    else {
+    if (category === 'eligible') {
+      await route.continue();
+      guard.continued += 1;
+    } else {
+      guard.blocked += 1;
       blocked[category] = (blocked[category] ?? 0) + 1;
       await route.abort('blockedbyclient');
     }
   });
+  return session;
 }
 
 function remainingDiscovery(deadline) {
@@ -908,7 +935,7 @@ try {
         } = await discoverAcrossWorkspaces(panel, reads, approvedName, originalApproved);
         report.observations.existingFixtureFound = true;
         const identity = fixture.url;
-        await installPublicReadGuard(page);
+        const fixtureSession = await installPublicReadGuard(page);
         const positive = {
           navigationStarted: false,
           navigationReturned: false,
@@ -921,6 +948,51 @@ try {
         };
         report.observations.positiveBoundaries = positive;
         const positiveStart = Date.now();
+        const documents = new Set();
+        const documentNetwork = {
+          requests: 0,
+          fixtureRequests: 0,
+          responses: 0,
+          httpStatus: null,
+          loadingFailures: 0,
+          cancelled: 0,
+          corsFailures: 0,
+          blocked: 0,
+          chromiumCodes: {},
+          otherFailureText: 0,
+        };
+        positive.documentNetwork = documentNetwork;
+        const documentRequest = ({ requestId, request, type }) => {
+          if (type !== 'Document') return;
+          documents.add(requestId);
+          documentNetwork.requests += 1;
+          if (request.url === identity) documentNetwork.fixtureRequests += 1;
+        };
+        const documentResponse = ({ requestId, response }) => {
+          if (!documents.has(requestId)) return;
+          documentNetwork.responses += 1;
+          documentNetwork.httpStatus = response.status;
+        };
+        const documentFailure = ({
+          requestId,
+          errorText,
+          canceled,
+          blockedReason,
+          corsErrorStatus,
+        }) => {
+          if (!documents.has(requestId)) return;
+          documentNetwork.loadingFailures += 1;
+          if (canceled) documentNetwork.cancelled += 1;
+          if (blockedReason) documentNetwork.blocked += 1;
+          if (corsErrorStatus) documentNetwork.corsFailures += 1;
+          const code = chromiumErrorCode(errorText);
+          if (code)
+            documentNetwork.chromiumCodes[code] = (documentNetwork.chromiumCodes[code] ?? 0) + 1;
+          else documentNetwork.otherFailureText += 1;
+        };
+        fixtureSession.on('Network.requestWillBeSent', documentRequest);
+        fixtureSession.on('Network.responseReceived', documentResponse);
+        fixtureSession.on('Network.loadingFailed', documentFailure);
         const requestFailed = (request) => {
           if (!request.isNavigationRequest()) return;
           const category = safeFailureCategory({ message: request.failure()?.errorText ?? '' });
@@ -948,11 +1020,16 @@ try {
           report.observations.positiveRecognitionAndOpen = 'pass';
         } catch (error) {
           positive.failureCategory = safeFailureCategory(error);
+          positive.errorShape = navigationErrorShape(error);
+          positive.pageClosed = page.isClosed();
           positive.failedBoundary = stage;
           report.failureCode ??= positive.failureCategory;
           throw error;
         } finally {
           page.off('requestfailed', requestFailed);
+          fixtureSession.off('Network.requestWillBeSent', documentRequest);
+          fixtureSession.off('Network.responseReceived', documentResponse);
+          fixtureSession.off('Network.loadingFailed', documentFailure);
           positive.elapsedMs = Date.now() - positiveStart;
           positive.urlMatchesFixture = page.url() === identity;
           const matching = reads.records

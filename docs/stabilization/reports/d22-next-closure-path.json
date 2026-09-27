@@ -144,6 +144,27 @@
       "choice_counts": "accessibleUniqueChoices initializes to null and choicesEnumeratedFromPicker to false. Only actual picker enumeration supplies the count and true flag; no initialized numeric value is represented as an observation. Historical run003 remains preserved unchanged.",
       "preserved_behavior": "No acceptance predicate weakened; no fixture creation, writes, retries, checkpoint access or new runtime launch. Diagnostic repair only.",
       "choice_count_peer_repair": "0760274e: replaced initial numeric1 with null; no other runner behavior changed."
+    },
+    "navigation_diagnostic_escalation": {
+      "status": "Diagnostic source repair only; native cause and acceptance still unverified.",
+      "confirmed_observability_defect": "safeFailureCategory recognized only seven hardcoded Chromium net error identifiers; all other requestfailure/goto messages collapsed to unclassified_exception. Browser harness keeps Chrome stderr only in process memory and writes no navigation trace. Existing raw result/log have only sanitized category, so no private error file is available to recover this failure.",
+      "repair": "Extract bounded ERR_* identifier only from exact Chromium errorText or anchored Playwright page.goto error prefix, never arbitrary substrings or URLs. Preserve safe exception-shape booleans/class, closed-page state, document request/response/failure counts and status, cancellation/CORS/blocking counts. Capture independent CDP Network.loadingFailed code plus Playwright requestfailed classification. Count page-route intercepted/continued/blocked requests. No exception text, URLs, hosts, IDs or payloads serialized.",
+      "unchanged": "No navigation retry, timeout extension, TLS bypass, fixture substitution, product edit, acceptance weakening, Save/capture/checkpoint action, or browser run.",
+      "falsifiable_hypotheses": [
+        {
+          "hypothesis": "Chromium network error outside old seven-code list, such as TLS/proxy/HTTP failure.",
+          "prediction": "Anchored requestfailed and CDP loadingFailed yield same concrete ERR_* code before navigation returns. Only that code can justify a targeted navigation/environment remedy."
+        },
+        {
+          "hypothesis": "Playwright/CDP target interruption or protocol failure.",
+          "prediction": "Safe exception flags show protocol/target-closed/interrupted navigation; document failure may be cancelled or absent. Do not change product recognition."
+        },
+        {
+          "hypothesis": "Harness route prevents request completion.",
+          "prediction": "Route blocked count or handler-boundary progress disagrees with CDP document flow. In run006 blocked categories were empty, so deliberate category rejection was not observed."
+        }
+      ],
+      "verification": "Node syntax and targeted Biome passed. No runtime/test executed; root must obtain narrow peer and admit any diagnostic run. No positive/multi-workspace/late-lookup claim."
     }
   },
   "readonly_001_preserved": {
@@ -302,5 +323,121 @@
     "classification": "Actual admin, one real scoped HTTP200 list row and one eligible existing Source. Failed at composite positive_workspace_recognition; no positive recognition/Open or multi-workspace proof.",
     "timing": "Guard admitted02:48:58.712Z and child exited02:49:11.208Z:12.496seconds for entire run including login/cleanup. This cannot be a full configured60000ms navigation or30000ms lookup/UI wait expiry. A fast navigation exception, earlier UI/driver failure, or another immediate exception is possible; raw error was discarded, so exact cause is unknown. No guessed product bug.",
     "count_correction": "accessibleUniqueChoices=1 was initialized from the original workspace before fixture success, not an enumeration of all picker options. Run003 proves one selected workspace only; it does not prove the account has exactly one accessible workspace."
+  },
+  "readonly_006_preserved": {
+    "sha256": "9a5d43cf5fa37fe6097ec121a12770207e38e25b32fa0f864e26da0ec9b51582",
+    "result": {
+      "schema_version": 1,
+      "defect_id": "EXT-D-0022",
+      "status": "unverified",
+      "scope": "Existing Source recognition, workspace switching, authentic delayed lookup; no Source writes",
+      "observations": {
+        "lateInflightSave": "unverified",
+        "realAdminUi": true,
+        "workspaceDiscovery": {
+          "accessibleUniqueChoices": null,
+          "choicesEnumeratedFromPicker": false,
+          "attemptedWorkspaces": 1,
+          "selectedOriginal": true,
+          "workspaces": [
+            {
+              "ordinal": 1,
+              "original": true,
+              "selectedByUi": true,
+              "scopedLookupOrganizationMatched": true,
+              "discovery": {
+                "pages": 1,
+                "rows": 1,
+                "totalReturnedRows": 1,
+                "urlPresent": 1,
+                "httpUrls": 1,
+                "publicEligible": 1,
+                "categories": {
+                  "eligible": 1
+                },
+                "listPages": [
+                  {
+                    "status": 200,
+                    "rowCount": 1,
+                    "urlAliasSelected": true,
+                    "cursorPresent": false,
+                    "expectedCursorMatched": true,
+                    "limit": 40
+                  }
+                ],
+                "pagination": [],
+                "exhausted": false
+              }
+            }
+          ],
+          "scope": "bounded_accessible_workspace_search"
+        },
+        "fixtureDiscovery": {
+          "pages": 1,
+          "rows": 1,
+          "totalReturnedRows": 1,
+          "urlPresent": 1,
+          "httpUrls": 1,
+          "publicEligible": 1,
+          "categories": {
+            "eligible": 1
+          },
+          "listPages": [
+            {
+              "status": 200,
+              "rowCount": 1,
+              "urlAliasSelected": true,
+              "cursorPresent": false,
+              "expectedCursorMatched": true,
+              "limit": 40
+            }
+          ],
+          "pagination": [],
+          "exhausted": false
+        },
+        "existingFixtureFound": true,
+        "fixturePageMode": "scripts_disabled_service_workers_bypassed",
+        "publicPageBlockedRequests": {},
+        "positiveBoundaries": {
+          "navigationStarted": true,
+          "navigationReturned": false,
+          "navigationStatus": null,
+          "urlMatchesFixture": false,
+          "scrapeClickReturned": false,
+          "lookupReturned": false,
+          "elapsedMs": 253,
+          "requestFailures": {
+            "unclassified_exception": 1
+          },
+          "failureCategory": "unclassified_exception",
+          "failedBoundary": "positive_fixture_navigation",
+          "scopedReads": {
+            "observed": 0,
+            "completed": 0,
+            "http200": 0,
+            "failed": 0,
+            "returnedRows": 0
+          },
+          "scrapeUi": {
+            "linked": false
+          },
+          "scrapeTab": {
+            "count": 1,
+            "active": false
+          }
+        },
+        "workspaceCleanup": "pass"
+      },
+      "build": {
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.85",
+        "treeSha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff"
+      },
+      "failureCode": "unclassified_exception",
+      "failureStage": "positive_fixture_navigation"
+    },
+    "log": "/tmp/matrx-d22-recognition-readonly-006.log",
+    "classification": "Navigation transport failure before Source recognition. Real admin, actual scoped Source list200, genuine eligible row. goto did not return; navigation requestfailed count1;253ms; no Source point reads; Scrape tab exists but inactive; cleanup passed. Original exception and failure errorText were not retained, so underlying network/browser cause cannot be reconstructed. Resource unsafe sample followed report emission and does not establish the cause of earlier navigation failure."
   }
 }
