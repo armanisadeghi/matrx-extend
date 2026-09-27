@@ -1,6 +1,6 @@
 # Stabilization checklist (derived)
 
-> Updated after D22 run 011 and guarded Debug export run 002. The frozen lockfile install, compile, and development build passed on source HEAD `36fa88fb`; the `.85` local artifact tree is `f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff`. Incoming lockfile changes landed afterward and have not been installed or rebuilt. Focused D22 regressions passed 62 tests with 1 explicit skip. Native acceptance remains unverified. `inventory.json` and defect records remain authoritative.
+> Updated after D22 run 011 and guarded Debug export run 002. The frozen lockfile install, compile, and development build passed on source HEAD `36fa88fb`; the `.85` local artifact tree is `f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff`. Incoming lockfile changes and release commit `4767ed43` (source 0.2.86) landed afterward and have not been installed or rebuilt. Focused D22 regressions passed 62 tests with 1 explicit skip. Native acceptance remains unverified. `inventory.json` and defect records remain authoritative.
 
 ## Coverage
 
