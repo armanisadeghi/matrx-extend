@@ -12717,11 +12717,11 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "screenshot-fullpage-dev095-002",
-              "evidence": "docs/stabilization/runs/screenshot-fullpage-dev095-002.json",
+              "run_id": "screenshot-fullpage-dev095-003",
+              "evidence": "docs/stabilization/runs/screenshot-fullpage-dev095-003.json",
               "verified_substeps": [],
               "remaining_criteria": [
-                "Native capture-stage failure full_page_stage_failed requires diagnosis; owned-row cleanup verified. No full-page assertion passed.",
+                "D36 source repair passed review; native003 stopped at ambiguous organization selector before capture. Shared setup diagnosis required.",
                 "Full-page warm, unsupported page, persistence failure, tile cap, reload and member mode remain unverified."
               ]
             }
@@ -13017,7 +13017,8 @@
             "screenshot-controls-dev095-003",
             "screenshot-fullpage-dev095-001",
             "screenshot-fullpage-dev095-002",
-            "gallery-failure-dev095-002"
+            "gallery-failure-dev095-002",
+            "screenshot-fullpage-dev095-003"
           ],
           "retest_status": "partial"
         }

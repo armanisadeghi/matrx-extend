@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "source_verdict": "accept",
+  "native_verdict": "unverified_early_harness_failure",
+  "run_id": "screenshot-fullpage-dev095-003",
+  "guard": {
+    "admission": {
+      "code": "RESOURCE_ADMITTED",
+      "at": "2026-09-27T12:04:48.246Z",
+      "reasons": []
+    },
+    "terminal": {
+      "code": "RESOURCE_JOB_EXIT",
+      "at": "2026-09-27T12:04:56.232Z",
+      "childExitCode": 1,
+      "childSignal": null
+    }
+  },
+  "build_version": "0.2.95",
+  "failure": {
+    "stage": "select_approved_organization",
+    "code": "full_page_stage_failed",
+    "diagnostic": {
+      "timeout": false,
+      "assertion": false,
+      "pointerCode": "pointer_target_not_unique"
+    },
+    "createdRowMayNeedUiCleanup": false
+  },
+  "capture_reached": false,
+  "cleanup_required": false,
+  "evidence": {
+    "private_log": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-fullpage-dev095-003.private.log",
+    "private_result": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-fullpage-dev095-003.private-result.json"
+  },
+  "source_commits": {
+    "40de414b": "40de414b0b6e3ecef1a1ea3263a41fbca4995f43",
+    "c8640d89": "c8640d8909e71efc45027aad9ff1d62714bb42a0"
+  },
+  "observed_checkout_head": "fd700b6bc29c7b670a89f7b966dfaec20b877d23",
+  "private_artifacts": {
+    "log": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-fullpage-dev095-003.private.log",
+      "mode": "0600",
+      "bytes": 712,
+      "sha256": "7c87f39d540f6d2e87f7d694cc075706b62a8675c75b964ea852c5975ae466a2"
+    },
+    "result": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-fullpage-dev095-003.private-result.json",
+      "mode": "0600",
+      "bytes": 729,
+      "sha256": "51fefb4541950dcaba080955ba56eb9b4c7a2b3e75fa3df9f75661cd6d789b74"
+    }
+  }
+}
