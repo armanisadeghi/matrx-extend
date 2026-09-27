@@ -12,13 +12,14 @@ import { create } from 'zustand';
  * on already-extracted state.
  */
 
-export type AutoExtractStatus = 'pending' | 'running' | 'ok' | 'error';
+export type AutoExtractStatus = 'pending' | 'running' | 'ok' | 'no_match' | 'error';
 
 export interface AutoExtractRecord {
   pattern: ExtractionPattern;
   url: string;
   rows: ExtractedRow[];
   status: AutoExtractStatus;
+  note?: string;
   error?: string;
   /** Wall-clock when the run completed (ms epoch). */
   lastRunAt: number;

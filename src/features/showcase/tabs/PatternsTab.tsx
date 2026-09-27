@@ -1,6 +1,7 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { urlMatchesPattern } from '@/lib/data-pattern/matcher';
 import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
+import { classifySavedRun } from '@/lib/data-pattern/saved-run-outcome';
 import { confirmDestructive } from '@/lib/destructive/confirm';
 import {
   type ExtractionPattern,
@@ -43,7 +44,10 @@ const KIND_LABELS: Record<string, string> = {
 
 export function PatternsTab({ active = true }: { active?: boolean }) {
   const tab = useActiveTab();
-  const [patterns, setPatterns] = useState<ExtractionPattern[] | null>(null);
+  const [patternSnapshot, setPatternSnapshot] = useState<{
+    pageKey: string;
+    patterns: ExtractionPattern[];
+  } | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [runError, setRunError] = useState<string | null>(null);
@@ -52,7 +56,12 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
   const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
   const [activeName, setActiveName] = useState<string | null>(null);
   const [runInfo, setRunInfo] = useState<string | null>(null);
+  const [resultPageKey, setResultPageKey] = useState<string | null>(null);
   const pageKey = `${tab.id ?? 'none'}|${tab.url ?? ''}`;
+  const patterns = patternSnapshot?.pageKey === pageKey ? patternSnapshot.patterns : null;
+  const visibleRows = resultPageKey === pageKey ? rows : null;
+  const visibleRunInfo = resultPageKey === pageKey ? runInfo : null;
+  const visibleRunError = resultPageKey === pageKey ? runError : null;
   const currentPageKey = useRef(pageKey);
   const previousPageKey = useRef(pageKey);
   const loadSeq = useRef(0);
@@ -74,7 +83,9 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
     setLoadError(null);
     try {
       const found = await fetchPatternsForDomain(host);
-      if (seq === loadSeq.current && currentPageKey.current === pageKey) setPatterns(found);
+      if (seq === loadSeq.current && currentPageKey.current === pageKey) {
+        setPatternSnapshot({ pageKey, patterns: found });
+      }
     } catch (err) {
       if (seq === loadSeq.current && currentPageKey.current === pageKey) {
         setLoadError(err instanceof Error ? err.message : String(err));
@@ -89,7 +100,7 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
     previousPageKey.current = pageKey;
     loadSeq.current += 1;
     runSeq.current += 1;
-    setPatterns(null);
+    setPatternSnapshot(null);
     setLoading(false);
     setLoadError(null);
     setRunningId(null);
@@ -98,6 +109,7 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
     setRunInfo(null);
     setRows(null);
     setActiveName(null);
+    setResultPageKey(null);
   }, [pageKey]);
 
   useEffect(() => () => {
@@ -118,6 +130,7 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
     const isCurrent = () => seq === runSeq.current && currentPageKey.current === runPageKey;
     const onSavedRoute = urlMatchesPattern(tab.url ?? '', p);
     setRunningId(p.id);
+    setResultPageKey(runPageKey);
     setActiveName(p.name);
     setRows(null);
     setRunError(null);
@@ -131,11 +144,9 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
       });
       if (!isCurrent()) return;
       setRows(data);
-      if (data.length === 0) {
-        setRunInfo('No matching data was found on this page. Check the saved route and selectors, then run again.');
-      } else if (!onSavedRoute) {
-        setRunInfo('This run was outside the saved route. Review these rows before treating them as the intended data.');
-      } else {
+      const outcome = classifySavedRun(p, tab.url ?? '', data);
+      setRunInfo(outcome.message);
+      if (outcome.kind === 'matched') {
         void bumpPatternRun(p.id, 'ok', data.length);
       }
     } catch (err) {
@@ -146,7 +157,7 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
         setRunError(err.message);
       } else {
         setRunError(`"${p.name}" failed: ${err instanceof Error ? err.message : String(err)}`);
-        void bumpPatternRun(p.id, 'broken', 0);
+        if (onSavedRoute) void bumpPatternRun(p.id, 'broken', 0);
       }
     } finally {
       if (isCurrent()) {
@@ -198,15 +209,15 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
           </div>
         )}
 
-        {runError && (
+        {visibleRunError && (
           <div className="rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
-            {runError}
+            {visibleRunError}
           </div>
         )}
 
-        {runInfo && (
+        {visibleRunInfo && (
           <div className="rounded-xl bg-secondary px-3 py-2 text-xs text-muted-foreground">
-            {runInfo}
+            {visibleRunInfo}
           </div>
         )}
 
@@ -233,12 +244,12 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
           </div>
         )}
 
-        {rows && rows.length > 0 && (
+        {visibleRows && visibleRows.length > 0 && (
           <div className="space-y-1">
             <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
               Last run: {activeName ?? '—'}
             </div>
-            <ResultPreview rows={rows} />
+            <ResultPreview rows={visibleRows} />
           </div>
         )}
       </div>

@@ -5,6 +5,7 @@ import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { rowsToTsv, stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { findFirstMatch } from '@/lib/data-pattern/matcher';
 import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
+import { classifySavedRun } from '@/lib/data-pattern/saved-run-outcome';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import {
@@ -35,6 +36,7 @@ export function DataView() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [runNote, setRunNote] = useState<string | null>(null);
+  const [runInfo, setRunInfo] = useState<string | null>(null);
 
   // Navigating the tab orphans any extracted rows on screen — they belonged
   // to the previous page and rendered with zero indication of that.
@@ -42,6 +44,7 @@ export function DataView() {
   useEffect(() => {
     setRows(null);
     setRunNote(null);
+    setRunInfo(null);
   }, [tab.url]);
 
   const host = (() => {
@@ -190,6 +193,7 @@ export function DataView() {
     // error — clear up front so what's on screen always belongs to this run.
     setRows(null);
     setRunNote(null);
+    setRunInfo(null);
     try {
       // 'user': handleRun is the Run control on a pattern row.
       const data = await runSavedPattern(pattern, tab.id, {
@@ -197,7 +201,9 @@ export function DataView() {
         initiation: 'user',
       });
       setRows(data);
-      void bumpPatternRun(pattern.id, 'ok', data.length);
+      const outcome = classifySavedRun(pattern, tab.url ?? '', data);
+      setRunInfo(outcome.message);
+      if (outcome.kind === 'matched') void bumpPatternRun(pattern.id, 'ok', data.length);
     } catch (err) {
       if (err instanceof NetworkNoMatchError) {
         setError(err.message);
@@ -263,6 +269,12 @@ export function DataView() {
             </div>
           )}
 
+          {runInfo && (
+            <div className="rounded-xl bg-secondary/40 px-3 py-2 text-xs text-muted-foreground">
+              {runInfo}
+            </div>
+          )}
+
           {running && runNote && (
             <div className="flex items-center gap-1.5 rounded-xl bg-secondary/40 px-3 py-2 text-xs text-muted-foreground">
               <Loader2 className="size-3 animate-spin" />
@@ -289,6 +301,11 @@ export function DataView() {
                       auto · {autoForMatched.rows.length} rows
                     </span>
                   )}
+                  {autoForMatched?.status === 'no_match' && (
+                    <span className="rounded-full bg-secondary px-1.5 py-px text-[9px] font-medium uppercase tracking-wider text-muted-foreground">
+                      auto · no match
+                    </span>
+                  )}
                   {autoForMatched?.status === 'error' && (
                     <span className="flex items-center gap-1 rounded-full bg-red-500/15 px-1.5 py-px text-[9px] font-medium uppercase tracking-wider text-red-700 dark:text-red-400">
                       <XCircle className="size-2.5" />
@@ -299,6 +316,8 @@ export function DataView() {
                 <div className="text-emerald-700/70 dark:text-emerald-300/70">
                   {autoForMatched?.status === 'ok'
                     ? 'Auto-extracted on page load — no click needed.'
+                    : autoForMatched?.status === 'no_match'
+                      ? (autoForMatched.note ?? 'No matching data was found on this page.')
                     : autoForMatched?.status === 'error'
                       ? (autoForMatched.error ?? 'Auto-extract failed')
                       : 'Matches this URL'}
@@ -423,7 +442,7 @@ export function DataView() {
             </Section>
           )}
 
-          {rows && (
+          {rows && rows.length > 0 && (
             <Section
               label={`Extracted rows (${rows.length})`}
               rightSlot={

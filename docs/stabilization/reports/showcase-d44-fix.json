@@ -1,7 +1,7 @@
 {
   "id": "EXT-D-0044-prepared",
-  "status": "source repaired and focused green; combined compile resource-deferred; installed-extension verification pending",
-  "evidence_level": "guarded source-boundary red/green; no combined compile, build, or installed-extension D44 run",
+  "status": "peer follow-up source patch prepared; follow-up regressions, combined compile, and installed-extension verification pending",
+  "evidence_level": "initial guarded source-boundary red/green 4/4; peer follow-up source-only and untested; no combined compile, build, or installed-extension D44 run",
   "source_report": "docs/stabilization/reports/showcase-replay-scope-audit.json",
   "root_causes": [
     "list_pattern.runInPage and probeFirstRowInPage fall back to document when a configured list_root is absent, widening the saved recipe to unrelated elements.",
@@ -25,5 +25,18 @@
   "repair": "A configured missing or invalid list root yields no rows in both mode and first-row probe. Shared runPattern/runMode reject absent Chrome extraction results while preserving explicit empty arrays. PatternsTab scopes fetch/run completion to the current tab and URL, clears old results on navigation, shows nonblocking saved-route guidance, labels legitimate zero rows as no matching data, and withholds ok health updates for zero or off-route rows.",
   "green_receipt": "showcase-d44-green-001 admitted and ended 2026-09-27T21:22:50.324Z, child exit 0, 4/4 focused tests across two files.",
   "compile_attempt": "showcase-d44-compile-001 refused before child launch at 2026-09-27T21:22:57.865Z with RESOURCE_LEGACY_RUNNER_BUSY; no compile verdict. No further child launch attempted in this lane.",
-  "next_action": "When sole guarded permit is available, run combined compile on frozen D44 source, then exact-path commit and independent installed-extension verification. A build and real-site replay remain required before D44 closure."
+  "peer_followup": {
+    "source_review": "docs/stabilization/reports/showcase-saved-scope-peer.json confirmed old-page rows/list can render once before passive effect cleanup, the stale-run test can assert before its promise settles, and DataView/auto-extract/data_patterns can promote zero-row runs to saved health ok.",
+    "source_patch": "PatternsTab tags fetched lists and run results with their source page key at render time. A shared classifySavedRun helper labels nonempty applicable rows matched, zero rows no_match, and nonempty off-route rows off_route. PatternsTab, DataView, auto-extract, and data_patterns only bump saved health ok for matched; zero/off-route preserve previous health and surface latest guidance. Auto-extract stores a local no_match outcome. No DB schema or D41 runner change.",
+    "scope_nuance": "A missing configured List root and a matching root with zero items both yield [] at the current mode boundary. Neither is marked healthy or broken; guidance asks the person to check whether the saved root and selectors still match without claiming which condition occurred. Distinguishing the two would require richer mode output or another page probe and is outside this minimal patch.",
+    "pending_tests": [
+      "docs/stabilization/pending/EXT-D-0044/showcase-patterns-replay-provenance.test.tsx.pending: layout-phase first new-page commit, actual stale promise settlement, positive same-route result; mutation proof pending permit.",
+      "docs/stabilization/pending/EXT-D-0044/saved-run-auto-health.test.tsx.pending: auto no-match versus real rows and saved health writes.",
+      "docs/stabilization/pending/EXT-D-0044/saved-run-tool-health.test.ts.pending: actual data_patterns run returns no_match/off_route/matched and only matched promotes health.",
+      "docs/stabilization/pending/EXT-D-0044/saved-run-data-view-health.test.tsx.pending: DataView zero-row guidance versus nonempty healthy run."
+    ],
+    "bounded_mutation_proof": "When the sole test permit returns, temporarily bypass only PatternsTab's render-time patternSnapshot/resultPageKey comparisons, run the focused provenance test and require its layout-phase navigation case to fail, then restore that exact hunk and rerun green. Separately bypass only the completion isCurrent guard and require the awaited stale-run case to fail. Do not retain either mutation or run broad suites.",
+    "verification": "Source diff only. Pending tests remain outside discovery while D41 owns the sole heavy permit; no test, compile, catalog regeneration, build, or browser run on this follow-up patch."
+  },
+  "next_action": "After D41 releases the sole guarded permit, install pending caller regressions into test discovery and run the narrow red/mutation proof and green checks, then combined compile plus handler catalog:tools:md/docs:tools regeneration. Exact-path follow-up commit and independent installed-extension verification remain required."
 }

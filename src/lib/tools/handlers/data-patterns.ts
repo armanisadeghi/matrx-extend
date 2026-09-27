@@ -22,6 +22,8 @@
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { loadRecipes, recipesForUrl } from '@/lib/data-pattern/recipes';
 import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
+import { urlMatchesPattern } from '@/lib/data-pattern/matcher';
+import { classifySavedRun } from '@/lib/data-pattern/saved-run-outcome';
 import {
   type ExtractionPatternField,
   PATTERN_KINDS,
@@ -163,10 +165,13 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
           onProgress: (note) => ctx.reportProgress?.(note),
           initiation: 'auto',
         });
-        void bumpPatternRun(pattern.id, 'ok', rows.length);
+        const outcome = classifySavedRun(pattern, tab.url ?? '', rows);
+        if (outcome.kind === 'matched') void bumpPatternRun(pattern.id, 'ok', rows.length);
         const limit = args.rows_limit ?? DEFAULT_ROWS_LIMIT;
         return {
           ok: true,
+          outcome: outcome.kind,
+          ...(outcome.message && { message: outcome.message }),
           pattern: { id: pattern.id, name: pattern.name, kind: pattern.kind },
           row_count: rows.length,
           rows: rows.slice(0, limit),
@@ -177,7 +182,9 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
           // Circumstantial, not a broken pattern — give the agent guidance.
           return { ok: false, reason: err.message, retryable: true };
         }
-        void bumpPatternRun(pattern.id, 'broken', 0);
+        if (urlMatchesPattern(tab.url ?? '', pattern)) {
+          void bumpPatternRun(pattern.id, 'broken', 0);
+        }
         return {
           ok: false,
           reason: err instanceof Error ? err.message : String(err),

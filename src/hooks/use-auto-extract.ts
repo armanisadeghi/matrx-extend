@@ -1,6 +1,7 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { urlMatchesPattern } from '@/lib/data-pattern/matcher';
 import { isInteractiveOnlyKind, runPattern } from '@/lib/data-pattern/run-pattern';
+import { classifySavedRun } from '@/lib/data-pattern/saved-run-outcome';
 import {
   type ExtractionPattern,
   bumpPatternRun,
@@ -101,14 +102,16 @@ export function useAutoExtract(): void {
           try {
             const rows = await runPattern(pattern, tabId);
             if (cancelled) return;
+            const outcome = classifySavedRun(pattern, url, rows);
             setRecord(key, {
               pattern,
               url,
               rows,
-              status: 'ok',
+              status: outcome.kind === 'matched' ? 'ok' : 'no_match',
+              ...(outcome.message && { note: outcome.message }),
               lastRunAt: Date.now(),
             });
-            void bumpPatternRun(pattern.id, 'ok', rows.length);
+            if (outcome.kind === 'matched') void bumpPatternRun(pattern.id, 'ok', rows.length);
           } catch (err) {
             if (cancelled) return;
             setRecord(key, {

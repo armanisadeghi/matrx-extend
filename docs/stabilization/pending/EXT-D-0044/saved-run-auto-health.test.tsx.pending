@@ -1,0 +1,81 @@
+import { act, renderHook } from '@testing-library/react';
+import { afterEach, expect, it, vi } from 'vitest';
+
+const mocks = vi.hoisted(() => ({
+  fetchPatterns: vi.fn(),
+  runPattern: vi.fn(),
+  bumpRun: vi.fn(),
+}));
+
+vi.mock('@/hooks/use-active-tab', () => ({
+  useActiveTab: () => ({ id: 37, url: 'https://electronic.vegas/calendar/' }),
+}));
+vi.mock('@/lib/supabase/queries', () => ({
+  fetchPatternsForDomain: mocks.fetchPatterns,
+  bumpPatternRun: mocks.bumpRun,
+}));
+vi.mock('@/lib/data-pattern/run-pattern', () => ({
+  isInteractiveOnlyKind: () => false,
+  runPattern: mocks.runPattern,
+}));
+
+import { useAutoExtract } from '@/hooks/use-auto-extract';
+import { useAuthStore } from '@/state/auth';
+import { useAutoExtractStore } from '@/state/auto-extract';
+
+const pattern = {
+  id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+  name: 'Calendar events',
+  domain: 'electronic.vegas',
+  route_pattern: '/calendar/',
+  kind: 'list_pattern',
+  config: { list_root: '#events', item_selector: '.event', field_paths: [] },
+};
+
+afterEach(() => {
+  vi.useRealTimers();
+  vi.clearAllMocks();
+  useAuthStore.setState({ user: null, status: 'unknown', error: null, isAdmin: false });
+  useAutoExtractStore.setState({ records: new Map() });
+});
+
+it('records an auto-extract no-match locally without promoting saved health to ok', async () => {
+  vi.useFakeTimers();
+  mocks.fetchPatterns.mockResolvedValue([pattern]);
+  mocks.runPattern.mockResolvedValue([]);
+  useAuthStore.setState({
+    user: { id: 'user-1' } as never,
+    status: 'signed-in',
+    error: null,
+    isAdmin: false,
+  });
+  renderHook(() => useAutoExtract());
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(1_000);
+  });
+
+  const record = useAutoExtractStore.getState().records.get(
+    `${pattern.id}|https://electronic.vegas/calendar/`,
+  );
+  expect(record?.status).toBe('no_match');
+  expect(record?.note).toMatch(/no matching data/i);
+  expect(mocks.bumpRun).not.toHaveBeenCalled();
+});
+
+it('still promotes a matched nonempty auto-extraction to ok', async () => {
+  vi.useFakeTimers();
+  mocks.fetchPatterns.mockResolvedValue([pattern]);
+  mocks.runPattern.mockResolvedValue([{ title: 'Real calendar event' }]);
+  useAuthStore.setState({
+    user: { id: 'user-1' } as never,
+    status: 'signed-in',
+    error: null,
+    isAdmin: false,
+  });
+  renderHook(() => useAutoExtract());
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(1_000);
+  });
+
+  expect(mocks.bumpRun).toHaveBeenCalledWith(pattern.id, 'ok', 1);
+});
