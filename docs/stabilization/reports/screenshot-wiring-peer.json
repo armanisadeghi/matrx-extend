@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-wiring-peer",
+  "scope": "Independent source review of the uncommitted screenshot guest runner harness-argument correction after dev093 setup failure. No browser or build was launched.",
+  "A_native_runtime": {
+    "status": "PENDING_GUARDED_RUN",
+    "evidence": "dev093's recorded failure was at owned_profile before exercisePanel, with zero cases and no observed product UI. This peer did not retry it.",
+    "claim_limit": "The wiring correction is source-verified only. Guest reload, admin-to-guest transition, and current-build UI behavior remain unverified until a new guarded native result exists."
+  },
+  "B_source_quality": {
+    "status": "ACCEPTED_FOR_ONE_GUARDED_RUN",
+    "finding": "tests/browser/screenshot-guest-acceptance.mjs now forwards extensionDir, expectedRelease=buildAtStart, and localDevReceiptPath to runNativeSidepanelQa only when SCREENSHOT_GUEST_DEV_BUILD_RECEIPT is defined. The no-environment-variable call retains exercisePanel alone and therefore the canonical release receipt path.",
+    "actual_call_chain": "The runner reads and validates the local receipt and keyed 0.2.93 manifest, package version, and tree hash before the call. The harness reads the forwarded receipt, selects its localDev branch in resolveExpectedRelease, compares expectedRelease version/tree with that receipt, and verifies manifest version/key and current tree in verifyReleasedArtifact before resolving or launching Chrome. It then uses its existing owned profile/CDP/process and expected-extension-ID checks. After return, the runner reads and rehashes the build again.",
+    "current_artifact_check": "The existing dev093 receipt identifies local_dev_unpacked/not_published, version 0.2.93, and the canonical .output/chrome-mv3-dev path. At review, package.json and manifest versions were 0.2.93, manifest.key was present, and hashReleaseTree matched receipt.treeSha256 6b2f5a0cff151755e3de140592f6f92148ee184e95746cf07c9c539e3f62cb76. The default release receipt remained 0.2.79, explaining the earlier fallback failure.",
+    "checks": [
+      "node --check passed for the runner and native harness.",
+      "The runNativeSidepanelQa call and resolveExpectedRelease/verifyReleasedArtifact branches were inspected directly; no browser process was started."
+    ],
+    "why_prior_review_missed_it": "The prior source peer checked the runner's own pre/post receipt validation but did not follow the values into the actual runNativeSidepanelQa invocation. At commit 70d44c9a that invocation passed only exercisePanel, so the harness selected .output/release-receipt.json (0.2.79) despite the runner's successful 0.2.93 local validation. The dev093 failure exposed this caller-to-harness contract gap before UI exercise.",
+    "remaining_limits": "This local receipt binds unpacked bytes and version, not a source commit or published release. This source review cannot promote EXT-F-1009-T09 or any capture/gallery case to pass."
+  }
+}

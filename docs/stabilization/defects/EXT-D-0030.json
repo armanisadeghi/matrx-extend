@@ -1,0 +1,53 @@
+{
+  "id": "EXT-D-0030",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T09"],
+  "surface": "Screenshot guest native acceptance: development artifact handoff",
+  "auth_mode": "guest; setup failed before UI or role transition",
+  "reproduction": [
+    "Use Screenshot runner at70d44c9a with the .93 local development receipt and matching unpacked artifact, leaving the historical .output/release-receipt.json at .79.",
+    "Provide SCREENSHOT_GUEST_DEV_BUILD_RECEIPT=test-results/source-dev-build-093-contained-20260927.json and the explicit runtime paths documented in COORDINATOR.md; run the exact allowlisted Screenshot guest command through the resource guard.",
+    "The runner validates the development identity, but calls runNativeSidepanelQa with only exercisePanel, omitting the receipt and artifact override.",
+    "The native harness consequently validates the default .79 release receipt against the .93 manifest and refuses before exercisePanel: owned_profile / owned_harness_failed, zero cases."
+  ],
+  "expected": "The validated development receipt and artifact identity reach the native harness, which enforces that same identity and owned-profile contract.",
+  "actual": "The caller discards development provenance and the harness falls back to a stale release receipt. No product case executes.",
+  "evidence": [
+    "docs/stabilization/runs/screenshot-guest-dev093-001.json",
+    "docs/stabilization/reports/screenshot-guest-ready.json",
+    "tests/browser/screenshot-guest-acceptance.mjs",
+    "docs/stabilization/reports/screenshot-wiring-peer.json"
+  ],
+  "severity": "S3: test infrastructure prevents guest Screenshot acceptance; no product failure shown",
+  "priority": "P1: unblock contained native coverage",
+  "state": "fixed",
+  "owner": "/root/screenshot_guest_batch",
+  "fix_commits": [],
+  "transition_history": [
+    {
+      "at": "2026-09-27T09:59:16.193587+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Guarded native run stopped before any UI case."
+    },
+    {
+      "at": "2026-09-27T09:59:16.193587+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Actual caller omits dev provenance and default release receipt version differs; source trace explains the observed early refusal."
+    },
+    {
+      "at": "2026-09-27T09:59:16.193587+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Caller now forwards dev receipt and validated identity; higher-tier independent source re-review pending."
+    },
+    {
+      "at": "2026-09-27T10:00:05.384448+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent Sol peer traced all development provenance arguments through the actual harness call and verified default release and ownership checks remain intact. Native retry pending."
+    }
+  ],
+  "closure_requirement": "Peer verifies the actual caller-to-harness provenance chain; guarded native retry enters the owned profile and executes its intended cases. Preserve all artifact/ownership guards."
+}

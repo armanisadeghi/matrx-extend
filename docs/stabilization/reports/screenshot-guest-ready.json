@@ -23,6 +23,8 @@
     "EXT-F-1009-C09"
   ],
   "runner": "tests/browser/screenshot-guest-acceptance.mjs; supports SCREENSHOT_GUEST_DEV_BUILD_RECEIPT plus optional SCREENSHOT_GUEST_RELOAD=1 and SCREENSHOT_ROLE_CHANGE=1",
+  "dev093_setup_failure": "The runner validated its 0.2.93 local receipt, then invoked the native harness without localDevReceiptPath/extensionDir/expectedRelease; the harness defaulted to the stale 0.2.79 release receipt and failed artifact identity verification before exercisePanel.",
+  "setup_fix": "When SCREENSHOT_GUEST_DEV_BUILD_RECEIPT is set, forward that receipt and the already-validated extensionDir/build identity to the native harness, matching contained-navigation and debug-export callers.",
   "existing_coverage": "Prior screenshot-guest-003 evidence covers bounded guest T09 warm navigation, real reload, and real admin sign-out recovery; arbitrary direct/persisted inaccessible state remains unverified.",
   "this_run_proves": "One guarded native guest profile run can verify protected Screenshots absence during public navigation, with optional real reload and actual admin sign-in/select/sign-out transition; build identity is bound to reviewed local dev receipt or release receipt.",
   "not_covered": "T01-T08 capture/gallery controls; member/admin controls; full control-by-mode matrix; arbitrary malformed/direct tab state. All remain unverified; partial T09 evidence cannot promote any full case or feature pass.",

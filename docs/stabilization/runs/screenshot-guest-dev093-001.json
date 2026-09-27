@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "runId": "screenshot-guest-dev093-001",
+  "status": "unverified",
+  "scope": "EXT-F-1009-T09 guest protected-navigation check with requested real reload and real admin-to-guest sign-out scenario",
+  "sourceHead": "356c07d57c58795361e2afd04f245d21086ad15d",
+  "build": {
+    "runId": "dev093-contained",
+    "command": "pnpm exec wxt build --mode development",
+    "resourceAdmission": "RESOURCE_ADMITTED",
+    "buildChildExitCode": 0,
+    "buildLeaseReleased": true,
+    "buildWrapperLog": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/dev093-contained-wrapper.log",
+      "mode": "0600",
+      "sha256": "c9d75c01b400b0725e1212b5ba69cf8b98c25134dcdb97d55e68a8e58bc115de"
+    },
+    "receipt": "test-results/source-dev-build-093-contained-20260927.json",
+    "version": "0.2.93",
+    "treeSha256": "6b2f5a0cff151755e3de140592f6f92148ee184e95746cf07c9c539e3f62cb76",
+    "receiptSha256": "6a213156ca241be1cd59bfb02fc1a6095f3dd2c5ee2cd9c16e9b10309465da41",
+    "identityVerifiedBeforeHarness": true,
+    "identityVerifiedAfterHarness": false
+  },
+  "guard": {
+    "code": "RESOURCE_ADMITTED",
+    "pressureLevel": 1,
+    "availableMemoryGiB": 12.16,
+    "requiredMemoryGiB": 4,
+    "oneMinuteLoad": 5.24,
+    "logicalCpus": 10,
+    "cpuBusyFraction": 0.42622857142857146,
+    "swapUsedMiB": 2740.56,
+    "childExitCode": 1,
+    "leaseReleased": true,
+    "terminalAt": "2026-09-27T09:55:43.118Z"
+  },
+  "failure": {
+    "stage": "owned_profile",
+    "code": "owned_harness_failed",
+    "profileOwned": false,
+    "casesRecorded": 0,
+    "interpretation": "Harness setup failed before exercisePanel; no product UI target was observed. Browser process launch status is unknown."
+  },
+  "requestedScenarios": {
+    "guestPanelReload": true,
+    "realAdminToGuestRoleChange": true,
+    "observed": false
+  },
+  "immutableResult": {
+    "sourcePath": "test-results/screenshot-guest-acceptance-1c50fddc-d7c6-4fc0-a2fc-b6b761066dd9.json",
+    "path": "test-results/screenshot-guest-dev093-001.evidence.json",
+    "mode": "0600",
+    "sha256": "4df5072a4bd68d863b8fdef607390d6d8f0e76e2ca0f7025197030e628fcc8af"
+  },
+  "privateWrapperLog": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-guest-dev093-001-wrapper.log",
+    "mode": "0600",
+    "sha256": "766e5a2797d33a340e6cb4c28392d3219d9dbb2c775c8eda6e224c6347934d53"
+  },
+  "disposition": "No retry was made. EXT-F-1009-T09 remains unverified; no screenshot or gallery target was tested."
+}

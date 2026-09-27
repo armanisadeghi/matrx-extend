@@ -353,7 +353,14 @@ try {
     artifactTreeMatchedAfter: false,
   };
   stage = 'owned_profile';
-  const run = await runNativeSidepanelQa({ exercisePanel: exercise });
+  const run = await runNativeSidepanelQa({
+    ...(DEV_BUILD_RECEIPT !== undefined && {
+      extensionDir: EXTENSION_DIR,
+      expectedRelease: buildAtStart,
+      localDevReceiptPath: DEV_BUILD_RECEIPT,
+    }),
+    exercisePanel: exercise,
+  });
   assert.equal(run.verified, true, 'owned profile and released artifact verified');
   stage = 'build_identity_end';
   const buildAtEnd = await readBuildIdentity();
