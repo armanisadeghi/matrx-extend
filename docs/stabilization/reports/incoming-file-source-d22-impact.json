@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "report_id": "incoming-file-source-d22-impact",
+  "review_range": {
+    "base": "4877f106",
+    "incoming": "5593c486",
+    "integrated_head": "ef03ecefa1433459ae5c6c5f1034282e108535d0"
+  },
+  "verdict": "NO_D22_REBREAK_ESTABLISHED_BY_SOURCE_REVIEW; FRESH_BUILD_AND_REGRESSION_GATES_REQUIRED",
+  "scope": "Read-only source impact review. No tests, browser, build, database requests, checkpoint access or product edits.",
+  "delta": {
+    "files": 15,
+    "insertions": 1031,
+    "deletions": 16,
+    "summary": "Optional post-save Source filing panel, associations store and dependency, keepSource expectedActor forwarding, informational notice icon/role, package and global CSS drift."
+  },
+  "d22_preservation": [
+    {
+      "boundary": "Recognition",
+      "finding": "use-page-recognition.ts and supabase/queries.ts unchanged by incoming range; selected-organization lookup filters, lookup serial invalidation, late response/broadcast rejection remain intact."
+    },
+    {
+      "boundary": "Save transport and queue",
+      "finding": "api/client.ts, sources/save-capture.ts and capture-ladder/queue.ts unchanged; the existing pinned actor and revision/terminal queue mechanisms were not replaced."
+    },
+    {
+      "boundary": "Scrape saved state",
+      "finding": "FileSourcePanel is nested under saved && savedSource. Existing saved predicate requires matching active organization, current capture identity and unedited capture. Incoming filingFor state alone cannot render the old workspace claim after a switch."
+    },
+    {
+      "boundary": "Optional filing",
+      "finding": "setFilingFor runs after successful landing and the new panel receives savedSource.organizationId. keepSource forwards supplied expectedActor through existing post/client plumbing. Existing save path does not wait for filing."
+    }
+  ],
+  "new_filing_risks_not_proven_d22_regressions": [
+    {
+      "finding": "FileSourcePanel supplies expectedActor only when userId is non-null; it otherwise calls keepSource with undefined. The new unit tests mock keepSource, so they do not prove refusal before network across authentication/workspace changes.",
+      "required_check": "Add/execute real-client keepSource boundary cases: supplied actor workspace switch before headers emits zero requests; null session never results in a write under a later identity; dispatched request stays bound to its original actor."
+    },
+    {
+      "finding": "useMyLibraries filters created_by and deleted_at, but not selected organization; remembered Library keys are per user, and libraryId can remain selected when absent from returned options. This is a filing selection concern requiring contract/schema validation, not proof of an unauthorized DB write.",
+      "required_check": "Verify whether Libraries are intentionally selectable across accessible organizations and whether a remembered unavailable Library is visibly represented before filing. Do not claim current mocked library tests prove RLS or workspace isolation."
+    },
+    {
+      "finding": "Filing uses the same LandingOutcome/refusal parser as capture saving. Local transport-refusal wording describes a page kept on this device, although this filing action has no queue persistence.",
+      "required_check": "Exercise filing refusal with the real transport/parser and check that the message accurately describes the already-landed Source and unsaved filing selection. No runtime defect claim made here."
+    },
+    {
+      "finding": "save-source-logic parity test skips when the frontend file is absent.",
+      "required_check": "Resolve MATRX_FRONTEND_DIR to the actual sibling checkout before running parity; explicitly record a skip if unavailable, never claim cross-client parity from a skipped test."
+    }
+  ],
+  "readonly_runner_impact": {
+    "file": "tests/browser/source-recognition-readonly-acceptance.mjs",
+    "finding": "No direct selector, query shape or Source-link route change in incoming range. Runner never creates a local savedSource and therefore never mounts or exercises the new filing panel. Shared dependency/CSS changes can still alter real layout and must be tested in the fresh artifact.",
+    "coverage_limits": "Runner is prepared, not runtime-verified. Does not prove filing, immediate intermediate-state claim clearing, service-failure/recovery, or native late Save.",
+    "checkpoint": "Reserved SourceSave checkpoint remains forbidden to read/write/reset/delete/reinitialize/retry in the next runner. Do not switch to default recovery."
+  },
+  "required_gates_in_order": [
+    {
+      "gate": "dependency_and_compile",
+      "action": "Root reconciles installation to integrated pnpm-lock.yaml under its resource guard, then runs pnpm compile. New @ai-matrx/associations 0.13.2 and agents 0.15.0 plus react-resizable-panels 4.14.1 differ from pre-incoming tree."
+    },
+    {
+      "gate": "focused_existing_d22",
+      "action": "Guarded single-worker Vitest against current tree.",
+      "files": [
+        "src/lib/supabase/queries.recognition.test.ts",
+        "src/hooks/use-page-recognition.test.tsx",
+        "src/lib/api/client-expected-actor.test.ts",
+        "tests/unit/source-landing-transport.test.ts",
+        "tests/unit/save-never-loses-input.test.tsx",
+        "tests/unit/not-yet-a-source.test.tsx",
+        "src/lib/api/routes/sources.test.ts"
+      ]
+    },
+    {
+      "gate": "incoming_surface_regressions",
+      "action": "Guarded single-worker Vitest. Preserve honest distinction between mocked panel tests and real transport/UI coverage.",
+      "files": [
+        "src/features/scrape/FileSourcePanel.test.tsx",
+        "src/lib/sources/save-source-logic.test.ts",
+        "tests/unit/notice-icon.test.tsx",
+        "tests/unit/notice-resolution.test.tsx",
+        "src/features/saved-captures/SavedCapturesView.test.tsx"
+      ]
+    },
+    {
+      "gate": "fresh_build_binding",
+      "action": "Build current integrated development tree after dependency reconciliation; issue a new immutable development receipt and independent receipt review. Earlier .82 artifact is stale even though package version is unchanged. Do not overwrite historical receipt or relabel old hash."
+    },
+    {
+      "gate": "native_readonly",
+      "action": "After independent runner review and root sole-heavy admission, run SOURCE_READONLY_SCOPE=1 and the new source-recognition-readonly runner with fresh SOURCE_DEV_BUILD_RECEIPT. Report each bounded result separately. Positive fixture absence remains unverified."
+    }
+  ],
+  "not_authorized_as_substitute": {
+    "files": ["tests/browser/file-source-e2e.mjs", "tests/browser/saved-captures-e2e.mjs"],
+    "reason": "Incoming file-source e2e signs in through password API, injects extension storage, creates a project, writes filing/Source state and soft-deletes during cleanup. saved-captures e2e also has write/cleanup behavior. Neither is the approved real-login, checkpoint-independent read-only D22 run. Do not add either to the current resource allowance or launch for this retest."
+  },
+  "closure": "D22 remains open pending current-build authenticated multi-workspace native evidence. Existing engineering fixes need regression checks, not a speculative rewrite. This report does not close D22 or validate optional filing.",
+  "validation": {
+    "source_review": "completed",
+    "runtime": "not run by scope",
+    "report_json": "validated",
+    "biome": "targeted report check passed"
+  }
+}
