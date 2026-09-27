@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "lane": "independent structured verification / source only / zero product authorship",
+  "reviewed_at": "2026-09-27",
+  "snapshot": "Uncommitted DoctorTab, ListPatternTab, and showcase-tab store diff; source review may be superseded by concurrent builder edits.",
+  "A_live_outcome": {
+    "verdict": "unverified",
+    "basis": "No build, browser session, field click, extraction, or real calendar rows were exercised in this lane. Earlier installed .97 evidence reproduced the blank handoff before the change and is baseline only.",
+    "required_check": "On a fresh build and real repeating-card page, click the Doctor recommendation, confirm root/item selectors and nonempty suggested fields, select a meaningful field, Extract, and compare values with the page. Change page between probe and click, and between handoff and consumption; confirm rejection. Start ordinary Pick an example item and finish its field selection independently."
+  },
+  "B_source_quality": {
+    "verdict": "conditional_handoff_wired_but_usable_extraction_and_stale_page_not_yet_proven",
+    "positive": [
+      "Doctor passes the detected list_root and item_selector with tab ID and diagnostic URL through a one-shot shared store before selecting List Pattern.",
+      "List Pattern consumes the request, requires exact tab ID and URL, seeds empty field_paths, and its existing inspector effect can derive suggested fields from the seeded selectors. Extract remains disabled until a field is selected.",
+      "The original manual Pick an example item control and stamped picker-result handlers remain in place; the handoff does not invoke or replace them."
+    ],
+    "findings": [
+      {
+        "severity": "high_for_stale_page_requirement",
+        "classification": "preexisting List Pattern state, unchanged by handoff patch",
+        "location": "src/features/showcase/tabs/ListPatternTab.tsx",
+        "reproduction": "Seed or manually build a list config and preview rows, then navigate the same tab to another URL or switch active tabs without a new Doctor recommendation.",
+        "finding": "There is no general tab ID/URL invalidation of config, rows, source, candidates, or pending inspector/run results. The old builder stays visible and can Extract against or save under a new page context. The new handoff checks only its own incoming request and does not close this stale-state path.",
+        "recommendation": "Bind the builder and async inspector/run completions to a page key; on page change clear or visibly invalidate the prior config, preview, and candidates. Preserve ordinary manual picking on the current page."
+      },
+      {
+        "severity": "high_for_usable_field_claim",
+        "classification": "new handoff validation gap",
+        "location": "src/features/showcase/tabs/ListPatternTab.tsx and tests/unit/showcase-doctor-list-handoff.test.tsx",
+        "reproduction": "Feed Doctor selectors that are nonempty strings but match no root/item on the target document; click the recommendation.",
+        "finding": "The handoff accepts string type alone. inspectCardInPage returns an empty list for missing selectors, while the builder can show a seeded config and the test only asserts selectors, Pick more fields, and disabled Extract. The source cannot establish that the detected repeating list produced selectable fields or extracted rows.",
+        "recommendation": "Treat zero matches or failed inspection as an honest unavailable state with re-probe/manual-pick remedy, and verify a field is selected and real row values are returned on the target page."
+      },
+      {
+        "severity": "medium",
+        "classification": "preexisting inspector behavior exposed by automatic handoff",
+        "location": "src/features/showcase/tabs/ListPatternTab.tsx runInspector/CandidatesPanel",
+        "reproduction": "Make inspector injection fail or return no candidates after a valid-looking handoff.",
+        "finding": "Failure is logged and converted to []; the suggested-field panel can say all fields are already selected even when none were selected. Manual Pick more fields remains available, but the empty state misstates what happened.",
+        "recommendation": "Differentiate inspection failure, zero candidates, and already-selected candidates, each with the appropriate visible remedy."
+      }
+    ],
+    "test_limit": "The new component test uses a manufactured diagnostic and mocked inspector returning []; it proves selector delivery and stale Doctor-click refusal, but never executes real field selection, inspector candidates, list extraction, or the ordinary manual picker. No test/build was run by this reviewer."
+  },
+  "verification": "Source only. No product changes, test/build/browser execution, commit, or push; reserved D22 checkpoint untouched.",
+  "source_recheck": {
+    "scope": "Same-reviewer bounded recheck of the three prior findings against revised uncommitted source; not a fresh independent review or live proof.",
+    "stale_builder_and_async_results": {
+      "status": "addressed_in_source",
+      "evidence": "ListPatternTab now binds config to tab ID/URL, masks it immediately when the page key differs, clears config/rows/source/candidates/sample state on page change, and invalidates inspector and extraction sequence IDs. Inspector, sample-value, run, and sample-HTML completions check current page identity before committing. Picker results carry the page key from picker start, so delayed old-page results remain masked."
+    },
+    "selector_matches_and_usable_fields": {
+      "status": "addressed_as_honest_source_state;_real_rows_unverified",
+      "evidence": "The handoff still accepts selector strings, then inspectCardInPage reports root_missing, items_missing, or ready with item count and candidates. The panel offers re-probe or manual pick on missing root/items, and a manual-pick or selector-edit remedy when a valid item has no suggested fields. Actual field selection and extracted values remain live checks."
+    },
+    "inspector_failure_visibility": {
+      "status": "addressed_in_source",
+      "evidence": "Inspector transport failure is now distinct from a successful empty inspection; CandidatesPanel displays a failure remedy. The 'all suggested fields selected' message appears only for ready inspection with zero unused candidates and a positive selected-field count."
+    },
+    "verdicts": "A remains live-unverified. B remains conditional until the real Doctor recommendation seeds fields that the user can select and extract, and the normal manual picker and stale-page paths are exercised in the installed extension."
+  }
+}

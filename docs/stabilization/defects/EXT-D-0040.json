@@ -1,0 +1,41 @@
+{
+  "id": "EXT-D-0040",
+  "feature_id": "EXT-F-1012",
+  "case_ids": [
+    "EXT-F-1012-T40",
+    "EXT-F-1012-T41",
+    "EXT-F-1012-T42",
+    "EXT-F-1012-T43",
+    "EXT-F-1012-T44",
+    "EXT-F-1012-T45",
+    "EXT-F-1012-T46",
+    "EXT-F-1012-T48"
+  ],
+  "surface": "Showcase preview → Save pattern → Patterns replay",
+  "auth_mode": "admin",
+  "reproduction": [
+    "On a page with two distinguishable tables, extract Table 0 and observe its rows.",
+    "Select Table 1 without pressing Extract again, then Save pattern with an existing target table.",
+    "Inspect the saved config and appended rows, then reopen and run the pattern from Patterns."
+  ],
+  "expected": "The saved config and optional dataset append both describe the successful preview; navigation or tab change hides prior-page rows immediately.",
+  "actual": "Source before repair passed the current table_index to SaveAsPattern after previewing Table 0, so the saved pattern reran Table 1 while appending Table 0 rows. The same live-control pattern occurred for JSON-LD, Microdata, Framework, and AI Extract. This has not yet been reproduced in the installed extension.",
+  "evidence": [
+    "docs/stabilization/reports/showcase-save-replay-audit.json",
+    "tests/unit/save-as-pattern-organization-race.test.tsx",
+    "src/hooks/use-extraction.ts",
+    "src/hooks/use-ai-extraction.ts"
+  ],
+  "severity": "S2: a saved extraction can silently target different data from the preview and optional initial dataset write",
+  "priority": "P1: first Showcase save/replay repair wave",
+  "state": "open",
+  "transition_history": [
+    {
+      "at": "2026-09-27T15:24:51Z",
+      "from": null,
+      "to": "open",
+      "reason": "Source audit identified preview/config drift and a two-direction tab-selection regression was added; installed-extension reproduction and independent verification remain pending."
+    }
+  ],
+  "closure_requirement": "Run the focused regression red against the original behavior and green against the repair; then an independent verifier uses real pages to edit controls after preview, save with an existing target table, reopen and rerun the pattern, and confirm saved config, returned values, and appended values match the preview. Repeat relevant navigation/tab-change cases and List Pattern handoff."
+}

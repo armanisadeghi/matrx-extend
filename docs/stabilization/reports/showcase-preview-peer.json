@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "lane": "independent structured verification / source only / zero product authorship",
+  "reviewed_at": "2026-09-27",
+  "snapshot": "Uncommitted Showcase D40 producer-tab and hook changes present during review; concurrent builder may revise them after this receipt.",
+  "A_outcome": {
+    "verdict": "unverified_live",
+    "finding": "No build, browser, data write, saved-row inspection, or reopened replay was performed in this lane. The user outcome—detect a repeating pattern, extract real rows, save the exact recipe and rows, then reopen and repeat consistently—cannot be claimed from this source review or the mocked Table test.",
+    "required_live_check": "On distinguishable real pages, run each supported method, edit its controls after preview, save to an existing table, inspect the saved config and appended values, leave/reopen Patterns, rerun on the intended route, and compare returned fields and values with the preview. Include page switch during pending extraction and the List Pattern path."
+  },
+  "B_source_quality": {
+    "verdict": "conditional_not_complete_for_showcase_outcome",
+    "positive": [
+      "useExtraction now commits executed config, extracted rows, and source/page key together; JSON-LD, Microdata, Tables, Framework, and Snapshot Save controls consume that preview config instead of a later live control value.",
+      "AI Extract snapshots its submitted description, schema, mandate/agent choice, captured source, and page key; Save consumes the completed preview config. Recipes guard their result against tab and URL changes.",
+      "SaveAsPattern already captures the selected organization at click time, checks an existing dataset's organization, and appends the preview rows; the new two-direction Table test checks saved table_index and appended rows."
+    ],
+    "findings": [
+      {
+        "severity": "high",
+        "location": "src/hooks/use-extraction.ts detect/run sequence and src/features/showcase/ShowcaseView.tsx forceMount",
+        "classification": "preexisting sequence design, still present in D40 change",
+        "reproduction": "Start Table extraction, switch to another Showcase subtab before it resolves, then return to Tables. React keeps Tables mounted; active toggles false to true and detect increments callSeq. Resolve the original run after detect starts.",
+        "finding": "The run's finally refuses to clear running because detect superseded its sequence, so the spinner can remain indefinitely with no preview or error.",
+        "recommendation": "Separate detection and extraction generations, or explicitly settle the superseded run."
+      },
+      {
+        "severity": "medium",
+        "location": "src/hooks/use-ai-extraction.ts capture catch",
+        "classification": "existing catch behavior left unguarded by newly added page generation",
+        "reproduction": "Begin AI capture, navigate before executeScript rejects, then let the old capture reject.",
+        "finding": "Navigation invalidates requestSeq, but the catch still sets an old-page error/running state.",
+        "recommendation": "Guard the catch with the captured sequence, matching the successful capture path."
+      },
+      {
+        "severity": "high_for_full_outcome_outside_D40_diff",
+        "location": "src/features/showcase/tabs/ListPatternTab.tsx",
+        "classification": "preexisting untouched sibling; D39 owner has separate callsite work pending",
+        "reproduction": "Preview List Pattern rows, edit a selected field or root without extracting again, and save.",
+        "finding": "SaveAsPattern receives the current live config while rows remain from the prior extraction.",
+        "recommendation": "Snapshot and save the executed List Pattern config with its preview rows."
+      },
+      {
+        "severity": "high_for_full_outcome_outside_D40_diff",
+        "location": "src/features/showcase/tabs/PatternsTab.tsx and src/lib/data-pattern/run-interactive.ts",
+        "classification": "preexisting untouched replay path; next scope",
+        "reproduction": "Save a recipe on one route, open a different route on the same host, and run it from Patterns; separately change hosts while an earlier pattern fetch or run remains pending.",
+        "finding": "Patterns lists by host and runs without checking route_pattern against the current URL; asynchronous fetch/run completions are not guarded by current page identity.",
+        "recommendation": "Check saved route applicability before Run and guard fetch/run commits by tab ID and URL."
+      },
+      {
+        "severity": "medium",
+        "location": "src/features/showcase/tabs/FrameworkTab.tsx dump",
+        "classification": "preexisting dump race; newly added navigation reset does not close it",
+        "reproduction": "Begin Reload tree on framework page A, navigate to page B before executeScript resolves, then resolve A's dump.",
+        "finding": "The old dump can install page A's sources under page B after the reset.",
+        "recommendation": "Bind dump completion to the page identity captured when it starts."
+      }
+    ],
+    "test_limit": "The new Table test mocks runMode and savePattern, checks call arguments and appended rows, and does not exercise persisted reread or runSavedPattern. It is useful regression evidence for config drift, not a forcing proof of end-to-end save/replay."
+  },
+  "verification": "Source inspection only, as assigned; no tests, build, browser, commit, or push. Reserved D22 checkpoint untouched.",
+  "source_recheck": {
+    "scope": "Bounded follow-up of three prior findings against revised uncommitted source; this is not a fresh review or live acceptance.",
+    "detect_run_race": {
+      "status": "addressed_in_source",
+      "evidence": "useExtraction now has independent detectSeq and runSeq, plus pageGeneration. A returning detect can no longer supersede an in-flight run merely because the force-mounted subtab was reactivated; run finally clears running when its own sequence and page remain current."
+    },
+    "ai_stale_capture_rejection": {
+      "status": "addressed_in_source",
+      "evidence": "useAiExtraction now checks requestSeqRef against the captured requestSeq in the executeScript catch and in the stream-start catch. Navigation increments requestSeqRef and clears the old error/running state."
+    },
+    "framework_stale_dump": {
+      "status": "addressed_in_source",
+      "evidence": "FrameworkTab increments dumpSeq on page change, checks it on dump success/error/finally, stores sourcesPageKey with the result, and renders sources only when that key equals the current tab ID/URL."
+    },
+    "remaining": "The earlier List Pattern live-config drift and Patterns replay route/stale-result findings remain outside this bounded recheck. A and B verdicts remain unchanged pending real UI and persisted replay verification."
+  }
+}
