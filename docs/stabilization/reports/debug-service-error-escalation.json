@@ -1,6 +1,6 @@
 {
   "lane": "Astra medium escalation",
-  "status": "DONE_WITH_CONCERNS",
+  "status": "READY_FOR_RESET_ORACLE_PEER",
   "scope": "Debug service-error native acceptance setup and safe observer diagnostics only",
   "preserved_006": {
     "result_path": "test-results/debug-log-controls-acceptance.json",
@@ -934,5 +934,14 @@
         ]
       }
     }
+  },
+  "reset_oracle_followup": {
+    "prior_claim": "Debug009 searchReset pass_exact_prior_count proved count only. Its immutable receipt and report section remain unchanged; no retrospective rowset claim.",
+    "change": "Before message/no-match and detail-only search, capture ordered visible row signatures in runner memory. After clearing, require every prior signature in exactly the same order/multiplicity/content as a suffix of the complete feed. New natural arrivals may prepend only, with visible and total counts agreeing.",
+    "identity_definition": "Visible timestamp/context/source/tag/message span values, severity/style class and detail affordance. No React/internal event IDs inspected; visually identical rows are preserved with multiplicity.",
+    "privacy": "Raw content crosses only private runner memory for SHA-256 computation; neither raw content nor hashes enter reports or wait timeout observations. Reports retain counts/booleans only.",
+    "arrival_handling": "The real debug store prepends events. New prefix rows are allowed; deletion, mutation, reordering, substitution or lost old rows fails. Retention-cap eviction is not silently tolerated.",
+    "scope": "Both message/no-match reset and detail-only reset strengthened. T17, product code, outage proof and existing partial verdicts unchanged.",
+    "validation": "Exact-path Biome and node syntax check passed; no browser/tests run. Fresh peer and root runtime required."
   }
 }

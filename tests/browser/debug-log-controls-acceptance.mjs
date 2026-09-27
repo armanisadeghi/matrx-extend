@@ -4,6 +4,7 @@
  * Execution is deliberately deferred to the admitted native-browser owner.
  */
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { mkdir, open, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -240,6 +241,68 @@ async function setSearch(panel, value) {
     (state) => state?.focused && state.value === value,
   );
   return true;
+}
+
+// Capture the visible row identity/content tuple, not only its count. No React
+// internals: timestamp, context, source, tag, message, severity styling and detail
+// affordance are the row a person sees. Hashes stay in runner memory only.
+async function logRowBaseline(panel) {
+  const visible = await evaluate(
+    panel,
+    `(() => {
+    const search=document.querySelector('input[placeholder="Search…"]');
+    const view=search?.closest('div.flex.h-full.flex-col');
+    const buttons=[...(view?.lastElementChild?.children??[])]
+      .map(row=>row.firstElementChild).filter(button=>button?.matches('button'));
+    const count=/^([0-9]+)[/]([0-9]+)$/.exec(search?.nextElementSibling?.textContent.trim()??'');
+    return {
+      searchEmpty:search?.value==='',
+      displayedCount:count?Number(count[1]):null,
+      totalCount:count?Number(count[2]):null,
+      rows:buttons.map(button=>JSON.stringify({
+        fields:[...button.children].map(span=>span.textContent),
+        className:button.className,
+        hasDetail:!!button.firstElementChild?.querySelector('svg'),
+      })),
+    };
+  })()`,
+  );
+  return {
+    ...visible,
+    rows: visible.rows.map((row) => createHash('sha256').update(row).digest('hex')),
+  };
+}
+
+async function waitForExactSearchReset(panel, before, label) {
+  assert.equal(before.searchEmpty, true, 'search baseline is unfiltered');
+  assert.equal(before.displayedCount, before.rows.length, 'baseline counter matches visible rows');
+  assert.equal(before.totalCount, before.rows.length, 'baseline includes every available event');
+  return waitFor(
+    label,
+    async () => {
+      const after = await logRowBaseline(panel);
+      const added = after.rows.length - before.rows.length;
+      // Real events prepend. New arrivals may extend the front, but may never
+      // replace, reorder, mutate or hide the exact prior sequence (duplicates too).
+      const priorRowsRestored =
+        added >= 0 && before.rows.every((row, index) => after.rows[added + index] === row);
+      return {
+        searchEmpty: after.searchEmpty,
+        priorRowsRestored,
+        countersMatch:
+          after.displayedCount === after.rows.length && after.totalCount === after.rows.length,
+        arrivalCountMatches: added === after.totalCount - before.totalCount,
+        priorRowCount: before.rows.length,
+        restoredRowCount: after.rows.length,
+        addedRowCount: added,
+      };
+    },
+    (state) =>
+      state?.searchEmpty &&
+      state.priorRowsRestored &&
+      state.countersMatch &&
+      state.arrivalCountMatches,
+  );
 }
 
 async function naturalDetailRows(panel) {
@@ -864,6 +927,7 @@ async function exercise({ page, panel, artifacts }) {
       );
     } else {
       stage = 'search_control';
+      const beforeSearchRows = await logRowBaseline(panel);
       const positive = await evaluate(
         panel,
         `(() => {
@@ -923,13 +987,10 @@ async function exercise({ page, panel, artifacts }) {
           },
         );
         await setSearch(panel, '');
-        const restored = await waitFor(
-          'search_reset',
-          () => snapshot(panel),
-          (s) => s?.counterMatchesRows && s.searchLength === 0 && s.rowCount === preClearCount,
-        );
-        result.cases.find((item) => item.id === 'EXT-F-1005-T14').evidence.searchReset =
-          restored.rowCount === preClearCount ? 'pass_exact_prior_count' : 'fail';
+        const restored = await waitForExactSearchReset(panel, beforeSearchRows, 'search_reset');
+        const evidence = result.cases.find((item) => item.id === 'EXT-F-1005-T14').evidence;
+        evidence.searchReset = 'pass_exact_prior_visible_row_sequence_with_new_arrivals';
+        evidence.searchResetCounts = restored;
       } else {
         add(
           'EXT-F-1005-T14',
@@ -946,11 +1007,7 @@ async function exercise({ page, panel, artifacts }) {
         );
         noMatchObserved = true;
         await setSearch(panel, '');
-        await waitFor(
-          'search_reset_without_positive',
-          () => snapshot(panel),
-          (s) => s?.counterMatchesRows && s.searchLength === 0 && s.rowCount === preClearCount,
-        );
+        await waitForExactSearchReset(panel, beforeSearchRows, 'search_reset_without_positive');
       }
       stage = 'pause_resume';
       await click(panel, 'title', 'Pause');
@@ -1000,6 +1057,7 @@ async function exercise({ page, panel, artifacts }) {
         detailCollapsed = true;
         const t14 = result.cases.find((item) => item.id === 'EXT-F-1005-T14');
         if (detailTerm && t14?.status === 'partial') {
+          const beforeDetailSearchRows = await logRowBaseline(panel);
           await setSearch(panel, detailTerm.term);
           await waitFor(
             'detail_only_search_positive',
@@ -1018,11 +1076,13 @@ async function exercise({ page, panel, artifacts }) {
               ? 'pass_via_natural_detail_key_absent_from_messages'
               : 'pass_via_natural_detail_primitive_absent_from_messages';
           await setSearch(panel, '');
-          await waitFor(
+          t14.evidence.detailSearchResetCounts = await waitForExactSearchReset(
+            panel,
+            beforeDetailSearchRows,
             'detail_search_reset',
-            () => snapshot(panel),
-            (observed) => observed?.counterMatchesRows && observed.searchLength === 0,
           );
+          t14.evidence.detailSearchReset =
+            'pass_exact_prior_visible_row_sequence_with_new_arrivals';
         }
       }
       if (detailRows.noDetailRowText) {
