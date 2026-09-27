@@ -307,7 +307,8 @@ function stopOwnedChild(child) {
 }
 
 function testPage(extensionId) {
-  return `<!doctype html><meta charset="utf-8"><title>Native panel QA</title>
+  return `<!doctype html><meta charset="utf-8"><title>Research brief: product discovery</title>
+    <main><article><h1>Research brief: product discovery</h1><p>A short demo article for a real guest Scrape capture.</p><p>Capture the page, review its structure, and identify SEO improvements before sharing the result.</p></article></main>
     <button id="open-panel">Open panel</button><pre id="result"></pre>
     <script>
       document.querySelector('#open-panel').addEventListener('click', () => {

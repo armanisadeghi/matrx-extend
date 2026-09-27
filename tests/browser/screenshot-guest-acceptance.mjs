@@ -282,6 +282,25 @@ async function exercise({ page, panel, artifacts }) {
         ),
       (checked) => checked === 'false',
     );
+    await evaluate(
+      panel,
+      `document.querySelector('[role="switch"][aria-label="Auto-scrape on load"]')
+        ?.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' })`,
+    );
+    await waitFor(
+      'guest_auto_capture_visible',
+      () =>
+        evaluate(
+          panel,
+          `(() => {
+            const element = document.querySelector('[role="switch"][aria-label="Auto-scrape on load"]');
+            if (!element) return false;
+            const rect = element.getBoundingClientRect();
+            return rect.top >= 0 && rect.bottom <= innerHeight;
+          })()`,
+        ),
+      (visible) => visible === true,
+    );
     report.storeAssets.settings = await saveScreenshot(
       panel,
       artifacts,
