@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0047",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T57"
-  ],
+  "case_ids": ["EXT-F-1012-T57"],
   "surface": "Showcase Network replay capture timing and document provenance",
   "auth_mode": "admin",
   "reproduction": [
