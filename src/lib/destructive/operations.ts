@@ -218,6 +218,11 @@ export const INTERNAL_ONLY: { fn: string; module: string; why: string }[] = [
     why: 'Drops the cached is-admin bit on sign-out. Re-derived on the next sign-in.',
   },
   {
+    fn: 'writeAuthRoleGate',
+    module: 'src/hooks/use-auth.ts',
+    why: 'During automatic auth revalidation or sign-out, removes only the cached admin-role bit when a false write is rejected or the session ends. The role is re-derived from the verified session; no user content is deleted.',
+  },
+  {
     fn: 'invalidateEnginePortCache',
     module: 'src/lib/desktop/discovery.ts',
     why: 'Cached desktop-engine port. Rediscovered automatically on the next call.',

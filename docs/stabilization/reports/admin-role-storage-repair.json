@@ -10,6 +10,7 @@
     "src/hooks/use-auth.ts",
     "src/hooks/use-auth.strict-mode.test.tsx",
     "src/hooks/use-auth.entrypoints.test.tsx",
+    "src/lib/destructive/operations.ts",
     "docs/feature-tests.md",
     "docs/stabilization/reports/admin-role-storage-repair.json"
   ],
@@ -44,6 +45,12 @@
       "run_id": "d29-final",
       "verdict": "pass_after_final_generation_check",
       "evidence": "24 of 24 focused auth tests passed after the final current-generation check before restoring the UI admin role."
+    },
+    {
+      "case_id": "EXT-F-1015-T35",
+      "run_id": "d29-destructive-guard-final",
+      "verdict": "pass",
+      "evidence": "Four of four destructive-action guard tests passed after classifying the uniquely named internal cached admin-role removal in INTERNAL_ONLY; the guard and application behavior were unchanged."
     }
   ],
   "limitations": [

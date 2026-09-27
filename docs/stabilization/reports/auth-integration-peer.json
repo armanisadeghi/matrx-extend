@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "report_id": "auth-integration-peer-20260927",
+  "reviewer_lane": "independent verification; no authorship",
+  "reviewed_at": "2026-09-27",
+  "acceptance": {
+    "result": "acceptance-supported-with-bounded-partial",
+    "native_run": "docs/stabilization/runs/d26-d29-native092.json",
+    "native_result": "test-results/contained-navigation-d26-d29-native092.json",
+    "native_result_sha256_actual": "153787c99be190053f227d5b935f64f75924856bf46c471bfd7c36ceb323c19c",
+    "native_result_sha256_recorded": "153787c99be190053f227d5b935f64f75924856bf46c471bfd7c36ceb323c19c",
+    "artifact_source_head": "c9abb17e079bb0ac4829d2a4b294b3a2e312f5e4",
+    "native_source_head": "0b1ef207973fa6fc496707588cc8d80615e5f22c",
+    "post_compile_source_change": false,
+    "development_receipt": "test-results/source-dev-build-092-d26-d29-20260927.json",
+    "receipt_sha256_actual": "a5eed6ce6809628855593826183f9d49d2cbfd0897920ae6dee9ce14d5d73ac8",
+    "receipt_sha256_recorded": "a5eed6ce6809628855593826183f9d49d2cbfd0897920ae6dee9ce14d5d73ac8",
+    "version": "0.2.92",
+    "tree_sha256": "48b73b141ed7fe48cd4aac145ed518bb3b732891d1b31946fbc7a7f87b4b572c",
+    "tree_hash_matches_native_before_after": true,
+    "procedure_review": {
+      "first_admin_sample_precedes_settling_wait": true,
+      "first_admin_sample_has_21_titles": true,
+      "first_admin_sample_exact_expected_roster": true,
+      "readiness_flags_present": [
+        "expectedEmailMatch",
+        "adminRoleMatch",
+        "signOutPresent",
+        "advancedPresent",
+        "authAlertPresent"
+      ],
+      "readiness_values": [true, true, true, true, false],
+      "role_ready_to_first_sample_ms": 33,
+      "settling_attempts": 1,
+      "settling_elapsed_ms": 0,
+      "post_navigation_roster_has_21_items": true,
+      "post_navigation_roster_exact": true,
+      "initial_admin_17_of_21_issue": "The comparison baseline is commit 5224d583, titled fix(EXT-D-0026): preserve verified admin state on local auth notice; this 0.2.92 native evidence records all 21 expected admin titles on the first ready sample and after navigation.",
+      "reload_or_role_transition_exercised": false
+    },
+    "coverage": { "pass": 37, "partial": 1, "unverified": 0 },
+    "partial_target": "capture-observed:admin",
+    "partial_reason": "Capture's accessible empty-state label is present and the badge is absent; the bounded target remains partial.",
+    "limits": [
+      "D29 failed or unverified role/session transition paths are not tested by normal sign-in.",
+      "No persisted-selection role transition or reload scenario was exercised.",
+      "Ordinary member access and systematic Chat/Pilot actions are outside this evidence.",
+      "This run does not establish full feature health or release readiness."
+    ]
+  },
+  "quality": {
+    "result": "registry-correction-is-narrow-and-classified",
+    "changed_files_reviewed": ["src/hooks/use-auth.ts", "src/lib/destructive/operations.ts"],
+    "source_change": "The local promise variable is renamed from write to writeAuthRoleGate and all references in writeAdminGate are updated consistently. The promise chain and return behavior are unchanged.",
+    "guard_classification": "The AST guard identifies chrome.storage.local.remove by its enclosing function name. The discovered remover is writeAuthRoleGate, so the matching INTERNAL_ONLY entry in src/lib/destructive/operations.ts classifies that exact function/module pair. This is the guard's intended internal-removal exemption; it does not widen a path, primitive, or module-level bypass.",
+    "reason_scope": "Reason describes only removal of the cached admin-role bit during automatic auth revalidation/sign-out, followed by re-derivation from verified session; it excludes user content.",
+    "runtime_behavior_change_from_registry_correction": false,
+    "test_execution": "Not run by this independent reviewer; the owning agent is running the guard test separately.",
+    "limits": [
+      "This is a source/guard-classification review, not execution evidence for the test suite."
+    ]
+  }
+}

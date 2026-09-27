@@ -35,7 +35,7 @@ let signInGeneration = 0;
 // role result from an older auth generation cannot land after a newer clear.
 let adminStorageWrite: Promise<void> = Promise.resolve();
 function writeAdminGate(value: boolean | null, isCurrent: () => boolean): Promise<boolean> {
-  const write = adminStorageWrite.then(async () => {
+  const writeAuthRoleGate = adminStorageWrite.then(async () => {
     if (!isCurrent()) return false;
     if (value === null) await chrome.storage.local.remove([STORAGE_KEYS.IS_ADMIN]);
     else if (value === false) {
@@ -48,11 +48,11 @@ function writeAdminGate(value: boolean | null, isCurrent: () => boolean): Promis
     } else await chrome.storage.local.set({ [STORAGE_KEYS.IS_ADMIN]: true });
     return isCurrent();
   });
-  adminStorageWrite = write.then(
+  adminStorageWrite = writeAuthRoleGate.then(
     () => undefined,
     () => undefined,
   );
-  return write;
+  return writeAuthRoleGate;
 }
 // Native broadcast fans out to this document synchronously. A sign-in that
 // this hook just verified is already committed here; rereading it on its own
