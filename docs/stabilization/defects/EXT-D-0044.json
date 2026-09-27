@@ -26,9 +26,9 @@
   ],
   "severity": "S2: saved recipes can silently produce unrelated data or misrepresent no matching data as a successful intended replay.",
   "priority": "P1: directly affects reliable reopen-and-repeat behavior in the requested Showcase workflow.",
-  "state": "in-fix",
+  "state": "fixed",
   "reproduction_status": "Deterministic source and real-mode caller regressions reproduced scope widening, absent execution results, stale-page rows/errors/health, same-URL cross-tab reuse, and total selected-field misses. Installed-extension replay remains pending.",
-  "verification_status": "Focused25/25 green; real baseline copies and three isolated mutations fail intended assertions; tsc passed. Catalog169tools and database documentation82tools regenerated. Installed real-site verification remains open.",
+  "verification_status": "Engineering checks and independent source review passed. Installed .109 owned List recipe reopened and reran249rows; explicit off-route run remained available, returned honest no-match and retained prior verified health. Native in-flight navigation, sibling callers, full-row audit and same-URL document reload identity remain unverified; no closure.",
   "transition_history": [
     {
       "at": "2026-09-27",
@@ -47,6 +47,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Guarded mode/probe regression failed 2/2 at the intended boundaries, and guarded Patterns UI regression failed 2/2 for missing route guidance and stale old-page rows. Focused repairs are underway."
+    },
+    {
+      "at": "2026-09-27T22:35:47+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Class repair completed with25/25 focused guards, meaningful mutation failures, compile/catalogs, independent source review and subsequent35/35 integrated tests. Installed .109 saved/reopened List replay and off-route no-match passed; remaining native dimensions keep retest partial."
     }
   ],
   "closure_requirement": "Add meaningful red/green coverage for route guidance with explicit Run still enabled, absent-root no-widening, truthful zero-row outcomes and current-page completion provenance. Then verify with an owned uniquely named pattern on real same-host pages using the installed build; confirm intended rows, no unrelated rows, honest no-match display, and navigation behavior. Preserve guest/member denial evidence under existing EXT-F-1012-T38 rather than duplicating it.",
@@ -58,6 +64,8 @@
     ],
     "report": "docs/stabilization/reports/showcase-replay-class-escalation.json",
     "contract": "Explicit Run stays available off-route. No-match/off-route retain last verified persisted health while returning current guidance. Rows and late side effects are bound to originating tab ID plus URL. Manual and List modes require actual selected elements, preserving existing empty values.",
-    "remaining": "Owner integrates later upstream dependency refresh and verifies save/reopen/replay in installed extension. Same-URL document reload identity is not claimed."
-  }
+    "remaining": "Continue native provenance and sibling-caller acceptance. Same-URL document reload identity remains unclaimed. Full-row inspection and retained test fixture cleanup are open."
+  },
+  "retest_status": "partial",
+  "live_evidence": "docs/stabilization/runs/showcase-installed-d45-001.json"
 }

@@ -1,7 +1,11 @@
 {
   "id": "EXT-D-0045",
   "feature_id": "EXT-F-1012",
-  "case_ids": ["EXT-F-1012-T23", "EXT-F-1012-T24", "EXT-F-1012-T51"],
+  "case_ids": [
+    "EXT-F-1012-T23",
+    "EXT-F-1012-T24",
+    "EXT-F-1012-T51"
+  ],
   "surface": "Showcase List Pattern picker cancellation after changing a configured draft scope",
   "auth_mode": "admin",
   "reproduction": [
@@ -19,12 +23,12 @@
     "src/features/showcase/tabs/ListPatternTab.tsx:227-230 exit handler only closes the session",
     "docs/stabilization/inventory.json EXT-F-1012-T23 expects Cancel without applying picks"
   ],
-  "runtime_evidence_limit": "Installed 0.2.108 run showcase-installed-d43-001 observed Restart/Cancel after choosing the correct scope in a fresh picker. It did not start with a configured A plus fields and did not exercise replacement by B; this stronger loss scenario is source-confirmed but not yet live-reproduced.",
+  "runtime_evidence_limit": "Installed .109 independently exercised configured A plus fields and 249-row preview, Restart and nested B selection, Cancel preserving A, same-scope field append, and zero-field Done committing B. Full-row correctness and broader Showcase coverage remain outside this defect closure.",
   "severity": "S2: Cancel can irreversibly discard an unsaved list definition and its preview.",
   "priority": "P1: core detect, select, extract workflow and an explicit existing Cancel contract.",
-  "state": "fixed",
+  "state": "closed",
   "reproduction_status": "Guarded component regression failed on the original source at the intended Cancel assertions (2 of 4 failed); the previously configured A root was replaced by nested B before Done.",
-  "verification_status": "Guarded D45/D43/D42/D44 focused run passed 35 of 35 assertions across 8 files; pnpm compile passed. Direct development build and installed real-site verification remain pending.",
+  "verification_status": "35/35 focused regressions, TypeScript, direct .109 build, source peer, and independent real-calendar Cancel/Done/same-scope retest passed. Browser guard stopped cleanly with exit0.",
   "transition_history": [
     {
       "at": "2026-09-27",
@@ -41,10 +45,34 @@
     {
       "at": "2026-09-27",
       "from": "triaged",
+      "to": "in-fix",
+      "reason": "Ledger reconciliation: guarded showcase-d45-red-001 reproduced the two intended Cancel failures before the source repair; the original checkpoint omitted this required intermediate state."
+    },
+    {
+      "at": "2026-09-27",
+      "from": "in-fix",
       "to": "fixed",
       "reason": "Staged picker scope and field edits until Done; Cancel retains the committed draft and preview. Deterministic red/green and TypeScript checks passed. Installed-extension acceptance remains open."
+    },
+    {
+      "at": "2026-09-27T22:31:57.574Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Installed showcase-installed-d45-001 reproduced the original A\u2192Restart\u2192B\u2192Cancel sequence and confirmed A fields and 249-row preview survived; same-scope Done appended a field and zero-field Done explicitly committed B."
+    },
+    {
+      "at": "2026-09-27T22:35:47+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Orchestrator reviewed independent live evidence90ce2953 against original reproduction and surrounding cases. Closure is limited to provisional picker transaction loss."
     }
   ],
   "repair_direction": "Stage provisional picker scope/fields within the active session and use the staged scope to display suggested fields without replacing the committed editor or preview. Commit on Done, discard on Cancel. Keep zero-field Done as a valid explicit scope selection, and retain D42 page/session nonce guards.",
-  "red_guard_plan": "A component test starts with A+field+preview, enters the actual Pick more fields session, Restarts, selects B using the real page picker, Cancels, and asserts A+field+preview survive. Sibling assertions cover Done B with zero fields, same-scope field append with five distinct extracted records, and late stamped results after Cancel. D42/D43 regressions retain page/session nonce checks. Installed-extension real-site acceptance remains pending."
+  "red_guard_plan": "Executed: original Cancel regression red, repaired D45/D42/D43/D44 focused35/35 green, independent installed .109 original/surrounding retest passed. Late stamped results after Cancel remain protected by component regression.",
+  "closure_evidence": [
+    "docs/stabilization/runs/showcase-installed-d45-001.json",
+    "docs/stabilization/runs/showcase-d45-dev109-001.json",
+    "docs/stabilization/reports/showcase-d45-fix.json",
+    "docs/stabilization/reports/showcase-picker-transaction-peer.json"
+  ]
 }
