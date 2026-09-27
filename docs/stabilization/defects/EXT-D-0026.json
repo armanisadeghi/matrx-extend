@@ -1,0 +1,35 @@
+{
+  "id": "EXT-D-0026",
+  "feature_id": "EXT-F-1001",
+  "case_ids": ["EXT-F-1001-T03"],
+  "surface": "Admin navigation / shared authentication state",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Build current0.2.89 unpacked development extension, verify receipt/tree78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2, launch in an owned fresh Chrome-for-Testing profile under the resource guard.",
+    "Use tests/browser/contained-navigation-acceptance.mjs with CONTAINED_DEV_BUILD_RECEIPT=test-results/source-dev-build-089-takeover-20260927.json and explicit bundled Playwright/Chrome runtime paths documented in COORDINATOR.md. Original observation used runner at c90406ce; the follow-up preserves its initial roster observation.",
+    "Complete guest navigation checks, sign in through real aimatrx.com UI as the authorized admin test account using point-of-use AI_ADMIN_PASSWORD, then complete extension Sign in.",
+    "Wait for Settings to show the admin role and Advanced agent capabilities; immediately inspect the main navigation roster, excluding nested feature tablists. Compare all21 titles required by the source audience table."
+  ],
+  "expected": "Once admin readiness is observed, main navigation exposes all21 expected tabs, including Pilot, Showcase, Token broker and Debug.",
+  "actual": "First post-readiness sample had17tabs; exactly those four admin-only tabs were absent. Guest targets and Capture title/count observations passed. No later roster sample was recorded, so duration and recovery are unknown.",
+  "evidence": [
+    "docs/stabilization/runs/contained-navigation-dev089-001.json",
+    "tests/browser/contained-navigation-acceptance.mjs",
+    "src/entrypoints/sidepanel/App.tsx"
+  ],
+  "severity": "S2 provisional: admin-only controls absent at observed readiness; persistence/user impact not yet established",
+  "priority": "P1: resolve contained admin navigation before broad authenticated coverage",
+  "state": "open",
+  "owner": "/root/contained_batch_ready",
+  "reproduction_status": "Observed once; source-supported same-session role-refresh race is a hypothesis. Bounded temporal reproduction in preparation; not yet triaged as persistent product defect.",
+  "fix_commits": [],
+  "transition_history": [
+    {
+      "at": "2026-09-27T08:31:32.312719+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Guarded .89 navigation run failed exact admin roster assertion; preserve failed first observation while distinguishing hydration from persistent access failure."
+    }
+  ],
+  "closure_requirement": "Classify original initial17-tab observation with temporal evidence; retain strict21-tab stable oracle and independently verify any required fix. No guessed product change or passing by weakening roster."
+}

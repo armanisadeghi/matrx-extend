@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "runId": "contained-navigation-dev089-001",
+  "scope": "EXT-F-1001 bounded contained-navigation native acceptance on the captured local dev build",
+  "outcome": {
+    "testReportStatus": "unverified",
+    "wrapperExitCode": 1,
+    "resourceChildExitCode": 1,
+    "resourceChildSignal": null,
+    "stoppedBeforeSeoRun": true
+  },
+  "build": {
+    "version": "0.2.89",
+    "kind": "local_dev_unpacked",
+    "treeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2"
+  },
+  "recordedTargetStatuses": [
+    {
+      "id": "guest-tab-inventory",
+      "role": "guest",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "avatar:guest",
+      "role": "guest",
+      "control": "EXT-F-1001-C04",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:guest:Scrape",
+      "role": "guest",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:guest:Data",
+      "role": "guest",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "lazy-load:guest:Data",
+      "role": "guest",
+      "control": "EXT-F-1001-C05",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:guest:SEO",
+      "role": "guest",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "lazy-load:guest:SEO",
+      "role": "guest",
+      "control": "EXT-F-1001-C05",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:guest:Settings",
+      "role": "guest",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "lazy-load:guest:Settings",
+      "role": "guest",
+      "control": "EXT-F-1001-C05",
+      "status": "pass"
+    },
+    {
+      "id": "capture-absent:guest",
+      "role": "guest",
+      "control": "EXT-F-1001-C02",
+      "status": "pass"
+    },
+    {
+      "id": "vault-shortcut-absent:guest",
+      "role": "guest",
+      "control": "EXT-F-1001-C03",
+      "status": "pass"
+    },
+    {
+      "id": "real-admin-signin",
+      "role": "admin",
+      "control": "prerequisite",
+      "status": "pass"
+    }
+  ],
+  "failure": {
+    "stage": "admin_tab_inventory",
+    "category": "admin_tab_inventory_unverified",
+    "safeCode": "unclassified",
+    "criterionResults": [
+      {
+        "name": "admin capture identity count is exactly one",
+        "status": "pass",
+        "observedCount": 1
+      },
+      {
+        "name": "admin capture title matches supported capture-label pattern",
+        "status": "pass"
+      },
+      {
+        "name": "admin navigation roster matches expected guest/admin inventory",
+        "status": "fail",
+        "observedCount": 17,
+        "expectedCount": 21
+      }
+    ]
+  },
+  "cleanup": {
+    "ownedProfileEmpty": true,
+    "profileScopedProcessCount": 0,
+    "canonicalHeavyLeasePresent": false,
+    "canonicalUnsafeHoldPresent": false
+  },
+  "privateWrapperLog": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/contained-navigation-dev089-001-wrapper.log",
+    "mode": "0600",
+    "sha256": "7992467326079637aa320fab6e8e49c40ddeb896432fb5b499cdbf0504b424b5"
+  },
+  "testResult": {
+    "path": "test-results/contained-navigation-acceptance.json",
+    "sha256": "41359691eb0c392952b71d071e3499412277d644967a4d3a16f85ed90e3e1d22"
+  }
+}

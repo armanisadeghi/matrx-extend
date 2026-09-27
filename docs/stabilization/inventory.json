@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-27T08:17:57.212077+00:00",
+  "updated_at": "2026-09-27T08:31:32.312719+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -1679,7 +1679,21 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "defect_ids": [
+            "EXT-D-0026"
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "contained-navigation-dev089-001",
+              "observed_assertion": "fail: first admin-readiness roster17 rather than21; no later snapshot",
+              "detail": "Open untriaged finding EXT-D-0026; product persistence versus initial auth settling remains unresolved. No full navigation pass.",
+              "evidence": [
+                "docs/stabilization/runs/contained-navigation-dev089-001.json"
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1001-T04",
@@ -2007,7 +2021,8 @@
         "admin": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0001"
+            "EXT-D-0001",
+            "EXT-D-0026"
           ],
           "run_ids": [
             "contained-navigation-001",
@@ -2017,7 +2032,7 @@
             "contained-navigation-005",
             "contained-navigation-006"
           ],
-          "retest_status": "not-run"
+          "retest_status": "pending"
         }
       },
       "inventory_status": "complete",
