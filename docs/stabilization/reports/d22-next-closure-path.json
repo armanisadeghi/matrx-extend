@@ -126,6 +126,23 @@
         "failure_truth": "Expired deadline yields unverified only after started UI work settles. A nonsettling driver/transport does not reach workspaceCleanup=pass; root guard may terminate owned disposable profile. No fictitious cancellation or hard total wall-clock bound is claimed.",
         "validation": "Targeted Biome and node syntax check; no runtime/test execution. Narrow independent re-review pending."
       }
+    },
+    "positive_diagnostics_repair": {
+      "status": "Source-only diagnostic repair; peer/runtime pending.",
+      "stages": [
+        "positive_fixture_navigation",
+        "positive_scrape_click",
+        "positive_scoped_lookup",
+        "positive_scrape_reselect",
+        "positive_recognition_ui",
+        "positive_open_click",
+        "positive_open_new_tab",
+        "positive_open_target_route"
+      ],
+      "safe_evidence": "Boolean start/return markers, response HTTP status, exact-fixture URL equality only, elapsed positive-sequence milliseconds, navigation failure counts from fixed allowlist, scoped observed/completed/HTTP200/failed/returned-row counts, Scrape DOM booleans and tab count/active state. No raw URLs, IDs, error messages, headers or response bodies.",
+      "error_classification": "Fixed known Chromium net-error categories, known pointer driver codes, timeout/wait category and unclassified_exception fallback. Never echo raw exception. Evidence is captured before workspace cleanup can alter UI.",
+      "choice_counts": "choicesEnumeratedFromPicker=false until actual option enumeration; initialized baseline count alone is never full account/workspace census. Multi-workspace and late lookup remain unverified until their actual predicates pass.",
+      "preserved_behavior": "No acceptance predicate weakened; no fixture creation, writes, retries, checkpoint access or new runtime launch. Diagnostic repair only."
     }
   },
   "readonly_001_preserved": {
@@ -195,5 +212,94 @@
       "failureStage": "discover_existing_public_source"
     },
     "classification": "Actual scoped HTTP200 list with zero rows and limit40. Genuine empty RLS-visible selected-workspace result, not a URL filter or product failure; says nothing about other accessible workspaces."
+  },
+  "readonly_003_preserved": {
+    "sha256": "ba7b8624c83d401f7f09d1c6182be6fd032693343945988fe736e516d67bc608",
+    "result": {
+      "schema_version": 1,
+      "defect_id": "EXT-D-0022",
+      "status": "unverified",
+      "scope": "Existing Source recognition, workspace switching, authentic delayed lookup; no Source writes",
+      "observations": {
+        "lateInflightSave": "unverified",
+        "realAdminUi": true,
+        "workspaceDiscovery": {
+          "accessibleUniqueChoices": 1,
+          "attemptedWorkspaces": 1,
+          "selectedOriginal": true,
+          "workspaces": [
+            {
+              "ordinal": 1,
+              "original": true,
+              "selectedByUi": true,
+              "scopedLookupOrganizationMatched": true,
+              "discovery": {
+                "pages": 1,
+                "rows": 1,
+                "totalReturnedRows": 1,
+                "urlPresent": 1,
+                "httpUrls": 1,
+                "publicEligible": 1,
+                "categories": {
+                  "eligible": 1
+                },
+                "listPages": [
+                  {
+                    "status": 200,
+                    "rowCount": 1,
+                    "urlAliasSelected": true,
+                    "cursorPresent": false,
+                    "expectedCursorMatched": true,
+                    "limit": 40
+                  }
+                ],
+                "pagination": [],
+                "exhausted": false
+              }
+            }
+          ],
+          "scope": "bounded_accessible_workspace_search"
+        },
+        "fixtureDiscovery": {
+          "pages": 1,
+          "rows": 1,
+          "totalReturnedRows": 1,
+          "urlPresent": 1,
+          "httpUrls": 1,
+          "publicEligible": 1,
+          "categories": {
+            "eligible": 1
+          },
+          "listPages": [
+            {
+              "status": 200,
+              "rowCount": 1,
+              "urlAliasSelected": true,
+              "cursorPresent": false,
+              "expectedCursorMatched": true,
+              "limit": 40
+            }
+          ],
+          "pagination": [],
+          "exhausted": false
+        },
+        "existingFixtureFound": true,
+        "fixturePageMode": "scripts_disabled_service_workers_bypassed",
+        "publicPageBlockedRequests": {},
+        "workspaceCleanup": "pass"
+      },
+      "build": {
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.83",
+        "treeSha256": "8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8"
+      },
+      "failureStage": "positive_workspace_recognition",
+      "failureCode": "stage_not_observed"
+    },
+    "receipt": "docs/stabilization/runs/d22-recognition-readonly-003.json",
+    "classification": "Actual admin, one real scoped HTTP200 list row and one eligible existing Source. Failed at composite positive_workspace_recognition; no positive recognition/Open or multi-workspace proof.",
+    "timing": "Guard admitted02:48:58.712Z and child exited02:49:11.208Z:12.496seconds for entire run including login/cleanup. This cannot be a full configured60000ms navigation or30000ms lookup/UI wait expiry. A fast navigation exception, earlier UI/driver failure, or another immediate exception is possible; raw error was discarded, so exact cause is unknown. No guessed product bug.",
+    "count_correction": "accessibleUniqueChoices=1 was initialized from the original workspace before fixture success, not an enumeration of all picker options. Run003 proves one selected workspace only; it does not prove the account has exactly one accessible workspace."
   }
 }

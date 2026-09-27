@@ -232,11 +232,45 @@ async function scrapeState(panel) {
   );
 }
 
-async function sourceIdFromRealUi(panel, page, label) {
+function safeFailureCategory(error) {
+  const pointerCodes = [
+    'pointer_initial_evaluation_failed',
+    'pointer_page_sample_failed',
+    'pointer_target_not_unique',
+    'pointer_followup_evaluation_failed',
+    'pointer_stable_hit_not_observed',
+    'pointer_press_dispatch_failed',
+    'pointer_release_dispatch_failed',
+  ];
+  if (pointerCodes.includes(error?.driverFailure?.code)) return error.driverFailure.code;
+  const message = typeof error?.message === 'string' ? error.message : '';
+  for (const code of [
+    'ERR_ABORTED',
+    'ERR_BLOCKED_BY_CLIENT',
+    'ERR_NAME_NOT_RESOLVED',
+    'ERR_CONNECTION_REFUSED',
+    'ERR_CONNECTION_RESET',
+    'ERR_TIMED_OUT',
+    'ERR_CERT_AUTHORITY_INVALID',
+  ]) {
+    if (message.includes(`net::${code}`)) return code;
+  }
+  if (error?.name === 'TimeoutError') return 'browser_timeout';
+  if (message.startsWith('scoped_read_completed_not_observed:')) return 'lookup_wait_expired';
+  if (message.startsWith('recognition_ui_matches_response_not_observed:'))
+    return 'recognition_ui_wait_expired';
+  if (message === 'panel_runtime_exception') return 'panel_runtime_exception';
+  return 'unclassified_exception';
+}
+
+async function sourceIdFromRealUi(panel, page, label, prefix) {
+  if (prefix) stage = `${prefix}_open_click`;
   const openedPromise = page.context().waitForEvent('page', { timeout: 30_000 });
   await click(panel, 'button', label);
+  if (prefix) stage = `${prefix}_open_new_tab`;
   const opened = await openedPromise;
   try {
+    if (prefix) stage = `${prefix}_open_target_route`;
     await opened.waitForURL(
       (url) =>
         SOURCE_ORIGINS.has(url.origin) &&
@@ -576,6 +610,7 @@ async function discoverAcrossWorkspaces(panel, reads, originalName, original) {
   const deadline = Date.now() + DISCOVERY_TOTAL_MS;
   const summary = {
     accessibleUniqueChoices: 1,
+    choicesEnumeratedFromPicker: false,
     attemptedWorkspaces: 0,
     selectedOriginal: true,
     workspaces: [],
@@ -621,6 +656,7 @@ async function discoverAcrossWorkspaces(panel, reads, originalName, original) {
         ),
       ];
       summary.accessibleUniqueChoices = candidates.length;
+      summary.choicesEnumeratedFromPicker = true;
       await discoveryUiStep(deadline, () => click(panel, 'option', originalName));
     }
   }
@@ -765,8 +801,10 @@ async function completedLookup(reads, since, origin, org, identity) {
   return row?.id ?? null;
 }
 
-async function assertRecognition(panel, page, expectedId) {
+async function assertRecognition(panel, page, expectedId, prefix) {
+  if (prefix) stage = `${prefix}_scrape_reselect`;
   await click(panel, 'title', 'Scrape');
+  if (prefix) stage = `${prefix}_recognition_ui`;
   await waitFor(
     'recognition_ui_matches_response',
     () => scrapeState(panel),
@@ -779,7 +817,10 @@ async function assertRecognition(panel, page, expectedId) {
         : s.notSaved && !s.savedBanner && !s.openRecognized),
     30_000,
   );
-  if (expectedId && (await sourceIdFromRealUi(panel, page, 'Open (web app)')) !== expectedId)
+  if (
+    expectedId &&
+    (await sourceIdFromRealUi(panel, page, 'Open (web app)', prefix)) !== expectedId
+  )
     fail('open_source_target_mismatch');
 }
 
@@ -868,15 +909,86 @@ try {
         report.observations.existingFixtureFound = true;
         const identity = fixture.url;
         await installPublicReadGuard(page);
-        stage = 'positive_workspace_recognition';
+        const positive = {
+          navigationStarted: false,
+          navigationReturned: false,
+          navigationStatus: null,
+          urlMatchesFixture: false,
+          scrapeClickReturned: false,
+          lookupReturned: false,
+          elapsedMs: 0,
+          requestFailures: {},
+        };
+        report.observations.positiveBoundaries = positive;
+        const positiveStart = Date.now();
+        const requestFailed = (request) => {
+          if (!request.isNavigationRequest()) return;
+          const category = safeFailureCategory({ message: request.failure()?.errorText ?? '' });
+          positive.requestFailures[category] = (positive.requestFailures[category] ?? 0) + 1;
+        };
+        page.on('requestfailed', requestFailed);
         let since = reads.records.length;
-        await page.goto(identity, { waitUntil: 'load', timeout: 60_000 });
-        if (page.url() !== identity) fail('existing_fixture_redirected');
-        await click(panel, 'title', 'Scrape');
-        const sourceId = await completedLookup(reads, since, origin, approved.storedId, identity);
-        if (!sourceId) fail('existing_fixture_not_recognized');
-        await assertRecognition(panel, page, sourceId);
-        report.observations.positiveRecognitionAndOpen = 'pass';
+        let sourceId;
+        try {
+          stage = 'positive_fixture_navigation';
+          positive.navigationStarted = true;
+          const response = await page.goto(identity, { waitUntil: 'load', timeout: 60_000 });
+          positive.navigationReturned = true;
+          positive.navigationStatus = response?.status() ?? null;
+          positive.urlMatchesFixture = page.url() === identity;
+          if (!positive.urlMatchesFixture) fail('existing_fixture_redirected');
+          stage = 'positive_scrape_click';
+          await click(panel, 'title', 'Scrape');
+          positive.scrapeClickReturned = true;
+          stage = 'positive_scoped_lookup';
+          sourceId = await completedLookup(reads, since, origin, approved.storedId, identity);
+          positive.lookupReturned = true;
+          if (!sourceId) fail('existing_fixture_not_recognized');
+          await assertRecognition(panel, page, sourceId, 'positive');
+          report.observations.positiveRecognitionAndOpen = 'pass';
+        } catch (error) {
+          positive.failureCategory = safeFailureCategory(error);
+          positive.failedBoundary = stage;
+          report.failureCode ??= positive.failureCategory;
+          throw error;
+        } finally {
+          page.off('requestfailed', requestFailed);
+          positive.elapsedMs = Date.now() - positiveStart;
+          positive.urlMatchesFixture = page.url() === identity;
+          const matching = reads.records
+            .slice(since)
+            .filter(
+              (r) =>
+                r.origin === origin &&
+                r.org === `eq.${approved.storedId}` &&
+                r.identity === `eq.${identity}`,
+            );
+          positive.scopedReads = {
+            observed: matching.length,
+            completed: matching.filter((r) => r.done).length,
+            http200: matching.filter((r) => r.status === 200).length,
+            failed: matching.filter((r) => r.failed).length,
+            returnedRows: matching
+              .filter((r) => Array.isArray(r.rows))
+              .reduce((sum, r) => sum + r.rows.length, 0),
+          };
+          try {
+            positive.scrapeUi = await scrapeState(panel);
+          } catch {
+            positive.scrapeUi = 'unavailable';
+          }
+          try {
+            positive.scrapeTab = await evaluate(
+              panel,
+              `(() => {
+            const tabs = [...document.querySelectorAll('button[role="tab"][title="Scrape"]')];
+            return { count: tabs.length, active: tabs.length === 1 && tabs[0].getAttribute('aria-selected') === 'true' };
+          })()`,
+            );
+          } catch {
+            positive.scrapeTab = 'unavailable';
+          }
+        }
 
         stage = 'comparison_workspace_discovery';
         await click(panel, 'title', 'Settings');
