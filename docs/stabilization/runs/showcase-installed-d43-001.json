@@ -2,10 +2,7 @@
   "schema_version": 1,
   "run_id": "showcase-installed-d43-001",
   "feature_id": "EXT-F-1012",
-  "defect_ids": [
-    "EXT-D-0043",
-    "EXT-D-0039"
-  ],
+  "defect_ids": ["EXT-D-0043", "EXT-D-0039"],
   "status": "partial",
   "mode": "admin",
   "target": "https://electronic.vegas/vegas-edm-event-calendar/",
