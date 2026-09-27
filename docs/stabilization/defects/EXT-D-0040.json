@@ -11,7 +11,7 @@
     "EXT-F-1012-T46",
     "EXT-F-1012-T48"
   ],
-  "surface": "Showcase preview → Save pattern → Patterns replay",
+  "surface": "Showcase preview \u2192 Save pattern \u2192 Patterns replay",
   "auth_mode": "admin",
   "reproduction": [
     "On a page with two distinguishable tables, extract Table 0 and observe its rows.",
@@ -24,18 +24,44 @@
     "docs/stabilization/reports/showcase-save-replay-audit.json",
     "tests/unit/save-as-pattern-organization-race.test.tsx",
     "src/hooks/use-extraction.ts",
-    "src/hooks/use-ai-extraction.ts"
+    "src/hooks/use-ai-extraction.ts",
+    "docs/stabilization/reports/showcase-preview-config-fix.json",
+    "docs/stabilization/runs/showcase-live-microdata-001.json",
+    "test-results/source-dev-build-101-showcase-20260927.json"
   ],
   "severity": "S2: a saved extraction can silently target different data from the preview and optional initial dataset write",
   "priority": "P1: first Showcase save/replay repair wave",
-  "state": "open",
+  "state": "fixed",
   "transition_history": [
     {
       "at": "2026-09-27T15:24:51Z",
       "from": null,
       "to": "open",
       "reason": "Source audit identified preview/config drift and a two-direction tab-selection regression was added; installed-extension reproduction and independent verification remain pending."
+    },
+    {
+      "at": "2026-09-27T16:28:20.222231+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Ledger reconciliation: two-direction Table reproduction failed against original source; evidence is recorded in showcase-preview-config-fix.json."
+    },
+    {
+      "at": "2026-09-27T16:28:20.222231+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Ledger reconciliation: executed-preview snapshots and sibling lifecycle repairs were implemented in cb47afa0, 9be8d4c9 and dc67ce84; these timestamps record reconciliation, not historical coding times."
+    },
+    {
+      "at": "2026-09-27T16:28:20.222231+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Engineering verification: focused 15/15 and compile passed for dc67ce84, built as development .101. Full independent live retest remains pending."
     }
   ],
-  "closure_requirement": "Run the focused regression red against the original behavior and green against the repair; then an independent verifier uses real pages to edit controls after preview, save with an existing target table, reopen and rerun the pattern, and confirm saved config, returned values, and appended values match the preview. Repeat relevant navigation/tab-change cases and List Pattern handoff."
+  "closure_requirement": "Run the focused regression red against the original behavior and green against the repair; then an independent verifier uses real pages to edit controls after preview, save with an existing target table, reopen and rerun the pattern, and confirm saved config, returned values, and appended values match the preview. Repeat relevant navigation/tab-change cases and List Pattern handoff.",
+  "retest": {
+    "status": "partial",
+    "scope_passed": "Real .101 Microdata Event preview, unsent Place draft, saved recipe and reopened replay retained 249 Event rows.",
+    "remaining": "Original Table scenario with dataset append, other methods, and navigation/reload cases remain unverified. This is not a retest-pass or closure."
+  }
 }
