@@ -113,49 +113,109 @@ async function signIn(page, panel) {
 }
 async function selectOrganization(panel, approved) {
   stage = 'select_approved_organization';
-  await click(panel, 'title', 'Settings');
-  const states = await evaluate(
-    panel,
-    `(() => [...document.querySelectorAll('button[aria-expanded]')]
+  let step = 'settings_tab';
+  try {
+    await click(panel, 'title', 'Settings');
+    step = 'account_section_state';
+    const states = await evaluate(
+      panel,
+      `(() => [...document.querySelectorAll('button[aria-expanded]')]
     .filter(el => el.textContent.trim()==='Account').map(el => el.getAttribute('aria-expanded')))()`,
-  );
-  if (states?.length !== 1) fail('account_section_not_unique');
-  if (states[0] === 'true') await click(panel, 'section', 'Account');
-  await waitFor(
-    'account_collapsed',
-    () =>
-      evaluate(
-        panel,
-        `(() => [...document.querySelectorAll('button[aria-expanded]')]
+    );
+    if (states?.length !== 1 || !['true', 'false'].includes(states[0]))
+      fail('account_section_not_unique');
+    step = 'account_section_collapse';
+    if (states[0] === 'true') await click(panel, 'section', 'Account');
+    await waitFor(
+      'account_collapsed',
+      () =>
+        evaluate(
+          panel,
+          `(() => [...document.querySelectorAll('button[aria-expanded]')]
     .find(el => el.textContent.trim()==='Account')?.getAttribute('aria-expanded'))()`,
-      ),
-    (value) => value === 'false',
-  );
-  await openSection(panel, 'Organization');
-  await click(panel, 'organization', 'Acting as');
-  const count = await evaluate(
-    panel,
-    `(() => [...document.querySelectorAll('[role="option"]')]
+        ),
+      (value) => value === 'false',
+    );
+    step = 'organization_section';
+    await openSection(panel, 'Organization');
+    // Membership hydration can mount the combobox after the section expands.
+    // Require the same unique control the trusted pointer driver will click.
+    step = 'organization_control_ready';
+    await waitFor(
+      'organization_control',
+      () =>
+        evaluate(
+          panel,
+          `(() => [...document.querySelectorAll('span')]
+            .filter(span => span.textContent.trim()==='Acting as')
+            .flatMap(span => [...span.parentElement.parentElement.querySelectorAll(
+              'button[role="combobox"]')]).length)()`,
+        ),
+      (count) => count === 1,
+    );
+    step = 'organization_control_click';
+    await click(panel, 'organization', 'Acting as');
+    step = 'approved_option_ready';
+    const count = await evaluate(
+      panel,
+      `(() => [...document.querySelectorAll('[role="option"]')]
     .filter(el => el.textContent.trim()===${JSON.stringify(approved)}).length)()`,
-  );
-  if (count !== 1) fail('approved_option_not_unique');
-  await click(panel, 'option', approved);
-  await waitFor(
-    'approved_organization_selected',
-    () =>
-      evaluate(
-        panel,
-        `(async () => {
+    );
+    if (count !== 1) fail('approved_option_not_unique');
+    step = 'approved_option_click';
+    await click(panel, 'option', approved);
+    step = 'approved_organization_selected';
+    await waitFor(
+      'approved_organization_selected',
+      () =>
+        evaluate(
+          panel,
+          `(async () => {
     const row=[...document.querySelectorAll('span')].find(el => el.textContent.trim()==='Acting as');
     const controls=[...(row?.parentElement?.parentElement?.querySelectorAll('button[role="combobox"]')??[])];
     const active=(await chrome.storage.local.get('matrx.org.active'))['matrx.org.active'];
     return controls.length===1 && controls[0].textContent.trim()===${JSON.stringify(approved)} &&
       active?.name===${JSON.stringify(approved)} && typeof active?.id==='string';
   })()`,
-      ),
-    (value) => value === true,
-    30_000,
-  );
+        ),
+      (value) => value === true,
+      30_000,
+    );
+  } catch (error) {
+    const pointer = error?.driverFailure;
+    report.failure = {
+      ...(report.failure ?? { stage, code: 'approved_organization_selection_failed' }),
+      step,
+      driverCode: /^pointer_[a-z_]+$/.test(pointer?.code ?? '') ? pointer.code : null,
+      matchedTargetCount: Number.isInteger(pointer?.matchedTargetCount)
+        ? pointer.matchedTargetCount
+        : null,
+      visibleMatchCount: Number.isInteger(pointer?.visibleMatchCount)
+        ? pointer.visibleMatchCount
+        : null,
+    };
+    try {
+      report.failure.surface = await evaluate(
+        panel,
+        `(() => {
+          const exact = (selector, label) => [...document.querySelectorAll(selector)]
+            .filter(node => node.textContent.trim()===label);
+          const row=[...document.querySelectorAll('span')]
+            .filter(node => node.textContent.trim()==='Acting as');
+          const controls=row.flatMap(node => [...(node.parentElement?.parentElement
+            ?.querySelectorAll('button[role="combobox"]')??[])]);
+          return {settingsTabCount:document.querySelectorAll('button[title="Settings"]').length,
+            accountSectionCount:exact('button[aria-expanded]','Account').length,
+            organizationSectionCount:exact('button[aria-expanded]','Organization').length,
+            actingAsRowCount:row.length,organizationControlCount:controls.length,
+            approvedOptionCount:exact('[role="option"]',${JSON.stringify(approved)}).length};
+        })()`,
+      );
+    } catch {
+      report.failure.surface = { available: false };
+    }
+    throw new Error('screenshot_gallery_organization_selection_unverified');
+  }
 }
 function listRequest(request, expected) {
   try {
