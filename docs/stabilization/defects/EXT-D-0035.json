@@ -26,11 +26,12 @@
     "docs/stabilization/runs/screenshot-controls-dev095-001.json",
     "docs/stabilization/reports/screenshot-identity-repair.json",
     "docs/stabilization/runs/screenshot-controls-dev095-002.json",
-    "docs/stabilization/reports/screenshot-identity-native-peer.json"
+    "docs/stabilization/reports/screenshot-identity-native-peer.json",
+    "docs/stabilization/runs/screenshot-controls-dev095-003.json"
   ],
   "severity": "S3: acceptance pointer helper blocks control verification; no product defect established",
   "priority": "P1: correct the helper before the next resource-admitted native run",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/screenshot_identity_repair",
   "fix_commits": [
     "84d63d0e",
@@ -79,8 +80,21 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source runner now requires a completed real read of the restored fixture and exact owned-row/card agreement before the next Files control. A permanent wrong row still fails closed. Focused no-browser guard and syntax pass; fresh native proof and independent peer review remain pending."
+    },
+    {
+      "at": "2026-09-27T11:46:15.178286+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent guarded native .95 controls003 passed thumbnail, separate icon, actual Copy, Cancel, confirm-delete and exact owned cleanup; source reviews accepted."
+    },
+    {
+      "at": "2026-09-27T11:46:15.178286+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original reproduction and required surrounding controls now pass. Broader feature dimensions remain tracked unverified."
     }
   ],
   "closure_requirement": "Fresh peer accepts the restored-fixture read and privacy-safe identity diagnostics, then an admitted native run clicks the separate icon and verifies its exact owned Files route, reaches actual Copy and Cancel outcomes, and proves exact owned cleanup.",
-  "native_retest_status": "Pending: resource guard refused before browser launch; not a product failure."
+  "native_retest_status": "Passed in controls-dev095-003 after resource recovery.",
+  "retest_status": "pass: bounded closure criteria in docs/stabilization/runs/screenshot-controls-dev095-003.json"
 }

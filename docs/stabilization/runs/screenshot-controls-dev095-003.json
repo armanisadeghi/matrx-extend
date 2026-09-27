@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "run_id": "screenshot-controls-dev095-003",
+  "status": "partial",
+  "scope": "One guarded .95 development native run for owned Screenshot controls.",
+  "runner": "tests/browser/screenshot-capture-acceptance.mjs",
+  "run_count": 1,
+  "build": {
+    "version": "0.2.95",
+    "tree_sha256": "ea3bdb7c38ea99b3f01dcba3850480b58f86973cabaa2e8b12455dae42064d46",
+    "receipt_path": "test-results/source-dev-build-095-controls-20260927.json",
+    "receipt_sha256": "c361e561500f428a39904287a56d60d93246abd4ec5bf62bd03768441da4a546",
+    "receipt_tree_matches": true,
+    "rebuild_performed": false
+  },
+  "runtime": {
+    "explicit_tmpdir_playwright_chrome_and_receipt_verified_before_launch": true,
+    "resource_admission": "RESOURCE_ADMITTED",
+    "admitted_at": "2026-09-27T11:43:39.806Z",
+    "terminal_at": "2026-09-27T11:44:05.703Z",
+    "child_exit_code": 0,
+    "lease_root_empty_after_run": true
+  },
+  "native_result": {
+    "runner_status": "partial",
+    "fresh_fixture_capture_and_preview": "pass: persisted owned row, completed real gallery read, loaded preview and fixture pixel checks",
+    "per_control": {
+      "EXT-F-1009-T01-warm-refresh": "pass: completed real gallery read preserved the exact owned row",
+      "EXT-F-1009-T04-thumbnail": "pass: exact owned Files route reached in one new tab and the owned tab was closed",
+      "EXT-F-1009-T04-icon": "pass: exact owned Files route reached in one new tab and the owned tab was closed",
+      "EXT-F-1009-T05-copy": "pass: actual clipboard matched expected product URL; observation permission restored",
+      "EXT-F-1009-T06-cancel": "pass: confirmation cancelled and completed real read preserved the exact owned row",
+      "EXT-F-1009-T06-confirm": "pass: confirmation consequence shown; completed real read verified owned index row removed; file retention by design"
+    },
+    "owned_row_cleanup_verified": true,
+    "created_row_may_need_ui_cleanup": false
+  },
+  "evidence": {
+    "private_wrapper_log": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-controls-dev095-003-private/wrapper.log",
+    "private_wrapper_log_mode": "0600",
+    "private_wrapper_log_capture": "Exact safe wrapper output observed at command completion; full shell stdout was not redirected to disk.",
+    "private_wrapper_log_sha256": "0f3a770bc311c87d1473a16d52827aac393c0cbcf6c6a8e36abd8c37348f4e3e",
+    "runner_result_path": "test-results/screenshot-capture-32d9ef06-6749-4542-972d-3c95d58bddce.json",
+    "runner_result_mode": "0600",
+    "runner_result_sha256": "c9b3f755f97ee96e153aa0b87393aa46f340994655c8d0cd21260e46b45b29da"
+  },
+  "limits": [
+    "The runner labels the overall scenario partial; only the listed native control cases are claimed passed.",
+    "No additional native run was performed."
+  ]
+}

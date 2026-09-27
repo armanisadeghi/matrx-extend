@@ -12635,14 +12635,14 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "screenshot-controls-dev095-001",
+              "run_id": "screenshot-controls-dev095-003",
               "verified_substeps": [
                 "Actual warm Refresh completed real gallery read and preserved exact owned row."
               ],
               "remaining_criteria": [
                 "Pending prior-page responses, reload, failure/retry, no-page and member mode remain unverified."
               ],
-              "evidence": "docs/stabilization/runs/screenshot-controls-dev095-001.json"
+              "evidence": "docs/stabilization/runs/screenshot-controls-dev095-003.json"
             }
           },
           "defect_ids": [
@@ -12747,15 +12747,14 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "screenshot-controls-dev095-001",
+              "run_id": "screenshot-controls-dev095-003",
               "verified_substeps": [
-                "Thumbnail opens exactly one new tab at exact owned Files route and ID on verified canonical www host."
+                "Thumbnail and separate Files icon each opened one new tab at exact owned canonical Files route; only owned tabs were closed."
               ],
               "remaining_criteria": [
-                "Separate icon remains unverified: identity synchronization repair passed source review, but .95 controls002 was resource-refused before launch.",
                 "Reload, service-error and member dimensions remain unverified."
               ],
-              "evidence": "docs/stabilization/runs/screenshot-controls-dev095-001.json"
+              "evidence": "docs/stabilization/runs/screenshot-controls-dev095-003.json"
             }
           }
         },
@@ -12786,7 +12785,20 @@
           "defect_ids": [
             "EXT-D-0033",
             "EXT-D-0034"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "screenshot-controls-dev095-003",
+              "evidence": "docs/stabilization/runs/screenshot-controls-dev095-003.json",
+              "verified_substeps": [
+                "Actual clipboard matched product durable Files URL; observation permissions restored."
+              ],
+              "remaining_criteria": [
+                "Clipboard rejection, reload and member dimensions remain unverified."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1009-T06",
@@ -12815,16 +12827,16 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "screenshot-controls-dev094-002",
+              "run_id": "screenshot-controls-dev095-003",
               "verified_substeps": [
-                "Normal exact-owned-row Delete shows consequence and enabled confirmation; real post-delete read proves row absent and gallery empty.",
-                "Failure-recovery Delete also verified exact owned row absent after completed real gallery read."
+                "Cancel preserved exact row verified by fresh read.",
+                "Confirmation showed consequence and removed exact owned index row verified by fresh read; file retention is intended."
               ],
               "remaining_criteria": [
-                "Cancel/service-failure cases remain unverified.",
-                "Historical .93/.94 capture001 rows have unknown disposition and no retained exact recovery identity."
+                "Delete failure, reload and member dimensions remain unverified.",
+                "Historical rows without retained identities remain unknown; no broad cleanup authorized."
               ],
-              "evidence": "docs/stabilization/runs/screenshot-controls-dev094-002.json"
+              "evidence": "docs/stabilization/runs/screenshot-controls-dev095-003.json"
             }
           },
           "defect_ids": [
@@ -12973,7 +12985,8 @@
             "screenshot-controls-dev094-002",
             "screenshot-controls-dev094-003",
             "screenshot-controls-dev095-001",
-            "screenshot-controls-dev095-002"
+            "screenshot-controls-dev095-002",
+            "screenshot-controls-dev095-003"
           ],
           "retest_status": "partial"
         }
