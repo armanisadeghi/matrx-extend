@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "94529f4db49d3f40dc68e09022bf7c36b0da8bd1",
+  "scope": "Independent source review of guarded local unpacked development-build support for Debug export QA.",
+  "verdict_a_runtime": {
+    "status": "UNVERIFIED",
+    "evidence": "No browser or test was launched by this review lane. The prepared command states that it targets the existing local 0.2.85 keyed build and explicitly disclaims any native result or published-release claim.",
+    "missing": [
+      "Actual unpacked dev extension launch and acceptance results for T16/T18 remain unverified; the root-owned resource-guarded run is still required."
+    ]
+  },
+  "verdict_b_source_quality": {
+    "status": "PASS",
+    "evidence": [
+      "Without DEBUG_DEV_BUILD_RECEIPT, the runner calls the same harness entry with no override, preserving its release-receipt path; the harness verifies release tree and store ZIP before launch.",
+      "With the opt-in set, the runner validates local_dev_unpacked/not_published receipt fields, fixed .output/chrome-mv3-dev identity, nonempty manifest key, package/manifest/receipt version equality, and a pre-run tree hash. The harness rereads and validates the receipt, checks expected identity, and verifies the tree again before launching the verified unpacked path.",
+      "After the run, the runner re-reads identity and hashes the extension tree again before recording completion. Existing T16/T18 oracles and privacy safeguards are unchanged; the report stores bounded metadata and does not store clipboard, event, or download text.",
+      "Resource policy is unchanged and already contains the exact node runner argv. No acceptance threshold, private output handling, or published-release claim was weakened."
+    ],
+    "findings": [],
+    "recommendation": "Proceed with the separate root-owned, resource-guarded native run. Keep its result labeled as local development-build QA, and do not call runtime acceptance complete until the receipt and resulting run evidence are inspected."
+  },
+  "review_limits": [
+    "This is source review only; the local receipt is an integrity snapshot for accidental build drift, not a cryptographic attestation against a local actor who can rewrite both files.",
+    "No heavy checks, browser, or application UI were run, per lane boundary."
+  ]
+}
