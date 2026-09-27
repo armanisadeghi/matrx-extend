@@ -77,10 +77,10 @@ describe('popup capture claim recovery', () => {
 
   afterEach(async () => {
     // Vitest globals are disabled, so RTL cannot register automatic cleanup.
-    // Stop effects/subscriptions before clearing the session rows. The views that
-    // App starts lazily are awaited in the test at the point they are requested;
-    // waiting for Vitest's global dynamic-import queue here can include unrelated
-    // work from the serial suite and exceed this hook's timeout.
+    // Drain App's lazy pre-warm before teardown. Without this barrier, its
+    // ChatView import can resume after Vitest disposes the jsdom environment.
+    await vi.dynamicImportSettled();
+    // Stop effects/subscriptions before clearing the session rows.
     cleanup();
     const { POPUP_LAUNCH_INTENT_KEY } = await import('@/lib/panel/launch-intent');
     const rows = await chrome.storage.session.get(null);
