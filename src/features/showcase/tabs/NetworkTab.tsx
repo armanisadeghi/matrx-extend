@@ -1,7 +1,7 @@
 import { JsonTree } from '@/components/ui/json-tree';
 import { useNetworkCapture } from '@/hooks/use-network-capture';
 import type { CapturedNetEvent } from '@/lib/data-pattern/network-tap';
-import { matchesUrlFilter } from '@/lib/data-pattern/run-interactive';
+import { matchesUrlFilter, rowsFromBody } from '@/lib/data-pattern/run-interactive';
 import { cn } from '@/lib/utils';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { formatFileSize } from '@ai-matrx/kit/format';
@@ -19,6 +19,8 @@ export function NetworkTab() {
   const [selectedEvent, setSelectedEvent] = useState<CapturedNetEvent | null>(null);
   const [extractKeyPath, setExtractKeyPath] = useState('');
   const [replayUrlFilter, setReplayUrlFilter] = useState('');
+  const [urlMatch, setUrlMatch] = useState<'exact' | 'filter'>('exact');
+  const [matchRequestBody, setMatchRequestBody] = useState(true);
 
   const filtered = useMemo(() => {
     if (!filter) return events;
@@ -38,6 +40,8 @@ export function NetworkTab() {
     setSelectedEvent(event);
     setExtractKeyPath('');
     setReplayUrlFilter(event.url);
+    setUrlMatch('exact');
+    setMatchRequestBody(true);
   };
 
   const parsedBody = useMemo<unknown | null>(() => {
@@ -61,17 +65,12 @@ export function NetworkTab() {
 
   const extractedRows = useMemo<Record<string, unknown>[] | null>(() => {
     if (!parsedBody) return null;
-    let target: unknown = parsedBody;
-    if (extractKeyPath) {
-      for (const part of extractKeyPath.split('.')) {
-        if (target == null || typeof target !== 'object') break;
-        target = (target as Record<string, unknown>)[part];
-      }
+    try {
+      return selected ? rowsFromBody(selected.body, extractKeyPath) : null;
+    } catch {
+      return null;
     }
-    if (Array.isArray(target)) return target as Record<string, unknown>[];
-    if (target && typeof target === 'object') return [target as Record<string, unknown>];
-    return null;
-  }, [parsedBody, extractKeyPath]);
+  }, [parsedBody, extractKeyPath, selected]);
 
   return (
     <div className="h-full overflow-y-auto">
@@ -108,7 +107,7 @@ export function NetworkTab() {
             variant="ghost"
             size="icon"
             onClick={() => void reload()}
-            title="Reload page (catches initial fetches)"
+            title="Reload page (stops capture; start capture again afterward)"
             className="size-9 shrink-0 rounded-full"
           >
             <RefreshCw className="size-3.5" />
@@ -210,12 +209,44 @@ export function NetworkTab() {
                 placeholder={selected.url}
                 className="h-8 rounded-full bg-background text-xs"
               />
+              <label className="flex items-center gap-2 text-[11px]">
+                URL matching
+                <select
+                  aria-label="URL matching"
+                  value={urlMatch}
+                  onChange={(event) =>
+                    setUrlMatch(event.target.value === 'exact' ? 'exact' : 'filter')
+                  }
+                  className="rounded bg-background px-2 py-1"
+                >
+                  <option value="exact">Exact URL</option>
+                  <option value="filter">Partial URL or * wildcard</option>
+                </select>
+              </label>
+              <label className="flex items-center gap-2 text-[11px]">
+                <input
+                  type="checkbox"
+                  checked={matchRequestBody}
+                  onChange={(event) => setMatchRequestBody(event.target.checked)}
+                />
+                Match the selected request body
+              </label>
               <div className="text-[10px] text-muted-foreground">
-                The selected request URL is matched exactly by default, including its query. Edit
-                this matcher to reuse a broader request; * matches changing URL segments. Search
-                above only filters this list.
+                Exact URL includes the query and literal * characters. Partial matching uses text or
+                * wildcards. Body matching saves only an opaque digest, never the request body.
+                Rerun uses the newest successful request of the same identity and checks the full
+                capture window. Search above only filters this list.
               </div>
-              {!matchesUrlFilter(selected.url, savedUrlFilter) && (
+              {(!matchRequestBody ||
+                selected.request_body_key === 'unavailable' ||
+                selected.request_body_key === undefined) && (
+                <div className="text-[10px] text-amber-700 dark:text-amber-400">
+                  {matchRequestBody
+                    ? 'This capture has no stable body identity. Start a fresh capture, or turn off body matching to explicitly use URL and method only.'
+                    : 'URL and method only may include different operations. If multiple request identities match, rerun will ask you to narrow the matcher instead of choosing one.'}
+                </div>
+              )}
+              {!matchesUrlFilter(selected.url, savedUrlFilter, urlMatch) && (
                 <div className="text-[10px] text-amber-700 dark:text-amber-400">
                   This matcher does not include the selected response. Rerun may capture different
                   data or find no request.
@@ -257,6 +288,11 @@ export function NetworkTab() {
                   kind="network_capture"
                   config={{
                     url_filter: savedUrlFilter,
+                    url_match: urlMatch,
+                    body_match: matchRequestBody ? 'exact' : 'ignore',
+                    ...(matchRequestBody && {
+                      request_body_key: selected.request_body_key ?? 'unavailable',
+                    }),
                     method: selected.method,
                     key_path: extractKeyPath,
                   }}

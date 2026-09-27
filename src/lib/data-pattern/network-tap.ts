@@ -16,6 +16,10 @@ export interface CapturedNetEvent {
   source: 'fetch' | 'xhr';
   method: string;
   url: string;
+  /** Opaque producer-computed identity; raw request data never leaves the page. */
+  request_body_key?: string;
+  /** Initiation order within this document, independent of response completion. */
+  request_sequence?: number;
   status: number;
   status_text?: string;
   request_headers?: Record<string, string>;
@@ -78,36 +82,112 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
     return out;
   };
 
+  let requestSequence = 0;
+  const absoluteUrl = (input: string): string => {
+    try {
+      const url = new URL(input, document.baseURI);
+      url.hash = ''; // Fragments never reach the server.
+      return url.href;
+    } catch {
+      return input;
+    }
+  };
+  const digestBytes = async (bytes: ArrayBuffer): Promise<string> => {
+    try {
+      const digest = await crypto.subtle.digest('SHA-256', bytes);
+      return `sha256:${Array.from(new Uint8Array(digest), (n) => n.toString(16).padStart(2, '0')).join('')}`;
+    } catch {
+      return 'unavailable';
+    }
+  };
+  const boundedBodyKey = async (stream: ReadableStream<Uint8Array> | null): Promise<string> => {
+    if (!stream) return 'none';
+    const reader = stream.getReader();
+    const chunks: Uint8Array[] = [];
+    let size = 0;
+    try {
+      while (true) {
+        const part = await reader.read();
+        if (part.done) break;
+        size += part.value.byteLength;
+        if (size > maxBodyBytes) {
+          void reader.cancel().catch(() => {});
+          return 'unavailable';
+        }
+        chunks.push(part.value);
+      }
+      const bytes = new Uint8Array(size);
+      let offset = 0;
+      for (const chunk of chunks) {
+        bytes.set(chunk, offset);
+        offset += chunk.byteLength;
+      }
+      return digestBytes(bytes.buffer);
+    } catch {
+      return 'unavailable';
+    } finally {
+      reader.releaseLock();
+    }
+  };
+  // Multipart boundaries and streaming bodies are not stable replay identities.
+  // Keep their data local; the UI offers an explicit broader matcher instead.
+  const bodyKey = async (
+    body: XMLHttpRequestBodyInit | ReadableStream | null | undefined,
+  ): Promise<string> => {
+    if (body == null) return 'none';
+    if (body instanceof FormData || body instanceof ReadableStream) return 'unavailable';
+    try {
+      return await boundedBodyKey(new Response(body).body);
+    } catch {
+      return 'unavailable';
+    }
+  };
+  const fetchBodyKey = async (input: RequestInfo | URL, init?: RequestInit): Promise<string> => {
+    if (init?.body != null) return bodyKey(init.body);
+    if (!(input instanceof Request) || input.body === null) return 'none';
+    if (input.headers.get('content-type')?.toLowerCase().includes('multipart/form-data'))
+      return 'unavailable';
+    try {
+      return await boundedBodyKey(input.clone().body);
+    } catch {
+      return 'unavailable';
+    }
+  };
+
   // ── fetch patch ─────────────────────────────────────────────────────────
   const origFetch = window.fetch;
   window.fetch = async function (...args) {
     const t0 = Date.now();
-    const reqUrl =
-      typeof args[0] === 'string'
-        ? args[0]
-        : args[0] instanceof URL
-          ? args[0].href
-          : (args[0] as Request).url;
-    const reqMethod =
-      typeof args[0] === 'string' || args[0] instanceof URL
-        ? (args[1]?.method ?? 'GET')
-        : ((args[0] as Request).method ?? 'GET');
+    const sequence = ++requestSequence;
+    const input = args[0];
+    const reqUrl = absoluteUrl(
+      typeof input === 'string' ? input : input instanceof URL ? input.href : input.url,
+    );
+    const reqMethod = (
+      args[1]?.method ?? (input instanceof Request ? input.method : 'GET')
+    ).toUpperCase();
+    // Clone before fetch can consume a Request. Hashing never delays the page's request.
+    const identity = fetchBodyKey(input, args[1]);
 
     let res: Response;
     try {
       res = await origFetch.apply(this, args);
     } catch (err) {
-      post({
-        ts_ms: t0,
-        source: 'fetch',
-        method: reqMethod,
-        url: reqUrl,
-        status: 0,
-        body: '',
-        body_truncated: false,
-        body_size: 0,
-        error: err instanceof Error ? err.message : String(err),
-      });
+      void identity.then((request_body_key) =>
+        post({
+          request_body_key,
+          request_sequence: sequence,
+          ts_ms: t0,
+          source: 'fetch',
+          method: reqMethod,
+          url: reqUrl,
+          status: 0,
+          body: '',
+          body_truncated: false,
+          body_size: 0,
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
       throw err;
     }
 
@@ -115,9 +195,11 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
     res
       .clone()
       .text()
-      .then((text) => {
+      .then(async (text) => {
         const t = truncate(text);
         post({
+          request_body_key: await identity,
+          request_sequence: sequence,
           ts_ms: t0,
           source: 'fetch',
           method: reqMethod,
@@ -144,21 +226,42 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
     const xhr = new OrigXHR();
     let url = '';
     let method = 'GET';
-    const t0 = Date.now();
+    let t0 = 0;
+    let sequence = 0;
+    let identity: Promise<string> = Promise.resolve('none');
     const origOpen = xhr.open;
     xhr.open = function (this: XMLHttpRequest, m: string, u: string | URL, ...rest: unknown[]) {
-      method = m;
-      url = typeof u === 'string' ? u : u.href;
+      method = m.toUpperCase();
+      url = absoluteUrl(typeof u === 'string' ? u : u.href);
       return (origOpen as unknown as (...args: unknown[]) => void).apply(this, [
         m,
         u,
         ...rest,
       ] as unknown[]);
     } as typeof xhr.open;
-    xhr.addEventListener('load', () => {
+    const origSend = xhr.send;
+    xhr.send = function (body) {
+      t0 = Date.now();
+      sequence = ++requestSequence;
+      identity = body instanceof Document ? Promise.resolve('unavailable') : bodyKey(body);
+      // Reflect preserves both native send overloads (Document and BodyInit).
+      return Reflect.apply(origSend, this, [body]);
+    };
+    xhr.addEventListener('load', async () => {
+      const requestBodyKey = identity;
+      const requestSequenceAtLoad = sequence;
+      const startedAt = t0;
+      const requestUrl = url;
+      const requestMethod = method;
+      const responseStatus = xhr.status;
+      const responseStatusText = xhr.statusText;
       try {
         const respText =
-          xhr.responseType === '' || xhr.responseType === 'text' ? xhr.responseText : '';
+          xhr.responseType === 'json'
+            ? JSON.stringify(xhr.response)
+            : xhr.responseType === '' || xhr.responseType === 'text'
+              ? xhr.responseText
+              : '';
         const t = truncate(respText);
         const headersRaw = xhr.getAllResponseHeaders();
         const responseHeaders: Record<string, string> = {};
@@ -168,12 +271,14 @@ export function networkTapMain(maxBodyBytes = 1_000_000): void {
           responseHeaders[line.slice(0, colon).trim().toLowerCase()] = line.slice(colon + 1).trim();
         }
         post({
-          ts_ms: t0,
+          request_body_key: await requestBodyKey,
+          request_sequence: requestSequenceAtLoad,
+          ts_ms: startedAt,
           source: 'xhr',
-          method,
-          url,
-          status: xhr.status,
-          status_text: xhr.statusText,
+          method: requestMethod,
+          url: requestUrl,
+          status: responseStatus,
+          status_text: responseStatusText,
           response_headers: responseHeaders,
           body: t.body,
           body_truncated: t.truncated,

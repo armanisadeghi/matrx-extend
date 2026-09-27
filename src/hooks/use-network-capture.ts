@@ -68,25 +68,27 @@ export function useNetworkCapture() {
     setDropped(0);
     tabIdRef.current = tab.id;
     try {
-      // 1. Install MAIN-world tap (idempotent).
+      // Relay first so the earliest tapped response has somewhere to go.
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: networkRelayIsolated,
+      });
+      capturingRef.current = true;
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         world: 'MAIN',
         func: networkTapMain,
         args: [1_000_000],
       });
-      // 2. Install ISOLATED-world relay (idempotent).
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: networkRelayIsolated,
-      });
       setInstalled(true);
       capturingRef.current = true;
       setCapturing(true);
     } catch (err) {
+      capturingRef.current = false;
+      setCapturing(false);
       setError(err instanceof Error ? err.message : String(err));
     }
-  }, [tab.id]);
+  }, [tab.id, tab.url]);
 
   const stop = useCallback(() => {
     capturingRef.current = false;
