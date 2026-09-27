@@ -30,5 +30,22 @@
     "docs/stabilization/reports/d22-next-closure-path.json",
     "docs/stabilization/runs/d22-recognition-readonly-003.json"
   ],
-  "reviewed_correction_commit": "84adee61"
+  "reviewed_correction_commit": "84adee61",
+  "subsequent_review": {
+    "reviewed_commit": "77b716e4",
+    "scope": "Independent source-only review of navigation diagnostics added after read-only native attempt 006; no browser or test execution.",
+    "A_runtime": {
+      "verdict": "UNVERIFIED",
+      "reason": "Attempt 006 predates this change and failed during positive fixture navigation. The new fields have not been observed in a native run and cannot establish the old error cause or Source recognition."
+    },
+    "B_source": {
+      "native_admission_verdict": "ACCEPT_NARROW_DIAGNOSTICS_FOR_GUARDED_NATIVE_ADMISSION",
+      "findings": [
+        "The new Chromium error parser reads only a strict net::ERR_* position or the page.goto error prefix. It persists a bounded code and fixed booleans, not exception text, request URLs, Source IDs, organization IDs, headers, credentials or response bodies.",
+        "The CDP document listeners retain request IDs only in memory to correlate numeric status and fixed failure counts. The public page route records category counts while preserving the existing GET/HEAD and public-address guard; it does not permit a write or touch a Source checkpoint.",
+        "The positive acceptance path still requires the real page navigation, matching fixture URL, scoped HTTP 200 Source lookup, saved UI and Open target identity before progress. New observations do not turn a failed or missing navigation into a pass."
+      ],
+      "limit": "A browser error outside the strict patterns can remain unclassified; the source change improves safe evidence but makes no claim that attempt 006's cause is already known."
+    }
+  }
 }
