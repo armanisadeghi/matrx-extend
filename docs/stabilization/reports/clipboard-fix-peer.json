@@ -1,0 +1,28 @@
+{
+  "status": "SOURCE_ACCEPTED_RUNTIME_OPEN",
+  "defect": "EXT-D-0027",
+  "verdict_A_acceptance": {
+    "status": "PARTIAL",
+    "finding": "The repaired path preserves the actual trusted Copy all click, requires Copied feedback before any post-click read override, and compares the observed clipboard with the independently reconstructed filtered export. A real owned Chrome run is still required to establish that the CDP override works for this extension and that the final clipboard is restored."
+  },
+  "verdict_B_source_quality": {
+    "status": "PASS",
+    "finding": "The helper derives chrome-extension:// plus the validated 32-character extension host instead of Node URL.origin, uses Browser.setPermission for clipboard-read on the owned browser CDP session, reads only inside the temporary grant, and restores the queried prior permission in finally. The browser session comes from the owned Playwright browser attached to the harness's verified disposable profile; omitted browserContextId targets its default context. Failure to restore latches observation unavailable and keeps acceptance unverified. No product or shared harness source changed."
+  },
+  "evidence": [
+    "Independently read the final diff and the three source files. Node URL.origin for a chrome-extension URL returns null; direct scheme/host construction avoids Playwright's invalid-origin normalization.",
+    "Official Chrome DevTools Protocol Browser.setPermission documents permission descriptor, setting, origin and default browser context; it also documents that deprecated Browser.grantPermissions rejects all unlisted permissions.",
+    "PASS node tests/browser/clipboard-observation.test.mjs: prompt and denied originals, distinct read values, grant/read/restore failures, refused origins, and five in-memory unsafe mutations including constant return.",
+    "PASS node --check tests/browser/debug-log-export-acceptance.mjs."
+  ],
+  "files": [
+    "tests/browser/debug-log-export-acceptance.mjs",
+    "tests/browser/clipboard-observation.mjs",
+    "tests/browser/clipboard-observation.test.mjs"
+  ],
+  "open_runtime_gaps": [
+    "No browser or host clipboard was exercised by this peer; the guarded native run must verify real readback, Copy feedback, exact export text, and conditional prior-clipboard restoration.",
+    "The existing native-sidepanel harness guard's hardcoded /Users checkout expectation fails in this /Volumes checkout; this is outside the changed source and remains for root to route."
+  ],
+  "protocol_reference": "https://chromedevtools.github.io/devtools-protocol/tot/Browser/#method-setPermission"
+}

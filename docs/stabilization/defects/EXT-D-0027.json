@@ -1,0 +1,47 @@
+{
+  "id": "EXT-D-0027",
+  "feature_id": "EXT-F-1005",
+  "case_ids": ["EXT-F-1005-T16"],
+  "surface": "Debug Copy all verification / browser test permissions",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Run the reviewed Debug export acceptance against receipt-verified .89 development build in an owned native Chrome-for-Testing profile with real admin sign-in.",
+    "Reach focused visible Debug panel; initial clipboard read returns NotAllowedError, causing the test observation-permission fallback.",
+    "The runner passes new URL(extensionUrl).origin to BrowserContext.grantPermissions; for chrome-extension URLs that value is the literal string null. Installed Playwright reparses it with new URL(origin), which throws before the CDP request.",
+    "Observe grant_or_transport_error and no Copy all click; reproduction can also inspect the actual installed Playwright normalization plus the standard URL constructor without launching a browser."
+  ],
+  "expected": "Test-only clipboard observation permission targets the owned extension origin, allowing real Copy all contents and feedback to be verified without granting extra permission to the app action itself.",
+  "actual": "Origin normalization produces an invalid request before CDP; Copy all remains skipped and its product behavior unverified.",
+  "evidence": [
+    "docs/stabilization/reports/takeover-debug-followup.json",
+    "test-results/debug-log-export-9b53131c-e362-401c-8647-4e3d3b0eb28a.json",
+    "tests/browser/debug-log-export-acceptance.mjs"
+  ],
+  "severity": "S3: test infrastructure blocks Copy verification; no product Copy defect established",
+  "priority": "P1: unblock contained Debug acceptance",
+  "state": "in-fix",
+  "owner": "/root/clipboard_escalation",
+  "reproduction_status": "Astra confirmed actual installed Playwright origin normalization and standard URL behavior; runtime repair pending.",
+  "fix_commits": [],
+  "transition_history": [
+    {
+      "at": "2026-09-27T08:46:14.508641+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Two Debug attempts could not observe clipboard and skipped Copy."
+    },
+    {
+      "at": "2026-09-27T08:46:14.508641+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Concrete extension-origin normalization failure confirmed before any protocol request."
+    },
+    {
+      "at": "2026-09-27T08:46:14.508641+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Astra implementing direct owned-origin CDP observation permission with restoration before real Copy action."
+    }
+  ],
+  "closure_requirement": "Fresh source review and guarded real native run verify snapshot/readback/restore and actual trusted Copy+feedback under original app permissions; no clipboard contents in shared artifacts."
+}

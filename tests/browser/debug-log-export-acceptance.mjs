@@ -10,6 +10,7 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
+import { withClipboardReadPermission } from './clipboard-observation.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const OUTPUT = join(REPO, 'test-results', `debug-log-export-${randomUUID()}.json`);
@@ -370,7 +371,8 @@ async function readClipboard(panel) {
   });
 }
 
-async function observedClipboardSnapshot(page, panel, panelTarget, evidence) {
+async function observedClipboardSnapshot(browserSession, panel, panelTarget, evidence) {
+  if (evidence.clipboardObservationPermissionRestored === false) return null;
   try {
     await panel.send('Page.bringToFront');
   } catch {
@@ -391,14 +393,17 @@ async function observedClipboardSnapshot(page, panel, panelTarget, evidence) {
   // clipboard. Copy all still receives a real trusted click and performs its
   // own write; no fixture writes the expected export to the clipboard.
   try {
-    await page.context().grantPermissions(['clipboard-read'], {
-      origin: new URL(panelTarget.url).origin,
+    const text = await withClipboardReadPermission({
+      browserSession,
+      panel,
+      panelUrl: panelTarget.url,
+      read: () => readClipboard(panel),
+      evidence,
     });
-    evidence.clipboardReadPermissionForObservation = true;
-    return await readClipboard(panel);
+    evidence.clipboardReadAfterGrant = 'read_succeeded';
+    return text;
   } catch (error) {
-    evidence.clipboardReadAfterGrant =
-      error.clipboardDiagnostic?.code ?? 'grant_or_transport_error';
+    evidence.clipboardReadAfterGrant = error.clipboardDiagnostic?.code ?? 'observation_stage_error';
     return null;
   }
 }
@@ -520,7 +525,12 @@ async function exercise({ page, panel, panelTarget, artifacts }) {
   let originalVerbose;
   let toggledVerbose = false;
   let stopConsole;
+  let browserSession;
+  const clipboardEvidence = {};
+  const observeClipboard = () =>
+    observedClipboardSnapshot(browserSession, panel, panelTarget, clipboardEvidence);
   try {
+    browserSession = await page.context().browser().newBrowserCDPSession();
     await signIn(page, panel);
     stage = 'debug_open';
     let openingStep = 'tab_click';
@@ -583,16 +593,28 @@ async function exercise({ page, panel, panelTarget, artifacts }) {
         downloadExact: false,
       };
       stage = 'clipboard_snapshot';
-      priorClipboard = await observedClipboardSnapshot(page, panel, panelTarget, exportEvidence);
+      priorClipboard = await observeClipboard();
+      Object.assign(exportEvidence, clipboardEvidence);
       if (typeof priorClipboard !== 'string') exportEvidence.clipboardUnavailable = true;
       if (typeof priorClipboard === 'string') {
         stage = 'copy_filtered_rows';
         await click(panel, 'title', 'Copy all');
         exportedClipboard = subset.expected;
+        // The app must finish its own write before a temporary read override.
+        // Granting while writeText is pending could mask a product permission bug.
+        await waitFor(
+          'copy_feedback_before_observation_permission',
+          () =>
+            evaluate(
+              panel,
+              `!!document.querySelector('button[title="Copy all"] svg.text-emerald-500')`,
+            ),
+          (value) => value === true,
+        );
         const copied = await waitFor(
           'actual_clipboard_and_feedback',
           async () => ({
-            same: (await readClipboard(panel)) === subset.expected,
+            same: (await observeClipboard()) === subset.expected,
             feedback: await evaluate(
               panel,
               `!!document.querySelector('button[title="Copy all"] svg.text-emerald-500')`,
@@ -743,10 +765,10 @@ async function exercise({ page, panel, panelTarget, artifacts }) {
     }
     if (typeof priorClipboard === 'string' && typeof exportedClipboard === 'string') {
       try {
-        const current = await readClipboard(panel);
+        const current = await observeClipboard();
         if (current === exportedClipboard) {
           await evaluate(panel, `navigator.clipboard.writeText(${JSON.stringify(priorClipboard)})`);
-          report.clipboardRestored = (await readClipboard(panel)) === priorClipboard;
+          report.clipboardRestored = (await observeClipboard()) === priorClipboard;
         } else if (current === priorClipboard) {
           report.clipboardRestored = true;
         } else {
@@ -757,9 +779,13 @@ async function exercise({ page, panel, panelTarget, artifacts }) {
         report.clipboardRestored = false;
       }
     }
+    report.clipboardObservation = clipboardEvidence;
+    await browserSession?.detach().catch(() => {});
     if (
       report.status !== 'fail' &&
-      (report.verboseRestored === false || report.clipboardRestored === false)
+      (report.verboseRestored === false ||
+        report.clipboardRestored === false ||
+        clipboardEvidence.clipboardObservationPermissionRestored === false)
     )
       report.status = 'unverified';
   }

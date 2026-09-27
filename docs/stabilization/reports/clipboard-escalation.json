@@ -1,0 +1,34 @@
+{
+  "status": "IMPLEMENTED_PENDING_INDEPENDENT_REVIEW_AND_RUNTIME",
+  "defect": "EXT-D-0027",
+  "cause": "Node URL.origin returns the literal null string for chrome-extension URLs. The installed Playwright 1.62.1 BrowserContext.grantPermissions parses that string with new URL and throws before CDP. Passing the full extension origin would also be normalized back to null by Playwright.",
+  "evidence": [
+    "Inspected the canonical harness callback: page is a real Playwright Page; panel is an owned flattened CDP target session; panelTarget includes the actual extension URL.",
+    "Executed the installed Playwright grantPermissions method extracted in memory from coreBundle.js without starting a browser: the existing call throws ERR_INVALID_URL before doGrantPermissions; a full extension URL is normalized to null.",
+    "Prior immutable .89 result has focused/visible NotAllowedError and no successful grant marker, consistent with this exact failure."
+  ],
+  "changes": [
+    "Bypass Playwright origin normalization through a browser CDP session derived from the already-owned browser, using Browser.setPermission with a validated chrome-extension origin and clipboard-read descriptor.",
+    "Query the existing read permission, temporarily grant only while reading, and restore in finally including grant transport failures. A failed restoration latches observation unavailable and the acceptance result unverified.",
+    "Every clipboard read uses the scoped observation. Copy remains a trusted click; its real success indicator must appear before the post-copy read override, so the observation cannot help the product write succeed.",
+    "Preserved rendered filtered-row oracle, exact clipboard comparison, download oracle, in-memory prior clipboard, and conditional restore only if clipboard still equals the export. No clipboard text or raw errors are added to artifacts.",
+    "Split safe grant/read/restore stage diagnostics. Product code and manifest are unchanged."
+  ],
+  "verification": [
+    "PASS node tests/browser/clipboard-observation.test.mjs: two permission states and distinct observation values; grant/read/restore failures; refused origins and invalid permission state.",
+    "PASS five in-memory unsafe mutations rejected: null origin, omitted restore, write permission substitution, skipped read, and constant-return gut check.",
+    "PASS node --check tests/browser/debug-log-export-acceptance.mjs and clipboard-observation.mjs.",
+    "Canonical harness guard was also attempted but has a pre-existing fixed /Users checkout expectation versus the actual /Volumes checkout. No harness production code was changed."
+  ],
+  "files": [
+    "tests/browser/debug-log-export-acceptance.mjs",
+    "tests/browser/clipboard-observation.mjs",
+    "tests/browser/clipboard-observation.test.mjs",
+    "docs/stabilization/reports/clipboard-escalation.json"
+  ],
+  "gaps": [
+    "No browser, heavy job, or real clipboard observation was run in this lane. The actual Chrome permission override and full acceptance outcome remain unverified until the independent peer clears one guarded runtime.",
+    "Root owns commit/push and defect/inventory updates.",
+    "Existing native-sidepanel-qa-harness.test.mjs checkout-path assertion fails after repository relocation; root must route this discovered guard portability defect."
+  ]
+}
