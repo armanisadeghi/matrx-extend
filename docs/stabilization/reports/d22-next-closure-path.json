@@ -141,8 +141,9 @@
       ],
       "safe_evidence": "Boolean start/return markers, response HTTP status, exact-fixture URL equality only, elapsed positive-sequence milliseconds, navigation failure counts from fixed allowlist, scoped observed/completed/HTTP200/failed/returned-row counts, Scrape DOM booleans and tab count/active state. No raw URLs, IDs, error messages, headers or response bodies.",
       "error_classification": "Fixed known Chromium net-error categories, known pointer driver codes, timeout/wait category and unclassified_exception fallback. Never echo raw exception. Evidence is captured before workspace cleanup can alter UI.",
-      "choice_counts": "choicesEnumeratedFromPicker=false until actual option enumeration; initialized baseline count alone is never full account/workspace census. Multi-workspace and late lookup remain unverified until their actual predicates pass.",
-      "preserved_behavior": "No acceptance predicate weakened; no fixture creation, writes, retries, checkpoint access or new runtime launch. Diagnostic repair only."
+      "choice_counts": "accessibleUniqueChoices initializes to null and choicesEnumeratedFromPicker to false. Only actual picker enumeration supplies the count and true flag; no initialized numeric value is represented as an observation. Historical run003 remains preserved unchanged.",
+      "preserved_behavior": "No acceptance predicate weakened; no fixture creation, writes, retries, checkpoint access or new runtime launch. Diagnostic repair only.",
+      "choice_count_peer_repair": "0760274e: replaced initial numeric1 with null; no other runner behavior changed."
     }
   },
   "readonly_001_preserved": {

@@ -609,7 +609,7 @@ async function discoverAcrossWorkspaces(panel, reads, originalName, original) {
     fail('invalid_workspace_discovery_bounds');
   const deadline = Date.now() + DISCOVERY_TOTAL_MS;
   const summary = {
-    accessibleUniqueChoices: 1,
+    accessibleUniqueChoices: null,
     choicesEnumeratedFromPicker: false,
     attemptedWorkspaces: 0,
     selectedOriginal: true,
