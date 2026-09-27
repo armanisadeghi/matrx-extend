@@ -27,7 +27,7 @@ const PRIVATE_CONFIG = join(REPO, 'test-results', 'd22-private-config.json');
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const ADMIN_EMAIL = 'admin@admin.com';
 const WEB_ORIGIN = 'https://www.aimatrx.com';
-const FIXTURE_HTML = `<!doctype html><meta charset="utf-8"><title>Harbor Dental appointment guide</title><style>html,body{margin:0;min-height:100%;height:100%}body{background:linear-gradient(90deg,#183f67 0 33%,#ef476f 33% 66%,#36c58b 66% 100%);color:#fff;font:20px system-ui}main{padding:18px;text-shadow:0 1px 3px #000}</style><main><h1>Harbor Dental appointment guide</h1><p>Bring your insurance card and a list of current medicines to your first appointment.</p></main>`;
+const FIXTURE_HTML = `<!doctype html><meta charset="utf-8"><title>Harbor Dental appointment guide</title><style>html,body{margin:0;min-height:100%;height:100%}body{background:linear-gradient(90deg,#183f67 0 33%,#ef476f 33% 66%,#36c58b 66% 100%);color:#fff;font:20px system-ui}main{padding:18px;text-shadow:0 1px 3px #000}body::after{content:"";position:fixed;left:0;right:0;bottom:0;height:24px;background:linear-gradient(90deg,#183f67 0 33%,#ef476f 33% 66%,#36c58b 66% 100%);pointer-events:none}</style><main><h1>Harbor Dental appointment guide</h1><p>Bring your insurance card and a list of current medicines to your first appointment.</p></main>`;
 let stage = 'build_start';
 const report = {
   schema_version: 1,
@@ -629,8 +629,9 @@ async function completedRead(journal, marker, expected) {
 }
 
 // The fixture's three broad vertical bands are an oracle independent of the
-// screenshot handler and gallery metadata. Sample decoded preview pixels away
-// from text and band boundaries, tolerating JPEG conversion only.
+// screenshot handler and gallery metadata. The fixed bottom strip keeps each
+// sample clear of fixture text at every viewport height; JPEG conversion may
+// slightly shift the channels.
 async function fixturePixels(panel) {
   return evaluate(
     panel,
@@ -648,7 +649,7 @@ async function fixturePixels(panel) {
     const matches=positions.map((fraction,index)=>{
       ctx.clearRect(0,0,1,1);
       ctx.drawImage(image,Math.floor(image.naturalWidth*fraction),
-        Math.floor(image.naturalHeight*.62),1,1,0,0,1,1);
+        image.naturalHeight-8,1,1,0,0,1,1);
       const pixel=ctx.getImageData(0,0,1,1).data;
       return expected[index].every((channel,i)=>Math.abs(pixel[i]-channel)<=32)&&pixel[3]===255;
     });

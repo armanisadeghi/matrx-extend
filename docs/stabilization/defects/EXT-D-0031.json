@@ -1,0 +1,31 @@
+{
+  "id": "EXT-D-0031",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T02"],
+  "surface": "Screenshot admin native acceptance: owned fixture pixel oracle",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Run the owned .94 admin Visible capture on the fresh Harbor Dental localhost fixture through the native sidepanel harness.",
+    "The real zero-row gallery read becomes one persisted user row with positive dimensions, a loaded blob preview, and matching card metadata.",
+    "The oracle samples each colored band at 62% image height. On the captured 370 by 405 preview, that row crosses the fixture paragraph in the left and middle bands, producing only one matching band."
+  ],
+  "expected": "The decoded preview pixel oracle verifies the three fixture colors at positions guaranteed clear of overlaid text, while still rejecting a wrong or corrupted capture.",
+  "actual": "Two samples hit fixture text and fail even though the private preview visibly contains the intended three-band page; the native case returns unverified.",
+  "evidence": [
+    "test-results/screenshot-capture-9e937791-f9e6-4a7a-b8c5-7c08b3ad26f2.json",
+    "test-results/screenshot-capture-9e937791-f9e6-4a7a-b8c5-7c08b3ad26f2.fixture-failure.png (private local image; do not commit)",
+    "tests/browser/screenshot-capture-acceptance.mjs"
+  ],
+  "severity": "S3: acceptance infrastructure falsely rejects a real capture; no product capture defect established",
+  "priority": "P1: unblock owned native capture verification",
+  "state": "fixed",
+  "owner": "/root/screenshot_capture_repair",
+  "fix_commits": [],
+  "transition_history": [
+    {"at": "2026-09-27T10:35:03Z", "from": null, "to": "open", "reason": "The .94 native run recorded one of three matching bands despite a persisted user row and decoded preview."},
+    {"at": "2026-09-27T10:35:03Z", "from": "open", "to": "triaged", "reason": "Private preview inspection and measured pixels show the left and middle .62-height samples cross visible paragraph glyphs; lower samples match all three known fixture colors."},
+    {"at": "2026-09-27T10:35:03Z", "from": "triaged", "to": "in-fix", "reason": "The fixture now paints a fixed bottom color strip; the independent decoded-preview oracle samples inside that strip."},
+    {"at": "2026-09-27T10:35:03Z", "from": "in-fix", "to": "fixed", "reason": "Source correction is in place and syntax-checked; peer review and guarded native retest remain pending."}
+  ],
+  "closure_requirement": "Independent peer verifies strip geometry and pixel assertion; guarded native retest proves three real decoded preview bands match."
+}
