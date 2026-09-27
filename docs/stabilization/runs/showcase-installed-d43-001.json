@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-installed-d43-001",
+  "feature_id": "EXT-F-1012",
+  "defect_ids": [
+    "EXT-D-0043",
+    "EXT-D-0039"
+  ],
+  "status": "partial",
+  "mode": "admin",
+  "target": "https://electronic.vegas/vegas-edm-event-calendar/",
+  "build": {
+    "receipt": "docs/stabilization/runs/showcase-d43-dev108-build.json",
+    "source_sha": "19f13e58e071250fc9d5ccf64e9648746ff006f0",
+    "version": "0.2.108",
+    "tree_sha256": "db05d3c385d55199ecea7c3b70761f476bb5a42755647c0f49586bba6e23739c",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "identity_evidence": "Primary Chrome chrome://extensions initially showed unpacked 0.2.101. Reload changed it to 0.2.108 with ID cihdmkcdjjckfhjpgoedmgfpoljebaml. Details showed Unpacked extension loaded from /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev, matching the build receipt. The calendar was refreshed and Showcase reopened afterward."
+  },
+  "resource_guard": {
+    "run_id": "showcase-installed-d43-001",
+    "mode": "browser",
+    "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "admitted_at": "2026-09-27T21:01:08.615Z",
+    "admission": "RESOURCE_ADMITTED",
+    "terminal_at": "2026-09-27T21:08:11.420Z",
+    "terminal": "RESOURCE_BROWSER_STOP_CONFIRMED",
+    "resource_invalid": false,
+    "wrapper_exit_code": 0
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-1012-T04",
+      "verdict": "partial",
+      "evidence": "Doctor on the refreshed live calendar showed a repeating-card recommendation for the current page. Following it opened List Pattern with root #wideeventsList and item div.wideeventwrapper already filled. The recommendation text described 249 cards at this run; this count was observed from the current page, not taken from the previous run.",
+      "observed_substep_verdict": "pass"
+    },
+    {
+      "case_id": "EXT-F-1012-T24",
+      "verdict": "partial",
+      "evidence": "From that seeded builder, Pick more fields opened an overlay that reported 249 matching items. Clicking the first current event title staged DJ Pauly D; clicking its date staged SEP 27. Done returned to the builder with root #wideeventsList and item div.wideeventwrapper unchanged. The title field preview matched DJ Pauly D. I changed the two field names to title and url and set the url field selector to the same relative event-title anchor with Attribute href. The URL preview became https://electronic.vegas/event/dj-pauly-d-omnia-dayclub-vegas-sep-27/. The scope stayed on the original event cards.",
+      "observed_substep_verdict": "pass"
+    },
+    {
+      "case_id": "EXT-F-1012-T29",
+      "verdict": "partial",
+      "evidence": "Extract after the title/url configuration returned 249 rows. The UI table showed distinct current event titles paired with event-specific URLs. Sample pairs matched the current page: DJ Pauly D \u2192 https://electronic.vegas/event/dj-pauly-d-omnia-dayclub-vegas-sep-27/; DJ Sourmilk \u2192 https://electronic.vegas/event/dj-sourmilk-tao-beach-vegas-sep-27/; DJ Stretch \u2192 https://electronic.vegas/event/dj-stretch-palm-tree-beach-club-vegas-sep-27/; Al Tamar \u2192 https://electronic.vegas/event/al-tamar-marquee-dayclub-vegas-sep-27/; D-Miles \u2192 https://electronic.vegas/event/d-miles-marquee-dayclub-vegas-sep-28/. The table explicitly displayed 'Showing first 200 of 249 rows \u2014 Copy and Save include all of them'; I could not inspect all 249 output records in the visible table. The verified result is a successful title+URL extraction with correct sampled distinct records, not a full-row audit."
+    },
+    {
+      "case_id": "EXT-F-1012-T24",
+      "verdict": "partial",
+      "evidence": "After builder Restart cleared the prior seeded draft, a fresh Pick an example item flow clicked the current DJ Pauly D title. The overlay explicitly said 'Several groups repeat here. Choose which group you want to extract.' It offered 3 nested li details, 249 div.wideeventwrapper event cards under #wideeventsList, and 2 larger section cards. Choosing the 249-card option produced '249 matching items selected' and the builder showed root #wideeventsList / item div.wideeventwrapper. This is explicit user choice of the intended event-card collection.",
+      "observed_substep_verdict": "pass_with_observation"
+    },
+    {
+      "case_id": "EXT-F-1012-T51",
+      "verdict": "partial",
+      "evidence": "After choosing the 249-card scope and staging a title, the page picker Restart returned to 'Click one example item'. Cancel closed the overlay. The builder retained the explicitly chosen #wideeventsList / div.wideeventwrapper scope, had no selected fields, and Extract remained disabled. No rows or fields from the abandoned field-picking step were shown. The labels do not promise that Cancel rolls back a scope already deliberately selected, so this is recorded as an observation rather than a failure."
+    },
+    {
+      "case_id": "EXT-F-1012-T45",
+      "verdict": "partial",
+      "evidence": "After navigating to https://example.com/, the Showcase host changed to example.com and List Pattern returned to Pick an example item with no event root, selected fields, or result rows.",
+      "observed_substep_verdict": "pass"
+    }
+  ],
+  "data_changes": {
+    "pattern_saved": false,
+    "pattern_deleted": false,
+    "dataset_written": false,
+    "saved_pattern_touched": false,
+    "notes": "No Save pattern action or other data write was used. Existing saved Microdata pattern was not run, edited, or deleted."
+  },
+  "method": "Direct native Chrome accessibility-tree and screenshot observation through CUA. No localhost, test server, fixture site, shell browser control, or hidden application state was used.",
+  "limitations": [
+    "Only the first 200 of 249 extracted rows are displayed in the product table, and the complete 249-row collection was not independently inspected value by value.",
+    "No saved List Pattern recipe was written or reopened, so save/replay acceptance remains outside this bounded D43/D39 run.",
+    "The selected title and URL were previewed and extracted for distinct records. The second raw picker click initially selected the event date; I then used the visible field editor to set the URL field's href attribute. This does not establish automatic URL-field classification from clicking a link.",
+    "The Cancel observation followed a user choice of the correct 249-card scope. It did not leave a wrong collection or enabled extraction; rollback semantics are not promised by the overlay labels."
+  ],
+  "ui_stop": "Sent UI_STOP to root after leaving Chrome on example.com with an empty List Pattern builder. Ctrl-C to the browser permit returned RESOURCE_BROWSER_STOP_CONFIRMED with resourceInvalid false and exit code 0.",
+  "coverage_note": "Substeps passed as described; inventory cases include additional targets/modes/error/reload dimensions. No whole-case pass is inferred from one substep."
+}

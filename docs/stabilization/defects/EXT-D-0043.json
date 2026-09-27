@@ -1,7 +1,10 @@
 {
   "id": "EXT-D-0043",
   "feature_id": "EXT-F-1012",
-  "case_ids": ["EXT-F-1012-T24", "EXT-F-1012-T29"],
+  "case_ids": [
+    "EXT-F-1012-T24",
+    "EXT-F-1012-T29"
+  ],
   "surface": "Showcase List Pattern manual field picking after Doctor recommends event cards",
   "auth_mode": "admin",
   "reproduction": [
@@ -58,5 +61,8 @@
     "Run the resulting config against that DOM and assert five distinct event titles and URLs rather than three details from one event. Include a fresh manual pick with nested candidate scopes, requiring an explicit way to choose the event-card scope rather than silently committing the smallest one."
   ],
   "implementation_boundary": "Coordinate with EXT-D-0042 picker-session identity work before editing start/payload/relay contracts; no product code or test was changed in this read-only triage.",
-  "closure_requirement": "Focused red/green guards must prove seeded Pick more fields preserves the broad card scope and an unseeded nested-list pick offers correct scope selection. Rebuild/reload the installed extension and independently extract multiple distinct event rows on the real calendar; inspect all extracted rows, not only the row count, before closing."
+  "closure_requirement": "Focused red/green guards must prove seeded Pick more fields preserves the broad card scope and an unseeded nested-list pick offers correct scope selection. Rebuild/reload the installed extension and independently extract multiple distinct event rows on the real calendar; inspect all extracted rows, not only the row count, before closing.",
+  "retest_status": "partial",
+  "retest_evidence": "docs/stabilization/runs/showcase-installed-d43-001.json",
+  "retest_remaining": "Full249-row contents beyond table200 limit and alternate nested-group extraction remain unverified live; no closure claim."
 }

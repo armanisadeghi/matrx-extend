@@ -15024,8 +15024,8 @@
           "results": {
             "admin": {
               "status": "partial",
-              "run_id": "showcase-live-retest-001",
-              "evidence": "docs/stabilization/runs/showcase-live-retest-001.json"
+              "run_id": "showcase-installed-d43-001",
+              "evidence": "docs/stabilization/runs/showcase-installed-d43-001.json"
             }
           }
         },
@@ -15531,8 +15531,8 @@
           "results": {
             "admin": {
               "status": "partial",
-              "run_id": "showcase-live-retest-001",
-              "evidence": "docs/stabilization/runs/showcase-live-retest-001.json"
+              "run_id": "showcase-installed-d43-001",
+              "evidence": "docs/stabilization/runs/showcase-installed-d43-001.json"
             }
           }
         },
@@ -15662,9 +15662,9 @@
           ],
           "results": {
             "admin": {
-              "status": "fail",
-              "run_id": "showcase-live-retest-001",
-              "evidence": "docs/stabilization/runs/showcase-live-retest-001.json"
+              "status": "partial",
+              "run_id": "showcase-installed-d43-001",
+              "evidence": "docs/stabilization/runs/showcase-installed-d43-001.json"
             }
           }
         },
@@ -16105,8 +16105,8 @@
           "results": {
             "admin": {
               "status": "partial",
-              "run_id": "showcase-live-retest-001",
-              "evidence": "docs/stabilization/runs/showcase-live-retest-001.json"
+              "run_id": "showcase-installed-d43-001",
+              "evidence": "docs/stabilization/runs/showcase-installed-d43-001.json"
             }
           }
         },
@@ -16289,7 +16289,14 @@
           ],
           "defect_ids": [
             "EXT-D-0043"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-installed-d43-001",
+              "evidence": "docs/stabilization/runs/showcase-installed-d43-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T52",
@@ -16356,7 +16363,8 @@
           "run_ids": [
             "showcase-live-discovery-001",
             "showcase-live-retest-001",
-            "showcase-live-microdata-001"
+            "showcase-live-microdata-001",
+            "showcase-installed-d43-001"
           ],
           "retest_status": "fail"
         }
@@ -16370,7 +16378,8 @@
         "EXT-D-0042 investigates old picker events/cancellation reaching a new same-page session; source evidence at reports/showcase-picker-session-fix.json, boundary reproduction pending. This is separate from D39 handoff and D40 executed preview config, and no coverage is promoted.",
         "EXT-D-0041 reserved for selected Network request \u2192 saved URL matching \u2192 repeat extraction; source-only investigation assigned while frozen .101 D39/D40 live review runs. No result claimed.",
         "Fresh .101 live retest: original Doctor list seed arrives, but Pick more fields replaced event-card scope with one event\u2019s nested list and returned3 rows. D43 assigned for independent diagnosis; D39 remains open until surrounding field/extraction behavior passes. No saved recipe persistence yet tested.",
-        "D40 real Microdata Event preview \u2192 unsent Place draft \u2192 saved pattern \u2192 reopened Patterns replay returned249 Event records with matching visible fields/sample values. T46 stays partial; full-value comparison/reload/errors and datasets remain unverified. Exact owned recipe retained as next persistence-test fixture."
+        "D40 real Microdata Event preview \u2192 unsent Place draft \u2192 saved pattern \u2192 reopened Patterns replay returned249 Event records with matching visible fields/sample values. T46 stays partial; full-value comparison/reload/errors and datasets remain unverified. Exact owned recipe retained as next persistence-test fixture.",
+        "Installed .108 real-calendar retest: Doctor handoff and seeded/fresh scope selection now work; title+href extraction249rows had matching sampled records and navigation cleared state. T04/T24/T29/T45/T51 remain partial; full rows beyond200, alternate-scope extraction, persistence and other dimensions still pending. No localhost UI was used."
       ]
     },
     {
