@@ -1,0 +1,60 @@
+{
+  "id": "EXT-D-0044-class-escalation",
+  "status": "engineering-complete; installed verification and upstream integration handed to owner",
+  "source_commit": "db1b55f8",
+  "lane": "Astra medium escalation",
+  "scope": [
+    "DataView origin page/run guards, first-commit row suppression, captured copy provenance and off-route failure health",
+    "manual CSS emits rows only with actual matching elements; empty values and missing optional fields preserved",
+    "automatic extraction includes tab identity in cache, dedupe and display",
+    "data_patterns rechecks pinned tab URL before/after execution; stale results preserve prior health",
+    "List Pattern and first-row probe require an actual selected element; all-miss/no-field recipes produce no match while blank matched fields remain valid."
+  ],
+  "source_census": [
+    "PatternsTab",
+    "DataView",
+    "useAutoExtract",
+    "auto-extract store",
+    "data_patterns tool",
+    "runPattern/runMode",
+    "manual_css/list_pattern modes"
+  ],
+  "dependencies": {
+    "agents": "0.16.19",
+    "kit": "0.16.11",
+    "consumer_action": "Both changelogs state metadata-only republish; none required.",
+    "receipt": "d44-escalation-deps-001 admitted 2026-09-27T21:46:25.860Z, exit 0 at 21:46:27.025Z"
+  },
+  "verification": {
+    "initial": "d44-escalation-green-001 source changed during preflight via external stash restoration; no source verdict credited. Seven harness failures from duplicate text queries and missing renderHook cleanup fixed before repeat.",
+    "red": "d44-escalation-baseline-red-001 exit 1 at 21:51:44.106Z: original source copies fail stale DataView resolve/reject/first commit, off-route broken health, manual all-null fabrication, tool stale URL and cross-tab auto reuse. 8 failures total; the old-key lookup failure is structural, not credited as separate behavior proof.",
+    "green": "d44-list-and-callers-green-003 passed25/25 across7 files; exit0 at2026-09-27T22:01:55.892Z, after List sibling repair545367cd.",
+    "mutation": "Copy-only render bypass and constant-matched classifier each failed intended assertions (mutations001, exit 1 at 21:55:12.340Z). Completion bypass initially survived an off-route test; test corrected to start on saved route. Completion mutation002 then failed unwanted health write while the real source passed 3/3 in the same run (exit 1 at 21:56:49.055Z). No production file was weakened.",
+    "compile": "types002 passed tsc --noEmit, exit0 at2026-09-27T22:03:35.054Z. Earlier types001 found only test auth fixture shape errors, corrected in545367cd.",
+    "catalog": "catalog001 exit0 at2026-09-27T22:05:30.359Z,169tools JSON/Markdown; db-docs001 exit0 at22:07:02.325Z,82tools read from Supabase Management API into docs/TOOLS.generated.md.",
+    "live": "Not run. Localhost UI tests prohibited by user; installed extension verification belongs to owner.",
+    "list_peer_red": "Independent source peer955cbe54 found total-field-miss sibling in list_pattern. List caller baseline001 (actual DOM mode\u2192runPattern\u2192data_patterns) failed missing-field and no-field cases, preserved blank-existing positive; 2 failed/1 passed, exit 1 at 22:00:07.340Z. Source and probe repaired in545367cd."
+  },
+  "limitations": [
+    "A same-URL document reload is not a new page identity in current useActiveTab; this lane covers tab ID plus URL changes.",
+    "Database last_status retains prior verified health for no_match/off_route; latest run outcome is local/tool response without schema expansion."
+  ],
+  "next_action": "Owner integrates newer upstream dependency/formatting changes, runs its planned combined checks/build, and verifies saved replay in installed Chrome. No push or browser/build from this lane.",
+  "commits": [
+    "db1b55f8",
+    "f7730783",
+    "545367cd"
+  ],
+  "verified_source_sha256": {
+    "src/features/data/DataView.tsx": "dfd768f988269e60eb51518e76eb25771e462f87f729f66c224003be81874bfe",
+    "src/hooks/use-auto-extract.ts": "b42a5c6d12920011772bf3b66e5a701c1f1cf72c6532dab9270f091cb32f1485",
+    "src/lib/data-pattern/modes/manual-css.ts": "05bd777c70797f8da50ec8e012c5d1f68a6a4a4e1bf4490b83712cd31bba6e37",
+    "src/lib/data-pattern/modes/list-pattern.ts": "3416a898b55fef1c27e364466e8271f72bf154c6e5584927460bf27e6537ab04",
+    "src/lib/tools/handlers/data-patterns.ts": "d40e8e441d61380243bca3507f823b8decb2c9b5698e975b557326f5e7860a44",
+    "src/state/auto-extract.ts": "59e8da037b4cf16ebbd340b3d5f391203dc5b2e17d14bcfa1143837cb65a7bb5",
+    "src/features/showcase/tabs/PatternsTab.tsx": "b751daf57111fb3d6f1804699a2c16b59f789fd0e6dff4bb501b410fda3ad636",
+    "src/lib/data-pattern/saved-run-outcome.ts": "4c8e59abaa46afbe5ff9a75ec6371eb32b5dc8b9451aa6736270ab0550dc7b89"
+  },
+  "evidence_level": "Deterministic DOM/caller boundary evidence and typecheck; no live browser or database persistence proof.",
+  "remaining_runtime_processes": []
+}
