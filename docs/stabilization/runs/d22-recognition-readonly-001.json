@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "run_id": "d22-recognition-readonly-001",
+  "source": {
+    "guard_log_path": "/tmp/matrx-d22-recognition-readonly-001.log",
+    "guard_log_sha256": "6a539333cf5ba12e9f70967e48432c1d54fbdb31d027cd6564b6accbc882f738",
+    "raw_result_path": "test-results/source-recognition-readonly-acceptance.json",
+    "raw_result_sha256": "d4e49cff77e88bbcf52059c4265efc6e159f51b41e94249a2acc044aa066db29"
+  },
+  "guard": {
+    "admitted_at": "2026-09-27T02:24:43.172Z",
+    "child_exit_at": "2026-09-27T02:24:56.779Z",
+    "child_exit_code": 1
+  },
+  "raw_result": {
+    "status": "unverified",
+    "build": {
+      "version": "0.2.82",
+      "tree_sha256": "9066e69fc13f5c35bd9650aa2540288045a40331012620def87faef4405d9611"
+    }
+  },
+  "execution_evidence": {
+    "child_exit": "nonzero",
+    "wrapper_completion": "unverified_from_guard_log",
+    "overall_acceptance": "not_adjudicated"
+  }
+}
