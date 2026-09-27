@@ -1,0 +1,43 @@
+{
+  "id": "EXT-D-0037",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T08"],
+  "surface": "Native gallery failure acceptance diagnostic capture",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Use fresh validated .96 development receipt and configured native runtime.",
+    "Run screenshot-gallery-failure-acceptance.mjs through resource guard as gallery-org-diag-dev096-001.",
+    "Inspect saved initial_real_empty_read failure: timeout=false, assertion=false, pointerCode=null, no failing call or network/UI state retained."
+  ],
+  "expected": "Fixed substep and safe error category plus content-free network/UI evidence identify the failed boundary.",
+  "actual": "Generic owned_harness_or_ui_stage_failed erases the failing operation; product versus test defect cannot be determined.",
+  "evidence": [
+    "docs/stabilization/runs/gallery-org-diag-dev096-001.json",
+    "docs/stabilization/reports/orgselection-shared-diagnosis.json"
+  ],
+  "severity": "S3: test diagnostic loss prevents reproducible triage",
+  "priority": "P1: needed before next gallery run",
+  "state": "in-fix",
+  "fix_commits": ["6ce22a41"],
+  "transition_history": [
+    {
+      "at": "2026-09-27T12:16:20.382913+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Recorded missing failure-boundary evidence."
+    },
+    {
+      "at": "2026-09-27T12:16:20.382913+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Saved .96 result confirms no specific failing operation, source catch discards it."
+    },
+    {
+      "at": "2026-09-27T12:16:20.382913+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Fixed allowlisted diagnostics committed; independent source/native peer active."
+    }
+  ],
+  "closure_requirement": "Independent review confirms no private values leak; native run either passes target or returns precise safe failure-boundary evidence."
+}
