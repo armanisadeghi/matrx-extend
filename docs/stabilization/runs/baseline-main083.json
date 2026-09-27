@@ -1,0 +1,39 @@
+{
+  "status": "development_baseline_pass",
+  "incoming_source": "27f74031d2acefa4ae785ceaef5834a8839c6b05",
+  "merge": "7c25e1dc",
+  "runs": [
+    {
+      "run_id": "baseline-main083-install-001",
+      "wrapper_session": 38152,
+      "wrapper_exit_code": 0,
+      "child_exit_at": "2026-09-27T02:36:45.886Z",
+      "child_exit_code": 0,
+      "guard_log": "/tmp/matrx-baseline-main083-install-001.log",
+      "sha256": "09191cd20c905f3826a302b14747b450623fb69d5800dff00c5021feee1022f4"
+    },
+    {
+      "run_id": "baseline-main083-devbuild-001",
+      "wrapper_session": 85456,
+      "wrapper_exit_code": 0,
+      "child_exit_at": "2026-09-27T02:38:16.336Z",
+      "child_exit_code": 0,
+      "guard_log": "/tmp/matrx-baseline-main083-devbuild-001.log",
+      "sha256": "5153d29bd0d75afb4d2ca8927e39c039d317a746ec9f84c602ebf9a5f6e126a1"
+    }
+  ],
+  "build": {
+    "schema_version": 1,
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "observedAt": "2026-09-27T02:38:28.431Z",
+    "extensionDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "version": "0.2.83",
+    "treeSha256": "8d1e7e426d679b1efdcebf6376c077d1317aff99fe6e223b64689b6809b46ed8"
+  },
+  "incoming_ci": {
+    "run_id": 36288901126,
+    "conclusion": "success"
+  },
+  "limits": "Local development artifact, not a release. Incoming CI passed; this receipt does not claim native acceptance."
+}
