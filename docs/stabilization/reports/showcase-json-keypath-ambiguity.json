@@ -1,0 +1,27 @@
+{
+  "defect": "EXT-D-0046",
+  "scope": "Showcase Network and Framework JSON tree key selection",
+  "status": "source-confirmed, runtime-unverified",
+  "reproduction": {
+    "input_shape": {
+      "feeds.news": [{ "source": "literal-key" }],
+      "feeds": {
+        "news": [{ "source": "nested-key" }]
+      }
+    },
+    "steps": [
+      "In the Network response JsonTree, select the single top-level property named `feeds.news` and extract.",
+      "Select the nested `feeds` property, then its `news` property, and extract.",
+      "Repeat both selections in the Framework JsonTree."
+    ],
+    "expected": "The first selection returns the `literal-key` rows; the nested selection returns the `nested-key` rows. They remain distinguishable through preview, save, and replay.",
+    "actual_from_source": "JsonTree constructs both selections as the string `feeds.news`; NetworkTab and the saved network runner split that string on dots, as does the next_data Framework mode. Both selections therefore traverse the nested object and return `nested-key` rows."
+  },
+  "source_evidence": [
+    "src/components/ui/json-tree.tsx:134-135 concatenates object keys with a dot without escaping or preserving segments.",
+    "src/features/showcase/tabs/NetworkTab.tsx:66-70 passes the selected path to rowsFromBody; src/lib/data-pattern/run-interactive.ts:268-281 splits it on dots for Network extraction/replay.",
+    "src/features/showcase/tabs/FrameworkTab.tsx:144-153 forwards the same JsonTree path; src/lib/data-pattern/modes/next-data.ts:339-344 splits it on dots."
+  ],
+  "runtime_evidence": "None. No test, build, localhost, or browser run was performed. Inventory EXT-F-1012-T56 is unverified and requires a real public page with a genuine response or framework object containing distinguishable literal-dotted and nested keys.",
+  "state": "open"
+}

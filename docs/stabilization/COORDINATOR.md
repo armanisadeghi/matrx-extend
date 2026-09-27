@@ -10,37 +10,24 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
-## Latest checkpoint (2026-09-27 16:50 UTC)
+## Current checkpoint (2026-09-27 21:36 UTC)
 
-Runtime verification is resource-blocked: last guarded launch refused before child16:44:50Z; OS pressure still2 at16:48:17Z. No owned heavy process remains. Do not retry on a timer without safe admission; never weaken the guard or terminate foreign work.
+Showcase remains the active priority. Acceptance is the installed development extension in Chrome on real public websites: verify the exact build receipt/version, reload the unpacked extension, refresh the page, reopen Showcase, and exercise the real controls. The owner explicitly ruled out localhost/test-server UI acceptance. Unit tests and controlled fixtures are source-regression evidence only.
 
-D43 fresh Sol source peer75d50030: PASS_WITH_GAPS, live unverified. The prior Luna missing-caller finding was refuted against the actual patch and corrected ine01c3f4c; do not reintroduce it. Patch already passes seed; entry/distinct-field tests strengthened in031196ec. Required user procedure and actual invalid-seed test were preserved with pending artifacts in5e1ced11. No D43 product patch is applied to current source.
+The latest installed artifact is 0.2.108 from `docs/stabilization/runs/showcase-d43-dev108-build.json` (source `19f13e58`, tree `db05d3c3…e23739c`, extension ID `cihdmkcdjjckfhjpgoedmgfpoljebaml`). `docs/stabilization/runs/showcase-installed-d43-001.json` is a partial real-site result on the electronic.vegas calendar: Doctor handoff, 249-card scope selection, sampled distinct title/href rows, and navigation clearing were observed. Only the first 200 rows were visible; saved List Pattern persistence/reopen and complete row audit remain open. D39 is closed for its bounded handoff contract. D43 remains fixed with partial retest, not closed.
 
-D41 initial display-selection repair and D42 session code were pushed by concurrent sync through71a13590. D41 query/path identity follow-up remains unrun and unimplemented. D44 missing-root/replay integrity has source findings and prepared red tests only. No defect is closed from these checkpoints. Preserve pending artifacts in docs/stabilization/pending; apply only exact owned patches after checking base/hash, under serial verification.
+Current ownership and unresolved work:
 
-Remote c5faabf3 updates @ai-matrx/agents0.15.1→0.16.18 and design-system0.48.5→0.48.6. It was merged without discarding either side, but installed node_modules are still0.15.1/0.48.5. Resume requires guarded dependency install and changed-package Consumer action review, followed by compile/regressions/build. Earlier combined compile passed against pre-update dependencies; do not label merged latest dependency state verified. Frozen primary Chrome .101 remains unchanged.
+- Astra owns the sole guarded D41 Network request-identity red/fix/green/types permit. No other heavy or browser run may start. Installed real-site Network save/reopen/replay remains necessary after code verification.
+- D42 is in-fix: original focused tests and combined compile passed, but helper-only rerun and independent installed-extension proof remain pending.
+- D44 is in-fix: focused red/green source coverage passed; Sol is making source-only peer corrections. Combined compile and installed real-site replay remain pending. The prior compile refusal at 21:22:57Z was `RESOURCE_LEGACY_RUNNER_BUSY`; its contemporaneous process identity is unknown. No process/lock cleanup was performed.
+- D45 is triaged as a source-confirmed provisional-picker transaction loss. Its regressions are held outside test discovery; real installed-extension confirmation remains pending.
+- D46 is newly open and source-confirmed/runtime-unverified: JsonTree dot-string paths collapse a literal dotted key into the same path as nested keys in Network and Framework. Inventory T56 is unverified.
+- D40 has engineering verification and partial real Microdata replay evidence; Table dataset append and other lifecycle/method dimensions remain open.
 
-## Current source, build, and ownership
+Inventory EXT-F-1012 remains the coverage source of truth. C44-C45/T53-T55 extend D41 Network matching coverage; C46/T56 cover D46. These new cases have no results recorded. Guest/member denial remains the existing T38 case. No whole-feature pass is claimed. The retained Microdata Event recipe remains an owned test fixture; deletion was not verified.
 
-Frozen build source dc67ce84 (0.2.101); shared source now .102 through129ac54a +D43 doc46d7848a: D39 handoff and D40 preview provenance/reset repairs. Final focused pair15/15 and guarded compile passed. Development build showcase-dev101-build-001 exited0 at15:58:03Z. Receipt test-results/source-dev-build-101-showcase-20260927.json records tree ea964f8ecde94b9ab66faa601adb9d63b3a5c12b5baadad37e9008c7362e1a10. This artifact is frozen; source-only workers must not rebuild/overwrite it during live review.
-
-Primary Chrome is unpacked from .output/chrome-mv3-dev, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, admin signed in. Actual .101 was verified after extension/page reload. Both live runs have terminated cleanly; no browser guard is active.
-
-- showcase_live_verify (Luna medium, zero product authorship) is reviewing the external D43 patch; no heavy permit. Live .101 Doctor handoff passed original reproduction; manual picking exposed D43. Microdata replay retained249 Event rows. Saved fixture `Codex live Microdata Event replay 20260927-1612Z` retained, no dataset attached; Delete unverified. Local synthetic replay fixture committed1961afeb, not yet served or browser tested.
-- showcase_picker_escalation is terminal. D42 source checkpoint aa8ade51: six intended red failures, original19/19 green, combined compile passed16:33:55Z. Helper-only focused rerun and independent UI pending; defect remains in-fix. Report and boundary contract retained.
-- showcase_save_replay_audit (Sol medium) owns D41 follow-up. Initial fix fa9841ec passed2/2 and combined compile, but independent source peer found query/numeric-path identity silently generalized. A real runner regression is prepared outside discovery. Sole heavy permit: one guarded red admission >=3min after16:39:57Z refusal, then fix/green/types if admitted; hold on refusal. D44 source/scratch preparation is paused behind D41.
-- showcase_detect_audit is terminal, D43 proposed source patch frozen outside repo: `/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d43-product.patch`, SHA25671eb140e8f764bec28d4e8dbe537ae38023d5c4b62ea054a216d1f3b2b13d6cf. Red4/5 intended failures; green refused prechild16:39:57Z for pressure/swap. Test and apply instructions in reports/showcase-d43-fix.json; no product changes in current checkout. Root coordinates reapply/green after peer and resource admission.
-- Root owns inventory/integration. D44/T52 track saved root fallback, route guidance (nonblocking), honest no-match and stale-page result identity. No foreign-process cleanup or resource-policy weakening.
-
-D39 original handoff passed fresh live .101, but state retest-fail because surrounding Pick more fields replaced249-card event scope with nested3-item details; D43 owns that repair. D40 engineering is verified but live save/reopen outcome remains open. D41/D42/D43 remain open work; saved runner missing-root/route applicability, dataset persistence promises and all-method coverage remain next. No whole-feature health claim.
-
-Concurrent writer committed/pushed both initial in-flight D39/D40 changes as cb47afa0. Preserve shared history: external exception to one-defect-per-commit, separate defect/retest records retained. Follow-ups9be8d4c9 anddc67ce84 preserve preview provenance and reset invalidation. Never bulk-stage active worker drafts. Fetch/reconcile before push, no destructive resets or foreign-process cleanup. Heavy cap1, no threshold weakening. Reserved d22-source-save-attempt.json remains untouchable.
-
-## Next check order
-
-D41 query/path identity red→fix→green/types; D43 patch peer→reapply→green/D42 regressions/types; D44 replay integrity red→fix→green/types; then current development build and independent real UI retests. Initial D41/D42 checkpoints reached remote through concurrent sync; follow-up corrections remain pending verification. Exact patches remain recoverable; never claim a preflight refusal ran tests. D43 adds seed-preserving fields and explicit nested scope choice. Row-rendering absence was not proven and must not be reported as a separate bug.
-
-D40 ledger reconciled to fixed with partial live retest: engineering red/green/types/build and real Microdata saved Event replay are recorded; original Table dataset append and other method/lifecycle cases remain open. Never close based on partial evidence.
+Immediate sequence: let Astra finish the sole D41 guarded cycle; then integrate only against its verified source/receipt. Reconcile D44 peer corrections and obtain compile proof when the guarded permit is available. Complete D45 transaction regression and D42 runtime proof, then verify the current build on real websites. D46 needs a focused literal-key regression and real-site installed verification. Preserve all concurrent drafts; never stage another lane's files, rerun on a timer after guard refusal, weaken the guard, or terminate foreign processes. Reserved `d22-source-save-attempt.json` remains untouched.
 
 ## Historical baseline (superseded environment and sequencing)
 

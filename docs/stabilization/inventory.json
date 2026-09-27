@@ -14855,6 +14855,11 @@
           "id": "EXT-F-1012-C45",
           "label": "Network request payload identity",
           "action": "Choose whether replay must match the selected request payload or intentionally use broader matching; retain only a local digest for payload identity, never raw payload, credentials, or headers."
+        },
+        {
+          "id": "EXT-F-1012-C46",
+          "label": "JSON literal dotted-key path selection",
+          "action": "Select a JSON object key whose literal name contains dots and preserve it as one path segment in Network and Framework extraction."
         }
       ],
       "source_anchors": [
@@ -16454,6 +16459,40 @@
             "Ambiguous matches, late old requests, reload effects, and truncated bodies have distinct honest outcomes; none silently masquerades as the selected complete response.",
             "Only current-run matching requests can satisfy replay, and any partial result remains visibly partial with source identity.",
             "Reports and persistence contain sanitized fixed fields only; no raw request payload, credentials, or headers are retained."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T56",
+          "title": "Network and Framework literal dotted JSON keys",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C18",
+            "EXT-F-1012-C42",
+            "EXT-F-1012-C46"
+          ],
+          "defect_ids": [
+            "EXT-D-0046"
+          ],
+          "preconditions": [
+            "Fresh verified development build; use a real public page whose genuine response or framework state contains a literal dotted key and a distinguishable nested-path value. Do not use localhost or a test server. Guest/member denial uses EXT-F-1012-T38.",
+            "Example data shape: a literal key `feeds.news` and nested object `{feeds: {news: ...}}` contain distinct rows so path selection is observable."
+          ],
+          "steps": [
+            "In Network, select the literal `feeds.news` key in the captured JSON tree, save/reopen the recipe, and compare replayed rows with the literal-key value rather than the nested `feeds.news` value.",
+            "Repeat in Framework using a real embedded state source with the same distinguishable key shape; select the literal dotted key and compare extracted rows.",
+            "Also select the nested `feeds` then `news` path and verify it remains distinguishable from the one-segment literal key."
+          ],
+          "expected": [
+            "JSON path selection retains segment boundaries so a literal dotted key resolves to its own value and nested keys resolve separately.",
+            "Saved/reopened Network and Framework recipes preserve the selected path without silently returning a different value."
           ],
           "dimensions": [
             "warm",

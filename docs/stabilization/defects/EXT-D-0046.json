@@ -1,0 +1,34 @@
+{
+  "id": "EXT-D-0046",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T56"],
+  "surface": "Showcase Network and Framework JSON key-path selection",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Use a JSON object containing both a literal key named `feeds.news` and a nested object `feeds: { news: ... }`, with distinct values.",
+    "Select the literal dotted key in the Showcase Network JSON tree and run extraction; repeat with the Showcase Framework tree.",
+    "Compare the selected result with the literal key's value and with the separately selectable nested path."
+  ],
+  "expected": "A selected JSON object key remains one path segment even when its literal name contains dots. The nested path `feeds` then `news` remains a distinct selection. Saved/reopened Network and Framework recipes return the selected value rather than silently routing to the other shape.",
+  "actual": "Source constructs JsonTree child paths by concatenating keys with `.` and both consumers parse the resulting string by splitting on `.`. Selecting the single key `feeds.news` therefore produces the same path string as selecting nested keys `feeds` then `news`; extraction resolves the nested value and cannot address the literal dotted key through this UI path.",
+  "source_evidence": [
+    "src/components/ui/json-tree.tsx:134-135 builds childPath as `${path}.${key}` without escaping or segment encoding.",
+    "src/features/showcase/tabs/NetworkTab.tsx:66-70 passes the selected key-path string to rowsFromBody; src/lib/data-pattern/run-interactive.ts:268-281 performs split-based traversal for Network extraction and replay.",
+    "src/lib/data-pattern/modes/next-data.ts:339-344 traverses cfg.key_path.split('.'); FrameworkTab.tsx:144-153 passes the JsonTree path into the next_data mode."
+  ],
+  "severity": "S2: selected extraction can silently return a different JSON value when literal dotted keys coexist with nested paths.",
+  "priority": "P2: affects key-path correctness in Network and Framework modes; no runtime reproduction recorded yet.",
+  "state": "open",
+  "reproduction_status": "source-confirmed; runtime not verified",
+  "verification_status": "No test, build, or browser run performed. EXT-F-1012-T56 is new and unverified.",
+  "source_report": "docs/stabilization/reports/showcase-json-keypath-ambiguity.json",
+  "transition_history": [
+    {
+      "at": "2026-09-27T21:33:09Z",
+      "from": null,
+      "to": "open",
+      "reason": "Source reading confirmed that JsonTree encodes object keys in a dotted string and Network/Framework consumers split the string, making a literal dotted key ambiguous with a nested path."
+    }
+  ],
+  "closure_requirement": "Add a regression using distinct literal-dotted and nested values through the actual JsonTree selection and both extraction consumers, then verify an installed development build on a real public page with the same shape. Confirm save/reopen preserves each segment boundary."
+}
