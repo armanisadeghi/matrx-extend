@@ -1,0 +1,20 @@
+{
+  "run_id": "screenshot-admin-readonly-004",
+  "wrapper_session": 86747,
+  "wrapper_exit_code": 2,
+  "status": "resource_refused",
+  "refused_at": "2026-09-27T00:27:55.879Z",
+  "reason": "RESOURCE_PRESSURE_UNSAFE",
+  "child_started": false,
+  "raw_result": null,
+  "log_path": "/tmp/matrx-screenshot-admin-readonly-004.log",
+  "log_sha256": "ea689813287cbd831754d51235092f47bf1bbb463f0d4e471fab11d7eea45953",
+  "guard_event": {
+    "code": "RESOURCE_PREFLIGHT_REFUSED",
+    "pressure_level": 2,
+    "available_memory_gib": 5.92,
+    "required_memory_gib": 4,
+    "reasons": ["RESOURCE_PRESSURE_UNSAFE"]
+  },
+  "next_action": "Wait for healthy resource preflight; keep guard thresholds unchanged."
+}
