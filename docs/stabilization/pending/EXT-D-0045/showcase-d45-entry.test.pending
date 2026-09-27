@@ -43,6 +43,7 @@ vi.mock('@ai-matrx/design-system', () => ({
 
 import { ListPatternTab } from '@/features/showcase/tabs/ListPatternTab';
 import { mountListPicker, unmountListPicker } from '@/lib/data-pattern/list-picker';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import { useShowcaseTabStore } from '@/state/showcase-tab';
 
 const titles = [
@@ -173,5 +174,49 @@ describe('D45 cancel is a picker transaction boundary', () => {
     expect(screen.queryByText(/1 selected field/i)).toBeNull();
     expect((screen.getByRole('button', { name: /^Extract$/i }) as HTMLButtonElement).disabled).toBe(true);
     expect(screen.queryByTestId('rows')).toBeNull();
+  });
+
+  it('appends page-picked fields to the staged same-scope definition on Done', async () => {
+    await startWithPreview();
+    await act(async () => fireEvent.click(screen.getByRole('button', { name: /Pick more fields/i })));
+    const overlay = pickerHost();
+    await act(async () => {
+      document.querySelector('.wideeventwrapper:first-child .eventTitle')?.dispatchEvent(
+        new MouseEvent('click', { bubbles: true, cancelable: true }),
+      );
+      overlay.querySelector('#done')?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    expect(screen.getByText('#wideeventsList')).toBeTruthy();
+    expect(screen.getByText('div.wideeventwrapper')).toBeTruthy();
+    expect(screen.getByText(/2 selected fields/i)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /^Extract$/i }));
+    const rows = JSON.parse((await screen.findByTestId('rows')).textContent ?? '[]') as Array<Record<string, unknown>>;
+    expect(rows.map((row) => row.link_url)).toEqual(urls);
+    expect(rows.map((row) => row.field_1)).toEqual(titles);
+  });
+
+  it('ignores a late stamped result from the canceled B session', async () => {
+    const priorRows = await startWithPreview();
+    const overlay = await restartAndChooseNestedScope();
+    const sent = vi.mocked(chrome.runtime.sendMessage).mock.calls.map(([message]) => message as {
+      kind: string;
+      payload: { session_id: string };
+    });
+    const sessionId = sent.find((message) => message.kind === 'data:list-picker-item-detected')?.payload.session_id;
+    expect(sessionId).toBeTruthy();
+    await act(async () => {
+      overlay.querySelector('#cancel')?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      listeners.get(CHANNELS.LIST_PICKER_RESULT)?.({
+        session_id: sessionId,
+        tab_id: 77,
+        list_root: '#wideeventsList > div.wideeventwrapper:first-child > li > ul.briefDetails',
+        item_selector: 'li',
+        field_paths: [{ name: 'wrong_scope', rel_selector: ':scope' }],
+      });
+    });
+    expect(screen.getByText('#wideeventsList')).toBeTruthy();
+    expect(screen.getByText('div.wideeventwrapper')).toBeTruthy();
+    expect(screen.getByText(/1 selected field/i)).toBeTruthy();
+    expect(JSON.parse(screen.getByTestId('rows').textContent ?? '[]')).toEqual(priorRows);
   });
 });
