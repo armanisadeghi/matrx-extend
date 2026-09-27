@@ -86,6 +86,7 @@ describe('Showcase saved pattern replay provenance', () => {
   });
 
   it('does not present a completed old-page run after navigating on the same host', async () => {
+    mocks.page.url = 'https://electronic.vegas/vegas-edm-event-calendar/';
     let resolveRun: (rows: Record<string, unknown>[]) => void = () => {};
     mocks.fetchPatterns.mockResolvedValue([pattern]);
     mocks.runSaved.mockImplementation(

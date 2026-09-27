@@ -93,17 +93,20 @@ export const listPatternMode: ExtractionMode<ListPatternConfig> = {
       return v;
     };
 
-    return items.map((item) => {
+    return items.flatMap((item) => {
+      let matchedElement = false;
       const row: Record<string, string | null> = {};
       for (const f of cfg.field_paths) {
         try {
           const el = f.rel_selector === ':scope' ? item : item.querySelector(f.rel_selector);
+          matchedElement ||= el !== null;
           row[f.name] = el ? readValue(el, f.attr, f.transform) : null;
         } catch {
           row[f.name] = null;
         }
       }
-      return row;
+      // Empty values are data; absent selected elements are not rows.
+      return matchedElement ? [row] : [];
     });
   },
 };
@@ -168,14 +171,16 @@ export function probeFirstRowInPage(
     return v;
   };
 
+  let matchedElement = false;
   const row: Record<string, string | null> = {};
   for (const f of cfg.field_paths) {
     try {
       const el = f.rel_selector === ':scope' ? item : item.querySelector(f.rel_selector);
+      matchedElement ||= el !== null;
       row[f.name] = el ? readValue(el, f.attr, f.transform) : null;
     } catch {
       row[f.name] = null;
     }
   }
-  return row;
+  return matchedElement ? row : null;
 }

@@ -50,7 +50,7 @@ it('records an auto-extract no-match locally without promoting saved health to o
   mocks.fetchPatterns.mockResolvedValue([pattern]);
   mocks.runPattern.mockResolvedValue([]);
   useAuthStore.setState({
-    user: { id: 'user-1', app_metadata: {}, user_metadata: {}, aud: 'authenticated', created_at: '2026-09-27T00:00:00Z' },
+    user: { id: 'user-1', email: null },
     status: 'signed-in',
     error: null,
     isAdmin: false,
@@ -73,7 +73,7 @@ it('still promotes a matched nonempty auto-extraction to ok', async () => {
   mocks.fetchPatterns.mockResolvedValue([pattern]);
   mocks.runPattern.mockResolvedValue([{ title: 'Real calendar event' }]);
   useAuthStore.setState({
-    user: { id: 'user-1', app_metadata: {}, user_metadata: {}, aud: 'authenticated', created_at: '2026-09-27T00:00:00Z' },
+    user: { id: 'user-1', email: null },
     status: 'signed-in',
     error: null,
     isAdmin: false,
@@ -90,7 +90,7 @@ it('extracts independently when two tabs share the same URL', async () => {
   vi.useFakeTimers();
   mocks.fetchPatterns.mockResolvedValue([pattern]);
   mocks.runPattern.mockImplementation(async (_pattern, tabId) => [{ venue: tabId === 37 ? 'Brooklyn Bowl' : 'Area15' }]);
-  useAuthStore.setState({ user: { id: 'user-1', app_metadata: {}, user_metadata: {}, aud: 'authenticated', created_at: '2026-09-27T00:00:00Z' }, status: 'signed-in' });
+  useAuthStore.setState({ user: { id: 'user-1', email: null }, status: 'signed-in' });
   const view = renderHook(() => useAutoExtract());
   await act(async () => { await vi.advanceTimersByTimeAsync(600); });
   mocks.page.id = 38;
