@@ -7,11 +7,16 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
+import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'contained-navigation-acceptance.json');
+const EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
+const DEV_BUILD_RECEIPT = process.env.CONTAINED_DEV_BUILD_RECEIPT;
+const RECEIPT = DEV_BUILD_RECEIPT ?? join(REPO, '.output', 'release-receipt.json');
 const ADMIN_ENV = join(homedir(), 'code', 'aidream', '.env');
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const GUEST = ['Scrape', 'Data', 'SEO', 'Settings'];
@@ -105,8 +110,9 @@ const report = {
   admin_tab_inventory: null,
   profile_attempt: null,
   navigation_surfaces: {},
+  build: null,
 };
-let stage = 'owned_profile';
+let stage = 'build_identity';
 const advance = (next) => {
   stage = next;
   report.admin_prerequisite.stage = next;
@@ -114,6 +120,28 @@ const advance = (next) => {
 
 const target = (id, role, control, detail) =>
   report.targets.push({ id, role, control, status: 'pass', detail });
+
+async function buildIdentity() {
+  const [receipt, manifest, pkg] = await Promise.all([
+    readFile(RECEIPT, 'utf8').then(JSON.parse),
+    readFile(join(EXTENSION_DIR, 'manifest.json'), 'utf8').then(JSON.parse),
+    readFile(join(REPO, 'package.json'), 'utf8').then(JSON.parse),
+  ]);
+  if (DEV_BUILD_RECEIPT !== undefined) requireLocalDevReceipt(receipt, EXTENSION_DIR);
+  assert.equal(manifest.version, pkg.version, 'manifest matches current package');
+  assert.equal(receipt.version, pkg.version, 'receipt matches current package');
+  if (DEV_BUILD_RECEIPT !== undefined)
+    assert.ok(manifest.key, 'development build has a stable key');
+  assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256, 'artifact matches receipt');
+  return {
+    ...(DEV_BUILD_RECEIPT !== undefined && {
+      kind: receipt.kind,
+      publishState: receipt.publish_state,
+    }),
+    version: receipt.version,
+    treeSha256: receipt.treeSha256,
+  };
+}
 
 async function selected(panel, title, marker = null) {
   return evaluate(
@@ -364,7 +392,15 @@ async function realAdminSignin(page, panel) {
 }
 
 try {
+  const before = await buildIdentity();
+  report.build = { before, after: null };
+  stage = 'owned_profile';
   const harness = await runNativeSidepanelQa({
+    ...(DEV_BUILD_RECEIPT !== undefined && {
+      extensionDir: EXTENSION_DIR,
+      expectedRelease: before,
+      localDevReceiptPath: DEV_BUILD_RECEIPT,
+    }),
     exercisePanel: async ({ page, panel }) => {
       advance('guest_tab_inventory');
       const guestTabs = await inventory(panel, 'guest');
@@ -445,6 +481,10 @@ try {
     },
   });
   report.extension_id = harness.extensionId;
+  stage = 'build_recheck';
+  const after = await buildIdentity();
+  assert.deepEqual(after, before, 'build identity remained stable during native run');
+  report.build.after = after;
   report.status = 'partial';
 } catch (error) {
   report.status = 'unverified';

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "lane": "implementation/preparation — Sol medium",
+  "status": "SOURCE_READY_AWAITING_PEER_AND_RUNTIME_ADMISSION",
+  "files": [
+    "tests/browser/contained-navigation-acceptance.mjs",
+    "tests/browser/seo-guest-acceptance.mjs"
+  ],
+  "change": "Each existing runner accepts a caller-selected local development receipt, validates the current package version, unpacked manifest version and artifact tree hash before native launch, passes the selected receipt into runNativeSidepanelQa, and repeats those checks after the run. Without the dev receipt variable, each runner retains its released-artifact path. No UI assertion or action was weakened or added.",
+  "runtime_inputs": {
+    "contained_navigation": "CONTAINED_DEV_BUILD_RECEIPT: path to a current local_dev_unpacked receipt for .output/chrome-mv3-dev",
+    "seo_guest": "SEO_GUEST_DEV_BUILD_RECEIPT: path to a current local_dev_unpacked receipt for .output/chrome-mv3-dev",
+    "browser": "Owned Chrome-for-Testing and Playwright runtime resolved by native-sidepanel-qa-harness; root admits the browser run and supplies any runtime environment."
+  },
+  "inventory_scope": {
+    "contained_navigation": {
+      "feature": "EXT-F-1001",
+      "targets": [
+        "T01: guest direct-tab navigation, tab roster and selected panel; stale persisted selection remains unverified",
+        "T03: admin direct-tab navigation, tab roster and Profile route; stale persisted selection remains unverified",
+        "T04: guest Capture trigger absent",
+        "T06: admin Capture trigger and observed badge label; live count accuracy remains partial",
+        "T07: guest Vault assistance shortcut absent",
+        "T10: guest avatar and desktop status",
+        "T12: admin avatar, desktop status and Profile entry",
+        "T13: guest Data, SEO and Settings lazy views load; failure/retry remains unverified",
+        "T15: admin Data, SEO and Settings lazy views load; failure/retry remains unverified"
+      ],
+      "excluded": "T02, T05, T08, T09, T11, T14 member paths; Chat and Pilot systematic actions; live Vault assistance state",
+      "prerequisites": "Current receipt-verified extension; owned disposable native sidepanel; guest state first; real admin web login at aimatrx.com using AI_ADMIN_USERNAME and AI_ADMIN_PASSWORD from aidream .env; extension Sign in reaches admin role."
+    },
+    "seo_guest": {
+      "feature": "EXT-F-1008",
+      "targets": [
+        "T01: guest visible audit title tracks two distinct public URLs and current URL after reload; slow-old-result race and exact one-audit count remain unverified",
+        "T02: guest manual re-audit retains current public-page title; fresh-capture and stale-advice behavior remain unverified",
+        "T03: guest about:blank restricted-page error clears stale audit and public navigation recovers; other restrictions and unreachable HTTP(S) remain unverified",
+        "T07: guest copy menu offers text and AI choices and hides JSON before and after reload; clipboard contents and signed-in role gates remain unverified",
+        "T09: guest details and selected outbound links compared with live public DOM; unobserved groups and broken social preview fallback remain unverified"
+      ],
+      "excluded": "T04-T06, T08 save/history/diff; T10-T14 recommendations, Chat staging and social snippet actions; member/admin modes",
+      "prerequisites": "Current receipt-verified extension; owned disposable guest native sidepanel; external public pages example.org, IANA, MDN and Wikipedia reachable with usable DOM. Optional SEO_GUEST_METADATA_FIXTURE=airbnb requires live Airbnb metadata and unique link targets. No organization or database write is required for this runner."
+    }
+  },
+  "verification": {
+    "node_check": "passed for both edited runners",
+    "scoped_biome_check": "passed for both edited runners",
+    "git_diff_check": "passed for both edited runners",
+    "browser_or_build": "not launched in this lane"
+  },
+  "open_questions": [],
+  "next_action": "Root peer-reviews the two source edits, admits the exact browser commands, and supplies fresh local receipt paths. Treat output as bounded subtarget evidence, not full inventory case completion."
+}

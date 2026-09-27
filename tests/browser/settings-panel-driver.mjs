@@ -114,6 +114,8 @@ export async function click(panel, kind, label) {
     let candidates;
     if (kind === 'title') candidates = [...document.querySelectorAll('button[title]')]
       .filter((el) => el.title === label);
+    else if (kind === 'button-text') candidates = [...document.querySelectorAll('button')]
+      .filter((el) => el.textContent.trim() === label);
     else if (kind === 'section') candidates = [...document.querySelectorAll('button[aria-expanded]')]
       .filter((el) => el.textContent.trim() === label);
     else if (kind === 'theme') candidates = [...document.querySelectorAll('span')]

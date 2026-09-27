@@ -1,0 +1,48 @@
+{
+  "verdict": "PASS_WITH_EXECUTION_BOUNDARY",
+  "summary": "Both acceptance scripts accept an explicitly selected local dev receipt, verify package/manifest/tree identity before the native harness, pass that identity into the canonical native harness, and recheck identity afterward. Existing browser assertions and auth boundaries remain intact in the scoped diffs. No Source checkpoint path was touched by this review.",
+  "evidence": {
+    "scoped_files": [
+      "tests/browser/contained-navigation-acceptance.mjs",
+      "tests/browser/seo-guest-acceptance.mjs"
+    ],
+    "diff_review": "The only deletion in the scoped diff is the SEO script's import-list adjustment to add readFile; no original acceptance assertion, browser action, or auth boundary was removed or weakened. New acceptance-script file writes remain the existing named test-results report and SEO screenshot/artifact writes; buildIdentity only reads package.json, manifest.json, receipt, and hashes the unpacked tree.",
+    "receipt": {
+      "path": "test-results/source-dev-build-089-takeover-20260927.json",
+      "kind": "local_dev_unpacked",
+      "publish_state": "not_published",
+      "receipt_package_manifest_version": "0.2.89",
+      "manifest_key_present": true,
+      "tree_hash_matches": true
+    },
+    "checks": [
+      "node --check tests/browser/contained-navigation-acceptance.mjs — passed",
+      "node --check tests/browser/seo-guest-acceptance.mjs — passed",
+      "git diff --check -- tests/browser/contained-navigation-acceptance.mjs tests/browser/seo-guest-acceptance.mjs — passed",
+      "requireLocalDevReceipt plus direct package/manifest/tree comparison for the selected .89 receipt — passed"
+    ],
+    "execution": "No browser, build, or native harness was launched. The default release receipt is 0.2.79 while package and dev manifest are 0.2.89, so a run without the relevant receipt environment variable intentionally fails the new package/receipt check before native browser launch."
+  },
+  "safe_to_execute_cases": [
+    {
+      "case": "contained navigation acceptance on the currently captured dev build",
+      "selection": "CONTAINED_DEV_BUILD_RECEIPT=test-results/source-dev-build-089-takeover-20260927.json",
+      "entrypoint": "node tests/browser/contained-navigation-acceptance.mjs",
+      "preconditions": "Confirm the current unpacked dev tree remains the captured tree; the script itself checks this before and after the native run."
+    },
+    {
+      "case": "SEO guest acceptance on the currently captured dev build",
+      "selection": "SEO_GUEST_DEV_BUILD_RECEIPT=test-results/source-dev-build-089-takeover-20260927.json",
+      "entrypoint": "node tests/browser/seo-guest-acceptance.mjs",
+      "preconditions": "Confirm the current unpacked dev tree remains the captured tree; the script itself checks this before and after the native run."
+    }
+  ],
+  "files": [
+    "tests/browser/contained-navigation-acceptance.mjs",
+    "tests/browser/seo-guest-acceptance.mjs",
+    "test-results/source-dev-build-089-takeover-20260927.json"
+  ],
+  "open_questions": [
+    "None for the scoped source review. Browser behavior and runtime write effects remain unverified until the two explicitly selected runs are executed."
+  ]
+}

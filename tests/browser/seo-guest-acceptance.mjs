@@ -6,13 +6,18 @@
  */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { open, writeFile } from 'node:fs/promises';
+import { open, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
+import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'seo-guest-acceptance.json');
+const EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
+const DEV_BUILD_RECEIPT = process.env.SEO_GUEST_DEV_BUILD_RECEIPT;
+const RECEIPT = DEV_BUILD_RECEIPT ?? join(REPO, '.output', 'release-receipt.json');
 const PAGES = ['https://example.org/', 'https://www.iana.org/domains/reserved'];
 const DETAIL_PAGE = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link';
 const NEXT_DETAIL_PAGE = 'https://en.wikipedia.org/wiki/HTML';
@@ -41,6 +46,7 @@ const report = {
   last_safe_stage: 'before_owned_profile',
   last_safe_observable: null,
   current_operation: null,
+  build: null,
 };
 const advance = (stage, observable = null) => {
   report.last_safe_stage = stage;
@@ -80,6 +86,28 @@ const target = (caseId, subtarget, evidence) =>
   report.targets.push({ case_id: `EXT-F-1008-${caseId}`, subtarget, status: 'pass', evidence });
 const unverifiedTarget = (caseId, subtarget, reason) =>
   report.targets.push({ case_id: `EXT-F-1008-${caseId}`, subtarget, status: 'unverified', reason });
+
+async function buildIdentity() {
+  const [receipt, manifest, pkg] = await Promise.all([
+    readFile(RECEIPT, 'utf8').then(JSON.parse),
+    readFile(join(EXTENSION_DIR, 'manifest.json'), 'utf8').then(JSON.parse),
+    readFile(join(REPO, 'package.json'), 'utf8').then(JSON.parse),
+  ]);
+  if (DEV_BUILD_RECEIPT !== undefined) requireLocalDevReceipt(receipt, EXTENSION_DIR);
+  assert.equal(manifest.version, pkg.version, 'manifest matches current package');
+  assert.equal(receipt.version, pkg.version, 'receipt matches current package');
+  if (DEV_BUILD_RECEIPT !== undefined)
+    assert.ok(manifest.key, 'development build has a stable key');
+  assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256, 'artifact matches receipt');
+  return {
+    ...(DEV_BUILD_RECEIPT !== undefined && {
+      kind: receipt.kind,
+      publishState: receipt.publish_state,
+    }),
+    version: receipt.version,
+    treeSha256: receipt.treeSha256,
+  };
+}
 
 // New-batch failures retain only our fixed assertion label and scalar values.
 // Public page text, arbitrary DOM strings, transport errors, and URLs never
@@ -804,7 +832,16 @@ async function copyMenu(panel) {
 }
 
 try {
+  enter('build_identity');
+  const before = await buildIdentity();
+  report.build = { before, after: null };
+  advance('build_identity_verified');
   const harness = await runNativeSidepanelQa({
+    ...(DEV_BUILD_RECEIPT !== undefined && {
+      extensionDir: EXTENSION_DIR,
+      expectedRelease: before,
+      localDevReceiptPath: DEV_BUILD_RECEIPT,
+    }),
     exercisePanel: async ({ page, panel }) => {
       advance('owned_guest_panel_ready', { nativePanel: true });
       const publicPages = [];
@@ -1361,6 +1398,10 @@ try {
     },
   });
   report.extension_id = harness.extensionId;
+  enter('build_recheck');
+  const after = await buildIdentity();
+  assert.deepEqual(after, before, 'build identity remained stable during native run');
+  report.build.after = after;
   report.status = 'partial';
 } catch (error) {
   report.status = 'unverified';
