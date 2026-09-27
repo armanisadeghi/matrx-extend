@@ -1322,24 +1322,41 @@ Every entry follows this shape:
 
 ### Showcase — Network tab
 - **What it does:** Captures top-frame fetch/XHR while you interact; pick a
-  response, drill into the JSON, and save its request URL matcher and key path
-  as an interactive pattern.
-- **Steps:** Start capture on an SPA, scroll/click so two JSON API calls with
-  distinct URLs fire, search for `json` by content type, select one response,
-  click its array node, and Save pattern. Change the list search before saving
-  to confirm the selected response and preview stay pinned. Reopen the saved
-  pattern in Patterns and Run on the same open page. Capture two sibling URLs
-  distinguished only by query date or numeric path ID; the saved default must
-  retain the selected full URL and replay its rows. Test an edited matcher
-  that excludes the selected URL, too.
-- **Expected:** Only the captured tab's requests appear (another tab's
-  traffic never pollutes the list); Reload stops the recording state;
-  buffer caps at 500 events with a "dropped" notice; events survive
-  switching to another sub-tab and back. The saved URL matcher targets the
-  exact selected request including query rather than the display search, and rerun reloads the
-  page and returns rows from that request when it fires. A matcher that omits
-  the selected URL warns without blocking Save; no-match rerun explains how
-  to trigger the request again. No scheduled replay is claimed.
+  response, drill into JSON, and save its request identity and selected path
+  as an interactive pattern. Exact URL and selected-body matching are the
+  defaults; only an opaque SHA-256 payload digest leaves the page.
+- **Steps:** On a real website, capture two JSON requests with distinct URLs,
+  search for `json`, choose a response and its array, change the list search,
+  then Save. Reopen it in Patterns and Run. Repeat with relative request URLs,
+  differing query dates, numeric paths, encoded values and literal `*` URLs.
+  For a POST endpoint, capture two different operations at the same URL; save
+  one and rerun with both operations firing. Repeat the same operation with
+  updated data, including an older request that finishes after the newer one.
+  Switch URL matching to partial/wildcard and turn off body matching; verify
+  these explicit choices save even when the matcher excludes the selected URL.
+- **Expected:** Preview and saved config stay attached to the selected response;
+  fetch string/URL/Request and XHR URLs resolve against the document base.
+  Exact URL treats `*` literally. POST replay matches the selected payload digest
+  without storing raw request bodies or request headers. A repeat of the same
+  operation uses the newest successful request by initiation order, not the
+  largest response or completion order. The whole configured capture window is
+  observed; distinct request identities accepted by a broad matcher produce an
+  actionable ambiguity message instead of arbitrary rows. Truncated results are
+  not reported as complete. List search never changes replay identity.
+- **Unsupported payloads:** Multipart, explicit streaming, oversized payloads,
+  or unavailable browser cryptography show that exact body matching is unavailable.
+  Save remains available; the person may explicitly choose URL and method only.
+  Old saved recipes without body identity ask for recapture when a body-bearing
+  request cannot be identified safely.
+- **Capture lifecycle:** Only the captured tab's requests appear; Reload stops
+  recording and its tooltip says to start again. The buffer caps at 500 events
+  with a dropped notice; events survive switching Showcase sub-tabs. Replay
+  removes its event listener, tab listener and timer on completion or failure.
+- **Still requires independent installed-Chrome proof:** Replay currently installs
+  on tab loading, not document start. Very early hydration requests can be missed,
+  and delayed messages lack trusted document identity. Guidance to interact while
+  listening is a temporary limitation, not proof of fully automatic replay. No
+  scheduled replay is claimed. Unit guards are not live acceptance evidence.
 
 ### Showcase — Patterns tab (lifecycle + re-run)
 - **What it does:** Lists every saved pattern for the host with health

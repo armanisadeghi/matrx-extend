@@ -3,6 +3,9 @@ import type { ExtractionMode } from '../types';
 
 export const networkCaptureConfigSchema = z.object({
   url_filter: z.string(),
+  url_match: z.enum(['exact', 'filter']).optional(),
+  body_match: z.enum(['exact', 'ignore']).optional(),
+  request_body_key: z.string().optional(),
   method: z.string().optional(),
   key_path: z.string().optional(),
 });
