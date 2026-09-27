@@ -35,7 +35,9 @@ const MODE_LABELS: Record<string, string> = {
 export function DoctorTab({ active = true }: { active?: boolean }) {
   const tab = useActiveTab();
   const setSubTab = useShowcaseTabStore((s) => s.setSubTab);
+  const offerListRecommendation = useShowcaseTabStore((s) => s.offerListRecommendation);
   const [diag, setDiag] = useState<PageDiagnostic | null>(null);
+  const [diagTabId, setDiagTabId] = useState<number | null>(null);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,6 +55,7 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
         setError('No result from page probe.');
       } else {
         setDiag(r);
+        setDiagTabId(tab.id);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -60,6 +63,31 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
       setRunning(false);
     }
   }, [tab.id]);
+
+  const openRecommendation = (mode: string, config: unknown) => {
+    const target = MODE_TABS[mode];
+    if (!target) return;
+    if (mode === 'list_pattern') {
+      if (!diag || tab.id === null || diagTabId !== tab.id || diag.url !== tab.url) {
+        setError(
+          'The page changed since Doctor probed it. Re-probe this page and choose the list again.',
+        );
+        return;
+      }
+      const list = config as { list_root?: unknown; item_selector?: unknown } | null;
+      if (typeof list?.list_root !== 'string' || typeof list.item_selector !== 'string') {
+        setError('Doctor did not return usable list selectors. Re-probe this page and try again.');
+        return;
+      }
+      offerListRecommendation({
+        tabId: tab.id,
+        url: diag.url,
+        listRoot: list.list_root,
+        itemSelector: list.item_selector,
+      });
+    }
+    setSubTab(target);
+  };
 
   // `active` gates the auto-probe: with every sub-tab forceMounted, only the
   // visible one should scan the page. Becoming active (re)probes.
@@ -148,7 +176,7 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
                         // biome-ignore lint/suspicious/noArrayIndexKey: render-only.
                         key={i}
                         type="button"
-                        onClick={() => target && setSubTab(target)}
+                        onClick={() => openRecommendation(r.mode, r.config)}
                         disabled={!target}
                         title={target ? `Open the ${MODE_LABELS[r.mode] ?? r.mode}` : undefined}
                         className="flex w-full items-start gap-2 rounded-lg bg-background/60 px-2 py-1.5 text-left transition-colors enabled:hover:bg-background enabled:hover:ring-1 enabled:hover:ring-primary/30"

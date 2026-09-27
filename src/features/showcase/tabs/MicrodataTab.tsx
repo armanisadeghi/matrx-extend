@@ -7,14 +7,18 @@ import { SaveAsPattern } from '../components/SaveAsPattern';
 
 export function MicrodataTab({ active = true }: { active?: boolean }) {
   const [filter, setFilter] = useState('');
-  const { detection, rows, running, error, source, run } = useExtraction('microdata', {
-    autoDetect: active,
-  });
+  const { detection, rows, running, error, source, previewConfig, run } = useExtraction(
+    'microdata',
+    {
+      autoDetect: active,
+    },
+  );
 
   const types = useMemo(() => {
     const meta = detection?.meta as { types?: Record<string, number> } | undefined;
     return meta?.types ?? {};
   }, [detection]);
+  const previewFilter = (previewConfig as { itemtype?: unknown } | null)?.itemtype;
 
   return (
     <div className="h-full overflow-y-auto">
@@ -78,10 +82,14 @@ export function MicrodataTab({ active = true }: { active?: boolean }) {
           <div className="flex justify-end">
             <SaveAsPattern
               kind="microdata"
-              config={filter ? { itemtype: filter } : {}}
+              config={previewConfig}
               rows={rows}
               source={source}
-              defaultName={filter ? `${filter} microdata` : 'Microdata items'}
+              defaultName={
+                typeof previewFilter === 'string' && previewFilter
+                  ? `${previewFilter} microdata`
+                  : 'Microdata items'
+              }
             />
           </div>
         )}

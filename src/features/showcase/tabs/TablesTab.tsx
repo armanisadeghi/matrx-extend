@@ -7,12 +7,16 @@ import { SaveAsPattern } from '../components/SaveAsPattern';
 
 export function TablesTab({ active = true }: { active?: boolean }) {
   const [tableIndex, setTableIndex] = useState(0);
-  const { detection, rows, running, error, source, run } = useExtraction('auto_table', {
-    autoDetect: active,
-  });
+  const { detection, rows, running, error, source, previewConfig, run } = useExtraction(
+    'auto_table',
+    {
+      autoDetect: active,
+    },
+  );
 
   const tableCount = detection?.count ?? 0;
   const indices = Array.from({ length: tableCount }, (_, i) => i);
+  const previewTableIndex = (previewConfig as { table_index?: unknown } | null)?.table_index;
 
   return (
     <div className="h-full overflow-y-auto">
@@ -71,10 +75,10 @@ export function TablesTab({ active = true }: { active?: boolean }) {
           <div className="flex justify-end">
             <SaveAsPattern
               kind="auto_table"
-              config={{ table_index: tableIndex }}
+              config={previewConfig}
               rows={rows}
               source={source}
-              defaultName={`Table ${tableIndex}`}
+              defaultName={`Table ${typeof previewTableIndex === 'number' ? previewTableIndex : tableIndex}`}
             />
           </div>
         )}

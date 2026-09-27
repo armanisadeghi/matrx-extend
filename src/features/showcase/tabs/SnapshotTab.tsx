@@ -5,7 +5,7 @@ import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
 
 export function SnapshotTab({ active = true }: { active?: boolean }) {
-  const { detection, rows, running, error, source, run } = useExtraction('og_meta', {
+  const { detection, rows, running, error, source, previewConfig, run } = useExtraction('og_meta', {
     autoDetect: active,
   });
 
@@ -45,7 +45,7 @@ export function SnapshotTab({ active = true }: { active?: boolean }) {
           <div className="flex justify-end">
             <SaveAsPattern
               kind="og_meta"
-              config={{}}
+              config={previewConfig}
               rows={rows}
               source={source}
               defaultName="Page snapshot"

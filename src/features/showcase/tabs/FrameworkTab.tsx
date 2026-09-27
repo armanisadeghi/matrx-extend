@@ -4,7 +4,7 @@ import { useExtraction } from '@/hooks/use-extraction';
 import { frameworkDumpInPage } from '@/lib/data-pattern/framework-dump';
 import { Button } from '@ai-matrx/design-system';
 import { Loader2, PlayCircle, RefreshCw } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
 
@@ -12,10 +12,16 @@ type ParsedSource = { source: string; data: unknown };
 
 export function FrameworkTab({ active = true }: { active?: boolean }) {
   const tab = useActiveTab();
-  const { detection, rows, running, error, source, run } = useExtraction('next_data', {
-    autoDetect: active,
-  });
+  const { detection, rows, running, error, source, previewConfig, run } = useExtraction(
+    'next_data',
+    {
+      autoDetect: active,
+    },
+  );
   const [sources, setSources] = useState<ParsedSource[]>([]);
+  const [sourcesPageKey, setSourcesPageKey] = useState<string | null>(null);
+  const dumpSeq = useRef(0);
+  const pageKey = `${tab.id ?? ''}:${tab.url ?? ''}`;
   const [activeSource, setActiveSource] = useState<string | null>(null);
   const [keyPath, setKeyPath] = useState('');
   const [loadingTree, setLoadingTree] = useState(false);
@@ -26,13 +32,19 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
   // page A's tree never renders under page B.
   // biome-ignore lint/correctness/useExhaustiveDependencies: tab.id/tab.url are the invalidation keys.
   useEffect(() => {
+    dumpSeq.current += 1;
     setSources([]);
+    setSourcesPageKey(null);
     setActiveSource(null);
     setKeyPath('');
+    setLoadingTree(false);
+    setDumpError(null);
   }, [tab.id, tab.url]);
 
   const dump = useCallback(async () => {
     if (!tab.id) return;
+    const seq = ++dumpSeq.current;
+    const pageKeyAtDump = pageKey;
     setLoadingTree(true);
     setDumpError(null);
     try {
@@ -41,23 +53,27 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
         func: frameworkDumpInPage,
       });
       const fetched = (result?.[0]?.result ?? []) as ParsedSource[];
+      if (seq !== dumpSeq.current) return;
       setSources(fetched);
+      setSourcesPageKey(pageKeyAtDump);
       const first = fetched[0];
       if (first && !activeSource) setActiveSource(first.source);
     } catch (err) {
       // Previously try/finally with NO catch — restricted pages stopped the
       // spinner with zero feedback (audit P1-5).
-      setDumpError(err instanceof Error ? err.message : String(err));
+      if (seq === dumpSeq.current) setDumpError(err instanceof Error ? err.message : String(err));
     } finally {
-      setLoadingTree(false);
+      if (seq === dumpSeq.current) setLoadingTree(false);
     }
-  }, [tab.id, activeSource]);
+  }, [tab.id, pageKey, activeSource]);
 
   useEffect(() => {
     if (detection?.available) void dump();
   }, [detection?.available, dump]);
 
-  const activeData = sources.find((s) => s.source === activeSource)?.data;
+  const visibleSources = sourcesPageKey === pageKey ? sources : [];
+  const activeData = visibleSources.find((s) => s.source === activeSource)?.data;
+  const previewKeyPath = (previewConfig as { key_path?: unknown } | null)?.key_path;
 
   return (
     <div className="h-full overflow-y-auto">
@@ -82,9 +98,9 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
           </div>
         )}
 
-        {sources.length > 1 && (
+        {visibleSources.length > 1 && (
           <div className="flex gap-1">
-            {sources.map((s) => (
+            {visibleSources.map((s) => (
               <button
                 key={s.source}
                 type="button"
@@ -154,10 +170,10 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
           <div className="flex justify-end">
             <SaveAsPattern
               kind="next_data"
-              config={{ key_path: keyPath, source: activeSource ?? undefined }}
+              config={previewConfig}
               rows={rows}
               source={source}
-              defaultName={`Framework: ${keyPath || '(root)'}`}
+              defaultName={`Framework: ${typeof previewKeyPath === 'string' && previewKeyPath ? previewKeyPath : '(root)'}`}
             />
           </div>
         )}

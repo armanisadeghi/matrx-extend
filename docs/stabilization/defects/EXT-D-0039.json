@@ -18,7 +18,7 @@
   ],
   "severity": "S2: core discover-to-extract workflow loses detected pattern and forces manual restart",
   "priority": "P1: first Showcase vertical repair",
-  "state": "triaged",
+  "state": "fixed",
   "transition_history": [
     {
       "at": "2026-09-27T15:17:46.172311+00:00",
@@ -31,7 +31,25 @@
       "from": "open",
       "to": "triaged",
       "reason": "Source DoctorTab calls only setSubTab; detected config is not carried to ListPatternTab."
+    },
+    {
+      "at": "2026-09-27T15:32:57Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Focused guard reproduced the blank builder after Doctor click; repair and independent source review follow-up are in progress."
+    },
+    {
+      "at": "2026-09-27T15:42:34Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Doctor-to-List handoff and stale-page/inspector repairs are implemented; focused real-DOM guard passed 6/6 and TypeScript compile passed. Independent fresh-build UI retest remains required before closure."
     }
   ],
+  "engineering_evidence": [
+    "showcase-d39-red-001: resource-admitted focused test reproduced blank builder (2 intended assertion failures before fix)",
+    "showcase-d39-final-focused-001: resource-admitted Vitest 6/6 pass, including real DOM inspector suggestion, field selection, extracted row values, page change and missing-root guidance",
+    "showcase-d39-compile-002: resource-admitted tsc --noEmit passed on 0.2.101"
+  ],
+  "live_retest_prerequisites": "Baseline was installed unpacked 0.2.97 at https://electronic.vegas/vegas-edm-event-calendar/. Build current 0.2.101 source, reload that unpacked extension explicitly, then re-run the Doctor recommendation and List Pattern extraction in the user's seat.",
   "closure_requirement": "Independent verifier uses Doctor recommendation on real calendar; detected selectors arrive, field selection/extract works; wrong-page stale handoff rejected; guest/member behavior remains tracked."
 }

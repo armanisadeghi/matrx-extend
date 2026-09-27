@@ -39,33 +39,45 @@ export function useExtraction(modeId: string, options?: { autoDetect?: boolean }
   const [detection, setDetection] = useState<DetectionHint | null>(null);
   const [rows, setRows] = useState<ExtractedRow[] | null>(null);
   const [running, setRunning] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [detectError, setDetectError] = useState<string | null>(null);
+  const [runError, setRunError] = useState<string | null>(null);
   const [source, setSource] = useState<ExtractionSource | null>(null);
-  const callSeq = useRef(0);
+  const [previewConfig, setPreviewConfig] = useState<unknown>(null);
+  const [previewPageKey, setPreviewPageKey] = useState<string | null>(null);
+  const pageGeneration = useRef(0);
+  const detectSeq = useRef(0);
+  const runSeq = useRef(0);
+  const pageKey = `${tab.id ?? ''}:${tab.url ?? ''}`;
 
   // Navigation invalidates everything extracted from the previous page.
   // biome-ignore lint/correctness/useExhaustiveDependencies: tab.id/tab.url are the invalidation keys.
   useEffect(() => {
-    callSeq.current += 1; // in-flight calls from the old page can't commit
+    pageGeneration.current += 1; // in-flight calls from the old page can't commit
+    detectSeq.current += 1;
+    runSeq.current += 1;
     setRows(null);
-    setError(null);
+    setDetectError(null);
+    setRunError(null);
     setSource(null);
+    setPreviewConfig(null);
+    setPreviewPageKey(null);
     setRunning(false); // a superseded run's finally won't clear this itself
   }, [tab.id, tab.url]);
 
   const detect = useCallback(
     async (config?: unknown): Promise<DetectionHint | null> => {
       if (!tab.id) return null;
-      const seq = ++callSeq.current;
+      const seq = ++detectSeq.current;
+      const generation = pageGeneration.current;
       try {
         const hint = await detectModeInPage(modeId, tab.id, config);
-        if (seq !== callSeq.current) return hint; // a newer call superseded us
+        if (seq !== detectSeq.current || generation !== pageGeneration.current) return hint;
         setDetection(hint);
-        setError(null);
+        setDetectError(null);
         return hint;
       } catch (err) {
-        if (seq === callSeq.current) {
-          setError(err instanceof Error ? err.message : String(err));
+        if (seq === detectSeq.current && generation === pageGeneration.current) {
+          setDetectError(err instanceof Error ? err.message : String(err));
         }
         return null;
       }
@@ -76,24 +88,32 @@ export function useExtraction(modeId: string, options?: { autoDetect?: boolean }
   const run = useCallback(
     async (config: unknown): Promise<ExtractedRow[]> => {
       if (!tab.id) return [];
-      const seq = ++callSeq.current;
+      const seq = ++runSeq.current;
+      const generation = pageGeneration.current;
       const sourceAtRun = sourceFromUrl(tab.url);
+      const pageKeyAtRun = `${tab.id}:${tab.url ?? ''}`;
       setRunning(true);
-      setError(null);
+      setRunError(null);
+      setRows(null);
+      setSource(null);
+      setPreviewConfig(null);
+      setPreviewPageKey(null);
       try {
         const result = await runMode(modeId, tab.id, config);
-        if (seq === callSeq.current) {
+        if (seq === runSeq.current && generation === pageGeneration.current) {
           setRows(result);
           setSource(sourceAtRun);
+          setPreviewConfig(config);
+          setPreviewPageKey(pageKeyAtRun);
         }
         return result;
       } catch (err) {
-        if (seq === callSeq.current) {
-          setError(err instanceof Error ? err.message : String(err));
+        if (seq === runSeq.current && generation === pageGeneration.current) {
+          setRunError(err instanceof Error ? err.message : String(err));
         }
         return [];
       } finally {
-        if (seq === callSeq.current) setRunning(false);
+        if (seq === runSeq.current && generation === pageGeneration.current) setRunning(false);
       }
     },
     [modeId, tab.id, tab.url],
@@ -107,9 +127,24 @@ export function useExtraction(modeId: string, options?: { autoDetect?: boolean }
 
   const reset = useCallback(() => {
     setRows(null);
-    setError(null);
+    setDetectError(null);
+    setRunError(null);
     setSource(null);
+    setPreviewConfig(null);
+    setPreviewPageKey(null);
   }, []);
 
-  return { tab, detection, rows, running, error, source, detect, run, reset };
+  const previewIsCurrentPage = previewPageKey === pageKey;
+  return {
+    tab,
+    detection,
+    rows: previewIsCurrentPage ? rows : null,
+    running,
+    error: runError ?? detectError,
+    source: previewIsCurrentPage ? source : null,
+    previewConfig: previewIsCurrentPage ? previewConfig : null,
+    detect,
+    run,
+    reset,
+  };
 }

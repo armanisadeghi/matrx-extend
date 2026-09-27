@@ -2,12 +2,17 @@ import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
-import { type CandidateField, inspectCardInPage } from '@/lib/data-pattern/card-inspector';
+import {
+  type CandidateField,
+  type CardInspection,
+  inspectCardInPage,
+} from '@/lib/data-pattern/card-inspector';
 import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
 import { runMode } from '@/lib/data-pattern/run-pattern';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { cn } from '@/lib/utils';
+import { useShowcaseTabStore } from '@/state/showcase-tab';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { ChevronDown, ChevronRight, Crosshair, Loader2, PlayCircle, Plus, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -43,20 +48,70 @@ const KIND_LABELS: Record<CandidateField['kind'], string> = {
 
 export function ListPatternTab() {
   const tab = useActiveTab();
+  const pageKey = `${tab.id ?? ''}:${tab.url ?? ''}`;
+  const latestPageKeyRef = useRef(pageKey);
+  latestPageKeyRef.current = pageKey;
+  const lastPageKeyRef = useRef(pageKey);
+  const pickPageKeyRef = useRef<string | null>(null);
+  const inspectorSeqRef = useRef(0);
+  const runSeqRef = useRef(0);
+  const listRecommendation = useShowcaseTabStore((s) => s.listRecommendation);
+  const clearListRecommendation = useShowcaseTabStore((s) => s.clearListRecommendation);
   const [picking, setPicking] = useState(false);
   /** Tab the current pick session targets — events from other tabs are ignored. */
   const pickTabRef = useRef<number | null>(null);
-  const [config, setConfig] = useState<ListPickerResult | null>(null);
+  const [rawConfig, setConfig] = useState<ListPickerResult | null>(null);
+  const [configPageKey, setConfigPageKey] = useState<string | null>(null);
+  const config = configPageKey === pageKey ? rawConfig : null;
   const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [candidates, setCandidates] = useState<CandidateField[] | null>(null);
+  const [inspectionStatus, setInspectionStatus] = useState<
+    'idle' | CardInspection['status'] | 'failed'
+  >('idle');
   const [inspecting, setInspecting] = useState(false);
   const [sampleHtml, setSampleHtml] = useState<string[]>([]);
   const [expandedFieldIdx, setExpandedFieldIdx] = useState<number | null>(null);
   /** Live per-field sample values, probed using the SAME logic as the runner. */
   const [sampleValues, setSampleValues] = useState<Record<string, string | null>>({});
   const [source, setSource] = useState<ExtractionSource | null>(null);
+
+  useEffect(() => {
+    if (lastPageKeyRef.current === pageKey) return;
+    lastPageKeyRef.current = pageKey;
+    inspectorSeqRef.current += 1;
+    runSeqRef.current += 1;
+    setConfig(null);
+    setConfigPageKey(null);
+    setRows(null);
+    setSource(null);
+    setError(null);
+    setCandidates(null);
+    setInspectionStatus('idle');
+    setSampleValues({});
+    setSampleHtml([]);
+    setRunning(false);
+  }, [pageKey]);
+
+  useEffect(() => {
+    if (!listRecommendation) return;
+    clearListRecommendation(listRecommendation.requestId);
+    if (listRecommendation.tabId !== tab.id || listRecommendation.url !== tab.url) {
+      setError(
+        'The page changed before List Pattern could use Doctor’s result. Re-probe this page.',
+      );
+      return;
+    }
+    setConfig({
+      list_root: listRecommendation.listRoot,
+      item_selector: listRecommendation.itemSelector,
+      field_paths: [],
+    });
+    setConfigPageKey(pageKey);
+    setRows(null);
+    setError(null);
+  }, [listRecommendation, clearListRecommendation, tab.id, tab.url, pageKey]);
 
   useEffect(() => {
     // STRICT: only the SW's stamped rebroadcast counts. The raw content-
@@ -81,6 +136,7 @@ export function ListPatternTab() {
                 }
               : payload,
           );
+          setConfigPageKey(pickPageKeyRef.current);
           setRows(null);
           setError(null);
         }
@@ -108,6 +164,7 @@ export function ListPatternTab() {
               field_paths: prev?.field_paths ?? [],
             },
       );
+      setConfigPageKey(pickPageKeyRef.current);
       setRows(null);
       setError(null);
       return { ack: true };
@@ -129,28 +186,39 @@ export function ListPatternTab() {
 
   // Auto-run card inspector whenever the item selector changes.
   const runInspector = useCallback(async () => {
-    if (!tab.id || !config) return;
+    if (!tab.id || !config?.list_root || !config.item_selector) return;
+    const request = ++inspectorSeqRef.current;
+    const pageAtStart = pageKey;
     setInspecting(true);
+    setInspectionStatus('idle');
     try {
       const result = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: inspectCardInPage,
         args: [{ list_root: config.list_root, item_selector: config.item_selector }],
       });
-      setCandidates((result?.[0]?.result as CandidateField[] | undefined) ?? []);
+      if (request !== inspectorSeqRef.current || pageAtStart !== latestPageKeyRef.current) return;
+      const inspected = result?.[0]?.result as CardInspection | undefined;
+      if (!inspected) throw new Error('Page inspection returned no result.');
+      setCandidates(inspected.candidates);
+      setInspectionStatus(inspected.status);
     } catch (err) {
+      if (request !== inspectorSeqRef.current || pageAtStart !== latestPageKeyRef.current) return;
       console.warn('[matrx-extend] card inspector failed', err);
       setCandidates([]);
+      setInspectionStatus('failed');
     } finally {
-      setInspecting(false);
+      if (request === inspectorSeqRef.current && pageAtStart === latestPageKeyRef.current)
+        setInspecting(false);
     }
-  }, [tab.id, config]);
+  }, [tab.id, config?.list_root, config?.item_selector, pageKey]);
 
   useEffect(() => {
     if (config?.list_root && config.item_selector) {
       void runInspector();
     } else {
       setCandidates(null);
+      setInspectionStatus('idle');
     }
   }, [config?.list_root, config?.item_selector, runInspector]);
 
@@ -175,14 +243,14 @@ export function ListPatternTab() {
             args: [cfgSnapshot],
           });
           const row = (result?.[0]?.result as Record<string, string | null> | null) ?? {};
-          setSampleValues(row ?? {});
+          if (pageKey === latestPageKeyRef.current) setSampleValues(row ?? {});
         } catch {
-          setSampleValues({});
+          if (pageKey === latestPageKeyRef.current) setSampleValues({});
         }
       })();
     }, 300);
     return () => clearTimeout(handle);
-  }, [tab.id, config]);
+  }, [tab.id, config, pageKey]);
 
   // The content-script picker dies silently when the page navigates or the
   // tab closes — without this watcher, picking stays true forever (audit F1).
@@ -214,6 +282,7 @@ export function ListPatternTab() {
     setPicking(true);
     setError(null);
     pickTabRef.current = tab.id;
+    pickPageKeyRef.current = pageKey;
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
@@ -269,20 +338,27 @@ export function ListPatternTab() {
 
   const handleRun = async () => {
     if (!tab.id || !config) return;
+    const request = ++runSeqRef.current;
+    const pageAtStart = pageKey;
     setRunning(true);
     setError(null);
+    setRows(null);
     const sourceAtRun = sourceFromUrl(tab.url);
     try {
       const data = await runMode('list_pattern', tab.id, config);
+      if (request !== runSeqRef.current || pageAtStart !== latestPageKeyRef.current) return;
       setRows(data);
       setSource(sourceAtRun);
       // Snapshot 1-2 cards' HTML for later AI-paste.
       const samples = await captureSampleHtml();
-      setSampleHtml(samples);
+      if (request === runSeqRef.current && pageAtStart === latestPageKeyRef.current)
+        setSampleHtml(samples);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      if (request === runSeqRef.current && pageAtStart === latestPageKeyRef.current)
+        setError(err instanceof Error ? err.message : String(err));
     } finally {
-      setRunning(false);
+      if (request === runSeqRef.current && pageAtStart === latestPageKeyRef.current)
+        setRunning(false);
     }
   };
 
@@ -574,10 +650,12 @@ export function ListPatternTab() {
             )}
 
             {/* Candidate-fields panel (auto-discovered from sample card) */}
-            {(inspecting || (candidates !== null && unusedCandidates.length > 0)) && (
+            {(inspecting || inspectionStatus !== 'idle') && (
               <CandidatesPanel
                 inspecting={inspecting}
+                status={inspectionStatus}
                 candidates={unusedCandidates}
+                selectedCount={fields.length}
                 onAdd={addCandidate}
               />
             )}
@@ -587,9 +665,11 @@ export function ListPatternTab() {
                 variant="secondary"
                 onClick={() => {
                   setConfig(null);
+                  setConfigPageKey(null);
                   setRows(null);
                   setSampleHtml([]);
                   setCandidates(null);
+                  setInspectionStatus('idle');
                 }}
                 className="rounded-full"
               >
@@ -654,11 +734,15 @@ export function ListPatternTab() {
 
 function CandidatesPanel({
   inspecting,
+  status,
   candidates,
+  selectedCount,
   onAdd,
 }: {
   inspecting: boolean;
+  status: 'idle' | CardInspection['status'] | 'failed';
   candidates: CandidateField[];
+  selectedCount: number;
   onAdd: (c: CandidateField) => void;
 }) {
   const [open, setOpen] = useState(true);
@@ -694,9 +778,29 @@ function CandidatesPanel({
       </button>
       {open && (
         <div className="space-y-2">
-          {!inspecting && candidates.length === 0 && (
+          {!inspecting && status === 'root_missing' && (
+            <div className="text-[11px] text-amber-700 dark:text-amber-400">
+              The detected list is no longer on this page. Re-probe in Doctor or pick an example
+              item.
+            </div>
+          )}
+          {!inspecting && status === 'items_missing' && (
+            <div className="text-[11px] text-amber-700 dark:text-amber-400">
+              The detected list has no matching items now. Re-probe in Doctor or pick an example
+              item.
+            </div>
+          )}
+          {!inspecting && status === 'failed' && (
+            <div className="text-[11px] text-amber-700 dark:text-amber-400">
+              Suggested fields could not be inspected. Try picking fields on the page, or re-probe
+              in Doctor.
+            </div>
+          )}
+          {!inspecting && status === 'ready' && candidates.length === 0 && (
             <div className="text-[11px] text-muted-foreground">
-              All available fields are already selected.
+              {selectedCount > 0
+                ? 'All suggested fields are already selected.'
+                : 'No suggested fields found. Pick fields on the page or edit the selectors.'}
             </div>
           )}
           {Array.from(grouped.entries()).map(([kind, items]) => (

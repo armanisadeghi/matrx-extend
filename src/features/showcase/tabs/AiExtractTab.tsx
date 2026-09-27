@@ -1,6 +1,4 @@
-import { useActiveTab } from '@/hooks/use-active-tab';
 import { useAiExtraction } from '@/hooks/use-ai-extraction';
-import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { usePatternFromData } from '@/hooks/use-pattern-from-data';
 import { useRequestOrganizationId } from '@/hooks/use-request-organization';
 import { mandateKeyOf } from '@/lib/agents/use-agent-row';
@@ -44,7 +42,6 @@ const buildJsonSchema = (fields: SchemaField[]): object => {
 };
 
 export function AiExtractTab() {
-  const tab = useActiveTab();
   const organizationId = useRequestOrganizationId();
   // This surface's default is a DIFFERENT platform default than chat's — the
   // package carries one default row per picker instance and each host surface
@@ -53,8 +50,8 @@ export function AiExtractTab() {
   const [agentId, setAgentId] = useState<string>(STRUCTURED_EXTRACTOR_MANDATE_REF);
   const [description, setDescription] = useState('');
   const [fields, setFields] = useState<SchemaField[]>([]);
-  const [source, setSource] = useState<ExtractionSource | null>(null);
-  const { rows, running, error, notes, confidence, extract, cancel } = useAiExtraction();
+  const { rows, running, error, notes, confidence, previewConfig, source, extract, cancel } =
+    useAiExtraction();
   const {
     result: patternResult,
     liveProbe: patternProbe,
@@ -90,7 +87,7 @@ export function AiExtractTab() {
 
   const handleRun = () => {
     if (!agentId || !description.trim()) return;
-    setSource(sourceFromUrl(tab.url));
+    resetPattern();
     const mandateKey = mandateKeyOf(agentId);
     void extract({
       agentId,
@@ -102,6 +99,8 @@ export function AiExtractTab() {
 
   const canRun =
     organizationId && agentId && description.trim().length > 0 && !running && !schemaProblem;
+  const previewDescription =
+    typeof previewConfig?.description === 'string' ? previewConfig.description : '';
 
   return (
     <div className="h-full overflow-y-auto">
@@ -310,7 +309,7 @@ export function AiExtractTab() {
                       rows={rows}
                       source={source}
                       defaultName={
-                        description.slice(0, 40) || `Auto-pattern · ${rows.length} items`
+                        previewDescription.slice(0, 40) || `Auto-pattern · ${rows.length} items`
                       }
                     />
                   </div>
@@ -322,7 +321,7 @@ export function AiExtractTab() {
                     onClick={() =>
                       void convertToPattern({
                         mandateKey: PATTERN_FROM_DATA_MANDATE_KEY,
-                        userInput: description,
+                        userInput: previewDescription,
                         extractedRows: rows,
                       })
                     }
@@ -342,16 +341,10 @@ export function AiExtractTab() {
             <div className="flex justify-end">
               <SaveAsPattern
                 kind="ai_extract"
-                config={{
-                  description,
-                  output_schema: outputSchema,
-                  ...(mandateKeyOf(agentId) !== null
-                    ? { mandate_key: mandateKeyOf(agentId) }
-                    : { agent_id: agentId }),
-                }}
+                config={previewConfig}
                 rows={rows}
                 source={source}
-                defaultName={description.slice(0, 40) || 'AI extraction'}
+                defaultName={previewDescription.slice(0, 40) || 'AI extraction'}
               />
             </div>
           </div>

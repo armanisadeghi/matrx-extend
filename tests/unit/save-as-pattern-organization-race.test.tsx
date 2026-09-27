@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, render, renderHook, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -17,6 +17,10 @@ const mocks = vi.hoisted(() => {
     ),
     appendRows: vi.fn(async () => ({ inserted: 1 })),
     savePattern: vi.fn(async () => ({ id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc' })),
+    detectModeInPage: vi.fn(async () => ({ available: true, summary: '2 tables', count: 2 })),
+    runMode: vi.fn(async (_mode: string, _tabId: number, config: { table_index: number }) => [
+      { pickup_day: config.table_index === 0 ? 'Friday' : 'Tuesday' },
+    ]),
     tableOrganization: vi.fn(),
     tables: [] as { id: string; table_name: string }[],
     releaseCreate: (value: { id: string }) => releaseCreate?.(value),
@@ -32,7 +36,11 @@ vi.mock('@/hooks/use-active-organization', () => ({
   }),
 }));
 vi.mock('@/hooks/use-active-tab', () => ({
-  useActiveTab: () => ({ url: 'https://example.com/products' }),
+  useActiveTab: () => ({ id: 37, url: 'https://harbor-recovery.test/pickups' }),
+}));
+vi.mock('@/lib/data-pattern/run-pattern', () => ({
+  detectModeInPage: mocks.detectModeInPage,
+  runMode: mocks.runMode,
 }));
 vi.mock('@/hooks/use-user-tables', () => ({
   useUserTables: () => ({
@@ -60,11 +68,19 @@ vi.mock('@ai-matrx/design-system', () => ({
 vi.mock('lucide-react', () => ({
   CheckCircle2: () => null,
   Loader2: () => null,
+  PlayCircle: () => null,
   Save: () => null,
   TriangleAlert: () => null,
 }));
+vi.mock('@/features/showcase/components/ResultPreview', () => ({
+  ResultPreview: ({ rows }: { rows: Record<string, unknown>[] }) => (
+    <div>{JSON.stringify(rows)}</div>
+  ),
+}));
 
 import { SaveAsPattern } from '@/features/showcase/components/SaveAsPattern';
+import { TablesTab } from '@/features/showcase/tabs/TablesTab';
+import { useExtraction } from '@/hooks/use-extraction';
 
 afterEach(() => {
   cleanup();
@@ -127,4 +143,73 @@ describe('SaveAsPattern organization operation boundary', () => {
     expect(mocks.savePattern).not.toHaveBeenCalled();
     expect(mocks.appendRows).not.toHaveBeenCalled();
   });
+});
+
+describe('Showcase preview provenance', () => {
+  it('finishes an extraction when tab activation starts a detection during the run', async () => {
+    let releaseRun: ((rows: { pickup_day: string }[]) => void) | undefined;
+    mocks.runMode.mockImplementationOnce(
+      () =>
+        new Promise<{ pickup_day: string }[]>((resolve) => {
+          releaseRun = resolve;
+        }),
+    );
+    const hook = renderHook(({ active }) => useExtraction('auto_table', { autoDetect: active }), {
+      initialProps: { active: false },
+    });
+
+    let runPromise: Promise<Record<string, unknown>[]> | undefined;
+    act(() => {
+      runPromise = hook.result.current.run({ table_index: 0 });
+    });
+    hook.rerender({ active: true });
+    await waitFor(() => expect(mocks.detectModeInPage).toHaveBeenCalledTimes(1));
+    await act(async () => {
+      releaseRun?.([{ pickup_day: 'Friday' }]);
+      await runPromise;
+    });
+
+    expect(hook.result.current.running).toBe(false);
+    expect(hook.result.current.rows).toEqual([{ pickup_day: 'Friday' }]);
+    expect(hook.result.current.previewConfig).toEqual({ table_index: 0 });
+  });
+
+  // Regression: saving the live table selector after an earlier preview wrote
+  // a different table_index while appending the old preview's rows.
+  it.each([
+    { previewIndex: 0, editedIndex: 1, expectedDay: 'Friday' },
+    { previewIndex: 1, editedIndex: 0, expectedDay: 'Tuesday' },
+  ])(
+    'saves table $previewIndex with its preview rows after selecting table $editedIndex',
+    async ({ previewIndex, editedIndex, expectedDay }) => {
+      const user = userEvent.setup();
+      mocks.tables = [
+        { id: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', table_name: 'Harbor Recovery pickups' },
+      ];
+      mocks.tableOrganization.mockResolvedValue(ORG_A);
+      render(<TablesTab />);
+
+      await screen.findByRole('button', { name: 'Table 1' });
+      await user.click(screen.getByRole('button', { name: `Table ${previewIndex}` }));
+      await user.click(screen.getByRole('button', { name: `Extract table ${previewIndex}` }));
+      await screen.findByText(new RegExp(`"pickup_day":"${expectedDay}"`));
+      await user.click(screen.getByRole('button', { name: `Table ${editedIndex}` }));
+      await user.selectOptions(
+        screen.getByRole('combobox'),
+        'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',
+      );
+      await user.click(screen.getByRole('button', { name: /^Save$/ }));
+
+      await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(1));
+      expect(mocks.savePattern).toHaveBeenCalledWith(
+        expect.objectContaining({
+          kind: 'auto_table',
+          config: { table_index: previewIndex },
+        }),
+      );
+      expect(mocks.appendRows).toHaveBeenCalledWith('eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', ORG_A, [
+        { pickup_day: expectedDay },
+      ]);
+    },
+  );
 });

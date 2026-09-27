@@ -1129,11 +1129,22 @@ Every entry follows this shape:
 
 ### Showcase — Doctor tab
 - **What it does:** Probes the page for every structured-data signal and
-  recommends an extraction mode; recommendations are click-to-jump.
+  recommends an extraction mode; a repeating-list recommendation carries its
+  detected root and item selectors into List Pattern.
 - **Steps:** Open a recipe site (e.g. an Allrecipes page). Doctor auto-probes.
   Click the "JSON-LD tab" recommendation.
 - **Expected:** Showcase switches to the JSON-LD sub-tab. Re-probe works.
   On chrome:// pages a readable error shows (no spinner hang).
+- **Repeating-list case:** On a page with at least five matching cards, click
+  Doctor's List Pattern recommendation. List Pattern shows the detected root
+  and item selectors immediately, suggests fields, and keeps Extract unavailable
+  until a field is selected. Edit a chosen field, return to Doctor and re-probe,
+  then return to List Pattern: the edit remains. Click the recommendation again
+  to start a fresh config. If the page changed after Doctor's probe, the click
+  asks for a new probe instead of applying stale selectors. After any page or
+  tab change, the old List Pattern config/preview disappears. If the detected
+  root or items are gone, the suggested-fields area says so and offers a fresh
+  probe or manual pick; an inspector failure never claims all fields were selected.
 - **Edge cases:** giant pages (50k+ elements) still probe quickly — the
   repeating-group scan is capped at 20k elements.
 - **Byte sizes come from the package, including inside the recommendations
@@ -1284,6 +1295,19 @@ Every entry follows this shape:
 - **Expected:** Supabase outages show an error banner with Retry — NEVER the
   "no saved patterns" empty state; a no-match network re-run shows guidance
   and does NOT mark the pattern broken.
+
+### Showcase — preview configuration survives later edits
+- **What it does:** Saving a preview keeps the exact settings that produced
+  its rows, even if the controls are edited before Save is clicked.
+- **Where to test:** Showcase → JSON-LD, Microdata, Tables, Framework, AI Extract,
+  then Patterns. Use pages with two distinguishable result sets.
+- **Steps:** Extract the first type/table/path or AI request, edit the control to
+  a different choice without extracting again, save the displayed preview,
+  reopen it in Patterns, and Run. Repeat after changing page or tab during a
+  pending extraction, and with an existing target table selected on Save.
+- **Expected:** Re-run uses the previewed settings and returns the same kind of
+  rows; a page change does not display or save rows from the old page. The
+  existing target table receives exactly the previewed rows.
 
 ### Showcase — Save as pattern into a table (by where the table lives)
 - **What it does:** "Save as pattern" can create a new table from the scraped fields or append

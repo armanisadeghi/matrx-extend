@@ -5,7 +5,7 @@ import { runMode } from '@/lib/data-pattern/run-pattern';
 import { cn } from '@/lib/utils';
 import { Button } from '@ai-matrx/design-system';
 import { Loader2, PlayCircle, Sparkles } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
 
@@ -17,6 +17,9 @@ export function RecipesTab() {
   const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [source, setSource] = useState<ExtractionSource | null>(null);
+  const [resultPageKey, setResultPageKey] = useState<string | null>(null);
+  const callSeq = useRef(0);
+  const pageKey = `${tab.id ?? ''}:${tab.url ?? ''}`;
   // DB-backed catalog (updatable without a release); bundled list until the
   // fetch lands and as the offline fallback.
   const [recipes, setRecipes] = useState<Recipe[]>(RECIPES);
@@ -35,28 +38,38 @@ export function RecipesTab() {
   const visible = showAll ? recipes : matching;
 
   // Rows from the previous page must not display (or save) under the new one.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the active page identity invalidates preview rows.
   useEffect(() => {
+    callSeq.current += 1;
     setRows(null);
     setActiveRecipe(null);
     setError(null);
     setSource(null);
-  }, [tab.url]);
+    setResultPageKey(null);
+    setRunning(null);
+  }, [tab.id, tab.url]);
 
   const handleRun = async (recipe: Recipe) => {
     if (!tab.id) return;
+    const seq = ++callSeq.current;
+    const pageKeyAtRun = pageKey;
     setRunning(recipe.id);
     setActiveRecipe(recipe);
     setError(null);
     setRows(null);
+    setResultPageKey(null);
     const sourceAtRun = sourceFromUrl(tab.url);
     try {
       const data = await runMode(recipe.kind, tab.id, recipe.config);
-      setRows(data);
-      setSource(sourceAtRun);
+      if (seq === callSeq.current) {
+        setRows(data);
+        setSource(sourceAtRun);
+        setResultPageKey(pageKeyAtRun);
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      if (seq === callSeq.current) setError(err instanceof Error ? err.message : String(err));
     } finally {
-      setRunning(null);
+      if (seq === callSeq.current) setRunning(null);
     }
   };
 
@@ -146,7 +159,7 @@ export function RecipesTab() {
           </div>
         )}
 
-        {activeRecipe && rows && (
+        {activeRecipe && rows && resultPageKey === pageKey && (
           <>
             <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
               <Sparkles className="mr-1 inline size-3" />

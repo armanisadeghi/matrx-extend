@@ -7,7 +7,7 @@ import { SaveAsPattern } from '../components/SaveAsPattern';
 
 export function JsonLdTab({ active = true }: { active?: boolean }) {
   const [filter, setFilter] = useState('');
-  const { detection, rows, running, error, source, run } = useExtraction('json_ld', {
+  const { detection, rows, running, error, source, previewConfig, run } = useExtraction('json_ld', {
     autoDetect: active,
   });
 
@@ -15,6 +15,7 @@ export function JsonLdTab({ active = true }: { active?: boolean }) {
     const meta = detection?.meta as { types?: Record<string, number> } | undefined;
     return meta?.types ?? {};
   }, [detection]);
+  const previewFilter = (previewConfig as { ld_type?: unknown } | null)?.ld_type;
 
   return (
     <div className="h-full overflow-y-auto">
@@ -78,10 +79,14 @@ export function JsonLdTab({ active = true }: { active?: boolean }) {
           <div className="flex justify-end">
             <SaveAsPattern
               kind="json_ld"
-              config={filter ? { ld_type: filter } : {}}
+              config={previewConfig}
               rows={rows}
               source={source}
-              defaultName={filter ? `${filter} from JSON-LD` : 'JSON-LD blocks'}
+              defaultName={
+                typeof previewFilter === 'string' && previewFilter
+                  ? `${previewFilter} from JSON-LD`
+                  : 'JSON-LD blocks'
+              }
             />
           </div>
         )}

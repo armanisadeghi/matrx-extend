@@ -24,9 +24,23 @@ export const SHOWCASE_SUB_TABS = [
 ] as const;
 export type ShowcaseSubTab = (typeof SHOWCASE_SUB_TABS)[number];
 
+/** One explicit Doctor click, scoped to the page that produced its selectors. */
+export interface ListPatternRecommendation {
+  tabId: number;
+  url: string;
+  listRoot: string;
+  itemSelector: string;
+  requestId: number;
+}
+
+let nextListRecommendationId = 0;
+
 interface ShowcaseTabState {
   subTab: ShowcaseSubTab;
   setSubTab: (t: ShowcaseSubTab) => void;
+  listRecommendation: ListPatternRecommendation | null;
+  offerListRecommendation: (recommendation: Omit<ListPatternRecommendation, 'requestId'>) => void;
+  clearListRecommendation: (requestId: number) => void;
 }
 
 export const useShowcaseTabStore = create<ShowcaseTabState>()(
@@ -34,10 +48,23 @@ export const useShowcaseTabStore = create<ShowcaseTabState>()(
     (set) => ({
       subTab: 'doctor',
       setSubTab: (subTab) => set({ subTab }),
+      listRecommendation: null,
+      offerListRecommendation: (recommendation) =>
+        set(() => ({
+          listRecommendation: {
+            ...recommendation,
+            requestId: ++nextListRecommendationId,
+          },
+        })),
+      clearListRecommendation: (requestId) =>
+        set((state) =>
+          state.listRecommendation?.requestId === requestId ? { listRecommendation: null } : state,
+        ),
     }),
     {
       name: 'matrx.showcase.subTab.v1',
       storage: createJSONStorage(() => chromeLocalStorage),
+      partialize: (state) => ({ subTab: state.subTab }),
     },
   ),
 );

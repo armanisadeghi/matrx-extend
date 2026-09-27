@@ -45,15 +45,22 @@ export interface InspectInput {
   item_selector: string;
 }
 
+export interface CardInspection {
+  status: 'ready' | 'root_missing' | 'items_missing';
+  item_count: number;
+  candidates: CandidateField[];
+}
+
 /**
  * Self-contained: runs across the chrome.scripting boundary.
  */
-export function inspectCardInPage(input: InspectInput): CandidateField[] {
+export function inspectCardInPage(input: InspectInput): CardInspection {
   const cfg = input;
   const root = document.querySelector(cfg.list_root);
-  if (!root) return [];
-  const sample = (root as ParentNode).querySelector(cfg.item_selector) as HTMLElement | null;
-  if (!sample) return [];
+  if (!root) return { status: 'root_missing', item_count: 0, candidates: [] };
+  const items = (root as ParentNode).querySelectorAll(cfg.item_selector);
+  const sample = items[0] as HTMLElement | undefined;
+  if (!sample) return { status: 'items_missing', item_count: 0, candidates: [] };
 
   const out: CandidateField[] = [];
   const seenSelectors = new Set<string>();
@@ -238,5 +245,5 @@ export function inspectCardInPage(input: InspectInput): CandidateField[] {
     }
   }
 
-  return out;
+  return { status: 'ready', item_count: items.length, candidates: out };
 }

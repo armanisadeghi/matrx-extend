@@ -1,4 +1,5 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { type AgentStartRequest, agentExecutePath, mandateExecutePath } from '@/lib/api/routes/ai';
 import { aiExtractCapturePage } from '@/lib/data-pattern/modes/ai-extract';
 import { parseAgentResponse } from '@/lib/data-pattern/run-interactive';
@@ -46,9 +47,17 @@ export function useAiExtraction() {
   const [error, setError] = useState<string | null>(null);
   const [notes, setNotes] = useState<string | null>(null);
   const [confidence, setConfidence] = useState<string | null>(null);
+  const [previewConfig, setPreviewConfig] = useState<Record<string, unknown> | null>(null);
+  const [source, setSource] = useState<ExtractionSource | null>(null);
+  const [previewPageKey, setPreviewPageKey] = useState<string | null>(null);
 
   const runIdRef = useRef<string | null>(null);
   const accumRef = useRef('');
+  const runConfigRef = useRef<Record<string, unknown> | null>(null);
+  const runSourceRef = useRef<ExtractionSource | null>(null);
+  const runPageKeyRef = useRef<string | null>(null);
+  const requestSeqRef = useRef(0);
+  const pageKey = `${tab.id ?? ''}:${tab.url ?? ''}`;
 
   // Dead-man's switch: if the server goes silent without a terminal `done`,
   // the spinner used to spin forever (audit K1). Any chunk for our run
@@ -92,6 +101,9 @@ export function useAiExtraction() {
         try {
           const parsed = parseAgentResponse(accumRef.current);
           setRows(parsed.rows);
+          setPreviewConfig(runConfigRef.current);
+          setSource(runSourceRef.current);
+          setPreviewPageKey(runPageKeyRef.current);
           setNotes(parsed.notes ?? null);
           setConfidence(parsed.confidence ?? null);
         } catch (e) {
@@ -118,9 +130,13 @@ export function useAiExtraction() {
       setRunning(true);
       setError(null);
       setRows(null);
+      setPreviewConfig(null);
+      setSource(null);
+      setPreviewPageKey(null);
       setNotes(null);
       setConfidence(null);
       accumRef.current = '';
+      const requestSeq = ++requestSeqRef.current;
 
       let captured: ReturnType<typeof aiExtractCapturePage>;
       try {
@@ -130,7 +146,9 @@ export function useAiExtraction() {
         });
         captured = result?.[0]?.result as ReturnType<typeof aiExtractCapturePage>;
         if (!captured) throw new Error('Page capture returned nothing.');
+        if (requestSeq !== requestSeqRef.current) return;
       } catch (e) {
+        if (requestSeq !== requestSeqRef.current) return;
         setError(`Could not read page: ${e instanceof Error ? e.message : String(e)}`);
         setRunning(false);
         return;
@@ -138,6 +156,13 @@ export function useAiExtraction() {
 
       const runId = newId('extract');
       runIdRef.current = runId;
+      runConfigRef.current = {
+        description: input.description,
+        output_schema: input.outputSchema,
+        ...(input.mandateKey ? { mandate_key: input.mandateKey } : { agent_id: input.agentId }),
+      };
+      runSourceRef.current = sourceFromUrl(captured.url);
+      runPageKeyRef.current = `${tab.id}:${tab.url ?? ''}`;
 
       const body: AgentStartRequest = {
         user_input: input.description,
@@ -178,12 +203,13 @@ export function useAiExtraction() {
         });
         watchdog.start();
       } catch (e) {
+        if (requestSeq !== requestSeqRef.current) return;
         setError(`Failed to start extraction: ${e instanceof Error ? e.message : String(e)}`);
         setRunning(false);
         runIdRef.current = null;
       }
     },
-    [tab.id, watchdog],
+    [tab.id, tab.url, watchdog],
   );
 
   const cancel = useCallback(async () => {
@@ -197,6 +223,9 @@ export function useAiExtraction() {
     watchdog.stop();
     setRunning(false);
     setRows(null);
+    setPreviewConfig(null);
+    setSource(null);
+    setPreviewPageKey(null);
     setNotes(null);
     setConfidence(null);
     setError(null);
@@ -205,10 +234,44 @@ export function useAiExtraction() {
 
   const reset = useCallback(() => {
     setRows(null);
+    setPreviewConfig(null);
+    setSource(null);
+    setPreviewPageKey(null);
     setError(null);
     setNotes(null);
     setConfidence(null);
   }, []);
 
-  return { rows, running, error, notes, confidence, extract, cancel, reset };
+  // A response belongs to the page captured at run start. Navigation also
+  // invalidates in-flight captures and streamed responses.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: tab identity is the invalidation key.
+  useEffect(() => {
+    requestSeqRef.current += 1;
+    const runId = runIdRef.current;
+    runIdRef.current = null;
+    if (runId) void send(CHANNELS.STREAM_CANCEL, { runId }).catch(() => {});
+    watchdog.stop();
+    setRows(null);
+    setPreviewConfig(null);
+    setSource(null);
+    setPreviewPageKey(null);
+    setNotes(null);
+    setConfidence(null);
+    setError(null);
+    setRunning(false);
+  }, [tab.id, tab.url, watchdog]);
+
+  const previewIsCurrentPage = previewPageKey === pageKey;
+  return {
+    rows: previewIsCurrentPage ? rows : null,
+    running,
+    error,
+    notes,
+    confidence,
+    previewConfig: previewIsCurrentPage ? previewConfig : null,
+    source: previewIsCurrentPage ? source : null,
+    extract,
+    cancel,
+    reset,
+  };
 }
