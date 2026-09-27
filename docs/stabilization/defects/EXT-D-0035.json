@@ -1,11 +1,7 @@
 {
   "id": "EXT-D-0035",
   "feature_id": "EXT-F-1009",
-  "case_ids": [
-    "EXT-F-1009-T04",
-    "EXT-F-1009-T05",
-    "EXT-F-1009-T06"
-  ],
+  "case_ids": ["EXT-F-1009-T04", "EXT-F-1009-T05", "EXT-F-1009-T06"],
   "surface": "Native screenshot acceptance pointer helper for the Open in Files icon",
   "auth_mode": "real admin with approved organization and owned localhost fixture",
   "reproduction": [
@@ -32,10 +28,7 @@
   "priority": "P1: correct the helper before the next resource-admitted native run",
   "state": "fixed",
   "owner": "/root/screenshot_identity_repair",
-  "fix_commits": [
-    "84d63d0e",
-    "b41ac842"
-  ],
+  "fix_commits": ["84d63d0e", "b41ac842"],
   "transition_history": [
     {
       "at": "2026-09-27T11:16:03Z",
