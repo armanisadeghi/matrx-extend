@@ -1,5 +1,5 @@
 {
-  "status": "engineering_self_verified_awaiting_independent_review_and_browser",
+  "status": "F1_open_after_second_peer_failure_escalated",
   "defect": "EXT-D-0047",
   "base_commit": "de819649845c299c47ee27566b849c91d90bead1",
   "scratch_repository": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-integrated-20260927/repo",
@@ -7,7 +7,7 @@
   "candidate_patch_sha256": "5c627dab4482f2dd23097e40d8cfc623deb7a962c2347d6acd547c1c4176072e",
   "scratch_construction": "Two separate git clone --shared --no-checkout repositories, each checked out detached at de819649; no git worktree or branch was created and neither clone was removed.",
   "baseline_probe": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-integrated-20260927/apply-check/tests/unit/network-replay-integrity.test.ts",
-  "baseline_probe_scope": "The added test calls the old runSavedPattern Network path directly and emits the first response during Chrome reload before onUpdated loading. Its expected row is absent under the old listener timing. It imports no D47 module, and remains unrun pending runtime permission.",
+  "baseline_probe_scope": "The added test calls the old runSavedPattern Network path directly and emits the first response during Chrome reload before onUpdated loading. Its expected row is absent under the old listener timing. It imports no D47 module; the guarded original baseline probe failed at the intended matcher boundary.",
   "source_resolution": [
     "Resolved the two run-interactive.ts rejects by replacing post-loading event subscription with document-scoped capture, while retaining D48 sanitized URL matching, transient credential fingerprint identity and sanitized no-match text.",
     "Resolved the dispatch.ts reject by adding the recovered-operation field alongside D48's early Network save sanitizer; both dispatch and WebMCP sanitization remain.",
@@ -17,7 +17,7 @@
     "git diff --check succeeded in the scratch repository.",
     "A separate detached clone at de819649 accepted git apply --check for the regenerated patch.",
     "Static review corrected two candidate test hoist initializers that referenced their own variable before initialization; no runtime result is claimed.",
-    "No live source, product runtime, build, tests, browser or database was changed by this lane."
+    "These static checks describe the earlier scratch preparation; the D47 candidate was subsequently applied to live source under the root coordinator's permit. No browser or database was changed by this lane."
   ],
   "execution_evidence": [
     "Baseline probe on untouched de819649 called old runSavedPattern and failed: first request emitted during reload was rejected with NetworkNoMatchError saying requests before the reload listener installs cannot be captured. Initial scratch setup needed the existing .wxt tsconfig link; that transform failure was not counted as a behavioral red.",
@@ -32,6 +32,13 @@
     "f2_red": "The actual PatternsTab approval lacked recipe name, target page and debugger/reload effect.",
     "f2_green": "The prepared operation carries a sanitized page URL and recipe name only for display, persists them for remount, and the actual saved UI and remount tests assert the visible details. Approval authority still comes solely from the immutable snapshot recheck."
   },
+  "second_f1_repair": {
+    "fresh_peer_result": "The first F1 fix bounded Page.reload only; peer found unbounded hook-removal commands and debugger release still blocked terminal timeout/cancel.",
+    "current_candidate": "Core close attempts all hook removals, bounds confirmation and lease release with the caller duration, and reports unconfirmed cleanup instead of success. Adversarial core tests stall removal and release; actual PatternsTab saved-UI tests stall hook removal and owned debugger detach. The UI terminates without rows or marking the saved recipe broken. A stalled setup reports that Chrome may not have confirmed cleanup.",
+    "guarded_evidence": "d47-cleanup-focused-20260927-1 passed 2 files/10 tests; d47-integrated-tests-20260927-1 passed 22 files/104 tests including D41/D48 siblings; d47-integrated-compile-20260927-1 passed. All three were resourceInvalid false with child and guard exit 0. Lint was not launched after escalation.",
+    "second_peer_failure": "Fresh peer 3cad3432 found that an owned debugger detach rejection returns {ok:false} from cdp/client.ts, but acquireSession.release ignores this result. Capture can therefore report clean rows and OK recipe health despite an explicit Chrome cleanup failure. This is unresolved and escalated for a narrow independent correction; no further source fix or verification was attempted in this lane.",
+    "verification_deviation": "A read-only pnpm exec biome check --diagnostic-level=error . was run outside the resource guard and was not admitted. It made no file changes. Its output is excluded from guarded verification; admitted pnpm lint must be rerun after the repair."
+  },
   "guarded_test_plan": [
     "Under the coordinator's single runtime permit, first run pnpm compile and pnpm catalog:tools:md on the integrated candidate; resolve any static errors and regenerate required catalog docs.",
     "Run pnpm test tests/unit/document-network-authorization.test.ts tests/unit/document-network-dispatch.test.ts tests/unit/document-network-recovery.test.ts tests/unit/document-network-port.test.ts tests/unit/document-network-capture.test.ts tests/unit/document-network-lease.test.ts tests/unit/document-network-page-privacy.test.ts.",
@@ -40,7 +47,7 @@
     "With installed Chrome, check early initial request, old-document late response, same-URL navigation, denied approval, port disconnect, and owned versus borrowed debugger attachment cleanup. No localhost is authorized for this lane."
   ],
   "outstanding": [
-    "Installed-browser verification and independent source review remain open. Root owns build and push after fresh peer verdict.",
+    "Debugger detach rejection must fail the saved run honestly. Fresh peer source review, guarded lint and installed-browser verification remain open. Root owns build and push after correction and accepted review.",
     "The feature-test addendum is integrated. The existing canonical data_patterns description still needs a database update explaining debugger approval and reload before shipping.",
     "Preserve D48 privacy and matcher behavior when any later edit touches run-interactive.ts, dispatch.ts or ToolsView.tsx."
   ]

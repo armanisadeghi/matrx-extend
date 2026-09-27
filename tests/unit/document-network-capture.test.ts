@@ -127,6 +127,40 @@ it('cancels and releases its lease while Page.reload is stalled', async () => {
   expect(harness.release).toHaveBeenCalledOnce();
 });
 
+it('returns an honest terminal error and attempts release when cleanup never settles', async () => {
+  vi.useFakeTimers();
+  const opts = { ...options(), timeoutMs: 100 };
+  const baseSend = harness.send.getMockImplementation()!;
+  harness.send.mockImplementation((method, params) =>
+    method === 'Page.removeScriptToEvaluateOnNewDocument'
+      ? new Promise(() => {})
+      : baseSend(method, params),
+  );
+  const capture = await startDocumentNetworkCapture(opts);
+  const outcome = capture.close().then(
+    () => 'success',
+    (error: Error) => error.message,
+  );
+  await vi.advanceTimersByTimeAsync(100);
+  expect(await outcome).toMatch(/did not confirm removal/);
+  expect(harness.release).toHaveBeenCalledOnce();
+  expect(harness.send).toHaveBeenCalledWith('Runtime.removeBinding', expect.any(Object));
+});
+
+it('returns an honest terminal error when owned debugger release never settles', async () => {
+  vi.useFakeTimers();
+  const opts = { ...options(), timeoutMs: 100 };
+  harness.release.mockImplementation(() => new Promise(() => {}));
+  const capture = await startDocumentNetworkCapture(opts);
+  const outcome = capture.close().then(
+    () => 'success',
+    (error: Error) => error.message,
+  );
+  await vi.advanceTimersByTimeAsync(100);
+  expect(await outcome).toMatch(/did not confirm removal/);
+  expect(harness.release).toHaveBeenCalledOnce();
+});
+
 it('arms before reload and retains the earliest new-document response while rejecting a delayed old response', async () => {
   const opts = options();
   const baseSend = harness.send.getMockImplementation()!;

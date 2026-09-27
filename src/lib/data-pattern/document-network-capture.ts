@@ -61,28 +61,48 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
     opts.signal.removeEventListener('abort', onAbort);
     closePromise = (async () => {
       await setupSettled;
-      const failures: unknown[] = [];
-      const attempt = async (method: string, params: Record<string, unknown>) => {
-        try {
-          await lease.send(method, params);
-        } catch (error) {
-          failures.push(error);
-        }
-      };
+      // Chrome may never settle a command after a stalled reload. Keep every
+      // removal attempt alive, but do not let it strand the caller or lease.
+      const removals: Promise<unknown>[] = [];
       if (scriptId)
-        await attempt('Page.removeScriptToEvaluateOnNewDocument', { identifier: scriptId });
-      if (documentContext)
-        await attempt('Runtime.evaluate', {
-          expression: `globalThis[${JSON.stringify(`${bindingName}_cleanup`)}]?.()`,
-          uniqueContextId: documentContext.uniqueId,
-        });
-      if (bindingAdded) await attempt('Runtime.removeBinding', { name: bindingName });
-      await lease.release();
-      // A detached/closed tab has already destroyed the capture. Other cleanup failures remain visible.
-      if (failures.length && !detached)
-        throw new Error(
-          'Capture stopped, but Chrome did not confirm removal of every capture hook. Reload the tab before capturing again.',
+        removals.push(
+          lease.send('Page.removeScriptToEvaluateOnNewDocument', { identifier: scriptId }),
         );
+      if (documentContext)
+        removals.push(
+          lease.send('Runtime.evaluate', {
+            expression: `globalThis[${JSON.stringify(`${bindingName}_cleanup`)}]?.()`,
+            uniqueContextId: documentContext.uniqueId,
+          }),
+        );
+      if (bindingAdded) removals.push(lease.send('Runtime.removeBinding', { name: bindingName }));
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const deadline = new Promise<false>((resolve) => {
+        timer = setTimeout(() => resolve(false), opts.timeoutMs);
+      });
+      try {
+        const removed = await Promise.race([
+          Promise.allSettled(removals).then((results) =>
+            results.every((r) => r.status === 'fulfilled'),
+          ),
+          deadline,
+        ]);
+        // Releasing a borrowed lease never detaches its pre-existing debugger.
+        // For an owned lease, Chrome's detach acknowledgement is also bounded.
+        const released = await Promise.race([
+          lease.release().then(
+            () => true,
+            () => false,
+          ),
+          deadline,
+        ]);
+        if ((!removed || !released) && !detached)
+          throw new Error(
+            'Capture stopped, but Chrome did not confirm removal of every capture hook or debugger release. Reload the tab before capturing again.',
+          );
+      } finally {
+        if (timer !== undefined) clearTimeout(timer);
+      }
     })();
     return closePromise;
   };

@@ -43,7 +43,7 @@ async function startOwned(options: Options): Promise<Capture> {
     rejectSetup(
       new Error(
         setupTimedOut
-          ? 'Network capture setup timed out. Run again.'
+          ? 'Network capture setup timed out; Chrome may not have confirmed capture-hook cleanup. Reload the tab before trying again.'
           : 'Network replay was cancelled.',
       ),
     );

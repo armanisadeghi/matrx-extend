@@ -90,6 +90,7 @@ vi.mock('@/lib/destructive/confirm', () => ({ confirmDestructive: vi.fn() }));
 import { SavedReplayApprovalHost } from '@/features/showcase/SavedReplayApprovalHost';
 import { PatternsTab } from '@/features/showcase/tabs/PatternsTab';
 import { registerDocumentNetworkCaptureHost } from '@/lib/data-pattern/document-network-transport';
+import { bumpPatternRun } from '@/lib/supabase/queries';
 import { startToolDispatcher } from '@/lib/tools/dispatch';
 // Browser APIs and DB/auth are boundary doubles. Actual PatternsTab, saved runner,
 // port host, dispatcher, preparation, CDP client, capture core and row parser run.
@@ -98,155 +99,182 @@ afterEach(() => {
   vi.useRealTimers();
   vi.clearAllMocks();
 });
-it('saved UI renders current CDP rows after a full window despite slow setup, never old-document rows', async () => {
-  vi.useFakeTimers();
-  let stored: Record<string, unknown> = {};
-  Object.assign(chrome.storage, {
-    session: {
-      get: async () => structuredClone(stored),
-      set: async (v: object) => {
-        stored = { ...stored, ...structuredClone(v) };
+it.each([
+  ['responsive cleanup', false, false],
+  ['stalled hook removal', true, false],
+  ['stalled owned debugger detach', false, true],
+])(
+  'saved UI handles %s after a full window without showing old-document rows',
+  async (_name, stallCleanup, stallDetach) => {
+    vi.useFakeTimers();
+    let stored: Record<string, unknown> = {};
+    Object.assign(chrome.storage, {
+      session: {
+        get: async () => structuredClone(stored),
+        set: async (v: object) => {
+          stored = { ...stored, ...structuredClone(v) };
+        },
       },
-    },
-  });
-  const connections = new Set<(port: chrome.runtime.Port) => void>();
-  Object.assign(chrome, {
-    runtime: {
-      id: 'extension',
-      onConnect: { addListener: (fn: (p: chrome.runtime.Port) => void) => connections.add(fn) },
-      connect: () => {
-        const clientMessages = new Set<(v: unknown) => void>();
-        const serverMessages = new Set<(v: unknown) => void>();
-        const disconnects = new Set<() => void>();
-        let closed = false;
-        const disconnect = () => {
-          if (closed) return;
-          closed = true;
-          for (const fn of disconnects) fn();
-        };
-        const endpoint = (input: Set<(v: unknown) => void>, output: Set<(v: unknown) => void>) => ({
-          postMessage: (v: unknown) => {
-            for (const fn of output) fn(v);
-          },
-          disconnect,
-          onMessage: { addListener: (fn: (v: unknown) => void) => input.add(fn) },
-          onDisconnect: { addListener: (fn: () => void) => disconnects.add(fn) },
-        });
-        const client = endpoint(clientMessages, serverMessages);
-        const server = {
-          ...endpoint(serverMessages, clientMessages),
-          name: 'matrx:document-network-capture',
-          sender: { id: 'extension' },
-        };
-        for (const fn of connections) fn(server as unknown as chrome.runtime.Port);
-        return client;
-      },
-    },
-  });
-  const events = new Set<(source: object, method: string, params: object) => void>();
-  const emit = (method: string, params: object) => {
-    for (const fn of events) fn({ tabId: 37 }, method, params);
-  };
-  const context = (id: number, uniqueId: string) =>
-    emit('Runtime.executionContextCreated', {
-      context: { id, uniqueId, auxData: { frameId: 'main', isDefault: true } },
     });
-  let binding = '';
-  let registered = false;
-  let releaseSetup!: () => void;
-  const attach = vi.fn(async () => {});
-  const detach = vi.fn(async () => {});
-  const sendCommand = vi.fn(async (_target, method, params) => {
-    if (method === 'Page.getFrameTree') return { frameTree: { frame: { id: 'main', url: h.url } } };
-    if (method === 'Runtime.enable') context(1, 'old');
-    if (method === 'Runtime.addBinding') binding = params.name;
-    if (method === 'Page.addScriptToEvaluateOnNewDocument') {
-      await new Promise<void>((resolve) => {
-        releaseSetup = resolve;
-      });
-      registered = true;
-      return { identifier: 'script' };
-    }
-    if (method === 'Page.reload') {
-      expect(registered).toBe(true);
-      context(2, 'new');
-      const packet = (id: number, title: string, sequence: number) =>
-        emit('Runtime.bindingCalled', {
-          name: binding,
-          executionContextId: id,
-          payload: JSON.stringify({
-            source: 'fetch',
-            url: 'https://calendar.invalid/api',
-            method: 'GET',
-            body: JSON.stringify([{ title }]),
-            status: 200,
-            request_body_key: 'none',
-            request_sequence: sequence,
-            ts_ms: 1,
-            body_size: 100,
-            body_truncated: false,
-          }),
-        });
-      packet(1, 'STALE_DOCUMENT_ROW', 999);
-      packet(2, 'CURRENT_DOCUMENT_ROW', 1);
-      emit('Page.frameNavigated', { frame: { id: 'main', url: h.url } });
-    }
-    return {};
-  });
-  Object.assign(chrome, {
-    debugger: {
-      attach,
-      detach,
-      sendCommand,
-      onEvent: {
-        addListener: (fn: any) => events.add(fn),
-        removeListener: (fn: any) => events.delete(fn),
+    const connections = new Set<(port: chrome.runtime.Port) => void>();
+    Object.assign(chrome, {
+      runtime: {
+        id: 'extension',
+        onConnect: { addListener: (fn: (p: chrome.runtime.Port) => void) => connections.add(fn) },
+        connect: () => {
+          const clientMessages = new Set<(v: unknown) => void>();
+          const serverMessages = new Set<(v: unknown) => void>();
+          const disconnects = new Set<() => void>();
+          let closed = false;
+          const disconnect = () => {
+            if (closed) return;
+            closed = true;
+            for (const fn of disconnects) fn();
+          };
+          const endpoint = (
+            input: Set<(v: unknown) => void>,
+            output: Set<(v: unknown) => void>,
+          ) => ({
+            postMessage: (v: unknown) => {
+              for (const fn of output) fn(v);
+            },
+            disconnect,
+            onMessage: { addListener: (fn: (v: unknown) => void) => input.add(fn) },
+            onDisconnect: { addListener: (fn: () => void) => disconnects.add(fn) },
+          });
+          const client = endpoint(clientMessages, serverMessages);
+          const server = {
+            ...endpoint(serverMessages, clientMessages),
+            name: 'matrx:document-network-capture',
+            sender: { id: 'extension' },
+          };
+          for (const fn of connections) fn(server as unknown as chrome.runtime.Port);
+          return client;
+        },
       },
-      onDetach: { addListener: vi.fn(), removeListener: vi.fn() },
-    },
-    tabs: { get: async () => ({ id: 37, groupId: 1, url: h.url }) },
-    scripting: { executeScript: async () => [{ result: null, documentId: 'original-document' }] },
-  });
-  startToolDispatcher({ defaultPermissionMode: () => 'act' });
-  registerDocumentNetworkCaptureHost();
-  const drain = async () => {
-    for (let i = 0; i < 100; i++) await Promise.resolve();
-  };
-  render(
-    <>
-      <PatternsTab />
-      <SavedReplayApprovalHost signedIn />
-    </>,
-  );
-  await act(drain);
-  fireEvent.click(screen.getByTitle('Run pattern'));
-  await vi.dynamicImportSettled();
-  await act(drain);
-  expect(attach).not.toHaveBeenCalled();
-  const allow = screen.getByRole('button', { name: 'Allow' });
-  const approvalText = allow.parentElement?.parentElement?.textContent ?? '';
-  expect(approvalText).toContain('Events');
-  expect(approvalText).toContain('https://calendar.invalid/calendar');
-  expect(approvalText).toMatch(/debugger.*reload/i);
-  fireEvent.click(allow);
-  await act(drain);
-  expect(releaseSetup).toBeTypeOf('function');
-  await act(async () => {
-    await vi.advanceTimersByTimeAsync(10000);
-    releaseSetup();
-    await drain();
-  });
-  expect(sendCommand.mock.calls.some((call) => call[1] === 'Page.reload')).toBe(true);
-  await act(async () => {
-    await vi.advanceTimersByTimeAsync(10000);
-    await drain();
-  });
-  expect(screen.queryByText('CURRENT_DOCUMENT_ROW')).toBeNull();
-  await act(async () => {
-    await vi.advanceTimersByTimeAsync(10000);
-    await drain();
-  });
-  expect(screen.getByText('CURRENT_DOCUMENT_ROW')).toBeTruthy();
-  expect(screen.queryByText('STALE_DOCUMENT_ROW')).toBeNull();
-  expect(detach).toHaveBeenCalledOnce();
-});
+    });
+    const events = new Set<(source: object, method: string, params: object) => void>();
+    const emit = (method: string, params: object) => {
+      for (const fn of events) fn({ tabId: 37 }, method, params);
+    };
+    const context = (id: number, uniqueId: string) =>
+      emit('Runtime.executionContextCreated', {
+        context: { id, uniqueId, auxData: { frameId: 'main', isDefault: true } },
+      });
+    let binding = '';
+    let registered = false;
+    let releaseSetup!: () => void;
+    const attach = vi.fn(async () => {});
+    const detach = vi.fn(async () => {
+      if (stallDetach) await new Promise(() => {});
+    });
+    const sendCommand = vi.fn(async (_target, method, params) => {
+      if (stallCleanup && method === 'Page.removeScriptToEvaluateOnNewDocument')
+        return new Promise(() => {});
+      if (method === 'Page.getFrameTree')
+        return { frameTree: { frame: { id: 'main', url: h.url } } };
+      if (method === 'Runtime.enable') context(1, 'old');
+      if (method === 'Runtime.addBinding') binding = params.name;
+      if (method === 'Page.addScriptToEvaluateOnNewDocument') {
+        await new Promise<void>((resolve) => {
+          releaseSetup = resolve;
+        });
+        registered = true;
+        return { identifier: 'script' };
+      }
+      if (method === 'Page.reload') {
+        expect(registered).toBe(true);
+        context(2, 'new');
+        const packet = (id: number, title: string, sequence: number) =>
+          emit('Runtime.bindingCalled', {
+            name: binding,
+            executionContextId: id,
+            payload: JSON.stringify({
+              source: 'fetch',
+              url: 'https://calendar.invalid/api',
+              method: 'GET',
+              body: JSON.stringify([{ title }]),
+              status: 200,
+              request_body_key: 'none',
+              request_sequence: sequence,
+              ts_ms: 1,
+              body_size: 100,
+              body_truncated: false,
+            }),
+          });
+        packet(1, 'STALE_DOCUMENT_ROW', 999);
+        packet(2, 'CURRENT_DOCUMENT_ROW', 1);
+        emit('Page.frameNavigated', { frame: { id: 'main', url: h.url } });
+      }
+      return {};
+    });
+    Object.assign(chrome, {
+      debugger: {
+        attach,
+        detach,
+        sendCommand,
+        onEvent: {
+          addListener: (fn: any) => events.add(fn),
+          removeListener: (fn: any) => events.delete(fn),
+        },
+        onDetach: { addListener: vi.fn(), removeListener: vi.fn() },
+      },
+      tabs: { get: async () => ({ id: 37, groupId: 1, url: h.url }) },
+      scripting: { executeScript: async () => [{ result: null, documentId: 'original-document' }] },
+    });
+    startToolDispatcher({ defaultPermissionMode: () => 'act' });
+    registerDocumentNetworkCaptureHost();
+    const drain = async () => {
+      for (let i = 0; i < 100; i++) await Promise.resolve();
+    };
+    render(
+      <>
+        <PatternsTab />
+        <SavedReplayApprovalHost signedIn />
+      </>,
+    );
+    await act(drain);
+    fireEvent.click(screen.getByTitle('Run pattern'));
+    await vi.dynamicImportSettled();
+    await act(drain);
+    expect(attach).not.toHaveBeenCalled();
+    const allow = screen.getByRole('button', { name: 'Allow' });
+    const approvalText = allow.parentElement?.parentElement?.textContent ?? '';
+    expect(approvalText).toContain('Events');
+    expect(approvalText).toContain('https://calendar.invalid/calendar');
+    expect(approvalText).toMatch(/debugger.*reload/i);
+    fireEvent.click(allow);
+    await act(drain);
+    expect(releaseSetup).toBeTypeOf('function');
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(10000);
+      releaseSetup();
+      await drain();
+    });
+    expect(sendCommand.mock.calls.some((call) => call[1] === 'Page.reload')).toBe(true);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(10000);
+      await drain();
+    });
+    expect(screen.queryByText('CURRENT_DOCUMENT_ROW')).toBeNull();
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(10000);
+      await drain();
+    });
+    if (stallCleanup || stallDetach) {
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(20000);
+        await drain();
+      });
+      expect(screen.queryByText('CURRENT_DOCUMENT_ROW')).toBeNull();
+      expect(screen.getByText(/Chrome did not confirm removal/)).toBeTruthy();
+      expect(bumpPatternRun).not.toHaveBeenCalledWith(
+        'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+        'broken',
+        0,
+      );
+    } else expect(screen.getByText('CURRENT_DOCUMENT_ROW')).toBeTruthy();
+    expect(screen.queryByText('STALE_DOCUMENT_ROW')).toBeNull();
+    expect(detach).toHaveBeenCalledOnce();
+  },
+);
