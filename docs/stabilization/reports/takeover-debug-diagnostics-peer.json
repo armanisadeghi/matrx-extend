@@ -1,0 +1,10 @@
+{
+  "scope": "Independent peer review of Debug-opening diagnostic change and prior guarded run",
+  "behavior_evidence_verdict": "opening_cause_unconfirmed",
+  "behavior_evidence": "Guarded run debug-export-dev085-002 was owned, child-started, and exited 1 with status unverified. Its safe summary says it reached debug_open; no case results were recorded. This does not establish a product defect or distinguish tab click from Log mount.",
+  "code_quality_readiness": "ready_for_one_root_admitted_bounded_run",
+  "review": "The new failure shape records a fixed step, an allowlisted driver code/count/boolean subset, and fixed-shape UI presence/selection flags. It does not copy exception text, page text, account data, logs, or clipboard contents. The outer catch preserves this diagnosis while keeping status unverified and cases unpromoted.",
+  "verification": "node --check tests/browser/debug-log-export-acceptance.mjs passed. No browser, test suite, build, or resource-guarded command was launched.",
+  "limits": "This is source-level/privacy review only; the runner has not been live-verified with the diagnostic change. Run only after root admits the heavy slot and supplies the current build receipt.",
+  "findings": []
+}

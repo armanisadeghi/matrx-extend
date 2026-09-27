@@ -1,0 +1,33 @@
+{
+  "scope": "EXT-F-1005-T16/T18 Debug opening setup, run debug-export-dev085-002",
+  "status": "opening_cause_unconfirmed_diagnostic_ready",
+  "product_defect_confirmed": false,
+  "evidence": {
+    "run_002": "Guard-owned child exited unverified at debug_open after real_admin_signin; no case result was recorded. Its failure code is a generic catch-all.",
+    "private_result_inspection": "Only top-level keys, failure stage/code, case count and build-key names were inspected. No account, log, clipboard or browser content was read into this report.",
+    "wrapper_log_inspection": "Three lines; no stack, pointer code or timeout marker. The log and raw result cannot distinguish the opening substep.",
+    "working_sibling": "The existing Debug controls runner uses the same visible 'Debug (admin only)' tab title and waits for the lazy Log view; run 001 opened Debug on the same 0.2.85 artifact, but its runner was outside guard ownership and cannot promote acceptance.",
+    "source_contract": "App.tsx renders an admin-only Debug tab with the title used by both runners; DebugView starts in Log and exposes the Search input when mounted."
+  },
+  "confirmed_diagnostic_gap": "The export runner discarded the exception from both the Debug tab click and Log mount wait, replacing either with owned_harness_or_ui_stage_failed. This erased the distinction needed for diagnosis.",
+  "change": {
+    "file": "tests/browser/debug-log-export-acceptance.mjs",
+    "behavior": "On an opening failure, record which substep failed, allowlisted pointer metadata and fixed-shape tab/panel presence and selection flags. Preserve unverified status and zero case promotion; no page or log text enters the receipt.",
+    "verification": "node --check passed. No tests, build, browser or resource guard were launched because the native census owns the heavy slot."
+  },
+  "falsifiable_next_run_reading": [
+    {
+      "hypothesis": "The trusted click cannot reach the Debug tab",
+      "prediction": "step=tab_click and a pointer failure code or tabCount/selection mismatch; the panel remains inactive."
+    },
+    {
+      "hypothesis": "The tab activates but lazy Log controls do not mount within the existing bound",
+      "prediction": "step=log_mount, tabSelected=true, panelActive=true, searchPresent=false."
+    },
+    {
+      "hypothesis": "The panel execution context closes or reloads during opening",
+      "prediction": "step=tab_click or log_mount with observationUnavailable=true or an evaluation-related pointer code."
+    }
+  ],
+  "next_action": "After root grants a new heavy slot and current build receipt, run one guard-owned child against that receipt. Inspect only the new allowlisted debug_open failure fields and wrapper ownership. If it opens, execute the actual T16/T18 UI checks; this diagnostic change itself proves neither case."
+}

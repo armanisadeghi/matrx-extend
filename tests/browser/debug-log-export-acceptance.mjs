@@ -144,6 +144,53 @@ async function logView(panel) {
   );
 }
 
+// Keep opening failures useful without copying account, log, or page content
+// into the acceptance result. The tab title is fixed source copy.
+async function debugOpenState(panel) {
+  try {
+    return await evaluate(
+      panel,
+      `(() => {
+        const tabs=[...document.querySelectorAll('button[role="tab"][title="Debug (admin only)"]')];
+        const tab=tabs[0];
+        const controlled=tab?.getAttribute('aria-controls');
+        const content=controlled?document.getElementById(controlled):null;
+        return {tabCount:tabs.length,tabSelected:tab?.getAttribute('aria-selected')==='true',
+          panelPresent:!!content,panelActive:content?.getAttribute('data-state')==='active',
+          searchPresent:!!content?.querySelector('input[placeholder="Search…"]')};
+      })()`,
+    );
+  } catch {
+    return { observationUnavailable: true };
+  }
+}
+
+function safeDebugOpenDriverFailure(error) {
+  const failure = error?.driverFailure;
+  const codes = new Set([
+    'pointer_initial_evaluation_failed',
+    'pointer_page_sample_failed',
+    'pointer_target_not_unique',
+    'pointer_followup_evaluation_failed',
+    'pointer_stable_hit_not_observed',
+    'pointer_press_dispatch_failed',
+    'pointer_release_dispatch_failed',
+  ]);
+  return failure && typeof failure === 'object'
+    ? {
+        code: codes.has(failure.code) ? failure.code : 'unknown',
+        matchedTargetCount: Number.isInteger(failure.matchedTargetCount)
+          ? failure.matchedTargetCount
+          : null,
+        visibleMatchCount: Number.isInteger(failure.visibleMatchCount)
+          ? failure.visibleMatchCount
+          : null,
+        hitTarget: failure.hitTarget === true,
+        animating: failure.animating === true,
+      }
+    : null;
+}
+
 async function visibleRowSequence(panel) {
   return evaluate(
     panel,
@@ -348,12 +395,25 @@ async function exercise({ page, panel, artifacts }) {
   try {
     await signIn(page, panel);
     stage = 'debug_open';
-    await click(panel, 'title', 'Debug (admin only)');
-    await waitFor(
-      'debug_log_ready',
-      () => logView(panel),
-      (state) => state?.present,
-    );
+    let openingStep = 'tab_click';
+    try {
+      await click(panel, 'title', 'Debug (admin only)');
+      openingStep = 'log_mount';
+      await waitFor(
+        'debug_log_ready',
+        () => logView(panel),
+        (state) => state?.present,
+      );
+    } catch (error) {
+      report.failure = {
+        stage,
+        code: 'debug_open_unverified',
+        step: openingStep,
+        driverFailure: safeDebugOpenDriverFailure(error),
+        uiState: await debugOpenState(panel),
+      };
+      throw new Error('debug_open_unverified');
+    }
     stage = 'natural_events';
     for (const url of PUBLIC_PAGES) {
       await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
