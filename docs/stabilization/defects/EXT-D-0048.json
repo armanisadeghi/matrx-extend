@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0048",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T58"
-  ],
+  "case_ids": ["EXT-F-1012-T58"],
   "surface": "Showcase Network selection \u2192 Save as pattern persistence",
   "auth_mode": "admin",
   "reproduction": [

@@ -1,17 +1,24 @@
 /** Credential-aware Network request identity. Never persist or log raw credential values. */
 export const NETWORK_CREDENTIAL_MASK = '[credential]';
 
-const credentialKey = /^(?:token|accesstoken|refreshtoken|idtoken|authtoken|bearertoken|csrftoken|sessiontoken|apikey|xapikey|key|secret|clientsecret|password|passwd|pwd|authorization|auth|bearer|signature|sig|session|sessionid|jwt|credential|xamzcredential|xamzsignature|xgoogcredential|xgoogsignature)$/;
+const credentialKey =
+  /^(?:token|accesstoken|refreshtoken|idtoken|authtoken|bearertoken|csrftoken|sessiontoken|apikey|xapikey|key|secret|clientsecret|password|passwd|pwd|authorization|auth|bearer|signature|sig|session|sessionid|jwt|credential|xamzcredential|xamzsignature|xgoogcredential|xgoogsignature)$/;
 
 function normalizedKey(key: string): string {
   let decoded = key.replaceAll('+', ' ');
-  try { decoded = decodeURIComponent(decoded); } catch { /* Keep malformed key literal. */ }
+  try {
+    decoded = decodeURIComponent(decoded);
+  } catch {
+    /* Keep malformed key literal. */
+  }
   return decoded.toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
 export function isCredentialQueryKey(key: string, extraKeys: readonly string[] = []): boolean {
   const normalized = normalizedKey(key);
-  return credentialKey.test(normalized) || extraKeys.some((extra) => normalizedKey(extra) === normalized);
+  return (
+    credentialKey.test(normalized) || extraKeys.some((extra) => normalizedKey(extra) === normalized)
+  );
 }
 
 function splitUrl(raw: string): { prefix: string; query: string | null; userInfo: string } {
@@ -20,7 +27,8 @@ function splitUrl(raw: string): { prefix: string; query: string | null; userInfo
   const beforeQuery = question < 0 ? withoutFragment : withoutFragment.slice(0, question);
   const query = question < 0 ? null : withoutFragment.slice(question + 1);
   try {
-    if (!/^[a-z][\da-z+.-]*:\/\//i.test(beforeQuery)) return { prefix: beforeQuery, query, userInfo: '' };
+    if (!/^[a-z][\da-z+.-]*:\/\//i.test(beforeQuery))
+      return { prefix: beforeQuery, query, userInfo: '' };
     const url = new URL(beforeQuery);
     return {
       prefix: `${url.protocol}//${url.host}${url.pathname}`,
@@ -28,7 +36,11 @@ function splitUrl(raw: string): { prefix: string; query: string | null; userInfo
       userInfo: `${url.username}:${url.password}`,
     };
   } catch {
-    return { prefix: beforeQuery.replace(/^([a-z][\da-z+.-]*:\/\/)[^/@]*@/i, '$1'), query, userInfo: '' };
+    return {
+      prefix: beforeQuery.replace(/^([a-z][\da-z+.-]*:\/\/)[^/@]*@/i, '$1'),
+      query,
+      userInfo: '',
+    };
   }
 }
 
@@ -55,7 +67,13 @@ export function sanitizeNetworkUrl(raw: string, extraKeys: readonly string[] = [
 export function queryKeysInNetworkUrl(raw: string): string[] {
   const { query } = splitUrl(raw);
   if (query === null) return [];
-  return [...new Set(querySegments(query).map((part) => part.split('=', 1)[0] ?? '').filter(Boolean))];
+  return [
+    ...new Set(
+      querySegments(query)
+        .map((part) => part.split('=', 1)[0] ?? '')
+        .filter(Boolean),
+    ),
+  ];
 }
 
 /** A safe default; caller can still supply a human label. */
@@ -89,7 +107,9 @@ export function sanitizeNetworkPatternName(
         try {
           const decoded = decodeURIComponent(value.replaceAll('+', ' '));
           if (decoded) safe = safe.replaceAll(decoded, NETWORK_CREDENTIAL_MASK);
-        } catch { /* Raw form was already replaced. */ }
+        } catch {
+          /* Raw form was already replaced. */
+        }
       }
     }
   }
@@ -97,7 +117,11 @@ export function sanitizeNetworkPatternName(
     isCredentialQueryKey(key, extraKeys) ? `${lead}${key}=${NETWORK_CREDENTIAL_MASK}` : whole,
   );
   // Legacy defaults truncated from the tail of a URL can omit the key itself.
-  if (/^Network:/i.test(name) && name.includes('…') && queryKeysInNetworkUrl(rawFilter).some((key) => isCredentialQueryKey(key, extraKeys))) {
+  if (
+    /^Network:/i.test(name) &&
+    name.includes('…') &&
+    queryKeysInNetworkUrl(rawFilter).some((key) => isCredentialQueryKey(key, extraKeys))
+  ) {
     return networkPatternDefaultName(rawFilter, extraKeys);
   }
   return safe;
@@ -111,29 +135,45 @@ export function safeRequestBodyKey(raw: unknown): string | undefined {
 }
 
 /** One boundary shared by the UI/database save and agent observation paths. */
-export function sanitizeNetworkPatternFields(name: string, config: unknown): {
+export function sanitizeNetworkPatternFields(
+  name: string,
+  config: unknown,
+): {
   name: string;
   config: Record<string, unknown>;
 } {
-  const source = config && typeof config === 'object' && !Array.isArray(config)
-    ? config as Record<string, unknown>
-    : {};
+  const source =
+    config && typeof config === 'object' && !Array.isArray(config)
+      ? (config as Record<string, unknown>)
+      : {};
   const rawFilter = typeof source.url_filter === 'string' ? source.url_filter : '';
   const extraKeys = Array.isArray(source.credential_query_keys)
     ? source.credential_query_keys.filter((key): key is string => typeof key === 'string')
     : [];
   const bodyKey = safeRequestBodyKey(source.request_body_key);
-  if (bodyKey === 'unavailable' && source.request_body_key !== 'unavailable' && source.body_match !== 'ignore') {
-    throw new Error('Request body identity is invalid. Capture the request again or choose URL and method only.');
+  if (
+    bodyKey === 'unavailable' &&
+    source.request_body_key !== 'unavailable' &&
+    source.body_match !== 'ignore'
+  ) {
+    throw new Error(
+      'Request body identity is invalid. Capture the request again or choose URL and method only.',
+    );
   }
   return {
     name: sanitizeNetworkPatternName(name, rawFilter, extraKeys),
     config: {
       url_filter: sanitizeNetworkUrl(rawFilter, extraKeys),
       credential_query_keys: extraKeys,
-      ...(source.url_match === 'exact' || source.url_match === 'filter' ? { url_match: source.url_match } : {}),
-      ...(source.body_match === 'exact' || source.body_match === 'ignore' ? { body_match: source.body_match } : {}),
-      ...(bodyKey !== undefined && source.body_match !== 'ignore' ? { request_body_key: bodyKey } : {}),
+      ...(source.url_match === 'exact' || source.url_match === 'filter'
+        ? { url_match: source.url_match }
+        : {}),
+      ...(source.body_match === 'exact' || source.body_match === 'ignore'
+        ? { body_match: source.body_match }
+        : {}),
+      ...(bodyKey !== undefined && source.body_match !== 'ignore'
+        ? { request_body_key: bodyKey }
+        : {}),
       ...(typeof source.method === 'string' ? { method: source.method } : {}),
       ...(typeof source.key_path === 'string' ? { key_path: source.key_path } : {}),
     },
@@ -142,18 +182,27 @@ export function sanitizeNetworkPatternFields(name: string, config: unknown): {
 
 /** Sanitize before debug logs, timeline, approval records, or receipts see tool arguments. */
 export function sanitizeNetworkToolSaveArgs(toolName: string, rawArgs: unknown): unknown {
-  if (toolName !== 'data_patterns' || !rawArgs || typeof rawArgs !== 'object' || Array.isArray(rawArgs)) {
+  if (
+    toolName !== 'data_patterns' ||
+    !rawArgs ||
+    typeof rawArgs !== 'object' ||
+    Array.isArray(rawArgs)
+  ) {
     return rawArgs;
   }
   const args = rawArgs as Record<string, unknown>;
   if (args.action !== 'save' || args.kind !== 'network_capture') return rawArgs;
   if (Array.isArray(args.fields) && args.fields.length > 0) {
-    throw new Error('Network capture saves do not use CSS fields. Remove the fields and save the request recipe.');
+    throw new Error(
+      'Network capture saves do not use CSS fields. Remove the fields and save the request recipe.',
+    );
   }
   let domain: string | undefined;
   if (args.domain !== undefined) {
     if (typeof args.domain !== 'string' || /[@/?#\s]/.test(args.domain)) {
-      throw new Error('Network capture domain must be a hostname, without credentials, path, or query.');
+      throw new Error(
+        'Network capture domain must be a hostname, without credentials, path, or query.',
+      );
     }
     try {
       const parsed = new URL(`https://${args.domain}`);
@@ -163,9 +212,15 @@ export function sanitizeNetworkToolSaveArgs(toolName: string, rawArgs: unknown):
       throw new Error('Network capture domain must be a valid hostname.');
     }
   }
-  const safe = sanitizeNetworkPatternFields(typeof args.name === 'string' ? args.name : '', args.config);
+  const safe = sanitizeNetworkPatternFields(
+    typeof args.name === 'string' ? args.name : '',
+    args.config,
+  );
   return {
-    action: 'save', kind: 'network_capture', name: safe.name, config: safe.config,
+    action: 'save',
+    kind: 'network_capture',
+    name: safe.name,
+    config: safe.config,
     ...(domain !== undefined && { domain }),
     ...(Array.isArray(args.fields) && { fields: [] }),
   };
@@ -173,7 +228,12 @@ export function sanitizeNetworkToolSaveArgs(toolName: string, rawArgs: unknown):
 
 /** Chat activity is observational: an invalid recipe still gets a safe, honest row. */
 export function networkToolArgsForObservation(toolName: string, rawArgs: unknown): unknown {
-  if (toolName !== 'data_patterns' || !rawArgs || typeof rawArgs !== 'object' || Array.isArray(rawArgs)) {
+  if (
+    toolName !== 'data_patterns' ||
+    !rawArgs ||
+    typeof rawArgs !== 'object' ||
+    Array.isArray(rawArgs)
+  ) {
     return rawArgs;
   }
   const args = rawArgs as Record<string, unknown>;
@@ -190,7 +250,10 @@ export function networkToolArgsForObservation(toolName: string, rawArgs: unknown
 }
 
 /** Non-reversible, run-local discriminator; never persisted or shown. */
-export function transientCredentialFingerprint(raw: string, extraKeys: readonly string[] = []): string {
+export function transientCredentialFingerprint(
+  raw: string,
+  extraKeys: readonly string[] = [],
+): string {
   const { query, userInfo } = splitUrl(raw);
   const parts = userInfo !== ':' ? [userInfo] : [];
   if (query !== null) {

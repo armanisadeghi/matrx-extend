@@ -11,11 +11,11 @@ import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
 import { buildChatContext } from '@/lib/chat/build-context';
 import type { AttachedHighlight } from '@/lib/chat/context/types';
 import { decisionRenderBlock, isDecisionAnswers } from '@/lib/chat/decision-answers';
-import { networkToolArgsForObservation } from '@/lib/credentials/network-urls';
 import { refreshPageContextBeforeSend } from '@/lib/chat/refresh-page-context';
 import { presentChatStreamError } from '@/lib/chat/stream-error';
 import { progressFromWire } from '@/lib/chat/tool-progress';
 import { readInboundRenderBlock } from '@/lib/content-ir/inbound';
+import { networkToolArgsForObservation } from '@/lib/credentials/network-urls';
 import { log } from '@/lib/debug/log';
 import { getHighlightsByIds } from '@/lib/highlights/queries';
 import { newId } from '@/lib/id';
@@ -227,7 +227,10 @@ function handleResourceChangedEvent(data: Record<string, unknown> | undefined): 
  * merges into the same part by callId — this stream-side handler just
  * marks the part as started and seeds the args.
  */
-export function handleToolEvent(messageId: string, data: Record<string, unknown> | undefined): void {
+export function handleToolEvent(
+  messageId: string,
+  data: Record<string, unknown> | undefined,
+): void {
   if (!data) return;
   const subEvent = String(data.event ?? '');
   const callId = String(data.call_id ?? '');
@@ -261,9 +264,10 @@ export function handleToolEvent(messageId: string, data: Record<string, unknown>
   // makes the call, instead of waiting for completion. The server does NOT
   // emit `tool_started` for client-dispatched tools — only this one.
   if (subEvent === 'tool_started' || subEvent === 'tool_delegated') {
-    const args = inner.arguments === undefined
-      ? undefined
-      : networkToolArgsForObservation(toolName, inner.arguments);
+    const args =
+      inner.arguments === undefined
+        ? undefined
+        : networkToolArgsForObservation(toolName, inner.arguments);
     upsert(messageId, callId, {
       ...base,
       phase: 'started',

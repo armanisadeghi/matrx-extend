@@ -33,7 +33,10 @@
 
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { decisionAnswersText } from '@/lib/chat/decision-answers';
-import { networkToolArgsForObservation, sanitizeNetworkPatternFields } from '@/lib/credentials/network-urls';
+import {
+  networkToolArgsForObservation,
+  sanitizeNetworkPatternFields,
+} from '@/lib/credentials/network-urls';
 import { log } from '@/lib/debug/log';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { canonicalUrl } from '@/lib/sources/canonical';
@@ -330,7 +333,11 @@ export async function fetchConversationToolCalls(
     });
     throw new Error(`Could not load conversation tool calls: ${error.message}`);
   }
-  const parsed = parseRowsSafe(ToolCallRowSchema, (data ?? []) as unknown[], 'fetchConversationToolCalls');
+  const parsed = parseRowsSafe(
+    ToolCallRowSchema,
+    (data ?? []) as unknown[],
+    'fetchConversationToolCalls',
+  );
   return {
     ...parsed,
     rows: parsed.rows.map((row) => ({
@@ -975,9 +982,8 @@ export type SavePatternInput = {
 export async function savePattern(p: SavePatternInput): Promise<{ id: string } | null> {
   const organizationId = requireOrganizationContext(p.organization_id);
   const c = supabaseForActor(p.authored_by);
-  const network = p.kind === 'network_capture'
-    ? sanitizeNetworkPatternFields(p.name, p.config)
-    : null;
+  const network =
+    p.kind === 'network_capture' ? sanitizeNetworkPatternFields(p.name, p.config) : null;
   const safeConfig = network?.config ?? p.config ?? {};
   const safeName = network?.name ?? p.name;
   // UNIQUE(created_by, domain, name) — on a name collision, auto-suffix

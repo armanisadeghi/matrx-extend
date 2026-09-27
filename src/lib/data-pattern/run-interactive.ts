@@ -20,8 +20,8 @@ import {
   agentExecutePath,
   mandateExecutePath,
 } from '@/lib/api/routes/ai';
-import { newId } from '@/lib/id';
 import { sanitizeNetworkUrl, transientCredentialFingerprint } from '@/lib/credentials/network-urls';
+import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import type { ExtractionPattern } from '@/lib/supabase/queries';
@@ -320,8 +320,15 @@ export async function runNetworkCapturePattern(
   tabId: number,
   opts: InteractiveRunOptions,
 ): Promise<ExtractedRow[]> {
-  const { url_filter, url_match, credential_query_keys, request_body_key, body_match, method, key_path } = (config ??
-    {}) as SavedNetConfig;
+  const {
+    url_filter,
+    url_match,
+    credential_query_keys,
+    request_body_key,
+    body_match,
+    method,
+    key_path,
+  } = (config ?? {}) as SavedNetConfig;
   if (!url_filter) {
     throw new Error('This network pattern has no url_filter — re-save it from the Network tab.');
   }
@@ -369,7 +376,8 @@ export async function runNetworkCapturePattern(
     const offEvents = on<CapturedNetEvent, { ack: true }>(CHANNELS.NET_CAPTURE_EVENT, (event) => {
       if (finished || !accepting) return { ack: true };
       if (event.tab_id !== tabId) return { ack: true };
-      if (!matchesUrlFilter(event.url, url_filter, url_match, credential_query_keys)) return { ack: true };
+      if (!matchesUrlFilter(event.url, url_filter, url_match, credential_query_keys))
+        return { ack: true };
       if (method && event.method.toUpperCase() !== method.toUpperCase()) return { ack: true };
       if (
         body_match !== 'ignore' &&

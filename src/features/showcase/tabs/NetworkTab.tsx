@@ -1,7 +1,13 @@
 import { JsonTree } from '@/components/ui/json-tree';
 import { useNetworkCapture } from '@/hooks/use-network-capture';
+import {
+  isCredentialQueryKey,
+  networkPatternDefaultName,
+  queryKeysInNetworkUrl,
+  safeRequestBodyKey,
+  sanitizeNetworkUrl,
+} from '@/lib/credentials/network-urls';
 import type { CapturedNetEvent } from '@/lib/data-pattern/network-tap';
-import { isCredentialQueryKey, networkPatternDefaultName, queryKeysInNetworkUrl, safeRequestBodyKey, sanitizeNetworkUrl } from '@/lib/credentials/network-urls';
 import { matchesUrlFilter, rowsFromBody } from '@/lib/data-pattern/run-interactive';
 import { cn } from '@/lib/utils';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
@@ -41,7 +47,12 @@ export function NetworkTab() {
     : '';
   const safeSelectedUrl = selected ? sanitizeNetworkUrl(selected.url, extraCredentialKeys) : '';
   const queryKeys = selected
-    ? [...new Set([...queryKeysInNetworkUrl(selected.url), ...queryKeysInNetworkUrl(replayUrlFilter)])]
+    ? [
+        ...new Set([
+          ...queryKeysInNetworkUrl(selected.url),
+          ...queryKeysInNetworkUrl(replayUrlFilter),
+        ]),
+      ]
     : [];
   const selectedBodyKey = selected ? safeRequestBodyKey(selected.request_body_key) : undefined;
 
@@ -184,7 +195,9 @@ export function NetworkTab() {
               >
                 <StatusBadge status={e.status} />
                 <span className="w-8 shrink-0 text-muted-foreground">{e.method}</span>
-                <span className="flex-1 truncate">{shortenUrl(sanitizeNetworkUrl(e.url, selected === e ? extraCredentialKeys : []))}</span>
+                <span className="flex-1 truncate">
+                  {shortenUrl(sanitizeNetworkUrl(e.url, selected === e ? extraCredentialKeys : []))}
+                </span>
                 <span className="shrink-0 text-muted-foreground">
                   {formatFileSize(e.body_size)}
                 </span>
@@ -221,7 +234,10 @@ export function NetworkTab() {
               />
               {queryKeys.length > 0 && (
                 <div className="space-y-1 text-[10px] text-muted-foreground">
-                  <div>Known credential values are masked. Review every query key; unknown keys may still contain a credential.</div>
+                  <div>
+                    Known credential values are masked. Review every query key; unknown keys may
+                    still contain a credential.
+                  </div>
                   {queryKeys.map((key) => (
                     <label key={key} className="flex items-center gap-2">
                       <input
@@ -229,9 +245,13 @@ export function NetworkTab() {
                         aria-label={`Treat ${key} as credential`}
                         checked={isCredentialQueryKey(key, extraCredentialKeys)}
                         disabled={isCredentialQueryKey(key)}
-                        onChange={(event) => setExtraCredentialKeys((current) => event.target.checked
-                          ? [...current, key]
-                          : current.filter((entry) => entry !== key))}
+                        onChange={(event) =>
+                          setExtraCredentialKeys((current) =>
+                            event.target.checked
+                              ? [...current, key]
+                              : current.filter((entry) => entry !== key),
+                          )
+                        }
                       />
                       Treat {key} as credential{isCredentialQueryKey(key) ? ' (recognized)' : ''}
                     </label>

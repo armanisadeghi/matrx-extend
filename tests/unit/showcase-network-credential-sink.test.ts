@@ -6,7 +6,10 @@ vi.mock('@/lib/supabase/client', () => {
   const client = {
     schema: () => client,
     from: () => client,
-    insert: (payload: unknown) => { recorder.insert(payload); return client; },
+    insert: (payload: unknown) => {
+      recorder.insert(payload);
+      return client;
+    },
     select: () => client,
     single: async () => ({ data: { id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' }, error: null }),
   };
@@ -38,7 +41,9 @@ describe('D48 actual network_capture save sink', () => {
       name: `Network: calendar.invalid…access_token=${canary}&page=2`,
       config: {
         url_filter: `https://calendar.invalid/api/events?date=2026-09-27&access_token=${canary}&page=2`,
-        url_match: 'exact', method: 'GET', key_path: 'events',
+        url_match: 'exact',
+        method: 'GET',
+        key_path: 'events',
         raw_event_url: `https://calendar.invalid/api/events?access_token=${canary}`,
       },
     });
@@ -62,7 +67,10 @@ describe('D48 actual network_capture save sink', () => {
       name: 'Regional events',
       config: {
         url_filter: `https://calendar.invalid/api/events?date=2026-09-27&proof=${canary}&page=2`,
-        credential_query_keys: ['proof'], url_match: 'exact', method: 'GET', key_path: 'events',
+        credential_query_keys: ['proof'],
+        url_match: 'exact',
+        method: 'GET',
+        key_path: 'events',
       },
     });
     const payload = recorder.insert.mock.calls[0]?.[0] as {
@@ -80,7 +88,9 @@ describe('D48 actual network_capture save sink', () => {
     await savePattern({
       ...common,
       name: `Network: https://user:${canary}@calendar.invalid/api/events?access_token=SYNTHETIC_TOKEN`,
-      config: { url_filter: `https://user:${canary}@calendar.invalid/api/events?access_token=SYNTHETIC_TOKEN` },
+      config: {
+        url_filter: `https://user:${canary}@calendar.invalid/api/events?access_token=SYNTHETIC_TOKEN`,
+      },
     });
     await savePattern({
       ...common,
@@ -96,15 +106,17 @@ describe('D48 actual network_capture save sink', () => {
   });
 
   it('rejects malformed body identity before persisting a Network recipe', async () => {
-    await expect(savePattern({
-      ...common,
-      name: 'Network: calendar.invalid/api/events',
-      config: {
-        url_filter: 'https://calendar.invalid/api/events',
-        body_match: 'exact',
-        request_body_key: 'Bearer SYNTHETIC_BODY_SECRET',
-      },
-    })).rejects.toThrow(/body identity is invalid/i);
+    await expect(
+      savePattern({
+        ...common,
+        name: 'Network: calendar.invalid/api/events',
+        config: {
+          url_filter: 'https://calendar.invalid/api/events',
+          body_match: 'exact',
+          request_body_key: 'Bearer SYNTHETIC_BODY_SECRET',
+        },
+      }),
+    ).rejects.toThrow(/body identity is invalid/i);
     expect(recorder.insert).not.toHaveBeenCalled();
   });
 

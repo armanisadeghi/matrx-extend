@@ -13,8 +13,8 @@
  * URLs. Debug records metadata, never raw envelope/body text.
  */
 
-import { log } from '@/lib/debug/log';
 import { sanitizeNetworkUrl } from '@/lib/credentials/network-urls';
+import { log } from '@/lib/debug/log';
 import { fetchWithMatrxProtocolFallback } from '@ai-matrx/agents/matrx';
 import { type MatrxStreamEnvelope, readMatrxNdjsonStream } from '@ai-matrx/agents/stream/ndjson';
 
@@ -99,7 +99,10 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
         totalTimeoutMs: null,
         throwOnHttpError: false,
         onDowngrade: ({ url, reason, status }) => {
-          log.warn('stream', `ai_v2_downgrade → retrying on v1: ${sanitizeNetworkUrl(url)}`, { reason, status });
+          log.warn('stream', `ai_v2_downgrade → retrying on v1: ${sanitizeNetworkUrl(url)}`, {
+            reason,
+            status,
+          });
         },
       },
     );
@@ -175,7 +178,9 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
     if (opts.signal?.aborted || (err as Error).name === 'AbortError') {
       log.info('stream', 'aborted by client');
     } else {
-      log.error('stream', 'read failed', { error: err instanceof Error ? err.name : 'StreamError' });
+      log.error('stream', 'read failed', {
+        error: err instanceof Error ? err.name : 'StreamError',
+      });
       opts.onEvent({ type: 'error', message: streamErrorMessage() });
     }
   } finally {

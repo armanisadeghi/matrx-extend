@@ -141,38 +141,46 @@ describe('D48 credential-safe Network request identity', () => {
     ['access_token', 'SYNTHETIC_TOKEN_DO_NOT_USE'],
     ['api_key', 'SYNTHETIC_KEY_DO_NOT_USE'],
     ['signature', 'SYNTHETIC_SIGNATURE_DO_NOT_USE'],
-  ])('does not persist the selected %s URL value in matcher or default name', async (key, secret) => {
-    const base = mocks.baseEvents[0];
-    if (!base) throw new Error('Network capture fixture is incomplete');
-    const selectedUrl = `https://electronic.vegas/api/events?date=2026-09-27&${key}=${secret}&page=2`;
-    mocks.events.splice(0, mocks.events.length, { ...base, url: selectedUrl });
-    const user = userEvent.setup();
-    render(<NetworkTab />);
-    await user.click(screen.getByRole('button', { name: /api\/events/ }));
-    expect(document.body.textContent).not.toContain(secret);
-    expect((screen.getByLabelText('Request URL to match on rerun') as HTMLInputElement).value)
-      .not.toContain(secret);
-    await user.click(screen.getByRole('button', { name: 'Select events path' }));
-    await user.click(screen.getByRole('button', { name: /^Save$/ }));
-    await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(1));
-    const saved = mocks.savePattern.mock.calls[0]?.[0] as {
-      name: string;
-      config: { url_filter: string; url_match: 'exact' | 'filter' };
-    };
-    expect(JSON.stringify(saved)).not.toContain(secret);
-    expect(saved.config.url_filter).toContain('date=2026-09-27');
-    expect(saved.config.url_filter).toContain('page=2');
-    expect(matchesUrlFilter(
-      `https://electronic.vegas/api/events?date=2026-09-27&${key}=ROTATED_SYNTHETIC&page=2`,
-      saved.config.url_filter,
-      saved.config.url_match,
-    )).toBe(true);
-    expect(matchesUrlFilter(
-      `https://electronic.vegas/api/events?date=2026-09-28&${key}=ROTATED_SYNTHETIC&page=2`,
-      saved.config.url_filter,
-      saved.config.url_match,
-    )).toBe(false);
-  });
+  ])(
+    'does not persist the selected %s URL value in matcher or default name',
+    async (key, secret) => {
+      const base = mocks.baseEvents[0];
+      if (!base) throw new Error('Network capture fixture is incomplete');
+      const selectedUrl = `https://electronic.vegas/api/events?date=2026-09-27&${key}=${secret}&page=2`;
+      mocks.events.splice(0, mocks.events.length, { ...base, url: selectedUrl });
+      const user = userEvent.setup();
+      render(<NetworkTab />);
+      await user.click(screen.getByRole('button', { name: /api\/events/ }));
+      expect(document.body.textContent).not.toContain(secret);
+      expect(
+        (screen.getByLabelText('Request URL to match on rerun') as HTMLInputElement).value,
+      ).not.toContain(secret);
+      await user.click(screen.getByRole('button', { name: 'Select events path' }));
+      await user.click(screen.getByRole('button', { name: /^Save$/ }));
+      await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(1));
+      const saved = mocks.savePattern.mock.calls[0]?.[0] as {
+        name: string;
+        config: { url_filter: string; url_match: 'exact' | 'filter' };
+      };
+      expect(JSON.stringify(saved)).not.toContain(secret);
+      expect(saved.config.url_filter).toContain('date=2026-09-27');
+      expect(saved.config.url_filter).toContain('page=2');
+      expect(
+        matchesUrlFilter(
+          `https://electronic.vegas/api/events?date=2026-09-27&${key}=ROTATED_SYNTHETIC&page=2`,
+          saved.config.url_filter,
+          saved.config.url_match,
+        ),
+      ).toBe(true);
+      expect(
+        matchesUrlFilter(
+          `https://electronic.vegas/api/events?date=2026-09-28&${key}=ROTATED_SYNTHETIC&page=2`,
+          saved.config.url_filter,
+          saved.config.url_match,
+        ),
+      ).toBe(false);
+    },
+  );
 
   it('lets a person mark an unrecognized query key as a credential before saving', async () => {
     const base = mocks.baseEvents[0];
@@ -188,8 +196,9 @@ describe('D48 credential-safe Network request identity', () => {
     expect(screen.getByText(/unknown keys may still contain a credential/i)).toBeTruthy();
     await user.click(screen.getByRole('checkbox', { name: 'Treat proof as credential' }));
     expect(document.body.textContent).not.toContain(secret);
-    expect((screen.getByLabelText('Request URL to match on rerun') as HTMLInputElement).value)
-      .not.toContain(secret);
+    expect(
+      (screen.getByLabelText('Request URL to match on rerun') as HTMLInputElement).value,
+    ).not.toContain(secret);
     await user.click(screen.getByRole('button', { name: 'Select events path' }));
     await user.click(screen.getByRole('button', { name: /^Save$/ }));
     await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(1));
@@ -211,7 +220,10 @@ describe('D48 credential-safe Network request identity', () => {
     await user.click(screen.getByRole('button', { name: /api\/events/ }));
     const input = screen.getByLabelText('Request URL to match on rerun') as HTMLInputElement;
     await user.clear(input);
-    await user.type(input, 'https://electronic.vegas/api/events?date=2026-09-27&proof=SYNTHETIC_TYPED_SECRET&page=2');
+    await user.type(
+      input,
+      'https://electronic.vegas/api/events?date=2026-09-27&proof=SYNTHETIC_TYPED_SECRET&page=2',
+    );
     await user.click(screen.getByRole('checkbox', { name: 'Treat proof as credential' }));
     expect(input.value).not.toContain('SYNTHETIC_TYPED_SECRET');
     await user.click(screen.getByRole('button', { name: 'Select events path' }));
@@ -265,19 +277,22 @@ describe('D48 credential-safe Network request identity', () => {
     });
     vi.useFakeTimers();
     const replay = runNetworkCapturePattern(saved.config, 37, {
-      initiation: 'user', timeoutMs: 5_000,
+      initiation: 'user',
+      timeoutMs: 5_000,
     });
     void replay.catch(() => undefined);
     addListener.mock.calls[0]?.[0](37, { status: 'loading' });
     await vi.advanceTimersByTimeAsync(0);
     const emit = mocks.listeners.get(CHANNELS.NET_CAPTURE_EVENT);
     if (!emit) throw new Error('Network replay listener was not installed');
-    emit({ ...base,
+    emit({
+      ...base,
       url: 'https://electronic.vegas/api/events?date=2026-09-27&access_token=SYNTHETIC_ROTATED',
       body: JSON.stringify({ events: [{ title: 'Harbor Night at Pier Hall' }] }),
       request_sequence: 2,
     });
-    emit({ ...base,
+    emit({
+      ...base,
       url: 'https://electronic.vegas/api/events?date=2026-09-28&access_token=SYNTHETIC_ROTATED',
       body: JSON.stringify({ events: [{ title: 'Different Day at Harbor Hall' }] }),
       request_sequence: 3,
@@ -295,17 +310,32 @@ describe('D48 credential-safe Network request identity', () => {
       tabs: { onUpdated: { addListener, removeListener: vi.fn() }, reload: vi.fn(async () => {}) },
     });
     vi.useFakeTimers();
-    const replay = runNetworkCapturePattern({
-      url_filter: 'https://electronic.vegas/api/events?date=2026-09-27&access_token=[credential]',
-      url_match: 'exact', method: 'GET', body_match: 'ignore', key_path: 'events',
-    }, 37, { initiation: 'user', timeoutMs: 5_000 });
+    const replay = runNetworkCapturePattern(
+      {
+        url_filter: 'https://electronic.vegas/api/events?date=2026-09-27&access_token=[credential]',
+        url_match: 'exact',
+        method: 'GET',
+        body_match: 'ignore',
+        key_path: 'events',
+      },
+      37,
+      { initiation: 'user', timeoutMs: 5_000 },
+    );
     void replay.catch(() => undefined);
     addListener.mock.calls[0]?.[0](37, { status: 'loading' });
     await vi.advanceTimersByTimeAsync(0);
     const emit = mocks.listeners.get(CHANNELS.NET_CAPTURE_EVENT);
     if (!emit) throw new Error('Network replay listener was not installed');
-    emit({ ...base, url: 'https://electronic.vegas/api/events?date=2026-09-27&access_token=SYNTHETIC_ONE', request_sequence: 1 });
-    emit({ ...base, url: 'https://electronic.vegas/api/events?date=2026-09-27&access_token=SYNTHETIC_TWO', request_sequence: 2 });
+    emit({
+      ...base,
+      url: 'https://electronic.vegas/api/events?date=2026-09-27&access_token=SYNTHETIC_ONE',
+      request_sequence: 1,
+    });
+    emit({
+      ...base,
+      url: 'https://electronic.vegas/api/events?date=2026-09-27&access_token=SYNTHETIC_TWO',
+      request_sequence: 2,
+    });
     await vi.advanceTimersByTimeAsync(5_000);
     await expect(replay).rejects.toThrow(/ambiguous/i);
   });
