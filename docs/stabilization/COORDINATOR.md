@@ -10,19 +10,19 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
-## Current checkpoint (2026-09-27; refreshed after D45 installed run)
+## Current checkpoint (2026-09-27; refreshed after List management run)
 
 **Installed acceptance target:** Chrome was explicitly reloaded from unpacked extension 0.2.108 to 0.2.109, then the real public calendar page was refreshed and Showcase reopened. The immutable build is source `141b11ac9079f7bfb3ec13717e529180107138e5`, tree SHA `8cd579919c549c9b6429dce83933249f984dc1e6ad7523b8214874a665cdaebe`, receipt `runs/showcase-d45-dev109-001.json`. Live evidence is `runs/showcase-installed-d45-001.json`; guard session 8900 was admitted and stopped with confirmation/exit 0. No owned UI run is active. Acceptance continues to mean installed Chrome on real websites; no localhost/test-server UI substitution.
 
-The .109 run verified bounded List Pattern behavior on `https://electronic.vegas/vegas-edm-event-calendar/`: outer event scope, distinct title/locality/date extraction, Cancel preservation, same-scope field append, changed nested scope with zero fields, save/reopen/replay, and same-host event-detail route guidance with explicit no-match. The UI showed the first 200 of 249 rows only. The uniquely titled recipe `Codex D45 fixture 20260927-2229Z` remains intentionally retained; UI record ID was not exposed, and the observed post-save time is not a verified creation timestamp. No full 249-row audit or deletion is claimed. Inventory cases T23, T24, T29, T36, T45, T51, and T52 now link this report as partial admin evidence; the overall Showcase feature remains incomplete.
+The .109 run verified bounded List Pattern behavior on `https://electronic.vegas/vegas-edm-event-calendar/`: outer event scope, distinct title/locality/date extraction, Cancel preservation, same-scope field append, changed nested scope with zero fields, save/reopen/replay, and same-host event-detail route guidance with explicit no-match. The UI showed the first 200 of 249 rows only. The owned recipe was renamed to `Codex D45 fixture 20260927-2229Z cleanup`; rename survived Refresh and reopening Patterns (run `showcase-installed-list-management-001`). Copy JSON was clicked but clipboard contents remain unverified. Delete was canceled: the computer-use tool explicitly requires action-time confirmation for irreversible deletion; this cleanup is deferred without blocking other work. UI record ID was not exposed, and the observed post-save time is not a verified creation timestamp. No full 249-row audit or deletion is claimed. Inventory cases T23, T24, T29, T36, T45, T51, and T52 now link this report as partial admin evidence; the overall Showcase feature remains incomplete.
 
 - **D45:** closed by root in `beaedac1`. The .109 live run supplies bounded picker and List Pattern evidence; broader inventory cases remain partial.
 - **D44:** fix has partial live retest only. Native in-flight completion and sibling-caller coverage remain open; do not claim defect-class closure.
 - **D48:** Sol owns the sole heavy permit for red/repair. Do not start browser/heavy work or edit D48 artifacts/tests during that ownership.
-- **D47:** scratch work is paused; no test or live result is claimed.
+- **D47:** integrated scratch candidate committed in report `c96ad224`; fresh source peer `network_candidate_peer` reviewing. Patch remains unapplied; tests/types/live behavior unverified.
 - **D46:** remains open and runtime-unverified.
 
-Inventory EXT-F-1012 remains authoritative. Guest/member denial remains the existing T38 case and is unverified by this run. Network, dataset persistence, deletion, complete row-by-row audit, cross-tab/caller provenance, and broader reload/error coverage are not established here. Preserve the retained recipe until an authorized cleanup lane has a uniquely exposed record identity; never touch reserved `d22-source-save-attempt.json`.
+Inventory EXT-F-1012 remains authoritative. Guest/member denial remains the existing T38 case and is unverified by this run. Network, dataset persistence, deletion, complete row-by-row audit, cross-tab/caller provenance, and broader reload/error coverage are not established here. Preserve the retained recipe pending the tool-required action-time deletion confirmation; never touch reserved `d22-source-save-attempt.json`.
 
 ## Historical baseline (superseded environment and sequencing)
 
