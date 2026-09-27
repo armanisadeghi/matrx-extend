@@ -1,0 +1,51 @@
+{
+  "defect": "EXT-D-0047",
+  "lane": "fresh implementation peer; source-only, zero product authorship",
+  "checked_revision": "15939d39c0b3697833b062c9f84723a2db559dee plus shared-checkout edits identified by hashes",
+  "verdict_a_installed_live": "UNVERIFIED",
+  "verdict_b_source_quality": "FAIL: one new important cleanup-status issue",
+  "finding_reverification": [
+    {
+      "id": "D47-F1",
+      "status": "ADDRESSED FOR FINITE CALLER TERMINAL BEHAVIOR",
+      "evidence": "document-network-transport.ts:24-75 races setup against abort and its per-run deadline, including a stalled acquire or setup command. document-network-capture.ts:315-339 bounds Page.reload; :60-107 bounds hook removal and lease release with the same deadline. run-interactive.ts:360-376 awaits close before resolving or rejecting; those close paths now settle even when hook removal or owned detach never settles. The transport can return during stalled setup before cleanup is confirmed and says so in its timeout remedy.",
+      "limit": "A Chrome command that never returns cannot prove hook removal or free a pending debugger attachment; the caller is terminal and receives an unconfirmed-cleanup remedy. The installed extension was not exercised in this lane."
+    },
+    {
+      "id": "D47-F2",
+      "status": "ADDRESSED IN SOURCE",
+      "evidence": "data-patterns.ts:145 derives recipe name and sanitized assigned-page URL from the prepared saved operation. dispatch.ts:1740-1750 persists the preview. SavedReplayApprovalHost.tsx:48-63 restores it. AgentApprovalCard.tsx:100-108 states the recipe, page, debugger, reload, and response capture. prepared-tool-operation.ts:63-78 re-prepares and compares operation identity after approval."
+    }
+  ],
+  "new_breakage_in_fix_diff": [
+    {
+      "severity": "Important",
+      "title": "Rejected Chrome detach is reported as confirmed cleanup",
+      "evidence": "cdp/client.ts:331-357 catches a rejected chrome.debugger.detach and returns { ok: false, reason }. acquireSession.release at :319-328 awaits detach but ignores that result and resolves void. document-network-capture.ts:91-101 therefore sets released=true and can return successful close despite Chrome rejecting owned detach. The saved UI may show captured rows and an OK health update while the debugger attachment is unconfirmed. Current tests model a never-settling detach, not a rejected detach.",
+      "remedy": "Propagate detach's unsuccessful result through lease.release so close reports cleanup unconfirmed. Exercise a rejected detach through the real saved-run caller and assert no rows or OK health update."
+    }
+  ],
+  "verdict_b_details": {
+    "positive": "Actual saved-run callers reach finite outcomes for stalled setup, reload, hook removal, and detach. Lease state prevents an old lease from releasing a replacement attachment, and borrowed attachments are not detached on lease release.",
+    "important": "A rejected owned detach currently masquerades as successful release and can misreport recipe health.",
+    "minor": "No other new issue established by this scoped source review."
+  },
+  "source_hashes_sha256": {
+    "src/lib/data-pattern/document-network-capture.ts": "337dd7a929eefb797cff45668ef0919ad66cef1532a3d13afe25c4a8a98ca621",
+    "src/lib/data-pattern/document-network-transport.ts": "ab114700df13fd181f6796ea4a7911ada2592663442d570426b7cee29306933d",
+    "src/lib/data-pattern/run-interactive.ts": "cb41a664130491e90f2313893d3647d95839bd10e3ccb93c7a5e58da200448db",
+    "src/lib/cdp/client.ts": "ca22aee61d97fa4e8ff7cb76f059e917d90e8483bc8f454fdfd05690c4aca25f",
+    "src/lib/tools/handlers/data-patterns.ts": "779226a0bb443a7a275b51c33d5a502b472e3bd15aff6b9b0f906849f6ad54ae",
+    "src/lib/tools/dispatch.ts": "388753d7a5b450a003a9d99887e03ef38ad8f152629928daca39f7f8cf43941e",
+    "src/lib/tools/prepared-tool-operation.ts": "974c182934f158cc9e202bc5f629af1c0947cbf211a68f339825460ffea9039d",
+    "src/features/showcase/SavedReplayApprovalHost.tsx": "ceeea15efd1622ff58dfb9d8a596db9709236978df9774cd1936ed28f1775846",
+    "src/features/chat/AgentApprovalCard.tsx": "f132ad35647ae891ebd3e991ab96830d084535f9a23ba2e9d10f09e82703251b",
+    "tests/unit/document-network-capture.test.ts": "3293c341ec993c9665598ddabbf48ed88a19cf8b07087b6358b2daa1cb0e7f97",
+    "tests/unit/document-network-lease.test.ts": "0327be559a03cc179e80ab878a57e62cb904e70be1f6d62a3fbc0bc86d9d01d1",
+    "tests/unit/document-network-saved-ui.test.tsx": "ee1678a945c5f68a893b0c59ed3c97e05f5fc912511a09ca6340fe9114f28e87"
+  },
+  "limits": [
+    "No product edits, runtime, tests, browser, or installed extension in this peer lane.",
+    "Source hashes identify the exact moving shared-main contents inspected."
+  ]
+}
