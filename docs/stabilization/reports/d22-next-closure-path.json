@@ -70,5 +70,26 @@
     "late_save": "An old reserved checkpoint is not a live inflight request. No read-only operation can recreate an actual late Save completion. Native late-Save proof requires a separately authorized new mutation scenario with its own fresh fixture/attempt identity; this assessment authorizes none. Keep this dimension unverified while using existing forcing tests only for their engineering scope.",
     "closure": "Do not close D22 solely after bounded read-only scope passes. Its recorded closure requires authenticated multi-workspace UI verification. Parent must reconcile the completed engineering evidence with the precise remaining native predicates; broader inventory coverage and native late Save must not be silently relabeled passed."
   },
-  "recommendation": "Finish read-only recognition proof on the current build; preserve all existing repairs and the immutable attempt. Treat absence of native proof as an evidence gap, not grounds for another speculative production rewrite."
+  "recommendation": "Finish read-only recognition proof on the current build; preserve all existing repairs and the immutable attempt. Treat absence of native proof as an evidence gap, not grounds for another speculative production rewrite.",
+  "prepared_runner": {
+    "file": "tests/browser/source-recognition-readonly-acceptance.mjs",
+    "status": "AWAITING_INDEPENDENT_SOURCE_REVIEW_AND_ROOT_ADMISSION",
+    "execution": "SOURCE_DEV_BUILD_RECEIPT=<current private local-development receipt> node tests/browser/source-recognition-readonly-acceptance.mjs; guarded execution only",
+    "build_binding": "Requires keyed development build, package/manifest/receipt version agreement, receipt/tree hash agreement before and after run, and shared native harness exact identity validation. Uses actual helper localDevReceiptPath parameter.",
+    "fixture": "Observes actual RLS-scoped Saved captures list after real admin sign-in and approved UI workspace selection. Uses a genuine existing HTTPS Source on example.com, www.iana.org, or en.wikipedia.org without query/fragment. Only first visible page searched; no qualifying row yields explicit unverified, never creates one. Source IDs, URLs, row bodies, names and credentials stay in memory.",
+    "oracles": [
+      "Actual scoped HTTP200 response and real Open target identity agreement.",
+      "Distinct existing accessible comparison organization selected by UI; corresponding HTTP200 empty or different Source result agrees with UI.",
+      "A real approved-workspace lookup HTTP200 response is held using CDP Fetch Response interception until comparison-workspace read and UI settle. Continue unchanged; require completed positive old response and current comparison UI/link unchanged through a bounded 1500ms observation.",
+      "Restore original organization with a fresh scoped read and matching real Open target."
+    ],
+    "protocol_evidence": "Installed playwright-core/types/protocol.d.ts Fetch.requestPaused documents Response stage and continueRequest as a permitted continuation. Only requestId is supplied; no response/request modification or fulfillment.",
+    "cleanup": "Fetch continuation/disable and listener removal in finally, approved workspace restored via UI. Owned profile disposed by native harness.",
+    "limits": [
+      "No native run or forcing test executed in this lane. Node syntax and targeted Biome only.",
+      "No Source Save, capture, mutation, checkpoint path/import/read/write or default recovery.",
+      "Late Save stays unverified; actual service-failure/recovery and immediate intermediate-state clearing are not claimed by this runner.",
+      "Existing positive fixture might be absent or redirect; that remains unverified rather than synthetic coverage."
+    ]
+  }
 }

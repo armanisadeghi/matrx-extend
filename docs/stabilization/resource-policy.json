@@ -48,6 +48,7 @@
     ["node", "tests/browser/svg-caption-native-acceptance.mjs"],
     ["node", "tests/browser/member-vault-access-probe.mjs"],
     ["node", "tests/browser/source-workspace-acceptance.mjs"],
+    ["node", "tests/browser/source-recognition-readonly-acceptance.mjs"],
     ["node", "tests/browser/debug-log-controls-acceptance.mjs"],
     ["node", "tests/browser/notice-write-retention-acceptance.mjs"],
     ["node", "tests/browser/screenshot-guest-acceptance.mjs"],
