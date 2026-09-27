@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "stopped_before_install",
+  "source": {
+    "head": "36fa88fb7cb88bd8233a510fbf1d1bff3beba449",
+    "version": "0.2.85",
+    "lockfile_sha256": "4e5f896cf6d9bff99b9fd910c72f1fcade093b60f530fd2b4dabeef77840aeb7"
+  },
+  "runs": [
+    {
+      "run_id": "baseline-main085-install-001",
+      "command": ["pnpm", "install", "--frozen-lockfile"],
+      "wrapper_exit_code": 2,
+      "child_started": false,
+      "guard_event": "RESOURCE_COMMAND_NOT_ALLOWED",
+      "at": "2026-09-27T04:09:08.999Z",
+      "guard_log": "/tmp/matrx-baseline-main085-install-001.log",
+      "guard_log_sha256": "385aa695a66c056dc218f418ad21da4241262c12a6e2f0595bbec40d166d9a7d"
+    }
+  ],
+  "compile": "not_run_after_install_refusal",
+  "development_build": "not_run_after_install_refusal",
+  "local_dev_receipt": null,
+  "lease": "absent_after_refusal",
+  "next_action": "Stop. The requested install command is not admitted by the resource policy; do not change it or continue the sequence without new authorization."
+}
