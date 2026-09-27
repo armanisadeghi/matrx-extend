@@ -4,7 +4,7 @@ Owner request 2026-09-27: use Showcase and make repeating-pattern discovery, ext
 
 ## Target and existing capability
 
-Authoritative coverage: inventory EXT-F-1012, currently 38 controls/cases. Preserve stable IDs; extend missing preview/save/reopen/replay cases per method before testing them. Existing UI: Doctor, Recipes, Prepare, Snapshot, JSON-LD, Microdata, Tables, Framework, AI Extract, List Pattern, Network, Patterns. Shared extraction/data-pattern primitives remain canonical. Guest/member/admin applicability stays tracked. A disallowed mode passes only its actual denial behavior; it is not an extraction pass.
+Authoritative coverage: inventory EXT-F-1012, 41 controls and49 cases (original stable IDs retained). Preserve stable IDs; extend missing preview/save/reopen/replay cases per method before testing them. Existing UI: Doctor, Recipes, Prepare, Snapshot, JSON-LD, Microdata, Tables, Framework, AI Extract, List Pattern, Network, Patterns. Shared extraction/data-pattern primitives remain canonical. Guest/member/admin applicability stays tracked. A disallowed mode passes only its actual denial behavior; it is not an extraction pass.
 
 Owner-seat observation: primary Chrome already has Showcase Doctor open on https://electronic.vegas/vegas-edm-event-calendar/. Visible Doctor reports249 event cards and249 Event microdata items; public calendar has readable event names/dates/venues. Build identity is not yet verified, so this is orientation evidence, not a development acceptance pass. This page is a real-data acceptance target alongside a structurally different public page and controlled regression pages.
 
@@ -36,7 +36,7 @@ Luna medium: narrow execution. Sol medium: product fixes and moderate diagnosis.
 
 The user already authorized autonomous execution and this repair scope; no repeated approval checkpoint is needed. Site-specific unsupported capabilities must show an honest limitation or offer another existing method, never silently report success/empty data. No essential owner-only decision identified. Broader stabilization remains incomplete.
 
-Plan attack: pending independent regret/buildability checks; address findings before first implementation.
+Plan attack: independent regret/buildability checks completed; rulings are below.
 
 ## Adjudicated attack and repair order
 
@@ -44,4 +44,4 @@ Independent REGRET and BUILDABILITY reviews completed 2026-09-27. FIX: explicitl
 
 First wave: EXT-D-0039 Doctor recommendation handoff (actual .97 UI reproduction and matching source audit), then preview/config integrity and network saved-request matching. Missing-root and route-scoped execution are next core safety/correctness repairs. One defect per commit; first verified product repair before further process expansion.
 
-Environment update: primary Chrome is verified unpacked .97 from repository .output/chrome-mv3-dev, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, admin account already signed in. Resource-admitted manual discovery001 reproduced D39; permit terminated cleanly before builds/tests. Build .99 source and explicitly reload before accepting a fix. Existing .97 evidence is baseline only.
+Environment update: primary Chrome is verified unpacked .97 from repository .output/chrome-mv3-dev, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, admin account already signed in. Resource-admitted manual discovery001 reproduced D39; permit terminated cleanly before builds/tests. Build current .100 source and explicitly reload before accepting a fix. Existing .97 evidence is baseline only.

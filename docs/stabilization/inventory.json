@@ -16205,7 +16205,8 @@
         "admin": {
           "test_status": "fail",
           "defect_ids": [
-            "EXT-D-0039"
+            "EXT-D-0039",
+            "EXT-D-0040"
           ],
           "run_ids": [
             "showcase-live-discovery-001"
@@ -16217,7 +16218,8 @@
       "missing_items": [],
       "source_complete": true,
       "notes": [
-        "2026-09-27 user elevated Showcase to current priority; added shared-save and per-kind roundtrip acceptance before testing. Every added case starts unverified; admin-only product audience retained, guest/member denial remains separately tracked."
+        "2026-09-27 user elevated Showcase to current priority; added shared-save and per-kind roundtrip acceptance before testing. Every added case starts unverified; admin-only product audience retained, guest/member denial remains separately tracked.",
+        "D40 source-confirmed preview/config drift is linked; its focused regression and live saved/reopened retest remain pending. No added method case is promoted from source review."
       ]
     },
     {

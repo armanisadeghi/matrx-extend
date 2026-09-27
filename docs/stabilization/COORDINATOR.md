@@ -1,6 +1,12 @@
 # Matrx Extend stabilization: resume here
 
-Checkpoint: 2026-09-27. Goal BLOCKED on host resource availability, not complete. Same native-verification blocker persisted for three consecutive goal turns: D38 .96run001 refusal, .96runs002/003 refusals plus no-owned-cleanup audit, and .97run001 refusal. A fresh .97 build succeeded in a brief admission window, but browser admission again failed pressure2 and sustained high CPU/load. No browser child ran. No campaign-owned cleanup opportunity exists in the recorded live audit. Further blind retries or extra scaffolding do not advance target verification; resume when external resource conditions change. All workers terminal, no campaign browser/build remains.
+Current priority (2026-09-27): finish Showcase detect → extract → save → reopen → repeat, per the latest owner request. See SHOWCASE-PLAN.md and inventory EXT-F-1012. Broad stabilization is incomplete. Prior resource refusals are historical; primary Chrome manual discovery was admitted and terminated cleanly. The goal tool retains its earlier blocked status, but current Showcase work is active.
+
+Primary Chrome is verified unpacked .97 from repository .output/chrome-mv3-dev, extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, signed-in admin. Source is now .100, integrated at dcd57b09; the old installed build is baseline evidence only. D39 reproduced live: Doctor finds249 event cards but List Pattern receives no seed. Run showcase-live-discovery-001 records this and installation identity.
+
+Active ownership: showcase_detect_audit (Sol medium) owns D39 Doctor/List Pattern/state and the sole heavy-test permit; dependency sync completed, prepare/focused regression underway. showcase_save_replay_audit (Sol medium) owns D40 preview/config integrity and other producer tabs/hooks; source-only until permit transfer. Root owns integration. No browser permit is active. Fresh development build/reload and independent live retests remain mandatory. After these fixes, address saved Network matching, missing-root behavior, route applicability, and actual saved output/replay across all supported methods. Preserve every historical unresolved defect below.
+
+## Historical baseline (superseded environment and sequencing)
 
 ## Source and runtime
 
