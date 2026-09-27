@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-27T08:31:32.312719+00:00",
+  "updated_at": "2026-09-27T08:55:42+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -1686,12 +1686,23 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "contained-navigation-dev089-001",
-              "observed_assertion": "fail: first admin-readiness roster17 rather than21; no later snapshot",
-              "detail": "Open untriaged finding EXT-D-0026; product persistence versus initial auth settling remains unresolved. No full navigation pass.",
+              "run_id": "contained-navigation-dev089-002",
+              "observed_assertion": "Run001 first post-readiness roster was 17/21; run002 first sample matched 21/21 at +22ms, one settling attempt, 0ms elapsed.",
+              "detail": "Run002 did not reproduce the immediate short roster: all 21 entries were present at the first post-role-ready sample; direct admin navigation/profile targets passed and the roster remained 21 after navigation. No product fix occurred; EXT-D-0026 remains open. Restricted persisted selection across lower-role transition/reload is unverified, so the full T03 case remains unverified.",
               "evidence": [
-                "docs/stabilization/runs/contained-navigation-dev089-001.json"
-              ]
+                "docs/stabilization/runs/contained-navigation-dev089-001.json",
+                "docs/stabilization/runs/contained-navigation-dev089-002.json",
+                "test-results/contained-navigation-dev089-002.evidence.json",
+                "docs/stabilization/reports/contained-navigation-dev089-002-peer.json",
+                "docs/stabilization/defects/EXT-D-0026.json"
+              ],
+              "prior_run_ids": [
+                "contained-navigation-dev089-001"
+              ],
+              "dimension_results": {
+                "warm": "pass",
+                "reload": "unverified"
+              }
             }
           }
         },
@@ -6945,14 +6956,38 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "debug-export-dev089-001",
-              "detail": "Exact chronological filtered download matched802bytes; Copy all not clicked because test prerequisite clipboard read failed, so clipboard/feedback remain unverified.",
+              "run_id": "debug-export-dev089-002",
+              "prior_run_ids": [
+                "debug-export-dev089-001"
+              ],
+              "dimension_results": {
+                "warm": "partial",
+                "reload": "unverified",
+                "service-error": "unverified"
+              },
+              "subtarget_observations": [
+                {
+                  "id": "filtered_download_chronology_and_content",
+                  "status": "pass",
+                  "detail": "For 66 natural rows, the 12-row filtered download matched the chronological filtered-row oracle."
+                },
+                {
+                  "id": "clipboard_exactness_and_copy_feedback",
+                  "status": "unverified",
+                  "detail": "Focused/visible clipboard read was denied; scoped read permission failed and Copy all was skipped."
+                }
+              ],
+              "detail": "Download evidence supports only the filtered .log branch. Clipboard content and Copied feedback were not observed because safe pre-copy clipboard observation failed; this is not a product failure. T16 remains unverified overall; reload and service-error dimensions were not run.",
               "evidence": [
-                "docs/stabilization/runs/debug-export-dev089-001.json",
-                "docs/stabilization/reports/debug-export-dev089-001-peer.json"
+                "docs/stabilization/runs/debug-export-dev089-002.json",
+                "test-results/debug-log-export-9b53131c-e362-401c-8647-4e3d3b0eb28a.json",
+                "docs/stabilization/reports/debug-seo-dev089-002-peer.json"
               ]
             }
-          }
+          },
+          "defect_ids": [
+            "EXT-D-0027"
+          ]
         },
         {
           "id": "EXT-F-1005-T17",
@@ -7028,12 +7063,43 @@
           ],
           "results": {
             "admin": {
-              "status": "unverified",
-              "run_id": "debug-export-dev089-001",
-              "detail": "Admin verbosity UI/storage changed and persisted through actual reload, prior setting restored, existing paused feed unchanged. Future event retention, service-error behavior, and actual console mirroring remain unverified.",
+              "status": "partial",
+              "run_id": "debug-export-dev089-002",
+              "prior_run_ids": [
+                "debug-export-dev089-001"
+              ],
+              "dimension_results": {
+                "warm": "partial",
+                "reload": "partial",
+                "service-error": "unverified"
+              },
+              "subtarget_observations": [
+                {
+                  "id": "verbosity_persists_after_real_panel_reload",
+                  "status": "pass"
+                },
+                {
+                  "id": "natural_info_event_mirrors_when_verbose",
+                  "status": "pass",
+                  "console_matches": 1,
+                  "event_sha256": "ba914e9d7caac98ccd152113baf12f4a57fe76c8d87bc84a69449dd070ad2b3b"
+                },
+                {
+                  "id": "natural_info_event_suppressed_when_not_verbose",
+                  "status": "pass",
+                  "console_matches": 0,
+                  "event_sha256": "ba914e9d7caac98ccd152113baf12f4a57fe76c8d87bc84a69449dd070ad2b3b"
+                },
+                {
+                  "id": "existing_paused_feed_sequence_unchanged_during_toggle",
+                  "status": "pass"
+                }
+              ],
+              "detail": "The same natural Bridges Re-discover event was observed on the owned side-panel CDP target with one console match when verbose was on and none when off; setting persistence across real panel reload and restoration also passed. Warning/error invariance, feed behavior after subsequent events/reload, and service-error dimension remain unverified. No full T18 pass.",
               "evidence": [
-                "docs/stabilization/runs/debug-export-dev089-001.json",
-                "docs/stabilization/reports/debug-export-dev089-001-peer.json"
+                "docs/stabilization/runs/debug-export-dev089-002.json",
+                "test-results/debug-log-export-9b53131c-e362-401c-8647-4e3d3b0eb28a.json",
+                "docs/stabilization/reports/debug-seo-dev089-002-peer.json"
               ]
             }
           },
@@ -8476,7 +8542,9 @@
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0027"
+          ],
           "run_ids": [
             "admin-debug-filters-001",
             "admin-debug-filter-matrix-001",
@@ -8490,7 +8558,7 @@
             "debug-log-controls-012",
             "debug-export-dev089-001"
           ],
-          "retest_status": "not-run"
+          "retest_status": "pending"
         }
       },
       "inventory_status": "complete",
@@ -11269,7 +11337,33 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": "seo-guest-dev089-002",
+              "dimension_results": {
+                "warm": "partial",
+                "reload": "unverified"
+              },
+              "observed_subtargets": [
+                {
+                  "id": "new_url_replaces_visible_title",
+                  "status": "pass"
+                },
+                {
+                  "id": "reload_audits_current_url",
+                  "status": "pass"
+                }
+              ],
+              "detail": "Evidence covers title/headings across navigation and reselect after reload only; exactly-once audit and slow stale-result behavior remain unverified.",
+              "evidence": [
+                "docs/stabilization/runs/seo-guest-dev089-002.json",
+                "test-results/seo-guest-dev089-002.evidence.json",
+                "docs/stabilization/reports/debug-seo-dev089-002-peer.json"
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1008-T02",
@@ -11294,7 +11388,29 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": "seo-guest-dev089-002",
+              "dimension_results": {
+                "warm": "partial",
+                "reload": "unverified"
+              },
+              "observed_subtargets": [
+                {
+                  "id": "manual_button_returns_to_current_page",
+                  "status": "pass"
+                }
+              ],
+              "detail": "Title preservation only; pending/running disablement, stale-advice replacement and failure recovery remain unverified.",
+              "evidence": [
+                "docs/stabilization/runs/seo-guest-dev089-002.json",
+                "test-results/seo-guest-dev089-002.evidence.json",
+                "docs/stabilization/reports/debug-seo-dev089-002-peer.json"
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1008-T03",
@@ -11319,7 +11435,33 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": "seo-guest-dev089-002",
+              "dimension_results": {
+                "warm": "partial",
+                "reload": "unverified"
+              },
+              "observed_subtargets": [
+                {
+                  "id": "about_blank_clear_error_without_stale_audit",
+                  "status": "pass"
+                },
+                {
+                  "id": "public_page_recovers_after_restricted_url",
+                  "status": "pass"
+                }
+              ],
+              "detail": "about:blank error/no-stale-audit and public recovery observed; full internal/restricted URL and reload dimensions remain unverified.",
+              "evidence": [
+                "docs/stabilization/runs/seo-guest-dev089-002.json",
+                "test-results/seo-guest-dev089-002.evidence.json",
+                "docs/stabilization/reports/debug-seo-dev089-002-peer.json"
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1008-T04",
@@ -11419,7 +11561,33 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": "seo-guest-dev089-002",
+              "dimension_results": {
+                "warm": "partial",
+                "reload": "partial"
+              },
+              "observed_subtargets": [
+                {
+                  "id": "guest_menu_offers_text_and_ai_but_hides_json",
+                  "status": "pass"
+                },
+                {
+                  "id": "guest_role_gate_after_reload",
+                  "status": "pass"
+                }
+              ],
+              "detail": "Guest Text/AI/JSON menu availability observed before and after reload only; actual clipboard bytes and member/admin role gates remain unverified.",
+              "evidence": [
+                "docs/stabilization/runs/seo-guest-dev089-002.json",
+                "test-results/seo-guest-dev089-002.evidence.json",
+                "docs/stabilization/reports/debug-seo-dev089-002-peer.json"
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1008-T08",
@@ -11469,7 +11637,65 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": "seo-guest-dev089-002",
+              "dimension_results": {
+                "warm": "partial",
+                "reload": "unverified"
+              },
+              "observed_subtargets": [
+                {
+                  "id": "page_0_title_and_headings",
+                  "status": "pass"
+                },
+                {
+                  "id": "page_1_title_and_headings",
+                  "status": "pass"
+                },
+                {
+                  "id": "sparse_public_detail_groups",
+                  "status": "pass"
+                },
+                {
+                  "id": "rich_public_detail_groups_and_canonical_door",
+                  "status": "pass"
+                },
+                {
+                  "id": "canonical_outbound_opens_expected_public_tab",
+                  "status": "pass"
+                },
+                {
+                  "id": "guest_manual_link_counts_match_live_dom",
+                  "status": "pass"
+                },
+                {
+                  "id": "guest_manual_image_alt_counts_match_live_dom",
+                  "status": "pass"
+                },
+                {
+                  "id": "guest_manual_readability_display_is_populated_and_explained",
+                  "status": "pass"
+                },
+                {
+                  "id": "guest_manual_performance_reflects_current_navigation",
+                  "status": "pass"
+                },
+                {
+                  "id": "guest_manual_hreflang_and_schema_doors_match_page",
+                  "status": "unverified"
+                }
+              ],
+              "detail": "The listed public-detail subtargets are bounded partial evidence. Hreflang/schema doors are unverified; robots, social preview fallback and remaining detail/link requirements are not established. No full case pass.",
+              "evidence": [
+                "docs/stabilization/runs/seo-guest-dev089-002.json",
+                "test-results/seo-guest-dev089-002.evidence.json",
+                "docs/stabilization/reports/debug-seo-dev089-002-peer.json"
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1008-T10",

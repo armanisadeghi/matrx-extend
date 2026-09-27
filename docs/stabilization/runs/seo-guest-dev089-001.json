@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "runId": "seo-guest-dev089-001",
+  "scope": "EXT-F-1008 bounded SEO guest acceptance on the captured local dev build",
+  "outcome": {
+    "status": "not_run_resource_preflight_refused",
+    "wrapperExitCode": 2,
+    "resourceChildLaunched": false,
+    "refusalCode": "RESOURCE_PREFLIGHT_REFUSED",
+    "resourceReasons": ["RESOURCE_PRESSURE_UNSAFE"]
+  },
+  "build": {
+    "version": "0.2.89",
+    "kind": "local_dev_unpacked",
+    "receiptTreeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "currentTreeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "treeMatchesReceipt": true
+  },
+  "boundedTargetsNotRun": [
+    {
+      "id": "EXT-F-1008-T01",
+      "status": "unverified",
+      "reason": "resource preflight refused before acceptance child launch"
+    },
+    {
+      "id": "EXT-F-1008-T02",
+      "status": "unverified",
+      "reason": "resource preflight refused before acceptance child launch"
+    },
+    {
+      "id": "EXT-F-1008-T03",
+      "status": "unverified",
+      "reason": "resource preflight refused before acceptance child launch"
+    },
+    {
+      "id": "EXT-F-1008-T07",
+      "status": "unverified",
+      "reason": "resource preflight refused before acceptance child launch"
+    },
+    {
+      "id": "EXT-F-1008-T09",
+      "status": "unverified",
+      "reason": "resource preflight refused before acceptance child launch"
+    }
+  ],
+  "cleanup": {
+    "ownedProfileEmpty": true,
+    "profileScopedProcessCount": 0,
+    "canonicalHeavyLeasePresent": false,
+    "canonicalUnsafeHoldPresent": false
+  },
+  "privateWrapperLog": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/seo-guest-dev089-001-wrapper.log",
+    "mode": "0600",
+    "sha256": "caac83799285a0a26e698ffb688ad5fc2a2fc7763714e481c5973c66c0dbebae"
+  },
+  "acceptanceOutput": {
+    "path": "test-results/seo-guest-acceptance.json",
+    "usedAsEvidence": false,
+    "reason": "pre-existing output predates this attempt",
+    "mtime": "2026-09-26T22:12:19.060Z",
+    "predatesWrapperLog": true,
+    "excludedPreexistingSha256": "7d82e5059c7c137f49bc65ec64b77a15098b96a2fd7f9cc12d10439e5b50a858"
+  }
+}

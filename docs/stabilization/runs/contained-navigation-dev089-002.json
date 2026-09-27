@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "runId": "contained-navigation-dev089-002",
+  "scope": "EXT-F-1001 bounded contained-navigation native acceptance on the captured local dev build",
+  "outcome": {
+    "testStatus": "partial",
+    "wrapperExitCode": 0,
+    "resourceEvents": [
+      {
+        "code": "RESOURCE_ADMITTED",
+        "runId": "contained-navigation-dev089-002",
+        "childExitCode": null,
+        "childSignal": null
+      },
+      {
+        "testSummary": "PARTIAL"
+      },
+      {
+        "code": "RESOURCE_JOB_EXIT",
+        "runId": "contained-navigation-dev089-002",
+        "childExitCode": 0,
+        "childSignal": null
+      }
+    ]
+  },
+  "build": {
+    "version": "0.2.89",
+    "kind": "local_dev_unpacked",
+    "receiptTreeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "runBeforeTreeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "runAfterTreeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "currentTreeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "treeMatchesReceipt": true
+  },
+  "adminRoster": {
+    "firstSample": {
+      "matched": true,
+      "observedTitleCount": 21,
+      "expectedTitleCount": 21,
+      "observedAfterRoleReadyMs": 22
+    },
+    "settling": {
+      "attempts": 1,
+      "elapsedMs": 0,
+      "converged": true,
+      "lastObservedTitleCount": 21,
+      "postNavigationTitleCount": 21
+    },
+    "finalAdminInventory": {
+      "observedTitleCount": 21,
+      "captureIdentityCount": 1,
+      "captureTitleMatchesExpectedPattern": true
+    }
+  },
+  "targetCounts": {
+    "pass": 37,
+    "partial": 1,
+    "fail": 0,
+    "unverified": 0
+  },
+  "recordedTargetStatuses": [
+    {
+      "id": "guest-tab-inventory",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "avatar:guest",
+      "control": "EXT-F-1001-C04",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:guest:Scrape",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:guest:Data",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "lazy-load:guest:Data",
+      "control": "EXT-F-1001-C05",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:guest:SEO",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "lazy-load:guest:SEO",
+      "control": "EXT-F-1001-C05",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:guest:Settings",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "lazy-load:guest:Settings",
+      "control": "EXT-F-1001-C05",
+      "status": "pass"
+    },
+    {
+      "id": "capture-absent:guest",
+      "control": "EXT-F-1001-C02",
+      "status": "pass"
+    },
+    {
+      "id": "vault-shortcut-absent:guest",
+      "control": "EXT-F-1001-C03",
+      "status": "pass"
+    },
+    {
+      "id": "real-admin-signin",
+      "control": "prerequisite",
+      "status": "pass"
+    },
+    {
+      "id": "admin-tab-inventory",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "avatar:admin",
+      "control": "EXT-F-1001-C04",
+      "status": "pass"
+    },
+    {
+      "id": "profile:admin",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Scrape",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Data",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "lazy-load:admin:Data",
+      "control": "EXT-F-1001-C05",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:SEO",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "lazy-load:admin:SEO",
+      "control": "EXT-F-1001-C05",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Settings",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "lazy-load:admin:Settings",
+      "control": "EXT-F-1001-C05",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Plan & tasks",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Tasks",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Agenda",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Saved captures",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Highlights",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Guidance",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Notes",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Files",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Screenshots",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Vault",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Tools",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Showcase (admin only)",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Token broker (admin only)",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Debug (admin only)",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "navigation:admin:Capture (dynamic label)",
+      "control": "EXT-F-1001-C01",
+      "status": "pass"
+    },
+    {
+      "id": "capture-observed:admin",
+      "control": "EXT-F-1001-C02",
+      "status": "partial"
+    }
+  ],
+  "privateWrapperLog": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/contained-navigation-dev089-002-wrapper.log",
+    "mode": "0600",
+    "sha256": "c7a4192bca4fba15f5a4108dec2aa66357f375e1d074ed06f46c8b9aff01d29e"
+  },
+  "testResult": {
+    "path": "test-results/contained-navigation-dev089-002.evidence.json",
+    "sha256": "7ce238f61f810fc2ab167aa210899fd28e9e2481577f0454e0055ba80c7c3922",
+    "mode": "0600",
+    "bytes": 21220,
+    "mutableOriginPath": "test-results/contained-navigation-acceptance.json"
+  },
+  "peerReview": {
+    "path": "docs/stabilization/reports/contained-navigation-dev089-002-peer.json",
+    "verdict": "RUN_EVIDENCE_VERIFIED_WITH_LIMITS"
+  },
+  "priorRunComparison": {
+    "runId": "contained-navigation-dev089-001",
+    "recordedFirstRosterCount": 17,
+    "expectedRosterCount": 21,
+    "laterSampleRecorded": false,
+    "rawResultAvailability": "unavailable_at_shared_path_overwritten_by_run002",
+    "recordedRawSha256": "41359691eb0c392952b71d071e3499412277d644967a4d3a16f85ed90e3e1d22",
+    "privateWrapperLogHashVerified": true,
+    "completeStructuredResultRecovered": false
+  }
+}

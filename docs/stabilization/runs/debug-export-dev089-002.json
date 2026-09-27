@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "runId": "debug-export-dev089-002",
+  "scope": "EXT-F-1005 bounded debug log export and console-mirroring acceptance on captured local dev build",
+  "outcome": {
+    "status": "partial",
+    "wrapperExitCode": 0,
+    "resourceEvents": [
+      {
+        "code": "RESOURCE_ADMITTED",
+        "runId": "debug-export-dev089-002",
+        "at": "2026-09-27T08:39:49.013Z",
+        "childExitCode": null,
+        "childSignal": null
+      },
+      {
+        "testSummary": "PARTIAL"
+      },
+      {
+        "code": "RESOURCE_WATCH_HEALTHY",
+        "runId": "debug-export-dev089-002",
+        "at": "2026-09-27T08:40:05.428Z",
+        "childExitCode": null,
+        "childSignal": null
+      },
+      {
+        "code": "RESOURCE_JOB_EXIT",
+        "runId": "debug-export-dev089-002",
+        "at": "2026-09-27T08:40:05.428Z",
+        "childExitCode": 0,
+        "childSignal": null
+      }
+    ]
+  },
+  "build": {
+    "version": "0.2.89",
+    "receiptTreeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "currentTreeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "treeMatchesReceipt": true,
+    "runBeforeTreeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "runAfterTreeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2"
+  },
+  "boundedCases": [
+    {
+      "id": "EXT-F-1005-T16",
+      "status": "unverified",
+      "evidenceFields": [
+        "naturalRowCount",
+        "filteredRowCount",
+        "chronologicalOrderChecked",
+        "clipboardExact",
+        "copyFeedback",
+        "downloadExact",
+        "clipboardReadDiagnostic",
+        "clipboardReadAfterGrant",
+        "clipboardUnavailable",
+        "downloadBytes"
+      ],
+      "naturalRowCount": 66,
+      "filteredRowCount": 12,
+      "chronologicalOrderChecked": true,
+      "clipboardExact": false,
+      "copyFeedback": false,
+      "downloadExact": true
+    },
+    {
+      "id": "EXT-F-1005-T18",
+      "status": "partial",
+      "evidenceFields": [
+        "realAdmin",
+        "persistedAfterRealReload",
+        "visibleFeedSequenceUnchangedWhilePaused",
+        "consoleMirroring",
+        "consoleProbes"
+      ],
+      "realAdmin": true,
+      "persistedAfterRealReload": true,
+      "visibleFeedSequenceUnchangedWhilePaused": true,
+      "consoleMirroring": "observed_natural_info_gate"
+    }
+  ],
+  "caseCounts": {
+    "pass": 0,
+    "partial": 1,
+    "fail": 0,
+    "unverified": 1
+  },
+  "restoration": {
+    "verboseRestored": true,
+    "clipboardRestorationStatus": "not_recorded",
+    "profileOwned": true
+  },
+  "immutableTestResult": {
+    "path": "test-results/debug-log-export-9b53131c-e362-401c-8647-4e3d3b0eb28a.json",
+    "mtime": "2026-09-27T08:40:04.893Z",
+    "sha256": "97da2b7062cdf88959321e604e344e7f78b3e5322c873e921082a978809954b5"
+  },
+  "privateWrapperLog": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/debug-export-dev089-002-wrapper.log",
+    "mode": "0600",
+    "sha256": "138d5cc73c95600a48d9e3bfc6084cb84b7f1e9148e253d26c2e36216668312a"
+  }
+}

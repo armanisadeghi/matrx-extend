@@ -1,0 +1,26 @@
+{
+  "observed_at_local": "2026-09-27 (current inspection)",
+  "memory": {
+    "system_memory_bytes": 17179869184,
+    "memory_pressure_free_percent": 73,
+    "free_pages": 7526,
+    "purgeable_pages": 16902,
+    "compressed_pages": 61536,
+    "assessment": "No current pressure signal from memory_pressure; substantial free percentage."
+  },
+  "largest_rss_processes_kb": [
+    { "name": "TGOnDeviceInferenceProviderService", "rss_kb": 893648 },
+    { "name": "Codex Renderer", "rss_kb": 711264 },
+    { "name": "Google Chrome Helper (Renderer)", "rss_kb": 434080 },
+    { "name": "managedcorespotlightd", "rss_kb": 403008 },
+    { "name": "textunderstandingd", "rss_kb": 266384 },
+    { "name": "ChatGPT", "rss_kb": 246256 },
+    { "name": "codex", "rss_kb": 230048 }
+  ],
+  "chrome_for_testing": {
+    "current_candidates": [],
+    "ownership_conclusion": "No current Chrome-for-Testing process with a campaign disposable profile is present, so no safe cleanup candidate exists.",
+    "transient_observation": "During the first process snapshot, a Chrome-family process group (root PID 59935; child PIDs 59943, 59944, 59945, 59973, 59975, 59976, 59984, 59985, 59986, 59989, 59990, 59994) shared /Volumes/Samsung2TB/code/.stabilization-scratch/matrx-native-sidepanel-qa-eLHVDM/profile. The group disappeared before the follow-up ownership check. Its live parent PID 59933 was not characterized, and the process executable signature was not reliable from that snapshot; therefore campaign ownership/orphan status cannot be proven. No process was signaled and no files were inspected or changed."
+  },
+  "actions": "Read-only inspection only; no process stopped, no files deleted, no tests launched, and no thresholds changed."
+}

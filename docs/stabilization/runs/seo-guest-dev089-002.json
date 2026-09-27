@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "runId": "seo-guest-dev089-002",
+  "scope": "EXT-F-1008 bounded SEO guest acceptance on the captured local dev build",
+  "outcome": {
+    "status": "partial",
+    "wrapperExitCode": 0,
+    "resourceEvents": [
+      {
+        "code": "RESOURCE_ADMITTED",
+        "runId": "seo-guest-dev089-002",
+        "at": "2026-09-27T08:43:13.172Z",
+        "childExitCode": null,
+        "childSignal": null
+      },
+      {
+        "testSummary": "PARTIAL"
+      },
+      {
+        "code": "RESOURCE_JOB_EXIT",
+        "runId": "seo-guest-dev089-002",
+        "at": "2026-09-27T08:43:21.060Z",
+        "childExitCode": 0,
+        "childSignal": null
+      }
+    ]
+  },
+  "build": {
+    "version": "0.2.89",
+    "kind": "local_dev_unpacked",
+    "receiptTreeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "currentTreeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "treeMatchesReceipt": true
+  },
+  "targetCellCounts": {
+    "pass": 16,
+    "partial": 0,
+    "fail": 0,
+    "unverified": 1
+  },
+  "targetCells": [
+    {
+      "caseId": "EXT-F-1008-T09",
+      "status": "pass",
+      "criterionFields": ["publicTitle", "titleMatches", "headingsPresenceMatches"]
+    },
+    {
+      "caseId": "EXT-F-1008-T09",
+      "status": "pass",
+      "criterionFields": ["publicTitle", "titleMatches", "headingsPresenceMatches"]
+    },
+    {
+      "caseId": "EXT-F-1008-T01",
+      "status": "pass",
+      "criterionFields": ["twoDistinctPublicTitles"]
+    },
+    {
+      "caseId": "EXT-F-1008-T02",
+      "status": "pass",
+      "criterionFields": ["currentTitlePreserved"]
+    },
+    {
+      "caseId": "EXT-F-1008-T07",
+      "status": "pass",
+      "criterionFields": ["textChoice", "agentChoice", "jsonAbsent"]
+    },
+    {
+      "caseId": "EXT-F-1008-T01",
+      "status": "pass",
+      "criterionFields": [
+        "currentUrl",
+        "currentTitleMatched",
+        "headingsPresenceMatched",
+        "reselectedAfterReload"
+      ]
+    },
+    {
+      "caseId": "EXT-F-1008-T07",
+      "status": "pass",
+      "criterionFields": ["textChoice", "agentChoice", "jsonAbsent"]
+    },
+    {
+      "caseId": "EXT-F-1008-T03",
+      "status": "pass",
+      "criterionFields": [
+        "scopeValid",
+        "expectedErrorVisible",
+        "staleAuditAbsent",
+        "copyAuditAbsent",
+        "retryOffered"
+      ]
+    },
+    {
+      "caseId": "EXT-F-1008-T03",
+      "status": "pass",
+      "criterionFields": ["publicTitleMatched", "headingsPresenceMatched", "auditErrorAbsent"]
+    },
+    {
+      "caseId": "EXT-F-1008-T09",
+      "status": "pass",
+      "criterionFields": ["descriptionAbsent", "canonicalAbsent", "groupsMatchPublicDom"]
+    },
+    {
+      "caseId": "EXT-F-1008-T09",
+      "status": "pass",
+      "criterionFields": [
+        "descriptionMatchesPublicDom",
+        "canonicalMatchesPublicDom",
+        "groupsMatchPublicDom",
+        "outboundAnchorSafe"
+      ]
+    },
+    {
+      "caseId": "EXT-F-1008-T09",
+      "status": "pass",
+      "criterionFields": ["trustedInput", "destinationMatchesPublicDom"]
+    },
+    {
+      "caseId": "EXT-F-1008-T09",
+      "status": "pass",
+      "criterionFields": ["url", "internal", "external"]
+    },
+    {
+      "caseId": "EXT-F-1008-T09",
+      "status": "pass",
+      "criterionFields": ["url", "total", "missingAlt"]
+    },
+    {
+      "caseId": "EXT-F-1008-T09",
+      "status": "pass",
+      "criterionFields": ["publicBodyHasText", "displayed", "metricValueCorrectness"]
+    },
+    {
+      "caseId": "EXT-F-1008-T09",
+      "status": "pass",
+      "criterionFields": ["pageResponseStatus", "exposedNavigation", "displayed"]
+    },
+    {
+      "caseId": "EXT-F-1008-T09",
+      "status": "unverified",
+      "criterionFields": []
+    }
+  ],
+  "immutableEvidence": {
+    "path": "test-results/seo-guest-dev089-002.evidence.json",
+    "mode": "0600",
+    "sha256": "8ffa162635598af98d4b9e0a4d6432ad3eb0e2ae4bc7763eb3995f59027ae597"
+  },
+  "privateWrapperLog": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/seo-guest-dev089-002-wrapper.log",
+    "mode": "0600",
+    "sha256": "02df8f32f510535fab765c4bbf176292059250050d63c992f4691e009096eedb"
+  },
+  "generatedOutput": {
+    "path": "test-results/seo-guest-acceptance.json",
+    "mtime": "2026-09-27T08:43:21.047Z",
+    "sha256": "8ffa162635598af98d4b9e0a4d6432ad3eb0e2ae4bc7763eb3995f59027ae597"
+  }
+}

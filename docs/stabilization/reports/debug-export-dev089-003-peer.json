@@ -1,0 +1,37 @@
+{
+  "status": "PARTIAL_RUNTIME_NOT_REACHED",
+  "verdictA": "PARTIAL: no Copy, feedback, readback, or restoration acceptance occurred.",
+  "verdictB": "PASS: freshness refusal is correct; no guard bypass is justified.",
+  "independentChecks": {
+    "resultDigestMatches": true,
+    "resultMode": 384,
+    "resultStatus": "unverified",
+    "cases": 0,
+    "failure": {
+      "stage": "build_start",
+      "code": "development_build_mismatch"
+    },
+    "packageVersion": "0.2.90",
+    "manifestVersion": "0.2.89",
+    "receiptVersion": "0.2.89",
+    "treeMatchesReceipt": true
+  },
+  "browserLaunchAssessment": "Source awaits buildIdentity before invoking runNativeSidepanelQa. Immutable result fails at build_start; native harness was never invoked.",
+  "buildWorkflow": {
+    "cwd": "/Volumes/Samsung2TB/code/matrx-extend",
+    "preflight": "Confirm no heavy lease, the scratch directory is writable, and package.json still says 0.2.90. If lockfile/dependencies changed, perform guarded frozen install, WXT prepare and compile first as prescribed in HANDOFF. Do not change package or old receipt to match.",
+    "buildCommand": "env -u MATRX_CWS_BUILD TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node scripts/stabilization-resource.mjs run --run-id dev090-build-UNIQUE --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec wxt build --mode development",
+    "afterBuild": "Require wrapper and child exit zero, resource permit released, keyed MV3 manifest version 0.2.90 matching package. No concurrent writer may change .output/chrome-mv3-dev during receipt/run.",
+    "receiptCommand": "node scripts/record-local-dev-build.mjs --extension-dir .output/chrome-mv3-dev --output test-results/source-dev-build-090-UNIQUE.json",
+    "receiptChecks": "Recorder requires exact dev directory and manifest/package match, hashes twice, and exclusively creates mode-0600 receipt. Require version 0.2.90, publish_state not_published, and current tree hash equal to receipt. Preserve old .89 and release receipts.",
+    "runtimeEnvironment": {
+      "TMPDIR": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+      "MATRX_PLAYWRIGHT_MODULE": "/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+      "MATRX_CHROME_PATH": "/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+      "DEBUG_DEV_BUILD_RECEIPT": "/Volumes/Samsung2TB/code/matrx-extend/test-results/source-dev-build-090-UNIQUE.json"
+    },
+    "runtimeCommand": "node scripts/stabilization-resource.mjs run --run-id debug-export-dev090-UNIQUE --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- node tests/browser/debug-log-export-acceptance.mjs",
+    "afterRuntime": "Require actual Copy click/feedback, exact filtered-row clipboard and download comparisons, restored original permission and prior clipboard, matching before/after tree, and clean owned-process/lease exit. Partial overall feature coverage must remain partial."
+  },
+  "scope": "Read-only source/artifact assessment plus this report only. No browser, build, diagnostics, reserved Save checkpoint, defect, or inventory mutation."
+}

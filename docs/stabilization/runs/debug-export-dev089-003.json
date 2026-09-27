@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "runId": "debug-export-dev089-003",
+  "scope": "One guarded Debug export acceptance attempt against the receipt-verified local 0.2.89 unpacked build",
+  "outcome": {
+    "status": "unverified",
+    "wrapperExitCode": 1,
+    "childExitCode": 1,
+    "childSignal": null,
+    "resourceAdmission": "RESOURCE_ADMITTED",
+    "failureStage": "build_start",
+    "failureCode": "development_build_mismatch",
+    "browserLaunched": false
+  },
+  "source": {
+    "headAtResult": "91b610da50532fc52e381dde10e857b2145d3a23",
+    "clipboardRepairCommit": "6b8e7d28",
+    "headNote": "91b610da changes import ordering only; clipboard logic is the committed repair."
+  },
+  "build": {
+    "receiptVersion": "0.2.89",
+    "manifestVersion": "0.2.89",
+    "packageVersionAtRun": "0.2.90",
+    "receiptTreeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "currentTreeSha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "treeMatchesReceipt": true,
+    "interpretation": "The runner's freshness check refused the mixed package 0.2.90 and unpacked 0.2.89 state before native Chrome setup. The local 0.2.89 artifact must not be described as 0.2.90."
+  },
+  "boundedCases": [
+    {
+      "id": "EXT-F-1005-T16",
+      "status": "unverified",
+      "copyButtonClicked": false,
+      "copyFeedbackObserved": false,
+      "clipboardExactObserved": false,
+      "priorClipboardRestoredObserved": false
+    },
+    {
+      "id": "EXT-F-1005-T18",
+      "status": "unverified",
+      "reason": "The run stopped before any browser case."
+    }
+  ],
+  "immutableTestResult": {
+    "path": "test-results/debug-log-export-91b6566f-5421-4df4-b651-d3e8e173298e.json",
+    "mode": "0600",
+    "sha256": "78f9fa311df7a026adc0ce2e37009e432b19f6b6b7288a3cb26ee0ed33551c2c"
+  },
+  "privateWrapperLog": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/debug-export-dev089-003-wrapper.log",
+    "mode": "0600",
+    "sha256": "67427be3a0ccd694d5f190633fef124aaddbccd16e39b676828bccd2b591ff49"
+  },
+  "openAction": "Align package version, receipt, and unpacked build through the normal fresh-build path, then rerun guarded native acceptance. No guard bypass or second heavy run was made in this lane."
+}

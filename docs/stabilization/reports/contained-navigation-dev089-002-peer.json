@@ -1,0 +1,46 @@
+{
+  "verdict": "RUN_EVIDENCE_VERIFIED_WITH_LIMITS",
+  "run": "contained-navigation-dev089-002",
+  "verification": {
+    "immutable_raw_result": {
+      "path": "test-results/contained-navigation-dev089-002.evidence.json",
+      "sha256": "7ce238f61f810fc2ab167aa210899fd28e9e2481577f0454e0055ba80c7c3922",
+      "matches_run_receipt": true,
+      "mode": "0600",
+      "preservation": "Copied from the current shared result path with exclusive create after checking the run-record hash; rehashed after copy."
+    },
+    "private_wrapper_log": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/contained-navigation-dev089-002-wrapper.log",
+      "sha256": "c7a4192bca4fba15f5a4108dec2aa66357f375e1d074ed06f46c8b9aff01d29e",
+      "matches_run_receipt": true,
+      "mode": "0600",
+      "bytes": 705,
+      "content_read": false
+    },
+    "receipt": {
+      "path": "test-results/source-dev-build-089-takeover-20260927.json",
+      "kind": "local_dev_unpacked",
+      "publish_state": "not_published",
+      "version": "0.2.89",
+      "tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+      "matches_run_before_after_and_current_recorded_tree": true
+    },
+    "cross_checks": "The raw acceptance status is partial; its target counts match the sanitized run record (37 pass, 1 partial, 0 fail, 0 unverified). Wrapper admission and child exit are recorded as admitted and exit 0."
+  },
+  "EXT-D-0026": {
+    "recommendation": "Keep open; record run002 as not reproduced, not fixed.",
+    "evidence": "Unlike run001's first 17-of-21 roster, run002's first post-role-ready sample matched all 21 after 22 ms. The bounded wait used one attempt with 0 ms settling and converged immediately. No product change occurred between the observations; the new runner only adds measurement and preserves the strict oracle. This does not explain the earlier 17-tab sample or justify closing the finding."
+  },
+  "inventory_recommendation": {
+    "EXT-F-1001-T03_admin": "Record the observed warm admin path as partial evidence: all 21 navigation entries were present at first sample, the Capture identity and label pattern were valid, profile opened, 37 targets passed, and the 21-entry roster remained after navigation. Keep the overall T03 admin case partial/unverified because restricted persisted selection across a real lower-role transition and reload was deferred; no full case pass.",
+    "remaining": "Member-role behavior, stale-selection reload, and other inventory dimensions/cases such as service-error remain unverified by these runs. The single Capture observed target is itself partial, so the batch remains partial."
+  },
+  "run001_raw_result": {
+    "availability": "Unavailable at its recorded shared path: that path now contains run002's raw result (run002 hash matches; run001's recorded hash does not). The run001 private wrapper log still matches its recorded hash, but its contents were not inspected and are not treated as the original structured result.",
+    "basis_for_comparison": "Use the original sanitized run001 receipt, which records a 17-of-21 first roster and no later sample, plus its original worker attestation. Do not reconstruct or claim an unavailable raw artifact."
+  },
+  "limits": [
+    "Run002 shows non-reproduction of the immediate short roster; it does not establish the cause or prove that the prior observation could never recur.",
+    "No runtime, source, or inventory changes were made. No logs were emitted or read as text."
+  ]
+}

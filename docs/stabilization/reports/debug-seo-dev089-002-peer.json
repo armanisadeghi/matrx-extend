@@ -1,0 +1,82 @@
+{
+  "verdict": "EVIDENCE_VERIFIED_WITH_PARTIAL_CASE_COVERAGE",
+  "build_scope": {
+    "receipt": "test-results/source-dev-build-089-takeover-20260927.json",
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "version": "0.2.89",
+    "tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+    "both_runs_record_before_after_current_tree_match": true
+  },
+  "debug_run": {
+    "run_id": "debug-export-dev089-002",
+    "outcome": "partial; wrapper exit 0; admitted child exited 0",
+    "raw_result": {
+      "path": "test-results/debug-log-export-9b53131c-e362-401c-8647-4e3d3b0eb28a.json",
+      "sha256": "97da2b7062cdf88959321e604e344e7f78b3e5322c873e921082a978809954b5",
+      "matches_run_receipt": true,
+      "mode": "0600"
+    },
+    "private_wrapper_log": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/debug-export-dev089-002-wrapper.log",
+      "sha256": "138d5cc73c95600a48d9e3bfc6084cb84b7f1e9148e253d26c2e36216668312a",
+      "matches_run_receipt": true,
+      "mode": "0600",
+      "content_read": false
+    },
+    "T16_allowed_observation": "For 66 natural rows, the 12-row filtered subset's chronological Download .log matched its oracle. Clipboard observation first failed with NotAllowedError while focused and visible; the clipboard-read permission attempt then failed. The committed runner's guarded flow skips the real Copy all click when no prior clipboard snapshot is available. Thus no clipboard write, exact-copy result, or copied feedback was observed; T16 remains unverified overall.",
+    "T18_allowed_observation": "The raw probes correlate the same event hash across two natural Bridges → Re-discover actions: one matching owned-target console event at verbose enabled, zero at disabled. The case receipt also records real-admin setting persistence through panel reload, unchanged currently paused feed, and successful restoration. This is partial evidence only: the inventory also requires warning/error behavior in both modes and has warm/reload/service-error dimensions."
+  },
+  "debug_source_basis": "Compared the executed behavior with committed tests/browser/debug-log-export-acceptance.mjs at c90406ce and the reviewed shared click driver, not the current uncommitted follow-up. The guarded clipboard-read-only observation, conditional real Copy click, exact clipboard oracle, and natural owned-target console listener/probes are present there. No product event is fabricated.",
+  "seo_run": {
+    "run_id": "seo-guest-dev089-002",
+    "outcome": "partial; wrapper exit 0; admitted child exited 0",
+    "raw_result": {
+      "path": "test-results/seo-guest-dev089-002.evidence.json",
+      "sha256": "8ffa162635598af98d4b9e0a4d6432ad3eb0e2ae4bc7763eb3995f59027ae597",
+      "matches_run_receipt_and_generated_output": true,
+      "mode": "0600"
+    },
+    "private_wrapper_log": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/seo-guest-dev089-002-wrapper.log",
+      "sha256": "02df8f32f510535fab765c4bbf176292059250050d63c992f4691e009096eedb",
+      "matches_run_receipt": true,
+      "mode": "0600",
+      "content_read": false
+    },
+    "target_counts": { "pass": 16, "partial": 0, "fail": 0, "unverified": 1 },
+    "allowed_inventory_observations": [
+      {
+        "case": "EXT-F-1008-T01",
+        "evidence": "Current public URL title/headings replace the prior page, and the selected page is reselected after reload.",
+        "limit": "Does not prove exactly-once audit starts or reject a slow stale result; no complete case pass."
+      },
+      {
+        "case": "EXT-F-1008-T02",
+        "evidence": "Manual audit control preserves the current title.",
+        "limit": "Loading disablement, stale-advice replacement, and failure behavior remain outside this subtarget."
+      },
+      {
+        "case": "EXT-F-1008-T03",
+        "evidence": "about:blank shows the expected restricted-page error without a stale audit or Copy audit control; returning to a public page recovers.",
+        "limit": "Bounded warm observations only; not a full restricted/unreachable dimension pass."
+      },
+      {
+        "case": "EXT-F-1008-T07",
+        "evidence": "Guest copy menu offers Text and AI choices and omits JSON before and after reload.",
+        "limit": "Clipboard contents are not observed; member/admin role gates are not exercised; no full case pass."
+      },
+      {
+        "case": "EXT-F-1008-T09",
+        "evidence": "Subtargets pass for two public title/heading samples, sparse and rich description/canonical groups, canonical outbound navigation, link counts, image alt counts, readability, and current-page performance.",
+        "limit": "guest_manual_hreflang_and_schema_doors_match_page is unverified. Robots/social preview fallback and remaining inventory details are not established; no full case pass."
+      }
+    ],
+    "not_covered": "T04–T06, T08, and T10–T14 are not evidenced by this run; member/admin modes, saves/history, clipboard output, provider recommendations, and Chat staging remain unverified."
+  },
+  "seo_source_basis": "Compared with committed tests/browser/seo-guest-acceptance.mjs at 78bf66f1. That runner performs no clipboard read/write; its T07 observation is menu availability only.",
+  "method_limits": [
+    "Only fixed run metadata, allowlisted raw-result predicates, hashes, modes, and byte counts were inspected. Private wrapper-log text, clipboard contents, page DOM text, and exported log contents were not read or emitted.",
+    "No source, inventory, or runtime artifacts were changed; no browser or build was launched."
+  ]
+}

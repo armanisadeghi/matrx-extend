@@ -11,9 +11,12 @@
     "Wait for Settings to show the admin role and Advanced agent capabilities; immediately inspect the main navigation roster, excluding nested feature tablists. Compare all21 titles required by the source audience table."
   ],
   "expected": "Once admin readiness is observed, main navigation exposes all21 expected tabs, including Pilot, Showcase, Token broker and Debug.",
-  "actual": "First post-readiness sample had17tabs; exactly those four admin-only tabs were absent. Guest targets and Capture title/count observations passed. No later roster sample was recorded, so duration and recovery are unknown.",
+  "actual": "Run001's first post-readiness sample had 17 tabs, with Pilot, Showcase, Token broker and Debug absent. Run002's first post-role-ready sample had all 21 expected entries after 22ms; the bounded wait used one attempt and 0ms settling, and the exact roster remained after navigation. The .89 product tree was unchanged and no product fix occurred. The original 17-tab observation remains unexplained.",
   "evidence": [
     "docs/stabilization/runs/contained-navigation-dev089-001.json",
+    "docs/stabilization/runs/contained-navigation-dev089-002.json",
+    "test-results/contained-navigation-dev089-002.evidence.json",
+    "docs/stabilization/reports/contained-navigation-dev089-002-peer.json",
     "tests/browser/contained-navigation-acceptance.mjs",
     "src/entrypoints/sidepanel/App.tsx"
   ],
@@ -21,7 +24,7 @@
   "priority": "P1: resolve contained admin navigation before broad authenticated coverage",
   "state": "open",
   "owner": "/root/contained_batch_ready",
-  "reproduction_status": "Observed once; source-supported same-session role-refresh race is a hypothesis. Bounded temporal reproduction in preparation; not yet triaged as persistent product defect.",
+  "reproduction_status": "Observed once in run001; not reproduced in run002's immediate first sample. Not fixed and not closed: run002 changed only diagnostic runner behavior, retained the exact 21-entry oracle, and used the same product tree. Cause remains unknown.",
   "fix_commits": [],
   "transition_history": [
     {
@@ -31,5 +34,5 @@
       "reason": "Guarded .89 navigation run failed exact admin roster assertion; preserve failed first observation while distinguishing hydration from persistent access failure."
     }
   ],
-  "closure_requirement": "Classify original initial17-tab observation with temporal evidence; retain strict21-tab stable oracle and independently verify any required fix. No guessed product change or passing by weakening roster."
+  "closure_requirement": "Keep the strict 21-tab oracle and classify the original 17-tab observation with further evidence if needed. Run002 is non-reproduction, not a fix or proof the earlier result cannot recur. Independently verify any required product fix; do not close on the added wait or weaken the roster."
 }
