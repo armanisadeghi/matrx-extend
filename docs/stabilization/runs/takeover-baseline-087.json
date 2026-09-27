@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "run_id": "takeover-baseline-087",
+  "lane": "implementation/setup",
+  "status": "baseline_artifact_built_historical",
+  "source_commit_at_install": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+  "later_local_head": "959bdf1766a227a4718c5cccdc89afe0ef16e81e",
+  "later_head_change_scope": "docs/stabilization only; no source or lockfile change",
+  "package_version": "0.2.87",
+  "lockfile_sha256": "70bf6f2f0d8606b1a1b1ac6613d7e52c9715d347b03cf1848c3293702db39611",
+  "package_json_sha256": "515007e7f19db15f08d84d2d45c80ffb0382e118f8294265af36eaa20082d8be",
+  "profile_volume": "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-release-temp-032",
+  "resource_runs": [
+    { "id": "takeover087-install-20260927", "command": "pnpm install --frozen-lockfile --ignore-scripts", "guard": "admitted", "child_exit_code": 0 },
+    { "id": "takeover087-prepare-20260927", "command": "pnpm exec wxt prepare", "guard": "admitted", "child_exit_code": 0 },
+    { "id": "takeover087-compile-20260927", "command": "pnpm compile", "guard": "admitted", "child_exit_code": 0 },
+    { "id": "takeover087-devbuild-20260927", "command": "pnpm exec wxt build --mode development", "guard": "admitted", "child_exit_code": 0 }
+  ],
+  "resource_refusals": [],
+  "artifact": {
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "version": "0.2.87",
+    "tree_sha256": "e8c8386a7d9ba637465f89487d7a8cc596a6eb149e393a4406866bffd1789c90",
+    "receipt": "test-results/source-dev-build-087-takeover-20260927.json",
+    "publish_state": "not_published"
+  },
+  "limitations": [
+    "No extension installation, browser identity, sign-in, or product behavior was tested in this lane.",
+    "A new remote 0.2.88 release arrived after the 0.2.87 build; the artifact is historical until current remote source is merged and rebuilt."
+  ],
+  "guard_or_job_alive_at_close": false
+}

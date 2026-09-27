@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "report_id": "takeover-baseline",
+  "status": "local_dev_087_built_current_remote_088_pending",
+  "summary": "The 0.2.87 frozen dependencies installed, WXT prepared, TypeScript compiled, and an unpacked development extension built under four separate clean resource admissions. The local development artifact has an immutable receipt. No native product verdict follows.",
+  "source_commit": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+  "lockfile_sha256": "70bf6f2f0d8606b1a1b1ac6613d7e52c9715d347b03cf1848c3293702db39611",
+  "build_receipt": "test-results/source-dev-build-087-takeover-20260927.json",
+  "build_tree_sha256": "e8c8386a7d9ba637465f89487d7a8cc596a6eb149e393a4406866bffd1789c90",
+  "resource_refusals": 0,
+  "guard_or_job_alive_at_close": false,
+  "native_test_status": "not_started_census_gate",
+  "next_action": "Reconcile the incoming 0.2.88 remote release, then repeat guarded installation, preparation, compile, build and receipt before current-baseline native testing."
+}

@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0024",
+  "feature_id": "EXT-F-2014",
+  "case_ids": [
+    "EXT-F-2014-T05"
+  ],
+  "control_ids": [
+    "EXT-F-2014-C62"
+  ],
+  "surface": "Pilot",
+  "auth_mode": "not established for user report; admin reproduction planned under current source applicability",
+  "reproduction": [
+    "Build and reload the receipt-bound unpacked extension, reopen the native sidepanel, reload owned target pages and confirm the actual signed-in mode and selected device organization.",
+    "Start a Pilot session with two owned distinguishable pages in its assigned group; give it a read-only multi-step task requiring continued context from those pages.",
+    "While Pilot is working, activate an unrelated owned tab outside its group and continue browsing there.",
+    "Observe which tabs receive subsequent Pilot reads/actions and whether its next step retains the original task/page context; repeat switching windows and returning to the Pilot group."
+  ],
+  "reproduction_status": "user report captured; proposed steps not yet independently reproduced",
+  "expected": "Pilot continues working within its assigned tabs independently while the user browses elsewhere, preserving task/page context.",
+  "actual": "User reports Pilot follows the user into other tabs and then loses context.",
+  "evidence": [
+    {
+      "kind": "user-report",
+      "at": "2026-09-27T07:25:42.648380+00:00",
+      "quote": "in pilot mode, it's supposed to stay in the tabs and work without you but it doesn't and it folllows you and then loses context."
+    }
+  ],
+  "severity": "S1 provisional: autonomous Pilot workflow and context fail; impact requires reproduction",
+  "priority": "P3: deferred Pilot wave D unless shown to block safe contained-surface testing",
+  "state": "open",
+  "owner": "extend-stabilization",
+  "build_receipt": null,
+  "fix_commits": [],
+  "ui_retest": "not-run",
+  "transition_history": [
+    {
+      "at": "2026-09-27T07:25:42.648380+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Direct user report; retain untriaged until self-contained reproduction is verified."
+    }
+  ],
+  "closure_requirement": "Independent original-reproduction and surrounding tab/window/session lifecycle tests on exact integrated build; verify unrelated user tabs remain untouched."
+}

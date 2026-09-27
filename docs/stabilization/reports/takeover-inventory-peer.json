@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "reviewer_lane": "independent static source census",
+  "source_coverage_verdict": "src-complete-with-native-visibility-pending",
+  "evidence": "All 72 changed src paths from fb71764 to checkout 959bdf17 are mapped; b3bed1ab adds no further src paths. All nine newly declared controls map to a case, and the new/strengthened cases reviewed have concrete preconditions, steps, and expected outcomes. Dynamic role/permission visibility and execution remain unverified as stated.",
+  "omission": "The report comparison.changed_paths followup omits types/python-generated/stream-events.ts, which changes from fb71764 to b3bed1ab (+115 lines). It adds cutover event payload interfaces and HostedToolPart to TypedDataPayload/MessagePart. No extension source or inventory references these symbols; record as a generated contract delta outside the current src-control census, or explicitly explain its out-of-scope status.",
+  "evidence_schema_verdict": "usable-with-caveats",
+  "evidence_quality": "Stable feature/control/case IDs are globally unique in inventory (no collisions). wait_for's two catalog rows are explicitly represented as legacy shadowed and canonical entries; catalog itself has those two rows, but the source registry resolves only canonical, so this is not two executable handlers.",
+  "procedure_gap": "Existing EXT-F-4058-T01 has empty steps and EXT-F-4156-T01 is explicitly marked as requiring fixture-specific canonical procedures; neither should be dispatched as ready. New reconciliation cases reviewed are executable in principle; EXT-F-2014-T05 correctly remains Wave D.",
+  "gate_recommendation": "Accept source-path coverage only; retain independent dynamic-control/native-visibility census as an open gate. Add the generated type delta to reconciliation accounting before calling the overall source reconciliation complete.",
+  "limits": ["Read-only review; no build, tests, browser, or live role visibility.", "The 82-row live roster supports active-definition/binding counts only, not UI visibility, permissions, or execution."]
+}

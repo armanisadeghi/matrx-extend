@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-27T00:31:00+00:00",
-  "inventory_gate": "open-source-census-reviewed",
-  "scope_complete": true,
-  "source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
+  "updated_at": "2026-09-27T07:34:05.702342+00:00",
+  "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
+  "scope_complete": false,
+  "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
   "modes": [
     "guest",
     "member",
@@ -1534,7 +1534,10 @@
         "src/entrypoints/sidepanel/App.tsx:307",
         "src/config/sidepanel-visibility.ts:1",
         "src/state/sidepanel-tab.ts:1",
-        "src/components/UserMenu.tsx:89"
+        "src/components/UserMenu.tsx:89",
+        "src/entrypoints/sidepanel/App.tsx",
+        "src/lib/panel/launch-intent.ts",
+        "src/styles/globals.css"
       ],
       "dependency_class": "local",
       "wave": "A",
@@ -2051,7 +2054,10 @@
         "wxt.config.ts:33",
         "src/lib/panel/adapter.ts:74",
         "src/lib/panel/launch-intent.ts:1",
-        "src/entrypoints/sidepanel/App.tsx:180"
+        "src/entrypoints/sidepanel/App.tsx:180",
+        "src/entrypoints/sidepanel/App.tsx",
+        "src/lib/destructive/operations.ts",
+        "src/lib/panel/launch-intent.ts"
       ],
       "dependency_class": "local",
       "wave": "A",
@@ -2812,7 +2818,8 @@
         "src/features/settings/SettingsView.tsx:337",
         "src/state/settings.ts:1",
         "src/features/settings/SettingsView.tsx:50",
-        "src/features/settings/SettingsView.tsx:570"
+        "src/features/settings/SettingsView.tsx:570",
+        "src/features/settings/SettingsView.tsx"
       ],
       "dependency_class": "local",
       "wave": "A",
@@ -8755,7 +8762,9 @@
         "src/features/debug/BridgesView.tsx:838",
         "src/features/debug/BridgesView.tsx:856",
         "src/features/debug/BridgesView.tsx:864",
-        "src/features/debug/BridgesView.tsx:877"
+        "src/features/debug/BridgesView.tsx:877",
+        "src/lib/background/bootstrap.ts",
+        "src/lib/stream/offscreen-proxy.ts"
       ],
       "dependency_class": "cross-system",
       "wave": "C",
@@ -9705,6 +9714,36 @@
           "id": "EXT-F-1007-C28",
           "label": "Show not-yet-a-Source state with its next action",
           "action": "An absent Source is described as not yet a Source with the correct next action; a known Source shows saved status; unknown lookup state is explicit and never presented as not-yet-saved."
+        },
+        {
+          "id": "EXT-F-1007-C29",
+          "label": "Close optional Source filing without filing",
+          "action": "After landing a Source, close the optional filing panel without any attachment write.",
+          "source_anchor": "src/features/scrape/FileSourcePanel.tsx"
+        },
+        {
+          "id": "EXT-F-1007-C30",
+          "label": "File landed Source in registered places",
+          "action": "Select and remove multiple registered target chips, then submit filing after landing.",
+          "source_anchor": "src/features/scrape/FileSourcePanel.tsx"
+        },
+        {
+          "id": "EXT-F-1007-C31",
+          "label": "Choose optional media Library for Source",
+          "action": "Choose a Library or No Library and verify remembered choice and filing outcome.",
+          "source_anchor": "src/features/scrape/FileSourcePanel.tsx"
+        },
+        {
+          "id": "EXT-F-1007-C32",
+          "label": "Keep in-flight Source save bound to capture and organization",
+          "action": "Late save completion after workspace or capture switch cannot claim the wrong saved state.",
+          "source_anchor": "src/features/scrape/ScrapeView.tsx"
+        },
+        {
+          "id": "EXT-F-1007-C33",
+          "label": "Suppress duplicate save action for held URL",
+          "action": "When the Unsaved card owns a URL, only its retry action can save it.",
+          "source_anchor": "src/features/scrape/UnsavedCapturesCard.tsx"
         }
       ],
       "source_anchors": [
@@ -9735,7 +9774,27 @@
         "src/lib/sources/portions.ts:1",
         "src/lib/sources/canonical.ts:1",
         "src/hooks/use-page-recognition.ts:7",
-        "src/features/scrape/ScrapeView.tsx:211"
+        "src/features/scrape/ScrapeView.tsx:211",
+        "src/features/scrape/FileSourcePanel.tsx",
+        "src/features/scrape/ScrapeView.tsx",
+        "src/features/scrape/UnsavedCapturesCard.tsx",
+        "src/components/NoticeHost.tsx",
+        "src/hooks/use-page-recognition.ts",
+        "src/hooks/use-scrape.ts",
+        "src/lib/api/client.ts",
+        "src/lib/capture-ladder/queue.ts",
+        "src/lib/scrape/pipeline.ts",
+        "src/lib/sources/associations-store.ts",
+        "src/lib/sources/canonical.ts",
+        "src/lib/sources/portions.ts",
+        "src/lib/sources/save-capture.ts",
+        "src/lib/sources/save-source-logic.ts",
+        "src/lib/sources/web-app-link.ts",
+        "src/lib/supabase/db-failure.ts",
+        "src/lib/supabase/queries.ts",
+        "src/state/notices.ts",
+        "src/state/scrape.ts",
+        "src/lib/api/routes/sources.ts"
       ],
       "dependency_class": "cross-system",
       "wave": "C",
@@ -10636,6 +10695,134 @@
               ]
             }
           }
+        },
+        {
+          "id": "EXT-F-1007-T29",
+          "title": "Optional filing follows Source landing and can be skipped",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C29",
+            "EXT-F-1007-C30",
+            "EXT-F-1007-C31"
+          ],
+          "preconditions": [
+            "Build the current development extension under the campaign resource permit; record an immutable source/lock/output receipt, reload that exact unpacked build, reopen the sidepanel, reload affected content tabs, and verify extension ID, organization and role before judging results.",
+            "Use an owned page, two registered filing targets and a controlled Library in the selected organization; reserve the Source and target records for this test only."
+          ],
+          "steps": [
+            "Capture and save the page; confirm the Source landed before the filing panel appears. Close filing and reload the Source to confirm no target or Library was attached.",
+            "Reopen filing on a new owned Source; select two targets, remove one, choose a Library, and submit. Inspect the success/failure notice and server-backed Source associations; then repeat with No Library.",
+            "Cause a controlled filing refusal after a successful landing and inspect the Source and filing remedy."
+          ],
+          "expected": [
+            "Closing filing leaves a landed Source without attachments. Selecting targets and an optional Library files only the chosen associations. Filing refusal is visible and does not undo landing or claim unmade associations."
+          ],
+          "dimensions": [
+            "close",
+            "multi-target",
+            "remove",
+            "library",
+            "no-library",
+            "refusal"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Current-source procedure awaits receipt-bound native execution."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Current-source procedure awaits receipt-bound native execution."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-1007-T30",
+          "title": "Late save cannot mark another workspace or capture saved",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C32"
+          ],
+          "preconditions": [
+            "Build the current development extension under the campaign resource permit; record an immutable source/lock/output receipt, reload that exact unpacked build, reopen the sidepanel, reload affected content tabs, and verify extension ID, organization and role before judging results.",
+            "Use a principal in two owned organizations and two distinguishable owned page captures; use a controlled delay on the Source landing response."
+          ],
+          "steps": [
+            "Start saving capture A in organization A, then switch the device to organization B before the response resolves; inspect saved badge, notices and unsaved queue.",
+            "Repeat by starting a save for capture A, then switching the Scrape view to capture B before A resolves.",
+            "Return to organization A and inspect authoritative Source list and capture state."
+          ],
+          "expected": [
+            "A late response is attributed only to capture A and organization A. It never marks B or the current organization saved; a refused or unresolved save remains recoverable."
+          ],
+          "dimensions": [
+            "organization-switch",
+            "capture-switch",
+            "late-success",
+            "late-refusal"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Current-source procedure awaits receipt-bound native execution."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Current-source procedure awaits receipt-bound native execution."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-1007-T31",
+          "title": "Unsaved retry owns the held URL save action",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C22",
+            "EXT-F-1007-C23",
+            "EXT-F-1007-C33"
+          ],
+          "preconditions": [
+            "Build the current development extension under the campaign resource permit; record an immutable source/lock/output receipt, reload that exact unpacked build, reopen the sidepanel, reload affected content tabs, and verify extension ID, organization and role before judging results.",
+            "Use an owned capture and a controlled first-save refusal; guest mode uses the sign-in remedy."
+          ],
+          "steps": [
+            "Refuse Source landing once and inspect the Unsaved card. Check that the main page has no competing save action for that held URL.",
+            "Resolve the refusal, use the Unsaved card Retry once, and inspect resulting Source count and notices.",
+            "Switch organization or page while retry is in flight and confirm no stale saved badge appears."
+          ],
+          "expected": [
+            "Exactly one actionable retry owns the held URL; a successful retry lands one Source and clears the held item, while a refusal keeps a truthful remedy."
+          ],
+          "dimensions": [
+            "single-action",
+            "retry",
+            "guest-remedy",
+            "stale-completion"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "Current-source procedure awaits receipt-bound native execution."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "Current-source procedure awaits receipt-bound native execution."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Current-source procedure awaits receipt-bound native execution."
+            }
+          }
         }
       ],
       "cells": {
@@ -10905,7 +11092,8 @@
         "src/features/seo/SeoView.tsx:303",
         "src/features/seo/SeoView.tsx:42",
         "src/features/seo/SeoView.tsx:80",
-        "src/features/seo/SeoView.tsx:98"
+        "src/features/seo/SeoView.tsx:98",
+        "src/features/seo/SeoView.tsx"
       ],
       "dependency_class": "database",
       "wave": "B",
@@ -16306,6 +16494,12 @@
           "label": "Recover from Safari callback failure or timeout",
           "action": "Surface cancellation, invalid callback, completion failure, or timeout and allow the person to retry.",
           "source_anchor": "src/lib/auth/safari-background.ts:113"
+        },
+        {
+          "id": "EXT-F-1015-C18",
+          "label": "Retire organization-required notice after explicit selection",
+          "action": "An organization-required notice clears when a device organization is chosen, including a late-arriving stale notice.",
+          "source_anchor": "src/components/NoticeHost.tsx"
         }
       ],
       "source_anchors": [
@@ -16318,7 +16512,15 @@
         "src/lib/auth/flow.ts:1",
         "src/lib/auth/identity-transport.ts:1",
         "src/lib/auth/safari-background.ts:1",
-        "src/lib/messaging/schemas.ts:14"
+        "src/lib/messaging/schemas.ts:14",
+        "src/components/NoticeHost.tsx",
+        "src/hooks/use-auth.ts",
+        "src/lib/api/client.ts",
+        "src/lib/auth/identity.ts",
+        "src/lib/org/active-org.ts",
+        "src/lib/supabase/db-failure.ts",
+        "src/lib/supabase/user-profile.ts",
+        "src/state/notices.ts"
       ],
       "dependency_class": "cross-system",
       "wave": "B",
@@ -17293,6 +17495,44 @@
             }
           },
           "campaign_scope": "outside current Chrome stabilization scope; retained for remote-change traceability"
+        },
+        {
+          "id": "EXT-F-1015-T38",
+          "title": "Organization-required notice retires after selection",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1015-C18"
+          ],
+          "preconditions": [
+            "Build the current development extension under the campaign resource permit; record an immutable source/lock/output receipt, reload that exact unpacked build, reopen the sidepanel, reload affected content tabs, and verify extension ID, organization and role before judging results.",
+            "Use a signed-in principal in two owned organizations and a controlled request that requires the selected organization."
+          ],
+          "steps": [
+            "Clear the device organization and trigger the request; observe the organization-required notice.",
+            "Choose an organization in the picker and observe whether the notice retires without dismissing unrelated notices.",
+            "Repeat with a delayed organization-required response arriving just after selection."
+          ],
+          "expected": [
+            "The remedy is visible while organization is absent; it retires after explicit selection, including late arrival, without hiding unrelated failures."
+          ],
+          "dimensions": [
+            "missing-organization",
+            "selection",
+            "late-notice"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Current-source procedure awaits receipt-bound native execution."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Current-source procedure awaits receipt-bound native execution."
+            }
+          }
         }
       ],
       "cells": {
@@ -17809,7 +18049,8 @@
         "src/features/tasks/QueueToolbar.tsx:40",
         "src/features/tasks/QueueSelectionBar.tsx:20",
         "src/features/tasks/ParallelRunsPanel.tsx:206",
-        "src/features/tasks/QueueToolbar.tsx:1"
+        "src/features/tasks/QueueToolbar.tsx:1",
+        "src/lib/capture-ladder/queue.ts"
       ],
       "dependency_class": "backend",
       "wave": "B",
@@ -19208,7 +19449,10 @@
         "src/features/agenda/AgendaView.tsx:145",
         "src/features/agenda/AgendaView.tsx:260",
         "src/features/agenda/AgendaView.tsx:292",
-        "src/features/agenda/AgendaView.tsx:1"
+        "src/features/agenda/AgendaView.tsx:1",
+        "src/features/agenda/AgendaView.tsx",
+        "src/lib/agenda/queries.ts",
+        "src/lib/destructive/operations.ts"
       ],
       "dependency_class": "backend",
       "wave": "C",
@@ -21181,6 +21425,18 @@
           "label": "Report unreadable saved captures",
           "action": "Show the number of returned saved captures that could not be read and offer a refresh retry; do not present the list as empty when unreadable rows exist.",
           "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx:221"
+        },
+        {
+          "id": "EXT-F-2009-C38",
+          "label": "Identify Source capturing member",
+          "action": "Show you, resolved member name, or another member without exposing a raw identity.",
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx"
+        },
+        {
+          "id": "EXT-F-2009-C39",
+          "label": "Confirm organization-wide Source deletion",
+          "action": "Warn that deleting a Source removes it for all organization members without changing the original web page.",
+          "source_anchor": "src/features/saved-captures/SavedCapturesView.tsx"
         }
       ],
       "source_anchors": [
@@ -21207,7 +21463,11 @@
         "src/lib/sources/web-app-link.ts:1",
         "src/features/saved-captures/SavedCapturesView.tsx:66",
         "src/features/saved-captures/SavedCapturesView.tsx:221",
-        "src/lib/supabase/queries.ts:687"
+        "src/lib/supabase/queries.ts:687",
+        "src/features/saved-captures/SavedCapturesView.tsx",
+        "src/lib/sources/canonical.ts",
+        "src/lib/sources/portions.ts",
+        "src/lib/supabase/queries.ts"
       ],
       "dependency_class": "cross-system",
       "wave": "C",
@@ -21419,6 +21679,84 @@
           ],
           "verification_status": "unverified-after-source-change",
           "source_evidence": "c3a2477 returns unreadable row count and renders a retryable notice; runtime behavior remains unverified."
+        },
+        {
+          "id": "EXT-F-2009-T07",
+          "title": "Show Source author identity with unreadable-name fallback",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2009-C38"
+          ],
+          "preconditions": [
+            "Build the current development extension under the campaign resource permit; record an immutable source/lock/output receipt, reload that exact unpacked build, reopen the sidepanel, reload affected content tabs, and verify extension ID, organization and role before judging results.",
+            "Use two authorized members of one selected organization; controlled Sources captured by self and the other member, plus a safe profile-name read failure."
+          ],
+          "steps": [
+            "List Sources as each member and compare self and other-author labels.",
+            "Cause the other profile name to be unavailable while retaining Source access; refresh the list."
+          ],
+          "expected": [
+            "Own Source says you, a resolvable other author shows their name, and unreadable identity says another member without losing the Source row."
+          ],
+          "dimensions": [
+            "self",
+            "other-member",
+            "profile-read-failure"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Current-source procedure awaits receipt-bound native execution."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Current-source procedure awaits receipt-bound native execution."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-2009-T08",
+          "title": "Organization-wide Source deletion is confirmed and visible to another member",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2009-C06",
+            "EXT-F-2009-C39"
+          ],
+          "preconditions": [
+            "Build the current development extension under the campaign resource permit; record an immutable source/lock/output receipt, reload that exact unpacked build, reopen the sidepanel, reload affected content tabs, and verify extension ID, organization and role before judging results.",
+            "Use only a disposable Source created for this case and two real authorized members of its organization; verify the original page URL is reachable before deletion."
+          ],
+          "steps": [
+            "As the first member open Delete and read the scope copy; cancel and verify both members still see the Source.",
+            "Confirm deletion of that test Source, refresh both member lists and search by its unique title or URL.",
+            "Reopen the original web page outside the extension. Repeat the authorization path with the admin mode if distinct."
+          ],
+          "expected": [
+            "Confirmation accurately states organization scope; cancellation preserves the Source; confirmed deletion removes it for both members while the original web page remains available."
+          ],
+          "dimensions": [
+            "member-confirm",
+            "cancel",
+            "cross-member",
+            "original-page",
+            "admin"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Current-source procedure awaits receipt-bound native execution."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Current-source procedure awaits receipt-bound native execution."
+            }
+          }
         }
       ],
       "cells": {
@@ -22326,6 +22664,12 @@
           "id": "EXT-F-2011-C51",
           "label": "Distinguish failed site-login lookup from no matches and retry",
           "action": "Failure is not shown as an empty successful result; candidates from an earlier page or actor are cleared; retry runs for the same current tab, page, and actor and then displays the returned result."
+        },
+        {
+          "id": "EXT-F-2011-C52",
+          "label": "Invalidate saved-login candidates when panel URL changes",
+          "action": "Only candidates matching the resolved panel page and actual actor remain actionable.",
+          "source_anchor": "src/features/vault/VaultView.tsx"
         }
       ],
       "source_anchors": [
@@ -22333,7 +22677,9 @@
         "src/features/vault/useVault.ts:1",
         "src/features/vault/PendingCaptureCard.tsx:1",
         "src/features/vault/PasswordGenerator.tsx:1",
-        "src/features/vault/usePanelAdmission.ts:1"
+        "src/features/vault/usePanelAdmission.ts:1",
+        "src/features/vault/VaultView.tsx",
+        "src/features/vault/useVault.ts"
       ],
       "dependency_class": "database",
       "wave": "B",
@@ -22614,6 +22960,47 @@
               "acceptance": "When the page-fill panel is ready, Vault resolves against its page URL and displays only candidates shared by the page-fill panel and the current Vault lookup. The blocked panel reason no longer coexists with the ordinary no-outcome guidance."
             }
           ]
+        },
+        {
+          "id": "EXT-F-2011-T09",
+          "title": "Saved-login candidates track the resolved page URL",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2011-C31",
+            "EXT-F-2011-C52"
+          ],
+          "preconditions": [
+            "Build the current development extension under the campaign resource permit; record an immutable source/lock/output receipt, reload that exact unpacked build, reopen the sidepanel, reload affected content tabs, and verify extension ID, organization and role before judging results.",
+            "Use two owned sites with different disposable logins and an allowed sign-in form; never capture field values in evidence."
+          ],
+          "steps": [
+            "Open Vault while site A is the panel-resolved page; check exact-site candidate and a nonmatching login exclusion.",
+            "Switch to site B, including a frame or active-tab transition, while lookup A is pending; inspect candidate actions and create-login URL.",
+            "Exercise a controlled lookup failure and Retry, then inspect candidates again."
+          ],
+          "expected": [
+            "Only current site matches are actionable. Stale A candidates disappear across URL/tab change and retry; create-login uses the panel-resolved URL. No secret value appears in evidence."
+          ],
+          "dimensions": [
+            "exact-match",
+            "nonmatch",
+            "url-switch",
+            "retry",
+            "no-secret-egress"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Current-source procedure awaits receipt-bound native execution."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Current-source procedure awaits receipt-bound native execution."
+            }
+          }
         }
       ],
       "cells": {
@@ -24169,7 +24556,19 @@
         "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/AgentTagsPanel.tsx:1",
         "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/FavoriteAgentButton.tsx:1",
         "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/AgentRow.tsx:1",
-        "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/AgentDetailCard.tsx:1"
+        "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/AgentDetailCard.tsx:1",
+        "src/features/chat/ChatView.tsx",
+        "src/hooks/use-chat-stream.ts",
+        "src/hooks/use-pilot-chat-stream.ts",
+        "src/lib/background/bootstrap.ts",
+        "src/lib/chat/context/page-source.ts",
+        "src/lib/chat/context/v1-flat.ts",
+        "src/lib/chat/context/v2-bundled.ts",
+        "src/lib/chat/decision-answers.ts",
+        "src/lib/settings/default-chat-model.ts",
+        "src/lib/settings/platform-knobs.ts",
+        "src/lib/stream/offscreen-proxy.ts",
+        "src/lib/tts/read-aloud-voice.ts"
       ],
       "dependency_class": "cross-system",
       "wave": "D",
@@ -24459,13 +24858,17 @@
             "EXT-F-2013-C135"
           ],
           "preconditions": [
-            "Record current build receipt, reload extension and relevant pages, confirm actual mode. Use only controlled owned fixtures. Chat/Pilot execution remains deferred wave D."
+            "Build the current development extension under the campaign resource permit; record an immutable source/lock/output receipt, reload that exact unpacked build, reopen the sidepanel, reload affected content tabs, and verify extension ID, organization and role before judging results.",
+            "Use an account whose chat_default_model can be safely changed and a built agent with a distinguishable configured model."
           ],
           "steps": [
-            "Exercise the named behavior, positive and negative outcomes, and reload persistence/history where applicable."
+            "Set account default model, leave composer on Your default and send a general-chat message; inspect the actual model selected by the run.",
+            "Choose an explicit composer model and send again; then clear the override.",
+            "Select a built agent and verify its own model is retained; unset the account default and repeat.",
+            "Cause a controlled settings-read failure, then restore service and retry."
           ],
           "expected": [
-            "Verify general chat sends the account default with no local choice, an explicit extension model takes precedence, and an agent-specific model is unchanged."
+            "General chat uses the account choice only with no local override; explicit override wins; built agents keep their configured model; unset/failure states are honest and recoverable."
           ],
           "dimensions": [
             "warm",
@@ -24555,7 +24958,8 @@
       "readiness_gaps": [
         "Execution is deferred to wave D. Source control inventory does not claim chat/provider behavior; run all applicable persona cases after non-Chat/Pilot completion gate.",
         "Agent picker implementation was read from the shared @ai-matrx/agents source checkout; installed package version and live menu behavior require runtime reconciliation.",
-        "Public tab label and unavailable Sneak Peek were reconciled from shared package 0.13.10 and host props; still verify picker at wave D."
+        "Public tab label and unavailable Sneak Peek were reconciled from shared package 0.13.10 and host props; still verify picker at wave D.",
+        "Generated stream-events contract delta through b3bed1ab adds cutover payloads, HostedToolPart and message flags. Wave D stream/history acceptance must cover them; type generation is not runtime proof. See takeover-inventory-reconciled.json generated_contract_accounting."
       ],
       "unverified_leads": [
         {
@@ -25049,6 +25453,13 @@
           "id": "EXT-F-2014-C61",
           "label": "Render typed decision answer in Pilot live stream and conversation history",
           "action": "The verdict appears as readable assistant content during the Pilot stream and after history reload, without an empty assistant bubble."
+        },
+        {
+          "id": "EXT-F-2014-C62",
+          "label": "Continue Pilot in assigned tabs while user browses elsewhere",
+          "action": "Keep autonomous task and tab context bound to its Pilot session",
+          "test_design_status": "ready-for-reproduction",
+          "source_anchor": "src/features/chat/PilotView.tsx"
         }
       ],
       "source_anchors": [
@@ -25065,7 +25476,18 @@
         "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/AgentTagsPanel.tsx:1",
         "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/FavoriteAgentButton.tsx:1",
         "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/AgentRow.tsx:1",
-        "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/AgentDetailCard.tsx:1"
+        "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/AgentDetailCard.tsx:1",
+        "src/features/chat/ChatView.tsx",
+        "src/hooks/use-chat-stream.ts",
+        "src/hooks/use-pilot-chat-stream.ts",
+        "src/lib/api/routes/local-browser-commands.ts",
+        "src/lib/background/bootstrap.ts",
+        "src/lib/chat/context/page-source.ts",
+        "src/lib/chat/context/v1-flat.ts",
+        "src/lib/chat/context/v2-bundled.ts",
+        "src/lib/chat/decision-answers.ts",
+        "src/lib/desktop/local-browser/controller.ts",
+        "src/lib/stream/offscreen-proxy.ts"
       ],
       "dependency_class": "cross-system",
       "wave": "D",
@@ -25228,6 +25650,45 @@
               "detail": "New remote behavior; source census only."
             }
           }
+        },
+        {
+          "id": "EXT-F-2014-T05",
+          "title": "Pilot stays in its assigned tabs and preserves context when user switches tabs",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-2014-C62"
+          ],
+          "preconditions": [
+            "Wave D gate satisfied, or documented global-blocker exception.",
+            "Use owned test pages and a current immutable build receipt; no external writes."
+          ],
+          "steps": [
+            "Build and reload the receipt-bound unpacked extension, reopen the native sidepanel, reload owned target pages and confirm the actual signed-in mode and selected device organization.",
+            "Start a Pilot session with two owned distinguishable pages in its assigned group; give it a read-only multi-step task requiring continued context from those pages.",
+            "While Pilot is working, activate an unrelated owned tab outside its group and continue browsing there.",
+            "Observe which tabs receive subsequent Pilot reads/actions and whether its next step retains the original task/page context; repeat switching windows and returning to the Pilot group."
+          ],
+          "expected": [
+            "Pilot remains scoped to its assigned session tabs despite unrelated active-tab/window changes.",
+            "Task and page context remain coherent across switches; a closed/unavailable assigned tab yields an explicit recoverable status rather than silently adopting the user tab."
+          ],
+          "dimensions": [
+            "tab-switch",
+            "window-switch",
+            "autonomous-continuation",
+            "context-retention"
+          ],
+          "defect_ids": [
+            "EXT-D-0024"
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "detail": "User-reported failure; current build and exact reproduction not yet verified. Deferred wave D."
+            }
+          }
         }
       ],
       "cells": {
@@ -25245,7 +25706,9 @@
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0024"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         }
@@ -25255,7 +25718,8 @@
       "readiness_gaps": [
         "Execution is deferred to wave D. Source control inventory does not claim chat/provider behavior; run all applicable persona cases after non-Chat/Pilot completion gate.",
         "Agent picker implementation was read from the shared @ai-matrx/agents source checkout; installed package version and live menu behavior require runtime reconciliation.",
-        "Public tab label and unavailable Sneak Peek were reconciled from shared package 0.13.10 and host props; still verify picker at wave D."
+        "Public tab label and unavailable Sneak Peek were reconciled from shared package 0.13.10 and host props; still verify picker at wave D.",
+        "Generated stream-events contract delta through b3bed1ab adds cutover payloads, HostedToolPart and message flags. Wave D stream/history acceptance must cover them; type generation is not runtime proof. See takeover-inventory-reconciled.json generated_contract_accounting."
       ],
       "unverified_leads": [
         {
@@ -37055,7 +37519,10 @@
         "types/tool-catalog.json",
         "src/lib/tools/registry.ts",
         "src/features/tools/ToolsView.tsx",
-        "src/config/sidepanel-visibility.ts:31"
+        "src/config/sidepanel-visibility.ts:31",
+        "src/lib/api/routes/local-browser-commands.ts",
+        "src/lib/desktop/local-browser/controller.ts",
+        "src/lib/tools/handlers/credential-login.ts"
       ],
       "catalog_record_index": 88,
       "input_schema": {
@@ -37452,13 +37919,16 @@
             "EXT-F-4089-C10"
           ],
           "preconditions": [
-            "Record current build receipt, reload extension and relevant pages, confirm actual mode. Use only controlled owned fixtures. Chat/Pilot execution remains deferred wave D."
+            "Build the current development extension under the campaign resource permit; record an immutable source/lock/output receipt, reload that exact unpacked build, reopen the sidepanel, reload affected content tabs, and verify extension ID, organization and role before judging results.",
+            "Use an owned HTTPS sign-in form and a controlled admitted local-browser run. Keep all credentials in the authorized vault path; evidence contains no field values."
           ],
           "steps": [
-            "Exercise the named behavior, positive and negative outcomes, and reload persistence/history where applicable."
+            "Exercise a successful form probe and submit, recording value-free stage receipts.",
+            "Exercise missing or failed navigation document, changed form, unavailable field, and timeout conditions one at a time.",
+            "Inspect each terminal reason and verify no stale success and no credential value in logs, timeline or result."
           ],
           "expected": [
-            "A Chrome error document or unavailable frame cannot be treated as a successful login-page navigation; terminal classification follows the actual stage."
+            "The operation reports the observed stage and accurate terminal reason; unsafe or missing document never yields success or exposes a credential."
           ],
           "dimensions": [
             "warm",
@@ -37675,7 +38145,8 @@
         "types/tool-catalog.json",
         "src/lib/tools/registry.ts",
         "src/features/tools/ToolsView.tsx",
-        "src/config/sidepanel-visibility.ts:31"
+        "src/config/sidepanel-visibility.ts:31",
+        "src/lib/tools/handlers/education.ts"
       ],
       "catalog_record_index": 90,
       "input_schema": {
@@ -37753,18 +38224,16 @@
           ],
           "design_status": "ready",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Build the current development extension under the campaign resource permit; record an immutable source/lock/output receipt, reload that exact unpacked build, reopen the sidepanel, reload affected content tabs, and verify extension ID, organization and role before judging results.",
+            "Use an owned public study set and a disposable target organization; inspect writes via authorized read-only observation."
           ],
           "steps": [
-            "Preview a controlled public study set and confirm preview writes nothing.",
-            "With organization A selected, capture and inspect the import request and resulting deck organization.",
-            "With no selected organization or membership, attempt capture and inspect the result and write count."
+            "Preview without capture and confirm zero writes.",
+            "Select organization A and capture; inspect tool result and created deck organization.",
+            "Clear selected organization and attempt capture; inspect visible organization-required remedy and write count."
           ],
           "expected": [
-            "Preview remains read-only.",
-            "Capture calls only edu_import_deck with p_organization_id equal to A.",
-            "Unavailable organization returns organization_required with a remedy and makes no RPC/write."
+            "Preview writes nothing; capture belongs to the selected organization; missing selection makes no write and gives a usable remedy."
           ],
           "dimensions": [
             "valid-input",
@@ -49527,7 +49996,8 @@
   ],
   "notes": [
     "Independent source census passed. Runtime test execution still requires safe resource admission, fresh build receipt, concrete per-case steps and fixtures.",
-    "Remote75cfb09 inventory reconciliation includes Source status, Vault match-error retry, popup recovery, deferred Chat/Pilot context and terminal cases. Runtime proof remains tied to frozen0.2.56 until a new integration."
+    "Remote75cfb09 inventory reconciliation includes Source status, Vault match-error retry, popup recovery, deferred Chat/Pilot context and terminal cases. Runtime proof remains tied to frozen0.2.56 until a new integration.",
+    "2026-09-27 source reconciliation to 528ea0b: changed source paths mapped in takeover-inventory-reconciled.json. Current-source native results remain unverified; historical case receipts retain their original build provenance."
   ],
-  "source_review": "docs/stabilization/reports/inventory-remote-delta.json"
+  "source_review": "docs/stabilization/reports/takeover-inventory-reconciled.json"
 }

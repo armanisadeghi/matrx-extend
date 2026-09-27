@@ -1,0 +1,1002 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-09-27T07:31:00.260726+00:00",
+  "status": "changed_source_paths_mapped_control_census_requires_independent_review",
+  "comparison": {
+    "from_inventory_source_sha": "fb71764a6a7fe05bcc6e85be678d617f5174833b",
+    "to_checkout_sha": "959bdf1766a227a4718c5cccdc89afe0ef16e81e",
+    "changed_src_paths": 72,
+    "mapped_src_paths": 72,
+    "unmapped_src_paths": [],
+    "scope": "Static source and existing inventory only; current native mode results remain unverified.",
+    "fetched_origin_main_followup": {
+      "sha": "b3bed1abc27ac7672720f3189de48554390e2277",
+      "changed_paths": [
+        "docs/TOOLS.generated.md",
+        "package.json",
+        "types/python-generated/stream-events.ts",
+        "types/tool-catalog.json",
+        "types/tool-catalog.md"
+      ],
+      "src_paths_changed": 0,
+      "conclusion": "Fetched origin/main has no further src change in this scoped comparison; package version and generated catalog/document timestamps still require current-build verification by baseline owner."
+    }
+  },
+  "path_census": [
+    {
+      "path": "src/components/NoticeHost.tsx",
+      "feature_ids": [
+        "EXT-F-1015",
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/entrypoints/sidepanel/App.tsx",
+      "feature_ids": [
+        "EXT-F-1002",
+        "EXT-F-1001"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/features/agenda/AgendaView.tsx",
+      "feature_ids": [
+        "EXT-F-2004"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/features/chat/ChatView.tsx",
+      "feature_ids": [
+        "EXT-F-2013",
+        "EXT-F-2014"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/features/saved-captures/SavedCapturesView.test.tsx",
+      "feature_ids": [
+        "EXT-F-2009"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/features/saved-captures/SavedCapturesView.tsx",
+      "feature_ids": [
+        "EXT-F-2009"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/features/scrape/FileSourcePanel.test.tsx",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/features/scrape/FileSourcePanel.tsx",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/features/scrape/ScrapeView.tsx",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/features/scrape/UnsavedCapturesCard.tsx",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/features/seo/SeoView.tsx",
+      "feature_ids": [
+        "EXT-F-1008"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/features/settings/SettingsView.about.test.tsx",
+      "feature_ids": [
+        "EXT-F-1003"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/features/settings/SettingsView.tsx",
+      "feature_ids": [
+        "EXT-F-1003"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/features/vault/VaultView.focused-frame.test.tsx",
+      "feature_ids": [
+        "EXT-F-2011"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/features/vault/VaultView.match-errors.test.tsx",
+      "feature_ids": [
+        "EXT-F-2011"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/features/vault/VaultView.tsx",
+      "feature_ids": [
+        "EXT-F-2011"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/features/vault/useVault.ts",
+      "feature_ids": [
+        "EXT-F-2011"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/hooks/use-auth.entrypoints.test.tsx",
+      "feature_ids": [
+        "EXT-F-1015"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/hooks/use-auth.strict-mode.test.tsx",
+      "feature_ids": [
+        "EXT-F-1015"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/hooks/use-auth.ts",
+      "feature_ids": [
+        "EXT-F-1015"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/hooks/use-chat-stream.ts",
+      "feature_ids": [
+        "EXT-F-2013",
+        "EXT-F-2014"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/hooks/use-page-recognition.test.tsx",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/hooks/use-page-recognition.ts",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/hooks/use-pilot-chat-stream.ts",
+      "feature_ids": [
+        "EXT-F-2013",
+        "EXT-F-2014"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/hooks/use-scrape.ts",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/agenda/create-task-organization.test.ts",
+      "feature_ids": [
+        "EXT-F-2004"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/lib/agenda/queries.ts",
+      "feature_ids": [
+        "EXT-F-2004"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/api/FEATURE.md",
+      "feature_ids": [
+        "EXT-F-1015"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/lib/api/client-expected-actor.test.ts",
+      "feature_ids": [
+        "EXT-F-1015",
+        "EXT-F-1007"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/lib/api/client-organization-hold.test.ts",
+      "feature_ids": [
+        "EXT-F-1015",
+        "EXT-F-1007"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/lib/api/client-organization-no-memberships.test.ts",
+      "feature_ids": [
+        "EXT-F-1015",
+        "EXT-F-1007"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/lib/api/client.ts",
+      "feature_ids": [
+        "EXT-F-1015",
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/api/routes/local-browser-commands.test.ts",
+      "feature_ids": [
+        "EXT-F-4089",
+        "EXT-F-2014"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/lib/api/routes/local-browser-commands.ts",
+      "feature_ids": [
+        "EXT-F-4089",
+        "EXT-F-2014"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/api/routes/sources.ts",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/auth/identity.ts",
+      "feature_ids": [
+        "EXT-F-1015"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/background/bootstrap.ts",
+      "feature_ids": [
+        "EXT-F-2013",
+        "EXT-F-2014",
+        "EXT-F-1006"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/capture-ladder/queue.ts",
+      "feature_ids": [
+        "EXT-F-1007",
+        "EXT-F-2001"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/chat/context/page-source.test.ts",
+      "feature_ids": [
+        "EXT-F-2013",
+        "EXT-F-2014"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/lib/chat/context/page-source.ts",
+      "feature_ids": [
+        "EXT-F-2013",
+        "EXT-F-2014"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/chat/context/v1-flat.ts",
+      "feature_ids": [
+        "EXT-F-2013",
+        "EXT-F-2014"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/chat/context/v2-bundled.ts",
+      "feature_ids": [
+        "EXT-F-2013",
+        "EXT-F-2014"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/chat/decision-answers.ts",
+      "feature_ids": [
+        "EXT-F-2013",
+        "EXT-F-2014"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/desktop/local-browser/controller.test.ts",
+      "feature_ids": [
+        "EXT-F-4089",
+        "EXT-F-2014"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/lib/desktop/local-browser/controller.ts",
+      "feature_ids": [
+        "EXT-F-4089",
+        "EXT-F-2014"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/destructive/operations.ts",
+      "feature_ids": [
+        "EXT-F-2004",
+        "EXT-F-1002"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/org/active-org.ts",
+      "feature_ids": [
+        "EXT-F-1015"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/panel/launch-intent.ts",
+      "feature_ids": [
+        "EXT-F-1002",
+        "EXT-F-1001"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/scrape/pipeline.ts",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/settings/default-chat-model.ts",
+      "feature_ids": [
+        "EXT-F-2013"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/settings/platform-knobs.ts",
+      "feature_ids": [
+        "EXT-F-2013"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/sources/associations-store.ts",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/sources/canonical.ts",
+      "feature_ids": [
+        "EXT-F-1007",
+        "EXT-F-2009"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/sources/portions.test.ts",
+      "feature_ids": [
+        "EXT-F-1007",
+        "EXT-F-2009"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/lib/sources/portions.ts",
+      "feature_ids": [
+        "EXT-F-1007",
+        "EXT-F-2009"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/sources/save-capture.ts",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/sources/save-source-logic.test.ts",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/lib/sources/save-source-logic.ts",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/sources/web-app-link.test.ts",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/lib/sources/web-app-link.ts",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/stream/offscreen-proxy.ts",
+      "feature_ids": [
+        "EXT-F-2013",
+        "EXT-F-2014",
+        "EXT-F-1006"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/supabase/FEATURE.md",
+      "feature_ids": [
+        "EXT-F-1015",
+        "EXT-F-2009"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/lib/supabase/db-failure.ts",
+      "feature_ids": [
+        "EXT-F-1015",
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/supabase/queries.recognition.test.ts",
+      "feature_ids": [
+        "EXT-F-2009",
+        "EXT-F-1007"
+      ],
+      "kind": "test_or_doc"
+    },
+    {
+      "path": "src/lib/supabase/queries.ts",
+      "feature_ids": [
+        "EXT-F-2009",
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/supabase/user-profile.ts",
+      "feature_ids": [
+        "EXT-F-1015"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/tools/handlers/credential-login.ts",
+      "feature_ids": [
+        "EXT-F-4089"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/tools/handlers/education.ts",
+      "feature_ids": [
+        "EXT-F-4091"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/lib/tts/read-aloud-voice.ts",
+      "feature_ids": [
+        "EXT-F-2013"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/state/notices.ts",
+      "feature_ids": [
+        "EXT-F-1015",
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/state/scrape.ts",
+      "feature_ids": [
+        "EXT-F-1007"
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "src/styles/globals.css",
+      "feature_ids": [
+        "EXT-F-1001"
+      ],
+      "kind": "source"
+    }
+  ],
+  "reconciliation": {
+    "new_control_ids": [
+      "EXT-F-1007-C29",
+      "EXT-F-1007-C30",
+      "EXT-F-1007-C31",
+      "EXT-F-1007-C32",
+      "EXT-F-1007-C33",
+      "EXT-F-2009-C38",
+      "EXT-F-2009-C39",
+      "EXT-F-2011-C52",
+      "EXT-F-1015-C18"
+    ],
+    "new_case_ids": [
+      "EXT-F-1007-T29",
+      "EXT-F-1007-T30",
+      "EXT-F-1007-T31",
+      "EXT-F-2009-T07",
+      "EXT-F-2009-T08",
+      "EXT-F-2011-T09",
+      "EXT-F-1015-T38"
+    ],
+    "reused_case_ids": [
+      "EXT-F-1002-T19",
+      "EXT-F-1002-T20",
+      "EXT-F-1003-T46",
+      "EXT-F-1003-T48",
+      "EXT-F-1007-T21",
+      "EXT-F-1007-T22",
+      "EXT-F-1007-T27",
+      "EXT-F-2004-T07",
+      "EXT-F-2011-T08",
+      "EXT-F-2013-T06",
+      "EXT-F-2013-T07",
+      "EXT-F-2013-T08",
+      "EXT-F-2013-T09",
+      "EXT-F-2014-T03",
+      "EXT-F-2014-T04",
+      "EXT-F-2014-T05",
+      "EXT-F-4089-T02",
+      "EXT-F-4091-T01"
+    ],
+    "strengthened_procedures": [
+      "EXT-F-2013-T08",
+      "EXT-F-4089-T02",
+      "EXT-F-4091-T01"
+    ],
+    "pilot_user_report_preserved": {
+      "defect_id": "EXT-D-0024",
+      "case_id": "EXT-F-2014-T05",
+      "wave": "D"
+    },
+    "historical_receipts": "No run/evidence file changed. Existing results retain original build and source provenance. Feature-level current status on affected surfaces is unverified; newly added mode results are unverified. Settings T46 remains a historical pass because its receipt already observed the exact stale-error clearing behavior."
+  },
+  "tool_roster": {
+    "source_inventory_entries": 169,
+    "unique_source_names": 168,
+    "name_collision": "wait_for has two inventory entries",
+    "live_active_bound_names": 82,
+    "live_missing_from_inventory": [],
+    "source_only_local_or_unadvertised_entries": [
+      {
+        "feature_id": "EXT-F-4002",
+        "name": "list_core_tools"
+      },
+      {
+        "feature_id": "EXT-F-4003",
+        "name": "list_reading_tools"
+      },
+      {
+        "feature_id": "EXT-F-4004",
+        "name": "list_interaction_tools"
+      },
+      {
+        "feature_id": "EXT-F-4005",
+        "name": "list_tabs_tools"
+      },
+      {
+        "feature_id": "EXT-F-4006",
+        "name": "list_capture_tools"
+      },
+      {
+        "feature_id": "EXT-F-4007",
+        "name": "list_chrome_tools"
+      },
+      {
+        "feature_id": "EXT-F-4008",
+        "name": "list_human_tools"
+      },
+      {
+        "feature_id": "EXT-F-4009",
+        "name": "list_memory_tools"
+      },
+      {
+        "feature_id": "EXT-F-4010",
+        "name": "list_ai_tools"
+      },
+      {
+        "feature_id": "EXT-F-4011",
+        "name": "list_demos_tools"
+      },
+      {
+        "feature_id": "EXT-F-4012",
+        "name": "list_guidance_tools"
+      },
+      {
+        "feature_id": "EXT-F-4013",
+        "name": "list_devtools_tools"
+      },
+      {
+        "feature_id": "EXT-F-4014",
+        "name": "list_webmcp_tools"
+      },
+      {
+        "feature_id": "EXT-F-4015",
+        "name": "list_desktop_tools"
+      },
+      {
+        "feature_id": "EXT-F-4016",
+        "name": "list_credentials_tools"
+      },
+      {
+        "feature_id": "EXT-F-4017",
+        "name": "list_crm_tools"
+      },
+      {
+        "feature_id": "EXT-F-4018",
+        "name": "list_education_tools"
+      },
+      {
+        "feature_id": "EXT-F-4019",
+        "name": "list_productivity_tools"
+      },
+      {
+        "feature_id": "EXT-F-4020",
+        "name": "list_records_tools"
+      },
+      {
+        "feature_id": "EXT-F-4025",
+        "name": "get_active_tab"
+      },
+      {
+        "feature_id": "EXT-F-4028",
+        "name": "take_screenshot"
+      },
+      {
+        "feature_id": "EXT-F-4036",
+        "name": "list_open_tabs"
+      },
+      {
+        "feature_id": "EXT-F-4037",
+        "name": "get_tab_groups"
+      },
+      {
+        "feature_id": "EXT-F-4038",
+        "name": "get_tab_info"
+      },
+      {
+        "feature_id": "EXT-F-4039",
+        "name": "search_bookmarks"
+      },
+      {
+        "feature_id": "EXT-F-4040",
+        "name": "list_bookmark_tree"
+      },
+      {
+        "feature_id": "EXT-F-4041",
+        "name": "search_history"
+      },
+      {
+        "feature_id": "EXT-F-4042",
+        "name": "list_recent_history"
+      },
+      {
+        "feature_id": "EXT-F-4043",
+        "name": "list_downloads"
+      },
+      {
+        "feature_id": "EXT-F-4045",
+        "name": "ai_check_availability"
+      },
+      {
+        "feature_id": "EXT-F-4046",
+        "name": "ai_summarize"
+      },
+      {
+        "feature_id": "EXT-F-4047",
+        "name": "ai_classify"
+      },
+      {
+        "feature_id": "EXT-F-4048",
+        "name": "ai_extract_json"
+      },
+      {
+        "feature_id": "EXT-F-4049",
+        "name": "ai_translate"
+      },
+      {
+        "feature_id": "EXT-F-4050",
+        "name": "ai_detect_language"
+      },
+      {
+        "feature_id": "EXT-F-4051",
+        "name": "ai_proofread"
+      },
+      {
+        "feature_id": "EXT-F-4052",
+        "name": "ai_describe_image"
+      },
+      {
+        "feature_id": "EXT-F-4053",
+        "name": "ai_check_prompt_injection"
+      },
+      {
+        "feature_id": "EXT-F-4054",
+        "name": "navigate_active_tab"
+      },
+      {
+        "feature_id": "EXT-F-4055",
+        "name": "click_element"
+      },
+      {
+        "feature_id": "EXT-F-4056",
+        "name": "type_into_element"
+      },
+      {
+        "feature_id": "EXT-F-4057",
+        "name": "scroll_page"
+      },
+      {
+        "feature_id": "EXT-F-4059",
+        "name": "set_clipboard"
+      },
+      {
+        "feature_id": "EXT-F-4061",
+        "name": "press_keys"
+      },
+      {
+        "feature_id": "EXT-F-4062",
+        "name": "hover_element"
+      },
+      {
+        "feature_id": "EXT-F-4063",
+        "name": "focus_element"
+      },
+      {
+        "feature_id": "EXT-F-4064",
+        "name": "blur_element"
+      },
+      {
+        "feature_id": "EXT-F-4065",
+        "name": "right_click_element"
+      },
+      {
+        "feature_id": "EXT-F-4066",
+        "name": "select_dropdown_option"
+      },
+      {
+        "feature_id": "EXT-F-4067",
+        "name": "set_checkbox"
+      },
+      {
+        "feature_id": "EXT-F-4068",
+        "name": "set_radio"
+      },
+      {
+        "feature_id": "EXT-F-4070",
+        "name": "file_upload"
+      },
+      {
+        "feature_id": "EXT-F-4071",
+        "name": "open_new_tab"
+      },
+      {
+        "feature_id": "EXT-F-4072",
+        "name": "close_tab"
+      },
+      {
+        "feature_id": "EXT-F-4073",
+        "name": "switch_to_tab"
+      },
+      {
+        "feature_id": "EXT-F-4074",
+        "name": "duplicate_tab"
+      },
+      {
+        "feature_id": "EXT-F-4075",
+        "name": "pin_tab"
+      },
+      {
+        "feature_id": "EXT-F-4076",
+        "name": "mute_tab"
+      },
+      {
+        "feature_id": "EXT-F-4077",
+        "name": "reload_tab"
+      },
+      {
+        "feature_id": "EXT-F-4078",
+        "name": "go_back"
+      },
+      {
+        "feature_id": "EXT-F-4079",
+        "name": "go_forward"
+      },
+      {
+        "feature_id": "EXT-F-4080",
+        "name": "set_tab_zoom"
+      },
+      {
+        "feature_id": "EXT-F-4081",
+        "name": "move_tab"
+      },
+      {
+        "feature_id": "EXT-F-4083",
+        "name": "create_tab_group"
+      },
+      {
+        "feature_id": "EXT-F-4084",
+        "name": "add_tabs_to_group"
+      },
+      {
+        "feature_id": "EXT-F-4085",
+        "name": "remove_tabs_from_group"
+      },
+      {
+        "feature_id": "EXT-F-4086",
+        "name": "update_tab_group"
+      },
+      {
+        "feature_id": "EXT-F-4087",
+        "name": "download_url"
+      },
+      {
+        "feature_id": "EXT-F-4088",
+        "name": "cancel_download"
+      },
+      {
+        "feature_id": "EXT-F-4094",
+        "name": "list_recently_closed"
+      },
+      {
+        "feature_id": "EXT-F-4095",
+        "name": "restore_recently_closed"
+      },
+      {
+        "feature_id": "EXT-F-4097",
+        "name": "get_cookies"
+      },
+      {
+        "feature_id": "EXT-F-4098",
+        "name": "set_cookie"
+      },
+      {
+        "feature_id": "EXT-F-4099",
+        "name": "delete_cookie"
+      },
+      {
+        "feature_id": "EXT-F-4100",
+        "name": "cdp_attach"
+      },
+      {
+        "feature_id": "EXT-F-4101",
+        "name": "cdp_detach"
+      },
+      {
+        "feature_id": "EXT-F-4102",
+        "name": "cdp_attached_tabs"
+      },
+      {
+        "feature_id": "EXT-F-4113",
+        "name": "cdp_emulate_device"
+      },
+      {
+        "feature_id": "EXT-F-4114",
+        "name": "cdp_clear_emulation"
+      },
+      {
+        "feature_id": "EXT-F-4118",
+        "name": "webmcp_check_availability"
+      },
+      {
+        "feature_id": "EXT-F-4119",
+        "name": "webmcp_list_page_tools"
+      },
+      {
+        "feature_id": "EXT-F-4120",
+        "name": "webmcp_call_page_tool"
+      },
+      {
+        "feature_id": "EXT-F-4125",
+        "name": "inject_stylesheet"
+      },
+      {
+        "feature_id": "EXT-F-4126",
+        "name": "remove_stylesheet"
+      },
+      {
+        "feature_id": "EXT-F-4128",
+        "name": "parallel_for_each_tab"
+      },
+      {
+        "feature_id": "EXT-F-4144",
+        "name": "get_clipboard"
+      }
+    ],
+    "meaning": "The 169 inventory entries represent local executor/catalog census. Only 82 names currently have active non-deleted definitions with active chrome-extension binding in the read-only DB receipt. Source-only entries must not be counted as advertised tools or promoted to executable UI cases without their routing contract."
+  },
+  "gate_verdict": "Changed src path accounting is complete (all 72 paths mapped to existing features). Full control/mode census is not certified until an independent source review and read-only native visibility pass, especially dynamic role/permission gates. No behavior cell is promoted by this source work.",
+  "next_narrow_batch": [
+    "EXT-F-1003-T46",
+    "EXT-F-1003-T48",
+    "EXT-F-1002-T19",
+    "EXT-F-1002-T20",
+    "EXT-F-1001-T01",
+    "EXT-F-1015-T38"
+  ],
+  "sequence_note": "Start with local Settings engine-port recovery and popup/navigation failure remedies after current build/role visibility. Chat/Pilot stay wave D; Source cross-system cases do not preempt local controls.",
+  "limits": [
+    "No browser, build, tests, live role visibility or tool execution in this lane.",
+    "Path mapping is source-accounting, not proof that every dynamic control or backend authorization is visible to each mode.",
+    "Canonical live roster receipt verifies active definitions and bindings only; it does not prove manual runner visibility, permissions or successful execution.",
+    "Original inventory contains broad older cases with generic steps; new and strengthened cases here have explicit build/reload preconditions, but remaining procedures need just-in-time design before native dispatch."
+  ],
+  "generated_contract_accounting": {
+    "path": "types/python-generated/stream-events.ts",
+    "feature_ids": [
+      "EXT-F-2013",
+      "EXT-F-2014"
+    ],
+    "wave": "D",
+    "changes": [
+      "Additive cutover typed data payloads",
+      "HostedToolPart in persisted MessagePart/schema",
+      "Message flag constants/types and compatibility metadata"
+    ],
+    "disposition": "Shared generated contracts add no standalone extension control. Account for accepted unknown/hosted message parts and flag preservation in deferred Chat/Pilot stream/history coverage. No claim of runtime compatibility; generated code is not modified by this campaign.",
+    "review": "reports/takeover-inventory-peer.json"
+  }
+}
