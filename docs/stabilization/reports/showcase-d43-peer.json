@@ -7,13 +7,10 @@
     "claim_limit": "No claim that the proposed implementation was installed, exercised, or accepted live."
   },
   "source_verdict": {
-    "status": "not ready; core seeded continuation is disconnected",
+    "status": "proposed source repair is coherent in the inspected path; runtime and integration remain unverified",
     "patch": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d43-product.patch",
     "regression": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-d43-regression.test.ts",
-    "confirmed_blocker": {
-      "reproduction": "With an existing broad list configuration, invoke Pick more fields and click a nested title. Expected: reuse the existing list_root/item_selector and collect a field. Actual in the prepared patch: ListPatternTab still calls startListPickerSession(tab.id, sessionId) without a seed (current source line 347); therefore mountListPicker receives no seed and remains in phase 'item'. A nested repeated li can still replace the broad card scope.",
-      "evidence": "The patch adds seed support to list-picker-session.ts and mountListPicker(), but does not change the ListPatternTab enterPicker call. src/entrypoints/list-picker.content.ts assigns mountListPicker directly as the start hook. The prepared first regression directly calls mountListPicker(id, seed), bypassing the missing sidepanel-to-session-to-content wiring, so it would not catch this integration failure."
-    },
+    "corrected_finding": "The proposed patch DOES pass the existing config's list_root and item_selector from ListPatternTab.enterPicker to startListPickerSession as its third argument (patch hunk around lines 26–35), which forwards it through executeScript to the content hook and mountListPicker. The earlier missing-caller blocker was false: it came from checking restored source rather than the proposed diff. The direct-mount regression still does not verify this end-to-end wiring.",
     "positive_source_changes": [
       "Fresh clicks can enumerate repeated ancestor candidates and defer item-detected until a scope is selected.",
       "Field clicks are resolved against the repeated item containing the click, and config merging now requires both root and item selector to match.",
@@ -24,7 +21,7 @@
       "The direct mount tests do not exercise startListPickerSession serialization, injected hook invocation, D42 stamped rebroadcast, or sidepanel acceptance/merge; no regression proves the user-visible continuation end to end.",
       "The no-seed page-change test proves only a fresh picker run; it does not assert stale A completion cannot overwrite replacement B during seeded mount, cancel, or delayed injection."
     ],
-    "d42_lifecycle": "No direct identity regression is visible in the patch: emitted messages retain session_id and the existing D42 consumer filters tab, session, and page key. However seed transport is not wired at the caller, and async injection/cancel overlap with the new seed path is not covered by the prepared regression."
+    "d42_lifecycle": "No direct identity regression is visible in the patch: emitted messages retain session_id and the existing D42 consumer filters tab, session, and page key. Seed transport is wired at the caller; async injection/cancel overlap with the seeded path is not covered by the prepared regression."
   },
   "review_scope": "Read-only inspection of the proposed diff, prepared test, current ListPatternTab caller, picker content hook, and selector inference. Patch was not applied; tests/build/browser were not run."
 }
