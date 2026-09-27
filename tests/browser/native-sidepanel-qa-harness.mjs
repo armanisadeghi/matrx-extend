@@ -148,7 +148,7 @@ function requireSidePanelContext(contexts, panelUrl) {
 function isSettledGuestPanel(state) {
   return (
     state?.ready === true &&
-    state?.signInControl === true &&
+    state?.guestAccount === true &&
     state?.scrapeTrigger === true &&
     state?.chatTrigger === false &&
     state?.visibleControls >= 2
@@ -218,7 +218,7 @@ async function waitForSettledGuestPanel(cdp, targetId) {
       .filter(visible);
     return {
       ready: document.readyState === 'complete',
-      signInControl: controls.some((element) => /^sign in$/i.test(element.textContent?.trim() ?? '')),
+      guestAccount: controls.some((element) => element.getAttribute('title') === 'Account'),
       scrapeTrigger: [...document.querySelectorAll('button[role="tab"]')]
         .some((element) => element.getAttribute('title') === 'Scrape' && visible(element)),
       chatTrigger: [...document.querySelectorAll('button[role="tab"]')]
@@ -241,7 +241,7 @@ async function waitForSettledGuestPanel(cdp, targetId) {
     throw error;
   }
   await panel.detach();
-  throw new Error('native_sidepanel_render_not_settled');
+  throw new Error(`native_sidepanel_render_not_settled:${previousFingerprint ?? 'no_state'}`);
 }
 
 async function captureTarget(cdp, targetId, output) {

@@ -90,7 +90,7 @@ assert.throws(
 assert.equal(
   isSettledGuestPanel({
     ready: true,
-    signInControl: true,
+    guestAccount: true,
     scrapeTrigger: true,
     chatTrigger: false,
     visibleControls: 4,
@@ -100,7 +100,7 @@ assert.equal(
 assert.equal(
   isSettledGuestPanel({
     ready: true,
-    signInControl: true,
+    guestAccount: true,
     scrapeTrigger: true,
     chatTrigger: true,
     visibleControls: 4,
@@ -110,7 +110,7 @@ assert.equal(
 assert.equal(
   isSettledGuestPanel({
     ready: true,
-    signInControl: false,
+    guestAccount: false,
     scrapeTrigger: true,
     chatTrigger: false,
     visibleControls: 4,
