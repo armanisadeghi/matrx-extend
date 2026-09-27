@@ -1,0 +1,62 @@
+{
+  "defect": "EXT-D-0041",
+  "lane": "fresh independent source peer, Sol medium, no authorship",
+  "reviewed_commit": "56fdac28994cc7a217cd8d91e72092fbf5662359",
+  "scope": "Saved Network selection, config persistence, tap/relay, replay, and new guards. Read-only source review; no build, browser, localhost, or runtime test commands.",
+  "verdict_A_live_user_outcome": {
+    "status": "UNVERIFIED",
+    "reason": "No installed extension or real-site capture/save/reopen/replay was exercised in this lane. The source has important paths that can still yield no result or the wrong document's result.",
+    "positive_source_findings": [
+      "Selected response, rather than search text or largest body, supplies the saved matcher; exact URL and body digest preserve stable request identity by default.",
+      "Same-identity changed response content is allowed and latest initiation order wins after the full capture window. Distinct accepted identities produce an ambiguity error; truncated replay results are rejected.",
+      "Partial URL/wildcard and URL-plus-method-only choices are user-visible and saved explicitly. Changing ordinary query values can be accommodated when a sufficiently specific broad matcher admits only the intended request."
+    ],
+    "unclosed_user_outcome_gaps": [
+      "Replay injection begins only after a tabs.onUpdated loading callback and two sequential executeScript calls. A page request and response completed before MAIN tap installation cannot be recovered, so automatic reload/replay is not consistent on early-loading sites. run-interactive.ts:444-465,476-495.",
+      "A delayed old-document response delivered after the loading callback can pass the tab-only replay filter. The background stamps sender.tab.id but no trusted document identity. If the old response has the same URL/method/body digest as the new response, its document-local request_sequence may be higher and can win as latest, returning stale rows. bootstrap.ts:551-556; run-interactive.ts:361-413,446-450; network-tap.ts:85,159-161."
+    ]
+  },
+  "verdict_B_source_quality": {
+    "status": "FAIL_IMPORTANT",
+    "findings": [
+      {
+        "severity": "Important",
+        "title": "Credential-bearing request URLs are persisted without redaction or an identity-safe refusal",
+        "repro": "Capture a GET response whose URL has a credential query parameter, select it, and save with the default exact matcher. NetworkTab assigns event.url to replayUrlFilter and config.url_filter and also derives a defaultName from the URL. SaveAsPattern sends both to savePattern, which inserts them into extend.wbx_pattern. A synthetic URL such as https://calendar.invalid/api/events?access_token=PRIVATE_VALUE demonstrates the flow; no real token was used or written to this report.",
+        "evidence": [
+          "src/features/showcase/tabs/NetworkTab.tsx:39-44,287-301",
+          "src/features/showcase/components/SaveAsPattern.tsx:154-166",
+          "src/lib/supabase/queries.ts:974-987"
+        ],
+        "implication": "Raw URL credentials can land in both persisted config and name, contradicting the no-raw-credentials outcome. The desktop WebSocket redactToken helpers only redact log strings and do not cover this path.",
+        "guard_gap": "The new save/replay tests use ordinary URLs and mocked savePattern; none includes a credential-bearing URL or verifies safe persisted fields."
+      },
+      {
+        "severity": "Important",
+        "title": "Loading callback is neither document-start interception nor document provenance",
+        "repro": "Start replay with an old tab request pending. After tabs.onUpdated reports loading, the old document finishes and relays a matching response while the new document is starting. accepting is already true, and tab_id is unchanged. The replay may choose old rows if no new response arrives, or if its sequence is greater than the new document's reset sequence.",
+        "evidence": [
+          "src/lib/data-pattern/run-interactive.ts:361-413,444-465",
+          "src/lib/background/bootstrap.ts:551-556",
+          "src/lib/data-pattern/network-tap.ts:85,159-161,304-328"
+        ],
+        "guard_gap": "The old-response test emits only before loading; it never emits a delayed old-document response after loading, and the event fixture has no document identity. tests/unit/network-replay-integrity.test.ts:150-158."
+      },
+      {
+        "severity": "Moderate",
+        "title": "A capturable truncated or failed preview can still be saved as a recipe that cannot rerun",
+        "repro": "A response whose byte cap cuts only trailing whitespace can still parse and show a Save control despite body_truncated=true; a non-2xx JSON response can also show Save. The replay later rejects the truncated result or ignores all non-2xx responses. The preview does display status/truncated text, but the save affordance has no explicit future-run warning for these cases.",
+        "evidence": [
+          "src/features/showcase/tabs/NetworkTab.tsx:47-73,189-195,282-305",
+          "src/lib/data-pattern/run-interactive.ts:345-354,387-388"
+        ],
+        "guard_gap": "The truncation guard covers replay rejection only; no guard asserts truthful Save guidance for a truncated or failed selected preview."
+      }
+    ],
+    "guard_assessment": "The replay guards exercise exact URL, body digest, full-window ambiguity, initiation order, and truncation with different expected results. The UI save guard checks selected request versus list search, but persistence is mocked. Builder report records a constant-runner mutant causing seven replay failures; not independently rerun here. Neither tests nor source review establish real Chrome behavior."
+  },
+  "ordinary_updated_data_ruling": "Response data can change for an unchanged request identity. A changed date/cursor/query is a changed request identity; exact default yields no match, and the explicit broad control can accept it if unique. Multiple different identities under that broad matcher correctly return ambiguity rather than guessing. This is a bounded user-managed limitation, not itself a defect, though the UI must keep its remedy clear.",
+  "raw_data_assessment": "D41 emits a SHA-256 key for supported request bodies and no raw request headers in the event or saved config. Captured response body and response headers remain in the transient capture event as intended. The report contains no real URL, credential, body, or header capture. Credential-bearing URL persistence above is the exception to the privacy claim.",
+  "not_run": ["Browser/live site", "localhost UI", "build/typecheck", "unit suite", "database persistence roundtrip"],
+  "files_changed": ["docs/stabilization/reports/showcase-network-final-peer.json"]
+}
