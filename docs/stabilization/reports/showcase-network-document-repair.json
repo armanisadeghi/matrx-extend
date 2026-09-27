@@ -1,5 +1,5 @@
 {
-  "status": "prepared_unverified_not_apply_ready",
+  "status": "paused_prepared_unverified_not_apply_ready",
   "defect": "EXT-D-0047",
   "case": "EXT-F-1012-T57",
   "lane": "Astra medium; source/scratch only",
@@ -29,9 +29,13 @@
     "src/lib/data-pattern/document-network-transport.ts",
     "src/lib/data-pattern/network-tap.ts",
     "src/lib/data-pattern/run-interactive.ts",
+    "src/lib/tools/dispatch-persist.ts",
+    "src/lib/tools/prepared-tool-operation.ts",
+    "tests/unit/document-network-authorization.test.ts",
     "tests/unit/document-network-capture.test.ts",
     "tests/unit/document-network-lease.test.ts",
-    "tests/unit/document-network-port.test.ts"
+    "tests/unit/document-network-port.test.ts",
+    "tests/unit/document-network-recovery.test.ts"
   ],
   "prepared_tests": [
     "Initial binding response before frame commit survives; delayed old context is rejected; registration precedes reload; sensitive header canaries omitted.",
@@ -90,10 +94,17 @@
       "Concurrent tab captures cannot consume each other's approval."
     ],
     "lease_fix": "Detach invalidates the old lease generation. Its stale send/release cannot touch a subsequent attachment. Prepared tests also cover owned, borrowed and concurrently retained attachments.",
-    "executed": false
+    "executed": false,
+    "resolution": "Concrete minimal prepared-operation integration specified in IMPLEMENTATION.md. Existing data_patterns tool/run identity is retained. Recovery matches immutable recipe/document/options digest and rechecks current admin/Pilot/browser/permission requirements. Local disconnected owner expires without attachment.",
+    "registry_change": "No new definition/binding needed; existing data_patterns description amendment proposed, not applied."
   },
   "additional_prepared_tests": [
     "Four actual CDP client lease tests, including stale lease versus replacement attachment.",
-    "Three actual private-port host tests: sender authority, disconnect during pending setup, cleanup error delivery."
-  ]
+    "Three actual private-port host tests: sender authority, disconnect during pending setup, cleanup error delivery.",
+    "Prepared operation execution-boundary authorization tests, including denial, Act, recovery policy checks, binding mismatch and cancellation.",
+    "Actual dispatch persistence across module restart, concurrent approval claims and competing record write; existing-store mutation serialization prepared."
+  ],
+  "selected_implementation": "Prepared data_patterns run through existing dispatcher and durable approval identity; no new tool or DB schema. Network operation alone resolves privileged debugger requirements.",
+  "implementation_plan": "/Volumes/Samsung2TB/code/.stabilization-scratch/d47-document-repair-20260927/IMPLEMENTATION.md",
+  "remaining": "Full dispatcher/local-port adapter wiring and actual TOOL_CONFIRM_RESPONSE caller tests remain. Scratch executable seams are not integrated implementation or runtime proof. Pause for D48 priority source peer."
 }
