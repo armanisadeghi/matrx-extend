@@ -4,7 +4,7 @@ Owner request 2026-09-27: use Showcase and make repeating-pattern discovery, ext
 
 ## Target and existing capability
 
-Authoritative coverage: inventory EXT-F-1012, 41 controls and49 cases (original stable IDs retained). Preserve stable IDs; extend missing preview/save/reopen/replay cases per method before testing them. Existing UI: Doctor, Recipes, Prepare, Snapshot, JSON-LD, Microdata, Tables, Framework, AI Extract, List Pattern, Network, Patterns. Shared extraction/data-pattern primitives remain canonical. Guest/member/admin applicability stays tracked. A disallowed mode passes only its actual denial behavior; it is not an extraction pass.
+Authoritative coverage: inventory EXT-F-1012, stable controls/cases in inventory (original IDs retained). Preserve stable IDs; extend missing preview/save/reopen/replay cases per method before testing them. Existing UI: Doctor, Recipes, Prepare, Snapshot, JSON-LD, Microdata, Tables, Framework, AI Extract, List Pattern, Network, Patterns. Shared extraction/data-pattern primitives remain canonical. Guest/member/admin applicability stays tracked. A disallowed mode passes only its actual denial behavior; it is not an extraction pass.
 
 Owner-seat observation: primary Chrome already has Showcase Doctor open on https://electronic.vegas/vegas-edm-event-calendar/. Visible Doctor reports249 event cards and249 Event microdata items; public calendar has readable event names/dates/venues. Build identity is not yet verified, so this is orientation evidence, not a development acceptance pass. This page is a real-data acceptance target alongside a structurally different public page and controlled regression pages.
 

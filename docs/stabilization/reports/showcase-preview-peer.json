@@ -75,5 +75,54 @@
       "evidence": "FrameworkTab increments dumpSeq on page change, checks it on dump success/error/finally, stores sourcesPageKey with the result, and renders sources only when that key equals the current tab ID/URL."
     },
     "remaining": "The earlier List Pattern live-config drift and Patterns replay route/stale-result findings remain outside this bounded recheck. A and B verdicts remain unchanged pending real UI and persisted replay verification."
+  },
+  "list_pattern_shared_extraction_review": {
+    "scope": "Distinct zero-authorship source review of commit 9be8d4c9 and the current uncommitted useExtraction.reset follow-up; no test, build, or browser execution.",
+    "A_live_outcome": "unverified: no real List Pattern field selection, preview, dataset append, saved-pattern reread, or rerun was observed in this lane.",
+    "B_source_quality": {
+      "verdict": "preview_save_config_drift_addressed;_restart_sample_and_picker_cancel_edges_remain",
+      "positive": [
+        "ListPatternTab now uses the shared useExtraction('list_pattern') path. The hook stores the executed config and extracted rows/source under the same page key, and SaveAsPattern receives previewConfig rather than current editable config. Later field edits therefore do not alter the saved recipe for an earlier preview.",
+        "The follow-up useExtraction.reset increments runSeq and clears rows, config, source, error, and running. A pending run result cannot repopulate the preview after Restart or a new detected/picked config; page change also invalidates the hook generation and masks stale rows immediately.",
+        "The normal Extract button still calls runMode through useExtraction with the selected list config, and a failed run surfaces extractionError."
+      ],
+      "findings": [
+        {
+          "severity": "medium",
+          "classification": "new local/hook generation mismatch in 9be8d4c9 integration",
+          "location": "src/features/showcase/tabs/ListPatternTab.tsx handleRun and captureSampleHtml",
+          "reproduction": "Start extraction, press Restart before it resolves, then resolve the old run with rows.",
+          "finding": "useExtraction discards the old preview but still returns the old data to handleRun. ListPattern's separate runSeqRef is not incremented by Restart or config replacement, so handleRun can capture and restore old sampleHtml after Restart. Rows/config stay cleared, but stale sample material can reappear in a later builder session.",
+          "recommendation": "Invalidate the local handleRun generation on Restart and every config replacement, or return a committed-result marker from the hook before capturing samples."
+        },
+        {
+          "severity": "medium",
+          "classification": "preexisting picker lifecycle gap retained in new integration",
+          "location": "src/features/showcase/tabs/ListPatternTab.tsx cancelPicker and LIST_PICKER handlers",
+          "reproduction": "Begin a picker session, cancel it from the sidepanel, then deliver a delayed stamped item-detected or result message for that tab.",
+          "finding": "cancelPicker sets picking false but leaves pickTabRef and pickPageKeyRef active; message handlers check only tab ID and may install the cancelled picker config and clear the preview. Normal in-order cancel emits EXIT, but the code does not exclude delayed messages.",
+          "recommendation": "Clear the picker session refs at cancel/exit and require the current picker session when applying detected/result messages."
+        }
+      ],
+      "remaining": "PatternsTab route applicability and stale replay remains outside this commit. Live field extraction and saved replay are still required before the user outcome is claimed."
+    }
+  },
+  "list_pattern_cancel_recheck": {
+    "scope": "Same-reviewer bounded source recheck of the two prior ListPattern findings against the current uncommitted fix; not a fresh review or live acceptance.",
+    "A_live_outcome": "unverified; no browser, build, or test execution in this lane.",
+    "B_source_quality": {
+      "late_sample_html_after_restart": {
+        "status": "addressed_in_source",
+        "evidence": "Restart calls invalidateBuilderWork, which increments ListPattern's runSeqRef and sampleSeqRef and calls the shared hook reset. handleRun checks runSeqRef after run() and again after captureSampleHtml, so an old run/capture cannot reinstall sampleHtml after Restart or a replacement handoff."
+      },
+      "stamped_picker_events_after_cancel": {
+        "status": "addressed_while_no_new_picker_active;_same_page_new_session_gap",
+        "evidence": "cancelPicker now calls closePickerSession before attempting injected cancel; that nulls pickTabRef and pickPageKeyRef. fromOurPick requires both the tab ID and current page key, so delayed stamped messages arriving while no picker is active are ignored.",
+        "residual_reproduction": "Cancel picker A, immediately start picker B on the same tab and URL, then deliver a delayed stamped ITEM_DETECTED or RESULT from A. Both messages carry tab_id but no session identity; fromOurPick sees B's active tab/page refs and accepts A's payload.",
+        "recommendation": "Carry a picker-session nonce through the content-script messages and service-worker rebroadcast, or wait for old-picker teardown before admitting a new session and prove the ordering. The existing pickerSessionSeqRef only guards late injection errors, not incoming messages."
+      },
+      "regression_check": "Valid RESULT now snapshots its session page key before closePickerSession and still applies the config; ordinary manual picker launch and selected-field merge remain present. No additional source regression was established in this narrow review.",
+      "verdict": "sample_restart_fixed;_cancel_gap_remains_for_rapid_same_page_repick"
+    }
   }
 }

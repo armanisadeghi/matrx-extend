@@ -1,7 +1,10 @@
 {
   "id": "EXT-D-0039",
   "feature_id": "EXT-F-1012",
-  "case_ids": ["EXT-F-1012-T04", "EXT-F-1012-T23"],
+  "case_ids": [
+    "EXT-F-1012-T04",
+    "EXT-F-1012-T23"
+  ],
   "surface": "Showcase Doctor \u2192 List Pattern",
   "auth_mode": "admin",
   "reproduction": [
@@ -14,11 +17,12 @@
   "actual": "Navigation discards detection config and leaves blank initial picker screen despite promise to pre-seed.",
   "evidence": [
     "docs/stabilization/runs/showcase-live-discovery-001.json",
-    "docs/stabilization/reports/showcase-detect-audit.json"
+    "docs/stabilization/reports/showcase-detect-audit.json",
+    "docs/stabilization/runs/showcase-live-retest-001.json"
   ],
   "severity": "S2: core discover-to-extract workflow loses detected pattern and forces manual restart",
   "priority": "P1: first Showcase vertical repair",
-  "state": "fixed",
+  "state": "retest-fail",
   "transition_history": [
     {
       "at": "2026-09-27T15:17:46.172311+00:00",
@@ -43,6 +47,12 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Doctor-to-List handoff and stale-page/inspector repairs are implemented; focused real-DOM guard passed 6/6 and TypeScript compile passed. Independent fresh-build UI retest remains required before closure."
+    },
+    {
+      "at": "2026-09-27T16:12:53.635507+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Fresh .101 live retest passes original Doctor handoff, but required surrounding Pick more fields/extraction replaces the detected event-card scope with nested detail items. Separate root cause tracked as EXT-D-0043; hold closure until this workflow retest passes."
     }
   ],
   "engineering_evidence": [

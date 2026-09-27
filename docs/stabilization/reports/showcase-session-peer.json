@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0042",
+  "review_type": "independent source verification",
+  "scope": "Picker producer \u2192 per-tab injection/cancellation queue \u2192 service-worker relay \u2192 ListPatternTab consumer; identical tab and URL replacement session.",
+  "authorship": "No product source or test edits. This reviewer previously held the live-verification seat for D39/D40; D42 itself received no live observation.",
+  "live_verification": {
+    "verdict": "unverified",
+    "evidence": "No browser or test/build tools were used in this review. The retained Microdata Event recipe is unrelated to D42 and remains available for future live work.",
+    "required_next_proof": "On the fresh installed artifact, start A, cancel it, start B on the same tab and URL, then deliver A detection/result/exit and delayed A cancellation separately. Require unchanged B config/picking state, followed by successful B detection, field selection and extraction. Reinject the content context and verify one event per click and normal page clicks after close."
+  },
+  "source_quality": {
+    "verdict": "pass_with_test_gaps",
+    "source_blockers": [],
+    "reasoning": [
+      "ListPatternTab creates a unique UUID per start, stores current tab/page/session identity, invalidates refs before dispatching targeted cancellation, and accepts rebroadcasts only when tab_id, session_id and current page key all match (src/features/showcase/tabs/ListPatternTab.tsx:93-106,165-170).",
+      "Start and cancel executeScript operations are serialized per tab; cancellation carries the old UUID. Therefore a queued A cancel cannot overtake B start, and if delivered after B is active the page hook only cancels when the target equals its current session (src/lib/data-pattern/list-picker-session.ts:13-57; src/lib/data-pattern/list-picker.ts:102-105).",
+      "Detection, result and exit carry producer session_id. The relay preserves that identity while replacing tab_id with the trusted sender's tab; the consumer rejects non-current sessions before changing the builder (src/lib/data-pattern/list-picker.ts:181-190,306-318; src/lib/data-pattern/list-picker-relay.ts:4-16; ListPatternTab.tsx:165-228).",
+      "Reinjection calls the previous context teardown before replacing the overlay; teardown removes that context's document capture listeners and resets picker state (src/lib/data-pattern/list-picker.ts:39-50,112-128).",
+      "A parameterized consumer-level regression test injects each stale A channel after B starts, confirms B remains in picking state, then delivers current B RESULT and asserts Extract returns Neon Nights data (tests/unit/showcase-doctor-list-handoff.test.tsx:133-172)."
+    ],
+    "test_proof_gaps": [
+      "Cross-context reinjection tests count one detection and verify a later ordinary click is not prevented, but do not exercise the full sequence with a pending old message plus a replacement picker.",
+      "The parameterized Showcase handoff test does assert current B RESULT \u2192 Extract \u2192 Neon Nights rows after a stale A channel, separately for stale detection/result/exit. It uses mocked message delivery and page execution; it does not include the real producer and service-worker relay in that same composition."
+    ],
+    "limitations": "This is static source analysis only. No tests were run and no runtime outcome is claimed. It does not promote EXT-D-0042 to verified or closed."
+  }
+}

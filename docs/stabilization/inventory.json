@@ -14835,6 +14835,16 @@
           "id": "EXT-F-1012-C41",
           "label": "Result preview and export",
           "action": "Toggle table/JSON and use JSON/TSV/AI copy and explicit agent handoff."
+        },
+        {
+          "id": "EXT-F-1012-C42",
+          "label": "Network replay request URL matcher",
+          "action": "Select a captured response, inspect or edit its replay URL matcher, and save the selected request recipe independently of the captured-list search."
+        },
+        {
+          "id": "EXT-F-1012-C43",
+          "label": "List scope choice",
+          "action": "Choose a repeated group during a fresh manual pick; keep the chosen list when adding fields."
         }
       ],
       "source_anchors": [
@@ -15013,9 +15023,9 @@
           ],
           "results": {
             "admin": {
-              "status": "fail",
-              "run_id": "showcase-live-discovery-001",
-              "evidence": "docs/stabilization/runs/showcase-live-discovery-001.json"
+              "status": "partial",
+              "run_id": "showcase-live-retest-001",
+              "evidence": "docs/stabilization/runs/showcase-live-retest-001.json"
             }
           }
         },
@@ -15517,7 +15527,14 @@
             "reload",
             "auth-transition",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-live-retest-001",
+              "evidence": "docs/stabilization/runs/showcase-live-retest-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T25",
@@ -15642,7 +15659,14 @@
             "reload",
             "auth-transition",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "fail",
+              "run_id": "showcase-live-retest-001",
+              "evidence": "docs/stabilization/runs/showcase-live-retest-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T30",
@@ -16077,7 +16101,14 @@
             "reload",
             "navigation",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-live-retest-001",
+              "evidence": "docs/stabilization/runs/showcase-live-retest-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T46",
@@ -16107,7 +16138,14 @@
             "reload",
             "navigation",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-live-microdata-001",
+              "evidence": "docs/stabilization/runs/showcase-live-microdata-001.json"
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T47",
@@ -16187,6 +16225,71 @@
             "navigation",
             "service-error"
           ]
+        },
+        {
+          "id": "EXT-F-1012-T50",
+          "title": "Selected Network request matcher survives save and interactive replay",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C42"
+          ],
+          "defect_ids": [
+            "EXT-D-0041"
+          ],
+          "preconditions": [
+            "Use a real page with two distinct JSON fetch/XHR response URLs and an owned disposable pattern; guest/member denial follows T38."
+          ],
+          "steps": [
+            "Search captured responses by content type json, select one request, choose its array path, then change the display search and confirm the selected preview stays pinned.",
+            "Inspect the separate request URL matcher, edit it to omit the selected URL and observe nonblocking guidance, then restore a matcher for the selected URL and save.",
+            "Reopen the saved recipe in Patterns and Run on the same open page; trigger the request if needed and compare request identity and returned rows with the selected preview."
+          ],
+          "expected": [
+            "The saved matcher targets the selected request URL and method, not a display search or another visible response; the key path and rows remain aligned.",
+            "Interactive rerun reloads the open page and returns rows when the matching request fires, or gives honest no-match guidance; no scheduled run is offered."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ]
+        },
+        {
+          "id": "EXT-F-1012-T51",
+          "title": "Seeded field picking and nested-list scope selection",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C43",
+            "EXT-F-1012-C24"
+          ],
+          "preconditions": [
+            "Fresh development build, explicit extension/page reload; nested repeated DOM and actual electronic.vegas calendar.",
+            "Guest/member feature denial is tracked in the existing excluded-audience case."
+          ],
+          "steps": [
+            "Follow Doctor recommendation for event cards, then Pick more fields and select an event title/link.",
+            "Verify root/item scope remains event cards; extract distinct fields across the card collection.",
+            "Start a fresh manual pick on a nested title and explicitly choose the intended outer repeated group.",
+            "Exercise alternate nested group choice, cancel and page-change behavior."
+          ],
+          "expected": [
+            "Adding fields preserves existing selected list and saved field definitions.",
+            "Fresh manual picking offers an understandable scope choice where nested repeated groups exist; selected scope determines actual extracted rows."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "cancel"
+          ],
+          "defect_ids": [
+            "EXT-D-0043"
+          ]
         }
       ],
       "cells": {
@@ -16206,12 +16309,17 @@
           "test_status": "fail",
           "defect_ids": [
             "EXT-D-0039",
-            "EXT-D-0040"
+            "EXT-D-0040",
+            "EXT-D-0041",
+            "EXT-D-0042",
+            "EXT-D-0043"
           ],
           "run_ids": [
-            "showcase-live-discovery-001"
+            "showcase-live-discovery-001",
+            "showcase-live-retest-001",
+            "showcase-live-microdata-001"
           ],
-          "retest_status": "not-run"
+          "retest_status": "fail"
         }
       },
       "inventory_status": "complete",
@@ -16219,7 +16327,11 @@
       "source_complete": true,
       "notes": [
         "2026-09-27 user elevated Showcase to current priority; added shared-save and per-kind roundtrip acceptance before testing. Every added case starts unverified; admin-only product audience retained, guest/member denial remains separately tracked.",
-        "D40 source-confirmed preview/config drift is linked; its focused regression and live saved/reopened retest remain pending. No added method case is promoted from source review."
+        "D40 source-confirmed preview/config drift is linked; its focused regression and live saved/reopened retest remain pending. No added method case is promoted from source review.",
+        "EXT-D-0042 investigates old picker events/cancellation reaching a new same-page session; source evidence at reports/showcase-picker-session-fix.json, boundary reproduction pending. This is separate from D39 handoff and D40 executed preview config, and no coverage is promoted.",
+        "EXT-D-0041 reserved for selected Network request \u2192 saved URL matching \u2192 repeat extraction; source-only investigation assigned while frozen .101 D39/D40 live review runs. No result claimed.",
+        "Fresh .101 live retest: original Doctor list seed arrives, but Pick more fields replaced event-card scope with one event\u2019s nested list and returned3 rows. D43 assigned for independent diagnosis; D39 remains open until surrounding field/extraction behavior passes. No saved recipe persistence yet tested.",
+        "D40 real Microdata Event preview \u2192 unsent Place draft \u2192 saved pattern \u2192 reopened Patterns replay returned249 Event records with matching visible fields/sample values. T46 stays partial; full-value comparison/reload/errors and datasets remain unverified. Exact owned recipe retained as next persistence-test fixture."
       ]
     },
     {

@@ -1,10 +1,25 @@
 # Matrx Extend stabilization: resume here
 
-Current priority (2026-09-27): finish Showcase detect → extract → save → reopen → repeat, per the latest owner request. See SHOWCASE-PLAN.md and inventory EXT-F-1012. Broad stabilization is incomplete. Prior resource refusals are historical; primary Chrome manual discovery was admitted and terminated cleanly. The goal tool retains its earlier blocked status, but current Showcase work is active.
+Current priority (2026-09-27): finish Showcase detect → extract → save → reopen → repeat, per latest owner request. SHOWCASE-PLAN.md and inventory EXT-F-1012 own scope. Broad stabilization remains incomplete; old blocked goal-tool state reflects historical resource refusals, not the current active repair.
 
-Primary Chrome is verified unpacked .97 from repository .output/chrome-mv3-dev, extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, signed-in admin. Source is now .100, integrated at dcd57b09; the old installed build is baseline evidence only. D39 reproduced live: Doctor finds249 event cards but List Pattern receives no seed. Run showcase-live-discovery-001 records this and installation identity.
+## Current source, build, and ownership
 
-Active ownership: showcase_detect_audit (Sol medium) owns D39 Doctor/List Pattern/state and the sole heavy-test permit; dependency sync completed, prepare/focused regression underway. showcase_save_replay_audit (Sol medium) owns D40 preview/config integrity and other producer tabs/hooks; source-only until permit transfer. Root owns integration. No browser permit is active. Fresh development build/reload and independent live retests remain mandatory. After these fixes, address saved Network matching, missing-root behavior, route applicability, and actual saved output/replay across all supported methods. Preserve every historical unresolved defect below.
+Frozen build source dc67ce84 (0.2.101); shared source now .102 through129ac54a +D43 doc46d7848a: D39 handoff and D40 preview provenance/reset repairs. Final focused pair15/15 and guarded compile passed. Development build showcase-dev101-build-001 exited0 at15:58:03Z. Receipt test-results/source-dev-build-101-showcase-20260927.json records tree ea964f8ecde94b9ab66faa601adb9d63b3a5c12b5baadad37e9008c7362e1a10. This artifact is frozen; source-only workers must not rebuild/overwrite it during live review.
+
+Primary Chrome is unpacked from .output/chrome-mv3-dev, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, admin signed in. Last observed installed version .97 is baseline only; live reviewer must explicitly reload extension/page/panel and verify .101 before fix evidence.
+
+- showcase_live_verify (Luna medium, fresh independent seat) owns SOLE heavy/manual-browser permit for showcase-live-microdata-001. It must obtain full resource admission, monitor watchdog, stop UI and confirm terminal guard cleanup. Original D39 pass terminated cleanly16:04:33.982Z (run001); now bounded Microdata Event preview/type-edit/save/reopen/replay on same frozen .101. No closure before actual evidence.
+- showcase_picker_escalation (fresh Astra medium, objective repeated lifecycle gaps) owns D42 source/test repair: session identity through producer/relay/consumer, targeted cancellation, cross-context teardown. SOURCE ONLY until browser permit released. Baseline build has known D42 risk. D42 red proved6 intended session/cancellation/listener failures; source ready for three-file green after browser terminal. Prepared tests were safely restored for red; no code claim until green/types.
+- showcase_save_replay_audit (Sol medium) owns next D41 Network selected-request/config/replay repair, SOURCE ONLY. D41 red proved2 intended failures; Network source fix ready, green queued after D42 green. No ListPattern/picker/shared-hook/background edits without coordination.
+- showcase_detect_audit is terminal, owns D43 diagnosis only; implementation waits for D42 same-file commit. Independent source reviewer auth_fault_runner_peer is terminal, reports retained. Root owns inventory/integration.
+
+D39 original handoff passed fresh live .101, but state retest-fail because surrounding Pick more fields replaced249-card event scope with nested3-item details; D43 owns that repair. D40 engineering is verified but live save/reopen outcome remains open. D41/D42/D43 remain open work; saved runner missing-root/route applicability, dataset persistence promises and all-method coverage remain next. No whole-feature health claim.
+
+Concurrent writer committed/pushed both initial in-flight D39/D40 changes as cb47afa0. Preserve shared history: external exception to one-defect-per-commit, separate defect/retest records retained. Follow-ups9be8d4c9 anddc67ce84 preserve preview provenance and reset invalidation. Never bulk-stage active worker drafts. Fetch/reconcile before push, no destructive resets or foreign-process cleanup. Heavy cap1, no threshold weakening. Reserved d22-source-save-attempt.json remains untouchable.
+
+## Next check order
+
+Microdata UI terminal → D42 focused green/release → D41 focused green + combined frozen compile → D41 code/docs commit → D42 code/tests/docs commit → D43 seeded field-picking/scope repair. No builds during primary UI; prior source instructions never grant concurrent heavy launches. D43 root cause is new item-phase picking despite known list config; nearest nested repeated siblings then overwrite the selected list. Explicit scope choice for fresh manual picking is part of the repair; row-rendering absence was not proven and must not be reported as a separate bug.
 
 ## Historical baseline (superseded environment and sequencing)
 

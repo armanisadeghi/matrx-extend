@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-live-microdata-001",
+  "feature_id": "EXT-F-1012",
+  "status": "partial",
+  "mode": "admin",
+  "target": "https://electronic.vegas/vegas-edm-event-calendar/",
+  "build": {
+    "source_sha": "dc67ce846d0bd4657c4aebe1c002f3056136e6d7",
+    "version": "0.2.101",
+    "tree_sha256": "ea964f8ecde94b9ab66faa601adb9d63b3a5c12b5baadad37e9008c7362e1a10",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": ".output/chrome-mv3-dev",
+    "identity_evidence": "Chrome extensions page showed the unpacked extension reloaded as 0.2.101 with the expected ID. Frozen receipt test-results/source-dev-build-101-showcase-20260927.json matches the expected tree hash. Chrome browser version was not captured."
+  },
+  "resource_guard": {
+    "admitted_at": "2026-09-27T16:12:04.717Z",
+    "terminal": "RESOURCE_BROWSER_STOP_CONFIRMED",
+    "terminal_at": "2026-09-27T16:16:47.620Z",
+    "resource_invalid": false,
+    "wrapper_exit_code": 0
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-1012-T46",
+      "verdict": "partial",
+      "evidence": "On the real calendar, Microdata reported 748 items (249 Event, 249 Place, 249 PostalAddress, 1 WebPage). Selecting Event and Extract produced 249 rows with columns @type, description, endDate, eventAttendanceMode, eventStatus, image, location, name, organizer, performer, startDate and url. The visible first rows included DJ Pauly D (2026/09/27 11:00), DJ Sourmilk and DJ Stretch. Without rerunning, selecting Place changed the draft filter while the preview remained Event. Save pattern opened with '(don't append rows now)'; the uniquely named pattern was saved. After leaving the tab, reopening Patterns showed the saved item as MICRODATA. Run pattern returned 249 Event rows with matching columns and matching visible DJ Pauly D, DJ Sourmilk and DJ Stretch values/URLs. No dataset was created.",
+      "scope": "The preview-to-saved-replay integrity branch passed for this Microdata Event case: the unsent Place draft did not replace the successful Event configuration. The inventory case remains partial because page reload, source mutation/navigation and error-route branches were not exercised. UI stated only the first 200 of 249 rows are shown; verification compared visible rows, not every value in all 249 records."
+    }
+  ],
+  "steps": [
+    "Confirmed Chrome had the receipt-bound unpacked 0.2.101 extension loaded; opened the real electronic.vegas event calendar and Showcase.",
+    "Ran Microdata Event extraction and inspected its 249-row preview, headers and first visible event records.",
+    "Changed the draft quick filter to Place without rerunning; the Event preview remained visible.",
+    "Before Save, recorded the owned test pattern title 'Codex live Microdata Event replay 20260927-1612Z'. Verified the destination was '(don't append rows now)' and saved the pattern only.",
+    "Left Microdata, opened Patterns, verified the saved item and reran it. The replay returned 249 Event rows with matching visible headers and first records despite the unsaved Place draft.",
+    "Opened the delete confirmation for the uniquely owned test pattern. It stated deletion was for good and could not be undone; canceled. The pattern remains saved under the exact title above.",
+    "Stopped UI work, sent Ctrl-C to the admitted resource guard, and received RESOURCE_BROWSER_STOP_CONFIRMED with resourceInvalid false; wrapper exited 0."
+  ],
+  "limits": [
+    "The uniquely owned recipe remains in Patterns because the UI described deletion as irreversible and the required action-time confirmation was not available. No other records were touched.",
+    "Only the first 200 of 249 preview rows were displayed; full 249-row value-by-value equivalence is not claimed.",
+    "No dataset append/create, reload, changed-source, navigation mismatch, service-error or other extraction method was tested in this bounded run.",
+    "This is partial evidence for EXT-F-1012-T46, not whole-case promotion or feature closure."
+  ],
+  "fixture_disposition": {
+    "state": "retained_for_followup_verification",
+    "exact_title": "Codex live Microdata Event replay 20260927-1612Z",
+    "purpose": "Reload, changed-source and repeat persistence checks; no dataset attached",
+    "delete_status": "unverified",
+    "coordinator_ruling": "Keep this owned fixture for next checks; no user decision or cleanup is blocking current repairs."
+  }
+}

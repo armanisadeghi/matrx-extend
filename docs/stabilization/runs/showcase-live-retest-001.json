@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-live-retest-001",
+  "feature_id": "EXT-F-1012",
+  "status": "partial",
+  "mode": "admin",
+  "target": "https://electronic.vegas/vegas-edm-event-calendar/",
+  "build": {
+    "source_sha": "dc67ce846d0bd4657c4aebe1c002f3056136e6d7",
+    "version": "0.2.101",
+    "tree_sha256": "ea964f8ecde94b9ab66faa601adb9d63b3a5c12b5baadad37e9008c7362e1a10",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "identity_evidence": "Chrome extensions page showed 0.2.97 before Reload and 0.2.101 after Reload with the same extension ID; build receipt test-results/source-dev-build-101-showcase-20260927.json matches the reported tree hash. Chrome browser version was not captured."
+  },
+  "resource_guard": {
+    "admitted_at": "2026-09-27T16:00:23.625Z",
+    "terminal": "RESOURCE_BROWSER_STOP_CONFIRMED",
+    "terminal_at": "2026-09-27T16:04:33.982Z",
+    "resource_invalid": false,
+    "wrapper_exit_code": 0
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-1012-T04",
+      "verdict": "partial",
+      "evidence": "On the real calendar, Doctor reported 249 repeating cards and its List Pattern recommendation opened with root #wideeventsList and item div.wideeventwrapper prefilled.",
+      "scope": "Doctor List Pattern recommendation on the real calendar after reload passes; the original Doctor-seeded root was not extracted before Pick more fields started a separate picker phase. Other finding targets, service errors and auth transitions remain unverified."
+    },
+    {
+      "case_id": "EXT-F-1012-T24",
+      "verdict": "partial",
+      "evidence": "Manual picker opened; clicking the DJ Pauly D title found 3 similar items. Adding suggested name and URL fields changed root to #wideeventsList > div.wideeventwrapper:nth-of-type(1) > li[itemtype=Event] > ul.briefDetails and item li. The picked field previews showed DJ Pauly D and its event URL."
+    },
+    {
+      "case_id": "EXT-F-1012-T29",
+      "verdict": "fail",
+      "evidence": "Extract labeled the result 3 rows after the picker replaced the249-card root with one event\u2019s nested3-item list. DJ Pauly D and its URL were visible. The observed extraction scope is wrong for the detected event list; absence of additional rendered rows is not established by this receipt. No data was saved."
+    },
+    {
+      "case_id": "EXT-F-1012-T45",
+      "verdict": "partial",
+      "evidence": "After navigating to https://example.com/, Showcase changed the host label to example.com and cleared the pattern draft and Extract control. The old Extract element index became invalid during navigation. No stale extraction ran."
+    }
+  ],
+  "steps": [
+    "Reloaded the existing unpacked extension from chrome://extensions and confirmed version 0.2.101 and extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml.",
+    "Reloaded the electronic.vegas calendar and reopened the Matrx side panel.",
+    "Ran Doctor, followed its List Pattern recommendation, and observed the detected root and item prefilled.",
+    "Used Pick more fields, selected the DJ Pauly D title, added the suggested name and URL fields, finished the picker, and extracted.",
+    "Observed extraction labeled3 rows under the nested event list, with DJ Pauly D and its URL visible; complete rendered-row visibility was not established.",
+    "Navigated to example.com and observed that the page host updated and the stale List Pattern draft cleared.",
+    "Stopped manual UI work, sent Ctrl-C to the permit holder, and received RESOURCE_BROWSER_STOP_CONFIRMED with resourceInvalid false."
+  ],
+  "limits": [
+    "No pattern or dataset writes were performed; no cleanup was required.",
+    "D40 table preview/save/reopen/replay pass is deferred until the root\u2019s next UI window.",
+    "No structurally different second extraction page was tested.",
+    "This is a bounded independent live pass, not full F1012 coverage.",
+    "Coordinator scope correction: one visible row does not establish missing rendered rows without a complete table/scroll check. Treat wrong nested root and3-row scope as the verified finding; do not infer a separate rendering defect."
+  ]
+}
