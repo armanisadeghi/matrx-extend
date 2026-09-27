@@ -240,9 +240,12 @@ export function editSource(
 export function keepSource(
   processedDocumentId: string,
   body: { keep?: boolean; attach_to?: AttachTarget[] } = {},
+  /** Bind the write to the person and organization the Source landed in (fails closed on a switch). */
+  expectedActor?: { userId: string; organizationId: string },
 ): Promise<LandingOutcome> {
-  return post(`/sources/${encodeURIComponent(processedDocumentId)}/keep`, {
-    keep: body.keep ?? true,
-    attach_to: body.attach_to ?? [],
-  });
+  return post(
+    `/sources/${encodeURIComponent(processedDocumentId)}/keep`,
+    { keep: body.keep ?? true, attach_to: body.attach_to ?? [] },
+    expectedActor ? { expectedActor } : undefined,
+  );
 }

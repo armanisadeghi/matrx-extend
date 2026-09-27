@@ -16,7 +16,7 @@ import { CHANNELS } from '@/lib/messaging/schemas';
 import { getActiveOrganizationId, onActiveOrganizationChange } from '@/lib/org/active-org';
 import { useAuthStore } from '@/state/auth';
 import { type Notice, useNoticeStore } from '@/state/notices';
-import { AlertTriangle, X } from 'lucide-react';
+import { AlertTriangle, Info, X } from 'lucide-react';
 import { useEffect } from 'react';
 
 export function NoticeHost() {
@@ -67,7 +67,10 @@ export function NoticeHost() {
       {notices.map((n) => (
         <div
           key={n.id}
-          role="alert"
+          // An info notice ("Source filed") is a confirmation, not a warning:
+          // its own icon, announced politely.
+          role={n.tone === 'info' ? 'status' : 'alert'}
+          data-tone={n.tone}
           className={`pointer-events-auto flex items-start gap-2 rounded-xl border px-3 py-2 text-xs shadow-lg backdrop-blur ${
             n.tone === 'error'
               ? 'border-destructive/40 bg-destructive/10 text-destructive'
@@ -76,7 +79,15 @@ export function NoticeHost() {
                 : 'border-border bg-background text-foreground'
           }`}
         >
-          <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
+          {n.tone === 'info' ? (
+            <Info aria-hidden="true" data-icon="info" className="mt-0.5 size-3.5 shrink-0" />
+          ) : (
+            <AlertTriangle
+              aria-hidden="true"
+              data-icon="warning"
+              className="mt-0.5 size-3.5 shrink-0"
+            />
+          )}
           <div className="min-w-0 flex-1">
             <div className="font-medium">{n.title}</div>
             <p className="mt-0.5 leading-relaxed text-foreground/90">{n.message}</p>

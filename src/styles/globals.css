@@ -41,6 +41,7 @@
 @source "../../node_modules/@ai-matrx/design-system/dist";
 @source "../../node_modules/@ai-matrx/tap-target/dist";
 @source "../../node_modules/@ai-matrx/agents/dist";
+@source "../../node_modules/@ai-matrx/associations/dist";
 
 @custom-variant dark (&:is(.dark *));
 

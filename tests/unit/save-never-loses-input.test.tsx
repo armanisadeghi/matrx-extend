@@ -51,6 +51,16 @@ vi.mock('@/features/scrape/DiagnoseCard', () => ({
   DiagnoseLauncher: () => null,
 }));
 vi.mock('@/features/seo/SeoDetails', () => ({ SeoDetails: () => null }));
+vi.mock('@/features/scrape/FileSourcePanel', () => ({
+  FileSourcePanel: ({
+    processedDocumentId,
+    organizationId,
+  }: { processedDocumentId: string; organizationId: string }) => (
+    <div data-testid="file-source-panel">
+      {processedDocumentId}@{organizationId}
+    </div>
+  ),
+}));
 
 import { ScrapeView } from '@/features/scrape/ScrapeView';
 import type { SoupResult } from '@/lib/scrape/pipeline';
@@ -380,9 +390,14 @@ describe('Save never loses input', () => {
       },
     });
     render(<ScrapeView />);
+    // Filing is offered AFTER the save lands — never a step before it.
+    expect(screen.queryByTestId('file-source-panel')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
     expect(await screen.findByText(/opens in the web app/)).toBeTruthy();
     expect(screen.getByText('Heads up from the door.')).toBeTruthy();
+    expect(screen.getByTestId('file-source-panel').textContent).toBe(
+      `6b8c38dd-6d68-4824-b664-a380b7611627@${mocks.organizationId}`,
+    );
     expect(useScrapeStore.getState().edited).toBe(false);
     expect(await listUnsavedCaptures()).toHaveLength(0);
     const [, body] = mocks.apiPost.mock.calls[0] as [string, { portions: { text: string }[] }];

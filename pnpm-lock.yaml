@@ -10,7 +10,10 @@ importers:
     dependencies:
       '@ai-matrx/agents':
         specifier: latest
-        version: 0.14.3(@supabase/supabase-js@2.117.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.15.0(@supabase/supabase-js@2.117.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@ai-matrx/associations':
+        specifier: latest
+        version: 0.13.2(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/content-ir':
         specifier: latest
         version: 0.19.17
@@ -222,8 +225,8 @@ packages:
   '@1natsu/wait-element@4.2.0':
     resolution: {integrity: sha512-Om0Q+WE9mNrpY4AwMTvkFiYHv8VM7TML3PvOqXy+w6kAjLjKhGYHYX+305+a6J8RVpds9s7IF2Z5aOPYwULFNw==}
 
-  '@ai-matrx/agents@0.14.3':
-    resolution: {integrity: sha512-i6CGtHAEZZRn9WMpJLBr1kW/JOXat/mWGGY2pHMhs7KihvSArTeiv0zH6x9d9hb9EON0PIcKUHOXxHDnMmKj2Q==}
+  '@ai-matrx/agents@0.15.0':
+    resolution: {integrity: sha512-Qo1qTap3lP6ClZBHaxJvROSi+Mhmayy1rwFaR+qPFpODI+8G3RsfYmPc7MQTt1bsSR//3/k71igbChO6KXz9rg==}
     engines: {node: '>=20'}
     peerDependencies:
       react: '>=18.0.0'
@@ -235,6 +238,18 @@ packages:
       react-native:
         optional: true
       react-native-svg:
+        optional: true
+
+  '@ai-matrx/associations@0.13.2':
+    resolution: {integrity: sha512-c2gFSmMZT+AesVwu+tcbNfzKq29ZDQasPY2wiKy3Bb0/M35DJC9ecSTqIoqjw2kYgh+uD8eDpdSrUYaNUQWgew==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
         optional: true
 
   '@ai-matrx/content-ir-react@0.11.11':
@@ -3659,8 +3674,8 @@ packages:
       '@types/react':
         optional: true
 
-  react-resizable-panels@4.14.0:
-    resolution: {integrity: sha512-X04Rn7N6TCByS3JMdQoNM2Omevzxs0Nk15ibqIqhQrsmTg6qbDA69W8BCD5yLf4XnC45t2JBu3JkJzxI3MXBVQ==}
+  react-resizable-panels@4.14.1:
+    resolution: {integrity: sha512-OB1bXDNTLcGgTTbaX6Dn5efZhlMboSnkfr1w4xpsJTHPEbRJpACBhXpgRCXozgPO1ztgFeZRUe5J3mFNCVKm5g==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
@@ -4352,7 +4367,7 @@ snapshots:
       defu: 6.1.7
       many-keys-map: 3.0.3
 
-  '@ai-matrx/agents@0.14.3(@supabase/supabase-js@2.117.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@ai-matrx/agents@0.15.0(@supabase/supabase-js@2.117.2)(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@ai-matrx/data': 0.18.1(@supabase/supabase-js@2.117.2)(react@19.3.0)
       '@ai-matrx/design-system': 0.46.4(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -4364,6 +4379,17 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
       - react-dom
+
+  '@ai-matrx/associations@0.13.2(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+    dependencies:
+      '@ai-matrx/design-system': 0.46.4(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      '@ai-matrx/kit': 0.16.7(react@19.3.0)
+    optionalDependencies:
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
 
   '@ai-matrx/content-ir-react@0.11.11(react@19.3.0)':
     dependencies:
@@ -4417,7 +4443,7 @@ snapshots:
       cmdk: 1.1.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
-      react-resizable-panels: 4.14.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      react-resizable-panels: 4.14.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       tailwind-merge: 3.7.0
       vaul: 1.1.2(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       zod: 4.6.5
@@ -7905,7 +7931,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.3.0
 
-  react-resizable-panels@4.14.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+  react-resizable-panels@4.14.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)

@@ -2,6 +2,7 @@ import { AddToProjectButton } from '@/components/AddToProjectButton';
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { MarkdownView } from '@/components/MarkdownView';
 import { DiagnoseCard, DiagnoseLauncher } from '@/features/scrape/DiagnoseCard';
+import { FileSourcePanel } from '@/features/scrape/FileSourcePanel';
 import { UnsavedCapturesCard } from '@/features/scrape/UnsavedCapturesCard';
 import { SeoDetails } from '@/features/seo/SeoDetails';
 import { useActiveTab } from '@/hooks/use-active-tab';
@@ -102,6 +103,8 @@ export function ScrapeView() {
     !edited;
   /** URLs the unsaved-retry card owns; for those, its Retry is the one save action. */
   const [unsavedUrls, setUnsavedUrls] = useState<string[]>([]);
+  /** The landed Source whose optional filing is open (after the save, never before it). */
+  const [filingFor, setFilingFor] = useState<string | null>(null);
   // Retry must replay the mode the user actually picked — activeMode is
   // cleared in the hook's finally, so the error card's fallback was ALWAYS
   // 'fast' (a failed Scroll & capture silently retried without scrolling).
@@ -231,6 +234,7 @@ export function ScrapeView() {
           organizationId: outcome.organizationId,
           capture,
         });
+        setFilingFor(outcome.landed.processed_document_id);
       } else if (outcome.status === 'unsaved' && outcome.persisted === false) {
         setSaveError(outcome.unsaved.lastRefusal.message);
       } else if (outcome.status === 'empty' && organizationEpoch === organizationEpochRef.current) {
@@ -742,6 +746,13 @@ export function ScrapeView() {
           {savedSource.notices.map((message) => (
             <p key={message}>{message}</p>
           ))}
+          {filingFor === savedSource.id && (
+            <FileSourcePanel
+              processedDocumentId={savedSource.id}
+              organizationId={savedSource.organizationId}
+              onClose={() => setFilingFor(null)}
+            />
+          )}
         </div>
       )}
       <ConfirmDialog
