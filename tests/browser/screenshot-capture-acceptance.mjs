@@ -897,15 +897,16 @@ async function exercise({ page, panel }) {
           report.failure.ownedUiCleanupStage = 'delete_consequence';
           const confirmation = await observedWait(
             'owned_cleanup_confirmation',
-            () => evaluate(
-              panel,
-              `(() => {const dialog=document.querySelector('[role="alertdialog"],[role="dialog"]');
+            () =>
+              evaluate(
+                panel,
+                `(() => {const dialog=document.querySelector('[role="alertdialog"],[role="dialog"]');
                 return {visible:!!dialog,consequence:dialog?.innerText.includes(
                   'The image file itself stays in your Files')===true,
                   confirmButton:[...(dialog?.querySelectorAll('button')??[])]
                     .some(button=>button.textContent.trim()==='Delete'&&
                       button.disabled===false&&!button.matches(':disabled'))};})()`,
-            ),
+              ),
             (state) => state?.visible && state.consequence && state.confirmButton,
           );
           if (!confirmation.consequence) throw new Error('consequence_not_visible');
