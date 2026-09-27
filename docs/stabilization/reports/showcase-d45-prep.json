@@ -1,0 +1,13 @@
+{
+  "defect": "EXT-D-0045",
+  "status": "source patch prepared outside checkout; red, product application, green, compile, build, and live verification pending",
+  "source_patch": "docs/stabilization/pending/EXT-D-0045/product.patch",
+  "source_patch_sha256": "a4e1c10fa974bd1bfe7ba5391ce57a5180f62fe69d7d95072d78194c5ea7a4ab",
+  "source_patch_applies_to_current_checkout": true,
+  "prepared_test": "docs/stabilization/pending/EXT-D-0045/showcase-d45-entry.test.pending",
+  "prepared_test_sha256": "d5d61a256f4449350f7f809e9c9c9a2b9e9633c19e9f27b8fdfdadd041986e13",
+  "feature_test_procedure": "docs/stabilization/pending/EXT-D-0045/feature-test-procedure.pending.md",
+  "owned_product_file": "src/features/showcase/tabs/ListPatternTab.tsx",
+  "proposed_behavior": "The picker edits a session-local config shown to the inspector while active. Cancel discards it and reveals the committed config and prior preview. Done merges same-scope fields or commits a new scope even with zero fields, then clears the old preview. In-flight inspector/sample work is invalidated when the session closes; page and session checks remain in place.",
+  "verification_limit": "git apply --check passed; no test, compile, build, browser, or product edit was launched under the active heavy-queue hold."
+}

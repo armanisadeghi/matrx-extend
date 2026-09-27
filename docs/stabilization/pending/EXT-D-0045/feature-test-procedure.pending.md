@@ -1,0 +1,6 @@
+### List Pattern picker cancellation keeps the prior draft
+
+- **What it does:** Changes made inside Pick more fields stay provisional until Done. Cancel keeps the earlier list definition, selected fields, and extracted preview. Done can intentionally switch to a newly chosen repeated group even before any fields are selected.
+- **Where to test:** Showcase → List Pattern on a real page with nested repeated groups, such as the Vegas EDM event calendar.
+- **Steps:** Configure the outer event cards with a title or URL field and Extract; note several distinct preview rows. Choose Pick more fields, press Restart in the page overlay, click an event title, select the inner repeated-details group, then press Cancel. Repeat and press Done instead of Cancel. Also choose the original outer-card group and add another field before Done.
+- **Expected:** After Cancel, the original event-card selectors, field, and exact prior preview are still available. After Done on the inner group with zero fields, the editor shows that new group and its suggested fields, with Extract disabled until a field is chosen; no old preview is attributed to it. Returning to the original scope and adding a field appends that field. Navigation or a canceled session cannot apply late picker messages.
