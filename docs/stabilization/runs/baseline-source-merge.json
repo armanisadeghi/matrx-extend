@@ -1,0 +1,47 @@
+{
+  "status": "baseline_pass",
+  "merged_source": "ef03ecefa1433459ae5c6c5f1034282e108535d0",
+  "runs": [
+    {
+      "run_id": "baseline-source-merge-install-001",
+      "wrapper_session": 90507,
+      "wrapper_exit_code": 0,
+      "child_exit_at": "2026-09-27T02:19:48.393Z",
+      "child_exit_code": 0,
+      "guard_log": "/tmp/matrx-baseline-source-merge-install-001.log",
+      "sha256": "2683285ab83c80c1e364ec6910bee2f5afa5f491d16012febd2be9bef5af4bd3"
+    },
+    {
+      "run_id": "baseline-source-merge-types-001",
+      "wrapper_session": 25943,
+      "wrapper_exit_code": 0,
+      "child_exit_at": "2026-09-27T02:21:13.461Z",
+      "child_exit_code": 0,
+      "guard_log": "/tmp/matrx-baseline-source-merge-types-001.log",
+      "sha256": "f27d50306dee99ecc7fb8f7cb20ed53e2c7fcb1377a1c1ce132f627f454c50d7"
+    },
+    {
+      "run_id": "baseline-source-merge-devbuild-001",
+      "wrapper_session": 16337,
+      "wrapper_exit_code": 0,
+      "child_exit_at": "2026-09-27T02:22:46.914Z",
+      "child_exit_code": 0,
+      "guard_log": "/tmp/matrx-baseline-source-merge-devbuild-001.log",
+      "sha256": "e01d3bb0844aec330f65632476fe8875f5ebd2204dd0ddd65ecb81b5a8c5d452"
+    }
+  ],
+  "build": {
+    "schema_version": 1,
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "observedAt": "2026-09-27T02:22:59.148Z",
+    "extensionDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "version": "0.2.82",
+    "treeSha256": "9066e69fc13f5c35bd9650aa2540288045a40331012620def87faef4405d9611"
+  },
+  "ci": {
+    "run_id": 36288123113,
+    "conclusion": "success"
+  },
+  "limits": "Local development build, not a release; no browser acceptance is implied."
+}
