@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "run_id": "takeover-visible-census-089",
+  "status": "setup_failed_no_native_census",
+  "observed_at": "2026-09-27T08:00:06.057Z",
+  "source_sha": "6aef35aff6ad3ab917f5edabd610013ccf941e61",
+  "artifact": {
+    "receipt": "/Volumes/Samsung2TB/code/matrx-extend/test-results/source-dev-build-089-takeover-20260927.json",
+    "kind": "local_dev_unpacked",
+    "version": "0.2.89",
+    "tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2"
+  },
+  "guard": {
+    "mode": "run",
+    "code": "RESOURCE_ADMITTED",
+    "profile_dir": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+    "tmpdir": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+    "sample": {
+      "pressure_level": 1,
+      "available_memory_gib": 9.76,
+      "cpu_busy_fraction": 0.5603428571428571,
+      "one_minute_load": 8.29,
+      "logical_cpus": 10,
+      "swap_used_mib": 1923.5,
+      "repo_free_gib": 1675.8883323669434,
+      "profile_free_gib": 1675.8883323669434
+    },
+    "exit": {
+      "code": "RESOURCE_JOB_EXIT",
+      "child_exit_code": 2,
+      "child_signal": null,
+      "lease_released": true
+    }
+  },
+  "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch CENSUS_DEV_BUILD_RECEIPT=/Volumes/Samsung2TB/code/matrx-extend/test-results/source-dev-build-089-takeover-20260927.json node scripts/stabilization-resource.mjs run --run-id takeover-visible-census-089 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- node tests/browser/takeover-visible-census.mjs",
+  "runner_output": {
+    "code": "CENSUS_FAILED",
+    "native_guest_observed": false,
+    "elapsed_after_admission_ms": 231,
+    "detail": "Runner emits only a sanitized generic failure; no fixed stage or stack was captured. No separate private log file was written."
+  },
+  "dependency_diagnostic": {
+    "matrx_playwright_module_supplied": false,
+    "matrx_chrome_path_supplied": false,
+    "project_playwright_resolvable": false,
+    "project_playwright_core_resolvable": false,
+    "canonical_workspace_node_modules": "/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules",
+    "independent_resolution": "Sol diagnosis agent's read-only resolver reproduced browser_runtime_playwright_missing without MATRX_PLAYWRIGHT_MODULE and RUNTIME_READY with the bundled dependency paths.",
+    "interpretation": "Missing Playwright runtime injection strongly explains the immediate setup failure before any guest observation. The original runner masked its throw site, so the precise original exception remains unconfirmed. This is infrastructure/setup evidence, not a product defect.",
+    "peer_diagnosis": "Sol diagnosis agent reproduced the missing-runtime condition. The follow-up run is separately gated on fresh peer acceptance."
+  },
+  "native_census": {
+    "guest_navigation": "not observed",
+    "settings_sections": "not observed",
+    "member": "unverified",
+    "admin": "unverified",
+    "store_or_primary_chrome": "not accessed",
+    "behavioral_tests": "not run"
+  },
+  "disposition": "Infrastructure/setup failure only; not a product defect, test failure, or pass. Preserve this attempt and wait for diagnosis before any later authorized run."
+}

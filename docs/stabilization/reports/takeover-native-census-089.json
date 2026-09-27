@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "task_id": "takeover-native-census-089",
+  "lane": "structured execution / Luna medium",
+  "status": "SETUP_FAILED_NO_UI_EVIDENCE",
+  "summary": "The .89 run received a healthy exclusive resource admission on external scratch, then the census runner exited 2 with sanitized CENSUS_FAILED before returning guest observations. No product behavior was tested and no product verdict follows.",
+  "source_sha": "6aef35aff6ad3ab917f5edabd610013ccf941e61",
+  "build": {
+    "receipt": "test-results/source-dev-build-089-takeover-20260927.json",
+    "version": "0.2.89",
+    "tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2"
+  },
+  "run_evidence": "docs/stabilization/runs/takeover-visible-census-089.json",
+  "verification": [
+    {
+      "case_id": "native guest visibility census",
+      "run_id": "takeover-visible-census-089",
+      "verdict": "UNVERIFIED_SETUP_FAILURE",
+      "evidence": "RESOURCE_ADMITTED at 2026-09-27T08:00:05.821Z; CENSUS_FAILED/native_guest_observed=false at 08:00:06.052Z; RESOURCE_JOB_EXIT childExitCode=2 at 08:00:06.057Z. Guard lease was released. No separate runner log file exists."
+    }
+  ],
+  "diagnosis_handoff": {
+    "owner": "/root/native_runner_peer",
+    "evidence_sent": "Runner received no MATRX_PLAYWRIGHT_MODULE or MATRX_CHROME_PATH. Neither playwright nor playwright-core resolves from repo node_modules. Canonical workspace dependency directory is /Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules.",
+    "status": "Sol diagnosis agent reproduced browser_runtime_playwright_missing with the omitted runtime environment and RUNTIME_READY with bundled paths. This strongly explains the 231 ms failure; original generic output did not prove the exact throw site. No retry occurred in this attempt."
+  },
+  "visibility": {
+    "guest": "unverified; runner returned no observations",
+    "member": "unverified",
+    "admin": "unverified",
+    "primary_chrome_store_dev_state": "unverified; the primary Chrome UI was not inspected",
+    "behavioral_test_gate": "still closed"
+  },
+  "changed_files": [
+    "docs/stabilization/runs/takeover-visible-census-089.json",
+    "docs/stabilization/reports/takeover-native-census-089.json"
+  ],
+  "next_action": "Await fresh peer acceptance of the exact retry invocation before any subsequent run. Do not classify this setup failure as a product defect or acceptance pass."
+}

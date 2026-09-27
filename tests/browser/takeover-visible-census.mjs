@@ -66,6 +66,7 @@ const CONTROLS = [
   'Clear local data on this device',
   'Check for extension update',
 ];
+let stage = 'preflight';
 
 function refuse(code) {
   const error = new Error(code);
@@ -201,6 +202,7 @@ async function censusGuest(panel, version) {
 
 async function main() {
   const { scratch, dev, receiptPath } = await preflight();
+  stage = 'native_harness';
   let census;
   const native = await runNativeSidepanelQa({
     headed: true,
@@ -210,11 +212,13 @@ async function main() {
     expectedExtensionId: EXTENSION_ID,
     artifactRoot: scratch,
     exercisePanel: async ({ panel }) => {
+      stage = 'guest_census';
       census = await censusGuest(panel, dev.version);
     },
   });
   if (!native.verified || native.extensionId !== EXTENSION_ID || !census)
     refuse('CENSUS_NATIVE_VERIFICATION_MISSING');
+  stage = 'complete';
   process.stdout.write(
     `${JSON.stringify({
       schema_version: 1,
@@ -235,9 +239,17 @@ async function main() {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   main().catch((error) => {
+    const message = String(error?.message ?? '');
+    const knownRuntimeFailure = [
+      ['browser_runtime_playwright_missing', 'CENSUS_PLAYWRIGHT_MISSING'],
+      ['browser_runtime_playwright_unavailable', 'CENSUS_PLAYWRIGHT_UNAVAILABLE'],
+      ['browser_runtime_playwright_invalid', 'CENSUS_PLAYWRIGHT_INVALID'],
+      ['browser_runtime_chrome_missing', 'CENSUS_CHROME_MISSING'],
+    ].find(([prefix]) => message.startsWith(prefix))?.[1];
     process.stderr.write(
       `${JSON.stringify({
-        code: error?.censusCode ?? 'CENSUS_FAILED',
+        code: error?.censusCode ?? knownRuntimeFailure ?? 'CENSUS_FAILED',
+        stage,
         at: new Date().toISOString(),
         native_guest_observed: false,
       })}\n`,

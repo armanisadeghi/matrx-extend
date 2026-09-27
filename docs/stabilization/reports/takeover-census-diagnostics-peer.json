@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "lane": "independent verifier; Luna medium; lightweight static plus read-only resolver",
+  "scope": "tests/browser/takeover-visible-census.mjs diagnostic-only diff",
+  "engineering": "ACCEPT_SOURCE",
+  "runtime": "UNVERIFIED; runtime failure classification awaits next admitted census run",
+  "findings": [
+    "The diff adds only a stage variable and fixed-stage assignments (preflight, native_harness, guest_census, complete), plus a four-prefix allowlist that maps Playwright/Chrome resolver failures to fixed diagnostic codes. It emits no raw exception message, stack, DOM text, or receipt data; censusCode remains the prior fixed refusal-code path.",
+    "The diff does not change NAV, SECTIONS, CONTROLS, preflight owner/TMPDIR/scratch/receipt checks, native harness options, guest census logic, identity assertions, output payload, or success criteria. Launch prerequisites and census assertions are unchanged.",
+    "Read-only resolveBrowserRuntime invocation with the reported MATRX_PLAYWRIGHT_MODULE and MATRX_CHROME_PATH succeeded: Playwright chromium API shape was present and the configured Chrome-for-Testing executable passed X_OK access. No browser launch occurred.",
+    "Static checks passed: node --check tests/browser/takeover-visible-census.mjs and git diff --check -- tests/browser/takeover-visible-census.mjs. The emitted diagnostic intentionally still masks the exact underlying exception as CENSUS_FAILED for unrecognized failures; this review does not claim the census or runtime recovery passed."
+  ],
+  "limitations": "Resolver readiness proves the configured module and executable are discoverable/readable for execution only. It does not prove native launch, preflight admission, guest census completion, or the actual categorized failure path."
+}
