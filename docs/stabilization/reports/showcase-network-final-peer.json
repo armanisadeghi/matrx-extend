@@ -57,6 +57,12 @@
   },
   "ordinary_updated_data_ruling": "Response data can change for an unchanged request identity. A changed date/cursor/query is a changed request identity; exact default yields no match, and the explicit broad control can accept it if unique. Multiple different identities under that broad matcher correctly return ambiguity rather than guessing. This is a bounded user-managed limitation, not itself a defect, though the UI must keep its remedy clear.",
   "raw_data_assessment": "D41 emits a SHA-256 key for supported request bodies and no raw request headers in the event or saved config. Captured response body and response headers remain in the transient capture event as intended. The report contains no real URL, credential, body, or header capture. Credential-bearing URL persistence above is the exception to the privacy claim.",
-  "not_run": ["Browser/live site", "localhost UI", "build/typecheck", "unit suite", "database persistence roundtrip"],
+  "not_run": [
+    "Browser/live site",
+    "localhost UI",
+    "build/typecheck",
+    "unit suite",
+    "database persistence roundtrip"
+  ],
   "files_changed": ["docs/stabilization/reports/showcase-network-final-peer.json"]
 }

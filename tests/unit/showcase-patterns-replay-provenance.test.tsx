@@ -88,7 +88,10 @@ describe('Showcase saved pattern replay provenance', () => {
     let resolveRun: (rows: Record<string, unknown>[]) => void = () => {};
     mocks.fetchPatterns.mockResolvedValue([pattern]);
     mocks.runSaved.mockImplementation(
-      () => new Promise<Record<string, unknown>[]>((resolve) => { resolveRun = resolve; }),
+      () =>
+        new Promise<Record<string, unknown>[]>((resolve) => {
+          resolveRun = resolve;
+        }),
     );
     const view = render(<PatternsTab />);
     await screen.findByText('Calendar events');

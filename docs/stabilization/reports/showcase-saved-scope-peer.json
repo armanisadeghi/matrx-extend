@@ -23,7 +23,12 @@
         "severity": "Important",
         "title": "The same saved pattern is still marked healthy with zero rows through sibling replay surfaces",
         "reproduction": "Save a pattern for a calendar route, then invoke it from DataView or the data_patterns agent tool on the same host where the selector finds no rows; each caller unconditionally executes bumpPatternRun(pattern.id, 'ok', 0). Auto-extract does the same on a matching route with no content. The health badge/queue can then say ok despite no intended data. DataView can also render an empty result without the new Showcase no-match guidance.",
-        "source": ["src/features/data/DataView.tsx:195-201", "src/lib/tools/handlers/data-patterns.ts:162-174", "src/hooks/use-auto-extract.ts:102-112", "src/lib/supabase/queries.ts:1048-1064"],
+        "source": [
+          "src/features/data/DataView.tsx:195-201",
+          "src/lib/tools/handlers/data-patterns.ts:162-174",
+          "src/hooks/use-auto-extract.ts:102-112",
+          "src/lib/supabase/queries.ts:1048-1064"
+        ],
         "root_cause": "The result-to-health policy remains separately implemented at every caller. The D44 policy change was applied only inside PatternsTab instead of a shared replay outcome path.",
         "recommendation": "Make one shared classification for extracted rows and saved-route applicability, then have every saved-pattern caller report a true no-match without marking the pattern ok or broken; add caller-level forcing tests."
       },
@@ -31,7 +36,11 @@
         "severity": "Important",
         "title": "Previous-page rows and patterns can render for one commit after navigation",
         "reproduction": "Complete a Patterns-tab run with visible rows on route A, then navigate the same tab to route B while PatternsTab stays mounted. The render with the new tab URL still uses unkeyed rows/patterns state from route A; lines 87-101 clear it only in a passive useEffect after that render. The async completion guard prevents a later overwrite, but it does not prevent this stale render.",
-        "source": ["src/features/showcase/tabs/PatternsTab.tsx:50-60", "src/features/showcase/tabs/PatternsTab.tsx:87-112", "src/features/showcase/tabs/PatternsTab.tsx:213-241"],
+        "source": [
+          "src/features/showcase/tabs/PatternsTab.tsx:50-60",
+          "src/features/showcase/tabs/PatternsTab.tsx:87-112",
+          "src/features/showcase/tabs/PatternsTab.tsx:213-241"
+        ],
         "root_cause": "Result and fetched-list state have no page identity attached at render time.",
         "recommendation": "Store the originating page key with rows and fetched patterns and render them only when it matches the current key; retain effect cleanup for abandoned work."
       },
