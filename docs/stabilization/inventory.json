@@ -13027,7 +13027,9 @@
             "screenshot-fullpage-dev095-003",
             "gallery-org-diag-dev096-001",
             "gallery-d37-dev096-001",
-            "gallery-d38-dev096-001"
+            "gallery-d38-dev096-001",
+            "gallery-d38-dev096-002",
+            "gallery-d38-dev096-003"
           ],
           "retest_status": "partial"
         }
