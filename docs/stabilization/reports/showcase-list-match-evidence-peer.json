@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "review": "showcase-list-match-evidence-peer",
+  "reviewed_commit": "545367cdcadf7e69bf8d22e75f609886a01bfdc6",
+  "scope": "Independent source-only review of the D44 final sibling patch's List Pattern mode and first-row probe, its saved-list caller regression, and prior source verdict 955cbe54. No product authorship, tests, build, or browser use.",
+  "A_live_outcome": {
+    "status": "UNVERIFIED",
+    "reason": "No installed-extension or real-site extraction was exercised; source and test code do not establish live behavior."
+  },
+  "B_source_verdict": "ADDRESSED_IN_PATCH",
+  "finding": {
+    "prior_issue": "A repeated item could produce a nonempty row even when none of its configured relative field selectors matched, including when field_paths was empty. The caller classified this as matched and could promote saved health to ok.",
+    "assessment": "The final patch fixes this specific outcome. runInPage now retains an item row only if at least one configured field selector resolved to an element. probeFirstRowInPage uses the same existence condition and returns null when no selected element matches. The test separately covers a stale selected selector and zero selected fields, both yielding no_match with no saved-health bump, plus an existing blank title element remaining matched with {title: ''}.",
+    "evidence": [
+      "src/lib/data-pattern/modes/list-pattern.ts:96-108 sets matchedElement from element existence and flatMaps absent-field items away; value text is not used as the match criterion.",
+      "src/lib/data-pattern/modes/list-pattern.ts:175-190 applies the same criterion to first-row preview probing.",
+      "tests/unit/saved-list-selector-caller.test.ts:22-39 executes the actual DOM mode through data_patterns.run and verifies missing-field, no-fields, and blank-existing-field cases, including health bump behavior.",
+      "Prior independent report docs/stabilization/reports/showcase-replay-class-final-peer.json finding identifies this exact no-field-match/no-field-path row fabrication as the remaining Important gap; commit 545367cd addresses it."
+    ],
+    "blank_value_boundary": "An element that exists with empty text is still a matched element and yields an empty string. A missing field among other configured fields yields null for that column while the row remains valid if any selected element exists. This preserves blank-but-present data and optional/missing sibling fields.",
+    "obvious_new_breakage": "No obvious breakage found in the requested mode/probe scope. Empty or invalid relative selectors are caught as no element; malformed/missing root already returns no rows. This is a bounded source review, not proof across other modes or live pages."
+  },
+  "limitations": [
+    "No tests were run in this review; the caller regression is source-inspected only.",
+    "No installed build was verified, and the verdict does not certify other D44 replay/provenance changes."
+  ]
+}
