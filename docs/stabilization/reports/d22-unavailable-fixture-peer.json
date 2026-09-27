@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-unavailable-fixture-peer",
+  "reviewed_at": "2026-09-27T04:39:12Z",
+  "reviewed_source_commit": "f4ebfbce",
+  "followup_repair_review_commit": "2233b989",
+  "prior_source_review": "77b716e4",
+  "scope": "Independent source-only review of unavailable public fixture probing and its acceptance boundary; no browser, build, or tests were run.",
+  "verdicts": {
+    "A_true_positive_source_open_contract": {
+      "verdict": "ACCEPTED_IN_SOURCE",
+      "evidence": [
+        "A candidate becomes a fixture only after a successful 2xx navigation at the exact canonical URL. The unchanged positive path then requires an organization-scoped HTTP 200 lookup, saved-state UI, and the Open target ID matching the lookup row.",
+        "The subsequent comparison workspace, delayed real response, stale-state check, and restoration predicates remain downstream; candidate availability alone cannot pass recognition."
+      ],
+      "runtime": "UNVERIFIED"
+    },
+    "B_bounded_unavailable_fixture_discovery": {
+      "verdict": "REPAIR_ACCEPTED_WITH_BOUNDED_LIMITS",
+      "positive_evidence": [
+        "Candidate probing stays within the actual scoped Source list rows, cursor-bound pages, accessible organization choices, configured page/workspace caps, and shared deadlines.",
+        "Non-2xx/redirect outcomes and an explicit allowlist of known transport categories are treated as unavailable candidates and cannot produce a pass. Source Save/Capture and checkpoint paths are not accessed; fixture navigation uses the existing scripts-disabled, service-worker-bypassed public GET/HEAD guard.",
+        "Persisted diagnostics are fixed categories and counts; the new probe does not persist candidate URLs or raw exception messages. Outer cleanup restores the selected organization, and the owned browser/profile is torn down by the native harness."
+      ],
+      "finding": {
+        "severity": "important",
+        "title": "Unknown navigation errors lose their safe category",
+        "evidence": "probeExistingPublicPage rethrows errors outside the known-unavailable allowlist. The file-level catch then discards the error and fills failureCode with stage_not_observed, so the run fails unverified but hides whether the error was unclassified_exception or another safe category.",
+        "required_repair": "Propagate only safeFailureCategory(error) to the sanitized result for unexpected errors; never persist the exception message or URL. Preserve the failing stage and non-pass status.",
+        "status": "addressed_in_source_by_2233b989",
+        "repair_evidence": "The new candidate_public_page_navigation stage remains set on thrown unknown errors, and `report.failureCode ??= code` records only the safe category before rethrow. The file-level handler therefore retains a specific safe category while leaving status unverified."
+      },
+      "repair_review": {
+        "verdict": "ACCEPTED",
+        "acceptance_logic_changed": false,
+        "private_error_text_or_url_persisted": false,
+        "unknown_errors_still_fail_unverified": true
+      },
+      "runtime": "UNVERIFIED"
+    }
+  },
+  "source_admission_recommendation": "Recommend one root-admitted guarded native run of the reviewed repair. Source review is not runtime acceptance; require the actual positive Source/Open, comparison-workspace and delayed-response predicates before any pass.",
+  "runtime_boundary": "Run 007's HTTP 500 is an unavailable public fixture observation, not a product defect. It does not establish fixture-probe acceptance or positive Source recognition."
+}
