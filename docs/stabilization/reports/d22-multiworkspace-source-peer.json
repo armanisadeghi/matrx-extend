@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-multiworkspace-source-peer",
+  "defect_id": "EXT-D-0022",
+  "reviewed_commit": "f17b7b4b",
+  "scope": "Independent source-only review of bounded real-UI multi-workspace fixture discovery and cleanup; no browser, tests, build, database write or checkpoint access.",
+  "A_runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "The recorded 0.2.83 readonly_002 attempt saw a real scoped HTTP 200 empty list only in the original workspace. This revision has no native run and no positive Source/Open or delayed-response observation."
+  },
+  "B_source": {
+    "verdict": "CHANGES_REQUIRED_BEFORE_NATIVE_ADMISSION",
+    "accepted_boundaries": [
+      "The runner first searches the privately approved organization selected through actual Settings UI; only a genuinely exhausted scoped list causes it to enumerate unique visible picker choices. It never invents an organization ID, uses an account default, elevates a role, or changes production organization selection policy.",
+      "For each bounded candidate, chooseOrganization requires the selected UI name and device-stored ID to agree, and discoverFixture requires a completed list GET filtered to exactly that ID, extension origin, capture derivations and live rows. The positive fixture, if found, stays in memory; the original organization becomes an explicit comparison choice and later gets an actual scoped point lookup, not a presumed negative from the earlier list.",
+      "The path adds no Capture, Save, Source/database mutation or reserved-checkpoint access. Persisted discovery output uses ordinals, booleans, fixed categories and counts; picker names, organization IDs, Source IDs, URLs and response bodies are not serialized. The successful path restores and checks the original stored ID."
+    ],
+    "finding": {
+      "severity": "native_admission_blocker",
+      "title": "A discovery deadline can race the UI selection that cleanup is meant to undo",
+      "evidence": "discoverAcrossWorkspaces wraps chooseOrganization(panel, candidate, originalName) in discoveryStep. discoveryStep uses Promise.race between that multi-step UI operation and a timer, but does not cancel or join the losing operation. If SOURCE_DISCOVERY_TOTAL_MS expires during a candidate selection, the outer finally begins chooseOrganization(originalName) while the first selection can still click the candidate or complete its wait afterward. The restored.storedId check can pass before the stale selection finishes, so workspaceCleanup='pass' does not guarantee the profile remains on the original organization.",
+      "required_repair": "Do not abandon an in-flight UI selection. Let the started selection settle before restoration, then check the deadline and report budget exhaustion; or use a cancellation mechanism that proves no later UI action can occur before the final original-ID check. Keep the overall bound claim honest if a non-cancellable operation may exceed it."
+    },
+    "limits": "SOURCE_DISCOVERY_MAX_ORGS counts the original workspace and bounds attempted choices. The total timer limits when the caller gives up waiting, not the lifetime of an uncancelled selection. The read-only runner still cannot prove late Save or real recognition service-failure/recovery, and this review does not close D22 or pass EXT-F-1007-T26."
+  },
+  "reviewed_paths": [
+    "tests/browser/source-recognition-readonly-acceptance.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "src/features/saved-captures/SavedCapturesView.tsx",
+    "docs/stabilization/reports/d22-next-closure-path.json"
+  ]
+}
