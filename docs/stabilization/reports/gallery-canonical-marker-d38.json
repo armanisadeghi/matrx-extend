@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0038",
+  "scope": "Screenshot gallery acceptance canonical-page marker",
+  "observed": "The admitted 0.2.96 gallery run reached initial_owned_empty_ui after one exact owned-page GET returned HTTP 200 and zero rows. The gallery was active, selected and linked, with Refresh and empty state visible; only its canonical marker assertion was false. Failure injection and recovery were not reached.",
+  "native_receipt": "docs/stabilization/runs/gallery-d37-dev096-001.json",
+  "root_cause": "ScreenshotsView displays canonicalUrl as the header span text while setting the same span's title to the raw tab.url. The gallery-failure and admin-readonly runners compared span.title to an expected canonical URL. The owned localhost URL has a scheme, so that comparison rejects the correct marker.",
+  "sibling_census": {
+    "repaired": [
+      "tests/browser/screenshot-gallery-failure-acceptance.mjs",
+      "tests/browser/screenshot-admin-readonly-acceptance.mjs"
+    ],
+    "already_correct": "tests/browser/screenshot-capture-acceptance.mjs compares the displayed span text to the expected canonical value.",
+    "no_marker_assertion": "tests/browser/screenshot-full-page-acceptance.mjs verifies page identity and matching network rows without this DOM marker query."
+  },
+  "repair": "Both affected runners now require exactly one span with the exact displayed canonical URL, scoped to the Screenshots tab's linked panel. Their other tab, network, and gallery assertions remain intact.",
+  "verification": {
+    "focused_dom_replay": "Using the actual gallery evaluator functions from HEAD and the changed working files against a DOM matching ScreenshotsView's raw-URL tooltip and canonical visible text: old evaluators returned false for the owned page; changed evaluators returned true for the owned page and false for a different canonical page in both runners.",
+    "node_check": "pass_both_runners",
+    "focused_biome": "pass_both_runners",
+    "diff_check": "pass",
+    "fresh_native_acceptance": "pending_peer_retest"
+  },
+  "open": [
+    "The gallery failure injection and Refresh recovery still require a fresh native acceptance run against these runner changes.",
+    "The historical organization-selection pointer failure remains unexplained; this repair addresses only the independently proven canonical marker mismatch."
+  ]
+}

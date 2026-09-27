@@ -313,7 +313,8 @@ async function gallery(panel, expected) {
     const text=pane?.innerText??'';
     const refresh=pane?.querySelector('button[title="Refresh"]');
     const cards=pane?.querySelectorAll('button[title="Open in Files"]').length??0;
-    const canonical=[...(pane?.querySelectorAll('span[title]')??[])].filter(el => el.title===${JSON.stringify(expected)}).length;
+    const canonical=[...(pane?.querySelectorAll('span[title]')??[])]
+      .filter(el => el.textContent.trim()===${JSON.stringify(expected)}).length;
     return {active,selected:tab?.getAttribute('aria-selected')==='true',linked:pane?.getAttribute('aria-labelledby')===tab?.id,
       canonical:canonical===1,refresh:!!refresh&&!refresh.disabled,error:text.includes("Couldn't load screenshots"),
       empty:text.includes('No screenshots yet'),loading:!!pane?.querySelector('svg.animate-spin'),cards};

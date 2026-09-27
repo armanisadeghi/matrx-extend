@@ -385,7 +385,7 @@ async function gallery(panel, expectedCanonical) {
       const buttons=[...(pane?.querySelectorAll('button[title="Open in Files"]')??[])];
       const cards=buttons.length%2===0?buttons.length/2:null;
       const displayed=[...(pane?.querySelectorAll('span[title]')??[])]
-        .filter(span=>span.title===expected);
+        .filter(span=>span.textContent.trim()===expected);
       return {tabCount:tabs.length,selected:tab?.getAttribute('aria-selected')==='true',
         linked:pane?.getAttribute('aria-labelledby')===tab?.id,active,visible,
         heading:text.includes('Screenshots'),canonicalCount:displayed.length,
