@@ -385,6 +385,20 @@ async function discoveryStep(deadline, operation) {
   }
 }
 
+// UI input is not cancellable. Once admitted, join the complete operation
+// before checking deadline and entering restoration. Racing it would let a
+// late candidate click overwrite a supposedly completed original selection.
+async function discoveryUiStep(deadline, operation) {
+  remainingDiscovery(deadline);
+  try {
+    return await operation();
+  } finally {
+    const overrun = Math.max(0, Date.now() - deadline);
+    if (overrun > 0) report.observations.discoveryUiSettlementOverrunMs = overrun;
+    remainingDiscovery(deadline);
+  }
+}
+
 async function discoverFixture(panel, reads, organizationId, outerDeadline) {
   if (
     !Number.isInteger(DISCOVERY_MAX_PAGES) ||
@@ -414,7 +428,7 @@ async function discoverFixture(panel, reads, organizationId, outerDeadline) {
   let pageLimit = null;
   let listOrigin = null;
   const seen = new Set();
-  await discoveryStep(deadline, () => click(panel, 'title', 'Saved captures'));
+  await discoveryUiStep(deadline, () => click(panel, 'title', 'Saved captures'));
   for (let index = 0; index < DISCOVERY_MAX_PAGES; index += 1) {
     const list = await discoveryStep(deadline, (remaining) =>
       waitFor(
@@ -546,7 +560,7 @@ async function discoverFixture(panel, reads, organizationId, outerDeadline) {
       fail('source_cursor_unavailable');
     expectedCursor = `(created_at.lt.${last.captured_at},and(created_at.eq.${last.captured_at},id.lt.${last.id}))`;
     since = reads.records.length;
-    await discoveryStep(deadline, () => click(panel, 'button', 'Load more'));
+    await discoveryUiStep(deadline, () => click(panel, 'button', 'Load more'));
   }
   fail('source_discovery_unverified');
 }
@@ -575,7 +589,7 @@ async function discoverAcrossWorkspaces(panel, reads, originalName, original) {
     const selected =
       index === 0
         ? original
-        : await discoveryStep(deadline, () => chooseOrganization(panel, name, originalName));
+        : await discoveryUiStep(deadline, () => chooseOrganization(panel, name, originalName));
     if (!selected.storedId || seenIds.has(selected.storedId))
       fail('workspace_discovery_identity_ambiguous');
     seenIds.add(selected.storedId);
@@ -595,9 +609,9 @@ async function discoverAcrossWorkspaces(panel, reads, originalName, original) {
     if (index === 0) {
       // Enumerate actual accessible options only after the original scoped list
       // proves no eligible row. No stored fallback or organization inference.
-      await discoveryStep(deadline, () => click(panel, 'title', 'Settings'));
-      await discoveryStep(deadline, () => openSection(panel, 'Organization'));
-      await discoveryStep(deadline, () => click(panel, 'organization', 'Acting as'));
+      await discoveryUiStep(deadline, () => click(panel, 'title', 'Settings'));
+      await discoveryUiStep(deadline, () => openSection(panel, 'Organization'));
+      await discoveryUiStep(deadline, () => click(panel, 'organization', 'Acting as'));
       const offered = await discoveryStep(deadline, () => organizationState(panel, originalName));
       if (offered.approvedOptionCount !== 1) fail('original_workspace_option_unavailable');
       candidates = [
@@ -607,7 +621,7 @@ async function discoverAcrossWorkspaces(panel, reads, originalName, original) {
         ),
       ];
       summary.accessibleUniqueChoices = candidates.length;
-      await discoveryStep(deadline, () => click(panel, 'option', originalName));
+      await discoveryUiStep(deadline, () => click(panel, 'option', originalName));
     }
   }
   fail(
