@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "run_id": "d22-recognition-readonly-011",
+  "source": {
+    "guard_log_path": "/tmp/matrx-d22-recognition-readonly-011.log",
+    "guard_log_sha256": "69ccbe51c047e87d710b97f116f558a07c80474f35bbe83f17a636b8359a51db",
+    "raw_result_path": "/tmp/matrx-d22-recognition-readonly-011-result.json",
+    "raw_result_sha256": "6014a63795ccc156d5c16ba3330437d37f3c5410673f783bdafe9ec017e94b41"
+  },
+  "guard": {
+    "admitted_at": "2026-09-27T04:56:50.653Z",
+    "child_exit_at": "2026-09-27T05:05:30.198Z",
+    "child_exit_code": 1,
+    "watch_healthy_at": "2026-09-27T05:05:17.204Z"
+  },
+  "raw_result": {
+    "status": "unverified",
+    "build": {
+      "version": "0.2.85",
+      "tree_sha256": "f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff"
+    }
+  },
+  "execution_evidence": {
+    "child_exit": "nonzero",
+    "wrapper_completion": "unverified_from_guard_log",
+    "overall_acceptance": "not_adjudicated"
+  },
+  "wrapper_exit_code": 1,
+  "lease": "absent_after_child_exit",
+  "observed": {
+    "real_admin_ui": true,
+    "workspace_cleanup": "pass",
+    "attempted_workspaces": 98,
+    "accessible_unique_choices": 98,
+    "source_list_pages_total": 98,
+    "source_list_rows_total": 7,
+    "public_eligible_rows_total": 7,
+    "candidate_pages_attempted": 7,
+    "candidate_pages_healthy": 0,
+    "candidate_http_status_counts": {
+      "500": 1,
+      "404": 5
+    },
+    "candidate_unavailable_categories": {
+      "http_not_success": 6,
+      "redirected": 1
+    },
+    "fixture_mode": "scripts_disabled_service_workers_bypassed",
+    "failure_stage": "discovery_scoped_list_response",
+    "failure_code": "no_healthy_fixture_in_examined_accessible_workspaces",
+    "late_inflight_save": "unverified",
+    "runtime_acceptance": "unverified"
+  },
+  "classification": "The runner enumerated all 98 accessible picker choices and completed scoped reads across those workspaces. It found seven eligible public candidates; none produced a healthy fixture (six non-success HTTP outcomes and one redirect). Workspace cleanup passed, but no positive Source/Open flow was reached. This run is unverified and establishes no product defect or positive recognition result; no Source Save or checkpoint action was performed."
+}

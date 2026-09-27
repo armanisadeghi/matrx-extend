@@ -1,12 +1,12 @@
 # Stabilization checklist (derived)
 
-> Updated 2026-09-27T04:22:58Z. The frozen lockfile install, compile, and development build passed on source HEAD `36fa88fb`; the `.85` local artifact tree is `f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff`. Focused D22 regressions passed 62 tests with 1 explicit skip. Native acceptance remains unverified. `inventory.json` and defect records remain authoritative.
+> Updated after native D22 run 011. The frozen lockfile install, compile, and development build passed on source HEAD `36fa88fb`; the `.85` local artifact tree is `f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff`. Focused D22 regressions passed 62 tests with 1 explicit skip. Native acceptance remains unverified. `inventory.json` and defect records remain authoritative.
 
 ## Coverage
 
 - [x] Inventory contains 205 features and 693 cases.
 - [ ] Case coverage remains incomplete: 1142 mode-specific slots, including 1 not-applicable result; 53 recorded pass, 76 explicit unverified, and 1012 slots without a result record (unverified coverage).
-- [ ] Acceptance: the 62 focused unit tests do not count as inventory case passes; no current `.85` native case pass is recorded. Run 005 on `.85` was refused before child launch, so it produced no browser result. The last child-started native run, 003 on `.83`, found one eligible Source in the originally selected workspace but left successful fixture navigation, positive recognition, and workspace enumeration unverified. Run 004 was also refused before child launch.
+- [ ] Acceptance: the 62 focused unit tests do not count as inventory case passes; no current `.85` D22 native case pass is recorded. Run 011 on `.85` enumerated 98 accessible picker choices and read 98 organization-scoped lists, each HTTP 200 and exhausted after one page. Seven public-eligible pages were probed: one HTTP 500, five HTTP 404, and one redirect did not satisfy the runner's exact-URL rule. The child exited unverified before positive recognition.
 - [ ] The four explicit 0.2.79 Debug passes (EXT-F-1005-T14/T15/T17/T22) remain historical, not 0.2.85 retests.
 
 ## Defects
@@ -16,9 +16,9 @@
 
 ### EXT-D-0022 - native retest pending
 
-Independent state audit `reports/d22-state-audit.json` supports recording the engineering repair as fixed after the scoped-query, stale-result, actor-boundary, queue-order, and refusal repairs and their focused green receipts. Discovery peer `reports/d22-discovery-final-peer.json` accepted the bounded source repair; diagnostic peer `4a3ad173` accepted scoped discovery/cleanup diagnostics. Run 003 found one eligible fixture in the originally selected workspace but could not establish workspace enumeration or positive recognition. Keep `ui_retest` pending and do not mark EXT-F-1007-T26 passed.
+Independent state audit `reports/d22-state-audit.json` supports recording the engineering repair as fixed after the scoped-query, stale-result, actor-boundary, queue-order, and refusal repairs and their focused green receipts. Run 011 has independently checked hashes and bounded list/candidate counts (`reports/d22-readonly011-peer.json`), but found no candidate meeting the exact-URL healthy-fixture rule within its observed 98 accessible workspaces. The redirect may be benign URL normalization; it is not a global absence claim. Keep `ui_retest` pending and do not mark EXT-F-1007-T26 passed.
 
-**Next:** Run 006 is pending healthy resource conditions and root admission. Use the fresh receipt-bound `.85` artifact only after admission; use actual existing Sources, keep URLs/IDs private, and send no Save input. Run 005 was refused at preflight and is infrastructure evidence, not a product result.
+**Next:** Audit the redirect candidate against the app's canonical URL behavior, then seek a qualifying existing fixture through a bounded read-only retest on a receipt-bound build. Preserve the exact-URL Source identity and UI predicates unless independently justified. Keep URLs/IDs private and send no Save input.
 
 **Still unverified:** actual positive Source/Open identity agreement across workspaces, stale-response rejection, service-failure/recovery, and late in-flight Save. The read-only runner cannot prove late Save. Preserve the reserved Save checkpoint exactly; do not read, advance, reset, reinitialize, retry, capture, or Save.
 

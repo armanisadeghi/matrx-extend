@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "report_id": "d22-readonly011-peer",
+  "run_id": "d22-recognition-readonly-011",
+  "review_scope": "Independent read-only receipt and sanitized private-result audit; no browser, test, Source write or checkpoint access.",
+  "A_runtime": {
+    "verdict": "UNVERIFIED",
+    "reason": "The guarded child exited 1. No candidate satisfied the runner's healthy exact-URL fixture requirement, so positive Source recognition, Open identity, workspace switching and late-response behavior were not exercised."
+  },
+  "B_evidence": {
+    "verdict": "ACCEPT_BOUNDED_011_RECEIPT",
+    "checks": [
+      "The saved guard-log and private-result SHA-256 values match the immutable 011 receipt; the private result is mode 0600. The guard admitted the child, recorded healthy watch samples and a child exit of 1.",
+      "The private result records 98 picker choices enumerated, 98 UI-selected workspaces with matching scoped organization reads, 98 HTTP 200 list pages, and one exhausted list page in each selected workspace.",
+      "Those bounded lists returned seven rows and seven public-eligible page candidates. All seven were probed: one HTTP 500, five HTTP 404, and one redirect. Candidate health was zero and workspace cleanup passed."
+    ],
+    "scope_limit": "This proves only the 98 accessible choices and list responses observed in this run. It does not prove that no Source exists elsewhere, that every listed Source page is broken, or that the redirect is unusable outside the runner's exact-URL oracle."
+  },
+  "followup": "Audit the runner's exact page.url() equality against the app's canonical URL handling, including benign trailing slash or fragment normalization, before treating the one redirected candidate as truly unsuitable. No acceptance predicate is changed by this report.",
+  "tracking_state": "EXT-D-0022 remains fixed awaiting native retest; no inventory case pass or product failure is established."
+}
