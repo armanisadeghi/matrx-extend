@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "run_id": "screenshot-admin-readonly-002",
+  "source": {
+    "guard_log_path": "/tmp/matrx-screenshot-admin-readonly-002.log",
+    "guard_log_sha256": "b63492991478141816bd8862b7a631ab4d90d2fc1e8fa677be5a95c31d8380a7",
+    "raw_result_path": "test-results/screenshot-admin-readonly-e6672c0d-8e10-44c5-95e0-9ba24c5e5289.json",
+    "raw_result_sha256": "838bc5f8b69b44f6d3dad695af1c7e446670fc5369863308531d16e124c411db"
+  },
+  "guard": {
+    "admitted_at": "2026-09-27T00:15:40.768Z",
+    "child_exit_at": "2026-09-27T00:16:22.034Z",
+    "child_exit_code": 1
+  },
+  "raw_result": {
+    "status": "unverified",
+    "build": {
+      "version": "0.2.79",
+      "tree_sha256": "be1cd4eeae8665beb7b0696238330c5f460e2c89bd52098bade9771a9d0fedf0"
+    }
+  },
+  "execution_evidence": {
+    "child_exit": "nonzero",
+    "wrapper_completion": "unverified_from_guard_log",
+    "overall_acceptance": "not_adjudicated"
+  }
+}
