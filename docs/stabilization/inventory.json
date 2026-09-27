@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-27T07:34:05.702342+00:00",
+  "updated_at": "2026-09-27T07:57:12.737877+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -480,43 +480,78 @@
           ],
           "dimensions": [
             "contention",
-            "scratch-policy"
+            "scratch-policy",
+            "cross-TMPDIR",
+            "cross-profile-volume"
           ],
           "results": {
             "guest": {
               "status": "pass",
-              "scope": "Current host-level single-lease contention; auth-independent infrastructure only",
-              "run_id": "resource-contention-current-001",
+              "historical_result": {
+                "status": "pass",
+                "scope": "Current host-level single-lease contention; auth-independent infrastructure only",
+                "run_id": "resource-contention-current-001",
+                "evidence": [
+                  "docs/stabilization/runs/resource-contention-current-001.json",
+                  "docs/stabilization/reports/resource-current-peer.json",
+                  "docs/stabilization/runs/final-release-native-003.json"
+                ],
+                "detail": "Second admission refused with exit2 RESOURCE_HEAVY_BUSY, no second child; incumbent remained healthy. Does not prove every launcher uses the guard."
+              },
+              "detail": "Independent real-guard contender refused, incumbent completed and cleaned up; existing legacy holder remained blocking. No extension behavior or watchdog proof claimed.",
+              "scope": "Auth-independent host lock only; updated guarded callers across TMPDIR/profile volumes",
               "evidence": [
-                "docs/stabilization/runs/resource-contention-current-001.json",
-                "docs/stabilization/reports/resource-current-peer.json",
-                "docs/stabilization/runs/final-release-native-003.json"
+                "docs/stabilization/reports/resource-lock-peer.json",
+                "docs/stabilization/reports/resource-lock-quality-peer.json"
               ],
-              "detail": "Second admission refused with exit2 RESOURCE_HEAVY_BUSY, no second child; incumbent remained healthy. Does not prove every launcher uses the guard."
+              "fix_commit": "4083a889"
             },
             "member": {
               "status": "pass",
-              "scope": "Current host-level single-lease contention; auth-independent infrastructure only",
-              "run_id": "resource-contention-current-001",
+              "historical_result": {
+                "status": "pass",
+                "scope": "Current host-level single-lease contention; auth-independent infrastructure only",
+                "run_id": "resource-contention-current-001",
+                "evidence": [
+                  "docs/stabilization/runs/resource-contention-current-001.json",
+                  "docs/stabilization/reports/resource-current-peer.json",
+                  "docs/stabilization/runs/final-release-native-003.json"
+                ],
+                "detail": "Second admission refused with exit2 RESOURCE_HEAVY_BUSY, no second child; incumbent remained healthy. Does not prove every launcher uses the guard."
+              },
+              "detail": "Independent real-guard contender refused, incumbent completed and cleaned up; existing legacy holder remained blocking. No extension behavior or watchdog proof claimed.",
+              "scope": "Auth-independent host lock only; updated guarded callers across TMPDIR/profile volumes",
               "evidence": [
-                "docs/stabilization/runs/resource-contention-current-001.json",
-                "docs/stabilization/reports/resource-current-peer.json",
-                "docs/stabilization/runs/final-release-native-003.json"
+                "docs/stabilization/reports/resource-lock-peer.json",
+                "docs/stabilization/reports/resource-lock-quality-peer.json"
               ],
-              "detail": "Second admission refused with exit2 RESOURCE_HEAVY_BUSY, no second child; incumbent remained healthy. Does not prove every launcher uses the guard."
+              "fix_commit": "4083a889"
             },
             "admin": {
               "status": "pass",
-              "scope": "Current host-level single-lease contention; auth-independent infrastructure only",
-              "run_id": "resource-contention-current-001",
+              "historical_result": {
+                "status": "pass",
+                "scope": "Current host-level single-lease contention; auth-independent infrastructure only",
+                "run_id": "resource-contention-current-001",
+                "evidence": [
+                  "docs/stabilization/runs/resource-contention-current-001.json",
+                  "docs/stabilization/reports/resource-current-peer.json",
+                  "docs/stabilization/runs/final-release-native-003.json"
+                ],
+                "detail": "Second admission refused with exit2 RESOURCE_HEAVY_BUSY, no second child; incumbent remained healthy. Does not prove every launcher uses the guard."
+              },
+              "detail": "Independent real-guard contender refused, incumbent completed and cleaned up; existing legacy holder remained blocking. No extension behavior or watchdog proof claimed.",
+              "scope": "Auth-independent host lock only; updated guarded callers across TMPDIR/profile volumes",
               "evidence": [
-                "docs/stabilization/runs/resource-contention-current-001.json",
-                "docs/stabilization/reports/resource-current-peer.json",
-                "docs/stabilization/runs/final-release-native-003.json"
+                "docs/stabilization/reports/resource-lock-peer.json",
+                "docs/stabilization/reports/resource-lock-quality-peer.json"
               ],
-              "detail": "Second admission refused with exit2 RESOURCE_HEAVY_BUSY, no second child; incumbent remained healthy. Does not prove every launcher uses the guard."
+              "fix_commit": "4083a889"
             }
-          }
+          },
+          "defect_ids": [
+            "EXT-D-0025"
+          ]
         },
         {
           "id": "EXT-F-0002-T03",
@@ -698,21 +733,27 @@
       "cells": {
         "guest": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0025"
+          ],
           "run_ids": [],
-          "retest_status": "not-run"
+          "retest_status": "partial: EXT-D-0025 passed; remaining infrastructure cases unverified"
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0025"
+          ],
           "run_ids": [],
-          "retest_status": "not-run"
+          "retest_status": "partial: EXT-D-0025 passed; remaining infrastructure cases unverified"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0025"
+          ],
           "run_ids": [],
-          "retest_status": "not-run"
+          "retest_status": "partial: EXT-D-0025 passed; remaining infrastructure cases unverified"
         }
       },
       "readiness_gaps": [

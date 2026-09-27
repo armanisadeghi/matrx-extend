@@ -21,11 +21,11 @@
   ],
   "severity": "S1: guard can fail to enforce machine-wide heavy concurrency, allowing resource-induced false defects",
   "priority": "P0: restore trustworthy admission before additional browser launches",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/resource_lock_fix",
   "reproduction_status": "reproduced with harmless independent process probes; no overlapping heavy workloads",
-  "fix_commits": [],
-  "ui_retest": "not-applicable: infrastructure defect; independent process/lease retest required",
+  "fix_commits": ["4083a889"],
+  "ui_retest": "not-applicable: independent real-process contention and cleanup verified; no extension UI claim",
   "transition_history": [
     {
       "at": "2026-09-27T07:40:54.777250+00:00",
@@ -50,6 +50,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Implementation complete; independent process review and fresh portable-regression review passed. Tracking final independent retest closure after fix commit."
+    },
+    {
+      "at": "2026-09-27T07:57:12.737877+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent original-formula red probe, updated real-guard cross-TMPDIR refusal, legacy-holder preservation and cleanup passed; fresh reviewer verified portable four-test regression. Unchanged watchdog/stale-recovery coverage remains separately unverified in inventory."
+    },
+    {
+      "at": "2026-09-27T07:57:12.737877+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Verified infrastructure repair pushed to origin/main as 4083a889; scope is cooperative updated callers plus registered existing legacy owners."
     }
   ],
   "closure_requirement": "Independent proof of fail-before/pass-after cross-TMPDIR contention; adjacent same-root contention, stale recovery and old-owner preservation remain safe; no unsafe real workloads."
