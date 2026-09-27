@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "lane": "independent verifier; Luna medium; static review only",
+  "scope": "tests/browser/settings-local-controls-acceptance.mjs local development receipt path",
+  "engineering": "ACCEPT_SOURCE",
+  "runtime": "UNVERIFIED",
+  "findings": [
+    "SETTINGS_DEV_BUILD_RECEIPT opts into the local development build path and must be non-empty. The receipt is validated with requireLocalDevReceipt; its version is matched to package.json and manifest.json, its stable manifest key is required, and hashReleaseTree must match its treeSha256.",
+    "The canonical runNativeSidepanelQa harness receives extensionDir, expectedRelease version/tree hash, and localDevReceiptPath. Its resolveExpectedRelease and verifyReleasedArtifact paths validate receipt provenance, manifest version/key, and current unpacked tree before browser launch.",
+    "After successful harness return, the caller reloads and revalidates the receipt and recomputes the development tree hash, refusing version/tree drift during the run.",
+    "The fallback release-receipt branch retains its source SHA ancestry and SettingsView diff checks. The added local path does not replace or bypass it when SETTINGS_DEV_BUILD_RECEIPT is absent.",
+    "The diff adds no receipt contents or credentials to output. The report records receipt kind, publish state, version, and tree hash; the local receipt validator and harness use fixed refusal messages for provenance failures.",
+    "Cleanup remains covered: T46's finally block attempts debugger close, worker detach, and override reset; the native harness terminates its owned browser child and removes its disposable profile; the top-level finally closes the observed port. Evidence artifacts remain intentionally retained under test-results.",
+    "The diff has no hunks in the T22, T37, T46, or T70 scenario bodies. In particular, T46's trusted Save boundary, rediscovery entry/completion count, ordering assertions, and cleanup checkpoint are unchanged. No source-workspace Save checkpoint code is edited by this diff.",
+    "Static checks passed: node --check tests/browser/settings-local-controls-acceptance.mjs and git diff --check -- tests/browser/settings-local-controls-acceptance.mjs. No browser, build, or test execution was performed, so runtime behavior and actual cleanup remain unverified."
+  ],
+  "limitations": "This review establishes source wiring and unchanged assertions only. It does not establish that the current local build launches, that receipt admission succeeds with a real caller-selected receipt, or that the UI scenarios pass at runtime."
+}

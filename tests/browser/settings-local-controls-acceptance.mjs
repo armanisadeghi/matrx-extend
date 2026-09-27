@@ -4,6 +4,8 @@ import { execFileSync } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { join, resolve } from 'node:path';
+import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
+import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
@@ -11,6 +13,8 @@ import { click, evaluate, openSection, waitFor } from './settings-panel-driver.m
 // UI actions use trusted CDP pointer/keyboard input; DOM and Chrome API reads are evidence only.
 const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'settings-local-controls-acceptance.json');
+const DEV_EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
+const DEV_BUILD_RECEIPT = process.env.SETTINGS_DEV_BUILD_RECEIPT;
 const EXTENSION_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
 const DISCOVERY_SCAN_START = 22140;
 const DISCOVERY_SCAN_END = 22159;
@@ -21,7 +25,7 @@ const report = {
   build: { extensionId: EXTENSION_ID },
   preconditions: [
     'Owned disposable profile',
-    'Released extension receipt and tree hash verified',
+    'Extension receipt and tree hash verified',
     'Guest panel settled before interaction',
   ],
   cases: IDS.map((id) => ({ id, role: 'guest', status: 'unverified', steps: [], criteria: [] })),
@@ -363,23 +367,51 @@ async function runCase(c, fn) {
 let observedPort;
 try {
   const packageJson = JSON.parse(await readFile(join(REPO, 'package.json'), 'utf8'));
-  const receipt = JSON.parse(await readFile(join(REPO, '.output', 'release-receipt.json'), 'utf8'));
-  assert.equal(receipt.version, packageJson.version, 'receipt version must match package');
-  assert.match(receipt.sourceSha, /^[a-f0-9]{40}$/);
-  execFileSync('git', ['merge-base', '--is-ancestor', receipt.sourceSha, 'HEAD'], { cwd: REPO });
-  execFileSync(
-    'git',
-    ['diff', '--quiet', receipt.sourceSha, '--', 'src/features/settings/SettingsView.tsx'],
-    { cwd: REPO },
-  );
-  report.build = {
-    ...report.build,
-    version: receipt.version,
-    sourceSha: receipt.sourceSha,
-    treeSha256: receipt.treeSha256,
-  };
+  let receipt;
+  if (DEV_BUILD_RECEIPT !== undefined) {
+    assert.ok(DEV_BUILD_RECEIPT, 'SETTINGS_DEV_BUILD_RECEIPT must name a receipt');
+    const manifest = JSON.parse(await readFile(join(DEV_EXTENSION_DIR, 'manifest.json'), 'utf8'));
+    receipt = JSON.parse(await readFile(DEV_BUILD_RECEIPT, 'utf8'));
+    requireLocalDevReceipt(receipt, DEV_EXTENSION_DIR);
+    assert.equal(receipt.version, packageJson.version, 'development receipt must match package');
+    assert.equal(manifest.version, receipt.version, 'development manifest must match receipt');
+    assert.ok(manifest.key, 'development manifest must carry its stable key');
+    assert.equal(
+      hashReleaseTree(DEV_EXTENSION_DIR),
+      receipt.treeSha256,
+      'development tree must match receipt',
+    );
+    report.build = {
+      ...report.build,
+      kind: receipt.kind,
+      publishState: receipt.publish_state,
+      version: receipt.version,
+      treeSha256: receipt.treeSha256,
+    };
+  } else {
+    receipt = JSON.parse(await readFile(join(REPO, '.output', 'release-receipt.json'), 'utf8'));
+    assert.equal(receipt.version, packageJson.version, 'receipt version must match package');
+    assert.match(receipt.sourceSha, /^[a-f0-9]{40}$/);
+    execFileSync('git', ['merge-base', '--is-ancestor', receipt.sourceSha, 'HEAD'], { cwd: REPO });
+    execFileSync(
+      'git',
+      ['diff', '--quiet', receipt.sourceSha, '--', 'src/features/settings/SettingsView.tsx'],
+      { cwd: REPO },
+    );
+    report.build = {
+      ...report.build,
+      version: receipt.version,
+      sourceSha: receipt.sourceSha,
+      treeSha256: receipt.treeSha256,
+    };
+  }
   observedPort = await startObservedDeadPort();
   const result = await runNativeSidepanelQa({
+    ...(DEV_BUILD_RECEIPT !== undefined && {
+      extensionDir: DEV_EXTENSION_DIR,
+      expectedRelease: { version: receipt.version, treeSha256: receipt.treeSha256 },
+      localDevReceiptPath: DEV_BUILD_RECEIPT,
+    }),
     exercisePanel: async ({ panel, attachWorker }) => {
       await settings(panel);
       await runCase(byId('T22'), async () => {
@@ -741,6 +773,17 @@ try {
     },
   });
   assert.equal(result.verified, true);
+  if (DEV_BUILD_RECEIPT !== undefined) {
+    const after = JSON.parse(await readFile(DEV_BUILD_RECEIPT, 'utf8'));
+    requireLocalDevReceipt(after, DEV_EXTENSION_DIR);
+    assert.equal(after.version, receipt.version, 'development version changed during run');
+    assert.equal(after.treeSha256, receipt.treeSha256, 'development receipt changed during run');
+    assert.equal(
+      hashReleaseTree(DEV_EXTENSION_DIR),
+      receipt.treeSha256,
+      'development tree changed during run',
+    );
+  }
   report.build.verified = true;
   report.artifacts = result.artifacts;
 } catch (error) {
