@@ -26,6 +26,7 @@
     ["pnpm", "exec", "wxt", "build"],
     ["pnpm", "exec", "wxt"],
     ["pnpm", "compile"],
+    ["pnpm", "lint"],
     ["pnpm", "catalog:tools:md"],
     ["pnpm", "docs:tools"],
     ["pnpm", "exec", "tsc", "--noEmit"],
