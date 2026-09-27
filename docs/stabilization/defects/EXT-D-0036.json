@@ -19,9 +19,9 @@
   ],
   "severity": "S3: acceptance infrastructure loses a failure boundary; no product defect established",
   "priority": "P1: restore actionable diagnostics before the next admitted native run",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "/root/fullpage_capture_diagnosis",
-  "fix_commits": [],
+  "fix_commits": ["40de414b", "c8640d89"],
   "transition_history": [
     {
       "at": "2026-09-27T11:59:40Z",
@@ -40,6 +40,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "The source now names the active capture substage with fixed codes; a fresh admitted native run is required to classify the original failure."
+    },
+    {
+      "at": "2026-09-27T12:02:53Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "The runner now reports fixed capture substages and its in-page aspect oracle passes a focused test that rejects wrong-width and always-accept mutants. Native retest and independent review remain required for closure."
     }
   ],
   "closure_requirement": "An admitted native full-page run either passes the original pixel and exact-row oracles or returns a fixed, actionable capture substage with exact-owned cleanup; independently review the recorded result."
