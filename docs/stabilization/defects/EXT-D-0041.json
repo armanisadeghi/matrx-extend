@@ -21,9 +21,9 @@
   ],
   "severity": "S2: a saved recipe can fail to recapture the selected data or silently target another response",
   "priority": "P1: Showcase selected-data save/replay reliability",
-  "state": "in-fix",
+  "state": "fixed",
   "reproduction_status": "source-boundary-red-confirmed",
-  "verification_status": "focused-green-2-of-2; combined compile resource-deferred after D42 test type correction; independent installed-extension replay pending",
+  "verification_status": "focused-green-2-of-2; combined guarded compile passed; independent installed-extension replay pending",
   "transition_history": [
     {
       "at": "2026-09-27T16:04:41Z",
@@ -42,6 +42,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Reconciled state after the Network source repair and focused 2/2 green; combined TypeScript check and independent installed-extension replay remain pending."
+    },
+    {
+      "at": "2026-09-27T16:33:55.659Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Guarded focused Network regression passed 2/2 and combined pnpm compile passed on frozen D41+D42 source. Engineering repair is ready; independent installed-extension save/reopen/rerun and build remain pending before closure."
     }
   ],
   "closure_requirement": "Run the focused regression red on pre-repair source and green on repaired source, compile and build, then have an independent verifier capture a real JSON request, search by content type, save its recipe, reopen and rerun on the same open page, and confirm returned rows and matching request identity. Include a filter-change selection check and honest no-match guidance."

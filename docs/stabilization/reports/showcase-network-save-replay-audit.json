@@ -1,6 +1,6 @@
 {
   "id": "EXT-D-0041-source-audit",
-  "evidence_level": "focused source regression red then green; combined compile resource-deferred and installed-extension replay pending",
+  "evidence_level": "focused source regression red then green and guarded combined compile passed; installed-extension replay pending",
   "boundary": "NetworkTab selected captured event → SaveAsPattern persisted config → runNetworkCapturePattern request matching",
   "root_cause": "NetworkTab uses one filter for two different purposes: searching displayed events by URL or content type, and persisting a url_filter that the runner applies only to request URLs. It also stores selection as an index into the changing filtered list.",
   "source_evidence": [
@@ -18,7 +18,7 @@
   "source_repair": "NetworkTab now keeps selected response identity independent of list search, derives the default replay URL matcher from its URL, exposes that matcher as a distinct editable control with a nonblocking mismatch warning, and preserves the selected key path and rows. Save and mode copy describe interactive replay without promising schedules.",
   "verification": {
     "focused_green": "Guarded Vitest showcase-d41-green-002 ended 2026-09-27T16:24:50Z with exit 0; 2/2 regressions passed. Scoped Biome and diff checks passed.",
-    "compile": "First guarded combined compile showcase-d41-compile-001 ended 2026-09-27T16:23:02Z with exit 1: this lane's four fixture-index TS2532 errors were corrected; D42-owned Doctor/List test had four findLast/implicit-any errors, corrected by its owner. Combined rerun has not launched: two later resource admissions refused before test children.",
+    "compile": "First guarded combined compile showcase-d41-compile-001 ended 2026-09-27T16:23:02Z with exit 1: this lane's four fixture-index TS2532 errors were corrected; D42-owned Doctor/List test had four findLast/implicit-any errors, corrected by its owner. Unchanged combined guarded compile showcase-d41-d42-combined-compile-002 admitted and ended 2026-09-27T16:33:55.659Z with exit 0 on version 0.2.102.",
     "resource_deferral": "D42 three-file guarded retry showcase-d42-focus-after-helper-001 was refused before child at 2026-09-27T16:26:57.655Z for pressure level 2, swap growth, and high-load CPU busy; retry -002 at 2026-09-27T16:29:30.728Z was refused before child for pressure level 2 and swap growth. No further admission attempted. Read-only attribution found the /var/tmp/matrx-stabilization-resource-501 lease root empty, this lane's external profile directory empty, and no identified campaign-owned active guard process. System Chrome/ChatGPT processes and an unrelated node chain were visible by executable name only; their ownership and pressure contribution are unknown. Nothing was terminated or deleted.",
     "live": "No installed-extension Network capture/save/reopen/rerun verdict yet."
   },
