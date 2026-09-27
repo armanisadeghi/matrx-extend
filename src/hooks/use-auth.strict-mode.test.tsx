@@ -278,7 +278,13 @@ describe('useAuth persisted-session boot', () => {
     dependencies.restore.mockResolvedValue(false);
     const originalSet = chrome.storage.local.set.bind(chrome.storage.local);
     const set = vi.spyOn(chrome.storage.local, 'set').mockImplementation(async (items) => {
-      if (items[STORAGE_KEYS.IS_ADMIN] === false) throw new Error('false write rejected');
+      if (
+        typeof items === 'object' &&
+        items !== null &&
+        Reflect.get(items, STORAGE_KEYS.IS_ADMIN) === false
+      ) {
+        throw new Error('false write rejected');
+      }
       await originalSet(items);
     });
     try {

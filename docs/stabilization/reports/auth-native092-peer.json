@@ -1,0 +1,44 @@
+{
+  "reviewer": "auth_native_receipt_peer",
+  "scope": "Independent source-oracle and retained-receipt review for D26 contained admin navigation acceptance on the current auth repair. No build, test, browser session, credentials, raw logs, or product files were read or modified by this reviewer.",
+  "source_state": {
+    "reviewed_commit": "c9abb17e079bb0ac4829d2a4b294b3a2e312f5e4",
+    "package_version_at_review": "0.2.92",
+    "oracle": "tests/browser/contained-navigation-acceptance.mjs",
+    "prior_receipt": "contained-navigation-dev089-002"
+  },
+  "compile_fix_review": {
+    "file": "src/hooks/use-auth.strict-mode.test.tsx",
+    "verdict": "TEST_FIX_ONLY_ORACLE_UNCHANGED",
+    "details": "Compared the working diff against the reviewed commit. The diff changes the false-admin-write spy to narrow its input to a non-null object and read the key with Reflect.get, addressing TypeScript's unsafe index diagnostic. It does not change test assertions, product source, or the contained-navigation acceptance oracle."
+  },
+  "verdict_a_acceptance": {
+    "status": "NATIVE_RETEST_PENDING_BUILD_COMPILE_FAILURE",
+    "current_build_result": "No new native run exists. The coordinator reported that the refreshed test compile failed with TS7053 and sequence stopped before build/native execution. Do not infer a product result from this failure.",
+    "source_oracle": {
+      "verdict": "PRESERVED_STRICT_ACCEPTANCE",
+      "details": [
+        "The admin roster is compared against a strict sorted expected roster of 21 entries, including Capture, Pilot, Showcase, Token broker, and Debug; it does not weaken the D26 assertion.",
+        "The runner requires real aimatrx.com dashboard sign-in and then waits for extension Settings to show the expected admin identity, admin role, Sign out, and Advanced agent capabilities before roster inventory begins.",
+        "The first roster is recorded before the bounded settling wait. The runner retains first-sample match, count, title list, time after role readiness, and readiness fields, then requires the exact roster after navigation.",
+        "The runner checks the local development receipt against manifest/package identity and the unpacked extension tree before and after the native run."
+      ],
+      "quality_note": "The readiness wait is explicit and precedes the first sample; the receipt stores readiness values sampled immediately after first inventory. The source does not assert those sampled readiness booleans at that exact sample point. Retain both preceding role-ready timestamp and first-sample readiness in the next sanitized receipt so temporal linkage is auditable."
+    },
+    "prior_native_evidence": "The immutable dev089-002 record reports 21/21 at the first sample, +22ms after role readiness, one settling attempt, and 21/21 after navigation on a verified 0.2.89 local development tree. Its peer verified the retained evidence hash and receipt/tree match. It is pre-fix and must remain a non-reproduction, not evidence that the current D26/D29 source is fixed in the native product.",
+    "missing_cases": [
+      "A real lower-role/guest transition with restricted admin selection persisted, followed by reload and verification that selection falls back to Chat.",
+      "Reload persistence of the authenticated admin identity and role on this exact current build."
+    ]
+  },
+  "verdict_b_evidence_quality": {
+    "status": "SOURCE_AND_PRIOR_RECEIPT_REVIEW_PASS_WITH_CURRENT_NATIVE_EVIDENCE_ABSENT",
+    "findings": [],
+    "limits": [
+      "Current package is 0.2.92, but the failed compile means there is no current-build receipt/tree identity or native result to assess.",
+      "The current worker's compile failure is a test-code/build-chain blocker, not a D26/D29 acceptance failure and not a native product failure.",
+      "The normal successful admin sign-in/navigation scenario cannot establish D29's failed, unverifiable, or revoked role-transition paths. Keep those failure-path checks separately attributed to the guarded regressions and retain their native/service-worker limits."
+    ]
+  },
+  "recommendation": "Keep D26 native acceptance pending. Repair the TS7053 test compile issue, then obtain a fresh receipt tied to the actual tested artifact and immutable sanitized native result. Require a 21/21 first roster before any wait, Settings readiness at that observation, and 21/21 after navigation. Record reload and real role-transition cases as explicitly unverified unless separately exercised. Do not claim D29 all-gates-pass from ordinary successful sign-in."
+}
