@@ -439,5 +439,12 @@
     },
     "log": "/tmp/matrx-d22-recognition-readonly-006.log",
     "classification": "Navigation transport failure before Source recognition. Real admin, actual scoped Source list200, genuine eligible row. goto did not return; navigation requestfailed count1;253ms; no Source point reads; Scrape tab exists but inactive; cleanup passed. Original exception and failure errorText were not retained, so underlying network/browser cause cannot be reconstructed. Resource unsafe sample followed report emission and does not establish the cause of earlier navigation failure."
+  },
+  "readonly_007_and_candidate_selection_repair": {
+    "run_receipt": "docs/stabilization/runs/d22-recognition-readonly-007.json",
+    "runtime_truth": "The genuine first eligible Source page returned HTTP 500, so navigation failed before any scoped recognition query. Real admin, organization-scoped Source list, and workspace cleanup were observed; positive recognition remains unverified. This is an unavailable public fixture, not evidence of an extension product defect.",
+    "source_change": "Within the existing page, workspace and discovery deadlines, each genuinely listed public-eligible Source is navigated read-only with scripts disabled and the public GET/HEAD route guard. Non-success HTTP responses and known unavailable-page transport failures are counted by fixed safe category, then discovery continues through real rows, pagination and accessible organizations. An unknown browser or runner error still fails the attempt.",
+    "acceptance_boundary": "A selected fixture still needs a successful exact-URL page navigation, actual organization-scoped HTTP 200 Source lookup, matching saved UI and Open target, comparison workspace, late real response, and restoration. Candidate probing cannot satisfy these predicates or turn HTTP 500 into a healthy page.",
+    "verification": "Source syntax and targeted Biome only. No guarded native run of this change yet; independent review and root resource admission remain required. No Save, capture, checkpoint access, fixture creation, or source product edit."
   }
 }

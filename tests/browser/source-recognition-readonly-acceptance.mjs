@@ -460,7 +460,55 @@ async function discoveryUiStep(deadline, operation) {
   }
 }
 
-async function discoverFixture(panel, reads, organizationId, outerDeadline) {
+const UNAVAILABLE_PAGE_CODES = new Set([
+  'ERR_HTTP_RESPONSE_CODE_FAILURE',
+  'ERR_NAME_NOT_RESOLVED',
+  'ERR_CONNECTION_REFUSED',
+  'ERR_CONNECTION_RESET',
+  'ERR_TIMED_OUT',
+  'ERR_CERT_AUTHORITY_INVALID',
+  'ERR_BLOCKED_BY_CLIENT',
+  'browser_timeout',
+]);
+
+async function probeExistingPublicPage(page, session, identity, deadline) {
+  const documents = new Set();
+  let documentStatus = null;
+  const onRequest = ({ requestId, request, type }) => {
+    if (type === 'Document' && request.url === identity) documents.add(requestId);
+  };
+  const onResponse = ({ requestId, response }) => {
+    if (documents.has(requestId)) documentStatus = response.status;
+  };
+  session.on('Network.requestWillBeSent', onRequest);
+  session.on('Network.responseReceived', onResponse);
+  try {
+    const timeout = Math.min(60_000, remainingDiscovery(deadline));
+    const response = await discoveryUiStep(deadline, () =>
+      page.goto(identity, { waitUntil: 'load', timeout }),
+    );
+    const status = response?.status() ?? documentStatus;
+    if (!Number.isInteger(status) || status < 200 || status >= 300)
+      return { healthy: false, reason: 'http_not_success', status };
+    if (page.url() !== identity) return { healthy: false, reason: 'redirected' };
+    return { healthy: true };
+  } catch (error) {
+    // A real HTTP error can make page.goto reject before Playwright returns a
+    // Response. CDP still provides the document status. Unknown runner errors
+    // remain failures rather than silently becoming unavailable fixtures.
+    remainingDiscovery(deadline);
+    if (Number.isInteger(documentStatus) && (documentStatus < 200 || documentStatus >= 300))
+      return { healthy: false, reason: 'http_not_success', status: documentStatus };
+    const code = safeFailureCategory(error);
+    if (UNAVAILABLE_PAGE_CODES.has(code)) return { healthy: false, reason: code };
+    throw error;
+  } finally {
+    session.off('Network.requestWillBeSent', onRequest);
+    session.off('Network.responseReceived', onResponse);
+  }
+}
+
+async function discoverFixture(panel, page, fixtureSession, reads, organizationId, outerDeadline) {
   if (
     !Number.isInteger(DISCOVERY_MAX_PAGES) ||
     DISCOVERY_MAX_PAGES < 1 ||
@@ -478,6 +526,7 @@ async function discoverFixture(panel, reads, organizationId, outerDeadline) {
     httpUrls: 0,
     publicEligible: 0,
     categories: {},
+    candidatePages: { attempted: 0, healthy: 0, unavailable: {}, httpStatusCounts: {} },
     listPages: [],
     pagination: [],
     exhausted: false,
@@ -548,7 +597,17 @@ async function discoverFixture(panel, reads, organizationId, outerDeadline) {
       diagnostics.categories[category] = (diagnostics.categories[category] ?? 0) + 1;
       if (category === 'eligible') {
         diagnostics.publicEligible += 1;
-        return { fixture: row, origin: list.origin };
+        diagnostics.candidatePages.attempted += 1;
+        const pageResult = await probeExistingPublicPage(page, fixtureSession, row.url, deadline);
+        if (pageResult.healthy) {
+          diagnostics.candidatePages.healthy += 1;
+          return { fixture: row, origin: list.origin };
+        }
+        diagnostics.candidatePages.unavailable[pageResult.reason] =
+          (diagnostics.candidatePages.unavailable[pageResult.reason] ?? 0) + 1;
+        if (Number.isInteger(pageResult.status))
+          diagnostics.candidatePages.httpStatusCounts[pageResult.status] =
+            (diagnostics.candidatePages.httpStatusCounts[pageResult.status] ?? 0) + 1;
       }
     }
     remainingDiscovery(deadline);
@@ -626,7 +685,14 @@ async function discoverFixture(panel, reads, organizationId, outerDeadline) {
   fail('source_discovery_unverified');
 }
 
-async function discoverAcrossWorkspaces(panel, reads, originalName, original) {
+async function discoverAcrossWorkspaces(
+  panel,
+  page,
+  fixtureSession,
+  reads,
+  originalName,
+  original,
+) {
   if (
     !Number.isInteger(DISCOVERY_MAX_ORGS) ||
     DISCOVERY_MAX_ORGS < 1 ||
@@ -639,6 +705,7 @@ async function discoverAcrossWorkspaces(panel, reads, originalName, original) {
     accessibleUniqueChoices: null,
     choicesEnumeratedFromPicker: false,
     attemptedWorkspaces: 0,
+    unavailableCandidatePages: 0,
     selectedOriginal: true,
     workspaces: [],
     scope: 'bounded_accessible_workspace_search',
@@ -656,7 +723,17 @@ async function discoverAcrossWorkspaces(panel, reads, originalName, original) {
       fail('workspace_discovery_identity_ambiguous');
     seenIds.add(selected.storedId);
     summary.attemptedWorkspaces += 1;
-    const result = await discoverFixture(panel, reads, selected.storedId, deadline);
+    const result = await discoverFixture(
+      panel,
+      page,
+      fixtureSession,
+      reads,
+      selected.storedId,
+      deadline,
+    );
+    summary.unavailableCandidatePages +=
+      report.observations.fixtureDiscovery.candidatePages.attempted -
+      report.observations.fixtureDiscovery.candidatePages.healthy;
     summary.workspaces.push({
       ordinal: index + 1,
       original: index === 0,
@@ -690,7 +767,9 @@ async function discoverAcrossWorkspaces(panel, reads, originalName, original) {
   fail(
     candidates.length > DISCOVERY_MAX_ORGS
       ? 'no_fixture_within_workspace_search_budget'
-      : 'no_fixture_in_examined_accessible_workspaces',
+      : summary.unavailableCandidatePages > 0
+        ? 'no_healthy_fixture_in_examined_accessible_workspaces'
+        : 'no_fixture_in_examined_accessible_workspaces',
   );
 }
 
@@ -927,15 +1006,22 @@ try {
       let hold;
       try {
         stage = 'discover_existing_public_source';
+        const fixtureSession = await installPublicReadGuard(page);
         const {
           fixture,
           origin,
           selected: approved,
           positiveName,
-        } = await discoverAcrossWorkspaces(panel, reads, approvedName, originalApproved);
+        } = await discoverAcrossWorkspaces(
+          panel,
+          page,
+          fixtureSession,
+          reads,
+          approvedName,
+          originalApproved,
+        );
         report.observations.existingFixtureFound = true;
         const identity = fixture.url;
-        const fixtureSession = await installPublicReadGuard(page);
         const positive = {
           navigationStarted: false,
           navigationReturned: false,
