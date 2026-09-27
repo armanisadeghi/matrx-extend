@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-capture-receipt-peer",
+  "feature_id": "EXT-F-1009",
+  "review_mode": "narrow source-only receipt-selection verification; no browser, secrets, private config, or product data",
+  "A_acceptance_readiness": {
+    "verdict": "SOURCE_BLOCKER_ADDRESSED; RUN_READINESS_UNVERIFIED",
+    "evidence": "SCREENSHOT_CAPTURE_DEV_BUILD_RECEIPT overrides the default and resolves relative to REPO; without override, default remains source-dev-build-093-contained-20260927.json. Setting it to test-results/source-dev-build-093-capture-20260927.json resolves to /Volumes/Samsung2TB/code/matrx-extend/test-results/source-dev-build-093-capture-20260927.json.",
+    "validation_path": "Selected RECEIPT flows through buildIdentity: requireLocalDevReceipt(receipt, EXTENSION_DIR), manifest/package version equality, and hashReleaseTree equality; the same RECEIPT is passed as localDevReceiptPath to runNativeSidepanelQa, which parses and validates the local dev receipt against expectedRelease.",
+    "artifact": "The refreshed capture receipt file is absent in this checkout, so its runtime validation and native harness execution were not performed.",
+    "native_behavior": "UNVERIFIED"
+  },
+  "B_source_quality": {
+    "verdict": "SELECTION_GUARD_AND_CANONICAL_VALIDATION_INTACT",
+    "evidence": "Override is constrained to REPO/test-results by dirname check; no validation bypass or receipt relabeling was introduced. node --check tests/browser/screenshot-capture-acceptance.mjs passed."
+  }
+}

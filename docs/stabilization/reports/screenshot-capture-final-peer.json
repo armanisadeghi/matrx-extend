@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-capture-final-peer",
+  "feature_id": "EXT-F-1009",
+  "review_mode": "independent source-only; no native browser run, credential read, private config read, or product data mutation",
+  "prior_findings": [
+    {
+      "finding": "Current dev build provenance was absent",
+      "status": "ADDRESSED_WITH_LAUNCH_BLOCKER",
+      "evidence": "buildIdentity checks local-dev receipt, manifest/package versions and unpacked tree hash before and after the native harness; runNativeSidepanelQa receives extensionDir, expectedRelease and localDevReceiptPath. The runner still hardcodes the older contained receipt path, so it cannot select the refreshed capture receipt without a source change."
+    },
+    {
+      "finding": "Captured image did not prove the owned current viewport",
+      "status": "ADDRESSED_IN_SOURCE",
+      "evidence": "The runner reads the controlled page viewport, checks persisted image aspect ratio, decodes the mounted blob preview, and samples three independent fixture color bands from its pixels. This is a meaningful oracle for this one page; no browser result exists yet."
+    },
+    {
+      "finding": "Failure before row assignment could skip cleanup and falsely report no row",
+      "status": "ADDRESSED_IN_SOURCE_WITH_EXPLICIT_UNRESOLVED_PATH",
+      "evidence": "After a completed unique one-row GET on a zero-row fixture baseline, the row is claimed before UI assertions. Recovery requires the same page and sole matching card, uses the real Delete UI, then requires a fresh completed zero-row GET before clearing createdRowMayNeedUiCleanup. If a row cannot be identified or definitive cleanup fails, the flag remains true."
+    },
+    {
+      "finding": "T02 could show pass before T06 cleanup failed",
+      "status": "ADDRESSED_IN_SOURCE",
+      "evidence": "Both pass cases are appended only after the successful deletion GET and empty gallery agreement."
+    }
+  ],
+  "A_acceptance_readiness": {
+    "verdict": "REVISE_RECEIPT_SELECTION_THEN_READY_FOR_ONE_GUARDED_RUN",
+    "launch_blockers": [
+      "The current hardcoded RECEIPT is source-dev-build-093-contained-20260927.json. The refreshed source-dev-build-093-capture-20260927.json must be selectable through a narrowly validated override or a direct constant update, and must pass the existing hash/version checks. The older artifact must not be relabeled as the refreshed build."
+    ],
+    "admitted_claim_after_green_run": "One admin warm Visible click on the controlled localhost fixture yields a real single user screenshot row, a preview showing the fixture's viewport color bands, and successful deletion of that owned index row with a definitive zero-row GET. This is partial T02 and T06 evidence only.",
+    "not_covered": "T02 no active tab, competing busy capture, reload and service error; T06 cancel and failure; T07 lazy/offscreen and failed preview; member mode and complete EXT-F-1009 acceptance.",
+    "runtime_status": "UNRUN; source check is not browser evidence"
+  },
+  "B_implementation_quality": {
+    "verdict": "SOURCE_DESIGN_ACCEPTABLE_FOR_BOUNDED_LIVE_PROBE; PRODUCT_QUALITY_UNVERIFIED",
+    "basis": [
+      "The real product path invokes take_screenshot with persistence, reads extend.wbx_screenshot for the canonical URL, mounts a decoded blob preview, and uses the UI Delete path. The runner observes a real completed GET and compares its row to the sole mounted card.",
+      "The unique fixture URL and completed empty baseline constrain ownership. Recovery never deletes an unrelated row by broad query or direct database call; unresolved cleanup is surfaced when a safe proof is unavailable.",
+      "The result report stores fixed stages, flags, counts, build identity and bounded status. Credentials, approved organization name or ID, file ID, page text, raw network bodies and screenshot pixels are not serialized. The product intentionally retains the uploaded image file in Files after index deletion.",
+      "The test has not been run against live UI or subjected to a mutation/gut check. This review cannot certify the product behavior or full forcing-function quality."
+    ]
+  },
+  "evidence": [
+    "tests/browser/screenshot-capture-acceptance.mjs:20-27,160-177,609-650,653-868,879-910",
+    "tests/browser/native-sidepanel-qa-harness.mjs:57-114,325-352,369-458",
+    "scripts/record-local-dev-build.mjs:12-26",
+    "src/features/screenshots/ScreenshotsView.tsx:65-263,399-480",
+    "docs/stabilization/inventory.json:12637-12784",
+    ".claude/skills/forcing-function-tests/SKILL.md",
+    "node --check tests/browser/screenshot-capture-acceptance.mjs passed"
+  ]
+}

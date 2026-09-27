@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-capture-ready",
+  "feature_id": "EXT-F-1009",
+  "status": "REVISED_FOR_INDEPENDENT_SOURCE_REVIEW_NO_RUNTIME_CLAIM",
+  "runner": "tests/browser/screenshot-capture-acceptance.mjs",
+  "exact_command_for_root_review": "SCREENSHOT_CAPTURE_DEV_BUILD_RECEIPT=test-results/source-dev-build-093-capture-20260927.json node tests/browser/screenshot-capture-acceptance.mjs",
+  "source_check": "node --check tests/browser/screenshot-capture-acceptance.mjs passed; no browser or service was launched",
+  "scope": {
+    "primary_case": "EXT-F-1009-T02 admin warm Visible capture on a controlled regular page",
+    "cleanup_subcase": "EXT-F-1009-T06 deletion of only the screenshot row created by this run",
+    "fixture": "A localhost server owned by the runner serves a static, nonsecret Harbor Dental appointment guide at a unique URL. Three broad vertical color bands provide a pixel fingerprint for the current viewport. It is separate from the real login tab and from any customer page.",
+    "identity": "The native harness creates an isolated profile. The runner signs in through the real web and extension UI with the established admin credential read at point of use. It selects only the exact previously approved QA organization in the private mode-0600 config; a missing or nonunique selection stops the case.",
+    "observation": "The fixture gallery must have a completed real zero-row GET before capture. A trusted Visible click must cause a completed real screenshot GET with exactly one new user row, positive dimensions, and a file_id. The row is claimed before later UI assertions. Its aspect ratio must match the current fixture viewport. The mounted card must show You, matching dimensions, and a decoded blob preview whose three sampled pixels match the fixture's independent color bands. The sole card's real Delete confirmation must state that its file remains in Files; a post-delete real GET must return zero rows and the gallery must show empty.",
+    "build_provenance": "SCREENSHOT_CAPTURE_DEV_BUILD_RECEIPT selects a receipt only from this repo's test-results directory; the refreshed 0.2.93 capture receipt is selected by the exact command above. The runner still applies requireLocalDevReceipt and checks the manifest, package version and unpacked tree hash, forwards that same receipt, extension directory and identity to the native harness, and rechecks the tree after use. Any drift stops the run before a behavior claim. Without the override, the earlier contained receipt remains the default and may fail the current tree check.",
+    "privacy": "Reports contain fixed stages, counts, booleans, HTTP status and release identity only. Credentials, organization name/ID, file ID, screenshot bytes, page text, network bodies, and customer data stay out of receipts. No existing screenshot row can be deleted because the baseline requires an empty unique fixture URL.",
+    "resource_gate": "New native runner is not allowlisted. Root must admit this exact command and obtain independent source review before execution."
+  },
+  "bounded_claim": "A green run could establish one admin warm Visible capture of the owned page's current viewport, preview and gallery result, plus owned-row index cleanup. It cannot complete T02 no-tab/busy/error/reload dimensions, T06 cancel/failure cases, T07 lazy/offscreen/failure behavior, any member mode, or full EXT-F-1009 acceptance.",
+  "open_facts": [
+    "No runtime evidence yet that the localhost fixture can be captured and persisted under the approved organization.",
+    "Delete removes the screenshot index row through the real UI; the product intentionally retains the uploaded image file in Files.",
+    "If execution fails after the Visible click, the receipt flags possible unresolved cleanup even when a list read did not identify the new row. Once a sole row is claimed, recovery attempts real UI cleanup only while the fresh fixture page and sole created card still match. Only a fresh real zero-row GET clears the cleanup flag. No unrelated or previously existing row may be removed."
+  ]
+}

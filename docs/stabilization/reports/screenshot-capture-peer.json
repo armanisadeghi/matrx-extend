@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-capture-peer",
+  "feature_id": "EXT-F-1009",
+  "review_mode": "independent source-only; no native browser run",
+  "acceptance_readiness": {
+    "verdict": "REVISE_BEFORE_NATIVE_RUN",
+    "blockers": [
+      "The candidate invokes runNativeSidepanelQa({ exercisePanel }) with its default release receipt and .output/chrome-mv3-dev artifact. It never supplies a localDevReceiptPath, extensionDir, or expectedRelease. The native harness therefore verifies the last released artifact, not the actual current dev build. A pass cannot establish current-source behavior, and stale release UI can fail for irrelevant reasons.",
+      "The positive oracle proves a new screenshot metadata row and a decodable blob preview, but never checks that the image depicts the controlled Harbor Dental page or even the current viewport. A valid image of another tab or a blank image with positive dimensions can pass the capture claim. The owned fixture has distinguishable text; inspect the actual captured pixels with an independent visual or image-content oracle.",
+      "createdRow is assigned only after requireGalleryAgreement and the one-row assertions. A real persisted row followed by a UI disagreement, duplicate row, missing dimensions, or preview failure before assignment skips the cleanup branch and can leave the newly created screenshot index row and retained file. The report then says createdRowMayNeedUiCleanup=false. Capture the owned row identity from the completed real GET before later UI assertions, and preserve an explicit unresolved cleanup state."
+    ],
+    "supported_narrow_scope": "After repair and a real run, one admin warm Visible click on an owned localhost page, real screenshot GET/row, preview, and index-row deletion could be evidenced. T02 no-tab, busy, reload, service error; T06 cancel/failure; and T07 lazy/offscreen/failure remain unverified, as do member mode and complete feature acceptance.",
+    "exact_command_after_repair_and_root_admission": "node tests/browser/screenshot-capture-acceptance.mjs"
+  },
+  "implementation_quality": {
+    "verdict": "SOURCE_DESIGN_PARTIAL; PRODUCT_IMPLEMENTATION_UNVERIFIED",
+    "findings": [
+      "The runner selects an exact approved organization through the real Settings UI and verifies displayed and stored selection, and the fixture URL is unique with a zero-row GET baseline. This bounds which screenshot index row the normal Delete path may touch.",
+      "The real product capture path runs take_screenshot.run with persist=true and user source; fetchScreenshotsForUrl queries extend.wbx_screenshot by canonical URL. The runner observes the matching GET response and checks mounted card metadata and blob preview. Those are meaningful live seams, but no runtime execution occurred in this review.",
+      "The native harness writes guest pre-sign-in PNGs under test-results with mode 0600. The candidate report reduces UI observations to fixed values/booleans and does not serialize credentials, organization identifiers, file IDs, response rows, or image bytes. The decoded image is nevertheless held in the browser memory and the uploaded file remains in Files by product design after index deletion.",
+      "Failure cleanup only attempts a UI Delete and does not verify the post-delete GET or absence of the exact created row. It must report cleanup unresolved unless a definitive read confirms it; no unrelated row should be deleted.",
+      "The runner pushes T02 pass before attempting T06 deletion. If deletion fails, final status becomes unverified while cases still contains a T02 pass; inventory should not be promoted from that partial intermediate claim without separately inspecting the terminal failure."
+    ],
+    "limits": "No gut-check or mutation proof was run; per forcing-function-tests, source inspection cannot certify the test as a finished forcing-function guard. No implementation-quality pass is claimed for capture pixels, lazy preview behavior, error states, or cleanup after failures."
+  },
+  "evidence": [
+    "tests/browser/screenshot-capture-acceptance.mjs:573-756",
+    "tests/browser/native-sidepanel-qa-harness.mjs:33-105,325-465",
+    "src/features/screenshots/ScreenshotsView.tsx:65-263,279-520",
+    "src/lib/supabase/queries.ts:1262-1310",
+    "docs/stabilization/inventory.json:12637-12785",
+    ".claude/skills/forcing-function-tests/SKILL.md",
+    "node --check tests/browser/screenshot-capture-acceptance.mjs passed"
+  ]
+}
