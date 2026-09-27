@@ -1,0 +1,49 @@
+{
+  "runId": "dev093-associations-refresh",
+  "status": "completed",
+  "install": {
+    "sourceHead": "a75b75a91b2bfdc895a5bc91466f1fe5848386f4",
+    "runId": "dev093-associations-install",
+    "command": "pnpm install --frozen-lockfile --ignore-scripts",
+    "admittedAt": "2026-09-27T10:13:54.179Z",
+    "exitCode": 0,
+    "terminalAt": "2026-09-27T10:13:55.433Z",
+    "leaseReleased": true,
+    "expectedPackageVersion": "0.13.7",
+    "installedPackageVersionBefore": "0.13.6",
+    "installedPackageVersionAfter": "0.13.7",
+    "consumerAction": "Installed CHANGELOG.md 0.13.7 states this was a docs/metadata-only republish, with no source changes intended and no consumer action required.",
+    "privateWrapperLog": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/dev093-associations-install-wrapper.log",
+      "mode": "0600",
+      "sha256": "888c0ce4adc43b30b247d711e11b3d078c852fc4c47b77fe722a7f23ae78d7c3"
+    }
+  },
+  "build": {
+    "sourceHead": "a75b75a91b2bfdc895a5bc91466f1fe5848386f4",
+    "runnerHead": "baca9b1390f845c818bd33472e5dcf51c0d3271f",
+    "runId": "dev093-capture",
+    "command": "pnpm exec wxt build --mode development",
+    "admittedAt": "2026-09-27T10:15:47.753Z",
+    "exitCode": 0,
+    "terminalAt": "2026-09-27T10:15:51.077Z",
+    "leaseReleased": true,
+    "version": "0.2.93",
+    "treeSha256": "64a82f5049527ea640273fe0156d845d3d96fb063eb3845b0353489942d03cc0",
+    "receiptPath": "test-results/source-dev-build-093-capture-20260927.json",
+    "receiptSha256": "3d1d9284a4d9270ff0aa8b9af6fa5df8d1451e1b27593556ef31ddc0f44a1735",
+    "publishState": "not_published",
+    "developmentExtensionIdUnchanged": true,
+    "privateWrapperLog": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/dev093-capture-wrapper.log",
+      "mode": "0600",
+      "sha256": "8007df8060a5a9acbe7d71cf72bbd2223471d6a28c602c20a6a6dd0a8ba5e1f6"
+    }
+  },
+  "laterCheckoutUpdate": {
+    "commit": "3ba3d9f1173bc3038f90d6c52c488351f9603f40",
+    "version": "0.2.94",
+    "timing": "Merged after the .93 native capture process had terminated.",
+    "receiptDisposition": "The .93 receipt is historical and must not be used for a new run against the .94 checkout."
+  }
+}

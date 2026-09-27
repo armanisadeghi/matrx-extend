@@ -1,12 +1,12 @@
 # Matrx Extend stabilization: resume here
 
-Checkpoint: 2026-09-27. Goal remains active and incomplete. This goal turn made verified progress: repaired the actual D26 admin navigation regression, independently retested it in native Chrome, repaired D29 persisted-role failures with remaining native gaps tracked, and closed D28 harness portability. Do not infer whole-feature health from these repairs.
+Checkpoint: 2026-09-27. Goal active and incomplete. Latest progress: D29 original persisted-role failure passed native fault/recovery and closed; D30 development-provenance setup repair passed native guest/reload/sign-out. Real Screenshot capture now reaches persisted image/preview but fails pixel verification and cleanup remains unresolved. No whole-feature health claim.
 
 ## Source and runtime
 
 Code commits: D26 5224d583; D29 c9abb17e, typing correction0b1ef207, internal cleanup registration110809f3. Concurrent main releases .91/.92 were merged without losing work. Another contributor fixed the same registry issue in32a6b944; merge31204376 reconciles both into the specific writeAuthRoleGate entry, preserving the shared intent. The targeted destructive-operation guard passed4/4. Final integrated CI still needs its current-head result checked; earlier CI failures were corrected, not ignored.
 
-Latest verified development artifact is .93: `test-results/source-dev-build-093-contained-20260927.json`, tree `6b2f5a0cff151755e3de140592f6f92148ee184e95746cf07c9c539e3f62cb76`, source356c07d5. Subsequent changes only affect test runners and resource policy. Native role failure/recovery passed on this artifact. This is local unpacked Chrome-for-Testing verification; primary Chrome installation and Store release are not claimed. Main CI passed at2de0364c (run36311131191).
+Latest built artifact is historical .93 capture refresh: `test-results/source-dev-build-093-capture-20260927.json`, tree `64a82f5049527ea640273fe0156d845d3d96fb063eb3845b0353489942d03cc0`, sourcea75b75a9; dependencies installed from locked associations0.13.7 (changelog says no consumer action). Native capture used runnerbaca9b13. After its exit, remote release .94 merged as3ba3d9f1. Build fresh .94 before another run; never relabel .93. Earlier accepted D29/T09 used separate .93 contained artifact tree6b2f5a0c, preserved in their run records. Primary Chrome installation and Store verification are not claimed. Remote release7835dec4 CI passed; check latest integrated HEAD CI before declaring checkpoint green.
 
 ## Accepted findings and remaining work
 
@@ -23,9 +23,9 @@ Inventory is authoritative:205 features,1297 controls,702 cases. The added auth 
 
 ## Next actions
 
-Check final integrated CI and reconcile any new origin/main changes. Expand actual Screenshot capture/control coverage next; keep remaining auth dimensions tracked. Primary Chrome channel switch and ordinary-member test access remain unresolved. Do not spend another cycle rebuilding process scaffolding. Existing prepared native runners and inventory cases are the starting point.
+Check integrated CI, reconcile remote changes, and continue Screenshot diagnosis. Run `runs/screenshot-capture-dev093-001.json` failed `captured_pixels_do_not_match_owned_fixture` after real capture persistence/loaded blob. Cleanup is unverified, and original row identity/URL were not retained; never delete by title/recency or reuse the reserved Source checkpoint. F1009T02/T06/T07 remain unverified. Source diagnosis found evidence insufficient to distinguish product capture from oracle error; diagnostic patch adds private mismatch PNG and bounded pixel/cleanup-stage observations. Obtain/read fresh `reports/screenshot-capture-diagnostics-peer.json` before one fresh guarded .94 attempt, then inspect actual private image only after checking privacy. No product defect root cause has been established yet.
 
-Active lane: Sol screenshot_capture_case revises the Visible capture runner after fresh peer found missing dev provenance, inadequate captured-pixel proof and failure cleanup gaps. No native capture launch until fresh re-review. Luna guest retry002 is terminal with lease released. Verify actual collaboration/process status before dispatch. No heavy job should remain after the accepted native/guard runs. Use Luna medium for narrow execution, Sol medium for code, a fresh peer before acceptance, and objective escalation thresholds in TAKEOVER-PLAN.md. Root owns exact-path integration and frequent pushes.
+Use Luna medium for narrow execution and Sol medium for implementation. Sole heavy guard run at a time; only one lightweight worker alongside it. Current refresh/capture executor is terminal and lease released. Final source peer may still be running: check live agents. No hidden browser run remains. Root owns exact-path integration and frequent pushes. Primary channel switch and ordinary-member access remain unresolved; keep progressing on actionable admin/guest contained controls.
 
 ## Runtime and resource requirements
 

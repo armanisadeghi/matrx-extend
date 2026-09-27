@@ -1,0 +1,76 @@
+{
+  "runId": "screenshot-capture-dev093-001",
+  "status": "unverified",
+  "scope": "One guarded screenshot capture acceptance attempt only; this is not a full Screenshot feature pass.",
+  "sourceHead": "a75b75a91b2bfdc895a5bc91466f1fe5848386f4",
+  "runnerHead": "baca9b1390f845c818bd33472e5dcf51c0d3271f",
+  "build": {
+    "version": "0.2.93",
+    "treeSha256": "64a82f5049527ea640273fe0156d845d3d96fb063eb3845b0353489942d03cc0",
+    "receiptPath": "test-results/source-dev-build-093-capture-20260927.json",
+    "receiptSha256": "3d1d9284a4d9270ff0aa8b9af6fa5df8d1451e1b27593556ef31ddc0f44a1735",
+    "identityVerifiedBeforeRun": true,
+    "identityAfterRun": null
+  },
+  "resourceRun": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id screenshot-capture-dev093-001 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- node tests/browser/screenshot-capture-acceptance.mjs",
+    "admittedAt": "2026-09-27T10:20:00.654Z",
+    "admission": "RESOURCE_ADMITTED",
+    "sample": {
+      "pressure": 1,
+      "availableMemoryGiB": 12.32,
+      "loadAverage": 4.94,
+      "cpuCount": 10,
+      "busyRatio": 0.33695714285714284,
+      "swapMiB": 2716.56,
+      "requiredMemoryGiB": 4
+    },
+    "childExitCode": 1,
+    "terminalAt": "2026-09-27T10:20:20.391Z",
+    "leaseReleased": true
+  },
+  "observations": {
+    "approvedOrganizationSelected": true,
+    "baselineGalleryReads": "HTTP 200 complete",
+    "adminGalleryCardCount": 1,
+    "capturePreview": {
+      "cardCount": 1,
+      "sourceIsCurrentUser": true,
+      "blobImage": true,
+      "loaded": true,
+      "dimensionsPresent": true,
+      "error": false
+    },
+    "pixelOracle": "Failed: captured pixels did not match the owned fixture's three-band fingerprint.",
+    "failure": {
+      "stage": "visible_user_capture",
+      "operation": "owned_capture_preview",
+      "code": "captured_pixels_do_not_match_owned_fixture",
+      "fixtureOnly": true
+    }
+  },
+  "cleanup": {
+    "createdRowMayNeedUiCleanup": true,
+    "cleanupAttemptFieldEmitted": false,
+    "ownedUiCleanupVerified": false,
+    "rowDisposition": "Unresolved: the result does not evidence a successful delete click or a fresh zero-row verification; it does not establish whether the row remains or was removed.",
+    "rowRecoveryIdentityStored": false,
+    "additionalCleanupOrRetryPerformed": false
+  },
+  "evidence": {
+    "immutableResultPath": "test-results/screenshot-capture-dev093-001.evidence.json",
+    "immutableResultMode": "0600",
+    "immutableResultSha256": "198522e9d38b7c99dbf58f3a697d164f439449e368e85d2ef595346a58cfad51",
+    "originalResultPath": "test-results/screenshot-capture-a0b947ca-fe7a-4be4-ad71-7e456156ace0.json",
+    "privateWrapperLog": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/screenshot-capture-dev093-001-wrapper.log",
+      "mode": "0600",
+      "sha256": "0c3f62c0ecfe2eebeb74ff739f1b54230de1feca2ad45e8b57a1c1b9ecd50904"
+    }
+  },
+  "laterCheckoutUpdate": {
+    "commit": "3ba3d9f1173bc3038f90d6c52c488351f9603f40",
+    "version": "0.2.94",
+    "timing": "Merged after the .93 native process terminal; .93 evidence remains historical."
+  }
+}
