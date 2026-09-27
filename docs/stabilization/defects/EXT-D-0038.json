@@ -1,0 +1,43 @@
+{
+  "id": "EXT-D-0038",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T08"],
+  "surface": "Native Screenshot canonical marker predicate",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Run gallery-d37-dev096-001 with owned raw URL differing from normalized canonical URL.",
+    "Observe real HTTP200 empty gallery with active selected linked pane, but canonical marker predicate false.",
+    "Compare ScreenshotsView displayed canonical text with raw URL tooltip and runner title comparison."
+  ],
+  "expected": "Exact displayed canonical text identifies the owned page within its linked gallery pane.",
+  "actual": "Two test runners compare raw tooltip against canonical URL, falsely failing a correctly rendered empty gallery.",
+  "severity": "S3: test oracle blocks native acceptance; no product failure established",
+  "priority": "P1: unblock gallery error and recovery verification",
+  "state": "in-fix",
+  "fix_commits": ["46eaeecf"],
+  "evidence": [
+    "docs/stabilization/runs/gallery-d37-dev096-001.json",
+    "docs/stabilization/reports/gallery-canonical-marker-d38.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-09-27T12:23:23.165844+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Native canonical=false despite successful owned empty read."
+    },
+    {
+      "at": "2026-09-27T12:23:23.165844+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Actual product DOM contract and old/current evaluator replay prove raw-title versus canonical-text mismatch."
+    },
+    {
+      "at": "2026-09-27T12:23:23.165844+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Two affected predicates repaired; peer review and native retest active."
+    }
+  ],
+  "closure_requirement": "Fresh peer accepts exactlinkedpane identity; native gallery run passes initial canonical check and reaches target failure/recovery assertions."
+}

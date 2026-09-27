@@ -12924,17 +12924,18 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "run_id": "gallery-org-diag-dev096-001",
-              "evidence": "docs/stabilization/runs/gallery-org-diag-dev096-001.json",
+              "run_id": "gallery-d37-dev096-001",
+              "evidence": "docs/stabilization/runs/gallery-d37-dev096-001.json",
               "verified_substeps": [],
               "remaining_criteria": [
-                "Org selection passed this run; initial gallery read failed without adequate diagnostics. D37 instrumented retest pending.",
+                "D37 diagnostics verified; D38 raw-tooltip versus displayed-canonical test mismatch repaired, native target verification pending.",
                 "All loading/no-page/list-error/Refresh-recovery and member dimensions remain open."
               ]
             }
           },
           "defect_ids": [
-            "EXT-D-0037"
+            "EXT-D-0037",
+            "EXT-D-0038"
           ]
         },
         {
@@ -13007,7 +13008,8 @@
             "EXT-D-0034",
             "EXT-D-0035",
             "EXT-D-0036",
-            "EXT-D-0037"
+            "EXT-D-0037",
+            "EXT-D-0038"
           ],
           "run_ids": [
             "screenshot-capture-dev093-001",
@@ -13023,7 +13025,8 @@
             "screenshot-fullpage-dev095-002",
             "gallery-failure-dev095-002",
             "screenshot-fullpage-dev095-003",
-            "gallery-org-diag-dev096-001"
+            "gallery-org-diag-dev096-001",
+            "gallery-d37-dev096-001"
           ],
           "retest_status": "partial"
         }
