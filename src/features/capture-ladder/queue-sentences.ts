@@ -110,10 +110,3 @@ export function captureTabLabel(count: number, elsewhereTotal: number): string {
   }
   return 'Pages that need your browser';
 }
-
-/** The short text the trigger shows beside its icon while there is work. Empty when there is none. */
-export function captureTabShortLabel(count: number, elsewhereTotal: number): string {
-  if (count > 0) return 'Needs you';
-  if (elsewhereTotal > 0) return 'Elsewhere';
-  return '';
-}

@@ -3090,6 +3090,8 @@ Every entry follows this shape:
      numbers are never added together.
   4. The panel lands on the Capture tab with that page first, under the line "Sent from AI
      Matrx just now."
+  5. The toolbar Capture tab shows only its Inbox icon and actionable count badge. Its tooltip
+     and accessible name still explain the active count and any pages waiting in another workspace.
 - **Edge cases worth poking:**
   - The page the web app pointed at was already captured: the tab says so in one line
     instead of silently showing an ordinary list.

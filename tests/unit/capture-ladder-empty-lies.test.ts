@@ -44,11 +44,7 @@ vi.mock('@ai-matrx/realtime', () => ({
   onRealtimeManagerChange: () => () => undefined,
 }));
 
-import {
-  captureTabLabel,
-  captureTabShortLabel,
-  queueSentences,
-} from '@/features/capture-ladder/queue-sentences';
+import { captureTabLabel, queueSentences } from '@/features/capture-ladder/queue-sentences';
 import {
   CAPTURE_PICKUP_MAX_AGE_MS,
   isPickupFresh,
@@ -222,7 +218,6 @@ describe('THE GUARD — the tab badge does not read a silent zero', () => {
     expect(captureTabLabel(0, 4)).toBe(
       'Nothing needs your browser here — 4 waiting in another workspace',
     );
-    expect(captureTabShortLabel(0, 4)).not.toBe('');
   });
 
   it('never adds other workspaces into the actionable number', () => {
@@ -232,9 +227,8 @@ describe('THE GUARD — the tab badge does not read a silent zero', () => {
     expect(label).not.toContain('6');
   });
 
-  it('collapses to the plain name — and no label — when there is nothing anywhere', () => {
+  it('keeps the accessible tab name when there is nothing anywhere', () => {
     expect(captureTabLabel(0, 0)).toBe('Pages that need your browser');
-    expect(captureTabShortLabel(0, 0)).toBe('');
   });
 });
 

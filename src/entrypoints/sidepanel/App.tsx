@@ -3,7 +3,6 @@ import { NoticeHost } from '@/components/NoticeHost';
 import { PermissionPromptModal } from '@/components/PermissionPromptModal';
 import { UserMenu } from '@/components/UserMenu';
 import { canAccessSidepanelTab, firstAccessibleSidepanelTab } from '@/config/sidepanel-visibility';
-import { captureTabShortLabel } from '@/features/capture-ladder/queue-sentences';
 import { useCapturePickup } from '@/features/capture-ladder/use-capture-pickup';
 import { useNeedsYouCount } from '@/features/capture-ladder/use-needs-you-count';
 import { OrganizationPickerDialog } from '@/features/org/OrganizationPickerDialog';
@@ -161,7 +160,6 @@ export function App() {
   // pointer, so it never fights the person switching tabs afterwards.
   const capturePickup = useCapturePickup();
   const actedPickupAt = useRef<number | null>(null);
-  const captureShortLabel = captureTabShortLabel(needsYou.count, needsYou.elsewhereTotal);
 
   useEffect(() => {
     if (!capturePickup) return;
@@ -436,33 +434,11 @@ export function App() {
                   {canAccess('capture') && (
                     <TabsTrigger
                       value="capture"
-                      // FINDABILITY. Among ~20 icon-only triggers an Inbox icon
-                      // is a needle: the owner went hunting in Scrape and
-                      // concluded the system was broken. While there is work
-                      // the trigger grows a two-word label beside the icon; with
-                      // nothing waiting it collapses back to the same 28px
-                      // square as every other tab, so the row's scroll and the
-                      // other tabs' behaviour are untouched.
-                      className={
-                        captureShortLabel
-                          ? 'relative h-7 shrink-0 gap-1 px-1.5'
-                          : 'relative size-7 p-0'
-                      }
-                      // An icon-only tab with only a `title` has no accessible
-                      // name: a screen reader announces "tab" and the count in
-                      // the corner is invisible to it. The label carries the
-                      // count for the same reason the badge does — AND the
-                      // "waiting in another workspace" fact, which the number
-                      // alone can never say.
+                      className="relative size-7 p-0"
                       aria-label={needsYou.label}
                       title={needsYou.label}
                     >
                       <Inbox className="size-3.5" />
-                      {captureShortLabel && (
-                        <span className="text-[10px] font-medium leading-none">
-                          {captureShortLabel}
-                        </span>
-                      )}
                       {needsYou.count > 0 && (
                         <span className="absolute -right-0.5 -top-0.5 min-w-3.5 rounded-full bg-primary px-0.5 text-[9px] font-semibold leading-3.5 text-primary-foreground">
                           {needsYou.count > 9 ? '9+' : needsYou.count}
