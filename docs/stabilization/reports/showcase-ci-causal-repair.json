@@ -1,0 +1,64 @@
+{
+  "status": "PENDING_PATCH_CHECKPOINTED_UNAPPLIED_RESOURCE_BLOCKED",
+  "defect": "EXT-D-0047",
+  "lane": "CI causal synchronization escalation; test and report only",
+  "base": "906a87d8 plus documentation-only peer commits",
+  "ci_red": {
+    "run": 36362707950,
+    "cases_failed": 4,
+    "observed": "Both responsive and stalled-detach cases reached releaseSetup before native preparation completed; later cases observed attachment or missing detach from overlapping prior work. Contributor fake-clock polling did not synchronize native WebCrypto."
+  },
+  "cause": "The real saved-operation preparation awaits crypto.subtle.digest before approval and again after approval. Fixed microtask drains and fake-clock advancement do not await completion of native crypto jobs. A failed case then left async work active across case boundaries.",
+  "changes": [
+    "Preserve the real digest and entire saved UI/dispatcher/capture chain. Gate only the known saved-snapshot digest input, then wait for observed approval broadcast, setup entry, reload and terminal port result.",
+    "Keep every original approval-copy, no-attach-before-approval, row-provenance, detach and health-update assertion. No test timeout or fake-clock capture duration was increased.",
+    "Mock only the unrelated external health request, which previously generated native guest-signature work and real network traffic during this UI test. Other digests still call native WebCrypto.",
+    "An idempotent teardown runs in finally and runner afterEach. It stops observation waits, disconnects owned ports, releases gates, waits for imports and real replay promises, then cleans any owned debugger attachment before spies are restored.",
+    "A fifth case invokes that teardown while saved native preparation is held and requires a rejected operation with no approval and no debugger attachment."
+  ],
+  "verification": [
+    {
+      "run_id": "d47-ci-causal-green-1",
+      "guard_exit": 1,
+      "child_exit": 1,
+      "result": "Three original cases passed; responsive met original UI assertions but failed a new total-digest count. Stack proved unrelated health\u2192guest-signature native digest; one unhandled rejection was recorded."
+    },
+    {
+      "run_id": "d47-ci-causal-green-2",
+      "guard_exit": 0,
+      "child_exit": 0,
+      "tests_passed": 4,
+      "result": "All original cases passed after isolating the unrelated health request and scoping only saved-operation digests. This predates the peer-requested unconditional teardown correction."
+    },
+    {
+      "run_id": "d47-ci-causal-format",
+      "guard_exit": 0,
+      "child_exit": 0,
+      "result": "Admitted 28-file formatter changed only the saved-UI test formatting; no product files changed."
+    },
+    {
+      "run_id": "d47-ci-causal-teardown-green",
+      "guard_exit": 2,
+      "child_launched": false,
+      "code": "RESOURCE_PREFLIGHT_REFUSED",
+      "reason": "RESOURCE_PRESSURE_UNSAFE",
+      "pressure_level": 2,
+      "available_memory_gib": 5.76,
+      "at": "2026-09-28T00:47:46.539Z"
+    }
+  ],
+  "peer": "Fresh f24fd626 accepted the unconditional teardown correction (source PASS; runtime unverified). Subsequent formatter changed whitespace/import order only; root was notified of final test hash.",
+  "limits": "No product source change, no browser/build/localhost, no push, and no claim that local results establish remote CI success. Root owns the final CI run after its coordinated push.",
+  "outstanding": "CI remains red. The current peer-approved five-case candidate is UNTESTED because resource admission was refused; only its earlier four-case form passed. Apply the checkpoint and complete targeted tests, types, lint and final full suite after safe admission. No runtime, browser, localhost, build or push was performed for this checkpoint. Concurrent remote changes were not merged or discarded.",
+  "test_sha256": "1ca536099ee875ead8448edb350957e9b6a81b8e956568797bf2ba0d3a6a44d3",
+  "checkpoint": {
+    "base_head": "f24fd626aea0f6bed360eba46ebd86514ebc9b80",
+    "base_test_git_blob": "3ec10f47745ad812828a347f0635952ed266693e",
+    "base_test_sha256": "a695f14dfa1cfd5435e188c5bf6e14d02c642ee113a52a2a8627a9a62aa1908b",
+    "candidate_test_sha256": "1ca536099ee875ead8448edb350957e9b6a81b8e956568797bf2ba0d3a6a44d3",
+    "patch": "docs/stabilization/pending/EXT-D-0047-ci-causal/test.patch.pending",
+    "patch_sha256": "5287f231a1064b9c25014d1f275f835ac41c88849d83960a96e00d4ed972e354",
+    "verification": "Applied the saved patch to the exact local-HEAD test bytes in an explicitly targeted temporary scratch directory; reproduced the candidate byte-for-byte and SHA-256. Restored only the owned test after verifying neither local HEAD nor candidate changed.",
+    "application_status": "Unapplied. Working-tree test restored to the recorded local HEAD; unverified candidate preserved in the patch."
+  }
+}

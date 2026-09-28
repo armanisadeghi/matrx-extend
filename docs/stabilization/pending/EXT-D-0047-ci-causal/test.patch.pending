@@ -1,0 +1,345 @@
+diff --git a/tests/unit/document-network-saved-ui.test.tsx b/tests/unit/document-network-saved-ui.test.tsx
+index 3ec10f47..9249723c 100644
+--- a/tests/unit/document-network-saved-ui.test.tsx
++++ b/tests/unit/document-network-saved-ui.test.tsx
+@@ -1,5 +1,13 @@
+ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+ import { afterEach, expect, it, vi } from 'vitest';
++
++function signal() {
++  let resolve!: () => void;
++  const promise = new Promise<void>((done) => {
++    resolve = done;
++  });
++  return { promise, resolve };
++}
+ const h = vi.hoisted(() => ({
+   handlers: new Map<string, Array<(p: any) => unknown>>(),
+   broadcasts: vi.fn(),
+@@ -64,6 +72,8 @@ vi.mock('@/lib/tools/handlers/cdp', () => ({
+     required_optional_permissions: ['debugger'],
+   },
+ }));
++// Auth's startup health ping is an unrelated external network boundary.
++vi.mock('@/lib/api/routes/health', () => ({ pingHealth: vi.fn(async () => null) }));
+ vi.mock('@/lib/auth/is-admin', () => ({ readIsAdminFromStorage: async () => h.admin }));
+ vi.mock('@/lib/permissions/optional', () => ({
+   hasOptionalPermissions: async () => true,
+@@ -90,24 +100,74 @@ vi.mock('@/lib/destructive/confirm', () => ({ confirmDestructive: vi.fn() }));
+ import { SavedReplayApprovalHost } from '@/features/showcase/SavedReplayApprovalHost';
+ import { PatternsTab } from '@/features/showcase/tabs/PatternsTab';
+ import { registerDocumentNetworkCaptureHost } from '@/lib/data-pattern/document-network-transport';
++import { CHANNELS } from '@/lib/messaging/schemas';
+ import { bumpPatternRun } from '@/lib/supabase/queries';
+-import { startToolDispatcher } from '@/lib/tools/dispatch';
++import * as dispatcher from '@/lib/tools/dispatch';
+ // Browser APIs and DB/auth are boundary doubles. Actual PatternsTab, saved runner,
+ // port host, dispatcher, preparation, CDP client, capture core and row parser run.
+-afterEach(() => {
++let teardownCase: (() => Promise<void>) | undefined;
++afterEach(async () => {
++  await teardownCase?.();
++  teardownCase = undefined;
+   cleanup();
++  vi.clearAllTimers();
+   vi.useRealTimers();
++  vi.restoreAllMocks();
+   vi.clearAllMocks();
+ });
+ it.each([
+-  ['responsive cleanup', false, false, false],
+-  ['rejected owned debugger detach', false, false, true],
+-  ['stalled hook removal', true, false, false],
+-  ['stalled owned debugger detach', false, true, false],
++  ['responsive cleanup', false, false, false, false],
++  ['rejected owned debugger detach', false, false, true, false],
++  ['stalled hook removal', true, false, false, false],
++  ['stalled owned debugger detach', false, true, false, false],
++  ['teardown during native preparation', false, false, false, true],
+ ])(
+   'saved UI handles %s after a full window without showing old-document rows',
+-  async (_name, stallCleanup, stallDetach, rejectDetach) => {
+-    vi.useFakeTimers();
++  async (_name, stallCleanup, stallDetach, rejectDetach, teardownDuringPreparation) => {
++    const stopObserving = signal();
++    let stopping = false;
++    const observe = async (promise: Promise<void>) => {
++      await Promise.race([promise, stopObserving.promise]);
++      if (stopping) throw new Error('The test case ended before its observed operation completed.');
++    };
++    const operations: Array<Promise<unknown>> = [];
++    const nativeRun = dispatcher.runLocalSavedPattern;
++    const runObserver = vi
++      .spyOn(dispatcher, 'runLocalSavedPattern')
++      .mockImplementation((...args) => {
++        const operation = nativeRun(...args);
++        operations.push(operation);
++        return operation;
++      });
++    const disconnectPorts = new Set<() => void>();
++    const preparing = [signal(), signal()] as const;
++    const permitDigest = [signal(), signal()] as const;
++    const approvalRequested = signal();
++    const setupEntered = signal();
++    const reloaded = signal();
++    const terminal = signal();
++    const finishRemoval = signal();
++    const finishDetach = signal();
++    const nativeDigest = crypto.subtle.digest.bind(crypto.subtle);
++    let preparation = 0;
++    // WebCrypto runs outside the fake clock. Hold both real native calls to
++    // prove approval and CDP cannot overtake preparation, then await actual
++    // downstream events instead of guessing how many microtasks they need.
++    vi.spyOn(crypto.subtle, 'digest').mockImplementation(async (algorithm, data) => {
++      const serialized = new TextDecoder().decode(data);
++      if (!serialized.startsWith('["aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",'))
++        return nativeDigest(algorithm, data);
++      const index = preparation++;
++      const entered = preparing[index];
++      const permit = permitDigest[index];
++      if (!entered || !permit) throw new Error('Unexpected extra saved-operation preparation.');
++      entered.resolve();
++      await permit.promise;
++      return nativeDigest(algorithm, data);
++    });
++    h.broadcasts.mockImplementation((kind) => {
++      if (kind === CHANNELS.TOOL_CONFIRM_REQUEST) approvalRequested.resolve();
++    });
+     let stored: Record<string, unknown> = {};
+     Object.assign(chrome.storage, {
+       session: {
+@@ -132,12 +192,15 @@ it.each([
+             closed = true;
+             for (const fn of disconnects) fn();
+           };
++          disconnectPorts.add(disconnect);
+           const endpoint = (
+             input: Set<(v: unknown) => void>,
+             output: Set<(v: unknown) => void>,
+           ) => ({
+             postMessage: (v: unknown) => {
+               for (const fn of output) fn(v);
++              const message = v as { kind?: string };
++              if (message.kind === 'result' || message.kind === 'error') terminal.resolve();
+             },
+             disconnect,
+             onMessage: { addListener: (fn: (v: unknown) => void) => input.add(fn) },
+@@ -164,15 +227,15 @@ it.each([
+       });
+     let binding = '';
+     let registered = false;
+-    let releaseSetup!: () => void;
++    let releaseSetup: (() => void) | undefined;
+     const attach = vi.fn(async () => {});
+     const detach = vi.fn(async () => {
+-      if (stallDetach) await new Promise(() => {});
++      if (stallDetach) await finishDetach.promise;
+       if (rejectDetach) throw new Error('Chrome refused debugger detach');
+     });
+     const sendCommand = vi.fn(async (_target, method, params) => {
+       if (stallCleanup && method === 'Page.removeScriptToEvaluateOnNewDocument')
+-        return new Promise(() => {});
++        return finishRemoval.promise;
+       if (method === 'Page.getFrameTree')
+         return { frameTree: { frame: { id: 'main', url: h.url } } };
+       if (method === 'Runtime.enable') context(1, 'old');
+@@ -180,6 +243,7 @@ it.each([
+       if (method === 'Page.addScriptToEvaluateOnNewDocument') {
+         await new Promise<void>((resolve) => {
+           releaseSetup = resolve;
++          setupEntered.resolve();
+         });
+         registered = true;
+         return { identifier: 'script' };
+@@ -207,6 +271,7 @@ it.each([
+         packet(1, 'STALE_DOCUMENT_ROW', 999);
+         packet(2, 'CURRENT_DOCUMENT_ROW', 1);
+         emit('Page.frameNavigated', { frame: { id: 'main', url: h.url } });
++        reloaded.resolve();
+       }
+       return {};
+     });
+@@ -224,84 +289,114 @@ it.each([
+       tabs: { get: async () => ({ id: 37, groupId: 1, url: h.url }) },
+       scripting: { executeScript: async () => [{ result: null, documentId: 'original-document' }] },
+     });
+-    startToolDispatcher({ defaultPermissionMode: () => 'act' });
++    dispatcher.startToolDispatcher({ defaultPermissionMode: () => 'act' });
+     registerDocumentNetworkCaptureHost();
+-    const drain = async () => {
+-      for (let i = 0; i < 100; i++) await Promise.resolve();
++    let teardown: Promise<void> | undefined;
++    teardownCase = () => {
++      if (teardown) return teardown;
++      teardown = (async () => {
++        stopping = true;
++        stopObserving.resolve();
++        cleanup();
++        for (const disconnect of disconnectPorts) disconnect();
++        for (const permit of permitDigest) permit.resolve();
++        releaseSetup?.();
++        finishRemoval.resolve();
++        finishDetach.resolve();
++        // Runner teardown also calls this after a test timeout: unblock the
++        // body, then drain the actual dispatcher operation before the next case.
++        await vi.dynamicImportSettled();
++        await Promise.allSettled(operations);
++        detach.mockResolvedValue(undefined);
++        const client = await import('@/lib/cdp/client');
++        if (client.isAttached(37)) await client.detach(37);
++      })();
++      return teardown;
+     };
+-    render(
+-      <>
+-        <PatternsTab />
+-        <SavedReplayApprovalHost signedIn />
+-      </>,
+-    );
+-    await act(drain);
+-    fireEvent.click(screen.getByTitle('Run pattern'));
+-    await vi.dynamicImportSettled();
+-    await act(drain);
+-    expect(attach).not.toHaveBeenCalled();
+-    // Dispatch crosses async storage and messaging boundaries before the
+-    // approval host receives the request. Advance the fake clock in small,
+-    // bounded steps instead of relying on an incidental microtask count.
+-    for (
+-      let i = 0;
+-      i < 10 && screen.queryAllByRole('button', { name: 'Allow' }).length === 0;
+-      i++
+-    ) {
++    try {
++      render(
++        <>
++          <PatternsTab />
++          <SavedReplayApprovalHost signedIn />
++        </>,
++      );
++      const run = await screen.findByTitle('Run pattern');
++      vi.useFakeTimers();
+       await act(async () => {
+-        await vi.advanceTimersByTimeAsync(100);
+-        await drain();
++        fireEvent.click(run);
++        await observe(preparing[0].promise);
+       });
+-    }
+-    const allows = screen.getAllByRole('button', { name: 'Allow' });
+-    expect(allows).toHaveLength(1);
+-    const allow = allows[0];
+-    if (!allow) throw new Error('The saved replay approval did not render.');
+-    const approvalText = allow.parentElement?.parentElement?.textContent ?? '';
+-    expect(approvalText).toContain('Events');
+-    expect(approvalText).toContain('https://calendar.invalid/calendar');
+-    expect(approvalText).toMatch(/debugger.*reload/i);
+-    fireEvent.click(allow);
+-    // The persisted-confirm recovery crosses the message boundary before it
+-    // begins CDP setup. Under fake timers, yield a bounded amount of that
+-    // boundary rather than assuming a fixed microtask count.
+-    for (let i = 0; i < 10 && !releaseSetup; i++) {
++      expect(screen.queryAllByRole('button', { name: 'Allow' })).toHaveLength(0);
++      expect(attach).not.toHaveBeenCalled();
++      if (teardownDuringPreparation) {
++        await teardownCase();
++        expect(runObserver).toHaveBeenCalledOnce();
++        expect(await Promise.allSettled(operations)).toEqual([
++          { status: 'rejected', reason: expect.any(Error) },
++        ]);
++        expect(attach).not.toHaveBeenCalled();
++        expect(
++          h.broadcasts.mock.calls.some(([kind]) => kind === CHANNELS.TOOL_CONFIRM_REQUEST),
++        ).toBe(false);
++        return;
++      }
+       await act(async () => {
+-        await vi.advanceTimersByTimeAsync(100);
+-        await drain();
++        permitDigest[0].resolve();
++        await observe(approvalRequested.promise);
+       });
+-    }
+-    expect(releaseSetup).toBeTypeOf('function');
+-    await act(async () => {
+-      await vi.advanceTimersByTimeAsync(10000);
+-      releaseSetup();
+-      await drain();
+-    });
+-    expect(sendCommand.mock.calls.some((call) => call[1] === 'Page.reload')).toBe(true);
+-    await act(async () => {
+-      await vi.advanceTimersByTimeAsync(10000);
+-      await drain();
+-    });
+-    expect(screen.queryByText('CURRENT_DOCUMENT_ROW')).toBeNull();
+-    await act(async () => {
+-      await vi.advanceTimersByTimeAsync(10000);
+-      await drain();
+-    });
+-    if (stallCleanup || stallDetach || rejectDetach) {
++      expect(attach).not.toHaveBeenCalled();
++      const allows = screen.getAllByRole('button', { name: 'Allow' });
++      expect(allows).toHaveLength(1);
++      const allow = allows[0];
++      if (!allow) throw new Error('The saved replay approval did not render.');
++      const approvalText = allow.parentElement?.parentElement?.textContent ?? '';
++      expect(approvalText).toContain('Events');
++      expect(approvalText).toContain('https://calendar.invalid/calendar');
++      expect(approvalText).toMatch(/debugger.*reload/i);
+       await act(async () => {
+-        await vi.advanceTimersByTimeAsync(20000);
+-        await drain();
++        fireEvent.click(allow);
++        await observe(preparing[1].promise);
++      });
++      expect(attach).not.toHaveBeenCalled();
++      await act(async () => {
++        permitDigest[1].resolve();
++        await observe(setupEntered.promise);
++      });
++      expect(releaseSetup).toBeTypeOf('function');
++      await act(async () => {
++        await vi.advanceTimersByTimeAsync(10000);
++        releaseSetup?.();
++        await observe(reloaded.promise);
++      });
++      expect(sendCommand.mock.calls.some((call) => call[1] === 'Page.reload')).toBe(true);
++      await act(async () => {
++        await vi.advanceTimersByTimeAsync(10000);
+       });
+       expect(screen.queryByText('CURRENT_DOCUMENT_ROW')).toBeNull();
+-      expect(screen.getByText(/Chrome did not confirm removal/)).toBeTruthy();
+-      expect(bumpPatternRun).not.toHaveBeenCalled();
+-    } else expect(screen.getByText('CURRENT_DOCUMENT_ROW')).toBeTruthy();
+-    expect(screen.queryByText('STALE_DOCUMENT_ROW')).toBeNull();
+-    expect(detach).toHaveBeenCalledOnce();
+-    if (rejectDetach) {
+-      detach.mockResolvedValue(undefined);
+-      const client = await import('@/lib/cdp/client');
+-      await client.detach(37);
++      await act(async () => {
++        await vi.advanceTimersByTimeAsync(10000);
++      });
++      if (stallCleanup || stallDetach || rejectDetach) {
++        await act(async () => {
++          await vi.advanceTimersByTimeAsync(20000);
++        });
++        await act(async () => {
++          await observe(terminal.promise);
++        });
++        expect(screen.queryByText('CURRENT_DOCUMENT_ROW')).toBeNull();
++        expect(screen.getByText(/Chrome did not confirm removal/)).toBeTruthy();
++        expect(bumpPatternRun).not.toHaveBeenCalled();
++      } else {
++        await act(async () => {
++          await observe(terminal.promise);
++        });
++        expect(screen.getByText('CURRENT_DOCUMENT_ROW')).toBeTruthy();
++      }
++      expect(screen.queryByText('STALE_DOCUMENT_ROW')).toBeNull();
++      expect(detach).toHaveBeenCalledOnce();
++      expect(preparation).toBe(2);
++    } finally {
++      await teardownCase();
+     }
+   },
+ );
