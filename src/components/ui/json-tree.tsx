@@ -1,3 +1,4 @@
+import { formatJsonKeyPath } from '@/lib/data-pattern/json-key-path';
 import { cn } from '@/lib/utils';
 import { ChevronRight } from 'lucide-react';
 import { useState } from 'react';
@@ -24,10 +25,10 @@ const previewValue = (v: unknown): string => {
 
 interface JsonTreeProps {
   data: unknown;
-  /** Called with the dot-path the user clicked (empty string for root). */
-  onSelectPath?: ((path: string) => void) | undefined;
+  /** Called with exact JSON object keys (empty array for root). */
+  onSelectPath?: ((path: string[]) => void) | undefined;
   /** Highlight this path with a ring. */
-  selectedPath?: string | undefined;
+  selectedPath?: string[] | undefined;
   /** Initial expand depth. */
   defaultDepth?: number;
 }
@@ -42,7 +43,7 @@ export function JsonTree({
     <div className="rounded-xl bg-secondary/40 p-2 font-mono text-[11px]">
       <Node
         value={data}
-        path=""
+        path={[]}
         depth={0}
         defaultDepth={defaultDepth}
         onSelectPath={onSelectPath}
@@ -61,17 +62,18 @@ function Node({
   selectedPath,
 }: {
   value: unknown;
-  path: string;
+  path: string[];
   depth: number;
   defaultDepth: number;
-  onSelectPath?: ((path: string) => void) | undefined;
-  selectedPath?: string | undefined;
+  onSelectPath?: ((path: string[]) => void) | undefined;
+  selectedPath?: string[] | undefined;
 }) {
   const [open, setOpen] = useState(depth < defaultDepth);
   const [childLimit, setChildLimit] = useState(CHILD_PAGE_SIZE);
   const kind = kindOf(value);
   const isContainer = kind === 'object' || kind === 'array';
-  const selected = selectedPath !== undefined && selectedPath === path;
+  const selected = selectedPath !== undefined && selectedPath.length === path.length && selectedPath.every((part, i) => part === path[i]);
+  const displayPath = formatJsonKeyPath(path);
 
   if (!isContainer) {
     return (
@@ -83,7 +85,7 @@ function Node({
           selected && 'ring-1 ring-primary/60 bg-primary/10',
         )}
       >
-        <span className="text-foreground/50">{path || '(root)'}</span>
+        <span className="text-foreground/50">{displayPath || '(root)'}</span>
         <span
           className={cn(
             kind === 'string' && 'text-emerald-700 dark:text-emerald-400',
@@ -125,17 +127,17 @@ function Node({
             selected && 'ring-1 ring-primary/60 bg-primary/10',
           )}
         >
-          <span className="text-foreground/50">{path || '(root)'}</span>
+          <span className="text-foreground/50">{displayPath || '(root)'}</span>
           <span className="text-muted-foreground">{previewValue(value)}</span>
         </button>
       </div>
       {open && (
         <div className="ml-3 border-l border-border/60 pl-2">
           {visibleEntries.map(([key, child]) => {
-            const childPath = path ? `${path}.${key}` : key;
+            const childPath = [...path, key];
             return (
               <Node
-                key={childPath}
+                key={key}
                 value={child}
                 path={childPath}
                 depth={depth + 1}

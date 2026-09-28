@@ -118,8 +118,8 @@ vi.mock('@/lib/data-pattern/document-network-transport', () => ({
   },
 }));
 vi.mock('@/components/ui/json-tree', () => ({
-  JsonTree: ({ onSelectPath }: { onSelectPath: (path: string) => void }) => (
-    <button type="button" onClick={() => onSelectPath('events')}>
+  JsonTree: ({ onSelectPath }: { onSelectPath: (path: string[]) => void }) => (
+    <button type="button" onClick={() => onSelectPath(['events'])}>
       Select events path
     </button>
   ),
@@ -291,7 +291,7 @@ describe('D48 credential-safe Network request identity', () => {
     await user.click(screen.getByRole('button', { name: /^Save$/ }));
     await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(1));
     const saved = mocks.savePattern.mock.calls[0]?.[0] as {
-      config: { url_filter: string; url_match: 'exact' | 'filter'; key_path: string };
+      config: { url_filter: string; url_match: 'exact' | 'filter'; key_path: string[] };
     };
     const addListener = vi.fn();
     Object.assign(chrome, {

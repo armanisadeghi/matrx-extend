@@ -118,8 +118,8 @@ vi.mock('@/lib/data-pattern/document-network-transport', () => ({
   },
 }));
 vi.mock('@/components/ui/json-tree', () => ({
-  JsonTree: ({ onSelectPath }: { onSelectPath: (path: string) => void }) => (
-    <button type="button" onClick={() => onSelectPath('events')}>
+  JsonTree: ({ onSelectPath }: { onSelectPath: (path: string[]) => void }) => (
+    <button type="button" onClick={() => onSelectPath(['events'])}>
       Select events path
     </button>
   ),
@@ -174,11 +174,11 @@ describe('Network saved request replay', () => {
     await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(1));
     const saved = mocks.savePattern.mock.calls[0]?.[0] as {
       kind: string;
-      config: { url_filter: string; method: string; key_path: string };
+      config: { url_filter: string; method: string; key_path: string[] };
     };
     expect(saved.kind).toBe('network_capture');
     expect(saved.config.method).toBe('GET');
-    expect(saved.config.key_path).toBe('events');
+    expect(saved.config.key_path).toEqual(['events']);
     expect(matchesUrlFilter('https://electronic.vegas/api/events', saved.config.url_filter)).toBe(
       true,
     );
@@ -205,7 +205,7 @@ describe('Network saved request replay', () => {
         url_filter: '/other-calendar/*',
         url_match: 'filter',
         body_match: 'ignore',
-        key_path: 'events',
+        key_path: ['events'],
       },
     });
     expect(
@@ -228,10 +228,10 @@ describe('Network saved request replay', () => {
     await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(1));
     const saved = mocks.savePattern.mock.calls[0]?.[0] as {
       name: string;
-      config: { url_filter: string; key_path: string };
+      config: { url_filter: string; key_path: string[] };
     };
     expect(saved.name).toContain('/api/events');
-    expect(saved.config.key_path).toBe('events');
+    expect(saved.config.key_path).toEqual(['events']);
     expect(matchesUrlFilter('https://electronic.vegas/api/events', saved.config.url_filter)).toBe(
       true,
     );
@@ -281,7 +281,7 @@ describe('Network saved request replay', () => {
       await user.click(screen.getByRole('button', { name: /^Save$/ }));
       await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(1));
       const saved = mocks.savePattern.mock.calls[0]?.[0] as {
-        config: { url_filter: string; method: string; key_path: string };
+        config: { url_filter: string; method: string; key_path: string[] };
       };
       expect(saved.config.url_filter).toBe(variant.selectedUrl);
 

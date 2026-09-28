@@ -17,10 +17,10 @@
     "src/lib/data-pattern/modes/next-data.ts:339-344 traverses cfg.key_path.split('.'); FrameworkTab.tsx:144-153 passes the JsonTree path into the next_data mode."
   ],
   "severity": "S2: selected extraction can silently return a different JSON value when literal dotted keys coexist with nested paths.",
-  "priority": "P2: affects key-path correctness in Network and Framework modes; no runtime reproduction recorded yet.",
-  "state": "open",
-  "reproduction_status": "source-confirmed; runtime not verified",
-  "verification_status": "No test, build, or browser run performed. EXT-F-1012-T56 is new and unverified.",
+  "priority": "P2: affects key-path correctness in Network and Framework modes; installed public-page acceptance remains open.",
+  "state": "fixed",
+  "reproduction_status": "Guarded baseline assertion reproduced the wrong row: clicking the literal feeds.news key returned the distinct nested feed row. The Network save sanitizer also dropped array paths before repair.",
+  "verification_status": "Engineering fix: guarded six-file focused suite passed 28/28 after frozen install, and TypeScript compile passed. Independent installed public-page T56 acceptance remains open; no native D46 verification has run.",
   "source_report": "docs/stabilization/reports/showcase-json-keypath-ambiguity.json",
   "transition_history": [
     {
@@ -28,6 +28,12 @@
       "from": null,
       "to": "open",
       "reason": "Source reading confirmed that JsonTree encodes object keys in a dotted string and Network/Framework consumers split the string, making a literal dotted key ambiguous with a nested path."
+    },
+    {
+      "at": "2026-09-28T06:10:00Z",
+      "from": "open",
+      "to": "fixed",
+      "reason": "The literal-key wrong-value baseline and dropped Network save path were reproduced. Exact segment selection, both runners, and credential-safe persistence were repaired; the real query mapping and focused regression suite passed. Native public-page acceptance remains open."
     }
   ],
   "closure_requirement": "Add a regression using distinct literal-dotted and nested values through the actual JsonTree selection and both extraction consumers, then verify an installed development build on a real public page with the same shape. Confirm save/reopen preserves each segment boundary."

@@ -1,30 +1,31 @@
 {
   "defect_id": "EXT-D-0046",
   "case_id": "EXT-F-1012-T56",
-  "status": "prepared_waiting_for_source_ownership",
-  "current_truth": "Current product code remains unchanged and still collapses a literal JSON key containing a dot into the same dotted string as nested keys. No test, build, browser, or database operation has run in this lane.",
-  "confirmed_source_boundary": {
-    "origin": "JsonTree constructs child paths by concatenating object keys with dots.",
-    "network": "NetworkTab passes the ambiguous string to rowsFromBody for preview and into saved config for runNetworkCapturePattern replay.",
-    "framework": "FrameworkTab passes the same ambiguous string through useExtraction and saved config to nextDataMode.runInPage for preview and runPattern replay.",
-    "sibling_census": "NetworkTab and FrameworkTab are the only production JsonTree selection callers. Debug views render JsonTree without selection. Existing saved string paths and built-in recipe literals are compatibility inputs."
-  },
-  "candidate": {
-    "product_patch": "docs/stabilization/pending/EXT-D-0046/product.patch",
-    "component_guard": "docs/stabilization/pending/EXT-D-0046/showcase-json-path-connected.test.tsx.pending",
-    "runner_guard": "docs/stabilization/pending/EXT-D-0046/showcase-json-key-path.test.pending",
-    "representation": "New tree picks persist exact string segments as a JSON array in key_path. Existing saved strings continue to use each runner's current dotted-string semantics, including Network's skipped empty segments and Framework's preserved interior empty segments. The type of key_path itself distinguishes old and new representations.",
-    "static_check": "git apply --check passed against current shared checkout."
-  },
-  "guard_quality": {
-    "connected_scope": "The staged connected test renders the real NetworkTab and FrameworkTab with real JsonTree, useExtraction, SaveAsPattern, and runners. It replaces external capture transport and database persistence only. It asserts the saved config, passes it through JSON serialization to model reopen, and asserts the distinct literal-key row from real replay.",
-    "runner_scope": "The smaller staged guard covers literal dots, nested keys, bracket-looking keys, array indexes, empty keys, and old string behavior. The new-helper import and artificial save/reopen assertion were removed so the old source can fail on behavior rather than import failure.",
-    "unproven": "Both guards are pending and unrun. The connected guard may need harness adjustment when moved into tests/unit. Red/green, mutation, typecheck, existing tests, and installed public-page acceptance remain open."
-  },
-  "integration_hazards": [
-    "Existing showcase-network-save-replay and showcase-network-credential tests mock JsonTree with a string callback and assert string key_path; adapt those fixtures to exact-segment arrays when the product patch lands.",
-    "Verify the in-page Framework runner remains self-contained after the type-only import; chrome.scripting serializes the function body, not its module imports.",
-    "Keep selected response values out of reports/logs; tests use synthetic publisher titles only."
+  "status": "engineering_fixed_native_acceptance_open",
+  "root_cause": "JsonTree flattened exact JSON object-key segments into dotted text. Network and Framework runners split that text, so one literal key named feeds.news selected the nested feeds/news value. Network's credential-safe save boundary also discarded the new array representation until repaired.",
+  "representation": "New tree selections use a string[] key_path in saved JSON config. Existing string key_path values retain their original dotted semantics: Network skips empty segments, Framework preserves interior empty segments. Display formatting is never parsed for extraction.",
+  "source_scope": [
+    "JsonTree emits and compares exact key segments, including literal dots, brackets, and empty names.",
+    "Network preview, saved capture replay, credential-safe save sanitization, and config schema retain and resolve segment arrays.",
+    "Framework preview and saved pattern replay resolve segment arrays inside the self-contained in-page runner; its config schema accepts both persisted representations.",
+    "Existing Network component-test selection mocks were updated from old string callbacks to array callbacks; read-only Debug JsonTree callers need no migration."
   ],
-  "next_action": "After root releases source ownership, move staged guards into tests/unit, prove assertion-red against current source, apply the product patch, reconcile existing selection mocks, prove green, run compile and focused tests, then return source ownership for build and installed verification."
+  "red_evidence": {
+    "first_run": "Guarded d46-red-20260928-0545 admitted and child/wrapper exited 1. The direct sanitizer assertion failed because string[] key_path was omitted. Tree tests stopped at the new display label, so those selector-only failures were not counted as behavior reproduction.",
+    "wrong_value_baseline": "Guarded d46-baseline-20260928-0550 admitted and child/wrapper exited 1. A temporary copy of the exact HEAD JsonTree source selected the existing visible literal feeds.news key; the real legacy string resolver returned [{title: Regional wire digest}] rather than the literal key's [{title: Harbor desk bulletin}]. The temporary baseline files were removed after the wrapper exited.",
+    "privacy": "All fixture titles and URLs are synthetic; no captured private response values, credentials, or headers were put in reports."
+  },
+  "green_evidence": {
+    "pre_lockfile": "Guarded d46-green-20260928-0550: 5 files, 24 tests passed; child/wrapper exit 0. Guarded d46-compile-20260928-0552: TypeScript passed; child/wrapper exit 0. These runs used associations 0.13.15 and design-system 0.49.5 installed before the merged lockfile refresh.",
+    "dependency_reconciliation": "Merged lockfile advanced associations to 0.13.16 and design-system to 0.49.6. Both upstream CHANGELOG entries say metadata/docs-only republish with no consumer action. Guarded frozen install d46-install-20260928-0604 completed child/wrapper exit 0; prepare was unnecessary because the existing WXT generated environment remained present and the subsequent tests/compile loaded it successfully.",
+    "final_focused": "Guarded d46-final-tests-20260928-0605: 6 files, 28 tests passed, child/wrapper exit 0. This includes the real savePattern insert mapping, fetchPatternsForDomain row parse, and runSavedPattern replay for distinct literal and nested paths in both Network and Framework, with only external Supabase I/O and capture transport mocked.",
+    "final_compile": "Guarded d46-final-compile-20260928-0607: pnpm compile passed, child/wrapper exit 0 on the refreshed dependency install.",
+    "static": "git diff --check passed."
+  },
+  "independent_review": "docs/stabilization/reports/showcase-d46-independent-peer.json found the original connected test's mocked savePattern/fetch seam insufficient. The new real-query roundtrip guard covers that gap with two distinct path inputs per mode; its guarded run passed. Independent installed acceptance remains open.",
+  "remaining": [
+    "No installed development build or real public-page Network/Framework selection/save/reopen/replay was run in this lane. EXT-F-1012-T56 remains open for native acceptance on a fresh build of the integrated source.",
+    "The guarded query test substitutes Supabase I/O with JSON serialization, so it verifies application insert/fetch mapping but not a live database row or RLS behavior.",
+    "No release or production verification was attempted."
+  ]
 }

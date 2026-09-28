@@ -7,7 +7,7 @@ export const networkCaptureConfigSchema = z.object({
   body_match: z.enum(['exact', 'ignore']).optional(),
   request_body_key: z.string().optional(),
   method: z.string().optional(),
-  key_path: z.string().optional(),
+  key_path: z.union([z.string(), z.array(z.string())]).optional(),
 });
 export type NetworkCaptureConfig = z.infer<typeof networkCaptureConfigSchema>;
 

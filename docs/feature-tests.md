@@ -1257,6 +1257,20 @@ Every entry follows this shape:
   their value is strict JSON; JavaScript object literals are skipped rather
   than evaluated as extension code.
 
+### Showcase — literal JSON keys in Network and Framework (EXT-D-0046)
+- **What it does:** Tree selection keeps each JSON object key as one exact
+  segment. A key named `feeds.news` differs from the nested path `feeds` then
+  `news`; brackets and empty key names also retain their literal meaning.
+- **Where to test:** Installed development extension → Showcase → Network and
+  Framework on a real public page with a genuine response or embedded state
+  containing distinct literal-dotted and nested values. Do not use localhost
+  or a test server for UI acceptance.
+- **Steps:** Select the literal dotted key in each tree, Extract, Save, reopen
+  the pattern in Patterns, and Run. Repeat by selecting the nested path.
+- **Expected:** Preview and saved replay return the respective distinct rows.
+  Reopening preserves the selection. Older saved dotted-string paths still
+  resolve with their original meaning, including bracket-looking key names.
+
 ### Showcase — AI Extract tab
 - **What it does:** Describe what you want; the extractor agent reads the
   page and returns schema-shaped rows. Convert-to-pattern generates CSS

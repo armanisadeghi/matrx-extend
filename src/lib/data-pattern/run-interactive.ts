@@ -31,6 +31,7 @@ import type { ExtractionPattern } from '@/lib/supabase/queries';
 import { formatDurationMs } from '@ai-matrx/kit/format';
 import { openDocumentNetworkCapture } from './document-network-transport';
 import { aiExtractCapturePage } from './modes/ai-extract';
+import { formatJsonKeyPath, jsonKeyPathSegments, type JsonKeyPath } from './json-key-path';
 import type { CapturedNetEvent } from './network-tap';
 import { runPattern } from './run-pattern';
 import type { ExtractedRow } from './types';
@@ -250,7 +251,7 @@ interface SavedNetConfig {
   url_filter?: string;
   credential_query_keys?: string[];
   method?: string;
-  key_path?: string;
+  key_path?: JsonKeyPath;
 }
 
 /**
@@ -280,8 +281,8 @@ export function matchesUrlFilter(
   return re.test(candidate);
 }
 
-/** Walk a dotted key path (numeric segments index arrays) and shape rows. */
-export function rowsFromBody(body: string, keyPath?: string): ExtractedRow[] {
+/** Walk legacy dotted paths or exact JSON-key segments, then shape rows. */
+export function rowsFromBody(body: string, keyPath?: JsonKeyPath): ExtractedRow[] {
   let parsed: unknown;
   try {
     parsed = JSON.parse(body);
@@ -290,8 +291,7 @@ export function rowsFromBody(body: string, keyPath?: string): ExtractedRow[] {
   }
   let target: unknown = parsed;
   if (keyPath) {
-    for (const part of keyPath.split('.')) {
-      if (!part) continue;
+    for (const part of jsonKeyPathSegments(keyPath)) {
       if (target == null || typeof target !== 'object') break;
       target = (target as Record<string, unknown>)[part];
     }
@@ -303,8 +303,8 @@ export function rowsFromBody(body: string, keyPath?: string): ExtractedRow[] {
   }
   if (target && typeof target === 'object') return [target as ExtractedRow];
   throw new Error(
-    keyPath
-      ? `Nothing found at key path "${keyPath}" in the captured response.`
+    keyPath?.length
+      ? `Nothing found at key path "${typeof keyPath === 'string' ? keyPath : formatJsonKeyPath(keyPath)}" in the captured response.`
       : 'The captured response was not an object or array.',
   );
 }

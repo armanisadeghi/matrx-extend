@@ -1,6 +1,7 @@
 import { JsonTree } from '@/components/ui/json-tree';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useExtraction } from '@/hooks/use-extraction';
+import { formatJsonKeyPath } from '@/lib/data-pattern/json-key-path';
 import { frameworkDumpInPage } from '@/lib/data-pattern/framework-dump';
 import { Button } from '@ai-matrx/design-system';
 import { Loader2, PlayCircle, RefreshCw } from 'lucide-react';
@@ -23,7 +24,7 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
   const dumpSeq = useRef(0);
   const pageKey = `${tab.id ?? ''}:${tab.url ?? ''}`;
   const [activeSource, setActiveSource] = useState<string | null>(null);
-  const [keyPath, setKeyPath] = useState('');
+  const [keyPath, setKeyPath] = useState<string[]>([]);
   const [loadingTree, setLoadingTree] = useState(false);
   const [dumpError, setDumpError] = useState<string | null>(null);
 
@@ -36,7 +37,7 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
     setSources([]);
     setSourcesPageKey(null);
     setActiveSource(null);
-    setKeyPath('');
+    setKeyPath([]);
     setLoadingTree(false);
     setDumpError(null);
   }, [tab.id, tab.url]);
@@ -121,7 +122,7 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-2">
               <code className="flex-1 truncate rounded-full bg-secondary/40 px-3 py-1.5 text-[11px]">
-                {keyPath || '(root)'}
+                {formatJsonKeyPath(keyPath) || '(root)'}
               </code>
               <Button
                 size="icon"
@@ -173,7 +174,7 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
               config={previewConfig}
               rows={rows}
               source={source}
-              defaultName={`Framework: ${typeof previewKeyPath === 'string' && previewKeyPath ? previewKeyPath : '(root)'}`}
+              defaultName={`Framework: ${Array.isArray(previewKeyPath) ? formatJsonKeyPath(previewKeyPath) || '(root)' : typeof previewKeyPath === 'string' && previewKeyPath ? previewKeyPath : '(root)'}`}
             />
           </div>
         )}

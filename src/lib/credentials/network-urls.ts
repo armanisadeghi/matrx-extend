@@ -175,7 +175,10 @@ export function sanitizeNetworkPatternFields(
         ? { request_body_key: bodyKey }
         : {}),
       ...(typeof source.method === 'string' ? { method: source.method } : {}),
-      ...(typeof source.key_path === 'string' ? { key_path: source.key_path } : {}),
+      ...(typeof source.key_path === 'string' ||
+      (Array.isArray(source.key_path) && source.key_path.every((key) => typeof key === 'string'))
+        ? { key_path: source.key_path }
+        : {}),
     },
   };
 }

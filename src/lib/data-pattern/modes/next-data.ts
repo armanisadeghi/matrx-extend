@@ -1,10 +1,11 @@
+import type { JsonKeyPath } from '../json-key-path';
 import { formatFileSize } from '@ai-matrx/kit/format';
 import { z } from 'zod';
 import type { ExtractionMode } from '../types';
 
 export const nextDataConfigSchema = z.object({
   source: z.string().optional(),
-  key_path: z.string(),
+  key_path: z.union([z.string(), z.array(z.string())]),
 });
 export type NextDataConfig = z.infer<typeof nextDataConfigSchema>;
 
@@ -175,7 +176,7 @@ export const nextDataMode: ExtractionMode<NextDataConfig> = {
   },
 
   runInPage: (config) => {
-    const cfg = config as { source?: string; key_path: string };
+    const cfg = config as { source?: string; key_path: JsonKeyPath };
 
     const tryParseScript = (node: Element | null): unknown => {
       if (!node?.textContent) return undefined;
@@ -336,11 +337,12 @@ export const nextDataMode: ExtractionMode<NextDataConfig> = {
     if (!picked) return [];
 
     let target: unknown = picked.data;
-    if (cfg.key_path) {
-      for (const part of cfg.key_path.split('.')) {
+    const keyParts = typeof cfg.key_path === 'string'
+      ? (cfg.key_path ? cfg.key_path.split('.') : [])
+      : cfg.key_path ?? [];
+    for (const part of keyParts) {
         if (target == null || typeof target !== 'object') break;
         target = (target as Record<string, unknown>)[part];
-      }
     }
 
     if (Array.isArray(target)) return target as Record<string, unknown>[];

@@ -7,6 +7,7 @@ import {
   safeRequestBodyKey,
   sanitizeNetworkUrl,
 } from '@/lib/credentials/network-urls';
+import { formatJsonKeyPath } from '@/lib/data-pattern/json-key-path';
 import type { CapturedNetEvent } from '@/lib/data-pattern/network-tap';
 import { matchesUrlFilter, rowsFromBody } from '@/lib/data-pattern/run-interactive';
 import { cn } from '@/lib/utils';
@@ -24,7 +25,7 @@ export function NetworkTab() {
     useNetworkCapture();
   const [filter, setFilter] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<CapturedNetEvent | null>(null);
-  const [extractKeyPath, setExtractKeyPath] = useState('');
+  const [extractKeyPath, setExtractKeyPath] = useState<string[]>([]);
   const [replayUrlFilter, setReplayUrlFilter] = useState('');
   const [extraCredentialKeys, setExtraCredentialKeys] = useState<string[]>([]);
   const [urlMatch, setUrlMatch] = useState<'exact' | 'filter'>('exact');
@@ -58,7 +59,7 @@ export function NetworkTab() {
 
   const selectEvent = (event: CapturedNetEvent) => {
     setSelectedEvent(event);
-    setExtractKeyPath('');
+    setExtractKeyPath([]);
     setReplayUrlFilter(event.url);
     setExtraCredentialKeys([]);
     setUrlMatch('exact');
@@ -308,7 +309,7 @@ export function NetworkTab() {
               <>
                 <div className="flex items-center gap-2">
                   <code className="flex-1 truncate rounded-full bg-background px-3 py-1 text-[10px]">
-                    {extractKeyPath || '(root)'}
+                    {formatJsonKeyPath(extractKeyPath) || '(root)'}
                   </code>
                 </div>
                 <div className="max-h-[280px] overflow-y-auto">
