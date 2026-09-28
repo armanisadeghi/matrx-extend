@@ -9,15 +9,17 @@ import { lookup } from '@/lib/tools/registry';
 import type { ToolContext } from '@/lib/tools/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { store, openRecordStore } = vi.hoisted(() => ({
+const { store, openRecordStore, getSupabase } = vi.hoisted(() => ({
   store: {
     tableList: vi.fn(),
     recordWrite: vi.fn(),
   },
   openRecordStore: vi.fn(),
+  getSupabase: vi.fn(),
 }));
 
 vi.mock('@/lib/records/store', () => ({ openRecordStore }));
+vi.mock('@/lib/supabase/client', () => ({ getSupabase }));
 
 function context(): ToolContext {
   return {
@@ -52,10 +54,29 @@ beforeEach(() => {
     ],
   });
   store.recordWrite.mockResolvedValue({ ok: true, data: 'rec-harbor-dental-maya-chen' });
+  const maybeSingle = vi.fn().mockResolvedValue({
+    data: {
+      parameters: {
+        action: { enum: ['table_list', 'form_propose', 'guide'] },
+        $variants: {
+          table_list: { limit: { type: 'integer', default: 50 } },
+          form_propose: {
+            title: { type: 'string', required: true, description: 'What the form calls itself.' },
+            fields: { type: 'array', required: true, description: 'The form fields.' },
+          },
+        },
+      },
+    },
+    error: null,
+  });
+  const isActive = vi.fn(() => ({ maybeSingle }));
+  const name = vi.fn(() => ({ eq: isActive }));
+  const select = vi.fn(() => ({ eq: name }));
+  getSupabase.mockReturnValue({ schema: vi.fn(() => ({ from: vi.fn(() => ({ select })) })) });
 });
 
 describe('registered records schema null defaults', () => {
-  it('accepts the canonical read-only guide action without opening the record store', async () => {
+  it('routes a canonical guide topic to its live arguments without opening the record store', async () => {
     const handler = registeredRecords();
     const parsed = handler.argsSchema.parse({ action: 'guide', topic: 'form_propose' }) as Record<
       string,
@@ -64,9 +85,30 @@ describe('registered records schema null defaults', () => {
 
     expect(parsed).toMatchObject({ action: 'guide', topic: 'form_propose' });
     await expect(handler.run(parsed, context())).resolves.toMatchObject({
-      ok: false,
+      ok: true,
       action: 'guide',
-      code: 'records_action_unavailable_in_chrome_extension',
+      topic: 'form_propose',
+      how: expect.stringContaining('public form'),
+      arguments: {
+        title: { type: 'string', required: true },
+        fields: { type: 'array', required: true },
+      },
+    });
+    expect(openRecordStore).not.toHaveBeenCalled();
+  });
+
+  it('answers an unknown guide topic with the live action vocabulary', async () => {
+    const handler = registeredRecords();
+    const parsed = handler.argsSchema.parse({ action: 'guide', topic: 'form_propse' }) as Record<
+      string,
+      unknown
+    >;
+
+    await expect(handler.run(parsed, context())).resolves.toMatchObject({
+      ok: true,
+      action: 'guide',
+      topic: null,
+      actions: ['table_list', 'form_propose'],
     });
     expect(openRecordStore).not.toHaveBeenCalled();
   });
