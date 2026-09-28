@@ -24,13 +24,14 @@
     "docs/stabilization/reports/showcase-d49-final-acceptance.json",
     "docs/stabilization/reports/showcase-d49-worker-escalation.json",
     "docs/stabilization/reports/showcase-d49-standalone-peer.json",
-    "docs/stabilization/runs/showcase-d49-standalone-peer-20260928.json"
+    "docs/stabilization/runs/showcase-d49-standalone-peer-20260928.json",
+    "docs/stabilization/reports/showcase-request-identity.json"
   ],
   "severity": "S1: the observed saved Network extraction cannot run and gives no recovery feedback.",
   "priority": "P1: blocks Showcase saved replay acceptance and D47 retest.",
   "state": "in-fix",
   "reproduction_status": "Native diagnostic localized first stalled boundary to worker lazy dispatcher import; Port and run message acceptance and worker log delivery verified. Worker DevTools closed.",
-  "verification_status": "Independent native replay70ce3822 on artifact57e37156 passes approval, denial reset, debugger attach and automatic reload. Capture times out without matching saved Algolia URL/body identity; zero rows. Worker import repair narrowly verified; full replay remains failed. Sol medium showcase_request_identity owns bounded diagnosis.",
+  "verification_status": "Fresh native recipe reproduces no-match. Instrumented capture delivered10 responses, one matching URL/POST but no matching exact body. Same-primary-Chrome evidence shows selected manual request prefixLast versus reload prefixNone. Exact matcher preserves distinct search semantics. Discovery only taps already loaded document and its Reload stops capture, whereas replay arms before reload. Correct settled-request discovery/save/replay remains open; no broad matcher fallback. Provenance limitation: instrumented native build had no complete artifact receipt before replacement; counter/semantic observations are diagnostic leads requiring re-establishment on a receipted build, not acceptance proof.",
   "transition_history": [
     {
       "at": "2026-09-28T06:06:00Z",

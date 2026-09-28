@@ -16690,9 +16690,10 @@
                 "docs/stabilization/runs/showcase-network-current-001.json",
                 "docs/stabilization/runs/showcase-d49-native-retest-001.json",
                 "docs/stabilization/reports/showcase-d49-final-acceptance.json",
-                "docs/stabilization/reports/showcase-d49-standalone-peer.json"
+                "docs/stabilization/reports/showcase-d49-standalone-peer.json",
+                "docs/stabilization/reports/showcase-request-identity.json"
               ],
-              "detail": "Fresh artifact57e37156 on primary Chrome passes per-run approval, denial reset, debugger attach and automatic HN reload; matching saved Algolia request times out in20s with zero rows. Watchdog valid, stopped07:31:42Z. Worker import fix narrowly verified; saved replay and D47 provenance remain incomplete. D49 in-fix for causal request-matching diagnosis."
+              "detail": "Fresh artifact57e37156 on primary Chrome passes per-run approval, denial reset, debugger attach and automatic HN reload; matching saved Algolia request times out in20s with zero rows. Watchdog valid, stopped07:31:42Z. Worker import fix narrowly verified; saved replay and D47 provenance remain incomplete. D49 in-fix for causal request-matching diagnosis. Fresh saved recipe also fails. Same-profile semantic comparison finds discovery prefixLast versus reload prefixNone; first failing boundary is exact body match. Discovery/replay capture timing differs. Correct intended-request discovery and replay remain unverified; no matching-rule relaxation. Instrumented native artifact receipt was omitted; latest counter/semantic observations remain diagnostic leads, not additional acceptance proof."
             }
           }
         },
