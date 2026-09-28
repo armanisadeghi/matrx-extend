@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0053",
+  "feature_id": "EXT-F-1012",
+  "case_ids": [
+    "EXT-F-1012-T49"
+  ],
+  "title": "JSON copy truncates long strings",
+  "surface": "Showcase and shared clipboard exports",
+  "auth_mode": "all applicable export users",
+  "reproduction": [
+    "Create/extract a row with a string longer than 50000 characters.",
+    "Copy JSON or Copy for AI from Showcase result; parse output and compare full source string."
+  ],
+  "expected": "Copy retains complete string values.",
+  "actual": "Shared stringifyJson replacer truncates every string beyond50000characters, including CopyJSON/CopyforAI and Data rerun.",
+  "severity": "S2: copied extraction data loses original content.",
+  "priority": "P1: shared export correctness.",
+  "state": "in-fix",
+  "evidence": [
+    "docs/stabilization/reports/showcase-export-source-audit.json",
+    "src/lib/clipboard/copy.ts:115"
+  ],
+  "verification_status": "Source-proven formatter behavior; no nativeclipboard proof. Source-only fix assigned while resourceguard refusesruntime.",
+  "transition_history": [
+    {
+      "at": "2026-09-28T12:38:00.604065+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Shared formatter audit exposed deterministic data-loss branch."
+    },
+    {
+      "at": "2026-09-28T12:38:00.604065+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source and actual Showcase/Data callers confirmed."
+    },
+    {
+      "at": "2026-09-28T12:38:00.604065+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol source-only repair assigned; guarded regression and native acceptance remain mandatory."
+    }
+  ]
+}

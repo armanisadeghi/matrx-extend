@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0054",
+  "feature_id": "EXT-F-1012",
+  "case_ids": [
+    "EXT-F-1012-T49"
+  ],
+  "title": "TSV copy changes cell values and structure",
+  "surface": "Showcase and shared clipboard exports",
+  "auth_mode": "all applicable export users",
+  "reproduction": [
+    "Extract rows with tab/newline/quote characters in cells and field names.",
+    "Copy TSV and parse/paste as spreadsheet; compare exact values and dimensions."
+  ],
+  "expected": "Spreadsheet copy preserves field names, cell values and dimensions.",
+  "actual": "rowsToTsv replaces tabs/newlines in values with spaces and emits rawunescapedheaders, changing values or columns.",
+  "severity": "S2: copied extraction data loses original content.",
+  "priority": "P1: shared export correctness.",
+  "state": "in-fix",
+  "evidence": [
+    "docs/stabilization/reports/showcase-export-source-audit.json",
+    "src/lib/clipboard/copy.ts:170"
+  ],
+  "verification_status": "Source-proven formatter behavior; no nativeclipboard proof. Source-only fix assigned while resourceguard refusesruntime.",
+  "transition_history": [
+    {
+      "at": "2026-09-28T12:38:00.604065+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Shared formatter audit exposed deterministic data-loss branch."
+    },
+    {
+      "at": "2026-09-28T12:38:00.604065+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source and actual Showcase/Data callers confirmed."
+    },
+    {
+      "at": "2026-09-28T12:38:00.604065+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol source-only repair assigned; guarded regression and native acceptance remain mandatory."
+    }
+  ]
+}
