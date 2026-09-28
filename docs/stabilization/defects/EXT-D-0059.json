@@ -17,10 +17,11 @@
   "actual": "Source trace shows useActiveTab lacks document identity and consumers invalidate only tab ID/URL; same-URL reload is not distinguished. Native reproduction remains unverified.",
   "severity": "S2: old-document results can appear current",
   "priority": "P1: shared document identity correctness",
-  "state": "open",
+  "state": "triaged",
   "evidence": [
     "docs/stabilization/reports/prepare-source-audit.json",
-    "docs/stabilization/reports/prepare-lifecycle-repair.json"
+    "docs/stabilization/reports/prepare-lifecycle-repair.json",
+    "docs/stabilization/reports/document-identity-diagnosis.json"
   ],
   "verification_status": "Source-supported gap; needs controlled regression and native reproduction before triage. D58 does not claim to fix it.",
   "transition_history": [
@@ -29,6 +30,12 @@
       "from": null,
       "to": "open",
       "reason": "Sibling census identified document identity gap beyond D58 run ordering."
+    },
+    {
+      "at": "2026-09-28T15:45:17.730626+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source trace confirms id/URL-only keys and identifies existing Chrome top-frame document-ID consumers; controlled/native reproduction still pending. Shared design requires race/consumer review before edits."
     }
   ]
 }

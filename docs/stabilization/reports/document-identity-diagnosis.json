@@ -12,7 +12,7 @@
     "src/lib/desktop/local-browser/controller.ts:255-273 reads top-frame chrome.webNavigation.getFrame({tabId,frameId:0}) and requires documentId, URL, and no errorOccurred; src/lib/tools/handlers/credential-login.ts:1170-1193 binds injection to documentIds and checks the final document again."
   ],
   "controlled_sequence": [
-    "Use a local ordinary HTTPS test page with deterministic metadata and a visible version marker. Keep the side panel open on Showcase Snapshot. Capture version A, reload the same tab to version B at the identical URL, then inspect the Snapshot card before clicking Capture again: A remains eligible for preview/save because the key is unchanged.",
+    "Controlled automated regression: model genuine document A/B identities with deterministic metadata while holding the same tab ID and URL, and inspect completed/late results. This is regression evidence only; no local test server or fixture may substitute for native acceptance.",
     "For the late-result case, hold the Snapshot executeScript or Prepare promise after starting on document A, commit a same-URL reload to document B, then release A's result. The current tab-ID/URL generation accepts A as current. Repeat with a new click on B and release completions out of order to separate D58 attempt ordering from D59 document replacement.",
     "Control: change only the page title/favicon or fire a non-navigation tabs.onUpdated event; document identity must remain stable. Navigate within the same document via History API and verify URL-based invalidation still occurs. Reload an inactive tab, then activate it and verify its new document ID is observed."
   ],
@@ -29,21 +29,47 @@
     "Migrate Prepare and useExtraction/Snapshot to the shared key first. Keep Snapshot detection and SaveAsPattern provenance aligned with the same identity; explicitly decide whether each sibling consumer below requires page-document invalidation or only URL/domain identity."
   ],
   "consumer_census": {
-    "direct_page_results": ["use-page-prep", "use-extraction (Snapshot plus other Showcase extraction modes)", "DataView saved-run preview", "use-auto-extract and DataView auto records", "use-ai-extraction", "use-pattern-from-data", "use-network-capture"],
-    "page_ui_or_operations_to_audit": ["ScrapeView", "SeoView", "ScreenshotsView", "HighlightView", "Showcase Doctor/Framework/Recipes/ListPattern/Patterns", "SaveAsPattern", "VaultView", "sidepanel App and TasksView"],
-    "url_or_domain_semantics_may_be_intentional": ["use-page-recognition saved-by-URL lookup", "Showcase host label and domain pattern fetch"],
-    "evidence": ["src/hooks/use-auto-extract.ts:41-48,65-103", "src/features/data/DataView.tsx:44-73,215-235,271-280", "src/hooks/use-ai-extraction.ts:53-61,99-108", "src/hooks/use-network-capture.ts:57-65,70-100"]
+    "direct_page_results": [
+      "use-page-prep",
+      "use-extraction (Snapshot plus other Showcase extraction modes)",
+      "DataView saved-run preview",
+      "use-auto-extract and DataView auto records",
+      "use-ai-extraction",
+      "use-pattern-from-data",
+      "use-network-capture"
+    ],
+    "page_ui_or_operations_to_audit": [
+      "ScrapeView",
+      "SeoView",
+      "ScreenshotsView",
+      "HighlightView",
+      "Showcase Doctor/Framework/Recipes/ListPattern/Patterns",
+      "SaveAsPattern",
+      "VaultView",
+      "sidepanel App and TasksView"
+    ],
+    "url_or_domain_semantics_may_be_intentional": [
+      "use-page-recognition saved-by-URL lookup",
+      "Showcase host label and domain pattern fetch"
+    ],
+    "evidence": [
+      "src/hooks/use-auto-extract.ts:41-48,65-103",
+      "src/features/data/DataView.tsx:44-73,215-235,271-280",
+      "src/hooks/use-ai-extraction.ts:53-61,99-108",
+      "src/hooks/use-network-capture.ts:57-65,70-100"
+    ]
   },
   "required_tests": [
     "Red-then-green connected hook regression: same tab/URL, document A -> B clears a completed Prepare report and Snapshot rows/preview/save; A's deferred success and rejection cannot repopulate B.",
     "Shared hook event and async ordering tests: top-frame committed same-URL replacement changes documentId; title/favicon churn and subframe commits do not; overlapping refresh results cannot restore an earlier active tab/document; inactive-tab reload is picked up on activation; getFrame error or errorOccurred yields unresolved, never trusted identity.",
     "Operation admission test: navigation between click and script injection or during execution cannot claim results for the new document; any unbound script side effects are called out separately.",
-    "Native localhost Chrome run with side panel open: controlled A/B same-URL reload for Prepare and Snapshot, a held in-flight completion, same-document History API route change, and background-tab reload/activation. Compare displayed version markers and inspect save/stage affordances."
+    "Native actual Chrome development extension, explicit Reload, real public HTTPS page: compare actual top-frame document identity across same-URL reload with side panel open; verify old Prepare/Snapshot results become unavailable, current capture works, same-document route changes remain correct, and background reload/activation refreshes identity. Use actual page fields as oracle; no localhost or injected fixture acceptance. If controlled held completion cannot be produced genuinely, leave that native dimension unverified and retain automated timing proof separately."
   ],
   "risks": [
     "Adding documentId to useActiveTab changes every consumer's return shape and refresh cadence; 20+ direct call sites and mocked hook fixtures need a scoped census before implementation.",
     "A getFrame read may lag a navigation signal or fail on restricted/error pages; unresolved must be represented honestly and must not permit old results to look current.",
     "React invalidation prevents stale UI commits but does not cancel a running injected Prepare script; document-targeted injection and final identity checks are distinct safeguards.",
     "Network replay's CDP context uniqueId and its capture document_key are specific to that debugger session; use Chrome's top-frame documentId for the shared side-panel identity, not the replay-only key."
-  ]
+  ],
+  "owner_ruling": "The original diagnosis proposed localhost native acceptance; that conflicts with the explicit user instruction. Corrected here to built-extension/real-public-page native testing. Controlled data is restricted to automated regression evidence."
 }
