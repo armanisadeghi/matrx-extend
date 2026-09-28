@@ -1,0 +1,69 @@
+{
+  "id": "EXT-D-0059",
+  "role": "independent source-only Showcase identity census",
+  "scope": "Current live page targets, result admission, save admission, and unresolved recovery across every Showcase subtab after shared identity migration.",
+  "method": "Read current shared identity hook, Showcase shell and all 12 tab components, shared extraction/save hooks, picker session helper/relay, framework runners, network capture, and EXT-F-1012 inventory. No product edits, tests, build, UI, or runtime claims.",
+  "shared_guard": {
+    "status": "complete for audited extraction/result/save flows, subject to the picker target gap below",
+    "evidence": [
+      "use-active-tab.ts is one external-store resolver; pageKey includes tab ID, top-frame documentId, and URL; navigation withholds identity; isCurrentPageIdentity checks the latest snapshot.",
+      "ShowcaseView renders PageIdentityNotice for all subtabs; unresolved identity has a visible Retry remedy.",
+      "useExtraction targets documentIds and rejects stale detection/run completions; Prepare/Snapshot, JSON-LD, Microdata, Tables, Framework extraction, and AI extraction consume it.",
+      "Recipes, Doctor, Framework tree, List Pattern probes/runs, and saved Patterns pass documentId and gate result admission by pageKey/current identity.",
+      "SaveAsPattern captures its result page key and checks isCurrentPageIdentity at save initiation; source URL/host/path are captured with extracted results for reusable recipe identity.",
+      "Network ordinary capture is document-targeted; relay events require matching event document_id to the capture document; page-load capture has a separate approval and document-capture contract."
+    ],
+    "intentionally_url_or_domain_scoped": [
+      "Recipe catalog loading and URL match/show-all behavior.",
+      "Saved pattern catalog lookup by host and persisted recipe matching by URL/path."
+    ]
+  },
+  "ranked_remaining": [
+    {
+      "rank": 1,
+      "surface": "List Pattern manual picker start/cancel injection lacks exact document target",
+      "inventory_cases": [
+        "EXT-F-1012-T23",
+        "EXT-F-1012-T24",
+        "EXT-F-1012-T28"
+      ],
+      "control_ids": [
+        "EXT-F-1012-C23",
+        "EXT-F-1012-C24",
+        "EXT-F-1012-C28"
+      ],
+      "source_proof": [
+        "src/features/showcase/tabs/ListPatternTab.tsx:361-379 admits enterPicker from a ready pageKey and later calls startListPickerSession(tabId, sessionId, seed).",
+        "src/lib/data-pattern/list-picker-session.ts:35-56 performs both script installation and picker start with target { tabId }, without the captured documentId or a post-injection identity check.",
+        "The relay at src/lib/data-pattern/list-picker-relay.ts stamps tab_id only. ListPatternTab's fromOurPick guard at :180-188 correctly rejects a result unless the original pageKey is still current, so source supports a wrong-document picker target window but not an admitted stale result."
+      ],
+      "reproducible_async_sequence": "On document A, begin a List Pattern pick and hold the first script injection between installation and start; same-URL reload the tab to document B; let the queued start execute; observe the picker target, then select a list. The source predicts injection targets whichever document is current at each tab-only call; the result should fail current-page admission after B resolves. This is a source-derived sequence, not a runtime claim.",
+      "required_fix": "Capture the ready documentId with the picker session; target both install/start/cancel to that document and reject start if the shared pageKey has changed. Stamp trusted sender.documentId on picker relay and require it to match the session document before accepting events, while retaining session_id and pageKey guards. Provide explicit retry/remedy if exact-document injection fails.",
+      "qualification": "Result admission is guarded; the missing contract is exact document targeting and preventing a delayed A action from operating on B. Verify runtime ordering before claiming a user-visible failure."
+    }
+  ],
+  "checked_subtabs": {
+    "shared_useExtraction_document_target_and_completion_admission": [
+      "Prepare",
+      "Snapshot",
+      "JSON-LD",
+      "Microdata",
+      "Tables",
+      "Framework extraction",
+      "AI Extract"
+    ],
+    "explicit_document_target_and_completion_admission": [
+      "Recipes",
+      "Doctor",
+      "Framework tree dump",
+      "List Pattern inspector/sample/run",
+      "Patterns saved run"
+    ],
+    "document_bound_capture_and_save_source": [
+      "Network ordinary capture and selected-response extraction/save",
+      "Network approved initial-document capture"
+    ],
+    "shared_unresolved_retry": "Showcase shell PageIdentityNotice covers all subtabs; no separate per-tab retry gap found in this census."
+  },
+  "verification_limits": "Source audit only. No tests, compile, browser, product edits, or runtime failure claim. Preserve URL/domain catalog and historical lookup behavior."
+}
