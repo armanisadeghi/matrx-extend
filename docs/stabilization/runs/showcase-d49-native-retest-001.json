@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-d49-native-peer-20260928TXXXXZ",
+  "lane": "independent native retest of EXT-D-0049 callback injection fix",
+  "status": "FAILED_ACTIONABLE_ERROR_NO_APPROVAL_OR_CAPTURE",
+  "source": {
+    "commit": "227d3540f19b24d21b9038586e99770058c70480",
+    "working_tree_note": "Root added documentation-only commit 64f4ac77 after the fix; source and output artifact were unchanged.",
+    "artifact_directory": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "artifact_tree_sha256": "c43b9717ef07a4a9043ed6bf91f5896163f42d3ec57c891e6989123da793dc44",
+    "build_identity_record": "docs/stabilization/reports/showcase-current-run-stall.json#fix_candidate.build",
+    "receipt_note": "The cited implementation report records the fix build and full-tree SHA-256; no separate test-results receipt file for this fix build was present in the checkout. The current output tree independently hashes to the recorded value.",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "installed_version": "0.2.114",
+    "version_identity_note": "The build and installed manifest kept the same version string; the exact fresh artifact is identified by the matching full-tree SHA-256 receipt. Chrome Extensions showed the expected ID and version after explicit Reload."
+  },
+  "resource_guard": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id showcase-d49-native-peer-20260928TXXXXZ --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "admitted_at": "2026-09-28T06:37:18.990Z",
+    "terminal_at": "2026-09-28T06:39:17.851Z",
+    "terminal": "RESOURCE_BROWSER_STOP_CONFIRMED",
+    "resource_invalid": false,
+    "last_watch": "RESOURCE_WATCH_HEALTHY at 2026-09-28T06:39:13.438Z"
+  },
+  "native_context": {
+    "browser": "Primary Google Chrome profile",
+    "site": "https://hn.algolia.com/?q=OpenAI",
+    "site_observation": "Refreshed real public search; visible result count 19,665 and public story rows included OpenAI's board has fired Sam Altman, Google 'We have no moat, and neither does OpenAI', and other OpenAI matches.",
+    "account": "admin@admin.com",
+    "organization": "Admin's Workspace was already active in the session before retest.",
+    "recipe": "Owned recipe Codex D47 HN Search OpenAI network replay 20260928; NETWORK mode; displayed never run before click.",
+    "devtools": "Worker DevTools stayed closed. No console injection or raw request data was used."
+  },
+  "actions": [
+    {
+      "at": "2026-09-28T06:37Z",
+      "action": "Explicitly reloaded the enabled unpacked Matrx Extend entry in primary Chrome's chrome://extensions page, then refreshed the HN search tab.",
+      "observed": "Chrome listed expected extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml and version 0.2.114. Fresh source artifact hash matched c43b9717ef07a4a9043ed6bf91f5896163f42d3ec57c891e6989123da793dc44."
+    },
+    {
+      "at": "2026-09-28T06:38Z",
+      "action": "Clicked Run once on the named owned saved Network recipe.",
+      "observed": "Patterns displayed the visible error 'Codex D47 HN Search OpenAI network replay 20260928' failed: document is not defined. The recipe remained never run; no approval card, progress stage, captured result, or fresh result rows appeared."
+    }
+  ],
+  "acceptance": {
+    "required_approval_or_actionable_error": "VISIBLE_ERROR",
+    "approval_observed": false,
+    "error": "document is not defined",
+    "run_entered_success_state": false,
+    "automatic_fresh_page_capture": false,
+    "matching_saved_rows": false,
+    "comparison_with_public_page_values": "Not applicable: the saved Run failed before producing rows; no values were presented to compare.",
+    "cancel_or_deny_then_allow": "Not exercised because no approval appeared and the one allowed Run action failed with the visible error. No same-action retry was attempted.",
+    "original_d47_reproduction_and_surrounding_cancel_reload_proof": "Not established by this bounded run; D47 and D49 remain open."
+  },
+  "verdict_a": {
+    "status": "FAIL_NATIVE_ACCEPTANCE",
+    "outcome": "The old silent disabled Run symptom now surfaces a concrete error after one click, but the fixed artifact does not reach approval or extraction. The stated user outcome is not met.",
+    "evidence": "Fresh receipt-bound artifact was explicitly reloaded in primary Chrome; on the real HN search page and owned NETWORK recipe, one Run click rendered 'failed: document is not defined' and left the recipe never run.",
+    "limits": [
+      "This observation localizes failure only to the visible rejection after Run; it does not prove which internal function references document in a non-document context.",
+      "No approval denial/allowance, automatic reload capture, saved rows, or row-value comparison could be tested.",
+      "D46 native proof and original D47 reproduction/cancellation/reload acceptance remain outside this run."
+    ]
+  },
+  "verdict_b": {
+    "status": "INDEPENDENT_REVIEW_FAIL_NO_CLOSURE",
+    "positive": [
+      "Full unpacked artifact identity matches the fix receipt rather than the previous .114 artifact; extension ID and installed version were visible in primary Chrome after Reload.",
+      "The real public page exposed actual search result values and the recipe was the named owned NETWORK pattern.",
+      "The former silent disabled state produced a visible concrete failure, so the user has an error signal, but it is not recovery or successful execution."
+    ],
+    "finding": "The action reports 'document is not defined' before approval or capture. This is a new native blocker that must be diagnosed at the actual production execution boundary. Do not treat the visible error as successful saved Network extraction or close EXT-D-0049.",
+    "next_evidence_needed": "Trace the exact document reference from the saved Network run's production context, repair the failing context boundary, then repeat on this public page: approval, denial/cancel safety, allowance, automatic fresh capture without manual retrigger, matching saved rows, and row comparison against visible page values."
+  },
+  "privacy": "No credentials, request headers, API keys, raw request body, screenshots, or unrelated user data were recorded.",
+  "files_changed_by_peer": [
+    "docs/stabilization/runs/showcase-d49-native-retest-001.json"
+  ],
+  "commit_scope": "Exact report path only; no push."
+}
