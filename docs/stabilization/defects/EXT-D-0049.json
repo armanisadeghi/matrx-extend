@@ -30,13 +30,14 @@
     "docs/stabilization/reports/showcase-initial-discovery-plan-review.json",
     "docs/stabilization/reports/showcase-initial-discovery-source-peer.json",
     "docs/stabilization/reports/showcase-initial-discovery-revised-peer.json",
-    "docs/stabilization/reports/showcase-initial-discovery.json"
+    "docs/stabilization/reports/showcase-initial-discovery.json",
+    "docs/stabilization/reports/showcase-discovery-runtime-validation.json"
   ],
   "severity": "S1: the observed saved Network extraction cannot run and gives no recovery feedback.",
   "priority": "P1: blocks Showcase saved replay acceptance and D47 retest.",
   "state": "in-fix",
   "reproduction_status": "Native diagnostic localized first stalled boundary to worker lazy dispatcher import; Port and run message acceptance and worker log delivery verified. Worker DevTools closed.",
-  "verification_status": "Page-load discovery implemented with privileged approval and canonical document-start engine; fresh source peer a585cf2f PASS on revised source only. Earlier compile/focused suites passed before final route/empty/test-seam corrections. Revised tests refused twice by resource guard (CPU high load; later unsafe memory pressure despite intervening healthy check). Current-source compile, tests, full artifact receipt/build and native exact save/reopen/two replays remain unverified. State stays in-fix; no release claim.",
+  "verification_status": "Independent current six-file run admitted:33pass/1 empty-capture test timeout. Test-only scheduling candidate470e300f awaits onArmed before fake-clock advance; rerun refused unsafe resources, so unverified. Current compile/build/native exact save/reopen/two replays remain open. Source peer a585cf2f passed discovery implementation source only. State remains in-fix.",
   "transition_history": [
     {
       "at": "2026-09-28T06:06:00Z",
