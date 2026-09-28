@@ -51,6 +51,7 @@ export function isInteractiveOnlyKind(kind: string): boolean {
 export async function runPattern(
   pattern: ExtractionPattern,
   tabId: number,
+  documentId?: string,
 ): Promise<ExtractedRow[]> {
   const mode = getMode(pattern.kind);
   if (!mode) throw new Error(`Unknown pattern kind: ${pattern.kind}`);
@@ -68,7 +69,7 @@ export async function runPattern(
   if (!mode.runInPage) throw new Error(`Pattern kind "${pattern.kind}" has no runner.`);
 
   const result = await chrome.scripting.executeScript({
-    target: { tabId },
+    target: { tabId, ...(documentId && { documentIds: [documentId] }) },
     func: mode.runInPage as (cfg: unknown) => ExtractedRow[],
     args: [safeArg(config)],
   });
@@ -80,11 +81,12 @@ export async function detectModeInPage(
   modeId: string,
   tabId: number,
   config?: unknown,
+  documentId?: string,
 ): Promise<DetectionHint | null> {
   const mode = getMode(modeId);
   if (!mode) return null;
   const result = await chrome.scripting.executeScript({
-    target: { tabId },
+    target: { tabId, ...(documentId && { documentIds: [documentId] }) },
     func: mode.detectInPage as (cfg?: unknown) => DetectionHint,
     args: [safeArg(config)],
   });
@@ -105,6 +107,7 @@ export async function runMode(
   modeId: string,
   tabId: number,
   config: unknown,
+  documentId?: string,
 ): Promise<ExtractedRow[]> {
   const mode = getMode(modeId);
   if (!mode) throw new Error(`Unknown mode: ${modeId}`);
@@ -115,7 +118,7 @@ export async function runMode(
   if (mode.runInExtension) return mode.runInExtension(tabId, config);
   if (!mode.runInPage) throw new Error(`Mode "${modeId}" has no runner.`);
   const result = await chrome.scripting.executeScript({
-    target: { tabId },
+    target: { tabId, ...(documentId && { documentIds: [documentId] }) },
     func: mode.runInPage as (cfg: unknown) => ExtractedRow[],
     args: [safeArg(config)],
   });

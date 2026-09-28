@@ -1,4 +1,4 @@
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import {
   type PagePrepConfig,
   type PagePrepReport,
@@ -20,7 +20,7 @@ function emptyState(pageKey: string): PrepState {
 
 export function usePagePrep() {
   const tab = useActiveTab();
-  const pageKey = JSON.stringify([tab.id, tab.url]);
+  const pageKey = tab.pageKey ?? '';
   const currentPageKey = useRef(pageKey);
   currentPageKey.current = pageKey;
   const runSeq = useRef(0);
@@ -45,16 +45,16 @@ export function usePagePrep() {
 
   const run = useCallback(
     async (config: Partial<PagePrepConfig> = {}): Promise<PagePrepReport | null> => {
-      if (!tab.id) return null;
+      if (!tab.id || !tab.documentId || !tab.pageKey) return null;
       const seq = ++runSeq.current;
       const startedOn = pageKey;
       const isCurrent = () =>
-        mounted.current && seq === runSeq.current && startedOn === currentPageKey.current;
+        mounted.current && seq === runSeq.current && startedOn === currentPageKey.current && isCurrentPageIdentity(startedOn);
       setState({ pageKey: startedOn, report: null, running: true, error: null });
       try {
-        const r = await preparePage(tab.id, config);
+        const r = await preparePage(tab.id, config, tab.documentId);
         if (isCurrent()) setState({ pageKey: startedOn, report: r, running: true, error: null });
-        return r;
+        return isCurrent() ? r : null;
       } catch (err) {
         if (isCurrent()) {
           setState({
@@ -69,7 +69,7 @@ export function usePagePrep() {
         if (isCurrent()) setState((current) => ({ ...current, running: false }));
       }
     },
-    [tab.id, pageKey],
+    [tab.id, tab.documentId, pageKey],
   );
 
   const reset = useCallback(() => {

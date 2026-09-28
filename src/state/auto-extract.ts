@@ -7,7 +7,7 @@ import { create } from 'zustand';
  * pattern, fire that pattern in the background and cache the rows here so
  * the side-panel surfaces them without requiring a click.
  *
- * Cache key = `${tabId}|${patternId}|${url}`. Tab identity prevents another tab at the same URL from reusing these rows.
+ * Cache key includes the resolved top-frame document, so a reload cannot reuse rows.
  */
 
 export type AutoExtractStatus = 'pending' | 'running' | 'ok' | 'no_match' | 'error';
@@ -16,6 +16,7 @@ export interface AutoExtractRecord {
   pattern: ExtractionPattern;
   url: string;
   tabId: number;
+  pageKey: string;
   rows: ExtractedRow[];
   status: AutoExtractStatus;
   note?: string;
@@ -25,14 +26,14 @@ export interface AutoExtractRecord {
 }
 
 interface AutoExtractState {
-  /** Map keyed by `${tabId}|${patternId}|${url}`. */
+  /** Map keyed by document-scoped page identity and pattern. */
   records: Map<string, AutoExtractRecord>;
   setRecord: (key: string, record: AutoExtractRecord) => void;
   removeRecord: (key: string) => void;
   /** Drop every record whose URL doesn't match the current tab. */
-  pruneTo: (tabId: number | null, currentUrl: string | null) => void;
+  pruneTo: (pageKey: string | null) => void;
   /** All records that match the given URL. */
-  getForUrl: (tabId: number | null, url: string | null | undefined) => AutoExtractRecord[];
+  getForUrl: (pageKey: string | null) => AutoExtractRecord[];
 }
 
 export const useAutoExtractStore = create<AutoExtractState>((set, get) => ({
@@ -49,20 +50,20 @@ export const useAutoExtractStore = create<AutoExtractState>((set, get) => ({
       next.delete(key);
       return { records: next };
     }),
-  pruneTo: (tabId, currentUrl) =>
+  pruneTo: (pageKey) =>
     set((s) => {
-      if (!currentUrl) return { records: new Map() };
+      if (!pageKey) return { records: new Map() };
       const next = new Map<string, AutoExtractRecord>();
       for (const [k, v] of s.records) {
-        if (v.tabId === tabId && v.url === currentUrl) next.set(k, v);
+        if (v.pageKey === pageKey) next.set(k, v);
       }
       return { records: next };
     }),
-  getForUrl: (tabId, url) => {
-    if (!url) return [];
-    return Array.from(get().records.values()).filter((r) => r.tabId === tabId && r.url === url);
+  getForUrl: (pageKey) => {
+    if (!pageKey) return [];
+    return Array.from(get().records.values()).filter((r) => r.pageKey === pageKey);
   },
 }));
 
-export const autoExtractKey = (patternId: string, tabId: number, url: string): string =>
-  `${tabId}|${patternId}|${url}`;
+export const autoExtractKey = (patternId: string, pageKey: string): string =>
+  `${pageKey}|${patternId}`;

@@ -1,5 +1,5 @@
 import { CopyMenu } from '@/components/CopyMenu';
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { sanitizePageSourceUrl } from '@/lib/credentials/network-urls';
 import { type PageDiagnostic, pageDiagnosticInPage } from '@/lib/data-pattern/page-diagnostic';
@@ -37,39 +37,44 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
   const tab = useActiveTab();
   const setSubTab = useShowcaseTabStore((s) => s.setSubTab);
   const offerListRecommendation = useShowcaseTabStore((s) => s.offerListRecommendation);
-  const [diag, setDiag] = useState<PageDiagnostic | null>(null);
+  const [storedDiag, setDiag] = useState<PageDiagnostic | null>(null);
   const [diagTabId, setDiagTabId] = useState<number | null>(null);
+  const [diagPageKey, setDiagPageKey] = useState<string | null>(null);
+  const diag = tab.pageKey && diagPageKey === tab.pageKey ? storedDiag : null;
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const run = useCallback(async () => {
-    if (!tab.id) return;
+    if (!tab.id || !tab.documentId || !tab.pageKey) return;
+    const pageAtStart = tab.pageKey;
     setRunning(true);
     setError(null);
     try {
       const result = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
+        target: { tabId: tab.id, documentIds: [tab.documentId] },
         func: pageDiagnosticInPage,
       });
       const r = result?.[0]?.result as PageDiagnostic | undefined;
+      if (!isCurrentPageIdentity(pageAtStart)) return;
       if (!r) {
         setError('No result from page probe.');
       } else {
         setDiag(r);
         setDiagTabId(tab.id);
+        setDiagPageKey(pageAtStart);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      if (isCurrentPageIdentity(pageAtStart)) setError(err instanceof Error ? err.message : String(err));
     } finally {
-      setRunning(false);
+      if (isCurrentPageIdentity(pageAtStart)) setRunning(false);
     }
-  }, [tab.id]);
+  }, [tab.id, tab.documentId, tab.pageKey]);
 
   const openRecommendation = (mode: string, config: unknown) => {
     const target = MODE_TABS[mode];
     if (!target) return;
     if (mode === 'list_pattern') {
-      if (!diag || tab.id === null || diagTabId !== tab.id || diag.url !== tab.url) {
+      if (!diag || tab.id === null || diagTabId !== tab.id || diag.url !== tab.url || diagPageKey !== tab.pageKey || !isCurrentPageIdentity(diagPageKey)) {
         setError(
           'The page changed since Doctor probed it. Re-probe this page and choose the list again.',
         );
@@ -83,6 +88,7 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
       offerListRecommendation({
         tabId: tab.id,
         url: diag.url,
+        pageKey: diagPageKey,
         listRoot: list.list_root,
         itemSelector: list.item_selector,
       });
@@ -93,11 +99,11 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
   // `active` gates the auto-probe: with every sub-tab forceMounted, only the
   // visible one should scan the page. Becoming active (re)probes.
   useEffect(() => {
-    if (active && tab.id) void run();
-  }, [active, run, tab.id, tab.url]);
+    if (active && tab.pageKey) void run();
+  }, [active, run, tab.pageKey]);
 
   const copyOptions = useMemo(() => {
-    if (!diag) return [];
+    if (!diag || diagPageKey !== tab.pageKey || !tab.pageKey) return [];
     return [
       {
         label: 'Copy diagnostic JSON',
@@ -119,7 +125,7 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
           }),
       },
     ];
-  }, [diag]);
+  }, [diag, diagPageKey, tab.pageKey]);
 
   return (
     <div className="h-full overflow-y-auto">
