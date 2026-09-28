@@ -10,6 +10,12 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest resource checkpoint — D60 closed; Scrape migration active
+
+- D60 correction b3421dd2 gives admission precedence, retaining infrastructure error/resourceInvalid evidence. Seven cases pass after the new pre-admission case failed on prior code. Fresh peer5b9e07b3 accepts source and evidence, confirms protections unchanged. Root verified all four journal hashes. Original defect closed through required states; wrapper journal-write fault injection remains an explicit coverage limit.
+- Sol scrape_document_repair owns D59 manual/auto Scrape capture, draft, Diagnose and save document provenance, plus minimal shared context cache admission. No systematic Chat/Pilot work. Heavy lease granted after D60 finished; no parallel test jobs. Await report/independent review before accepting source candidate.
+- Previous turn made concrete progress (Save correction and D60 candidate); this turn resolves D60 and advances Scrape. Remaining D59/native/catalog/build/CI/release requirements unchanged; goal active.
+
 ## Latest checkpoint — Save race corrected; guard edge remains
 
 - Goal-turn progress: D59 save-boundary correction99d61661 prevents persistence after document replacement during organization lookup, and prevents old completion/finally from changing a new page's Save state. Guarded original RED2/new GREEN17 + compile pass; root verified all three journal hashes. Fresh source peer1998c62b found no important defect. Native and actual persistence unverified; D59 remains in-fix for wider census/migration.
