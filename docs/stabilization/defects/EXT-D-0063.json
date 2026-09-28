@@ -16,13 +16,16 @@
   "actual": "The second timer calls persist while inflightRef is true; persist returns immediately and discards that snapshot. Completion of the first update marks the earlier snapshot saved and does not schedule a trailing write.",
   "severity": "S2: latest user edits can be lost while the UI reports an earlier snapshot saved",
   "priority": "P1: silent note data loss",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     "docs/stabilization/reports/notes-files-batch-audit.json",
     "src/features/notes/NoteEditor.tsx:95-114",
-    "src/features/notes/NoteEditor.tsx:118-136"
+    "src/features/notes/NoteEditor.tsx:118-136",
+    "docs/stabilization/reports/notes-files-batch-final-peer.json",
+    "docs/stabilization/reports/notes-autosave-correction.json",
+    "docs/stabilization/reports/files-captures-correction.json"
   ],
-  "verification_status": "Source-derived reproducible sequence; native and regression verification pending.",
+  "verification_status": "Guarded combined18/18 and compile pass; independent source review passes scoped fixes. Fresh batch build underway; native guest/member/admin retest pending. Not closed.",
   "transition_history": [
     {
       "at": "2026-09-28T19:51:52.878308+00:00",
@@ -41,6 +44,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol assigned latest-draft autosave correction, source-only while build lane owns heavy lease."
+    },
+    {
+      "at": "2026-09-28T20:11:37.028317+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Committed correction, independent source peer2b1e50b1 and guardedcombined18/18+compile pass; native retest remains pending."
     }
   ]
 }

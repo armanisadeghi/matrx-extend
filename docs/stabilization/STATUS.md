@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-09-28 19:31 UTC from inventory.json and defects/*.json. Inventory updated 2026-09-28. 205 features · 724 cases · 1309 controls · 60 linked defect records.
+Generated 2026-09-28 20:11 UTC from inventory.json and defects/*.json. Inventory updated 2026-09-28T19:51:52.878308+00:00. 205 features · 724 cases · 1309 controls · 65 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. A fixed or closed defect does not itself prove native behavior.
 
@@ -32,10 +32,10 @@ A feature is fully verified for a role only when every applicable case explicitl
 | [Lists side-panel](#lists-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 |
 | [Agenda side-panel](#agenda-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 |
 | [Data side-panel](#data-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 1 |
-| [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 |
-| [Notes editor](#notes-editor) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 |
-| [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 |
-| [Saved captures side-panel](#saved-captures-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 |
+| [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 2 |
+| [Notes editor](#notes-editor) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 1 |
+| [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 1 |
+| [Saved captures side-panel](#saved-captures-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 1 |
 | [Capture side-panel](#capture-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 |
 | [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 |
 | [Tools/manual runner](#toolsmanual-runner) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 |
@@ -1237,7 +1237,9 @@ Counts exclude N/A feature-role combinations from each denominator. Open each fe
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 3. **Controls:** 11.
 
-**Next:** Add cases for 5 uncovered control(s), then verify them in the extension.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0061, EXT-D-0062
+
+**Linked defects:** [EXT-D-0061](defects/EXT-D-0061.json) (triaged), [EXT-D-0062](defects/EXT-D-0062.json) (triaged)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1256,7 +1258,9 @@ Counts exclude N/A feature-role combinations from each denominator. Open each fe
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 3. **Controls:** 26.
 
-**Next:** Add cases for 10 uncovered control(s), then verify them in the extension.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0063
+
+**Linked defects:** [EXT-D-0063](defects/EXT-D-0063.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1275,7 +1279,9 @@ Counts exclude N/A feature-role combinations from each denominator. Open each fe
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 4. **Controls:** 28.
 
-**Next:** Add cases for 13 uncovered control(s), then verify them in the extension.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0064
+
+**Linked defects:** [EXT-D-0064](defects/EXT-D-0064.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1295,7 +1301,9 @@ Counts exclude N/A feature-role combinations from each denominator. Open each fe
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 8. **Controls:** 39.
 
-**Next:** Add cases for 9 uncovered control(s), then verify them in the extension.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0065
+
+**Linked defects:** [EXT-D-0065](defects/EXT-D-0065.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

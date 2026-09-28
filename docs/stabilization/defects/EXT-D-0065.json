@@ -16,13 +16,16 @@
   "actual": "openCapture has no request generation or selected-ID guard; each resolution calls setSelected, so the slower A response overwrites B.",
   "severity": "S3: delayed detail response can navigate to a stale capture",
   "priority": "P2: user sees the wrong saved Source after selecting another row",
-  "state": "triaged",
+  "state": "fixed",
   "evidence": [
     "docs/stabilization/reports/notes-files-batch-audit.json",
     "src/features/saved-captures/SavedCapturesView.tsx:113-125",
-    "src/features/saved-captures/SavedCapturesView.tsx:269-276"
+    "src/features/saved-captures/SavedCapturesView.tsx:269-276",
+    "docs/stabilization/reports/notes-files-batch-final-peer.json",
+    "docs/stabilization/reports/notes-autosave-correction.json",
+    "docs/stabilization/reports/files-captures-correction.json"
   ],
-  "verification_status": "Source-derived reproducible sequence; native and regression verification pending.",
+  "verification_status": "Guarded combined18/18 and compile pass; independent source review passes scoped fixes. Fresh batch build underway; native guest/member/admin retest pending. Not closed.",
   "transition_history": [
     {
       "at": "2026-09-28T19:51:52.878308+00:00",
@@ -35,6 +38,18 @@
       "from": "open",
       "to": "triaged",
       "reason": "Concrete source branch and self-contained reproduction identified; runtime pending."
+    },
+    {
+      "at": "2026-09-28T20:11:37.028317+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Parallel contained-feature correction assigned and committed."
+    },
+    {
+      "at": "2026-09-28T20:11:37.028317+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Committed correction, independent source peer2b1e50b1 and guardedcombined18/18+compile pass; native retest remains pending."
     }
   ]
 }
