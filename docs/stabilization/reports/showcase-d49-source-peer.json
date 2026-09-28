@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "lane": "EXT-D-0049 independent source and guard review",
+  "status": "PARTIAL_BOTH_VERDICTS_NATIVE_REPAIR_UNVERIFIED",
+  "reviewed_at": "2026-09-27",
+  "current_source_change": [
+    "src/lib/background/bootstrap.ts now statically imports runLocalSavedPattern from the dispatch module already loaded for startToolDispatcher and passes it to registerDocumentNetworkCaptureHost.",
+    "src/lib/data-pattern/document-network-transport.ts accepts that callback and invokes it after the existing authenticated Port run-message checks. This removes the observed dynamic import('@/lib/tools/dispatch') wait at the Port boundary."
+  ],
+  "verdict_a": {
+    "status": "PARTIAL",
+    "outcome": "The source change addresses the exact boundary observed in native run d49-native-instrumented-20260928, where sender validation and run-message receipt succeeded but dispatch import did not settle. The approval and execution path still flows through runLocalSavedPattern -> prepareOperation -> runPrepared/executePreparedOperation; handler preparation fetches the saved pattern from the server, hashes saved configuration plus assigned tab/document identity, and returns privileged tier with a saved-name/sanitized-page preview. executePreparedOperation requests confirmation even in act mode, re-prepares after approval, compares identity, rechecks requirements, and checks cancellation before run.",
+    "native_evidence": "The baseline native trace is strong for the old source: it recorded host connected, run accepted, independent worker broadcast health, and no dispatch-import completion for over 90 seconds. It does not verify the current callback injection source, approval card display, approval denial, post-approval replay, fresh-document capture, or accurate extracted values. No new native proof is present in this review.",
+    "limits": [
+      "Installed version .114 remains the only observed artifact in the supplied evidence; the current repair has not been shown in a newly built/reloaded artifact.",
+      "No source-only or connected test result can substitute for the requested real public-page saved Network run and row-accuracy acceptance."
+    ]
+  },
+  "verdict_b": {
+    "status": "PARTIAL",
+    "positive": [
+      "The callback injection avoids dynamically importing the broad dispatch/registry graph from a Port event while reusing the existing canonical dispatcher behavior.",
+      "The Port still requires matching extension sender id and no sender tab, accepts only one run, validates pattern id/tab id, and forwards only saved identity plus its internally-owned AbortSignal/progress callback. Caller approval, config, permission mode, and context remain untrusted and unused.",
+      "The local path creates an internal privileged operation and does not infer approval from permissionMode='act'. The request confirmation identity is tied to the prepared operation and replay is re-prepared after approval."
+    ],
+    "findings": [
+      {
+        "severity": "IMPORTANT",
+        "finding": "There is no independent evidence yet that the bootstrap-to-host callback wiring is what the shipped extension executes. The unit Port test injects operation.run, and the existing connected UI test manually imports runLocalSavedPattern then manually registers the host; neither exercises bootstrapBackground's actual registration call or catches an accidental missing/wrong callback at that production seam.",
+        "action": "Add or adapt a meaningful seam guard that executes the real bootstrap registration wiring and proves a received run reaches the actual runLocalSavedPattern approval request. The test should fail if callback injection is removed or replaced by a hanging lazy import; retain sender rejection and saved-identity-only assertions."
+      },
+      {
+        "severity": "MINOR",
+        "finding": "Disconnect abort is delivered into the operation, and executePreparedOperation checks the signal before confirmation and before running. However, runLocalSavedPattern's initial prepareOperation(handler, ...) and checkOperationRequirements do not observe the signal while awaiting Supabase, Chrome document probe, or policy calls. Cancellation therefore prevents approval/capture after those awaits settle, but it cannot promptly stop the preparation work itself.",
+        "action": "Preserve fail-closed cancellation and cleanup; consider a narrow signal check between preparation/policy awaits or signal-aware preparation if the UI promises immediate cancellation. A regression case should park a preparation dependency, disconnect, release it, and prove no confirmation, debugger attach, capture, health write, or late Port reply."
+      },
+      {
+        "severity": "IMPORTANT",
+        "finding": "Current port and dispatcher tests cover host protocol and local approval behavior separately; they do not show a red-to-green regression at the actual lazy-import stall seam. Existing UI integration uses real dispatch but manually composes host registration and mocked Chrome dependencies, so a test green does not establish that the native Vite worker module-loading failure is fixed.",
+        "action": "Use a forcing test for the production bootstrap-to-Port-to-dispatch chain, with external Chrome/Supabase operations controlled and assertions on actual approval request and denial/no-run behavior. Then require a new installed native trace for final outcome."
+      }
+    ],
+    "tests_reviewed_without_execution": [
+      "tests/unit/document-network-port.test.ts",
+      "tests/unit/document-network-dispatch.test.ts",
+      "tests/unit/document-network-saved-ui.test.tsx"
+    ],
+    "execution": "No tests, build, or browser session were run in this source-review lane."
+  },
+  "safe_contract": [
+    "Keep the Port sender authentication and one-run semantics at the host boundary.",
+    "Treat pattern id and tab id only as lookup selectors; fetch authoritative pattern/config server-side for the assigned page and bind approval to current saved config, page URL, tab, and document identity.",
+    "Require a per-run confirmation at privileged tier regardless of ask/act preference; deny, timeout, stale identity, disconnected approval recovery, or cancellation must prevent capture.",
+    "Keep abort ownership through confirmation, document capture, reload, lease/script cleanup, and disconnect; surface cleanup failure rather than a success result.",
+    "Do not let the sidepanel supply pattern config or an approval assertion."
+  ],
+  "review_scope": "Independent source and existing-test review only. No product source/test/build/browser changes."
+}
