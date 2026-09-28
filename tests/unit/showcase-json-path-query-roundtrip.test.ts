@@ -205,9 +205,9 @@ describe('Showcase JSON key paths through real query mapping', () => {
           ),
         },
       });
-      await expect(runSavedPattern(reopened, 37, { initiation: 'user' })).resolves.toEqual([
-        { title },
-      ]);
+      await expect(
+        runSavedPattern(reopened, 37, { initiation: 'user', documentId: 'framework-document' }),
+      ).resolves.toEqual([{ title }]);
     },
   );
 });
