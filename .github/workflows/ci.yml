@@ -39,14 +39,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # The complete records guide comes only from aidream's guide_for. This
-      # public, read-only checkout is pinned deliberately: CI must measure one
-      # declared server revision, never whichever sibling happens to exist.
+      # The complete records guide comes only from aidream's guide_for. The
+      # server repository is private: this preflight deliberately fails before
+      # tests if the approved read-only organization secret is not configured.
+      # CI must measure this pinned server revision, never ambient machine state.
+      - name: Require canonical records reader
+        env:
+          AIDREAM_REPO_TOKEN: ${{ secrets.AIDREAM_REPO_TOKEN }}
+        run: |
+          if [ -z "$AIDREAM_REPO_TOKEN" ]; then
+            echo "::error::AIDREAM_REPO_TOKEN is required for records-guide parity; configure the approved read-only repository reader."
+            exit 1
+          fi
+
       - uses: actions/checkout@v4
         with:
           repository: AI-Matrix-Engine/aidream
           ref: ea1db98d9acceed438cd3e476b3de3f8585f90e9
           path: .canonical/aidream
+          token: ${{ secrets.AIDREAM_REPO_TOKEN }}
           persist-credentials: false
 
       - uses: pnpm/action-setup@v4
