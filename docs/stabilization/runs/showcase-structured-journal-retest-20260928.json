@@ -5,12 +5,7 @@
   "started_at_utc": "2026-09-28T11:28:00.694Z",
   "ended_at_utc": "2026-09-28T11:34:40.666Z",
   "status": "BOUNDED_PARTIAL_PASS",
-  "case_ids": [
-    "EXT-F-1012-T10",
-    "EXT-F-1012-T11",
-    "EXT-F-1012-T40",
-    "EXT-F-1012-T41"
-  ],
+  "case_ids": ["EXT-F-1012-T10", "EXT-F-1012-T11", "EXT-F-1012-T40", "EXT-F-1012-T41"],
   "receipt": {
     "source_receipt": "docs/stabilization/runs/showcase-d50-runtime-artifact-20260928.json",
     "artifact_path": ".output/chrome-mv3-dev",
@@ -61,10 +56,7 @@
   "evidence": {
     "report": "docs/stabilization/reports/showcase-structured-journal-retest.json",
     "ui_evidence": "Native CUA accessibility observations in this task session; no screenshots retained.",
-    "recipe_ids": [
-      "585785a0-862b-45bb-85bc-08da355f6f70",
-      "6501466d-a03e-4bc4-b2d8-dbf1cbb637f9"
-    ]
+    "recipe_ids": ["585785a0-862b-45bb-85bc-08da355f6f70", "6501466d-a03e-4bc4-b2d8-dbf1cbb637f9"]
   },
   "invalidations": [],
   "whole_feature_closure": false

@@ -23,7 +23,10 @@ vi.mock('@/lib/data-pattern/run-interactive', () => ({
 }));
 vi.mock('@/lib/destructive/confirm', () => ({ confirmDestructive: vi.fn() }));
 vi.mock('@/features/showcase/components/ResultPreview', () => ({
-  ResultPreview: ({ rows, source }: {
+  ResultPreview: ({
+    rows,
+    source,
+  }: {
     rows: Record<string, unknown>[];
     source?: { url?: string | null; title?: string | null } | null;
   }) => (
@@ -86,7 +89,8 @@ describe('Showcase saved pattern replay provenance', () => {
   it('binds each replay preview to the page that produced its rows', async () => {
     mocks.page.url = 'https://electronic.vegas/vegas-edm-event-calendar/?date=2026-09-28';
     mocks.fetchPatterns.mockResolvedValue([pattern]);
-    mocks.runSaved.mockResolvedValueOnce([{ title: 'Monday event' }])
+    mocks.runSaved
+      .mockResolvedValueOnce([{ title: 'Monday event' }])
       .mockResolvedValueOnce([{ title: 'Tuesday event' }]);
     mocks.bumpRun.mockResolvedValue(null);
     const view = render(<PatternsTab />);
@@ -114,9 +118,12 @@ describe('Showcase saved pattern replay provenance', () => {
     let resolveBump!: (error: string | null) => void;
     mocks.fetchPatterns.mockImplementation(async () => [{ ...pattern, last_run_at: savedRunAt }]);
     mocks.runSaved.mockResolvedValue([{ title: 'Friday night concert' }]);
-    mocks.bumpRun.mockImplementation(() => new Promise<string | null>((resolve) => {
-      resolveBump = resolve;
-    }));
+    mocks.bumpRun.mockImplementation(
+      () =>
+        new Promise<string | null>((resolve) => {
+          resolveBump = resolve;
+        }),
+    );
     render(<PatternsTab />);
     await screen.findByText(/last run 9 minutes ago/i);
 
@@ -141,7 +148,9 @@ describe('Showcase saved pattern replay provenance', () => {
 
     await userEvent.click(screen.getByTitle('Run pattern'));
     expect(await screen.findByText(/Friday night concert/)).toBeTruthy();
-    expect(await screen.findByText(/saved run history could not be updated: Database unavailable/i)).toBeTruthy();
+    expect(
+      await screen.findByText(/saved run history could not be updated: Database unavailable/i),
+    ).toBeTruthy();
     expect(screen.getByText(/last run 9 minutes ago/i)).toBeTruthy();
   });
 
@@ -154,7 +163,11 @@ describe('Showcase saved pattern replay provenance', () => {
     await screen.findByText('Calendar events');
 
     await userEvent.click(screen.getByTitle('Run pattern'));
-    expect(await screen.findByText(/Selector could not execute.*saved run history could not be updated: Database unavailable/i)).toBeTruthy();
+    expect(
+      await screen.findByText(
+        /Selector could not execute.*saved run history could not be updated: Database unavailable/i,
+      ),
+    ).toBeTruthy();
   });
 
   it('guides on route mismatch without blocking Run and calls zero rows no match', async () => {

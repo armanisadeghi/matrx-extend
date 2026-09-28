@@ -75,8 +75,6 @@
     "next_evidence_needed": "Trace the exact document reference from the saved Network run's production context, repair the failing context boundary, then repeat on this public page: approval, denial/cancel safety, allowance, automatic fresh capture without manual retrigger, matching saved rows, and row comparison against visible page values."
   },
   "privacy": "No credentials, request headers, API keys, raw request body, screenshots, or unrelated user data were recorded.",
-  "files_changed_by_peer": [
-    "docs/stabilization/runs/showcase-d49-native-retest-001.json"
-  ],
+  "files_changed_by_peer": ["docs/stabilization/runs/showcase-d49-native-retest-001.json"],
   "commit_scope": "Exact report path only; no push."
 }

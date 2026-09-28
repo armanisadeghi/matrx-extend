@@ -120,7 +120,9 @@ it('keeps extracted rows and reports saved history failure in DataView', async (
   await userEvent.click(screen.getByRole('button', { name: 'Extract' }));
 
   expect(await screen.findByText(/Friday night concert/)).toBeTruthy();
-  expect(await screen.findByText(/saved run history could not be updated: Database unavailable/i)).toBeTruthy();
+  expect(
+    await screen.findByText(/saved run history could not be updated: Database unavailable/i),
+  ).toBeTruthy();
 });
 
 it('shows the extraction failure and the separate history failure together', async () => {
@@ -131,7 +133,11 @@ it('shows the extraction failure and the separate history failure together', asy
   await screen.findAllByText('Calendar events');
   await userEvent.click(screen.getByRole('button', { name: 'Extract' }));
 
-  expect(await screen.findByText(/Selector could not execute.*saved run history could not be updated: Database unavailable/i)).toBeTruthy();
+  expect(
+    await screen.findByText(
+      /Selector could not execute.*saved run history could not be updated: Database unavailable/i,
+    ),
+  ).toBeTruthy();
 });
 
 it('shows the auto-extract history warning alongside its extracted rows', async () => {
@@ -139,9 +145,9 @@ it('shows the auto-extract history warning alongside its extracted rows', async 
   render(<DataView />);
   await screen.findAllByText('Calendar events');
   await act(async () => {
-    useAutoExtractStore.getState().setRecord(
-      `37|${pattern.id}|https://electronic.vegas/calendar/`,
-      {
+    useAutoExtractStore
+      .getState()
+      .setRecord(`37|${pattern.id}|https://electronic.vegas/calendar/`, {
         pattern,
         url: 'https://electronic.vegas/calendar/',
         tabId: 37,
@@ -149,11 +155,12 @@ it('shows the auto-extract history warning alongside its extracted rows', async 
         status: 'ok',
         note: 'Saved run history could not be updated: Database unavailable',
         lastRunAt: Date.now(),
-      },
-    );
+      });
   });
 
-  expect(await screen.findByText(/saved run history could not be updated: Database unavailable/i)).toBeTruthy();
+  expect(
+    await screen.findByText(/saved run history could not be updated: Database unavailable/i),
+  ).toBeTruthy();
   expect(screen.getByText(/Friday night concert/)).toBeTruthy();
 });
 

@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0051",
   "feature_id": "EXT-F-0002",
-  "case_ids": [
-    "EXT-F-0002-T06"
-  ],
+  "case_ids": ["EXT-F-0002-T06"],
   "surface": "Testing infrastructure resource evidence",
   "auth_mode": "all",
   "reproduction": [

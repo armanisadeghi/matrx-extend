@@ -1,7 +1,10 @@
 {
   "schema": 1,
   "defect": "EXT-D-0050",
-  "reviewed_commits": ["a011a6829298287af2c389abce70237032693b28", "f65b020aa0ebcd6aae2ec138d63e9910b8cb3c18"],
+  "reviewed_commits": [
+    "a011a6829298287af2c389abce70237032693b28",
+    "f65b020aa0ebcd6aae2ec138d63e9910b8cb3c18"
+  ],
   "lane": "fresh independent source-only correction verifier; zero product authorship",
   "prior_findings": [
     {
@@ -24,7 +27,9 @@
     "native_outcome": "UNVERIFIED",
     "source_contract": "PASS",
     "evidence": "PatternsTab awaits bumpPatternRun before its finally refresh; bumpPatternRun awaits a returned row from UPDATE and reports PostgREST errors, zero-row updates, and thrown exceptions. DataView, auto extraction, and the tool return path preserve extracted rows while exposing metadata failure. Original extraction errors remain distinct where a failed run also fails to record health.",
-    "limitations": ["No installed native extension replay, persisted timestamp observation, or live RLS write proof was allowed in this source-only lane."]
+    "limitations": [
+      "No installed native extension replay, persisted timestamp observation, or live RLS write proof was allowed in this source-only lane."
+    ]
   },
   "verdict_b": {
     "quality": "CONCERNS_UNVERIFIED",

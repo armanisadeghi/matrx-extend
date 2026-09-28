@@ -76,7 +76,9 @@ export function MicrodataTab({ active = true }: { active?: boolean }) {
           </div>
         )}
 
-        {rows && <ResultPreview rows={rows} source={source} emptyHint="No matching microdata items." />}
+        {rows && (
+          <ResultPreview rows={rows} source={source} emptyHint="No matching microdata items." />
+        )}
 
         {rows && rows.length > 0 && (
           <div className="flex justify-end">

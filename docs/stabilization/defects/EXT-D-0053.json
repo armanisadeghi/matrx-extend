@@ -1,10 +1,7 @@
 {
   "id": "EXT-D-0053",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T49",
-    "EXT-F-2005-T03"
-  ],
+  "case_ids": ["EXT-F-1012-T49", "EXT-F-2005-T03"],
   "title": "JSON copy truncates long strings",
   "surface": "Showcase and shared clipboard exports",
   "auth_mode": "all applicable export users",
@@ -65,7 +62,5 @@
       "reason": "Independent actualData andShowcase JSON/AI copies preserve719594characterfield samehash/end, includingData refreshreplay; guardedformertruncationRED/restoredGREEN andsourcepeer accepted. Originallongstringloss resolved; broadercopyfailureUI trackedunverified separately."
     }
   ],
-  "related_feature_ids": [
-    "EXT-F-2005"
-  ]
+  "related_feature_ids": ["EXT-F-2005"]
 }

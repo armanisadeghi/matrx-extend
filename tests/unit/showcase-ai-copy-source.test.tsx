@@ -8,23 +8,25 @@ const copied = vi.hoisted(() => ({
   fetchPatterns: vi.fn(),
   runSaved: vi.fn(),
   bumpRun: vi.fn(),
-  networkEvents: [{
-    ts_ms: 1_726_000_000_000,
-    source: 'fetch',
-    method: 'GET',
-    request_body_key: 'none',
-    request_sequence: 1,
-    url: 'https://api.electronic.vegas/events?day=2026-09-28&proof=PRIVATE-RESPONSE',
-    status: 200,
-    status_text: 'OK',
-    request_headers: {},
-    response_headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ events: [{ title: 'Monday event' }] }),
-    body_truncated: false,
-    body_size: 38,
-    content_type: 'application/json',
-    tab_id: 37,
-  }],
+  networkEvents: [
+    {
+      ts_ms: 1_726_000_000_000,
+      source: 'fetch',
+      method: 'GET',
+      request_body_key: 'none',
+      request_sequence: 1,
+      url: 'https://api.electronic.vegas/events?day=2026-09-28&proof=PRIVATE-RESPONSE',
+      status: 200,
+      status_text: 'OK',
+      request_headers: {},
+      response_headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ events: [{ title: 'Monday event' }] }),
+      body_truncated: false,
+      body_size: 38,
+      content_type: 'application/json',
+      tab_id: 37,
+    },
+  ],
 }));
 
 vi.mock('@/hooks/use-auth', () => ({ useAuth: () => ({ isAdmin: true }) }));
@@ -54,7 +56,11 @@ vi.mock('@/hooks/use-network-capture', () => ({
     events: copied.networkEvents,
     error: null,
     installed: true,
-    source: { url: 'https://electronic.vegas/calendar', host: 'electronic.vegas', pathname: '/calendar' },
+    source: {
+      url: 'https://electronic.vegas/calendar',
+      host: 'electronic.vegas',
+      pathname: '/calendar',
+    },
     dropped: 0,
     start: vi.fn(),
     capturePageLoad: vi.fn(),
@@ -82,12 +88,16 @@ vi.mock('@ai-matrx/design-system', () => ({
 }));
 
 import { ResultPreview } from '@/features/showcase/components/ResultPreview';
-import { PatternsTab } from '@/features/showcase/tabs/PatternsTab';
 import { NetworkTab } from '@/features/showcase/tabs/NetworkTab';
+import { PatternsTab } from '@/features/showcase/tabs/PatternsTab';
 
 Object.defineProperty(navigator, 'clipboard', {
   configurable: true,
-  value: { writeText: vi.fn(async (text: string) => { copied.text = text; }) },
+  value: {
+    writeText: vi.fn(async (text: string) => {
+      copied.text = text;
+    }),
+  },
 });
 
 afterEach(() => {
@@ -107,7 +117,9 @@ it('copies each extraction source with ordinary query identity while masking cre
     />,
   );
   await userEvent.click(screen.getByRole('button', { name: /^Copy for AI/ }));
-  expect(copied.text).toContain('Source URL: https://electronic.vegas/calendar?date=2026-09-28&token=[credential]');
+  expect(copied.text).toContain(
+    'Source URL: https://electronic.vegas/calendar?date=2026-09-28&token=[credential]',
+  );
   expect(copied.text).not.toContain('PRIVATE-ONE');
   expect(copied.text).toContain('Friday night concert');
 
@@ -118,7 +130,9 @@ it('copies each extraction source with ordinary query identity while masking cre
     />,
   );
   await userEvent.click(screen.getByRole('button', { name: /^Copy for AI/ }));
-  expect(copied.text).toContain('Source URL: https://electronic.vegas/calendar?date=2026-09-29&token=[credential]');
+  expect(copied.text).toContain(
+    'Source URL: https://electronic.vegas/calendar?date=2026-09-29&token=[credential]',
+  );
   expect(copied.text).not.toContain('PRIVATE-TWO');
   expect(copied.text).toContain('Saturday night concert');
   expect(copied.text).not.toContain('Friday night concert');
@@ -132,17 +146,23 @@ it('keeps hash-routed page identity and masks credentials inside the fragment', 
     />,
   );
   await userEvent.click(screen.getByRole('button', { name: /^Copy for AI/ }));
-  expect(copied.text).toContain('Source URL: https://electronic.vegas/app#/calendar?date=2026-09-28&token=[credential]');
+  expect(copied.text).toContain(
+    'Source URL: https://electronic.vegas/app#/calendar?date=2026-09-28&token=[credential]',
+  );
   expect(copied.text).not.toContain('PRIVATE-HASH');
 
   view.rerender(
     <ResultPreview
       rows={[{ title: 'Tuesday event' }]}
-      source={{ url: 'https://electronic.vegas/app#/calendar?date=2026-09-29&token=PRIVATE-HASH-NEXT' }}
+      source={{
+        url: 'https://electronic.vegas/app#/calendar?date=2026-09-29&token=PRIVATE-HASH-NEXT',
+      }}
     />,
   );
   await userEvent.click(screen.getByRole('button', { name: /^Copy for AI/ }));
-  expect(copied.text).toContain('Source URL: https://electronic.vegas/app#/calendar?date=2026-09-29&token=[credential]');
+  expect(copied.text).toContain(
+    'Source URL: https://electronic.vegas/app#/calendar?date=2026-09-29&token=[credential]',
+  );
   expect(copied.text).toContain('Tuesday event');
   expect(copied.text).not.toContain('PRIVATE-HASH-NEXT');
 });
@@ -168,7 +188,8 @@ it('copies the actual saved replay page and its rows through the real preview an
     last_run_count: null,
   };
   copied.fetchPatterns.mockResolvedValue([pattern]);
-  copied.runSaved.mockResolvedValueOnce([{ title: 'Monday event' }])
+  copied.runSaved
+    .mockResolvedValueOnce([{ title: 'Monday event' }])
     .mockResolvedValueOnce([{ title: 'Tuesday event' }]);
   copied.bumpRun.mockResolvedValue(null);
   copied.page.url = 'https://electronic.vegas/calendar?date=2026-09-28&token=PRIVATE-PAGE';
@@ -179,7 +200,9 @@ it('copies the actual saved replay page and its rows through the real preview an
   await screen.findByText('Monday event');
   await userEvent.click(screen.getByRole('button', { name: /^Copy for AI/ }));
   await waitFor(() => expect(copied.text).toContain('Monday event'));
-  expect(copied.text).toContain('Source URL: https://electronic.vegas/calendar?date=2026-09-28&token=[credential]');
+  expect(copied.text).toContain(
+    'Source URL: https://electronic.vegas/calendar?date=2026-09-28&token=[credential]',
+  );
   expect(copied.text).toContain('Source kind: web page');
   expect(copied.text).not.toContain('https://electronic.vegas/api/events');
 
@@ -190,7 +213,9 @@ it('copies the actual saved replay page and its rows through the real preview an
   await screen.findByText('Tuesday event');
   await userEvent.click(screen.getByRole('button', { name: /^Copy for AI/ }));
   await waitFor(() => expect(copied.text).toContain('Tuesday event'));
-  expect(copied.text).toContain('Source URL: https://electronic.vegas/calendar?date=2026-09-29&token=[credential]');
+  expect(copied.text).toContain(
+    'Source URL: https://electronic.vegas/calendar?date=2026-09-29&token=[credential]',
+  );
   expect(copied.text).not.toContain('Monday event');
 });
 
@@ -204,7 +229,9 @@ it('copies the selected network response URL rather than the edited replay filte
 
   await userEvent.click(screen.getByRole('button', { name: /^Copy for AI/ }));
   await waitFor(() => expect(copied.text).toContain('Monday event'));
-  expect(copied.text).toContain('Source URL: https://api.electronic.vegas/events?day=2026-09-28&proof=[credential]');
+  expect(copied.text).toContain(
+    'Source URL: https://api.electronic.vegas/events?day=2026-09-28&proof=[credential]',
+  );
   expect(copied.text).toContain('Source kind: network response');
   expect(copied.text).not.toContain('PRIVATE-RESPONSE');
   expect(copied.text).not.toContain('https://api.electronic.vegas/other');

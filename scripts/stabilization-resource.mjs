@@ -26,13 +26,13 @@ import {
 import { platform } from 'node:os';
 import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
+import { openResourceJournal } from './stabilization-resource-journal.mjs';
 import {
   assertNoLegacyLease,
   legacyLeaseRoots,
   reserveHeavyDirectory,
   resourceLeaseRoot,
 } from './stabilization-resource-lease.mjs';
-import { openResourceJournal } from './stabilization-resource-journal.mjs';
 import { classifyLegacyRunner, parseProcessIdentity } from './stabilization-resource-process.mjs';
 
 const run = promisify(execFile);

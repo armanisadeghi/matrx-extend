@@ -29,7 +29,11 @@ vi.mock('@/hooks/use-network-capture', () => ({
     stop: vi.fn(),
     reload: vi.fn(),
     clear: vi.fn(),
-    source: { url: 'https://harborjournal.test/news', host: 'harborjournal.test', pathname: '/news' },
+    source: {
+      url: 'https://harborjournal.test/news',
+      host: 'harborjournal.test',
+      pathname: '/news',
+    },
     dropped: 0,
   }),
 }));
@@ -67,14 +71,24 @@ vi.mock('@/lib/data-pattern/document-network-transport', () => ({
     onEvent: (event: unknown) => void;
   }) => {
     mocks.listeners.set('net-capture:event', (event) =>
-      options.onEvent({ ...(event as object), capture_id: options.captureId, document_key: 'fresh-document' }),
+      options.onEvent({
+        ...(event as object),
+        capture_id: options.captureId,
+        document_key: 'fresh-document',
+      }),
     );
     options.onArmed?.();
-    return Promise.resolve({ close: async () => { mocks.listeners.delete('net-capture:event'); } });
+    return Promise.resolve({
+      close: async () => {
+        mocks.listeners.delete('net-capture:event');
+      },
+    });
   },
 }));
 vi.mock('@/features/showcase/components/ResultPreview', () => ({
-  ResultPreview: ({ rows }: { rows: Record<string, unknown>[] }) => <div>{JSON.stringify(rows)}</div>,
+  ResultPreview: ({ rows }: { rows: Record<string, unknown>[] }) => (
+    <div>{JSON.stringify(rows)}</div>
+  ),
 }));
 vi.mock('@ai-matrx/design-system', () => ({
   Button: (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => <button {...props} />,
@@ -96,8 +110,8 @@ vi.mock('lucide-react', () => ({
   TriangleAlert: () => null,
 }));
 
-import { NetworkTab } from '@/features/showcase/tabs/NetworkTab';
 import { FrameworkTab } from '@/features/showcase/tabs/FrameworkTab';
+import { NetworkTab } from '@/features/showcase/tabs/NetworkTab';
 import { sanitizeNetworkPatternFields } from '@/lib/credentials/network-urls';
 import { runNetworkCapturePattern } from '@/lib/data-pattern/run-interactive';
 import { runPattern } from '@/lib/data-pattern/run-pattern';
@@ -131,9 +145,10 @@ function literalDottedKeyButton(): HTMLButtonElement {
 beforeEach(() => {
   mocks.savePattern.mockImplementation(async (input: unknown) => {
     const save = input as { kind: string; name: string; config: { key_path: string | string[] } };
-    const sanitized = save.kind === 'network_capture'
-      ? sanitizeNetworkPatternFields(save.name, save.config)
-      : { name: save.name, config: save.config };
+    const sanitized =
+      save.kind === 'network_capture'
+        ? sanitizeNetworkPatternFields(save.name, save.config)
+        : { name: save.name, config: save.config };
     // This guard covers tab wiring; query-roundtrip.test covers real save/fetch mapping.
     mocks.persisted = JSON.parse(JSON.stringify({ ...save, ...sanitized }));
     return { id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc' };
@@ -159,11 +174,13 @@ describe('Showcase exact JSON key path persistence', () => {
       key_path: ['feeds.news'],
     });
     expect(saved.config.key_path).toEqual(['feeds.news']);
-    expect(sanitizeNetworkPatternFields('Harbor Journal feed', {
-      url_filter: event.url,
-      method: 'GET',
-      key_path: '["edition"]',
-    }).config.key_path).toBe('["edition"]');
+    expect(
+      sanitizeNetworkPatternFields('Harbor Journal feed', {
+        url_filter: event.url,
+        method: 'GET',
+        key_path: '["edition"]',
+      }).config.key_path,
+    ).toBe('["edition"]');
   });
 
   it('saves the selected literal key from the real Network tree and replays its value', async () => {
@@ -210,15 +227,21 @@ describe('Showcase exact JSON key path persistence', () => {
     document.body.append(script);
     Object.assign(chrome, {
       scripting: {
-        executeScript: vi.fn(async ({ func, args }: { func: (config?: unknown) => unknown; args?: unknown[] }) => [
-          { frameId: 0, result: func(args?.[0]) },
-        ]),
+        executeScript: vi.fn(
+          async ({ func, args }: { func: (config?: unknown) => unknown; args?: unknown[] }) => [
+            { frameId: 0, result: func(args?.[0]) },
+          ],
+        ),
       },
     });
 
     const user = userEvent.setup();
     render(<FrameworkTab />);
-    await waitFor(() => expect(screen.queryByText('["feeds.news"]') ?? screen.queryAllByText('feeds.news')[0]).toBeTruthy());
+    await waitFor(() =>
+      expect(
+        screen.queryByText('["feeds.news"]') ?? screen.queryAllByText('feeds.news')[0],
+      ).toBeTruthy(),
+    );
     await user.click(literalDottedKeyButton());
     await user.click(screen.getByRole('button', { name: 'Extract from key path' }));
     await screen.findByText(/Harbor desk bulletin/);
@@ -233,7 +256,8 @@ describe('Showcase exact JSON key path persistence', () => {
     expect(mocks.persisted?.config.key_path).toEqual(['feeds.news']);
     const reopened = mocks.persisted?.config;
     if (!reopened) throw new Error('Framework pattern was not persisted');
-    await expect(runPattern({ kind: 'next_data', config: reopened } as Parameters<typeof runPattern>[0], 37))
-      .resolves.toEqual([{ title: 'Harbor desk bulletin' }]);
+    await expect(
+      runPattern({ kind: 'next_data', config: reopened } as Parameters<typeof runPattern>[0], 37),
+    ).resolves.toEqual([{ title: 'Harbor desk bulletin' }]);
   });
 });

@@ -69,35 +69,77 @@
     "stop_after_attached_capture": {
       "status": "PASS",
       "stages": [
-        { "at_utc": "2026-09-28T09:29:43Z", "observed": "Allowed Capture page load on the OpenAI HN tab; Chrome debugger infobar visible and Network showed five captured responses including the public Algolia POST." },
-        { "at_utc": "2026-09-28T09:30:00Z", "observed": "Clicked Stop after attachment; panel said Page-load capture cancelled and returned to idle while infobar remained briefly." },
-        { "at_utc": "2026-09-28T09:30:14Z", "observed": "Infobar disappeared on subsequent observation; no captured-response list remained." }
+        {
+          "at_utc": "2026-09-28T09:29:43Z",
+          "observed": "Allowed Capture page load on the OpenAI HN tab; Chrome debugger infobar visible and Network showed five captured responses including the public Algolia POST."
+        },
+        {
+          "at_utc": "2026-09-28T09:30:00Z",
+          "observed": "Clicked Stop after attachment; panel said Page-load capture cancelled and returned to idle while infobar remained briefly."
+        },
+        {
+          "at_utc": "2026-09-28T09:30:14Z",
+          "observed": "Infobar disappeared on subsequent observation; no captured-response list remained."
+        }
       ]
     },
     "panel_close_after_attached_capture": {
       "status": "PASS",
       "stages": [
-        { "at_utc": "2026-09-28T09:30:33Z", "observed": "Second approval attached debugger to original HN tab; Network showed nine captured responses." },
-        { "at_utc": "2026-09-28T09:30:49Z", "observed": "Closed side panel during active attached capture; Chrome infobar remained briefly." },
-        { "at_utc": "2026-09-28T09:31:03Z", "observed": "Infobar disappeared with HN page still loaded; reopening the panel showed idle Network controls, not an active capture." }
+        {
+          "at_utc": "2026-09-28T09:30:33Z",
+          "observed": "Second approval attached debugger to original HN tab; Network showed nine captured responses."
+        },
+        {
+          "at_utc": "2026-09-28T09:30:49Z",
+          "observed": "Closed side panel during active attached capture; Chrome infobar remained briefly."
+        },
+        {
+          "at_utc": "2026-09-28T09:31:03Z",
+          "observed": "Infobar disappeared with HN page still loaded; reopening the panel showed idle Network controls, not an active capture."
+        }
       ]
     },
     "same_tab_document_replacement": {
       "status": "PASS",
       "stages": [
-        { "at_utc": "2026-09-28T09:31:39Z", "observed": "Third approval attached to HN OpenAI; debugger infobar and five responses visible." },
-        { "at_utc": "2026-09-28T09:31:54Z", "observed": "Navigated that tab to HN Anthropic; new page displayed unrelated public results. An intermediate state still showed old capture responses and infobar." },
-        { "at_utc": "2026-09-28T09:31:55Z", "observed": "Panel terminated capture with The replay document was replaced. Run the recipe again. Response list cleared; no new-page recipe was saved." },
-        { "at_utc": "2026-09-28T09:32:08Z", "observed": "Debugger infobar disappeared; restored original HN OpenAI URL afterward." }
+        {
+          "at_utc": "2026-09-28T09:31:39Z",
+          "observed": "Third approval attached to HN OpenAI; debugger infobar and five responses visible."
+        },
+        {
+          "at_utc": "2026-09-28T09:31:54Z",
+          "observed": "Navigated that tab to HN Anthropic; new page displayed unrelated public results. An intermediate state still showed old capture responses and infobar."
+        },
+        {
+          "at_utc": "2026-09-28T09:31:55Z",
+          "observed": "Panel terminated capture with The replay document was replaced. Run the recipe again. Response list cleared; no new-page recipe was saved."
+        },
+        {
+          "at_utc": "2026-09-28T09:32:08Z",
+          "observed": "Debugger infobar disappeared; restored original HN OpenAI URL afterward."
+        }
       ]
     },
     "user_tab_switch": {
       "status": "PASS",
       "stages": [
-        { "at_utc": "2026-09-28T09:32:45Z", "observed": "Fourth approval attached to original HN OpenAI tab; seven responses and debugger infobar visible." },
-        { "at_utc": "2026-09-28T09:33:15Z", "observed": "Selected existing Chrome Extensions details tab; panel briefly retained the original HN response list with ten rows while debugger infobar remained." },
-        { "at_utc": "2026-09-28T09:33:16Z", "observed": "Panel changed source label to extensions, canceled page-load capture, and cleared HN rows. It did not save unrelated-tab data under the HN recipe." },
-        { "at_utc": "2026-09-28T09:33:30Z", "observed": "Debugger infobar disappeared; switched back to original HN OpenAI tab." }
+        {
+          "at_utc": "2026-09-28T09:32:45Z",
+          "observed": "Fourth approval attached to original HN OpenAI tab; seven responses and debugger infobar visible."
+        },
+        {
+          "at_utc": "2026-09-28T09:33:15Z",
+          "observed": "Selected existing Chrome Extensions details tab; panel briefly retained the original HN response list with ten rows while debugger infobar remained."
+        },
+        {
+          "at_utc": "2026-09-28T09:33:16Z",
+          "observed": "Panel changed source label to extensions, canceled page-load capture, and cleared HN rows. It did not save unrelated-tab data under the HN recipe."
+        },
+        {
+          "at_utc": "2026-09-28T09:33:30Z",
+          "observed": "Debugger infobar disappeared; switched back to original HN OpenAI tab."
+        }
       ]
     },
     "fresh_existing_hits_recipe_replay": {
@@ -106,9 +148,18 @@
       "recipe_id": "667a7a91-604a-41cd-a289-b3327a3e22ca",
       "matcher": "Existing exact URL plus exact request-body identity; unchanged by this lane.",
       "stages": [
-        { "at_utc": "2026-09-28T09:34:04Z", "observed": "Clicked Run pattern for this named saved recipe and approved its privileged debugger/reload prompt on HN OpenAI." },
-        { "at_utc": "2026-09-28T09:34:12Z", "observed": "Own run displayed Matched 1 request; checking for other matches until the capture window ends; debugger infobar visible." },
-        { "at_utc": "2026-09-28T09:34:36Z", "observed": "Own run reached LAST RUN: CODEX D49 EXACT HN HITS ROWS 20260928 with 10 ROWS. First row title, author, 5710 points, and 2530 comments matched visible HN page. Run button enabled; debugger infobar absent." }
+        {
+          "at_utc": "2026-09-28T09:34:04Z",
+          "observed": "Clicked Run pattern for this named saved recipe and approved its privileged debugger/reload prompt on HN OpenAI."
+        },
+        {
+          "at_utc": "2026-09-28T09:34:12Z",
+          "observed": "Own run displayed Matched 1 request; checking for other matches until the capture window ends; debugger infobar visible."
+        },
+        {
+          "at_utc": "2026-09-28T09:34:36Z",
+          "observed": "Own run reached LAST RUN: CODEX D49 EXACT HN HITS ROWS 20260928 with 10 ROWS. First row title, author, 5710 points, and 2530 comments matched visible HN page. Run button enabled; debugger infobar absent."
+        }
       ],
       "attribution": "Observed this invocation from launch through matched-request progress to terminal rows; the saved-pattern summary's older last-run age was not used as proof."
     }

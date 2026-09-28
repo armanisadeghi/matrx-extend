@@ -25,7 +25,12 @@
     "run_id": "native-guard-journal-peer-watch-20260928",
     "journal_path": "docs/stabilization/resource-journals/native-guard-journal-peer-watch-20260928.jsonl",
     "journal_sha256": "8fb828e04f4facdf9c436b0be8d4fa3e2dc1ccf18b469934fe37bbb791cd191d",
-    "events": ["RESOURCE_JOURNAL_OPENED", "RESOURCE_STOP_REQUESTED", "RESOURCE_STOP_REQUESTED", "RESOURCE_FINAL_DECISION"],
+    "events": [
+      "RESOURCE_JOURNAL_OPENED",
+      "RESOURCE_STOP_REQUESTED",
+      "RESOURCE_STOP_REQUESTED",
+      "RESOURCE_FINAL_DECISION"
+    ],
     "wrapper_exit_code": 2,
     "final_decision": "refused",
     "admitted": false,

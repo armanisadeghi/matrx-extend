@@ -115,9 +115,14 @@ export function useAutoExtract(): void {
               const updateError = await bumpPatternRun(pattern.id, 'ok', rows.length);
               if (updateError && !cancelled && currentPage.current === pageKey) {
                 setRecord(key, {
-                  pattern, url, tabId, rows, status: 'ok',
+                  pattern,
+                  url,
+                  tabId,
+                  rows,
+                  status: 'ok',
                   note: [outcome.message, `Saved run history could not be updated: ${updateError}`]
-                    .filter(Boolean).join(' '),
+                    .filter(Boolean)
+                    .join(' '),
                   lastRunAt: Date.now(),
                 });
               }
@@ -137,7 +142,11 @@ export function useAutoExtract(): void {
             const updateError = await bumpPatternRun(pattern.id, 'broken', 0);
             if (updateError && !cancelled && currentPage.current === pageKey) {
               setRecord(key, {
-                pattern, url, tabId, rows: [], status: 'error',
+                pattern,
+                url,
+                tabId,
+                rows: [],
+                status: 'error',
                 error: `${errorMessage} Saved run history could not be updated: ${updateError}`,
                 lastRunAt: Date.now(),
               });

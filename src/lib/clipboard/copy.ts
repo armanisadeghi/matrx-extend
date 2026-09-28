@@ -118,7 +118,9 @@ export function stringifyJson(data: unknown, indent = 2): string {
     if (json === undefined) throw new TypeError('This value cannot be represented as JSON.');
     return json;
   } catch (error) {
-    throw new Error('Could not copy JSON: the value cannot be represented as JSON.', { cause: error });
+    throw new Error('Could not copy JSON: the value cannot be represented as JSON.', {
+      cause: error,
+    });
   }
 }
 

@@ -2,10 +2,7 @@
   "schema_version": 1,
   "run_id": "data-multiline-native-20260928-01",
   "defect_id": "EXT-D-0054",
-  "inventory_case_ids": [
-    "EXT-F-2005-T03",
-    "EXT-F-1012-T49"
-  ],
+  "inventory_case_ids": ["EXT-F-2005-T03", "EXT-F-1012-T49"],
   "status": "BLOCKED_RESOURCE_ADMISSION_REFUSED",
   "scope": "Requested native verification of multiline Data/manual picker extraction and TSV paste into the user's existing spreadsheet. No browser, spreadsheet, product edits, build, or tests were performed.",
   "expected_runtime": {
@@ -22,10 +19,7 @@
     "profile_free_gib": 15.611358642578125,
     "required_free_gib": 20,
     "swap_used_mib": 5063.44,
-    "reasons": [
-      "RESOURCE_DISK_LOW",
-      "RESOURCE_SWAP_GROWTH"
-    ],
+    "reasons": ["RESOURCE_DISK_LOW", "RESOURCE_SWAP_GROWTH"],
     "terminal_exit_code": 2,
     "final_decision": "refused"
   },

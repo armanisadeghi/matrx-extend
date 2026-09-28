@@ -19,7 +19,7 @@ describe('Showcase saved-result copy formatters', () => {
 
   it('refuses cyclic or unsupported JSON instead of returning a success-looking substitute', () => {
     const cyclic: Record<string, unknown> = { event_title: 'Harbor Jazz Friday' };
-    cyclic['related_event'] = cyclic;
+    cyclic.related_event = cyclic;
 
     expect(() => stringifyJson(cyclic)).toThrow('Could not copy JSON');
     expect(() => stringifyJson({ event_title: 'Sunday Matinee', seats: 12n })).toThrow(

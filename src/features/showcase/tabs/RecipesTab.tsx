@@ -165,7 +165,11 @@ export function RecipesTab() {
               <Sparkles className="mr-1 inline size-3" />
               Result · {activeRecipe.label}
             </div>
-            <ResultPreview rows={rows} source={source} emptyHint="Recipe ran but returned no rows." />
+            <ResultPreview
+              rows={rows}
+              source={source}
+              emptyHint="Recipe ran but returned no rows."
+            />
             {rows.length > 0 && (
               <div className="flex justify-end">
                 <SaveAsPattern

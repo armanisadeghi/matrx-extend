@@ -2,12 +2,7 @@
   "schema_version": 1,
   "run_id": "showcase-structured-native-20260928",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T10",
-    "EXT-F-1012-T11",
-    "EXT-F-1012-T40",
-    "EXT-F-1012-T41"
-  ],
+  "case_ids": ["EXT-F-1012-T10", "EXT-F-1012-T11", "EXT-F-1012-T40", "EXT-F-1012-T41"],
   "status": "PARTIAL",
   "at_utc": "2026-09-28T10:54:19Z",
   "report": "docs/stabilization/reports/showcase-structured-native.json",

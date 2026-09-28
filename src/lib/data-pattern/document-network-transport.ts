@@ -148,7 +148,10 @@ export function registerDocumentNetworkCaptureHost(
           .then(
             (result) => reply({ kind: 'result', result }),
             (error) =>
-              reply({ kind: 'error', message: error instanceof Error ? error.message : String(error) }),
+              reply({
+                kind: 'error',
+                message: error instanceof Error ? error.message : String(error),
+              }),
           );
         return;
       }
@@ -206,17 +209,19 @@ export function openNetworkPageLoadDiscovery(
       if (settled) return;
       if (message.kind === 'event') {
         const event = message.event as Event;
-        if (event?.tab_id === tabId && typeof event.capture_id === 'string')
-          options.onEvent(event);
+        if (event?.tab_id === tabId && typeof event.capture_id === 'string') options.onEvent(event);
       } else if (message.kind === 'progress') options.onProgress?.(String(message.note));
       else if (message.kind === 'result') {
         const result = message.result as Record<string, unknown> | null;
-        if (result?.ok !== true || typeof result.pageUrl !== 'string' ||
-            typeof result.documentId !== 'string' || !Number.isSafeInteger(result.eventCount))
+        if (
+          result?.ok !== true ||
+          typeof result.pageUrl !== 'string' ||
+          typeof result.documentId !== 'string' ||
+          !Number.isSafeInteger(result.eventCount)
+        )
           finish(new Error('Page-load capture returned incomplete document identity. Try again.'));
         else finish(null, result as DiscoveryResult);
-      }
-      else if (message.kind === 'error') finish(new Error(String(message.message)));
+      } else if (message.kind === 'error') finish(new Error(String(message.message)));
     });
     port.onDisconnect.addListener(() =>
       finish(new Error('The page-load capture connection ended. Start it again.')),

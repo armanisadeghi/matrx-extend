@@ -21,7 +21,5 @@
       "qualification": "Source recommendation only; not exercised in the browser. Confirm the selected DOM element yields embedded line breaks through the ordinary manual CSS extraction flow before treating it as native evidence."
     }
   },
-  "files_touched": [
-    "docs/stabilization/reports/header-native-path.json"
-  ]
+  "files_touched": ["docs/stabilization/reports/header-native-path.json"]
 }

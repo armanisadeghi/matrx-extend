@@ -27,12 +27,14 @@ afterEach(() => {
 describe('CopyMenu feedback', () => {
   it('shows a failed copy instead of a green check when JSON cannot be prepared', async () => {
     const cyclic: Record<string, unknown> = { event_title: 'Harbor Jazz Friday' };
-    cyclic['related_event'] = cyclic;
+    cyclic.related_event = cyclic;
     render(<CopyMenu options={[{ label: 'JSON', getContent: () => stringifyJson(cyclic) }]} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Copy' }));
 
-    expect((await screen.findByRole('alert')).textContent).toContain('Could not prepare this content');
+    expect((await screen.findByRole('alert')).textContent).toContain(
+      'Could not prepare this content',
+    );
     expect(screen.getByRole('img', { name: 'Copy failed' })).not.toBeNull();
     expect(screen.queryByRole('img', { name: 'Copied' })).toBeNull();
     expect(mocks.copy).not.toHaveBeenCalled();
@@ -59,7 +61,11 @@ describe('CopyMenu feedback', () => {
 
   it('shows the success check only after the clipboard write succeeds', async () => {
     mocks.copy.mockResolvedValue(true);
-    render(<CopyMenu options={[{ label: 'JSON', getContent: () => '{"event_title":"Sunday Matinee"}' }]} />);
+    render(
+      <CopyMenu
+        options={[{ label: 'JSON', getContent: () => '{"event_title":"Sunday Matinee"}' }]}
+      />,
+    );
 
     fireEvent.click(screen.getByRole('button', { name: 'Copy' }));
 

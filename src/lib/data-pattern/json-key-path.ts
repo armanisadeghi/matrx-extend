@@ -2,7 +2,7 @@
 export type JsonKeyPath = string | string[];
 
 export function jsonKeyPathSegments(path: JsonKeyPath | undefined): readonly string[] {
-  return typeof path === 'string' ? path.split('.').filter(Boolean) : path ?? [];
+  return typeof path === 'string' ? path.split('.').filter(Boolean) : (path ?? []);
 }
 
 /** Display only. Resolution never parses this string back into keys. */

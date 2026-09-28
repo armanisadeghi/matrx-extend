@@ -54,21 +54,50 @@
     "EXT-F-1012-T40": {
       "status": "PARTIAL_PASS",
       "observed": "Saved and reopened the successful JSON-LD configuration through Showcase UI. Exact owned recipe codex-structured-native-20260928-jsonld-breadcrumb: 585785a0-862b-45bb-85bc-08da355f6f70; read-only safe fields confirmed kind=json_ld and config.ld_type=BreadcrumbList. After changing the draft to NonexistentType following preview, a second UI save retained config.ld_type=BreadcrumbList; owned challenge recipe codex-structured-native-20260928-draft-shift: c61d5061-bc33-4301-9a43-f60f25a1d09d. Reopening and replaying the challenge recipe returned the preview's one BreadcrumbList row. On a same-host public 404 URL, the saved route was identified as outside-route and replay showed a clear no-match message instead of stale article data. Snapshot recipe codex-structured-native-20260928-og-metadata: 6501466d-a03e-4bc4-b2d8-dbf1cbb637f9 also reopened/replayed one row; a same-host 404 replay showed current 404 title and OG data, not stale source data.",
-      "unverified": ["auth-transition", "service-error", "cleanup of the three owned UI-saved recipes"]
+      "unverified": [
+        "auth-transition",
+        "service-error",
+        "cleanup of the three owned UI-saved recipes"
+      ]
     },
     "EXT-F-1012-T41": {
       "status": "PARTIAL_PASS",
       "observed": "Snapshot on the real page returned one row. title, description, og.title, og.description, og.image, og.site_name, og.type and og.url matched the page's actual metadata; title matched the visible browser document title. UI save/reopen/replay returned the same values. On a same-host 404 page, replay returned that page's 404 title, OG image and current URL instead of the prior article values.",
-      "unverified": ["auth-transition", "service-error", "source metadata mutation on the same route"]
+      "unverified": [
+        "auth-transition",
+        "service-error",
+        "source metadata mutation on the same route"
+      ]
     },
     "owned_ui_saved_recipes": [
-      {"id": "585785a0-862b-45bb-85bc-08da355f6f70", "name": "codex-structured-native-20260928-jsonld-breadcrumb", "kind": "json_ld", "config": {"ld_type": "BreadcrumbList"}},
-      {"id": "c61d5061-bc33-4301-9a43-f60f25a1d09d", "name": "codex-structured-native-20260928-draft-shift", "kind": "json_ld", "config": {"ld_type": "BreadcrumbList"}},
-      {"id": "6501466d-a03e-4bc4-b2d8-dbf1cbb637f9", "name": "codex-structured-native-20260928-og-metadata", "kind": "og_meta", "config": {}}
+      {
+        "id": "585785a0-862b-45bb-85bc-08da355f6f70",
+        "name": "codex-structured-native-20260928-jsonld-breadcrumb",
+        "kind": "json_ld",
+        "config": { "ld_type": "BreadcrumbList" }
+      },
+      {
+        "id": "c61d5061-bc33-4301-9a43-f60f25a1d09d",
+        "name": "codex-structured-native-20260928-draft-shift",
+        "kind": "json_ld",
+        "config": { "ld_type": "BreadcrumbList" }
+      },
+      {
+        "id": "6501466d-a03e-4bc4-b2d8-dbf1cbb637f9",
+        "name": "codex-structured-native-20260928-og-metadata",
+        "kind": "og_meta",
+        "config": {}
+      }
     ],
     "database_writes": "The three recipes were saved using the authorized Showcase UI. The database was only read afterward for exact owned IDs and safe name/domain/kind/config fields; no direct database mutation was made.",
     "observed_regressions": [],
-    "not_exercised": ["service-error paths", "auth transitions", "guest/member access", "source metadata mutation on the same route", "cleanup of the three owned recipes"],
+    "not_exercised": [
+      "service-error paths",
+      "auth transitions",
+      "guest/member access",
+      "source metadata mutation on the same route",
+      "cleanup of the three owned recipes"
+    ],
     "whole_feature_closure": false
   },
   "verdicts": {

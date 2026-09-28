@@ -4,9 +4,24 @@
   "review_type": "independent source review only; no runtime, tests, build, install, or native UI run",
   "A_outcome": "SOURCE_PASS_FOR_REPRO: all ten ResultPreview callers now supply source; saved DOM replay snapshots tab URL/title with its rows, useExtraction and useAiExtraction carry run/capture source, and Copy for AI writes the sanitized Source URL. This addresses the reported Gutenberg omission in source. Native outcome remains unverified after this commit.",
   "B_quality": [
-    {"severity": "P1", "finding": "Saved network replay labels response rows with the page URL, not the matched request URL. NetworkTab previews selected.url, but runNetworkCapturePattern resolves rowsFromBody(latest.body) and runSavedPattern returns only rows; PatternsTab sourceAtRun captures tab.url. On a page whose API endpoint differs from the page URL, Copy for AI misattributes the data source.", "evidence": "src/features/showcase/tabs/NetworkTab.tsx:50,357-360; src/lib/data-pattern/run-interactive.ts:389-395,547-567; src/features/showcase/tabs/PatternsTab.tsx:140-160", "action": "Return matched response provenance alongside replay rows and bind it atomically to the preview; add a saved-network replay copy assertion with page URL != response URL."},
-    {"severity": "P2", "finding": "ResultPreview applies sanitizeNetworkUrl to every source URL; that helper deliberately removes fragments. Hash-routed pages therefore copy a truncated URL even when the fragment identifies the extracted page.", "evidence": "src/features/showcase/components/ResultPreview.tsx:45-48; src/lib/credentials/network-urls.ts:29-31,52-66", "action": "Use a page-source sanitizer that masks credentials while preserving safe route fragments, or explicitly report source identity unavailable; cover distinct hash routes."},
-    {"severity": "P2", "finding": "The new provenance guard mocks ResultPreview and asserts a prop; the copy guard tests ResultPreview separately. Neither exercises the actual saved replay-to-clipboard path or selected Network response/draft edits.", "evidence": "tests/unit/showcase-patterns-replay-provenance.test.tsx:30-40,79-111; tests/unit/showcase-ai-copy-source.test.tsx:41-72", "action": "Add connected replay-to-copy coverage for two page queries and a selected response versus edited replay URL filter; verify masking and retained ordinary query keys."}
+    {
+      "severity": "P1",
+      "finding": "Saved network replay labels response rows with the page URL, not the matched request URL. NetworkTab previews selected.url, but runNetworkCapturePattern resolves rowsFromBody(latest.body) and runSavedPattern returns only rows; PatternsTab sourceAtRun captures tab.url. On a page whose API endpoint differs from the page URL, Copy for AI misattributes the data source.",
+      "evidence": "src/features/showcase/tabs/NetworkTab.tsx:50,357-360; src/lib/data-pattern/run-interactive.ts:389-395,547-567; src/features/showcase/tabs/PatternsTab.tsx:140-160",
+      "action": "Return matched response provenance alongside replay rows and bind it atomically to the preview; add a saved-network replay copy assertion with page URL != response URL."
+    },
+    {
+      "severity": "P2",
+      "finding": "ResultPreview applies sanitizeNetworkUrl to every source URL; that helper deliberately removes fragments. Hash-routed pages therefore copy a truncated URL even when the fragment identifies the extracted page.",
+      "evidence": "src/features/showcase/components/ResultPreview.tsx:45-48; src/lib/credentials/network-urls.ts:29-31,52-66",
+      "action": "Use a page-source sanitizer that masks credentials while preserving safe route fragments, or explicitly report source identity unavailable; cover distinct hash routes."
+    },
+    {
+      "severity": "P2",
+      "finding": "The new provenance guard mocks ResultPreview and asserts a prop; the copy guard tests ResultPreview separately. Neither exercises the actual saved replay-to-clipboard path or selected Network response/draft edits.",
+      "evidence": "tests/unit/showcase-patterns-replay-provenance.test.tsx:30-40,79-111; tests/unit/showcase-ai-copy-source.test.tsx:41-72",
+      "action": "Add connected replay-to-copy coverage for two page queries and a selected response versus edited replay URL filter; verify masking and retained ordinary query keys."
+    }
   ],
   "positive_evidence": "NetworkTab derives extractedRows and safeSelectedUrl from the same selected event; search and replay-filter drafts cannot change the current preview. sanitizeNetworkUrl retains ordinary query bytes/order and masks recognized credential keys; selected Network extra credential keys are applied before ResultPreview. Doctor now uses diagnostic URL/title rather than active-tab metadata.",
   "native_reference": "docs/stabilization/reports/data-picker-long-native.json is the pre-fix installed Chrome reproduction: Data AI copy had a URL; Showcase AI copy omitted it. It does not verify commit 8ae31220.",
