@@ -171,11 +171,19 @@ export function DataView() {
   const dataHandoff = useHighlightStore((s) => s.dataHandoff);
   const setDataHandoff = useHighlightStore((s) => s.setDataHandoff);
   useEffect(() => {
-    if (dataHandoff && dataHandoff.length > 0) {
-      setPickedFields(dataHandoff);
+    if (dataHandoff) {
+      if (dataHandoff.fields.length > 0 && dataHandoff.pageKey === pageKey && dataHandoff.tabId === tab.id && dataHandoff.documentId === tab.documentId && isCurrentPageIdentity(dataHandoff.pageKey)) {
+        setPickedFields(dataHandoff.fields);
+        setPickedPageKey(dataHandoff.pageKey);
+        setError(null);
+      } else {
+        setPickedFields([]);
+        setPickedPageKey(null);
+        setError('These highlight fields came from another or unverified page. Return to the current page and send the highlights again, or pick fields here.');
+      }
       setDataHandoff(null);
     }
-  }, [dataHandoff, setDataHandoff]);
+  }, [dataHandoff, pageKey, tab.id, tab.documentId, setDataHandoff]);
 
   const enterPicker = async () => {
     if (!tab.id || !tab.documentId || !tab.pageKey || picking) return;
@@ -187,25 +195,34 @@ export function DataView() {
     pickPageKeyRef.current = tab.pageKey;
     const sessionId = crypto.randomUUID();
     pickSessionRef.current = sessionId;
+    const stillOurSession = () => pickSessionRef.current === sessionId && pickDocumentRef.current === tab.documentId && pickPageKeyRef.current === tab.pageKey && isCurrentPageIdentity(tab.pageKey);
+    setError(null);
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id, documentIds: [tab.documentId] },
         func: (id: string) => { (window as Window & { __matrxDataPickerSessionId?: string }).__matrxDataPickerSessionId = id; },
         args: [sessionId],
       });
+      if (!stillOurSession()) return;
       await chrome.scripting.executeScript({
         target: { tabId: tab.id, documentIds: [tab.documentId] },
         files: ['content-scripts/data-picker.js'],
       });
     } catch (err) {
+      if (!stillOurSession()) return;
       setPicking(false);
       pickSessionRef.current = null;
+      setError(`Could not start the field picker: ${err instanceof Error ? err.message : String(err)}. Retry picking fields on this page.`);
       console.warn('[matrx-extend] picker injection failed', err);
     }
   };
 
   const handleSavePattern = async () => {
-    if (!host || pickedFields.length === 0 || !isCurrentPageIdentity(pickedPageKey)) return;
+    if (!host || pickedFields.length === 0) return;
+    if (!isCurrentPageIdentity(pickedPageKey)) {
+      setError('These fields are not verified for the current page. Pick fields again or resend highlights from this page.');
+      return;
+    }
     setSaving(true);
     setError(null);
     try {

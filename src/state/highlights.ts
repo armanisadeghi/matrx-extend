@@ -29,7 +29,7 @@ interface HighlightState {
    * broadcast wouldn't loop back — we pass through the store instead).
    * DataView / ScrapeView consume + clear these on mount.
    */
-  dataHandoff: { name: string; selector: string }[] | null;
+  dataHandoff: { fields: { name: string; selector: string }[]; pageKey: string; tabId: number; documentId: string } | null;
   scrapeHandoff: { title: string; text: string }[] | null;
 
   setItems: (items: HighlightListItem[]) => void;
@@ -43,7 +43,7 @@ interface HighlightState {
   detach: (id: string) => void;
   clearAttached: () => void;
 
-  setDataHandoff: (fields: { name: string; selector: string }[] | null) => void;
+  setDataHandoff: (handoff: HighlightState['dataHandoff']) => void;
   setScrapeHandoff: (regions: { title: string; text: string }[] | null) => void;
 }
 
@@ -83,6 +83,6 @@ export const useHighlightStore = create<HighlightState>((set) => ({
   detach: (id) => set((s) => ({ attachedIds: s.attachedIds.filter((a) => a !== id) })),
   clearAttached: () => set({ attachedIds: [] }),
 
-  setDataHandoff: (fields) => set({ dataHandoff: fields }),
+  setDataHandoff: (handoff) => set({ dataHandoff: handoff }),
   setScrapeHandoff: (regions) => set({ scrapeHandoff: regions }),
 }));

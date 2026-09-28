@@ -1,0 +1,49 @@
+{
+  "id": "EXT-D-0059",
+  "status": "SOURCE_CORRECTED_GUARDS_GREEN_NATIVE_PENDING",
+  "scope": "Two regressions found in document-correction-escalation.json; this is not full D59 acceptance.",
+  "changes": [
+    "Highlight-to-Data verifies every selected element selector by executing in the exact top-frame Chrome document, checks the canonical page identity after the await, and passes fields with tab, document, and page provenance.",
+    "Data admits a handoff only for the current tab/document/page, assigns pickedPageKey before Save, and gives a visible resend-or-pick remedy for a stale or unverified handoff.",
+    "Data picker injection continuations and errors are scoped to the captured session and document. An obsolete A failure cannot clear B; a current injection failure visibly invites retry."
+  ],
+  "verification": {
+    "focused_green": {
+      "run_id": "d59-handoff-tests-20260928-1",
+      "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/saved-run-data-view-health.test.tsx",
+      "admitted": true,
+      "result": "15 passed, 0 failed",
+      "journal_sha256": "ce78a1e0440b83866f0835e5949288fbe408f476beb7286e7abdaffaaaee1cc8"
+    },
+    "compile_green": {
+      "run_id": "d59-handoff-compile-20260928-1",
+      "command": "pnpm compile",
+      "admitted": true,
+      "result": "tsc --noEmit passed",
+      "journal_sha256": "268bc9d809bd7667a4edd8e60f1dee2f2d73bfe522255df6fd6b23de0f076ea9"
+    },
+    "mutation_red": {
+      "run_id": "d59-handoff-mutation-20260928-2",
+      "method": "Temporarily changed only DataView's handoff pickedPageKey assignment to null and removed only the catch's current-session guard; a shell EXIT trap restored the exact source before reporting.",
+      "admitted": true,
+      "result": "2 expected failures: connected Highlight-to-Data Save made zero persistence calls; obsolete A error became visible during B session. The other 13 tests passed.",
+      "child_exit_code": 1,
+      "journal_sha256": "2e43398c107ed9407bb45e71a12d04d0af8f1e55d790acf877be327924ff13ca"
+    },
+    "command_shape_rejection": {
+      "run_id": "d59-handoff-mutation-20260928-1",
+      "reason": "RESOURCE_COMMAND_NOT_ALLOWED for Vitest -t filter; no child executed. Re-ran the full allowed test file instead.",
+      "journal_sha256": "7d076cc350398289a08e9f1efdddc6a5555e502a3ec4433715415585b135d3ad"
+    }
+  },
+  "test_cases_added": [
+    "Connected HighlightView selector verification through DataView Save on the same document",
+    "Stale A handoff rejected visibly in DataView on document B",
+    "Deferred A injection rejection after B starts preserves B fields and Save; current-session failure shows retry"
+  ],
+  "limits": [
+    "Native installed-extension same-URL reload and browser event ordering remain unverified.",
+    "Broader D59 census and pending surface migrations are separately owned; this report does not mark them complete.",
+    "Selector revalidation establishes current-document field presence, not that a persisted highlight was originally captured in this same document."
+  ]
+}

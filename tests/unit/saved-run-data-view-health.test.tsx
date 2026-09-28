@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   savePattern: vi.fn(),
   pickerListeners: new Map<string, (payload: unknown) => unknown>(),
   retryIdentity: vi.fn(),
+  listHighlights: vi.fn(),
 }));
 
 vi.mock('@/hooks/use-active-tab', () => ({
@@ -35,6 +36,8 @@ vi.mock('@/lib/data-pattern/run-interactive', () => ({
 }));
 vi.mock('@/lib/messaging/native', () => ({ on: (kind: string, callback: (payload: unknown) => unknown) => { mocks.pickerListeners.set(kind, callback); return () => { mocks.pickerListeners.delete(kind); }; }, send: vi.fn() }));
 vi.mock('@/lib/api/routes/auth', () => ({ requireRequestOrganizationId: vi.fn() }));
+vi.mock('@/lib/highlights/queries', () => ({ listMyHighlights: mocks.listHighlights, listHighlightsForUrl: vi.fn(), deleteHighlight: vi.fn() }));
+vi.mock('@/lib/highlights/control', () => ({ startHighlighter: vi.fn(), stopHighlighter: vi.fn(), setHighlighterMode: vi.fn() }));
 vi.mock('@/components/CopyMenu', () => ({
   CopyMenu: ({
     title,
@@ -62,10 +65,20 @@ vi.mock('lucide-react', () => ({
   Save: () => null,
   XCircle: () => null,
   Zap: () => null,
+  Database: () => null,
+  Highlighter: () => null,
+  Link2: () => null,
+  MousePointerSquareDashed: () => null,
+  ScanLine: () => null,
+  Square: () => null,
+  Trash2: () => null,
+  Type: () => null,
 }));
 
 import { DataView } from '@/features/data/DataView';
+import { HighlightView } from '@/features/highlights/HighlightView';
 import { useAutoExtractStore } from '@/state/auto-extract';
+import { useHighlightStore } from '@/state/highlights';
 
 const pattern = {
   id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
@@ -96,6 +109,7 @@ afterEach(() => {
   mocks.pickerListeners.clear();
   vi.unstubAllGlobals();
   useAutoExtractStore.setState({ records: new Map() });
+  useHighlightStore.setState({ items: [], dataHandoff: null });
 });
 
 it('shows DataView no-match guidance without writing ok health for zero rows', async () => {
@@ -206,6 +220,76 @@ it('rejects document A picker fields after document B starts a new session on th
   await user.click(screen.getByRole('button', { name: /save pattern/i }));
   expect(mocks.savePattern).toHaveBeenCalledOnce();
   expect(mocks.savePattern.mock.calls[0]?.[0]).toMatchObject({ fields: [{ name: 'current', selector: '#current' }] });
+});
+
+it('saves a Highlight-to-Data handoff only after its selectors are verified in the exact current document', async () => {
+  mocks.fetchPatterns.mockResolvedValue([]);
+  mocks.savePattern.mockResolvedValue(pattern);
+  mocks.listHighlights.mockResolvedValue([{
+    id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', created_by: null, conversation_id: null,
+    mode: 'element', url: mocks.page.url, domain: 'electronic.vegas', page_title: 'Vegas events',
+    color: 'yellow', text: 'Event title', anchor: { selector: '#event-title' },
+    created_at: '', updated_at: '',
+  }]);
+  const injection = vi.fn(async ({ target }: { target: { documentIds: string[] } }) => {
+    expect(target.documentIds).toEqual(['document-a']);
+    return [{ result: [true] }];
+  });
+  vi.stubGlobal('chrome', { scripting: { executeScript: injection } });
+  const highlight = render(<HighlightView />);
+  await screen.findByRole('button', { name: /Data \(1\)/ });
+  await userEvent.click(screen.getByRole('button', { name: /Data \(1\)/ }));
+  await waitFor(() => expect(useHighlightStore.getState().dataHandoff?.pageKey).toBe('page-a'));
+  highlight.unmount();
+  render(<DataView />);
+  await userEvent.click(screen.getByRole('button', { name: /save pattern/i }));
+  expect(injection).toHaveBeenCalledOnce();
+  expect(mocks.savePattern).toHaveBeenCalledOnce();
+  expect(mocks.savePattern.mock.calls[0]?.[0]).toMatchObject({ fields: [{ name: 'event_title', selector: '#event-title' }] });
+});
+
+it('shows recovery for an old Highlight handoff instead of silently saving it on the new document', async () => {
+  mocks.fetchPatterns.mockResolvedValue([]);
+  useHighlightStore.getState().setDataHandoff({ fields: [{ name: 'old', selector: '#old' }], pageKey: 'page-a', tabId: 37, documentId: 'document-a' });
+  mocks.page = { ...mocks.page, pageKey: 'page-b', documentId: 'document-b' };
+  render(<DataView />);
+  expect(await screen.findByText(/highlight fields came from another or unverified page/i)).toBeTruthy();
+  expect(screen.queryByRole('button', { name: /save pattern/i })).toBeNull();
+  expect(mocks.savePattern).not.toHaveBeenCalled();
+});
+
+it('keeps B picker live when delayed A injection rejects and shows a retry remedy for a current rejection', async () => {
+  mocks.fetchPatterns.mockResolvedValue([]);
+  mocks.savePattern.mockResolvedValue(pattern);
+  let rejectA!: (error: Error) => void;
+  const heldA = new Promise<unknown[]>((_resolve, reject) => { rejectA = reject; });
+  const sessions: string[] = [];
+  vi.stubGlobal('chrome', { scripting: { executeScript: vi.fn(({ args }: { args?: unknown[] }) => {
+    if (typeof args?.[0] === 'string') {
+      sessions.push(args[0]);
+      return sessions.length === 1 ? heldA : Promise.resolve([]);
+    }
+    return Promise.resolve([]);
+  }) } });
+  const view = render(<DataView />);
+  await userEvent.click(screen.getByRole('button', { name: /pick fields on this page/i }));
+  expect(sessions).toHaveLength(1);
+  await act(async () => { mocks.page = { ...mocks.page, pageKey: 'page-b', documentId: 'document-b' }; view.rerender(<DataView />); });
+  await userEvent.click(screen.getByRole('button', { name: /pick fields on this page/i }));
+  expect(sessions).toHaveLength(2);
+  await act(async () => { rejectA(new Error('A disappeared')); await heldA.catch(() => {}); });
+  expect(screen.queryByText(/A disappeared/)).toBeNull();
+  const emit = mocks.pickerListeners.get(CHANNELS.DATA_PICKER_RESULT);
+  if (!emit) throw new Error('Data picker result listener was not installed');
+  act(() => { emit({ tab_id: 37, document_id: 'document-b', session_id: sessions[1], fields: [{ name: 'current', selector: '#current' }] }); });
+  await userEvent.click(screen.getByRole('button', { name: /save pattern/i }));
+  expect(mocks.savePattern).toHaveBeenCalledOnce();
+
+  // A separate current-session injection failure must be visible and retryable.
+  const execute = chrome.scripting.executeScript as ReturnType<typeof vi.fn>;
+  execute.mockRejectedValueOnce(new Error('Document unavailable'));
+  await userEvent.click(screen.getByRole('button', { name: /pick fields on this page/i }));
+  expect(await screen.findByText(/Could not start the field picker.*Retry picking fields/i)).toBeTruthy();
 });
 
 it('shows a Retry remedy and disables Data picker actions when document identity is unresolved', async () => {

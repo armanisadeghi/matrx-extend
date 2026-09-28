@@ -11,7 +11,7 @@
  * reads the store + issues control commands.
  */
 
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { confirmDestructive } from '@/lib/destructive/confirm';
 import { setHighlighterMode, startHighlighter, stopHighlighter } from '@/lib/highlights/control';
 import { deleteHighlight, listHighlightsForUrl, listMyHighlights } from '@/lib/highlights/queries';
@@ -55,6 +55,7 @@ export function HighlightView() {
 
   const [scope, setScope] = useState<Scope>('page');
   const [busy, setBusy] = useState(false);
+  const [handoffError, setHandoffError] = useState<string | null>(null);
 
   const host = useMemo(() => {
     try {
@@ -135,16 +136,38 @@ export function HighlightView() {
     });
   };
 
-  const sendElementsToData = () => {
+  const sendElementsToData = async () => {
     const elements = visible.filter((h) => h.mode === 'element' && h.anchor.selector);
     if (elements.length === 0) return;
-    setDataHandoff(
-      elements.map((h, i) => ({
-        name: slugName(h.text) || `highlight_${i + 1}`,
-        selector: h.anchor.selector as string,
-      })),
-    );
-    setTab('data');
+    setHandoffError(null);
+    if (!tab.id || !tab.documentId || !tab.pageKey || !tab.url || elements.some((h) => h.url !== tab.url)) {
+      setHandoffError('These highlights are not verified on this page. Open their page and retry, or pick fields in Data.');
+      return;
+    }
+    const fields = elements.map((h, i) => ({
+      name: slugName(h.text) || `highlight_${i + 1}`,
+      selector: h.anchor.selector as string,
+    }));
+    try {
+      const matches = await chrome.scripting.executeScript({
+        target: { tabId: tab.id, documentIds: [tab.documentId] },
+        func: (selectors: string[]) => selectors.map((selector) => {
+          try { return document.querySelector(selector) !== null; } catch { return false; }
+        }),
+        args: [fields.map((field) => field.selector)],
+      });
+      if (!isCurrentPageIdentity(tab.pageKey)) return;
+      if (matches.length !== 1 || !matches[0]?.result?.every(Boolean)) {
+        setHandoffError('Some highlighted elements are no longer on this page. Refresh the highlights or pick fields in Data.');
+        return;
+      }
+      setDataHandoff({ fields, pageKey: tab.pageKey, tabId: tab.id, documentId: tab.documentId });
+      setTab('data');
+    } catch (error) {
+      if (isCurrentPageIdentity(tab.pageKey)) {
+        setHandoffError(`Could not verify these highlights on this page: ${error instanceof Error ? error.message : String(error)}. Retry or pick fields in Data.`);
+      }
+    }
   };
 
   const sendToScrape = () => {
@@ -290,6 +313,7 @@ export function HighlightView() {
       </div>
 
       {/* Footer actions */}
+      {handoffError && <div role="alert" className="px-3 py-2 text-xs text-destructive">{handoffError}</div>}
       {visible.length > 0 && (
         <div className="shrink-0 space-y-1.5 border-t px-3 py-2">
           <div className="flex gap-2">
@@ -308,7 +332,7 @@ export function HighlightView() {
               size="sm"
               className="flex-1 rounded-full text-xs"
               disabled={elementCount === 0}
-              onClick={sendElementsToData}
+              onClick={() => void sendElementsToData()}
               title="Load element highlights as Data-tab fields"
             >
               <Database className="size-3.5" /> Data ({elementCount})

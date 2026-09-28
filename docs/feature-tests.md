@@ -1832,8 +1832,12 @@ Every entry follows this shape:
   5. Click the link icon on a row (or **Attach all to chat**), open **Chat** —
      an amber "N highlights attached" chip shows above the composer. Send a
      message; the agent receives a `highlights` context key.
-  6. **Data ( N )** button → switches to Data tab with element highlights
-     pre-loaded as picker fields → Save pattern works.
+  6. **Data ( N )** button → verifies the element selectors in this exact page
+     document, then switches to Data with those fields pre-loaded. **Save pattern**
+     persists the verified fields. Reload the same URL before sending again:
+     a stale or missing selector shows a remedy instead of opening an enabled
+     Save button. An older handoff arriving after navigation is rejected in Data
+     with instructions to resend it or pick fields on the current page.
   7. **Scrape ( N )** button → switches to Scrape tab, shows a highlighted-
      regions banner with combined text + copy.
   8. Tools tab → run `list_highlights` with `{"scope":"page"}` → returns the
@@ -1842,6 +1846,9 @@ Every entry follows this shape:
   scoped to the user). The pill's count tracks captures; trash clears the
   page's highlights; ✕ stops the overlay.
 - **Edge cases worth poking:**
+  - Start picking Data fields in document A, navigate to document B at the same
+    URL, then let A's injection fail after starting B's picker. B still accepts
+    its own field result; a failure of B itself shows a retry message.
   - chrome:// / Web Store pages: overlay injection fails gracefully (button
     no-ops, no crash).
   - Side panel closed while capturing: the paint stays but the row isn't saved
