@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "lane": "EXT-D-0049 independent worker build source review",
+  "status": "DONE_WITH_CONCERNS",
+  "review_scope": "Source and pre-fix emitted artifact only. No build, test, runtime, browser, product edit, or native acceptance was performed in this lane.",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "outcome": "The observed document-is-not-defined failure is explained by the pre-fix artifact: a worker-reachable data_patterns.prepare dynamic import of ./cdp enters Vite's shared preload helper, which dereferences document before import. Vite 8.3.1's modulePreload:false removes JavaScript dependencies from preload lists but retains native import() and preserves CSS dependencies. This is an appropriate source-level direction for worker imports without CSS. A rebuilt artifact and installed saved Network Run are required to establish that WXT applies this config and that approval and rows work; this review did not perform them.",
+    "native_limit": "The last supplied installed retest failed immediately with document is not defined and produced no approval or rows. No post-config native receipt was available to this source lane."
+  },
+  "verdict_b": {
+    "status": "FAIL",
+    "positive": [
+      "The proposal changes bundler behavior instead of fabricating a worker document or weakening the saved-operation sender, approval, or replay checks.",
+      "Native dynamic imports remain in Vite's generated wrapper; disabling module preload does not itself remove lazy loading. CSS associated with UI dynamic imports remains eligible for Vite's loader."
+    ],
+    "findings": [
+      {
+        "severity": "IMPORTANT",
+        "finding": "The generateBundle guard matches the DOM-bearing preload helper's definition in every emitted chunk, not a worker-reachable call with nonempty dependencies. In installed Vite 8.3.1, modulePreload:false filters non-CSS dependencies but still wraps dynamic imports and generates that helper, whose source contains document.getElementsByTagName('link') and the modulepreload string. A harmless definition shared with UI or used only with empty worker dependency arrays can therefore fail the build. If a future helper changes spelling, the regex can go green while equivalent worker DOM access returns. The guard is a brittle emitted-text change detector rather than a forcing worker-safety check.",
+        "evidence": "wxt.config.ts generateBundle and build.modulePreload; node_modules/.pnpm/vite@8.3.1_.../node_modules/vite/dist/node/chunks/node.js lines 26713-26821 and 26987; pre-fix .output/chrome-mv3/chunks/matrx-Bk8QwtPy.js contains the shared helper.",
+        "action": "Inspect emitted worker entry and its reachable import graph. Assert that worker-reachable dynamic-import call sites cannot invoke the preload helper with DOM-dependent dependencies; leave harmless UI-only helper definitions and stylesheet loading alone. Show red on the known failing artifact and green on the repaired artifact."
+      },
+      {
+        "severity": "IMPORTANT",
+        "finding": "The config disables JS preload for all extension pages because worker and UI chunks share Vite build settings. That is likely acceptable for locally installed extension modules, but source alone does not prove the current WXT output applies the setting, that UI dynamic CSS still loads, or that no worker-reachable dynamic import carries CSS dependencies and therefore still touches document.",
+        "evidence": "Vite 8.3.1 line 26987 preserves .css dependencies under modulePreload:false; source has worker-reachable lazy imports in data-patterns.ts, cdp.ts, extract.ts, read.ts, privileged.ts, and bootstrap.ts, plus UI lazy views and AnnotationEditor.",
+        "action": "Examine the new emitted artifact for every worker-reachable lazy import and its dependency array, then verify the saved Network Run and a UI lazy view/style on the installed artifact."
+      }
+    ],
+    "security": "No new fake document or approval bypass appears in this config diff. The background entrypoint already suppresses unhandled ReferenceError messages for document/window; this proposal neither adds nor removes that older suppression. A green build guard should not be treated as proof that suppression is safe."
+  },
+  "source_evidence": [
+    "src/lib/tools/handlers/data-patterns.ts prepare dynamically imports ./cdp after saved pattern and document identity lookup.",
+    "src/lib/tools/dispatch.ts runLocalSavedPattern calls prepareOperation, then privileged confirmation path; the failing import precedes approval.",
+    "src/entrypoints/background.ts declares an MV3 module service worker; no document global is available there.",
+    "The committed pre-fix .output/chrome-mv3 artifact contains a shared helper with document.getElementsByTagName('link') and worker-reachable __vite__mapDeps wrappers."
+  ],
+  "open_questions": [
+    "Does the new WXT build emit the shared helper with this config and trip the current all-chunk guard?",
+    "Do any worker-reachable imports retain CSS dependency arrays after the config change?",
+    "Does the newly installed saved Network replay reach its approval card and then produce correct rows or an explicit remedy?"
+  ]
+}
