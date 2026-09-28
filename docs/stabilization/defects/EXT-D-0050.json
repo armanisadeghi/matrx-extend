@@ -16,7 +16,8 @@
   "evidence": [
     "docs/stabilization/reports/showcase-discovery-empty-recovery.json",
     "docs/stabilization/reports/showcase-discovery-active-lifecycle.json",
-    "docs/stabilization/reports/showcase-run-timestamp-peer.json"
+    "docs/stabilization/reports/showcase-run-timestamp-peer.json",
+    "docs/stabilization/reports/showcase-run-timestamp-correction-peer.json"
   ],
   "severity": "S3: misleading run history undermines freshness and repeatability confirmation; extraction itself can succeed.",
   "priority": "P1: fix observed Showcase workflow defect during current stabilization.",
@@ -38,7 +39,7 @@
       "reason": "Assigned Sol medium showcase_run_timestamp; narrow class repair with regression then fresh peer/native retest required."
     }
   ],
-  "verification_status": "Correction f65b020a addresses hidden auto-extraction note, loss of original extraction error during simultaneous history failure, and leaking test mock. Final four-file focused run showcase-d50-round2-focused-001 refused before launch: RESOURCE_CPU_HIGH_LOAD_BUSY, terminalexit2. Current correction tests/compile/build/native remain UNVERIFIED. Fresh source-only peer active; D50 remains in-fix.",
+  "verification_status": "Fresh source peer6973c4d4 finds all3prior findings ADDRESSED and no new confirmed regression. A source PASS/native UNVERIFIED; B CONCERNS_UNVERIFIED because final focused suite, mutation proof, compile/build, shared zero-row/error branch and installed persistence remain unverified. Earlier21test suite red is not superseded. Correctionf65b020a runtime admission refused CPU_HIGH_LOAD_BUSY before launch. All agents/guards terminal; fresh safe admission required next.",
   "closure_requirement": "Prove persistence/refresh race red then green, errors visible without hiding extracted rows, independent source review, and actual newly completed native saved replay updates run history.",
   "fix_commits": [
     "a011a682",
