@@ -12,5 +12,7 @@
   "resource_decision": "valid",
   "exit_code": 0,
   "journal": "docs/stabilization/resource-journals/nuxt-peer-build-20260928a.jsonl",
-  "runtime_extension_id": "unverified; no browser UI execution in this lane"
+  "runtime_extension_id": "unverified; no browser UI execution in this lane",
+  "canonical_tree_sha256": "78ff463f44e66e7ead0d9229eccdd2d6b2a6f98f9bff748794454435264e88f3",
+  "canonical_hash_method": "Root recomputed scripts/sync-unpacked-release.mjs hashReleaseTree after guarded build; output_content_sha256 is worker alternative algorithm, not interchangeable."
 }

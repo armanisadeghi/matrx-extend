@@ -16,12 +16,14 @@
   "actual": "Framework exposes the serialized reference table and extracts {value:10} instead of repo string nuxt/nuxt. Source tree and next_data runner both JSON.parse without devalue revival.",
   "severity": "S2: supported extraction method returns serialization indexes instead of selected user data.",
   "priority": "P1: repair supported source before expanding Framework acceptance.",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     "docs/stabilization/reports/showcase-nuxt-diagnosis.json",
-    "docs/stabilization/reports/showcase-framework-native.json"
+    "docs/stabilization/reports/showcase-framework-native.json",
+    "docs/stabilization/reports/showcase-nuxt-guarded-peer.json",
+    "docs/stabilization/reports/showcase-nuxt-guarded-build-receipt.json"
   ],
-  "verification_status": "Resource-valid native53f43086 reproduces rawpointer inpreview andsavedreplay; artifacthash matches9ea6687b. Currentrun did notclick extensionReload; source diagnosis corroborates. Repair in progress, newbuild explicitReload/retest required.",
+  "verification_status": "Fixed awaiting native explicitReload Nuxt tree/semanticpreview/save/replay/oldpathremedy on new canonicalartifact78ff463f. Guardedcausalred proof also open; do not close.",
   "transition_history": [
     {
       "at": "2026-09-28T12:03:37.923717+00:00",
@@ -40,6 +42,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Original Sol diagnosis agent owns class repair and regression proof; independent review/native retest required."
+    },
+    {
+      "at": "2026-09-28T12:24:05.503586+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "fb91cc32 shareddecodedNuxt source plus52030b04 sourceisolation/missingremedy independently reviewed. Guardeda5ae4f82 12tests/compile/devbuild pass. Originalbuilderruntime remainsresourceunverified; native retest and guardedcausalproof pending."
     }
   ],
   "owned_recipe_id": "92d3df60-fa8e-4b14-ba37-c5c630b49294"
