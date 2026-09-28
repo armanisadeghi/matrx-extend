@@ -108,7 +108,7 @@
     "receipt_recorded_at": "2026-09-28T05:39:40.925Z"
   },
   "acceptance": {
-    "case_id": "EXT-F-1012-T57 (bounded acceptance target; not present in inventory-local stable case list)",
+    "case_id": "EXT-F-1012-T57",
     "target": "Owned HN Search saved Network replay recipe `Codex D47 HN Search OpenAI network replay 20260928`",
     "result": "BLOCKED_REPRODUCED_ONCE; no D47 closure or retest pass",
     "browser_run_id": "showcase-current-native-20260928T054000Z",
@@ -122,7 +122,8 @@
     "observation": "After at least 113 seconds of continuously healthy resource-watch observations, recipe still showed never run; no visible approval, progress, result, or failure. Debug search for replay showed 0 matching events.",
     "classification": "Definite visible run-path stall after one click under healthy machine conditions and signed-in admin with active organization. Exact internal transport/approval stage remains unknown; no claim that network transport itself failed.",
     "guard_terminal": "SIGINT requested 2026-09-28T06:02:24.892Z; RESOURCE_BROWSER_STOP_CONFIRMED resourceInvalid=false.",
-    "inventory_change": "No T57 stable case exists in inventory-local (EXT-F-1012 currently ends at T38); record this bounded evidence in run report only, without inventing or closing coverage."
+    "inventory_change": "Canonical inventory.json contains T57. The tester initially consulted inventory-local, a historical discovery report; root corrected this lookup and linked the bounded failure to T57 and EXT-D-0049.",
+    "defect_id": "EXT-D-0049"
   },
   "limitations": [
     "Evidence is one installed reproduction only. Original D47 repro and surrounding cancel/reload proof were not rerun; D47 remains open.",

@@ -16651,7 +16651,8 @@
             "EXT-F-1012-C47"
           ],
           "defect_ids": [
-            "EXT-D-0047"
+            "EXT-D-0047",
+            "EXT-D-0049"
           ],
           "preconditions": [
             "Fresh development build; verify receipt and reload the extension and page in Chrome. Use a real public website with a reproducible request during initial document load and an owned recipe. No localhost/test server. Guest/member denial uses EXT-F-1012-T38."
@@ -16673,12 +16674,12 @@
           ],
           "results": {
             "admin": {
-              "status": "diagnostic-only",
-              "run_id": "showcase-d47-installed-live-001",
+              "status": "fail",
+              "run_id": "showcase-network-current-001",
               "evidence": [
-                "docs/stabilization/runs/showcase-d47-installed-live-001.json"
+                "docs/stabilization/runs/showcase-network-current-001.json"
               ],
-              "detail": "Observations only; no acceptance proof. Fresh .111 unpacked build was loaded in primary Chrome. On real HN Search, a user-triggered query change produced a captured 200 POST; a saved recipe masked x-algolia-api-key before persistence. One Run click left the row disabled/never-run with no visible approval or progress. The browser guard ended resourceInvalid=true after unsafe pressure/swap growth, and UI inspection continued while watcher output was buffered; this is invalid for a product verdict. No product failure or pass is claimed. Initial-load capture, approved replay, prior-document isolation, and cancel denial remain unverified."
+              "detail": "Receipt-bound .114 current build explicitly reloaded in primary Chrome. Real HN Search OpenAI owned Network recipe Run stayed disabled/never-run with no visible approval, progress, result, or failure for >113 seconds. Admin identity and active organization were visible; watchdog ended resourceInvalid=false. EXT-D-0049 records this earlier execution blocker. D47 initial-load capture, current-document provenance and cancellation remain unverified; no claim the capture transport itself caused the stall."
             }
           }
         },
@@ -16750,14 +16751,20 @@
             "EXT-D-0041",
             "EXT-D-0042",
             "EXT-D-0043",
-            "EXT-D-0044"
+            "EXT-D-0044",
+            "EXT-D-0045",
+            "EXT-D-0046",
+            "EXT-D-0047",
+            "EXT-D-0049",
+            "EXT-D-0048"
           ],
           "run_ids": [
             "showcase-live-discovery-001",
             "showcase-live-retest-001",
             "showcase-live-microdata-001",
             "showcase-installed-d43-001",
-            "showcase-installed-d48-network-001"
+            "showcase-installed-d48-network-001",
+            "showcase-network-current-001"
           ],
           "retest_status": "fail"
         }

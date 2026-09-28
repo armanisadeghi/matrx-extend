@@ -1,0 +1,35 @@
+{
+  "id": "EXT-D-0049",
+  "feature_id": "EXT-F-1012",
+  "case_ids": [
+    "EXT-F-1012-T57"
+  ],
+  "surface": "Showcase Patterns saved Network Run",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Build the development extension and explicitly reload its unpacked installation in primary Chrome. Observed artifact: version 0.2.114, source d4bbe70ea652c0e23f6dd5941ccf72945a31d5e5; use the receipt in evidence for exact build identity.",
+    "Sign in as admin@admin.com with an active organization. Native run confirmed ADMIN and Acting as admin\u2019s Workspace.",
+    "Open and refresh https://hn.algolia.com/?q=OpenAI, then open Showcase \u2192 Patterns. Use retained owned NETWORK recipe Codex D47 HN Search OpenAI network replay 20260928, created from this site\u2019s captured search request.",
+    "Click Run pattern once. Observe the row and global approval area for at least 113 seconds, without another Run click or manually retriggering the page request."
+  ],
+  "expected": "Run presents its required approval or actionable progress/error, then captures a fresh matching response after approval. The control cannot remain silently disabled indefinitely.",
+  "actual": "Run became disabled and the recipe remained never run for >113 seconds. No approval, progress, result or failure appeared. Debug replay search showed no matching events. The active organization was set and resources stayed healthy until clean guard termination.",
+  "evidence": [
+    "docs/stabilization/runs/showcase-network-current-001.json",
+    "test-results/source-dev-build-showcase-current-20260928T053930Z.json"
+  ],
+  "severity": "S1: the observed saved Network extraction cannot run and gives no recovery feedback.",
+  "priority": "P1: blocks Showcase saved replay acceptance and D47 retest.",
+  "state": "open",
+  "reproduction_status": "one installed native reproduction with valid resource watchdog; internal stage unknown",
+  "verification_status": "Retest not run; source diagnosis in progress. D47 capture-timing and provenance acceptance remains unverified behind this blocker.",
+  "transition_history": [
+    {
+      "at": "2026-09-28T06:06:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Valid primary Chrome .114 native run reproduced silent disabled Run, with admin identity and active organization confirmed."
+    }
+  ],
+  "closure_requirement": "Prove the failing execution stage, correct the actual saved UI path, then independently repeat this native reproduction and demonstrate approval, fresh automatic reload capture, saved result, and surrounding cancellation/error recovery under a valid watchdog."
+}
