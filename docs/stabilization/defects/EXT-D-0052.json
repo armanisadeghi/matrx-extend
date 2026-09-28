@@ -18,9 +18,10 @@
   "priority": "P1: repair supported source before expanding Framework acceptance.",
   "state": "in-fix",
   "evidence": [
-    "docs/stabilization/reports/showcase-nuxt-diagnosis.json"
+    "docs/stabilization/reports/showcase-nuxt-diagnosis.json",
+    "docs/stabilization/reports/showcase-framework-native.json"
   ],
-  "verification_status": "Native worker reproduction pending final resource-valid report; causal source diagnosis confirmed. Fix assigned Sol.",
+  "verification_status": "Resource-valid native53f43086 reproduces rawpointer inpreview andsavedreplay; artifacthash matches9ea6687b. Currentrun did notclick extensionReload; source diagnosis corroborates. Repair in progress, newbuild explicitReload/retest required.",
   "transition_history": [
     {
       "at": "2026-09-28T12:03:37.923717+00:00",
@@ -40,5 +41,6 @@
       "to": "in-fix",
       "reason": "Original Sol diagnosis agent owns class repair and regression proof; independent review/native retest required."
     }
-  ]
+  ],
+  "owned_recipe_id": "92d3df60-fa8e-4b14-ba37-c5c630b49294"
 }
