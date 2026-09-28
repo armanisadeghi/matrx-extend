@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0047",
+  "case": "EXT-F-1012-T57",
+  "lane": "Independent source/evidence peer; read-only source and existing artifacts; no tests, build, browser, or HTTP executed",
+  "observed_at_utc": "2026-09-28T10:45:36Z",
+  "source_head_at_review": "971b067f",
+  "original_closure_requirements": [
+    {
+      "requirement": "Initial request racing tap installation is captured, or the user gets honest retrigger guidance",
+      "status": "PROVED_IN_REGRESSION_AND_BOUNDED_NATIVE_REPLAY",
+      "evidence": [
+        "docs/stabilization/reports/showcase-network-document-integration.json records a pre-fix runSavedPattern baseline red when the first response arrived during reload, then 22 focused files/100 tests green; it also records the old/new context mutation making the actual saved UI row assertion fail.",
+        "src/lib/data-pattern/document-network-capture.ts registers Page.addScriptToEvaluateOnNewDocument before Page.reload (around lines 414-459); tests/unit/document-network-capture.test.ts exercises a response before frame commit (around lines 175-224).",
+        "docs/stabilization/runs/showcase-discovery-native-acceptance-20260928.json records receipt-bound installed Chrome page-load initial HN capture (10 responses) and an exact saved hits recipe that reopened and replayed once to 10 rows matching public page values; docs/stabilization/runs/showcase-d50-native-20260928.json records a later receipt-bound fresh Allow/replay of 10 rows and panel remount."
+      ],
+      "limit": "Native success proves the observed HN initial request, not every site/request timing. The no-match text in src/lib/data-pattern/run-interactive.ts around line 500 gives Run again/interact guidance, but no cited current test asserts that precise user-visible guidance after an early request was genuinely missed; the successful native request took the capture branch."
+    },
+    {
+      "requirement": "Delayed old-document response after loading cannot satisfy or overwrite the new document, including colliding request identity and higher old local sequence",
+      "status": "PROVED_IN_CONTROLLED_REGRESSION; NATIVE_UNVERIFIED",
+      "evidence": [
+        "src/lib/data-pattern/document-network-capture.ts around lines 240-371 tracks Chrome Runtime unique context IDs, rejects pre-reload/old contexts, buffers new-document packets before frame commit, and emits only after commit.",
+        "tests/unit/document-network-capture.test.ts around lines 175-224 injects old sequence 999 and new sequence 1 before frame commit and asserts only the new document response; tests/unit/document-network-saved-ui.test.tsx around lines 208-352 sends stale/current rows through the real saved UI path and asserts only CURRENT_DOCUMENT_ROW renders. The integration report records a scratch mutation removing document identity causing that downstream UI assertion to fail."
+      ],
+      "limit": "No cited installed Chrome run deliberately held and released an old-document response after new navigation began, or observed same-URL replacement rejection. Native HN success alone cannot prove this adversarial isolation."
+    },
+    {
+      "requirement": "Saved request replay on a real public website using an installed build",
+      "status": "PROVED_FOR_BOUNDED_HN_RECIPE",
+      "evidence": [
+        "docs/stabilization/runs/showcase-discovery-native-acceptance-20260928.json records installed build receipt/tree 8b0f8adc, approval denial, initial HN request capture, saved exact hits recipe, reopen, first 10-row replay and public-value comparison; its second hits replay remained nonterminal at observation.",
+        "docs/stabilization/runs/showcase-d50-native-20260928.json records later installed receipt/tree 9ea6687b, explicit extension reload, Allow, matched request, terminal 10-row table and remounted card still showing 10 rows."
+      ],
+      "limit": "These are bounded positive runs on a newly selected exact hits recipe. Earlier named D47 recipe had silent stall, worker-global failures, then an honest no-match on older artifacts; those failures are superseded for this demonstrated recipe, not evidence that every saved recipe works."
+    }
+  ],
+  "verdict_A_actual_user_outcome": {
+    "status": "PARTIAL_FOR_ORIGINAL_D47_CLOSURE; PASS_FOR_BOUNDED_INITIAL_REQUEST_AND_SAVED_REPLAY",
+    "reason": "The real installed HN workflow now captures and replays selected initial-load rows. The distinct old-document provenance requirement remains native-unverified, so the original D47 closure and whole T57 status cannot be promoted to PASS from the current artifacts.",
+    "minimal_next_test": "On the current receipt-bound installed build, run the saved real-public-page recipe while a matching prior-document response is deliberately delayed until after new navigation begins; make its request identity collide and local sequence exceed the current response, then verify the current rows win or the run refuses attribution. Record the visible terminal result and artifact identity. This tests the missing original D47 branch; it does not require a whole Showcase sweep."
+  },
+  "verdict_B_source_and_evidence_quality": {
+    "status": "SOURCE_REPAIR_SUPPORTED; NATIVE_PROVENANCE_GAP",
+    "reason": "The regression boundary reaches real capture core and saved UI with CDP/Chrome as doubles, and the recorded old/new-context mutation failed downstream. Source review reports rejected detach cleanup addressed in docs/stabilization/reports/showcase-network-detach-final-peer.json. Historical guarded full-suite/compile/lint success in EXT-D-0047.json supports the engineering checkpoint, but it predates subsequent changes and does not substitute for the missing native adversarial test. No independent current suite was executed in this lane.",
+    "evidence_caution": "The scratch candidate design report and older source peers are design/review checkpoints, not installed proof. D49 and D50 successful native reports prove capture/replay and timestamp behavior only; neither claims delayed prior-document isolation."
+  },
+  "tracking_assessment": {
+    "defect_record": "docs/stabilization/defects/EXT-D-0047.json remains in-fix and says installed D47 build unverified; that is stale for bounded saved replay success but still accurate against full original closure because prior-document isolation is unverified natively.",
+    "canonical_case": "docs/stabilization/inventory.json EXT-F-1012-T57 remains unverified and expressly identifies the delayed prior-document/current-document isolation gap; this status is supported. Its newer bounded 10-row note must not be read as whole T57 or Showcase acceptance."
+  }
+}
