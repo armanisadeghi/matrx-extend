@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "audit": "EXT-D-0063-independent-autosave-acceptance-review",
+  "defect_id": "EXT-D-0063",
+  "feature_case_id": "EXT-F-2007-T01",
+  "review_scope": "Independent source-only regression acceptance review focused on note switch, unmount, append, and in-flight save behavior.",
+  "current_source_assessment": {
+    "confirmed": true,
+    "severity": "S2 is warranted: a successfully acknowledged save can be an older snapshot while newer user-authored content is discarded; the content may be unrecoverable after reload.",
+    "priority": "P1 is warranted for data-loss remediation before shipping the autosave correction.",
+    "mechanism": "persist returns immediately whenever inflightRef is true. Debounced timer and onAppend both call persist without retaining a queued snapshot. Component cleanup also calls persist fire-and-forget. inflightRef is shared by the component as noteId changes; the reset effect clears the timer and draft but does not reset or wait for the in-flight write.",
+    "evidence": [
+      "src/features/notes/NoteEditor.tsx:54-56",
+      "src/features/notes/NoteEditor.tsx:64-73",
+      "src/features/notes/NoteEditor.tsx:95-114",
+      "src/features/notes/NoteEditor.tsx:118-149",
+      "src/features/notes/NoteEditor.tsx:152-165"
+    ],
+    "native_or_regression_verified": false
+  },
+  "acceptance_cases": [
+    {
+      "id": "D63-A1",
+      "title": "Edits made during a pending save reach storage",
+      "setup": "Open an existing member note. Use a controllable updateNote response so the first write remains pending.",
+      "steps": [
+        "Change content to snapshot A and wait for the 600 ms debounce to invoke the first update.",
+        "While the first request is pending, change content to snapshot B and wait for the second debounce to expire.",
+        "Resolve the first write successfully, wait for all autosave work to settle, then refetch the note from the data source."
+      ],
+      "assertions": [
+        "The stored content equals snapshot B, not snapshot A.",
+        "The save indicator only reports Saved after snapshot B has succeeded.",
+        "No second edit disappears after reload."
+      ]
+    },
+    {
+      "id": "D63-A2",
+      "title": "Switching notes while a save is pending does not lose or cross-write either note",
+      "setup": "Open note A and note B with distinct initial content; hold A's update request pending.",
+      "steps": [
+        "Edit A and allow its write to start.",
+        "Navigate Back, open B, wait for B to hydrate, edit B, and let B's debounce expire before releasing A's request.",
+        "Resolve A, wait for saves to settle, then refetch both notes."
+      ],
+      "assertions": [
+        "A contains its latest A draft.",
+        "B contains its latest B draft.",
+        "No B content is written to A and no A completion changes B's save status to Saved."
+      ],
+      "source_risk": "NoteEditor is reused with a changing noteId; the shared inflightRef is not reset or keyed by note ID. Its cleanup can launch the old note's pending snapshot before the new note reset effect."
+    },
+    {
+      "id": "D63-A3",
+      "title": "Appending page content during a pending autosave is persisted",
+      "setup": "Open a note and hold an ordinary update request pending.",
+      "steps": [
+        "Edit the body and allow its debounced write to start.",
+        "Use Append from page to append distinctive content before the pending write resolves.",
+        "Resolve the pending write, wait for autosave work to settle, and refetch the note."
+      ],
+      "assertions": [
+        "Stored content includes the pre-existing text and appended block in order.",
+        "The append action does not get lost when persist encounters another in-flight request."
+      ],
+      "source_risk": "onAppend calls persist directly; the current in-flight early return drops this snapshot and does not schedule a trailing save."
+    },
+    {
+      "id": "D63-A4",
+      "title": "Leaving the editor with a pending latest draft does not discard it",
+      "setup": "Open a note and use a controllable update response.",
+      "steps": [
+        "Start saving snapshot A.",
+        "Change to snapshot B while A remains pending and wait until B's debounce fires.",
+        "Immediately navigate Back or switch to another tab, resolve A, and later reopen/refetch the original note."
+      ],
+      "assertions": [
+        "The latest snapshot B is eventually stored despite editor unmount.",
+        "A pending save is not treated as completion of a newer unsaved draft."
+      ],
+      "source_risk": "Unmount cleanup clears the timer and invokes persist(draftRef.current), but persist returns immediately while A is in flight; the component then unmounts without retaining B elsewhere."
+    }
+  ],
+  "fix_acceptance_boundary": [
+    "Queue or serialize writes so the newest draft is retained while a request is pending.",
+    "Associate queued drafts and in-flight saves with the note ID they belong to; a note switch must not cross-write or let an old completion mark the new note saved.",
+    "Use one persistence path for debounce, append, note-switch cleanup, and unmount cleanup so none can bypass the queue.",
+    "Keep failure visible and retryable; do not mark a newer draft saved when only an older snapshot succeeded."
+  ],
+  "limits": [
+    "This is an independent source-path review and proposed concrete regression acceptance, not an executed regression test or native verification.",
+    "No product files were edited and no build, tests, or browser run was performed."
+  ]
+}
