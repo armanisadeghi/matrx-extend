@@ -135,6 +135,13 @@ export function rowToItem(row: WbxGuidanceRow): GuidanceItem | null {
 
 /** Fire-and-forget upsert of one item to the cloud. Never throws. */
 export async function pushGuidanceToCloud(item: GuidanceItem): Promise<void> {
+  const { isCloudSyncableGuidanceId } = await import('@/lib/guidance/storage');
+  if (!isCloudSyncableGuidanceId(item.id)) {
+    // Created before guidance ids became uuids (2026-09-28): the cloud table only takes uuid ids, so this
+    // item stays on this machine. Re-creating it gives it a syncable id.
+    log.warn('sys', `guidance id=${item.id} predates uuid ids and stays local; re-create it to sync it`);
+    return;
+  }
   try {
     const { upsertGuidanceRow } = await import('@/lib/supabase/queries');
     const ok = await upsertGuidanceRow(itemToRowPayload(item));

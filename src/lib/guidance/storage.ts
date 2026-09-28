@@ -20,12 +20,20 @@ function itemKey(id: string): string {
   return `${ITEM_PREFIX}${id}`;
 }
 
-/** Generate a unique guidance id. Mirrors the demo id format. */
+/**
+ * Generate a unique guidance id. It is the row id of `extend.wbx_guidance`, which is a uuid
+ * (every platform entity id is — the access rules compare it with uuid sets), so it is a uuid here too.
+ * Items created before 2026-09-28 carry the old `gd_<time>_<rand>` form; see `isCloudSyncableGuidanceId`.
+ */
 export function makeGuidanceId(): string {
-  // Short URL-safe id — sortable by creation time.
-  const ts = Date.now().toString(36);
-  const rand = Math.random().toString(36).slice(2, 8);
-  return `gd_${ts}_${rand}`;
+  return crypto.randomUUID();
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** True when the id can be a `wbx_guidance` row id (a uuid). Old `gd_…` ids stay on this machine only. */
+export function isCloudSyncableGuidanceId(id: string): boolean {
+  return UUID_RE.test(id);
 }
 
 /** Domain-match helper. Memos/guidance on a parent domain apply to subdomains. */
