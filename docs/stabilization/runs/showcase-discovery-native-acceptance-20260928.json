@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-discovery-native-20260928",
+  "status": "NATIVE_PARTIAL",
+  "report": "docs/stabilization/reports/showcase-discovery-native-acceptance.json",
+  "source_head": "80a64727139d46ece2e8d522573ab217b30850e8",
+  "artifact": {
+    "receipt": "docs/stabilization/runs/showcase-discovery-corrected-artifact-20260928.json",
+    "receipt_sha256": "a739125b9fbdf75c555d61af5a06bfcf0d85f430d6aa6ea326591a1bbd426846",
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "version": "0.2.114",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "expected_tree_sha256": "8b0f8adc1e576451da4d549780958766f7bb7e51b545e8dd421d36eb6e65ee45",
+    "tree_sha256_at_end": "8b0f8adc1e576451da4d549780958766f7bb7e51b545e8dd421d36eb6e65ee45",
+    "tree_matches_receipt": true,
+    "explicit_reload_at_utc": "2026-09-28T09:00:07.969Z",
+    "reload_confirmation": "chrome://extensions/ showed Reloaded for Matrx Extend after clicking its Reload control."
+  },
+  "resource_guard": {
+    "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "admitted_at_utc": "2026-09-28T08:59:02.633Z",
+    "watch_samples": 51,
+    "unsafe_samples": 0,
+    "stop_requested_at_utc": "2026-09-28T09:12:57.791Z",
+    "terminal_at_utc": "2026-09-28T09:12:57.792Z",
+    "terminal_confirmed": true,
+    "full_sample_timestamps": "docs/stabilization/reports/showcase-discovery-native-acceptance.json#guard.healthy_watch_samples_utc"
+  },
+  "tests": {
+    "native_status": "PARTIAL",
+    "denial": "PASS",
+    "page_load_initial_document_capture": "PASS; 10 responses, intended Algolia POST matched visible page rows",
+    "root_object_recipe": {
+      "name": "Codex D49 exact initial HN body 20260928",
+      "id": "270bd76b-c6ec-4d25-985c-eff9627f6b0d",
+      "replay_results": ["one matching request, 1 root row", "one matching request, 1 root row"]
+    },
+    "hits_rows_recipe": {
+      "name": "Codex D49 exact HN hits rows 20260928",
+      "id": "667a7a91-604a-41cd-a289-b3327a3e22ca",
+      "selected_path": "hits",
+      "replay_1": "PASS, 10 rows; first row matched visible public values",
+      "replay_2": "approved, one request matched, capture window still checking at final UI observation; terminal state unverified"
+    },
+    "debugger_cleanup": "Completed runs showed the infobar disappear; cleanup after the second hits replay is unverified.",
+    "observed_regressions": [],
+    "whole_feature_closure_inferred": false
+  }
+}
