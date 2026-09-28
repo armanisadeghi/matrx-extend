@@ -27,6 +27,7 @@ import { platform } from 'node:os';
 import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { openResourceJournal } from './stabilization-resource-journal.mjs';
+import { resourceVerdict } from './stabilization-resource-verdict.mjs';
 import {
   assertNoLegacyLease,
   legacyLeaseRoots,
@@ -49,6 +50,9 @@ let journal;
 let activeRunId;
 let resourceInvalid = false;
 let journalBroken = false;
+let admitted = false;
+let childFinished = false;
+let operatorStopped = false;
 const flags = new Map();
 let command = [];
 for (let i = 0; i < raw.length; i++) {
@@ -618,6 +622,7 @@ async function main() {
       await rm(holdPath);
     }
     emit('RESOURCE_ADMITTED', { runId, mode, policySchema: policy.schema, ...pre });
+    admitted = true;
     if (mode === 'check') return;
     if (mode === 'run') {
       owner.childPending = true;
@@ -655,6 +660,7 @@ async function main() {
         stopEvent,
       ]);
       if (result?.stop) {
+        operatorStopped = true;
         if (mode === 'browser') {
           emit('RESOURCE_BROWSER_STOP_CONFIRMED', { runId, resourceInvalid });
           process.exitCode = resourceInvalid ? 3 : 0;
@@ -667,6 +673,7 @@ async function main() {
       }
       if (result) {
         emit('RESOURCE_JOB_EXIT', { runId, ...result });
+        childFinished = true;
         if (
           groupId &&
           !(await stopOwnedGroup(groupId, runId, 'child-exited-with-owned-descendants'))
@@ -758,6 +765,7 @@ async function main() {
 try {
   await main();
 } catch (error) {
+  if (admitted) resourceInvalid = true;
   if (journalBroken) {
     // A later successful journal write cannot repair the missing event. Keep
     // the permit and invalid verdict instead of letting fail() downgrade to 2.
@@ -783,9 +791,16 @@ try {
       const exitCode = process.exitCode ?? 0;
       emit('RESOURCE_FINAL_DECISION', {
         runId: activeRunId,
+        admitted,
         resourceInvalid,
         exitCode,
-        decision: exitCode === 0 && !resourceInvalid ? 'valid' : 'refused',
+        decision: resourceVerdict({
+          admitted,
+          resourceInvalid,
+          exitCode,
+          childFinished,
+          operatorStopped,
+        }),
       });
       const closed = journal.close();
       if (closed.pendingCleanupFailed)

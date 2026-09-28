@@ -1,0 +1,31 @@
+{
+  "defect_id": "EXT-D-0060",
+  "state": "source and focused runtime verified; independent review pending",
+  "cause": "The final journal mapped every nonzero wrapper exit to refused, including an admitted child command that exited 1 while resourceInvalid was false.",
+  "captured_reproduction": {
+    "journal": "docs/stabilization/resource-journals/d59-compile-2.jsonl",
+    "admitted": true,
+    "child_exit_code": 1,
+    "resource_invalid": false,
+    "old_decision": "refused",
+    "correct_decision": "child_failed"
+  },
+  "new_decisions": {
+    "refused": "The guard denied launch before RESOURCE_ADMITTED.",
+    "invalid": "The admitted resource run became unsafe or the guard failed after admission.",
+    "child_failed": "The admitted command ended unsuccessfully while the resource run remained valid.",
+    "valid": "The admitted check, command or browser session ended successfully.",
+    "interrupted": "An operator stopped an admitted command before it finished."
+  },
+  "compatibility": "No active script consumer parses the decision values beyond the focused guard test; historical reports and journals remain unchanged.",
+  "verification": {
+    "focused_test": "d60-verdict-tests-20260928-2: admitted, six Vitest cases passed, exit 0, resourceInvalid false, final decision valid",
+    "admitted_child_failure": "d60-verdict-tests-20260928-1: admitted, Vitest exited 1 because its .js test file was outside the configured .ts/.tsx include; resourceInvalid false, final decision child_failed",
+    "mutation_proof": "The admitted child failure directly exercised the formerly conflated branch. A separate source mutant run was not performed.",
+    "journals_sha256": {
+      "d60-verdict-tests-20260928-1.jsonl": "e7c5f5996c2629af3180e036869f60118bcca462c4304a2a4501a006a74ed82c",
+      "d60-verdict-tests-20260928-2.jsonl": "81188245838bfe0be9b28acd2da218b0b27195ebab0ddebf462689c550b56eee"
+    },
+    "source_review": "pending independent review"
+  }
+}
