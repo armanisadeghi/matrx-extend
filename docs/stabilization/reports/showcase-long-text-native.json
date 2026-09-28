@@ -6,6 +6,7 @@
   "source": "https://www.gutenberg.org/files/1342/1342-h/1342-h.htm",
   "field_sha256": "b00e0775eb927ceef5e323c46251053e14008aed8c442b9e5b7fc7e20434fc6f",
   "field_ending": "END OF THE PROJECT GUTENBERG EBOOK 1342",
+  "bounded_data_attempt": "On the active captured Gutenberg page, clicked Data. It showed Structured data for www.gutenberg.org and only Pick fields on this page: no rows, saved pattern, selector editor, or Copy JSON action. Clicked Showcase (admin only) > List Pattern; it showed Pick an example item, requiring a repeated item and field picks before any ResultPreview row. The captured full-book article was not available there as a row. No field was picked and no recipe was saved.",
   "resource": "Completed guard journal SHA-256 8f46b9baf7ecf47e39bf0ba5d8d3a51a4e5e0bf8a431b4757a759b3fd23d571c; 24 healthy watches, zero unsafe, actual exit 0 and valid final decision.",
   "evidence": [
     "docs/stabilization/runs/showcase-long-text-native-20260928-01.json",

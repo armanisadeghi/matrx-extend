@@ -50,8 +50,12 @@
     "verification": "Both product copy actions showed Copied. The immediately read clipboard parsed as complete JSON; the AI copy's fenced JSON parsed independently. The single article.content_markdown field exceeded 50k characters by over 14x and matched length, SHA-256, and ending in both exports. The independently fetched public HTML contains the same end marker."
   },
   "direct_showcase_attempt": {
-    "data": "Data showed Pick fields on this page, without an existing extracted row.",
-    "showcase": "List Pattern showed Pick an example item; selecting a representative full-book field was not offered in the bounded attempt.",
+    "steps_reached": [
+      "With the captured Gutenberg book tab active, clicked the side-panel Data tab.",
+      "Data showed Structured data, host www.gutenberg.org, and only Pick fields on this page. It showed no extracted rows, saved pattern, CSS selector editor, or Copy JSON action.",
+      "Clicked the side-panel Showcase (admin only) tab, then List Pattern. That mode showed Pick an example item and instructions to pick fields inside a repeated sibling item; it did not expose the captured article as a row."
+    ],
+    "obstacle": "The Data path requires an interactive field pick before a row exists, while Showcase List Pattern requires choosing an example item and fields. Neither presented the already captured 727835-character article field to ResultPreview. No field was picked or pattern saved, so no direct ResultPreview JSON copy occurred.",
     "verdict": "The original Showcase ResultPreview single-cell path remains unverified by this native run. The shared stringifyJson and wrapJsonForAgent paths used by ResultPreview are exercised through Scrape's actual UI."
   },
   "persistence": "No saved Source or recipe created; no database fixture or source change."
