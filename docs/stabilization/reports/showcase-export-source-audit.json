@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "report_id": "showcase-export-source-audit",
+  "scope": "EXT-F-1012-T49/T36 saved-pattern result view, copy, and export; source-only audit of HEAD 3c878a85",
+  "verification": "Read-only source inspection. No runtime, test, build, clipboard read, or browser execution. This report is not native acceptance.",
+  "path_inventory": {
+    "saved_run": "PatternsTab.handleRun calls runSavedPattern, clears old rows before the await, ignores a superseded sequence or changed tab-id/URL page key, and stores returned data as rows (src/features/showcase/tabs/PatternsTab.tsx:129-183). The saved result passes visibleRows directly to ResultPreview (261-267).",
+    "view": "ResultPreview counts rows.length, table renders rows.slice(0, 200) and discloses that limit, while JSON view renders up to 500 and discloses its limit (src/features/showcase/components/ResultPreview.tsx:99-126,155-173,175-229).",
+    "copy": "ResultPreview's Copy JSON, Copy TSV, and Copy for AI all receive the unsliced rows array (src/features/showcase/components/ResultPreview.tsx:62-86). CopyMenu awaits content and copyToClipboard; success closes the menu and flashes a check icon on its trigger, while a returned false keeps the menu open with failure text (src/components/CopyMenu.tsx:99-117,150-206). copyToClipboard first awaits navigator.clipboard.writeText, then tries execCommand copy and returns its boolean (src/lib/clipboard/copy.ts:15-36).",
+    "shared_siblings": "Data manual rerun also calls runSavedPattern and uses the same stringifyJson and rowsToTsv helpers for copy (src/features/data/DataView.tsx:228-236,493-526). Other Showcase sub-tabs use ResultPreview, so formatter defects are shared (rg ResultPreview under src/features/showcase/tabs)."
+  },
+  "findings": [
+    {
+      "id": "COPY-JSON-LOSSY-LONG-STRING",
+      "severity": "material data loss",
+      "source_anchor": "src/lib/clipboard/copy.ts:115-130; src/features/showcase/components/ResultPreview.tsx:65-68,75-83",
+      "fact": "stringifyJson replaces every string longer than 50,000 characters with a truncated string before Copy JSON and Copy for AI. Those controls describe all rows, and the copied JSON no longer contains the original value, although the JSON view uses plain JSON.stringify.",
+      "proposed_reproduction": "Use a saved extraction returning one row with a 50,001-character string value; click Copy JSON, read clipboard, parse it, and compare the value with the extracted source. It ends in a truncation marker. Repeat Copy for AI and Data manual rerun JSON to cover the shared helper.",
+      "status": "Source-proven formatter behavior; real copied output remains unverified."
+    },
+    {
+      "id": "COPY-TSV-LOSSY-CELLS",
+      "severity": "material data loss",
+      "source_anchor": "src/lib/clipboard/copy.ts:170-185; src/features/showcase/components/ResultPreview.tsx:70-72; src/features/data/DataView.tsx:499-504",
+      "fact": "rowsToTsv replaces tabs and line breaks inside values with spaces, so distinct source values can copy identically. It also joins header names without escaping, so a field name containing a tab or newline changes the exported column or row structure.",
+      "proposed_reproduction": "Run a saved pattern whose text cell is 'first\\nsecond' and whose field name includes a tab; copy TSV, paste into a spreadsheet, and compare cell text and dimensions to the result. Also compare 'first second' to show value collision. Repeat through Data manual rerun to cover the shared helper.",
+      "status": "Source-proven formatter behavior; spreadsheet paste remains unverified."
+    }
+  ],
+  "non_findings_and_limits": [
+    "A 249-row saved result is not sliced for Copy JSON/TSV/AI by the preview; only the visible table is capped at 200. Source cannot prove clipboard contents from the earlier click.",
+    "The earlier observation that the menu closed without noticed confirmation is consistent with CopyMenu's short-lived trigger check after success. It does not establish successful clipboard writing or a feedback defect.",
+    "Returned clipboard failures have explicit feedback, but getContent exceptions have no local catch in CopyMenu (src/components/CopyMenu.tsx:106-117). No supported saved-result row that triggers such an exception was established in this audit.",
+    "The saved-run sequence and tab-id/URL guards prevent many stale results. Same-URL document replacement is not distinguished by that key; whether it yields stale copied rows requires native reproduction before calling it a defect."
+  ],
+  "remaining_acceptance": "EXT-F-1012-T49 needs a native saved run with more than 200 rows, table/JSON toggle, exact clipboard reads for JSON/TSV/AI including last row and special cells, success/failure feedback, and source metadata in explicit agent handoff; T36 needs progress/no-match/failure and history checks."
+}
