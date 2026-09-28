@@ -15,11 +15,12 @@
   "actual": "Menu promises sourceURL butpreambleonlyrowcount, noURL; DataAIcopy includesURL.",
   "severity": "S2: copieddata loses advertisedsourceprovenance.",
   "priority": "P1: sharedresultprovenance correctness.",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     "docs/stabilization/reports/data-picker-long-native.json",
     "docs/stabilization/reports/showcase-ai-copy-source-peer.json",
-    "docs/stabilization/reports/showcase-ai-copy-runtime-retry.json"
+    "docs/stabilization/reports/showcase-ai-copy-runtime-retry.json",
+    "docs/stabilization/reports/showcase-ai-copy-build-after-guard.json"
   ],
   "transition_history": [
     {
@@ -39,7 +40,13 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol ai_copy_source_repair assigned diagnosis andsource-bound repair."
+    },
+    {
+      "at": "2026-09-28T14:12:59.649090+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Sourcepeers and32guardedtests accepted;304752e2 guardedcompile/devbuild pass afterD56repair. NativeAIcopy sourceURL retest pending."
     }
   ],
-  "verification_status": "Sourcecorrections8ae31220/43ebf322 plusselector7719d739;32guardedtests pass. Compilepreflightrefusedlegacyrunnerbusy, no newbuild/native. D56guardmatcherdefectsourceconfirmed, pastrefusalcauseunknown."
+  "verification_status": "Fixed; guarded32tests,compile/devbuild pass. Newartifactbe95fefd requires actualChromeReload then sourceboundAIcopy repro andhashquery/native surroundingchecks."
 }
