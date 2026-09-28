@@ -74,6 +74,32 @@ test('journal writes only guard fields and refuses overwrite', async () => {
   }
 });
 
+test('legacy refusal journal retains bounded identity without command or environment', async () => {
+  const runId = `legacy-evidence-${randomUUID()}`;
+  const path = journalPath(runId);
+  const journal = openResourceJournal(repo, runId);
+  try {
+    journal.write({
+      schema: 1, at: '2026-09-28T00:00:00.000Z', code: 'RESOURCE_LEGACY_RUNNER_BUSY', runId,
+      processEvidence: {
+        matches: [{ pid: 4242, ppid: 101, processStart: 'Mon Sep 28 06:59:03 2026',
+          executable: 'node', reason: 'script-operand',
+          command: 'private command', environment: 'private environment' }],
+        overflow: 0,
+      },
+    });
+    const saved = JSON.parse((await readFile(journal.path, 'utf8')).trim());
+    assert.deepEqual(saved.processEvidence, {
+      matches: [{ pid: 4242, ppid: 101, processStart: 'Mon Sep 28 06:59:03 2026',
+        executable: 'node', reason: 'script-operand' }], overflow: 0,
+    });
+    assert.doesNotMatch(JSON.stringify(saved), /private command|private environment/);
+  } finally {
+    journal.close();
+    await rm(path, { force: true });
+  }
+});
+
 test('journal refuses a symlinked directory without creating evidence outside the repository', async () => {
   const scratch = await mkdtemp(resolve(tmpdir(), 'resource-journal-containment-'));
   const fixtureRepo = resolve(scratch, 'repo');
@@ -130,6 +156,7 @@ test('guard exits invalid and leaves no completed journal when close fails', asy
       'stabilization-resource.mjs',
       'stabilization-resource-journal.mjs',
       'stabilization-resource-lease.mjs',
+      'stabilization-resource-process.mjs',
     ]) await copyFile(resolve(repo, 'scripts', name), resolve(scripts, name));
     await copyFile(resolve(repo, 'docs/stabilization/resource-policy.json'), resolve(docs, 'resource-policy.json'));
     const helperPath = resolve(scripts, 'stabilization-resource-journal.mjs');

@@ -9,7 +9,7 @@ const JOURNAL_FIELDS = new Set([
   'schema', 'at', 'code', 'runId', 'mode', 'policySchema', 'sample',
   'reasons', 'cpuBusySamples', 'swapWindowSeconds', 'groupId', 'reason',
   'signal', 'resourceInvalid', 'exitCode', 'decision', 'instruction',
-  'recovery', 'previousRunId', 'childExitCode', 'childSignal',
+  'recovery', 'previousRunId', 'childExitCode', 'childSignal', 'processEvidence',
 ]);
 
 // This writer receives guard-owned events only. Child stdout still goes directly
@@ -45,6 +45,23 @@ export function openResourceJournal(repo, runId, { closeFd = closeSync } = {}) {
         const safe = Object.fromEntries(
           Object.entries(event).filter(([key]) => JOURNAL_FIELDS.has(key)),
         );
+        if (safe.processEvidence) {
+          const evidence = safe.processEvidence;
+          if (!Array.isArray(evidence.matches) || evidence.matches.length > 5 ||
+              !Number.isSafeInteger(evidence.overflow) || evidence.overflow < 0)
+            throw new Error('invalid process evidence');
+          safe.processEvidence = {
+            matches: evidence.matches.map(({ pid, ppid, processStart, executable, reason }) => {
+              if (![pid, ppid].every((value) => Number.isSafeInteger(value) && value >= 0) ||
+                  !/^[A-Za-z]{3} [A-Za-z]{3} [\d ]\d \d\d:\d\d:\d\d \d{4}$/.test(processStart) ||
+                  executable !== 'node' ||
+                  !['script-operand', 'ambiguous-command', 'ambiguous-arguments'].includes(reason))
+                throw new Error('invalid process identity');
+              return { pid, ppid, processStart, executable, reason };
+            }),
+            overflow: evidence.overflow,
+          };
+        }
         const bytes = Buffer.from(`${JSON.stringify(safe)}\n`);
         for (let offset = 0; offset < bytes.length;) {
           const written = writeSync(fd, bytes, offset, bytes.length - offset);
