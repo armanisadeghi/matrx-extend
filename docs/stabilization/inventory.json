@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-28",
+  "updated_at": "2026-09-28T11:38:19.944687+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -772,25 +772,31 @@
           ],
           "results": {
             "guest": {
-              "status": "fail",
+              "status": "pass",
+              "run_id": "showcase-structured-journal-retest-20260928",
               "evidence": [
-                "docs/stabilization/reports/showcase-structured-native.json"
+                "docs/stabilization/reports/showcase-structured-journal-retest.json",
+                "docs/stabilization/reports/native-guard-finalize-peer.json"
               ],
-              "detail": "Auth-independent guard lacks automatic durable successful-run eventjournal; D51 in-fix."
+              "detail": "Auth-independent infrastructure: D51 closed. Subsequent real Chrome run durable20healthy watches/stop/final exit0; independent writer/refusal/close tests and contained-path checks pass. No claim other infrastructure cases pass."
             },
             "member": {
-              "status": "fail",
+              "status": "pass",
+              "run_id": "showcase-structured-journal-retest-20260928",
               "evidence": [
-                "docs/stabilization/reports/showcase-structured-native.json"
+                "docs/stabilization/reports/showcase-structured-journal-retest.json",
+                "docs/stabilization/reports/native-guard-finalize-peer.json"
               ],
-              "detail": "Auth-independent guard lacks automatic durable successful-run eventjournal; D51 in-fix."
+              "detail": "Auth-independent infrastructure: D51 closed. Subsequent real Chrome run durable20healthy watches/stop/final exit0; independent writer/refusal/close tests and contained-path checks pass. No claim other infrastructure cases pass."
             },
             "admin": {
-              "status": "fail",
+              "status": "pass",
+              "run_id": "showcase-structured-journal-retest-20260928",
               "evidence": [
-                "docs/stabilization/reports/showcase-structured-native.json"
+                "docs/stabilization/reports/showcase-structured-journal-retest.json",
+                "docs/stabilization/reports/native-guard-finalize-peer.json"
               ],
-              "detail": "Auth-independent guard lacks automatic durable successful-run eventjournal; D51 in-fix."
+              "detail": "Auth-independent infrastructure: D51 closed. Subsequent real Chrome run durable20healthy watches/stop/final exit0; independent writer/refusal/close tests and contained-path checks pass. No claim other infrastructure cases pass."
             }
           }
         }
@@ -799,26 +805,29 @@
         "guest": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0025"
+            "EXT-D-0025",
+            "EXT-D-0051"
           ],
           "run_ids": [],
-          "retest_status": "partial: EXT-D-0025 passed; remaining infrastructure cases unverified"
+          "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"
         },
         "member": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0025"
+            "EXT-D-0025",
+            "EXT-D-0051"
           ],
           "run_ids": [],
-          "retest_status": "partial: EXT-D-0025 passed; remaining infrastructure cases unverified"
+          "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"
         },
         "admin": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0025"
+            "EXT-D-0025",
+            "EXT-D-0051"
           ],
           "run_ids": [],
-          "retest_status": "partial: EXT-D-0025 passed; remaining infrastructure cases unverified"
+          "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"
         }
       },
       "readiness_gaps": [
@@ -15272,12 +15281,12 @@
           ],
           "results": {
             "admin": {
-              "status": "unverified",
-              "run_id": "showcase-structured-native-20260928",
+              "status": "partial",
+              "run_id": "showcase-structured-journal-retest-20260928",
               "evidence": [
-                "docs/stabilization/reports/showcase-structured-native.json"
+                "docs/stabilization/reports/showcase-structured-journal-retest.json"
               ],
-              "detail": "UI observations suggest bounded successful extraction/filter/save/replay/source-change, but required resource watch/unsafe/terminal evidence was not recoverable (82ddc501). Not accepted as verified passes. Repeat after D51 durable journal repair using retained owned recipeIDs; auth/fault dimensions also unverified."
+              "detail": "Type chip and blank/matching/nonexistent filters verified on actual Google Article page. Auth-transition, service-error and broader chips remain unverified."
             }
           }
         },
@@ -15307,12 +15316,12 @@
           ],
           "results": {
             "admin": {
-              "status": "unverified",
-              "run_id": "showcase-structured-native-20260928",
+              "status": "partial",
+              "run_id": "showcase-structured-journal-retest-20260928",
               "evidence": [
-                "docs/stabilization/reports/showcase-structured-native.json"
+                "docs/stabilization/reports/showcase-structured-journal-retest.json"
               ],
-              "detail": "UI observations suggest bounded successful extraction/filter/save/replay/source-change, but required resource watch/unsafe/terminal evidence was not recoverable (82ddc501). Not accepted as verified passes. Repeat after D51 durable journal repair using retained owned recipeIDs; auth/fault dimensions also unverified."
+              "detail": "Blank/matching returned current BreadcrumbList; nonexistent shows honest no-match; changed-page live no-JSONLD state verified. Auth/fault dimensions remain unverified."
             }
           }
         },
@@ -16163,12 +16172,12 @@
           ],
           "results": {
             "admin": {
-              "status": "unverified",
-              "run_id": "showcase-structured-native-20260928",
+              "status": "partial",
+              "run_id": "showcase-structured-journal-retest-20260928",
               "evidence": [
-                "docs/stabilization/reports/showcase-structured-native.json"
+                "docs/stabilization/reports/showcase-structured-journal-retest.json"
               ],
-              "detail": "UI observations suggest bounded successful extraction/filter/save/replay/source-change, but required resource watch/unsafe/terminal evidence was not recoverable (82ddc501). Not accepted as verified passes. Repeat after D51 durable journal repair using retained owned recipeIDs; auth/fault dimensions also unverified."
+              "detail": "Existing saved JSON-LD replay after extensionReload/pageRefresh returns current BreadcrumbList. Save/editor/draft-change and changed-page saved replay not retested; earlier run lacked resource proof."
             }
           }
         },
@@ -16203,12 +16212,12 @@
           ],
           "results": {
             "admin": {
-              "status": "unverified",
-              "run_id": "showcase-structured-native-20260928",
+              "status": "partial",
+              "run_id": "showcase-structured-journal-retest-20260928",
               "evidence": [
-                "docs/stabilization/reports/showcase-structured-native.json"
+                "docs/stabilization/reports/showcase-structured-journal-retest.json"
               ],
-              "detail": "UI observations suggest bounded successful extraction/filter/save/replay/source-change, but required resource watch/unsafe/terminal evidence was not recoverable (82ddc501). Not accepted as verified passes. Repeat after D51 durable journal repair using retained owned recipeIDs; auth/fault dimensions also unverified."
+              "detail": "Existing saved OG recipe replay returns metadata and matching visible title; fresh404 Snapshot reflects currentpage. Independent allfield metadata comparison, changed-page saved replay, auth/fault and save dimensions unverified."
             }
           }
         },

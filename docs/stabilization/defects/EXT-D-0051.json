@@ -15,12 +15,13 @@
   "actual": "Structured native run a21f7203/82ddc501 retained UI observations but lost guardwatch history/unsafe signals/resourceInvalid/exit proof. Guard emit currently writes only console.log; released lease does not retain successful-run event history. Native coverage cannot be accepted.",
   "severity": "S2: loss of resource evidence invalidates otherwise useful test runs and can hide resource-caused false product findings.",
   "priority": "P1: restore durable evidence before another native run.",
-  "state": "fixed",
+  "state": "closed",
   "evidence": [
     "docs/stabilization/reports/showcase-structured-native.json",
     "scripts/stabilization-resource.mjs emit console.log-only at pre-fix source",
     "docs/stabilization/reports/native-guard-journal.json",
-    "docs/stabilization/reports/native-guard-finalize-peer.json"
+    "docs/stabilization/reports/native-guard-finalize-peer.json",
+    "docs/stabilization/reports/showcase-structured-journal-retest.json"
   ],
   "transition_history": [
     {
@@ -46,8 +47,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "c29b0514/fe877f17/4397a3f9 implement durable contained journals, truthful writer-fault invalidation and publish-after-close. Fresh independent4647220b accepts source and focused5/5 evidence; subsequent native consumption pending."
+    },
+    {
+      "at": "2026-09-28T11:38:19.944687+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent4647220b accepts engineering; subsequent actual Chrome run7cb6ab60 consumes completed journal with20 healthy watches, no unsafe events, clean stop/actualexit0; root hash and final decision match."
+    },
+    {
+      "at": "2026-09-28T11:38:19.944687+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original lost-evidence reproduction now durably recoverable after native stop; containment, fault invalidation, refusal and close failures independently verified. Historical invalid run remains invalid."
     }
   ],
-  "verification_status": "Independent engineering verification accepted; subsequent native run consuming completed journal remains required for closure.",
+  "verification_status": "Closed with independent repair review and subsequent native completed-journal consumption; no physical disk failure claimed.",
   "closure_requirement": "Real guard admission/watch/stop/refusal decisions recoverable from safe durable unique runjournal with original cap/thresholds intact; journal failure visible; independent tests/source review and subsequent native report actually consumes persisted evidence."
 }
