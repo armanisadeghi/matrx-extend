@@ -133,7 +133,7 @@ export function AiRecommendations({ audit }: { audit: SeoAudit }) {
             onClick={() =>
               void chrome.tabs.create({
                 url: mandateKey
-                  ? `${ENV.FRONTEND_URL}/administration/mandates?mandate=${encodeURIComponent(mandateKey)}`
+                  ? `${ENV.FRONTEND_URL}/administration/intelligence/mandates/${encodeURIComponent(mandateKey)}`
                   : `${ENV.FRONTEND_URL}/agents/${encodeURIComponent(agentId)}`,
               })
             }
