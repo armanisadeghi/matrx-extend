@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "task_id": "remote-refresh-build",
+  "status": "guarded package refresh and requested verification passed",
+  "source_head": "48c2bbef1075b1441500436151e2eb350f0fa505",
+  "origin_main_at_run": "83b5ceddd43060ba2119c88432d2f0ebdc0945e6",
+  "integration_commits": [
+    "a2e8a641 chore(deps): every @ai-matrx package to npm latest (sync-main)",
+    "83b5cedd test(bootstrap): mirror saved pattern dispatcher exports"
+  ],
+  "worktree": "main ahead 5 of origin/main; source files unchanged by this task",
+  "lockfile_sha256": "bbf9402f9e97ec367013b837f4a04fca5c2afa4089aa23c621c407fbcf95b5c4",
+  "consumer_action": {
+    "package": "@ai-matrx/design-system",
+    "previous_version": "0.49.9",
+    "installed_version": "0.49.10",
+    "finding": "CHANGELOG.md 0.49.10 describes a docs/metadata-only republish, with no source changes intended and no consumer action required.",
+    "source": "/Volumes/Samsung2TB/code/aidream/apps/shared/design-system/CHANGELOG.md:3-7"
+  },
+  "runs": [
+    {
+      "run_id": "remote-refresh-install-20260928-1417",
+      "command": "pnpm install --frozen-lockfile --ignore-scripts",
+      "journal": "docs/stabilization/resource-journals/remote-refresh-install-20260928-1417.jsonl",
+      "journal_sha256": "97dfefc3b6caed94fc59c388b1efd2fa137fc525d70150d479ea984a5c6df5ee",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "resource_decision": "valid",
+      "result": "Lockfile up to date; installed design-system 0.49.10."
+    },
+    {
+      "run_id": "remote-refresh-tests-20260928-1417",
+      "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/offscreen-reload-startup-order.test.ts tests/unit/showcase-ai-copy-source.test.tsx tests/unit/showcase-patterns-replay-provenance.test.tsx",
+      "journal": "docs/stabilization/resource-journals/remote-refresh-tests-20260928-1417.jsonl",
+      "journal_sha256": "746adf3003ba0db0811589d3bf47efb982cf100cac60d8aafae518454035d2a5",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "resource_decision": "valid",
+      "result": "3 test files passed; 14 tests passed."
+    },
+    {
+      "run_id": "remote-refresh-compile-20260928-1418",
+      "command": "pnpm compile",
+      "journal": "docs/stabilization/resource-journals/remote-refresh-compile-20260928-1418.jsonl",
+      "journal_sha256": "db51605254532ef72babb6d35d5b1f1214559906b50854f5a6f1ad73afd99b59",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "resource_decision": "valid",
+      "result": "TypeScript compile passed."
+    },
+    {
+      "run_id": "remote-refresh-build-20260928-1419",
+      "command": "pnpm exec wxt build --mode development",
+      "journal": "docs/stabilization/resource-journals/remote-refresh-build-20260928-1419.jsonl",
+      "journal_sha256": "beeff7e976e062dfaf863d01ae2f211460a3359c96402cb9904dd124045dbdc8",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "resource_decision": "valid",
+      "result": "WXT 0.21.4 built chrome-mv3 development output successfully. Existing INEFFECTIVE_DYNAMIC_IMPORT warnings were emitted."
+    }
+  ],
+  "artifact": {
+    "output_directory": ".output/chrome-mv3-dev",
+    "manifest_sha256": "9140ab8686f4552f2507c85a773e99826feff482b524a8deba615b05513f738c",
+    "canonical_tree_sha256": "a000d26b9d5d01b4ebe37f80ab830184fd74135c49fd8a5559f8e73c9b19560e",
+    "canonical_hash_method": "hashReleaseTree from scripts/sync-unpacked-release.mjs"
+  },
+  "initial_wrapper_attempts": [
+    {
+      "command_shape": "node scripts/stabilization-resource.mjs run UNIQUE --profile-dir PATH --allowedcmd ...",
+      "outcome": "RESOURCE_ARGUMENT_INVALID at stabilization-resource.mjs:59; the brief shorthand incorrectly treated --allowedcmd as a literal option. No child product command ran and no resource refusal occurred."
+    }
+  ],
+  "source_edits": [],
+  "open_actions": []
+}
