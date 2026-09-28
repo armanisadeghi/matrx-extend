@@ -22,13 +22,15 @@
     "docs/stabilization/runs/showcase-d49-native-retest-001.json",
     "docs/stabilization/reports/showcase-d49-worker-build-peer.json",
     "docs/stabilization/reports/showcase-d49-final-acceptance.json",
-    "docs/stabilization/reports/showcase-d49-worker-escalation.json"
+    "docs/stabilization/reports/showcase-d49-worker-escalation.json",
+    "docs/stabilization/reports/showcase-d49-standalone-peer.json",
+    "docs/stabilization/runs/showcase-d49-standalone-peer-20260928.json"
   ],
   "severity": "S1: the observed saved Network extraction cannot run and gives no recovery feedback.",
   "priority": "P1: blocks Showcase saved replay acceptance and D47 retest.",
-  "state": "fixed",
+  "state": "in-fix",
   "reproduction_status": "Native diagnostic localized first stalled boundary to worker lazy dispatcher import; Port and run message acceptance and worker log delivery verified. Worker DevTools closed.",
-  "verification_status": "Escalation found unsupported dynamic import() in extension worker; Vite error handling masked rejection with window error. Standalone worker guard/build and35 regressions pass. Two earlier native rounds failed; new independent integrated build/native acceptance in progress after remote dependency merge8048b81e. No closure claim.",
+  "verification_status": "Independent native replay70ce3822 on artifact57e37156 passes approval, denial reset, debugger attach and automatic reload. Capture times out without matching saved Algolia URL/body identity; zero rows. Worker import repair narrowly verified; full replay remains failed. Sol medium showcase_request_identity owns bounded diagnosis.",
   "transition_history": [
     {
       "at": "2026-09-28T06:06:00Z",
@@ -89,6 +91,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Escalation repair afb74866 uses WXT standalone worker with all runtime imports bundled inline; emitted guard red on original module build, green on standalone;35 regressions, compile/catalog and two test mutations verified. Fresh integrated native acceptance remains open."
+    },
+    {
+      "at": "2026-09-28T07:31:42Z",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Valid independent native run reaches approval/reload but no matching request yields zero rows; full acceptance fails."
+    },
+    {
+      "at": "2026-09-28T07:36:00Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Worker import class now narrowly verified. Separate request matching boundary assigned to Sol medium with reproduction required before repair."
     }
   ],
   "closure_requirement": "Prove the failing execution stage, correct the actual saved UI path, then independently repeat this native reproduction and demonstrate approval, fresh automatic reload capture, saved result, and surrounding cancellation/error recovery under a valid watchdog.",
