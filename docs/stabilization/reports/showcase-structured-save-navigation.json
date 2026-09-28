@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "task_id": "structured-save-nav-20260928-1201",
+  "lane": "structured native save and navigation",
+  "model_effort": "GPT-6 Luna / medium",
+  "status": "BOUNDED_PARTIAL_PASS",
+  "scope": "Bounded admin Chrome acceptance for JSON-LD preview/draft/save/reopen/replay, saved-recipe replay after page change, and Article metadata comparison. This is not whole-feature closure.",
+  "target": {
+    "url": "https://developers.google.com/search/docs/appearance/structured-data/article",
+    "changed_page_url": "https://developers.google.com/search/docs/appearance/structured-data/article/nonexistent-20260928",
+    "browser": "Primary Google Chrome",
+    "chrome_version": "153.0.8010.54",
+    "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "identity": "admin@admin.com visible in the extension panel",
+    "localhost": false,
+    "devtools_open": false
+  },
+  "build": {
+    "artifact_path": ".output/chrome-mv3-dev",
+    "artifact_version": "0.2.114",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "receipt": "docs/stabilization/runs/showcase-d50-runtime-artifact-20260928.json",
+    "chrome_source_identity": "chrome://extensions showed enabled Matrx Extend, matching ID/version, and loaded-from path .output/chrome-mv3-dev",
+    "explicit_reload": "Clicked Reload in extension details; Chrome displayed Reloaded. Refreshed the changed-page tab, reopened Showcase, then returned to the Article page."
+  },
+  "resource_guard": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id structured-save-nav-20260928-1201 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "journal": "docs/stabilization/resource-journals/structured-save-nav-20260928-1201.jsonl",
+    "journal_sha256": "1a8704b61661dfcbfd24299f971fff726f4da0b4686c78d15b7c149a98a06332",
+    "admitted_at_utc": "2026-09-28T11:40:41.697Z",
+    "watch_evidence": "All 20 retained watch events were RESOURCE_WATCH_HEALTHY; no unsafe event or stop-at-boundary request occurred.",
+    "stop_confirmed_at_utc": "2026-09-28T11:46:16.558Z",
+    "terminal_exit_code": 0,
+    "resource_invalid": false,
+    "decision": "valid"
+  },
+  "observations": [
+    {
+      "case": "EXT-F-1012-T40",
+      "verdict": "PASS_BOUNDED",
+      "result": "On the live Article page, JSON-LD showed one BreadcrumbList block. Extract with the BreadcrumbList filter returned one row and the current three breadcrumb URLs/names. After preview, changed only the draft filter to NewsArticle without executing it. Save Pattern still proposed 'BreadcrumbList from JSON-LD'; saved a uniquely named owned recipe. Left the recipe view, reopened Patterns, and ran it: the saved config remained ld_type=BreadcrumbList and returned one current BreadcrumbList row with the Article page title and breadcrumb URLs."
+    },
+    {
+      "case": "EXT-F-1012-T41",
+      "verdict": "PASS_BOUNDED",
+      "result": "After the explicit extension reload and page refresh, the existing saved OG recipe replayed on both the live Article page and the changed same-host 404 page. The 404 replay showed the current 404 title, URL, site name, OG image and Twitter image/card with a visible outside-route warning; it did not reuse the Article values. On the Article page, the saved recipe returned the current one-row metadata snapshot."
+    },
+    {
+      "case": "saved-jsonld-changed-page-replay",
+      "verdict": "PASS_BOUNDED",
+      "result": "Running the existing saved BreadcrumbList recipe on the same-host 404 page showed 'No matching data was found' with outside-saved-route guidance; no stale BreadcrumbList row was presented as a current success."
+    },
+    {
+      "case": "EXT-F-1012-T41-live-source-comparison",
+      "verdict": "PASS_BOUNDED",
+      "result": "Read the actual public page source through Chrome view-source and compared its HTML metadata with the saved OG recipe replay row. The canonical URL, description, favicon, language, OG metadata and fields, theme color, title, Twitter card, URL, viewport and JSON-LD matched the live page source. The OG fields matched individually: site_name=Google for Developers; type=website; title=Learn About Article Schema Markup | Google Search Central | Documentation | Google for Developers; description=Learn how adding article schema markup to your news articles and blogs can enhance their appearance in Google Search results.; url=https://developers.google.com/search/docs/appearance/structured-data/article; image=https://developers.google.com/static/search/images/home-social-share-lockup.jpg; image width=1200; image height=675; locale=en. Twitter card was summary_large_image; theme color was #fff; canonical and current URL matched. The JSON-LD was one BreadcrumbList with Search Central, Documentation and the current Article page. The source has no author meta field, matching the blank snapshot author field."
+    }
+  ],
+  "saved_recipes": [
+    {
+      "name": "Codex structured save-nav 2026-09-28 JSONLD",
+      "id": "91349863-4a89-4bd5-9248-8785ba1ec3fc",
+      "kind": "json_ld",
+      "route_pattern": "/search/docs/appearance/structured-data/article",
+      "config": { "ld_type": "BreadcrumbList" },
+      "last_status": "ok",
+      "last_run_count": 1,
+      "identity_source": "Read-only Supabase query of the exact unique recipe name after the UI save and replay"
+    },
+    {
+      "name": "codex-structured-native-20260928-jsonld-breadcrumb",
+      "id": "585785a0-862b-45bb-85bc-08da355f6f70",
+      "kind": "json_ld",
+      "identity_retained": true
+    },
+    {
+      "name": "codex-structured-native-20260928-draft-shift",
+      "id": "c61d5061-bc33-4301-9a43-f60f25a1d09d",
+      "kind": "json_ld",
+      "identity_retained": true
+    },
+    {
+      "name": "codex-structured-native-20260928-og-metadata",
+      "id": "6501466d-a03e-4bc4-b2d8-dbf1cbb637f9",
+      "kind": "og_meta",
+      "identity_retained": true
+    }
+  ],
+  "limitations": [
+    "This run did not exercise auth transitions, service errors, guest/member modes, metadata mutation on the same route, or whole-feature closure.",
+    "No application source changes, screenshots, credentials, page-source secrets, or unrelated data were retained."
+  ],
+  "source_changes": [],
+  "commit_policy": "Exact evidence paths only; do not push (CI red)."
+}

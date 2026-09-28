@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "run_id": "structured-save-nav-20260928-1201",
+  "task_id": "structured-save-nav-20260928-1201",
+  "started_at_utc": "2026-09-28T11:39:32.091Z",
+  "ended_at_utc": "2026-09-28T11:46:16.568Z",
+  "status": "BOUNDED_PARTIAL_PASS",
+  "case_ids": [
+    "EXT-F-1012-T40",
+    "EXT-F-1012-T41",
+    "saved-jsonld-changed-page-replay"
+  ],
+  "receipt": {
+    "source_receipt": "docs/stabilization/runs/showcase-d50-runtime-artifact-20260928.json",
+    "artifact_path": ".output/chrome-mv3-dev",
+    "artifact_version": "0.2.114",
+    "artifact_tree_sha256": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "chrome_version": "153.0.8010.54",
+    "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "auth_mode": "signed-in admin; admin@admin.com visible in side panel",
+    "target_page": "https://developers.google.com/search/docs/appearance/structured-data/article",
+    "changed_page": "https://developers.google.com/search/docs/appearance/structured-data/article/nonexistent-20260928",
+    "mocking_or_interception": "No response interception or mocked page data observed; product UI read the live public page. Browser view-source was used for a separate read-only metadata comparison."
+  },
+  "resource_admission": {
+    "journal": "docs/stabilization/resource-journals/structured-save-nav-20260928-1201.jsonl",
+    "journal_sha256": "1a8704b61661dfcbfd24299f971fff726f4da0b4686c78d15b7c149a98a06332",
+    "admitted": true,
+    "watch_events": 20,
+    "unsafe_events": 0,
+    "stop_at_safe_boundary": false,
+    "stop_confirmed": true,
+    "resource_invalid": false,
+    "wrapper_exit_code": 0,
+    "decision": "valid"
+  },
+  "outcomes": {
+    "EXT-F-1012-T40": {
+      "status": "pass_bounded",
+      "observation": "A previewed BreadcrumbList row remained the executed config after the NewsArticle draft filter was changed; the Save Pattern form defaulted to BreadcrumbList from JSON-LD. After leaving and reopening Patterns, the uniquely named recipe replayed one current BreadcrumbList row."
+    },
+    "EXT-F-1012-T41": {
+      "status": "pass_bounded",
+      "observation": "The existing saved OG recipe returned current Article metadata and matched the Article's page-source metadata field by field. On the changed 404 page, it returned current 404 metadata with an outside-route warning."
+    },
+    "saved_jsonld_changed_page_replay": {
+      "status": "pass_bounded",
+      "observation": "Existing BreadcrumbList recipe replay on the changed same-host 404 showed no matching data plus route guidance instead of stale Article values."
+    }
+  },
+  "evidence": {
+    "report": "docs/stabilization/reports/showcase-structured-save-navigation.json",
+    "ui_evidence": "Native CUA accessibility observations in the guarded task session; no screenshots retained.",
+    "new_recipe": {
+      "name": "Codex structured save-nav 2026-09-28 JSONLD",
+      "id": "91349863-4a89-4bd5-9248-8785ba1ec3fc"
+    },
+    "retained_recipe_ids": [
+      "585785a0-862b-45bb-85bc-08da355f6f70",
+      "c61d5061-bc33-4301-9a43-f60f25a1d09d",
+      "6501466d-a03e-4bc4-b2d8-dbf1cbb637f9"
+    ],
+    "source_comparison": "Chrome view-source read the public Article HTML; no source content or tokens were retained."
+  },
+  "invalidations": [],
+  "whole_feature_closure": false
+}
