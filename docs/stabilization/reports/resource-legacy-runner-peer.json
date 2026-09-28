@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "defect": "EXT-D-0056",
+  "reviewed_commit": "3796392c6f4ce814e8e1944e99350acf3cadd049",
+  "lane": "independent source and lightweight infrastructure peer; no product build, browser, or release run",
+  "verdicts": {
+    "A_source": "accepted for the reported false-positive class and retained refusal behavior",
+    "B_lightweight_infrastructure": "accepted within the stated scope; product/runtime acceptance remains with the owner"
+  },
+  "evidence": [
+    "Read the complete process classifier and admission, ownerless recovery, lease, and journal call sites independently of the repair report. The macOS ps comm column gates inspection to a live Node executable, so a zsh -lc command containing guard text cannot match. Node eval/print arguments return no runner match; a direct guard script operand matches; uncertain Node options containing the guard name return ambiguous-arguments and refuse.",
+    "Admission and ownerless recovery call the same legacyRunnerEvidence function. Admission still checks the canonical and configured legacy leases before scanning processes; the heavy-directory reservation, resource thresholds, and one-owner cap were not changed by this commit.",
+    "The scan compares the first process start with per-PID command output and rechecks PID/start immediately before recording a match. An exited or reused PID is skipped; a ps error other than an exited PID propagates and prevents admission.",
+    "The journal whitelist stores at most five matched PID/PPID/start/executable/reason records plus overflow. Its mapper strips command and environment even if supplied, and invalid evidence causes a journal failure rather than an unsafe completed decision.",
+    "UNGUARDED lightweight suite: node --test scripts/test-stabilization-resource-process.mjs scripts/test-stabilization-resource-lease.mjs scripts/test-stabilization-resource-journal.mjs; 19 passed, 0 failed. This includes a live macOS ps identity case and a copied-guard admission refusal carrying the real canonical lease.",
+    "Independent live macOS ps probe launched a Node guard-named script from a directory with spaces. The classifier returned ambiguous-arguments, which blocks admission, and the child exited before this review ended."
+  ],
+  "test_integrity": "The copied-guard admission test replaces preflight with an immediate failure sentinel. If runner detection missed, the sentinel would produce a different error and no RESOURCE_LEGACY_RUNNER_BUSY journal event, so the asserted refusal cannot be supplied by the sentinel. The sentinel also prevents heavy work.",
+  "limits": [
+    "macOS ps command is display text rather than a lossless argv vector. A path with spaces is conservatively refused as ambiguous instead of being attributed as a definite script operand.",
+    "PID/start comparisons have ps one-second start-time precision, so a pathological same-second PID reuse is outside this lightweight proof.",
+    "The probe verifies source and guard infrastructure only. It does not establish a product/browser verdict or explain historical refusals that lack PID evidence."
+  ],
+  "process_cleanup": "The 19-test suite and independent space-path probe exited; no peer-owned probe process remains."
+}
