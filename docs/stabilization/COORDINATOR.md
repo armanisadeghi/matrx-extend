@@ -10,6 +10,14 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest integrated checkpoint — current development build, picker gap open
+
+- Initial integrated suiteea977edb:56/58 pass;2stale Prepare expectations omitted now-required documentId. Testonlyb5462b9b adds exact document-b assertion, preserves lifecycle assertions. Corrected suite58/58 across15files, compile, direct WXT devbuild all guardedpass; reporte6c9f079. Fresh peer0fc1b5c8 accepts correction, checks journals and recomputes matching artifact hash.
+- NEW artifact .output/chrome-mv3-dev version0.2.114 hash44a478fee4a81a8353d0b0d8f4afc08fe9bb8315b11e6cb90b40a4532b5e12a1, sourceb5462b9b tree6616ef17d82dca102dec7829d981a9e57f042bd9, lock82acc89c. Includes accumulated D57/D58/D59 corrections; NOT reloaded in Chrome/native verified. Prior a8670bf7 historical.
+- Showcase census07e8766a found remaining exact-target gap: List Pattern install/start/cancel targets tab only and relay stamps tab only. Existing session/pageKey rejects stale result, but delayed action can reach replacementdocument. Next Sol fix exact-document session target, trusted senderdocument relay/admission, visible failure recovery; casesEXT-F-1012-T23/T24/T28. Source audit of other tabs is scoped evidence, not exhaustive runtime acceptance.
+- All workers terminal, no ownedheavy/browserprocess. Native primarydisk6.3GiB stillbelowguard; no localhost. D59 staysinfix, broader mode/controlcoverage open. CI credential repair/release remainopen; rootno redtrunkpush. Goalturnprogress: integratedregression+freshbuild and precise remainingpicker gap.
+- PlatformList item scheduledtoday and stillWaiting was surfaced: The whole database structure rebuilds from the repository alone. Separateplatformwork, not addedtoextension scope.
+
 ## Latest Highlight checkpoint — scoped source accepted, native open
 
 - 3cfdd19d represents one overlay pinned to tab/document/pageKey/sessionId. Pending start, exact-document control, sender/session admission and capture post-await guard corrected. Switching tabs preserves pinned session with explicit stop; starting elsewhere retires it. Historical lists/Data/Scrape handoffs preserved. Guarded final11reportedtests and compile valid; root verified seven journal hashes.

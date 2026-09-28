@@ -41,9 +41,12 @@
     "docs/stabilization/reports/screenshot-document-correction.json",
     "docs/stabilization/reports/screenshot-document-peer.json",
     "docs/stabilization/reports/highlight-session-correction.json",
-    "docs/stabilization/reports/highlight-session-peer.json"
+    "docs/stabilization/reports/highlight-session-peer.json",
+    "docs/stabilization/reports/showcase-identity-remaining.json",
+    "docs/stabilization/reports/document-integrated-checks.json",
+    "docs/stabilization/reports/document-integrated-peer.json"
   ],
-  "verification_status": "Highlight candidate3cfdd19d guarded11reportedtests/finalcompile valid; fresh peer edc126c1 accepts scoped source with no important defect. Rootverified7journalhashes. No observedoriginalred/native; savedURLclear continuation is intentional confirmedhistoricalmutation, not wrongtarget based solely on navigation. SharedD59 remains in-fix for remaining Showcase/integrated/native coverage.",
+  "verification_status": "Integrated suite58/58 across15files after exactdocument Prepare expectationb5462b9b, compile and directdevbuild passed; independentpeer0fc1b5c8 validates assertion preservation/artifact. New artifact44a478fe not reloaded. Remaining sourcegap: ListPattern picker install/start/cancel tab-only, relay lacks document stamp (casesT23/T24/T28); stale resultguard exists. Native/broad coverage incomplete, D59infix.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",
