@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "report_id": "showcase-export-repair",
+  "scope": "EXT-D-0053 JSON long-string loss and EXT-D-0054 TSV header/cell loss in EXT-F-1012-T49",
+  "status": "Implementation committed; all runtime verification unexecuted because the resource guard refused admission. No native acceptance claim.",
+  "commits": [
+    { "defect": "EXT-D-0053", "commit": "0b66b853", "change": "Preserve complete strings in JSON copy; reject unrepresentable JSON instead of copying a success-looking substitute; make content-generation failure visible." },
+    { "defect": "EXT-D-0054", "commit": "33f7a921", "change": "Quote TSV headers and cells containing tabs, line breaks, or quotes; double embedded quotes; keep ordinary cells unchanged." },
+    { "defect": "EXT-D-0053", "commit": "1b8e9c06", "change": "Distinguish JSON preparation failure from clipboard permission failure in the copy menu." }
+  ],
+  "source_caller_proof": [
+    "src/features/showcase/tabs/PatternsTab.tsx:129-152 and 261-267: the saved-pattern Run result passes its full rows array to ResultPreview.",
+    "src/features/showcase/components/ResultPreview.tsx:62-86 and 113: Copy JSON, Copy TSV, and Copy for AI call the repaired shared formatters with unsliced rows; the visible table slice is only at 212.",
+    "src/features/data/DataView.tsx:228-236 and 493-526: Data manual rerun uses the same run path and copy formatters.",
+    "src/components/CopyMenu.tsx:106-117: content generation and clipboard writing are awaited; failure remains visible instead of closing as copied."
+  ],
+  "regressions_written_unexecuted": [
+    "tests/unit/clipboard-export.test.ts: distinct long event descriptions must survive JSON parsing and AI fenced JSON parsing; cycle and BigInt values must refuse JSON copying.",
+    "tests/unit/clipboard-export.test.ts: TSV must match a worked spreadsheet-compatible string and round-trip distinct tab/newline/quote-containing headers and cells, alongside unchanged plain cells."
+  ],
+  "feature_test_instructions": "docs/feature-tests.md: Showcase Patterns copy JSON completeness and TSV fidelity instructions include real clipboard reads and spreadsheet paste from saved replay and Data manual rerun.",
+  "verification_not_run": [
+    "No unit tests were executed; neither failing-before nor passing-after evidence exists for these guards.",
+    "No mutation plant or forcing-function gut check was executed.",
+    "No compile, lint, build, installed extension, browser, clipboard, spreadsheet, or native UI check was executed."
+  ],
+  "remaining": "A guarded worker must run focused tests and type checks, prove the tests fail against the prior formatter in an isolated scratch context, then verify installed saved replay and Data copy with real clipboard contents and spreadsheet paste. EXT-F-1012-T49/T36 remain unverified."
+}
