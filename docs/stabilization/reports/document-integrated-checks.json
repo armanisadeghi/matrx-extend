@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "report_id": "document-integrated-checks",
+  "defect_ids": ["EXT-D-0057", "EXT-D-0058", "EXT-D-0059"],
+  "status": "INTEGRATED_SUITE_FAILED_STALE_FIXTURE",
+  "source_commit": "a347f6348015e9b236cd3573811eff2e3fe20b29",
+  "source_tree": "d78226d321908a6a70f11913afc2b3d1b5d19124",
+  "pnpm_lock_sha256": "82acc89c8d9b60568def970fff9125b69afcfe713ae0a7de053f18f4b6137e28",
+  "scope": "Shared active-tab identity; Prepare; extraction; auto scrape; Showcase; framework targeting; manual scrape; document network capture; highlights; screenshot targeting and handler.",
+  "guarded_suite": {
+    "run_id": "document-integrated-suite-20260928a",
+    "command": "node scripts/stabilization-resource.mjs run --run-id document-integrated-suite-20260928a --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec vitest run --maxWorkers=1 tests/unit/active-tab-document-identity.test.tsx tests/unit/prepare-lifecycle.test.tsx tests/unit/extraction-document-identity.test.tsx tests/unit/auto-scrape-document-identity.test.tsx tests/unit/showcase-d43-regression.test.ts tests/unit/showcase-d45-entry.test.tsx tests/unit/showcase-replay-scope-mode.test.ts tests/unit/framework-document-target.test.ts tests/unit/scrape-document-identity.test.tsx tests/unit/document-network-capture.test.ts src/lib/highlights/session.test.tsx src/lib/highlights/control.test.ts src/lib/highlights/queries.session.test.ts src/lib/screenshot/document.test.ts src/lib/tools/handlers/read.screenshot.test.ts",
+    "resource_admitted": true,
+    "resource_invalid": false,
+    "exit_code": 1,
+    "test_files": { "passed": 14, "failed": 1, "total": 15 },
+    "tests": { "passed": 56, "failed": 2, "total": 58 },
+    "journal": "docs/stabilization/resource-journals/document-integrated-suite-20260928a.jsonl",
+    "journal_sha256": "1d7cd9d9cae2d96dca36e68157bedc21e72d2afb44e035d631d3a6ba918f17db"
+  },
+  "failures": [
+    {
+      "test": "tests/unit/prepare-lifecycle.test.tsx > Prepare current-attempt lifecycle > ignores a late resolve from A after navigation and accepts a fresh B result",
+      "assertion_line": 104,
+      "expected_call": "preparePage(23, {})",
+      "actual_call": "preparePage(23, {}, 'document-b')"
+    },
+    {
+      "test": "tests/unit/prepare-lifecycle.test.tsx > Prepare current-attempt lifecycle > ignores a late reject from A after navigation and accepts a fresh B result",
+      "assertion_line": 104,
+      "expected_call": "preparePage(23, {})",
+      "actual_call": "preparePage(23, {}, 'document-b')"
+    }
+  ],
+  "classification": "Stale fixture assertion: usePagePrep deliberately supplies tab.documentId to preparePage, whose third parameter targets Chrome scripting to that document. The failure occurs before the subsequent B-report and error assertions, so those two test continuations are not proven by this run. No source regression is established by these failures.",
+  "compile": "Not run: stop after first failing suite.",
+  "development_build": "Not run: stop after first failing suite. Historical artifact a8670bf7 is not current acceptance evidence.",
+  "native_browser": "Not run in this lane.",
+  "edits": "Report and completed resource journal only; no product or test changes."
+}
