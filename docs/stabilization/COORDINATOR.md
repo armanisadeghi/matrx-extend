@@ -10,6 +10,15 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest integration checkpoint — development build refreshed
+
+- Progress: merged origin/main `796a0b5e` in `10a8cb82`, preserving all local work. Design-system 0.49.11 is a docs/metadata-only republish, with no consumer action.
+- Independent Sol lane `refresh_04911`, commit `c18d791e`: guarded frozen install, 14 focused tests, compile and direct development build all passed. Root verified all four completed journal hashes and terminal valid/exit-0 records against `reports/refresh-04911.json`.
+- NEW development artifact `d1626c0d007fac7d53a6e17ae3c054fe55bf38c309f6a1207fcd2592ea22f3b0`. It has NOT yet been reloaded in Chrome. Next native run must explicitly Reload and refresh its real source page before acceptance.
+- Source-only lane `header_native_path` completed `36cbe32e`: Data picker offers no field-name editor; Showcase AI Extract output-schema fields can be named. Do not invent a Data rename path. Candidate small multiline source is The Raven, qualified as needing native inspection; report `reports/header-native-path.json`.
+- Next: native remaining D54 multiline paste/Data quote-case; quote-bearing header can be exercised through normal Showcase schema controls if AI extraction works. Prior AFI quote-cell paste proof remains historical on artifact a000d26b.
+- Latest CI 36438365310 on remote796a0b5e still fails Require canonical records reader. Release/push not claimed. All assigned workers are terminal and no owned heavy/browser process remains.
+
 ## Latest export checkpoint — actual spreadsheet paste passed
 
 - Progress: Luna native lane `tsv_quote_native` completed and committed `1366a80a`. Explicit Chrome Reload of artifact `a000d26b` preceded real AFI table extraction and normal Google Sheets paste. Range A1:F101 and three quote-bearing cells were inspected. Journal SHA `74fbe07a1b09248236655a4cee2dca1d8bc2c0baeb8b63ea99607ec879994628` verified; terminal exit 0, valid, no unsafe watches.
