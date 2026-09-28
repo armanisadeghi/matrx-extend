@@ -37,9 +37,9 @@
   ],
   "severity": "S1: the observed saved Network extraction cannot run and gives no recovery feedback.",
   "priority": "P1: blocks Showcase saved replay acceptance and D47 retest.",
-  "state": "fixed",
+  "state": "closed",
   "reproduction_status": "Native diagnostic localized first stalled boundary to worker lazy dispatcher import; Port and run message acceptance and worker log delivery verified. Worker DevTools closed.",
-  "verification_status": "Exact8b0f8adc: original native daf2890e passed denial, initial capture, exact save/reopen and first10matchingstoryrows. Independent9cee037c passed fresh own start\u2192terminal10row replay plus attached Stop, panel unmount, document replacement and tab-switch cleanup. Old cached second-run attribution remains unverified, superseded by controlled fresh replay evidence. Empty-result/service-error recovery remains pending; fixed, not closed.",
+  "verification_status": "Closed for the original silent replay failure on exact development artifact8b0f8adc: independent daf2890e initial capture/exact save/reopen/first10rows,9cee037c fresh own start-to-terminal10rows and attached cancellation/unmount/navigation/tab isolation,8012c1c6 empty-response remedy and subsequent useful replay recovery. Source peer a585cf2f and integrated36tests/compile/devbuild passed. Separate stale run-history display is D50 and remains in-fix. This is bounded defect closure, not Showcase-wide health or release.",
   "transition_history": [
     {
       "at": "2026-09-28T06:06:00Z",
@@ -118,6 +118,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Page-load discovery ef744dc6 and timing correction470e300f independently pass integrated36tests/compile/devbuild; native T59 and D49 closure remain pending."
+    },
+    {
+      "at": "2026-09-28T09:47:52.496762+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Root inspected separate immutable independent native reports daf2890e,9cee037c,8012c1c6 on receipt-bound8b0f8adc and clean guard terminals; original reproduction and surrounding recovery pass."
+    },
+    {
+      "at": "2026-09-28T09:47:52.496762+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original replay liveness/capture outcome now verified. Keep independent D50 run-history display defect open; wider feature/auth coverage and ship gate remain incomplete."
     }
   ],
   "closure_requirement": "Prove the failing execution stage, correct the actual saved UI path, then independently repeat this native reproduction and demonstrate approval, fresh automatic reload capture, saved result, and surrounding cancellation/error recovery under a valid watchdog.",
@@ -127,5 +139,10 @@
     "dd6f12a2",
     "afb7486692dbdd46d611021c46022a91b22ab227",
     "ef744dc68d886b739418134a279503e1b36bbfe5"
+  ],
+  "retest_evidence": [
+    "docs/stabilization/reports/showcase-discovery-native-acceptance.json",
+    "docs/stabilization/reports/showcase-discovery-active-lifecycle.json",
+    "docs/stabilization/reports/showcase-discovery-empty-recovery.json"
   ]
 }

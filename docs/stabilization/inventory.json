@@ -16763,7 +16763,8 @@
             "EXT-F-1012-C45"
           ],
           "defect_ids": [
-            "EXT-D-0049"
+            "EXT-D-0049",
+            "EXT-D-0050"
           ],
           "preconditions": [
             "Fresh direct development build with source/diff/lock/artifact receipt; explicitly reload unpacked primary Chrome extension and real HN Search OpenAI page. No localhost. Guest/member restricted access is covered by T38."
@@ -16786,16 +16787,17 @@
           ],
           "results": {
             "admin": {
-              "status": "unverified",
+              "status": "fail",
               "evidence": [
                 "docs/stabilization/reports/showcase-initial-discovery-source-peer.json",
                 "docs/stabilization/reports/showcase-initial-discovery-revised-peer.json",
                 "docs/stabilization/reports/showcase-discovery-native-acceptance.json",
                 "docs/stabilization/reports/showcase-discovery-repeat-cleanup.json",
-                "docs/stabilization/reports/showcase-discovery-active-lifecycle.json"
+                "docs/stabilization/reports/showcase-discovery-active-lifecycle.json",
+                "docs/stabilization/reports/showcase-discovery-empty-recovery.json"
               ],
-              "detail": "Exact8b0f8adc native: denial, approved initial capture, credential-safe exact save/reopen and first10row replay PASS. Independent9cee037c observed a fresh own invocation approval\u2192matched1\u2192terminal10matchingrows plus attached Stop, panel close, document replacement and tab-switch cancellation/cleanup PASS. Old second-run cached output remains unattributed (b90b04be), not needed as repeat proof. No-response/service-error recovery still unverified; overall status unverified pending that dimension. Other roles use T38; full Showcase not certified.",
-              "run_id": "showcase-discovery-active-lifecycle-20260928"
+              "detail": "D49 original silent replay defect CLOSED: receipt-bound8b0f8adc native denial, initial capture, exact save/reopen, two independently observed10row replays, attached Stop/unmount/document replacement/tab-switch cleanup, empty-response remedy and subsequent useful recovery PASS. D50 observed stale saved-card run age after fresh completion and source-confirmed unawaited persistence/refresh race remains in-fix, so saved replay case FAIL pending that repair. Guest/member coverage remains linked T38; no wholefeature health claim.",
+              "run_id": "showcase-discovery-empty-recovery-20260928"
             }
           }
         }
