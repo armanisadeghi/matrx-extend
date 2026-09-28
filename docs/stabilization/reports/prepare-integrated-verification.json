@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "report_id": "prepare-integrated-verification",
+  "defect_ids": ["EXT-D-0057", "EXT-D-0058"],
+  "candidate_commit": "78041e1632088a100476b33cb082e51f1bdbdf9a",
+  "verified_head": "78041e1632088a100476b33cb082e51f1bdbdf9a",
+  "review_mode": "fresh independent verification; zero product or test authorship",
+  "source_review": {
+    "peer_commit": "70abfdba",
+    "followup_commit": "78041e16",
+    "findings": "D58 follow-up tests assert the stale error is absent after older overlapping rejection in both completion orders. Rejection before newer settlement leaves report null and newer run busy; rejection after newer settlement preserves the new report and non-busy state. Reset late rejection leaves empty state with no error and not busy. The implementation gates report, error, and final running updates through the same current-attempt predicate.",
+    "verdict_a": "PASS_FOR_SCOPED_ATTEMPT_RESET_AND_DIFFERENT_URL_LIFECYCLE; NATIVE_UNVERIFIED",
+    "verdict_b": "PASS_FOR_REVIEWED_REGRESSION_ASSERTIONS",
+    "limits": [
+      "Same-tab same-URL reload identity remains unresolved, as documented by the peer review.",
+      "No Chrome or localhost UI exercise was performed in this lane."
+    ]
+  },
+  "guarded_regressions": {
+    "run_id": "prepare-integrated-regressions-20260928-01",
+    "command": "node scripts/stabilization-resource.mjs run --run-id prepare-integrated-regressions-20260928-01 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec vitest run --maxWorkers=1 src/lib/data-pattern/page-prep.test.ts tests/unit/prepare-lifecycle.test.tsx",
+    "exit_code": 0,
+    "result": "2 files and 18 tests passed",
+    "journal": "docs/stabilization/resource-journals/prepare-integrated-regressions-20260928-01.jsonl",
+    "journal_sha256": "f99876f0ad16c5e29f5c764d1a10d635c2b1578b27f1bb44498eaa339d39a09b"
+  },
+  "guarded_development_build": {
+    "run_id": "prepare-integrated-devbuild-20260928-01",
+    "command": "node scripts/stabilization-resource.mjs run --run-id prepare-integrated-devbuild-20260928-01 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec wxt build --mode development",
+    "exit_code": 2,
+    "result": "Refused before build with RESOURCE_CPU_HIGH_LOAD_BUSY; no build process or artifact was produced.",
+    "journal": "docs/stabilization/resource-journals/prepare-integrated-devbuild-20260928-01.jsonl",
+    "journal_sha256": "72f33ba41f8cee649598569eca8978abad2d940ba2668a086b0d7689056f36b2"
+  },
+  "build_identity": {
+    "source_commit": "78041e1632088a100476b33cb082e51f1bdbdf9a",
+    "source_git_tree": "4d70cb895cb1e1c85d01a7776bd4e823c6206526",
+    "pnpm_lock_sha256": "82acc89c8d9b60568def970fff9125b69afcfe713ae0a7de053f18f4b6137e28",
+    "artifact": ".output/chrome-mv3-dev",
+    "artifact_hashReleaseTree": null,
+    "artifact_hashReleaseTree_status": "Unavailable: guarded build refused, so no artifact from this source identity exists."
+  },
+  "closure": {
+    "ci": "Not run; no CI-green claim.",
+    "release": "Not run.",
+    "native_d57_d58": "Pending; this verification does not close native acceptance.",
+    "product_edits": "None."
+  }
+}
