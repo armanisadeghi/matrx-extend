@@ -15,7 +15,8 @@
   "actual": "Independent native recovery lane observed terminal10matchingrows while card retained last run9m ago. Source diagnosis found unawaited bumpPatternRun followed by refresh, allowing stale read; metadata-write errors are discarded.",
   "evidence": [
     "docs/stabilization/reports/showcase-discovery-empty-recovery.json",
-    "docs/stabilization/reports/showcase-discovery-active-lifecycle.json"
+    "docs/stabilization/reports/showcase-discovery-active-lifecycle.json",
+    "docs/stabilization/reports/showcase-run-timestamp-peer.json"
   ],
   "severity": "S3: misleading run history undermines freshness and repeatability confirmation; extraction itself can succeed.",
   "priority": "P1: fix observed Showcase workflow defect during current stabilization.",
@@ -37,6 +38,9 @@
       "reason": "Assigned Sol medium showcase_run_timestamp; narrow class repair with regression then fresh peer/native retest required."
     }
   ],
-  "verification_status": "Source diagnosis confirmed; fix/regression/independent retest pending.",
-  "closure_requirement": "Prove persistence/refresh race red then green, errors visible without hiding extracted rows, independent source review, and actual newly completed native saved replay updates run history."
+  "verification_status": "Fresh independent peer c528c108 FIX_FIRST: guarded4file21test suite20pass1fail, hidden auto-extraction history warning, dual-failure overwrites original extraction reason, test mock implementation leakage. Original implementer is correcting all3findings; no new build/native proof.",
+  "closure_requirement": "Prove persistence/refresh race red then green, errors visible without hiding extracted rows, independent source review, and actual newly completed native saved replay updates run history.",
+  "fix_commits": [
+    "a011a682"
+  ]
 }
