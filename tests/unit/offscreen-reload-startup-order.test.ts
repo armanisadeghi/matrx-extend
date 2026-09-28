@@ -107,6 +107,8 @@ vi.mock('@/lib/supabase/queries', () => ({ lookupCapturedByUrl: vi.fn() }));
 vi.mock('@/lib/tools/dispatch', () => ({
   handleWebmcpCall: vi.fn(),
   recordAssignedTab: vi.fn(),
+  runLocalNetworkDiscovery: vi.fn(),
+  runLocalSavedPattern: vi.fn(),
   startToolDispatcher: vi.fn(),
 }));
 vi.mock('@/lib/webmcp/register', () => ({ registerToolsOnActiveTab: vi.fn() }));
