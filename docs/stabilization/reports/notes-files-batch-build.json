@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "lane": "Notes Files Saved Captures final batch development build",
+  "status": "DIRECT_DEV_BUILD_PASSED_NATIVE_PENDING",
+  "source_at_launch": {
+    "commit": "b17ec93533ea5a0d1e1f700dce29633f4863c29d",
+    "src_tree_git_oid": "561f1cee49c24fd096b7cd260a781af0943f42bc",
+    "product_checkout": "clean before build",
+    "product_commits": ["783eef4d Notes status correction", "2da0ef91 Files and Saved Captures correction"],
+    "concurrent_commit": "7c4306a1 changed only stabilization status and defect documents during build; HEAD src tree, package.json and pnpm-lock.yaml Git object IDs remained identical to b17ec935."
+  },
+  "guarded_build": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id notes-files-batch-final-build-20260928-01 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec wxt build --mode development",
+    "journal": "docs/stabilization/resource-journals/notes-files-batch-final-build-20260928-01.jsonl",
+    "journal_sha256": "f7b79e5835070297cdc58681cebf75a7b5b5f7d58a070c2dea86347abaa02579",
+    "result": "Admitted, WXT 0.21.4 Chrome MV3 development build exited 0; resourceInvalid=false; guard wrapper exited 0 with no owned process remaining."
+  },
+  "artifact": {
+    "path": ".output/chrome-mv3-dev",
+    "tree_sha256": "1e6699956323479af9fdb5860da4bb7b6f092ad671892a2e28081fd9606c20a1",
+    "manifest_sha256": "9140ab8686f4552f2507c85a773e99826feff482b524a8deba615b05513f738c",
+    "manifest_version": "0.2.114",
+    "lockfile_sha256": "0b3548fa0b83c3b1c443f11e5925cb17035ec11894b06fbf64ebf8881e6afa3f",
+    "package_json_sha256": "50f6d8c4b592a9668a878ad4df716209037f741d6fba4bf46ef45ec44699afea"
+  },
+  "browser_feasibility": "Primary Chrome data volume had approximately 5 GiB free at the post-build check, below the browser guard's 20 GiB minimum. No browser run or localhost UI was launched.",
+  "remaining": "Exact artifact must be reloaded in Chrome and Notes, Files, and Saved Captures exercised on real data when native guard prerequisites admit. Build and focused tests alone do not close D63-D65 or broader Showcase acceptance.",
+  "scope": "Report and journal only; no product edits, release, browser run, or push."
+}
