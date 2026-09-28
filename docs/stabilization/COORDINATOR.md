@@ -10,6 +10,13 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest D57 runtime checkpoint — fixed, native pending
+
+- Progress: independent `prepare_runtime` proved the old fallback RED (7 regression assertions) and exact restored candidate GREEN (9 tests). Compile initially failed on the new test parameter typing; correction `1dfe7333` preserved assertions using named cases.
+- Fresh verifier `prepare_corrected_verify` independently reviewed that correction and passed guarded nine tests, compile and direct development build. Root verified completed journal hashes and valid/exit-0 terminals from `reports/prepare-corrected-verification.json`. D57 moves in-fix → fixed, not closed.
+- NEW artifact `.output/chrome-mv3-dev` tree `a8670bf7ba4a31a3ce73596b41f1dbfc192e94d990342e8063ed82645b703b5f`, lock82acc89c. Contains D57; Chrome has NOT explicitly reloaded it yet. Previous d1626c0d artifact is historical.
+- Next: D58 retry/late-result lifecycle repair; native D57 acceptance and remaining D54 export cases when primary Chrome resource admission recovers. Guarded external-volume tests now succeeded; that does not establish primary-profile disk recovery. All workers terminal, no owned runtime process remains.
+
 ## Latest source repair checkpoint — Prepare false success
 
 - Progress: read-only resource audit `084fe593` found internal volume 8.9 GiB free, no stale linked worktrees, and only about 3 MiB in the listed temporary directories. No safe meaningful owned cleanup established; no processes killed or files deleted. Report `reports/resource-attribution-20260928.json`.

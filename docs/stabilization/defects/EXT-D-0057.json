@@ -15,13 +15,15 @@
   "actual": "preparePage substitutes zero counts and duration; UI displays Prepared in 0ms.",
   "severity": "S2: misleading preparation status",
   "priority": "P1: truthful current-page results",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     "docs/stabilization/reports/prepare-source-audit.json",
     "docs/stabilization/reports/prepare-empty-report-repair.json",
-    "docs/stabilization/reports/prepare-empty-report-peer.json"
+    "docs/stabilization/reports/prepare-empty-report-peer.json",
+    "docs/stabilization/reports/prepare-empty-runtime.json",
+    "docs/stabilization/reports/prepare-corrected-verification.json"
   ],
-  "verification_status": "Candidate5dea4dd3 rejects missing/malformed injected reports. Independent source peer c802f81b: A partial (native unverified), B pass with unverified guard. Tests, causal red/green, compile/build and native acceptance pending. State remains in-fix.",
+  "verification_status": "Fixed, awaiting native retest. Guarded9tests/compile/build pass; source and test correction independently reviewed; original-code red proof retained. Artifact a8670bf7 not yet reloaded in Chrome.",
   "transition_history": [
     {
       "at": "2026-09-28T15:00:57.328820+00:00",
@@ -40,6 +42,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol assigned source-only shared-boundary repair and regressions; tests pending resource admission."
+    },
+    {
+      "at": "2026-09-28T15:18:01.027053+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent old-code regression fails seven assertions, restored candidate passes nine. Test typing correction independently reviewed; guarded focused tests, compile and direct development build pass. Native retest remains pending."
     }
   ]
 }
