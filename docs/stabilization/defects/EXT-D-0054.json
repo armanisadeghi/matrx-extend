@@ -2,7 +2,8 @@
   "id": "EXT-D-0054",
   "feature_id": "EXT-F-1012",
   "case_ids": [
-    "EXT-F-1012-T49"
+    "EXT-F-1012-T49",
+    "EXT-F-2005-T03"
   ],
   "title": "TSV copy changes cell values and structure",
   "surface": "Showcase and shared clipboard exports",
@@ -40,5 +41,8 @@
       "to": "in-fix",
       "reason": "Sol source-only repair assigned; guarded regression and native acceptance remain mandatory."
     }
+  ],
+  "related_feature_ids": [
+    "EXT-F-2005"
   ]
 }

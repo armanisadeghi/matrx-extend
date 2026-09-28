@@ -21902,7 +21902,12 @@
             "admin",
             "org-set",
             "reload"
-          ]
+          ],
+          "defect_ids": [
+            "EXT-D-0053",
+            "EXT-D-0054"
+          ],
+          "verification_note": "Shared export helper changes linked via source audit; native JSON/TSV/AI copied bytes and special cells remain unverified in Data."
         },
         {
           "id": "EXT-F-2005-T04",
@@ -21935,19 +21940,28 @@
       "cells": {
         "guest": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0053",
+            "EXT-D-0054"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0053",
+            "EXT-D-0054"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0053",
+            "EXT-D-0054"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         }
