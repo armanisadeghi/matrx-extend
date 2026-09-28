@@ -10,6 +10,15 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest parallel batch — Notes, Files, Saved Captures fixed; native blocked
+
+- User explicitly requested parallel taskforce and fresh extension builds each substantial batch, neverlocalhost. Reused3 workers: guardedpicker/build, containedfeatureaudit thenNotes/Filescoding, independentreview/resourceaudit. Sharedheavycap1 preserved. Sourcewriters paused for finalbatchbuild.
+- Five auditfindings595b907a registeredD61–65 and inventorylinked32471569. D61 Notesreaderror/D62silentcreate remaintriaged; D63autosave data loss, D64Files misleadingempty, D65SavedCaptures staleopen nowfixed pendingnative. Notes70aca470+783eef4d; Files2da0ef91; freshsourcepeer2b1e50b1. Guardedcombined18/18+compileb17ec935, rootverifiedhashes. EarlierdirectNotesruns invalidated; newguardedruns only acceptance. Trackerregenerated7c4306a1 (65defects).
+- NEW frozenproductbatch artifact1e6699956323479af9fdb5860da4bb7b6f092ad671892a2e28081fd9606c20a1 in .output/chrome-mv3-dev. Build816b82f9 admittedvalid/exit0; sourceb17ec935 src-tree561f1cee, simultaneous7c4306a1 docs-only. Manifest0.2.114 lock0b3548fa. Not reloaded/nativeaccepted. Prior089b107 artifact included uncommittedNotes and is superseded.
+- Pickerfinalverificationa2220c3d guarded29/29+compile+buildpassed after finalfixturetyping; D59 sourcecandidate nowverifiedautomated butnative/broadcoverageopen.
+- Native diskresourceaudit99932167: internal5.6GiB vs20GiB; only3.4MiB safe campaign-owned scratch. SharedClaudeVM10GiB/Docker7.7GiB/Chrome caches3.2GiB/code-signclone2.1GiB not proven safe disposable. No deletion/bypass. Native stillblocked on internalspace; independentcoding remainsavailable. Never claim this is producthealth.
+- All workers terminal, no ownedheavy/browserjobs. Next batch D61/D62 Notesread/create errors plus getNote forever-skeleton sourcefindingb25d8056 (triage carefully), while seek owner-aware safe disk remediation. ReleaseCIcredential remainsunresolved; no rootredtrunkpush. Keep STATUS.md/html generated frominventory+defects, notreports alone. Goalactive.
+
 ## Latest picker checkpoint — source accepted, final typecheck pending
 
 - Merged origin/main2e1dd471 cleanly (remote packageupdate and platform-list instruction). Design-system0.49.11→0.49.12, guardedfrozeninstall --ignore-scripts valid; CHANGELOG no consumeraction. Current artifact44a478fe predates thisdependency and pickerfix.
