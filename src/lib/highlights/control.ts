@@ -13,9 +13,9 @@ function envelope(kind: string, payload: unknown) {
   return { __matrx: true, kind, payload };
 }
 
-async function sendToTab(tabId: number, kind: string, payload: unknown): Promise<void> {
+async function sendToTab(tabId: number, documentId: string, kind: string, payload: unknown): Promise<void> {
   try {
-    await chrome.tabs.sendMessage(tabId, envelope(kind, payload));
+    await chrome.tabs.sendMessage(tabId, envelope(kind, payload), { documentId });
   } catch {
     // Overlay not mounted on that tab — caller handles by re-injecting.
   }
@@ -34,11 +34,12 @@ export interface PaintItem {
  */
 export async function startHighlighter(
   tabId: number,
+  documentId: string,
   existing: HighlightListItem[] = [],
 ): Promise<boolean> {
   try {
     await chrome.scripting.executeScript({
-      target: { tabId },
+      target: { tabId, documentIds: [documentId] },
       files: ['content-scripts/highlighter.js'],
     });
   } catch (err) {
@@ -57,16 +58,16 @@ export async function startHighlighter(
     // overlay dedupes by id, so extra sends are harmless.
     for (const delay of [80, 300, 700]) {
       await new Promise((r) => setTimeout(r, delay));
-      await sendToTab(tabId, CHANNELS.HIGHLIGHT_PAINT, { items });
+      await sendToTab(tabId, documentId, CHANNELS.HIGHLIGHT_PAINT, { items });
     }
   }
   return true;
 }
 
-export async function stopHighlighter(tabId: number): Promise<void> {
-  await sendToTab(tabId, CHANNELS.HIGHLIGHT_STOP, {});
+export async function stopHighlighter(tabId: number, documentId: string): Promise<void> {
+  await sendToTab(tabId, documentId, CHANNELS.HIGHLIGHT_STOP, {});
 }
 
-export async function setHighlighterMode(tabId: number, mode: HighlightMode): Promise<void> {
-  await sendToTab(tabId, CHANNELS.HIGHLIGHT_SET_MODE, { mode });
+export async function setHighlighterMode(tabId: number, documentId: string, mode: HighlightMode): Promise<void> {
+  await sendToTab(tabId, documentId, CHANNELS.HIGHLIGHT_SET_MODE, { mode });
 }
