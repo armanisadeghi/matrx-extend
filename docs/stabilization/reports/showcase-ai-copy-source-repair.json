@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "defect": "EXT-D-0055",
+  "status": "SOURCE_CANDIDATE_UNVERIFIED",
+  "source_commit": "8ae31220",
+  "push": "not pushed; root owns integration and runtime gates",
+  "original_native_evidence": "docs/stabilization/reports/data-picker-long-native.json",
+  "root_cause": "ResultPreview accepted an optional source and wrapJsonForAgent printed it, but nine Showcase result callers omitted the source prop. The observed saved-pattern replay therefore copied its row count and rows with no Source URL, although Data's separate copy action did include the source. List Pattern supplied the live tab URL instead of its extraction snapshot.",
+  "sibling_census": {
+    "result_previews": "JSON-LD, Microdata, Tables, Snapshot, Framework, AI Extract, Recipes, Patterns, Network, and List Pattern inspected and bound to the source that produced the preview.",
+    "doctor_copy": "The related Doctor AI copy now uses the probe result's URL and title instead of the currently active tab.",
+    "data_copy": "Already carried runSource captured before the saved-pattern run; no Data code changed.",
+    "list_debug_bundle": "Contains fresh/current-page sample HTML as well as the current-page preview; its page URL remains tied to that live sampling action."
+  },
+  "result_binding": {
+    "hook_modes": "useExtraction and useAiExtraction return source only for the same page as rows; Recipes stores sourceFromUrl at run time. Their callers pass that source to ResultPreview.",
+    "patterns": "PatternsTab captures URL and title before runSavedPattern, stores them only when the guarded run commits rows, and clears them when the page or run changes.",
+    "network": "NetworkTab passes the selected captured response's URL, sanitized with the credential query keys marked for that selected response. Search and replay URL filter drafts cannot replace the copied source."
+  },
+  "credential_handling": "ResultPreview uses the existing sanitizeNetworkUrl helper on its source URL for both Copy for AI and Send to agent. It masks recognized credential query keys and keeps ordinary query parameters that identify the page. Network's selected-response URL is first sanitized with user-marked extra credential keys. The shared clipboard formatter and general URL policy were not changed.",
+  "guards_added": [
+    "tests/unit/showcase-ai-copy-source.test.tsx: two distinct source queries and rows, recognized credential masking, and unavailable-source behavior",
+    "tests/unit/showcase-patterns-replay-provenance.test.tsx: two saved replays from distinct page URLs bind their respective result preview sources"
+  ],
+  "verification": {
+    "git_diff_check": "passed",
+    "unit_tests": "NOT RUN: runtime permit and source peer review pending",
+    "typecheck": "NOT RUN: runtime permit and source peer review pending",
+    "native_ui": "NOT RUN after this source change; original reproduction was on the installed extension"
+  },
+  "next": "Obtain fresh source review, then run the focused tests, typecheck, and installed-extension Copy for AI check under the root lane's resource permit. Preserve the existing Gutenberg pattern 60b0c5bb-b4d4-4642-857a-2924b56445d5 for that native check."
+}
