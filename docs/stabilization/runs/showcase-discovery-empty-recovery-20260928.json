@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-discovery-empty-recovery-20260928",
+  "status": "BOUNDED_NATIVE_EMPTY_PASS_AND_HN_RECOVERY_PASS_WITH_DISPLAY_CAVEAT",
+  "report": "docs/stabilization/reports/showcase-discovery-empty-recovery.json",
+  "artifact_receipt": "docs/stabilization/runs/showcase-discovery-corrected-artifact-20260928.json",
+  "artifact_version": "0.2.114",
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "expected_tree_sha256": "8b0f8adc1e576451da4d549780958766f7bb7e51b545e8dd421d36eb6e65ee45",
+  "tree_sha256_before_ui": "8b0f8adc1e576451da4d549780958766f7bb7e51b545e8dd421d36eb6e65ee45",
+  "tree_sha256_after_ui": "8b0f8adc1e576451da4d549780958766f7bb7e51b545e8dd421d36eb6e65ee45",
+  "guard": {
+    "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "admitted_at_utc": "2026-09-28T09:40:27.878Z",
+    "healthy_watch_samples_observed": 19,
+    "unsafe_watch_samples": 0,
+    "terminal_at_utc": "2026-09-28T09:45:40.034Z",
+    "terminal_code": "RESOURCE_BROWSER_STOP_CONFIRMED",
+    "exit_code": 0,
+    "resource_invalid": false
+  },
+  "results": {
+    "example_org_empty_page_load_capture": "PASS: actual terminal no-fetch/XHR remedy; debugger detached; UI idle",
+    "immediate_existing_hn_openai_recipe_recovery": "PASS: own run observed matched 1 request, then terminal-looking 10-row results, enabled Run pattern, and no debugger infobar",
+    "last_run_age_display": "CAVEAT: card still said last run 9m ago after own progress was observed; not relied upon as run attribution"
+  },
+  "whole_feature_closure": false
+}

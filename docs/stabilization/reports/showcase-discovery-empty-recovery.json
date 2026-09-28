@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "lane": "EXT-F-1012-T59 / EXT-D-0049 native empty page-load capture and HN recovery",
+  "status": "BOUNDED_NATIVE_PASS_WITH_RECOVERY_DISPLAY_CAVEAT",
+  "scope": "Independent primary-Chrome verification only. No source changes, build, install, new recipe, or localhost target.",
+  "source": {
+    "artifact_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "artifact_version": "0.2.114",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "expected_tree_sha256": "8b0f8adc1e576451da4d549780958766f7bb7e51b545e8dd421d36eb6e65ee45",
+    "independent_tree_sha256_before_first_ui_action": "8b0f8adc1e576451da4d549780958766f7bb7e51b545e8dd421d36eb6e65ee45",
+    "independent_tree_sha256_after_ui_session": "8b0f8adc1e576451da4d549780958766f7bb7e51b545e8dd421d36eb6e65ee45",
+    "hash_method": "hashReleaseTree(.output/chrome-mv3-dev) from scripts/sync-unpacked-release.mjs",
+    "matches_expected_before_and_after": true
+  },
+  "target": {
+    "browser": "Existing primary Google Chrome",
+    "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "showcase_identity": "admin@admin.com",
+    "initial_page": "https://hn.algolia.com/?q=OpenAI",
+    "empty_page": "https://example.org/",
+    "recovery_page": "https://hn.algolia.com/?q=OpenAI",
+    "developer_tools_open": false,
+    "localhost_used": false
+  },
+  "resource_guard": {
+    "run_id": "showcase-discovery-empty-recovery-20260928",
+    "mode": "browser",
+    "admitted_at_utc": "2026-09-28T09:40:27.878Z",
+    "admission_reasons": [],
+    "healthy_watch_samples_observed": 19,
+    "unsafe_watch_samples": 0,
+    "stopped_at_utc": "2026-09-28T09:45:40.034Z",
+    "terminal_code": "RESOURCE_BROWSER_STOP_CONFIRMED",
+    "terminal_exit_code": 0,
+    "resource_invalid": false
+  },
+  "A_native_empty_capture_outcome": {
+    "status": "PASS",
+    "stages": [
+      "On example.org, clicked Capture page load and approved its in-product PRIVILEGED Chrome debugger request for that page.",
+      "The reloaded document reached Listening in the reloaded document… with 0 responses captured.",
+      "The capture completed to the explicit terminal message: No fetch/XHR responses appeared during this page load. Try the page interaction after Start capture, or run page-load capture again.",
+      "The debugger infobar disappeared and Network controls returned to idle. No progress indicator remained stuck."
+    ],
+    "interpretation": "The page has no fetch/XHR API data to capture; the UI reported the actual empty condition and offered two concrete next steps."
+  },
+  "B_evidence_quality_and_recovery": {
+    "status": "PASS_WITH_DISPLAY_CAVEAT",
+    "stages": [
+      "Returned to the existing HN OpenAI page and ran the already-saved Codex D49 exact HN hits rows 20260928 pattern; created no recipe.",
+      "Approved this invocation's saved Network recipe prompt for the HN OpenAI URL.",
+      "Observed this invocation reach Matched 1 request; checking for other matches until the capture window ends… while the debugger infobar was visible.",
+      "The invocation then left progress, its debugger infobar disappeared, the Run pattern control was enabled again, and a 10-row result table was visible. The first row matched the HN page: OpenAI's board has fired Sam Altman, davidbarker, 5710 points, and 2530 comments."
+    ],
+    "display_caveat": "The saved-pattern card still read last run 9m ago while the new invocation's matched-request progress had been observed. The terminal 10-row table and absence of progress/debugger were observed after that invocation, but the card age did not refresh during this bounded observation; it is not used as proof of the invocation.",
+    "navigated_away_and_back_to_check_age_refresh": false,
+    "unverified": [
+      "The saved-pattern last-run age refresh behavior after navigating away and back.",
+      "Whole-feature closure for EXT-D-0049 or all EXT-F-1012-T59 acceptance scenarios."
+    ]
+  },
+  "observed_regressions": [],
+  "source_edits": false,
+  "whole_feature_closure": false
+}
