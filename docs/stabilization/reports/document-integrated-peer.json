@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "review": "independent source and evidence review",
+  "reviewed_commit": "e6c9f079ad0afdf15d1211f6addb05687c41b6ee",
+  "correction_commit": "b5462b9b47121cbc9c3d795d8b46fefd17a4d199",
+  "result": "SCOPED_ACCEPTANCE_WITH_LIMITS",
+  "acceptance": "The stale assertion is confirmed: usePagePrep.run() calls preparePage(tab.id, config, tab.documentId), and preparePage uses that third argument to target Chrome scripting at documentIds: [documentId]. After navigation to B, asserting document-b is the required behavior. The correction only updates the shared parameterized resolve/reject expectation. Both late-A suppression assertions and subsequent B report/error assertions remain present and unchanged.",
+  "evidence": {
+    "original_suite": "Journal SHA-256 matches report (1d7cd9d9cae2d96dca36e68157bedc21e72d2afb44e035d631d3a6ba918f17db); terminal decision child_failed, consistent with the two recorded stale-call-argument assertions.",
+    "corrected_suite": "Journal SHA-256 matches report (ac803693347f33f295a4e77db68604cb321d01ede0aee32f342ba1c83a9afd0f); terminal decision valid. Report records 15 files / 58 tests passed.",
+    "compile": "Journal SHA-256 matches report (b92ba1e7f78830de6e2dfdcc69f81693a6abec2d765828de83075a3cb4741416); terminal decision valid.",
+    "development_build": "Journal SHA-256 matches report (a4788ca305ac20c26bdd3f6f62c766d46a177262c319e2d550a4097b7f723279); terminal decision valid. Current manifest is 0.2.114 and current hashReleaseTree recomputes to the reported 44a478fee4a81a8353d0b0d8f4afc08fe9bb8315b11e6cb90b40a4532b5e12a1."
+  },
+  "limits": "Scoped regression, compile, and development-build evidence only. Native browser acceptance was not run; the Showcase List picker exact-document source gap remains open, so this does not establish native acceptance or D59 closure. No tests, compile, build, UI interaction, or product edits were performed during this review."
+}
