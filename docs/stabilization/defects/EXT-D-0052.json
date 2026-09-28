@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0052",
+  "feature_id": "EXT-F-1012",
+  "case_ids": [
+    "EXT-F-1012-T18",
+    "EXT-F-1012-T43"
+  ],
+  "surface": "Showcase Framework",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Build development extension and explicitly reload Chrome unpacked extension; refresh https://nuxt.com/docs/4.x/getting-started/introduction.",
+    "Open Showcase Framework and __NUXT_DATA__ source.",
+    "Select the repo property at raw path 7.repo; compare extracted value 10 with referenced payload slot10 nuxt/nuxt."
+  ],
+  "expected": "Supported Nuxt payload decoded into meaningful page values before field selection and extraction; saved replay uses identical decoded semantics.",
+  "actual": "Framework exposes the serialized reference table and extracts {value:10} instead of repo string nuxt/nuxt. Source tree and next_data runner both JSON.parse without devalue revival.",
+  "severity": "S2: supported extraction method returns serialization indexes instead of selected user data.",
+  "priority": "P1: repair supported source before expanding Framework acceptance.",
+  "state": "in-fix",
+  "evidence": [
+    "docs/stabilization/reports/showcase-nuxt-diagnosis.json"
+  ],
+  "verification_status": "Native worker reproduction pending final resource-valid report; causal source diagnosis confirmed. Fix assigned Sol.",
+  "transition_history": [
+    {
+      "at": "2026-09-28T12:03:37.923717+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Native Framework field selection exposed encoded pointer rather than meaningful repository value."
+    },
+    {
+      "at": "2026-09-28T12:03:37.923717+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source diagnosis confirms supported Nuxt source lacks reference-table decoding in tree and runner."
+    },
+    {
+      "at": "2026-09-28T12:03:37.923717+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Original Sol diagnosis agent owns class repair and regression proof; independent review/native retest required."
+    }
+  ]
+}

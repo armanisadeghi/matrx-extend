@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-28T11:49:57.107568+00:00",
+  "updated_at": "2026-09-28T12:03:37.923717+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -15520,7 +15520,19 @@
             "reload",
             "auth-transition",
             "service-error"
-          ]
+          ],
+          "defect_ids": [
+            "EXT-D-0052"
+          ],
+          "results": {
+            "admin": {
+              "status": "fail",
+              "evidence": [
+                "docs/stabilization/reports/showcase-nuxt-diagnosis.json"
+              ],
+              "detail": "Supported Nuxt transport references are not decoded; rawrepo pointer10 is returned instead ofnuxt/nuxt. Native final resource receipt pending; source rootcause confirmed."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T19",
@@ -16292,7 +16304,19 @@
             "reload",
             "navigation",
             "service-error"
-          ]
+          ],
+          "defect_ids": [
+            "EXT-D-0052"
+          ],
+          "results": {
+            "admin": {
+              "status": "fail",
+              "evidence": [
+                "docs/stabilization/reports/showcase-nuxt-diagnosis.json"
+              ],
+              "detail": "Supported Nuxt transport references are not decoded; rawrepo pointer10 is returned instead ofnuxt/nuxt. Native final resource receipt pending; source rootcause confirmed."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T44",
@@ -16979,7 +17003,8 @@
             "EXT-D-0047",
             "EXT-D-0049",
             "EXT-D-0048",
-            "EXT-D-0050"
+            "EXT-D-0050",
+            "EXT-D-0052"
           ],
           "run_ids": [
             "showcase-live-discovery-001",
