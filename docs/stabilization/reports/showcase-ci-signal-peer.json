@@ -1,0 +1,24 @@
+{
+  "defect": "EXT-D-0047",
+  "lane": "structured source-verification peer; zero product or test execution",
+  "checked_revision": "shared-checkout HEAD plus uncommitted saved-UI test change",
+  "verdict_a_runtime_live": "UNVERIFIED",
+  "verdict_b_source_quality": "FAIL: held async gates are not released on assertion failure",
+  "findings": [
+    {
+      "severity": "Important",
+      "title": "Failure path strands mocked operations and leaves cleanup incomplete",
+      "evidence": "The test creates finishRemoval and finishDetach gates (and a setup gate via releaseSetup), but resolves them only after the success/terminal assertions at lines 333-334. Any earlier assertion failure or awaited event timeout skips those releases. The original digest barriers are also unresolved until their respective successful phase. afterEach clears timers and restores spies but cannot release these operation promises. This permits background async work to survive the failed case and prevents the promised underlying cleanup, weakening confidence in independent reruns.",
+      "remedy": "Put per-case gate releases and any required owned-CDP cleanup in a finally path; make releases idempotent. Ensure test timeout failures still unblock all waits."
+    }
+  ],
+  "positive_evidence": "The spy delegates to native crypto.subtle.digest after an explicit barrier, and asserts exactly two real saved-operation preparations. Approval is observed through the real broadcast channel; the UI approval copy, no-attach-before-approval ordering, real setup/reload, stale-row exclusion, successful current-row display, cleanup failure withholding rows, and rejected detach withholding health updates remain asserted. Fake timers are installed after initial UI discovery; awaited downstream signals replace microtask-count guesses.",
+  "new_product_regression": "None established by source inspection.",
+  "source_hashes_sha256": {
+    "tests/unit/document-network-saved-ui.test.tsx": "f01a8d8ed328d3c7eec0fa02f15a7025f9bcb8ab5b12a9de21d7d2c57c791acc"
+  },
+  "limits": [
+    "No test/build/browser/runtime execution in this lane.",
+    "Prior CI failure logs were not independently available in the inspected report corpus."
+  ]
+}
