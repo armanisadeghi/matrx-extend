@@ -1,0 +1,66 @@
+{
+  "review": "EXT-D-0046 independent source-only peer review",
+  "lane": "verification; zero authorship",
+  "reviewed_at": "2026-09-27",
+  "reviewed_head": "ed6abf64",
+  "constraints": [
+    "Source-only review; no browser, build, tests, or production edits.",
+    "No subdelegation. Commit this report path only; do not push."
+  ],
+  "verdict_a_outcome_acceptance": {
+    "status": "PARTIAL — source flow supports exact paths; live acceptance remains unverified",
+    "evidence": [
+      {
+        "claim": "JSON tree selection returns exact key segments and display formatting does not drive resolution.",
+        "evidence": "src/components/ui/json-tree.tsx:17-19, src/components/ui/json-tree.tsx:105-120, src/lib/data-pattern/json-key-path.ts:8-15"
+      },
+      {
+        "claim": "Network preview and replay resolve array paths as exact segments; legacy string paths retain their prior dotted-path convention (including skipping empty segments).",
+        "evidence": "src/features/showcase/tabs/NetworkTab.tsx:85-94, src/lib/data-pattern/run-interactive.ts:284-309, src/lib/data-pattern/run-interactive.ts:325-388"
+      },
+      {
+        "claim": "Framework selection sends segment arrays into extraction, and the mode resolves array paths directly while preserving string splitting semantics for existing saved recipes.",
+        "evidence": "src/features/showcase/tabs/FrameworkTab.tsx:151-155, src/lib/data-pattern/modes/next-data.ts:339-352"
+      },
+      {
+        "claim": "SaveAsPattern passes config to savePattern; the Network sanitizer retains string[] key_path; database insert stores config as JSON and fetch/replay source uses saved pattern config.",
+        "evidence": "src/features/showcase/components/SaveAsPattern.tsx:154-165, src/lib/credentials/network-urls.ts:138-181, src/lib/supabase/queries.ts:982-1005, src/features/showcase/tabs/PatternsTab.tsx:129-146"
+      },
+      {
+        "claim": "Connected tests cover actual tab selection, extraction, serialized mock persistence, and replay for one literal dotted key in each mode.",
+        "evidence": "tests/unit/showcase-json-path-connected.test.tsx:169-203, tests/unit/showcase-json-path-connected.test.tsx:205-238"
+      }
+    ],
+    "live_gaps": [
+      "The saved-value round trip in tests/unit/showcase-json-path-connected.test.tsx uses a mocked savePattern that JSON.stringify/JSON.parse round-trips an in-memory value (lines 132-139); it does not write/read the database or reopen through PatternsTab/fetchPatternsForDomain. Source shows config passed to the insert and consumed from pattern.config, but persistence/retrieval behavior was not exercised.",
+      "The requested real public-site UI acceptance was not run under the source-only lane. docs/feature-tests.md:1260-1272 calls for selecting, saving, reopening in Patterns, and running on a public site."
+    ],
+    "source_defect_reproduced": false
+  },
+  "verdict_b_source_and_test_quality": {
+    "status": "PARTIAL — implementation is coherent; persistence test seam is simulated",
+    "findings": [
+      {
+        "severity": "Important evidence gap",
+        "finding": "The connected persistence tests replace the production save boundary and then replay the mock's local serialization result. A production change that transforms or drops key_path inside savePattern's insert, or during fetchPatternsForDomain decoding, could still pass. The test checks the tab-to-save-call and replay mechanics, but not the complete persistence transform requested by the acceptance path.",
+        "evidence": "tests/unit/showcase-json-path-connected.test.tsx:132-139, tests/unit/showcase-json-path-connected.test.tsx:178-202, tests/unit/showcase-json-path-connected.test.tsx:227-237; production boundary src/lib/supabase/queries.ts:982-1008",
+        "owner": "Showcase implementation/verification owner",
+        "reproduction": "In the connected test's mocked savePattern, mutate config.key_path before assigning mocks.persisted; the persisted-array assertions fail. That demonstrates its local simulated transform is checked. To cover the production boundary, exercise the actual savePattern insert payload and retrieval mapping, or inject only Supabase I/O below the real query function; then feed the fetched ExtractionPattern through the Patterns row Run action."
+      },
+      {
+        "severity": "No defect found in reviewed source",
+        "finding": "Selected path arrays stay arrays through both mode config schemas, Network sanitization, Supabase config insertion, and replay. Legacy path strings stay strings. The added helper's filter(Boolean) is applied only to Network's legacy string paths, matching the prior rowsFromBody behavior that skipped empty dotted segments; Framework preserves its prior direct split behavior, including empty segments.",
+        "evidence": "src/lib/data-pattern/json-key-path.ts:4-5; pre-change and current run-interactive code reviewed in the working diff; src/lib/data-pattern/modes/next-data.ts:340-346; tests/unit/showcase-json-key-path.test.tsx:39-73",
+        "owner": "No action"
+      }
+    ],
+    "forcing_function_assessment": {
+      "assessment": "The connected tests use distinct literal-key and nested-key values, and assert the actual selected path array plus the distinct literal-key output after replay. Thus replacing resolution with dotted splitting or stringifying the new array is observable at the path/persisted assertions and/or wrong title. The helper test separately distinguishes nested and literal path resolution. No tests were executed per lane constraints, so assertion-red behavior was not empirically confirmed.",
+      "missing_case": "Connected save/replay coverage is literal-dotted-key only; bracket-containing, empty-key, and nested-path save/replay are only partially covered by lower-level path tests, not through both Showcase save routes."
+    }
+  },
+  "files_changed_by_reviewer": [
+    "docs/stabilization/reports/showcase-d46-independent-peer.json"
+  ],
+  "commit_scope": "Exact report path only; no push."
+}
