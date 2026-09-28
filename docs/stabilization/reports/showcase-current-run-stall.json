@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "lane": "current saved Network replay stall; source-only diagnosis",
-  "status": "VALID_NATIVE_SYMPTOM_CAUSE_NOT_YET_LOCALIZED",
+  "status": "NATIVE_STALL_LOCALIZED_AT_LAZY_DISPATCH_IMPORT_FIX_PENDING",
   "canonical_case_id": "EXT-F-1012-T57 (docs/stabilization/inventory.json:16642)",
   "native_run_receipt": "docs/stabilization/runs/showcase-network-current-001.json (committed 764a47d8)",
   "immutable_source_sha": "d4bbe70e",
@@ -13,6 +13,19 @@
     "official_contract": "https://developer.chrome.com/docs/extensions/develop/concepts/messaging",
     "distinct_silent_edge": "The host returns silently when the Port name differs, sender.id differs from chrome.runtime.id, or sender.tab is present. A name mismatch is excluded by the shared PORT constant; actual installed-sidepanel sender metadata was not captured. The existing connected test supplies sender: { id: 'extension' } and dispatches onConnect synchronously before client postMessage, so it cannot distinguish a real Chrome sender-metadata rejection from a later preparation await. Another credential host expects the same id/no-tab shape and documents Chrome 153 side-panel MessageSender behavior, making the guard failure possible but unproven rather than the leading explanation.",
     "bounded_discriminator": "On one installed replay, record only Port phases (client connected/post sent; worker onConnect; sender guard accepted or rejected with booleans for id-match and has-tab; worker run-message accepted; dispatch import settled; preparation entered), without IDs, URLs, bodies, config, or tokens. If the guard rejects, fail closed by disconnecting with a typed reason and repair the exact sender trust rule using observed Chrome metadata. If the guard accepts and preparation enters, investigate the first unresolved preparation await. Check the existing Debug log for TOOL_CONFIRM_REQUEST, not merely the word replay."
+  },
+  "diagnostic_native_run": {
+    "run_id": "d49-native-instrumented-20260928",
+    "artifact_source_base": "6fa34fbb9bf39716d70fc161cb12edccab989d1d",
+    "diagnostic_source_diff_sha256": "9dad3652659f279b2282bb2908a5d48fa9b00ae5f080704414b7c396cb70760b",
+    "diagnostic_patch": "docs/stabilization/pending/EXT-D-0049/diagnostic-trace.patch",
+    "artifact_tree_sha256": "19900c06e124d90feea09c4837abd7869d7097147cddaeb3d79f34f69b908418",
+    "guarded_compile": "d49-phase-compile-20260928 terminal exit 0 at 2026-09-28T06:20:52Z",
+    "guarded_build": "d49-phase-build-20260928 terminal exit 0 at 2026-09-28T06:22:25Z",
+    "resource": "Browser lease admitted 2026-09-28T06:23:49Z, last healthy watch 06:26:33Z, terminal 06:26:46Z resourceInvalid=false; worker DevTools stayed closed.",
+    "observation": "After unpacked extension reload, one owned HN Search saved Network Run at 06:25:06Z showed client run posted, worker host connected, and worker host run accepted. There was no dispatch import settled, local saved run entered, or approval signal for more than 90 seconds while Run remained disabled.",
+    "positive_control": "The same sidepanel Debug session received the independent SW desktop:availability broadcast at 06:24:47Z, proving worker relay delivery before the Run. Client and worker trace events were both visible for the Run.",
+    "boundary": "The Port first message and sender guard succeeded. The first missing completion is import('@/lib/tools/dispatch') inside the host. In the built queue chunk this lazy import loads registry, while registry statically imports queue; no preparation dependency was reached. Why that chunk load never settles is not independently established, so the repair must remove this unnecessary lazy boundary and be verified on the same native path."
   },
   "confirmed_silent_gap": [
     "PatternsTab.handleRun sets runningId before awaiting runSavedPattern and clears it only in finally; runNote begins null. It offers no Cancel while running (src/features/showcase/tabs/PatternsTab.tsx:129-175, 404-434).",

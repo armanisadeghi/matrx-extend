@@ -1,0 +1,125 @@
+diff --git a/src/lib/data-pattern/document-network-transport.ts b/src/lib/data-pattern/document-network-transport.ts
+index 9a0737be..91203e80 100644
+--- a/src/lib/data-pattern/document-network-transport.ts
++++ b/src/lib/data-pattern/document-network-transport.ts
+@@ -1,4 +1,5 @@
+ import { startDocumentNetworkCapture } from './document-network-capture';
++import { log } from '@/lib/debug/log';
+ import type { CapturedNetEvent } from './network-tap';
+ 
+ const PORT = 'matrx:document-network-capture';
+@@ -97,7 +98,11 @@ export function openDocumentNetworkCapture(options: Options): Promise<Capture> {
+ 
+ export function registerDocumentNetworkCaptureHost(): void {
+   chrome.runtime.onConnect.addListener((port) => {
+-    if (port.name !== PORT || port.sender?.id !== chrome.runtime.id || port.sender.tab) return;
++    if (port.name !== PORT) return;
++    const idMatches = port.sender?.id === chrome.runtime.id;
++    const hasTab = Boolean(port.sender?.tab);
++    log.info('sw', '[DBG-D49] host connected', { idMatches, hasTab });
++    if (!idMatches || hasTab) return;
+     let started = false;
+     let connected = true;
+     const controller = new AbortController();
+@@ -115,17 +120,19 @@ export function registerDocumentNetworkCaptureHost(): void {
+       }
+       if (message.kind !== 'run' || started) return;
+       started = true;
++      log.info('sw', '[DBG-D49] host run accepted');
+       if (typeof message.patternId !== 'string' || !Number.isInteger(message.tabId)) {
+         reply({ kind: 'error', message: 'Invalid saved replay request.' });
+         return;
+       }
+       // Only saved identity crosses the port. Never trust client approval/context/config.
+       void import('@/lib/tools/dispatch')
+-        .then(({ runLocalSavedPattern }) =>
+-          runLocalSavedPattern(message.patternId!, message.tabId!, controller.signal, (note) =>
++        .then(({ runLocalSavedPattern }) => {
++          log.info('sw', '[DBG-D49] dispatch import settled');
++          return runLocalSavedPattern(message.patternId!, message.tabId!, controller.signal, (note) =>
+             reply({ kind: 'progress', note }),
+-          ),
+-        )
++          );
++        })
+         .then(
+           (result) => reply({ kind: 'result', result }),
+           (error) =>
+@@ -171,5 +178,6 @@ export function openSavedPatternOperation(
+       return;
+     }
+     port.postMessage({ kind: 'run', patternId, tabId });
++    log.info('ui', '[DBG-D49] client run posted');
+   });
+ }
+diff --git a/src/lib/tools/dispatch.ts b/src/lib/tools/dispatch.ts
+index 90cb59c7..52863297 100644
+--- a/src/lib/tools/dispatch.ts
++++ b/src/lib/tools/dispatch.ts
+@@ -1757,6 +1757,7 @@ export async function runLocalSavedPattern(
+   signal: AbortSignal,
+   progress: (note: string) => void,
+ ): Promise<unknown> {
++  log.info('sw', '[DBG-D49] local saved run entered');
+   const handler = lookupTool('data_patterns');
+   if (!handler) throw new Error('Saved recipe tool is unavailable.');
+   const parsed = handler.argsSchema.parse({ action: 'run', pattern_id: patternId });
+@@ -1773,7 +1774,9 @@ export async function runLocalSavedPattern(
+       if (label) progress(label);
+     },
+   };
++  log.info('sw', '[DBG-D49] preparation entering');
+   const prepared = await prepareOperation(handler, parsed, ctx);
++  log.info('sw', '[DBG-D49] preparation settled', { hasPrepared: Boolean(prepared) });
+   if (prepared) return runPrepared(handler, parsed, ctx, undefined, prepared, signal);
+   await checkOperationRequirements(handler, parsed, ctx, resolveToolTier(handler, parsed));
+   if (signal.aborted) throw new Error('Replay cancelled.');
+diff --git a/src/lib/tools/handlers/data-patterns.ts b/src/lib/tools/handlers/data-patterns.ts
+index f63ea736..07d43c1c 100644
+--- a/src/lib/tools/handlers/data-patterns.ts
++++ b/src/lib/tools/handlers/data-patterns.ts
+@@ -21,6 +21,7 @@
+ 
+ import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
+ import { sanitizeNetworkUrl } from '@/lib/credentials/network-urls';
++import { log } from '@/lib/debug/log';
+ import { urlMatchesPattern } from '@/lib/data-pattern/matcher';
+ import { loadRecipes, recipesForUrl } from '@/lib/data-pattern/recipes';
+ import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
+@@ -112,16 +113,22 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
+   argsSchema: DataPatternsArgs,
+   prepare: async (args, ctx) => {
+     if (args.action !== 'run') return null;
++    log.info('sw', '[DBG-D49] assigned tab entering');
+     const tab = await getAssignedTab(ctx);
++    log.info('sw', '[DBG-D49] assigned tab settled', { hasTab: Boolean(tab?.id && tab.url) });
+     if (tab?.id == null || !tab.url) throw new Error('No assigned page to run on.');
++    log.info('sw', '[DBG-D49] pattern read entering');
+     const patterns = await fetchPatternsForDomain(new URL(tab.url).host);
++    log.info('sw', '[DBG-D49] pattern read settled', { hasPattern: patterns.some((p) => p.id === args.pattern_id) });
+     const pattern = patterns.find((p) => p.id === args.pattern_id);
+     if (!pattern) throw new Error('The saved pattern no longer exists on this site.');
+     if (pattern.kind !== 'network_capture') return null;
++    log.info('sw', '[DBG-D49] document probe entering');
+     const [{ documentId } = {}] = await chrome.scripting.executeScript({
+       target: { tabId: tab.id },
+       func: () => null,
+     });
++    log.info('sw', '[DBG-D49] document probe settled', { hasDocumentId: Boolean(documentId) });
+     if (!documentId)
+       throw new Error(
+         'Chrome did not provide source document identity. Run again in a supported Chrome version.',
+@@ -139,11 +146,13 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
+       ]),
+     );
+     const digest = await crypto.subtle.digest('SHA-256', bytes);
++    log.info('sw', '[DBG-D49] digest settled');
+     const snapshotKey = Array.from(new Uint8Array(digest), (b) =>
+       b.toString(16).padStart(2, '0'),
+     ).join('');
+     // Read capability policy from the existing canonical handler, not its approval identity.
+     const { cdp_attach } = await import('./cdp');
++    log.info('sw', '[DBG-D49] cdp policy import settled');
+     return {
+       snapshotKey,
+       tier: 'privileged',
