@@ -16644,7 +16644,7 @@
                 "docs/stabilization/reports/showcase-d46-implementation.json",
                 "docs/stabilization/reports/showcase-d46-final-peer.json"
               ],
-              "detail": "Engineering repair 4a997c33 passed meaningful baseline wrong-row red, 28 focused tests, compile, and independent focused rerun. Actual application save/fetch mapping is exercised with external Supabase I/O replaced. Fresh installed real-public-page Network and Framework save/reopen/replay remain unverified; D46 fixed, not closed. Current installed .114 artifact predates this fix."
+              "detail": "Engineering repair 4a997c33 passed meaningful baseline wrong-row red, 28 focused tests, compile, and independent focused rerun. Actual application save/fetch mapping is exercised with external Supabase I/O replaced. Fresh installed real-public-page Network and Framework save/reopen/replay remain unverified; D46 fixed, not closed. Current installed artifact57e37156 includes this fix but has no native exact-key acceptance proof."
             }
           }
         },
@@ -16685,13 +16685,14 @@
           "results": {
             "admin": {
               "status": "fail",
-              "run_id": "showcase-d49-final-acceptance-20260928",
+              "run_id": "showcase-d49-standalone-peer-native-20260928T0728Z",
               "evidence": [
                 "docs/stabilization/runs/showcase-network-current-001.json",
                 "docs/stabilization/runs/showcase-d49-native-retest-001.json",
-                "docs/stabilization/reports/showcase-d49-final-acceptance.json"
+                "docs/stabilization/reports/showcase-d49-final-acceptance.json",
+                "docs/stabilization/reports/showcase-d49-standalone-peer.json"
               ],
-              "detail": "Second-round independent native replay on exact artifact1df62d6e214f0a70c25cf34fc762dc22582a1e64a002f12a9f69bf16efcb882d after explicit primaryChrome reload immediately fails window is not defined, before approval/capture/rows. Lazy Showcase UI remained styled. Guard terminated resourceInvalid=false. D49 escalated after two failed rounds; D47 timing/provenance remains unverified behind it."
+              "detail": "Fresh artifact57e37156 on primary Chrome passes per-run approval, denial reset, debugger attach and automatic HN reload; matching saved Algolia request times out in20s with zero rows. Watchdog valid, stopped07:31:42Z. Worker import fix narrowly verified; saved replay and D47 provenance remain incomplete. D49 in-fix for causal request-matching diagnosis."
             }
           }
         },
