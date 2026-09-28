@@ -10,6 +10,14 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest D58 checkpoint — source repair and peer accepted, build/native pending
+
+- Progress: remote formatting work merged as ef052e03. D57/D58 JSON conflicts were verified formatting-only against merge base; newer local transitions retained. Internal Chrome volume observed5.8GiB free; no native launch attempted.
+- Candidate46b22e50 repairs Prepare stale retry success and old async report/error/finally across changed page/newer run/reset/unmount. Guarded red5fail/1pass, repaired and final6pass, compilepass after correcting a fixture selector. Five completed resource journals retained with hashes in22388d09.
+- Fresh peer70abfdba accepts scoped source repair; native remains unverified. It notes small missing late-rejection assertions for reset/overlap. Next verification should cover these error branches, then build integrated source and native retest when resources allow. D58 remains in-fix, not closed.
+- D59 now tracks shared same-URL reload document identity in Prepare/Snapshot. Source-supported gap only, no native reproduction; do not claim D58 fixes it or cancels injected scripts.
+- Current built artifact a8670bf7 does NOT contain D58 or merged formatting; next build required. All workers terminal; no owned heavy/browser process remains. Reports prepare-lifecycle-repair.json and prepare-lifecycle-peer.json contain acceptance limits.
+
 ## Latest D57 runtime checkpoint — fixed, native pending
 
 - Progress: independent `prepare_runtime` proved the old fallback RED (7 regression assertions) and exact restored candidate GREEN (9 tests). Compile initially failed on the new test parameter typing; correction `1dfe7333` preserved assertions using named cases.

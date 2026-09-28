@@ -18,9 +18,11 @@
   "priority": "P1: truthful current-page results",
   "state": "in-fix",
   "evidence": [
-    "docs/stabilization/reports/prepare-source-audit.json"
+    "docs/stabilization/reports/prepare-source-audit.json",
+    "docs/stabilization/reports/prepare-lifecycle-repair.json",
+    "docs/stabilization/reports/prepare-lifecycle-peer.json"
   ],
-  "verification_status": "Source-derived deterministic finding; runtime and native reproduction not yet performed.",
+  "verification_status": "Candidate46b22e50 source accepted by fresh peer70abfdba. Guarded old hook5fail/1pass then repaired6pass and compilepass. Root retained/inspected completed journals22388d09. Peer notes missing reset late-rejection and overlapping older-rejection assertions. Build/native pending; stays in-fix. SameURL document identity is separate D59.",
   "transition_history": [
     {
       "at": "2026-09-28T15:00:57.328820+00:00",
