@@ -1,5 +1,5 @@
 import { CopyButton, CopyMenu } from '@/components/CopyMenu';
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { useExtraction } from '@/hooks/use-extraction';
 import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
 import {
@@ -52,7 +52,7 @@ const KIND_LABELS: Record<CandidateField['kind'], string> = {
 
 export function ListPatternTab() {
   const tab = useActiveTab();
-  const pageKey = `${tab.id ?? ''}:${tab.url ?? ''}`;
+  const pageKey = tab.pageKey ?? '';
   const latestPageKeyRef = useRef(pageKey);
   latestPageKeyRef.current = pageKey;
   const lastPageKeyRef = useRef(pageKey);
@@ -184,7 +184,7 @@ export function ListPatternTab() {
       payload.tab_id === pickTabRef.current &&
       typeof payload.session_id === 'string' &&
       payload.session_id === pickerSessionIdRef.current &&
-      pickPageKeyRef.current === latestPageKeyRef.current;
+      pickPageKeyRef.current === latestPageKeyRef.current && isCurrentPageIdentity(pickPageKeyRef.current);
     const offResult = on<ListPickerResult & ListPickerIdentity, { ack: true }>(
       CHANNELS.LIST_PICKER_RESULT,
       (payload) => {
@@ -259,29 +259,29 @@ export function ListPatternTab() {
 
   // Auto-run card inspector whenever the item selector changes.
   const runInspector = useCallback(async () => {
-    if (!tab.id || !config?.list_root || !config.item_selector) return;
+    if (!tab.id || !tab.documentId || !tab.pageKey || !config?.list_root || !config.item_selector) return;
     const request = ++inspectorSeqRef.current;
     const pageAtStart = pageKey;
     setInspecting(true);
     setInspectionStatus('idle');
     try {
       const result = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
+        target: { tabId: tab.id, documentIds: [tab.documentId] },
         func: inspectCardInPage,
         args: [{ list_root: config.list_root, item_selector: config.item_selector }],
       });
-      if (request !== inspectorSeqRef.current || pageAtStart !== latestPageKeyRef.current) return;
+      if (request !== inspectorSeqRef.current || pageAtStart !== latestPageKeyRef.current || !isCurrentPageIdentity(pageAtStart)) return;
       const inspected = result?.[0]?.result as CardInspection | undefined;
       if (!inspected) throw new Error('Page inspection returned no result.');
       setCandidates(inspected.candidates);
       setInspectionStatus(inspected.status);
     } catch (err) {
-      if (request !== inspectorSeqRef.current || pageAtStart !== latestPageKeyRef.current) return;
+      if (request !== inspectorSeqRef.current || pageAtStart !== latestPageKeyRef.current || !isCurrentPageIdentity(pageAtStart)) return;
       console.warn('[matrx-extend] card inspector failed', err);
       setCandidates([]);
       setInspectionStatus('failed');
     } finally {
-      if (request === inspectorSeqRef.current && pageAtStart === latestPageKeyRef.current)
+      if (request === inspectorSeqRef.current && pageAtStart === latestPageKeyRef.current && isCurrentPageIdentity(pageAtStart))
         setInspecting(false);
     }
   }, [tab.id, config?.list_root, config?.item_selector, pageKey]);
@@ -301,7 +301,7 @@ export function ListPatternTab() {
    * inline edits don't fire a probe per keystroke.
    */
   useEffect(() => {
-    if (!tab.id || !config || config.field_paths.length === 0) {
+    if (!tab.id || !tab.documentId || !tab.pageKey || !config || config.field_paths.length === 0) {
       sampleSeqRef.current += 1;
       setSampleValues({});
       return;
@@ -313,15 +313,15 @@ export function ListPatternTab() {
       void (async () => {
         try {
           const result = await chrome.scripting.executeScript({
-            target: { tabId: tid },
+            target: { tabId: tid, documentIds: [tab.documentId!] },
             func: probeFirstRowInPage,
             args: [cfgSnapshot],
           });
           const row = (result?.[0]?.result as Record<string, string | null> | null) ?? {};
-          if (request === sampleSeqRef.current && pageKey === latestPageKeyRef.current)
+          if (request === sampleSeqRef.current && pageKey === latestPageKeyRef.current && isCurrentPageIdentity(pageKey))
             setSampleValues(row ?? {});
         } catch {
-          if (request === sampleSeqRef.current && pageKey === latestPageKeyRef.current)
+          if (request === sampleSeqRef.current && pageKey === latestPageKeyRef.current && isCurrentPageIdentity(pageKey))
             setSampleValues({});
         }
       })();
@@ -330,7 +330,7 @@ export function ListPatternTab() {
       clearTimeout(handle);
       if (request === sampleSeqRef.current) sampleSeqRef.current += 1;
     };
-  }, [tab.id, config, pageKey]);
+  }, [tab.id, tab.documentId, config, pageKey]);
 
   // The content-script picker dies silently when the page navigates or the
   // tab closes — without this watcher, picking stays true forever (audit F1).
@@ -358,7 +358,7 @@ export function ListPatternTab() {
   }, [picking, closePickerSession]);
 
   const enterPicker = async () => {
-    if (!tab.id || picking) return;
+    if (!tab.id || !tab.pageKey || picking) return;
     const session = ++pickerSessionSeqRef.current;
     const sessionId = crypto.randomUUID();
     pickerSessionIdRef.current = sessionId;
@@ -387,10 +387,10 @@ export function ListPatternTab() {
   };
 
   const captureSampleHtml = useCallback(async (): Promise<string[]> => {
-    if (!tab.id || !config) return [];
+    if (!tab.id || !tab.documentId || !tab.pageKey || !config) return [];
     try {
       const result = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
+        target: { tabId: tab.id, documentIds: [tab.documentId] },
         func: (cfg: { list_root: string; item_selector: string }) => {
           const root = document.querySelector(cfg.list_root);
           if (!root) return [];
@@ -409,19 +409,19 @@ export function ListPatternTab() {
     } catch {
       return [];
     }
-  }, [tab.id, config]);
+  }, [tab.id, tab.documentId, pageKey, config]);
 
   const handleRun = async () => {
-    if (!tab.id || !config) return;
+    if (!tab.id || !tab.pageKey || !config) return;
     const request = ++runSeqRef.current;
     const pageAtStart = pageKey;
     setError(null);
     const data = await run(config);
-    if (request !== runSeqRef.current || pageAtStart !== latestPageKeyRef.current) return;
+    if (request !== runSeqRef.current || pageAtStart !== latestPageKeyRef.current || !isCurrentPageIdentity(pageAtStart)) return;
     if (data.length > 0) {
       // Snapshot 1-2 cards' HTML for later AI-paste.
       const samples = await captureSampleHtml();
-      if (request === runSeqRef.current && pageAtStart === latestPageKeyRef.current)
+      if (request === runSeqRef.current && pageAtStart === latestPageKeyRef.current && isCurrentPageIdentity(pageAtStart))
         setSampleHtml(samples);
     }
   };

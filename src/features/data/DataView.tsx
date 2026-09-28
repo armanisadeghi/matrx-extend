@@ -1,5 +1,5 @@
 import { CopyMenu } from '@/components/CopyMenu';
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { useAuth } from '@/hooks/use-auth';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { rowsToTsv, stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
@@ -41,7 +41,7 @@ export function DataView() {
   const [progressNote, setRunNote] = useState<string | null>(null);
   const [outcomeInfo, setRunInfo] = useState<string | null>(null);
 
-  const pageKey = `${tab.id ?? 'none'}|${tab.url ?? ''}`;
+  const pageKey = tab.pageKey ?? '';
   const currentPage = useRef(pageKey);
   const runSequence = useRef(0);
   currentPage.current = pageKey;
@@ -213,9 +213,9 @@ export function DataView() {
   };
 
   const handleRun = async (pattern: ExtractionPattern) => {
-    if (!tab.id) return;
+    if (!tab.id || !tab.pageKey) return;
     const sequence = ++runSequence.current;
-    const isCurrent = () => currentPage.current === pageKey && runSequence.current === sequence;
+    const isCurrent = () => currentPage.current === pageKey && runSequence.current === sequence && isCurrentPageIdentity(pageKey);
     const source = { pageKey, url: tab.url, title: tab.title, patternName: pattern.name };
     setRunSource(source);
     setRunning(true);
@@ -275,8 +275,8 @@ export function DataView() {
   const autoForUrl = useMemo(() => {
     const url = tab.url;
     if (!url) return [];
-    return Array.from(autoRecords.values()).filter((r) => r.tabId === tab.id && r.url === url);
-  }, [autoRecords, tab.id, tab.url]);
+    return Array.from(autoRecords.values()).filter((r) => r.pageKey === tab.pageKey && Boolean(tab.pageKey));
+  }, [autoRecords, tab.pageKey, tab.url]);
   const autoForMatched = matched ? autoForUrl.find((r) => r.pattern.id === matched.id) : undefined;
 
   return (

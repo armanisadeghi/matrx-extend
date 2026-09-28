@@ -1,4 +1,4 @@
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { type AgentStartRequest, agentExecutePath, mandateExecutePath } from '@/lib/api/routes/ai';
 import { aiExtractCapturePage } from '@/lib/data-pattern/modes/ai-extract';
@@ -58,7 +58,7 @@ export function useAiExtraction() {
   const runSourceRef = useRef<ExtractionSource | null>(null);
   const runPageKeyRef = useRef<string | null>(null);
   const requestSeqRef = useRef(0);
-  const pageKey = `${tab.id ?? ''}:${tab.url ?? ''}`;
+  const pageKey = tab.pageKey ?? '';
 
   // Dead-man's switch: if the server goes silent without a terminal `done`,
   // the spinner used to spin forever (audit K1). Any chunk for our run
@@ -86,7 +86,7 @@ export function useAiExtraction() {
       // and the state writes below, and a cancelled run's `done` must not
       // commit stale rows (audit K2).
       const activeRunId = runIdRef.current;
-      if (!activeRunId || chunk.runId !== activeRunId) return { ack: true };
+      if (!activeRunId || chunk.runId !== activeRunId || !isCurrentPageIdentity(runPageKeyRef.current)) return { ack: true };
       watchdog.touch();
 
       if (chunk.type === 'text' && chunk.payload.content) {
@@ -119,8 +119,8 @@ export function useAiExtraction() {
 
   const extract = useCallback(
     async (input: ExtractInput) => {
-      if (!tab.id) {
-        setError('No active tab.');
+      if (!tab.id || !tab.documentId || !tab.pageKey) {
+        setError(tab.identityError ?? 'Page identity is unavailable. Reload the page and retry.');
         return;
       }
       if (!input.agentId) {
@@ -142,12 +142,12 @@ export function useAiExtraction() {
       let captured: ReturnType<typeof aiExtractCapturePage>;
       try {
         const result = await chrome.scripting.executeScript({
-          target: { tabId: tab.id },
+          target: { tabId: tab.id, documentIds: [tab.documentId] },
           func: aiExtractCapturePage,
         });
         captured = result?.[0]?.result as ReturnType<typeof aiExtractCapturePage>;
         if (!captured) throw new Error('Page capture returned nothing.');
-        if (requestSeq !== requestSeqRef.current) return;
+        if (requestSeq !== requestSeqRef.current || !isCurrentPageIdentity(pageKey)) return;
       } catch (e) {
         if (requestSeq !== requestSeqRef.current) return;
         setError(`Could not read page: ${e instanceof Error ? e.message : String(e)}`);
@@ -163,7 +163,7 @@ export function useAiExtraction() {
         ...(input.mandateKey ? { mandate_key: input.mandateKey } : { agent_id: input.agentId }),
       };
       runSourceRef.current = sourceFromUrl(captured.url);
-      runPageKeyRef.current = `${tab.id}:${tab.url ?? ''}`;
+      runPageKeyRef.current = pageKey;
 
       const body: AgentStartRequest = {
         user_input: input.description,
@@ -213,13 +213,13 @@ export function useAiExtraction() {
         });
         watchdog.start();
       } catch (e) {
-        if (requestSeq !== requestSeqRef.current) return;
+        if (requestSeq !== requestSeqRef.current || !isCurrentPageIdentity(pageKey)) return;
         setError(`Failed to start extraction: ${e instanceof Error ? e.message : String(e)}`);
         setRunning(false);
         runIdRef.current = null;
       }
     },
-    [tab.id, tab.url, watchdog],
+    [tab.id, tab.url, tab.documentId, pageKey, watchdog],
   );
 
   const cancel = useCallback(async () => {
@@ -269,9 +269,9 @@ export function useAiExtraction() {
     setConfidence(null);
     setError(null);
     setRunning(false);
-  }, [tab.id, tab.url, watchdog]);
+  }, [pageKey, watchdog]);
 
-  const previewIsCurrentPage = previewPageKey === pageKey;
+  const previewIsCurrentPage = Boolean(tab.pageKey) && previewPageKey === pageKey;
   return {
     rows: previewIsCurrentPage ? rows : null,
     running,

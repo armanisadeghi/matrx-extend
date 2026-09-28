@@ -248,10 +248,11 @@ function isPagePrepReport(value: unknown): value is PagePrepReport {
 export async function preparePage(
   tabId: number,
   config: Partial<PagePrepConfig> = {},
+  documentId?: string,
 ): Promise<PagePrepReport> {
   const merged: PagePrepConfig = { ...defaultPagePrepConfig, ...config };
   const result = await chrome.scripting.executeScript({
-    target: { tabId },
+    target: { tabId, ...(documentId && { documentIds: [documentId] }) },
     func: preparePageInPage,
     args: [merged],
   });
