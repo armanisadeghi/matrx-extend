@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-28T16:07:07.892217+00:00",
+  "updated_at": "2026-09-28",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -11122,7 +11122,8 @@
           "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0001",
-            "EXT-D-0018"
+            "EXT-D-0018",
+            "EXT-D-0059"
           ],
           "run_ids": [
             "guest-local-001",
@@ -11131,13 +11132,14 @@
             "svg-caption-native-002",
             "svg-caption-native-003"
           ],
-          "retest_status": "pass"
+          "retest_status": "not-run"
         },
         "member": {
           "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0001",
-            "EXT-D-0018"
+            "EXT-D-0018",
+            "EXT-D-0059"
           ],
           "run_ids": [
             "incoming-sources-001"
@@ -11148,7 +11150,8 @@
           "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0001",
-            "EXT-D-0018"
+            "EXT-D-0018",
+            "EXT-D-0059"
           ],
           "run_ids": [
             "incoming-sources-001",
@@ -11166,7 +11169,8 @@
       "missing_items": [],
       "source_complete": true,
       "readiness_gaps": [
-        "Source landing, refusal/retry, organization authorization, and server persistence require live member/admin evidence; guest Save must show sign-in remedy while retaining the device-local capture. Endpoint/RLS behavior is a runtime readiness gap, not a source-census blocker."
+        "Source landing, refusal/retry, organization authorization, and server persistence require live member/admin evidence; guest Save must show sign-in remedy while retaining the device-local capture. Endpoint/RLS behavior is a runtime readiness gap, not a source-census blocker.",
+        "D59 document identity: candidate a021ae82 remains partial; guarded peer a702ba6c passes narrow capture tests/compile but finds mixed-document Diagnose bundle and refresh status race. Native guest/member/admin retest pending; reports/scrape-document-peer.json."
       ],
       "runtime_evidence": [
         {

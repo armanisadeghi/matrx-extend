@@ -10,6 +10,13 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest Scrape checkpoint — candidate rejected, guarded evidence recovered
+
+- D59 Scrape candidate a021ae82 migrates manual/auto capture, drafts, Diagnose session, minimal context cache admission and historical Highlight handoff. Builder violated guard instruction: all checks were direct/unguarded, admitted in report-only b9185b40. Exclude those results; use a fresh implementer for next correction.
+- Fresh peer a702ba6c ran actual guard:3files/3tests pass and compile pass after latest tests. One compile preflight refused while prior wrapper exited; later admitted compile passed. All completed journals committed. A outcome FAIL/B quality FAIL on source: Diagnose B Copy for AI includes retained A scrape; old A pre-send refresh can overwrite B error/inFlight status. Soup itself is guarded.
+- Next fresh Sol must correct both findings with connected Diagnose bundle A/B test and overlapping refresh ownership test, red/green under guard. Broader late-error/deep-scroll/save/picker/history coverage still pending; no native/build/fullD59 claim. EXT-F-1007 all mode cells now link D59 and retest not-run.
+- D60 closed separately on verified scoped evidence. All lanes terminal, no owned heavy job remains. Primary disk shortage still prevents native acceptance. Catalog/docs, integrated build, CI credential repair and release remain open; overall goal active.
+
 ## Latest resource checkpoint — D60 closed; Scrape migration active
 
 - D60 correction b3421dd2 gives admission precedence, retaining infrastructure error/resourceInvalid evidence. Seven cases pass after the new pre-admission case failed on prior code. Fresh peer5b9e07b3 accepts source and evidence, confirms protections unchanged. Root verified all four journal hashes. Original defect closed through required states; wrapper journal-write fault injection remains an explicit coverage limit.

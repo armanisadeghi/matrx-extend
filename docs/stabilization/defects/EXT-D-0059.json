@@ -32,9 +32,11 @@
     "docs/stabilization/reports/document-handoff-restored-runtime.json",
     "docs/stabilization/reports/document-remaining-census.json",
     "docs/stabilization/reports/document-save-boundary-correction.json",
-    "docs/stabilization/reports/document-save-boundary-peer.json"
+    "docs/stabilization/reports/document-save-boundary-peer.json",
+    "docs/stabilization/reports/scrape-document-correction.json",
+    "docs/stabilization/reports/scrape-document-peer.json"
   ],
-  "verification_status": "99d61661 fixes save boundary and old completion races; original source failed two new tests, candidate17/17 and compile passed. Fresh source peer1998c62b found no important defect; optional stale rejection/refresh tests remain. Broader consumer migration/catalog/build/native still pending, remains in-fix.",
+  "verification_status": "Scrape candidate a021ae82 source partial. Builder direct unguarded tests excluded (b9185b40 correction). Fresh peer a702ba6c guarded3/3 and finalcompile pass, but A/B review fails: Diagnose B copy includes retained A scrape; old pre-send refresh can overwrite B error/inFlight. Next fresh Sol correction with real card/bundle and overlapping refresh regressions. Broad D59/native/catalog/build remain open.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",
@@ -55,5 +57,9 @@
       "reason": "Sol document_identity_repair assigned shared snapshot and live-consumer migration under independently attacked contract; guarded self-verification required, native pending."
     }
   ],
-  "scope_ruling": "Use one shared top-frame identity snapshot; keep URL/domain persisted lookup semantics separate. Include detection, completed/pending rows, auto-extract cache, AI/pattern derivation and capture residue. Explicit recovery for unresolved identity; no null-equals-null page key. Preserve approved network-replay document contract."
+  "scope_ruling": "Use one shared top-frame identity snapshot; keep URL/domain persisted lookup semantics separate. Include detection, completed/pending rows, auto-extract cache, AI/pattern derivation and capture residue. Explicit recovery for unresolved identity; no null-equals-null page key. Preserve approved network-replay document contract.",
+  "related_feature_ids": [
+    "EXT-F-1007",
+    "EXT-F-1010"
+  ]
 }
