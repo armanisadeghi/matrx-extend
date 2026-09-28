@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "task_id": "refresh-04911",
+  "status": "guarded package refresh and requested verification passed",
+  "product_source_head_at_start": "10a8cb82088beb578d9b3924e28c507112cc34c8",
+  "origin_main_at_start": "796a0b5e5b5d589bc685c4fab5a59d038e1e1958",
+  "concurrent_docs_only_commit": "36cbe32ed4468e0c1519fd571ac8ebc6f525f689",
+  "source_edits": [],
+  "lockfile_sha256": "82acc89c8d9b60568def970fff9125b69afcfe713ae0a7de053f18f4b6137e28",
+  "consumer_action": {
+    "package": "@ai-matrx/design-system",
+    "previous_version": "0.49.10",
+    "installed_version": "0.49.11",
+    "finding": "The installed 0.49.11 CHANGELOG describes a docs/metadata-only republish with no source changes intended and no consumer action required.",
+    "source": "node_modules/@ai-matrx/design-system/CHANGELOG.md:3-7"
+  },
+  "runs": [
+    {
+      "run_id": "refresh-04911-install-20260928-01",
+      "command": "pnpm install --frozen-lockfile --ignore-scripts",
+      "journal": "docs/stabilization/resource-journals/refresh-04911-install-20260928-01.jsonl",
+      "journal_sha256": "68d00a6b4269ea5b3243c216a046c150bbf0363411a4cecf7a961a7958d54f91",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "resource_decision": "valid",
+      "result": "Frozen lockfile install completed; design-system 0.49.11 installed."
+    },
+    {
+      "run_id": "refresh-04911-tests-20260928-01",
+      "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/offscreen-reload-startup-order.test.ts tests/unit/showcase-ai-copy-source.test.tsx tests/unit/showcase-patterns-replay-provenance.test.tsx",
+      "journal": "docs/stabilization/resource-journals/refresh-04911-tests-20260928-01.jsonl",
+      "journal_sha256": "8b400f7de25988d53a4dd51376ee1e0a29a7cba4fcf35d68edc15087af62acf3",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "resource_decision": "valid",
+      "result": "3 test files passed; 14 tests passed."
+    },
+    {
+      "run_id": "refresh-04911-compile-20260928-01",
+      "command": "pnpm compile",
+      "journal": "docs/stabilization/resource-journals/refresh-04911-compile-20260928-01.jsonl",
+      "journal_sha256": "22b333944a41863c7814665f6673cc02405eb9fc09f656f55b537d848301ed26",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "resource_decision": "valid",
+      "result": "TypeScript compile passed."
+    },
+    {
+      "run_id": "refresh-04911-build-20260928-01",
+      "command": "pnpm exec wxt build --mode development",
+      "journal": "docs/stabilization/resource-journals/refresh-04911-build-20260928-01.jsonl",
+      "journal_sha256": "62b536993649947faedb831b17568c83dc64966574f75668c22892df920f3b7e",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "resource_decision": "valid",
+      "result": "WXT 0.21.4 built chrome-mv3 development output successfully. Existing INEFFECTIVE_DYNAMIC_IMPORT warnings were emitted."
+    }
+  ],
+  "artifact": {
+    "output_directory": ".output/chrome-mv3-dev",
+    "manifest_sha256": "9140ab8686f4552f2507c85a773e99826feff482b524a8deba615b05513f738c",
+    "canonical_tree_sha256": "d1626c0d007fac7d53a6e17ae3c054fe55bf38c309f6a1207fcd2592ea22f3b0",
+    "canonical_hash_method": "hashReleaseTree from scripts/sync-unpacked-release.mjs",
+    "native_verification": "Not performed; the new artifact requires explicit reload before native claims."
+  },
+  "open_actions": ["Explicitly reload the 0.49.11 development artifact before native verification."]
+}
