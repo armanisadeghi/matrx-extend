@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-28T11:38:19.944687+00:00",
+  "updated_at": "2026-09-28T11:49:57.107568+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -16173,11 +16173,12 @@
           "results": {
             "admin": {
               "status": "partial",
-              "run_id": "showcase-structured-journal-retest-20260928",
+              "run_id": "structured-save-nav-20260928-1201",
               "evidence": [
-                "docs/stabilization/reports/showcase-structured-journal-retest.json"
+                "docs/stabilization/reports/showcase-structured-journal-retest.json",
+                "docs/stabilization/reports/showcase-structured-save-navigation.json"
               ],
-              "detail": "Existing saved JSON-LD replay after extensionReload/pageRefresh returns current BreadcrumbList. Save/editor/draft-change and changed-page saved replay not retested; earlier run lacked resource proof."
+              "detail": "Native JSONLD preview\u2192draftchangedtoNewsArticle\u2192save\u2192leave/reopen\u2192replay preserved executedBreadcrumbList config; exactowned91349863-4a89-4bd5-9248-8785ba1ec3fc. Existing savedJSONLD on404 shows no-match and routeguidance. Service-error remains unverified."
             }
           }
         },
@@ -16213,11 +16214,12 @@
           "results": {
             "admin": {
               "status": "partial",
-              "run_id": "showcase-structured-journal-retest-20260928",
+              "run_id": "structured-save-nav-20260928-1201",
               "evidence": [
-                "docs/stabilization/reports/showcase-structured-journal-retest.json"
+                "docs/stabilization/reports/showcase-structured-journal-retest.json",
+                "docs/stabilization/reports/showcase-structured-save-navigation.json"
               ],
-              "detail": "Existing saved OG recipe replay returns metadata and matching visible title; fresh404 Snapshot reflects currentpage. Independent allfield metadata comparison, changed-page saved replay, auth/fault and save dimensions unverified."
+              "detail": "SavedOG recipe replay verified afterReload onArticle and404 with honestroutewarning/currentfields. Individual metadata compared againstactualpublicHTML source. NewOG save in resource-valid session and service-error/same-route mutation remain unverified; prior oldsave run lacked resourceproof."
             }
           }
         },
