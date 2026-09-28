@@ -1,0 +1,22 @@
+{
+  "run_id": "mailbox-icon-live",
+  "date": "2026-09-27",
+  "build": {
+    "development_build_guard": "PASS (worker-reported exit 0)",
+    "installed_version": "0.2.111",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "reload_status": "Chrome displayed Reloaded"
+  },
+  "browser_guard": {
+    "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "admitted": true,
+    "terminal": "RESOURCE_BROWSER_STOP_CONFIRMED",
+    "resource_invalid": false
+  },
+  "observation": {
+    "accessibility_before_reload": "Capture tab was named '2 pages need your browser — 3 more waiting in another workspace'. This confirms the accessible name and live count, not rendered toolbar text.",
+    "rendered_toolbar": "UNVERIFIED; the side panel closed after extension reload and timebox ended before it could be reopened and visually inspected.",
+    "full_feature_acceptance": "NOT CLAIMED"
+  }
+}
