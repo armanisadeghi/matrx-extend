@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "id": "EXT-D-0059-picker-final-verification",
+  "status": "Five-file regression, compile, and direct development build passed; native Chrome acceptance remains open.",
+  "fixture_commit": "1457a283c1531ddae0be66fa868dca7b3d4d61a2",
+  "source_head_at_build": "b25d8056fdbf60fe7b6cd97f40c3a10914a410c1",
+  "tests": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id d59-picker-final-five-tests-20260928-01 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec vitest run --maxWorkers=1 tests/unit/list-picker-session.test.ts tests/unit/list-picker-relay.test.ts tests/unit/showcase-doctor-list-handoff.test.tsx tests/unit/showcase-d43-entry.test.tsx tests/unit/showcase-d45-entry.test.tsx",
+    "result": "5 files, 29 tests passed; terminal 0; resourceInvalid=false",
+    "journal": "docs/stabilization/resource-journals/d59-picker-final-five-tests-20260928-01.jsonl",
+    "journal_sha256": "263364fe9d1dd9c9c32389ef5cf8517298905b8feeb1798ce8327ffd46f56713"
+  },
+  "compile": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id d59-picker-final-compile-20260928-01 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm compile",
+    "result": "terminal 0; resourceInvalid=false",
+    "journal": "docs/stabilization/resource-journals/d59-picker-final-compile-20260928-01.jsonl",
+    "journal_sha256": "8d2da27cb0b1ea90d3f8e5e24c2568f267b776dbd01b0eb8b08fec33fc79b9ce"
+  },
+  "build": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id d59-picker-final-dev-build-20260928-01 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec wxt build --mode development",
+    "result": "direct WXT 0.21.4 Chrome MV3 development build terminal 0; resourceInvalid=false",
+    "journal": "docs/stabilization/resource-journals/d59-picker-final-dev-build-20260928-01.jsonl",
+    "journal_sha256": "0bc505ef594374f94b03421eb3af0ca59b496aed5abc867691291f61e15ed073",
+    "artifact_path": ".output/chrome-mv3-dev",
+    "artifact_tree_sha256": "089b1073561e3a37cebb5960c392d1a1089710a3ae4d3d9eb1c45c56095019b4",
+    "manifest_sha256": "9140ab8686f4552f2507c85a773e99826feff482b524a8deba615b05513f738c",
+    "manifest_version": "0.2.114",
+    "lockfile_sha256": "0b3548fa0b83c3b1c443f11e5925cb17035ec11894b06fbf64ebf8881e6afa3f",
+    "package_json_sha256": "50f6d8c4b592a9668a878ad4df716209037f741d6fba4bf46ef45ec44699afea",
+    "fixture_sha256": "f7dc31e7f5ac7183f22971722d66c653a70a50ee29c017fd097fb4b821b30b38",
+    "concurrent_source_caveat": "During build, another lane edited uncommitted src/features/notes/NoteEditor.tsx and NotesView.tsx (mtime 12:53:47 PDT, before output 12:54:08 PDT). They were not modified by this lane; source HEAD alone does not fully bind the build. Observed post-build file SHA-256 values are 3b834b3518caff690e516586d6bc616d3eefeac3ec5c4f94cf9979cdb9e29f11 and 67611db0dba92a0255bb92f84c3920b771fb1fe4b0bcdf059d84c20173dced18 respectively, with combined git diff SHA-256 56be9827a67c4e60ad3dcdd60d9ae7fc59fe5b78eec9082d7191fd4436d6787d. Artifact hash remains authoritative."
+  },
+  "browser_feasibility": "Primary Chrome data volume had approximately 5 GiB available when checked, below the 20 GiB guard minimum. No browser run was launched or claimed; independent native installed-extension acceptance remains open. The sole heavy permit is free after the build wrapper exited.",
+  "limits": ["No product edits, localhost, UI run, release, or push in this lane", "Green fixtures and build do not prove saved picker behavior in installed Chrome", "Source review and broader Showcase coverage remain separate"]
+}
