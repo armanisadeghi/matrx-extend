@@ -38,9 +38,10 @@
       "reason": "Assigned Sol medium showcase_run_timestamp; narrow class repair with regression then fresh peer/native retest required."
     }
   ],
-  "verification_status": "Fresh independent peer c528c108 FIX_FIRST: guarded4file21test suite20pass1fail, hidden auto-extraction history warning, dual-failure overwrites original extraction reason, test mock implementation leakage. Original implementer is correcting all3findings; no new build/native proof.",
+  "verification_status": "Correction f65b020a addresses hidden auto-extraction note, loss of original extraction error during simultaneous history failure, and leaking test mock. Final four-file focused run showcase-d50-round2-focused-001 refused before launch: RESOURCE_CPU_HIGH_LOAD_BUSY, terminalexit2. Current correction tests/compile/build/native remain UNVERIFIED. Fresh source-only peer active; D50 remains in-fix.",
   "closure_requirement": "Prove persistence/refresh race red then green, errors visible without hiding extracted rows, independent source review, and actual newly completed native saved replay updates run history.",
   "fix_commits": [
-    "a011a682"
+    "a011a682",
+    "f65b020a"
   ]
 }
