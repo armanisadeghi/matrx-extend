@@ -15,6 +15,7 @@
   ],
   "regression_file": "src/features/notes/NoteEditor.autosave.test.tsx",
   "regression_cases": [
+    "restoring the exact saved draft before debounce starts no write and clears Saving; restoring during an older pending write waits for the restoration write",
     "newer edit during first pending write reaches storage and Saved waits for that write",
     "switching notes during a write preserves each note's content and separate status",
     "Append from page during pending autosave reaches storage",
@@ -36,13 +37,33 @@
     "src/features/notes/NotesView.tsx": "67611db0dba92a0255bb92f84c3920b771fb1fe4b0bcdf059d84c20173dced18",
     "src/features/notes/NoteEditor.autosave.test.tsx": "0f72268e110e0835e2ee46eb1e49b13d24cc1bbebe56c54f9a944c0ad0409b52"
   },
+  "peer_followup": {
+    "source_review": "docs/stabilization/reports/notes-files-batch-peer.json",
+    "finding": "D63-PEER-01: edit then exact revert left Saving visible indefinitely when the queued draft already equaled the saved snapshot.",
+    "correction_commit": "783eef4d",
+    "correction": "The equal-to-saved branch settles status only when the current editor draft still equals that snapshot and no newer draft is queued. An older in-flight write is completed before this branch can run; a return to the prior value during that write therefore takes a trailing write and waits for its success.",
+    "source_sha256": {
+      "src/features/notes/NoteEditor.tsx": "1ad831f653336a29314fedfec3ea4bb9d27dadc9ca8244f995fdc68f7ff85d33",
+      "src/features/notes/NoteEditor.autosave.test.tsx": "6b28b9719f91fc014dc45f574cdabd6ccd2e45698cdc62dfcd8009a499580253"
+    }
+  },
+  "final_combined_verification": {
+    "test_run_id": "d63-d64-d65-final-combined-20260928-01",
+    "test_journal": "docs/stabilization/resource-journals/d63-d64-d65-final-combined-20260928-01.jsonl",
+    "test_journal_sha256": "190d4605fc5b9b917845d5c00006de43cf0bbd7786f17b8989069dcc237f0999",
+    "test_result": "RESOURCE_ADMITTED; RESOURCE_FINAL_DECISION valid, resourceInvalid=false, exitCode=0; 3 focused files, 18 of 18 tests passed",
+    "compile_run_id": "d63-d64-d65-final-compile-20260928-01",
+    "compile_journal": "docs/stabilization/resource-journals/d63-d64-d65-final-compile-20260928-01.jsonl",
+    "compile_journal_sha256": "09c80f68b38a0405dd6425e04eff4ad098accbadc3a6afcfdb68f279c699e9fc",
+    "compile_result": "RESOURCE_ADMITTED; RESOURCE_FINAL_DECISION valid, resourceInvalid=false, exitCode=0; pnpm compile passed"
+  },
   "red_proof": "The repository plant tool temporarily substituted the previous persist implementation into the current editor and the connected test file went red; the tool restored the source byte-identically. That direct, unguarded run is diagnostic method evidence only and is excluded from campaign verification.",
   "invalid_for_campaign_acceptance": [
     "Earlier direct focused Vitest runs were not resource-admitted.",
     "Earlier direct pnpm compile was not resource-admitted. Its two SavedCapturesView.test.tsx fixture type errors belonged to concurrent peer work; this lane did not correct or classify them as baseline."
   ],
   "remaining_verification": [
-    "Guarded type check on the integrated checkout and independent source/test review.",
+    "Independent review of D63-PEER-01 follow-up and its guarded regression evidence.",
     "Actual installed-extension native Notes acceptance with member data and delayed/failing write boundaries. No native pass is claimed."
   ],
   "known_limit": "Recoverable failed drafts are retained in the current sidepanel process across note switches. Closing or restarting the sidepanel before a failed draft is retried does not durably preserve it."
