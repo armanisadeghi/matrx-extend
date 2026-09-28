@@ -30,9 +30,10 @@ import type { ExtractionPattern } from '@/lib/supabase/queries';
 // twins with no correct owner until kit became one.
 import { formatDurationMs } from '@ai-matrx/kit/format';
 import { openDocumentNetworkCapture } from './document-network-transport';
+import { type JsonKeyPath, formatJsonKeyPath, jsonKeyPathSegments } from './json-key-path';
 import { aiExtractCapturePage } from './modes/ai-extract';
-import { formatJsonKeyPath, jsonKeyPathSegments, type JsonKeyPath } from './json-key-path';
 import type { CapturedNetEvent } from './network-tap';
+import { pageCaptureOfferedValues } from './page-capture-offer';
 import { runPattern } from './run-pattern';
 import type { ExtractedRow } from './types';
 
@@ -154,6 +155,16 @@ export async function runAiExtractPattern(
       page_text: captured.page_text,
       page_metadata: captured.page_metadata,
       output_schema: output_schema ?? {},
+      // extend.page_capture offered values — Mandate door only (see
+      // page-capture-offer.ts): a saved agent_id pattern's agent may already
+      // use these names.
+      ...(mandate_key
+        ? pageCaptureOfferedValues({
+            pageMetadata: captured.page_metadata,
+            extractionDescription: description,
+            tabId,
+          })
+        : {}),
     },
     context: { page_title: captured.title },
     stream: true,

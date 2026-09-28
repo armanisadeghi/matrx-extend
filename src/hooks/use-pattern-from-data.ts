@@ -1,6 +1,7 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { type AgentStartRequest, mandateExecutePath } from '@/lib/api/routes/ai';
 import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
+import { pageCaptureOfferedValues } from '@/lib/data-pattern/page-capture-offer';
 import { newId } from '@/lib/id';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -286,6 +287,13 @@ export function usePatternFromData() {
           list_root_hint: input.listRootHint ?? '',
           sample_html: sampleHtml,
           extracted_rows: input.extractedRows.slice(0, 3),
+          // extend.page_capture offered values (Mandate door; mapped-only).
+          ...pageCaptureOfferedValues({
+            pageMetadata: input.pageMetadata,
+            extractionDescription: input.userInput,
+            extractedRows: input.extractedRows,
+            tabId: tab.id,
+          }),
         },
         context: { page_title: tab.title ?? '' },
         stream: true,
