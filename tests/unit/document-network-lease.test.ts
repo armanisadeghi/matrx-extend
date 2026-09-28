@@ -62,3 +62,77 @@ it('old detached lease cannot send to or release a replacement attachment', asyn
   await current.release();
   expect(detach).toHaveBeenCalledTimes(1);
 });
+it('keeps a rejected owned detach visible and retries it through the next lease', async () => {
+  const lease = await client.acquireSession(37);
+  detach.mockRejectedValueOnce(new Error('Chrome refused debugger detach'));
+  await expect(lease.release()).rejects.toThrow('Chrome refused debugger detach');
+  await expect(lease.release()).rejects.toThrow('Chrome refused debugger detach');
+  expect(client.isAttached(37)).toBe(true);
+  expect(detach).toHaveBeenCalledTimes(1);
+  const retry = await client.acquireSession(37);
+  expect(attach).toHaveBeenCalledTimes(1);
+  await retry.send('Page.getFrameTree');
+  await retry.release();
+  expect(detach).toHaveBeenCalledTimes(2);
+  expect(client.isAttached(37)).toBe(false);
+});
+it.each([true, false])(
+  'waits for pending detach before acquiring a replacement lease (ack=%s)',
+  async (acknowledged) => {
+    const old = await client.acquireSession(37);
+    let resolveDetach!: () => void;
+    let rejectDetach!: (error: Error) => void;
+    detach.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve, reject) => {
+          resolveDetach = resolve;
+          rejectDetach = reject;
+        }),
+    );
+    const first = old.release();
+    const repeated = old.release();
+    const settled = Promise.allSettled([first, repeated]);
+    const acquiring = client.acquireSession(37);
+    expect(attach).toHaveBeenCalledTimes(1);
+    if (acknowledged) resolveDetach();
+    else rejectDetach(new Error('Chrome refused debugger detach'));
+    const outcomes = await settled;
+    expect(outcomes.map((outcome) => outcome.status)).toEqual(
+      acknowledged ? ['fulfilled', 'fulfilled'] : ['rejected', 'rejected'],
+    );
+    const current = await acquiring;
+    expect(attach).toHaveBeenCalledTimes(acknowledged ? 2 : 1);
+    await current.send('Page.getFrameTree');
+    await current.release();
+    expect(detach).toHaveBeenCalledTimes(2);
+    expect(client.isAttached(37)).toBe(false);
+  },
+);
+
+it.each(['network', 'console'] as const)(
+  'ordinary %s capture waits for an owned detach before retaining its replacement',
+  async (kind) => {
+    const old = await client.acquireSession(37);
+    let finishDetach!: () => void;
+    detach.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          finishDetach = resolve;
+        }),
+    );
+    const releasing = old.release();
+    const capturing =
+      kind === 'network' ? client.startNetworkCapture(37) : client.startConsoleCapture(37);
+    expect(command).not.toHaveBeenCalled();
+    finishDetach();
+    await Promise.all([releasing, capturing]);
+    expect(attach).toHaveBeenCalledTimes(2);
+    expect(command).toHaveBeenCalledWith(
+      { tabId: 37 },
+      kind === 'network' ? 'Network.enable' : 'Runtime.enable',
+    );
+    const borrowed = await client.acquireSession(37);
+    await borrowed.release();
+    expect(detach).toHaveBeenCalledTimes(1);
+  },
+);

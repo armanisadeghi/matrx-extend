@@ -23,9 +23,12 @@ const PROTOCOL_VERSION = '1.3';
 const leases = new Map<number, { count: number; detachWhenUnused: boolean }>();
 const attachPending = new Map<number, Promise<{ ok: boolean; reason?: string }>>();
 const retainedTabs = new Set<number>();
+// Ownership survives a rejected detach so the next scoped lease can retry it.
+const leaseOwnedTabs = new Set<number>();
 const detachPending = new Map<number, Promise<{ ok: boolean; reason?: string }>>();
 function retain(tabId: number): void {
   retainedTabs.add(tabId);
+  leaseOwnedTabs.delete(tabId);
   const lease = leases.get(tabId);
   if (lease) lease.detachWhenUnused = false;
 }
@@ -127,6 +130,7 @@ function installListeners() {
       attachedTabs.delete(source.tabId);
       leases.delete(source.tabId);
       retainedTabs.delete(source.tabId);
+      leaseOwnedTabs.delete(source.tabId);
       networkBuffers.delete(source.tabId);
       networkRequests.delete(source.tabId);
       consoleBuffers.delete(source.tabId);
@@ -188,7 +192,7 @@ function handleConsoleEvent(tabId: number, method: string, params: Record<string
 export async function startConsoleCapture(tabId: number): Promise<void> {
   retain(tabId);
   installListeners();
-  if (!attachedTabs.has(tabId)) {
+  if (!attachedTabs.has(tabId) || detachPending.has(tabId)) {
     const r = await attach(tabId);
     if (!r.ok) throw new Error(`attach failed: ${r.reason}`);
   }
@@ -297,9 +301,17 @@ export async function attach(tabId: number): Promise<{ ok: boolean; reason?: str
 }
 
 export async function acquireSession(tabId: number) {
+  // Choose the new generation only after an earlier release has settled.
+  const detaching = detachPending.get(tabId);
+  if (detaching) await detaching;
   let state = leases.get(tabId);
   if (!state) {
-    state = { count: 0, detachWhenUnused: !attachedTabs.has(tabId) && !retainedTabs.has(tabId) };
+    state = {
+      count: 0,
+      detachWhenUnused:
+        !retainedTabs.has(tabId) && (leaseOwnedTabs.has(tabId) || !attachedTabs.has(tabId)),
+    };
+    if (state.detachWhenUnused) leaseOwnedTabs.add(tabId);
     leases.set(tabId, state);
   }
   state.count += 1;
@@ -310,6 +322,7 @@ export async function acquireSession(tabId: number) {
   }
   const leaseState = state;
   let released = false;
+  let releasePromise: Promise<void> | undefined;
   return {
     async send<T = unknown>(method: string, params?: Record<string, unknown>): Promise<T> {
       if (released || leases.get(tabId) !== leaseState || !attachedTabs.has(tabId))
@@ -317,13 +330,21 @@ export async function acquireSession(tabId: number) {
       touchIdleTimer(tabId);
       return (await chrome.debugger.sendCommand({ tabId }, method, params)) as T;
     },
-    async release(): Promise<void> {
-      if (released) return;
+    release(): Promise<void> {
+      if (releasePromise) return releasePromise;
       released = true;
-      if (--leaseState.count !== 0 || leases.get(tabId) !== leaseState) return;
-      leases.delete(tabId);
-      if (leaseState.detachWhenUnused && !retainedTabs.has(tabId) && attachedTabs.has(tabId))
-        await detach(tabId);
+      releasePromise = (async () => {
+        if (--leaseState.count !== 0 || leases.get(tabId) !== leaseState) return;
+        leases.delete(tabId);
+        if (leaseState.detachWhenUnused && !retainedTabs.has(tabId) && attachedTabs.has(tabId)) {
+          const result = await detach(tabId);
+          if (!result.ok)
+            throw new Error(
+              `Chrome did not confirm debugger release: ${result.reason ?? 'detach failed'}`,
+            );
+        }
+      })();
+      return releasePromise;
     },
   };
 }
@@ -331,7 +352,6 @@ export async function acquireSession(tabId: number) {
 export async function detach(tabId: number): Promise<{ ok: boolean; reason?: string }> {
   const pending = detachPending.get(tabId);
   if (pending) return pending;
-  attachedTabs.delete(tabId);
   leases.delete(tabId);
   const detaching = (async () => {
     retainedTabs.delete(tabId);
@@ -343,6 +363,7 @@ export async function detach(tabId: number): Promise<{ ok: boolean; reason?: str
     try {
       await chrome.debugger.detach({ tabId });
       attachedTabs.delete(tabId);
+      leaseOwnedTabs.delete(tabId);
       networkBuffers.delete(tabId);
       networkRequests.delete(tabId);
       // Console buffers too (audit P2-7) — they held captured page output
@@ -351,7 +372,9 @@ export async function detach(tabId: number): Promise<{ ok: boolean; reason?: str
       consoleBuffers.delete(tabId);
       return { ok: true };
     } catch (err) {
-      attachedTabs.delete(tabId);
+      // A rejected command is not evidence that Chrome released the attachment.
+      // Keep its ownership available to an explicit detach or scoped-lease retry.
+      touchIdleTimer(tabId);
       networkBuffers.delete(tabId);
       networkRequests.delete(tabId);
       consoleBuffers.delete(tabId);
@@ -384,7 +407,7 @@ export async function send<T = unknown>(
 export async function startNetworkCapture(tabId: number): Promise<void> {
   retain(tabId);
   installListeners();
-  if (!attachedTabs.has(tabId)) {
+  if (!attachedTabs.has(tabId) || detachPending.has(tabId)) {
     const r = await attach(tabId);
     if (!r.ok) throw new Error(`attach failed: ${r.reason}`);
   }

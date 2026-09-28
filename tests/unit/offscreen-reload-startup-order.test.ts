@@ -127,7 +127,10 @@ describe('reload startup ordering', () => {
     mocks.close.mockReturnValue(cleanup.promise);
     vi.stubGlobal('chrome', {
       alarms: { onAlarm: { addListener: vi.fn() } },
-      runtime: { onMessage: { addListener: vi.fn() } },
+      runtime: {
+        onMessage: { addListener: vi.fn() },
+        onConnect: { addListener: vi.fn() },
+      },
       storage: { local: { get: vi.fn(async () => ({})) }, onChanged: { addListener: vi.fn() } },
       tabs: { onUpdated: { addListener: vi.fn() } },
     });
@@ -153,7 +156,10 @@ describe('reload startup ordering', () => {
     mocks.close.mockReturnValue(new Promise<boolean>(() => undefined));
     vi.stubGlobal('chrome', {
       alarms: { onAlarm: { addListener: vi.fn() } },
-      runtime: { onMessage: { addListener: vi.fn() } },
+      runtime: {
+        onMessage: { addListener: vi.fn() },
+        onConnect: { addListener: vi.fn() },
+      },
       storage: { local: { get: vi.fn(async () => ({})) }, onChanged: { addListener: vi.fn() } },
       tabs: { onUpdated: { addListener: vi.fn() } },
     });

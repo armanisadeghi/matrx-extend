@@ -100,12 +100,13 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 it.each([
-  ['responsive cleanup', false, false],
-  ['stalled hook removal', true, false],
-  ['stalled owned debugger detach', false, true],
+  ['responsive cleanup', false, false, false],
+  ['rejected owned debugger detach', false, false, true],
+  ['stalled hook removal', true, false, false],
+  ['stalled owned debugger detach', false, true, false],
 ])(
   'saved UI handles %s after a full window without showing old-document rows',
-  async (_name, stallCleanup, stallDetach) => {
+  async (_name, stallCleanup, stallDetach, rejectDetach) => {
     vi.useFakeTimers();
     let stored: Record<string, unknown> = {};
     Object.assign(chrome.storage, {
@@ -167,6 +168,7 @@ it.each([
     const attach = vi.fn(async () => {});
     const detach = vi.fn(async () => {
       if (stallDetach) await new Promise(() => {});
+      if (rejectDetach) throw new Error('Chrome refused debugger detach');
     });
     const sendCommand = vi.fn(async (_target, method, params) => {
       if (stallCleanup && method === 'Page.removeScriptToEvaluateOnNewDocument')
@@ -261,20 +263,21 @@ it.each([
       await vi.advanceTimersByTimeAsync(10000);
       await drain();
     });
-    if (stallCleanup || stallDetach) {
+    if (stallCleanup || stallDetach || rejectDetach) {
       await act(async () => {
         await vi.advanceTimersByTimeAsync(20000);
         await drain();
       });
       expect(screen.queryByText('CURRENT_DOCUMENT_ROW')).toBeNull();
       expect(screen.getByText(/Chrome did not confirm removal/)).toBeTruthy();
-      expect(bumpPatternRun).not.toHaveBeenCalledWith(
-        'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
-        'broken',
-        0,
-      );
+      expect(bumpPatternRun).not.toHaveBeenCalled();
     } else expect(screen.getByText('CURRENT_DOCUMENT_ROW')).toBeTruthy();
     expect(screen.queryByText('STALE_DOCUMENT_ROW')).toBeNull();
     expect(detach).toHaveBeenCalledOnce();
+    if (rejectDetach) {
+      detach.mockResolvedValue(undefined);
+      const client = await import('@/lib/cdp/client');
+      await client.detach(37);
+    }
   },
 );

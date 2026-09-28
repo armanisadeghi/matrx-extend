@@ -1,0 +1,106 @@
+{
+  "status": "DONE_ENGINEERING_ROOT_HANDOFF",
+  "defect": "EXT-D-0047",
+  "lane": "rare escalation: rejected debugger cleanup acknowledgment",
+  "base": "15f13d8f",
+  "root_cause": "acquireSession.release discarded detach {ok:false}; detach erased attachment tracking before Chrome acknowledged, and repeated releases resolved independently of the first release outcome.",
+  "red": {
+    "run_id": "d47-detach-red",
+    "guard_exit": 1,
+    "child_exit": 1,
+    "actual_caller": "PatternsTab -> approval -> dispatcher -> saved runner -> capture transport/core -> real CDP client",
+    "observed": "Rejected Chrome detach still rendered CURRENT_DOCUMENT_ROW. The saved-UI assertion requiring no rows failed. A later parameterized case also failed after the primary failure; only the rejected-detach row assertion is counted as red proof."
+  },
+  "repair": [
+    "Propagate an unsuccessful Chrome detach as a rejected lease release. Cache the release promise so repeated/concurrent release receives the same acknowledgment.",
+    "Retain attachment and scoped ownership after rejected detach; permit later scoped lease or explicit detach to retry. Captured data buffers are cleared even on rejection.",
+    "Wait for pending detach before choosing a replacement lease generation. Ordinary console/network capture also waits before using its replacement session; ordinary retained sessions remain borrowed.",
+    "Keep existing capture timeout/removal behavior unchanged. Actual UI failure asserts no captured rows and no recipe-health update."
+  ],
+  "census": "The sole production acquireSession consumer is document-network-capture. Ordinary attach/send use attachShared, while console/network capture had attachment shortcuts; both shortcuts now also account for pending detach.",
+  "verification": [
+    {
+      "run_id": "d47-detach-green",
+      "files": 12,
+      "tests": 78,
+      "guard_exit": 0,
+      "child_exit": 0
+    },
+    {
+      "run_id": "d47-detach-format",
+      "guard_exit": 0,
+      "child_exit": 0,
+      "result": "28 admitted files checked; 2 owned files formatted; warnings only."
+    },
+    {
+      "run_id": "d47-detach-full",
+      "guard_exit": 1,
+      "child_exit": 1,
+      "files_passed": 218,
+      "tests_passed": 1648,
+      "tests_failed": 2,
+      "tests_skipped": 4,
+      "failure": "Both startup-order tests failed at real host registration because their Chrome runtime boundary doubles omitted onConnect.addListener."
+    },
+    {
+      "run_id": "d47-detach-startup-green",
+      "guard_exit": 0,
+      "child_exit": 0,
+      "files": 1,
+      "tests": 2,
+      "repair": "Add the missing onConnect event to both test Chrome environments, keeping real bootstrap/host registration and all ordering assertions."
+    },
+    {
+      "run_id": "d47-detach-compile",
+      "first_attempt": "Refused RESOURCE_LEGACY_RUNNER_BUSY before launch; retried only after previous guard terminal exit0."
+    },
+    {
+      "run_id": "d47-detach-compile",
+      "guard_exit": 1,
+      "child_exit": 1,
+      "failure": "New rejected-detach UI parameter added a fourth tuple field; existing three-field cases failed typechecking. Repaired by explicitly providing false in those three cases; no behavior or product change."
+    },
+    {
+      "run_id": "d47-detach-compile-final",
+      "guard_exit": 0,
+      "child_exit": 0
+    },
+    {
+      "run_id": "d47-detach-lint",
+      "guard_exit": 1,
+      "child_exit": 1,
+      "failure": "One formatting error in this new report: a one-item array should be inline. Changed outstanding to a plain status string; no source or test errors."
+    },
+    {
+      "run_id": "d47-detach-lint-final",
+      "guard_exit": 0,
+      "child_exit": 0,
+      "warnings": 608,
+      "errors": 0
+    },
+    {
+      "run_id": "d47-detach-full-final",
+      "guard_exit": 0,
+      "child_exit": 0,
+      "files_passed": 219,
+      "files_skipped": 1,
+      "tests_passed": 1650,
+      "tests_skipped": 4,
+      "duration_seconds": 107.2,
+      "resource_watches": "healthy; no invalidation",
+      "terminal_at": "2026-09-28T00:09:47.295Z"
+    }
+  ],
+  "limits": [
+    "Installed Chrome, browser API reality, extension builds, independent source peer, and push remain with root.",
+    "Boundary doubles replace Chrome and database calls in tests; actual UI, dispatcher, runner, transport, capture, CDP lease, parser and rendering execute.",
+    "Never-settling Chrome detach remains tracked and pending; existing per-run caller deadline reports unconfirmed cleanup rather than claiming Chrome has released it."
+  ],
+  "outstanding": "Root owns remote integration, push, builds and installed-Chrome verification. No runtime child or resource session remains in this lane; permit returned to root.",
+  "peer": {
+    "report": "docs/stabilization/reports/showcase-network-detach-final-peer.json",
+    "revision": "63076042",
+    "source_verdict": "ADDRESSED; no new scoped regression",
+    "installed_verdict": "UNVERIFIED"
+  }
+}
