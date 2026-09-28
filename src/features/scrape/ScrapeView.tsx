@@ -5,7 +5,7 @@ import { DiagnoseCard, DiagnoseLauncher } from '@/features/scrape/DiagnoseCard';
 import { FileSourcePanel } from '@/features/scrape/FileSourcePanel';
 import { UnsavedCapturesCard } from '@/features/scrape/UnsavedCapturesCard';
 import { SeoDetails } from '@/features/seo/SeoDetails';
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, refreshActiveTabIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { usePageRecognition } from '@/hooks/use-page-recognition';
 import { usePageScrollSync } from '@/hooks/use-page-scroll-sync';
 import { useScrape } from '@/hooks/use-scrape';
@@ -58,7 +58,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 export function ScrapeView() {
   const {
-    current,
+    current: captured,
     loading,
     activeMode,
     progress,
@@ -72,7 +72,6 @@ export function ScrapeView() {
     markUnsaved,
     launchDiagnose,
   } = useScrape();
-  const setCurrent = useScrapeStore((s) => s.setCurrent);
   const editArticleMarkdown = useScrapeStore((s) => s.editArticleMarkdown);
   const removeImage = useScrapeStore((s) => s.removeImage);
   const addImage = useScrapeStore((s) => s.addImage);
@@ -84,6 +83,9 @@ export function ScrapeView() {
   const signedIn = useAuthStore((s) => s.user !== null);
   const recognition = usePageRecognition();
   const tab = useActiveTab();
+  const capturedPageKey = useScrapeStore((s) => s.pageKey);
+  const captureIsCurrent = isCurrentPageIdentity(capturedPageKey) && capturedPageKey === tab.pageKey;
+  const current = captureIsCurrent ? captured : null;
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [activeOrganizationId, setActiveOrganizationId] = useState<string | null>(null);
@@ -205,18 +207,11 @@ export function ScrapeView() {
     void captureActiveTab({ mode });
   };
 
-  // Clear stale capture state when the user navigates to a new URL.
-  // Without this, the panel keeps showing the previous page's article and
-  // the button reads "Re-capture" — both wrong, both confusing.
-  useEffect(() => {
-    if (current && tab.url && current.url !== tab.url) {
-      setCurrent(null);
-      setSavedSource(null);
-    }
-  }, [tab.url, current, setCurrent]);
+  // A draft from an earlier document stays on this device, but is never
+  // presented as the active page's content or admitted to its Save controls.
 
   const handleSave = async () => {
-    if (!current) return;
+    if (!current || !captureIsCurrent) return;
     const run = ++saveRunRef.current;
     const capture = current;
     const organizationEpoch = organizationEpochRef.current;
@@ -226,7 +221,7 @@ export function ScrapeView() {
     try {
       const outcome = await save();
       if (!outcome) return;
-      if (run !== saveRunRef.current || useScrapeStore.getState().current !== capture) return;
+      if (run !== saveRunRef.current || useScrapeStore.getState().current !== capture || !isCurrentPageIdentity(capturedPageKey)) return;
       if (outcome.status === 'landed') {
         setSavedSource({
           id: outcome.landed.processed_document_id,
@@ -248,7 +243,8 @@ export function ScrapeView() {
       if (
         run === saveRunRef.current &&
         organizationEpoch === organizationEpochRef.current &&
-        useScrapeStore.getState().current === capture
+        useScrapeStore.getState().current === capture &&
+        isCurrentPageIdentity(capturedPageKey)
       ) {
         setSaveError(
           err instanceof Error
@@ -284,6 +280,17 @@ export function ScrapeView() {
   return (
     <div className="flex h-full flex-col">
       <div className="shrink-0 px-3 pt-2 pb-1">
+        {!tab.pageKey && (
+          <div className="mb-2 rounded-xl border border-amber-500/30 p-2 text-xs">
+            {tab.identityError ?? 'Checking this page…'}{' '}
+            <button type="button" className="underline" onClick={() => void refreshActiveTabIdentity()}>Retry page check</button>
+          </div>
+        )}
+        {captured && !captureIsCurrent && (
+          <div className="mb-2 rounded-xl border border-amber-500/30 p-2 text-xs">
+            A capture from a previous page is retained on this device. Capture the current page to edit or save its content.
+          </div>
+        )}
         <div className="flex items-start gap-2">
           <div className="min-w-0 flex-1">
             <div className="truncate text-sm font-medium">{tab.title ?? '—'}</div>
@@ -361,6 +368,7 @@ export function ScrapeView() {
                 type="button"
                 className="shrink-0 font-medium text-primary underline-offset-2 hover:underline"
                 onClick={() => guardedCapture('fast')}
+                disabled={!tab.pageKey}
               >
                 Capture this page
               </button>
@@ -686,7 +694,7 @@ export function ScrapeView() {
         <div className="flex gap-2">
           <Button
             onClick={() => guardedCapture('fast')}
-            disabled={loading}
+            disabled={loading || !tab.pageKey}
             className="flex-1 rounded-full"
             title="Capture the page exactly as it is right now"
           >
@@ -702,7 +710,7 @@ export function ScrapeView() {
           </Button>
           <Button
             onClick={() => guardedCapture('deep')}
-            disabled={loading}
+            disabled={loading || !tab.pageKey}
             variant="secondary"
             className="flex-1 rounded-full"
             title="Scroll the page top→bottom to load lazy content (images, infinite-scroll items), then capture. Better for dynamic pages."
@@ -1105,7 +1113,7 @@ function SeoPanel({ seo }: { seo: SeoAudit }) {
 function HighlightRegionsBanner() {
   const regions = useHighlightStore((s) => s.scrapeHandoff);
   const setScrapeHandoff = useHighlightStore((s) => s.setScrapeHandoff);
-  const [items, setItems] = useState<{ title: string; text: string }[] | null>(null);
+  const [items, setItems] = useState<{ title: string; text: string; url: string }[] | null>(null);
 
   useEffect(() => {
     if (regions && regions.length > 0) {
@@ -1115,13 +1123,13 @@ function HighlightRegionsBanner() {
   }, [regions, setScrapeHandoff]);
 
   if (!items || items.length === 0) return null;
-  const combined = items.map((r) => r.text).join('\n\n');
+  const combined = items.map((r) => `Saved highlight from ${r.url}\n${r.text}`).join('\n\n');
 
   return (
     <div className="mt-2 rounded-xl border border-amber-400/40 bg-amber-400/10 px-3 py-2 text-xs">
       <div className="mb-1 flex items-center justify-between">
         <span className="font-medium text-amber-700 dark:text-amber-300">
-          {items.length} highlighted region{items.length === 1 ? '' : 's'}
+          {items.length} saved highlighted region{items.length === 1 ? '' : 's'} (historical text)
         </span>
         <div className="flex items-center gap-1">
           <CopyButton text={combined} title="Copy regions" />

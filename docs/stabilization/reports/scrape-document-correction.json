@@ -1,0 +1,42 @@
+{
+  "id": "EXT-D-0059-scrape-correction",
+  "status": "source correction committed for peer verification; D59 remains in-fix",
+  "scope": [
+    "Manual Scrape fast/deep capture and retained draft admission",
+    "Diagnose picker session/result admission",
+    "Automatic Scrape cache and pre-send refresh",
+    "Minimal v1/v2 chat context stale-soup admission",
+    "Saved Highlight-to-Scrape handoff provenance text"
+  ],
+  "cause": "Scrape used tab id and URL for live capture and freshness, and the stores carried no top-frame document identity. Same-URL replacement could reuse A or accept late A work as B. Diagnose messages carried no originating picker session.",
+  "correction": [
+    "Manual and automatic capture use the shared active-tab pageKey/documentId and exact-document message/injection/scroll targets; late completions must still match current pageKey.",
+    "The retained manual draft stores its pageKey. Scrape hides it from B's article/edit/save controls and identifies it as an earlier page; unresolved identity shows Retry page check.",
+    "The Diagnose picker carries a per-launch session token and targets an exact document. Picker results and exits are admitted only for the active session and pageKey.",
+    "The auto cache stores pageKey and clears on document transition. The pre-send refresh and both context shapes reject cache or manual soup from a different shared document.",
+    "Saved highlight text in the Scrape handoff remains available with each source URL and an explicit historical label; URL/domain Source recognition remains historical lookup."
+  ],
+  "checks": {
+    "typecheck": "pnpm compile passed after source and auto test; the later manual test file was not included in that compile run",
+    "focused_tests": [
+      "auto-scrape-document-identity.test.tsx passed (A late success rejected, B same-URL exact document captured)",
+      "scrape-document-identity.test.tsx passed (A late manual success rejected, B captured)",
+      "page-ready.test.ts passed"
+    ],
+    "diff_check": "git diff --check passed before report write",
+    "red_before_green": "not performed; peer must not infer it from green tests",
+    "native_browser": "pending rebuilt extension acceptance; localhost forbidden by user"
+  },
+  "failed_commands_and_repairs": [
+    "First pnpm compile failed with two TypeScript errors: tabs.sendMessage overload disallowed explicit undefined options; exactOptionalPropertyTypes disallowed documentId:undefined in settlePage options. Corrected both, next compile passed.",
+    "Second pnpm compile failed with one test fixture type error: scrapeAutoMode 'fast' is not a valid ScrapeAutoMode. Changed fixture to 'capture'; next compile passed."
+  ],
+  "remaining_peer_checks": [
+    "Same-URL native A/B reload with fast/deep capture, an active Diagnose picker, and Save in a rebuilt unpacked extension",
+    "Diagnose late picker result/exit and late capture error adversarial cases",
+    "Saved A draft recovery and B Save/unsaved retry paths across guest, member, and admin where applicable",
+    "Pre-send context and automatic cache behavior while an older A capture is in flight, plus selector-level disabled and Retry visibility",
+    "Final compile after manual regression test was added; independent review of shared context changes and red-capable guard"
+  ],
+  "historical_lookup": "Saved Source recognition and saved Highlight lookup remain URL/domain scoped; no claim that saved history is current DOM evidence."
+}

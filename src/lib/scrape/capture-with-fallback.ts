@@ -55,18 +55,21 @@ function isUnreachable(url: string | null | undefined): boolean {
   return UNREACHABLE_URL_RE.test(url);
 }
 
-async function sendOnce(tabId: number): Promise<unknown> {
-  return chrome.tabs.sendMessage(tabId, {
+async function sendOnce(tabId: number, documentId?: string): Promise<unknown> {
+  const message = {
     __matrx: true,
     kind: CHANNELS.SCRAPE_CAPTURE,
     payload: { options: {} },
-  });
+  };
+  return documentId
+    ? chrome.tabs.sendMessage(tabId, message, { documentId })
+    : chrome.tabs.sendMessage(tabId, message);
 }
 
-async function tryInject(tabId: number): Promise<boolean> {
+async function tryInject(tabId: number, documentId?: string): Promise<boolean> {
   try {
     await chrome.scripting.executeScript({
-      target: { tabId },
+      target: { tabId, ...(documentId ? { documentIds: [documentId] } : {}) },
       files: [CONTENT_SCRIPT_FILE],
     });
     return true;
@@ -88,6 +91,7 @@ async function tryInject(tabId: number): Promise<boolean> {
 export async function captureWithFallback(
   tabId: number,
   url: string | null | undefined,
+  documentId?: string,
 ): Promise<CaptureResult> {
   if (isUnreachable(url)) {
     return {
@@ -100,7 +104,7 @@ export async function captureWithFallback(
   // First attempt — fast path.
   let raw: unknown;
   try {
-    raw = await sendOnce(tabId);
+    raw = await sendOnce(tabId, documentId);
   } catch (err) {
     const msg = (err as Error).message ?? String(err);
     if (!NO_RECEIVER_RE.test(msg)) {
@@ -109,7 +113,7 @@ export async function captureWithFallback(
       return { ok: false, reason: 'capture-error', detail: msg };
     }
     // No content script. Try to inject + retry once.
-    const injected = await tryInject(tabId);
+    const injected = await tryInject(tabId, documentId);
     if (!injected) {
       return {
         ok: false,
@@ -118,7 +122,7 @@ export async function captureWithFallback(
       };
     }
     try {
-      raw = await sendOnce(tabId);
+      raw = await sendOnce(tabId, documentId);
     } catch (err2) {
       const msg2 = (err2 as Error).message ?? String(err2);
       // If the second attempt still says "no receiver", something is

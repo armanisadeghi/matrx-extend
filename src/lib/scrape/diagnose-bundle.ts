@@ -23,6 +23,7 @@ import { elementPathSelector, inferListPattern } from '@/lib/data-pattern/select
 export type DiagnoseMode = 'missing' | 'unwanted';
 
 export interface DiagnosePickPayload {
+  sessionId?: string;
   /** Full path selectors, leaf → ancestor (up to 6 levels). */
   selectorChain: string[];
   leafTag: string;
@@ -51,6 +52,7 @@ export interface DiagnosePickPayload {
 export interface DiagnoseResult extends DiagnosePickPayload {
   mode: DiagnoseMode;
   capturedAt: number;
+  pageKey: string;
 }
 
 const LEAF_CAP = 3072;

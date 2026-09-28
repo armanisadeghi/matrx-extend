@@ -30,7 +30,7 @@ interface HighlightState {
    * DataView / ScrapeView consume + clear these on mount.
    */
   dataHandoff: { fields: { name: string; selector: string }[]; pageKey: string; tabId: number; documentId: string } | null;
-  scrapeHandoff: { title: string; text: string }[] | null;
+  scrapeHandoff: { title: string; text: string; url: string }[] | null;
 
   setItems: (items: HighlightListItem[]) => void;
   upsertItem: (item: HighlightListItem) => void;
@@ -44,7 +44,7 @@ interface HighlightState {
   clearAttached: () => void;
 
   setDataHandoff: (handoff: HighlightState['dataHandoff']) => void;
-  setScrapeHandoff: (regions: { title: string; text: string }[] | null) => void;
+  setScrapeHandoff: (regions: { title: string; text: string; url: string }[] | null) => void;
 }
 
 export const useHighlightStore = create<HighlightState>((set) => ({

@@ -176,6 +176,7 @@ export function HighlightView() {
       .map((h) => ({
         title: h.mode === 'element' ? 'Element' : 'Passage',
         text: h.text as string,
+        url: h.url,
       }));
     if (regions.length === 0) return;
     setScrapeHandoff(regions);

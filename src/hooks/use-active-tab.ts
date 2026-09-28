@@ -117,3 +117,8 @@ export function useActiveTab(): ActiveTabInfo {
 export function isCurrentPageIdentity(pageKey: string | null): boolean {
   return pageKey !== null && snapshot.identityStatus === 'ready' && snapshot.pageKey === pageKey;
 }
+
+/** Read the same shared identity synchronously at an async action boundary. */
+export function getActiveTabIdentitySnapshot(): ActiveTabInfo {
+  return snapshot;
+}

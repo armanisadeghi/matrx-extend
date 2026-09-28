@@ -14,6 +14,7 @@
  */
 
 import { CopyMenu } from '@/components/CopyMenu';
+import { useActiveTab } from '@/hooks/use-active-tab';
 import { formatDiagnoseBundle } from '@/lib/scrape/diagnose-bundle';
 import { cn } from '@/lib/utils';
 import { useScrapeStore } from '@/state/scrape';
@@ -22,6 +23,7 @@ import { ChevronDown, ChevronRight, Crosshair, X } from 'lucide-react';
 import { useState } from 'react';
 
 export function DiagnoseCard() {
+  const tab = useActiveTab();
   const result = useScrapeStore((s) => s.diagnose.lastResult);
   const draftNote = useScrapeStore((s) => s.diagnose.draftNote);
   const setDraftNote = useScrapeStore((s) => s.setDiagnoseDraftNote);
@@ -30,7 +32,7 @@ export function DiagnoseCard() {
   const [showSelectors, setShowSelectors] = useState(false);
   const [showHtml, setShowHtml] = useState(false);
 
-  if (!result) return null;
+  if (!result || !tab.pageKey || result.pageKey !== tab.pageKey) return null;
 
   const modeLabel = result.mode === 'missing' ? 'Missing element' : 'Unwanted element';
   const modeTone =

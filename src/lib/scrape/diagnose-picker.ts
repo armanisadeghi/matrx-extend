@@ -25,10 +25,12 @@ let host: HTMLElement | null = null;
 let shadow: ShadowRoot | null = null;
 let highlight: HTMLElement | null = null;
 let mode: 'missing' | 'unwanted' = 'missing';
+let sessionId = '';
 
-export function mountDiagnosePicker(initialMode: 'missing' | 'unwanted'): void {
+export function mountDiagnosePicker(initialMode: 'missing' | 'unwanted', initialSessionId = ''): void {
   if (host) return;
   mode = initialMode;
+  sessionId = initialSessionId;
   host = document.createElement('div');
   host.id = HOST_ID;
   host.style.cssText =
@@ -137,7 +139,7 @@ function finish(payload: DiagnosePickPayload | null) {
   void chrome.runtime.sendMessage({
     __matrx: true,
     kind,
-    payload: payload ? { ...payload, mode } : { mode },
+    payload: payload ? { ...payload, mode, sessionId } : { mode, sessionId },
   });
   unmountDiagnosePicker();
 }

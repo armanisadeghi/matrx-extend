@@ -1,4 +1,5 @@
 import { on } from '@/lib/messaging/native';
+import { getActiveTabIdentitySnapshot, isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import {
   buildCaptureError,
@@ -16,7 +17,7 @@ import { type SaveOutcome, saveCaptureAsSource } from '@/lib/sources/save-captur
 import { saveSeoAudit } from '@/lib/supabase/queries';
 import { pushNotice } from '@/state/notices';
 import { useScrapeStore } from '@/state/scrape';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type ScrapeMode = 'fast' | 'deep';
 
@@ -40,6 +41,9 @@ interface CaptureOptions {
 }
 
 export function useScrape() {
+  const tab = useActiveTab();
+  const pickerSessionRef = useRef<{ pageKey: string; sessionId: string } | null>(null);
+  const captureSequenceRef = useRef(0);
   const {
     current,
     original,
@@ -68,17 +72,23 @@ export function useScrape() {
     const offResult = on<DiagnosePickPayload & { mode?: DiagnoseMode }, { ack: true }>(
       CHANNELS.DIAGNOSE_PICKER_RESULT,
       (payload) => {
+        const session = pickerSessionRef.current;
+        if (!session || payload.sessionId !== session.sessionId || !isCurrentPageIdentity(session.pageKey)) return { ack: true };
         const mode: DiagnoseMode = payload.mode === 'unwanted' ? 'unwanted' : 'missing';
         const result: DiagnoseResult = {
           ...payload,
           mode,
           capturedAt: Date.now(),
+          pageKey: session.pageKey,
         };
+        pickerSessionRef.current = null;
         setDiagnoseResult(result);
         return { ack: true };
       },
     );
-    const offExit = on<unknown, { ack: true }>(CHANNELS.DIAGNOSE_PICKER_EXIT, () => {
+    const offExit = on<{ sessionId?: string }, { ack: true }>(CHANNELS.DIAGNOSE_PICKER_EXIT, (payload) => {
+      if (payload.sessionId !== pickerSessionRef.current?.sessionId) return { ack: true };
+      pickerSessionRef.current = null;
       setDiagnosePicking(false);
       return { ack: true };
     });
@@ -88,33 +98,57 @@ export function useScrape() {
     };
   }, [setDiagnoseResult, setDiagnosePicking]);
 
+  useEffect(() => {
+    captureSequenceRef.current += 1;
+    setLoading(false);
+    setActiveMode(null);
+    setProgress(null);
+    if (pickerSessionRef.current && pickerSessionRef.current.pageKey !== tab.pageKey) {
+      pickerSessionRef.current = null;
+      setDiagnosePicking(false);
+    }
+  }, [tab.pageKey, setDiagnosePicking]);
+
   const launchDiagnose = useCallback(async () => {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!tab?.id) return;
+    const page = getActiveTabIdentitySnapshot();
+    if (!page.id || !page.documentId || !page.pageKey) {
+      setError(buildCaptureError({ err: new Error(page.identityError ?? 'Page identity is unavailable. Retry.'), url: page.url, tabId: page.id }));
+      return;
+    }
+    const sessionId = crypto.randomUUID();
+    pickerSessionRef.current = { pageKey: page.pageKey, sessionId };
     setDiagnosePicking(true);
     try {
       // Stamp the mode on documentElement so the content-script entrypoint
       // can read it on startup. Same world as the content script (both ISOLATED
       // and MAIN can read attributes set this way).
       await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: (mode: string) => {
+        target: { tabId: page.id, documentIds: [page.documentId] },
+        func: (mode: string, session: string) => {
           document.documentElement.setAttribute('data-matrx-diagnose-mode', mode);
+          document.documentElement.setAttribute('data-matrx-diagnose-session', session);
         },
-        args: [diagnoseMode],
+        args: [diagnoseMode, sessionId],
       });
+      if (!isCurrentPageIdentity(page.pageKey)) {
+        pickerSessionRef.current = null;
+        setDiagnosePicking(false);
+        return;
+      }
       await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
+        target: { tabId: page.id, documentIds: [page.documentId] },
         files: ['content-scripts/diagnose-picker.js'],
       });
     } catch (err) {
+      pickerSessionRef.current = null;
       setDiagnosePicking(false);
       console.warn('[matrx-extend] diagnose picker injection failed', err);
     }
-  }, [diagnoseMode, setDiagnosePicking]);
+  }, [diagnoseMode, setDiagnosePicking, setError]);
 
   const captureActiveTab = useCallback(
     async ({ mode = 'fast' }: CaptureOptions = {}) => {
+      const run = ++captureSequenceRef.current;
       setLoading(true);
       setActiveMode(mode);
       setError(null);
@@ -122,37 +156,40 @@ export function useScrape() {
       let tabId: number | null = null;
       let tabUrl: string | null = null;
       try {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        tabId = tab?.id ?? null;
-        tabUrl = tab?.url ?? null;
-        if (!tab?.id) {
-          setError(buildCaptureError({ err: new Error('No active tab'), url: tabUrl, tabId }));
+        const page = getActiveTabIdentitySnapshot();
+        tabId = page.id;
+        tabUrl = page.url;
+        if (!page.id || !page.documentId || !page.pageKey) {
+          setError(buildCaptureError({ err: new Error(page.identityError ?? 'Page identity is unavailable. Retry.'), url: tabUrl, tabId }));
           return null;
         }
 
         // Pre-flight URL check. Saves a confusing Chrome error and a wasted
         // round-trip when we already know the page is on the blocklist.
-        const urlClass = classifyTabUrl(tab.url);
+        const urlClass = classifyTabUrl(page.url);
         if (urlClass.blocked) {
-          setError(buildCaptureError({ err: null, url: tab.url ?? null, tabId: tab.id }));
+          setError(buildCaptureError({ err: null, url: page.url, tabId: page.id }));
           return null;
         }
 
         if (mode === 'deep') {
           // scrollToLoadLazy includes shared post-scroll settling so JSXGraph
           // cannot be captured while only its empty axis/grid shell exists.
-          await scrollToLoadLazy(tab.id, {
-            onProgress: ({ step, total }) => setProgress({ step, total }),
+          await scrollToLoadLazy(page.id, {
+            documentId: page.documentId,
+            onProgress: ({ step, total }) => { if (run === captureSequenceRef.current && isCurrentPageIdentity(page.pageKey)) setProgress({ step, total }); },
           });
+          if (!isCurrentPageIdentity(page.pageKey) || run !== captureSequenceRef.current) return null;
           setProgress(null);
         }
 
         // Route through captureWithFallback (the same path auto-scrape and
         // read_active_page use) so a missing content script triggers an
         // inject retry instead of a hard "no-receiver" failure.
-        const cap = await captureWithFallback(tab.id, tab.url ?? null);
+        const cap = await captureWithFallback(page.id, page.url, page.documentId);
+        if (!isCurrentPageIdentity(page.pageKey) || run !== captureSequenceRef.current) return null;
         if (cap.ok && cap.soup) {
-          setCurrent(cap.soup);
+          setCurrent(cap.soup, page.pageKey);
           return cap.soup;
         }
         setError(
@@ -168,12 +205,14 @@ export function useScrape() {
         );
         return null;
       } catch (err) {
-        setError(buildCaptureError({ err, url: tabUrl, tabId }));
+        if (run === captureSequenceRef.current) setError(buildCaptureError({ err, url: tabUrl, tabId }));
         return null;
       } finally {
-        setLoading(false);
-        setActiveMode(null);
-        setProgress(null);
+        if (run === captureSequenceRef.current) {
+          setLoading(false);
+          setActiveMode(null);
+          setProgress(null);
+        }
       }
     },
     [setCurrent, setError, setLoading],
@@ -210,7 +249,7 @@ export function useScrape() {
    */
   const save = useCallback(
     async (extra: { patternId?: string } = {}): Promise<SaveOutcome | null> => {
-      if (!current) return null;
+      if (!current || !isCurrentPageIdentity(useScrapeStore.getState().pageKey)) return null;
       // Text and collectors from the (possibly edited) capture; the untouched
       // capture is the original; edited article text wins over the old HTML.
       const outcome = await saveCaptureAsSource(current, {

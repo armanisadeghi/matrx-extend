@@ -18,6 +18,7 @@ interface SettlePageOptions {
   quietMs?: number;
   /** Hard cap regardless of quiescence. */
   maxMs?: number;
+  documentId?: string;
 }
 
 /**
@@ -28,13 +29,13 @@ interface SettlePageOptions {
  */
 export async function settlePage(
   tabId: number,
-  { quietMs = 800, maxMs = 6000 }: SettlePageOptions = {},
+  { quietMs = 800, maxMs = 6000, documentId }: SettlePageOptions = {},
 ): Promise<void> {
   log.info('scrape', `settlePage tab=${tabId} quiet=${quietMs}ms max=${maxMs}ms`);
   const start = performance.now();
   try {
     await chrome.scripting.executeScript({
-      target: { tabId },
+      target: { tabId, ...(documentId ? { documentIds: [documentId] } : {}) },
       func: (quiet: number, max: number) =>
         new Promise<void>((resolve) => {
           const startObserver = () => {
@@ -86,6 +87,7 @@ interface ScrollProgress {
 }
 
 interface ScrollOptions {
+  documentId?: string;
   /** Pixels per scroll step as a fraction of viewport height. */
   stepRatio?: number;
   /** Pause between steps to let lazy loaders fire. */
@@ -128,6 +130,7 @@ export async function scrollToLoadLazy(
     maxMs = 6000,
     restoreScroll = true,
     onProgress,
+    documentId,
   }: ScrollOptions = {},
 ): Promise<void> {
   log.info('scrape', `scrollToLoadLazy tab=${tabId} delay=${delayMs}ms max=${maxMs}ms`);
@@ -152,7 +155,7 @@ export async function scrollToLoadLazy(
 
   try {
     const result = await chrome.scripting.executeScript({
-      target: { tabId },
+      target: { tabId, ...(documentId ? { documentIds: [documentId] } : {}) },
       func: (
         stepRatioArg: number,
         delayMsArg: number,
@@ -230,7 +233,7 @@ export async function scrollToLoadLazy(
     const summary = result?.[0]?.result as ScrollResult | undefined;
     // A scroll only triggers lazy graph hydration. Do not let any caller
     // capture the intermediate shell before JSXGraph's plotted children land.
-    await settlePage(tabId);
+    await settlePage(tabId, documentId ? { documentId } : {});
     const ms = Math.round(performance.now() - start);
     log.success(
       'scrape',

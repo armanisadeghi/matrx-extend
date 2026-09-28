@@ -21,6 +21,8 @@ import { create } from 'zustand';
 
 export interface AutoScrapeRecord {
   url: string;
+  /** Shared top-frame identity at capture time; absent legacy records are never live. */
+  pageKey?: string;
   /** ms epoch — when the soup was captured. */
   capturedAt: number;
   /**
