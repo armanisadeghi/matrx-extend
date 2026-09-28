@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "lane": "EXT-D-0049 final independent native acceptance and emitted worker review",
+  "status": "FAILED_NATIVE_ACCEPTANCE_OPEN_DEFECT",
+  "source": {
+    "fix_commit": "dd6f12a2d3bb91d2a06ffa5457cecf6523811a3d",
+    "artifact_directory": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "expected_and_recomputed_full_tree_sha256": "1df62d6e214f0a70c25cf34fc762dc22582a1e64a002f12a9f69bf16efcb882d",
+    "expected_and_recomputed_pnpm_lock_sha256": "09d68f1bf3045ac99ffa2ec593ffab1a11ddfbe703ebc4b2b99a42af995b1237",
+    "artifact_version": "0.2.114",
+    "manifest_and_installed_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "provenance": "The tree hash was independently recomputed with hashReleaseTree from scripts/sync-unpacked-release.mjs before Chrome interaction. The lockfile hash was recomputed with shasum -a 256. Chrome's extension details showed the expected ID, version and exact unpacked path after explicit Reload."
+  },
+  "resource_guard": {
+    "run_id": "showcase-d49-final-acceptance-20260928",
+    "command": "node scripts/stabilization-resource.mjs browser --run-id showcase-d49-final-acceptance-20260928 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "admitted_at_utc": "2026-09-28T07:02:57.386Z",
+    "last_healthy_watch_utc": "2026-09-28T07:04:19.079Z",
+    "terminal_at_utc": "2026-09-28T07:04:25.664Z",
+    "terminal": "RESOURCE_BROWSER_STOP_CONFIRMED",
+    "resource_invalid": false
+  },
+  "native_context": {
+    "browser": "Primary Google Chrome profile, existing HN search tab and Matrx side panel",
+    "page": "https://hn.algolia.com/?q=OpenAI",
+    "account": "admin@admin.com",
+    "organization": "The signed-in session already had the active workspace from the prior native run; no organization picker appeared during this run.",
+    "owned_recipe": "Codex D47 HN Search OpenAI network replay 20260928",
+    "recipe_mode": "NETWORK",
+    "worker_devtools": "Closed throughout; no console injection was used.",
+    "privacy": "No credentials, raw headers, request bodies, API keys or private page content were recorded."
+  },
+  "actions_and_observations": [
+    {
+      "at_utc": "2026-09-28T07:03Z",
+      "action": "Explicitly clicked Reload on the enabled unpacked Matrx extension, checked its Details page, refreshed the existing public HN search tab, then reopened the side panel and lazy Showcase Patterns view.",
+      "observed": "Details showed ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.114 and loaded-from path /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev. The public page showed 19,665 results; visible top rows included OpenAI's board has fired Sam Altman (5710 points) and Google ‘We have no moat, and neither does OpenAI’ (2455 points). Showcase rendered with dark styling, tab labels and styled pattern card."
+    },
+    {
+      "at_utc": "2026-09-28T07:03-07:04Z",
+      "action": "Clicked Run once on the named owned saved NETWORK recipe.",
+      "observed": "Patterns immediately displayed ‘\"Codex D47 HN Search OpenAI network replay 20260928\" failed: window is not defined’. The recipe remained BROKEN with last run about 25 minutes earlier and 0 rows; no approval card, automatic fresh-page capture, result or matching saved rows appeared. No retry was attempted."
+    }
+  ],
+  "verdict_a_actual_outcome": {
+    "status": "FAIL_NATIVE_ACCEPTANCE",
+    "result": "Saved Network Run still fails before approval and extraction on the exact rebuilt artifact. This failure is visibly ‘window is not defined’, whereas the previous artifact showed ‘document is not defined’. Approval, denial or cancellation followed by Allow, automatic fresh-page capture, matching rows and comparison with public values could not be exercised.",
+    "limit": "The UI error does not itself identify the exact emitted window reference or prove a circular import cause. The original silent Port stall had a proven import-settlement boundary, but its underlying cause was not proven."
+  },
+  "verdict_b_source_and_guard": {
+    "status": "NARROW_PRELOAD_GUARD_PASSES_BUT_RUNTIME_UNSAFE",
+    "positive": [
+      "The final source removes Vite JavaScript preloading and walks the background entry's emitted import graph; it checks dynamic-import wrapper calls with nonempty dependency arrays rather than rejecting a harmless shared helper definition.",
+      "An independent TypeScript AST walk of statically resolvable emitted background imports found 21 reachable chunks, 20 dynamic-import wrappers and zero nonempty dependency arrays. The shared helper still contains a conditional document reference, but these inspected worker call sites pass empty arrays. This addresses the previous document preload mechanism in the examined artifact.",
+      "The diff adds no fake document, sender or security bypass, approval bypass, or error suppression. Native lazy Showcase rendered styled after reload; the shared Vite option did not visibly strip that view's CSS."
+    ],
+    "finding": "The guard proves only that worker-reachable dynamic-import wrappers found by its current emitted-code pattern lack preload dependencies. It is not a general worker-global-safety proof, and the real saved Run now rejects with ‘window is not defined’. The independent AST census resolves literal import paths only, so its 21-chunk count is narrower than the build plugin's Rollup graph. The guard has not been red-tested on the overwritten known-failing artifact, and the new window failure remains unlocalized.",
+    "closure": "Do not close EXT-D-0049. Diagnose the first emitted worker window reference on the actual saved Run path, repair it without bypassing approval, then repeat native approval, denial/cancel, Allow, automatic capture, rows and public-value comparison."
+  },
+  "files_changed": [
+    "docs/stabilization/reports/showcase-d49-final-acceptance.json"
+  ],
+  "commit_scope": "Exact report path only; no push, build, install, tests, branch, worktree or product edits in this lane."
+}
