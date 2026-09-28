@@ -1415,6 +1415,7 @@ Every entry follows this shape:
   scheduled replay is claimed. Unit guards are not live acceptance evidence.
 
 ### Showcase — Patterns tab (lifecycle + re-run)
+
 - **What it does:** Lists every saved pattern for the host with health
   badges; run / rename / delete inline.
 - **Steps:**
@@ -1440,6 +1441,8 @@ Every entry follows this shape:
   rows remain visible with a warning that the saved history did not update,
   including when those rows came from automatic extraction. If both extraction
   and run-history saving fail, both reasons remain visible.
+
+**Copy JSON completeness (EXT-D-0053):** Run a saved pattern that returns a text value longer than 50,000 characters, then choose Copy JSON and Copy for AI from its result preview. Read the clipboard after each copy and confirm the complete value and every row are present; the AI payload's fenced JSON must parse to those same rows. Repeat JSON copy from Data manual rerun. An unsupported or cyclic value must show copy failure and leave the clipboard unchanged.
 
 ### Showcase — preview configuration survives later edits
 - **What it does:** Saving a preview keeps the exact settings that produced

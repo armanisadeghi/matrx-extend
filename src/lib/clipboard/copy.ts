@@ -114,18 +114,17 @@ export function wrapJsonForAgent(
 
 export function stringifyJson(data: unknown, indent = 2): string {
   try {
-    return JSON.stringify(data, jsonReplacer, indent);
-  } catch {
-    return String(data);
+    const json = JSON.stringify(data, jsonReplacer, indent);
+    if (json === undefined) throw new TypeError('This value cannot be represented as JSON.');
+    return json;
+  } catch (error) {
+    throw new Error('Could not copy JSON: the value cannot be represented as JSON.', { cause: error });
   }
 }
 
 function jsonReplacer(_key: string, value: unknown): unknown {
   if (value instanceof Error) {
     return { name: value.name, message: value.message, stack: value.stack };
-  }
-  if (typeof value === 'string' && value.length > 50_000) {
-    return `${value.slice(0, 50_000)}…(+${value.length - 50_000} chars truncated)`;
   }
   return value;
 }

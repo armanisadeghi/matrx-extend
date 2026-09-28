@@ -45,8 +45,14 @@ export function CopyButton({ text, title = 'Copy', className, size = 'sm' }: Cop
 
   const onClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const value = typeof text === 'function' ? await text() : text;
-    const ok = await copyToClipboard(value);
+    let ok = false;
+    try {
+      const value = typeof text === 'function' ? await text() : text;
+      ok = await copyToClipboard(value);
+    } catch {
+      // Content generation can fail (for example, unsupported JSON). Never
+      // show success when nothing was written to the clipboard.
+    }
     // Failure was previously SILENT — the user pasted nothing and blamed
     // themselves. Flash a red X so they know to refocus the panel and retry.
     setState(ok ? 'copied' : 'failed');
@@ -104,8 +110,13 @@ export function CopyMenu({
   if (visible.length === 0) return null;
 
   const handleClick = async (o: CopyOption) => {
-    const content = await o.getContent();
-    const ok = await copyToClipboard(content);
+    let ok = false;
+    try {
+      const content = await o.getContent();
+      ok = await copyToClipboard(content);
+    } catch {
+      // A formatter failure is a copy failure, not a successful empty copy.
+    }
     if (ok) {
       setCopiedLabel(o.label);
       setTimeout(() => setCopiedLabel(null), 1200);
