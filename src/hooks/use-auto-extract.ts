@@ -1,4 +1,4 @@
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { urlMatchesPattern } from '@/lib/data-pattern/matcher';
 import { isInteractiveOnlyKind, runPattern } from '@/lib/data-pattern/run-pattern';
 import { classifySavedRun } from '@/lib/data-pattern/saved-run-outcome';
@@ -38,20 +38,19 @@ export function useAutoExtract(): void {
   const setRecord = useAutoExtractStore((s) => s.setRecord);
   const pruneTo = useAutoExtractStore((s) => s.pruneTo);
 
-  const pageKey = `${tab.id ?? 'none'}|${tab.url ?? ''}`;
+  const pageKey = tab.pageKey ?? '';
   const currentPage = useRef(pageKey);
   currentPage.current = pageKey;
 
   useEffect(() => {
-    const url = tab.url ?? null;
-    pruneTo(tab.id, url);
-  }, [tab.id, tab.url, pruneTo]);
+    pruneTo(tab.pageKey);
+  }, [tab.pageKey, pruneTo]);
 
   useEffect(() => {
     if (!signedIn) return;
     const tabId = tab.id;
     const url = tab.url;
-    if (!tabId || !url) return;
+    if (!tabId || !url || !tab.documentId || !tab.pageKey) return;
 
     let host: string;
     try {
@@ -63,7 +62,7 @@ export function useAutoExtract(): void {
 
     let cancelled = false;
     const handle = setTimeout(async () => {
-      if (cancelled || currentPage.current !== pageKey) return;
+      if (cancelled || currentPage.current !== pageKey || !isCurrentPageIdentity(pageKey)) return;
 
       let patterns: ExtractionPattern[];
       try {
@@ -71,7 +70,7 @@ export function useAutoExtract(): void {
       } catch {
         return;
       }
-      if (cancelled || currentPage.current !== pageKey) return;
+      if (cancelled || currentPage.current !== pageKey || !isCurrentPageIdentity(pageKey)) return;
 
       // Interactive-only kinds (ai_extract, network_capture) are never run in
       // the background — no surprise reloads or agent spend without a click.
@@ -83,8 +82,8 @@ export function useAutoExtract(): void {
       // Fire each matching pattern in parallel.
       await Promise.all(
         matched.map(async (pattern) => {
-          if (cancelled || currentPage.current !== pageKey) return;
-          const key = autoExtractKey(pattern.id, tabId, url);
+          if (cancelled || currentPage.current !== pageKey || !isCurrentPageIdentity(pageKey)) return;
+          const key = autoExtractKey(pattern.id, pageKey);
           const existing = records.get(key);
           if (existing && existing.status === 'ok' && Date.now() - existing.lastRunAt < TTL_MS) {
             return; // recent successful run — skip
@@ -93,19 +92,21 @@ export function useAutoExtract(): void {
             pattern,
             url,
             tabId,
+            pageKey,
             rows: [],
             status: 'running',
             lastRunAt: Date.now(),
           });
 
           try {
-            const rows = await runPattern(pattern, tabId);
-            if (cancelled || currentPage.current !== pageKey) return;
+            const rows = await runPattern(pattern, tabId, tab.documentId);
+            if (cancelled || currentPage.current !== pageKey || !isCurrentPageIdentity(pageKey)) return;
             const outcome = classifySavedRun(pattern, url, rows);
             setRecord(key, {
               pattern,
               url,
               tabId,
+              pageKey,
               rows,
               status: outcome.kind === 'matched' ? 'ok' : 'no_match',
               ...(outcome.message && { note: outcome.message }),
@@ -113,11 +114,12 @@ export function useAutoExtract(): void {
             });
             if (outcome.kind === 'matched') {
               const updateError = await bumpPatternRun(pattern.id, 'ok', rows.length);
-              if (updateError && !cancelled && currentPage.current === pageKey) {
+              if (updateError && !cancelled && currentPage.current === pageKey && isCurrentPageIdentity(pageKey)) {
                 setRecord(key, {
                   pattern,
                   url,
                   tabId,
+                  pageKey,
                   rows,
                   status: 'ok',
                   note: [outcome.message, `Saved run history could not be updated: ${updateError}`]
@@ -128,23 +130,25 @@ export function useAutoExtract(): void {
               }
             }
           } catch (err) {
-            if (cancelled || currentPage.current !== pageKey) return;
+            if (cancelled || currentPage.current !== pageKey || !isCurrentPageIdentity(pageKey)) return;
             const errorMessage = err instanceof Error ? err.message : String(err);
             setRecord(key, {
               pattern,
               url,
               tabId,
+              pageKey,
               rows: [],
               status: 'error',
               error: errorMessage,
               lastRunAt: Date.now(),
             });
             const updateError = await bumpPatternRun(pattern.id, 'broken', 0);
-            if (updateError && !cancelled && currentPage.current === pageKey) {
+            if (updateError && !cancelled && currentPage.current === pageKey && isCurrentPageIdentity(pageKey)) {
               setRecord(key, {
                 pattern,
                 url,
                 tabId,
+                pageKey,
                 rows: [],
                 status: 'error',
                 error: `${errorMessage} Saved run history could not be updated: ${updateError}`,
@@ -164,5 +168,5 @@ export function useAutoExtract(): void {
     // stable from Zustand and including `records` would re-fire on every
     // store update. (useExhaustiveDependencies is warn-level during the
     // lint-baseline ratchet, so no suppression needed.)
-  }, [signedIn, tab.id, tab.url]);
+  }, [signedIn, tab.id, tab.url, tab.documentId, pageKey]);
 }

@@ -1,49 +1,119 @@
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 export interface ActiveTabInfo {
   id: number | null;
   url: string | null;
   title: string | null;
+  documentId: string | null;
+  identityStatus: 'resolving' | 'ready' | 'unresolved';
+  identityError: string | null;
+  pageKey: string | null;
 }
 
-export function useActiveTab(): ActiveTabInfo {
-  const [info, setInfo] = useState<ActiveTabInfo>({ id: null, url: null, title: null });
+const initial: ActiveTabInfo = {
+  id: null, url: null, title: null, documentId: null,
+  identityStatus: 'resolving', identityError: null, pageKey: null,
+};
+let snapshot = initial;
+let sequence = 0;
+let navigationPending = false;
+let committedDocumentId: string | null = null;
+const subscribers = new Set<() => void>();
 
-  useEffect(() => {
-    const refresh = async () => {
-      try {
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        if (!tab) return;
-        // Value-compare before writing: onUpdated fires for EVERY tab's
-        // title/favicon/loading churn, and an always-fresh object re-rendered
-        // every consumer (all 12 Showcase sub-tabs) per event (audit J5).
-        setInfo((prev) => {
-          const next = { id: tab.id ?? null, url: tab.url ?? null, title: tab.title ?? null };
-          return prev.id === next.id && prev.url === next.url && prev.title === next.title
-            ? prev
-            : next;
-        });
-      } catch (err) {
-        console.warn('[matrx-extend] active tab query failed', err);
-      }
-    };
-    void refresh();
+function publish(next: ActiveTabInfo) {
+  if (Object.keys(next).every((key) => next[key as keyof ActiveTabInfo] === snapshot[key as keyof ActiveTabInfo])) return;
+  snapshot = next;
+  for (const listener of subscribers) listener();
+}
 
-    const onActivated = () => void refresh();
-    const onUpdated = (_id: number, _info: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
-      // Background-tab events can't change the ACTIVE tab's info.
-      if (tab.active) void refresh();
-    };
+function withhold() {
+  navigationPending = true;
+  sequence += 1;
+  publish({ ...snapshot, documentId: null, identityStatus: 'resolving', identityError: null, pageKey: null });
+}
 
+/** One sequenced active-tab and top-frame read serves every side-panel consumer. */
+export async function refreshActiveTabIdentity(): Promise<void> {
+  const ownSequence = ++sequence;
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (ownSequence !== sequence) return;
+    if (!tab?.id) {
+      publish({ ...initial, identityStatus: 'unresolved', identityError: 'No active browser tab. Select a page and retry.' });
+      return;
+    }
+    const base = { id: tab.id, url: tab.url ?? null, title: tab.title ?? null };
+    const frame = await chrome.webNavigation.getFrame({ tabId: tab.id, frameId: 0 });
+    if (ownSequence !== sequence) return;
+    if (navigationPending) return;
+    if (!frame?.documentId || frame.errorOccurred || !frame.url || (committedDocumentId && frame.documentId !== committedDocumentId)) {
+      publish({ ...base, documentId: null, identityStatus: 'unresolved', identityError: 'Page identity is unavailable. Reload the page or retry.', pageKey: null });
+      return;
+    }
+    if (base.url && frame.url !== base.url) {
+      publish({ ...base, documentId: null, identityStatus: 'unresolved', identityError: 'Page navigation is still settling. Retry in a moment.', pageKey: null });
+      return;
+    }
+    const url = base.url ?? frame.url;
+    publish({ ...base, url, documentId: frame.documentId, identityStatus: 'ready', identityError: null, pageKey: JSON.stringify([tab.id, frame.documentId, url]) });
+  } catch (error) {
+    if (ownSequence !== sequence) return;
+    publish({ ...snapshot, documentId: null, identityStatus: 'unresolved', identityError: `Could not verify this page: ${error instanceof Error ? error.message : String(error)}. Retry.`, pageKey: null });
+  }
+}
+
+const onActivated = () => { withhold(); navigationPending = false; committedDocumentId = null; void refreshActiveTabIdentity(); };
+const onUpdated = (tabId: number, change: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
+  if (!tab.active) return;
+  if (change.status === 'loading' && tabId === snapshot.id) { withhold(); committedDocumentId = null; }
+  if (change.status === 'complete' && tabId === snapshot.id) navigationPending = false;
+  if (change.status || change.url || change.title) void refreshActiveTabIdentity();
+};
+const onBeforeNavigate = (details: chrome.webNavigation.WebNavigationParentedCallbackDetails) => {
+  if (details.frameId === 0 && details.tabId === snapshot.id) withhold();
+};
+const onCommitted = (details: chrome.webNavigation.WebNavigationTransitionCallbackDetails) => {
+  if (details.frameId !== 0 || details.tabId !== snapshot.id) return;
+  withhold();
+  committedDocumentId = details.documentId ?? null;
+  navigationPending = false;
+  void refreshActiveTabIdentity();
+};
+const onError = (details: chrome.webNavigation.WebNavigationFramedErrorCallbackDetails) => {
+  if (details.frameId === 0 && details.tabId === snapshot.id) { navigationPending = false; committedDocumentId = null; void refreshActiveTabIdentity(); }
+};
+function subscribe(listener: () => void) {
+  subscribers.add(listener);
+  if (subscribers.size === 1) {
     chrome.tabs.onActivated.addListener(onActivated);
     chrome.tabs.onUpdated.addListener(onUpdated);
     chrome.windows.onFocusChanged.addListener(onActivated);
-    return () => {
+    chrome.webNavigation.onBeforeNavigate.addListener(onBeforeNavigate);
+    chrome.webNavigation.onCommitted.addListener(onCommitted);
+    chrome.webNavigation.onErrorOccurred.addListener(onError);
+    void refreshActiveTabIdentity();
+  }
+  return () => {
+    subscribers.delete(listener);
+    if (subscribers.size === 0) {
+      sequence += 1;
       chrome.tabs.onActivated.removeListener(onActivated);
       chrome.tabs.onUpdated.removeListener(onUpdated);
       chrome.windows.onFocusChanged.removeListener(onActivated);
-    };
-  }, []);
+      chrome.webNavigation.onBeforeNavigate.removeListener(onBeforeNavigate);
+      chrome.webNavigation.onCommitted.removeListener(onCommitted);
+      chrome.webNavigation.onErrorOccurred.removeListener(onError);
+      snapshot = initial;
+      navigationPending = false;
+      committedDocumentId = null;
+    }
+  };
+}
 
-  return info;
+export function useActiveTab(): ActiveTabInfo {
+  return useSyncExternalStore(subscribe, () => snapshot, () => initial);
+}
+
+export function isCurrentPageIdentity(pageKey: string | null): boolean {
+  return pageKey !== null && snapshot.identityStatus === 'ready' && snapshot.pageKey === pageKey;
 }
