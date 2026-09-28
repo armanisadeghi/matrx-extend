@@ -110,6 +110,18 @@ it('still marks DataView healthy after a matching nonempty run', async () => {
   expect(await screen.findByText(/Real calendar event/)).toBeTruthy();
 });
 
+it('keeps extracted rows and reports saved history failure in DataView', async () => {
+  mocks.fetchPatterns.mockResolvedValue([pattern]);
+  mocks.runSaved.mockResolvedValue([{ title: 'Friday night concert' }]);
+  mocks.bumpRun.mockResolvedValue('Database unavailable');
+  render(<DataView />);
+  await screen.findAllByText('Calendar events');
+  await userEvent.click(screen.getByRole('button', { name: 'Extract' }));
+
+  expect(await screen.findByText(/Friday night concert/)).toBeTruthy();
+  expect(await screen.findByText(/saved run history could not be updated: Database unavailable/i)).toBeTruthy();
+});
+
 // The host contract is persistence and current-page presentation; extraction is the external runner.
 it.each(['resolve', 'reject'] as const)(
   'ignores stale DataView %s after a page switch',

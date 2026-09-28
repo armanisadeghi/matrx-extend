@@ -111,19 +111,37 @@ export function useAutoExtract(): void {
               ...(outcome.message && { note: outcome.message }),
               lastRunAt: Date.now(),
             });
-            if (outcome.kind === 'matched') void bumpPatternRun(pattern.id, 'ok', rows.length);
+            if (outcome.kind === 'matched') {
+              const updateError = await bumpPatternRun(pattern.id, 'ok', rows.length);
+              if (updateError && !cancelled && currentPage.current === pageKey) {
+                setRecord(key, {
+                  pattern, url, tabId, rows, status: 'ok',
+                  note: [outcome.message, `Saved run history could not be updated: ${updateError}`]
+                    .filter(Boolean).join(' '),
+                  lastRunAt: Date.now(),
+                });
+              }
+            }
           } catch (err) {
             if (cancelled || currentPage.current !== pageKey) return;
+            const errorMessage = err instanceof Error ? err.message : String(err);
             setRecord(key, {
               pattern,
               url,
               tabId,
               rows: [],
               status: 'error',
-              error: err instanceof Error ? err.message : String(err),
+              error: errorMessage,
               lastRunAt: Date.now(),
             });
-            void bumpPatternRun(pattern.id, 'broken', 0);
+            const updateError = await bumpPatternRun(pattern.id, 'broken', 0);
+            if (updateError && !cancelled && currentPage.current === pageKey) {
+              setRecord(key, {
+                pattern, url, tabId, rows: [], status: 'error',
+                error: `${errorMessage} Saved run history could not be updated: ${updateError}`,
+                lastRunAt: Date.now(),
+              });
+            }
           }
         }),
       );

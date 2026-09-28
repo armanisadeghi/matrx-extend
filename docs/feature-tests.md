@@ -1424,6 +1424,9 @@ Every entry follows this shape:
   widens to the document. Zero rows say "No matching data" rather than
   reporting success; off-route rows are presented for review without an ok
   health mark. Old-page runs and pattern lists never replace the new page.
+  After a matched run, the saved card's last-run time and row count update
+  before Run becomes available again. If run-history saving fails, extracted
+  rows remain visible with a warning that the saved history did not update.
 
 ### Showcase — preview configuration survives later edits
 - **What it does:** Saving a preview keeps the exact settings that produced

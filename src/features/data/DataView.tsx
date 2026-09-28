@@ -235,7 +235,12 @@ export function DataView() {
       setRows(data);
       const outcome = classifySavedRun(pattern, source.url ?? '', data);
       setRunInfo(outcome.message);
-      if (outcome.kind === 'matched') void bumpPatternRun(pattern.id, 'ok', data.length);
+      if (outcome.kind === 'matched') {
+        const updateError = await bumpPatternRun(pattern.id, 'ok', data.length);
+        if (isCurrent() && updateError) {
+          setRunError(`Rows were extracted, but the saved run history could not be updated: ${updateError}`);
+        }
+      }
     } catch (err) {
       if (!isCurrent()) return;
       if (err instanceof NetworkNoMatchError) {
@@ -244,8 +249,12 @@ export function DataView() {
         setRunError(
           `"${pattern.name}" failed: ${err instanceof Error ? err.message : String(err)}`,
         );
-        if (urlMatchesPattern(source.url ?? '', pattern))
-          void bumpPatternRun(pattern.id, 'broken', 0);
+        if (urlMatchesPattern(source.url ?? '', pattern)) {
+          const updateError = await bumpPatternRun(pattern.id, 'broken', 0);
+          if (isCurrent() && updateError) {
+            setRunError(`"${pattern.name}" failed, and its saved run history could not be updated: ${updateError}`);
+          }
+        }
       }
     } finally {
       if (isCurrent()) {

@@ -27,7 +27,10 @@ vi.mock('@/features/showcase/components/ResultPreview', () => ({
     <div>Preview {JSON.stringify(rows)}</div>
   ),
 }));
-vi.mock('@ai-matrx/kit/format', () => ({ formatRelativeTime: () => 'just now' }));
+vi.mock('@ai-matrx/kit/format', () => ({
+  formatRelativeTime: (value: string) =>
+    value === '2026-09-28T15:00:00Z' ? 'just now' : '9 minutes ago',
+}));
 vi.mock('@ai-matrx/design-system', () => ({
   Button: (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => <button {...props} />,
   BasicInput: (props: React.InputHTMLAttributes<HTMLInputElement>) => <input {...props} />,
@@ -72,6 +75,43 @@ afterEach(() => {
 });
 
 describe('Showcase saved pattern replay provenance', () => {
+  it('refreshes last run only after saved health commits, then shows the new timestamp', async () => {
+    mocks.page.url = 'https://electronic.vegas/vegas-edm-event-calendar/';
+    let savedRunAt = '2026-09-28T14:51:00Z';
+    let resolveBump!: (error: string | null) => void;
+    mocks.fetchPatterns.mockImplementation(async () => [{ ...pattern, last_run_at: savedRunAt }]);
+    mocks.runSaved.mockResolvedValue([{ title: 'Friday night concert' }]);
+    mocks.bumpRun.mockImplementation(() => new Promise<string | null>((resolve) => {
+      resolveBump = resolve;
+    }));
+    render(<PatternsTab />);
+    await screen.findByText(/last run 9 minutes ago/i);
+
+    await userEvent.click(screen.getByTitle('Run pattern'));
+    expect(await screen.findByText(/Friday night concert/)).toBeTruthy();
+    await waitFor(() => expect(mocks.bumpRun).toHaveBeenCalledWith(pattern.id, 'ok', 1));
+    expect(mocks.fetchPatterns).toHaveBeenCalledTimes(1);
+
+    savedRunAt = '2026-09-28T15:00:00Z';
+    await act(async () => resolveBump(null));
+    expect(await screen.findByText(/last run just now/i)).toBeTruthy();
+    expect(mocks.fetchPatterns).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps extracted rows visible and says when saved run history failed', async () => {
+    mocks.page.url = 'https://electronic.vegas/vegas-edm-event-calendar/';
+    mocks.fetchPatterns.mockResolvedValue([{ ...pattern, last_run_at: '2026-09-28T14:51:00Z' }]);
+    mocks.runSaved.mockResolvedValue([{ title: 'Friday night concert' }]);
+    mocks.bumpRun.mockResolvedValue('Database unavailable');
+    render(<PatternsTab />);
+    await screen.findByText(/last run 9 minutes ago/i);
+
+    await userEvent.click(screen.getByTitle('Run pattern'));
+    expect(await screen.findByText(/Friday night concert/)).toBeTruthy();
+    expect(await screen.findByText(/saved run history could not be updated: Database unavailable/i)).toBeTruthy();
+    expect(screen.getByText(/last run 9 minutes ago/i)).toBeTruthy();
+  });
+
   it('guides on route mismatch without blocking Run and calls zero rows no match', async () => {
     mocks.fetchPatterns.mockResolvedValue([pattern]);
     mocks.runSaved.mockResolvedValue([]);

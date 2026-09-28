@@ -152,7 +152,10 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
       const outcome = classifySavedRun(p, tab.url ?? '', data);
       setRunInfo(outcome.message);
       if (outcome.kind === 'matched') {
-        void bumpPatternRun(p.id, 'ok', data.length);
+        const updateError = await bumpPatternRun(p.id, 'ok', data.length);
+        if (isCurrent() && updateError) {
+          setRunError(`Rows were extracted, but the saved run history could not be updated: ${updateError}`);
+        }
       }
     } catch (err) {
       if (!isCurrent()) return;
@@ -162,7 +165,12 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
         setRunError(err.message);
       } else {
         setRunError(`"${p.name}" failed: ${err instanceof Error ? err.message : String(err)}`);
-        if (onSavedRoute) void bumpPatternRun(p.id, 'broken', 0);
+        if (onSavedRoute) {
+          const updateError = await bumpPatternRun(p.id, 'broken', 0);
+          if (isCurrent() && updateError) {
+            setRunError(`"${p.name}" failed, and its saved run history could not be updated: ${updateError}`);
+          }
+        }
       }
     } finally {
       if (isCurrent()) {

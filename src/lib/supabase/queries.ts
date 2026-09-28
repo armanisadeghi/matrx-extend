@@ -1068,18 +1068,34 @@ export async function bumpPatternRun(
   patternId: string,
   status: 'ok' | 'broken',
   rowCount: number,
-): Promise<void> {
-  const c = getMachineryAuthoredSupabase();
-  await c
-    .schema(EXTEND_SCHEMA)
-    .from('wbx_pattern')
-    .update({
-      last_run_at: new Date().toISOString(),
-      last_used_at: new Date().toISOString(),
-      last_status: status,
-      last_run_count: rowCount,
-    })
-    .eq('id', patternId);
+): Promise<string | null> {
+  try {
+    const c = getMachineryAuthoredSupabase();
+    const { data, error } = await c
+      .schema(EXTEND_SCHEMA)
+      .from('wbx_pattern')
+      .update({
+        last_run_at: new Date().toISOString(),
+        last_used_at: new Date().toISOString(),
+        last_status: status,
+        last_run_count: rowCount,
+      })
+      .eq('id', patternId)
+      .select('id')
+      .maybeSingle();
+    if (!error && data) return null;
+    if (!error) {
+      const message = 'The saved pattern could not be found or updated.';
+      console.warn('[matrx-extend] bumpPatternRun error', message);
+      return message;
+    }
+    console.warn('[matrx-extend] bumpPatternRun error', error.message);
+    return error.message;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn('[matrx-extend] bumpPatternRun error', message);
+    return message;
+  }
 }
 
 // ─── wbx_seo_audit (SEO audits + recommendations) ───────────────────────────

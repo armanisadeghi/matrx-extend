@@ -108,6 +108,21 @@ it('still promotes an on-route nonempty saved run to healthy', async () => {
   expect(mocks.bumpRun).toHaveBeenCalledWith(pattern.id, 'ok', 1);
 });
 
+it('returns extracted rows with an explicit warning when run history cannot be saved', async () => {
+  mocks.fetchPatterns.mockResolvedValue([pattern]);
+  mocks.runSaved.mockResolvedValue([{ title: 'Friday night concert' }]);
+  mocks.bumpRun.mockResolvedValue('Database unavailable');
+  const result = await data_patterns.run({ action: 'run', pattern_id: pattern.id }, context);
+
+  expect(result).toMatchObject({
+    ok: true,
+    outcome: 'matched',
+    row_count: 1,
+    rows: [{ title: 'Friday night concert' }],
+    warning: expect.stringMatching(/saved run history could not be updated.*Database unavailable/i),
+  });
+});
+
 it('does not return stale tool rows or overwrite health after assigned-page navigation', async () => {
   mocks.fetchPatterns.mockResolvedValue([pattern]);
   mocks.runSaved.mockImplementation(async () => {
