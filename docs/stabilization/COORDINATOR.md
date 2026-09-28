@@ -10,7 +10,7 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
-## Current checkpoint (2026-09-27; after D48 installed Network run)
+## Current checkpoint (2026-09-27 local; D47 engineering verified, installed retest pending)
 
 Latest installed acceptance artifact remains version **0.2.109**, but is a NEW tree built from `de819649845c299c47ee27566b849c91d90bead1`: `b0c4bd1c4ec5249aeb971df398b8d1148d8e743f99225ee22e614ae7d2056341`. `runs/showcase-d48-devbuild-001.json` ties source/build/receipt together. Chrome explicitly reloaded the unpacked extension at `.output/chrome-mv3-dev`; real-site evidence is `runs/showcase-installed-d48-network-001.json`. The browser guard stopped confirmed with exit 0. No localhost was used. Earlier .109 List evidence used a different tree; do not conflate the receipts.
 
@@ -19,8 +19,8 @@ The actual JSONPlaceholder homepage supplied GET `/todos/1`. Capture, select, sa
 - **D45:** closed in `beaedac1` after original picker Cancel reproduction and surrounding real-calendar cases.
 - **D44:** fixed with partial live List replay; native in-flight and broader sibling-caller proof remains open.
 - **D48:** source fix `de819649` pushed; regression/type/catalog checks passed, fresh source peers addressed. Installed masking controls and ordinary saved Network replay pass. Credential-bearing save/reopen/rotation/ambiguity and Debug/chat live observation remain open; defect stays fixed awaiting complete retest.
-- **D47:** source candidate rebased onto D48, now under guarded implementation/testing by `network_document_rebase`, the sole heavy permit owner. Fresh source peer `network_document_final_peer` reviews independently. Initial-request baseline red reproduced; candidate tests/types pass, existing matcher tests are being adapted to the new capture transport. No installed D47 build exists yet.
-- **D46:** source-only JSON path candidate at `/Volumes/Samsung2TB/code/.stabilization-scratch/d46-json-path/product.patch`, report `reports/showcase-json-keypath-repair.json`; not applied/tested. Historical exotic bracket-like key collision remains an explicit concern.
+- **D47:** engineering repair through `30310ae4` passed final guarded compile, lint, and full suite (219 files, 1650 tests passed, 4 skipped); fresh source peer `63076042` accepted the cleanup correction. Actual saved-UI rejected-detach regression proved red then green. Remote .111/package refresh merged at `5c9b269e`; dependency integration/build checks and installed real-site retest are now owned by `showcase_installed_d47`, sole heavy permit owner. No installed D47 proof yet. Reports: `reports/showcase-network-detach-escalation.json` and `reports/showcase-network-detach-final-peer.json`. GitHub Actions status API was rate-limited; remote CI green is not claimed.
+- **D46:** durable source-only JSON path candidate at `pending/EXT-D-0046/product.patch` (pending test alongside it), report `reports/showcase-json-keypath-repair.json`; not applied/tested. Historical exotic bracket-like key collision remains an explicit concern.
 
 Owned retained recipes: `Codex D45 fixture 20260927-2229Z cleanup`, `Codex D48 JSONPlaceholder todos replay 20260927-2327Z`, and prior `Codex live Microdata Event replay 20260927-1612Z`. Do not delete unrelated data. The computer-use tool requires action-time confirmation for irreversible deletion; cleanup is deferred without blocking other work. Copy JSON contents remain unverified. Never touch reserved `d22-source-save-attempt.json`.
 
