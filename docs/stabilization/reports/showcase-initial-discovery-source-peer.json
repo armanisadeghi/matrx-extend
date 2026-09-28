@@ -1,0 +1,43 @@
+{
+  "review": "EXT-F-1012-T59 / EXT-D-0049 initial-document Network discovery",
+  "scope": "Source-only independent review; no native or heavy test run",
+  "snapshot": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-initial-discovery-review.diff",
+    "sha256": "9d78930cad56be46abcfc9bb4c1bea82becb364fa8f5a4611da0d9dee3651fc2"
+  },
+  "currentSource": {
+    "dirtyDiffSha256": "765f1e81bce0a1e549ff23b64e09554f3acf7d027f18bb8f203c33317bf12378",
+    "driftFromSnapshot": "Current use-network-capture.ts additionally clears partial events and source on discovery failure; findings below apply to both snapshot and current source."
+  },
+  "verdictA": {
+    "status": "UNVERIFIED",
+    "reason": "No installed development extension, real HN Search initial request, saved-row persistence, reopened Patterns, or two native replays were exercised in this source lane."
+  },
+  "verdictB": {
+    "status": "FIX_FIRST",
+    "positiveEvidence": [
+      "Discovery enters the SW-owned Port and requestConfirmation with the cdp_attach privileged admin/debugger policy; executePreparedOperation rechecks tab URL and document identity before capture (document-network-transport.ts:110-175; dispatch.ts:1673-1691,1783-1896).",
+      "The document capture core whitelists event fields, omits request headers and raw request bodies, pins capture/document identity, and closes its CDP lease (document-network-capture.ts:107-175,195-207,330-377). Saved replay still compares request_body_key exactly (run-interactive.ts:394-412)."
+    ],
+    "findings": [
+      {
+        "severity": "Important",
+        "title": "Captured page and persisted recipe route can diverge during a same-tab navigation",
+        "evidence": "use-network-capture.ts:102-120 takes sourceFromUrl(tab.url) from the asynchronous useActiveTab React state, but dispatch.ts:1803-1821 independently reads the live tab URL/document and approves that page. The discovery Port returns only events/progress/result (document-network-transport.ts:179-219), so the hook never reconciles the approved URL. NetworkTab.tsx:360-375 passes the cached source into SaveAsPattern, which persists its host and route at SaveAsPattern.tsx:85-90,154-165. If onUpdated has fired but its async refresh has not committed, discovery can succeed for the new same-tab page while Save writes the old route. The event URL alone does not establish the top-frame route.",
+        "requiredFix": "Return the SW-approved top-frame page URL with the discovery result or a bound start message, and derive the save source from that identity. Add a navigation-race test that proves the persisted recipe host/route matches the captured document."
+      },
+      {
+        "severity": "Important",
+        "title": "New connected discovery test cannot prove initial-document delivery",
+        "evidence": "document-network-dispatch.test.ts:98-108 mocks openDocumentNetworkCapture to call onArmed and onEvent with the expected event. Its fixture lacks request_sequence, which the real document-network-capture.ts:330-345 rejects as incomplete. document-network-port.test.ts:96-128 also mocks the entire discovery runner and supplies its own event. Existing document-network-capture.test.ts:175-224 proves core buffering separately, but no new test carries an approved operation through the real capture core and Port into the picker. A broken connection between approval and document-start capture can leave these new tests green.",
+        "requiredFix": "Use the real discovery dispatcher, Port and document capture core with Chrome/CDP APIs stubbed below them. Feed an initial-document event with request_sequence and a distinct body digest; assert the exact event reaches the selection/save seam, then prove a wrong-document or wrong-body event cannot satisfy it."
+      },
+      {
+        "severity": "Minor",
+        "title": "Zero-response completion gives a misleading selection instruction",
+        "evidence": "runLocalNetworkDiscovery resolves { ok: true } when its 20-second window ends without any event (dispatch.ts:1843-1870), then use-network-capture.ts:121 unconditionally says 'Select a response below.' NetworkTab.tsx:185-188 instead presents the generic manual-capture instruction when the event list is empty.",
+        "requiredFix": "Report a truthful empty page-load result with a retry or page-interaction remedy."
+      }
+    ]
+  }
+}
