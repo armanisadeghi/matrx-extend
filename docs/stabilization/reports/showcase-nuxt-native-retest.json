@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "task_id": "showcase-nuxt-native-retest-20260928",
+  "lane": "D52 native diagnostic; resource-unverified",
+  "defect_id": "EXT-D-0052",
+  "status": "RESOURCE_UNVERIFIED_DIAGNOSTIC_ONLY",
+  "scope": "A bounded native observation of the Nuxt Framework flow in primary Chrome. This report does not claim native acceptance because UI actions overlapped resource preflight.",
+  "target": {
+    "url": "https://nuxt.com/docs/4.x/getting-started/introduction",
+    "changed_page_url": "https://example.com/",
+    "browser": "Primary Google Chrome",
+    "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "mode": "admin",
+    "localhost": false,
+    "mocking_or_interception": "No localhost, fixture, response interception, or mocked page data was used. The page was the public Nuxt documentation site."
+  },
+  "build": {
+    "artifact_path": ".output/chrome-mv3-dev",
+    "artifact_version": "0.2.114",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "canonical_tree_sha256": "78ff463f44e66e7ead0d9229eccdd2d6b2a6f98f9bff748794454435264e88f3",
+    "canonical_hash_method": "hashReleaseTree",
+    "receipt": "docs/stabilization/reports/showcase-nuxt-guarded-build-receipt.json",
+    "chrome_reload_observed": "Clicked Reload for Matrx Extend in chrome://extensions during this task; Chrome displayed Reloaded and the expected extension ID/version. The click occurred before resource admission, so this is diagnostic only."
+  },
+  "resource_admission": {
+    "decision": "No native UI batch has a valid admit-before-action sequence.",
+    "attempts": [
+      {
+        "run_id": "showcase-nuxt-native-retest-20260928-122450",
+        "journal": "docs/stabilization/resource-journals/showcase-nuxt-native-retest-20260928-122450.jsonl",
+        "journal_sha256": "da4aa0f6866569f24d3cd4dfc21e3ab695543ce4ad07d945cbb19258ab48f343",
+        "result": "The guard admitted at 2026-09-28T12:26:00.550Z. UI interaction began before that admission; all actions in this batch are resource-unverified.",
+        "terminal_exit_code": 0,
+        "resource_invalid": false
+      },
+      {
+        "run_id": "showcase-nuxt-native-retest-refresh-20260928-122653",
+        "journal": "docs/stabilization/resource-journals/showcase-nuxt-native-retest-refresh-20260928-122653.jsonl",
+        "journal_sha256": "ef7323e8b012e10d65cc1620e21c28091c13eeb93d2a989a9ca8c2ece5410bd3",
+        "result": "Interrupted during preflight; no RESOURCE_ADMITTED event. UI actions attempted in this interval are invalid evidence.",
+        "terminal_exit_code": 2,
+        "resource_invalid": false
+      },
+      {
+        "run_id": "showcase-nuxt-native-retest-refresh2-20260928-122846",
+        "journal": "docs/stabilization/resource-journals/showcase-nuxt-native-retest-refresh2-20260928-122846.jsonl",
+        "journal_sha256": "129f4120101c42ea3112c9a1779f3cb0e05a1d64f56b11868e0ad733ac7e8f8b",
+        "result": "Admitted, then stopped without any UI interaction.",
+        "terminal_exit_code": 0,
+        "resource_invalid": false
+      }
+    ],
+    "active_processes_or_heavy_lease_at_report": "None observed after the final stop confirmation."
+  },
+  "diagnostic_observations_not_acceptance": {
+    "decoded_semantic_path": {
+      "path": ["state", "$sstats", "repo"],
+      "tree_value": "nuxt/nuxt",
+      "extract_observed": "One row with value nuxt/nuxt, including after a page refresh; the refresh batch had no admission and is invalid evidence."
+    },
+    "corrected_recipe": {
+      "name": "codex-framework-native-20260928-nuxt-decoded-repo",
+      "id": "1260dbcc-ac75-45d3-b7d2-9c02d902f9cc",
+      "config": {
+        "source": "__NUXT_DATA__",
+        "key_path": ["state", "$sstats", "repo"]
+      },
+      "observed_save_reopen_replay": "Saved once, reopened under Patterns, replay displayed OK, one row, nuxt/nuxt. Resource-unverified; retained."
+    },
+    "prior_bad_recipe": {
+      "name": "codex-framework-native-20260928-nuxt-repo-pointer",
+      "id": "92d3df60-fa8e-4b14-ba37-c5c630b49294",
+      "config": {
+        "source": "__NUXT_DATA__",
+        "key_path": ["7", "repo"]
+      },
+      "observed_replay": "The UI showed a failure: This Nuxt key path no longer names page data. Open Framework, choose a field in the decoded tree, and save the pattern again. Resource-unverified; no data was deleted."
+    },
+    "changed_page": "On example.com, Framework displayed No embedded framework data and disabled Extract from key path. Resource-unverified."
+  },
+  "limitations": [
+    "No native UI result in this report has a valid resource-admit-before-action sequence; none is a product pass or fail verdict.",
+    "The requested explicit page refresh was attempted only in a batch whose guard never admitted.",
+    "No source, test, or build files were changed. No unrelated database rows or saved patterns were changed or deleted.",
+    "The exact recipe IDs and configs were confirmed with a read-only exact-name database query."
+  ],
+  "whole_feature_closure": false
+}

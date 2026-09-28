@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-nuxt-native-retest-20260928",
+  "task_id": "showcase-nuxt-native-retest-20260928",
+  "ended_at_utc": "2026-09-28T12:30:07.810Z",
+  "status": "RESOURCE_UNVERIFIED_DIAGNOSTIC_ONLY",
+  "case_ids": ["EXT-F-1012-T18", "EXT-F-1012-T43"],
+  "report": "docs/stabilization/reports/showcase-nuxt-native-retest.json",
+  "build_receipt": "docs/stabilization/reports/showcase-nuxt-guarded-build-receipt.json",
+  "target": {
+    "url": "https://nuxt.com/docs/4.x/getting-started/introduction",
+    "browser": "Primary Google Chrome",
+    "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_path": ".output/chrome-mv3-dev",
+    "artifact_version": "0.2.114",
+    "canonical_tree_sha256": "78ff463f44e66e7ead0d9229eccdd2d6b2a6f98f9bff748794454435264e88f3"
+  },
+  "resource_attempts": [
+    {
+      "run_id": "showcase-nuxt-native-retest-20260928-122450",
+      "journal": "docs/stabilization/resource-journals/showcase-nuxt-native-retest-20260928-122450.jsonl",
+      "journal_sha256": "da4aa0f6866569f24d3cd4dfc21e3ab695543ce4ad07d945cbb19258ab48f343",
+      "admission": "admitted after UI actions began; invalid sequence",
+      "final_exit_code": 0,
+      "resource_invalid": false
+    },
+    {
+      "run_id": "showcase-nuxt-native-retest-refresh-20260928-122653",
+      "journal": "docs/stabilization/resource-journals/showcase-nuxt-native-retest-refresh-20260928-122653.jsonl",
+      "journal_sha256": "ef7323e8b012e10d65cc1620e21c28091c13eeb93d2a989a9ca8c2ece5410bd3",
+      "admission": "not admitted; interrupted during preflight",
+      "final_exit_code": 2,
+      "resource_invalid": false
+    },
+    {
+      "run_id": "showcase-nuxt-native-retest-refresh2-20260928-122846",
+      "journal": "docs/stabilization/resource-journals/showcase-nuxt-native-retest-refresh2-20260928-122846.jsonl",
+      "journal_sha256": "129f4120101c42ea3112c9a1779f3cb0e05a1d64f56b11868e0ad733ac7e8f8b",
+      "admission": "admitted; stopped before any UI interaction",
+      "final_exit_code": 0,
+      "resource_invalid": false
+    }
+  ],
+  "ui_results": "Diagnostic observations only. Resource admission did not precede the UI actions, so no native product verdict is assigned.",
+  "whole_feature_closure": false
+}
