@@ -2,7 +2,7 @@
   "schema_version": 1,
   "report_id": "document-integrated-checks",
   "defect_ids": ["EXT-D-0057", "EXT-D-0058", "EXT-D-0059"],
-  "status": "INTEGRATED_SUITE_FAILED_STALE_FIXTURE",
+  "status": "GUARDED_REGRESSION_COMPILE_BUILD_PASS_NATIVE_PENDING",
   "source_commit": "a347f6348015e9b236cd3573811eff2e3fe20b29",
   "source_tree": "d78226d321908a6a70f11913afc2b3d1b5d19124",
   "pnpm_lock_sha256": "82acc89c8d9b60568def970fff9125b69afcfe713ae0a7de053f18f4b6137e28",
@@ -33,8 +33,38 @@
     }
   ],
   "classification": "Stale fixture assertion: usePagePrep deliberately supplies tab.documentId to preparePage, whose third parameter targets Chrome scripting to that document. The failure occurs before the subsequent B-report and error assertions, so those two test continuations are not proven by this run. No source regression is established by these failures.",
-  "compile": "Not run: stop after first failing suite.",
-  "development_build": "Not run: stop after first failing suite. Historical artifact a8670bf7 is not current acceptance evidence.",
+  "correction": {
+    "test_commit": "b5462b9b47121cbc9c3d795d8b46fefd17a4d199",
+    "change": "The two parametrized Prepare cases now assert preparePage(23, {}, 'document-b'); late-result, B-report, and error assertions remain intact.",
+    "source_tree": "6616ef17d82dca102dec7829d981a9e57f042bd9"
+  },
+  "corrected_guarded_suite": {
+    "run_id": "document-integrated-suite-corrected-20260928a",
+    "result": "15 files and 58 tests passed; exit 0; resource final decision valid",
+    "journal": "docs/stabilization/resource-journals/document-integrated-suite-corrected-20260928a.jsonl",
+    "journal_sha256": "ac803693347f33f295a4e77db68604cb321d01ede0aee32f342ba1c83a9afd0f"
+  },
+  "compile": {
+    "run_id": "document-integrated-compile-20260928a",
+    "command": "node scripts/stabilization-resource.mjs run --run-id document-integrated-compile-20260928a --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm compile",
+    "result": "tsc --noEmit passed; exit 0; resource final decision valid",
+    "journal": "docs/stabilization/resource-journals/document-integrated-compile-20260928a.jsonl",
+    "journal_sha256": "b92ba1e7f78830de6e2dfdcc69f81693a6abec2d765828de83075a3cb4741416"
+  },
+  "development_build": {
+    "run_id": "document-integrated-devbuild-20260928a",
+    "command": "node scripts/stabilization-resource.mjs run --run-id document-integrated-devbuild-20260928a --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec wxt build --mode development",
+    "result": "WXT development build passed; exit 0; resource final decision valid",
+    "source_commit": "b5462b9b47121cbc9c3d795d8b46fefd17a4d199",
+    "source_tree": "6616ef17d82dca102dec7829d981a9e57f042bd9",
+    "pnpm_lock_sha256": "82acc89c8d9b60568def970fff9125b69afcfe713ae0a7de053f18f4b6137e28",
+    "artifact": ".output/chrome-mv3-dev",
+    "manifest_version": "0.2.114",
+    "artifact_hashReleaseTree": "44a478fee4a81a8353d0b0d8f4afc08fe9bb8315b11e6cb90b40a4532b5e12a1",
+    "journal": "docs/stabilization/resource-journals/document-integrated-devbuild-20260928a.jsonl",
+    "journal_sha256": "a4788ca305ac20c26bdd3f6f62c766d46a177262c319e2d550a4097b7f723279"
+  },
   "native_browser": "Not run in this lane.",
-  "edits": "Report and completed resource journal only; no product or test changes."
+  "limits": "This artifact is partial while the separate Showcase List picker exact-document gap remains open. Green tests and build do not establish native acceptance or D59 closure.",
+  "edits": "One test expectation corrected; no product source changes."
 }
