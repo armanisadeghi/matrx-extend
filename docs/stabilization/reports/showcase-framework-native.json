@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "task_id": "showcase-framework-native-20260928",
+  "lane": "Framework / next_data native acceptance",
+  "model_effort": "GPT-6 Luna / medium",
+  "status": "NATIVE_FAIL_WITH_BOUNDED_ROUNDTRIP",
+  "scope": "Admin primary-Chrome testing of Showcase Framework source detection, tree reload, nested path extraction, preview/save/reopen/replay, and a page change on genuine public framework data. This is not whole-feature closure.",
+  "target": {
+    "url": "https://nuxt.com/docs/4.x/getting-started/introduction",
+    "changed_page_url": "https://example.com/",
+    "browser": "Primary Google Chrome",
+    "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "mode": "admin",
+    "localhost": false,
+    "devtools_open": false,
+    "target_selection": "Bounded search found that nextjs.org/docs exposes no Framework data. The genuine Nuxt documentation page had an accessible __NUXT_DATA__ source; no fixture or test server was used."
+  },
+  "build": {
+    "artifact_path": ".output/chrome-mv3-dev",
+    "artifact_version": "0.2.114",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256_expected": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "tree_sha256_actual": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "receipt": "docs/stabilization/runs/showcase-d50-runtime-artifact-20260928.json",
+    "source_identity": "Receipt names the .output/chrome-mv3-dev artifact. The current side panel origin used the same extension ID.",
+    "prior_extension_reload": "The referenced receipt records Chrome displaying Matrx Extend 0.2.114 with the expected ID and Reloaded at 2026-09-28T10:22:20Z, before this lane began.",
+    "current_run_extension_reload": "Not performed in this lane; current-run extension reload remains unverified.",
+    "page_refresh_at_utc_approx": "2026-09-28T11:54:37Z",
+    "page_refresh": "The real Nuxt page was explicitly refreshed in Chrome before Framework tree reload and extraction."
+  },
+  "resource_guard": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id showcase-framework-native-20260928 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "journal": "docs/stabilization/resource-journals/showcase-framework-native-20260928.jsonl",
+    "journal_sha256": "14716d3651d77bd78a91d3b380f0d86ba0683cc791778678549e6afdd976ac96",
+    "admitted_at_utc": "2026-09-28T11:52:24.567Z",
+    "watch_evidence": "Every retained watch event was RESOURCE_WATCH_HEALTHY; no unsafe event or safe-boundary stop occurred.",
+    "stop_confirmed_at_utc": "2026-09-28T12:02:03.343Z",
+    "terminal_code": "RESOURCE_BROWSER_STOP_CONFIRMED",
+    "terminal_exit_code": 0,
+    "resource_invalid": false,
+    "decision": "valid"
+  },
+  "observations": [
+    {
+      "case": "EXT-F-1012-T16",
+      "verdict": "PARTIAL_UNVERIFIED_ALTERNATE_SOURCE",
+      "result": "Framework detected one source, __NUXT_DATA__ (1.2 KB), and used it for the query. Only one source existed on this page, so there was no alternate source button to select and no multi-source highlight behavior to exercise."
+    },
+    {
+      "case": "EXT-F-1012-T17",
+      "verdict": "PASS_BOUNDED",
+      "result": "After refreshing the Nuxt page, Reload tree completed and retained the same real __NUXT_DATA__ tree (108 payload items; 100 visible at a time). No loading or error state remained."
+    },
+    {
+      "case": "EXT-F-1012-T18",
+      "verdict": "FAIL_NATIVE_RAW_POINTER",
+      "result": "Selecting nested path 7.repo and running Extract produced one row with value 10. The live serialized source tree itself shows 7.repo -> 10 and payload slot 10 -> \"nuxt/nuxt\". The preview returned the raw devalue reference index, not the referenced string, while the card reported OK. This report records 10 as the observed result and does not claim that the preview returned \"nuxt/nuxt\"."
+    },
+    {
+      "case": "EXT-F-1012-T43",
+      "verdict": "PARTIAL_FAIL_VALUE_SEMANTICS",
+      "result": "The preview for source __NUXT_DATA__ and key_path [\"7\",\"repo\"] showed one row, value 10. Changing the draft tree selection to 7.name left the executed preview unchanged; the Save form default remained Framework: 7.repo. The uniquely named pattern saved with the executed config, was reopened in Patterns, and replayed to one row with value 10. The config round trip is bounded-pass; the raw-reference result means data-value acceptance fails."
+    },
+    {
+      "case": "framework_source_change_empty_state",
+      "verdict": "PASS_FOR_EXERCISED_PATH",
+      "result": "After navigation to https://example.com/, Framework displayed No embedded framework data and disabled Extract from key path. No stale Framework preview appeared on that tab. The Patterns list still showed the saved nuxt.com pattern labeled with its source domain and prior row count."
+    }
+  ],
+  "saved_patterns": [
+    {
+      "name": "codex-framework-native-20260928-nuxt-repo-pointer",
+      "id": "92d3df60-fa8e-4b14-ba37-c5c630b49294",
+      "domain": "nuxt.com",
+      "kind": "next_data",
+      "config": {
+        "source": "__NUXT_DATA__",
+        "key_path": ["7", "repo"]
+      },
+      "identity_source": "Read-only exact-name query against extend.wbx_pattern after UI save; exactly one row returned.",
+      "replay_observed": true,
+      "cleanup": "Owned test pattern retained; no deletion or unrelated mutation performed."
+    }
+  ],
+  "limitations": [
+    "Only one genuine Framework source was present, so alternate-source selection behavior remains unverified.",
+    "Raw devalue pointer semantics were observed natively; interpretation as a product limitation is supported by separate source diagnosis outside this lane.",
+    "Guest/member modes, authentication transition, service errors, multiple-source selection, other framework encodings, and whole-feature closure remain unverified.",
+    "No source, build, or test files were changed. No screenshots, credentials, tokens, or unrelated page content were retained."
+  ],
+  "source_changes": [],
+  "whole_feature_closure": false,
+  "commit_policy": "Exact evidence paths only; do not push while CI is red."
+}

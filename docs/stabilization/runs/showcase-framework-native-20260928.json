@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-framework-native-20260928",
+  "task_id": "showcase-framework-native-20260928",
+  "started_at_utc": "2026-09-28T11:51:15.051Z",
+  "ended_at_utc": "2026-09-28T12:02:03.350Z",
+  "status": "NATIVE_FAIL_WITH_BOUNDED_ROUNDTRIP",
+  "case_ids": [
+    "EXT-F-1012-T16",
+    "EXT-F-1012-T17",
+    "EXT-F-1012-T18",
+    "EXT-F-1012-T43"
+  ],
+  "receipt": {
+    "source_receipt": "docs/stabilization/runs/showcase-d50-runtime-artifact-20260928.json",
+    "artifact_path": ".output/chrome-mv3-dev",
+    "artifact_version": "0.2.114",
+    "artifact_tree_sha256_expected": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "artifact_tree_sha256_actual": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "current_run_extension_reload": "Not performed; the source receipt records an earlier reload at 2026-09-28T10:22:20Z.",
+    "auth_mode": "Admin Showcase mode visible in the extension side panel.",
+    "target_page": "https://nuxt.com/docs/4.x/getting-started/introduction",
+    "changed_page": "https://example.com/",
+    "mocking_or_interception": "No fixture, localhost, response interception, or mocked page data used. Framework read the public Nuxt page's genuine embedded payload."
+  },
+  "resource_admission": {
+    "journal": "docs/stabilization/resource-journals/showcase-framework-native-20260928.jsonl",
+    "journal_sha256": "14716d3651d77bd78a91d3b380f0d86ba0683cc791778678549e6afdd976ac96",
+    "admitted": true,
+    "watch_events": 35,
+    "unsafe_events": 0,
+    "stop_at_safe_boundary": false,
+    "stop_confirmed": true,
+    "resource_invalid": false,
+    "wrapper_exit_code": 0,
+    "decision": "valid"
+  },
+  "outcomes": {
+    "EXT-F-1012-T16": {
+      "status": "partial_unverified_alternate_source",
+      "observation": "One __NUXT_DATA__ source auto-selected; no alternate source existed on the page."
+    },
+    "EXT-F-1012-T17": {
+      "status": "pass_bounded",
+      "observation": "Reload tree completed against the refreshed public Nuxt page and retained the genuine 108-item payload tree."
+    },
+    "EXT-F-1012-T18": {
+      "status": "fail_native_raw_pointer",
+      "observation": "Nested path 7.repo preview returned one row value 10; the actual serialized tree shows index 10 points to the string nuxt/nuxt. The UI reported OK but returned the raw pointer."
+    },
+    "EXT-F-1012-T43": {
+      "status": "partial_fail_value_semantics",
+      "observation": "Draft changed from 7.repo to 7.name before save; the form retained the executed 7.repo default. Saved/reopened config remained source __NUXT_DATA__, key_path [\"7\",\"repo\"], and replay returned one row value 10. Config round trip passed boundedly; raw-reference output did not meet decoded value semantics."
+    },
+    "framework_source_change_empty_state": {
+      "status": "pass_for_exercised_path",
+      "observation": "On example.com, Framework displayed No embedded framework data and disabled Extract from key path."
+    }
+  },
+  "saved_pattern": {
+    "name": "codex-framework-native-20260928-nuxt-repo-pointer",
+    "id": "92d3df60-fa8e-4b14-ba37-c5c630b49294",
+    "kind": "next_data",
+    "domain": "nuxt.com",
+    "config": {
+      "source": "__NUXT_DATA__",
+      "key_path": ["7", "repo"]
+    }
+  },
+  "evidence": {
+    "report": "docs/stabilization/reports/showcase-framework-native.json",
+    "ui_evidence": "Primary Chrome accessibility observations in this run; no screenshot retained.",
+    "pattern_id_source": "Exact-name read-only database query; one matching row returned."
+  },
+  "invalidations": [
+    "No alternate Framework source was available for T16 source-switch behavior.",
+    "No whole-feature closure or guest/member coverage is claimed."
+  ],
+  "whole_feature_closure": false
+}
