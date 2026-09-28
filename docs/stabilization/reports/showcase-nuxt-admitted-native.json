@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "task_id": "showcase-nuxt-admitted-native-20260928-1305",
+  "lane": "D52 native retest",
+  "defect_id": "EXT-D-0052",
+  "status": "RESOURCE_REFUSED_NO_UI",
+  "target": {
+    "url": "https://nuxt.com/docs/4.x/getting-started/introduction",
+    "browser": "Primary Google Chrome",
+    "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "artifact": {
+    "path": ".output/chrome-mv3-dev",
+    "version": "0.2.114",
+    "canonical_hash_method": "hashReleaseTree from scripts/sync-unpacked-release.mjs",
+    "canonical_tree_sha256_observed_before_guard": "78ff463f44e66e7ead0d9229eccdd2d6b2a6f98f9bff748794454435264e88f3"
+  },
+  "resource_guard": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id showcase-nuxt-admitted-native-20260928-1305 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "journal": "docs/stabilization/resource-journals/showcase-nuxt-admitted-native-20260928-1305.jsonl",
+    "journal_sha256": "1b00ad0d25c27684e0fe399db6e67cdf1061b14f8f2d7696e163e1863a517a97",
+    "opened_at": "2026-09-28T12:32:19.920Z",
+    "preflight_refused_at": "2026-09-28T12:33:31.489Z",
+    "refusal_reasons": ["RESOURCE_PRESSURE_UNSAFE", "RESOURCE_SWAP_GROWTH"],
+    "observed_pressure_level": 2,
+    "observed_available_memory_gib": 5.12,
+    "observed_swap_used_mib": 4450.44,
+    "final_decision_at": "2026-09-28T12:33:31.516Z",
+    "final_decision": "refused",
+    "terminal_exit_code": 2,
+    "resource_invalid": false,
+    "owned_browser_guard_process_after_exit": "None; shell process census matched only the census command itself."
+  },
+  "ui_observations": {
+    "actions_after_guard_start": 0,
+    "extension_reload": "Not attempted; admission never occurred.",
+    "public_nuxt_refresh": "Not attempted; admission never occurred.",
+    "decoded_tree_extract_save_replay": "Unverified; admission never occurred.",
+    "prior_raw_recipe_replay": "Unverified; admission never occurred."
+  },
+  "result": "The required admit-before-action sequence did not exist. This run supplies no native product pass or fail verdict; the earlier resource-unverified diagnostic observations remain unaccepted. No source, build, or saved pattern data changed."
+}
