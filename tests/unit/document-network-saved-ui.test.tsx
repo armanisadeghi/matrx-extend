@@ -202,6 +202,16 @@ it.each([
       if (method === 'Page.reload') {
         expect(registered).toBe(true);
         context(2, 'new');
+        // Mirror the document-start main-world hook: the capture core will
+        // only authorize its nonce-pinned cleanup after this CDP handshake.
+        emit('Runtime.bindingCalled', {
+          name: binding,
+          executionContextId: 2,
+          payload: JSON.stringify({
+            __matrx_capture_hook: 'network-tap',
+            nonce: 'a'.repeat(32),
+          }),
+        });
         const packet = (id: number, title: string, sequence: number) =>
           emit('Runtime.bindingCalled', {
             name: binding,
@@ -237,7 +247,17 @@ it.each([
         onDetach: { addListener: vi.fn(), removeListener: vi.fn() },
       },
       tabs: { get: async () => ({ id: 37, groupId: 1, url: h.url }) },
-      scripting: { executeScript: async () => [{ result: null, documentId: 'original-document' }] },
+      scripting: {
+        executeScript: async (details: { args?: unknown[] }) => {
+          const hookCall = details.args?.length === 2;
+          return [
+            {
+              result: hookCall ? true : null,
+              documentId: hookCall ? 'replay-document' : 'original-document',
+            },
+          ];
+        },
+      },
     });
     startToolDispatcher({ defaultPermissionMode: () => 'act' });
     registerDocumentNetworkCaptureHost();

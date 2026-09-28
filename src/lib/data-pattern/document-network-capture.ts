@@ -73,7 +73,10 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
     if (closed || opts.signal.aborted) throw new Error('Network replay was cancelled.');
   };
   const captureCleanupTarget = () => {
-    if (!committed || !documentContext || !captureNonce || cleanupTargetPromise) return;
+    // Cleanup identity is available as soon as the accepted context reports
+    // its hook nonce. Event delivery remains commit-gated below; only teardown
+    // must work if the user stops between context creation and frame commit.
+    if (!documentContext || !captureNonce || cleanupTargetPromise) return;
     const context = documentContext;
     const nonce = captureNonce;
     // `executeScript` reports the Chrome document ID of the document in which

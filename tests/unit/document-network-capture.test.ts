@@ -223,6 +223,25 @@ it('arms before reload and retains the earliest new-document response while reje
   expect(harness.release).toHaveBeenCalledTimes(1);
 });
 
+it('cleans a nonce-pinned hook when stopped after context creation but before frame commit', async () => {
+  const capture = await startDocumentNetworkCapture(options());
+  context(2, 'reloaded-document');
+  handshake(2);
+  await vi.waitFor(() => expect(chrome.scripting.executeScript).toHaveBeenCalledOnce());
+
+  await capture.close();
+
+  expect(chrome.scripting.executeScript).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      target: { tabId: 37, documentIds: ['replayed-document'] },
+      world: 'MAIN',
+      func: cleanupNetworkTapMain,
+      args: [binding, nonce],
+    }),
+  );
+  expect(harness.release).toHaveBeenCalledOnce();
+});
+
 it('refuses a replacement document when navigation arrives after the cleanup probe', async () => {
   let resolveProbe!: (value: Array<{ documentId: string; result: boolean }>) => void;
   Object.assign(chrome, {
