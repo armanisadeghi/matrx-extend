@@ -16636,7 +16636,17 @@
             "reload",
             "navigation",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "evidence": [
+                "docs/stabilization/reports/showcase-d46-implementation.json",
+                "docs/stabilization/reports/showcase-d46-final-peer.json"
+              ],
+              "detail": "Engineering repair 4a997c33 passed meaningful baseline wrong-row red, 28 focused tests, compile, and independent focused rerun. Actual application save/fetch mapping is exercised with external Supabase I/O replaced. Fresh installed real-public-page Network and Framework save/reopen/replay remain unverified; D46 fixed, not closed. Current installed .114 artifact predates this fix."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T57",
