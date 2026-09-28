@@ -10,6 +10,14 @@
 import type { HighlightListItem, HighlightMode } from '@/lib/highlights/types';
 import { create } from 'zustand';
 
+export interface HighlightOverlaySession {
+  tabId: number;
+  documentId: string;
+  pageKey: string;
+  url: string;
+  status: 'starting' | 'active';
+}
+
 interface HighlightState {
   /** Mirror of the user's highlights (most-recent first). */
   items: HighlightListItem[];
@@ -17,6 +25,7 @@ interface HighlightState {
   overlayActive: boolean;
   /** Tab the overlay is running on (null when inactive). */
   overlayTabId: number | null;
+  overlaySession: HighlightOverlaySession | null;
   /** Live count reported by the overlay. */
   overlayCount: number;
   /** Current capture mode. */
@@ -36,6 +45,7 @@ interface HighlightState {
   upsertItem: (item: HighlightListItem) => void;
   removeItem: (id: string) => void;
   setOverlay: (s: { active: boolean; tabId?: number | null; count?: number }) => void;
+  setOverlaySession: (session: HighlightOverlaySession | null) => void;
   setMode: (mode: HighlightMode) => void;
 
   attach: (id: string) => void;
@@ -51,6 +61,7 @@ export const useHighlightStore = create<HighlightState>((set) => ({
   items: [],
   overlayActive: false,
   overlayTabId: null,
+  overlaySession: null,
   overlayCount: 0,
   mode: 'text',
   attachedIds: [],
@@ -74,6 +85,12 @@ export const useHighlightStore = create<HighlightState>((set) => ({
       overlayTabId: tabId === undefined ? (active ? s.overlayTabId : null) : tabId,
       overlayCount: count ?? (active ? s.overlayCount : 0),
     })),
+  setOverlaySession: (session) => set({
+    overlaySession: session,
+    overlayActive: session?.status === 'active',
+    overlayTabId: session?.tabId ?? null,
+    overlayCount: 0,
+  }),
   setMode: (mode) => set({ mode }),
 
   attach: (id) =>
