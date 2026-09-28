@@ -777,7 +777,7 @@ export function ListPatternTab() {
         {displayRows && (
           <ResultPreview
             rows={displayRows}
-            source={{ url: tab.url, title: tab.title }}
+            source={source}
             description="extracted rows from a List-Pattern config in matrx-extend"
           />
         )}

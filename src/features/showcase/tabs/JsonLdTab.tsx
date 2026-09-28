@@ -73,7 +73,7 @@ export function JsonLdTab({ active = true }: { active?: boolean }) {
           </div>
         )}
 
-        {rows && <ResultPreview rows={rows} emptyHint="No matching JSON-LD blocks." />}
+        {rows && <ResultPreview rows={rows} source={source} emptyHint="No matching JSON-LD blocks." />}
 
         {rows && rows.length > 0 && (
           <div className="flex justify-end">

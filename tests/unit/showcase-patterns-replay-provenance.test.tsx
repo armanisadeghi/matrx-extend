@@ -4,7 +4,7 @@ import { useLayoutEffect } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  page: { id: 37, url: 'https://electronic.vegas/search/' },
+  page: { id: 37, url: 'https://electronic.vegas/search/', title: 'Event search' },
   fetchPatterns: vi.fn(),
   runSaved: vi.fn(),
   bumpRun: vi.fn(),
@@ -23,8 +23,14 @@ vi.mock('@/lib/data-pattern/run-interactive', () => ({
 }));
 vi.mock('@/lib/destructive/confirm', () => ({ confirmDestructive: vi.fn() }));
 vi.mock('@/features/showcase/components/ResultPreview', () => ({
-  ResultPreview: ({ rows }: { rows: Record<string, unknown>[] }) => (
-    <div>Preview {JSON.stringify(rows)}</div>
+  ResultPreview: ({ rows, source }: {
+    rows: Record<string, unknown>[];
+    source?: { url?: string | null; title?: string | null } | null;
+  }) => (
+    <div>
+      Preview {JSON.stringify(rows)}
+      <span data-testid="preview-source">{source?.url ?? 'source unavailable'}</span>
+    </div>
   ),
 }));
 vi.mock('@ai-matrx/kit/format', () => ({
@@ -73,9 +79,35 @@ afterEach(() => {
   mocks.bumpRun.mockReset();
   mocks.page.id = 37;
   mocks.page.url = 'https://electronic.vegas/search/';
+  mocks.page.title = 'Event search';
 });
 
 describe('Showcase saved pattern replay provenance', () => {
+  it('binds each replay preview to the page that produced its rows', async () => {
+    mocks.page.url = 'https://electronic.vegas/vegas-edm-event-calendar/?date=2026-09-28';
+    mocks.fetchPatterns.mockResolvedValue([pattern]);
+    mocks.runSaved.mockResolvedValueOnce([{ title: 'Monday event' }])
+      .mockResolvedValueOnce([{ title: 'Tuesday event' }]);
+    mocks.bumpRun.mockResolvedValue(null);
+    const view = render(<PatternsTab />);
+    await screen.findByText('Calendar events');
+
+    await userEvent.click(screen.getByTitle('Run pattern'));
+    expect(await screen.findByText(/Monday event/)).toBeTruthy();
+    expect(screen.getByTestId('preview-source').textContent).toBe(
+      'https://electronic.vegas/vegas-edm-event-calendar/?date=2026-09-28',
+    );
+
+    mocks.page.url = 'https://electronic.vegas/vegas-edm-event-calendar/?date=2026-09-29';
+    view.rerender(<PatternsTab />);
+    await screen.findByText('Calendar events');
+    await userEvent.click(screen.getByTitle('Run pattern'));
+    expect(await screen.findByText(/Tuesday event/)).toBeTruthy();
+    expect(screen.getByTestId('preview-source').textContent).toBe(
+      'https://electronic.vegas/vegas-edm-event-calendar/?date=2026-09-29',
+    );
+  });
+
   it('refreshes last run only after saved health commits, then shows the new timestamp', async () => {
     mocks.page.url = 'https://electronic.vegas/vegas-edm-event-calendar/';
     let savedRunAt = '2026-09-28T14:51:00Z';

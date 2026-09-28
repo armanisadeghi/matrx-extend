@@ -354,7 +354,11 @@ export function NetworkTab() {
 
         {extractedRows && (
           <>
-            <ResultPreview rows={extractedRows} />
+            <ResultPreview
+              rows={extractedRows}
+              source={selected ? { url: safeSelectedUrl } : null}
+              description="rows extracted from a captured network response"
+            />
             {extractedRows.length > 0 && selected && source && !discovering && (
               <div className="flex justify-end">
                 <SaveAsPattern

@@ -232,7 +232,7 @@ export function AiExtractTab() {
           </div>
         )}
 
-        {rows && <ResultPreview rows={rows} />}
+        {rows && <ResultPreview rows={rows} source={source} />}
 
         {rows && rows.length > 0 && (
           <div className="space-y-2">

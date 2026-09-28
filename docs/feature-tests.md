@@ -1446,6 +1446,8 @@ Every entry follows this shape:
 
 **Copy TSV fidelity (EXT-D-0054):** Run a saved pattern with two distinct cells containing respectively a tab or newline and an ordinary space, plus a quoted value and a field name containing a tab. Copy TSV from the result preview and Data manual rerun, paste into a spreadsheet, and compare the resulting column names and cell values with the extraction. Plain cells must remain unchanged, while tabs, line breaks, and quotes remain inside their original cells.
 
+**Copy for AI source provenance (EXT-D-0055):** Run a saved pattern on a real page with a query parameter, then use Showcase → Patterns → Result Preview → Copy for AI and Send to agent. The preamble must name the URL that produced those rows, including the ordinary query parameter, and the JSON must contain the same rows. Run it again on a second route or query; the second copy must name the second page and contain only its rows. Repeat Copy for AI in JSON-LD, Microdata, Tables, Framework, Snapshot, Recipes, AI Extract, and List Pattern; each preview must carry the extraction's captured source. In Network, select two different captured responses and verify each copy names its selected response URL. A recognized credential query key (for example `token`) must be masked in both copy and agent handoff. If a source URL is unavailable, the menu must say so and the copy must omit the Source URL line.
+
 ### Showcase — preview configuration survives later edits
 - **What it does:** Saving a preview keeps the exact settings that produced
   its rows, even if the controls are edited before Save is clicked.

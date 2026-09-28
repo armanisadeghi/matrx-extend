@@ -54,6 +54,10 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
   const [runningId, setRunningId] = useState<string | null>(null);
   const [runNote, setRunNote] = useState<string | null>(null);
   const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
+  const [resultSource, setResultSource] = useState<{
+    url: string | null;
+    title: string | null;
+  } | null>(null);
   const [activeName, setActiveName] = useState<string | null>(null);
   const [runInfo, setRunInfo] = useState<string | null>(null);
   const [resultPageKey, setResultPageKey] = useState<string | null>(null);
@@ -108,6 +112,7 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
     setRunError(null);
     setRunInfo(null);
     setRows(null);
+    setResultSource(null);
     setActiveName(null);
     setResultPageKey(null);
   }, [pageKey]);
@@ -132,10 +137,12 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
     const seq = ++runSeq.current;
     const isCurrent = () => seq === runSeq.current && currentPageKey.current === runPageKey;
     const onSavedRoute = urlMatchesPattern(tab.url ?? '', p);
+    const sourceAtRun = { url: tab.url, title: tab.title };
     setRunningId(p.id);
     setResultPageKey(runPageKey);
     setActiveName(p.name);
     setRows(null);
+    setResultSource(null);
     setRunError(null);
     setRunNote(null);
     setRunInfo(null);
@@ -149,6 +156,7 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
       });
       if (!isCurrent()) return;
       setRows(data);
+      setResultSource(sourceAtRun);
       const outcome = classifySavedRun(p, tab.url ?? '', data);
       setRunInfo(outcome.message);
       if (outcome.kind === 'matched') {
@@ -263,7 +271,11 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
             <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
               Last run: {activeName ?? '—'}
             </div>
-            <ResultPreview rows={visibleRows} />
+            <ResultPreview
+              rows={visibleRows}
+              source={resultSource}
+              description={`rows extracted by saved pattern "${activeName ?? 'unknown'}"`}
+            />
           </div>
         )}
       </div>
