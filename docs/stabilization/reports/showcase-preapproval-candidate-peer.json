@@ -1,0 +1,46 @@
+{
+  "lane": "independent source review; no runtime",
+  "target": "docs/stabilization/pending/EXT-D-0047-preapproval/",
+  "verdictA": {
+    "status": "UNVERIFIED",
+    "finding": "Repeated saved-Showcase extraction is not proven. The .111 native observation was resource-invalid and retry-refused; no healthy installed run, real recipe, approval, capture, or repeated-row comparison was performed in this lane.",
+    "sourceAssessment": "The proposed progress strings distinguish connection, preparation, and approval. Port abort gives the row a terminal cancellation after the Port exists. Existing prepared-operation checks reject an aborted signal before confirmation, after confirmation, and before capture following a late preparation result. These are source observations, not live behavior proof."
+  },
+  "verdictB": {
+    "status": "FIX_FIRST",
+    "findings": [
+      {
+        "severity": "important",
+        "title": "Cancellation test does not prove the real UI-to-dispatch path",
+        "evidence": "preapproval-stall.test.tsx.pending mocks runSavedPattern and manufactures its progress/cancellation race; its separate Port test stops at a mocked Port. dispatcher-gate.patch.pending parks only the first pattern read and never runs through PatternsTab or the Port host. A regression in signal forwarding, host disconnect, or approval cleanup can pass these cases.",
+        "remedy": "Add one connected regression with the actual PatternsTab, runSavedPattern, saved-operation Port host, and runLocalSavedPattern; park the underlying pattern read, cancel from the row, release it, then assert no approval, debugger action, rows, or health write. Run baseline RED and repaired GREEN, with the forcing-function mutation checks required by the test doctrine."
+      },
+      {
+        "severity": "important",
+        "title": "Cancel-before-Port and post-approval preparation remain uncovered",
+        "evidence": "runSavedPattern dynamically imports document-network-transport before opening the Port (run-interactive.ts:544-545); the proposed UI test replaces runSavedPattern. After approval, executePreparedOperation calls prepare again (prepared-tool-operation.ts:74), and the proposed dispatcher test exercises only the first read. An abort during either gap has no proposed regression proof.",
+        "remedy": "Cover cancellation before the transport import resolves and while the second prepare is pending; verify no capture, late result, or health change. If import cannot be made interruptible, keep the row recoverable and state the limitation honestly."
+      },
+      {
+        "severity": "moderate",
+        "title": "The controller changes behavior for non-Network runs",
+        "evidence": "candidate.patch.pending passes the new signal to every runSavedPattern call and aborts it on page change, unmount, or another Run. runSavedPattern sends AI runs to runAiExtractPattern, which never observes opts.signal (run-interactive.ts:118-233). The UI suppresses late output, but the agent stream can continue after an apparent cancellation or navigation.",
+        "remedy": "Scope this controller to Network runs, or make non-Network cancellation real and cover it separately. Do not describe an AI run as cancelled if only its UI result is hidden."
+      },
+      {
+        "severity": "moderate",
+        "title": "Candidate documentation overstates the test seam",
+        "evidence": "CANDIDATE.md says the UI regression keeps the actual PatternsTab and Port transport, but the UI test mocks runSavedPattern; the Port test uses a fake runtime Port. No pending test has been executed, and the candidate itself says so.",
+        "remedy": "Correct the claim and keep all pending tests explicitly unverified until executed."
+      }
+    ],
+    "safetyChecks": {
+      "cancelBeforeFirstPrepareResolves": "Source check appears safe for debugger capture: runLocalSavedPattern awaits prepare then runPrepared enters executePreparedOperation, whose first action checks the aborted signal. Late preparation may still complete read/hash/scripting work.",
+      "cancelWhileApprovalPending": "The existing requestConfirmation abort listener expires the card and resolves denial; executePreparedOperation checks abort before re-preparation. A cancellation during persistence removes the pending record before broadcasting a card. Needs connected test proof.",
+      "lateSuccessAndHealth": "The proposed UI checks controller.signal.aborted before setRows or bumpPatternRun; the Port rejects on abort and the host aborts on disconnect. The pending test does not assert bumpPatternRun remains untouched after a late success.",
+      "legitimateOrgAndUserHolds": "No new preparation deadline is introduced. The active-organization resolver can legitimately hold while the picker is open. Progress text plus Cancel is preferable to a fixed timer, but no source-only review proves the picker and status are visible together.",
+      "nonNetworkCallers": "Agent tool calls do not use the proposed local-only progress labels; PatternsTab's new controller does affect DOM and AI saved runs as noted above."
+    }
+  },
+  "limits": "Source read only. No tests, build, browser, DB, installed-extension run, or mutation checks were performed. The candidate is pending and was not applied."
+}
