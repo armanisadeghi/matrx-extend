@@ -1,0 +1,22 @@
+{
+  "defect": "EXT-D-0047",
+  "lane": "independent scoped source re-verification; zero authorship and no runtime execution",
+  "checked_revision": "29e0cf3ed7fef568d64424f4574fbff0b54cb5ee plus uncommitted saved-UI test change",
+  "verdict_a_runtime_native": "UNVERIFIED: no tests, build, browser, or product execution in this lane",
+  "verdict_b_source_quality": "PASS for the scoped cleanup finding; runtime behavior remains unverified",
+  "finding_reverify": [
+    {
+      "finding": "Failure path strands mocked operations and leaves cleanup incomplete",
+      "status": "ADDRESSED",
+      "evidence": "tests/unit/document-network-saved-ui.test.tsx:108-116 registers asynchronous afterEach teardown; :292-313 makes teardown idempotent, stops observation, unmounts the UI, disconnects ports, releases both digest gates plus setup/removal/detach gates, drains imports and tracked native dispatcher operations, and retries an owned CDP detach; :314-395 invokes the same teardown in finally after assertions or throws. The added preparation-teardown case at :329-337 exercises abort while a native digest is held. Port disconnect aborts the server controller in src/lib/data-pattern/document-network-transport.ts:107-109, and digest/setup gate release allows the aborted operation to settle."
+    }
+  ],
+  "new_scoped_regressions": "None established by source inspection. The test retains approval-before-attach, two native preparations, stale/current row, cleanup failure, and detach failure assertions.",
+  "limits": [
+    "The new failure-path case is source evidence only; its expected rejection and cleanup timing require a runtime run.",
+    "If teardown itself throws before Promise.allSettled, afterEach cannot complete remaining resets; no such throw is established in the inspected path."
+  ],
+  "source_hashes_sha256": {
+    "tests/unit/document-network-saved-ui.test.tsx": "a0c85b9843939af053cde70b138538f32d0bceddeac33794b05033629525ce7c"
+  }
+}
