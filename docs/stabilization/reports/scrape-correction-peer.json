@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "report_id": "scrape-correction-peer",
+  "defect": "EXT-D-0059",
+  "lane": "independent source and evidence peer; zero product authorship",
+  "candidate_commit": "fe389b5e374925095272f06d5d842341f7d24396",
+  "verdict_a_outcome": "PASS IN SOURCE for the two scoped D59 correction findings; native installed same-URL A/B acceptance remains UNVERIFIED",
+  "verdict_b_quality": "PASS WITH EVIDENCE LIMITS for the correction; no important new source finding",
+  "addressed": [
+    {
+      "finding": "A retained A scrape is attached to a B Diagnose result",
+      "verdict": "ADDRESSED",
+      "evidence": "DiagnoseCard.tsx gates current scrape by both result.pageKey and isCurrentPageIdentity before passing markdown/extractor to the real bundle formatter. The B-with-A and B-with-B card tests have distinct expected copied text."
+    },
+    {
+      "finding": "An old pre-send refresh can change B's shared cache status",
+      "verdict": "ADDRESSED",
+      "evidence": "auto-scrape.ts assigns a pageKey and monotonic run to shared status; error and finish require ownership. refresh-page-context.ts checks ownership before cache writes and guards deep errors. The hook's background capture uses the same token, cancels an older page on identity change, and does not supersede an active pre-send capture of the same page."
+    }
+  ],
+  "important_findings": [],
+  "evidence_review": {
+    "hashes": "All five claimed red, green, focused-test, and compile journal SHA-256 values match the checked-in files; all four claimed source SHA-256 values match the reviewed checkout.",
+    "resource_gate": "The red and green test runs, expanded focused test run, and final compile show RESOURCE_ADMITTED and a matching RESOURCE_FINAL_DECISION; red child exit 1, green/tests/compile child exit 0.",
+    "red_green_causality": "The old source demonstrably permitted the two reported failures, and the new tests assert their distinguishing outcomes. The resource journals contain exit metadata only, so the claimed specific red assertions and test counts rest on the builder report rather than captured runner output. No independent mutation or return-expected run occurred in this source-only lane."
+  },
+  "optional_case_gaps": [
+    "No connected test overlaps a background auto capture with a pre-send capture, although the shared token and timer gate cover that path in source.",
+    "The focused refresh tests cover late A success and returned failure; they do not separately inject a thrown A capture error or a page A to B to A transition.",
+    "No browser, installed extension, or real same-URL reload was exercised in this lane. This is not a full D59 acceptance verdict."
+  ]
+}
