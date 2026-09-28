@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
   pickerListeners: new Map<string, (payload: unknown) => unknown>(),
   retryIdentity: vi.fn(),
   listHighlights: vi.fn(),
+  requireOrg: vi.fn(),
 }));
 
 vi.mock('@/hooks/use-active-tab', () => ({
@@ -35,7 +36,7 @@ vi.mock('@/lib/data-pattern/run-interactive', () => ({
   NetworkNoMatchError: class NetworkNoMatchError extends Error {},
 }));
 vi.mock('@/lib/messaging/native', () => ({ on: (kind: string, callback: (payload: unknown) => unknown) => { mocks.pickerListeners.set(kind, callback); return () => { mocks.pickerListeners.delete(kind); }; }, send: vi.fn() }));
-vi.mock('@/lib/api/routes/auth', () => ({ requireRequestOrganizationId: vi.fn() }));
+vi.mock('@/lib/api/routes/auth', () => ({ requireRequestOrganizationId: mocks.requireOrg }));
 vi.mock('@/lib/highlights/queries', () => ({ listMyHighlights: mocks.listHighlights, listHighlightsForUrl: vi.fn(), deleteHighlight: vi.fn() }));
 vi.mock('@/lib/highlights/control', () => ({ startHighlighter: vi.fn(), stopHighlighter: vi.fn(), setHighlighterMode: vi.fn() }));
 vi.mock('@/components/CopyMenu', () => ({
@@ -106,6 +107,8 @@ afterEach(() => {
   mocks.bumpRun.mockReset();
   mocks.savePattern.mockReset();
   mocks.retryIdentity.mockReset();
+  mocks.requireOrg.mockReset();
+  mocks.requireOrg.mockResolvedValue('organization-1');
   mocks.pickerListeners.clear();
   vi.unstubAllGlobals();
   useAutoExtractStore.setState({ records: new Map() });
@@ -256,6 +259,43 @@ it('shows recovery for an old Highlight handoff instead of silently saving it on
   expect(await screen.findByText(/highlight fields came from another or unverified page/i)).toBeTruthy();
   expect(screen.queryByRole('button', { name: /save pattern/i })).toBeNull();
   expect(mocks.savePattern).not.toHaveBeenCalled();
+});
+
+it('does not persist A fields after same-URL document B replaces A during organization resolution', async () => {
+  mocks.fetchPatterns.mockResolvedValue([]);
+  let releaseOrg!: (id: string) => void;
+  mocks.requireOrg.mockReturnValue(new Promise<string>((resolve) => { releaseOrg = resolve; }));
+  useHighlightStore.getState().setDataHandoff({ fields: [{ name: 'old', selector: '#old' }], pageKey: 'page-a', tabId: 37, documentId: 'document-a' });
+  const view = render(<DataView />);
+  await userEvent.click(screen.getByRole('button', { name: /save pattern/i }));
+  expect(mocks.requireOrg).toHaveBeenCalledOnce();
+  await act(async () => { mocks.page = { ...mocks.page, pageKey: 'page-b', documentId: 'document-b' }; view.rerender(<DataView />); });
+  await act(async () => { releaseOrg('organization-1'); });
+  expect(mocks.savePattern).not.toHaveBeenCalled();
+  expect(screen.getByText(/Page changed before saving.*Select fields again/i)).toBeTruthy();
+});
+
+it('does not let an old save completion clear B fields or finish B save', async () => {
+  mocks.fetchPatterns.mockResolvedValue([]);
+  mocks.requireOrg.mockResolvedValue('organization-1');
+  let finishA!: (value: ExtractionPattern) => void;
+  let finishB!: (value: ExtractionPattern) => void;
+  mocks.savePattern
+    .mockReturnValueOnce(new Promise<ExtractionPattern>((resolve) => { finishA = resolve; }))
+    .mockReturnValueOnce(new Promise<ExtractionPattern>((resolve) => { finishB = resolve; }));
+  useHighlightStore.getState().setDataHandoff({ fields: [{ name: 'old', selector: '#old' }], pageKey: 'page-a', tabId: 37, documentId: 'document-a' });
+  const view = render(<DataView />);
+  await userEvent.click(screen.getByRole('button', { name: /save pattern/i }));
+  await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(1));
+  await act(async () => { mocks.page = { ...mocks.page, pageKey: 'page-b', documentId: 'document-b' }; view.rerender(<DataView />); });
+  act(() => { useHighlightStore.getState().setDataHandoff({ fields: [{ name: 'new', selector: '#new' }], pageKey: 'page-b', tabId: 37, documentId: 'document-b' }); });
+  await userEvent.click(screen.getByRole('button', { name: /save pattern/i }));
+  await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(2));
+  await act(async () => { finishA(pattern); });
+  expect(screen.getByRole('button', { name: /save pattern/i }).hasAttribute('disabled')).toBe(true);
+  expect(screen.getByText(/#new/)).toBeTruthy();
+  await act(async () => { finishB(pattern); });
+  expect(screen.queryByRole('button', { name: /save pattern/i })).toBeNull();
 });
 
 it('keeps B picker live when delayed A injection rejects and shows a retry remedy for a current rejection', async () => {
