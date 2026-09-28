@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const activePage = vi.hoisted(() => ({
   id: 77,
+  documentId: 'document-a',
   url: 'https://electronic.vegas/vegas-edm-event-calendar/',
   executeScript: vi.fn(),
 }));
@@ -14,10 +15,11 @@ vi.mock('@/hooks/use-active-tab', () => ({
     id: activePage.id,
     url: activePage.url,
     title: 'Vegas EDM Event Calendar',
-    documentId: 'document-a',
-    pageKey: 'document-a',
+    documentId: activePage.documentId,
+    pageKey: JSON.stringify([activePage.id, activePage.documentId, activePage.url]),
   }),
-  isCurrentPageIdentity: (key: string) => key === 'document-a',
+  isCurrentPageIdentity: (key: string) =>
+    key === JSON.stringify([activePage.id, activePage.documentId, activePage.url]),
 }));
 vi.mock('@/lib/storage/zustand-adapter', () => ({
   chromeLocalStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },
@@ -77,6 +79,7 @@ beforeEach(() => {
     .join('')}</section>`;
   Object.assign(window, { __matrxListPickerStart: mountListPicker });
   activePage.id = 77;
+  activePage.documentId = 'document-a';
   activePage.url = 'https://electronic.vegas/vegas-edm-event-calendar/';
   activePage.executeScript.mockReset().mockImplementation(
     async (request: {
@@ -89,7 +92,7 @@ beforeEach(() => {
     scripting: { executeScript: activePage.executeScript },
     runtime: {
       sendMessage: vi.fn(async (message: { kind: string; payload: Record<string, unknown> }) => {
-        listeners.get(message.kind)?.({ ...message.payload, tab_id: activePage.id, document_id: 'document-a' });
+        listeners.get(message.kind)?.({ ...message.payload, tab_id: activePage.id, document_id: activePage.documentId });
         return { ack: true };
       }),
     },
@@ -102,7 +105,7 @@ beforeEach(() => {
   useShowcaseTabStore.getState().offerListRecommendation({
     tabId: 77,
     url: activePage.url,
-    pageKey: 'document-a',
+    pageKey: JSON.stringify([activePage.id, activePage.documentId, activePage.url]),
     listRoot: '#wideeventsList',
     itemSelector: 'div.wideeventwrapper',
   });
@@ -164,16 +167,42 @@ describe('D43 Pick more fields user entry', () => {
     await act(async () =>
       fireEvent.click(screen.getByRole('button', { name: /Pick more fields/i })),
     );
+    // Queue the real producer's completion across navigation, as an in-flight relay can be.
+    const pendingMessages: Array<{ kind: string; payload: Record<string, unknown> }> = [];
+    Object.assign(chrome.runtime, {
+      sendMessage: vi.fn(async (message: { kind: string; payload: Record<string, unknown> }) => {
+        pendingMessages.push({
+          kind: message.kind,
+          payload: { ...message.payload, tab_id: activePage.id, document_id: activePage.documentId },
+        });
+        return { ack: true };
+      }),
+    });
+    await act(async () => {
+      document
+        .querySelector('.wideeventwrapper:first-child .eventTitle')
+        ?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+      document.getElementById('matrx-list-picker-host')?.shadowRoot
+        ?.querySelector('#done')
+        ?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+    const completion = pendingMessages.find((message) => message.kind === 'data:list-picker-result');
+    expect(completion?.payload).toMatchObject({
+      document_id: 'document-a',
+      list_root: '#wideeventsList',
+      item_selector: 'div.wideeventwrapper',
+      field_paths: [{ name: 'field_1' }],
+    });
     activePage.url = 'https://example.com/';
+    activePage.documentId = 'document-b';
     view.rerender(<ListPatternTab />);
     await waitFor(() =>
       expect(screen.getByRole('button', { name: /Pick an example item/i })).toBeTruthy(),
     );
     await act(async () => {
-      document
-        .querySelector('.wideeventwrapper:first-child .eventTitle')
-        ?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+      if (completion) listeners.get(completion.kind)?.(completion.payload);
     });
+    expect(document.getElementById('matrx-list-picker-host')).toBeNull();
     expect(screen.queryByText('#wideeventsList')).toBeNull();
   });
 });
