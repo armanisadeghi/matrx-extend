@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "run_id": "showcase-tables-native-20260928",
+  "inventory": "EXT-F-1012",
+  "verification_identity": {
+    "extension_version": "0.2.114",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact": ".output/chrome-mv3-dev",
+    "artifact_tree_sha256_before_and_after": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "artifact_receipt": "docs/stabilization/runs/showcase-d50-runtime-artifact-20260928.json",
+    "public_source": "https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population",
+    "browser": "Built unpacked Chrome extension in primary profile; extension explicitly reloaded and source page refreshed before checks; DevTools closed.",
+    "recipe": {
+      "name": "Codex Showcase Tables native 20260928 1035",
+      "id": "e6c0a2d9-0786-4a8f-9c7e-d1feb0b8c500",
+      "kind": "auto_table",
+      "route_pattern": "/wiki/List_of_countries_and_dependencies_by_population",
+      "config": { "table_index": 0 }
+    }
+  },
+  "cases": [
+    {
+      "case": "T14 — table selection",
+      "status": "PASS (bounded to this public page)",
+      "expected": "Detected table choices change the extraction target to the selected index.",
+      "actual": "3 tables detected. Selected and extracted indices 0, 1, and 2; each changed the Extract table label and yielded that index's contents. Index 0: 241 rows × 6 columns; index 1: 14 rows × 1 column; index 2: 2 rows × 1 column.",
+      "evidence": "Native accessibility observations of the Showcase Tables panel and result rows on the named Wikipedia URL."
+    },
+    {
+      "case": "T15 — extraction and empty source",
+      "status": "PASS (bounded to exercised pages and indices)",
+      "expected": "Selected table produces visible actual rows and columns; a source without tables reports an honest empty state.",
+      "actual": "Index 0 displayed 241 rows and six columns (% of world, Date, Location, Notes, Population, Source); visible records included World — 8,232,000,000 and India — 1,429,404,000. Indices 1 and 2 also returned their observed contents. On https://example.org/, panel said No tables on this page and disabled Extract table 1.",
+      "evidence": "Native accessibility observations on Wikipedia and example.org; no fixtures or fabricated network data."
+    },
+    {
+      "case": "T42 — auto_table preview/save/reopen/replay, draft stability, route mismatch",
+      "status": "PASS (bounded to one saved recipe and manual route-mismatch run)",
+      "expected": "Saved recipe reopens and replays its previewed table index; draft changes do not change saved config; route mismatch is disclosed.",
+      "actual": "Previewed table 0, saved through UI, reopened in Patterns, and replayed 241 rows. Changed draft selection to table 1 without saving; exact row remained config {table_index:0}, route unchanged, status ok/count 241. On /wiki/United_States, UI warned page was outside saved route; manual Run warned rows should be reviewed and returned 51 current-page infobox rows (including Population 341,784,857). Read-only exact-row verification after this run still showed saved route/config and status ok/count 241.",
+      "evidence": "UI observations on actual public Wikipedia routes plus safe exact-row read of extend.wbx_pattern for ID e6c0a2d9-0786-4a8f-9c7e-d1feb0b8c500. The mismatch action was an explicit user-triggerable manual Run with warning; it was not a silent route match.",
+      "limitations": "No browser reload/reopen cycle, other pages, auth transition, or service-error path exercised."
+    }
+  ],
+  "evidence_limits": {
+    "native": "Results reflect only the stated built artifact, primary Chrome profile, and real public pages observed in this run.",
+    "not_verified": ["Other source structures and routes", "extension auth transitions", "service-error behavior", "browser reload persistence cycle"],
+    "screenshots": "None captured; observations recorded from native accessibility state.",
+    "data_access": "Only safe exact recipe fields were read; no credentials were read or reported."
+  }
+}

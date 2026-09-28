@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "run_id": "showcase-tables-native-20260928",
+  "inventory": "EXT-F-1012",
+  "started_at": "2026-09-28T10:32:53.153Z",
+  "ended_at": "2026-09-28T10:41:22.025Z",
+  "resource_guard": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id showcase-tables-native-20260928 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "admission": "RESOURCE_ADMITTED",
+    "samples": "RESOURCE_WATCH_HEALTHY throughout observed browser work",
+    "terminal": "RESOURCE_BROWSER_STOP_CONFIRMED",
+    "terminal_at": "2026-09-28T10:41:22.025Z"
+  },
+  "verification_identity": {
+    "source_commit_at_artifact_build": "8c1624440f3bc98e24af624d0b50cadfc94665db",
+    "artifact_path": ".output/chrome-mv3-dev",
+    "artifact_version": "0.2.114",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256_before_ui": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "tree_sha256_after_ui": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "artifact_build_receipt": "docs/stabilization/runs/showcase-d50-runtime-artifact-20260928.json"
+  },
+  "owned_recipe": {
+    "name": "Codex Showcase Tables native 20260928 1035",
+    "id": "e6c0a2d9-0786-4a8f-9c7e-d1feb0b8c500",
+    "database_evidence": "Read-only exact-row fields: id, kind, route_pattern, config, last_status, last_run_count. Final values: auto_table, /wiki/List_of_countries_and_dependencies_by_population, {table_index:0}, ok, 241."
+  },
+  "cases": {
+    "T14": "PASS (bounded); Wikipedia detected 3 tables; exercised indices 0, 1, 2.",
+    "T15": "PASS (bounded); actual visible rows/columns; example.org reported no tables and disabled extraction.",
+    "T42": "PASS (bounded); preview-save-reopen-replay, draft config preservation, and warned manual out-of-route run."
+  },
+  "files": [
+    "docs/stabilization/reports/showcase-tables-native.json",
+    "docs/stabilization/runs/showcase-tables-native-20260928.json"
+  ],
+  "commit": null,
+  "limitations": ["No auth transition or service-error behavior claimed.", "No browser reload cycle or screenshots.", "No source, build, tests, or database writes in this lane."]
+}
