@@ -1,0 +1,29 @@
+{
+  "id": "EXT-D-0059-highlight-session-peer",
+  "role": "independent source and evidence peer",
+  "candidate_commit": "3cfdd19d",
+  "scope": "Highlight overlay start, reload, control, bridge admission, capture and clear; saved history and Data/Scrape handoffs checked for preservation",
+  "A_scoped_outcome": {
+    "status": "source_pass_with_native_verification_pending",
+    "supported": [
+      "The pending session is published before saved-history lookup; completion rechecks both object identity and the active pageKey after each awaited start stage (src/lib/highlights/session.ts:12-42).",
+      "Injection and control messages address the exact Chrome document and carry sessionId; the content overlay rejects later control messages with a different token (src/lib/highlights/control.ts:14-77; src/lib/highlights/highlighter.ts:440-466).",
+      "The bridge admits state, capture and clear only from the represented tab, top frame, document, URL and session token; capture rechecks the token after organization and bearer waits, before insert (src/hooks/use-highlight-bridge.ts:22-27,65-89; src/lib/highlights/queries.ts:166-216).",
+      "The view presents the represented session on its initiating page and a Stop there control from another page; URL/domain saved-history filtering and Data/Scrape handoff logic remain separate (src/features/highlights/HighlightView.tsx:82-108,139-181,194-214)."
+    ],
+    "important_findings": [],
+    "clear_semantics": "Clear is admitted on receipt and rechecked inside the user's confirmed action before clearHighlightsForUrl starts (src/hooks/use-highlight-bridge.ts:86-113). The helper then selects and soft-deletes saved IDs for the captured URL (src/lib/highlights/queries.ts:293-318). A subsequent session change during the database read does not, by itself, prove a wrong-target or unauthorized deletion: saved URL history is deliberately shared across documents, and the confirmed action was valid when it began. Cancellation after that point is an optional product policy, not an established defect in this scope."
+  },
+  "B_quality": {
+    "status": "source_and_recorded_gates_pass; native_behavior_unverified",
+    "evidence": [
+      "The committed journal highlight-session-tests-20260928-e records resource admission, child exit 0 and valid final decision; its SHA-256 equals 2bafd5e08d28c46c3cd6bf0bdb4936a2e9312cadba686a43f272fc84d11a8a33. The submitted correction reports 3 files and 11 tests; the journal itself does not carry the Vitest assertion count or stdout.",
+      "The committed journal highlight-session-compile-20260928-b records resource admission, child exit 0 and valid final decision; its SHA-256 equals b4e665bd783a7903a3aeb900b8009a9716f10ad44f887a380d266ae3487100ec. The submitted correction reports tsc --noEmit passed; the journal itself does not carry compiler stdout.",
+      "The 11 committed tests cover pending lookup/injection, cross-tab retirement, stale state/capture/clear admission, same-document restart, document-targeted controls and capture after organization wait. They do not cover session change during a valid confirmed historical-URL clear; that is an optional cancellation-policy question, not a failing invariant established by this source trace.",
+      "The submitted correction explicitly says no native Chrome UI or build was run and original behavior was source-traced without an observed pre-change red run. These remain evidence limits, not inferred runtime failures."
+    ],
+    "optional_followup": "Native Chrome verification should inspect actual overlay mounting and panel controls across same-URL reload, cross-tab switch and same-document stop/restart."
+  },
+  "runtime_claim": "None; source and committed evidence only.",
+  "product_edits": "None"
+}
