@@ -1,0 +1,76 @@
+{
+  "id": "EXT-D-0059",
+  "status": "IN_FIX_NEW_REGRESSIONS_FOUND",
+  "role": "bounded independent escalation verifier; zero product authorship",
+  "reviewed_commits": ["858dfd8fdfc2f1471f806eaa0a71430fb395ff65", "140d99c7e41271830d490f86862d5fc5f3ca52aa"],
+  "reviewed_working_head": "140d99c7e41271830d490f86862d5fc5f3ca52aa",
+  "original_findings": [
+    {
+      "title": "Old ordinary Network events admitted after new document capture",
+      "status": "ADDRESSED_SOURCE_AND_FOCUSED_GUARD",
+      "evidence": "document-event-relay.ts:2-8 overwrites payload identity with Chrome sender identity. bootstrap.ts uses it for NET_CAPTURE_EVENT. use-network-capture.ts:64-67 requires current page key, tab and document before append. The fresh focused run passes both spoofed sender and delayed A-after-B event tests."
+    },
+    {
+      "title": "Data picker A fields can be saved after B picker starts",
+      "status": "ADDRESSED_SOURCE_AND_FOCUSED_GUARD",
+      "evidence": "DataView.tsx:137-150 admits tab/document/session/current-page identity together, recording pickedPageKey; :208 checks that admitted identity at Save. Picker start injects its random session into the exact document, content script returns the session, and SW stamps trusted document identity. The fresh A-after-B test rejects A, accepts B, and asserts only B fields reach savePattern. This does not cover the new failure-path race below."
+    },
+    {
+      "title": "Framework tree and extension runner lose exact document target",
+      "status": "ADDRESSED_SOURCE_AND_FOCUSED_GUARD",
+      "evidence": "FrameworkTab passes tab.documentId to readFrameworkSources; runMode/runPattern require identity for runInExtension; framework-sources.ts:79-86 and :145-150 preserve it to executeScript documentIds. The fresh target test rejects A after replacement and extracts B successfully; existing Nuxt/key-path behavior tests remain green."
+    },
+    {
+      "title": "Unresolved identity silently no-ops visible actions",
+      "status": "ADDRESSED_SOURCE_AND_DATA_GUARD_NATIVE_UNVERIFIED",
+      "evidence": "Shared PageIdentityNotice renders status and Retry in DataView and ShowcaseView. Migrated Data, Recipes, Patterns, Framework, Doctor, List Pattern, AI Extract and Network controls require pageKey. The fresh Data test checks disabled picking and the Retry callback. Actual installed-extension notice, recovery and Chrome event ordering were not exercised."
+    }
+  ],
+  "verdict_a": {
+    "outcome": "PARTIAL",
+    "scoped_four_findings": "Addressed at source and focused-guard level, with the visible-remedy native limitation above.",
+    "accepted_outcome_met": false,
+    "reason": "No native UI proof was authorized; two new correction regressions remain. D59 remains in fix, not done."
+  },
+  "verdict_b": {
+    "quality": "FAIL_IMPORTANT",
+    "positive": "Trusted sender stamping is shared, exact document identity reaches the framework primitive, and the notice is reusable. Fixture corrections add required identity inputs without deleting or weakening the prior behavioral assertions.",
+    "test_limits": "27 green tests are guards, not native acceptance. No executed mutation/gut-check proof is supplied by the correction report or performed in this bounded verification. The tests omit the two new behaviors below."
+  },
+  "new_regressions": [
+    {
+      "priority": "important",
+      "title": "Highlight-to-Data Save silently returns because handoff fields lack pickedPageKey",
+      "status": "SOURCE_CONFIRMED_NOT_RUNTIME_REPRODUCED",
+      "evidence": "HighlightView.tsx:138-148 sends element selectors to dataHandoff and switches to Data. DataView.tsx:171-178 consumes fields but does not set pickedPageKey; its initial value is null and page changes reset it to null. The new guard at :208 requires isCurrentPageIdentity(pickedPageKey), so the existing handoff cannot save. The Save button at :595-601 stays enabled when tab.pageKey is resolved.",
+      "reproduction": "On a resolved page with an element highlight, choose the Highlight action sending elements to Data. On a fresh Data mount, the field list and enabled Save pattern button appear. Click Save: pickedPageKey is null, so no savePattern call occurs and no error is shown.",
+      "required_fix": "Carry and validate document provenance through the existing highlight handoff, admitting fields with their proven source identity; if provenance cannot be established, show a remedy instead of an enabled silent Save. Do not blindly assign the current page key to an unproven old handoff.",
+      "missing_guard": "Exercise the existing Highlight-to-Data handoff into real DataView; prove current-document fields save and stale or unproven handoffs receive visible recovery rather than silently failing."
+    },
+    {
+      "priority": "important",
+      "title": "Delayed old picker injection rejection erases the new picker session",
+      "status": "SOURCE_CONFIRMED_NOT_RUNTIME_REPRODUCED",
+      "evidence": "DataView.tsx:180-204 captures sessionId, but its catch unconditionally setPicking(false) and clears pickSessionRef. The page-key effect at :67-75 permits a new picker after navigation. Thus the old async operation can clear the new session; fromOurPick at :137-141 then rejects its valid result. Clearing pickSessionRef in that unguarded catch is introduced in 858dfd8f.",
+      "reproduction": "Hold A's executeScript promise. Switch to document B on the same tab, allowing the page-key effect to reset picker state. Start B and let its injections complete. Reject A's held promise. Its catch clears B's pickSessionRef; emitting B's correctly stamped result now fails admission and cannot be saved. The console warning gives no user remedy.",
+      "required_fix": "Only let the current picker session update failure state; compare the captured session and document/page identity before clearing refs or presenting an injection error. An obsolete rejection must leave B untouched; a current rejection must show a visible retry remedy.",
+      "missing_guard": "Use a deferred injection rejection to force A-fails-after-B-start and assert B still saves; separately assert a current-session injection failure is visible."
+    }
+  ],
+  "verification": {
+    "focused_command": "node scripts/stabilization-resource.mjs run --run-id d59-escalation-tests-20260928-1 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec vitest run --maxWorkers=1 tests/unit/document-relay-provenance.test.tsx tests/unit/framework-document-target.test.ts tests/unit/saved-run-data-view-health.test.tsx tests/unit/showcase-nuxt-data.test.ts tests/unit/showcase-json-key-path.test.tsx tests/unit/showcase-json-path-connected.test.tsx",
+    "focused_result": { "files_passed": 6, "tests_passed": 27, "resource_admitted": true, "child_exit_code": 0, "resource_invalid": false, "final_decision": "valid" },
+    "compile_command": "node scripts/stabilization-resource.mjs run --run-id d59-escalation-compile-20260928-1 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm compile",
+    "compile_result": { "resource_admitted": true, "child_exit_code": 0, "resource_invalid": false, "final_decision": "valid", "result": "tsc --noEmit passed" },
+    "journals": [
+      "docs/stabilization/resource-journals/d59-escalation-tests-20260928-1.jsonl",
+      "docs/stabilization/resource-journals/d59-escalation-compile-20260928-1.jsonl"
+    ]
+  },
+  "remaining_outside_this_lane": [
+    "Handler catalog and DB-sourced tool documentation regeneration remain pending separately.",
+    "Scrape, Screenshots, Highlights, Showcase shell state and sidepanel App context document-identity migration remain pending.",
+    "Broader relevant fixture/test census and native installed-extension same-URL Chrome Reload acceptance remain pending."
+  ],
+  "scope_limits": "No product edits, UI, localhost, build, child agents, full migration or push performed. Only this report and the two resource journals are owned artifacts."
+}
