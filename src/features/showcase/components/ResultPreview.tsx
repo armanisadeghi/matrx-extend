@@ -1,6 +1,6 @@
 import { CopyMenu } from '@/components/CopyMenu';
 import { rowsToTsv, stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
-import { sanitizeNetworkUrl } from '@/lib/credentials/network-urls';
+import { sanitizePageSourceUrl } from '@/lib/credentials/network-urls';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
@@ -19,6 +19,8 @@ interface ResultPreviewProps {
   maxHeight?: number;
   /** Source URL/title for AI-wrapped copy. Optional. */
   source?: { url?: string | null; title?: string | null } | null;
+  /** What the URL identifies for this result. */
+  sourceKind?: 'page' | 'response';
   /** Mode/recipe label for AI-wrapped copy. Optional. */
   description?: string;
 }
@@ -33,17 +35,17 @@ export function ResultPreview({
   emptyHint,
   maxHeight = 320,
   source,
+  sourceKind = 'page',
   description = 'extracted rows from a webpage',
 }: ResultPreviewProps) {
   const [view, setView] = useState<View>('table');
   const setDraft = useChatStore((s) => s.setDraft);
   const draft = useChatStore((s) => s.draft);
   const setSidepanelTab = useSidepanelTabStore((s) => s.setTab);
-  // Every AI handoff uses the same credential-aware URL that the Network
-  // surface uses for saved request identities. Preserve ordinary query keys:
-  // they can distinguish the page that produced these rows.
+  // Keep page hash routes and ordinary query keys while masking recognized
+  // credential keys in either the query or the fragment.
   const copySource = useMemo(
-    () => (source?.url ? { ...source, url: sanitizeNetworkUrl(source.url) } : (source ?? {})),
+    () => (source?.url ? { ...source, url: sanitizePageSourceUrl(source.url) } : (source ?? {})),
     [source],
   );
 
@@ -56,6 +58,9 @@ export function ResultPreview({
       description,
       source: copySource,
       meta: {
+        ...(source?.url && {
+          source_kind: sourceKind === 'response' ? 'network response' : 'web page',
+        }),
         row_count: rows.length,
         included_rows: included.length,
         ...(rows.length > included.length
@@ -82,18 +87,23 @@ export function ResultPreview({
       {
         label: 'Copy for AI',
         description: source?.url
-          ? 'JSON wrapped with source URL + a one-line preamble for chat.'
+          ? `JSON wrapped with ${sourceKind === 'response' ? 'response' : 'page'} URL + a one-line preamble for chat.`
           : 'JSON wrapped with a one-line preamble for chat; source URL unavailable.',
         ai: true,
         getContent: () =>
           wrapJsonForAgent(rows, {
             description,
             source: copySource,
-            meta: { row_count: rows.length },
+            meta: {
+              ...(source?.url && {
+                source_kind: sourceKind === 'response' ? 'network response' : 'web page',
+              }),
+              row_count: rows.length,
+            },
           }),
       },
     ],
-    [rows, source?.url, copySource, description],
+    [rows, source?.url, sourceKind, copySource, description],
   );
 
   if (rows.length === 0) {

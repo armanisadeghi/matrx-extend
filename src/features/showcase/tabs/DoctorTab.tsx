@@ -1,7 +1,7 @@
 import { CopyMenu } from '@/components/CopyMenu';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
-import { sanitizeNetworkUrl } from '@/lib/credentials/network-urls';
+import { sanitizePageSourceUrl } from '@/lib/credentials/network-urls';
 import { type PageDiagnostic, pageDiagnosticInPage } from '@/lib/data-pattern/page-diagnostic';
 import { cn } from '@/lib/utils';
 import { type ShowcaseSubTab, useShowcaseTabStore } from '@/state/showcase-tab';
@@ -113,7 +113,7 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
           wrapJsonForAgent(diag, {
             description:
               'a page-diagnostic snapshot from the matrx-extend Chrome extension. It lists every structured-data signal we detected on the active page (JSON-LD, microdata, framework state, tables, inline window.* assignments) plus our recommendations for which extraction mode is most likely to work',
-            source: { url: sanitizeNetworkUrl(diag.url), title: diag.title },
+            source: { url: sanitizePageSourceUrl(diag.url), title: diag.title },
             followUp:
               'Tell me which extraction approach is most likely to work, and if applicable, what selectors / key paths / regexes I should configure.',
           }),

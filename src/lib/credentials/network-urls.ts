@@ -64,6 +64,14 @@ export function sanitizeNetworkUrl(raw: string, extraKeys: readonly string[] = [
   return `${prefix}?${safeQuery.join('&')}`;
 }
 
+/** Page locations may use a fragment as the route; mask its query without losing it. */
+export function sanitizePageSourceUrl(raw: string, extraKeys: readonly string[] = []): string {
+  return raw
+    .split('#')
+    .map((part) => sanitizeNetworkUrl(part, extraKeys))
+    .join('#');
+}
+
 export function queryKeysInNetworkUrl(raw: string): string[] {
   const { query } = splitUrl(raw);
   if (query === null) return [];

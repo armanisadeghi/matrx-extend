@@ -357,6 +357,7 @@ export function NetworkTab() {
             <ResultPreview
               rows={extractedRows}
               source={selected ? { url: safeSelectedUrl } : null}
+              sourceKind="response"
               description="rows extracted from a captured network response"
             />
             {extractedRows.length > 0 && selected && source && !discovering && (
