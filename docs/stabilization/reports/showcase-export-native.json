@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "report_id": "showcase-export-native",
+  "task_id": "EXT-D-0053/0054",
+  "lane": "native execution",
+  "status": "PARTIAL_NATIVE_PASS",
+  "observed_at_utc": "2026-09-28T13:09:29Z–2026-09-28T13:14:21Z",
+  "target": {
+    "public_page": "https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population",
+    "browser": "primary Google Chrome profile",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.114",
+    "installed_source": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "artifact_tree_sha256_from_guarded_build_receipt": "b081b8748a562dc7575e435bdd3411bc08cff404520671282066ba48dc7ff6fc",
+    "artifact_receipt": "docs/stabilization/reports/showcase-export-guarded-runtime.json",
+    "reload": "Clicked Reload on chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml after confirming enabled unpacked version/source; Chrome displayed Reloaded. Opened and explicitly refreshed the real public Wikipedia page before running the saved pattern."
+  },
+  "resource_permit": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id d53d54-native-20260928-01 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "admitted_at_utc": "2026-09-28T13:09:12.864Z",
+    "first_healthy_at_utc": "2026-09-28T13:09:29.256Z",
+    "ui_started_after_admission_and_healthy": true,
+    "watching": "Fresh RESOURCE_WATCH_HEALTHY samples were read before UI action batches. One transient RESOURCE_WATCH_UNSAFE sample at 13:09:45Z stopped UI actions until the healthy sample at 13:10:02Z; no stop-at-safe-boundary event occurred.",
+    "run_id": "d53d54-native-20260928-01",
+    "completed_journal": "docs/stabilization/resource-journals/d53d54-native-20260928-01.jsonl",
+    "completed_journal_sha256": "06764467a6ba9941fd07462338ba9c6f51a70b477e48afa6eb6dc7c779fa297a",
+    "terminal_events": ["RESOURCE_BROWSER_STOP_CONFIRMED", "RESOURCE_FINAL_DECISION"],
+    "resource_invalid": false,
+    "actual_exit_code": 0,
+    "decision": "valid"
+  },
+  "native_actions_and_observations": [
+    {
+      "surface": "Showcase > Patterns > saved TABLE pattern Codex Showcase Tables native 20260928 1035 > Run pattern",
+      "result": "The installed side panel displayed 241 ROWS and explicitly said Copy and Save include all of them. The saved pattern was run in this session against the refreshed public page; this was not a fixture or injected page."
+    },
+    {
+      "action": "Copy JSON",
+      "ui_feedback": "Copied",
+      "clipboard_read": "Immediately after the product click, pbpaste yielded 53,362 UTF-8 bytes, SHA-256 1c2466be57c540791c1715253a407121801648cf221ef76b2a6bd814042119d1. JSON parsed as an array of 241 rows. First Location was World with Population 8,232,000,000; last Location was Pitcairn Islands (UK) with Population 35. The last row proves export exceeded the 200-row preview limit."
+    },
+    {
+      "action": "Copy TSV",
+      "ui_feedback": "Copied",
+      "clipboard_read": "Immediately after the product click, pbpaste yielded 15,770 UTF-8 bytes, SHA-256 1b637f2cc6effdf16992f2405e457c83c2d04e8a415a9694ccbb27c834311848. Python's strict csv.reader with tab delimiter and double-quote escaping parsed 242 records (one header plus 241 data rows), each with exactly six fields. The genuine Wikipedia headers '% of\\nworld' and 'Source (official or from\\nthe United Nations)' retained their embedded line feeds in quoted TSV fields. First and last rows matched JSON, including Pitcairn Islands (UK) / 35."
+    },
+    {
+      "action": "Copy for AI",
+      "ui_feedback": "Copied",
+      "clipboard_read": "Immediately after the product click, pbpaste yielded 53,441 UTF-8 bytes, SHA-256 111e21100b4fde3c7b762427eefac9a01215c5e16cf6ec4f18b3fe7b13c66284. The preamble stated Row count: 241; the fenced JSON parsed as 241 rows with the same final Pitcairn Islands (UK) / 35 row."
+    }
+  ],
+  "verdict": {
+    "passed": [
+      "Installed, explicitly reloaded extension copied complete 241-row saved Showcase result to JSON, TSV, and AI formats through the real Copy menu.",
+      "A complete JSON/AI clipboard payload over 50 KB copied successfully without truncating rows.",
+      "TSV retained genuine multiline headers and six-column row boundaries through an independent strict parser."
+    ],
+    "unverified": [
+      "D53 single extracted string greater than 50,000 characters: the real output exceeded 50 KB in total, but no individual source cell of that length was verified.",
+      "D54 literal tab or double-quote inside a genuine source field: this page supplied genuine newline headers, but those other character cases were not observed in native output.",
+      "Direct Showcase Tables result preview, Data T03 manual rerun, spreadsheet application paste, and CopyMenu failure presentation were not exercised in this bounded native lane."
+    ]
+  },
+  "source_changes": "None; this is native evidence only."
+}
