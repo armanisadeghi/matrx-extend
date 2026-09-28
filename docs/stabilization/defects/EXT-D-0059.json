@@ -17,7 +17,7 @@
   "actual": "Source trace shows useActiveTab lacks document identity and consumers invalidate only tab ID/URL; same-URL reload is not distinguished. Native reproduction remains unverified.",
   "severity": "S2: old-document results can appear current",
   "priority": "P1: shared document identity correctness",
-  "state": "triaged",
+  "state": "in-fix",
   "evidence": [
     "docs/stabilization/reports/prepare-source-audit.json",
     "docs/stabilization/reports/prepare-lifecycle-repair.json",
@@ -37,6 +37,12 @@
       "from": "open",
       "to": "triaged",
       "reason": "Source trace confirms id/URL-only keys and identifies existing Chrome top-frame document-ID consumers; controlled/native reproduction still pending. Shared design requires race/consumer review before edits."
+    },
+    {
+      "at": "2026-09-28T15:48:53.864670+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol document_identity_repair assigned shared snapshot and live-consumer migration under independently attacked contract; guarded self-verification required, native pending."
     }
   ],
   "scope_ruling": "Use one shared top-frame identity snapshot; keep URL/domain persisted lookup semantics separate. Include detection, completed/pending rows, auto-extract cache, AI/pattern derivation and capture residue. Explicit recovery for unresolved identity; no null-equals-null page key. Preserve approved network-replay document contract."
