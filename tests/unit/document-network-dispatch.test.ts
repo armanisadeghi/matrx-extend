@@ -259,8 +259,11 @@ it('page-load discovery denial or document replacement never arms Chrome capture
 });
 
 it('page-load discovery with no responses ends with a usable remedy', async () => {
+  let captureArmed!: () => void;
+  const armed = new Promise<void>((resolve) => { captureArmed = resolve; });
   h.capture.mockImplementation(async (options) => {
     options.onArmed();
+    captureArmed();
     return { close: vi.fn(async () => {}) };
   });
   const dispatch = await import('@/lib/tools/dispatch');
@@ -273,6 +276,9 @@ it('page-load discovery with no responses ends with a usable remedy', async () =
   vi.useFakeTimers();
   try {
     emit(CHANNELS.TOOL_CONFIRM_RESPONSE, { callId: request.callId, decision: 'allow' });
+    // The approval recheck and dynamic transport import are asynchronous.
+    // Advance the capture window only after its onArmed callback installed it.
+    await armed;
     await vi.advanceTimersByTimeAsync(20_000);
     await rejected;
   } finally {

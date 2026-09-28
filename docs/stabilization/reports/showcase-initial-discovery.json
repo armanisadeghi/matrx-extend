@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "lane": "EXT-D-0049 initial-document Network discovery implementation",
-  "status": "SOURCE_REVIEW_PASS_VALIDATION_PENDING",
-  "at_utc": "2026-09-28T08:30:00Z",
+  "status": "SOURCE_REVIEW_PASS_FOCUSED_TEST_FIX_UNVERIFIED",
+  "at_utc": "2026-09-28T08:40:00Z",
   "change": [
     "Showcase Network has a user-started Capture page load action. It obtains persisted per-run privileged approval through the existing dispatcher, rechecks the selected URL/document before attachment, and streams sanitized events through the existing SW-owned Port and document-start capture core.",
     "Discovery returns the approved top-frame page URL. The Network picker waits for that bound source before offering Save, so stale React tab state cannot assign a different route. Failure/cancellation discards partial rows; zero responses get a retry remedy.",
@@ -24,14 +24,18 @@
     "showcase-d49-discovery-docs-0928: guarded child exit 0",
     "showcase-d49-discovery-peerfix-tests-0928: preflight REFUSED RESOURCE_CPU_HIGH_LOAD_BUSY; no child",
     "resource check 2026-09-28T08:26:53Z: healthy sample, exit 0",
-    "showcase-d49-discovery-revised-tests-0928: preflight REFUSED RESOURCE_PRESSURE_UNSAFE; no child"
+    "showcase-d49-discovery-revised-tests-0928: preflight REFUSED RESOURCE_PRESSURE_UNSAFE; no child",
+    "d49-runtime-tests-0928-resume1: guarded child exit 1; 33 passed, one zero-response test timed out at 30000ms; see showcase-discovery-runtime-validation.json",
+    "showcase-d49-zero-response-fixed-0928: command rejected by existing allowlist because -t filter is unsupported; no child",
+    "showcase-d49-dispatch-fixed-0928: preflight REFUSED RESOURCE_PRESSURE_UNSAFE and RESOURCE_CPU_HIGH_LOAD_BUSY; no child"
   ],
+  "followup_diagnosis": "The zero-response test enabled fake timers and advanced 20000ms immediately after sending approval. The prepared operation still has asynchronous post-approval rechecks and a dynamic transport import, so onArmed could install the capture-window timer only after that advance; the test then waited until its real 30000ms timeout. The test now awaits its actual onArmed callback before advancing the fake clock. No product timeout or expected remedy was changed. This narrow harness correction is not yet executed because the guard refused the next admitted command.",
   "pending": [
-    "Run current connected, dispatch, Port, approval, hook and core regression files through a fresh admitted guard; their latest versions have never run.",
+    "Run the corrected zero-response test and current connected, dispatch, Port, approval, hook and core regression files through a fresh admitted guard; the full six-file run was 33 passed/one timed out before this test correction.",
     "Run current compile and development WXT build under the guard; bind HEAD/source diff/lockfile and output tree in a fresh receipt before any Chrome reload.",
     "Reload the exact unpacked build in primary Chrome under a fresh healthy browser guard. On real HN Search, capture the settled initial-document POST, save its exact request identity, reopen, and replay twice with correct rows; exercise denial, cancellation and cleanup.",
     "Obtain independent installed verification of normal window completion and actual saved-row persistence."
   ],
   "runtime_state": "No new development artifact was built or loaded for this change. The previous clean .output receipt cbb365ed predates this implementation and primary Chrome had not reloaded to that clean artifact at handoff. No native acceptance is claimed.",
-  "safety": "All guarded commands exited or refused before a child; no heavy permit remains held. Resource thresholds and allowlists were unchanged. No recipe was deleted, no credential or raw request body was recorded, and no push/release occurred."
+  "safety": "The later six-file guarded test child exited 1 and its guard exited cleanly; later attempts were rejected before child launch. No heavy permit remains held. Resource thresholds and allowlists were unchanged. No recipe was deleted, no credential or raw request body was recorded, and no push/release occurred."
 }
