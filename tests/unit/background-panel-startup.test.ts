@@ -14,13 +14,22 @@ vi.mock('@/lib/background/bootstrap', () => ({ bootstrapBackground: bootstrap })
 describe('background panel startup', () => {
   it('still bootstraps listeners when Chromium sidePanel is absent', async () => {
     globalThis.chrome = { runtime: { id: 'test-extension' } } as typeof chrome;
-    const addEventListener = vi.spyOn(self, 'addEventListener');
     await import('@/entrypoints/background');
 
     expect(background.main).not.toBeNull();
     expect(() => background.main?.()).not.toThrow();
     expect(bootstrap).toHaveBeenCalledOnce();
-    expect(addEventListener).toHaveBeenCalledWith('unhandledrejection', expect.any(Function));
-    addEventListener.mockRestore();
+    // Worker errors must remain observable, including the import failures that
+    // were previously hidden by a blanket DOM-global rejection suppressor.
+    for (const reason of [
+      new ReferenceError('window is not defined'),
+      new ReferenceError('document is not defined'),
+      new Error('Network capture failed'),
+    ]) {
+      const event = new Event('unhandledrejection', { cancelable: true });
+      Object.defineProperty(event, 'reason', { value: reason });
+      expect(self.dispatchEvent(event)).toBe(true);
+      expect(event.defaultPrevented).toBe(false);
+    }
   });
 });

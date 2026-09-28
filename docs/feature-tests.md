@@ -3317,7 +3317,7 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 
 ### Saved Network Run reaches approval from the installed side panel (EXT-D-0049)
 
-- **What it does:** A saved Network Run reaches the service-worker dispatcher and presents the privileged approval card without waiting on a lazy dispatcher import.
+- **What it does:** A saved Network Run reaches the service-worker dispatcher and presents the privileged approval card. The worker ships as a standalone bundle without unsupported dynamic imports; page views retain lazy loading and styles.
 - **Where to test:** Installed unpacked Chrome extension on `https://hn.algolia.com/?q=OpenAI`, Showcase → Patterns, signed in as an admin with an active organization.
-- **Steps:** Open the real page, find the owned HN Search Network recipe, click Run once, and observe the approval card. Deny it, then run once more and allow it; inspect the resulting saved-pattern status and rows. Repeat with service-worker DevTools closed so inspection does not keep the worker alive.
+- **Steps:** Open the real page, find the owned HN Search Network recipe, click Run once, and observe the approval card. Deny it, then run once more and allow it; inspect the resulting saved-pattern status and rows. Repeat with service-worker DevTools closed so inspection does not keep the worker alive. After an explicit extension reload, reopen the lazy Showcase view and verify its styling; compare extracted titles and scores with the refreshed public page.
 - **Expected:** Each click reaches an approval card promptly; denial causes no debugger attach or reload. Approval runs the capture and ends with visible rows or a specific failure remedy, never a disabled Run control with no progress or approval. The side panel and worker use the same registered saved-run function; client-supplied approval or capture config is ignored.

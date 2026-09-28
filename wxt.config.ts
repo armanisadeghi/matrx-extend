@@ -272,7 +272,7 @@ export default defineConfig({
         },
       },
       {
-        name: 'mv3-worker-no-dom-module-preload',
+        name: 'mv3-worker-no-dynamic-imports',
         generateBundle(_options, bundle) {
           const workerEntry = bundle['background.js'];
           if (workerEntry?.type !== 'chunk') return;
@@ -283,37 +283,16 @@ export default defineConfig({
             if (reachable.has(name)) continue;
             reachable.add(name);
             const chunk = bundle[name];
-            if (chunk?.type === 'chunk') pending.push(...chunk.imports, ...chunk.dynamicImports);
-          }
-          const hasDomPreloader = [...reachable].some((name) => {
-            const chunk = bundle[name];
-            return chunk?.type === 'chunk' &&
-              chunk.code.includes('modulepreload') &&
-              /document\.getElementsByTagName\([`'"]link[`'"]\)/.test(chunk.code);
-          });
-          if (!hasDomPreloader) return;
-          const containsDynamicImport = (node: ts.Node): boolean =>
-            (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) ||
-            ts.forEachChild(node, containsDynamicImport) === true;
-          for (const name of reachable) {
-            const chunk = bundle[name];
-            if (chunk?.type !== 'chunk' || !chunk.code.includes('import(')) continue;
+            if (chunk?.type !== 'chunk') continue;
+            pending.push(...chunk.imports, ...chunk.dynamicImports);
             const source = ts.createSourceFile(name, chunk.code, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
-            let unsafe = false;
             const visit = (node: ts.Node): void => {
-              const importer = ts.isCallExpression(node) ? node.arguments[0] : undefined;
-              const deps = ts.isCallExpression(node) ? node.arguments[1] : undefined;
-              if (
-                importer &&
-                deps &&
-                ts.isArrayLiteralExpression(deps) &&
-                deps.elements.length > 0 &&
-                containsDynamicImport(importer)
-              ) unsafe = true;
-              if (!unsafe) ts.forEachChild(node, visit);
+              if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
+                this.error(`MV3 service workers do not support dynamic import(): ${name}. Bundle the background independently; keep page lazy imports in the page build.`);
+              }
+              ts.forEachChild(node, visit);
             };
             visit(source);
-            if (unsafe) this.error(`MV3 worker-reachable dynamic import in ${name} preloads DOM-dependent assets.`);
           }
         },
       },
@@ -326,9 +305,6 @@ export default defineConfig({
     },
     build: {
       sourcemap: true,
-      // Vite's dependency-preload wrapper reads `document` before dynamic imports.
-      // Background and UI chunks share this build, while MV3 workers have no DOM.
-      modulePreload: false,
       // Default 500 kB is noisy for an extension: install is one-time, bundles
       // load from disk (no network cost), and the remaining oversized chunks
       // are all already correctly lazy-loaded.
