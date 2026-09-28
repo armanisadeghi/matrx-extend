@@ -13,11 +13,26 @@ const db = vi.hoisted(() => ({
 
 vi.mock('@/lib/supabase/client', () => {
   const query = {
-    schema: (name: string) => { db.schema = name; return query; },
-    from: (name: string) => { db.table = name; return query; },
-    update: (value: Record<string, unknown>) => { db.update = value; return query; },
-    eq: (_column: string, value: string) => { db.id = value; return query; },
-    select: (value: string) => { db.select = value; return query; },
+    schema: (name: string) => {
+      db.schema = name;
+      return query;
+    },
+    from: (name: string) => {
+      db.table = name;
+      return query;
+    },
+    update: (value: Record<string, unknown>) => {
+      db.update = value;
+      return query;
+    },
+    eq: (_column: string, value: string) => {
+      db.id = value;
+      return query;
+    },
+    select: (value: string) => {
+      db.select = value;
+      return query;
+    },
     maybeSingle: async () => db.result,
   };
   return { getMachineryAuthoredSupabase: () => query };

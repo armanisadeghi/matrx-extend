@@ -1,10 +1,7 @@
 {
   "id": "EXT-D-0054",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T49",
-    "EXT-F-2005-T03"
-  ],
+  "case_ids": ["EXT-F-1012-T49", "EXT-F-2005-T03"],
   "title": "TSV copy changes cell values and structure",
   "surface": "Showcase and shared clipboard exports",
   "auth_mode": "all applicable export users",
@@ -52,7 +49,5 @@
       "reason": "Source peer428a7d97 accepts repairs; independent guardedb9de78ba originalformatter/feedbackRED thenrestoredGREEN12tests, compile anddirectdevbuild. Nativeclipboard retest pending."
     }
   ],
-  "related_feature_ids": [
-    "EXT-F-2005"
-  ]
+  "related_feature_ids": ["EXT-F-2005"]
 }

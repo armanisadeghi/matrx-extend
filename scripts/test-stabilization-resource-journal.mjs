@@ -9,7 +9,8 @@ import { test } from 'node:test';
 import { openResourceJournal } from './stabilization-resource-journal.mjs';
 
 const repo = resolve(import.meta.dirname, '..');
-const journalPath = (runId) => resolve(repo, 'docs/stabilization/resource-journals', `${runId}.jsonl`);
+const journalPath = (runId) =>
+  resolve(repo, 'docs/stabilization/resource-journals', `${runId}.jsonl`);
 
 test('a refused guard launch durably records its exact run and terminal decision before any permit', async () => {
   const runId = `journal-refusal-${randomUUID()}`;
@@ -17,16 +18,28 @@ test('a refused guard launch durably records its exact run and terminal decision
   try {
     const result = spawnSync(
       process.execPath,
-      ['scripts/stabilization-resource.mjs', 'run', '--run-id', runId, '--', 'node', '-e', 'secret'],
+      [
+        'scripts/stabilization-resource.mjs',
+        'run',
+        '--run-id',
+        runId,
+        '--',
+        'node',
+        '-e',
+        'secret',
+      ],
       { cwd: repo, encoding: 'utf8' },
     );
     assert.equal(result.status, 2);
     const events = (await readFile(path, 'utf8')).trim().split('\n').map(JSON.parse);
-    assert.deepEqual(events.map((event) => event.code), [
-      'RESOURCE_JOURNAL_OPENED',
-      'RESOURCE_COMMAND_NOT_ALLOWED:see docs/stabilization/resource-policy.json',
-      'RESOURCE_FINAL_DECISION',
-    ]);
+    assert.deepEqual(
+      events.map((event) => event.code),
+      [
+        'RESOURCE_JOURNAL_OPENED',
+        'RESOURCE_COMMAND_NOT_ALLOWED:see docs/stabilization/resource-policy.json',
+        'RESOURCE_FINAL_DECISION',
+      ],
+    );
     assert(events.every((event) => event.runId === runId));
     assert.deepEqual(events.at(-1), {
       schema: 1,
@@ -42,7 +55,16 @@ test('a refused guard launch durably records its exact run and terminal decision
     const before = await readFile(path);
     const duplicate = spawnSync(
       process.execPath,
-      ['scripts/stabilization-resource.mjs', 'run', '--run-id', runId, '--', 'node', '-e', 'secret'],
+      [
+        'scripts/stabilization-resource.mjs',
+        'run',
+        '--run-id',
+        runId,
+        '--',
+        'node',
+        '-e',
+        'secret',
+      ],
       { cwd: repo, encoding: 'utf8' },
     );
     assert.equal(duplicate.status, 2);
@@ -59,14 +81,23 @@ test('journal writes only guard fields and refuses overwrite', async () => {
   const journal = openResourceJournal(repo, runId);
   try {
     journal.write({
-      schema: 1, at: '2026-09-28T00:00:00.000Z', code: 'RESOURCE_WATCH_HEALTHY', runId,
-      reasons: [], sample: { pressureLevel: 1 }, childStdout: 'private child output',
+      schema: 1,
+      at: '2026-09-28T00:00:00.000Z',
+      code: 'RESOURCE_WATCH_HEALTHY',
+      runId,
+      reasons: [],
+      sample: { pressureLevel: 1 },
+      childStdout: 'private child output',
       detail: 'private detail',
     });
     assert.throws(() => openResourceJournal(repo, runId), /RESOURCE_RUN_ID_ALREADY_JOURNALED/);
     assert.deepEqual(JSON.parse((await readFile(journal.path, 'utf8')).trim()), {
-      schema: 1, at: '2026-09-28T00:00:00.000Z', code: 'RESOURCE_WATCH_HEALTHY', runId,
-      reasons: [], sample: { pressureLevel: 1 },
+      schema: 1,
+      at: '2026-09-28T00:00:00.000Z',
+      code: 'RESOURCE_WATCH_HEALTHY',
+      runId,
+      reasons: [],
+      sample: { pressureLevel: 1 },
     });
   } finally {
     journal.close();
@@ -91,7 +122,15 @@ test('journal refuses a symlinked directory without creating evidence outside th
     const journal = openResourceJournal(alias, runId);
     journal.write({ schema: 1, at: '2026-09-28T00:00:00.000Z', code: 'RESOURCE_ADMITTED', runId });
     journal.close();
-    assert.equal((await readFile(resolve(fixtureRepo, 'docs/stabilization/resource-journals', `${runId}.jsonl`), 'utf8')).includes('RESOURCE_ADMITTED'), true);
+    assert.equal(
+      (
+        await readFile(
+          resolve(fixtureRepo, 'docs/stabilization/resource-journals', `${runId}.jsonl`),
+          'utf8',
+        )
+      ).includes('RESOURCE_ADMITTED'),
+      true,
+    );
   } finally {
     await rm(scratch, { recursive: true, force: true });
   }
@@ -100,14 +139,26 @@ test('journal refuses a symlinked directory without creating evidence outside th
 test('a close failure leaves a valid-looking decision uncommitted', async () => {
   const runId = `journal-close-fault-${randomUUID()}`;
   const finalPath = journalPath(runId);
-  const pendingPath = resolve(repo, 'docs/stabilization/resource-journals', `${runId}.pending.jsonl`);
+  const pendingPath = resolve(
+    repo,
+    'docs/stabilization/resource-journals',
+    `${runId}.pending.jsonl`,
+  );
   const journal = openResourceJournal(repo, runId, {
-    closeFd: (fd) => { closeSync(fd); throw new Error('injected close failure'); },
+    closeFd: (fd) => {
+      closeSync(fd);
+      throw new Error('injected close failure');
+    },
   });
   try {
     journal.write({
-      schema: 1, at: '2026-09-28T00:00:00.000Z', code: 'RESOURCE_FINAL_DECISION',
-      runId, resourceInvalid: false, exitCode: 0, decision: 'valid',
+      schema: 1,
+      at: '2026-09-28T00:00:00.000Z',
+      code: 'RESOURCE_FINAL_DECISION',
+      runId,
+      resourceInvalid: false,
+      exitCode: 0,
+      decision: 'valid',
     });
     assert.throws(() => journal.close(), /injected close failure/);
     await assert.rejects(stat(finalPath), { code: 'ENOENT' });
@@ -130,18 +181,35 @@ test('guard exits invalid and leaves no completed journal when close fails', asy
       'stabilization-resource.mjs',
       'stabilization-resource-journal.mjs',
       'stabilization-resource-lease.mjs',
-    ]) await copyFile(resolve(repo, 'scripts', name), resolve(scripts, name));
-    await copyFile(resolve(repo, 'docs/stabilization/resource-policy.json'), resolve(docs, 'resource-policy.json'));
+    ])
+      await copyFile(resolve(repo, 'scripts', name), resolve(scripts, name));
+    await copyFile(
+      resolve(repo, 'docs/stabilization/resource-policy.json'),
+      resolve(docs, 'resource-policy.json'),
+    );
     const helperPath = resolve(scripts, 'stabilization-resource-journal.mjs');
     const helper = await readFile(helperPath, 'utf8');
-    const faulted = helper.replace('closeFd(fd);\n      linkSync', "closeFd(fd);\n      throw new Error('injected close failure');\n      linkSync");
+    const faulted = helper.replace(
+      'closeFd(fd);\n      linkSync',
+      "closeFd(fd);\n      throw new Error('injected close failure');\n      linkSync",
+    );
     assert.notEqual(faulted, helper);
     await writeFile(helperPath, faulted);
     const runId = 'close-fault-run';
-    const result = spawnSync(process.execPath, [
-      resolve(scripts, 'stabilization-resource.mjs'), 'run', '--run-id', runId,
-      '--', 'node', '-e', 'secret',
-    ], { cwd: fixtureRepo, encoding: 'utf8' });
+    const result = spawnSync(
+      process.execPath,
+      [
+        resolve(scripts, 'stabilization-resource.mjs'),
+        'run',
+        '--run-id',
+        runId,
+        '--',
+        'node',
+        '-e',
+        'secret',
+      ],
+      { cwd: fixtureRepo, encoding: 'utf8' },
+    );
     assert.equal(result.status, 3);
     assert.match(result.stderr, /RESOURCE_JOURNAL_FINALIZE_FAILED/);
     const pending = resolve(docs, 'resource-journals', `${runId}.pending.jsonl`);

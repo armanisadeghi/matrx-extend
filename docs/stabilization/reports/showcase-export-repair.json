@@ -4,10 +4,26 @@
   "scope": "EXT-D-0053 JSON long-string loss and EXT-D-0054 TSV header/cell loss in EXT-F-1012-T49",
   "status": "Implementation committed; all runtime verification unexecuted because the resource guard refused admission. No native acceptance claim.",
   "commits": [
-    { "defect": "EXT-D-0053", "commit": "0b66b853", "change": "Preserve complete strings in JSON copy; reject unrepresentable JSON instead of copying a success-looking substitute; make content-generation failure visible." },
-    { "defect": "EXT-D-0054", "commit": "33f7a921", "change": "Quote TSV headers and cells containing tabs, line breaks, or quotes; double embedded quotes; keep ordinary cells unchanged." },
-    { "defect": "EXT-D-0053", "commit": "1b8e9c06", "change": "Distinguish JSON preparation failure from clipboard permission failure in the copy menu." },
-    { "defect": "EXT-D-0053", "commit": "68d834ed", "change": "Independent peer found that truthy failure text still rendered a green check. CopyMenu now separates success and failure state, renders red failure icons and visible error text in one-option and multi-option controls, and keeps the green check for completed clipboard writes only." }
+    {
+      "defect": "EXT-D-0053",
+      "commit": "0b66b853",
+      "change": "Preserve complete strings in JSON copy; reject unrepresentable JSON instead of copying a success-looking substitute; make content-generation failure visible."
+    },
+    {
+      "defect": "EXT-D-0054",
+      "commit": "33f7a921",
+      "change": "Quote TSV headers and cells containing tabs, line breaks, or quotes; double embedded quotes; keep ordinary cells unchanged."
+    },
+    {
+      "defect": "EXT-D-0053",
+      "commit": "1b8e9c06",
+      "change": "Distinguish JSON preparation failure from clipboard permission failure in the copy menu."
+    },
+    {
+      "defect": "EXT-D-0053",
+      "commit": "68d834ed",
+      "change": "Independent peer found that truthy failure text still rendered a green check. CopyMenu now separates success and failure state, renders red failure icons and visible error text in one-option and multi-option controls, and keeps the green check for completed clipboard writes only."
+    }
   ],
   "source_caller_proof": [
     "src/features/showcase/tabs/PatternsTab.tsx:129-152 and 261-267: the saved-pattern Run result passes its full rows array to ResultPreview.",

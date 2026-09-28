@@ -36,7 +36,7 @@
     "domain": "www.gutenberg.org",
     "route_pattern": "/files/1342/1342-h/1342-h.htm",
     "kind": "manual_css",
-    "fields": [{"name": "field_1", "selector": "html", "is_list": false}],
+    "fields": [{ "name": "field_1", "selector": "html", "is_list": false }],
     "identity_source": "Data > saved pattern > Copy pattern > Full pattern (JSON), read from the product clipboard immediately after copy",
     "cleanup": "Pattern left saved for reproducible review; no unrelated pattern was changed or deleted."
   },
@@ -58,13 +58,35 @@
     "all_six_copies_and_data_replay_matched": true
   },
   "copy_results": {
-    "data_json": {"clipboard_characters": 725340, "parsed_rows": 1, "field_matches": true},
-    "data_ai": {"clipboard_characters": 725639, "parsed_rows": 1, "field_matches": true, "source_url_in_preamble": true},
-    "data_tsv": {"clipboard_characters": 719604, "parsed_rows_including_header": 2, "header": ["field_1"], "row_widths": [1, 1], "field_matches": true},
-    "showcase_json": {"clipboard_characters": 725340, "parsed_rows": 1, "field_matches": true},
-    "showcase_ai": {"clipboard_characters": 725417, "parsed_rows": 1, "field_matches": true, "source_url_in_preamble": false},
-    "showcase_tsv": {"clipboard_characters": 719604, "parsed_rows_including_header": 2, "header": ["field_1"], "row_widths": [1, 1], "field_matches": true},
-    "data_json_after_page_refresh": {"parsed_rows": 1, "field_matches": true}
+    "data_json": { "clipboard_characters": 725340, "parsed_rows": 1, "field_matches": true },
+    "data_ai": {
+      "clipboard_characters": 725639,
+      "parsed_rows": 1,
+      "field_matches": true,
+      "source_url_in_preamble": true
+    },
+    "data_tsv": {
+      "clipboard_characters": 719604,
+      "parsed_rows_including_header": 2,
+      "header": ["field_1"],
+      "row_widths": [1, 1],
+      "field_matches": true
+    },
+    "showcase_json": { "clipboard_characters": 725340, "parsed_rows": 1, "field_matches": true },
+    "showcase_ai": {
+      "clipboard_characters": 725417,
+      "parsed_rows": 1,
+      "field_matches": true,
+      "source_url_in_preamble": false
+    },
+    "showcase_tsv": {
+      "clipboard_characters": 719604,
+      "parsed_rows_including_header": 2,
+      "header": ["field_1"],
+      "row_widths": [1, 1],
+      "field_matches": true
+    },
+    "data_json_after_page_refresh": { "parsed_rows": 1, "field_matches": true }
   },
   "tsv_character_proof": {
     "field_newline_count": 5613,

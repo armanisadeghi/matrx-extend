@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0050",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T59"
-  ],
+  "case_ids": ["EXT-F-1012-T59"],
   "surface": "Showcase saved Patterns run history",
   "auth_mode": "admin",
   "reproduction": [
@@ -61,8 +59,5 @@
   ],
   "verification_status": "Closed on independently observed user outcome ea12133a with28test runtime cf39a859 and sourcepeer6973c4d4. Primary Chrome Reload exact9ea6687b: fresh own10row replay updates last run40m\u21921s and remount retains current1m/10rows. Native exact DB row and forced metadata-failure remain unmeasured; error behavior proven in focused rendered/boundary tests, not represented as native.",
   "closure_requirement": "Prove persistence/refresh race red then green, errors visible without hiding extracted rows, independent source review, and actual newly completed native saved replay updates run history.",
-  "fix_commits": [
-    "a011a682",
-    "f65b020a"
-  ]
+  "fix_commits": ["a011a682", "f65b020a"]
 }

@@ -78,16 +78,11 @@
     "worker_source_dynamic_imports": [
       {
         "source": "../../src/lib/auth/flow.ts",
-        "imports": [
-          "'@/lib/supabase/client'",
-          "'@/lib/supabase/client'"
-        ]
+        "imports": ["'@/lib/supabase/client'", "'@/lib/supabase/client'"]
       },
       {
         "source": "../../src/lib/supabase/db-failure.ts",
-        "imports": [
-          "'@/lib/org/active-org'"
-        ]
+        "imports": ["'@/lib/org/active-org'"]
       },
       {
         "source": "../../src/lib/tools/handlers/read.ts",
@@ -99,16 +94,11 @@
       },
       {
         "source": "../../src/lib/tools/handlers/cdp.ts",
-        "imports": [
-          "'@/lib/screenshot/persist'",
-          "'@/lib/screenshot/persist'"
-        ]
+        "imports": ["'@/lib/screenshot/persist'", "'@/lib/screenshot/persist'"]
       },
       {
         "source": "../../src/lib/tools/handlers/privileged.ts",
-        "imports": [
-          "'@/lib/desktop/bridge'"
-        ]
+        "imports": ["'@/lib/desktop/bridge'"]
       },
       {
         "source": "../../src/lib/data-pattern/run-interactive.ts",
@@ -120,16 +110,11 @@
       },
       {
         "source": "../../src/lib/tools/handlers/data-patterns.ts",
-        "imports": [
-          "'./cdp'"
-        ]
+        "imports": ["'./cdp'"]
       },
       {
         "source": "../../src/lib/demos/storage.ts",
-        "imports": [
-          "'@/lib/demos/cloud-sync'",
-          "'@/lib/demos/cloud-sync'"
-        ]
+        "imports": ["'@/lib/demos/cloud-sync'", "'@/lib/demos/cloud-sync'"]
       },
       {
         "source": "../../src/lib/demos/cloud-sync.ts",
@@ -153,29 +138,19 @@
       },
       {
         "source": "../../src/lib/guidance/storage.ts",
-        "imports": [
-          "'@/lib/guidance/cloud-sync'",
-          "'@/lib/guidance/cloud-sync'"
-        ]
+        "imports": ["'@/lib/guidance/cloud-sync'", "'@/lib/guidance/cloud-sync'"]
       },
       {
         "source": "../../src/lib/tools/handlers/demos.ts",
-        "imports": [
-          "'@/lib/guidance/storage'"
-        ]
+        "imports": ["'@/lib/guidance/storage'"]
       },
       {
         "source": "../../src/lib/tools/handlers/extract.ts",
-        "imports": [
-          "'@/lib/screenshot/persist'",
-          "'@/lib/screenshot/persist'"
-        ]
+        "imports": ["'@/lib/screenshot/persist'", "'@/lib/screenshot/persist'"]
       },
       {
         "source": "../../src/lib/background/bootstrap.ts",
-        "imports": [
-          "'@/lib/auth/crypto'"
-        ]
+        "imports": ["'@/lib/auth/crypto'"]
       }
     ],
     "directory": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
@@ -202,10 +177,7 @@
         "target": "`./ShowcaseView-bmq2tfos.js`"
       }
     ],
-    "css_assets": [
-      "AnnotationEditor-BITxfmBU.css",
-      "globals-Y9oPaUyT.css"
-    ],
+    "css_assets": ["AnnotationEditor-BITxfmBU.css", "globals-Y9oPaUyT.css"],
     "limit": "Asset structure only; styled native Showcase acceptance remains required."
   },
   "compile": {

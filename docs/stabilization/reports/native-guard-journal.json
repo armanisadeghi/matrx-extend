@@ -13,7 +13,13 @@
       "journal_path": "docs/stabilization/resource-journals/native-guard-journal-signal-20260928.jsonl",
       "journal_sha256": "0f2db397b12ed0d89a48ab20147c7ac167bc7b5a8e4f6ffad43013402ba4266b",
       "profile_dir": "/Volumes/Samsung2TB/code/.stabilization-scratch",
-      "events": ["RESOURCE_JOURNAL_OPENED", "RESOURCE_ADMITTED", "RESOURCE_STOP_REQUESTED", "RESOURCE_BROWSER_STOP_CONFIRMED", "RESOURCE_FINAL_DECISION"],
+      "events": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_STOP_REQUESTED",
+        "RESOURCE_BROWSER_STOP_CONFIRMED",
+        "RESOURCE_FINAL_DECISION"
+      ],
       "signal": "SIGINT immediately after admission",
       "resource_invalid": false,
       "wrapper_exit_code": 0,
@@ -24,7 +30,14 @@
       "journal_path": "docs/stabilization/resource-journals/native-guard-journal-watch-20260928.jsonl",
       "journal_sha256": "a19da63b6f284377faacad9bb5fc4a1de871b330e5a233f5d4c326d70ba0d545",
       "profile_dir": "/Volumes/Samsung2TB/code/.stabilization-scratch",
-      "events": ["RESOURCE_JOURNAL_OPENED", "RESOURCE_ADMITTED", "RESOURCE_WATCH_HEALTHY", "RESOURCE_STOP_REQUESTED", "RESOURCE_BROWSER_STOP_CONFIRMED", "RESOURCE_FINAL_DECISION"],
+      "events": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_WATCH_HEALTHY",
+        "RESOURCE_STOP_REQUESTED",
+        "RESOURCE_BROWSER_STOP_CONFIRMED",
+        "RESOURCE_FINAL_DECISION"
+      ],
       "resource_invalid": false,
       "wrapper_exit_code": 0,
       "ui_actions": 0,

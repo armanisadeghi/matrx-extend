@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0056",
   "feature_id": "EXT-F-0002",
-  "case_ids": [
-    "EXT-F-0002-T01"
-  ],
+  "case_ids": ["EXT-F-0002-T01"],
   "surface": "Resource guard legacy-runner detection",
   "auth_mode": "all",
   "reproduction": [

@@ -22,8 +22,18 @@ const isJsonContentType = (ct: string | undefined): boolean => !!ct && /json/.te
 
 export function NetworkTab() {
   const {
-    capturing, discovering, discoveryProgress, events, error,
-    start, capturePageLoad, stop, reload, clear, source, dropped,
+    capturing,
+    discovering,
+    discoveryProgress,
+    events,
+    error,
+    start,
+    capturePageLoad,
+    stop,
+    reload,
+    clear,
+    source,
+    dropped,
   } = useNetworkCapture();
   const [filter, setFilter] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<CapturedNetEvent | null>(null);
@@ -166,7 +176,9 @@ export function NetworkTab() {
         {discovering && (
           <div role="status" className="rounded-xl bg-secondary/40 px-3 py-2 text-xs">
             {discoveryProgress ?? 'Capturing page load…'}{' '}
-            <Button onClick={stop} variant="ghost" size="sm">Stop</Button>
+            <Button onClick={stop} variant="ghost" size="sm">
+              Stop
+            </Button>
           </div>
         )}
 

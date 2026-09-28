@@ -162,7 +162,9 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
       if (outcome.kind === 'matched') {
         const updateError = await bumpPatternRun(p.id, 'ok', data.length);
         if (isCurrent() && updateError) {
-          setRunError(`Rows were extracted, but the saved run history could not be updated: ${updateError}`);
+          setRunError(
+            `Rows were extracted, but the saved run history could not be updated: ${updateError}`,
+          );
         }
       }
     } catch (err) {

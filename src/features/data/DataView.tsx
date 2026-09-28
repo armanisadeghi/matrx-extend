@@ -238,7 +238,9 @@ export function DataView() {
       if (outcome.kind === 'matched') {
         const updateError = await bumpPatternRun(pattern.id, 'ok', data.length);
         if (isCurrent() && updateError) {
-          setRunError(`Rows were extracted, but the saved run history could not be updated: ${updateError}`);
+          setRunError(
+            `Rows were extracted, but the saved run history could not be updated: ${updateError}`,
+          );
         }
       }
     } catch (err) {
@@ -359,9 +361,13 @@ export function DataView() {
                     </span>
                   )}
                 </div>
-                <div className={autoForMatched?.status === 'ok' && autoForMatched.note
-                  ? 'text-amber-700 dark:text-amber-400'
-                  : 'text-emerald-700/70 dark:text-emerald-300/70'}>
+                <div
+                  className={
+                    autoForMatched?.status === 'ok' && autoForMatched.note
+                      ? 'text-amber-700 dark:text-amber-400'
+                      : 'text-emerald-700/70 dark:text-emerald-300/70'
+                  }
+                >
                   {autoForMatched?.status === 'ok'
                     ? (autoForMatched.note ?? 'Auto-extracted on page load — no click needed.')
                     : autoForMatched?.status === 'no_match'

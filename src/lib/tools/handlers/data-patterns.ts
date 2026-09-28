@@ -147,7 +147,11 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
     return {
       snapshotKey,
       tier: 'privileged',
-      approvalPreview: { kind: 'saved-network-replay', recipeName: pattern.name, pageUrl: sanitizeNetworkUrl(tab.url) },
+      approvalPreview: {
+        kind: 'saved-network-replay',
+        recipeName: pattern.name,
+        pageUrl: sanitizeNetworkUrl(tab.url),
+      },
       requirements: {
         ...(cdp_attach.admin_only !== undefined && { admin_only: cdp_attach.admin_only }),
         ...(cdp_attach.required_optional_permissions && {
@@ -259,15 +263,18 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
         });
         if (!(await pageIsCurrent())) return pageChanged;
         const outcome = classifySavedRun(pattern, tab.url ?? '', rows);
-        const updateError = !ctx.localInvocation && outcome.kind === 'matched'
-          ? await bumpPatternRun(pattern.id, 'ok', rows.length)
-          : null;
+        const updateError =
+          !ctx.localInvocation && outcome.kind === 'matched'
+            ? await bumpPatternRun(pattern.id, 'ok', rows.length)
+            : null;
         const limit = ctx.localInvocation ? rows.length : (args.rows_limit ?? DEFAULT_ROWS_LIMIT);
         return {
           ok: true,
           outcome: outcome.kind,
           ...(outcome.message && { message: outcome.message }),
-          ...(updateError && { warning: `Rows were extracted, but saved run history could not be updated: ${updateError}` }),
+          ...(updateError && {
+            warning: `Rows were extracted, but saved run history could not be updated: ${updateError}`,
+          }),
           pattern: { id: pattern.id, name: pattern.name, kind: pattern.kind },
           row_count: rows.length,
           rows: rows.slice(0, limit),
@@ -279,9 +286,10 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
           // Circumstantial, not a broken pattern — give the agent guidance.
           return { ok: false, reason: err.message, retryable: true };
         }
-        const updateError = !ctx.localInvocation && urlMatchesPattern(tab.url ?? '', pattern)
-          ? await bumpPatternRun(pattern.id, 'broken', 0)
-          : null;
+        const updateError =
+          !ctx.localInvocation && urlMatchesPattern(tab.url ?? '', pattern)
+            ? await bumpPatternRun(pattern.id, 'broken', 0)
+            : null;
         return {
           ok: false,
           reason: err instanceof Error ? err.message : String(err),

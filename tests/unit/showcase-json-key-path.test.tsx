@@ -18,8 +18,17 @@ const payload = {
 
 async function pickTreePath(label: string): Promise<string[]> {
   let selected: string[] | undefined;
-  render(<JsonTree data={payload} defaultDepth={4} onSelectPath={(path) => { selected = path; }} />);
-  const text = screen.queryByText(label) ??
+  render(
+    <JsonTree
+      data={payload}
+      defaultDepth={4}
+      onSelectPath={(path) => {
+        selected = path;
+      }}
+    />,
+  );
+  const text =
+    screen.queryByText(label) ??
     (label === '["feeds.news"]' ? screen.getAllByText('feeds.news')[0] : null);
   const button = text?.closest('button');
   if (!button) throw new Error(`Missing selectable JSON node ${label}`);
@@ -61,19 +70,31 @@ describe('Showcase JSON key paths', () => {
     document.body.append(script);
     Object.assign(chrome, {
       scripting: {
-        executeScript: vi.fn(async ({ func, args }: { func: (config: unknown) => unknown; args?: unknown[] }) => [
-          { frameId: 0, result: func(args?.[0]) },
-        ]),
+        executeScript: vi.fn(
+          async ({ func, args }: { func: (config: unknown) => unknown; args?: unknown[] }) => [
+            { frameId: 0, result: func(args?.[0]) },
+          ],
+        ),
       },
     });
 
     const config = { source: '__NEXT_DATA__', key_path: literal };
     await expect(runMode('next_data', 37, config)).resolves.toEqual([{ title: 'Literal edition' }]);
-    await expect(runMode('next_data', 37, { source: '__NEXT_DATA__', key_path: nested })).resolves.toEqual([{ title: 'Nested edition' }]);
-    await expect(runPattern({ kind: 'next_data', config } as Parameters<typeof runPattern>[0], 37)).resolves.toEqual([{ title: 'Literal edition' }]);
-    await expect(runMode('next_data', 37, { source: '__NEXT_DATA__', key_path: 'odd..path' })).resolves.toEqual([{ title: 'Double-dot edition' }]);
-    await expect(runMode('next_data', 37, { source: '__NEXT_DATA__', key_path: '' })).resolves.toEqual([payload]);
-    await expect(runMode('next_data', 37, { source: '__NEXT_DATA__', key_path: '["literal"]' })).resolves.toEqual([{ title: 'Bracket-key edition' }]);
+    await expect(
+      runMode('next_data', 37, { source: '__NEXT_DATA__', key_path: nested }),
+    ).resolves.toEqual([{ title: 'Nested edition' }]);
+    await expect(
+      runPattern({ kind: 'next_data', config } as Parameters<typeof runPattern>[0], 37),
+    ).resolves.toEqual([{ title: 'Literal edition' }]);
+    await expect(
+      runMode('next_data', 37, { source: '__NEXT_DATA__', key_path: 'odd..path' }),
+    ).resolves.toEqual([{ title: 'Double-dot edition' }]);
+    await expect(
+      runMode('next_data', 37, { source: '__NEXT_DATA__', key_path: '' }),
+    ).resolves.toEqual([payload]);
+    await expect(
+      runMode('next_data', 37, { source: '__NEXT_DATA__', key_path: '["literal"]' }),
+    ).resolves.toEqual([{ title: 'Bracket-key edition' }]);
   });
 
   it('preserves the meaning of old dotted strings and bracket-looking literal keys', () => {

@@ -1,10 +1,7 @@
 {
   "id": "EXT-D-0052",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T18",
-    "EXT-F-1012-T43"
-  ],
+  "case_ids": ["EXT-F-1012-T18", "EXT-F-1012-T43"],
   "surface": "Showcase Framework",
   "auth_mode": "admin",
   "reproduction": [

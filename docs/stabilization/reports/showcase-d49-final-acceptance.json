@@ -57,8 +57,6 @@
     "finding": "The guard proves only that worker-reachable dynamic-import wrappers found by its current emitted-code pattern lack preload dependencies. It is not a general worker-global-safety proof, and the real saved Run now rejects with ‘window is not defined’. The independent AST census resolves literal import paths only, so its 21-chunk count is narrower than the build plugin's Rollup graph. The guard has not been red-tested on the overwritten known-failing artifact, and the new window failure remains unlocalized.",
     "closure": "Do not close EXT-D-0049. Diagnose the first emitted worker window reference on the actual saved Run path, repair it without bypassing approval, then repeat native approval, denial/cancel, Allow, automatic capture, rows and public-value comparison."
   },
-  "files_changed": [
-    "docs/stabilization/reports/showcase-d49-final-acceptance.json"
-  ],
+  "files_changed": ["docs/stabilization/reports/showcase-d49-final-acceptance.json"],
   "commit_scope": "Exact report path only; no push, build, install, tests, branch, worktree or product edits in this lane."
 }

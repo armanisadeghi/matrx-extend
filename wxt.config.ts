@@ -285,10 +285,21 @@ export default defineConfig({
             const chunk = bundle[name];
             if (chunk?.type !== 'chunk') continue;
             pending.push(...chunk.imports, ...chunk.dynamicImports);
-            const source = ts.createSourceFile(name, chunk.code, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+            const source = ts.createSourceFile(
+              name,
+              chunk.code,
+              ts.ScriptTarget.Latest,
+              true,
+              ts.ScriptKind.JS,
+            );
             const visit = (node: ts.Node): void => {
-              if (ts.isCallExpression(node) && node.expression.kind === ts.SyntaxKind.ImportKeyword) {
-                this.error(`MV3 service workers do not support dynamic import(): ${name}. Bundle the background independently; keep page lazy imports in the page build.`);
+              if (
+                ts.isCallExpression(node) &&
+                node.expression.kind === ts.SyntaxKind.ImportKeyword
+              ) {
+                this.error(
+                  `MV3 service workers do not support dynamic import(): ${name}. Bundle the background independently; keep page lazy imports in the page build.`,
+                );
               }
               ts.forEachChild(node, visit);
             };

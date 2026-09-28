@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0055",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T49"
-  ],
+  "case_ids": ["EXT-F-1012-T49"],
   "surface": "Showcase ResultPreview Copy for AI",
   "auth_mode": "admin",
   "reproduction": [

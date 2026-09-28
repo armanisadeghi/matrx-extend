@@ -59,8 +59,6 @@
       "missing_case": "Connected save/replay coverage is literal-dotted-key only; bracket-containing, empty-key, and nested-path save/replay are only partially covered by lower-level path tests, not through both Showcase save routes."
     }
   },
-  "files_changed_by_reviewer": [
-    "docs/stabilization/reports/showcase-d46-independent-peer.json"
-  ],
+  "files_changed_by_reviewer": ["docs/stabilization/reports/showcase-d46-independent-peer.json"],
   "commit_scope": "Exact report path only; no push."
 }

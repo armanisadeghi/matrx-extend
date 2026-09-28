@@ -29,8 +29,18 @@
   "resource_permit": {
     "terminal": true,
     "runs": [
-      {"run_id":"showcase-d46-peer-20260927","admission":"RESOURCE_ADMITTED","result":"RESOURCE_JOB_EXIT childExitCode=0","tests":"1 file, 4 passed"},
-      {"run_id":"showcase-d46-peer-focused-20260927","admission":"RESOURCE_ADMITTED","result":"RESOURCE_JOB_EXIT childExitCode=0","tests":"3 files, 10 passed"}
+      {
+        "run_id": "showcase-d46-peer-20260927",
+        "admission": "RESOURCE_ADMITTED",
+        "result": "RESOURCE_JOB_EXIT childExitCode=0",
+        "tests": "1 file, 4 passed"
+      },
+      {
+        "run_id": "showcase-d46-peer-focused-20260927",
+        "admission": "RESOURCE_ADMITTED",
+        "result": "RESOURCE_JOB_EXIT childExitCode=0",
+        "tests": "3 files, 10 passed"
+      }
     ]
   },
   "files_reviewed": [

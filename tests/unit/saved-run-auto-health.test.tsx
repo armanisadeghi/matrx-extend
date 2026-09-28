@@ -105,7 +105,9 @@ it('keeps auto-extracted rows and records a visible history warning when the met
     await vi.advanceTimersByTimeAsync(1_000);
   });
 
-  const record = useAutoExtractStore.getState().records.get(`37|${pattern.id}|https://electronic.vegas/calendar/`);
+  const record = useAutoExtractStore
+    .getState()
+    .records.get(`37|${pattern.id}|https://electronic.vegas/calendar/`);
   expect(record).toMatchObject({
     status: 'ok',
     rows: [{ title: 'Friday night concert' }],

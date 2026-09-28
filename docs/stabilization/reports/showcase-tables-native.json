@@ -44,7 +44,12 @@
   ],
   "evidence_limits": {
     "native": "Results reflect only the stated built artifact, primary Chrome profile, and real public pages observed in this run.",
-    "not_verified": ["Other source structures and routes", "extension auth transitions", "service-error behavior", "browser reload persistence cycle"],
+    "not_verified": [
+      "Other source structures and routes",
+      "extension auth transitions",
+      "service-error behavior",
+      "browser reload persistence cycle"
+    ],
     "screenshots": "None captured; observations recorded from native accessibility state.",
     "data_access": "Only safe exact recipe fields were read; no credentials were read or reported."
   }

@@ -16,16 +16,20 @@ vi.mock('@/lib/supabase/client', () => {
     from: () => client,
     insert: (payload: Record<string, unknown>) => {
       db.lastId = `cccccccc-cccc-4ccc-8ccc-${String(db.rows.length + 1).padStart(12, '0')}`;
-      db.rows.push(JSON.parse(JSON.stringify({
-        ...payload,
-        id: db.lastId,
-        created_by: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
-        created_at: '2026-09-27T12:00:00.000Z',
-        last_used_at: null,
-        last_run_at: null,
-        last_status: null,
-        last_run_count: null,
-      })));
+      db.rows.push(
+        JSON.parse(
+          JSON.stringify({
+            ...payload,
+            id: db.lastId,
+            created_by: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd',
+            created_at: '2026-09-27T12:00:00.000Z',
+            last_used_at: null,
+            last_run_at: null,
+            last_status: null,
+            last_run_count: null,
+          }),
+        ),
+      );
       return client;
     },
     select: () => client,
@@ -60,10 +64,18 @@ vi.mock('@/lib/data-pattern/document-network-transport', () => ({
     onEvent: (event: unknown) => void;
   }) => {
     db.listeners.set('net-capture:event', (event) =>
-      options.onEvent({ ...(event as object), capture_id: options.captureId, document_key: 'fresh-document' }),
+      options.onEvent({
+        ...(event as object),
+        capture_id: options.captureId,
+        document_key: 'fresh-document',
+      }),
     );
     options.onArmed?.();
-    return Promise.resolve({ close: async () => { db.listeners.delete('net-capture:event'); } });
+    return Promise.resolve({
+      close: async () => {
+        db.listeners.delete('net-capture:event');
+      },
+    });
   },
 }));
 
@@ -110,83 +122,92 @@ afterEach(() => {
 });
 
 describe('Showcase JSON key paths through real query mapping', () => {
-  it.each(variants)('retains $label after Network insert, fetch, and replay', async ({ path, title }) => {
-    const saved = await savePattern({
-      ...baseSave,
-      name: `Harbor Journal ${title}`,
-      kind: 'network_capture',
-      config: {
-        url_filter: 'https://harborjournal.test/api/feeds',
+  it.each(variants)(
+    'retains $label after Network insert, fetch, and replay',
+    async ({ path, title }) => {
+      const saved = await savePattern({
+        ...baseSave,
+        name: `Harbor Journal ${title}`,
+        kind: 'network_capture',
+        config: {
+          url_filter: 'https://harborjournal.test/api/feeds',
+          method: 'GET',
+          body_match: 'ignore',
+          key_path: [...path],
+        },
+      });
+      if (!saved) throw new Error('Network save failed');
+      const reopened = await reopenSavedPattern(saved.id);
+      expect(reopened.config).toMatchObject({ key_path: [...path] });
+
+      Object.assign(chrome, {
+        scripting: { executeScript: vi.fn(async () => []) },
+        tabs: {
+          onUpdated: { addListener: vi.fn(), removeListener: vi.fn() },
+          reload: vi.fn(async () => {}),
+        },
+      });
+      vi.useFakeTimers();
+      const replay = runSavedPattern(reopened, 37, {
+        initiation: 'user',
+        captureApproved: true,
+        timeoutMs: 5_000,
+      });
+      await vi.advanceTimersByTimeAsync(0);
+      const emit = db.listeners.get(CHANNELS.NET_CAPTURE_EVENT);
+      if (!emit) throw new Error('Network replay listener was not installed');
+      emit({
+        ts_ms: 1_726_000_000_000,
+        source: 'fetch',
         method: 'GET',
-        body_match: 'ignore',
-        key_path: [...path],
-      },
-    });
-    if (!saved) throw new Error('Network save failed');
-    const reopened = await reopenSavedPattern(saved.id);
-    expect(reopened.config).toMatchObject({ key_path: [...path] });
+        request_body_key: 'none',
+        request_sequence: 1,
+        url: 'https://harborjournal.test/api/feeds',
+        status: 200,
+        status_text: 'OK',
+        request_headers: {},
+        response_headers: { 'content-type': 'application/json' },
+        body,
+        body_truncated: false,
+        body_size: body.length,
+        content_type: 'application/json',
+        tab_id: 37,
+      });
+      await vi.advanceTimersByTimeAsync(5_000);
+      await expect(replay).resolves.toEqual([{ title }]);
+    },
+  );
 
-    Object.assign(chrome, {
-      scripting: { executeScript: vi.fn(async () => []) },
-      tabs: {
-        onUpdated: { addListener: vi.fn(), removeListener: vi.fn() },
-        reload: vi.fn(async () => {}),
-      },
-    });
-    vi.useFakeTimers();
-    const replay = runSavedPattern(reopened, 37, {
-      initiation: 'user',
-      captureApproved: true,
-      timeoutMs: 5_000,
-    });
-    await vi.advanceTimersByTimeAsync(0);
-    const emit = db.listeners.get(CHANNELS.NET_CAPTURE_EVENT);
-    if (!emit) throw new Error('Network replay listener was not installed');
-    emit({
-      ts_ms: 1_726_000_000_000,
-      source: 'fetch',
-      method: 'GET',
-      request_body_key: 'none',
-      request_sequence: 1,
-      url: 'https://harborjournal.test/api/feeds',
-      status: 200,
-      status_text: 'OK',
-      request_headers: {},
-      response_headers: { 'content-type': 'application/json' },
-      body,
-      body_truncated: false,
-      body_size: body.length,
-      content_type: 'application/json',
-      tab_id: 37,
-    });
-    await vi.advanceTimersByTimeAsync(5_000);
-    await expect(replay).resolves.toEqual([{ title }]);
-  });
+  it.each(variants)(
+    'retains $label after Framework insert, fetch, and replay',
+    async ({ path, title }) => {
+      const saved = await savePattern({
+        ...baseSave,
+        name: `Harbor Journal ${title}`,
+        kind: 'next_data',
+        config: { source: '__NEXT_DATA__', key_path: [...path] },
+      });
+      if (!saved) throw new Error('Framework save failed');
+      const reopened = await reopenSavedPattern(saved.id);
+      expect(reopened.config).toMatchObject({ key_path: [...path] });
 
-  it.each(variants)('retains $label after Framework insert, fetch, and replay', async ({ path, title }) => {
-    const saved = await savePattern({
-      ...baseSave,
-      name: `Harbor Journal ${title}`,
-      kind: 'next_data',
-      config: { source: '__NEXT_DATA__', key_path: [...path] },
-    });
-    if (!saved) throw new Error('Framework save failed');
-    const reopened = await reopenSavedPattern(saved.id);
-    expect(reopened.config).toMatchObject({ key_path: [...path] });
-
-    const script = document.createElement('script');
-    script.id = '__NEXT_DATA__';
-    script.type = 'application/json';
-    script.textContent = body;
-    document.body.append(script);
-    Object.assign(chrome, {
-      scripting: {
-        executeScript: vi.fn(async ({ func, args }: { func: (config?: unknown) => unknown; args?: unknown[] }) => [
-          { frameId: 0, result: func(args?.[0]) },
-        ]),
-      },
-    });
-    await expect(runSavedPattern(reopened, 37, { initiation: 'user' }))
-      .resolves.toEqual([{ title }]);
-  });
+      const script = document.createElement('script');
+      script.id = '__NEXT_DATA__';
+      script.type = 'application/json';
+      script.textContent = body;
+      document.body.append(script);
+      Object.assign(chrome, {
+        scripting: {
+          executeScript: vi.fn(
+            async ({ func, args }: { func: (config?: unknown) => unknown; args?: unknown[] }) => [
+              { frameId: 0, result: func(args?.[0]) },
+            ],
+          ),
+        },
+      });
+      await expect(runSavedPattern(reopened, 37, { initiation: 'user' })).resolves.toEqual([
+        { title },
+      ]);
+    },
+  );
 });

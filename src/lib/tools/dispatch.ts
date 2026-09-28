@@ -1800,7 +1800,9 @@ export async function runLocalNetworkDiscovery(
     localInvocation: true,
   };
   let approvalPreview: NetworkCaptureApprovalPreview | undefined;
-  const prepare = async (): Promise<PreparedOperation<{ ok: true; pageUrl: string; documentId: string; eventCount: number }>> => {
+  const prepare = async (): Promise<
+    PreparedOperation<{ ok: true; pageUrl: string; documentId: string; eventCount: number }>
+  > => {
     const [active] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (active?.id !== tabId || !active.url)
       throw new Error('The selected page changed. Start page-load capture again.');
@@ -1872,7 +1874,9 @@ export async function runLocalNetworkDiscovery(
           });
           await windowDone;
           if (eventCount === 0)
-            throw new Error('No fetch/XHR responses appeared during this page load. Try the page interaction after Start capture, or run page-load capture again.');
+            throw new Error(
+              'No fetch/XHR responses appeared during this page load. Try the page interaction after Start capture, or run page-load capture again.',
+            );
           return { ok: true, pageUrl: page.url, documentId: page.documentId, eventCount };
         } finally {
           if (timer !== undefined) clearTimeout(timer);

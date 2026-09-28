@@ -5,12 +5,7 @@
   "started_at_utc": "2026-09-28T11:51:15.051Z",
   "ended_at_utc": "2026-09-28T12:02:03.350Z",
   "status": "NATIVE_FAIL_WITH_BOUNDED_ROUNDTRIP",
-  "case_ids": [
-    "EXT-F-1012-T16",
-    "EXT-F-1012-T17",
-    "EXT-F-1012-T18",
-    "EXT-F-1012-T43"
-  ],
+  "case_ids": ["EXT-F-1012-T16", "EXT-F-1012-T17", "EXT-F-1012-T18", "EXT-F-1012-T43"],
   "receipt": {
     "source_receipt": "docs/stabilization/runs/showcase-d50-runtime-artifact-20260928.json",
     "artifact_path": ".output/chrome-mv3-dev",

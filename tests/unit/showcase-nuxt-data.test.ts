@@ -102,7 +102,9 @@ describe('Nuxt Framework source decoding', () => {
     setScript('__APOLLO_STATE__', JSON.stringify({ Repository: { name: 'nuxt/nuxt' } }));
     const sources = await readFrameworkSources(37);
     expect(sources.map((source) => source.source)).toEqual([
-      '__NEXT_DATA__', '__NUXT_DATA__', 'apollo',
+      '__NEXT_DATA__',
+      '__NUXT_DATA__',
+      'apollo',
     ]);
     expect(sources[1]?.error).toMatch(/Nuxt page data could not be decoded/);
     expect(sources[0]?.data).toEqual({ props: { title: 'Nuxt launch notes' } });
@@ -114,19 +116,27 @@ describe('Nuxt Framework source decoding', () => {
       }),
     ).resolves.toEqual([{ value: 'Nuxt launch notes' }]);
     await expect(
-      runPattern({
-        kind: 'next_data',
-        config: { source: 'apollo', key_path: ['Repository', 'name'] },
-      } as Parameters<typeof runPattern>[0], 37),
+      runPattern(
+        {
+          kind: 'next_data',
+          config: { source: 'apollo', key_path: ['Repository', 'name'] },
+        } as Parameters<typeof runPattern>[0],
+        37,
+      ),
     ).resolves.toEqual([{ value: 'nuxt/nuxt' }]);
   });
 
   it('names a missing saved source and tells the person how to repair it', async () => {
     setScript('__NEXT_DATA__', JSON.stringify({ props: { title: 'Nuxt launch notes' } }));
-    await expect(runPattern({
-      kind: 'next_data',
-      config: { source: '__NUXT_DATA__', key_path: ['state', '$sstats', 'repo'] },
-    } as Parameters<typeof runPattern>[0], 37)).rejects.toThrow(
+    await expect(
+      runPattern(
+        {
+          kind: 'next_data',
+          config: { source: '__NUXT_DATA__', key_path: ['state', '$sstats', 'repo'] },
+        } as Parameters<typeof runPattern>[0],
+        37,
+      ),
+    ).rejects.toThrow(
       /Framework source "__NUXT_DATA__" is no longer on this page.*choose an available source/,
     );
   });

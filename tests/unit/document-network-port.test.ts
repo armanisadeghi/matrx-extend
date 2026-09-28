@@ -104,23 +104,31 @@ it('page-load discovery streams only the owned event and closes on cancellation'
       url: 'https://calendar.invalid/api/events',
       method: 'POST',
       request_body_key: 'sha256:' + 'a'.repeat(64),
-      source: 'fetch', body: '{"events":[{"name":"Opening night"}]}',
-      body_size: 38, body_truncated: false, status: 200, ts_ms: 1,
+      source: 'fetch',
+      body: '{"events":[{"name":"Opening night"}]}',
+      body_size: 38,
+      body_truncated: false,
+      status: 200,
+      ts_ms: 1,
     });
-    return new Promise((resolve) => { finish = resolve; });
+    return new Promise((resolve) => {
+      finish = resolve;
+    });
   });
   const p = port();
   p.send({ kind: 'discover', tabId: 37, preApproved: true, config: { url: 'forged' } });
   await vi.waitFor(() => expect(operation.discover).toHaveBeenCalledOnce());
   expect(operation.discover.mock.calls[0]!.slice(0, 1)).toEqual([37]);
   expect(operation.discover.mock.calls[0]).toHaveLength(4);
-  expect(p.postMessage).toHaveBeenCalledWith(expect.objectContaining({
-    kind: 'event',
-    event: expect.objectContaining({
-      capture_id: 'owned-capture',
-      request_body_key: 'sha256:' + 'a'.repeat(64),
+  expect(p.postMessage).toHaveBeenCalledWith(
+    expect.objectContaining({
+      kind: 'event',
+      event: expect.objectContaining({
+        capture_id: 'owned-capture',
+        request_body_key: 'sha256:' + 'a'.repeat(64),
+      }),
     }),
-  }));
+  );
   p.disconnect();
   expect(operation.discover.mock.calls[0]![1].aborted).toBe(true);
   finish({ ok: true });
