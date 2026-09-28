@@ -94,6 +94,11 @@ export interface CopyMenuProps {
   align?: 'start' | 'center' | 'end';
 }
 
+type CopyFeedback =
+  | { kind: 'success'; label: string }
+  | { kind: 'failure'; message: string }
+  | null;
+
 export function CopyMenu({
   options,
   title = 'Copy',
@@ -104,7 +109,7 @@ export function CopyMenu({
 }: CopyMenuProps) {
   const { isAdmin } = useAuth();
   const [open, setOpen] = useState(false);
-  const [copiedLabel, setCopiedLabel] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<CopyFeedback>(null);
 
   const visible = options.filter((o) => !o.adminOnly || isAdmin);
   if (visible.length === 0) return null;
@@ -119,12 +124,12 @@ export function CopyMenu({
       failureMessage = '✕ Could not prepare this content for copy';
     }
     if (ok) {
-      setCopiedLabel(o.label);
-      setTimeout(() => setCopiedLabel(null), 1200);
+      setFeedback({ kind: 'success', label: o.label });
+      setTimeout(() => setFeedback(null), 1200);
       setOpen(false);
     } else {
-      setCopiedLabel(failureMessage);
-      setTimeout(() => setCopiedLabel(null), 2000);
+      setFeedback({ kind: 'failure', message: failureMessage });
+      setTimeout(() => setFeedback(null), 2000);
     }
   };
 
@@ -139,7 +144,8 @@ export function CopyMenu({
           e.stopPropagation();
           void handleClick(only);
         }}
-        title={title}
+        title={feedback?.kind === 'failure' ? feedback.message : title}
+        aria-label={feedback?.kind === 'failure' ? feedback.message : title}
         className={cn(
           'inline-flex shrink-0 items-center gap-1 rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground',
           label ? 'h-6 px-2 text-xs' : '',
@@ -149,12 +155,15 @@ export function CopyMenu({
           className,
         )}
       >
-        {copiedLabel ? (
-          <Check className={cn(ICON_SIZE, 'text-emerald-500')} />
+        {feedback?.kind === 'success' ? (
+          <Check role="img" aria-label="Copied" className={cn(ICON_SIZE, 'text-emerald-500')} />
+        ) : feedback?.kind === 'failure' ? (
+          <X role="img" aria-label="Copy failed" className={cn(ICON_SIZE, 'text-red-500')} />
         ) : (
           <Copy className={ICON_SIZE} />
         )}
         {label}
+        {feedback?.kind === 'failure' && <span role="alert">{feedback.message}</span>}
       </button>
     );
   }
@@ -165,7 +174,8 @@ export function CopyMenu({
         <button
           type="button"
           onClick={(e) => e.stopPropagation()}
-          title={title}
+          title={feedback?.kind === 'failure' ? feedback.message : title}
+          aria-label={feedback?.kind === 'failure' ? feedback.message : title}
           className={cn(
             'inline-flex shrink-0 items-center gap-1 rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground',
             label ? 'h-6 px-2 text-xs' : '',
@@ -175,8 +185,10 @@ export function CopyMenu({
             className,
           )}
         >
-          {copiedLabel ? (
-            <Check className={cn(ICON_SIZE, 'text-emerald-500')} />
+          {feedback?.kind === 'success' ? (
+            <Check role="img" aria-label="Copied" className={cn(ICON_SIZE, 'text-emerald-500')} />
+          ) : feedback?.kind === 'failure' ? (
+            <X role="img" aria-label="Copy failed" className={cn(ICON_SIZE, 'text-red-500')} />
           ) : (
             <Copy className={ICON_SIZE} />
           )}
@@ -184,6 +196,11 @@ export function CopyMenu({
         </button>
       </PopoverTrigger>
       <PopoverContent align={align} className="w-60 p-1">
+        {feedback?.kind === 'failure' && (
+          <div role="alert" className="px-2.5 py-2 text-xs text-red-600 dark:text-red-400">
+            {feedback.message}
+          </div>
+        )}
         {visible.map((o) => (
           <button
             key={o.label}
