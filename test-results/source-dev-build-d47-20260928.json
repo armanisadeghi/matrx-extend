@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "kind": "local_dev_unpacked",
+  "publish_state": "not_published",
+  "observedAt": "2026-09-28T00:21:23.658Z",
+  "extensionDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+  "version": "0.2.111",
+  "treeSha256": "01ae8a830c987566f8a58959cea46c40a16cba83c724e690d1e221ba253de622"
+}
