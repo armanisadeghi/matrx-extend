@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0063",
+  "feature_case_id": "EXT-F-2007-T01",
+  "scope": "NFS-03 latest-draft autosave loss only; Notes list/create/read failures remain separate findings.",
+  "root_cause": "The debounced save and Append path called persist while an earlier request was in flight. persist returned without retaining the newer draft; the older response then reported Saved. A component reused for another note also shared the same in-flight flag.",
+  "correction": [
+    "One serialized persistence drain retains the latest draft across debounce, Append, and unmount cleanup. After each response it compares the draft actually written with the latest editor draft and writes the newer one before reporting Saved.",
+    "The Notes view keys the editor by note ID, so an old note's completion cannot write into or mark a new note saved.",
+    "Failed drafts remain in sidepanel memory across note switches and reopen with an honest Unsaved changes/Save failed state and Retry save action. Successful writes remove their matching recoverable draft."
+  ],
+  "changed_product_files": [
+    "src/features/notes/NoteEditor.tsx",
+    "src/features/notes/NotesView.tsx"
+  ],
+  "regression_file": "src/features/notes/NoteEditor.autosave.test.tsx",
+  "regression_cases": [
+    "newer edit during first pending write reaches storage and Saved waits for that write",
+    "switching notes during a write preserves each note's content and separate status",
+    "Append from page during pending autosave reaches storage",
+    "unmount with a queued newer draft still writes it after the older request settles",
+    "failed draft survives a note switch and can be saved with Retry save"
+  ],
+  "guarded_verification": {
+    "run_id": "notes-d63-vitest-001",
+    "journal": "docs/stabilization/resource-journals/notes-d63-vitest-001.jsonl",
+    "journal_sha256": "75c112660f7ff2f9b18fcb7880fae7c7a4da229ee4749af08a73780c6fe924ad",
+    "admission": "RESOURCE_ADMITTED",
+    "final_decision": "valid",
+    "resource_invalid": false,
+    "child_exit_code": 0,
+    "result": "5 of 5 focused connected tests passed"
+  },
+  "source_sha256_at_guarded_run": {
+    "src/features/notes/NoteEditor.tsx": "5e844cf19a8152d56d68a4954a41838eb342d21d6f5f60e987d889c846b2e17f",
+    "src/features/notes/NotesView.tsx": "67611db0dba92a0255bb92f84c3920b771fb1fe4b0bcdf059d84c20173dced18",
+    "src/features/notes/NoteEditor.autosave.test.tsx": "0f72268e110e0835e2ee46eb1e49b13d24cc1bbebe56c54f9a944c0ad0409b52"
+  },
+  "red_proof": "The repository plant tool temporarily substituted the previous persist implementation into the current editor and the connected test file went red; the tool restored the source byte-identically. That direct, unguarded run is diagnostic method evidence only and is excluded from campaign verification.",
+  "invalid_for_campaign_acceptance": [
+    "Earlier direct focused Vitest runs were not resource-admitted.",
+    "Earlier direct pnpm compile was not resource-admitted. Its two SavedCapturesView.test.tsx fixture type errors belonged to concurrent peer work; this lane did not correct or classify them as baseline."
+  ],
+  "remaining_verification": [
+    "Guarded type check on the integrated checkout and independent source/test review.",
+    "Actual installed-extension native Notes acceptance with member data and delayed/failing write boundaries. No native pass is claimed."
+  ],
+  "known_limit": "Recoverable failed drafts are retained in the current sidepanel process across note switches. Closing or restarting the sidepanel before a failed draft is retried does not durably preserve it."
+}
