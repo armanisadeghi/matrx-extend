@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "lane": "current saved Network replay stall; source-only diagnosis",
-  "status": "IN_FIX_LAZY_DISPATCH_IMPORT_REMOVED_NATIVE_RETEST_PENDING",
+  "lane": "EXT-D-0049 saved Network replay worker import recovery",
+  "status": "SECOND_FIX_BUILT_PENDING_INDEPENDENT_NATIVE_RETEST",
   "canonical_case_id": "EXT-F-1012-T57 (docs/stabilization/inventory.json:16642)",
   "native_run_receipt": "docs/stabilization/runs/showcase-network-current-001.json (committed 764a47d8)",
   "immutable_source_sha": "d4bbe70e",
@@ -29,12 +29,27 @@
   },
   "fix_candidate": {
     "mechanism": "The background bootstrap already imports the canonical dispatcher. It now passes runLocalSavedPattern into registerDocumentNetworkCaptureHost, so a Port run uses the registered function directly instead of trying to load the dispatcher through the queue-to-registry lazy chunk cycle. The host still accepts only its internal Port name and same-extension non-tab sender, and still receives only saved pattern ID and assigned tab ID from the client; approval and requirements stay in the dispatcher.",
-    "files": ["src/lib/background/bootstrap.ts", "src/lib/data-pattern/document-network-transport.ts", "tests/unit/document-network-port.test.ts", "tests/unit/document-network-saved-ui.test.tsx", "docs/feature-tests.md"],
+    "files": [
+      "src/lib/background/bootstrap.ts",
+      "src/lib/data-pattern/document-network-transport.ts",
+      "tests/unit/document-network-port.test.ts",
+      "tests/unit/document-network-saved-ui.test.tsx",
+      "docs/feature-tests.md"
+    ],
     "connected_verification": "Guarded single-worker Vitest document-network-port.test.ts and document-network-saved-ui.test.tsx passed 8/8 at 2026-09-28T06:30:48Z. The latter uses actual PatternsTab, Port transport, runLocalSavedPattern, preparation, dispatcher approval, capture core and row parser, with only Chrome/Supabase boundaries doubled. Native bundled lazy-import behavior is not claimed to be reproduced by Vitest.",
     "typecheck": "Guarded pnpm compile passed at 2026-09-28T06:32:32Z.",
     "build": "Guarded WXT development build d49-fix-build-20260928 passed at 2026-09-28T06:34:03Z; full unpacked artifact tree SHA-256 c43b9717ef07a4a9043ed6bf91f5896163f42d3ec57c891e6989123da793dc44. Existing unrelated ineffective dynamic-import warnings remained.",
     "cancellation_scope": "The callback injection preserves existing abort ownership. A cancellation while initial preparation is pending still waits for that dependency to settle before surfacing, but executePreparedOperation checks the aborted signal before confirmation/capture. This pre-existing UX gap is not caused or solved by the lazy-import repair and needs a separately connected cancellation fix if retained.",
     "bootstrap_coverage_limit": "The tests manually register the host with the canonical dispatcher function; they do not execute full background bootstrap. Native unpacked acceptance must prove that the production bootstrap passed the callback and reached approval with DevTools closed."
+  },
+  "first_fix_native_retest": {
+    "receipt": "docs/stabilization/runs/showcase-d49-native-retest-001.json (peer commit dd094d85)",
+    "artifact_tree_sha256": "c43b9717ef07a4a9043ed6bf91f5896163f42d3ec57c891e6989123da793dc44",
+    "source_commit": "227d3540f19b24d21b9038586e99770058c70480",
+    "result": "With worker DevTools closed and the exact fixed unpacked artifact explicitly reloaded, one owned HN Search Network Run immediately showed failed: document is not defined. No approval or rows; resource guard terminal resourceInvalid=false. The first callback-injection fix made the previous silent Port stall visible but did not restore the full replay.",
+    "emitted_boundary": "In that exact artifact, registry-Crv38GjV.js wraps data_patterns.prepare's import('./cdp') with a preload helper and nonempty dependencies. The shared matrx-BJg5xIA-.js helper calls document.getElementsByTagName('link') before invoking the import. MV3 service workers have no document, so the helper throws before the approval policy module loads. This matches the native error; a documentless built-artifact guard is required before another native claim.",
+    "sibling_census": "Source search found other dynamic imports in worker-reachable bootstrap and tool handlers (including cdp screenshot, extract screenshot, demos, read, privileged, and credential handling). The same emitted helper can affect any with nonempty preload dependencies. A bundler-level worker-safe module-loading change is preferable to patching only data_patterns.prepare.",
+    "fix_round": 1
   },
   "confirmed_silent_gap": [
     "PatternsTab.handleRun sets runningId before awaiting runSavedPattern and clears it only in finally; runNote begins null. It offers no Cancel while running (src/features/showcase/tabs/PatternsTab.tsx:129-175, 404-434).",
@@ -72,6 +87,19 @@
   "hypotheses_disposition": "The ranked list preserves the pre-instrumentation predictions. The native diagnostic run ruled out ranks 1-3 and the first-message/sender-guard portions of rank 4 for that click: the first missing transition was lazy dispatch import settlement, before runLocalSavedPattern and preparation. Post-fix native behavior remains unverified.",
   "narrow_next_diagnostic": "During one healthy guarded installed retry, keep the existing Debug log on and check for TOOL_CONFIRM_REQUEST and persistPendingConfirm failed without exporting request payloads. If no broadcast appears, inspect only the service-worker Network timing/status for the wbx_pattern read and whether the Chrome document probe callback completes; do not capture raw URLs, bodies, tokens, or pattern config. A local confirmation record would place the stall after preparation; its absence is not conclusive if storage failed, so correlate with the Debug warning. Current user-visible diagnostics cannot distinguish every preapproval await without phase progress.",
   "causal_regression_to_write_before_fix": "Use the actual PatternsTab -> runSavedPattern -> saved-operation Port host -> runLocalSavedPattern -> prepareOperation -> requestConfirmation chain. Stub only Chrome/Supabase external calls. Park the worker's fetchPatternsForDomain with a controlled promise: on baseline, the real Run row disables without a stage or Cancel, an assertion failure naming the observed defect. After a narrow repair, the row must show the preparation stage and allow Cancel; releasing the parked read after Cancel must produce no approval card, CDP attach, rows, or pattern-health write. A second connected case parks chrome.scripting.executeScript, and a settled preparation case requires the real approval card. The test must fail if Port signal forwarding, host abort, or confirmation broadcast is severed; do not revive the pending candidate's mocked-UI proof as-is.",
-  "verification": "The original installed symptom was reproduced on old .114; a receipt-bound diagnostic .114 build localized the first stalled boundary with SW log positive control and DevTools closed. Guarded connected tests 8/8, compile, and development build passed after the fix. No post-fix native acceptance has been claimed; no credentials or raw captured request data were accessed.",
-  "open_action": "A fresh peer must reload the receipt-bound fixed unpacked artifact with DevTools closed and independently verify one owned saved Network Run reaches approval, denial prevents attach, allowance yields rows or a specific visible remedy, and surrounding cancellation remains safe. If the native Run still stalls, return to the first missing boundary and do not classify this candidate as fixed."
+  "verification": "The original native stall and first-fix native document error are established by receipt-bound Chrome runs. The second fix passed guarded frozen install, compile, direct WXT dev build, and worker-reachable emitted-import census. Its artifact is awaiting independent unpacked Chrome acceptance; no approval or rows have yet been observed on the second fix.",
+  "open_action": "Fresh peer must independently review the corrected emitted guard, reload the exact artifact SHA-256 1df62d6e214f0a70c25cf34fc762dc22582a1e64a002f12a9f69bf16efcb882d, run the owned HN Search saved Network recipe with worker DevTools closed, verify approval and allow/deny behavior plus rows or specific remedy, and exercise a UI lazy styled view. Keep D49 open until those pass.",
+  "second_fix_candidate": {
+    "source_commit": "dd6f12a2d3bb91d2a06ffa5457cecf6523811a3d",
+    "source_file": "wxt.config.ts",
+    "source_diff_sha256": "5f7946e900312bea9950cc765115896474676f980a8765162459a49bf09b5ae9",
+    "integrated_lock_sha256": "09d68f1bf3045ac99ffa2ec593ffab1a11ddfbe703ebc4b2b99a42af995b1237",
+    "mechanism": "Vite 8.3.1 modulePreload:false filters JavaScript preload dependencies from dynamic imports, retaining native import and the shared helper. The helper dereferences document only when passed a nonempty dependency array. A build-time guard traverses the background entry chunk graph and rejects worker-reachable dynamic-import wrappers with nonempty dependency arrays; it does not reject a harmless helper definition or UI-only imports. No document polyfill, import-error suppression, sender bypass, approval bypass, or credential behavior was added.",
+    "baseline_evidence": "Peer native retest of exact first-fix artifact showed failed: document is not defined before approval. Its registry data_patterns.prepare call passed nonempty dependency indexes to a helper whose document.getElementsByTagName branch runs before import. The initial broad emitted-helper guard rejected an unchanged WXT build on the shared helper at d49-dom-preload-guard-red-20260928; that guard was replaced after peer review because a helper definition alone is not proof of worker failure.",
+    "inspected_dev_build": "With modulePreload:false before final guard, d49-dom-preload-inspect-build-20260928 terminal exit 0. Built registry data_patterns.prepare import(./queue) wrapper passed []; an AST census of all 25 background-reachable chunks found 24 dynamic-import wrappers and zero nonempty dependency arrays. The shared DOM-bearing helper remained defined; this is safe for these call sites because its DOM branch is conditional on dependencies.",
+    "dependency_install": "Guarded pnpm install --frozen-lockfile --ignore-scripts d49-deps-install-20260928 terminal exit 0; agents 0.17.2 has no required consumer action, content-ir 0.19.20 adds details/summary raw HTML allow-list entries without an extension call-site action.",
+    "compile": "First guarded compile d49-dom-preload-compile-20260928 failed on strict TypeScript narrowing inside the new guard; corrected locally. Guarded d49-dom-preload-compile2-20260928 terminal exit 0.",
+    "build": "Guarded direct WXT development build d49-dom-preload-final-build-20260928 terminal exit 0; full unpacked artifact tree SHA-256 1df62d6e214f0a70c25cf34fc762dc22582a1e64a002f12a9f69bf16efcb882d. Final emitted worker registry call to import(./queue) passes []; build-time worker-graph guard passed. A launch immediately after compile receipt was refused RESOURCE_LEGACY_RUNNER_BUSY while its guard process still existed; waited for actual exit before this successful build.",
+    "limits": "The precise guard has not been red-tested against the exact failed dev artifact because that output was overwritten by later WXT builds. Static chunk graph and AST checks are not native replay proof. CSS dependencies would still trigger Vite DOM preloading, so the guard rejects any future worker-reachable dynamic import with nonempty dependencies. Independent Chrome retest with DevTools closed must prove approval and replay result; a UI lazy stylesheet check must confirm the shared option has not impaired UI."
+  }
 }
