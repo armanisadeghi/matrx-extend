@@ -111,18 +111,19 @@ export function CopyMenu({
 
   const handleClick = async (o: CopyOption) => {
     let ok = false;
+    let failureMessage = '✕ Copy failed — click the panel first, then retry';
     try {
       const content = await o.getContent();
       ok = await copyToClipboard(content);
     } catch {
-      // A formatter failure is a copy failure, not a successful empty copy.
+      failureMessage = '✕ Could not prepare this content for copy';
     }
     if (ok) {
       setCopiedLabel(o.label);
       setTimeout(() => setCopiedLabel(null), 1200);
       setOpen(false);
     } else {
-      setCopiedLabel('✕ Copy failed — click the panel first, then retry');
+      setCopiedLabel(failureMessage);
       setTimeout(() => setCopiedLabel(null), 2000);
     }
   };
