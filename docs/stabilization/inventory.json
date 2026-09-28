@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-28T14:45:25.567136+00:00",
+  "updated_at": "2026-09-28T14:55:42.085836+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -16160,7 +16160,18 @@
             "reload",
             "navigation",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "data-picker-long-native-20260928-01",
+              "evidence": [
+                "docs/stabilization/reports/data-picker-long-native.json",
+                "docs/stabilization/reports/showcase-ai-copy-native-retest.json"
+              ],
+              "detail": "Existing native evidence linked to this lifecycle case: real Data field picking, manual_css save with retained exact ID60b0c5bb-b4d4-4642-857a-2924b56445d5, Data refresh/replay and Showcase saved replay preserve the 719594-character field. Later explicitly reloaded native replay binds the actual URL including query/fragment. Draft-change isolation, wrong-route/missing-structure, service-error and broader source-change behavior remain unverified; this is evidence reconciliation, not a new run or whole-case pass."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T40",
