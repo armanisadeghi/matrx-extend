@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "run_id": "nuxt-peer-build-20260928a",
+  "source_commit": "52030b0410c5713936a75d5e9f3653abe0c2f7ae",
+  "source_dirty_paths_before_build": [],
+  "lockfile_sha256": "ffcab03bab71819d1fee1c1f4a2a1fb1857c11abe0e2541be9be76aa39b58042",
+  "mode": "development",
+  "output_directory": ".output/chrome-mv3-dev",
+  "output_file_count": 523,
+  "output_content_sha256": "0a1f0a65399dc31e754c362064fecb121fd0902552f36c183f5bb7618a6bd9de",
+  "manifest_sha256": "9140ab8686f4552f2507c85a773e99826feff482b524a8deba615b05513f738c",
+  "resource_decision": "valid",
+  "exit_code": 0,
+  "journal": "docs/stabilization/resource-journals/nuxt-peer-build-20260928a.jsonl",
+  "runtime_extension_id": "unverified; no browser UI execution in this lane"
+}

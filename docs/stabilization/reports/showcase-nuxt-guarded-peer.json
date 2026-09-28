@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "task_id": "showcase-nuxt-guarded-peer",
+  "lane": "independent peer and guarded runtime",
+  "reviewed_source_commit": "52030b0410c5713936a75d5e9f3653abe0c2f7ae",
+  "defect_id": "EXT-D-0052",
+  "A_outcome": {
+    "status": "guarded source and test pass; native UI open",
+    "evidence": "The named source is selected before decoding in runFrameworkPattern. The Framework picker retains Next and Apollo sources when Nuxt's custom reducer fails. A missing explicitly named source throws a source-specific reselect-and-save error. The guarded focused suite passed 12 tests across three files, including mixed-source preview and Apollo saved replay, missing-source saved replay, captured Nuxt decode, and sibling JSON key-path cases.",
+    "remaining": "The installed extension has not been reloaded or exercised on the real Nuxt page in this lane. Native tree selection, preview, save, replay, and old-path remedy remain open."
+  },
+  "B_quality": {
+    "status": "source review pass for requested corrections; native and mutation proof open",
+    "evidence": "The page-injected dump stays self-contained. Devalue decoding and unfamiliar-type refusal execute in the extension realm. Nuxt failure is carried on its own source entry, and explicit source selection prevents unrelated Nuxt decoding during extraction. The tests assert different decoded outputs and a distinct missing-source error. TypeScript compile and development WXT build passed through the resource guard.",
+    "limitations": "Earlier direct baseline and mutation runs in showcase-nuxt-repair.json were RESOURCE_UNVERIFIED and are not accepted as guarded proof. This lane did not mutate shared source or run browser UI. No new source defect was found in the reviewed paths."
+  },
+  "guarded_runs": [
+    {
+      "run_id": "nuxt-peer-focused-20260928a",
+      "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/showcase-nuxt-data.test.ts tests/unit/showcase-json-key-path.test.tsx tests/unit/showcase-json-path-connected.test.tsx",
+      "result": "3 files, 12 tests passed",
+      "exit_code": 0,
+      "resource_decision": "valid",
+      "journal": "docs/stabilization/resource-journals/nuxt-peer-focused-20260928a.jsonl"
+    },
+    {
+      "run_id": "nuxt-peer-compile-20260928a",
+      "command": "pnpm compile",
+      "result": "TypeScript noEmit passed",
+      "exit_code": 0,
+      "resource_decision": "valid",
+      "journal": "docs/stabilization/resource-journals/nuxt-peer-compile-20260928a.jsonl"
+    },
+    {
+      "run_id": "nuxt-peer-build-20260928a",
+      "command": "pnpm exec wxt build --mode development",
+      "result": "WXT Chrome MV3 development build passed",
+      "exit_code": 0,
+      "resource_decision": "valid",
+      "journal": "docs/stabilization/resource-journals/nuxt-peer-build-20260928a.jsonl"
+    }
+  ],
+  "artifact_receipt": "docs/stabilization/reports/showcase-nuxt-guarded-build-receipt.json",
+  "resource_cleanup": "All three foreground commands exited; no guard owner lease remained."
+}

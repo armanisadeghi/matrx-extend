@@ -1,0 +1,4 @@
+{"schema":1,"at":"2026-09-28T12:17:50.665Z","runId":"nuxt-peer-focused-20260928a","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-09-28T12:19:00.490Z","runId":"nuxt-peer-focused-20260928a","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":11.68,"requiredMemoryGiB":4,"oneMinuteLoad":7.18,"logicalCpus":10,"cpuBusyFraction":0.5052,"swapUsedMiB":3560.69,"repoFreeGiB":1673.1057777404785,"profileFreeGiB":1673.1057777404785},"cpuBusySamples":[0.4406,0.4282,0.5900000000000001,0.47439999999999993,0.5432,0.45100000000000007,0.609],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+{"schema":1,"at":"2026-09-28T12:19:02.633Z","runId":"nuxt-peer-focused-20260928a","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-09-28T12:19:02.682Z","runId":"nuxt-peer-focused-20260928a","resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}
