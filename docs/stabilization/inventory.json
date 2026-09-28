@@ -16648,9 +16648,10 @@
               "status": "unverified",
               "evidence": [
                 "docs/stabilization/reports/showcase-d46-implementation.json",
-                "docs/stabilization/reports/showcase-d46-final-peer.json"
+                "docs/stabilization/reports/showcase-d46-final-peer.json",
+                "docs/stabilization/reports/showcase-d46-public-targets.json"
               ],
-              "detail": "Engineering repair 4a997c33 passed meaningful baseline wrong-row red, 28 focused tests, compile, and independent focused rerun. Actual application save/fetch mapping is exercised with external Supabase I/O replaced. Fresh installed real-public-page Network and Framework save/reopen/replay remain unverified; D46 fixed, not closed. Current installed artifact57e37156 includes this fix but has no native exact-key acceptance proof."
+              "detail": "Engineering4a997c33 passed wrong-row baseline red,28focusedtests,compile and independent rerun. Current installed9ea6687b includes fix, but Network/Framework exact-key save/reopen/replay native acceptance remains UNVERIFIED. Bounded publictarget researchcd906160 found no verified genuine literal/nested collision; illustrative fixtures and429searchresults were not treated as proof."
             }
           }
         },
