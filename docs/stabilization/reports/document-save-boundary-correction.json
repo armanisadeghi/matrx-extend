@@ -1,0 +1,31 @@
+{
+  "id": "EXT-D-0059",
+  "status": "SOURCE_CORRECTED_GUARDED_TESTS_GREEN_NATIVE_PENDING",
+  "scope": "DataView Save boundary identified by document-handoff-restored-runtime.json",
+  "behavior": [
+    "Save captures the selected document, fields, name, route, and domain before awaiting organization selection. It checks the canonical page identity and save generation again immediately before savePattern, so a same-URL replacement cannot persist old fields.",
+    "A page change invalidates the in-flight save generation, releases the new page's Save control, and shows a precise recovery message. An old write or refresh completion cannot clear the new page's fields, set its result or error, or end its newer save."
+  ],
+  "failing_then_passing": {
+    "red": {
+      "run_id": "d59-save-red-20260928-1",
+      "result": "ADMITTED, 2 new cases failed against original source: A wrote old fields after B replaced the document during deferred organization lookup; A's pending write kept B Save disabled. 15 existing tests passed.",
+      "journal_sha256": "73ed20f6834da2801cdff38939c2868e970baacf4d5d1265e4330c094511a1d6"
+    },
+    "green": {
+      "run_id": "d59-save-green-20260928-1",
+      "result": "ADMITTED, 17/17 tests passed in saved-run-data-view-health.test.tsx",
+      "journal_sha256": "49de873b112aa4470730514e2bb8b18ce5b57aad059295982138fa3ab19b8897"
+    },
+    "compile": {
+      "run_id": "d59-save-compile-20260928-1",
+      "result": "ADMITTED, pnpm compile / tsc --noEmit passed",
+      "journal_sha256": "a5950aa0f0b46899bfd0764907ce47fb0f885ef9080efb89fe8f89be86559127"
+    }
+  },
+  "limits": [
+    "The component regression uses mocked Chrome identity, organization resolution, and persistence; native same-URL reload and real database persistence remain unverified.",
+    "A write already submitted before navigation cannot be revoked; the new page says to check saved patterns before retrying.",
+    "This bounded correction does not complete the broader D59 surface census, browser acceptance, or release."
+  ]
+}
