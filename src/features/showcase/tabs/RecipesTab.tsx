@@ -137,7 +137,7 @@ export function RecipesTab() {
                     size="icon"
                     variant="ghost"
                     onClick={() => void handleRun(r)}
-                    disabled={running === r.id || !tab.id}
+                    disabled={running === r.id || !tab.pageKey}
                     className="size-7 shrink-0"
                     title="Apply recipe"
                   >

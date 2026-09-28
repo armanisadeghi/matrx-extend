@@ -30,6 +30,8 @@ export interface CapturedNetEvent {
   content_type?: string;
   /** Stamped by the SW relay from sender.tab.id — null for non-tab senders. */
   tab_id?: number | null;
+  /** Stamped by the SW from MessageSender, never trusted from page payload. */
+  document_id?: string | null;
 }
 
 /**

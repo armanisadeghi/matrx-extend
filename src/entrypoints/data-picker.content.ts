@@ -13,6 +13,8 @@ export default defineContentScript({
   runAt: 'document_idle',
   async main() {
     const { mountPicker } = await import('@/lib/data-pattern/picker');
-    mountPicker();
+    const sessionId = (window as Window & { __matrxDataPickerSessionId?: string }).__matrxDataPickerSessionId;
+    if (!sessionId) throw new Error('The picker session was not set. Start picking again.');
+    mountPicker(sessionId);
   },
 });

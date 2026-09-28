@@ -143,7 +143,7 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
           </div>
           <Button
             onClick={() => void run()}
-            disabled={running}
+            disabled={running || !tab.pageKey}
             size="sm"
             variant="secondary"
             className="shrink-0 rounded-full"

@@ -41,13 +41,13 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
   }, [pageKey]);
 
   const dump = useCallback(async () => {
-    if (!tab.id || !tab.pageKey) return;
+    if (!tab.id || !tab.documentId || !tab.pageKey) return;
     const seq = ++dumpSeq.current;
     const pageKeyAtDump = pageKey;
     setLoadingTree(true);
     setDumpError(null);
     try {
-      const fetched = await readFrameworkSources(tab.id);
+      const fetched = await readFrameworkSources(tab.id, tab.documentId);
       if (seq !== dumpSeq.current || !isCurrentPageIdentity(pageKeyAtDump)) return;
       setSources(fetched);
       setSourcesPageKey(pageKeyAtDump);
@@ -60,7 +60,7 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
     } finally {
       if (seq === dumpSeq.current && isCurrentPageIdentity(pageKeyAtDump)) setLoadingTree(false);
     }
-  }, [tab.id, pageKey, activeSource]);
+  }, [tab.id, tab.documentId, pageKey, activeSource]);
 
   useEffect(() => {
     if (detection?.available) void dump();
@@ -129,7 +129,7 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
                 size="icon"
                 variant="ghost"
                 onClick={() => void dump()}
-                disabled={loadingTree}
+                disabled={loadingTree || !tab.pageKey}
                 title="Reload tree"
                 className="size-7 shrink-0"
               >
@@ -153,7 +153,7 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
 
         <Button
           onClick={() => void run({ key_path: keyPath, source: activeSource ?? undefined })}
-          disabled={running || !detection?.available}
+          disabled={running || !detection?.available || !tab.pageKey}
           className="w-full rounded-full"
         >
           {running ? <Loader2 className="animate-spin" /> : <PlayCircle />}

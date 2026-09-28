@@ -18,9 +18,11 @@ const HOST_ID = 'matrx-data-picker-host';
 let host: HTMLElement | null = null;
 let shadow: ShadowRoot | null = null;
 let highlight: HTMLElement | null = null;
+let activeSessionId: string | null = null;
 const picked: PickedField[] = [];
 
-export function mountPicker(): void {
+export function mountPicker(sessionId: string): void {
+  if (!sessionId) throw new Error('The picker has no session. Start picking again.');
   // Re-entry mounts FRESH (mirrors list-picker): each executeScript
   // re-evaluates the bundle with new module state, so the `if (host)` guard
   // never saw a previous context's mount — the old panel stayed on screen
@@ -35,6 +37,7 @@ export function mountPicker(): void {
     /* old context may be half-dead */
   }
   document.getElementById(HOST_ID)?.remove();
+  activeSessionId = sessionId;
   w.__matrxDataPickerTeardown = () => unmountPicker();
   host = document.createElement('div');
   host.id = HOST_ID;
@@ -89,6 +92,7 @@ export function unmountPicker(): void {
   shadow = null;
   highlight = null;
   picked.length = 0;
+  activeSessionId = null;
   const w = window as { __matrxDataPickerTeardown?: () => void };
   if (w.__matrxDataPickerTeardown) delete w.__matrxDataPickerTeardown;
 }
@@ -142,10 +146,13 @@ function renderPicked() {
 }
 
 function finish(reason: 'done' | 'cancel') {
+  const sessionId = activeSessionId;
+  if (!sessionId) return;
   void chrome.runtime.sendMessage({
     __matrx: true,
     kind: reason === 'done' ? 'data:picker-result' : 'data:picker-exit',
     payload: {
+      session_id: sessionId,
       fields: picked.map((p, i) => ({ name: `field_${i + 1}`, selector: p.selector })),
     },
   });

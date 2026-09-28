@@ -587,7 +587,7 @@ export function ListPatternTab() {
           ) : (
             <Button
               onClick={() => void enterPicker()}
-              disabled={!tab.id}
+              disabled={!tab.pageKey}
               className="w-full rounded-full"
             >
               <Crosshair />
@@ -749,7 +749,7 @@ export function ListPatternTab() {
               </Button>
               <Button
                 onClick={() => void enterPicker()}
-                disabled={picking}
+                disabled={picking || !tab.pageKey}
                 variant="secondary"
                 className="rounded-full"
               >
@@ -758,7 +758,7 @@ export function ListPatternTab() {
               </Button>
               <Button
                 onClick={() => void handleRun()}
-                disabled={running || fields.length === 0}
+                disabled={running || fields.length === 0 || !tab.pageKey}
                 className="flex-1 rounded-full"
               >
                 {running ? <Loader2 className="animate-spin" /> : <PlayCircle />}

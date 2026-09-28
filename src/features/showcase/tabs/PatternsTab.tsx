@@ -132,7 +132,7 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
   }, [active, refresh]);
 
   const handleRun = async (p: ExtractionPattern) => {
-    if (!tab.id || !tab.pageKey) return;
+    if (!tab.id || !tab.documentId || !tab.pageKey) return;
     const runPageKey = pageKey;
     const seq = ++runSeq.current;
     const isCurrent = () => seq === runSeq.current && currentPageKey.current === runPageKey && isCurrentPageIdentity(runPageKey);
@@ -153,6 +153,7 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
           if (isCurrent()) setRunNote(note);
         },
         initiation: 'user',
+        documentId: tab.documentId,
       });
       if (!isCurrent()) return;
       setRows(data);
@@ -259,7 +260,7 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
                 pattern={p}
                 running={runningId === p.id}
                 runNote={runningId === p.id ? runNote : null}
-                canRun={Boolean(tab.id)}
+                canRun={Boolean(tab.pageKey)}
                 routeMatches={urlMatchesPattern(tab.url ?? '', p)}
                 onRun={() => void handleRun(p)}
                 onChanged={() => void refresh()}

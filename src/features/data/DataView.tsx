@@ -1,4 +1,5 @@
 import { CopyMenu } from '@/components/CopyMenu';
+import { PageIdentityNotice } from '@/components/PageIdentityNotice';
 import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { useAuth } from '@/hooks/use-auth';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
@@ -32,6 +33,10 @@ export function DataView() {
   const [patternLoadAttempt, setPatternLoadAttempt] = useState(0);
   const [picking, setPicking] = useState(false);
   const pickTabRef = useRef<number | null>(null);
+  const pickDocumentRef = useRef<string | null>(null);
+  const pickSessionRef = useRef<string | null>(null);
+  const pickPageKeyRef = useRef<string | null>(null);
+  const [pickedPageKey, setPickedPageKey] = useState<string | null>(null);
   const [pickedFields, setPickedFields] = useState<{ name: string; selector: string }[]>([]);
   const [patternName, setPatternName] = useState('');
   const [extractedRows, setRows] = useState<Record<string, unknown>[] | null>(null);
@@ -62,8 +67,12 @@ export function DataView() {
   useEffect(() => {
     runSequence.current += 1;
     pickTabRef.current = null;
+    pickDocumentRef.current = null;
+    pickSessionRef.current = null;
+    pickPageKeyRef.current = null;
     setPicking(false);
     setPickedFields([]);
+    setPickedPageKey(null);
     setRunSource(null);
     setRows(null);
     setRunning(false);
@@ -125,22 +134,28 @@ export function DataView() {
     // script delivery (tab_id absent) reaches every sidepanel directly —
     // accepting it processed each pick TWICE and let window A's pick land
     // in window B's builder.
-    const fromOurPick = (tabId: unknown) =>
-      typeof tabId === 'number' && tabId === pickTabRef.current;
+    const fromOurPick = (payload: { tab_id?: number | null; document_id?: string | null; session_id?: string } | null | undefined) =>
+      payload?.tab_id === pickTabRef.current &&
+      payload?.document_id === pickDocumentRef.current &&
+      payload?.session_id === pickSessionRef.current &&
+      isCurrentPageIdentity(pickPageKeyRef.current);
     const offResult = on<
-      { fields?: { name: string; selector: string }[]; tab_id?: number | null },
+      { fields?: { name: string; selector: string }[]; tab_id?: number | null; document_id?: string | null; session_id?: string },
       { ack: true }
     >(CHANNELS.DATA_PICKER_RESULT, (payload) => {
-      if (!fromOurPick(payload?.tab_id)) return { ack: true };
+      if (!fromOurPick(payload)) return { ack: true };
       setPicking(false);
       setPickedFields(payload.fields ?? []);
+      setPickedPageKey(pickPageKeyRef.current);
+      pickSessionRef.current = null;
       return { ack: true };
     });
-    const offExit = on<{ tab_id?: number | null }, { ack: true }>(
+    const offExit = on<{ tab_id?: number | null; document_id?: string | null; session_id?: string }, { ack: true }>(
       CHANNELS.DATA_PICKER_EXIT,
       (payload) => {
-        if (!fromOurPick(payload?.tab_id)) return { ack: true };
+        if (!fromOurPick(payload)) return { ack: true };
         setPicking(false);
+        pickSessionRef.current = null;
         return { ack: true };
       },
     );
@@ -166,20 +181,31 @@ export function DataView() {
     if (!tab.id || !tab.documentId || !tab.pageKey || picking) return;
     setPicking(true);
     setPickedFields([]);
+    setPickedPageKey(null);
     pickTabRef.current = tab.id;
+    pickDocumentRef.current = tab.documentId;
+    pickPageKeyRef.current = tab.pageKey;
+    const sessionId = crypto.randomUUID();
+    pickSessionRef.current = sessionId;
     try {
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id, documentIds: [tab.documentId] },
+        func: (id: string) => { (window as Window & { __matrxDataPickerSessionId?: string }).__matrxDataPickerSessionId = id; },
+        args: [sessionId],
+      });
       await chrome.scripting.executeScript({
         target: { tabId: tab.id, documentIds: [tab.documentId] },
         files: ['content-scripts/data-picker.js'],
       });
     } catch (err) {
       setPicking(false);
+      pickSessionRef.current = null;
       console.warn('[matrx-extend] picker injection failed', err);
     }
   };
 
   const handleSavePattern = async () => {
-    if (!host || pickedFields.length === 0 || !isCurrentPageIdentity(pageKey)) return;
+    if (!host || pickedFields.length === 0 || !isCurrentPageIdentity(pickedPageKey)) return;
     setSaving(true);
     setError(null);
     try {
@@ -217,7 +243,7 @@ export function DataView() {
   };
 
   const handleRun = async (pattern: ExtractionPattern) => {
-    if (!tab.id || !tab.pageKey) return;
+    if (!tab.id || !tab.documentId || !tab.pageKey) return;
     const sequence = ++runSequence.current;
     const isCurrent = () => currentPage.current === pageKey && runSequence.current === sequence && isCurrentPageIdentity(pageKey);
     const source = { pageKey, url: tab.url, title: tab.title, patternName: pattern.name };
@@ -234,6 +260,7 @@ export function DataView() {
           if (isCurrent()) setRunNote(note);
         },
         initiation: 'user',
+        documentId: tab.documentId,
       });
       if (!isCurrent()) return;
       setRows(data);
@@ -289,6 +316,7 @@ export function DataView() {
         <span className="text-sm font-medium">Structured data</span>
         <span className="ml-2 truncate text-xs text-muted-foreground">{host || 'no host'}</span>
       </div>
+      <PageIdentityNotice tab={tab} />
 
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 px-3 pb-3">
@@ -385,7 +413,7 @@ export function DataView() {
                 size="sm"
                 className="h-7 shrink-0 rounded-full px-3 text-xs"
                 onClick={() => void handleRun(matched)}
-                disabled={running}
+                disabled={running || !tab.pageKey}
               >
                 {running ? (
                   <Loader2 className="size-3.5 animate-spin" />
@@ -488,7 +516,7 @@ export function DataView() {
                         variant="ghost"
                         className="size-7"
                         onClick={() => void handleRun(p)}
-                        disabled={running}
+                        disabled={running || !tab.pageKey}
                         title="Run pattern"
                       >
                         <Play className="size-3.5" />
@@ -567,7 +595,7 @@ export function DataView() {
             {user ? (
               <Button
                 onClick={() => void handleSavePattern()}
-                disabled={saving}
+                disabled={saving || !tab.pageKey}
                 className="flex-1 rounded-full"
               >
                 {saving ? <Loader2 className="animate-spin" /> : <Save />}
@@ -587,7 +615,7 @@ export function DataView() {
         ) : (
           <Button
             onClick={() => void enterPicker()}
-            disabled={picking || !tab.id}
+            disabled={picking || !tab.pageKey}
             className="w-full rounded-full"
           >
             {picking ? <Loader2 className="animate-spin" /> : <Crosshair />}

@@ -41,6 +41,7 @@ export function useNetworkCapture() {
   const capturingRef = useRef(false);
   const tabIdRef = useRef<number | null>(null);
   const capturePageKeyRef = useRef<string | null>(null);
+  const captureDocumentRef = useRef<string | null>(null);
   const droppedRef = useRef(0);
   const discoveryAbort = useRef<AbortController | null>(null);
 
@@ -63,13 +64,14 @@ export function useNetworkCapture() {
       // current capture (audit I1). The SW stamps tab_id on every event.
       if (!capturingRef.current || !isCurrentPageIdentity(capturePageKeyRef.current)) return { ack: true };
       if (event.tab_id == null || event.tab_id !== tabIdRef.current) return { ack: true };
+      if (!event.document_id || event.document_id !== captureDocumentRef.current) return { ack: true };
       appendEvent(event);
       return { ack: true };
     });
   }, [appendEvent]);
 
   const start = useCallback(async () => {
-    if (!tab.id || !tab.pageKey) return;
+    if (!tab.id || !tab.documentId || !tab.pageKey) return;
     discoveryAbort.current?.abort();
     setError(null);
     setEvents([]);
@@ -78,6 +80,7 @@ export function useNetworkCapture() {
     setDropped(0);
     tabIdRef.current = tab.id;
     capturePageKeyRef.current = tab.pageKey;
+    captureDocumentRef.current = tab.documentId;
     try {
       // Relay first so the earliest tapped response has somewhere to go.
       await chrome.scripting.executeScript({
@@ -161,6 +164,7 @@ export function useNetworkCapture() {
   // own approved reload/document contract and is left to that controller.
   useEffect(() => {
     capturePageKeyRef.current = null;
+    captureDocumentRef.current = null;
     capturingRef.current = false;
     setCapturing(false);
     setInstalled(false);
