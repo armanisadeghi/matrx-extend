@@ -11,8 +11,14 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('@/hooks/use-active-tab', () => ({
-  useActiveTab: () => ({ ...mocks.page }),
-  isCurrentPageIdentity: () => true,
+  useActiveTab: () => ({
+    ...mocks.page,
+    documentId: mocks.page.url,
+    identityStatus: 'ready',
+    identityError: null,
+    pageKey: mocks.page.url,
+  }),
+  isCurrentPageIdentity: (key: string) => key === mocks.page.url,
 }));
 vi.mock('@/lib/supabase/queries', () => ({
   fetchPatternsForDomain: mocks.fetchPatterns,
