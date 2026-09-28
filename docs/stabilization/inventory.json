@@ -16690,16 +16690,17 @@
           ],
           "results": {
             "admin": {
-              "status": "fail",
-              "run_id": "showcase-d49-standalone-peer-native-20260928T0728Z",
+              "status": "unverified",
+              "run_id": "showcase-discovery-native-20260928",
               "evidence": [
                 "docs/stabilization/runs/showcase-network-current-001.json",
                 "docs/stabilization/runs/showcase-d49-native-retest-001.json",
                 "docs/stabilization/reports/showcase-d49-final-acceptance.json",
                 "docs/stabilization/reports/showcase-d49-standalone-peer.json",
-                "docs/stabilization/reports/showcase-request-identity.json"
+                "docs/stabilization/reports/showcase-request-identity.json",
+                "docs/stabilization/reports/showcase-discovery-native-acceptance.json"
               ],
-              "detail": "Fresh artifact57e37156 on primary Chrome passes per-run approval, denial reset, debugger attach and automatic HN reload; matching saved Algolia request times out in20s with zero rows. Watchdog valid, stopped07:31:42Z. Worker import fix narrowly verified; saved replay and D47 provenance remain incomplete. D49 in-fix for causal request-matching diagnosis. Fresh saved recipe also fails. Same-profile semantic comparison finds discovery prefixLast versus reload prefixNone; first failing boundary is exact body match. Discovery/replay capture timing differs. Correct intended-request discovery and replay remain unverified; no matching-rule relaxation. Instrumented native artifact receipt was omitted; latest counter/semantic observations remain diagnostic leads, not additional acceptance proof."
+              "detail": "Current artifact8b0f8adc now natively captures settled initial HN request and replays selected hits with10 matching rows after save/reopen; prior import/body mismatch failure no longer current on this correctly selected recipe. D47 delayed prior-document/current-document isolation remains unverified, so wholecase unverified. Second-repeat terminal and surrounding controls tracked in T59; do not infer wholefeaturehealth."
             }
           }
         },
@@ -16788,9 +16789,11 @@
               "status": "unverified",
               "evidence": [
                 "docs/stabilization/reports/showcase-initial-discovery-source-peer.json",
-                "docs/stabilization/reports/showcase-initial-discovery-revised-peer.json"
+                "docs/stabilization/reports/showcase-initial-discovery-revised-peer.json",
+                "docs/stabilization/reports/showcase-discovery-native-acceptance.json"
               ],
-              "detail": "New control implemented; initial source review findings addressed and fresh revised source review PASS a585cf2f. Latest tests/compile/build and native acceptance unverified after guarded launch refusals. No UI success inferred from source."
+              "detail": "Independent native artifact8b0f8adc: denial, truthful approved initial capture, credential-safe exact save/reopen PASS. hits path yielded10 records and first saved replay returned10 matching public story rows. Second replay only observed matched1/checking, no terminal result. Stop/cancel, navigation, tab switch, panel unmount and final cleanup remain unverified. Overall PARTIAL, status unverified until remaining requirements pass.",
+              "run_id": "showcase-discovery-native-20260928"
             }
           }
         }
