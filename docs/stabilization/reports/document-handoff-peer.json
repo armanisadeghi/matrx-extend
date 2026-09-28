@@ -1,0 +1,57 @@
+{
+  "id": "EXT-D-0059",
+  "verifier": "independent zero-authorship peer",
+  "target_commit": "4926e1c1a391d9ebaf6003d6869f2b4caa7c7fc8",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "outcome": "The connected HighlightView -> shared handoff -> DataView -> Save path is wired to verify selectors against Chrome's captured documentId, carry page/tab/document provenance, reject a mismatched handoff with recovery copy, and associate accepted fields with the picked page before Save. Data picker replies are stamped from Chrome sender identity and matched against the active tab/document/session; delayed injection failures check that their captured session is still current before changing UI state.",
+    "evidence": [
+      "HighlightView.sendElementsToData checks current page identity after executeScript and carries pageKey/tabId/documentId with fields.",
+      "DataView consumes only matching provenance and has explicit stale-handoff guidance; handleSavePattern requires current pickedPageKey.",
+      "Data picker relay stamps sender tab/document identity; result handlers also match a session UUID.",
+      "Existing focused test file includes connected Save, stale handoff, old injection rejection during B, and current injection failure remedy cases. Builder report records its test as 15 passed, 0 failed, but this verifier could not freshly reproduce it."
+    ],
+    "limits": [
+      "Native installed-extension same-URL reload and real Chrome navigation/event ordering remain unverified.",
+      "Component tests mock Chrome executeScript, page identity, message relay, and save persistence; they prove connected UI orchestration but do not prove actual browser document behavior or a database row.",
+      "No test covers selector verification returning false or throwing, nor a page/document switch while selector verification is pending; source handles the former and checks pageKey after await, but these branches lack direct test evidence."
+    ],
+    "actionable_source_finding": {
+      "severity": "Important",
+      "location": "src/features/data/DataView.tsx handleSavePattern",
+      "finding": "The current picked-page identity is checked before the async organization-id lookup, but the code does not re-check it after that await and before savePattern. If the active document changes during organization resolution, a stale field set can still be written. Re-check both pickedPageKey and the captured tab/document identity at the write boundary, and add a deferred-org-resolution navigation regression.",
+      "classification": "Source race, distinct from additional coverage and native-runtime limitations."
+    }
+  },
+  "verdict_b": {
+    "status": "PARTIAL",
+    "quality": "The change reuses the shared active-page identity and message relay, carries identity across the UI seam, and provides visible recovery for stale handoffs and current injection failures. The new connected UI test is materially stronger than a store-only test. However, its doubles replace browser identity and script execution, so they cannot establish real top-frame/document targeting; no fresh run was obtained after reported mutation restoration. Mutation evidence in the builder report perturbed both pickedPageKey assignment and obsolete-session catch behavior together, so it does not independently establish red-to-green for each behavior. Native/browser proof is expressly pending.",
+    "findings": [
+      "Important: The component tests are valid evidence for connected UI orchestration, stale-handoff rejection, and session scoping; their Chrome and save doubles limit claims about actual Chrome document targeting and database persistence.",
+      "Important: Save identity is not re-checked after awaiting organization resolution, so a navigation in that interval can persist stale fields; see the source finding under Verdict A.",
+      "Important: A fresh post-restoration focused run is missing. The guarded runner refused execution for RESOURCE_DISK_LOW (scratch profile free 5.57 GiB, minimum 20 GiB); no second heavy attempt was made.",
+      "Minor: Focused cases for selector mismatch, executeScript rejection during highlight verification, and identity changing while verification is pending would close observable branch gaps."
+    ]
+  },
+  "fresh_verification": {
+    "status": "NOT_RUN_RESOURCE_REFUSAL",
+    "attempts": [
+      {
+        "run_id": "d59-peer-tests-20260928-1",
+        "result": "Measurement failed because the specified profile directory did not exist; no child command executed."
+      },
+      {
+        "run_id": "d59-peer-tests-20260928-2",
+        "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/saved-run-data-view-health.test.tsx",
+        "profile_dir": "/tmp/d59-independent-peer/profile",
+        "result": "Refused before child execution: RESOURCE_DISK_LOW; profile free 5.57 GiB, required 20 GiB. The profile was on /dev/disk3s5 at /System/Volumes/Data (df showed 5.5 GiB available). The brief-specified external scratch path /Volumes/Samsung2TB/code/.stabilization-scratch was not used; df showed its /dev/disk7s1 volume had 1.6 TiB available. No rerun was attempted.",
+        "journal_sha256": "9fd6db734a5c7dfb39777261e373fb0f22faf9846921ce70c399d3671a9cb3ae"
+      }
+    ],
+    "mutation_restoration": "Not freshly re-run. Builder report says the mutation was restored exactly; current shared tree is clean before this verifier's report and journals."
+  },
+  "exact_path_commit_evidence": {
+    "target_head": "4926e1c1a391d9ebaf6003d6869f2b4caa7c7fc8 fix(D59): preserve document provenance across highlight handoff and picker failures",
+    "scope_check": "git log -- docs/feature-tests.md src/features/data/DataView.tsx src/features/highlights/HighlightView.tsx tests/unit/saved-run-data-view-health.test.tsx shows target commit 4926e1c1 as latest on those paths."
+  }
+}
