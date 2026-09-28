@@ -814,6 +814,8 @@ Every entry follows this shape:
 
 ### Scrape — Save lands a Source (never lost) and Saved captures reads Sources
 
+- **Overlapping opens:** Click saved Source A, then B before A's detail read returns. Even when A settles last or fails late, B remains the selected detail and A's error does not replace it.
+
 - **Race/storage regression:** Delay an earlier refused Save/Retry, then complete a newer Save or discard for the same page. Releasing the older response must not restore its retry card; a fresh explicit Save may create one again. Switch workspaces before dispatch: the request must remain unsent and say the account or workspace changed, with a remedy to choose the intended workspace and retry. An actual server 403 must still say the server refused the request. A switch after dispatch keeps that request bound to its original workspace. If device storage cannot reserve save order, Save must say the page was not sent or saved on the device, keep the editable capture open, and allow a successful retry after storage recovers.
 
 - **What it does:** Save sends the capture through the landing door (`POST /sources/land`) as a kept Source in the selected workspace: the article cut into H1–H3 sections, the full capture kept as the original (S3), the collectors on the Source's structured data. If the server refuses or cannot be reached, the capture stays on this device under an amber **Unsaved — retry** card (with the server's sentence) until a retry lands; the unsaved-edits guard stays armed. The Saved captures tab lists the workspace's Sources saved from the extension (read directly under RLS), names the capturing member when their profile is readable, opens the original for Details / Data / Copy, saves edits beside the original (`/sources/{id}/edit`), and deletes by soft delete for the whole workspace. Recognition and the agent's page Source status look the page up by the door's canonical URL within the selected workspace.
@@ -1022,6 +1024,9 @@ Every entry follows this shape:
 ---
 
 ### Files tab
+
+- **Read failure:** With the file or screenshot read unavailable, neither tab claims the collection is empty. The error is visible; **Retry files** reruns both reads and a successful empty response then shows the appropriate empty state.
+
 - **What it does:** Shows recent discoverable Matrx library files and every screenshot captured by the extension, opens the canonical web viewer, inspects the file's live family inventory, and durably attaches/detaches a file to the current conversation.
 - **Where to test:** Side panel - **Files** tab (stacked-files icon).
 - **Steps:**

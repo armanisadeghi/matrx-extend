@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
@@ -127,6 +127,58 @@ beforeEach(() => {
 afterEach(cleanup);
 
 describe('SavedCapturesView', () => {
+  it('keeps the last clicked Source when earlier detail reads settle later', async () => {
+    let resolveAlpha!: (value: typeof fullCapture) => void;
+    let resolveBeta!: (value: typeof fullCapture) => void;
+    mocks.get.mockImplementation((id: string) =>
+      new Promise<typeof fullCapture>((resolve) => {
+        if (id === firstSummary.id) resolveAlpha = resolve;
+        else if (id === secondSummary.id) resolveBeta = resolve;
+      }),
+    );
+    render(<SavedCapturesView />);
+
+    fireEvent.click(await screen.findByText('Alpha guide'));
+    fireEvent.click(screen.getByText('Beta report'));
+    expect(mocks.get.mock.calls.map(([id]) => id)).toEqual([firstSummary.id, secondSummary.id]);
+
+    resolveBeta({
+      ...fullCapture,
+      id: secondSummary.id,
+      title: secondSummary.title,
+      url: secondSummary.url,
+    });
+    expect(await screen.findByText(secondSummary.url)).toBeTruthy();
+    await act(async () => resolveAlpha(fullCapture));
+    expect(screen.queryByText(firstSummary.url)).toBeNull();
+    expect(screen.getByText(secondSummary.url)).toBeTruthy();
+  });
+
+  it('does not show an older open error after the newest Source opens', async () => {
+    let rejectAlpha!: (reason: Error) => void;
+    let resolveBeta!: (value: typeof fullCapture) => void;
+    mocks.get.mockImplementation((id: string) =>
+      new Promise<typeof fullCapture>((resolve, reject) => {
+        if (id === firstSummary.id) rejectAlpha = reject;
+        else if (id === secondSummary.id) resolveBeta = resolve;
+      }),
+    );
+    render(<SavedCapturesView />);
+    fireEvent.click(await screen.findByText('Alpha guide'));
+    fireEvent.click(screen.getByText('Beta report'));
+
+    resolveBeta({
+      ...fullCapture,
+      id: secondSummary.id,
+      title: secondSummary.title,
+      url: secondSummary.url,
+    });
+    expect(await screen.findByText(secondSummary.url)).toBeTruthy();
+    await act(async () => rejectAlpha(new Error('Old Source read failed.')));
+    expect(screen.queryByText('Old Source read failed.')).toBeNull();
+    expect(screen.getByText(secondSummary.url)).toBeTruthy();
+  });
+
   it('searches the complete saved-capture collection on the server', async () => {
     mocks.list.mockImplementation(async ({ search }: { search?: string }) =>
       search === 'later match'

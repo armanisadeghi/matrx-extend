@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "lane": "EXT-D-0064 Files read error and EXT-D-0065 Saved Captures last-click selection",
+  "status": "SOURCE_CANDIDATE_AWAITING_FRESH_VERIFICATION_AFTER_TWO_FAILED_TEST_ROUNDS",
+  "source_basis": "docs/stabilization/reports/notes-files-batch-audit.json findings NFS-04 and NFS-05; current FilesView and SavedCapturesView branches inspected directly. No live UI reproduction is claimed.",
+  "files_root_cause": "FilesView reload already records a failed Promise.all read as state=error, but both inventory panels branch from loading directly to empty-row checks. A failed initial read therefore displays the read error banner and a contradictory no-files/no-captures message.",
+  "files_fix": "Both inventory panels now check state=error before evaluating empty rows, show a distinct load failure and Retry files action, and retain the existing error banner's actual failure message. Successful empty reads still use their former empty states.",
+  "captures_root_cause": "Each saved Source open resolves independently and calls setSelected, setError, and setLoading without ownership. A slower first click can replace the second click's detail or surface its stale error.",
+  "captures_fix": "A monotonic open generation marks each click and invalidates older detail resolutions, errors, and loading completion; Back also retires the active open. Query/list pagination generation remains separate.",
+  "regression_design": [
+    "FilesView.test.tsx drives actual FilesView with only auth/chat and data boundaries doubled, rejects each read source in turn, checks the active tab cannot claim an empty collection, then retries to a successful empty result.",
+    "SavedCapturesView.test.tsx uses the existing actual view harness with two deferred getSavedCapture results: B resolves first, then A resolves or rejects. The final rendered detail and error must still belong to B. The baseline production branch would fail the stale-success case."
+  ],
+  "changed_paths": [
+    "src/features/files/FilesView.tsx",
+    "src/features/files/FilesView.test.tsx",
+    "src/features/saved-captures/SavedCapturesView.tsx",
+    "src/features/saved-captures/SavedCapturesView.test.tsx",
+    "docs/feature-tests.md"
+  ],
+  "verification": {
+    "source_diff_check": "passed",
+    "first_combined_run": {
+      "run_id": "d64-d65-combined-focused-20260928-01",
+      "journal": "docs/stabilization/resource-journals/d64-d65-combined-focused-20260928-01.jsonl",
+      "journal_sha256": "83ce1000ab396e627996e447165d347a50c7ef49e9cb011750584a63e026b7a1",
+      "result": "Guard admitted, child_failed/resourceInvalid=false. Notes and SavedCaptures passed; both Files tests failed because mocked useAuth returned a new user object on every render, retriggering FilesView.reload effect until maximum update depth. Corrected to a hoisted stable user. A Ctrl-C sent after terminal caused a duplicate-signal RESOURCE_JOURNAL_WRITE_FAILED message; the journal retains its final child_failed decision, and no guard process remained."
+    },
+    "second_combined_run": {
+      "run_id": "d64-d65-combined-focused-20260928-02",
+      "journal": "docs/stabilization/resource-journals/d64-d65-combined-focused-20260928-02.jsonl",
+      "journal_sha256": "9288086488d99a353a996f1d6ea7a6d69ca471d117b1e8c64211c1e1c8356faa",
+      "result": "Guard admitted, child_failed/resourceInvalid=false. Notes and SavedCaptures suites passed; Files library test passed; Files captures test failed after retry because the test clicked a Radix TabsTrigger without its actual onMouseDown/onKeyDown event, so Library stayed active. Corrected test to mouseDown and assert data-state=active. This final correction has not been run."
+    },
+    "compile": "not run after failed suite",
+    "build": "not run by instruction; source freeze and native proof remain open",
+    "native": "not run; no localhost or browser used"
+  },
+  "open_action": "Two failed focused rounds exhausted this lane cap. A fresh lane must run the corrected combined suite under resource guard, compile if green, and obtain independent source/native review. Do not treat the prior SavedCaptures passes as final verification of the edited test file or D64/D65 as closed."
+}
