@@ -22,9 +22,11 @@
     "docs/stabilization/reports/prepare-source-audit.json",
     "docs/stabilization/reports/prepare-lifecycle-repair.json",
     "docs/stabilization/reports/document-identity-diagnosis.json",
-    "docs/stabilization/reports/document-identity-attack.json"
+    "docs/stabilization/reports/document-identity-attack.json",
+    "docs/stabilization/reports/document-identity-repair.json",
+    "docs/stabilization/reports/document-identity-partial-peer.json"
   ],
-  "verification_status": "Source diagnosis0e464b96 and independent contract attacke1376b12 confirm broader consumer gap. Implementation must cover live page-derived results across shared hook consumers, not only Prepare/Snapshot. Automated and native reproduction remain pending; no runtime launched.",
+  "verification_status": "Partial source checkpoints bb78e844/27aaaf96. Fresh peer180eacfa A PARTIAL/B FAIL_IMPORTANT: event provenance missing for Network/Data picker, Framework exact-document targeting missing, unresolved controls silently no-op. Integrated compile/newtests/native notverified. Corrections and remaining consumer migration required; remains in-fix.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",

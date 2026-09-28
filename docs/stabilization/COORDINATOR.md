@@ -10,6 +10,13 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest D59 implementation checkpoint — partial, peer rejected
+
+- Progress: Sol committed bb78e844 and27aaaf96: shared external-store document snapshot, core live-result consumers, SaveAsPattern/SEO/Data picker guards and authored A/B tests. No full-fix acceptance. Fresh source peer180eacfa A PARTIAL/B FAIL_IMPORTANT.
+- Next correction round must address all four findings in reports/document-identity-partial-peer.json: trusted SW sender.documentId on ordinary Network events; document+session-bound Data picker messages; exact documentId through Framework extension-run/read injections; shared visible identity/retry remedy for every migrated action currently no-oping. Then complete pending Scrape/Screenshots/Highlights/Showcase shell/App live context and fixture migration. Preserve historical URL/domain lookups.
+- Corrected runtime truth: d59-compile-1 passed before migration. d59-compile-2 was ADMITTED, child tsc exited1, resourceInvalidfalse; two typing errors subsequently corrected but uncompiled. Final journal incorrectly calls any nonzero child exit refused. This was NOT resource preflight refusal; D60 now tracks misleading verdict semantics. New A/B tests remain unrun.
+- Reports document-identity-repair.json and document-identity-partial-peer.json own current census/gaps. D59 remains in-fix; D57 fixed/native pending, D58 candidate awaiting build/native. Current artifact a8670bf7 lacks D58/D59. All workers terminal, no owned heavy/browser process remains. Next compile must use normal guard, not assume the mislabeled compiler failure proves resource rejection.
+
 ## Latest D59 diagnosis — shared repair scope confirmed
 
 - Progress: source diagnosis0e464b96 confirms sameURL replacement is invisible to existing id/URL/title useActiveTab. Existing canonical Chrome documentId usage was located in local-browser and document-network paths. Native remains unverified.
