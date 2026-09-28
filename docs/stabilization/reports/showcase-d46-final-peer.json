@@ -1,0 +1,47 @@
+{
+  "defect_id": "EXT-D-0046",
+  "review_lane": "fresh independent peer; zero production authorship",
+  "finding_from_prior_peer": {
+    "issue": "Connected Showcase tests mocked savePattern, so the production insert/fetch config mapping was not exercised.",
+    "verdict": "ADDRESSED",
+    "evidence": "tests/unit/showcase-json-path-query-roundtrip.test.ts imports actual savePattern and fetchPatternsForDomain. Its mock is at the Supabase client boundary; payload insert, returned-row fetch parsing, and Network/Framework runSavedPattern are production code. Each mode is exercised with ['feeds.news'] and ['feeds','news'] and the expected distinct Harbor Journal titles.",
+    "guarded_run": "node scripts/stabilization-resource.mjs run --run-id showcase-d46-peer-20260927 ... vitest ... query-roundtrip.test.ts: admitted; 1 file, 4 tests passed.",
+    "remaining_limit": "The fake Supabase client is not a live database/RLS test. It retains JSON-serialized inserted rows and returns those through the production fetch mapper."
+  },
+  "verdict_a_user_outcome": {
+    "result": "PARTIAL",
+    "evidence": "The real JsonTree connected tests exercise literal dotted key selection in Network and Framework and assert the preview and replay values. Guarded three-file run passed 3 files / 10 tests. Native installed development-build acceptance on a real public page, including save/reopen/replay, remains open; no user-seat result was observed.",
+    "cases": [
+      "Literal feeds.news and nested feeds/news remain distinct through tree selection, extraction, save configuration, query insert/fetch mapping, and Network/Framework replay.",
+      "Bracket-looking, indexed dotted, empty, and interior-empty keys are covered in path unit cases.",
+      "Legacy dotted strings retain consumer behavior in direct resolver tests; the round-trip cases are exact arrays."
+    ]
+  },
+  "verdict_b_source_and_test_quality": {
+    "result": "PASS_WITH_LIMITS",
+    "evidence": "Source uses arrays as exact path segments and keeps strings on legacy dotted semantics. The tree-connected guard validates selection and displayed extraction against distinct values. The query-roundtrip guard hits actual savePattern sanitization, the wbx_pattern insert mapping, fetchPatternsForDomain parsing, and saved replay; only external Supabase/capture I/O is replaced. Both guarded runs passed.",
+    "limits": [
+      "No return-expected mutation/sabotage was run in this peer lane; baseline wrong-value and sanitizer red evidence is recorded by the implementation report, not independently reproduced here.",
+      "The query mock verifies application serialization/mapping, not live database persistence, RLS, or network transport behavior.",
+      "The old dotted-string meaning is covered at resolver level but not by a saved-row legacy replay case in the new query-roundtrip test."
+    ]
+  },
+  "resource_permit": {
+    "terminal": true,
+    "runs": [
+      {"run_id":"showcase-d46-peer-20260927","admission":"RESOURCE_ADMITTED","result":"RESOURCE_JOB_EXIT childExitCode=0","tests":"1 file, 4 passed"},
+      {"run_id":"showcase-d46-peer-focused-20260927","admission":"RESOURCE_ADMITTED","result":"RESOURCE_JOB_EXIT childExitCode=0","tests":"3 files, 10 passed"}
+    ]
+  },
+  "files_reviewed": [
+    "src/lib/data-pattern/json-key-path.ts",
+    "src/components/ui/json-tree.tsx",
+    "src/features/showcase/tabs/NetworkTab.tsx",
+    "src/features/showcase/tabs/FrameworkTab.tsx",
+    "src/lib/supabase/queries.ts",
+    "tests/unit/showcase-json-key-path.test.tsx",
+    "tests/unit/showcase-json-path-connected.test.tsx",
+    "tests/unit/showcase-json-path-query-roundtrip.test.ts"
+  ],
+  "open_acceptance": "EXT-F-1012-T56 installed-build public-page acceptance remains open."
+}
