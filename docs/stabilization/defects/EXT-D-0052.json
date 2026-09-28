@@ -21,9 +21,11 @@
     "docs/stabilization/reports/showcase-nuxt-diagnosis.json",
     "docs/stabilization/reports/showcase-framework-native.json",
     "docs/stabilization/reports/showcase-nuxt-guarded-peer.json",
-    "docs/stabilization/reports/showcase-nuxt-guarded-build-receipt.json"
+    "docs/stabilization/reports/showcase-nuxt-guarded-build-receipt.json",
+    "docs/stabilization/reports/showcase-nuxt-native-retest.json",
+    "docs/stabilization/reports/showcase-nuxt-admitted-native.json"
   ],
-  "verification_status": "Fixed awaiting native explicitReload Nuxt tree/semanticpreview/save/replay/oldpathremedy on new canonicalartifact78ff463f. Guardedcausalred proof also open; do not close.",
+  "verification_status": "Fixed, native acceptance UNVERIFIED. Luna a229d1d5 observed corrected outputs but acted before resource admission: diagnostic only. Escalated Sol1a31e706 correctly waited and was refused pressure/swap preflight with zeroUI, exit2. No new native passes; retry only after changed resource state. Guardedcausalred proof also open.",
   "transition_history": [
     {
       "at": "2026-09-28T12:03:37.923717+00:00",
