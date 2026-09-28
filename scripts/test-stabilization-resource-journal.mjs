@@ -82,6 +82,7 @@ test('final verdict separates denied launch, invalid resources, failed child and
   // The wrapper's exit code alone cannot distinguish it from a denied launch.
   const cases = [
     [{ admitted: false, resourceInvalid: false, exitCode: 2 }, 'refused'],
+    [{ admitted: false, resourceInvalid: true, exitCode: 3 }, 'refused'],
     [{ admitted: true, resourceInvalid: true, exitCode: 3, childFinished: true }, 'invalid'],
     [{ admitted: true, resourceInvalid: false, exitCode: 1, childFinished: true }, 'child_failed'],
     [{ admitted: true, resourceInvalid: false, exitCode: 0, childFinished: true }, 'valid'],

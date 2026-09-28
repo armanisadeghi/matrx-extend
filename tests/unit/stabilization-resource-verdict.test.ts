@@ -4,6 +4,7 @@ import { resourceVerdict } from '../../scripts/stabilization-resource-verdict.mj
 describe('stabilization resource terminal verdict', () => {
   it.each([
     ['launch denied before admission', { admitted: false, resourceInvalid: false, exitCode: 2 }, 'refused'],
+    ['journal failure before admission', { admitted: false, resourceInvalid: true, exitCode: 3 }, 'refused'],
     ['unsafe admitted run', { admitted: true, resourceInvalid: true, exitCode: 3, childFinished: true }, 'invalid'],
     ['admitted compiler failure', { admitted: true, resourceInvalid: false, exitCode: 1, childFinished: true }, 'child_failed'],
     ['successful admitted command', { admitted: true, resourceInvalid: false, exitCode: 0, childFinished: true }, 'valid'],
