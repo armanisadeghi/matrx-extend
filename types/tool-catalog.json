@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T03:13:33.602Z",
+  "generated_at": "2026-09-28T04:07:38.973Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_chrome_categories",
@@ -6193,7 +6193,8 @@
               "signature_request",
               "subscription_propose",
               "entity_read",
-              "entity_write"
+              "entity_write",
+              "guide"
             ]
           },
           "availability": {
@@ -6499,6 +6500,10 @@
           },
           "title": {
             "type": "string"
+          },
+          "topic": {
+            "type": "string",
+            "default": null
           },
           "transitions": {
             "type": "array",

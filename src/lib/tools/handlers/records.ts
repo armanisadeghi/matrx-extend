@@ -53,6 +53,7 @@ const RECORD_ACTIONS = [
   'subscription_propose',
   'entity_read',
   'entity_write',
+  'guide',
 ] as const;
 
 const READ_ACTIONS = new Set<string>([
@@ -65,6 +66,10 @@ const READ_ACTIONS = new Set<string>([
 
 /** Workflows advertised by the platform but not implemented by this executor. */
 const UNSUPPORTED_BROWSER_ACTIONS = new Set<string>([
+  // The canonical guide prose is authored and served by the records agent on
+  // the server. Accept its shared contract here, but never pretend this
+  // browser executor has a second, stale copy of that source material.
+  'guide',
   'form_propose',
   'booking_propose',
   'import_propose',
@@ -175,6 +180,8 @@ const RecordsArgs = z.object({
   template_id: nullDefault(z.string()),
   thank_you: nullDefault(unknownObject()),
   title: z.string().optional(),
+  /** guide — the action whose server-authored guidance is requested. */
+  topic: nullDefault(z.string()),
   transitions: nullDefault(unknownArray()),
   trigger: nullDefault(z.string()),
   /** record_write — the document, keyed by field key. */

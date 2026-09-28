@@ -55,6 +55,22 @@ beforeEach(() => {
 });
 
 describe('registered records schema null defaults', () => {
+  it('accepts the canonical read-only guide action without opening the record store', async () => {
+    const handler = registeredRecords();
+    const parsed = handler.argsSchema.parse({ action: 'guide', topic: 'form_propose' }) as Record<
+      string,
+      unknown
+    >;
+
+    expect(parsed).toMatchObject({ action: 'guide', topic: 'form_propose' });
+    await expect(handler.run(parsed, context())).resolves.toMatchObject({
+      ok: false,
+      action: 'guide',
+      code: 'records_action_unavailable_in_chrome_extension',
+    });
+    expect(openRecordStore).not.toHaveBeenCalled();
+  });
+
   it('keeps the DB scalar-null-default catalog contract while validating null at runtime', () => {
     const recordsCatalog = buildToolCatalog().find((entry) => entry.name === 'records');
     const properties = (recordsCatalog?.input_schema as { properties?: Record<string, unknown> })
