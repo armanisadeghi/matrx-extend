@@ -149,6 +149,7 @@ export const CHANNELS = {
   //   sidepanel → content (chrome.tabs.sendMessage): mount + paint existing,
   //               or stop. Injected via chrome.scripting.executeScript first.
   HIGHLIGHT_PAINT: 'highlight:paint', // sidepanel → content: paint these existing highlights
+  HIGHLIGHT_START: 'highlight:start', // sidepanel → content: bind the mounted overlay to one live session
   HIGHLIGHT_STOP: 'highlight:stop', // sidepanel → content: unmount the overlay
   HIGHLIGHT_SET_MODE: 'highlight:set-mode', // sidepanel → content: switch text/element mode
   //   content → runtime (sidepanel capture bridge handles + writes to DB):

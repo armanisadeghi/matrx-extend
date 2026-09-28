@@ -1,0 +1,27 @@
+{
+  "id": "EXT-D-0059-highlight-session-correction",
+  "feature_id": "EXT-F-1010",
+  "scope": "Live Highlight overlay session start, stop, mode, sender admission, and same-URL reload/cross-tab races",
+  "policy": "One represented overlay is pinned to its initiating tab and document. Switching active tabs retains that representation and shows a Stop there control. Starting on another page explicitly retires the prior session. There is no automatic follow behavior in the source to preserve.",
+  "source_contradiction": "The old store represented one overlayTabId, but the old start path could leave another tab's overlay mounted. The old bridge claimed to mirror the live overlay even though it accepted any sender. The correction gives the representation one tabId, documentId, pageKey, URL, and unique sessionId and admits only that sender/session.",
+  "changes": [
+    "Publish a pending session before saved-highlight lookup and invalidate it on tab loading/removal; after each await require the same active page identity and session before publishing active state.",
+    "Target injection and control messages to the Chrome documentId; bind the content overlay with HIGHLIGHT_START and carry its sessionId through capture, clear, state, paint, stop, and mode.",
+    "Reject old-document, other-tab, and old-session messages at the side-panel bridge. Recheck capture admission after asynchronous organization and bearer resolution, immediately before database insertion.",
+    "Keep saved highlight URL/domain history and Data/Scrape handoffs unchanged."
+  ],
+  "verification": {
+    "targeted_tests": { "run_id": "highlight-session-tests-20260928-e", "result": "ADMITTED; 3 files, 11 tests passed; RESOURCE_FINAL_DECISION valid", "journal_sha256": "2bafd5e08d28c46c3cd6bf0bdb4936a2e9312cadba686a43f272fc84d11a8a33", "assertions": ["reload during lookup and during injection cannot publish stale active state", "starting tab B retires A and B receives mode/stop", "old tab/document/session state, capture, and clear are rejected", "injection and controls target the exact Chrome document", "capture after organization wait is refused before insert when the session changed"] },
+    "compile": { "run_id": "highlight-session-compile-20260928-b", "result": "ADMITTED; tsc --noEmit passed; RESOURCE_FINAL_DECISION valid", "journal_sha256": "b4e665bd783a7903a3aeb900b8009a9716f10ad44f887a380d266ae3487100ec" },
+    "earlier_admitted": [
+      { "run_id": "highlight-session-test-20260928-b", "result": "4 tests passed; valid", "journal_sha256": "3521e482cea0486324aa106f09e567fbe5ed315b6e2d91e00e5a156bdeef4b58" },
+      { "run_id": "highlight-session-test-20260928-c", "result": "5 tests passed; valid", "journal_sha256": "320cc692a226f6414d90bb493373ad4b8afd7b2d8efb96b8b001d27d3cd9c98c" },
+      { "run_id": "highlight-session-compile-20260928-a", "result": "tsc --noEmit passed; valid", "journal_sha256": "173a5f848eef787096fc1d5105e9873719ed68cb60b0cf1084c691367dae34c7" }
+    ],
+    "pre_admission_refusals": [
+      { "run_id": "highlight-session-test-20260928-a", "reason": "Vitest argument order was not allowed", "journal_sha256": "476872563df63d773e7ea196996ed415591f9158ce68aad26e241a885c006dc8" },
+      { "run_id": "highlight-session-tests-20260928-d", "reason": "Directory filter was not allowed; explicit test-file filters passed", "journal_sha256": "2c1407930d2e5bddf59dd4a941033a194ae2170d1597261d6f0984fe61388b40" }
+    ],
+    "limits": ["No native Chrome UI or build was run in this lane by assignment.", "The original pre-change behavior was source-traced but not executed red before implementation; the green connected tests cannot be claimed as observed original-red proof."]
+  }
+}
