@@ -44,8 +44,8 @@
     "Rerun CI to expose any later gate failure; all later steps in run 36379571405 are currently unmeasured."
   ],
   "latest_checkpoint": {
-    "run_id": 36399534388,
-    "commit": "80a64727139d46ece2e8d522573ab217b30850e8",
+    "run_id": 36405868022,
+    "commit": "02ceb1899219068880991be075789e0c95eb9ce7",
     "status": "completed",
     "conclusion": "failure",
     "first_failed_step": "Require canonical records reader",

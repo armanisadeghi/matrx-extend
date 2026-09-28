@@ -17,11 +17,12 @@
     "docs/stabilization/reports/showcase-discovery-empty-recovery.json",
     "docs/stabilization/reports/showcase-discovery-active-lifecycle.json",
     "docs/stabilization/reports/showcase-run-timestamp-peer.json",
-    "docs/stabilization/reports/showcase-run-timestamp-correction-peer.json"
+    "docs/stabilization/reports/showcase-run-timestamp-correction-peer.json",
+    "docs/stabilization/reports/showcase-run-timestamp-runtime.json"
   ],
   "severity": "S3: misleading run history undermines freshness and repeatability confirmation; extraction itself can succeed.",
   "priority": "P1: fix observed Showcase workflow defect during current stabilization.",
-  "state": "in-fix",
+  "state": "fixed",
   "transition_history": [
     {
       "from": null,
@@ -37,9 +38,15 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Assigned Sol medium showcase_run_timestamp; narrow class repair with regression then fresh peer/native retest required."
+    },
+    {
+      "at": "2026-09-28T10:20:06.546642+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent cf39a859 passes28tests/5files before and after actual race/boundary red mutations, restored source hashes, compile and direct development build. Fresh native persisted-history acceptance pending."
     }
   ],
-  "verification_status": "Fresh source peer6973c4d4 finds all3prior findings ADDRESSED and no new confirmed regression. A source PASS/native UNVERIFIED; B CONCERNS_UNVERIFIED because final focused suite, mutation proof, compile/build, shared zero-row/error branch and installed persistence remain unverified. Earlier21test suite red is not superseded. Correctionf65b020a runtime admission refused CPU_HIGH_LOAD_BUSY before launch. All agents/guards terminal; fresh safe admission required next.",
+  "verification_status": "Independent focused runtime PASS cf39a859; fresh artifact9ea6687b source8c162444 built and root rehashed. Original and corrected source peer findings addressed. Native displayed/persisted last_run_at remains unverified; Luna showcase_history_native owns sole browser permit for exact rebuilt artifact.",
   "closure_requirement": "Prove persistence/refresh race red then green, errors visible without hiding extracted rows, independent source review, and actual newly completed native saved replay updates run history.",
   "fix_commits": [
     "a011a682",
