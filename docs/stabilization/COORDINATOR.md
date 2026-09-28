@@ -10,6 +10,13 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest D59 diagnosis — shared repair scope confirmed
+
+- Progress: source diagnosis0e464b96 confirms sameURL replacement is invisible to existing id/URL/title useActiveTab. Existing canonical Chrome documentId usage was located in local-browser and document-network paths. Native remains unverified.
+- Independent contract attacke1376b12 rejects a Prepare/Snapshot-only migration: 21 hook instances can disagree and other live consumers retain saveable old-document results. Root accepts the broader single-snapshot repair scope in reports/document-identity-attack.json; URL/domain lookups remain intentionally separate.
+- Next implement D59 at shared identity boundary, with consumer census covering useExtraction detection/results, Prepare, Data/auto store, AI/pattern derivation, Showcase recipe/framework/list/pattern/Doctor state and ordinary network capture. Preserve session-specific approved replay contracts; explicit retry/remedy for unresolved identity, no silent disabled actions. No code yet; diagnosis corrected to forbid localhost native acceptance.
+- Resource observation15:42Z: load14.24 on10cores, internalvolume6.7GiB free. No new runtime launch. D58 integratedbuild remains refused; a8670bf7 remains historical. All workers terminal. Goal active; source repair is available despite runtime constraint.
+
 ## Latest integrated Prepare verification — tests pass, build refused
 
 - Progress: follow-up78041e16 covers reset late rejection and both older-rejection/newer-result orderings. Implementer9tests/compile pass; fresh peer3d01fcf1 independently accepted assertions and ran combined D57/D58:18tests passed. Root verified completed journal hashes and actual exit records.

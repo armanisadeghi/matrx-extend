@@ -6,7 +6,7 @@
     "EXT-F-1012-T09"
   ],
   "title": "Same-URL reload lacks document identity for page-result invalidation",
-  "surface": "Shared active-tab identity; Showcase Prepare and Snapshot",
+  "surface": "Shared active-tab document identity and live page-derived results",
   "auth_mode": "admin",
   "reproduction": [
     "Run Prepare or Snapshot on a page.",
@@ -21,9 +21,10 @@
   "evidence": [
     "docs/stabilization/reports/prepare-source-audit.json",
     "docs/stabilization/reports/prepare-lifecycle-repair.json",
-    "docs/stabilization/reports/document-identity-diagnosis.json"
+    "docs/stabilization/reports/document-identity-diagnosis.json",
+    "docs/stabilization/reports/document-identity-attack.json"
   ],
-  "verification_status": "Source-supported gap; needs controlled regression and native reproduction before triage. D58 does not claim to fix it.",
+  "verification_status": "Source diagnosis0e464b96 and independent contract attacke1376b12 confirm broader consumer gap. Implementation must cover live page-derived results across shared hook consumers, not only Prepare/Snapshot. Automated and native reproduction remain pending; no runtime launched.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",
@@ -37,5 +38,6 @@
       "to": "triaged",
       "reason": "Source trace confirms id/URL-only keys and identifies existing Chrome top-frame document-ID consumers; controlled/native reproduction still pending. Shared design requires race/consumer review before edits."
     }
-  ]
+  ],
+  "scope_ruling": "Use one shared top-frame identity snapshot; keep URL/domain persisted lookup semantics separate. Include detection, completed/pending rows, auto-extract cache, AI/pattern derivation and capture residue. Explicit recovery for unresolved identity; no null-equals-null page key. Preserve approved network-replay document contract."
 }
