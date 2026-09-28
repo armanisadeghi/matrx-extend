@@ -1,0 +1,29 @@
+# EXT-D-0049: initial-document Network discovery
+
+Status: proposed contract for independent review; no product edits yet.
+
+## Proven gap
+
+`use-network-capture.ts` starts its MAIN-world tap on an already loaded document. Its Reload action stops recording and destroys the tap. Saved Network replay uses `startDocumentNetworkCapture` to arm that same tap before reload. In the real HN Search case, manual selection captured a `prefixLast` search, while reload issued a semantically different `prefixNone` search. Exact request-body matching correctly refused replay. The previous diagnostic lacked a complete source/diff/artifact receipt, so the native boundary result remains a lead until repeated on a bound build.
+
+## Proposed integration
+
+1. Add an explicit **Capture page load** action to Network. Keep ordinary Start/Stop for interaction requests. The page-load action captures the current assigned top-frame document identity and URL before any approval, then asks through the existing `requestConfirmation` / persisted `PendingConfirm` / `SavedReplayApprovalHost` card with privileged tier. The dispatcher currently keeps `requestConfirmation` private and `data_patterns.prepare` covers saved runs only; use a narrowly scoped local prepared-operation entry within that dispatcher, with the existing `cdp_attach` handler's capability policy. Reuse `executePreparedOperation` to re-prepare and compare the tab/document/URL snapshot after approval. Denial, expiry, remount, route change, and tab switch attach nothing. No default debugger authorization or new remembered trust.
+1a. Make the shared prepared-operation approval preview a discriminated union: `saved-network-replay` retains recipe name and page URL; `network-page-load-discovery` carries the page URL and plainly says debugger attachment, reload and Network response capture. Persist that union in `PendingConfirm` and restore it in `SavedReplayApprovalHost`. `AgentApprovalCard` renders the correct wording and local initiator label for each, including its current generic “Your saved recipe” label. A service-worker restart during either local Port operation remains fail-closed with an expiry/remedy, never a resumed attach. Connected tests cover both cards, persistence/remount, denial, expiry and cancellation.
+2. Extend the existing `matrx:document-network-capture` SW-owned Port with a distinct local discovery operation. Accept only the extension's own non-tab sender; the request carries an operation kind and tab ID, never an approval bit, tap source, arbitrary URL, or caller-provided capture config. The SW resolves and validates current tab/document and runs the prepared approval itself. Stream only the existing whitelisted `CapturedNetEvent` fields plus capture/document identity and bounded status/progress through this Port. The sidepanel admits events only for the active discovery ID/tab and places them in the existing Network list/picker. Never forward raw request bodies, headers, or credentials.
+3. Run discovery through the existing `startDocumentNetworkCapture` document-start arm, `Page.reload`, main-frame/route/document checks, nonce, scoped CDP lease, bounded early buffer, teardown and exact-document hook cleanup. Add only a deliberate discovery completion window; cancel/Stop, Port disconnect, navigation, detach, failure, or timeout closes the capture and reports an honest terminal state. A successful window also closes before another capture. The existing manual Start and saved replay behavior stay separate consumers of the same primitive.
+4. Save continues to use the chosen response's exact URL, POST and request-body digest. `run-interactive.ts` keeps exact body comparison, no URL-only substitution or normalization of `queryType`.
+
+## Forcing acceptance
+
+- Connected regression first red then green: start page-load discovery on a document whose initial fetch is before a post-load tap; exercise real prepared approval and SW Port (stub only Chrome/CDP), verify exact initial event reaches the picker and a different body remains distinct. Denial/cancel/tab change must prevent attach or close its lease. A constant event or test-only relay must fail the guard.
+- Guarded compile and development build with source SHA, dirty diff SHA if any, lockfile SHA and output tree SHA recorded before native reload. The existing old output receipt is insufficient.
+- On the installed development extension in primary Chrome, reload that exact artifact; on real HN Search capture the settled OpenAI initial-document request, select and save its exact identity, leave/reopen Patterns, then replay twice. Each replay must return the visible matching rows with no ambiguity or debugger residue. Keep DevTools closed for lifecycle acceptance. A fresh healthy resource watch precedes each <=15-second UI batch; refusal/stop is inconclusive.
+
+No Supabase schema or registered tool-definition change is proposed. The owned product surface is `use-network-capture.ts`, `NetworkTab.tsx`, the existing document-network transport/capture and prepared local dispatch boundary, focused tests, and `docs/feature-tests.md`.
+
+## Review adjudication
+
+Independent contract review found the approval preview and initiator label were recipe-specific in the shared card. Confirmed in source. The discriminated preview, persisted propagation and two-path card tests above are required for truthful discovery approval; they do not expand the registered tool surface.
+
+Revised independent source review (`docs/stabilization/reports/showcase-initial-discovery-revised-peer.json`) accepts the repaired route binding, current Save gate, zero-response remedy, and dispatcher/Port/core test seam at source level. Its limit is explicit: the connected test cancels on the first event and cannot establish normal completion or database persistence. Resource admission refused the updated test run, so neither test execution nor installed Chrome behavior is claimed by this plan.

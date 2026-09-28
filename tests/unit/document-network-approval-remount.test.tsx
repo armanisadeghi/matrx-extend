@@ -31,7 +31,7 @@ it('remount restores a pending local request and can send a terminal answer', as
       expiresAt: Date.now() + 1000,
       preparedOperation: {
         delivery: 'local',
-        approvalPreview: { recipeName: 'Events', pageUrl: 'https://calendar.invalid/calendar' },
+        approvalPreview: { kind: 'saved-network-replay', recipeName: 'Events', pageUrl: 'https://calendar.invalid/calendar' },
       },
     },
   ]);
@@ -69,4 +69,25 @@ it('worker restart expiry is visible and removes the recovered card', async () =
   });
   expect((await screen.findByRole('status')).textContent).toContain('connection ended');
   expect(screen.queryByText('data_patterns')).toBeNull();
+});
+it('restores a page-load discovery approval with truthful debugger and reload scope', async () => {
+  h.list.mockResolvedValue([{
+    callId: 'discovery',
+    toolName: 'cdp_attach',
+    args: { tab_id: 37 },
+    effectiveTier: 'privileged',
+    expiresAt: Date.now() + 1000,
+    preparedOperation: {
+      delivery: 'local',
+      approvalPreview: {
+        kind: 'network-page-load-discovery',
+        pageUrl: 'https://calendar.invalid/calendar',
+      },
+    },
+  }]);
+  render(<SavedReplayApprovalHost signedIn />);
+  expect(await screen.findByText('Capture this page load')).toBeTruthy();
+  expect(screen.getByText(/captures its Network responses for you to inspect/)).toBeTruthy();
+  expect(screen.getByText('Your page-load capture')).toBeTruthy();
+  expect(screen.queryByText(/Saved Network recipe:/)).toBeNull();
 });

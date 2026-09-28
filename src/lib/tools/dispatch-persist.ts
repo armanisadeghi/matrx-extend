@@ -22,7 +22,7 @@
  */
 
 import { log } from '@/lib/debug/log';
-import type { ConfirmInitiator, SavedNetworkReplayApproval, ToolTier } from '@/lib/tools/types';
+import type { ConfirmInitiator, NetworkCaptureApprovalPreview, ToolTier } from '@/lib/tools/types';
 
 const RUNS_KEY = 'matrx.dispatch.runs';
 const CONFIRMS_KEY = 'matrx.dispatch.pendingConfirms';
@@ -62,7 +62,7 @@ export interface PersistedPendingConfirm {
   preparedOperation?: {
     snapshotKey: string;
     delivery: 'agent' | 'local';
-    approvalPreview?: SavedNetworkReplayApproval;
+    approvalPreview?: NetworkCaptureApprovalPreview;
   };
   initiator: ConfirmInitiator;
   /** Absolute deadline — mirrors the in-memory 5-minute timeout. */

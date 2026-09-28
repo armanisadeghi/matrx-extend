@@ -147,7 +147,7 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
     return {
       snapshotKey,
       tier: 'privileged',
-      approvalPreview: { recipeName: pattern.name, pageUrl: sanitizeNetworkUrl(tab.url) },
+      approvalPreview: { kind: 'saved-network-replay', recipeName: pattern.name, pageUrl: sanitizeNetworkUrl(tab.url) },
       requirements: {
         ...(cdp_attach.admin_only !== undefined && { admin_only: cdp_attach.admin_only }),
         ...(cdp_attach.required_optional_permissions && {

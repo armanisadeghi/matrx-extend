@@ -83,6 +83,7 @@ import { lookupCapturedByUrl } from '@/lib/supabase/queries';
 import {
   handleWebmcpCall,
   recordAssignedTab,
+  runLocalNetworkDiscovery,
   runLocalSavedPattern,
   startToolDispatcher,
 } from '@/lib/tools/dispatch';
@@ -540,7 +541,7 @@ function registerHandlers(): void {
   });
 
   registerListPickerRelays();
-  registerDocumentNetworkCaptureHost(runLocalSavedPattern);
+  registerDocumentNetworkCaptureHost(runLocalSavedPattern, runLocalNetworkDiscovery);
 
   // Demo recording: in-page event-capture function calls
   // chrome.runtime.sendMessage with a DEMO_EVENT envelope. We forward to

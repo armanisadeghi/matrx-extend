@@ -65,7 +65,7 @@ import type {
   ConfirmInitiator,
   ConfirmResponse,
   PendingConfirmRequest,
-  SavedNetworkReplayApproval,
+  NetworkCaptureApprovalPreview,
   ToolContext,
   ToolTier,
 } from '@/lib/tools/types';
@@ -1136,7 +1136,7 @@ async function requestConfirmation(
     preparedOperation?: {
       snapshotKey: string;
       delivery: 'agent' | 'local';
-      approvalPreview?: SavedNetworkReplayApproval;
+      approvalPreview?: NetworkCaptureApprovalPreview;
     };
   },
 ): Promise<ConfirmResult> {
@@ -1778,4 +1778,126 @@ export async function runLocalSavedPattern(
   await checkOperationRequirements(handler, parsed, ctx, resolveToolTier(handler, parsed));
   if (signal.aborted) throw new Error('Replay cancelled.');
   return handler.run(parsed, ctx);
+}
+
+/** User-started page-load discovery, owned by the same privileged dispatcher as saved replay. */
+export async function runLocalNetworkDiscovery(
+  tabId: number,
+  signal: AbortSignal,
+  onEvent: (event: import('@/lib/data-pattern/network-tap').CapturedNetEvent) => void,
+  progress: (note: string) => void,
+): Promise<{ ok: true; pageUrl: string; documentId: string; eventCount: number }> {
+  const handler = lookupTool('cdp_attach');
+  if (!handler) throw new Error('Chrome debugger capability is unavailable.');
+  const args = handler.argsSchema.parse({ tab_id: tabId });
+  const ctx: ToolContext = {
+    callId: crypto.randomUUID(),
+    runId: crypto.randomUUID(),
+    conversationId: null,
+    agentName: null,
+    permissionMode: 'act',
+    assignedTabId: tabId,
+    localInvocation: true,
+  };
+  let approvalPreview: NetworkCaptureApprovalPreview | undefined;
+  const prepare = async (): Promise<PreparedOperation<{ ok: true; pageUrl: string; documentId: string; eventCount: number }>> => {
+    const [active] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (active?.id !== tabId || !active.url)
+      throw new Error('The selected page changed. Start page-load capture again.');
+    const [frame] = await chrome.scripting.executeScript({
+      target: { tabId },
+      func: () => null,
+    });
+    if (!frame?.documentId)
+      throw new Error('Chrome did not provide source document identity. Try again in Chrome.');
+    const page = { url: active.url, documentId: frame.documentId };
+    const bytes = new TextEncoder().encode(JSON.stringify([tabId, page.url, page.documentId]));
+    const digest = await crypto.subtle.digest('SHA-256', bytes);
+    const snapshotKey = Array.from(new Uint8Array(digest), (b) =>
+      b.toString(16).padStart(2, '0'),
+    ).join('');
+    const preview: NetworkCaptureApprovalPreview = {
+      kind: 'network-page-load-discovery',
+      pageUrl: (await import('@/lib/credentials/network-urls')).sanitizeNetworkUrl(page.url),
+    };
+    approvalPreview ??= preview;
+    return {
+      identity: {
+        toolName: handler.name,
+        callId: ctx.callId,
+        runId: ctx.runId,
+        assignedTabId: tabId,
+        snapshotKey,
+      },
+      tier: 'privileged',
+      approvalPreview: preview,
+      checkRequirements: () => checkOperationRequirements(handler, args, ctx, 'privileged'),
+      run: async (runSignal) => {
+        const { openDocumentNetworkCapture } = await import(
+          '@/lib/data-pattern/document-network-transport'
+        );
+        const windowMs = 20_000;
+        let eventCount = 0;
+        let finish!: () => void;
+        let fail!: (error: Error) => void;
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        const windowDone = new Promise<void>((resolve, reject) => {
+          finish = resolve;
+          fail = reject;
+        });
+        // A setup failure can reject before the capture handle is returned.
+        // The awaited setup error remains primary; observe this sibling promise.
+        void windowDone.catch(() => undefined);
+        const abort = () => fail(new Error('Page-load capture was cancelled.'));
+        runSignal.addEventListener('abort', abort, { once: true });
+        progress('Preparing page-load capture before reloading…');
+        let capture: Awaited<ReturnType<typeof openDocumentNetworkCapture>> | undefined;
+        try {
+          capture = await openDocumentNetworkCapture({
+            tabId,
+            captureId: crypto.randomUUID(),
+            maxBodyBytes: 1_000_000,
+            timeoutMs: windowMs,
+            expectedPage: page,
+            signal: runSignal,
+            onEvent: (event) => {
+              eventCount += 1;
+              onEvent(event);
+            },
+            onFailure: fail,
+            onArmed: () => {
+              progress('Listening in the reloaded document…');
+              timer = setTimeout(finish, windowMs);
+            },
+          });
+          await windowDone;
+          if (eventCount === 0)
+            throw new Error('No fetch/XHR responses appeared during this page load. Try the page interaction after Start capture, or run page-load capture again.');
+          return { ok: true, pageUrl: page.url, documentId: page.documentId, eventCount };
+        } finally {
+          if (timer !== undefined) clearTimeout(timer);
+          runSignal.removeEventListener('abort', abort);
+          await capture?.close();
+        }
+      },
+    };
+  };
+  return executePreparedOperation({
+    permissionMode: 'act',
+    signal,
+    prepare,
+    confirm: async (identity, tier, abortSignal) =>
+      (
+        await requestConfirmation(handler, args, ctx, undefined, {
+          effectiveTier: tier,
+          initiator: 'extension',
+          signal: abortSignal,
+          preparedOperation: {
+            snapshotKey: identity.snapshotKey,
+            delivery: 'local',
+            ...(approvalPreview && { approvalPreview }),
+          },
+        })
+      ).allow,
+  });
 }

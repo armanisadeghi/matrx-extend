@@ -3,6 +3,7 @@ import type { CapturedNetEvent } from './network-tap';
 
 const PORT = 'matrx:document-network-capture';
 type Event = CapturedNetEvent & { capture_id: string; document_key: string };
+type DiscoveryResult = { ok: true; pageUrl: string; documentId: string; eventCount: number };
 interface Request {
   tabId: number;
   captureId: string;
@@ -23,6 +24,12 @@ type SavedPatternRunner = (
   patternId: string,
   tabId: number,
   signal: AbortSignal,
+  progress: (note: string) => void,
+) => Promise<unknown>;
+type DiscoveryRunner = (
+  tabId: number,
+  signal: AbortSignal,
+  onEvent: (event: CapturedNetEvent) => void,
   progress: (note: string) => void,
 ) => Promise<unknown>;
 const active = new Map<number, AbortController>();
@@ -101,7 +108,10 @@ export function openDocumentNetworkCapture(options: Options): Promise<Capture> {
   return startOwned(options);
 }
 
-export function registerDocumentNetworkCaptureHost(runLocalSavedPattern: SavedPatternRunner): void {
+export function registerDocumentNetworkCaptureHost(
+  runLocalSavedPattern: SavedPatternRunner,
+  runLocalNetworkDiscovery?: DiscoveryRunner,
+): void {
   chrome.runtime.onConnect.addListener((port) => {
     if (port.name !== PORT || port.sender?.id !== chrome.runtime.id || port.sender.tab) return;
     let started = false;
@@ -119,8 +129,29 @@ export function registerDocumentNetworkCaptureHost(runLocalSavedPattern: SavedPa
         controller.abort();
         return;
       }
-      if (message.kind !== 'run' || started) return;
+      if ((message.kind !== 'run' && message.kind !== 'discover') || started) return;
       started = true;
+      if (message.kind === 'discover') {
+        if (!runLocalNetworkDiscovery || !Number.isInteger(message.tabId)) {
+          reply({ kind: 'error', message: 'Invalid page-load discovery request.' });
+          return;
+        }
+        void Promise.resolve()
+          .then(() =>
+            runLocalNetworkDiscovery(
+              message.tabId!,
+              controller.signal,
+              (event) => reply({ kind: 'event', event }),
+              (note) => reply({ kind: 'progress', note }),
+            ),
+          )
+          .then(
+            (result) => reply({ kind: 'result', result }),
+            (error) =>
+              reply({ kind: 'error', message: error instanceof Error ? error.message : String(error) }),
+          );
+        return;
+      }
       if (typeof message.patternId !== 'string' || !Number.isInteger(message.tabId)) {
         reply({ kind: 'error', message: 'Invalid saved replay request.' });
         return;
@@ -143,6 +174,56 @@ export function registerDocumentNetworkCaptureHost(runLocalSavedPattern: SavedPa
             }),
         );
     });
+  });
+}
+
+/** The port owns cancellation for both approval wait and document capture. */
+export function openNetworkPageLoadDiscovery(
+  tabId: number,
+  options: {
+    signal?: AbortSignal;
+    onEvent: (event: Event) => void;
+    onProgress?: (note: string) => void;
+  },
+): Promise<DiscoveryResult> {
+  return new Promise<DiscoveryResult>((resolve, reject) => {
+    const port = chrome.runtime.connect({ name: PORT });
+    let settled = false;
+    const finish = (error: Error | null, result?: DiscoveryResult) => {
+      if (settled) return;
+      settled = true;
+      options.signal?.removeEventListener('abort', abort);
+      port.disconnect();
+      if (error) reject(error);
+      else if (result) resolve(result);
+      else reject(new Error('Page-load capture ended without a result.'));
+    };
+    const abort = () => {
+      port.postMessage({ kind: 'cancel' });
+      finish(new Error('Page-load capture cancelled.'));
+    };
+    port.onMessage.addListener((message) => {
+      if (settled) return;
+      if (message.kind === 'event') {
+        const event = message.event as Event;
+        if (event?.tab_id === tabId && typeof event.capture_id === 'string')
+          options.onEvent(event);
+      } else if (message.kind === 'progress') options.onProgress?.(String(message.note));
+      else if (message.kind === 'result') {
+        const result = message.result as Record<string, unknown> | null;
+        if (result?.ok !== true || typeof result.pageUrl !== 'string' ||
+            typeof result.documentId !== 'string' || !Number.isSafeInteger(result.eventCount))
+          finish(new Error('Page-load capture returned incomplete document identity. Try again.'));
+        else finish(null, result as DiscoveryResult);
+      }
+      else if (message.kind === 'error') finish(new Error(String(message.message)));
+    });
+    port.onDisconnect.addListener(() =>
+      finish(new Error('The page-load capture connection ended. Start it again.')),
+    );
+    options.signal?.addEventListener('abort', abort, { once: true });
+    if (options.signal?.aborted) return abort();
+    port.postMessage({ kind: 'discover', tabId });
   });
 }
 export function openSavedPatternOperation(

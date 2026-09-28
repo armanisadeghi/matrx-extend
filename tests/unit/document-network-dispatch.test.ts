@@ -8,6 +8,7 @@ const h = vi.hoisted(() => ({
   group: -1,
   document: 'original-document',
   url: 'https://calendar.invalid/calendar',
+  capture: vi.fn(),
 }));
 vi.mock('@/lib/messaging/native', () => ({
   on: (kind: string, fn: (p: any) => unknown) => {
@@ -26,9 +27,10 @@ vi.mock('@/lib/messaging/native', () => ({
 }));
 vi.mock('@/lib/tools/registry', async () => {
   const { data_patterns } = await import('@/lib/tools/handlers/data-patterns');
+  const { cdp_attach } = await import('@/lib/tools/handlers/cdp');
   return {
-    lookup: (name: string) => (name === 'data_patterns' ? data_patterns : undefined),
-    allToolNames: () => ['data_patterns'],
+    lookup: (name: string) => name === 'data_patterns' ? data_patterns : name === 'cdp_attach' ? cdp_attach : undefined,
+    allToolNames: () => ['data_patterns', 'cdp_attach'],
   };
 });
 vi.mock('@/lib/supabase/queries', () => ({
@@ -54,10 +56,15 @@ vi.mock('@/lib/data-pattern/run-interactive', () => ({
 }));
 vi.mock('@/lib/tools/handlers/cdp', () => ({
   cdp_attach: {
+    name: 'cdp_attach',
+    argsSchema: { parse: (value: unknown) => value },
     admin_only: true,
     supportedBrowsers: ['chrome'],
     required_optional_permissions: ['debugger'],
   },
+}));
+vi.mock('@/lib/data-pattern/document-network-transport', () => ({
+  openDocumentNetworkCapture: (...args: unknown[]) => h.capture(...args),
 }));
 vi.mock('@/lib/auth/is-admin', () => ({ readIsAdminFromStorage: async () => h.admin }));
 vi.mock('@/lib/permissions/optional', () => ({
@@ -89,6 +96,17 @@ beforeEach(() => {
   h.handlers.clear();
   h.broadcasts.mockClear();
   h.run.mockReset().mockResolvedValue([{ event: 'Current' }]);
+  h.capture.mockReset().mockImplementation(async (options) => {
+    options.onArmed();
+    options.onEvent({
+      tab_id: 37, capture_id: options.captureId, document_key: 'new-document',
+      source: 'fetch', url: 'https://calendar.invalid/api/events', method: 'POST',
+      request_body_key: 'sha256:' + 'a'.repeat(64),
+      status: 200, ts_ms: 1, body: '{"events":[{"name":"Opening night"}]}',
+      body_size: 38, body_truncated: false,
+    });
+    return { close: vi.fn(async () => {}) };
+  });
   h.post.mockReset().mockResolvedValue({ ok: true });
   h.admin = true;
   h.group = -1;
@@ -104,7 +122,10 @@ beforeEach(() => {
     },
   });
   Object.assign(chrome, {
-    tabs: { get: vi.fn(async () => ({ id: 37, groupId: 1, url: h.url })) },
+    tabs: {
+      get: vi.fn(async () => ({ id: 37, groupId: 1, url: h.url })),
+      query: vi.fn(async () => [{ id: 37, groupId: 1, url: h.url }]),
+    },
     scripting: { executeScript: vi.fn(async () => [{ documentId: h.document, result: null }]) },
   });
 });
@@ -186,6 +207,77 @@ it('real denial response cannot start capture', async () => {
   emit(CHANNELS.TOOL_CONFIRM_RESPONSE, { callId: request.callId, decision: 'deny' });
   await rejected;
   expect(h.run).not.toHaveBeenCalled();
+});
+
+it('page-load discovery requires its own approval before delivering the initial response', async () => {
+  const dispatch = await import('@/lib/tools/dispatch');
+  dispatch.startToolDispatcher({ defaultPermissionMode: () => 'act' });
+  const controller = new AbortController();
+  const events: unknown[] = [];
+  const result = dispatch.runLocalNetworkDiscovery(37, controller.signal, (event) => events.push(event), () => {});
+  const rejected = expect(result).rejects.toThrow('cancelled');
+  await vi.waitFor(() => expect(h.broadcasts.mock.calls.some((call) =>
+    call[0] === CHANNELS.TOOL_CONFIRM_REQUEST)).toBe(true));
+  const request = h.broadcasts.mock.calls.find((call) => call[0] === CHANNELS.TOOL_CONFIRM_REQUEST)![1];
+  expect(request.tier).toBe('privileged');
+  expect(request.approvalPreview).toMatchObject({
+    kind: 'network-page-load-discovery', pageUrl: h.url,
+  });
+  expect(h.capture).not.toHaveBeenCalled();
+  emit(CHANNELS.TOOL_CONFIRM_RESPONSE, { callId: request.callId, decision: 'allow' });
+  await vi.waitFor(() => expect(events).toHaveLength(1));
+  expect(events[0]).toMatchObject({
+    document_key: 'new-document',
+    request_body_key: 'sha256:' + 'a'.repeat(64),
+  });
+  expect(h.capture.mock.calls[0]![0].expectedPage).toEqual({ url: h.url, documentId: 'original-document' });
+  controller.abort();
+  await rejected;
+});
+
+it('page-load discovery denial or document replacement never arms Chrome capture', async () => {
+  const dispatch = await import('@/lib/tools/dispatch');
+  dispatch.startToolDispatcher({ defaultPermissionMode: () => 'act' });
+  const denied = dispatch.runLocalNetworkDiscovery(37, new AbortController().signal, () => {}, () => {});
+  const deniedCheck = expect(denied).rejects.toThrow('denied');
+  await vi.waitFor(() => expect(h.broadcasts.mock.calls.some((call) =>
+    call[0] === CHANNELS.TOOL_CONFIRM_REQUEST)).toBe(true));
+  let request = h.broadcasts.mock.calls.find((call) => call[0] === CHANNELS.TOOL_CONFIRM_REQUEST)![1];
+  emit(CHANNELS.TOOL_CONFIRM_RESPONSE, { callId: request.callId, decision: 'deny' });
+  await deniedCheck;
+  expect(h.capture).not.toHaveBeenCalled();
+  h.broadcasts.mockClear();
+  const changed = dispatch.runLocalNetworkDiscovery(37, new AbortController().signal, () => {}, () => {});
+  const changedCheck = expect(changed).rejects.toThrow('changed');
+  await vi.waitFor(() => expect(h.broadcasts.mock.calls.some((call) =>
+    call[0] === CHANNELS.TOOL_CONFIRM_REQUEST)).toBe(true));
+  request = h.broadcasts.mock.calls.find((call) => call[0] === CHANNELS.TOOL_CONFIRM_REQUEST)![1];
+  h.document = 'replacement-document';
+  emit(CHANNELS.TOOL_CONFIRM_RESPONSE, { callId: request.callId, decision: 'allow' });
+  await changedCheck;
+  expect(h.capture).not.toHaveBeenCalled();
+});
+
+it('page-load discovery with no responses ends with a usable remedy', async () => {
+  h.capture.mockImplementation(async (options) => {
+    options.onArmed();
+    return { close: vi.fn(async () => {}) };
+  });
+  const dispatch = await import('@/lib/tools/dispatch');
+  dispatch.startToolDispatcher({ defaultPermissionMode: () => 'act' });
+  const result = dispatch.runLocalNetworkDiscovery(37, new AbortController().signal, () => {}, () => {});
+  const rejected = expect(result).rejects.toThrow(/No fetch\/XHR responses.*Try the page interaction/);
+  await vi.waitFor(() => expect(h.broadcasts.mock.calls.some((call) =>
+    call[0] === CHANNELS.TOOL_CONFIRM_REQUEST)).toBe(true));
+  const request = h.broadcasts.mock.calls.find((call) => call[0] === CHANNELS.TOOL_CONFIRM_REQUEST)![1];
+  vi.useFakeTimers();
+  try {
+    emit(CHANNELS.TOOL_CONFIRM_RESPONSE, { callId: request.callId, decision: 'allow' });
+    await vi.advanceTimersByTimeAsync(20_000);
+    await rejected;
+  } finally {
+    vi.useRealTimers();
+  }
 });
 
 it.each(['admin', 'pilot', 'document', 'route'])(

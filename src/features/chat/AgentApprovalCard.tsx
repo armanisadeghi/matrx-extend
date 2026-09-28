@@ -22,7 +22,7 @@ import { useMemo, useState } from 'react';
  * their own assistant asked for it.
  */
 const EXTERNAL_INITIATOR_LABELS: Partial<Record<ConfirmInitiator, string>> = {
-  extension: 'Your saved recipe',
+  extension: 'Your extension action',
   page: 'Requested by the web page you have open — NOT by your agent.',
   frontend: 'Requested by aimatrx.com — NOT by your agent in this chat.',
   desktop: 'Requested by the Matrx desktop app — NOT by your agent in this chat.',
@@ -69,7 +69,11 @@ export function AgentApprovalCard({
       {externalLabel && (
         <div className="mb-2 flex items-start gap-1.5 rounded-md border border-rose-300/70 bg-rose-50/80 px-2 py-1.5 text-[11px] font-medium text-rose-800 dark:border-rose-700/60 dark:bg-rose-950/40 dark:text-rose-300">
           <Globe className="mt-px size-3.5 shrink-0" />
-          {externalLabel}
+          {req.initiator === 'extension' && req.approvalPreview
+            ? req.approvalPreview.kind === 'saved-network-replay'
+              ? 'Your saved recipe'
+              : 'Your page-load capture'
+            : externalLabel}
         </div>
       )}
       <div className="flex items-start gap-2">
@@ -99,11 +103,16 @@ export function AgentApprovalCard({
 
       {req.approvalPreview && (
         <div className="mt-2 rounded-md border border-amber-300/70 bg-background/60 p-2 text-xs dark:border-amber-700/60">
-          <div className="font-medium">Saved Network recipe: {req.approvalPreview.recipeName}</div>
+          <div className="font-medium">
+            {req.approvalPreview.kind === 'saved-network-replay'
+              ? `Saved Network recipe: ${req.approvalPreview.recipeName}`
+              : 'Capture this page load'}
+          </div>
           <div className="mt-1 break-all">Page: {req.approvalPreview.pageUrl}</div>
           <div className="mt-1">
-            Allowing this uses Chrome debugger, reloads this page, and captures matching Network
-            responses.
+            {req.approvalPreview.kind === 'saved-network-replay'
+              ? 'Allowing this uses Chrome debugger, reloads this page, and captures matching Network responses.'
+              : 'Allowing this uses Chrome debugger, reloads this page, and captures its Network responses for you to inspect.'}
           </div>
         </div>
       )}

@@ -21,8 +21,10 @@ import { SaveAsPattern } from '../components/SaveAsPattern';
 const isJsonContentType = (ct: string | undefined): boolean => !!ct && /json/.test(ct);
 
 export function NetworkTab() {
-  const { capturing, events, error, installed, start, stop, reload, clear, source, dropped } =
-    useNetworkCapture();
+  const {
+    capturing, discovering, discoveryProgress, events, error,
+    start, capturePageLoad, stop, reload, clear, source, dropped,
+  } = useNetworkCapture();
   const [filter, setFilter] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<CapturedNetEvent | null>(null);
   const [extractKeyPath, setExtractKeyPath] = useState<string[]>([]);
@@ -109,12 +111,12 @@ export function NetworkTab() {
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {!capturing ? (
             <Button
               onClick={() => void start()}
               className="flex-1 rounded-full"
-              disabled={!installed && capturing}
+              disabled={discovering}
             >
               <Circle className="size-3.5 fill-red-500 text-red-500" />
               Start capture
@@ -125,6 +127,15 @@ export function NetworkTab() {
               Stop
             </Button>
           )}
+          <Button
+            onClick={() => void capturePageLoad()}
+            variant="secondary"
+            disabled={capturing || discovering}
+            title="Ask to use Chrome debugger, reload this page, and capture requests from document start"
+            className="min-w-0"
+          >
+            Capture page load
+          </Button>
           <Button
             variant="ghost"
             size="icon"
@@ -152,8 +163,19 @@ export function NetworkTab() {
           </div>
         )}
 
+        {discovering && (
+          <div role="status" className="rounded-xl bg-secondary/40 px-3 py-2 text-xs">
+            {discoveryProgress ?? 'Capturing page load…'}{' '}
+            <Button onClick={stop} variant="ghost" size="sm">Stop</Button>
+          </div>
+        )}
+
         <div className="rounded-xl bg-secondary/40 px-3 py-2 text-xs text-muted-foreground">
-          {capturing ? (
+          {discovering ? (
+            <span className="text-emerald-700 dark:text-emerald-400">
+              ● page load — {events.length} response{events.length === 1 ? '' : 's'} captured
+            </span>
+          ) : capturing ? (
             <span className="text-emerald-700 dark:text-emerald-400">
               ● recording — {events.length} response{events.length === 1 ? '' : 's'} captured
             </span>
@@ -333,7 +355,7 @@ export function NetworkTab() {
         {extractedRows && (
           <>
             <ResultPreview rows={extractedRows} />
-            {extractedRows.length > 0 && selected && (
+            {extractedRows.length > 0 && selected && source && !discovering && (
               <div className="flex justify-end">
                 <SaveAsPattern
                   kind="network_capture"

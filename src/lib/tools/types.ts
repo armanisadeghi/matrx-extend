@@ -62,7 +62,7 @@ export interface ToolProgressUpdate {
 export interface PreparedToolCall {
   snapshotKey: string;
   tier: ToolTier;
-  approvalPreview?: SavedNetworkReplayApproval;
+  approvalPreview?: NetworkCaptureApprovalPreview;
   requirements: {
     admin_only?: boolean;
     required_optional_permissions?: string[];
@@ -71,11 +71,10 @@ export interface PreparedToolCall {
   run(signal: AbortSignal): Promise<unknown>;
 }
 
-/** Context shown on the privileged saved Network approval, never used as authority. */
-export interface SavedNetworkReplayApproval {
-  recipeName: string;
-  pageUrl: string;
-}
+/** Context shown on a privileged Network approval; never used as authority. */
+export type NetworkCaptureApprovalPreview =
+  | { kind: 'saved-network-replay'; recipeName: string; pageUrl: string }
+  | { kind: 'network-page-load-discovery'; pageUrl: string };
 
 export interface ToolContext {
   /** Created only by the authenticated extension-page dispatcher. */
@@ -215,7 +214,7 @@ export interface PendingConfirmRequest {
    * name + args.
    */
   description?: string | undefined;
-  approvalPreview?: SavedNetworkReplayApproval;
+  approvalPreview?: NetworkCaptureApprovalPreview;
   /** Args the agent supplied — surfaced verbatim so the user sees what's about to happen. */
   args: unknown;
   /**

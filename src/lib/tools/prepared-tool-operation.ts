@@ -2,7 +2,7 @@
  * Only dispatcher-owned code constructs Boundary; no member crosses a port.
  * The approval identity is the real data_patterns call and immutable operation.
  */
-import type { SavedNetworkReplayApproval, ToolTier } from './types';
+import type { NetworkCaptureApprovalPreview, ToolTier } from './types';
 export interface OperationIdentity {
   toolName: string;
   callId: string;
@@ -13,7 +13,7 @@ export interface OperationIdentity {
 export interface PreparedOperation<T> {
   identity: OperationIdentity;
   tier: ToolTier;
-  approvalPreview?: SavedNetworkReplayApproval;
+  approvalPreview?: NetworkCaptureApprovalPreview;
   /** Calls existing admin/browser/permission/Pilot checks with resolved policy. */
   checkRequirements(): Promise<void>;
   run(signal: AbortSignal): Promise<T>;
