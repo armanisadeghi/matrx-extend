@@ -26,9 +26,13 @@
     "docs/stabilization/reports/document-identity-repair.json",
     "docs/stabilization/reports/document-identity-partial-peer.json",
     "docs/stabilization/reports/document-identity-correction.json",
-    "docs/stabilization/reports/document-correction-escalation.json"
+    "docs/stabilization/reports/document-correction-escalation.json",
+    "docs/stabilization/reports/document-handoff-correction.json",
+    "docs/stabilization/reports/document-handoff-peer.json",
+    "docs/stabilization/reports/document-handoff-restored-runtime.json",
+    "docs/stabilization/reports/document-remaining-census.json"
   ],
-  "verification_status": "Corrections 858dfd8f/140d99c7 independently checked in 9e5db722: original four findings addressed at source/focused-guard level, 27 tests and compile passed. A PARTIAL/B FAIL_IMPORTANT: Highlight-to-Data save loses provenance and obsolete picker rejection clears the current session. Sol correction assigned; native, broader consumer migration and catalog regeneration pending. Remains in-fix.",
+  "verification_status": "4926e1c1 corrects Highlight-to-Data provenance and obsolete picker failure. Builder15tests/compile pass and controlled mutation2expected failures. Fresh Sol e0002aa8 post-restoration15/15 pass, valid resource journal. Peer3cfd8d63 and Sol independently confirm another save race: identity checked before awaited organization resolution, not again before savePattern. Next correction requires current-document check after await and deferred-org/reload regression. Native/broad migration/catalog/build remain pending; in-fix.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",

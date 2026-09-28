@@ -10,6 +10,13 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest D59 handoff checkpoint — corrected, further save race confirmed
+
+- 4926e1c1 fixes Highlight-to-Data provenance and obsolete picker injection failure. Builder15 tests/compile passed; two-behavior mutation made two expected regressions fail. Root verified four completed journal hashes. Independent Sol e0002aa8 freshly ran restored source:15/15 pass, admitted/valid, resourceInvalidfalse; journal b6abe3198fb93b16d0231964d5879d954b17f2f446eec71b1a2b70d151179f90.
+- Fresh peer3cfd8d63 and Sol independently confirm remaining Save race: handleSavePattern checks page identity before awaited organization resolution, then persists without rechecking. Next implementation must bind/check after the await, give visible stale recovery, and prove deferred-organization/same-URL-reload cannot save A as B. D59 remains in-fix.
+- Peer initial runtime refusal used WRONG internal /tmp scratch (5.57GiB), not the specified external scratch. Do not treat that as external-resource denial. Fresh Sol used /Volumes/Samsung2TB/code/.stabilization-scratch on /dev/disk7s1 (1.6TiB free) successfully. Native Chrome remains gated by primary-volume shortage.
+- Remaining consumer census110f520b/f485df4a is inventory-linked in reports/document-remaining-census.json: Scrape manual/auto, screenshot completion, highlight overlay/text handoff, remaining Showcase coverage. Native, catalog/docs regeneration, integrated build, CI credential repair and full release remain outstanding. Current historical artifact a8670bf7 lacks D58/D59. Goal active; all dispatched lanes terminal after reports.
+
 ## Latest D59 correction checkpoint — two regressions remain
 
 - Independent escalation 9e5db722 confirms the original four correction findings addressed at source/guard level in 858dfd8f/140d99c7. Guarded 27 tests and compile passed; native remains unverified. A PARTIAL/B FAIL_IMPORTANT.
