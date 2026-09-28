@@ -35,5 +35,9 @@
     "docs/stabilization/runs/showcase-tables-native-20260928.json"
   ],
   "commit": null,
-  "limitations": ["No auth transition or service-error behavior claimed.", "No browser reload cycle or screenshots.", "No source, build, tests, or database writes in this lane."]
+  "limitations": [
+    "No auth transition or service-error behavior claimed.",
+    "No browser reload cycle or screenshots.",
+    "No source, build, tests, or direct database writes outside normal extension UI save/replay actions in this lane."
+  ]
 }

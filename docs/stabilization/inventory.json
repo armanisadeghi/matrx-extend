@@ -15307,7 +15307,18 @@
             "reload",
             "auth-transition",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-tables-native-20260928",
+              "evidence": [
+                "docs/stabilization/reports/showcase-tables-native.json",
+                "docs/stabilization/runs/showcase-tables-native-20260928.json"
+              ],
+              "detail": "Bounded native9ea6687b PASS: Wikipedia detected3tables; selected/extracted allindices0/1/2, yielding241x6,14x1,2x1 and correct targetlabels. Auth-transition/service-error dimensions remain unverified; fullcase partial."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T15",
@@ -15332,7 +15343,18 @@
             "reload",
             "auth-transition",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-tables-native-20260928",
+              "evidence": [
+                "docs/stabilization/reports/showcase-tables-native.json",
+                "docs/stabilization/runs/showcase-tables-native-20260928.json"
+              ],
+              "detail": "Bounded native9ea6687b PASS: sourcevisible World/India population values and6headers match table0; otherindices returned distinctcontents. Real example.org reports No tables and disabled extraction. Auth-transition/service-error and later reloadbehavior unverified; fullcase partial."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T16",
@@ -16116,7 +16138,18 @@
             "reload",
             "navigation",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "showcase-tables-native-20260928",
+              "evidence": [
+                "docs/stabilization/reports/showcase-tables-native.json",
+                "docs/stabilization/runs/showcase-tables-native-20260928.json"
+              ],
+              "detail": "Bounded native9ea6687b PASS: UI preview/save/reopen/replay yields241rows; saved exactrow e6c0a2d9-0786-4a8f-9c7e-d1feb0b8c500 stays table_index0 despite draft1. Manual wrongroute warns explicitly and returns51currentpage rows while saved route/config/count241 remain unchanged. Browser-reload persistence and missing-structure/service-error paths unverified; fullcase partial."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T43",
@@ -16843,7 +16876,8 @@
             "showcase-network-current-001",
             "showcase-d49-native-retest-001",
             "showcase-d49-final-acceptance-20260928",
-            "showcase-d50-native-20260928"
+            "showcase-d50-native-20260928",
+            "showcase-tables-native-20260928"
           ],
           "retest_status": "fail"
         }
