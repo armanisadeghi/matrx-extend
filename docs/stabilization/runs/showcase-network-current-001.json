@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "run_id": "showcase-network-current-001",
-  "status": "BUILD_GREEN_NATIVE_NOT_RUN",
-  "scope": "Refresh current integrated dev dependencies and build a fresh unpacked extension for the planned EXT-F-1012-T57 acceptance. Native work was stopped by updated task direction before any UI was opened.",
+  "status": "BUILD_GREEN_NATIVE_BLOCKED_REPRODUCED",
+  "scope": "Receipt-bound installed native acceptance of EXT-F-1012-T57 against the immutable development artifact; no current-working-tree claim.",
   "source": {
     "commit": "d4bbe70ea652c0e23f6dd5941ccf72945a31d5e5",
     "git_tree": "e7f1a030471503f1f968828bebcb2c8dc00e0d9f",
@@ -108,15 +108,25 @@
     "receipt_recorded_at": "2026-09-28T05:39:40.925Z"
   },
   "acceptance": {
-    "case_id": "EXT-F-1012-T57",
+    "case_id": "EXT-F-1012-T57 (bounded acceptance target; not present in inventory-local stable case list)",
     "target": "Owned HN Search saved Network replay recipe `Codex D47 HN Search OpenAI network replay 20260928`",
-    "result": "NOT_RUN",
-    "reason": "Updated root direction explicitly ended this lane after the existing guarded development-build retry. No browser guard, Chrome reload, page refresh, Showcase open, approval interaction, replay, or product verdict was performed.",
-    "inventory_change": "None; no bounded UI evidence exists and no feature pass/fail is promoted."
+    "result": "BLOCKED_REPRODUCED_ONCE; no D47 closure or retest pass",
+    "browser_run_id": "showcase-current-native-20260928T054000Z",
+    "admitted_at": "2026-09-28T05:54:21Z",
+    "terminal_at": "2026-09-28T06:02:24.892Z",
+    "extension": "Primary Chrome expected ID cihdmkcdjjckfhjpgoedmgfpoljebaml explicitly reloaded from receipt-bound .output/chrome-mv3-dev; visible version 0.2.114.",
+    "site": "Real HN Algolia page hn.algolia.com/?q=OpenAI refreshed; actual OpenAI story results visible.",
+    "identity_and_org": "Showcase admin account admin@admin.com, Role ADMIN; Settings > Organization showed Acting as admin's Workspace.",
+    "recipe_before": "Owned recipe visible in Patterns, mode NETWORK, status never run.",
+    "run_action": "One Run click at approximately 2026-09-28T05:58:27Z; button became disabled. No second click or manual retrigger.",
+    "observation": "After at least 113 seconds of continuously healthy resource-watch observations, recipe still showed never run; no visible approval, progress, result, or failure. Debug search for replay showed 0 matching events.",
+    "classification": "Definite visible run-path stall after one click under healthy machine conditions and signed-in admin with active organization. Exact internal transport/approval stage remains unknown; no claim that network transport itself failed.",
+    "guard_terminal": "SIGINT requested 2026-09-28T06:02:24.892Z; RESOURCE_BROWSER_STOP_CONFIRMED resourceInvalid=false.",
+    "inventory_change": "No T57 stable case exists in inventory-local (EXT-F-1012 currently ends at T38); record this bounded evidence in run report only, without inventing or closing coverage."
   },
   "limitations": [
-    "The artifact is built and receipt-bound but was not loaded into Chrome; loaded extension version and source directory remain unverified.",
-    "No secrets, raw Algolia request values, or unrelated user data were read or recorded.",
-    "The existing HN recipe was not opened or changed."
+    "Evidence is one installed reproduction only. Original D47 repro and surrounding cancel/reload proof were not rerun; D47 remains open.",
+    "No raw Algolia request values, credentials, screenshots, or unrelated user data were recorded.",
+    "The build is bound to source d4bbe70ea652c0e23f6dd5941ccf72945a31d5e5 and artifact tree f6dd0f94fc4a37800e26f11d98eb37e35d8d1f47b3e474d299af17b2b50a28be; concurrent D46 working-tree edits are not included."
   ]
 }
