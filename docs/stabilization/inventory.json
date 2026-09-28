@@ -381,6 +381,11 @@
           "id": "EXT-F-0002-C05",
           "label": "Manual browser stop confirmation",
           "action": "Manual browser stop confirmation"
+        },
+        {
+          "id": "EXT-F-0002-C06",
+          "label": "Recover browser resource evidence after guard exit",
+          "action": "Read durable exact-run journal independent of stdout/session"
         }
       ],
       "source_anchors": [
@@ -729,6 +734,63 @@
               },
               "detail": "Historical fixture proof retained; current infrastructure audit requires revalidation after guard repairs before asserting current pass.",
               "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
+            }
+          }
+        },
+        {
+          "id": "EXT-F-0002-T06",
+          "title": "Durable browser resource event and terminal proof",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0002-C06"
+          ],
+          "defect_ids": [
+            "EXT-D-0051"
+          ],
+          "preconditions": [
+            "Resource guard available; do not bypass production safety thresholds."
+          ],
+          "steps": [
+            "Start a safely admitted guarded browser run and observe watches, then request graceful stop.",
+            "Recover its eventjournal after process and lease end without relying on stdout.",
+            "Exercise refusal and journal-write failure through meaningful guarded infrastructure tests; verify no unrecorded browser acceptance."
+          ],
+          "expected": [
+            "Exact admission, watch/unsafe, resourceInvalid and terminaldecision are durable and attributable; no credentials/childstdout recorded.",
+            "Existing cap/refusal/cleanup remain enforced; missing journal failure cannot silently license unverifiable work."
+          ],
+          "dimensions": [
+            "admission",
+            "watch",
+            "refusal",
+            "shutdown",
+            "evidence-failure"
+          ],
+          "results": {
+            "guest": {
+              "status": "fail",
+              "evidence": [
+                "docs/stabilization/reports/showcase-structured-native.json"
+              ],
+              "detail": "Auth-independent guard lacks automatic durable successful-run eventjournal; D51 in-fix."
+            },
+            "member": {
+              "status": "fail",
+              "evidence": [
+                "docs/stabilization/reports/showcase-structured-native.json"
+              ],
+              "detail": "Auth-independent guard lacks automatic durable successful-run eventjournal; D51 in-fix."
+            },
+            "admin": {
+              "status": "fail",
+              "evidence": [
+                "docs/stabilization/reports/showcase-structured-native.json"
+              ],
+              "detail": "Auth-independent guard lacks automatic durable successful-run eventjournal; D51 in-fix."
             }
           }
         }
@@ -15207,7 +15269,17 @@
             "reload",
             "auth-transition",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "showcase-structured-native-20260928",
+              "evidence": [
+                "docs/stabilization/reports/showcase-structured-native.json"
+              ],
+              "detail": "UI observations suggest bounded successful extraction/filter/save/replay/source-change, but required resource watch/unsafe/terminal evidence was not recoverable (82ddc501). Not accepted as verified passes. Repeat after D51 durable journal repair using retained owned recipeIDs; auth/fault dimensions also unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T11",
@@ -15232,7 +15304,17 @@
             "reload",
             "auth-transition",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "showcase-structured-native-20260928",
+              "evidence": [
+                "docs/stabilization/reports/showcase-structured-native.json"
+              ],
+              "detail": "UI observations suggest bounded successful extraction/filter/save/replay/source-change, but required resource watch/unsafe/terminal evidence was not recoverable (82ddc501). Not accepted as verified passes. Repeat after D51 durable journal repair using retained owned recipeIDs; auth/fault dimensions also unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T12",
@@ -16078,7 +16160,17 @@
             "reload",
             "navigation",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "showcase-structured-native-20260928",
+              "evidence": [
+                "docs/stabilization/reports/showcase-structured-native.json"
+              ],
+              "detail": "UI observations suggest bounded successful extraction/filter/save/replay/source-change, but required resource watch/unsafe/terminal evidence was not recoverable (82ddc501). Not accepted as verified passes. Repeat after D51 durable journal repair using retained owned recipeIDs; auth/fault dimensions also unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T41",
@@ -16108,7 +16200,17 @@
             "reload",
             "navigation",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "showcase-structured-native-20260928",
+              "evidence": [
+                "docs/stabilization/reports/showcase-structured-native.json"
+              ],
+              "detail": "UI observations suggest bounded successful extraction/filter/save/replay/source-change, but required resource watch/unsafe/terminal evidence was not recoverable (82ddc501). Not accepted as verified passes. Repeat after D51 durable journal repair using retained owned recipeIDs; auth/fault dimensions also unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T42",

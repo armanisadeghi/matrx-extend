@@ -1,0 +1,45 @@
+{
+  "id": "EXT-D-0051",
+  "feature_id": "EXT-F-0002",
+  "case_ids": [
+    "EXT-F-0002-T06"
+  ],
+  "surface": "Testing infrastructure resource evidence",
+  "auth_mode": "all",
+  "reproduction": [
+    "Run a guarded native browser session, then stop its owned guard after UI work.",
+    "Lose the ephemeral stdout/tool context; the lease is released and its owner state is removed.",
+    "Attempt to recover admitted/watch/unsafe/resourceInvalid/terminal evidence from repository artifacts."
+  ],
+  "expected": "Guard structured resource events and final decision remain durably recoverable for the exact run, independently of agent stdout retention, so resource exhaustion cannot be mistaken for product results.",
+  "actual": "Structured native run a21f7203/82ddc501 retained UI observations but lost guardwatch history/unsafe signals/resourceInvalid/exit proof. Guard emit currently writes only console.log; released lease does not retain successful-run event history. Native coverage cannot be accepted.",
+  "severity": "S2: loss of resource evidence invalidates otherwise useful test runs and can hide resource-caused false product findings.",
+  "priority": "P1: restore durable evidence before another native run.",
+  "state": "in-fix",
+  "evidence": [
+    "docs/stabilization/reports/showcase-structured-native.json",
+    "scripts/stabilization-resource.mjs emit console.log-only at pre-fix source"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-09-28T11:00:22.651661+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Native resource proof could not be recovered after run; UI results kept unverified."
+    },
+    {
+      "at": "2026-09-28T11:00:22.651661+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Current source emits guard events only to stdout; successful released lease is not an eventjournal."
+    },
+    {
+      "at": "2026-09-28T11:00:22.651661+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol native_guard_journal assigned minimal automatic durable guard-only journal and meaningful verification, followed by freshpeer."
+    }
+  ],
+  "verification_status": "Implementation and tests pending; no new native runs until evidence durability verified.",
+  "closure_requirement": "Real guard admission/watch/stop/refusal decisions recoverable from safe durable unique runjournal with original cap/thresholds intact; journal failure visible; independent tests/source review and subsequent native report actually consumes persisted evidence."
+}
