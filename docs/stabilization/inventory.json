@@ -16685,12 +16685,13 @@
           "results": {
             "admin": {
               "status": "fail",
-              "run_id": "showcase-d49-native-retest-001",
+              "run_id": "showcase-d49-final-acceptance-20260928",
               "evidence": [
                 "docs/stabilization/runs/showcase-network-current-001.json",
-                "docs/stabilization/runs/showcase-d49-native-retest-001.json"
+                "docs/stabilization/runs/showcase-d49-native-retest-001.json",
+                "docs/stabilization/reports/showcase-d49-final-acceptance.json"
               ],
-              "detail": "Independent primary Chrome retest of fixed artifact c43b9717ef07a4a9043ed6bf91f5896163f42d3ec57c891e6989123da793dc44, source repair227d3540: explicit extension reload and real HN page refresh. Same owned Network recipe Run now reports failed: document is not defined, with no approval/capture/rows. Resource guard ended valid. Original silent import stall was bypassed, but D49 full replay acceptance fails. D47 initial-request/document isolation remains unverified."
+              "detail": "Second-round independent native replay on exact artifact1df62d6e214f0a70c25cf34fc762dc22582a1e64a002f12a9f69bf16efcb882d after explicit primaryChrome reload immediately fails window is not defined, before approval/capture/rows. Lazy Showcase UI remained styled. Guard terminated resourceInvalid=false. D49 escalated after two failed rounds; D47 timing/provenance remains unverified behind it."
             }
           }
         },
@@ -16776,7 +16777,8 @@
             "showcase-installed-d43-001",
             "showcase-installed-d48-network-001",
             "showcase-network-current-001",
-            "showcase-d49-native-retest-001"
+            "showcase-d49-native-retest-001",
+            "showcase-d49-final-acceptance-20260928"
           ],
           "retest_status": "fail"
         }

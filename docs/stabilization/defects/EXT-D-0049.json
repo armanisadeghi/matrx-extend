@@ -20,13 +20,14 @@
     "docs/stabilization/reports/showcase-current-run-stall.json",
     "docs/stabilization/reports/showcase-d49-source-peer.json",
     "docs/stabilization/runs/showcase-d49-native-retest-001.json",
-    "docs/stabilization/reports/showcase-d49-worker-build-peer.json"
+    "docs/stabilization/reports/showcase-d49-worker-build-peer.json",
+    "docs/stabilization/reports/showcase-d49-final-acceptance.json"
   ],
   "severity": "S1: the observed saved Network extraction cannot run and gives no recovery feedback.",
   "priority": "P1: blocks Showcase saved replay acceptance and D47 retest.",
-  "state": "fixed",
+  "state": "in-fix",
   "reproduction_status": "Native diagnostic localized first stalled boundary to worker lazy dispatcher import; Port and run message acceptance and worker log delivery verified. Worker DevTools closed.",
-  "verification_status": "Round1 native failed with document is not defined. Round2 artifact1df62d6e214f0a70c25cf34fc762dc22582a1e64a002f12a9f69bf16efcb882d passed compile/build and emitted census (25 worker-reachable chunks,24 wrapped imports,zero nonempty dependency arrays). Independent source and installed acceptance in progress; D49 not closed.",
+  "verification_status": "Two native failures after source repairs: document is not defined, then window is not defined. Latest exact artifact1df62d6e, guard admitted07:02:57Z and stopped07:04:25Z valid. Fresh Astra escalation active; no closure or full replay pass.",
   "transition_history": [
     {
       "at": "2026-09-28T06:06:00Z",
@@ -69,6 +70,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Second repairdd6f12a2 disables DOM preload dependency optimization and guards worker-reachable emitted import sites. Refreshed dependency install, compile and devbuild passed. Independent source/native acceptance remains pending."
+    },
+    {
+      "at": "2026-09-28T07:07:20Z",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Independent native second-round acceptance18ef3623 on exact artifact1df62d6e reports window is not defined before approval/capture; guard valid and UI styled."
+    },
+    {
+      "at": "2026-09-28T07:07:20Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Two failed implementation/native rounds reached published escalation threshold. Fresh Astra medium lane showcase_d49_worker_escalation owns a bounded30-minute worker import diagnosis/class repair."
     }
   ],
   "closure_requirement": "Prove the failing execution stage, correct the actual saved UI path, then independently repeat this native reproduction and demonstrate approval, fresh automatic reload capture, saved result, and surrounding cancellation/error recovery under a valid watchdog.",
