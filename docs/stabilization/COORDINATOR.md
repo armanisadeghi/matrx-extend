@@ -10,6 +10,14 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest source repair checkpoint — Prepare false success
+
+- Progress: read-only resource audit `084fe593` found internal volume 8.9 GiB free, no stale linked worktrees, and only about 3 MiB in the listed temporary directories. No safe meaningful owned cleanup established; no processes killed or files deleted. Report `reports/resource-attribution-20260928.json`.
+- Source audit `6ce9a449` found concrete Prepare defects, now inventory-linked T08: D57 missing injected result falsely becomes Prepared in 0ms; D58 failed retry retains old success and late A results can appear after page B. Source-derived triggers are recorded; native reproduction unverified.
+- D57 candidate `5dea4dd3` validates the shared injected report, rejects absent/malformed data with reload/retry remedy, adds regression cases and feature-test instructions. Independent peer `c802f81b`: source quality accepted, runtime/native unverified. D57 remains in-fix, D58 triaged. Reports `prepare-empty-report-repair.json` and `prepare-empty-report-peer.json`.
+- Next: one guarded focused runtime attempt for D57 on the external scratch volume, preserving all policy thresholds; if admitted, meaningful original-code red/green, compile/build then native verification when primary Chrome profile volume recovers. D58 needs a separately reviewed lifecycle repair. No test/build/browser was run for D57 yet.
+- Current built d1626c0d does NOT include D57. All workers terminal; no owned heavy/browser process remains. Overall goal active and incomplete; release CI credential constraint remains.
+
 ## Latest native attempt — resource refusal, zero UI actions
 
 - Goal-turn classification: progress. Existing genuine manual-CSS lifecycle evidence was linked to T39 as partial in `43a2d7c7`, without claiming its draft-isolation, wrong-route or failure dimensions.

@@ -17,9 +17,11 @@
   "priority": "P1: truthful current-page results",
   "state": "in-fix",
   "evidence": [
-    "docs/stabilization/reports/prepare-source-audit.json"
+    "docs/stabilization/reports/prepare-source-audit.json",
+    "docs/stabilization/reports/prepare-empty-report-repair.json",
+    "docs/stabilization/reports/prepare-empty-report-peer.json"
   ],
-  "verification_status": "Source-derived deterministic finding; runtime and native reproduction not yet performed.",
+  "verification_status": "Candidate5dea4dd3 rejects missing/malformed injected reports. Independent source peer c802f81b: A partial (native unverified), B pass with unverified guard. Tests, causal red/green, compile/build and native acceptance pending. State remains in-fix.",
   "transition_history": [
     {
       "at": "2026-09-28T15:00:57.328820+00:00",
