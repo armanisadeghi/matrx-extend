@@ -15,10 +15,12 @@
   "actual": "Structured native run a21f7203/82ddc501 retained UI observations but lost guardwatch history/unsafe signals/resourceInvalid/exit proof. Guard emit currently writes only console.log; released lease does not retain successful-run event history. Native coverage cannot be accepted.",
   "severity": "S2: loss of resource evidence invalidates otherwise useful test runs and can hide resource-caused false product findings.",
   "priority": "P1: restore durable evidence before another native run.",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     "docs/stabilization/reports/showcase-structured-native.json",
-    "scripts/stabilization-resource.mjs emit console.log-only at pre-fix source"
+    "scripts/stabilization-resource.mjs emit console.log-only at pre-fix source",
+    "docs/stabilization/reports/native-guard-journal.json",
+    "docs/stabilization/reports/native-guard-finalize-peer.json"
   ],
   "transition_history": [
     {
@@ -38,8 +40,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol native_guard_journal assigned minimal automatic durable guard-only journal and meaningful verification, followed by freshpeer."
+    },
+    {
+      "at": "2026-09-28T11:27:35.614958+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "c29b0514/fe877f17/4397a3f9 implement durable contained journals, truthful writer-fault invalidation and publish-after-close. Fresh independent4647220b accepts source and focused5/5 evidence; subsequent native consumption pending."
     }
   ],
-  "verification_status": "Implementation and tests pending; no new native runs until evidence durability verified.",
+  "verification_status": "Independent engineering verification accepted; subsequent native run consuming completed journal remains required for closure.",
   "closure_requirement": "Real guard admission/watch/stop/refusal decisions recoverable from safe durable unique runjournal with original cap/thresholds intact; journal failure visible; independent tests/source review and subsequent native report actually consumes persisted evidence."
 }
