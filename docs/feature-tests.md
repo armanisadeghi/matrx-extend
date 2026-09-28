@@ -1364,6 +1364,21 @@ Every entry follows this shape:
   handoff, list-picker-session, and list-picker-relay unit tests; these guards
   do not replace the installed-extension check.
 
+### Showcase — List Pattern exact document picker (EXT-D-0059)
+- **What it does:** Installs, starts, and cancels a picker only in the page
+  document that was active when Pick was pressed. Relayed picks must carry that
+  document's trusted identity as well as the tab and session identity.
+- **Where to test:** Showcase → List Pattern on a regular page with repeating
+  cards, such as https://electronic.vegas/vegas-edm-event-calendar/.
+- **Steps:** Start a pick, reload the same URL, then start a fresh pick as soon
+  as the page is ready. Select a card and field, press Done, Extract, and Save.
+  Repeat while canceling the first pick during the reload. Also try Pick on a
+  page that rejects script injection, then return to a regular page.
+- **Expected:** The old pick cannot appear on or cancel the reloaded document,
+  and its late messages cannot change the new builder. The new pick still
+  extracts distinct rows and can be saved. An injection failure closes the
+  busy state and offers a retry on the current page.
+
 ### Showcase — List Pattern picker Cancel keeps the prior draft (EXT-D-0045)
 - **What it does:** Picker changes remain provisional until Done. Cancel keeps the
   earlier list definition, selected fields, and extraction preview.

@@ -36,6 +36,60 @@ function clickOverlay(id: string) {
 }
 
 describe('list picker producer session boundary', () => {
+  it('keeps a delayed install and start on the initiating document after a same-URL reload', async () => {
+    let releaseInstall: (() => void) | undefined;
+    let liveDocument = 'document-a';
+    const targets: string[] = [];
+    Object.assign(chrome, {
+      scripting: {
+        executeScript: vi.fn(async (request: {
+          target: { tabId: number; documentIds?: string[] };
+          files?: string[];
+          func?: (...args: string[]) => void;
+          args?: string[];
+        }) => {
+          if (request.files) {
+            await new Promise<void>((resolve) => { releaseInstall = resolve; });
+            Object.assign(window, { __matrxListPickerStart: mountListPicker });
+          }
+          const target = request.target.documentIds?.[0] ?? liveDocument;
+          targets.push(target);
+          request.func?.(...(request.args ?? []));
+          return [];
+        }),
+      },
+    });
+    const first = startListPickerSession(77, 'document-a', 'calendar-session', null, () => liveDocument === 'document-a');
+    await vi.waitFor(() => expect(releaseInstall).toBeTypeOf('function'));
+    liveDocument = 'document-b';
+    releaseInstall?.();
+    await expect(first).rejects.toThrow(/page changed/i);
+    expect(targets).toEqual(['document-a']);
+    expect(document.getElementById('matrx-list-picker-host')).toBeNull();
+  });
+
+  it('cancels only the old document and does not disturb a replacement session', async () => {
+    const targets: string[] = [];
+    Object.assign(window, { __matrxListPickerStart: mountListPicker });
+    Object.assign(chrome, {
+      scripting: { executeScript: vi.fn(async (request: {
+        target: { tabId: number; documentIds?: string[] };
+        func?: (...args: string[]) => void;
+        args?: string[];
+      }) => {
+        targets.push(request.target.documentIds?.[0] ?? 'current-document');
+        request.func?.(...(request.args ?? []));
+        return [];
+      }) },
+    });
+    await startListPickerSession(77, 'document-b', 'replacement-session', null, () => true);
+    await cancelListPickerSession(77, 'document-a', 'calendar-session');
+    clickCard();
+    expect(targets).toEqual(['document-b', 'document-b', 'document-a']);
+    expect(sendMessage.mock.calls.map(([message]) => message.kind)).toEqual([
+      'data:list-picker-item-detected',
+    ]);
+  });
   it('carries the initiating identity in detection, result, and exit messages', () => {
     mountListPicker('calendar-session');
     clickCard();
@@ -110,10 +164,10 @@ describe('list picker producer session boundary', () => {
         ),
       },
     });
-    const first = startListPickerSession(77, 'calendar-session');
+    const first = startListPickerSession(77, 'document-a', 'calendar-session', null, () => true);
     await vi.waitFor(() => expect(releaseInstall).toBeTypeOf('function'));
-    const canceled = cancelListPickerSession(77, 'calendar-session');
-    const second = startListPickerSession(77, 'replacement-session');
+    const canceled = cancelListPickerSession(77, 'document-a', 'calendar-session');
+    const second = startListPickerSession(77, 'document-a', 'replacement-session', null, () => true);
     releaseInstall?.();
     await Promise.all([first, canceled, second]);
     sendMessage.mockClear();

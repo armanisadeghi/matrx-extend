@@ -89,7 +89,7 @@ beforeEach(() => {
     scripting: { executeScript: activePage.executeScript },
     runtime: {
       sendMessage: vi.fn(async (message: { kind: string; payload: Record<string, unknown> }) => {
-        listeners.get(message.kind)?.({ ...message.payload, tab_id: activePage.id });
+        listeners.get(message.kind)?.({ ...message.payload, tab_id: activePage.id, document_id: 'document-a' });
         return { ack: true };
       }),
     },

@@ -1,0 +1,18 @@
+{
+  "id": "EXT-D-0059-list-picker-document-correction",
+  "status": "engineering correction incomplete: 28 of 29 connected tests pass; D43 navigation fixture remains red; compile and UI unverified",
+  "base": "origin/main 2e1dd471 at start; remote dependency update installed without scripts",
+  "scope": ["EXT-F-1012-T23", "EXT-F-1012-T24", "EXT-F-1012-T28"],
+  "confirmed_cause": "List picker install, start, and cancel used tab-only injection after a document-aware builder began the session. The relay stamped only the sender tab, so document identity was absent from event admission.",
+  "change": "Capture the initiating document, target all picker injections to documentIds, recheck live page/session identity between install and start, stamp the trusted runtime sender.documentId, and require document plus tab, session, and pageKey for result, detection, and exit. Exact-document failures show a retry remedy.",
+  "dependency": "@ai-matrx/design-system 0.49.11 to 0.49.12 via guarded frozen install; 0.49.12 CHANGELOG says no source change intended and no consumer action required.",
+  "red_evidence": "d59-picker-red-02: delayed reload/start, stale cancel target, sender-document forgery, and panel admission failed on the old code. One existing Doctor test also failed because its mock changed URL without document identity.",
+  "test_evidence": "d59-picker-green-02: 28 passed, 1 failed across list-picker-session, relay, Doctor handoff, D43 entry, and D45 entry. The new document guards and D45 extraction/draft tests pass.",
+  "remaining": "tests/unit/showcase-d43-entry.test.tsx 'rejects a stale seeded picker completion after page change' changes activePage.url at line 167, but its useActiveTab mock keeps documentId/pageKey fixed at document-a. The test waits for the builder to clear, while the product correctly still sees the same page identity. The fixture needs a document identity transition before this test can validate navigation.",
+  "limits": "Stopped at the assigned two-failed-fix-round cap. Compile attempt d59-picker-compile-01 was interrupted before admission on owner instruction; no typecheck, build, installed-extension UI, release, or full D59 completion is claimed.",
+  "source_sha256": {
+    "src/lib/data-pattern/list-picker-session.ts": "37fdffeb7dc65f389d95b30351e37175011f47bf0d955352a7a2cfbd7129add6",
+    "src/lib/data-pattern/list-picker-relay.ts": "7bb9f4bd0ae3c9e2821afd9e35f0f0607d663240bc7349b0e967400eb52a69bc",
+    "src/features/showcase/tabs/ListPatternTab.tsx": "a4826e6ba5937bdf5e6b30d159b319645946b402dd4c6b73b52d719626371f11"
+  }
+}

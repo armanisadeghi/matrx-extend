@@ -57,6 +57,7 @@ export function ListPatternTab() {
   latestPageKeyRef.current = pageKey;
   const lastPageKeyRef = useRef(pageKey);
   const pickPageKeyRef = useRef<string | null>(null);
+  const pickDocumentIdRef = useRef<string | null>(null);
   const pickerSessionSeqRef = useRef(0);
   const pickerSessionIdRef = useRef<string | null>(null);
   const inspectorSeqRef = useRef(0);
@@ -103,10 +104,12 @@ export function ListPatternTab() {
 
   const closePickerSession = useCallback(() => {
     const tabId = pickTabRef.current;
+    const documentId = pickDocumentIdRef.current;
     const sessionId = pickerSessionIdRef.current;
     pickerSessionSeqRef.current += 1;
     pickerSessionIdRef.current = null;
     pickTabRef.current = null;
+    pickDocumentIdRef.current = null;
     pickPageKeyRef.current = null;
     stageConfig(null);
     inspectorSeqRef.current += 1;
@@ -115,10 +118,10 @@ export function ListPatternTab() {
     setInspectionStatus('idle');
     setSampleValues({});
     setPicking(false);
-    if (tabId !== null && sessionId !== null) {
+    if (tabId !== null && documentId !== null && sessionId !== null) {
       // Navigated/closed pages may no longer accept an injection. The local
       // session is already invalidated; cancellation can affect only its ID.
-      void cancelListPickerSession(tabId, sessionId).catch(() => {});
+      void cancelListPickerSession(tabId, documentId, sessionId).catch(() => {});
     }
   }, [stageConfig]);
 
@@ -184,6 +187,8 @@ export function ListPatternTab() {
       payload.tab_id === pickTabRef.current &&
       typeof payload.session_id === 'string' &&
       payload.session_id === pickerSessionIdRef.current &&
+      typeof payload.document_id === 'string' &&
+      payload.document_id === pickDocumentIdRef.current &&
       pickPageKeyRef.current === latestPageKeyRef.current && isCurrentPageIdentity(pickPageKeyRef.current);
     const offResult = on<ListPickerResult & ListPickerIdentity, { ack: true }>(
       CHANNELS.LIST_PICKER_RESULT,
@@ -358,7 +363,7 @@ export function ListPatternTab() {
   }, [picking, closePickerSession]);
 
   const enterPicker = async () => {
-    if (!tab.id || !tab.pageKey || picking) return;
+    if (!tab.id || !tab.documentId || !tab.pageKey || picking || !isCurrentPageIdentity(tab.pageKey)) return;
     const session = ++pickerSessionSeqRef.current;
     const sessionId = crypto.randomUUID();
     pickerSessionIdRef.current = sessionId;
@@ -366,12 +371,15 @@ export function ListPatternTab() {
     setPicking(true);
     setError(null);
     pickTabRef.current = tab.id;
+    pickDocumentIdRef.current = tab.documentId;
     pickPageKeyRef.current = pageKey;
     try {
       await startListPickerSession(
         tab.id,
+        tab.documentId,
         sessionId,
         config ? { list_root: config.list_root, item_selector: config.item_selector } : null,
+        () => pickerSessionIdRef.current === sessionId && pickPageKeyRef.current === pageKey && isCurrentPageIdentity(pageKey),
       );
     } catch (err) {
       if (session === pickerSessionSeqRef.current) {
@@ -912,6 +920,9 @@ function CandidatesPanel({
  */
 function friendlyPickError(err: unknown): string {
   const msg = err instanceof Error ? err.message : String(err);
+  if (/page changed|no document|no frame with id|frame was removed|could not establish connection/i.test(msg)) {
+    return 'The page changed or the picker could not open in this page. Retry picking on the current page.';
+  }
   if (
     /cannot access|cannot be scripted|chrome:\/\/|extensions gallery|chrome web store/i.test(msg)
   ) {

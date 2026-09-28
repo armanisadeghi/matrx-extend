@@ -13,6 +13,7 @@ export interface ListPickerSeed {
 export interface ListPickerIdentity {
   session_id: string;
   tab_id?: number | null;
+  document_id?: string | null;
 }
 
 // Chrome injection has two stages (install, then start with arguments). Keep
@@ -34,16 +35,20 @@ function sequence(tabId: number, operation: () => Promise<void>): Promise<void> 
 
 export function startListPickerSession(
   tabId: number,
+  documentId: string,
   sessionId: string,
-  seed?: ListPickerSeed | null,
+  seed: ListPickerSeed | null,
+  isCurrent: () => boolean,
 ): Promise<void> {
   return sequence(tabId, async () => {
+    if (!isCurrent()) throw new Error('The page changed before the picker could start. Retry on the current page.');
     await chrome.scripting.executeScript({
-      target: { tabId },
+      target: { tabId, documentIds: [documentId] },
       files: ['content-scripts/list-picker.js'],
     });
+    if (!isCurrent()) throw new Error('The page changed before the picker could start. Retry on the current page.');
     await chrome.scripting.executeScript({
-      target: { tabId },
+      target: { tabId, documentIds: [documentId] },
       func: (id: string, initial: ListPickerSeed | null) => {
         const start = (window as ListPickerWindow).__matrxListPickerStart;
         if (!start) throw new Error('The page picker could not start. Try picking again.');
@@ -54,10 +59,10 @@ export function startListPickerSession(
   });
 }
 
-export function cancelListPickerSession(tabId: number, sessionId: string): Promise<void> {
+export function cancelListPickerSession(tabId: number, documentId: string, sessionId: string): Promise<void> {
   return sequence(tabId, async () => {
     await chrome.scripting.executeScript({
-      target: { tabId },
+      target: { tabId, documentIds: [documentId] },
       func: (id: string) => {
         (window as ListPickerWindow).__matrxListPickerCancel?.(id);
       },

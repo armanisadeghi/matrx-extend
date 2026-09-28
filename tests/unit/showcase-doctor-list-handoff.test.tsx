@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const page = vi.hoisted(() => ({
   id: 77,
+  documentId: 'document-a',
   url: 'https://electronic.vegas/vegas-edm-event-calendar/',
   executeScript: vi.fn(),
 }));
@@ -11,8 +12,8 @@ const pickerListeners = vi.hoisted(
 );
 
 vi.mock('@/hooks/use-active-tab', () => ({
-  useActiveTab: () => ({ id: page.id, url: page.url, title: 'Vegas EDM Event Calendar', documentId: 'document-a', pageKey: 'document-a' }),
-  isCurrentPageIdentity: (key: string) => key === 'document-a',
+  useActiveTab: () => ({ id: page.id, url: page.url, title: 'Vegas EDM Event Calendar', documentId: page.documentId, pageKey: page.documentId }),
+  isCurrentPageIdentity: (key: string) => key === page.documentId,
 }));
 vi.mock('@/lib/storage/zustand-adapter', () => ({
   chromeLocalStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },
@@ -88,6 +89,8 @@ function TestSurface() {
 }
 
 beforeEach(() => {
+  page.documentId = 'document-a';
+  page.url = 'https://electronic.vegas/vegas-edm-event-calendar/';
   // The page installation is external to this sidepanel consumer regression.
   Object.assign(window, { __matrxListPickerStart: () => {}, __matrxListPickerCancel: () => {} });
   const fixture = document.createElement('main');
@@ -153,6 +156,7 @@ describe('Showcase Doctor recommendation handoff', () => {
     await act(async () => {
       pickerListeners.get(channel)?.({
         tab_id: 77,
+        document_id: 'document-a',
         session_id: priorSession,
         list_root: detectedRoot,
         item_selector: detectedItem,
@@ -165,6 +169,7 @@ describe('Showcase Doctor recommendation handoff', () => {
     await act(async () => {
       pickerListeners.get(CHANNELS.LIST_PICKER_RESULT)?.({
         tab_id: 77,
+        document_id: 'document-a',
         session_id: currentSession,
         list_root: detectedRoot,
         item_selector: detectedItem,
@@ -173,6 +178,41 @@ describe('Showcase Doctor recommendation handoff', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: /^Extract$/i }));
     expect(await screen.findByText(/\[\{"event":"Neon Nights at Area15"/)).toBeTruthy();
+  });
+
+  it('rejects a matching session relayed from another document before accepting the real page', async () => {
+    render(<ListPatternTab />);
+    fireEvent.click(screen.getByRole('button', { name: /Pick an example item/i }));
+    const session = await vi.waitFor(() => {
+      const id = page.executeScript.mock.calls.find(([request]) => typeof request.args?.[0] === 'string')?.[0].args?.[0];
+      expect(id).toBeTypeOf('string');
+      return id;
+    });
+    act(() => {
+      pickerListeners.get(CHANNELS.LIST_PICKER_RESULT)?.({
+        tab_id: 77, document_id: 'document-b', session_id: session,
+        list_root: detectedRoot, item_selector: detectedItem,
+        field_paths: [{ name: 'event', rel_selector: '[itemprop="name"]' }],
+      });
+    });
+    expect(screen.getByRole('button', { name: /^Cancel$/i })).toBeTruthy();
+    expect(screen.queryByText(detectedRoot)).toBeNull();
+    act(() => {
+      pickerListeners.get(CHANNELS.LIST_PICKER_RESULT)?.({
+        tab_id: 77, document_id: 'document-a', session_id: session,
+        list_root: detectedRoot, item_selector: detectedItem,
+        field_paths: [{ name: 'event', rel_selector: '[itemprop="name"]' }],
+      });
+    });
+    expect(await screen.findByText(detectedRoot)).toBeTruthy();
+  });
+
+  it('offers retry when exact-document injection fails on the current page', async () => {
+    page.executeScript.mockRejectedValueOnce(new Error('No document with given id'));
+    render(<ListPatternTab />);
+    fireEvent.click(screen.getByRole('button', { name: /Pick an example item/i }));
+    expect(await screen.findByText(/Retry picking on the current page/i)).toBeTruthy();
+    expect(screen.getByRole('button', { name: /Pick an example item/i })).toBeTruthy();
   });
 
   it('carries detected list selectors into the builder while still requiring field selection', async () => {
@@ -300,6 +340,7 @@ describe('Showcase Doctor recommendation handoff', () => {
     await screen.findByText(detectedRoot);
 
     page.url = 'https://electronic.vegas/another-calendar/';
+    page.documentId = 'document-b';
     view.rerender(<TestSurface />);
 
     expect(await screen.findByRole('button', { name: /Pick an example item/i })).toBeTruthy();
