@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "audit": "tracker-truth-audit",
+  "source": "docs/stabilization/inventory.json",
+  "scope": "source/data only; no runtime inference",
+  "counts": {
+    "features": 205,
+    "controls": 1309,
+    "cases": 724,
+    "cases_without_results": 575,
+    "case_mode_results": 201,
+    "case_mode_statuses": {
+      "unverified": 115,
+      "pass": 57,
+      "not-applicable": 1,
+      "partial": 28
+    },
+    "controls_not_referenced_by_case": 426,
+    "feature_modes": [
+      "guest",
+      "member",
+      "admin"
+    ],
+    "case_mode_coverage": {
+      "guest": 156,
+      "member": 430,
+      "admin": 599
+    },
+    "defect_records": 60,
+    "defect_states": {
+      "closed": 44,
+      "fixed": 11,
+      "in-fix": 4,
+      "open": 1
+    }
+  },
+  "truth_mapping": {
+    "authority": "inventory.features[].cases[].results[mode].status",
+    "missing_result": "unverified",
+    "pass": "explicit case/mode pass only; feature pass requires all applicable cases explicitly pass and required evidence/gates satisfied",
+    "partial": "explicit partial, or aggregate includes both pass and unresolved criteria",
+    "fail": "explicit fail; linked defect lifecycle state does not imply or erase this result",
+    "not_applicable": "explicit source-backed applicability decision only",
+    "defects": "closed/fixed describe defect lifecycle; never translate to case pass",
+    "feature_cells": "derived convenience rollups only; ignore as evidence whenever case-level results exist; regenerate from cases"
+  },
+  "drift": {
+    "inventory_modes_vs_cases": "top-level modes lists guest only, but cases cover guest/member/admin",
+    "stale_or_unreliable_cells": "feature cells contain pass/fail/retest values inconsistent with the predominantly unverified case records; never use them to claim product pass",
+    "coverage": "426 controls currently have no control_ids reference from any case",
+    "surface_grouping": "user-facing grouping follows feature.surface; 169 features share generic Tools / registered executor, obscuring distinct named tool cases. Actual sidepanel tab navigation is EXT-F-1001 (Navigation / shell), separate from browser-tab tool features."
+  },
+  "limitations": [
+    "Source metadata audit only; did not inspect runtime behavior or prove evidence files are authentic/current.",
+    "Counts are a snapshot of inventory.json and defect JSON files at audit time."
+  ]
+}
