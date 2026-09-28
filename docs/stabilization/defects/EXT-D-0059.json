@@ -37,9 +37,11 @@
     "docs/stabilization/reports/scrape-document-peer.json",
     "docs/stabilization/reports/scrape-correction-fresh.json",
     "docs/stabilization/reports/scrape-correction-peer.json",
-    "docs/stabilization/reports/highlight-identity-audit.json"
+    "docs/stabilization/reports/highlight-identity-audit.json",
+    "docs/stabilization/reports/screenshot-document-correction.json",
+    "docs/stabilization/reports/screenshot-document-peer.json"
   ],
-  "verification_status": "Scrape scoped correction fe389b5e fixes mixed-document Diagnose bundle and refresh status ownership; guarded reported red2, final6tests/4files and compile passed. Fresh source/evidence peer220ba074 accepts both scoped findings, no important new issue, all journal/source hashes match. Journals capture exit metadata, detailed test counts/assertions rely on builder report. Broader consumer migration and native Chrome acceptance remain unverified; D59 in-fix.",
+  "verification_status": "Screenshot candidate521252fa guarded6tests/compile/catalog/docs pass; independent source/evidence peerd5e2446f supports observable before/after ownership checks, no confirmed changed-path regression. Chrome window capture non-atomic limitation explicit. Region/CDP/native persistence/gallery/D36 not verified. Highlight overlay source gapsb5f93015 remain next; broaderD59 stays in-fix.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",

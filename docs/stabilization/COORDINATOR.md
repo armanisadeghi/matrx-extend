@@ -10,6 +10,13 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest screenshot checkpoint — candidate reviewed, native open
+
+- 521252fa binds screenshot UI to initiating tab/document, checks window capture before/after, targets full-page scroll/restore to original document, and covers region/CDP persistence metadata. Guarded6tests, compile, catalog and docs passed. Root verified all five reported journal hashes. Historical URL gallery preserved; D36 source untouched.
+- Fresh source/evidence peerd5e2446f supports observable checks, no confirmed changed-path regression. Limits: Chrome window capture cannot detect switch-away-and-back wholly inside one API call; manual/agent tools bind at handler start; helper-red was not original handler red; region/CDP and native persistence/gallery/full-page/D36 acceptance remain unverified. D59 stays in-fix.
+- Highlight auditb5f93015 identifies tab-only overlay state, start-vs-reload race, and sender-document/session admission gaps. Next fresh Sol should fix shared overlay lifecycle with explicit active-tab policy and exact-document messaging, preserving historical lookup and fixed Data/Scrape handoffs. Scope and reproducible source traces in reports/highlight-identity-audit.json; native not claimed. Inventory1009/1010 linked to D59 in8c66ba61.
+- All workers terminal, no owned heavy/browser jobs. Native primary disk still5.3GiB; external1.6TiB. No incoming remote changes at fetch; root no red-trunk push. No new build; historical a8670bf7 does not contain current corrections. Remaining: Highlights/Showcase census, broad integrated fixtures, directdevbuild+ChromeReload/retests, CI credential repair/release. Goal active; this turn made source/test/evidence progress.
+
 ## Latest Scrape correction checkpoint — scoped peer acceptance
 
 - Fresh Sol fe389b5e corrects mixed-document Diagnose Copy for AI and shared refresh status ownership. Shared auto-scrape store uses page/run ownership in pre-send and automatic capture. Builder reports oldcode red2; final guarded6tests/4files and compile passed. Root verified all six journal hashes.
