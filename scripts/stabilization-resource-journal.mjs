@@ -1,4 +1,6 @@
-import { closeSync, fsyncSync, mkdirSync, openSync, writeSync } from 'node:fs';
+import {
+  closeSync, fsyncSync, lstatSync, mkdirSync, openSync, realpathSync, writeSync,
+} from 'node:fs';
 import { join } from 'node:path';
 
 const RUN_ID = /^[A-Za-z0-9_.-]+$/;
@@ -13,8 +15,17 @@ const JOURNAL_FIELDS = new Set([
 // to the caller's terminal and is never copied into the journal.
 export function openResourceJournal(repo, runId) {
   if (!runId || !RUN_ID.test(runId)) throw new Error('RESOURCE_RUN_ID_INVALID');
-  const dir = join(repo, 'docs/stabilization/resource-journals');
-  mkdirSync(dir, { recursive: true, mode: 0o700 });
+  const canonicalRepo = realpathSync(repo);
+  const parent = join(canonicalRepo, 'docs/stabilization');
+  if (realpathSync(parent) !== parent) throw new Error('RESOURCE_JOURNAL_PATH_INVALID');
+  const dir = join(parent, 'resource-journals');
+  try {
+    mkdirSync(dir, { mode: 0o700 });
+  } catch (error) {
+    if (error.code !== 'EEXIST') throw new Error('RESOURCE_JOURNAL_OPEN_FAILED');
+  }
+  if (!lstatSync(dir).isDirectory() || realpathSync(dir) !== dir)
+    throw new Error('RESOURCE_JOURNAL_PATH_INVALID');
   const path = join(dir, `${runId}.jsonl`);
   let fd;
   try {

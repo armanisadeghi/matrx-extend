@@ -4,9 +4,9 @@
   "defect_id": "EXT-D-0051",
   "scope": "Guard-owned resource evidence for check/run/browser invocations; no extension behavior or product test verdict changed",
   "root_cause": "The resource guard emitted admission, watch, unsafe, stop and refusal events only to terminal stdout. Browser UI work could outlive or lose terminal capture, so a useful native observation had no durable resource verdict. The existing evidence recorder reads an already captured guard log and cannot recover missing terminal output.",
-  "change": "The guard opens a private, exclusive repo-local JSONL journal before policy and command admission; synchronously writes only bounded guard fields on every emit; refuses run-ID reuse; and writes a final resourceInvalid/exitCode/decision event after cleanup. Child stdout is never journaled. If journaling fails while a permit is held, stderr requires browser work to stop, the wrapper exits nonzero, and the lease remains held for the existing recovery procedure.",
+  "change": "The guard opens a private, exclusive repo-local JSONL journal before policy and command admission; synchronously writes only bounded guard fields on every emit; refuses run-ID reuse; and writes a final resourceInvalid/exitCode/decision event after cleanup. Canonical-path checks refuse a symlinked journal directory while allowing a symlinked repository root. Child stdout is never journaled. If journaling fails while a permit is held, stderr requires browser work to stop, resourceInvalid becomes true, the wrapper exits 3, and the lease remains held for the existing recovery procedure.",
   "verification": {
-    "lightweight_test": "node --test scripts/test-stabilization-resource-journal.mjs: 2/2 pass, run outside guard because it invokes only a denied pre-permit command and writer operations; no heavy child ran",
+    "lightweight_test": "node --test scripts/test-stabilization-resource-journal.mjs: 3/3 pass, run outside guard because it invokes only a denied pre-permit command and writer/filesystem operations; no heavy child ran. Symlink test proves no outside file is created and a legitimate alias to the repository root works.",
     "syntax": "node --check scripts/stabilization-resource.mjs and scripts/stabilization-resource-journal.mjs: pass",
     "live_guard_probe": {
       "run_id": "native-guard-journal-signal-20260928",
@@ -18,7 +18,47 @@
       "resource_invalid": false,
       "wrapper_exit_code": 0,
       "ui_actions": 0
+    },
+    "live_watch_probe": {
+      "run_id": "native-guard-journal-watch-20260928",
+      "journal_path": "docs/stabilization/resource-journals/native-guard-journal-watch-20260928.jsonl",
+      "journal_sha256": "a19da63b6f284377faacad9bb5fc4a1de871b330e5a233f5d4c326d70ba0d545",
+      "profile_dir": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+      "events": ["RESOURCE_JOURNAL_OPENED", "RESOURCE_ADMITTED", "RESOURCE_WATCH_HEALTHY", "RESOURCE_STOP_REQUESTED", "RESOURCE_BROWSER_STOP_CONFIRMED", "RESOURCE_FINAL_DECISION"],
+      "resource_invalid": false,
+      "wrapper_exit_code": 0,
+      "ui_actions": 0,
+      "post_probe_global_heavy_lease": "absent"
+    },
+    "isolated_watch_write_fault": {
+      "method": "Copied the guard, policy and two helper modules to a scratch directory. Only the copied lease-root function was redirected to a private scratch lock, and only the copied journal writer was made to throw on RESOURCE_WATCH_*; admission thresholds and allowlist were unchanged. No Chrome UI was opened.",
+      "before_fix": {
+        "journal_path": "docs/stabilization/resource-journals/fault-first.jsonl",
+        "journal_sha256": "ba14aa9bb44c4405d044355ed91f379e35a10da3f7d112cabf5af5befd2e806f",
+        "admitted": true,
+        "wrapper_exit_code": 2,
+        "resource_invalid": false,
+        "isolated_browser_lease_retained": true,
+        "finding": "The outer fail() call overwrote exit 3 with 2 after the writer threw."
+      },
+      "after_fix": {
+        "journal_path": "docs/stabilization/resource-journals/fault-fixed.jsonl",
+        "journal_sha256": "562ce5cfd3cb4b8b5c9d0a0f8189a7cb4ddbdbb934c1e1daaec1f497a1290595",
+        "admitted": true,
+        "wrapper_exit_code": 3,
+        "resource_invalid": true,
+        "final_decision": "refused",
+        "isolated_browser_lease_retained": true
+      },
+      "next_launch": {
+        "journal_path": "docs/stabilization/resource-journals/fault-second-fixed.jsonl",
+        "journal_sha256": "8e100cdcb09625cc5db725680e098be6d797bdfb42a799682dc624c0920d0a07",
+        "wrapper_exit_code": 2,
+        "refusal": "RESOURCE_STALE_BROWSER",
+        "admitted": false
+      },
+      "cleanup": "With no browser UI or owned child, recover-browser --confirm-no-owned-work yes exited 0; isolated heavy lease absent. Global heavy lease was never used by this fault probe."
     }
   },
-  "limits": "The live probe stopped immediately after admission and therefore did not reach a 15-second watch event. The writer test covers watch-event persistence, but a live watch and mid-run disk I/O failure were not induced. This change cannot reconstruct the lost guard evidence from showcase-structured-native-20260928 or convert that run to verified. No product tests, browser UI actions or extension rebuild were performed."
+  "limits": "The fault was a deterministic throw at the journal writer seam in an isolated source copy, not an actual disk failure on the primary repository. The real guard probe independently proves durable watch output. The change cannot reconstruct lost guard evidence from showcase-structured-native-20260928 or convert that run to verified. No product tests, browser UI actions or extension rebuild were performed."
 }

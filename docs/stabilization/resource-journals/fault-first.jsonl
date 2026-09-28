@@ -1,0 +1,4 @@
+{"schema":1,"at":"2026-09-28T11:14:14.904Z","runId":"fault-first","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-09-28T11:15:24.522Z","runId":"fault-first","mode":"browser","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":12.32,"requiredMemoryGiB":4,"oneMinuteLoad":1.7999999999999998,"logicalCpus":10,"cpuBusyFraction":0.16654285714285716,"swapUsedMiB":3592.69,"repoFreeGiB":1673.134479522705,"profileFreeGiB":1673.134479522705},"cpuBusySamples":[0.08040000000000003,0.07790000000000008,0.24219999999999997,0.2922,0.22089999999999999,0.0867,0.16549999999999998],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+{"schema":1,"at":"2026-09-28T11:15:40.907Z","runId":"fault-first","code":"RESOURCE_JOURNAL_WRITE_FAILED"}
+{"schema":1,"at":"2026-09-28T11:15:40.915Z","runId":"fault-first","resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}

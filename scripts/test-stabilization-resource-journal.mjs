@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { readFile, rm, stat } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, stat, symlink } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { test } from 'node:test';
 import { openResourceJournal } from './stabilization-resource-journal.mjs';
@@ -69,5 +70,28 @@ test('journal writes only guard fields and refuses overwrite', async () => {
   } finally {
     journal.close();
     await rm(path, { force: true });
+  }
+});
+
+test('journal refuses a symlinked directory without creating evidence outside the repository', async () => {
+  const scratch = await mkdtemp(resolve(tmpdir(), 'resource-journal-containment-'));
+  const fixtureRepo = resolve(scratch, 'repo');
+  const outside = resolve(scratch, 'outside');
+  const runId = 'containment-probe';
+  try {
+    await mkdir(resolve(fixtureRepo, 'docs/stabilization'), { recursive: true });
+    await mkdir(outside);
+    await symlink(outside, resolve(fixtureRepo, 'docs/stabilization/resource-journals'));
+    assert.throws(() => openResourceJournal(fixtureRepo, runId), /RESOURCE_JOURNAL_PATH_INVALID/);
+    await assert.rejects(stat(resolve(outside, `${runId}.jsonl`)), { code: 'ENOENT' });
+    const alias = resolve(scratch, 'repo-alias');
+    await symlink(fixtureRepo, alias);
+    await rm(resolve(fixtureRepo, 'docs/stabilization/resource-journals'));
+    const journal = openResourceJournal(alias, runId);
+    journal.write({ schema: 1, at: '2026-09-28T00:00:00.000Z', code: 'RESOURCE_ADMITTED', runId });
+    journal.close();
+    assert.equal((await readFile(resolve(fixtureRepo, 'docs/stabilization/resource-journals', `${runId}.jsonl`), 'utf8')).includes('RESOURCE_ADMITTED'), true);
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
   }
 });

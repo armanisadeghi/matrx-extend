@@ -65,6 +65,8 @@ const emit = (code, extra = {}) => {
       journal.write(event);
     } catch (error) {
       journalBroken = true;
+      resourceInvalid = true;
+      process.exitCode = 3;
       process.stderr.write(
         `RESOURCE_JOURNAL_WRITE_FAILED runId=${activeRunId} Stop manual browser work; the permit is retained.\n`,
       );
@@ -739,14 +741,20 @@ async function main() {
 try {
   await main();
 } catch (error) {
-  const code = error.message.startsWith('RESOURCE_')
-    ? error.message
-    : 'RESOURCE_MEASUREMENT_FAILED';
-  try {
-    fail(code, { runId: activeRunId, detail: error.message });
-  } catch {
-    process.stderr.write(`RESOURCE_JOURNAL_WRITE_FAILED runId=${activeRunId ?? 'unavailable'}\n`);
+  if (journalBroken) {
+    // A later successful journal write cannot repair the missing event. Keep
+    // the permit and invalid verdict instead of letting fail() downgrade to 2.
     process.exitCode = 3;
+  } else {
+    const code = error.message.startsWith('RESOURCE_')
+      ? error.message
+      : 'RESOURCE_MEASUREMENT_FAILED';
+    try {
+      fail(code, { runId: activeRunId, detail: error.message });
+    } catch {
+      process.stderr.write(`RESOURCE_JOURNAL_WRITE_FAILED runId=${activeRunId ?? 'unavailable'}\n`);
+      process.exitCode = 3;
+    }
   }
 } finally {
   if (journal) {
