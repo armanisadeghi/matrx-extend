@@ -16786,8 +16786,11 @@
           "results": {
             "admin": {
               "status": "unverified",
-              "evidence": [],
-              "detail": "Implementation in progress; no native acceptance yet."
+              "evidence": [
+                "docs/stabilization/reports/showcase-initial-discovery-source-peer.json",
+                "docs/stabilization/reports/showcase-initial-discovery-revised-peer.json"
+              ],
+              "detail": "New control implemented; initial source review findings addressed and fresh revised source review PASS a585cf2f. Latest tests/compile/build and native acceptance unverified after guarded launch refusals. No UI success inferred from source."
             }
           }
         }

@@ -2,7 +2,8 @@
   "id": "EXT-D-0049",
   "feature_id": "EXT-F-1012",
   "case_ids": [
-    "EXT-F-1012-T57"
+    "EXT-F-1012-T57",
+    "EXT-F-1012-T59"
   ],
   "surface": "Showcase Patterns saved Network Run",
   "auth_mode": "admin",
@@ -25,13 +26,17 @@
     "docs/stabilization/reports/showcase-d49-worker-escalation.json",
     "docs/stabilization/reports/showcase-d49-standalone-peer.json",
     "docs/stabilization/runs/showcase-d49-standalone-peer-20260928.json",
-    "docs/stabilization/reports/showcase-request-identity.json"
+    "docs/stabilization/reports/showcase-request-identity.json",
+    "docs/stabilization/reports/showcase-initial-discovery-plan-review.json",
+    "docs/stabilization/reports/showcase-initial-discovery-source-peer.json",
+    "docs/stabilization/reports/showcase-initial-discovery-revised-peer.json",
+    "docs/stabilization/reports/showcase-initial-discovery.json"
   ],
   "severity": "S1: the observed saved Network extraction cannot run and gives no recovery feedback.",
   "priority": "P1: blocks Showcase saved replay acceptance and D47 retest.",
   "state": "in-fix",
   "reproduction_status": "Native diagnostic localized first stalled boundary to worker lazy dispatcher import; Port and run message acceptance and worker log delivery verified. Worker DevTools closed.",
-  "verification_status": "Fresh native recipe reproduces no-match. Instrumented capture delivered10 responses, one matching URL/POST but no matching exact body. Same-primary-Chrome evidence shows selected manual request prefixLast versus reload prefixNone. Exact matcher preserves distinct search semantics. Discovery only taps already loaded document and its Reload stops capture, whereas replay arms before reload. Correct settled-request discovery/save/replay remains open; no broad matcher fallback. Provenance limitation: instrumented native build had no complete artifact receipt before replacement; counter/semantic observations are diagnostic leads requiring re-establishment on a receipted build, not acceptance proof.",
+  "verification_status": "Page-load discovery implemented with privileged approval and canonical document-start engine; fresh source peer a585cf2f PASS on revised source only. Earlier compile/focused suites passed before final route/empty/test-seam corrections. Revised tests refused twice by resource guard (CPU high load; later unsafe memory pressure despite intervening healthy check). Current-source compile, tests, full artifact receipt/build and native exact save/reopen/two replays remain unverified. State stays in-fix; no release claim.",
   "transition_history": [
     {
       "at": "2026-09-28T06:06:00Z",
@@ -111,6 +116,7 @@
   "fix_commits": [
     "227d3540f19b24d21b9038586e99770058c70480",
     "dd6f12a2",
-    "afb7486692dbdd46d611021c46022a91b22ab227"
+    "afb7486692dbdd46d611021c46022a91b22ab227",
+    "ef744dc68d886b739418134a279503e1b36bbfe5"
   ]
 }
