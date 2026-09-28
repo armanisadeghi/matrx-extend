@@ -10,6 +10,14 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest Highlight checkpoint — scoped source accepted, native open
+
+- 3cfdd19d represents one overlay pinned to tab/document/pageKey/sessionId. Pending start, exact-document control, sender/session admission and capture post-await guard corrected. Switching tabs preserves pinned session with explicit stop; starting elsewhere retires it. Historical lists/Data/Scrape handoffs preserved. Guarded final11reportedtests and compile valid; root verified seven journal hashes.
+- Fresh peer edc126c1 accepts scoped source, no important defects. Journal metadata proves admission/exit but test counts are builder-reported; no original failing-source run or native acceptance. D59 remains in-fix, not closed.
+- Adjudication: confirmed URL-history clear rechecks session when the user-confirmed run begins, then deletes captured URL/IDs. Navigation after that does not itself establish wrong-target deletion. Do not add implicit cancellation to this historical mutation without actual evidence; reviewer downgraded concern accordingly.
+- Next: remaining Showcase live-action/document census, broader integrated fixture checks and direct development build; then nativeChromeReload/realpage tests once primary disk meetsguard. Existing historicalartifact a8670bf7 does not contain these changes. Screenshot/region/CDP/native persistence and broader guest/member/admin cases remain unverified.
+- All workers terminal; no owned heavy/browser process. Primarydisk last6.4GiB, external1.6TiB. No incomingremotechanges; rootno redtrunkpush. CI credential repair/release remain open. Goal turn progressed via Highlight correction/review; overall goal active.
+
 ## Latest screenshot checkpoint — candidate reviewed, native open
 
 - 521252fa binds screenshot UI to initiating tab/document, checks window capture before/after, targets full-page scroll/restore to original document, and covers region/CDP persistence metadata. Guarded6tests, compile, catalog and docs passed. Root verified all five reported journal hashes. Historical URL gallery preserved; D36 source untouched.

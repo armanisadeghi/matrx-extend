@@ -39,9 +39,11 @@
     "docs/stabilization/reports/scrape-correction-peer.json",
     "docs/stabilization/reports/highlight-identity-audit.json",
     "docs/stabilization/reports/screenshot-document-correction.json",
-    "docs/stabilization/reports/screenshot-document-peer.json"
+    "docs/stabilization/reports/screenshot-document-peer.json",
+    "docs/stabilization/reports/highlight-session-correction.json",
+    "docs/stabilization/reports/highlight-session-peer.json"
   ],
-  "verification_status": "Screenshot candidate521252fa guarded6tests/compile/catalog/docs pass; independent source/evidence peerd5e2446f supports observable before/after ownership checks, no confirmed changed-path regression. Chrome window capture non-atomic limitation explicit. Region/CDP/native persistence/gallery/D36 not verified. Highlight overlay source gapsb5f93015 remain next; broaderD59 stays in-fix.",
+  "verification_status": "Highlight candidate3cfdd19d guarded11reportedtests/finalcompile valid; fresh peer edc126c1 accepts scoped source with no important defect. Rootverified7journalhashes. No observedoriginalred/native; savedURLclear continuation is intentional confirmedhistoricalmutation, not wrongtarget based solely on navigation. SharedD59 remains in-fix for remaining Showcase/integrated/native coverage.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",
