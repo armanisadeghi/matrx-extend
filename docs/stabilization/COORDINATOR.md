@@ -10,6 +10,13 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest export checkpoint — actual spreadsheet paste passed
+
+- Progress: Luna native lane `tsv_quote_native` completed and committed `1366a80a`. Explicit Chrome Reload of artifact `a000d26b` preceded real AFI table extraction and normal Google Sheets paste. Range A1:F101 and three quote-bearing cells were inspected. Journal SHA `74fbe07a1b09248236655a4cee2dca1d8bc2c0baeb8b63ea99607ec879994628` verified; terminal exit 0, valid, no unsafe watches.
+- D54 remains fixed with partial native acceptance. Remaining: quote-bearing header, Data quote-case, and actual multiline spreadsheet paste. Strict parsing is separate evidence. Live Rank 1 punctuation supersedes reconnaissance wording; no product defect there.
+- Disposable spreadsheet exact identity is retained in `reports/tsv-quote-native.json` for cleanup. All workers terminal. No browser/heavy job remains. Next native run should cover the remaining export dimensions without repeating the now-passing quote-cell case.
+- Remote checked: no new commits; Actions 36433855149 remains failed on missing canonical-reader credential. No release or root push claimed.
+
 ## Latest verified checkpoint — D55 closed
 
 - Goal-turn classification: progress. Verified completed native journal SHA `15d4d326eb2077f45f2751661312a0b3848063642879d3a61ccb29af55fb5208`, exit 0, nine healthy watches and zero unsafe. D55 now closed; whole Showcase and the campaign remain incomplete.

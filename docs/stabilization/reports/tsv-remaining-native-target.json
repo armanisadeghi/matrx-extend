@@ -23,8 +23,22 @@
     "verification_method": "Browser-free web page retrieval; page text explicitly identifies the list table and exposes headers and cell values.",
     "page_evidence": "The page says the table reproduces quotes as AFI published them. Its table headers are Rank, Quotation, Character, Actor/Actress, Film, Year. Rows include Rank 1 Quotation `\"Frankly, my dear, I don't give a damn\"`, Character `Rhett Butler`; Rank 18 Character `Arthur \"Cody\" Jarrett`; and Rank 27 Character `\"Ratso\" Rizzo`.",
     "expected_values_if_extracted_verbatim": {
-      "headers": ["Rank", "Quotation", "Character", "Actor/Actress", "Film", "Year"],
-      "row_1": ["1", "\"Frankly, my dear, I don't give a damn\"", "Rhett Butler", "Clark Gable", "Gone with the Wind", "1939"],
+      "headers": [
+        "Rank",
+        "Quotation",
+        "Character",
+        "Actor/Actress",
+        "Film",
+        "Year"
+      ],
+      "row_1": [
+        "1",
+        "\"Frankly, my dear, I don't give a damn\"",
+        "Rhett Butler",
+        "Clark Gable",
+        "Gone with the Wind",
+        "1939"
+      ],
       "row_18_character": "Arthur \"Cody\" Jarrett",
       "row_27_character": "\"Ratso\" Rizzo"
     },
@@ -40,8 +54,15 @@
   "open_questions": [
     "Is a genuine public quote-bearing header required to close EXT-D-0054, or is source-level formatter coverage sufficient for that header case once native quote-bearing cells and spreadsheet paste are proven?"
   ],
-  "files_touched": ["docs/stabilization/reports/tsv-remaining-native-target.json"],
+  "files_touched": [
+    "docs/stabilization/reports/tsv-remaining-native-target.json"
+  ],
   "source_urls": [
     "https://en.wikipedia.org/wiki/AFI%27s_100_Years...100_Movie_Quotes"
-  ]
+  ],
+  "native_followup": {
+    "report": "docs/stabilization/reports/tsv-quote-native.json",
+    "ruling": "Live native source and spreadsheet value take precedence over web-text reconnaissance: Rank 1 quotation includes a period before its closing straight quote. This is a target-description correction, not a product defect.",
+    "actual_rank_1_quotation": "\"Frankly, my dear, I don't give a damn.\""
+  }
 }
