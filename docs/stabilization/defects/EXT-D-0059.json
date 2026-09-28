@@ -30,9 +30,11 @@
     "docs/stabilization/reports/document-handoff-correction.json",
     "docs/stabilization/reports/document-handoff-peer.json",
     "docs/stabilization/reports/document-handoff-restored-runtime.json",
-    "docs/stabilization/reports/document-remaining-census.json"
+    "docs/stabilization/reports/document-remaining-census.json",
+    "docs/stabilization/reports/document-save-boundary-correction.json",
+    "docs/stabilization/reports/document-save-boundary-peer.json"
   ],
-  "verification_status": "4926e1c1 corrects Highlight-to-Data provenance and obsolete picker failure. Builder15tests/compile pass and controlled mutation2expected failures. Fresh Sol e0002aa8 post-restoration15/15 pass, valid resource journal. Peer3cfd8d63 and Sol independently confirm another save race: identity checked before awaited organization resolution, not again before savePattern. Next correction requires current-document check after await and deferred-org/reload regression. Native/broad migration/catalog/build remain pending; in-fix.",
+  "verification_status": "99d61661 fixes save boundary and old completion races; original source failed two new tests, candidate17/17 and compile passed. Fresh source peer1998c62b found no important defect; optional stale rejection/refresh tests remain. Broader consumer migration/catalog/build/native still pending, remains in-fix.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",

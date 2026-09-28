@@ -10,6 +10,13 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest checkpoint — Save race corrected; guard edge remains
+
+- Goal-turn progress: D59 save-boundary correction99d61661 prevents persistence after document replacement during organization lookup, and prevents old completion/finally from changing a new page's Save state. Guarded original RED2/new GREEN17 + compile pass; root verified all three journal hashes. Fresh source peer1998c62b found no important defect. Native and actual persistence unverified; D59 remains in-fix for wider census/migration.
+- D60 candidatee4b2f39e fixes admitted child failure reporting; six classifier tests pass, real failed child journal now child_failed, successful child valid. Root verified both hashes. Fresh peer06117afe confirms original fix and unchanged guard protections, but flags pre-admission journal failure: if journal recovers, final invalid/admittedfalse conflicts with invalid's stated admission-scoped meaning. Next bounded correction must explicitly classify this case and test it; D60 remains in-fix.
+- All lanes terminal, no owned heavy/browser job remains. No new development build/native acceptance. Pending: D60 edge, remaining D59 consumer migration, catalog/docs regeneration, integrated checks/build, Chrome reload/retests, CI credential repair and release. Primary disk last observed5.6GiB vs20GiB minimum; external scratch1.6TiB. Never substitute internal /tmp for the specified external test scratch.
+- Origin fetched this turn: no incoming commits; shared sync had advanced remote to most prior work (HEAD then3ahead/0behind). Root made no red-trunk push. Goal remains active and incomplete.
+
 ## Latest D59 handoff checkpoint — corrected, further save race confirmed
 
 - 4926e1c1 fixes Highlight-to-Data provenance and obsolete picker injection failure. Builder15 tests/compile passed; two-behavior mutation made two expected regressions fail. Root verified four completed journal hashes. Independent Sol e0002aa8 freshly ran restored source:15/15 pass, admitted/valid, resourceInvalidfalse; journal b6abe3198fb93b16d0231964d5879d954b17f2f446eec71b1a2b70d151179f90.

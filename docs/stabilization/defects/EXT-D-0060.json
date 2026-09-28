@@ -15,10 +15,12 @@
   "actual": "scripts/stabilization-resource.mjs:788 uses refused for every nonzero exit, including admitted compiler errors with resourceInvalid false. D59 worker misclassified this and stopped verification.",
   "severity": "S2: misleading diagnostics stall validation",
   "priority": "P1: reliable test/run attribution",
-  "state": "open",
+  "state": "in-fix",
   "evidence": [
     "docs/stabilization/resource-journals/d59-compile-2.jsonl",
-    "scripts/stabilization-resource.mjs:788"
+    "scripts/stabilization-resource.mjs:788",
+    "docs/stabilization/reports/resource-verdict-correction.json",
+    "docs/stabilization/reports/resource-verdict-peer.json"
   ],
   "transition_history": [
     {
@@ -26,7 +28,19 @@
       "from": null,
       "to": "open",
       "reason": "Owner inspected admitted/child-exit/final journal and confirmed source ternary conflation."
+    },
+    {
+      "at": "2026-09-28T17:04:48.541748+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Confirmed original ADMITTED child failure was mislabeled as launch refusal."
+    },
+    {
+      "at": "2026-09-28T17:04:48.541748+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Candidate e4b2f39e separates verdicts; peer06117afe confirms original correction but raises pre-admission journal-error classification edge."
     }
   ],
-  "verification_status": "Observed journal and source proof; no repair yet."
+  "verification_status": "Six focused classifier tests pass; actual admitted child exit1 reports child_failed and success reports valid. Independent source/result peer confirms original fix, guard invariants unchanged. Remaining pre-admission journal-error precedence needs explicit semantics and regression. Do not close yet."
 }
