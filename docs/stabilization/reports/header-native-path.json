@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "report_id": "header-native-path",
+  "defect_id": "EXT-D-0054",
+  "status": "DATA_HEADER_PATH_UNAVAILABLE_BY_ORDINARY_CONTROLS",
+  "scope": "Source-only review of quote-bearing header and Data T03 naming paths. No browser, test, build, or product edits.",
+  "evidence": {
+    "data_manual_flow": {
+      "inventory_case": "EXT-F-2005-T03",
+      "source": "docs/stabilization/inventory.json: EXT-F-2005-T03 describes picking fields, naming/saving the pattern, then running and copying extracted rows.",
+      "picker": "src/lib/data-pattern/picker.ts assigns each pick the generated name field_N when reporting results; its overlay offers Done, Cancel, and Clear only. It has no field-name editor.",
+      "data_view": "src/features/data/DataView.tsx renders selected field names as text and allows naming the overall pattern; saved patterns expose Run and copy actions, with no field rename action.",
+      "conclusion": "Ordinary Data controls cannot create a straight-quote field name/header. The user can name the pattern itself, which is not an extracted column header. Do not invent a click path or inject a fixture."
+    },
+    "separate_ui": "src/features/showcase/tabs/AiExtractTab.tsx does expose editable output-schema field names, but that is Showcase AI Extract, not the Data manual-field lifecycle in EXT-F-2005-T03; it does not establish native Data-path acceptance.",
+    "existing_native_evidence": "docs/stabilization/reports/tsv-quote-native.json proves real quote-bearing cell values and spreadsheet paste on the AFI page, while explicitly leaving quote-bearing headers and Data T03 unverified.",
+    "multiline_value_target": {
+      "recommendation": "Use a single stanza/poem-sized element from Project Gutenberg's public HTML for The Raven as a genuine multiline value, instead of capturing an entire novel.",
+      "url": "https://www.gutenberg.org/files/1065/1065-h/1065-h.htm",
+      "bound": "One stanza-sized field is only a few hundred characters, suitable for an ordinary spreadsheet cell; the page is a short poem rather than a 719k-character book.",
+      "qualification": "Source recommendation only; not exercised in the browser. Confirm the selected DOM element yields embedded line breaks through the ordinary manual CSS extraction flow before treating it as native evidence."
+    }
+  },
+  "files_touched": [
+    "docs/stabilization/reports/header-native-path.json"
+  ]
+}
