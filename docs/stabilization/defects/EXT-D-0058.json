@@ -16,7 +16,7 @@
   "actual": "run clears error but retains report, and async continuations unconditionally write after page-change invalidation.",
   "severity": "S2: misleading preparation status",
   "priority": "P1: truthful current-page results",
-  "state": "triaged",
+  "state": "in-fix",
   "evidence": [
     "docs/stabilization/reports/prepare-source-audit.json"
   ],
@@ -33,6 +33,12 @@
       "from": "open",
       "to": "triaged",
       "reason": "Owner inspected source-backed reproduction; no native acceptance claim."
+    },
+    {
+      "at": "2026-09-28T15:18:37.565358+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol prepare_lifecycle_repair assigned async lifecycle repair with meaningful connected regression coverage and guarded self-verification."
     }
   ]
 }
