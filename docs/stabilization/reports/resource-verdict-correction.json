@@ -1,0 +1,26 @@
+{
+  "defect_id": "EXT-D-0060",
+  "state": "source-ready; runtime verification pending resource lease",
+  "cause": "The final journal mapped every nonzero wrapper exit to refused, including an admitted child command that exited 1 while resourceInvalid was false.",
+  "captured_reproduction": {
+    "journal": "docs/stabilization/resource-journals/d59-compile-2.jsonl",
+    "admitted": true,
+    "child_exit_code": 1,
+    "resource_invalid": false,
+    "old_decision": "refused",
+    "correct_decision": "child_failed"
+  },
+  "new_decisions": {
+    "refused": "The guard denied launch before RESOURCE_ADMITTED.",
+    "invalid": "The admitted resource run became unsafe or the guard failed after admission.",
+    "child_failed": "The admitted command ended unsuccessfully while the resource run remained valid.",
+    "valid": "The admitted check, command or browser session ended successfully.",
+    "interrupted": "An operator stopped an admitted command before it finished."
+  },
+  "compatibility": "No active script consumer parses the decision values beyond the focused guard test; historical reports and journals remain unchanged.",
+  "verification": {
+    "focused_test": "pending resource lease",
+    "mutation_proof": "pending resource lease",
+    "source_review": "pending independent review"
+  }
+}
