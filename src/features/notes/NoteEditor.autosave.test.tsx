@@ -105,9 +105,10 @@ describe('Notes editor autosave', () => {
     fireEvent.change(first, { target: { value: 'Call new patient at 9 AM.' } });
     await debounce();
     expect(writes[0]?.id).toBe(A);
+    vi.useRealTimers();
     await act(async () => { useNotesUiStore.getState().setSelectedNoteId(B); });
-    await settle();
-    const second = screen.getByDisplayValue('Order gloves.');
+    const second = await screen.findByDisplayValue('Order gloves.');
+    vi.useFakeTimers();
     fireEvent.change(second, { target: { value: 'Order nitrile gloves and masks.' } });
     await debounce();
     expect(writes[1]?.id).toBe(B);
@@ -122,7 +123,7 @@ describe('Notes editor autosave', () => {
 
   it('serializes Append from page behind an in-flight autosave', async () => {
     mount();
-    const body = await screen.findByDisplayValue('Call new patient.');
+    const body = await screen.findByPlaceholderText('Start writing… or use Append from page to capture content.');
     vi.useFakeTimers();
     fireEvent.change(body, { target: { value: 'Call new patient at 9 AM.' } });
     await debounce();
@@ -137,7 +138,7 @@ describe('Notes editor autosave', () => {
 
   it('flushes the latest queued draft after editor unmount', async () => {
     const view = mount();
-    const body = await screen.findByDisplayValue('Call new patient.');
+    const body = await screen.findByPlaceholderText('Start writing… or use Append from page to capture content.');
     vi.useFakeTimers();
     fireEvent.change(body, { target: { value: 'Call new patient at 9 AM.' } });
     await debounce();
