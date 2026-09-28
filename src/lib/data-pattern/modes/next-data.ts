@@ -1,6 +1,6 @@
-import type { JsonKeyPath } from '../json-key-path';
 import { formatFileSize } from '@ai-matrx/kit/format';
 import { z } from 'zod';
+import { runFrameworkPattern } from '../framework-sources';
 import type { ExtractionMode } from '../types';
 
 export const nextDataConfigSchema = z.object({
@@ -10,9 +10,8 @@ export const nextDataConfigSchema = z.object({
 export type NextDataConfig = z.infer<typeof nextDataConfigSchema>;
 
 /**
- * Names of window-bound state blobs we extract via inline-script regex.
- * Update by editing the same list inside both detectInPage and runInPage —
- * those functions cross the chrome.scripting boundary and can't reference
+ * Names of window-bound state blobs we detect via inline-script regex.
+ * detectInPage crosses the chrome.scripting boundary and cannot reference
  * outer-scope identifiers.
  *
  * Sites this catches:
@@ -175,179 +174,8 @@ export const nextDataMode: ExtractionMode<NextDataConfig> = {
       .join(', ');
   },
 
-  runInPage: (config) => {
-    const cfg = config as { source?: string; key_path: JsonKeyPath };
-
-    const tryParseScript = (node: Element | null): unknown => {
-      if (!node?.textContent) return undefined;
-      try {
-        return JSON.parse(node.textContent);
-      } catch {
-        return undefined;
-      }
-    };
-
-    /**
-     * Extract a window-bound state blob from inline scripts. The balanced scan
-     * locates the value, but only strict JSON is accepted. JavaScript object
-     * literals are intentionally skipped rather than executed.
-     */
-    const extractWindow = (name: string): unknown | undefined => {
-      const escName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const lhsRe = new RegExp(
-        `(?:window\\.|self\\.|var\\s+|let\\s+|const\\s+)?${escName}\\s*=\\s*`,
-        'g',
-      );
-      const scripts = Array.from(document.querySelectorAll<HTMLScriptElement>('script:not([src])'));
-      for (const s of scripts) {
-        const txt = s.textContent ?? '';
-        if (!txt.includes(name)) continue;
-        lhsRe.lastIndex = 0;
-        let m: RegExpExecArray | null;
-        while ((m = lhsRe.exec(txt))) {
-          const start = m.index + m[0].length;
-          const opener = txt[start];
-          if (opener !== '{' && opener !== '[') continue;
-          let i = start;
-          let depth = 0;
-          let inStr: string | null = null;
-          let inLineComment = false;
-          let inBlockComment = false;
-          while (i < txt.length) {
-            const ch = txt[i];
-            const next = txt[i + 1];
-            if (inLineComment) {
-              if (ch === '\n') inLineComment = false;
-              i++;
-              continue;
-            }
-            if (inBlockComment) {
-              if (ch === '*' && next === '/') {
-                inBlockComment = false;
-                i += 2;
-                continue;
-              }
-              i++;
-              continue;
-            }
-            if (inStr) {
-              if (ch === '\\') {
-                i += 2;
-                continue;
-              }
-              if (ch === inStr) inStr = null;
-              i++;
-              continue;
-            }
-            if (ch === '/' && next === '/') {
-              inLineComment = true;
-              i += 2;
-              continue;
-            }
-            if (ch === '/' && next === '*') {
-              inBlockComment = true;
-              i += 2;
-              continue;
-            }
-            if (ch === '"' || ch === "'" || ch === '`') {
-              inStr = ch;
-              i++;
-              continue;
-            }
-            if (ch === '{' || ch === '[') depth++;
-            else if (ch === '}' || ch === ']') {
-              depth--;
-              if (depth === 0) {
-                i++;
-                break;
-              }
-            }
-            i++;
-          }
-          if (depth !== 0) continue;
-          const blob = txt.slice(start, i);
-          // Try JSON first (strict).
-          try {
-            return JSON.parse(blob);
-          } catch {
-            // Window assignments may contain arbitrary JavaScript. Keep the
-            // extension CSP-safe and deterministic: accept JSON only; the loop
-            // naturally tries the next assignment after this block.
-          }
-        }
-      }
-      return undefined;
-    };
-
-    const sources: { id: string; data: unknown }[] = [];
-
-    // Script-tag-based sources (always JSON).
-    const scriptCandidates: [string, Element | null][] = [
-      ['__NEXT_DATA__', document.getElementById('__NEXT_DATA__')],
-      ['__NUXT_DATA__', document.getElementById('__NUXT_DATA__')],
-      ['apollo', document.getElementById('__APOLLO_STATE__')],
-    ];
-    for (const [id, node] of scriptCandidates) {
-      if (cfg.source && cfg.source !== id) continue;
-      const data = tryParseScript(node);
-      if (data !== undefined) sources.push({ id, data });
-    }
-
-    // LinkedIn bpr-guid (aggregated).
-    if (!cfg.source || cfg.source === 'bpr-guid') {
-      const blocks = Array.from(document.querySelectorAll<HTMLElement>('code[id^="bpr-guid-"]'));
-      const aggregated: Record<string, unknown> = {};
-      let included: unknown[] = [];
-      for (const b of blocks) {
-        try {
-          const parsed = JSON.parse(b.textContent ?? '') as Record<string, unknown>;
-          aggregated[b.id] = parsed;
-          if (Array.isArray(parsed.included)) included = included.concat(parsed.included);
-        } catch {
-          // skip
-        }
-      }
-      if (Object.keys(aggregated).length > 0) {
-        sources.push({ id: 'bpr-guid', data: { blocks: aggregated, included } });
-      }
-    }
-
-    // window.* assignments (JSON or JS-literal).
-    const WINDOW_NAMES = [
-      '_initialData',
-      '__INITIAL_STATE__',
-      '__INITIAL_DATA__',
-      '__PRELOADED_STATE__',
-      '__APP_STATE__',
-      '__REDUX_STATE__',
-      '__APOLLO_STATE__',
-      '__SERVER_STATE__',
-    ];
-    for (const name of WINDOW_NAMES) {
-      const sourceId = `window.${name}`;
-      if (cfg.source && cfg.source !== sourceId) continue;
-      // Skip if we already got it from a <script id="..."> form.
-      if (name === '__APOLLO_STATE__' && sources.some((s) => s.id === 'apollo')) continue;
-      const data = extractWindow(name);
-      if (data !== undefined) sources.push({ id: sourceId, data });
-    }
-
-    // Resolve which source the user wants (or first available).
-    const picked = cfg.source != null ? sources.find((s) => s.id === cfg.source) : sources[0];
-    if (!picked) return [];
-
-    let target: unknown = picked.data;
-    const keyParts = typeof cfg.key_path === 'string'
-      ? (cfg.key_path ? cfg.key_path.split('.') : [])
-      : cfg.key_path ?? [];
-    for (const part of keyParts) {
-        if (target == null || typeof target !== 'object') break;
-        target = (target as Record<string, unknown>)[part];
-    }
-
-    if (Array.isArray(target)) return target as Record<string, unknown>[];
-    if (target && typeof target === 'object') return [target as Record<string, unknown>];
-    if (target != null) return [{ value: target }];
-    return [];
+  runInExtension: runFrameworkPattern,
+  runInPage: () => {
+    throw new Error('Framework extraction requires decoded sources in the extension runner.');
   },
 };

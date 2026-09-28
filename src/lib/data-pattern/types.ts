@@ -18,9 +18,9 @@ export type PatternForBuildConfig = {
 /**
  * Self-contained extraction mode.
  *
- * `detectInPage` and `runInPage` cross the chrome.scripting boundary via
- * .toString() — they MUST be standalone JS (no imports, no outer-scope refs).
- * Any helpers a mode needs go inline inside those functions.
+ * `detectInPage` and `runInPage` cross the chrome.scripting boundary
+ * via .toString() — they MUST be standalone JS (no imports, no outer-scope refs).
+ * Modes that need a package decoder can use `runInExtension` instead.
  */
 export type ExtractionMode<TConfig = unknown> = {
   id: string;
@@ -30,6 +30,7 @@ export type ExtractionMode<TConfig = unknown> = {
   defaultConfig: () => TConfig;
   detectInPage: (config?: TConfig) => DetectionHint;
   runInPage: (config: TConfig) => ExtractedRow[];
+  runInExtension?: (tabId: number, config: TConfig) => Promise<ExtractedRow[]>;
   buildConfig?: (pattern: PatternForBuildConfig) => TConfig;
   /**
    * Rewrite the hint's `summary` in the EXTENSION realm, from the facts the

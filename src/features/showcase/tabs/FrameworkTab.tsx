@@ -1,8 +1,8 @@
 import { JsonTree } from '@/components/ui/json-tree';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useExtraction } from '@/hooks/use-extraction';
+import { readFrameworkSources } from '@/lib/data-pattern/framework-sources';
 import { formatJsonKeyPath } from '@/lib/data-pattern/json-key-path';
-import { frameworkDumpInPage } from '@/lib/data-pattern/framework-dump';
 import { Button } from '@ai-matrx/design-system';
 import { Loader2, PlayCircle, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -49,11 +49,7 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
     setLoadingTree(true);
     setDumpError(null);
     try {
-      const result = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: frameworkDumpInPage,
-      });
-      const fetched = (result?.[0]?.result ?? []) as ParsedSource[];
+      const fetched = await readFrameworkSources(tab.id);
       if (seq !== dumpSeq.current) return;
       setSources(fetched);
       setSourcesPageKey(pageKeyAtDump);

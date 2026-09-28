@@ -1248,6 +1248,8 @@ Every entry follows this shape:
 ### Showcase — Framework tab (next_data)
 - **What it does:** Dumps __NEXT_DATA__/__NUXT_DATA__/Apollo/bpr-guid/window.*
   state into a navigable tree; click a node to set the key path, Extract.
+  Nuxt's serialized reference table is decoded before it appears in the tree
+  and before preview or saved-pattern extraction follows the selected path.
 - **Steps:** Open a Next.js site (e.g. vercel.com) → tree renders → click a
   nested node → Extract from key path → Save pattern.
 - **Expected:** Huge dumps render incrementally ("+N more…" expanders, 100
@@ -1256,6 +1258,12 @@ Every entry follows this shape:
   appear in the source picker. `window.*` assignments are accepted only when
   their value is strict JSON; JavaScript object literals are skipped rather
   than evaluated as extension code.
+- **Nuxt check:** On `https://nuxt.com/docs/4.x/getting-started/introduction`,
+  choose `__NUXT_DATA__`, inspect a referenced repository value in the tree,
+  extract that path, save the pattern, and run it again. The tree and both runs
+  show the repository text, never the numeric slot in the serialized payload.
+  If a Nuxt custom type cannot be decoded, the tab shows a decoder error with
+  another extraction option instead of saving raw reference numbers as rows.
 
 ### Showcase — literal JSON keys in Network and Framework (EXT-D-0046)
 - **What it does:** Tree selection keeps each JSON object key as one exact

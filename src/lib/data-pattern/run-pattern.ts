@@ -64,6 +64,9 @@ export async function runPattern(
       })
     : (pattern.config ?? {});
 
+  if (mode.runInExtension) return mode.runInExtension(tabId, config);
+  if (!mode.runInPage) throw new Error(`Pattern kind "${pattern.kind}" has no runner.`);
+
   const result = await chrome.scripting.executeScript({
     target: { tabId },
     func: mode.runInPage as (cfg: unknown) => ExtractedRow[],
@@ -109,6 +112,8 @@ export async function runMode(
   // "succeeds" with 0 rows, which a DB-added ai_extract/network recipe
   // would otherwise silently hit.
   if (mode.interactiveOnly) throw new InteractiveOnlyError(modeId);
+  if (mode.runInExtension) return mode.runInExtension(tabId, config);
+  if (!mode.runInPage) throw new Error(`Mode "${modeId}" has no runner.`);
   const result = await chrome.scripting.executeScript({
     target: { tabId },
     func: mode.runInPage as (cfg: unknown) => ExtractedRow[],
