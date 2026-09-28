@@ -1,5 +1,9 @@
 import { useActiveOrganization } from '@/hooks/use-active-organization';
-import { isCurrentPageIdentity, refreshActiveTabIdentity, useActiveTab } from '@/hooks/use-active-tab';
+import {
+  isCurrentPageIdentity,
+  refreshActiveTabIdentity,
+  useActiveTab,
+} from '@/hooks/use-active-tab';
 import type { ExtractionSource } from '@/hooks/use-extraction';
 import { useUserTables } from '@/hooks/use-user-tables';
 import { isDbFailureError } from '@/lib/supabase/db-failure';
@@ -125,7 +129,8 @@ export function SaveAsPattern({
     try {
       let targetTableId: string | null = null;
 
-      if (!isCurrentPageIdentity(resultPageKey.current)) throw new Error('The page changed before Save. Capture it again.');
+      if (!isCurrentPageIdentity(resultPageKey.current))
+        throw new Error('The page changed before Save. Capture it again.');
       if (target === NEW_TABLE) {
         // Throws on refusal (the user already saw the reason as a notice);
         // the catch at the bottom of this function renders the same sentence
@@ -160,7 +165,8 @@ export function SaveAsPattern({
         }
       }
 
-      if (!isCurrentPageIdentity(resultPageKey.current)) throw new Error('The page changed before Save. Capture it again.');
+      if (!isCurrentPageIdentity(resultPageKey.current))
+        throw new Error('The page changed before Save. Capture it again.');
       const saved = await savePattern({
         // DD-131: the person clicked "Save as pattern" in Showcase — no actor header.
         authored_by: 'person',
@@ -200,7 +206,8 @@ export function SaveAsPattern({
 
         let result: { inserted: number };
         try {
-          if (!isCurrentPageIdentity(resultPageKey.current)) throw new Error('The page changed before rows could be saved. Capture it again.');
+          if (!isCurrentPageIdentity(resultPageKey.current))
+            throw new Error('The page changed before rows could be saved. Capture it again.');
           result = await appendRows(targetTableId, operationOrganizationId, rows);
         } catch (appendErr) {
           // The pattern row IS saved — but the rows are not. Saying
@@ -232,131 +239,145 @@ export function SaveAsPattern({
   const canSave = host && resultIsCurrent && !saving && (rows.length > 0 || kind === 'manual_css');
 
   return (
-    <><Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="secondary"
-          disabled={disabled || !host || !resultIsCurrent}
-          className="rounded-full"
-          title={host ? 'Save as pattern' : 'No active page'}
-        >
-          <Save className="size-3.5" />
-          Save pattern
-        </Button>
-      </PopoverTrigger>
-      {/* `align="end"` is explicit since the design-system PopoverContent
-          defaults to "center" (the deleted local fork defaulted to "end"). */}
-      <PopoverContent align="end" className="w-80 space-y-3 p-3">
-        <div className="space-y-1">
-          <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-            Save pattern
-          </div>
-          <div className="text-xs text-muted-foreground">
-            Save under {host}. Reopen and run it from Patterns.
-            {kind === 'network_capture' &&
-              ' Network reruns reload the open page and listen for a matching request.'}
-          </div>
-        </div>
-
-        {hostMismatch && (
-          <div className="flex items-start gap-1.5 rounded-lg bg-amber-500/10 px-2 py-1.5 text-[11px] text-amber-700 dark:text-amber-300">
-            <TriangleAlert className="mt-px size-3 shrink-0" />
-            <span>
-              These rows were extracted on <span className="font-medium">{source?.host}</span>, but
-              you're now on <span className="font-medium">{liveHost}</span>. The pattern saves under{' '}
-              {source?.host}.
-            </span>
-          </div>
-        )}
-
-        <Input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder={`${host} ${kind}`}
-          className="h-8 rounded-full text-xs"
-        />
-
-        <div className="space-y-1">
-          <div className="text-[11px] font-medium text-muted-foreground">Target user table</div>
-          <select
-            value={target}
-            onChange={(e) => setTarget(e.target.value)}
-            className="h-8 w-full rounded-full bg-secondary/40 px-3 text-xs outline-none focus-visible:ring-1"
+    <>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="secondary"
+            disabled={disabled || !host || !resultIsCurrent}
+            className="rounded-full"
+            title={host ? 'Save as pattern' : 'No active page'}
           >
-            <option value={NO_TABLE}>(don't append rows now)</option>
-            <option value={NEW_TABLE}>+ Create new from these fields…</option>
-            {tables?.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.table_name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {target === NEW_TABLE && (
-          <div className="space-y-2 rounded-xl bg-secondary/40 p-2">
-            <Input
-              value={newTableName}
-              onChange={(e) => setNewTableName(e.target.value)}
-              placeholder="New table name…"
-              className="h-7 rounded-full bg-background text-xs"
-            />
-            <div className="space-y-1">
-              <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                Inferred schema
-              </div>
-              {inferredFields.length === 0 ? (
-                <div className="text-[11px] text-muted-foreground">
-                  Run extraction first to infer fields.
-                </div>
-              ) : (
-                <div className="max-h-32 space-y-0.5 overflow-y-auto">
-                  {inferredFields.map((f) => (
-                    <div
-                      key={f.field_name}
-                      className="flex items-center justify-between gap-2 text-[11px]"
-                    >
-                      <span className="min-w-0 truncate">
-                        <span className="truncate font-mono">{f.field_name}</span>
-                        {f.display_name !== f.field_name && (
-                          <span className="ml-1 truncate text-muted-foreground">
-                            ({f.display_name})
-                          </span>
-                        )}
-                      </span>
-                      <span className="shrink-0 text-muted-foreground">{f.data_type}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <Save className="size-3.5" />
+            Save pattern
+          </Button>
+        </PopoverTrigger>
+        {/* `align="end"` is explicit since the design-system PopoverContent
+          defaults to "center" (the deleted local fork defaulted to "end"). */}
+        <PopoverContent align="end" className="w-80 space-y-3 p-3">
+          <div className="space-y-1">
+            <div className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+              Save pattern
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Save under {host}. Reopen and run it from Patterns.
+              {kind === 'network_capture' &&
+                ' Network reruns reload the open page and listen for a matching request.'}
             </div>
           </div>
-        )}
 
-        {err && (
-          <div className="rounded-lg bg-destructive/10 px-2 py-1 text-[11px] text-destructive">
-            {err}
+          {hostMismatch && (
+            <div className="flex items-start gap-1.5 rounded-lg bg-amber-500/10 px-2 py-1.5 text-[11px] text-amber-700 dark:text-amber-300">
+              <TriangleAlert className="mt-px size-3 shrink-0" />
+              <span>
+                These rows were extracted on <span className="font-medium">{source?.host}</span>,
+                but you're now on <span className="font-medium">{liveHost}</span>. The pattern saves
+                under {source?.host}.
+              </span>
+            </div>
+          )}
+
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={`${host} ${kind}`}
+            className="h-8 rounded-full text-xs"
+          />
+
+          <div className="space-y-1">
+            <div className="text-[11px] font-medium text-muted-foreground">Target user table</div>
+            <select
+              value={target}
+              onChange={(e) => setTarget(e.target.value)}
+              className="h-8 w-full rounded-full bg-secondary/40 px-3 text-xs outline-none focus-visible:ring-1"
+            >
+              <option value={NO_TABLE}>(don't append rows now)</option>
+              <option value={NEW_TABLE}>+ Create new from these fields…</option>
+              {tables?.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.table_name}
+                </option>
+              ))}
+            </select>
           </div>
-        )}
 
-        {savedSummary && (
-          <div className="flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-2 py-1 text-[11px] text-emerald-700 dark:text-emerald-300">
-            <CheckCircle2 className="size-3" />
-            {savedSummary}
+          {target === NEW_TABLE && (
+            <div className="space-y-2 rounded-xl bg-secondary/40 p-2">
+              <Input
+                value={newTableName}
+                onChange={(e) => setNewTableName(e.target.value)}
+                placeholder="New table name…"
+                className="h-7 rounded-full bg-background text-xs"
+              />
+              <div className="space-y-1">
+                <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                  Inferred schema
+                </div>
+                {inferredFields.length === 0 ? (
+                  <div className="text-[11px] text-muted-foreground">
+                    Run extraction first to infer fields.
+                  </div>
+                ) : (
+                  <div className="max-h-32 space-y-0.5 overflow-y-auto">
+                    {inferredFields.map((f) => (
+                      <div
+                        key={f.field_name}
+                        className="flex items-center justify-between gap-2 text-[11px]"
+                      >
+                        <span className="min-w-0 truncate">
+                          <span className="truncate font-mono">{f.field_name}</span>
+                          {f.display_name !== f.field_name && (
+                            <span className="ml-1 truncate text-muted-foreground">
+                              ({f.display_name})
+                            </span>
+                          )}
+                        </span>
+                        <span className="shrink-0 text-muted-foreground">{f.data_type}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {err && (
+            <div className="rounded-lg bg-destructive/10 px-2 py-1 text-[11px] text-destructive">
+              {err}
+            </div>
+          )}
+
+          {savedSummary && (
+            <div className="flex items-center gap-1.5 rounded-lg bg-emerald-500/10 px-2 py-1 text-[11px] text-emerald-700 dark:text-emerald-300">
+              <CheckCircle2 className="size-3" />
+              {savedSummary}
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2">
+            <Button size="sm" variant="ghost" onClick={() => setOpen(false)} className="h-7">
+              Cancel
+            </Button>
+            <Button size="sm" onClick={() => void handleSave()} disabled={!canSave} className="h-7">
+              {saving ? <Loader2 className="size-3 animate-spin" /> : <Save className="size-3" />}
+              Save
+            </Button>
           </div>
-        )}
-
-        <div className="flex justify-end gap-2">
-          <Button size="sm" variant="ghost" onClick={() => setOpen(false)} className="h-7">
-            Cancel
-          </Button>
-          <Button size="sm" onClick={() => void handleSave()} disabled={!canSave} className="h-7">
-            {saving ? <Loader2 className="size-3 animate-spin" /> : <Save className="size-3" />}
-            Save
-          </Button>
-        </div>
-      </PopoverContent>
-    </Popover>{!resultIsCurrent && <span className="text-xs text-muted-foreground">{tab.identityError ?? 'Checking the current page…'} <button type="button" className="underline" onClick={() => void refreshActiveTabIdentity()}>Retry</button></span>}</>
+        </PopoverContent>
+      </Popover>
+      {!resultIsCurrent && (
+        <span className="text-xs text-muted-foreground">
+          {tab.identityError ?? 'Checking the current page…'}{' '}
+          <button
+            type="button"
+            className="underline"
+            onClick={() => void refreshActiveTabIdentity()}
+          >
+            Retry
+          </button>
+        </span>
+      )}
+    </>
   );
 }
 

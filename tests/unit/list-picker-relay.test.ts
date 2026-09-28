@@ -3,14 +3,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const transport = vi.hoisted(() => ({
   handlers: new Map<
     string,
-    (payload: Record<string, unknown>, sender: { tab?: { id: number }; documentId?: string }) => unknown
+    (
+      payload: Record<string, unknown>,
+      sender: { tab?: { id: number }; documentId?: string },
+    ) => unknown
   >(),
   broadcast: vi.fn(),
 }));
 vi.mock('@/lib/messaging/native', () => ({
   on: (
     channel: string,
-    handler: (payload: Record<string, unknown>, sender: { tab?: { id: number }; documentId?: string }) => unknown,
+    handler: (
+      payload: Record<string, unknown>,
+      sender: { tab?: { id: number }; documentId?: string },
+    ) => unknown,
   ) => transport.handlers.set(channel, handler),
   broadcast: transport.broadcast,
 }));

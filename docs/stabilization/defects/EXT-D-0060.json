@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0060",
   "feature_id": "EXT-F-0002",
-  "case_ids": [
-    "EXT-F-0002-T01"
-  ],
+  "case_ids": ["EXT-F-0002-T01"],
   "title": "Final resource verdict conflates admitted command failure with refusal",
   "surface": "Stabilization resource guard reporting",
   "auth_mode": "not-applicable",

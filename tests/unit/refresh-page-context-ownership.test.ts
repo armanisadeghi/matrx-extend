@@ -1,10 +1,17 @@
 import { afterEach, expect, it, vi } from 'vitest';
 
 const harness = vi.hoisted(() => ({
-  pageKey: 'page-a', documentId: 'document-a', capture: vi.fn(),
+  pageKey: 'page-a',
+  documentId: 'document-a',
+  capture: vi.fn(),
 }));
 vi.mock('@/hooks/use-active-tab', () => ({
-  getActiveTabIdentitySnapshot: () => ({ id: 41, url: 'https://harbor-dental.test/intake', pageKey: harness.pageKey, documentId: harness.documentId }),
+  getActiveTabIdentitySnapshot: () => ({
+    id: 41,
+    url: 'https://harbor-dental.test/intake',
+    pageKey: harness.pageKey,
+    documentId: harness.documentId,
+  }),
   isCurrentPageIdentity: (key: string) => key === harness.pageKey,
 }));
 vi.mock('@/lib/scrape/capture-with-fallback', () => ({ captureWithFallback: harness.capture }));
@@ -16,7 +23,9 @@ import { useAutoScrapeStore } from '@/state/auto-scrape';
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
-  const promise = new Promise<T>((yes) => { resolve = yes; });
+  const promise = new Promise<T>((yes) => {
+    resolve = yes;
+  });
   return { promise, resolve };
 }
 afterEach(() => {
@@ -44,7 +53,10 @@ it('late A failure leaves B refresh status owned by B', async () => {
   await old;
   expect(useAutoScrapeStore.getState().inFlight).toBe(true);
   expect(useAutoScrapeStore.getState().lastError).toBeNull();
-  b.resolve({ ok: true, soup: { url: 'https://harbor-dental.test/intake', article: { title: 'B intake' } } });
+  b.resolve({
+    ok: true,
+    soup: { url: 'https://harbor-dental.test/intake', article: { title: 'B intake' } },
+  });
   await latest;
   expect(useAutoScrapeStore.getState().inFlight).toBe(false);
   expect(useAutoScrapeStore.getState().current?.pageKey).toBe('page-b');
@@ -61,11 +73,17 @@ it('late A success cannot replace B while B owns the refresh', async () => {
   harness.documentId = 'document-b';
   const latest = refreshPageContextBeforeSend({ autoFullScrollOnFirstSubmit: true });
   await vi.waitFor(() => expect(harness.capture).toHaveBeenCalledTimes(2));
-  a.resolve({ ok: true, soup: { url: 'https://harbor-dental.test/intake', article: { title: 'A intake' } } });
+  a.resolve({
+    ok: true,
+    soup: { url: 'https://harbor-dental.test/intake', article: { title: 'A intake' } },
+  });
   await old;
   expect(useAutoScrapeStore.getState().inFlight).toBe(true);
   expect(useAutoScrapeStore.getState().current).toBeNull();
-  b.resolve({ ok: true, soup: { url: 'https://harbor-dental.test/intake', article: { title: 'B intake' } } });
+  b.resolve({
+    ok: true,
+    soup: { url: 'https://harbor-dental.test/intake', article: { title: 'B intake' } },
+  });
   await latest;
   expect(useAutoScrapeStore.getState().current?.soup.article.title).toBe('B intake');
   expect(useAutoScrapeStore.getState().inFlight).toBe(false);

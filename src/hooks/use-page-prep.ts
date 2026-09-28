@@ -49,7 +49,10 @@ export function usePagePrep() {
       const seq = ++runSeq.current;
       const startedOn = pageKey;
       const isCurrent = () =>
-        mounted.current && seq === runSeq.current && startedOn === currentPageKey.current && isCurrentPageIdentity(startedOn);
+        mounted.current &&
+        seq === runSeq.current &&
+        startedOn === currentPageKey.current &&
+        isCurrentPageIdentity(startedOn);
       setState({ pageKey: startedOn, report: null, running: true, error: null });
       try {
         const r = await preparePage(tab.id, config, tab.documentId);

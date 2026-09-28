@@ -27,7 +27,10 @@ let highlight: HTMLElement | null = null;
 let mode: 'missing' | 'unwanted' = 'missing';
 let sessionId = '';
 
-export function mountDiagnosePicker(initialMode: 'missing' | 'unwanted', initialSessionId = ''): void {
+export function mountDiagnosePicker(
+  initialMode: 'missing' | 'unwanted',
+  initialSessionId = '',
+): void {
   if (host) return;
   mode = initialMode;
   sessionId = initialSessionId;

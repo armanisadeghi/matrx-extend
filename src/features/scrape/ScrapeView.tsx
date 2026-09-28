@@ -5,7 +5,11 @@ import { DiagnoseCard, DiagnoseLauncher } from '@/features/scrape/DiagnoseCard';
 import { FileSourcePanel } from '@/features/scrape/FileSourcePanel';
 import { UnsavedCapturesCard } from '@/features/scrape/UnsavedCapturesCard';
 import { SeoDetails } from '@/features/seo/SeoDetails';
-import { isCurrentPageIdentity, refreshActiveTabIdentity, useActiveTab } from '@/hooks/use-active-tab';
+import {
+  isCurrentPageIdentity,
+  refreshActiveTabIdentity,
+  useActiveTab,
+} from '@/hooks/use-active-tab';
 import { usePageRecognition } from '@/hooks/use-page-recognition';
 import { usePageScrollSync } from '@/hooks/use-page-scroll-sync';
 import { useScrape } from '@/hooks/use-scrape';
@@ -84,7 +88,8 @@ export function ScrapeView() {
   const recognition = usePageRecognition();
   const tab = useActiveTab();
   const capturedPageKey = useScrapeStore((s) => s.pageKey);
-  const captureIsCurrent = isCurrentPageIdentity(capturedPageKey) && capturedPageKey === tab.pageKey;
+  const captureIsCurrent =
+    isCurrentPageIdentity(capturedPageKey) && capturedPageKey === tab.pageKey;
   const current = captureIsCurrent ? captured : null;
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -221,7 +226,12 @@ export function ScrapeView() {
     try {
       const outcome = await save();
       if (!outcome) return;
-      if (run !== saveRunRef.current || useScrapeStore.getState().current !== capture || !isCurrentPageIdentity(capturedPageKey)) return;
+      if (
+        run !== saveRunRef.current ||
+        useScrapeStore.getState().current !== capture ||
+        !isCurrentPageIdentity(capturedPageKey)
+      )
+        return;
       if (outcome.status === 'landed') {
         setSavedSource({
           id: outcome.landed.processed_document_id,
@@ -283,12 +293,19 @@ export function ScrapeView() {
         {!tab.pageKey && (
           <div className="mb-2 rounded-xl border border-amber-500/30 p-2 text-xs">
             {tab.identityError ?? 'Checking this page…'}{' '}
-            <button type="button" className="underline" onClick={() => void refreshActiveTabIdentity()}>Retry page check</button>
+            <button
+              type="button"
+              className="underline"
+              onClick={() => void refreshActiveTabIdentity()}
+            >
+              Retry page check
+            </button>
           </div>
         )}
         {captured && !captureIsCurrent && (
           <div className="mb-2 rounded-xl border border-amber-500/30 p-2 text-xs">
-            A capture from a previous page is retained on this device. Capture the current page to edit or save its content.
+            A capture from a previous page is retained on this device. Capture the current page to
+            edit or save its content.
           </div>
         )}
         <div className="flex items-start gap-2">

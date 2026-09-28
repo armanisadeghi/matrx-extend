@@ -163,7 +163,10 @@ export async function getHighlightsByIds(ids: string[]): Promise<Highlight[]> {
  * database rejected must never come back as a quiet `null` while the overlay
  * keeps the mark on screen.
  */
-export async function createHighlight(input: CreateHighlightInput, isCurrent?: () => boolean): Promise<Highlight> {
+export async function createHighlight(
+  input: CreateHighlightInput,
+  isCurrent?: () => boolean,
+): Promise<Highlight> {
   const site: DbCallSite = {
     table: 'extend.wbx_highlight',
     operation: 'insert',
@@ -196,7 +199,8 @@ export async function createHighlight(input: CreateHighlightInput, isCurrent?: (
   }
   // Organization selection and local bearer verification can wait while the
   // initiating page reloads or its overlay session is replaced.
-  if (isCurrent && !isCurrent()) throw new Error('This page is no longer being highlighted. Start highlighting it again.');
+  if (isCurrent && !isCurrent())
+    throw new Error('This page is no longer being highlighted. Start highlighting it again.');
   // Owner (`created_by`) is stamped server-side by the platform _stamp_actor
   // trigger from auth.uid(); we no longer send it in the payload.
   const payload = {

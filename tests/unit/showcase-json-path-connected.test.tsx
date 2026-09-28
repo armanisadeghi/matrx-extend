@@ -21,7 +21,12 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@/hooks/use-network-capture', () => ({
   useNetworkCapture: () => ({
-    tab: { id: 37, url: 'https://harborjournal.test/news', documentId: 'document-a', pageKey: 'page-a' },
+    tab: {
+      id: 37,
+      url: 'https://harborjournal.test/news',
+      documentId: 'document-a',
+      pageKey: 'page-a',
+    },
     capturing: false,
     events: mocks.events,
     error: null,
@@ -39,7 +44,12 @@ vi.mock('@/hooks/use-network-capture', () => ({
   }),
 }));
 vi.mock('@/hooks/use-active-tab', () => ({
-  useActiveTab: () => ({ id: 37, url: 'https://harborjournal.test/news', documentId: 'document-a', pageKey: 'page-a' }),
+  useActiveTab: () => ({
+    id: 37,
+    url: 'https://harborjournal.test/news',
+    documentId: 'document-a',
+    pageKey: 'page-a',
+  }),
   isCurrentPageIdentity: (key: string | null) => key === 'page-a',
 }));
 vi.mock('@/hooks/use-active-organization', () => ({
@@ -259,7 +269,11 @@ describe('Showcase exact JSON key path persistence', () => {
     const reopened = mocks.persisted?.config;
     if (!reopened) throw new Error('Framework pattern was not persisted');
     await expect(
-      runPattern({ kind: 'next_data', config: reopened } as Parameters<typeof runPattern>[0], 37, 'document-a'),
+      runPattern(
+        { kind: 'next_data', config: reopened } as Parameters<typeof runPattern>[0],
+        37,
+        'document-a',
+      ),
     ).resolves.toEqual([{ title: 'Harbor desk bulletin' }]);
   });
 });

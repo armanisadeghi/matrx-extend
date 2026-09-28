@@ -86,7 +86,12 @@ export function useAiExtraction() {
       // and the state writes below, and a cancelled run's `done` must not
       // commit stale rows (audit K2).
       const activeRunId = runIdRef.current;
-      if (!activeRunId || chunk.runId !== activeRunId || !isCurrentPageIdentity(runPageKeyRef.current)) return { ack: true };
+      if (
+        !activeRunId ||
+        chunk.runId !== activeRunId ||
+        !isCurrentPageIdentity(runPageKeyRef.current)
+      )
+        return { ack: true };
       watchdog.touch();
 
       if (chunk.type === 'text' && chunk.payload.content) {

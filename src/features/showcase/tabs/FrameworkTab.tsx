@@ -56,7 +56,8 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
     } catch (err) {
       // Previously try/finally with NO catch — restricted pages stopped the
       // spinner with zero feedback (audit P1-5).
-      if (seq === dumpSeq.current && isCurrentPageIdentity(pageKeyAtDump)) setDumpError(err instanceof Error ? err.message : String(err));
+      if (seq === dumpSeq.current && isCurrentPageIdentity(pageKeyAtDump))
+        setDumpError(err instanceof Error ? err.message : String(err));
     } finally {
       if (seq === dumpSeq.current && isCurrentPageIdentity(pageKeyAtDump)) setLoadingTree(false);
     }

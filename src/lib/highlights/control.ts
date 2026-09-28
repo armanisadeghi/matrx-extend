@@ -13,7 +13,12 @@ function envelope(kind: string, payload: unknown) {
   return { __matrx: true, kind, payload };
 }
 
-async function sendToTab(tabId: number, documentId: string, kind: string, payload: unknown): Promise<boolean> {
+async function sendToTab(
+  tabId: number,
+  documentId: string,
+  kind: string,
+  payload: unknown,
+): Promise<boolean> {
   try {
     await chrome.tabs.sendMessage(tabId, envelope(kind, payload), { documentId });
     return true;
@@ -50,7 +55,7 @@ export async function startHighlighter(
   }
   // The content entrypoint registers its listener synchronously. No capture
   // or state message is valid until this session token reaches that document.
-  if (!await sendToTab(tabId, documentId, CHANNELS.HIGHLIGHT_START, { sessionId })) return false;
+  if (!(await sendToTab(tabId, documentId, CHANNELS.HIGHLIGHT_START, { sessionId }))) return false;
   if (existing.length > 0) {
     const items: PaintItem[] = existing.map((h) => ({
       id: h.id,
@@ -69,10 +74,19 @@ export async function startHighlighter(
   return true;
 }
 
-export async function stopHighlighter(tabId: number, documentId: string, sessionId: string): Promise<void> {
+export async function stopHighlighter(
+  tabId: number,
+  documentId: string,
+  sessionId: string,
+): Promise<void> {
   await sendToTab(tabId, documentId, CHANNELS.HIGHLIGHT_STOP, { sessionId });
 }
 
-export async function setHighlighterMode(tabId: number, documentId: string, sessionId: string, mode: HighlightMode): Promise<void> {
+export async function setHighlighterMode(
+  tabId: number,
+  documentId: string,
+  sessionId: string,
+  mode: HighlightMode,
+): Promise<void> {
   await sendToTab(tabId, documentId, CHANNELS.HIGHLIGHT_SET_MODE, { sessionId, mode });
 }

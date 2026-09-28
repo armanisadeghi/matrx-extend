@@ -1,5 +1,5 @@
-import { useActiveTab } from '@/hooks/use-active-tab';
 import { PageIdentityNotice } from '@/components/PageIdentityNotice';
+import { useActiveTab } from '@/hooks/use-active-tab';
 import { cn } from '@/lib/utils';
 import { type ShowcaseSubTab, useShowcaseTabStore } from '@/state/showcase-tab';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';

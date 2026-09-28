@@ -74,7 +74,8 @@ export const useAutoScrapeStore = create<AutoScrapeState>((set, get) => ({
     set({ captureOwner: { pageKey, run }, inFlight: true, lastError: null });
     return run;
   },
-  ownsCapture: (pageKey, run) => get().captureOwner?.pageKey === pageKey && get().captureOwner?.run === run,
+  ownsCapture: (pageKey, run) =>
+    get().captureOwner?.pageKey === pageKey && get().captureOwner?.run === run,
   finishCapture: (pageKey, run) => {
     if (get().ownsCapture(pageKey, run)) set({ captureOwner: null, inFlight: false });
   },

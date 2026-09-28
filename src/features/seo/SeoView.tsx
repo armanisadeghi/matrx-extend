@@ -2,7 +2,11 @@ import { CopyMenu } from '@/components/CopyMenu';
 import { AiRecommendations } from '@/features/seo/AiRecommendations';
 import { SeoDetails } from '@/features/seo/SeoDetails';
 import { SeoVerdict } from '@/features/seo/SeoVerdict';
-import { isCurrentPageIdentity, refreshActiveTabIdentity, useActiveTab } from '@/hooks/use-active-tab';
+import {
+  isCurrentPageIdentity,
+  refreshActiveTabIdentity,
+  useActiveTab,
+} from '@/hooks/use-active-tab';
 import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
 import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import type { SeoAudit } from '@/lib/seo/audit';
@@ -126,7 +130,12 @@ export function SeoView() {
       const cap = await captureWithFallback(requestedTab, requestedUrl ?? null);
       // Out-of-order / navigation guard: a slow audit of page A must not
       // overwrite page B's fresh state.
-      if (tabRef.current.id !== requestedTab || tabRef.current.url !== requestedUrl || !isCurrentPageIdentity(requestedPageKey)) return;
+      if (
+        tabRef.current.id !== requestedTab ||
+        tabRef.current.url !== requestedUrl ||
+        !isCurrentPageIdentity(requestedPageKey)
+      )
+        return;
       if (!cap.ok || !cap.soup) {
         setAudit(null);
         setAuditError(
@@ -309,7 +318,11 @@ export function SeoView() {
       </div>
 
       <div className="flex shrink-0 gap-2 px-3 pb-3 pt-1">
-        <Button onClick={() => void runAudit()} disabled={running || !tab.pageKey} className="flex-1 rounded-full">
+        <Button
+          onClick={() => void runAudit()}
+          disabled={running || !tab.pageKey}
+          className="flex-1 rounded-full"
+        >
           {running ? <Loader2 className="animate-spin" /> : <Search />}
           {audit ? 'Re-audit' : 'Audit this page'}
         </Button>
@@ -325,7 +338,18 @@ export function SeoView() {
           </Button>
         )}
       </div>
-      {!tab.pageKey && <div className="px-3 pb-2 text-[11px]">{tab.identityError ?? 'Checking this page…'} <button type="button" className="underline" onClick={() => void refreshActiveTabIdentity()}>Retry</button></div>}
+      {!tab.pageKey && (
+        <div className="px-3 pb-2 text-[11px]">
+          {tab.identityError ?? 'Checking this page…'}{' '}
+          <button
+            type="button"
+            className="underline"
+            onClick={() => void refreshActiveTabIdentity()}
+          >
+            Retry
+          </button>
+        </div>
+      )}
       {auditError && (
         <div className="px-3 pb-2 text-[11px] text-red-600 dark:text-red-400">{auditError}</div>
       )}

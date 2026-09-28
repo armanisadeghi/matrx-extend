@@ -74,13 +74,22 @@ export function useExtraction(modeId: string, options?: { autoDetect?: boolean }
       const generation = pageGeneration.current;
       try {
         const hint = await detectModeInPage(modeId, tab.id, config, tab.documentId);
-        if (seq !== detectSeq.current || generation !== pageGeneration.current || !isCurrentPageIdentity(pageKey)) return null;
+        if (
+          seq !== detectSeq.current ||
+          generation !== pageGeneration.current ||
+          !isCurrentPageIdentity(pageKey)
+        )
+          return null;
         setDetection(hint);
         setDetectionPageKey(pageKey);
         setDetectError(null);
         return hint;
       } catch (err) {
-        if (seq === detectSeq.current && generation === pageGeneration.current && isCurrentPageIdentity(pageKey)) {
+        if (
+          seq === detectSeq.current &&
+          generation === pageGeneration.current &&
+          isCurrentPageIdentity(pageKey)
+        ) {
           setDetectError(err instanceof Error ? err.message : String(err));
         }
         return null;
@@ -104,7 +113,11 @@ export function useExtraction(modeId: string, options?: { autoDetect?: boolean }
       setPreviewPageKey(null);
       try {
         const result = await runMode(modeId, tab.id, config, tab.documentId);
-        if (seq === runSeq.current && generation === pageGeneration.current && isCurrentPageIdentity(pageKeyAtRun)) {
+        if (
+          seq === runSeq.current &&
+          generation === pageGeneration.current &&
+          isCurrentPageIdentity(pageKeyAtRun)
+        ) {
           setRows(result);
           setSource(sourceAtRun);
           setPreviewConfig(config);
@@ -112,12 +125,21 @@ export function useExtraction(modeId: string, options?: { autoDetect?: boolean }
         }
         return isCurrentPageIdentity(pageKeyAtRun) ? result : [];
       } catch (err) {
-        if (seq === runSeq.current && generation === pageGeneration.current && isCurrentPageIdentity(pageKeyAtRun)) {
+        if (
+          seq === runSeq.current &&
+          generation === pageGeneration.current &&
+          isCurrentPageIdentity(pageKeyAtRun)
+        ) {
           setRunError(err instanceof Error ? err.message : String(err));
         }
         return [];
       } finally {
-        if (seq === runSeq.current && generation === pageGeneration.current && isCurrentPageIdentity(pageKeyAtRun)) setRunning(false);
+        if (
+          seq === runSeq.current &&
+          generation === pageGeneration.current &&
+          isCurrentPageIdentity(pageKeyAtRun)
+        )
+          setRunning(false);
       }
     },
     [modeId, tab.id, tab.url, tab.documentId, pageKey],

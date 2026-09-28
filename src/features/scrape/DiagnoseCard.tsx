@@ -34,9 +34,8 @@ export function DiagnoseCard() {
   const [showHtml, setShowHtml] = useState(false);
 
   if (!result || !tab.pageKey || result.pageKey !== tab.pageKey) return null;
-  const currentScrape = capturedPageKey === result.pageKey && isCurrentPageIdentity(capturedPageKey)
-    ? current
-    : null;
+  const currentScrape =
+    capturedPageKey === result.pageKey && isCurrentPageIdentity(capturedPageKey) ? current : null;
 
   const modeLabel = result.mode === 'missing' ? 'Missing element' : 'Unwanted element';
   const modeTone =

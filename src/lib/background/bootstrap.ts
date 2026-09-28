@@ -23,9 +23,9 @@ import {
 } from '@/lib/agenda/scanner';
 import { startAudibleLog } from '@/lib/audio/audible-log';
 import { refreshAccessToken } from '@/lib/auth/flow';
-import { stampDocumentSender } from '@/lib/background/document-event-relay';
 import { logExtensionIdentityOnce } from '@/lib/auth/identity';
 import { registerSafariAuthorizationBackground } from '@/lib/auth/safari-background';
+import { stampDocumentSender } from '@/lib/background/document-event-relay';
 import { reconcileOnBoot as reconcileCdpOnBoot } from '@/lib/cdp/client';
 import { registerListPickerRelays } from '@/lib/data-pattern/list-picker-relay';
 import { hydrateBridgeTrafficEnabled, recordBridgeTraffic } from '@/lib/debug/bridge-traffic';

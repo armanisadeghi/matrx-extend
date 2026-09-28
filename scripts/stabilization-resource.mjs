@@ -27,7 +27,6 @@ import { platform } from 'node:os';
 import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
 import { openResourceJournal } from './stabilization-resource-journal.mjs';
-import { resourceVerdict } from './stabilization-resource-verdict.mjs';
 import {
   assertNoLegacyLease,
   legacyLeaseRoots,
@@ -35,6 +34,7 @@ import {
   resourceLeaseRoot,
 } from './stabilization-resource-lease.mjs';
 import { classifyLegacyRunner, parseProcessIdentity } from './stabilization-resource-process.mjs';
+import { resourceVerdict } from './stabilization-resource-verdict.mjs';
 
 const run = promisify(execFile);
 const repo = resolve(import.meta.dirname, '..');

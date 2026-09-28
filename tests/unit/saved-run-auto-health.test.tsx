@@ -3,7 +3,12 @@ import { act, cleanup, renderHook } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  page: { id: 37, url: 'https://electronic.vegas/calendar/', documentId: 'document-a', pageKey: 'page-a' },
+  page: {
+    id: 37,
+    url: 'https://electronic.vegas/calendar/',
+    documentId: 'document-a',
+    pageKey: 'page-a',
+  },
   fetchPatterns: vi.fn(),
   runPattern: vi.fn(),
   bumpRun: vi.fn(),

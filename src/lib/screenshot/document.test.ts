@@ -13,7 +13,12 @@ describe('screenshot document boundary', () => {
     activeTabId = 18;
     vi.stubGlobal('chrome', {
       tabs: {
-        get: vi.fn(async () => ({ id: 18, windowId: 4, url: current.url, title: 'Harbor Dental intake' })),
+        get: vi.fn(async () => ({
+          id: 18,
+          windowId: 4,
+          url: current.url,
+          title: 'Harbor Dental intake',
+        })),
         query: vi.fn(async () => [{ id: activeTabId }]),
         captureVisibleTab: vi.fn(async () => 'data:image/png;base64,AAAA'),
       },
@@ -23,10 +28,12 @@ describe('screenshot document boundary', () => {
 
   it('rejects a same-URL replacement before saving captured bytes', async () => {
     const original = await readScreenshotDocument(18);
-    await expect(captureForDocument(original, async () => {
-      current = second;
-      return 'image bytes from the replaced page';
-    })).rejects.toThrow(/changed during screenshot/i);
+    await expect(
+      captureForDocument(original, async () => {
+        current = second;
+        return 'image bytes from the replaced page';
+      }),
+    ).rejects.toThrow(/changed during screenshot/i);
   });
 
   it('rejects a different active tab before and after a window capture', async () => {
@@ -36,22 +43,39 @@ describe('screenshot document boundary', () => {
     await expect(captureForDocument(original, capture)).rejects.toThrow(/active tab changed/i);
     expect(capture).not.toHaveBeenCalled();
     activeTabId = 18;
-    await expect(captureForDocument(original, async () => {
-      activeTabId = 19;
-      return 'unrelated image';
-    })).rejects.toThrow(/active tab changed/i);
+    await expect(
+      captureForDocument(original, async () => {
+        activeTabId = 19;
+        return 'unrelated image';
+      }),
+    ).rejects.toThrow(/active tab changed/i);
   });
 
   it('returns bytes only while the same initiating tab and document remain active', async () => {
     const original = await readScreenshotDocument(18);
-    await expect(captureForDocument(original, async () => 'harbor intake image')).resolves.toBe('harbor intake image');
+    await expect(captureForDocument(original, async () => 'harbor intake image')).resolves.toBe(
+      'harbor intake image',
+    );
   });
 
   it('restores the initiating document scroll after a full-page tile detects a reload', async () => {
-    const executeScript = vi.fn(async (request: { args?: number[] }) => request.args
-      ? [{ result: undefined }]
-      : [{ result: { scrollX: 7, scrollY: 43, innerWidth: 800, innerHeight: 600,
-        scrollWidth: 800, scrollHeight: 1200, devicePixelRatio: 1 } }]);
+    const executeScript = vi.fn(async (request: { args?: number[] }) =>
+      request.args
+        ? [{ result: undefined }]
+        : [
+            {
+              result: {
+                scrollX: 7,
+                scrollY: 43,
+                innerWidth: 800,
+                innerHeight: 600,
+                scrollWidth: 800,
+                scrollHeight: 1200,
+                devicePixelRatio: 1,
+              },
+            },
+          ],
+    );
     Object.assign(chrome, { scripting: { executeScript } });
     vi.mocked(chrome.tabs.captureVisibleTab).mockImplementationOnce(async () => {
       current = second;

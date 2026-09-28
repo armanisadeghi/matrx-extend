@@ -13,8 +13,12 @@
 
 import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { confirmDestructive } from '@/lib/destructive/confirm';
-import { setHighlightSessionMode, startHighlightSession, stopHighlightSession } from '@/lib/highlights/session';
 import { deleteHighlight, listMyHighlights } from '@/lib/highlights/queries';
+import {
+  setHighlightSessionMode,
+  startHighlightSession,
+  stopHighlightSession,
+} from '@/lib/highlights/session';
 import type { HighlightListItem, HighlightMode } from '@/lib/highlights/types';
 import { useHighlightStore } from '@/state/highlights';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
@@ -83,8 +87,10 @@ export function HighlightView() {
     return items.filter((h) => h.url === tab.url);
   }, [items, scope, host, tab.url]);
 
-  const isActiveHere = overlayActive && overlaySession?.pageKey === tab.pageKey && tab.identityStatus === 'ready';
-  const isStartingHere = overlaySession?.status === 'starting' && overlaySession.pageKey === tab.pageKey;
+  const isActiveHere =
+    overlayActive && overlaySession?.pageKey === tab.pageKey && tab.identityStatus === 'ready';
+  const isStartingHere =
+    overlaySession?.status === 'starting' && overlaySession.pageKey === tab.pageKey;
   const isElsewhere = !!overlaySession && overlaySession.pageKey !== tab.pageKey;
 
   const handleToggle = async () => {
@@ -137,8 +143,16 @@ export function HighlightView() {
     const elements = visible.filter((h) => h.mode === 'element' && h.anchor.selector);
     if (elements.length === 0) return;
     setHandoffError(null);
-    if (!tab.id || !tab.documentId || !tab.pageKey || !tab.url || elements.some((h) => h.url !== tab.url)) {
-      setHandoffError('These highlights are not verified on this page. Open their page and retry, or pick fields in Data.');
+    if (
+      !tab.id ||
+      !tab.documentId ||
+      !tab.pageKey ||
+      !tab.url ||
+      elements.some((h) => h.url !== tab.url)
+    ) {
+      setHandoffError(
+        'These highlights are not verified on this page. Open their page and retry, or pick fields in Data.',
+      );
       return;
     }
     const fields = elements.map((h, i) => ({
@@ -148,21 +162,30 @@ export function HighlightView() {
     try {
       const matches = await chrome.scripting.executeScript({
         target: { tabId: tab.id, documentIds: [tab.documentId] },
-        func: (selectors: string[]) => selectors.map((selector) => {
-          try { return document.querySelector(selector) !== null; } catch { return false; }
-        }),
+        func: (selectors: string[]) =>
+          selectors.map((selector) => {
+            try {
+              return document.querySelector(selector) !== null;
+            } catch {
+              return false;
+            }
+          }),
         args: [fields.map((field) => field.selector)],
       });
       if (!isCurrentPageIdentity(tab.pageKey)) return;
       if (matches.length !== 1 || !matches[0]?.result?.every(Boolean)) {
-        setHandoffError('Some highlighted elements are no longer on this page. Refresh the highlights or pick fields in Data.');
+        setHandoffError(
+          'Some highlighted elements are no longer on this page. Refresh the highlights or pick fields in Data.',
+        );
         return;
       }
       setDataHandoff({ fields, pageKey: tab.pageKey, tabId: tab.id, documentId: tab.documentId });
       setTab('data');
     } catch (error) {
       if (isCurrentPageIdentity(tab.pageKey)) {
-        setHandoffError(`Could not verify these highlights on this page: ${error instanceof Error ? error.message : String(error)}. Retry or pick fields in Data.`);
+        setHandoffError(
+          `Could not verify these highlights on this page: ${error instanceof Error ? error.message : String(error)}. Retry or pick fields in Data.`,
+        );
       }
     }
   };
@@ -206,10 +229,16 @@ export function HighlightView() {
         {isElsewhere && (
           <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
             <span>Highlighting is active on another page.</span>
-            <button className="shrink-0 underline" onClick={() => void stopHighlightSession()}>Stop there</button>
+            <button className="shrink-0 underline" onClick={() => void stopHighlightSession()}>
+              Stop there
+            </button>
           </div>
         )}
-        {tab.identityStatus !== 'ready' && tab.identityError && <p role="status" className="text-xs text-muted-foreground">{tab.identityError}</p>}
+        {tab.identityStatus !== 'ready' && tab.identityError && (
+          <p role="status" className="text-xs text-muted-foreground">
+            {tab.identityError}
+          </p>
+        )}
         <div className="flex items-center gap-1 rounded-full bg-secondary/50 p-0.5 text-xs">
           <ModeButton active={mode === 'text'} onClick={() => void handleMode('text')}>
             <Type className="size-3.5" /> Text
@@ -318,7 +347,11 @@ export function HighlightView() {
       </div>
 
       {/* Footer actions */}
-      {handoffError && <div role="alert" className="px-3 py-2 text-xs text-destructive">{handoffError}</div>}
+      {handoffError && (
+        <div role="alert" className="px-3 py-2 text-xs text-destructive">
+          {handoffError}
+        </div>
+      )}
       {visible.length > 0 && (
         <div className="shrink-0 space-y-1.5 border-t px-3 py-2">
           <div className="flex gap-2">

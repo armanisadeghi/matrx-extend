@@ -204,7 +204,8 @@ export function usePatternFromData() {
 
   useEffect(() => {
     return on<StreamChunk, { ack: true }>(CHANNELS.STREAM_CHUNK, (chunk) => {
-      if (chunk.runId !== runIdRef.current || !isCurrentPageIdentity(runPageKeyRef.current)) return { ack: true };
+      if (chunk.runId !== runIdRef.current || !isCurrentPageIdentity(runPageKeyRef.current))
+        return { ack: true };
       watchdogRef.current?.touch();
       if (chunk.type === 'text' && chunk.payload.content) {
         accumRef.current += chunk.payload.content;
@@ -356,7 +357,15 @@ export function usePatternFromData() {
   }, [tab.pageKey]);
 
   const resultIsCurrent = Boolean(tab.pageKey) && resultPageKey === tab.pageKey;
-  return { result: resultIsCurrent ? result : null, liveProbe: resultIsCurrent ? liveProbe : null, running, error, rawResponse: resultIsCurrent ? rawResponse : '', convert, reset };
+  return {
+    result: resultIsCurrent ? result : null,
+    liveProbe: resultIsCurrent ? liveProbe : null,
+    running,
+    error,
+    rawResponse: resultIsCurrent ? rawResponse : '',
+    convert,
+    reset,
+  };
 }
 
 /**

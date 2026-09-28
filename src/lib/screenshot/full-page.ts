@@ -18,7 +18,7 @@
  * tile capture throws.
  */
 
-import { assertScreenshotDocument, captureForDocument, type ScreenshotDocument } from './document';
+import { type ScreenshotDocument, assertScreenshotDocument, captureForDocument } from './document';
 
 interface PageMetrics {
   scrollX: number;
@@ -80,7 +80,9 @@ export interface FullPageCaptureResult {
   truncated: boolean;
 }
 
-export async function captureFullPage(document: ScreenshotDocument): Promise<FullPageCaptureResult> {
+export async function captureFullPage(
+  document: ScreenshotDocument,
+): Promise<FullPageCaptureResult> {
   const { tabId, windowId: winId, documentId } = document;
 
   await assertScreenshotDocument(document);

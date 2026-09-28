@@ -41,12 +41,14 @@ export function startListPickerSession(
   isCurrent: () => boolean,
 ): Promise<void> {
   return sequence(tabId, async () => {
-    if (!isCurrent()) throw new Error('The page changed before the picker could start. Retry on the current page.');
+    if (!isCurrent())
+      throw new Error('The page changed before the picker could start. Retry on the current page.');
     await chrome.scripting.executeScript({
       target: { tabId, documentIds: [documentId] },
       files: ['content-scripts/list-picker.js'],
     });
-    if (!isCurrent()) throw new Error('The page changed before the picker could start. Retry on the current page.');
+    if (!isCurrent())
+      throw new Error('The page changed before the picker could start. Retry on the current page.');
     await chrome.scripting.executeScript({
       target: { tabId, documentIds: [documentId] },
       func: (id: string, initial: ListPickerSeed | null) => {
@@ -59,7 +61,11 @@ export function startListPickerSession(
   });
 }
 
-export function cancelListPickerSession(tabId: number, documentId: string, sessionId: string): Promise<void> {
+export function cancelListPickerSession(
+  tabId: number,
+  documentId: string,
+  sessionId: string,
+): Promise<void> {
   return sequence(tabId, async () => {
     await chrome.scripting.executeScript({
       target: { tabId, documentIds: [documentId] },

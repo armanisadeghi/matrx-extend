@@ -9,11 +9,7 @@
   "correction_review": {
     "status": "PASS",
     "finding": "The it.each rows now use named objects, allowing the empty array to be passed as one value rather than inferred as zero callback arguments.",
-    "preserved_cases": [
-      "[]",
-      "[{ result: undefined }]",
-      "[{ result: null }]"
-    ]
+    "preserved_cases": ["[]", "[{ result: undefined }]", "[{ result: null }]"]
   },
   "verdict_a_runtime": {
     "status": "PASS_FOR_FOCUSED_TEST_COMPILE_AND_BUILD; NATIVE_UNVERIFIED",

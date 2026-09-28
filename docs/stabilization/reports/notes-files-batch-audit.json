@@ -1,12 +1,7 @@
 {
   "schema_version": 1,
   "audit": "notes-files-saved-capture-source-audit",
-  "source_scope": [
-    "EXT-F-2006",
-    "EXT-F-2007",
-    "EXT-F-2008",
-    "EXT-F-2009"
-  ],
+  "source_scope": ["EXT-F-2006", "EXT-F-2007", "EXT-F-2008", "EXT-F-2009"],
   "method": "Read-only current-source control-flow audit. Findings are source-confirmed paths, not native reproductions. No runtime pass is asserted.",
   "findings": [
     {
@@ -45,10 +40,7 @@
       ],
       "expected": "The failed create is reported and the user remains in the list with a clear way to retry.",
       "actual": "createNote converts a database error into null; NotesList only changes selection when the result is truthy and renders no error or notice for null.",
-      "evidence": [
-        "src/lib/notes/queries.ts:85-110",
-        "src/features/notes/NotesList.tsx:69-83"
-      ],
+      "evidence": ["src/lib/notes/queries.ts:85-110", "src/features/notes/NotesList.tsx:69-83"],
       "next_fix": "Return a surfaced failure from createNote and display an actionable error beside the create control; preserve creating cleanup.",
       "native_verified": false
     },
@@ -76,7 +68,13 @@
     {
       "id": "NFS-04",
       "feature_case_id": "EXT-F-2008-T02",
-      "controls": ["EXT-F-2008-C01", "EXT-F-2008-C02", "EXT-F-2008-C03", "EXT-F-2008-C04", "EXT-F-2008-C05"],
+      "controls": [
+        "EXT-F-2008-C01",
+        "EXT-F-2008-C02",
+        "EXT-F-2008-C03",
+        "EXT-F-2008-C04",
+        "EXT-F-2008-C05"
+      ],
       "title": "Files read failure also renders an empty-library or empty-captures claim",
       "severity": "S3: an error is accompanied by a contradictory empty-state claim",
       "priority": "P2: user may infer files or screenshots do not exist",

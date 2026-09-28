@@ -16,11 +16,7 @@
       "partial": 28
     },
     "controls_not_referenced_by_case": 426,
-    "feature_modes": [
-      "guest",
-      "member",
-      "admin"
-    ],
+    "feature_modes": ["guest", "member", "admin"],
     "case_mode_coverage": {
       "guest": 156,
       "member": 430,

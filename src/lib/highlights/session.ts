@@ -3,7 +3,7 @@ import { getActiveTabIdentitySnapshot, isCurrentPageIdentity } from '@/hooks/use
 import { setHighlighterMode, startHighlighter, stopHighlighter } from '@/lib/highlights/control';
 import { listHighlightsForUrl } from '@/lib/highlights/queries';
 import type { HighlightMode } from '@/lib/highlights/types';
-import { useHighlightStore, type HighlightOverlaySession } from '@/state/highlights';
+import { type HighlightOverlaySession, useHighlightStore } from '@/state/highlights';
 
 function sameSession(a: HighlightOverlaySession | null, b: HighlightOverlaySession): boolean {
   return a === b;
@@ -11,7 +11,8 @@ function sameSession(a: HighlightOverlaySession | null, b: HighlightOverlaySessi
 
 export async function startHighlightSession(): Promise<boolean> {
   const page = getActiveTabIdentitySnapshot();
-  if (page.identityStatus !== 'ready' || !page.id || !page.documentId || !page.pageKey || !page.url) return false;
+  if (page.identityStatus !== 'ready' || !page.id || !page.documentId || !page.pageKey || !page.url)
+    return false;
   const previous = useHighlightStore.getState().overlaySession;
   if (previous) {
     useHighlightStore.getState().setOverlaySession(null);
@@ -20,17 +21,32 @@ export async function startHighlightSession(): Promise<boolean> {
   if (!isCurrentPageIdentity(page.pageKey)) return false;
   const session: HighlightOverlaySession = {
     sessionId: crypto.randomUUID(),
-    tabId: page.id, documentId: page.documentId, pageKey: page.pageKey,
-    url: page.url, status: 'starting',
+    tabId: page.id,
+    documentId: page.documentId,
+    pageKey: page.pageKey,
+    url: page.url,
+    status: 'starting',
   };
   // Publish the pending identity before the first await so navigation can
   // cancel this start, even while the saved-highlight lookup is in flight.
   useHighlightStore.getState().setOverlaySession(session);
   try {
     const existing = await listHighlightsForUrl(session.url);
-    if (!sameSession(useHighlightStore.getState().overlaySession, session) || !isCurrentPageIdentity(session.pageKey)) return false;
-    const mounted = await startHighlighter(session.tabId, session.documentId, session.sessionId, existing);
-    if (!sameSession(useHighlightStore.getState().overlaySession, session) || !isCurrentPageIdentity(session.pageKey)) {
+    if (
+      !sameSession(useHighlightStore.getState().overlaySession, session) ||
+      !isCurrentPageIdentity(session.pageKey)
+    )
+      return false;
+    const mounted = await startHighlighter(
+      session.tabId,
+      session.documentId,
+      session.sessionId,
+      existing,
+    );
+    if (
+      !sameSession(useHighlightStore.getState().overlaySession, session) ||
+      !isCurrentPageIdentity(session.pageKey)
+    ) {
       if (mounted) await stopHighlighter(session.tabId, session.documentId, session.sessionId);
       return false;
     }
@@ -39,10 +55,16 @@ export async function startHighlightSession(): Promise<boolean> {
       return false;
     }
     useHighlightStore.getState().setOverlaySession({ ...session, status: 'active' });
-    await setHighlighterMode(session.tabId, session.documentId, session.sessionId, useHighlightStore.getState().mode);
+    await setHighlighterMode(
+      session.tabId,
+      session.documentId,
+      session.sessionId,
+      useHighlightStore.getState().mode,
+    );
     return true;
   } catch (error) {
-    if (sameSession(useHighlightStore.getState().overlaySession, session)) useHighlightStore.getState().setOverlaySession(null);
+    if (sameSession(useHighlightStore.getState().overlaySession, session))
+      useHighlightStore.getState().setOverlaySession(null);
     throw error;
   }
 }
@@ -57,5 +79,6 @@ export async function stopHighlightSession(): Promise<void> {
 export async function setHighlightSessionMode(mode: HighlightMode): Promise<void> {
   useHighlightStore.getState().setMode(mode);
   const session = useHighlightStore.getState().overlaySession;
-  if (session?.status === 'active') await setHighlighterMode(session.tabId, session.documentId, session.sessionId, mode);
+  if (session?.status === 'active')
+    await setHighlighterMode(session.tabId, session.documentId, session.sessionId, mode);
 }

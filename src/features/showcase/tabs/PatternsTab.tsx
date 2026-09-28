@@ -135,7 +135,10 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
     if (!tab.id || !tab.documentId || !tab.pageKey) return;
     const runPageKey = pageKey;
     const seq = ++runSeq.current;
-    const isCurrent = () => seq === runSeq.current && currentPageKey.current === runPageKey && isCurrentPageIdentity(runPageKey);
+    const isCurrent = () =>
+      seq === runSeq.current &&
+      currentPageKey.current === runPageKey &&
+      isCurrentPageIdentity(runPageKey);
     const onSavedRoute = urlMatchesPattern(tab.url ?? '', p);
     const sourceAtRun = { url: tab.url, title: tab.title };
     setRunningId(p.id);

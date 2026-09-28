@@ -31,8 +31,8 @@ import { confirmDestructive } from '@/lib/destructive/confirm';
 import { newId } from '@/lib/id';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import type { ScreenshotSavedPayload } from '@/lib/screenshot/persist';
 import { assertScreenshotDocument, readScreenshotDocument } from '@/lib/screenshot/document';
+import type { ScreenshotSavedPayload } from '@/lib/screenshot/persist';
 import {
   type ScreenshotRow,
   deleteScreenshot,
@@ -216,9 +216,11 @@ export function ScreenshotsView() {
           try {
             await assertScreenshotDocument(initiatingDocument);
           } catch {
-            setCaptureNotice(r.screenshot_id && r.file_id
-              ? 'Saved for the page that was active when capture began. The current tab or page has changed; this gallery includes earlier visits to the same URL.'
-              : 'This capture belongs to the page that was active when it began. The current tab or page has changed.');
+            setCaptureNotice(
+              r.screenshot_id && r.file_id
+                ? 'Saved for the page that was active when capture began. The current tab or page has changed; this gallery includes earlier visits to the same URL.'
+                : 'This capture belongs to the page that was active when it began. The current tab or page has changed.',
+            );
           }
           broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
             callId,
@@ -361,7 +363,9 @@ export function ScreenshotsView() {
           </div>
         )}
         {captureNotice && !captureError && (
-          <div className="text-xs text-muted-foreground" role="status">{captureNotice}</div>
+          <div className="text-xs text-muted-foreground" role="status">
+            {captureNotice}
+          </div>
         )}
         {deleteError && (
           <div className="flex items-start gap-1.5 text-xs text-destructive">

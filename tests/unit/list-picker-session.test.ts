@@ -42,24 +42,34 @@ describe('list picker producer session boundary', () => {
     const targets: string[] = [];
     Object.assign(chrome, {
       scripting: {
-        executeScript: vi.fn(async (request: {
-          target: { tabId: number; documentIds?: string[] };
-          files?: string[];
-          func?: (...args: string[]) => void;
-          args?: string[];
-        }) => {
-          if (request.files) {
-            await new Promise<void>((resolve) => { releaseInstall = resolve; });
-            Object.assign(window, { __matrxListPickerStart: mountListPicker });
-          }
-          const target = request.target.documentIds?.[0] ?? liveDocument;
-          targets.push(target);
-          request.func?.(...(request.args ?? []));
-          return [];
-        }),
+        executeScript: vi.fn(
+          async (request: {
+            target: { tabId: number; documentIds?: string[] };
+            files?: string[];
+            func?: (...args: string[]) => void;
+            args?: string[];
+          }) => {
+            if (request.files) {
+              await new Promise<void>((resolve) => {
+                releaseInstall = resolve;
+              });
+              Object.assign(window, { __matrxListPickerStart: mountListPicker });
+            }
+            const target = request.target.documentIds?.[0] ?? liveDocument;
+            targets.push(target);
+            request.func?.(...(request.args ?? []));
+            return [];
+          },
+        ),
       },
     });
-    const first = startListPickerSession(77, 'document-a', 'calendar-session', null, () => liveDocument === 'document-a');
+    const first = startListPickerSession(
+      77,
+      'document-a',
+      'calendar-session',
+      null,
+      () => liveDocument === 'document-a',
+    );
     await vi.waitFor(() => expect(releaseInstall).toBeTypeOf('function'));
     liveDocument = 'document-b';
     releaseInstall?.();
@@ -72,15 +82,19 @@ describe('list picker producer session boundary', () => {
     const targets: string[] = [];
     Object.assign(window, { __matrxListPickerStart: mountListPicker });
     Object.assign(chrome, {
-      scripting: { executeScript: vi.fn(async (request: {
-        target: { tabId: number; documentIds?: string[] };
-        func?: (...args: string[]) => void;
-        args?: string[];
-      }) => {
-        targets.push(request.target.documentIds?.[0] ?? 'current-document');
-        request.func?.(...(request.args ?? []));
-        return [];
-      }) },
+      scripting: {
+        executeScript: vi.fn(
+          async (request: {
+            target: { tabId: number; documentIds?: string[] };
+            func?: (...args: string[]) => void;
+            args?: string[];
+          }) => {
+            targets.push(request.target.documentIds?.[0] ?? 'current-document');
+            request.func?.(...(request.args ?? []));
+            return [];
+          },
+        ),
+      },
     });
     await startListPickerSession(77, 'document-b', 'replacement-session', null, () => true);
     await cancelListPickerSession(77, 'document-a', 'calendar-session');
@@ -167,7 +181,13 @@ describe('list picker producer session boundary', () => {
     const first = startListPickerSession(77, 'document-a', 'calendar-session', null, () => true);
     await vi.waitFor(() => expect(releaseInstall).toBeTypeOf('function'));
     const canceled = cancelListPickerSession(77, 'document-a', 'calendar-session');
-    const second = startListPickerSession(77, 'document-a', 'replacement-session', null, () => true);
+    const second = startListPickerSession(
+      77,
+      'document-a',
+      'replacement-session',
+      null,
+      () => true,
+    );
     releaseInstall?.();
     await Promise.all([first, canceled, second]);
     sendMessage.mockClear();

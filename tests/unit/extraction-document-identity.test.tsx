@@ -3,7 +3,13 @@ import { act, cleanup, renderHook } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  tab: { id: 41, url: 'https://example.org/story', title: 'Story', documentId: 'document-a', pageKey: 'page-a' },
+  tab: {
+    id: 41,
+    url: 'https://example.org/story',
+    title: 'Story',
+    documentId: 'document-a',
+    pageKey: 'page-a',
+  },
   runMode: vi.fn(),
   detect: vi.fn(),
 }));
@@ -20,7 +26,10 @@ import { useExtraction } from '@/hooks/use-extraction';
 function deferred<T>() {
   let resolve!: (value: T) => void;
   let reject!: (error: Error) => void;
-  const promise = new Promise<T>((yes, no) => { resolve = yes; reject = no; });
+  const promise = new Promise<T>((yes, no) => {
+    resolve = yes;
+    reject = no;
+  });
   return { promise, resolve, reject };
 }
 afterEach(() => {
@@ -39,7 +48,9 @@ it.each(['resolve', 'reject'] as const)(
     mocks.detect.mockResolvedValue({ available: true, summary: 'B metadata' });
     const hook = renderHook(() => useExtraction('og_meta', { autoDetect: false }));
     let oldCompletion!: Promise<unknown>;
-    act(() => { oldCompletion = hook.result.current.run({}); });
+    act(() => {
+      oldCompletion = hook.result.current.run({});
+    });
     act(() => {
       mocks.tab.documentId = 'document-b';
       mocks.tab.pageKey = 'page-b';
@@ -54,7 +65,9 @@ it.each(['resolve', 'reject'] as const)(
     });
     expect(hook.result.current.rows).toBeNull();
     expect(hook.result.current.error).toBeNull();
-    await act(async () => { await hook.result.current.run({}); });
+    await act(async () => {
+      await hook.result.current.run({});
+    });
     expect(hook.result.current.rows).toEqual([{ title: 'B' }]);
     expect(hook.result.current.source?.url).toBe('https://example.org/story');
   },

@@ -1,5 +1,5 @@
-import { useAiExtraction } from '@/hooks/use-ai-extraction';
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { useAiExtraction } from '@/hooks/use-ai-extraction';
 import { usePatternFromData } from '@/hooks/use-pattern-from-data';
 import { useRequestOrganizationId } from '@/hooks/use-request-organization';
 import { mandateKeyOf } from '@/lib/agents/use-agent-row';
@@ -100,7 +100,12 @@ export function AiExtractTab() {
   };
 
   const canRun =
-    tab.pageKey && organizationId && agentId && description.trim().length > 0 && !running && !schemaProblem;
+    tab.pageKey &&
+    organizationId &&
+    agentId &&
+    description.trim().length > 0 &&
+    !running &&
+    !schemaProblem;
   const previewDescription =
     typeof previewConfig?.description === 'string' ? previewConfig.description : '';
 

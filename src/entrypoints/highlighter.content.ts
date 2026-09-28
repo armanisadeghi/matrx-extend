@@ -1,5 +1,5 @@
-import { defineContentScript } from 'wxt/utils/define-content-script';
 import { mountHighlighter } from '@/lib/highlights/highlighter';
+import { defineContentScript } from 'wxt/utils/define-content-script';
 
 /**
  * Highlighter content script. Registered but only injected on demand from the

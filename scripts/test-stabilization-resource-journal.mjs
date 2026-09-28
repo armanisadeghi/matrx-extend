@@ -86,7 +86,10 @@ test('final verdict separates denied launch, invalid resources, failed child and
     [{ admitted: true, resourceInvalid: true, exitCode: 3, childFinished: true }, 'invalid'],
     [{ admitted: true, resourceInvalid: false, exitCode: 1, childFinished: true }, 'child_failed'],
     [{ admitted: true, resourceInvalid: false, exitCode: 0, childFinished: true }, 'valid'],
-    [{ admitted: true, resourceInvalid: false, exitCode: 130, operatorStopped: true }, 'interrupted'],
+    [
+      { admitted: true, resourceInvalid: false, exitCode: 130, operatorStopped: true },
+      'interrupted',
+    ],
     [{ admitted: true, resourceInvalid: false, exitCode: 2 }, 'invalid'],
   ];
   for (const [input, expected] of cases) assert.equal(resourceVerdict(input), expected);

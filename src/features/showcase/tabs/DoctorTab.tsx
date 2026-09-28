@@ -64,7 +64,8 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
         setDiagPageKey(pageAtStart);
       }
     } catch (err) {
-      if (isCurrentPageIdentity(pageAtStart)) setError(err instanceof Error ? err.message : String(err));
+      if (isCurrentPageIdentity(pageAtStart))
+        setError(err instanceof Error ? err.message : String(err));
     } finally {
       if (isCurrentPageIdentity(pageAtStart)) setRunning(false);
     }
@@ -74,7 +75,15 @@ export function DoctorTab({ active = true }: { active?: boolean }) {
     const target = MODE_TABS[mode];
     if (!target) return;
     if (mode === 'list_pattern') {
-      if (!diag || !diagPageKey || tab.id === null || diagTabId !== tab.id || diag.url !== tab.url || diagPageKey !== tab.pageKey || !isCurrentPageIdentity(diagPageKey)) {
+      if (
+        !diag ||
+        !diagPageKey ||
+        tab.id === null ||
+        diagTabId !== tab.id ||
+        diag.url !== tab.url ||
+        diagPageKey !== tab.pageKey ||
+        !isCurrentPageIdentity(diagPageKey)
+      ) {
         setError(
           'The page changed since Doctor probed it. Re-probe this page and choose the list again.',
         );

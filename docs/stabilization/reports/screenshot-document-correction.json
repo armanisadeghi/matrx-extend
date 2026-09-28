@@ -7,7 +7,11 @@
   "scope": "Screenshot capture, persistence attribution, and URL-history completion in the extension. No native browser or release was run in this lane.",
   "diagnosis": {
     "confirmed_source_failure": "ScreenshotsView knew the clicked tab ID but passed assignedTabId:null; take_screenshot then resolved the active tab later. Its captureVisibleTab call was window-scoped, as were all full-page tiles, and neither checked Chrome documentId. Same-URL reload and active-tab change could therefore accept or persist bytes from another page under the stale tab URL.",
-    "sibling_census": ["take_screenshot visible and full_page", "screenshot_region", "cdp_full_page_screenshot"],
+    "sibling_census": [
+      "take_screenshot visible and full_page",
+      "screenshot_region",
+      "cdp_full_page_screenshot"
+    ],
     "persistence_boundary": "All three writers use persistScreenshot; wbx_screenshot is URL-keyed historical lookup and has no documentId column. The capture document ID is included in uploaded file metadata and successful take_screenshot output. The index row retains the captured document's URL/title."
   },
   "correction": [

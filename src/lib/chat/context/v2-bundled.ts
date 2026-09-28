@@ -23,11 +23,11 @@
  *                            excerpt — content lives in page_full_content)
  */
 
-import { log } from '@/lib/debug/log';
 import { getActiveTabIdentitySnapshot, isCurrentPageIdentity } from '@/hooks/use-active-tab';
-import { useScrapeStore } from '@/state/scrape';
+import { log } from '@/lib/debug/log';
 import { fetchPatternsForDomain } from '@/lib/supabase/queries';
 import { prewarmReadPageCache } from '@/lib/tools/handlers/page-refs';
+import { useScrapeStore } from '@/state/scrape';
 import { useSettingsStore } from '@/state/settings';
 import { checkAuthState } from './check-auth-state';
 import { checkPageReady } from './check-page-ready';
@@ -169,13 +169,18 @@ export async function buildContextV2Bundled(
   // Scrape lookup. Prefer manual capture, then auto-background.
   const activeUrl = probe?.url ?? tabMeta?.url ?? null;
   const manualScrape =
-    inputs.scrape && activeUrl && inputs.scrape.url === activeUrl &&
+    inputs.scrape &&
+    activeUrl &&
+    inputs.scrape.url === activeUrl &&
     inputs.scrape === useScrapeStore.getState().current &&
     isCurrentPageIdentity(useScrapeStore.getState().pageKey) &&
     getActiveTabIdentitySnapshot().id === tabMeta?.id
-      ? inputs.scrape : null;
+      ? inputs.scrape
+      : null;
   const autoScrape =
-    inputs.autoScrape && activeUrl && inputs.autoScrape.url === activeUrl &&
+    inputs.autoScrape &&
+    activeUrl &&
+    inputs.autoScrape.url === activeUrl &&
     isCurrentPageIdentity(inputs.autoScrape.pageKey ?? null) &&
     getActiveTabIdentitySnapshot().id === tabMeta?.id
       ? inputs.autoScrape

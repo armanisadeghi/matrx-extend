@@ -152,7 +152,12 @@ export function ListPatternTab() {
   useEffect(() => {
     if (!listRecommendation) return;
     clearListRecommendation(listRecommendation.requestId);
-    if (listRecommendation.tabId !== tab.id || listRecommendation.url !== tab.url || listRecommendation.pageKey !== tab.pageKey || !isCurrentPageIdentity(tab.pageKey)) {
+    if (
+      listRecommendation.tabId !== tab.id ||
+      listRecommendation.url !== tab.url ||
+      listRecommendation.pageKey !== tab.pageKey ||
+      !isCurrentPageIdentity(tab.pageKey)
+    ) {
       setError(
         'The page changed before List Pattern could use Doctor’s result. Re-probe this page.',
       );
@@ -189,7 +194,8 @@ export function ListPatternTab() {
       payload.session_id === pickerSessionIdRef.current &&
       typeof payload.document_id === 'string' &&
       payload.document_id === pickDocumentIdRef.current &&
-      pickPageKeyRef.current === latestPageKeyRef.current && isCurrentPageIdentity(pickPageKeyRef.current);
+      pickPageKeyRef.current === latestPageKeyRef.current &&
+      isCurrentPageIdentity(pickPageKeyRef.current);
     const offResult = on<ListPickerResult & ListPickerIdentity, { ack: true }>(
       CHANNELS.LIST_PICKER_RESULT,
       (payload) => {
@@ -264,7 +270,8 @@ export function ListPatternTab() {
 
   // Auto-run card inspector whenever the item selector changes.
   const runInspector = useCallback(async () => {
-    if (!tab.id || !tab.documentId || !tab.pageKey || !config?.list_root || !config.item_selector) return;
+    if (!tab.id || !tab.documentId || !tab.pageKey || !config?.list_root || !config.item_selector)
+      return;
     const request = ++inspectorSeqRef.current;
     const pageAtStart = pageKey;
     setInspecting(true);
@@ -275,18 +282,32 @@ export function ListPatternTab() {
         func: inspectCardInPage,
         args: [{ list_root: config.list_root, item_selector: config.item_selector }],
       });
-      if (request !== inspectorSeqRef.current || pageAtStart !== latestPageKeyRef.current || !isCurrentPageIdentity(pageAtStart)) return;
+      if (
+        request !== inspectorSeqRef.current ||
+        pageAtStart !== latestPageKeyRef.current ||
+        !isCurrentPageIdentity(pageAtStart)
+      )
+        return;
       const inspected = result?.[0]?.result as CardInspection | undefined;
       if (!inspected) throw new Error('Page inspection returned no result.');
       setCandidates(inspected.candidates);
       setInspectionStatus(inspected.status);
     } catch (err) {
-      if (request !== inspectorSeqRef.current || pageAtStart !== latestPageKeyRef.current || !isCurrentPageIdentity(pageAtStart)) return;
+      if (
+        request !== inspectorSeqRef.current ||
+        pageAtStart !== latestPageKeyRef.current ||
+        !isCurrentPageIdentity(pageAtStart)
+      )
+        return;
       console.warn('[matrx-extend] card inspector failed', err);
       setCandidates([]);
       setInspectionStatus('failed');
     } finally {
-      if (request === inspectorSeqRef.current && pageAtStart === latestPageKeyRef.current && isCurrentPageIdentity(pageAtStart))
+      if (
+        request === inspectorSeqRef.current &&
+        pageAtStart === latestPageKeyRef.current &&
+        isCurrentPageIdentity(pageAtStart)
+      )
         setInspecting(false);
     }
   }, [tab.id, config?.list_root, config?.item_selector, pageKey]);
@@ -323,10 +344,18 @@ export function ListPatternTab() {
             args: [cfgSnapshot],
           });
           const row = (result?.[0]?.result as Record<string, string | null> | null) ?? {};
-          if (request === sampleSeqRef.current && pageKey === latestPageKeyRef.current && isCurrentPageIdentity(pageKey))
+          if (
+            request === sampleSeqRef.current &&
+            pageKey === latestPageKeyRef.current &&
+            isCurrentPageIdentity(pageKey)
+          )
             setSampleValues(row ?? {});
         } catch {
-          if (request === sampleSeqRef.current && pageKey === latestPageKeyRef.current && isCurrentPageIdentity(pageKey))
+          if (
+            request === sampleSeqRef.current &&
+            pageKey === latestPageKeyRef.current &&
+            isCurrentPageIdentity(pageKey)
+          )
             setSampleValues({});
         }
       })();
@@ -363,7 +392,14 @@ export function ListPatternTab() {
   }, [picking, closePickerSession]);
 
   const enterPicker = async () => {
-    if (!tab.id || !tab.documentId || !tab.pageKey || picking || !isCurrentPageIdentity(tab.pageKey)) return;
+    if (
+      !tab.id ||
+      !tab.documentId ||
+      !tab.pageKey ||
+      picking ||
+      !isCurrentPageIdentity(tab.pageKey)
+    )
+      return;
     const session = ++pickerSessionSeqRef.current;
     const sessionId = crypto.randomUUID();
     pickerSessionIdRef.current = sessionId;
@@ -379,7 +415,10 @@ export function ListPatternTab() {
         tab.documentId,
         sessionId,
         config ? { list_root: config.list_root, item_selector: config.item_selector } : null,
-        () => pickerSessionIdRef.current === sessionId && pickPageKeyRef.current === pageKey && isCurrentPageIdentity(pageKey),
+        () =>
+          pickerSessionIdRef.current === sessionId &&
+          pickPageKeyRef.current === pageKey &&
+          isCurrentPageIdentity(pageKey),
       );
     } catch (err) {
       if (session === pickerSessionSeqRef.current) {
@@ -425,11 +464,20 @@ export function ListPatternTab() {
     const pageAtStart = pageKey;
     setError(null);
     const data = await run(config);
-    if (request !== runSeqRef.current || pageAtStart !== latestPageKeyRef.current || !isCurrentPageIdentity(pageAtStart)) return;
+    if (
+      request !== runSeqRef.current ||
+      pageAtStart !== latestPageKeyRef.current ||
+      !isCurrentPageIdentity(pageAtStart)
+    )
+      return;
     if (data.length > 0) {
       // Snapshot 1-2 cards' HTML for later AI-paste.
       const samples = await captureSampleHtml();
-      if (request === runSeqRef.current && pageAtStart === latestPageKeyRef.current && isCurrentPageIdentity(pageAtStart))
+      if (
+        request === runSeqRef.current &&
+        pageAtStart === latestPageKeyRef.current &&
+        isCurrentPageIdentity(pageAtStart)
+      )
         setSampleHtml(samples);
     }
   };
@@ -920,7 +968,11 @@ function CandidatesPanel({
  */
 function friendlyPickError(err: unknown): string {
   const msg = err instanceof Error ? err.message : String(err);
-  if (/page changed|no document|no frame with id|frame was removed|could not establish connection/i.test(msg)) {
+  if (
+    /page changed|no document|no frame with id|frame was removed|could not establish connection/i.test(
+      msg,
+    )
+  ) {
     return 'The page changed or the picker could not open in this page. Retry picking on the current page.';
   }
   if (

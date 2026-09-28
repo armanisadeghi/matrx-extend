@@ -30,10 +30,7 @@
     {
       "rank": 2,
       "surface": "Automatic scrape and chat context cache",
-      "inventory": [
-        "EXT-F-1007",
-        "EXT-F-1007-C20"
-      ],
+      "inventory": ["EXT-F-1007", "EXT-F-1007-C20"],
       "source_proof": [
         "src/hooks/use-auto-scrape.ts:27-54 deduplicates/freshness-checks by tabId+URL",
         "src/hooks/use-auto-scrape.ts:62-113 awaits scroll/capture, checks returned URL only, then stores soup",
@@ -46,10 +43,7 @@
     {
       "rank": 3,
       "surface": "Screenshot capture and persisted gallery result",
-      "inventory": [
-        "EXT-F-1009-C01",
-        "EXT-F-1009-C02"
-      ],
+      "inventory": ["EXT-F-1009-C01", "EXT-F-1009-C02"],
       "source_proof": [
         "src/features/screenshots/ScreenshotsView.tsx:147-183 accepts tab.id/url then invokes take_screenshot with assignedTabId:null; result is not checked against captured page identity before completion handling",
         "src/features/screenshots/ScreenshotsView.tsx:95-105 reloads gallery by canonical URL",
@@ -62,12 +56,7 @@
     {
       "rank": 4,
       "surface": "Highlight overlay and highlight-to-Scrape handoff",
-      "inventory": [
-        "EXT-F-1010-C01",
-        "EXT-F-1010-C02",
-        "EXT-F-1010-C03",
-        "EXT-F-1010-C04"
-      ],
+      "inventory": ["EXT-F-1010-C01", "EXT-F-1010-C02", "EXT-F-1010-C03", "EXT-F-1010-C04"],
       "source_proof": [
         "src/features/highlights/HighlightView.tsx:99-110 starts/stops highlighter by tab ID and stores active overlay by tab ID",
         "src/features/highlights/HighlightView.tsx:130-139 changes overlay mode by tab ID",

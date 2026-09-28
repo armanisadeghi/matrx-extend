@@ -1,14 +1,17 @@
-import { useExtraction } from '@/hooks/use-extraction';
 import { refreshActiveTabIdentity } from '@/hooks/use-active-tab';
+import { useExtraction } from '@/hooks/use-extraction';
 import { Button } from '@ai-matrx/design-system';
 import { Camera, Loader2 } from 'lucide-react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
 
 export function SnapshotTab({ active = true }: { active?: boolean }) {
-  const { tab, detection, rows, running, error, source, previewConfig, run } = useExtraction('og_meta', {
-    autoDetect: active,
-  });
+  const { tab, detection, rows, running, error, source, previewConfig, run } = useExtraction(
+    'og_meta',
+    {
+      autoDetect: active,
+    },
+  );
 
   return (
     <div className="h-full overflow-y-auto">
@@ -29,12 +32,27 @@ export function SnapshotTab({ active = true }: { active?: boolean }) {
           </div>
         )}
 
-        <Button onClick={() => void run({})} disabled={running || !tab.pageKey} className="w-full rounded-full">
+        <Button
+          onClick={() => void run({})}
+          disabled={running || !tab.pageKey}
+          className="w-full rounded-full"
+        >
           {running ? <Loader2 className="animate-spin" /> : <Camera />}
           {running ? 'Capturing…' : 'Capture snapshot'}
         </Button>
 
-        {!tab.pageKey && <div className="rounded-xl bg-secondary/40 p-3 text-xs">{tab.identityError ?? 'Checking this page…'} <button type="button" className="underline" onClick={() => void refreshActiveTabIdentity()}>Retry</button></div>}
+        {!tab.pageKey && (
+          <div className="rounded-xl bg-secondary/40 p-3 text-xs">
+            {tab.identityError ?? 'Checking this page…'}{' '}
+            <button
+              type="button"
+              className="underline"
+              onClick={() => void refreshActiveTabIdentity()}
+            >
+              Retry
+            </button>
+          </div>
+        )}
 
         {error && (
           <div className="rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">

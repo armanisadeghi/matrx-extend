@@ -3,7 +3,12 @@ import { act, cleanup, renderHook } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  tab: { id: 41, url: 'https://harbor-dental.test/intake', documentId: 'document-a', pageKey: 'page-a' },
+  tab: {
+    id: 41,
+    url: 'https://harbor-dental.test/intake',
+    documentId: 'document-a',
+    pageKey: 'page-a',
+  },
   capture: vi.fn(),
 }));
 vi.mock('@/hooks/use-active-tab', () => ({
@@ -19,7 +24,9 @@ import { useSettingsStore } from '@/state/settings';
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
-  const promise = new Promise<T>((yes) => { resolve = yes; });
+  const promise = new Promise<T>((yes) => {
+    resolve = yes;
+  });
   return { promise, resolve };
 }
 
@@ -39,9 +46,13 @@ it('same-URL reload rejects late A and captures B from its exact document', asyn
   vi.useFakeTimers();
   useSettingsStore.setState({ scrapeAutoOnLoad: true, scrapeAutoMode: 'capture' });
   const old = deferred<unknown>();
-  mocks.capture.mockReturnValueOnce(old.promise).mockResolvedValueOnce({ ok: true, soup: soup('B intake') });
+  mocks.capture
+    .mockReturnValueOnce(old.promise)
+    .mockResolvedValueOnce({ ok: true, soup: soup('B intake') });
   const hook = renderHook(() => useAutoScrape());
-  await act(async () => { await vi.advanceTimersByTimeAsync(601); });
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(601);
+  });
   expect(mocks.capture).toHaveBeenNthCalledWith(1, 41, mocks.tab.url, 'document-a');
   act(() => {
     mocks.tab.documentId = 'document-b';
@@ -49,9 +60,14 @@ it('same-URL reload rejects late A and captures B from its exact document', asyn
     hook.rerender();
   });
   expect(useAutoScrapeStore.getState().current).toBeNull();
-  await act(async () => { old.resolve({ ok: true, soup: soup('A intake') }); await old.promise; });
+  await act(async () => {
+    old.resolve({ ok: true, soup: soup('A intake') });
+    await old.promise;
+  });
   expect(useAutoScrapeStore.getState().current).toBeNull();
-  await act(async () => { await vi.advanceTimersByTimeAsync(601); });
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(601);
+  });
   expect(mocks.capture).toHaveBeenNthCalledWith(2, 41, mocks.tab.url, 'document-b');
   expect(useAutoScrapeStore.getState().current?.pageKey).toBe('page-b');
   expect(useAutoScrapeStore.getState().current?.soup.article.title).toBe('B intake');

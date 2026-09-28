@@ -39,7 +39,12 @@ interface HighlightState {
    * broadcast wouldn't loop back — we pass through the store instead).
    * DataView / ScrapeView consume + clear these on mount.
    */
-  dataHandoff: { fields: { name: string; selector: string }[]; pageKey: string; tabId: number; documentId: string } | null;
+  dataHandoff: {
+    fields: { name: string; selector: string }[];
+    pageKey: string;
+    tabId: number;
+    documentId: string;
+  } | null;
   scrapeHandoff: { title: string; text: string; url: string }[] | null;
 
   setItems: (items: HighlightListItem[]) => void;
@@ -86,12 +91,13 @@ export const useHighlightStore = create<HighlightState>((set) => ({
       overlayTabId: tabId === undefined ? (active ? s.overlayTabId : null) : tabId,
       overlayCount: count ?? (active ? s.overlayCount : 0),
     })),
-  setOverlaySession: (session) => set({
-    overlaySession: session,
-    overlayActive: session?.status === 'active',
-    overlayTabId: session?.tabId ?? null,
-    overlayCount: 0,
-  }),
+  setOverlaySession: (session) =>
+    set({
+      overlaySession: session,
+      overlayActive: session?.status === 'active',
+      overlayTabId: session?.tabId ?? null,
+      overlayCount: 0,
+    }),
   setMode: (mode) => set({ mode }),
 
   attach: (id) =>

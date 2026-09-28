@@ -85,11 +85,13 @@ export function DataView() {
     setRunNote(null);
     setRunInfo(null);
     setSaving(false);
-    setError(interruptedSave === 'organization'
-      ? 'Page changed before saving. Select fields again on this page.'
-      : interruptedSave === 'write' || interruptedSave === 'refresh'
-        ? 'Page changed while the previous pattern was saving. Check saved patterns before retrying on this page.'
-        : null);
+    setError(
+      interruptedSave === 'organization'
+        ? 'Page changed before saving. Select fields again on this page.'
+        : interruptedSave === 'write' || interruptedSave === 'refresh'
+          ? 'Page changed while the previous pattern was saving. Check saved patterns before retrying on this page.'
+          : null,
+    );
     return () => {
       runSequence.current += 1;
     };
@@ -145,13 +147,23 @@ export function DataView() {
     // script delivery (tab_id absent) reaches every sidepanel directly —
     // accepting it processed each pick TWICE and let window A's pick land
     // in window B's builder.
-    const fromOurPick = (payload: { tab_id?: number | null; document_id?: string | null; session_id?: string } | null | undefined) =>
+    const fromOurPick = (
+      payload:
+        | { tab_id?: number | null; document_id?: string | null; session_id?: string }
+        | null
+        | undefined,
+    ) =>
       payload?.tab_id === pickTabRef.current &&
       payload?.document_id === pickDocumentRef.current &&
       payload?.session_id === pickSessionRef.current &&
       isCurrentPageIdentity(pickPageKeyRef.current);
     const offResult = on<
-      { fields?: { name: string; selector: string }[]; tab_id?: number | null; document_id?: string | null; session_id?: string },
+      {
+        fields?: { name: string; selector: string }[];
+        tab_id?: number | null;
+        document_id?: string | null;
+        session_id?: string;
+      },
       { ack: true }
     >(CHANNELS.DATA_PICKER_RESULT, (payload) => {
       if (!fromOurPick(payload)) return { ack: true };
@@ -161,15 +173,15 @@ export function DataView() {
       pickSessionRef.current = null;
       return { ack: true };
     });
-    const offExit = on<{ tab_id?: number | null; document_id?: string | null; session_id?: string }, { ack: true }>(
-      CHANNELS.DATA_PICKER_EXIT,
-      (payload) => {
-        if (!fromOurPick(payload)) return { ack: true };
-        setPicking(false);
-        pickSessionRef.current = null;
-        return { ack: true };
-      },
-    );
+    const offExit = on<
+      { tab_id?: number | null; document_id?: string | null; session_id?: string },
+      { ack: true }
+    >(CHANNELS.DATA_PICKER_EXIT, (payload) => {
+      if (!fromOurPick(payload)) return { ack: true };
+      setPicking(false);
+      pickSessionRef.current = null;
+      return { ack: true };
+    });
     return () => {
       offResult();
       offExit();
@@ -183,14 +195,22 @@ export function DataView() {
   const setDataHandoff = useHighlightStore((s) => s.setDataHandoff);
   useEffect(() => {
     if (dataHandoff) {
-      if (dataHandoff.fields.length > 0 && dataHandoff.pageKey === pageKey && dataHandoff.tabId === tab.id && dataHandoff.documentId === tab.documentId && isCurrentPageIdentity(dataHandoff.pageKey)) {
+      if (
+        dataHandoff.fields.length > 0 &&
+        dataHandoff.pageKey === pageKey &&
+        dataHandoff.tabId === tab.id &&
+        dataHandoff.documentId === tab.documentId &&
+        isCurrentPageIdentity(dataHandoff.pageKey)
+      ) {
         setPickedFields(dataHandoff.fields);
         setPickedPageKey(dataHandoff.pageKey);
         setError(null);
       } else {
         setPickedFields([]);
         setPickedPageKey(null);
-        setError('These highlight fields came from another or unverified page. Return to the current page and send the highlights again, or pick fields here.');
+        setError(
+          'These highlight fields came from another or unverified page. Return to the current page and send the highlights again, or pick fields here.',
+        );
       }
       setDataHandoff(null);
     }
@@ -206,12 +226,19 @@ export function DataView() {
     pickPageKeyRef.current = tab.pageKey;
     const sessionId = crypto.randomUUID();
     pickSessionRef.current = sessionId;
-    const stillOurSession = () => pickSessionRef.current === sessionId && pickDocumentRef.current === tab.documentId && pickPageKeyRef.current === tab.pageKey && isCurrentPageIdentity(tab.pageKey);
+    const stillOurSession = () =>
+      pickSessionRef.current === sessionId &&
+      pickDocumentRef.current === tab.documentId &&
+      pickPageKeyRef.current === tab.pageKey &&
+      isCurrentPageIdentity(tab.pageKey);
     setError(null);
     try {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id, documentIds: [tab.documentId] },
-        func: (id: string) => { (window as Window & { __matrxDataPickerSessionId?: string }).__matrxDataPickerSessionId = id; },
+        func: (id: string) => {
+          (window as Window & { __matrxDataPickerSessionId?: string }).__matrxDataPickerSessionId =
+            id;
+        },
         args: [sessionId],
       });
       if (!stillOurSession()) return;
@@ -223,7 +250,9 @@ export function DataView() {
       if (!stillOurSession()) return;
       setPicking(false);
       pickSessionRef.current = null;
-      setError(`Could not start the field picker: ${err instanceof Error ? err.message : String(err)}. Retry picking fields on this page.`);
+      setError(
+        `Could not start the field picker: ${err instanceof Error ? err.message : String(err)}. Retry picking fields on this page.`,
+      );
       console.warn('[matrx-extend] picker injection failed', err);
     }
   };
@@ -231,13 +260,22 @@ export function DataView() {
   const handleSavePattern = async () => {
     if (!host || pickedFields.length === 0) return;
     if (!isCurrentPageIdentity(pickedPageKey)) {
-      setError('These fields are not verified for the current page. Pick fields again or resend highlights from this page.');
+      setError(
+        'These fields are not verified for the current page. Pick fields again or resend highlights from this page.',
+      );
       return;
     }
     const sourcePageKey = pageKey;
     const saveId = ++saveSequence.current;
-    const isCurrentSave = () => saveSequence.current === saveId && currentPage.current === sourcePageKey && isCurrentPageIdentity(sourcePageKey);
-    const selectedFields = pickedFields.map((field) => ({ name: field.name, selector: field.selector, is_list: false }));
+    const isCurrentSave = () =>
+      saveSequence.current === saveId &&
+      currentPage.current === sourcePageKey &&
+      isCurrentPageIdentity(sourcePageKey);
+    const selectedFields = pickedFields.map((field) => ({
+      name: field.name,
+      selector: field.selector,
+      is_list: false,
+    }));
     const selectedName = patternName || `${host} pattern`;
     const selectedHost = host;
     const selectedRoute = tab.url ? new URL(tab.url).pathname : null;
@@ -285,7 +323,10 @@ export function DataView() {
   const handleRun = async (pattern: ExtractionPattern) => {
     if (!tab.id || !tab.documentId || !tab.pageKey) return;
     const sequence = ++runSequence.current;
-    const isCurrent = () => currentPage.current === pageKey && runSequence.current === sequence && isCurrentPageIdentity(pageKey);
+    const isCurrent = () =>
+      currentPage.current === pageKey &&
+      runSequence.current === sequence &&
+      isCurrentPageIdentity(pageKey);
     const source = { pageKey, url: tab.url, title: tab.title, patternName: pattern.name };
     setRunSource(source);
     setRunning(true);
@@ -346,7 +387,9 @@ export function DataView() {
   const autoForUrl = useMemo(() => {
     const url = tab.url;
     if (!url) return [];
-    return Array.from(autoRecords.values()).filter((r) => r.pageKey === tab.pageKey && Boolean(tab.pageKey));
+    return Array.from(autoRecords.values()).filter(
+      (r) => r.pageKey === tab.pageKey && Boolean(tab.pageKey),
+    );
   }, [autoRecords, tab.pageKey, tab.url]);
   const autoForMatched = matched ? autoForUrl.find((r) => r.pattern.id === matched.id) : undefined;
 

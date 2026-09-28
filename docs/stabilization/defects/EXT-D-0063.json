@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0063",
   "feature_id": "EXT-F-2007",
-  "case_ids": [
-    "EXT-F-2007-T01"
-  ],
+  "case_ids": ["EXT-F-2007-T01"],
   "title": "Debounced note edits are dropped when a save is already in flight",
   "surface": "Notes editor",
   "auth_mode": "member/admin; source-derived, native unverified",

@@ -62,9 +62,11 @@ export function useNetworkCapture() {
       // started on — patches persist on previously-tapped tabs for their
       // page lifetime, and without this check their traffic pollutes the
       // current capture (audit I1). The SW stamps tab_id on every event.
-      if (!capturingRef.current || !isCurrentPageIdentity(capturePageKeyRef.current)) return { ack: true };
+      if (!capturingRef.current || !isCurrentPageIdentity(capturePageKeyRef.current))
+        return { ack: true };
       if (event.tab_id == null || event.tab_id !== tabIdRef.current) return { ack: true };
-      if (!event.document_id || event.document_id !== captureDocumentRef.current) return { ack: true };
+      if (!event.document_id || event.document_id !== captureDocumentRef.current)
+        return { ack: true };
       appendEvent(event);
       return { ack: true };
     });

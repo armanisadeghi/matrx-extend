@@ -240,11 +240,20 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
         try {
           const frame = await chrome.webNavigation.getFrame({ tabId, frameId: 0 });
           if (!frame?.documentId || frame.errorOccurred || frame.url !== tab.url) {
-            return { ok: false, reason: 'The assigned page identity is unavailable. Reload it and run the pattern again.', retryable: true };
+            return {
+              ok: false,
+              reason:
+                'The assigned page identity is unavailable. Reload it and run the pattern again.',
+              retryable: true,
+            };
           }
           documentId = frame.documentId;
         } catch {
-          return { ok: false, reason: 'Could not verify the assigned page. Reload it and run the pattern again.', retryable: true };
+          return {
+            ok: false,
+            reason: 'Could not verify the assigned page. Reload it and run the pattern again.',
+            retryable: true,
+          };
         }
       }
       const pageIsCurrent = async () => {

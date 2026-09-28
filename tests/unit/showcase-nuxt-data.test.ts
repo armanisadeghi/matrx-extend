@@ -53,9 +53,15 @@ describe('Nuxt Framework source decoding', () => {
     });
 
     const config = { source: '__NUXT_DATA__', key_path: ['state', '$sstats', 'repo'] };
-    await expect(runMode('next_data', 37, config, 'document-a')).resolves.toEqual([{ value: 'nuxt/nuxt' }]);
+    await expect(runMode('next_data', 37, config, 'document-a')).resolves.toEqual([
+      { value: 'nuxt/nuxt' },
+    ]);
     await expect(
-      runPattern({ kind: 'next_data', config } as Parameters<typeof runPattern>[0], 37, 'document-a'),
+      runPattern(
+        { kind: 'next_data', config } as Parameters<typeof runPattern>[0],
+        37,
+        'document-a',
+      ),
     ).resolves.toEqual([{ value: 'nuxt/nuxt' }]);
   });
 
@@ -63,10 +69,15 @@ describe('Nuxt Framework source decoding', () => {
     // Exact devalue stringify example from https://github.com/sveltejs/devalue#stringify-and-parse
     setScript('__NUXT_DATA__', '[{"message":1},"hello"]');
     await expect(
-      runMode('next_data', 37, {
-        source: '__NUXT_DATA__',
-        key_path: ['message'],
-      }, 'document-a'),
+      runMode(
+        'next_data',
+        37,
+        {
+          source: '__NUXT_DATA__',
+          key_path: ['message'],
+        },
+        'document-a',
+      ),
     ).resolves.toEqual([{ value: 'hello' }]);
   });
 
@@ -90,10 +101,15 @@ describe('Nuxt Framework source decoding', () => {
     expect(sources[0]?.data).toBeUndefined();
     expect(sources[0]?.error).toMatch(/Nuxt page data could not be decoded/);
     await expect(
-      runMode('next_data', 37, {
-        source: '__NUXT_DATA__',
-        key_path: ['title'],
-      }, 'document-a'),
+      runMode(
+        'next_data',
+        37,
+        {
+          source: '__NUXT_DATA__',
+          key_path: ['title'],
+        },
+        'document-a',
+      ),
     ).rejects.toThrow(/Nuxt page data could not be decoded/);
   });
 
@@ -111,10 +127,15 @@ describe('Nuxt Framework source decoding', () => {
     expect(sources[0]?.data).toEqual({ props: { title: 'Nuxt launch notes' } });
     expect(sources[2]?.data).toEqual({ Repository: { name: 'nuxt/nuxt' } });
     await expect(
-      runMode('next_data', 37, {
-        source: '__NEXT_DATA__',
-        key_path: ['props', 'title'],
-      }, 'document-a'),
+      runMode(
+        'next_data',
+        37,
+        {
+          source: '__NEXT_DATA__',
+          key_path: ['props', 'title'],
+        },
+        'document-a',
+      ),
     ).resolves.toEqual([{ value: 'Nuxt launch notes' }]);
     await expect(
       runPattern(

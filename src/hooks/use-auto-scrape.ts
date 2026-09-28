@@ -20,10 +20,21 @@ export function useAutoScrape(): void {
     const store = useAutoScrapeStore.getState();
     if (store.current?.pageKey !== tab.pageKey) store.clear();
     store.cancelCaptureUnlessPage(tab.pageKey);
-    if (!enabled || !tab.id || !tab.url || !tab.documentId || !tab.pageKey || !/^https?:\/\//i.test(tab.url)) {
+    if (
+      !enabled ||
+      !tab.id ||
+      !tab.url ||
+      !tab.documentId ||
+      !tab.pageKey ||
+      !/^https?:\/\//i.test(tab.url)
+    ) {
       return;
     }
-    if (store.current?.pageKey === tab.pageKey && Date.now() - store.current.capturedAt < FRESH_THRESHOLD_MS) return;
+    if (
+      store.current?.pageKey === tab.pageKey &&
+      Date.now() - store.current.capturedAt < FRESH_THRESHOLD_MS
+    )
+      return;
     const tabId = tab.id;
     const url = tab.url;
     const documentId = tab.documentId;
@@ -42,10 +53,19 @@ export function useAutoScrape(): void {
           if (deep) await scrollToLoadLazy(tabId, { documentId });
           if (run !== runRef.current || !isCurrentPageIdentity(pageKey)) return;
           const result = await captureWithFallback(tabId, url, documentId);
-          if (run !== runRef.current || !isCurrentPageIdentity(pageKey) || !captureStore.ownsCapture(pageKey, captureRun)) return;
+          if (
+            run !== runRef.current ||
+            !isCurrentPageIdentity(pageKey) ||
+            !captureStore.ownsCapture(pageKey, captureRun)
+          )
+            return;
           if (!result.ok || !result.soup) {
             if (result.reason !== 'unreachable-url' && result.reason !== 'inject-failed') {
-              captureStore.setCaptureError(pageKey, captureRun, result.detail ?? result.reason ?? 'Auto capture failed');
+              captureStore.setCaptureError(
+                pageKey,
+                captureRun,
+                result.detail ?? result.reason ?? 'Auto capture failed',
+              );
             }
             return;
           }
@@ -59,7 +79,11 @@ export function useAutoScrape(): void {
           });
         } catch (error) {
           if (run === runRef.current && isCurrentPageIdentity(pageKey)) {
-            captureStore.setCaptureError(pageKey, captureRun, error instanceof Error ? error.message : 'Auto capture failed');
+            captureStore.setCaptureError(
+              pageKey,
+              captureRun,
+              error instanceof Error ? error.message : 'Auto capture failed',
+            );
           }
         } finally {
           captureStore.finishCapture(pageKey, captureRun);

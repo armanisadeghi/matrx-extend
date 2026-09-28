@@ -79,12 +79,18 @@ describe('Showcase JSON key paths', () => {
     });
 
     const config = { source: '__NEXT_DATA__', key_path: literal };
-    await expect(runMode('next_data', 37, config, 'document-a')).resolves.toEqual([{ title: 'Literal edition' }]);
+    await expect(runMode('next_data', 37, config, 'document-a')).resolves.toEqual([
+      { title: 'Literal edition' },
+    ]);
     await expect(
       runMode('next_data', 37, { source: '__NEXT_DATA__', key_path: nested }, 'document-a'),
     ).resolves.toEqual([{ title: 'Nested edition' }]);
     await expect(
-      runPattern({ kind: 'next_data', config } as Parameters<typeof runPattern>[0], 37, 'document-a'),
+      runPattern(
+        { kind: 'next_data', config } as Parameters<typeof runPattern>[0],
+        37,
+        'document-a',
+      ),
     ).resolves.toEqual([{ title: 'Literal edition' }]);
     await expect(
       runMode('next_data', 37, { source: '__NEXT_DATA__', key_path: 'odd..path' }, 'document-a'),

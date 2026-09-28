@@ -85,7 +85,14 @@ export const useScrapeStore = create<ScrapeState>((set) => ({
     draftNote: '',
   },
   setCurrent: (current, pageKey = null) =>
-    set({ current, pageKey: current ? pageKey : null, original: current, articleEdited: false, error: null, edited: false }),
+    set({
+      current,
+      pageKey: current ? pageKey : null,
+      original: current,
+      articleEdited: false,
+      error: null,
+      edited: false,
+    }),
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error, loading: false }),
   setAlreadyCaptured: (alreadyCapturedAt) => set({ alreadyCapturedAt }),

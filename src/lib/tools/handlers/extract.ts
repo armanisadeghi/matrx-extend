@@ -1,4 +1,9 @@
 import { log } from '@/lib/debug/log';
+import {
+  assertScreenshotDocument,
+  captureForDocument,
+  readScreenshotDocument,
+} from '@/lib/screenshot/document';
 import { type ScreenshotProfile, resolveProfile } from '@/lib/screenshot/profiles';
 import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
@@ -19,7 +24,6 @@ import type { ToolHandler } from '@/lib/tools/types';
  *    .research/proposed-tools-and-features.md (items #2 and #4)
  */
 import { z } from 'zod';
-import { assertScreenshotDocument, captureForDocument, readScreenshotDocument } from '@/lib/screenshot/document';
 
 // ─── extract_table ─────────────────────────────────────────────────────────
 const ExtractTableArgs = z
@@ -579,7 +583,9 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
     const quality = args.quality ?? profile.quality;
     let dataUrl: string;
     try {
-      dataUrl = await captureForDocument(document, () => chrome.tabs.captureVisibleTab(document.windowId, { format: 'png' }));
+      dataUrl = await captureForDocument(document, () =>
+        chrome.tabs.captureVisibleTab(document.windowId, { format: 'png' }),
+      );
     } catch (err) {
       return { ok: false, reason: `captureVisibleTab failed: ${(err as Error).message}` };
     }

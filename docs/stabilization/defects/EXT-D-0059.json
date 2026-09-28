@@ -1,10 +1,7 @@
 {
   "id": "EXT-D-0059",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T08",
-    "EXT-F-1012-T09"
-  ],
+  "case_ids": ["EXT-F-1012-T08", "EXT-F-1012-T09"],
   "title": "Same-URL reload lacks document identity for page-result invalidation",
   "surface": "Shared active-tab document identity and live page-derived results",
   "auth_mode": "admin",
@@ -71,9 +68,5 @@
     }
   ],
   "scope_ruling": "Use one shared top-frame identity snapshot; keep URL/domain persisted lookup semantics separate. Include detection, completed/pending rows, auto-extract cache, AI/pattern derivation and capture residue. Explicit recovery for unresolved identity; no null-equals-null page key. Preserve approved network-replay document contract.",
-  "related_feature_ids": [
-    "EXT-F-1007",
-    "EXT-F-1009",
-    "EXT-F-1010"
-  ]
+  "related_feature_ids": ["EXT-F-1007", "EXT-F-1009", "EXT-F-1010"]
 }

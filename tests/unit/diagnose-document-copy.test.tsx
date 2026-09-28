@@ -9,7 +9,11 @@ vi.mock('@/hooks/use-active-tab', () => ({
 }));
 vi.mock('@/components/CopyMenu', () => ({
   CopyMenu: ({ options }: { options: Array<{ label: string; getContent: () => string }> }) => (
-    <button onClick={() => { page.copied = options.find((option) => option.label === 'For AI agent')!.getContent(); }}>
+    <button
+      onClick={() => {
+        page.copied = options.find((option) => option.label === 'For AI agent')!.getContent();
+      }}
+    >
       Copy for AI
     </button>
   ),
@@ -21,11 +25,22 @@ import { useScrapeStore } from '@/state/scrape';
 const url = 'https://harbor-dental.test/intake';
 function pick(pageKey: string, text: string) {
   return {
-    pageKey, mode: 'missing' as const, capturedAt: 1_800_000_000_000,
-    pickedAtUrl: url, pickedAtTitle: 'New patient intake',
-    selectorChain: ['#insurance'], leafTag: 'div', leafHtml: `<div id="insurance">${text}</div>`,
-    leafTextPreview: text, leafTruncated: false, parentHtml: null, parentTruncated: false,
-    siblingHtml: null, siblingTruncated: false, siblingCount: 0, anchorCandidates: [text],
+    pageKey,
+    mode: 'missing' as const,
+    capturedAt: 1_800_000_000_000,
+    pickedAtUrl: url,
+    pickedAtTitle: 'New patient intake',
+    selectorChain: ['#insurance'],
+    leafTag: 'div',
+    leafHtml: `<div id="insurance">${text}</div>`,
+    leafTextPreview: text,
+    leafTruncated: false,
+    parentHtml: null,
+    parentTruncated: false,
+    siblingHtml: null,
+    siblingTruncated: false,
+    siblingCount: 0,
+    anchorCandidates: [text],
   };
 }
 afterEach(() => {
@@ -36,7 +51,13 @@ afterEach(() => {
 });
 
 it('copies B picker without retained A scrape after same-URL reload', () => {
-  useScrapeStore.getState().setCurrent({ url, article: { content_markdown: 'A dental benefits deadline', extractor: 'readability' } } as never, 'page-a');
+  useScrapeStore.getState().setCurrent(
+    {
+      url,
+      article: { content_markdown: 'A dental benefits deadline', extractor: 'readability' },
+    } as never,
+    'page-a',
+  );
   useScrapeStore.getState().setDiagnoseResult(pick('page-b', 'Insurance consent'));
   render(<DiagnoseCard />);
   fireEvent.click(screen.getByRole('button', { name: 'Copy for AI' }));
@@ -47,7 +68,16 @@ it('copies B picker without retained A scrape after same-URL reload', () => {
 });
 
 it('copies B scrape comparison when B was captured', () => {
-  useScrapeStore.getState().setCurrent({ url, article: { content_markdown: 'Insurance consent received from patient', extractor: 'defuddle' } } as never, 'page-b');
+  useScrapeStore.getState().setCurrent(
+    {
+      url,
+      article: {
+        content_markdown: 'Insurance consent received from patient',
+        extractor: 'defuddle',
+      },
+    } as never,
+    'page-b',
+  );
   useScrapeStore.getState().setDiagnoseResult(pick('page-b', 'Insurance consent'));
   render(<DiagnoseCard />);
   fireEvent.click(screen.getByRole('button', { name: 'Copy for AI' }));

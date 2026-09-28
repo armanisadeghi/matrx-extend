@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0057",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T08"
-  ],
+  "case_ids": ["EXT-F-1012-T08"],
   "title": "Prepare synthesizes success when no execution report returns",
   "surface": "Showcase Prepare",
   "auth_mode": "admin",

@@ -24,9 +24,18 @@
       "tests/unit/showcase-json-path-connected.test.tsx: mocked Network tab and useActiveTab include documentId/pageKey/isCurrentPageIdentity"
     ],
     "journals": [
-      { "path": "docs/stabilization/resource-journals/d59-correction-compile-1.jsonl", "sha256": "53697b7aed5f18ddf8c1792cd5f9e58986517d5abe40d2c32594344307a88082" },
-      { "path": "docs/stabilization/resource-journals/d59-correction-compile-2.jsonl", "sha256": "dcad1a629b8fc89e45706df2bd2b04dab815b51ccf4fd4c9cc46dcd44bed5c50" },
-      { "path": "docs/stabilization/resource-journals/d59-correction-tests-1.jsonl", "sha256": "a3f4feffada843546d4537a6748c2cab582482878b24b140f571fcc7966d54fe" }
+      {
+        "path": "docs/stabilization/resource-journals/d59-correction-compile-1.jsonl",
+        "sha256": "53697b7aed5f18ddf8c1792cd5f9e58986517d5abe40d2c32594344307a88082"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/d59-correction-compile-2.jsonl",
+        "sha256": "dcad1a629b8fc89e45706df2bd2b04dab815b51ccf4fd4c9cc46dcd44bed5c50"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/d59-correction-tests-1.jsonl",
+        "sha256": "a3f4feffada843546d4537a6748c2cab582482878b24b140f571fcc7966d54fe"
+      }
     ]
   },
   "remaining": [

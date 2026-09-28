@@ -67,7 +67,8 @@ export function RecipesTab() {
         setResultPageKey(pageKeyAtRun);
       }
     } catch (err) {
-      if (seq === callSeq.current && isCurrentPageIdentity(pageKeyAtRun)) setError(err instanceof Error ? err.message : String(err));
+      if (seq === callSeq.current && isCurrentPageIdentity(pageKeyAtRun))
+        setError(err instanceof Error ? err.message : String(err));
     } finally {
       if (seq === callSeq.current && isCurrentPageIdentity(pageKeyAtRun)) setRunning(null);
     }

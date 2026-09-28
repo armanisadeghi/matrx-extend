@@ -33,10 +33,42 @@
   ],
   "source_census": {
     "shared_hook": "use-active-tab.ts is the single side-panel resolver; top-frame events, sequence checks, URL plus document key, and unresolved status are present. Native event ordering remains unverified.",
-    "migrated_with_document_result_admission": ["Prepare", "Snapshot/useExtraction", "AI extraction", "auto extraction/Data rows", "pattern from data", "Recipes", "Patterns", "List Pattern", "Doctor", "SEO", "SaveAsPattern"],
-    "migrated_but_incomplete": ["ordinary Network event provenance", "Data picker event provenance", "Framework extension-run document targeting", "unresolved remedies across Data, Recipes, Patterns, Framework, Doctor and Network"],
-    "acknowledged_pending": ["Scrape/use-auto-scrape", "Screenshots captureNow", "Highlight live selection and picker", "Showcase shell", "sidepanel App context", "mocked fixtures and focused regressions", "integrated compile", "native installed-extension acceptance"],
-    "intentional_url_or_domain_lookup": ["saved patterns/recipes", "saved SEO history", "saved screenshots/highlights gallery", "Tasks URL matching", "Vault domain lookup"]
+    "migrated_with_document_result_admission": [
+      "Prepare",
+      "Snapshot/useExtraction",
+      "AI extraction",
+      "auto extraction/Data rows",
+      "pattern from data",
+      "Recipes",
+      "Patterns",
+      "List Pattern",
+      "Doctor",
+      "SEO",
+      "SaveAsPattern"
+    ],
+    "migrated_but_incomplete": [
+      "ordinary Network event provenance",
+      "Data picker event provenance",
+      "Framework extension-run document targeting",
+      "unresolved remedies across Data, Recipes, Patterns, Framework, Doctor and Network"
+    ],
+    "acknowledged_pending": [
+      "Scrape/use-auto-scrape",
+      "Screenshots captureNow",
+      "Highlight live selection and picker",
+      "Showcase shell",
+      "sidepanel App context",
+      "mocked fixtures and focused regressions",
+      "integrated compile",
+      "native installed-extension acceptance"
+    ],
+    "intentional_url_or_domain_lookup": [
+      "saved patterns/recipes",
+      "saved SEO history",
+      "saved screenshots/highlights gallery",
+      "Tasks URL matching",
+      "Vault domain lookup"
+    ]
   },
   "verification_limits": "Source only. No product edits, tests, build, or browser run in this verifier lane. d59-compile-1 passed before consumer changes. d59-compile-2 was admitted and tsc exited 1; two source corrections after it have no integrated compile result. Authored runtime tests remain unrun. The journal's final 'refused' label must not be represented as a resource preflight refusal for that compile.",
   "next_implementation_brief": "First close the four findings above as one document-provenance pass, including sender-stamped event identity and exact-document injection through extension runners. Then finish the acknowledged Scrape/Screenshots/Highlights/Showcase/App census and fixtures. Run integrated compile and focused forcing regressions when allowed, then verify actual installed-extension same-URL Chrome Reload on a public HTTPS page before changing D59 from partial."

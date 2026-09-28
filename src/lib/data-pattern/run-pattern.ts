@@ -66,7 +66,8 @@ export async function runPattern(
     : (pattern.config ?? {});
 
   if (mode.runInExtension) {
-    if (!documentId) throw new Error('Page identity is unavailable. Reload the page and run this pattern again.');
+    if (!documentId)
+      throw new Error('Page identity is unavailable. Reload the page and run this pattern again.');
     return mode.runInExtension(tabId, config, documentId);
   }
   if (!mode.runInPage) throw new Error(`Pattern kind "${pattern.kind}" has no runner.`);
@@ -119,7 +120,8 @@ export async function runMode(
   // would otherwise silently hit.
   if (mode.interactiveOnly) throw new InteractiveOnlyError(modeId);
   if (mode.runInExtension) {
-    if (!documentId) throw new Error('Page identity is unavailable. Reload the page and run this mode again.');
+    if (!documentId)
+      throw new Error('Page identity is unavailable. Reload the page and run this mode again.');
     return mode.runInExtension(tabId, config, documentId);
   }
   if (!mode.runInPage) throw new Error(`Mode "${modeId}" has no runner.`);

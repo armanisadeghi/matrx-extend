@@ -20,8 +20,8 @@
  * URL, or the page is on a known-blocked surface.
  */
 
-import { log } from '@/lib/debug/log';
 import { getActiveTabIdentitySnapshot, isCurrentPageIdentity } from '@/hooks/use-active-tab';
+import { log } from '@/lib/debug/log';
 import { classifyTabUrl } from '@/lib/scrape/capture-error';
 import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
@@ -116,7 +116,11 @@ export async function refreshPageContextBeforeSend(opts: RefreshOptions): Promis
   const store = useAutoScrapeStore.getState();
   const page = getActiveTabIdentitySnapshot();
   if (!page.id || !page.url || !page.documentId || !page.pageKey) {
-    return { action: 'noop', record: null, reason: page.identityError ?? 'page identity unavailable' };
+    return {
+      action: 'noop',
+      record: null,
+      reason: page.identityError ?? 'page identity unavailable',
+    };
   }
   const tabId = page.id;
   const url = page.url;

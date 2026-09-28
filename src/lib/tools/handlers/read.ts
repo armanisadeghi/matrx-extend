@@ -16,8 +16,8 @@ import { log } from '@/lib/debug/log';
 import { classifyTabUrl } from '@/lib/scrape/capture-error';
 import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
-import { type ScreenshotProfile, resolveProfile } from '@/lib/screenshot/profiles';
 import { captureForDocument, readScreenshotDocument } from '@/lib/screenshot/document';
+import { type ScreenshotProfile, resolveProfile } from '@/lib/screenshot/profiles';
 import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { base64ByteLength } from '@ai-matrx/kit/base64';
@@ -344,7 +344,7 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
     const captureSource = (args.capture_source ?? 'unknown') as 'agent' | 'user' | 'unknown';
     const mode = (args.mode ?? 'visible') as 'visible' | 'full_page';
     try {
-      const document = ctx.screenshotDocument ?? await readScreenshotDocument(tab.id);
+      const document = ctx.screenshotDocument ?? (await readScreenshotDocument(tab.id));
       if (document.tabId !== tab.id || document.windowId !== tab.windowId) {
         return { ok: false, reason: 'The screenshot tab changed before capture. Try again.' };
       }
@@ -362,9 +362,11 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
         tileCount = fp.tileCount;
         truncated = fp.truncated;
       } else {
-        dataUrl = await captureForDocument(document, () => chrome.tabs.captureVisibleTab(document.windowId, {
-          format: 'png',
-        }));
+        dataUrl = await captureForDocument(document, () =>
+          chrome.tabs.captureVisibleTab(document.windowId, {
+            format: 'png',
+          }),
+        );
       }
       const processed = await processScreenshot(dataUrl, format, quality, maxDim);
       const mediaType = format === 'jpeg' ? 'image/jpeg' : 'image/png';

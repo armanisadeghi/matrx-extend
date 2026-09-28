@@ -83,7 +83,8 @@ export function useAutoExtract(): void {
       // Fire each matching pattern in parallel.
       await Promise.all(
         matched.map(async (pattern) => {
-          if (cancelled || currentPage.current !== pageKey || !isCurrentPageIdentity(pageKey)) return;
+          if (cancelled || currentPage.current !== pageKey || !isCurrentPageIdentity(pageKey))
+            return;
           const key = autoExtractKey(pattern.id, pageKey);
           const existing = records.get(key);
           if (existing && existing.status === 'ok' && Date.now() - existing.lastRunAt < TTL_MS) {
@@ -101,7 +102,8 @@ export function useAutoExtract(): void {
 
           try {
             const rows = await runPattern(pattern, tabId, documentId);
-            if (cancelled || currentPage.current !== pageKey || !isCurrentPageIdentity(pageKey)) return;
+            if (cancelled || currentPage.current !== pageKey || !isCurrentPageIdentity(pageKey))
+              return;
             const outcome = classifySavedRun(pattern, url, rows);
             setRecord(key, {
               pattern,
@@ -115,7 +117,12 @@ export function useAutoExtract(): void {
             });
             if (outcome.kind === 'matched') {
               const updateError = await bumpPatternRun(pattern.id, 'ok', rows.length);
-              if (updateError && !cancelled && currentPage.current === pageKey && isCurrentPageIdentity(pageKey)) {
+              if (
+                updateError &&
+                !cancelled &&
+                currentPage.current === pageKey &&
+                isCurrentPageIdentity(pageKey)
+              ) {
                 setRecord(key, {
                   pattern,
                   url,
@@ -131,7 +138,8 @@ export function useAutoExtract(): void {
               }
             }
           } catch (err) {
-            if (cancelled || currentPage.current !== pageKey || !isCurrentPageIdentity(pageKey)) return;
+            if (cancelled || currentPage.current !== pageKey || !isCurrentPageIdentity(pageKey))
+              return;
             const errorMessage = err instanceof Error ? err.message : String(err);
             setRecord(key, {
               pattern,
@@ -144,7 +152,12 @@ export function useAutoExtract(): void {
               lastRunAt: Date.now(),
             });
             const updateError = await bumpPatternRun(pattern.id, 'broken', 0);
-            if (updateError && !cancelled && currentPage.current === pageKey && isCurrentPageIdentity(pageKey)) {
+            if (
+              updateError &&
+              !cancelled &&
+              currentPage.current === pageKey &&
+              isCurrentPageIdentity(pageKey)
+            ) {
               setRecord(key, {
                 pattern,
                 url,

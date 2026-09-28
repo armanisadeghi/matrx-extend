@@ -3,7 +3,14 @@ import { act, cleanup, renderHook } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  tab: { id: 41, url: 'https://harbor-dental.test/intake', title: 'New patient intake', documentId: 'document-a', pageKey: 'page-a', identityError: null },
+  tab: {
+    id: 41,
+    url: 'https://harbor-dental.test/intake',
+    title: 'New patient intake',
+    documentId: 'document-a',
+    pageKey: 'page-a',
+    identityError: null,
+  },
   capture: vi.fn(),
 }));
 vi.mock('@/hooks/use-active-tab', () => ({
@@ -21,7 +28,9 @@ import { useScrapeStore } from '@/state/scrape';
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
-  const promise = new Promise<T>((yes) => { resolve = yes; });
+  const promise = new Promise<T>((yes) => {
+    resolve = yes;
+  });
   return { promise, resolve };
 }
 
@@ -37,19 +46,28 @@ afterEach(() => {
 
 it('late A manual capture cannot replace B at the same URL', async () => {
   const old = deferred<unknown>();
-  mocks.capture.mockReturnValueOnce(old.promise).mockResolvedValueOnce({ ok: true, soup: soup('B intake') });
+  mocks.capture
+    .mockReturnValueOnce(old.promise)
+    .mockResolvedValueOnce({ ok: true, soup: soup('B intake') });
   const hook = renderHook(() => useScrape());
   let oldCapture!: Promise<unknown>;
-  act(() => { oldCapture = hook.result.current.captureActiveTab(); });
+  act(() => {
+    oldCapture = hook.result.current.captureActiveTab();
+  });
   expect(mocks.capture).toHaveBeenNthCalledWith(1, 41, mocks.tab.url, 'document-a');
   act(() => {
     mocks.tab.documentId = 'document-b';
     mocks.tab.pageKey = 'page-b';
     hook.rerender();
   });
-  await act(async () => { old.resolve({ ok: true, soup: soup('A intake') }); await oldCapture; });
+  await act(async () => {
+    old.resolve({ ok: true, soup: soup('A intake') });
+    await oldCapture;
+  });
   expect(useScrapeStore.getState().current).toBeNull();
-  await act(async () => { await hook.result.current.captureActiveTab(); });
+  await act(async () => {
+    await hook.result.current.captureActiveTab();
+  });
   expect(mocks.capture).toHaveBeenNthCalledWith(2, 41, mocks.tab.url, 'document-b');
   expect(useScrapeStore.getState().pageKey).toBe('page-b');
   expect(useScrapeStore.getState().current?.article.title).toBe('B intake');

@@ -12,7 +12,13 @@ const pickerListeners = vi.hoisted(
 );
 
 vi.mock('@/hooks/use-active-tab', () => ({
-  useActiveTab: () => ({ id: page.id, url: page.url, title: 'Vegas EDM Event Calendar', documentId: page.documentId, pageKey: page.documentId }),
+  useActiveTab: () => ({
+    id: page.id,
+    url: page.url,
+    title: 'Vegas EDM Event Calendar',
+    documentId: page.documentId,
+    pageKey: page.documentId,
+  }),
   isCurrentPageIdentity: (key: string) => key === page.documentId,
 }));
 vi.mock('@/lib/storage/zustand-adapter', () => ({
@@ -184,14 +190,19 @@ describe('Showcase Doctor recommendation handoff', () => {
     render(<ListPatternTab />);
     fireEvent.click(screen.getByRole('button', { name: /Pick an example item/i }));
     const session = await vi.waitFor(() => {
-      const id = page.executeScript.mock.calls.find(([request]) => typeof request.args?.[0] === 'string')?.[0].args?.[0];
+      const id = page.executeScript.mock.calls.find(
+        ([request]) => typeof request.args?.[0] === 'string',
+      )?.[0].args?.[0];
       expect(id).toBeTypeOf('string');
       return id;
     });
     act(() => {
       pickerListeners.get(CHANNELS.LIST_PICKER_RESULT)?.({
-        tab_id: 77, document_id: 'document-b', session_id: session,
-        list_root: detectedRoot, item_selector: detectedItem,
+        tab_id: 77,
+        document_id: 'document-b',
+        session_id: session,
+        list_root: detectedRoot,
+        item_selector: detectedItem,
         field_paths: [{ name: 'event', rel_selector: '[itemprop="name"]' }],
       });
     });
@@ -199,8 +210,11 @@ describe('Showcase Doctor recommendation handoff', () => {
     expect(screen.queryByText(detectedRoot)).toBeNull();
     act(() => {
       pickerListeners.get(CHANNELS.LIST_PICKER_RESULT)?.({
-        tab_id: 77, document_id: 'document-a', session_id: session,
-        list_root: detectedRoot, item_selector: detectedItem,
+        tab_id: 77,
+        document_id: 'document-a',
+        session_id: session,
+        list_root: detectedRoot,
+        item_selector: detectedItem,
         field_paths: [{ name: 'event', rel_selector: '[itemprop="name"]' }],
       });
     });

@@ -92,7 +92,11 @@ beforeEach(() => {
     scripting: { executeScript: activePage.executeScript },
     runtime: {
       sendMessage: vi.fn(async (message: { kind: string; payload: Record<string, unknown> }) => {
-        listeners.get(message.kind)?.({ ...message.payload, tab_id: activePage.id, document_id: activePage.documentId });
+        listeners.get(message.kind)?.({
+          ...message.payload,
+          tab_id: activePage.id,
+          document_id: activePage.documentId,
+        });
         return { ack: true };
       }),
     },
@@ -173,7 +177,11 @@ describe('D43 Pick more fields user entry', () => {
       sendMessage: vi.fn(async (message: { kind: string; payload: Record<string, unknown> }) => {
         pendingMessages.push({
           kind: message.kind,
-          payload: { ...message.payload, tab_id: activePage.id, document_id: activePage.documentId },
+          payload: {
+            ...message.payload,
+            tab_id: activePage.id,
+            document_id: activePage.documentId,
+          },
         });
         return { ack: true };
       }),
@@ -182,11 +190,14 @@ describe('D43 Pick more fields user entry', () => {
       document
         .querySelector('.wideeventwrapper:first-child .eventTitle')
         ?.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-      document.getElementById('matrx-list-picker-host')?.shadowRoot
-        ?.querySelector('#done')
+      document
+        .getElementById('matrx-list-picker-host')
+        ?.shadowRoot?.querySelector('#done')
         ?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
-    const completion = pendingMessages.find((message) => message.kind === 'data:list-picker-result');
+    const completion = pendingMessages.find(
+      (message) => message.kind === 'data:list-picker-result',
+    );
     expect(completion?.payload).toMatchObject({
       document_id: 'document-a',
       list_root: '#wideeventsList',

@@ -15,7 +15,9 @@ export async function readScreenshotDocument(tabId: number): Promise<ScreenshotD
       chrome.webNavigation.getFrame({ tabId, frameId: 0 }),
     ]);
   } catch {
-    throw new Error('Cannot identify the page for this screenshot. Try again on a regular web page.');
+    throw new Error(
+      'Cannot identify the page for this screenshot. Try again on a regular web page.',
+    );
   }
   if (tab.windowId == null || !frame?.documentId || !frame.url || frame.errorOccurred) {
     throw new Error('Cannot identify the page for this screenshot.');
@@ -29,15 +31,24 @@ export async function readScreenshotDocument(tabId: number): Promise<ScreenshotD
   };
 }
 
-export async function assertScreenshotDocument(document: ScreenshotDocument, requireActive = true): Promise<void> {
+export async function assertScreenshotDocument(
+  document: ScreenshotDocument,
+  requireActive = true,
+): Promise<void> {
   if (requireActive) {
     const [active] = await chrome.tabs.query({ active: true, windowId: document.windowId });
     if (active?.id !== document.tabId) {
-      throw new Error('The active tab changed during screenshot capture. Return to the original tab and try again.');
+      throw new Error(
+        'The active tab changed during screenshot capture. Return to the original tab and try again.',
+      );
     }
   }
   const current = await readScreenshotDocument(document.tabId);
-  if (current.windowId !== document.windowId || current.documentId !== document.documentId || current.url !== document.url) {
+  if (
+    current.windowId !== document.windowId ||
+    current.documentId !== document.documentId ||
+    current.url !== document.url
+  ) {
     throw new Error('The page changed during screenshot capture. Try again on the current page.');
   }
 }

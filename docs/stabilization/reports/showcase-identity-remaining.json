@@ -22,16 +22,8 @@
     {
       "rank": 1,
       "surface": "List Pattern manual picker start/cancel injection lacks exact document target",
-      "inventory_cases": [
-        "EXT-F-1012-T23",
-        "EXT-F-1012-T24",
-        "EXT-F-1012-T28"
-      ],
-      "control_ids": [
-        "EXT-F-1012-C23",
-        "EXT-F-1012-C24",
-        "EXT-F-1012-C28"
-      ],
+      "inventory_cases": ["EXT-F-1012-T23", "EXT-F-1012-T24", "EXT-F-1012-T28"],
+      "control_ids": ["EXT-F-1012-C23", "EXT-F-1012-C24", "EXT-F-1012-C28"],
       "source_proof": [
         "src/features/showcase/tabs/ListPatternTab.tsx:361-379 admits enterPicker from a ready pageKey and later calls startListPickerSession(tabId, sessionId, seed).",
         "src/lib/data-pattern/list-picker-session.ts:35-56 performs both script installation and picker start with target { tabId }, without the captured documentId or a post-injection identity check.",

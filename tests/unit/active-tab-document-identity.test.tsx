@@ -1,7 +1,7 @@
+import { useActiveTab } from '@/hooks/use-active-tab';
 // @vitest-environment jsdom
 import { act, cleanup, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { useActiveTab } from '@/hooks/use-active-tab';
 
 type Listener = (...args: never[]) => void;
 function event() {
@@ -9,7 +9,9 @@ function event() {
   return {
     addListener: (listener: Listener) => listeners.add(listener),
     removeListener: (listener: Listener) => listeners.delete(listener),
-    fire: (...args: never[]) => { for (const listener of listeners) listener(...args); },
+    fire: (...args: never[]) => {
+      for (const listener of listeners) listener(...args);
+    },
   };
 }
 
@@ -30,13 +32,24 @@ beforeEach(() => {
   vi.stubGlobal('chrome', {
     tabs: { query: vi.fn(async () => [{ ...tab }]), onActivated: activated, onUpdated: updated },
     windows: { onFocusChanged: focused },
-    webNavigation: { getFrame: () => getFrame(), onBeforeNavigate: beforeNavigate, onCommitted: committed, onErrorOccurred: navigationError },
+    webNavigation: {
+      getFrame: () => getFrame(),
+      onBeforeNavigate: beforeNavigate,
+      onCommitted: committed,
+      onErrorOccurred: navigationError,
+    },
   });
 });
-afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
 
 async function settle() {
-  await act(async () => { await Promise.resolve(); await Promise.resolve(); });
+  await act(async () => {
+    await Promise.resolve();
+    await Promise.resolve();
+  });
 }
 
 it('withholds A at navigation start and resolves B on a same-tab same-URL commit', async () => {
@@ -71,8 +84,17 @@ it('keeps identity through title and subframe churn, and invalidates a SPA URL',
 
 it('rejects a late frame read after activation and resolves the new active tab', async () => {
   let releaseOld!: (value: { documentId: string; url: string; errorOccurred: boolean }) => void;
-  getFrame.mockImplementationOnce(() => new Promise((resolve) => { releaseOld = resolve; }));
-  getFrame.mockImplementation(async () => ({ documentId: 'document-b', url: tab.url, errorOccurred: false }));
+  getFrame.mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        releaseOld = resolve;
+      }),
+  );
+  getFrame.mockImplementation(async () => ({
+    documentId: 'document-b',
+    url: tab.url,
+    errorOccurred: false,
+  }));
   const { result } = renderHook(useActiveTab);
   await settle();
   tab = { id: 42, url: 'https://example.org/story', title: 'New tab', active: true };

@@ -441,7 +441,9 @@ function onRuntimeMessage(msg: unknown): undefined {
   if (!msg || typeof msg !== 'object') return;
   const env = msg as { __matrx?: boolean; kind?: string; payload?: unknown };
   if (env.__matrx !== true) return;
-  const payload = env.payload as { sessionId?: string; mode?: HighlightMode; items?: Parameters<typeof paintExisting>[0] } | undefined;
+  const payload = env.payload as
+    | { sessionId?: string; mode?: HighlightMode; items?: Parameters<typeof paintExisting>[0] }
+    | undefined;
   if (env.kind === CHANNELS.HIGHLIGHT_START) {
     if (typeof payload?.sessionId === 'string' && payload.sessionId) {
       sessionId = payload.sessionId;

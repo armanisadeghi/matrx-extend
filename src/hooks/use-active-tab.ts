@@ -11,8 +11,13 @@ export interface ActiveTabInfo {
 }
 
 const initial: ActiveTabInfo = {
-  id: null, url: null, title: null, documentId: null,
-  identityStatus: 'resolving', identityError: null, pageKey: null,
+  id: null,
+  url: null,
+  title: null,
+  documentId: null,
+  identityStatus: 'resolving',
+  identityError: null,
+  pageKey: null,
 };
 let snapshot = initial;
 let sequence = 0;
@@ -21,7 +26,12 @@ let committedDocumentId: string | null = null;
 const subscribers = new Set<() => void>();
 
 function publish(next: ActiveTabInfo) {
-  if (Object.keys(next).every((key) => next[key as keyof ActiveTabInfo] === snapshot[key as keyof ActiveTabInfo])) return;
+  if (
+    Object.keys(next).every(
+      (key) => next[key as keyof ActiveTabInfo] === snapshot[key as keyof ActiveTabInfo],
+    )
+  )
+    return;
   snapshot = next;
   for (const listener of subscribers) listener();
 }
@@ -29,7 +39,13 @@ function publish(next: ActiveTabInfo) {
 function withhold() {
   navigationPending = true;
   sequence += 1;
-  publish({ ...snapshot, documentId: null, identityStatus: 'resolving', identityError: null, pageKey: null });
+  publish({
+    ...snapshot,
+    documentId: null,
+    identityStatus: 'resolving',
+    identityError: null,
+    pageKey: null,
+  });
 }
 
 /** One sequenced active-tab and top-frame read serves every side-panel consumer. */
@@ -39,33 +55,75 @@ export async function refreshActiveTabIdentity(): Promise<void> {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (ownSequence !== sequence) return;
     if (!tab?.id) {
-      publish({ ...initial, identityStatus: 'unresolved', identityError: 'No active browser tab. Select a page and retry.' });
+      publish({
+        ...initial,
+        identityStatus: 'unresolved',
+        identityError: 'No active browser tab. Select a page and retry.',
+      });
       return;
     }
     const base = { id: tab.id, url: tab.url ?? null, title: tab.title ?? null };
     const frame = await chrome.webNavigation.getFrame({ tabId: tab.id, frameId: 0 });
     if (ownSequence !== sequence) return;
     if (navigationPending) return;
-    if (!frame?.documentId || frame.errorOccurred || !frame.url || (committedDocumentId && frame.documentId !== committedDocumentId)) {
-      publish({ ...base, documentId: null, identityStatus: 'unresolved', identityError: 'Page identity is unavailable. Reload the page or retry.', pageKey: null });
+    if (
+      !frame?.documentId ||
+      frame.errorOccurred ||
+      !frame.url ||
+      (committedDocumentId && frame.documentId !== committedDocumentId)
+    ) {
+      publish({
+        ...base,
+        documentId: null,
+        identityStatus: 'unresolved',
+        identityError: 'Page identity is unavailable. Reload the page or retry.',
+        pageKey: null,
+      });
       return;
     }
     if (base.url && frame.url !== base.url) {
-      publish({ ...base, documentId: null, identityStatus: 'unresolved', identityError: 'Page navigation is still settling. Retry in a moment.', pageKey: null });
+      publish({
+        ...base,
+        documentId: null,
+        identityStatus: 'unresolved',
+        identityError: 'Page navigation is still settling. Retry in a moment.',
+        pageKey: null,
+      });
       return;
     }
     const url = base.url ?? frame.url;
-    publish({ ...base, url, documentId: frame.documentId, identityStatus: 'ready', identityError: null, pageKey: JSON.stringify([tab.id, frame.documentId, url]) });
+    publish({
+      ...base,
+      url,
+      documentId: frame.documentId,
+      identityStatus: 'ready',
+      identityError: null,
+      pageKey: JSON.stringify([tab.id, frame.documentId, url]),
+    });
   } catch (error) {
     if (ownSequence !== sequence) return;
-    publish({ ...snapshot, documentId: null, identityStatus: 'unresolved', identityError: `Could not verify this page: ${error instanceof Error ? error.message : String(error)}. Retry.`, pageKey: null });
+    publish({
+      ...snapshot,
+      documentId: null,
+      identityStatus: 'unresolved',
+      identityError: `Could not verify this page: ${error instanceof Error ? error.message : String(error)}. Retry.`,
+      pageKey: null,
+    });
   }
 }
 
-const onActivated = () => { withhold(); navigationPending = false; committedDocumentId = null; void refreshActiveTabIdentity(); };
+const onActivated = () => {
+  withhold();
+  navigationPending = false;
+  committedDocumentId = null;
+  void refreshActiveTabIdentity();
+};
 const onUpdated = (tabId: number, change: chrome.tabs.TabChangeInfo, tab: chrome.tabs.Tab) => {
   if (!tab.active) return;
-  if (change.status === 'loading' && tabId === snapshot.id) { withhold(); committedDocumentId = null; }
+  if (change.status === 'loading' && tabId === snapshot.id) {
+    withhold();
+    committedDocumentId = null;
+  }
   if (change.status === 'complete' && tabId === snapshot.id) navigationPending = false;
   if (change.status || change.url || change.title) void refreshActiveTabIdentity();
 };
@@ -80,7 +138,11 @@ const onCommitted = (details: chrome.webNavigation.WebNavigationTransitionCallba
   void refreshActiveTabIdentity();
 };
 const onError = (details: chrome.webNavigation.WebNavigationFramedErrorCallbackDetails) => {
-  if (details.frameId === 0 && details.tabId === snapshot.id) { navigationPending = false; committedDocumentId = null; void refreshActiveTabIdentity(); }
+  if (details.frameId === 0 && details.tabId === snapshot.id) {
+    navigationPending = false;
+    committedDocumentId = null;
+    void refreshActiveTabIdentity();
+  }
 };
 function subscribe(listener: () => void) {
   subscribers.add(listener);
@@ -111,7 +173,11 @@ function subscribe(listener: () => void) {
 }
 
 export function useActiveTab(): ActiveTabInfo {
-  return useSyncExternalStore(subscribe, () => snapshot, () => initial);
+  return useSyncExternalStore(
+    subscribe,
+    () => snapshot,
+    () => initial,
+  );
 }
 
 export function isCurrentPageIdentity(pageKey: string | null): boolean {

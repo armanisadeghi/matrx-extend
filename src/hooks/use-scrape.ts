@@ -1,5 +1,9 @@
+import {
+  getActiveTabIdentitySnapshot,
+  isCurrentPageIdentity,
+  useActiveTab,
+} from '@/hooks/use-active-tab';
 import { on } from '@/lib/messaging/native';
-import { getActiveTabIdentitySnapshot, isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import {
   buildCaptureError,
@@ -73,7 +77,12 @@ export function useScrape() {
       CHANNELS.DIAGNOSE_PICKER_RESULT,
       (payload) => {
         const session = pickerSessionRef.current;
-        if (!session || payload.sessionId !== session.sessionId || !isCurrentPageIdentity(session.pageKey)) return { ack: true };
+        if (
+          !session ||
+          payload.sessionId !== session.sessionId ||
+          !isCurrentPageIdentity(session.pageKey)
+        )
+          return { ack: true };
         const mode: DiagnoseMode = payload.mode === 'unwanted' ? 'unwanted' : 'missing';
         const result: DiagnoseResult = {
           ...payload,
@@ -86,12 +95,15 @@ export function useScrape() {
         return { ack: true };
       },
     );
-    const offExit = on<{ sessionId?: string }, { ack: true }>(CHANNELS.DIAGNOSE_PICKER_EXIT, (payload) => {
-      if (payload.sessionId !== pickerSessionRef.current?.sessionId) return { ack: true };
-      pickerSessionRef.current = null;
-      setDiagnosePicking(false);
-      return { ack: true };
-    });
+    const offExit = on<{ sessionId?: string }, { ack: true }>(
+      CHANNELS.DIAGNOSE_PICKER_EXIT,
+      (payload) => {
+        if (payload.sessionId !== pickerSessionRef.current?.sessionId) return { ack: true };
+        pickerSessionRef.current = null;
+        setDiagnosePicking(false);
+        return { ack: true };
+      },
+    );
     return () => {
       offResult();
       offExit();
@@ -112,7 +124,13 @@ export function useScrape() {
   const launchDiagnose = useCallback(async () => {
     const page = getActiveTabIdentitySnapshot();
     if (!page.id || !page.documentId || !page.pageKey) {
-      setError(buildCaptureError({ err: new Error(page.identityError ?? 'Page identity is unavailable. Retry.'), url: page.url, tabId: page.id }));
+      setError(
+        buildCaptureError({
+          err: new Error(page.identityError ?? 'Page identity is unavailable. Retry.'),
+          url: page.url,
+          tabId: page.id,
+        }),
+      );
       return;
     }
     const sessionId = crypto.randomUUID();
@@ -160,7 +178,13 @@ export function useScrape() {
         tabId = page.id;
         tabUrl = page.url;
         if (!page.id || !page.documentId || !page.pageKey) {
-          setError(buildCaptureError({ err: new Error(page.identityError ?? 'Page identity is unavailable. Retry.'), url: tabUrl, tabId }));
+          setError(
+            buildCaptureError({
+              err: new Error(page.identityError ?? 'Page identity is unavailable. Retry.'),
+              url: tabUrl,
+              tabId,
+            }),
+          );
           return null;
         }
 
@@ -177,9 +201,13 @@ export function useScrape() {
           // cannot be captured while only its empty axis/grid shell exists.
           await scrollToLoadLazy(page.id, {
             documentId: page.documentId,
-            onProgress: ({ step, total }) => { if (run === captureSequenceRef.current && isCurrentPageIdentity(page.pageKey)) setProgress({ step, total }); },
+            onProgress: ({ step, total }) => {
+              if (run === captureSequenceRef.current && isCurrentPageIdentity(page.pageKey))
+                setProgress({ step, total });
+            },
           });
-          if (!isCurrentPageIdentity(page.pageKey) || run !== captureSequenceRef.current) return null;
+          if (!isCurrentPageIdentity(page.pageKey) || run !== captureSequenceRef.current)
+            return null;
           setProgress(null);
         }
 
@@ -205,7 +233,8 @@ export function useScrape() {
         );
         return null;
       } catch (err) {
-        if (run === captureSequenceRef.current) setError(buildCaptureError({ err, url: tabUrl, tabId }));
+        if (run === captureSequenceRef.current)
+          setError(buildCaptureError({ err, url: tabUrl, tabId }));
         return null;
       } finally {
         if (run === captureSequenceRef.current) {
