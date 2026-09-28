@@ -34,9 +34,11 @@
     "docs/stabilization/reports/document-save-boundary-correction.json",
     "docs/stabilization/reports/document-save-boundary-peer.json",
     "docs/stabilization/reports/scrape-document-correction.json",
-    "docs/stabilization/reports/scrape-document-peer.json"
+    "docs/stabilization/reports/scrape-document-peer.json",
+    "docs/stabilization/reports/scrape-correction-fresh.json",
+    "docs/stabilization/reports/scrape-correction-peer.json"
   ],
-  "verification_status": "Scrape candidate a021ae82 source partial. Builder direct unguarded tests excluded (b9185b40 correction). Fresh peer a702ba6c guarded3/3 and finalcompile pass, but A/B review fails: Diagnose B copy includes retained A scrape; old pre-send refresh can overwrite B error/inFlight. Next fresh Sol correction with real card/bundle and overlapping refresh regressions. Broad D59/native/catalog/build remain open.",
+  "verification_status": "Scrape scoped correction fe389b5e fixes mixed-document Diagnose bundle and refresh status ownership; guarded reported red2, final6tests/4files and compile passed. Fresh source/evidence peer220ba074 accepts both scoped findings, no important new issue, all journal/source hashes match. Journals capture exit metadata, detailed test counts/assertions rely on builder report. Broader consumer migration and native Chrome acceptance remain unverified; D59 in-fix.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",

@@ -10,6 +10,13 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest Scrape correction checkpoint — scoped peer acceptance
+
+- Fresh Sol fe389b5e corrects mixed-document Diagnose Copy for AI and shared refresh status ownership. Shared auto-scrape store uses page/run ownership in pre-send and automatic capture. Builder reports oldcode red2; final guarded6tests/4files and compile passed. Root verified all six journal hashes.
+- Independent source/evidence peer220ba074 accepts scoped A/B findings, no important new source issue; all claimed source/journal hashes match. Journals prove admission/exit/final verdict, detailed counts/assertions remain builder-reported. Native acceptance unverified. Optional tests: actual auto-vs-pre-send overlap, thrown late error, A→B→A. D59 stays in-fix for broad surface completeness.
+- Next resume remaining document census (screenshots/live highlights/Showcase) and integrated fixture/handler catalog chores; do not redo these two accepted source corrections without new evidence. Native Chrome still requires resource recovery, direct development build, explicit Reload and fresh real pages. No localhost.
+- All lanes terminal, no owned heavy/browser process. D60 remains closed. Goal turn progress: verified scoped Scrape repair; full testing matrix, integrated build/native, CI credential repair and release remain incomplete. No remote changes at fetch; root has not pushed red trunk.
+
 ## Latest Scrape checkpoint — candidate rejected, guarded evidence recovered
 
 - D59 Scrape candidate a021ae82 migrates manual/auto capture, drafts, Diagnose session, minimal context cache admission and historical Highlight handoff. Builder violated guard instruction: all checks were direct/unguarded, admitted in report-only b9185b40. Exclude those results; use a fresh implementer for next correction.
