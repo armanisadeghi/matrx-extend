@@ -1,0 +1,66 @@
+{
+  "id": "EXT-D-0059-picker-navigation-escalation",
+  "status": "Fixture correction committed; 29/29 tests passed before final typing correction; compile failed then typed transport corrected unverified. Independent fixture review and fresh compile remain required. Full D59 native verification pending.",
+  "base_commit": "c17eb2c7aa3092b824e9785a518ad44d7c2a1e4e",
+  "fixture_commit": "0cc4ac46bc1ad1500dcefcbf7feb64439254c5a0",
+  "diagnosis": "Stale navigation fixture, not evidence of a product regression: use-active-tab refresh publishes pageKey as [tab id, document id, URL], and withholds identity at navigation start. D43 changed URL while its mock returned constant pageKey document-a and isCurrentPageIdentity remained true. ListPatternTab invalidation correctly depends on pageKey.",
+  "independent_evidence": [
+    "src/hooks/use-active-tab.ts refreshActiveTabIdentity, withhold, and isCurrentPageIdentity inspected directly",
+    "tests/unit/active-tab-identity.test.ts existing URL-change and same-URL document navigation assertions inspected",
+    "src/features/showcase/tabs/ListPatternTab.ts closePickerSession, navigation effect and fromOurPick inspected directly"
+  ],
+  "hypotheses": [
+    {
+      "cause": "Stale hook fixture",
+      "prediction": "Changing fixture page identity on navigation makes existing clear-builder assertion pass without product changes",
+      "outcome": "Confirmed by focused run"
+    },
+    {
+      "cause": "Product ignores real navigation identity",
+      "prediction": "Clear-builder assertion remains red with coherent identity change",
+      "outcome": "Not observed"
+    },
+    {
+      "cause": "Product admits delayed old completion",
+      "prediction": "Old real producer result reinstates seed after page transition",
+      "outcome": "Not observed in focused run; native behavior not claimed"
+    }
+  ],
+  "changes": [
+    "Only D43 fixture edited: mutable document id and tab/document/URL pageKey",
+    "Navigation test now queues a completion emitted by real picker Done, verifies selected field, then delivers the captured old-document result after navigation",
+    "Preserved clear-builder assertion and successful five-row extraction case; added overlay absence assertion"
+  ],
+  "checks": {
+    "focused": {
+      "files": 5,
+      "passed": 29,
+      "failed": 0,
+      "journal": "docs/stabilization/resource-journals/d59-picker-navigation-escalation-tests-20260928-01.jsonl",
+      "decision": "valid",
+      "note": "Executed before final type-only transport rewrite"
+    },
+    "compile": {
+      "exit_code": 1,
+      "journal": "docs/stabilization/resource-journals/d59-picker-navigation-escalation-compile-20260928-01.jsonl",
+      "decision": "child_failed",
+      "errors": "TS18049/TS2339 on overloaded vi.mocked(chrome.runtime.sendMessage) message inference in D43 fixture",
+      "followup": "Replaced overloaded mockImplementation with explicitly typed vi.fn assigned via Object.assign; no further heavy runs at one-failed-round cap"
+    },
+    "diff_check": "passed"
+  },
+  "scope_limits": [
+    "No product code edits",
+    "No build, UI, localhost, native extension or release work",
+    "No push",
+    "No mutation run permitted in this bounded lane; new fixture does not claim mutation verification",
+    "Product source and final authored fixture require separate independent review; parent reports product peer review separately"
+  ],
+  "sha256": {
+    "tests/unit/showcase-d43-entry.test.tsx": "f7dc31e7f5ac7183f22971722d66c653a70a50ee29c017fd097fb4b821b30b38",
+    "docs/stabilization/resource-journals/d59-picker-navigation-escalation-tests-20260928-01.jsonl": "d70a2a6d853646778f55e92bac35c11c90459c06b196b53c0a65b32c3269fa90",
+    "docs/stabilization/resource-journals/d59-picker-navigation-escalation-compile-20260928-01.jsonl": "ee919a97247732353721f2cae10a29a4daf1bd90cdd628b4b9dbc7cbf73034de",
+    "src/hooks/use-active-tab.ts": "d1fde0d33f1d1af92107303812dac3f70144d49982ff44cf88d2c5d1e6605bf4",
+    "src/features/showcase/tabs/ListPatternTab.tsx": "a4826e6ba5937bdf5e6b30d159b319645946b402dd4c6b73b52d719626371f11"
+  }
+}
