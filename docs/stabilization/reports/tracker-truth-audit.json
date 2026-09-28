@@ -53,5 +53,18 @@
   "limitations": [
     "Source metadata audit only; did not inspect runtime behavior or prove evidence files are authentic/current.",
     "Counts are a snapshot of inventory.json and defect JSON files at audit time."
-  ]
+  ],
+  "generated_tracker_review": {
+    "files": [
+      "docs/stabilization/STATUS.md",
+      "docs/stabilization/STATUS.html",
+      "scripts/generate-stabilization-tracker.py"
+    ],
+    "rendered_counts": "STATUS.md header agrees with canonical inventory: 205 features, 724 cases, 1,309 controls, 60 defect records.",
+    "mapping": "Generated markdown explains that role-level feature pass requires every applicable case to explicitly pass and every inventoried control to map to a case; absent results are unverified; closed/fixed defect is not native behavior proof. Script computes status from case.results and feature applicability/modes; stale feature.cells do not contribute status (they only contribute defect links).",
+    "coverage": "Rendered tracker shows guest/member/admin separately and enumerates unmapped controls per feature; source audit count remains 426 controls without a case mapping.",
+    "grouping": "Rendered overview groups by feature surface. Registered executor tools are explicitly separated from the visible Tools tab; this preserves actual tab/surface grouping rather than treating all tool APIs as one tab.",
+    "blocker": "At review time scripts/generate-stabilization-tracker.py has a SyntaxError at line 123 (invalid concatenation). Generated outputs are readable, but regeneration and exact source/output parity remain unverified until the script is repaired and rerun.",
+    "scope": "Static source/output inspection only; no browser or runtime verification."
+  }
 }
