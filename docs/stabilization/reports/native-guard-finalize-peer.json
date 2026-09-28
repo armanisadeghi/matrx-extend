@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "report_id": "native-guard-finalize-peer",
+  "defect_id": "EXT-D-0051",
+  "reviewed_commits": ["c29b0514", "fe877f17", "4397a3f9"],
+  "verdict_a_engineering_outcome": "COMPLETE",
+  "verdict_a_reason": "The real browser watch journal records admission, a healthy watch, stop confirmation, and a final decision under one run ID; its retained SHA-256 matches the implementation report. A mid-run writer fault makes the first isolated browser run resourceInvalid with exit 3, retains its lease, and refuses the next launch as stale. The finalization correction writes to a pending path, closes the descriptor, and only then atomically publishes the completed path. A failed close exits 3 and leaves no completed verdict, even when the pending file contains a valid-looking final event.",
+  "verdict_b_safety_quality": "ACCEPT",
+  "verdict_b_reason": "The publication boundary resolves the prior close-failure mismatch without changing admission caps or allowlisted commands. Journal writes are synchronous, bounded to guard fields, private, and exclusive by run ID. The code retains the permit after a writer fault, and the new tests exercise the close seam at both helper and wrapper levels. No actionable requirement flaw was found within the documented cooperative process contract.",
+  "prior_finding_final_close_failure": {
+    "status": "addressed",
+    "evidence": "scripts/stabilization-resource-journal.mjs closes the pending file before linkSync publishes the completed file. The injected wrapper close failure exits 3, prints RESOURCE_JOURNAL_FINALIZE_FAILED, and leaves only the pending file. docs/stabilization/PLAN.md says pending files cannot establish a resource verdict."
+  },
+  "verification": {
+    "focused_tests": "node --test scripts/test-stabilization-resource-journal.mjs: 5/5 pass; these tests run only denied pre-permit commands and local writer/fixture operations.",
+    "syntax": "node --check on the guard, journal helper, and focused test: pass.",
+    "retained_journal_integrity": "The signal, watch, fault-fixed, and fault-second-fixed journal SHA-256 values match docs/stabilization/reports/native-guard-journal.json: 0f2db397b12ed0d89a48ab20147c7ac167bc7b5a8e4f6ffad43013402ba4266b, a19da63b6f284377faacad9bb5fc4a1de871b330e5a233f5d4c326d70ba0d545, 562ce5cfd3cb4b8b5c9d0a0f8189a7cb4ddbdbb934c1e1daaec1f497a1290595, and 8e100cdcb09625cc5db725680e098be6d797bdfb42a799682dc624c0920d0a07.",
+    "policy": "docs/stabilization/resource-policy.json SHA-256 remains 4bf72a2d9c62359c193b527aa70f648b7fbffbd9ec532bb69f9b4ce0f81eca84, unchanged from the parent of c29b0514.",
+    "terminal_state": "No stabilization-resource.mjs process or global heavy lease was present after verification."
+  },
+  "limits": "This review inspected and hashed retained live browser journals; it did not repeat a 60-second preflight, open UI, run localhost, or induce a physical disk failure. The injected close failure uses an isolated copied helper and a denied command, so the browser lease conclusion also relies on the retained isolated mid-run writer-fault evidence and direct review of the guard's finally branch. Historical pre-correction journals remain historical evidence rather than proof of the new publication path."
+}
