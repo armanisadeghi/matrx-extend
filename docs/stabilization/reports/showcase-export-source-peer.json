@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "report_id": "showcase-export-source-peer",
+  "scope": "Independent source-only peer review of EXT-D-0053/0054 commits 0b66b853, 33f7a921, and 1b8e9c06 against complete, accurate Showcase/Data/shared export",
+  "reviewed_head": "273045f873afd8a13d942cc83e1e0e1fb97c20fc",
+  "verification": "Source and test inspection only. Resource admission refused; no tests, build, browser, clipboard, spreadsheet, install, or mutation proof executed. This is not native acceptance.",
+  "A_outcome": {
+    "verdict": "Original D53 long-string and D54 tab/newline/header losses are repaired in source, but complete export is not runtime-verified and error feedback is misleading.",
+    "evidence": [
+      "src/lib/clipboard/copy.ts:115-130 no longer truncates strings in JSON; unsupported top-level JSON, cycles, and BigInt throw rather than returning a success-looking substitute.",
+      "src/lib/clipboard/copy.ts:169-186 quotes TSV headers and cells with tabs, CR, LF, or quotes and doubles embedded quotes.",
+      "src/features/showcase/components/ResultPreview.tsx:62-86 passes unsliced rows to JSON, TSV, and AI copy; src/features/showcase/tabs/PatternsTab.tsx:129-152,261-267 passes the saved-run rows to that preview; src/features/data/DataView.tsx:228-236,493-527 uses the same formatters on manual rerun.",
+      "JSON-compatible saved rows are the supported losslessness scope. Standard JSON.stringify still omits undefined object fields, changes non-finite numbers to null, and honors toJSON; the source-only review cannot establish a universal input contract."
+    ],
+    "finding": {
+      "id": "COPY-FAILURE-DISPLAYS-SUCCESS",
+      "severity": "material user-facing feedback defect",
+      "anchors": [
+        "src/components/CopyMenu.tsx:112-128",
+        "src/components/CopyMenu.tsx:131-158",
+        "src/components/CopyMenu.tsx:162-184"
+      ],
+      "fact": "handleClick stores either a clipboard failure string or a preparation failure string in copiedLabel. Both the single-option and popover triggers render a green Check whenever copiedLabel is truthy, and neither renders the failure text. Thus a cyclic/BigInt JSON or a failed clipboard write appears as a successful copy, directly contradicting the new truthful-failure behavior. The menu remains open for multi-option failure, but its trigger still shows the green check.",
+      "repair": "Represent success and failure separately in CopyMenu state; render a visible error message or red failure icon with an accessible label, and retain the success check only after a completed clipboard write. Cover both one-option and multi-option modes."
+    }
+  },
+  "B_quality": {
+    "verdict": "Formatter tests use parse/round-trip assertions and a worked TSV literal, but no exercised red/green or UI proof exists.",
+    "evidence": [
+      "tests/unit/clipboard-export.test.ts tests two distinct long values through JSON.parse and fenced AI JSON parse, so it is stronger than checking a truncation marker or formatter implementation text.",
+      "The TSV test compares to an explicit expected string and also parses the result with an independent test reader, including distinct tab-vs-space values and a tab-containing header.",
+      "The tests invoke formatters only; none exercises CopyMenu failure state, actual clipboard contents, spreadsheet paste, or the Showcase/Data result controls. The worker report explicitly records tests and mutation checks as unexecuted."
+    ],
+    "missing_runtime": "Focused tests, type check, installed extension copy from saved replay and Data manual rerun, exact clipboard reads, spreadsheet paste, and independent native verification remain outstanding."
+  }
+}
