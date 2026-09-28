@@ -216,6 +216,31 @@ export const preparePageInPage = async (config: PagePrepConfig): Promise<PagePre
   return report;
 };
 
+function isPagePrepReport(value: unknown): value is PagePrepReport {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) return false;
+  const report = value as Record<string, unknown>;
+  const isActionList = (actions: unknown): boolean =>
+    Array.isArray(actions) &&
+    actions.every(
+      (action) =>
+        typeof action === 'object' &&
+        action !== null &&
+        !Array.isArray(action) &&
+        typeof action.selector === 'string' &&
+        typeof action.text === 'string',
+    );
+  return (
+    isActionList(report.banners_dismissed) &&
+    isActionList(report.load_more_clicks) &&
+    typeof report.scroll_steps === 'number' &&
+    Number.isSafeInteger(report.scroll_steps) &&
+    report.scroll_steps >= 0 &&
+    typeof report.duration_ms === 'number' &&
+    Number.isSafeInteger(report.duration_ms) &&
+    report.duration_ms >= 0
+  );
+}
+
 /**
  * Drive page-prep against a tab. Used by the Prepare sub-tab and as an
  * optional pre-step before any extraction mode.
@@ -230,12 +255,11 @@ export async function preparePage(
     func: preparePageInPage,
     args: [merged],
   });
-  return (
-    (result?.[0]?.result as PagePrepReport | undefined) ?? {
-      banners_dismissed: [],
-      load_more_clicks: [],
-      scroll_steps: 0,
-      duration_ms: 0,
-    }
-  );
+  const report: unknown = result?.[0]?.result;
+  if (!isPagePrepReport(report)) {
+    throw new Error(
+      'The page did not return a valid preparation report. Reload the page and try Prepare again.',
+    );
+  }
+  return report;
 }

@@ -1192,6 +1192,12 @@ Every entry follows this shape:
 - **Steps:** Run on a cookie-bannered site; then navigate to another page.
 - **Expected:** Report shows counts; report clears on navigation (a page-A
   report never displays on page B).
+- **Missing-result regression (EXT-D-0057):** On an owned ordinary page, make
+  the Prepare script injection return no frame result, then a malformed report
+  (for example, a missing `duration_ms`). Click Prepare for each condition.
+  The panel must show a visible error that says to reload and retry, with no
+  green “Prepared” report. Restore normal injection and run again with known
+  banner/load-more/scroll effects; the actual counts and duration must appear.
 
 ### Showcase — Snapshot / JSON-LD / Microdata tabs
 - **What it does:** One-shot metadata grab / typed JSON-LD blocks / Schema.org
