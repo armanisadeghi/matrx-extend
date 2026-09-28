@@ -1,11 +1,11 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
+import { openNetworkPageLoadDiscovery } from '@/lib/data-pattern/document-network-transport';
 import {
   type CapturedNetEvent,
   networkRelayIsolated,
   networkTapMain,
 } from '@/lib/data-pattern/network-tap';
-import { openNetworkPageLoadDiscovery } from '@/lib/data-pattern/document-network-transport';
 import { on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { useCallback, useEffect, useRef, useState } from 'react';

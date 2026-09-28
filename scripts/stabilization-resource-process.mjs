@@ -15,15 +15,24 @@ export function classifyLegacyRunner(executable, command) {
   let unknownOption = false;
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
-    if (['-e', '--eval', '-p', '--print'].includes(token) ||
-        /^(?:--eval|--print)=/.test(token)) return null;
-    if (token === '--') { first = tokens[i + 1]; break; }
-    if (['-r', '--require', '--import', '--loader', '--experimental-loader', '--env-file'].includes(token)) {
+    if (['-e', '--eval', '-p', '--print'].includes(token) || /^(?:--eval|--print)=/.test(token))
+      return null;
+    if (token === '--') {
+      first = tokens[i + 1];
+      break;
+    }
+    if (
+      ['-r', '--require', '--import', '--loader', '--experimental-loader', '--env-file'].includes(
+        token,
+      )
+    ) {
       i++;
       continue;
     }
     if (token.startsWith('-')) {
-      if (!/^(?:--input-type=|--no-warnings$|--trace-warnings$|--inspect(?:-brk)?(?:=|$))/.test(token))
+      if (
+        !/^(?:--input-type=|--no-warnings$|--trace-warnings$|--inspect(?:-brk)?(?:=|$))/.test(token)
+      )
         unknownOption = true;
       continue;
     }

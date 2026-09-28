@@ -64,8 +64,8 @@ import type {
   AnyToolHandler,
   ConfirmInitiator,
   ConfirmResponse,
-  PendingConfirmRequest,
   NetworkCaptureApprovalPreview,
+  PendingConfirmRequest,
   ToolContext,
   ToolTier,
 } from '@/lib/tools/types';

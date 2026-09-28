@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0057",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T08"
-  ],
+  "case_ids": ["EXT-F-1012-T08"],
   "title": "Prepare synthesizes success when no execution report returns",
   "surface": "Showcase Prepare",
   "auth_mode": "admin",
@@ -16,9 +14,7 @@
   "severity": "S2: misleading preparation status",
   "priority": "P1: truthful current-page results",
   "state": "in-fix",
-  "evidence": [
-    "docs/stabilization/reports/prepare-source-audit.json"
-  ],
+  "evidence": ["docs/stabilization/reports/prepare-source-audit.json"],
   "verification_status": "Source-derived deterministic finding; runtime and native reproduction not yet performed.",
   "transition_history": [
     {
