@@ -1,0 +1,42 @@
+{
+  "id": "EXT-D-0050",
+  "feature_id": "EXT-F-1012",
+  "case_ids": [
+    "EXT-F-1012-T59"
+  ],
+  "surface": "Showcase saved Patterns run history",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Load the receipt-bound development extension in primary Chrome and open a saved Network recipe on its matching public page.",
+    "Note its last-run age, approve Run, and observe matched request followed by terminal extracted rows and enabled Run control.",
+    "Inspect the saved recipe card: it can retain the earlier last-run age even though the new invocation completed."
+  ],
+  "expected": "A successful saved recipe invocation updates its visible last-run summary after run-history persistence completes; metadata persistence errors are visible and distinguishable from extraction failure.",
+  "actual": "Independent native recovery lane observed terminal10matchingrows while card retained last run9m ago. Source diagnosis found unawaited bumpPatternRun followed by refresh, allowing stale read; metadata-write errors are discarded.",
+  "evidence": [
+    "docs/stabilization/reports/showcase-discovery-empty-recovery.json",
+    "docs/stabilization/reports/showcase-discovery-active-lifecycle.json"
+  ],
+  "severity": "S3: misleading run history undermines freshness and repeatability confirmation; extraction itself can succeed.",
+  "priority": "P1: fix observed Showcase workflow defect during current stabilization.",
+  "state": "in-fix",
+  "transition_history": [
+    {
+      "from": null,
+      "to": "open",
+      "reason": "Independent native recovery observed stale saved run age after fresh replay."
+    },
+    {
+      "from": "open",
+      "to": "triaged",
+      "reason": "Sol source trace confirms fire-and-forget persistence/refresh ordering race and ignored metadata-write error."
+    },
+    {
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Assigned Sol medium showcase_run_timestamp; narrow class repair with regression then fresh peer/native retest required."
+    }
+  ],
+  "verification_status": "Source diagnosis confirmed; fix/regression/independent retest pending.",
+  "closure_requirement": "Prove persistence/refresh race red then green, errors visible without hiding extracted rows, independent source review, and actual newly completed native saved replay updates run history."
+}
