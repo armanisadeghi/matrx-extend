@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "run_id": "data-picker-long-native-20260928-01",
+  "inventory": ["EXT-F-2005-T03", "EXT-F-1012-T49"],
+  "defects": ["EXT-D-0053", "EXT-D-0054"],
+  "result": "PASS_DIRECT_DATA_AND_SHOWCASE_LONG_FIELD_EXPORT",
+  "runtime": {
+    "browser": "Primary Google Chrome profile, actual Matrx Extend side panel",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_version": "0.2.114",
+    "artifact_path": ".output/chrome-mv3-dev",
+    "artifact_tree_sha256": "b081b8748a562dc7575e435bdd3411bc08cff404520671282066ba48dc7ff6fc",
+    "explicit_reload": "Clicked Reload for the exact extension ID in chrome://extensions, then refreshed the Gutenberg book tab before exercising Data."
+  },
+  "resource_guard": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id data-picker-long-native-20260928-01 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "admitted_at": "2026-09-28T13:29:19.594Z",
+    "first_healthy_watch_at": "2026-09-28T13:29:36.001Z",
+    "healthy_watch_count": 18,
+    "unsafe_watch_count": 0,
+    "stop_confirmed_at": "2026-09-28T13:34:27.513Z",
+    "actual_exit_code": 0,
+    "final_decision": "valid",
+    "completed_journal": "docs/stabilization/resource-journals/data-picker-long-native-20260928-01.jsonl",
+    "completed_journal_sha256": "2cc51d8b209799a9cd677bd6572d12c911f85fad07edac5c216a51434c0516d9"
+  },
+  "source": {
+    "url": "https://www.gutenberg.org/files/1342/1342-h/1342-h.htm",
+    "title": "Pride and prejudice | Project Gutenberg",
+    "provenance": "Genuine public Project Gutenberg page opened in Chrome. No injected DOM, fixture, local server, response interception, or direct database pattern creation.",
+    "end_marker": "END OF THE PROJECT GUTENBERG EBOOK 1342"
+  },
+  "owned_pattern": {
+    "id": "60b0c5bb-b4d4-4642-857a-2924b56445d5",
+    "name": "EXT-F-2005-T03 Gutenberg whole-book native 20260928",
+    "domain": "www.gutenberg.org",
+    "route_pattern": "/files/1342/1342-h/1342-h.htm",
+    "kind": "manual_css",
+    "fields": [{"name": "field_1", "selector": "html", "is_list": false}],
+    "identity_source": "Data > saved pattern > Copy pattern > Full pattern (JSON), read from the product clipboard immediately after copy",
+    "cleanup": "Pattern left saved for reproducible review; no unrelated pattern was changed or deleted."
+  },
+  "ui_steps": [
+    "Data > Pick fields on this page opened the Matrx Field Picker overlay on the actual book tab.",
+    "Clicked the page margin outside the book's child blocks, selecting the full html document. The Data panel displayed field_1: html.",
+    "Named and saved the unique pattern, then clicked Extract. Data showed EXTRACTED ROWS (1).",
+    "Used Data > Copy rows > JSON, For AI agent, and TSV. Each product action displayed Copied; the clipboard was read immediately after the corresponding copy.",
+    "Showcase > Patterns displayed the same saved pattern. Run pattern showed LAST RUN and 1 ROW in Result Preview. Used Copy JSON, Copy for AI, and Copy TSV; each action displayed Copied.",
+    "Refreshed the actual Gutenberg tab, returned to Data, clicked Extract for the persisted matching pattern, and copied JSON again."
+  ],
+  "field_result": {
+    "row_count": 1,
+    "field_name": "field_1",
+    "field_characters": 719594,
+    "field_sha256": "e90baaaccd79f23d7daa2d72bec603f136c06a25b6bd2ebde852d7fab5a605d2",
+    "starts_with": "*** START OF THE PROJECT GUTENBERG EBOOK 1342 ***",
+    "ends_with": "*** END OF THE PROJECT GUTENBERG EBOOK 1342 ***",
+    "all_six_copies_and_data_replay_matched": true
+  },
+  "copy_results": {
+    "data_json": {"clipboard_characters": 725340, "parsed_rows": 1, "field_matches": true},
+    "data_ai": {"clipboard_characters": 725639, "parsed_rows": 1, "field_matches": true, "source_url_in_preamble": true},
+    "data_tsv": {"clipboard_characters": 719604, "parsed_rows_including_header": 2, "header": ["field_1"], "row_widths": [1, 1], "field_matches": true},
+    "showcase_json": {"clipboard_characters": 725340, "parsed_rows": 1, "field_matches": true},
+    "showcase_ai": {"clipboard_characters": 725417, "parsed_rows": 1, "field_matches": true, "source_url_in_preamble": false},
+    "showcase_tsv": {"clipboard_characters": 719604, "parsed_rows_including_header": 2, "header": ["field_1"], "row_widths": [1, 1], "field_matches": true},
+    "data_json_after_page_refresh": {"parsed_rows": 1, "field_matches": true}
+  },
+  "tsv_character_proof": {
+    "field_newline_count": 5613,
+    "field_tab_count": 104,
+    "field_quote_count": 0,
+    "parsed_field_matches_json_sha256": true,
+    "parser_note": "Python csv.field_size_limit(sys.maxsize) was required to parse the genuine 719594-character field; the default 131072-character parser cap is external to the product."
+  },
+  "remaining_scope": [
+    "This source field contains genuine newlines and tabs but no double quotes; quote-bearing cell and quote-bearing header cases remain outside this run.",
+    "The TSV was strictly parsed from the product clipboard; an actual spreadsheet paste was not exercised.",
+    "Copy failure feedback was not exercised."
+  ],
+  "new_candidate_defect": {
+    "id": "candidate-EXT-D-0055",
+    "title": "Showcase Copy for AI omits advertised source URL",
+    "reproduction": "On the saved Gutenberg pattern in Showcase > Patterns, click Run pattern, open Result Preview Copy, then Copy for AI.",
+    "advertised": "JSON wrapped with source URL + a one-line preamble for chat.",
+    "actual": "The copied preamble starts 'The following is extracted rows from a webpage.' then '- Row count: 1' and the JSON fence. It contains no source URL, despite the result coming from the live Gutenberg tab.",
+    "scope": "Observed in Showcase Result Preview only; Data's For AI agent copy did include the source URL."
+  },
+  "repo_commit_observed": "a58d75d4c654f0f2ade68d444bbdae5dac6e6519"
+}

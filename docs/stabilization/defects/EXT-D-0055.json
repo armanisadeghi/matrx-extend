@@ -1,0 +1,42 @@
+{
+  "id": "EXT-D-0055",
+  "feature_id": "EXT-F-1012",
+  "case_ids": [
+    "EXT-F-1012-T49"
+  ],
+  "surface": "Showcase ResultPreview Copy for AI",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Reloaddevelopmentextension; openpublicGutenbergbook andShowcasePatterns.",
+    "Run ownedmanual_css pattern60b0c5bb-b4d4-4642-857a-2924b56445d5.",
+    "OpenResultPreviewCopy menu; CopyforAI; readclipboard immediately."
+  ],
+  "expected": "AdvertisedsourceURL included inAI copy, bound toactualextractedresult.",
+  "actual": "Menu promises sourceURL butpreambleonlyrowcount, noURL; DataAIcopy includesURL.",
+  "severity": "S2: copieddata loses advertisedsourceprovenance.",
+  "priority": "P1: sharedresultprovenance correctness.",
+  "state": "in-fix",
+  "evidence": [
+    "docs/stabilization/reports/data-picker-long-native.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-09-28T13:36:18.522176+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Native clipboard mismatch observed."
+    },
+    {
+      "at": "2026-09-28T13:36:18.522176+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Side-by-sideData/Showcase clipboard confirms localizedsourceomission."
+    },
+    {
+      "at": "2026-09-28T13:36:18.522176+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol ai_copy_source_repair assigned diagnosis andsource-bound repair."
+    }
+  ]
+}

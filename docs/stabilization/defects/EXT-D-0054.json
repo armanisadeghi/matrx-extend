@@ -22,9 +22,10 @@
     "src/lib/clipboard/copy.ts:170",
     "docs/stabilization/reports/showcase-export-correction-peer.json",
     "docs/stabilization/reports/showcase-export-guarded-runtime.json",
-    "docs/stabilization/reports/showcase-export-native.json"
+    "docs/stabilization/reports/showcase-export-native.json",
+    "docs/stabilization/reports/data-picker-long-native.json"
   ],
-  "verification_status": "Fixed; native d55e0901 verifiesactual241rowJSON/TSV/AIclipboard,lastrow andrealmultilineheaders. Originalsinglecell>50k, tab/quote cells, spreadsheetpaste, DataT03 and failureUI stillunverified. Wholepayload>50k is NOT proof of singlecellbug closure.",
+  "verification_status": "NativeData+Showcase TSVstrictparse preserves719594charfield incl5613newlines/104tabs exactJSONhash. Priorrealheaders newlinepass. Quote-bearingcells/headers andactualspreadsheetpaste remainunverified; staysfixed.",
   "transition_history": [
     {
       "at": "2026-09-28T12:38:00.604065+00:00",

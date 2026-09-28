@@ -16,16 +16,17 @@
   "actual": "Shared stringifyJson replacer truncates every string beyond50000characters, including CopyJSON/CopyforAI and Data rerun.",
   "severity": "S2: copied extraction data loses original content.",
   "priority": "P1: shared export correctness.",
-  "state": "fixed",
+  "state": "closed",
   "evidence": [
     "docs/stabilization/reports/showcase-export-source-audit.json",
     "src/lib/clipboard/copy.ts:115",
     "docs/stabilization/reports/showcase-export-correction-peer.json",
     "docs/stabilization/reports/showcase-export-guarded-runtime.json",
     "docs/stabilization/reports/showcase-export-native.json",
-    "docs/stabilization/reports/showcase-long-text-native.json"
+    "docs/stabilization/reports/showcase-long-text-native.json",
+    "docs/stabilization/reports/data-picker-long-native.json"
   ],
-  "verification_status": "Shared clipboardJSONhelper nativeScrape path preservesone727835character genuinebookfield innormalJSON+AIJSON samehash/end;24healthy exit0. DirectShowcaseResultPreview/Data longrow notexercised: Data onlyPickfields action shown, worker didnotenterpicker; nofixture/recipecreated. D53notclosed.",
+  "verification_status": "Closed originallongstringloss with directnativeData+Showcase719594characterfield and guardedcausalregression. Fullcopyfeature/modes/failurepresentation notclaimed.",
   "transition_history": [
     {
       "at": "2026-09-28T12:38:00.604065+00:00",
@@ -50,6 +51,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source peer428a7d97 accepts repairs; independent guardedb9de78ba originalformatter/feedbackRED thenrestoredGREEN12tests, compile anddirectdevbuild. Nativeclipboard retest pending."
+    },
+    {
+      "at": "2026-09-28T13:36:18.522176+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent actualData andShowcase JSON/AI copies preserve719594characterfield samehash/end, includingData refreshreplay; guardedformertruncationRED/restoredGREEN andsourcepeer accepted. Originallongstringloss resolved; broadercopyfailureUI trackedunverified separately."
+    },
+    {
+      "at": "2026-09-28T13:36:18.522176+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent actualData andShowcase JSON/AI copies preserve719594characterfield samehash/end, includingData refreshreplay; guardedformertruncationRED/restoredGREEN andsourcepeer accepted. Originallongstringloss resolved; broadercopyfailureUI trackedunverified separately."
     }
   ],
   "related_feature_ids": [
