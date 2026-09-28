@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-d47-installed-live-002",
+  "status": "RESOURCE_PREFLIGHT_REFUSED",
+  "scope": "One fresh guarded admission attempt for a healthy primary-Chrome reproduction of the owned D47 HN Search pattern. No UI work was started.",
+  "build": {
+    "source_commit": "b0f456471c8db227e8168c98fdea09a603e2f25d",
+    "version": "0.2.111",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_dir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "tree_sha256": "01ae8a830c987566f8a58959cea46c40a16cba83c724e690d1e221ba253de622",
+    "artifact_receipt": "test-results/source-dev-build-d47-20260928.json",
+    "artifact_receipt_sha256": "395ca7974b6db64f06b43a00a0abad717217f6ca406a747bd7c3ee62a5b1e110",
+    "basis": "Existing independently verified .111 artifact; no source change or rebuild in this retry."
+  },
+  "browser_guard": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node scripts/stabilization-resource.mjs browser --run-id showcase-d47-installed-live-002 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "previous_run_recovery": "At 2026-09-28T00:34:50.669Z the guard emitted RESOURCE_RECOVERY_SAMPLES_READY for previousRunId showcase-d47-installed-live-001.",
+    "terminal": {
+      "at": "2026-09-28T00:36:00.568Z",
+      "code": "RESOURCE_PREFLIGHT_REFUSED",
+      "reasons": ["RESOURCE_PRESSURE_UNSAFE"],
+      "sample": {
+        "pressureLevel": 2,
+        "availableMemoryGiB": 5.28,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 2.92,
+        "logicalCpus": 10,
+        "cpuBusyFraction": 0.3133571428571429,
+        "swapUsedMiB": 3827.88,
+        "profileFreeGiB": 26.642414093017578,
+        "maxCpuBusySample": 0.7310000000000001
+      }
+    },
+    "operator_action": "No browser or UI action was taken. No admission retry was attempted."
+  },
+  "acceptance": {
+    "recipe": "Codex D47 HN Search OpenAI network replay 20260928",
+    "result": "NOT_RUN",
+    "reason": "The fresh browser guard refused admission because system pressure was unsafe. The resource policy requires a new healthy preflight before native UI interaction; no threshold change, bypass, cleanup, or process termination was performed.",
+    "classification": "No product pass/fail conclusion. The previous resource-invalid run remains diagnostic-only and this refusal contributes no product evidence."
+  }
+}
