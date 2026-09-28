@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "run_id": "showcase-long-text-native-20260928-01",
+  "inventory": "EXT-F-1012",
+  "defect": "EXT-D-0053",
+  "started_at": "2026-09-28T13:16:57.079Z",
+  "ended_at": "2026-09-28T13:24:50.262Z",
+  "resource_guard": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id showcase-long-text-native-20260928-01 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "admitted_at": "2026-09-28T13:18:06.720Z",
+    "first_healthy_watch_at": "2026-09-28T13:18:23.098Z",
+    "healthy_watch_count": 24,
+    "unsafe_event_count": 0,
+    "stop_confirmed_at": "2026-09-28T13:24:50.251Z",
+    "actual_exit_code": 0,
+    "final_decision": "valid",
+    "completed_journal": "docs/stabilization/resource-journals/showcase-long-text-native-20260928-01.jsonl",
+    "completed_journal_sha256": "8f46b9baf7ecf47e39bf0ba5d8d3a51a4e5e0bf8a431b4757a759b3fd23d571c"
+  },
+  "runtime": {
+    "browser": "Primary Google Chrome profile, actual side panel",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_version": "0.2.114",
+    "artifact_path": ".output/chrome-mv3-dev",
+    "artifact_tree_sha256": "b081b8748a562dc7575e435bdd3411bc08cff404520671282066ba48dc7ff6fc",
+    "extension_reload": "Clicked the Matrx Extend Reload control in chrome://extensions for this exact ID, then opened the public book in a fresh tab."
+  },
+  "source": {
+    "url": "https://www.gutenberg.org/files/1342/1342-h/1342-h.htm",
+    "title": "Pride and prejudice | Project Gutenberg",
+    "origin": "Public Project Gutenberg HTML, opened as a real page; no injected DOM, fixture, mock, or response interception.",
+    "independent_http_source_bytes": 806295,
+    "independent_http_source_sha256": "420b05f63fc1b50420edab9feb9147c87968413ad9487759e5e39c52471d62ba",
+    "source_end_marker": "END OF THE PROJECT GUTENBERG EBOOK 1342",
+    "capture_at": "2026-09-28T13:21:10.350Z"
+  },
+  "result": {
+    "status": "PASS_SHARED_SCRAPE_EXPORT; DIRECT_SHOWCASE_RESULT_PREVIEW_UNVERIFIED",
+    "actual_ui_path": "Scrape > Capture this page > Copy capture > Full capture (JSON), then Full capture for AI (JSON)",
+    "capture_article_word_count": 127657,
+    "json_clipboard_characters": 1541692,
+    "json_article_content_markdown_characters": 727835,
+    "json_article_content_markdown_sha256": "b00e0775eb927ceef5e323c46251053e14008aed8c442b9e5b7fc7e20434fc6f",
+    "json_article_content_html_safe_characters": 752885,
+    "json_article_content_html_safe_sha256": "839c5aee24abfaf0ab6cf7377f5180476e4a68e541e2d12a9f1cd2ff18b5aeb2",
+    "ai_json_clipboard_characters": 1541922,
+    "ai_json_article_content_markdown_characters": 727835,
+    "ai_json_article_content_markdown_sha256": "b00e0775eb927ceef5e323c46251053e14008aed8c442b9e5b7fc7e20434fc6f",
+    "matching_field_ending": "\\*\\*\\* END OF THE PROJECT GUTENBERG EBOOK 1342 \\*\\*\\*",
+    "verification": "Both product copy actions showed Copied. The immediately read clipboard parsed as complete JSON; the AI copy's fenced JSON parsed independently. The single article.content_markdown field exceeded 50k characters by over 14x and matched length, SHA-256, and ending in both exports. The independently fetched public HTML contains the same end marker."
+  },
+  "direct_showcase_attempt": {
+    "data": "Data showed Pick fields on this page, without an existing extracted row.",
+    "showcase": "List Pattern showed Pick an example item; selecting a representative full-book field was not offered in the bounded attempt.",
+    "verdict": "The original Showcase ResultPreview single-cell path remains unverified by this native run. The shared stringifyJson and wrapJsonForAgent paths used by ResultPreview are exercised through Scrape's actual UI."
+  },
+  "persistence": "No saved Source or recipe created; no database fixture or source change."
+}

@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "lane": "native tester Solmedium",
+  "run_id": "showcase-long-text-native-20260928-01",
+  "outcome": "Actual primary Chrome Scrape capture/export retained a genuine 727835-character book field in normal JSON and AI JSON with identical SHA-256 and ending. This directly proves the shared clipboard JSON helpers handle a single string over 50k characters, but does not close the original Showcase ResultPreview route without a direct row export.",
+  "source": "https://www.gutenberg.org/files/1342/1342-h/1342-h.htm",
+  "field_sha256": "b00e0775eb927ceef5e323c46251053e14008aed8c442b9e5b7fc7e20434fc6f",
+  "field_ending": "END OF THE PROJECT GUTENBERG EBOOK 1342",
+  "resource": "Completed guard journal SHA-256 8f46b9baf7ecf47e39bf0ba5d8d3a51a4e5e0bf8a431b4757a759b3fd23d571c; 24 healthy watches, zero unsafe, actual exit 0 and valid final decision.",
+  "evidence": [
+    "docs/stabilization/runs/showcase-long-text-native-20260928-01.json",
+    "docs/stabilization/resource-journals/showcase-long-text-native-20260928-01.jsonl"
+  ],
+  "next_action": "If D53 requires direct Showcase ResultPreview closure, find a genuine one-row extraction whose field is over 50k characters and copy JSON/AI from that ResultPreview. This run must not be cited as that direct UI proof."
+}
