@@ -127,6 +127,9 @@ export function NoteEditor({ noteId }: { noteId: string }) {
           queuedRef.current = null;
           if (sameDraft(writing, savedRef.current)) {
             if (sameDraft(unsavedDrafts.get(noteId) ?? null, writing)) unsavedDrafts.delete(noteId);
+            if (mountedRef.current && sameDraft(draftRef.current, writing) && !queuedRef.current) {
+              setSavingState('saved');
+            }
             continue;
           }
           if (mountedRef.current) setSavingState('saving');
