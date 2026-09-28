@@ -61,6 +61,7 @@ import { getAccessToken, getCurrentUser } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { platformDb } from '@/lib/supabase/schemas';
+import { type FillSurface, signFillRequest } from '@/lib/vault/fill-device';
 
 const BASE = '/api/vault/browser-login';
 const ITEMS = '/api/vault/items';
@@ -227,6 +228,38 @@ async function vaultPost<T>(
   return apiPost<T>(path, body, undefined, transportOptions(options, silent));
 }
 
+/**
+ * POST to a fill route with this browser's device signature (access ladder
+ * T-30). The server answers the fill routes only for a request signed by a
+ * registered device key over the extension's own OAuth session. On a 403 the
+ * key is re-registered once (the person may have signed in again, which starts
+ * a new session) and the request is re-signed; a revoked device stays refused.
+ */
+async function vaultFillPost<T>(
+  surface: FillSurface,
+  itemId: string,
+  path: string,
+  body: Record<string, unknown>,
+  options?: VaultRequestOptions,
+): Promise<ApiResult<T>> {
+  if (!(await hasRealUserToken())) return SIGN_IN_REQUIRED;
+  let last: ApiResult<T> | null = null;
+  for (const forceRegister of [false, true]) {
+    const signed = await signFillRequest({ surface, itemId, body, forceRegister });
+    if (!signed.ok) {
+      if (signed.failure.kind === 'sign_in_required') return SIGN_IN_REQUIRED;
+      return { ok: false, status: 403, error: signed.failure.message };
+    }
+    const transport = transportOptions(options, true);
+    last = await apiPost<T>(path, body, undefined, {
+      ...transport,
+      headers: { ...(transport.headers ?? {}), ...signed.headers },
+    });
+    if (last.ok || last.status !== 403) return last;
+  }
+  return last as ApiResult<T>;
+}
+
 async function vaultPatch<T>(path: string, body: unknown): Promise<ApiResult<T>> {
   if (!(await hasRealUserToken())) return SIGN_IN_REQUIRED;
   return apiPatch<T>(path, body);
@@ -322,7 +355,11 @@ export async function materializeBrowserLogin(
   request?: VaultRequestOptions,
 ): Promise<VaultResult<BrowserLoginMaterialized>> {
   log.info('api', '→ POST vault/browser-login/{item}/materialize');
-  const r = await vaultPost<BrowserLoginMaterialized>(
+  // Plaintext body: vaultFillPost is always silent, so a malformed 2xx is never
+  // quoted into the debug log.
+  const r = await vaultFillPost<BrowserLoginMaterialized>(
+    'browser_login_materialize',
+    itemId,
     `${BASE}/${encodeURIComponent(itemId)}/materialize`,
     {
       page_url: params.pageUrl,
@@ -330,9 +367,7 @@ export async function materializeBrowserLogin(
       client_build: params.clientBuild,
       ...(params.fieldKeys ? { field_keys: params.fieldKeys } : {}),
     },
-    // Plaintext body: a malformed 2xx must not be quoted into the debug log.
     request,
-    true,
   );
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   const data = r.data;
@@ -363,7 +398,9 @@ export async function materializeBrowserAuthenticator(
   },
 ): Promise<VaultResult<BrowserAuthenticatorMaterialized>> {
   log.info('api', '→ POST vault/browser-login/{item}/authenticator-materialize');
-  const r = await vaultPost<BrowserAuthenticatorMaterialized>(
+  const r = await vaultFillPost<BrowserAuthenticatorMaterialized>(
+    'browser_authenticator_materialize',
+    itemId,
     `${BASE}/${encodeURIComponent(itemId)}/authenticator-materialize`,
     {
       conversation_id: params.conversationId,
@@ -374,9 +411,7 @@ export async function materializeBrowserAuthenticator(
       extension_instance_id: params.extensionInstanceId,
       client_build: params.clientBuild,
     },
-    // TOTP body: a malformed response must never be quoted into debug logs.
-    undefined,
-    true,
+    // TOTP body: vaultFillPost is always silent — never quoted into debug logs.
   );
   if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
   const data = r.data;
