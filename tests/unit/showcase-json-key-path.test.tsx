@@ -1,9 +1,9 @@
-import { cleanup, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it, vi } from 'vitest';
 import { JsonTree } from '@/components/ui/json-tree';
 import { rowsFromBody } from '@/lib/data-pattern/run-interactive';
 import { runMode, runPattern } from '@/lib/data-pattern/run-pattern';
+import { cleanup, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 // A publisher extracts articles from API responses and embedded framework state.
 const payload = {

@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ExtractionPattern } from '@/lib/supabase/queries';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // External Supabase I/O only. Production save/query mapping and both replay
 // runners stay real, so dropping key_path at the insert or fetch boundary fails.

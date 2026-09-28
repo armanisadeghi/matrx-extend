@@ -23,8 +23,6 @@ agent -> Needs Arman) with ` — <question> — <what was checked> — <who>` ad
 Its files stay as they are.
 
 ## Held files
-- _conflicts/2026-09-28-080653/scripts/stabilization-resource-journal.mjs.held — LOCAL latest 2026-09-28 08:05; GITHUB latest 2026-09-28 07:05; LOCAL lacks 15 of GITHUB's 15 new lines; GITHUB lacks 13 of LOCAL's 13 new lines; recover: git show 04e47d227f:'scripts/stabilization-resource-journal.mjs' / edec6ffa5f:'scripts/stabilization-resource-journal.mjs'
-- _conflicts/2026-09-28-080653/scripts/test-stabilization-resource-journal.mjs.held — LOCAL latest 2026-09-28 08:05; GITHUB latest 2026-09-28 07:05; LOCAL lacks 14 of GITHUB's 19 new lines; GITHUB lacks 37 of LOCAL's 41 new lines; recover: git show 04e47d227f:'scripts/test-stabilization-resource-journal.mjs' / edec6ffa5f:'scripts/test-stabilization-resource-journal.mjs'
 
 ## Needs a manager
 

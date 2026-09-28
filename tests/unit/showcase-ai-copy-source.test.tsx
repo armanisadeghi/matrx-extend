@@ -88,8 +88,8 @@ vi.mock('@ai-matrx/design-system', () => ({
 }));
 
 import { ResultPreview } from '@/features/showcase/components/ResultPreview';
-import { PatternsTab } from '@/features/showcase/tabs/PatternsTab';
 import { NetworkTab } from '@/features/showcase/tabs/NetworkTab';
+import { PatternsTab } from '@/features/showcase/tabs/PatternsTab';
 
 Object.defineProperty(navigator, 'clipboard', {
   configurable: true,

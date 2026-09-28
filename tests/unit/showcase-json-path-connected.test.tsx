@@ -110,8 +110,8 @@ vi.mock('lucide-react', () => ({
   TriangleAlert: () => null,
 }));
 
-import { NetworkTab } from '@/features/showcase/tabs/NetworkTab';
 import { FrameworkTab } from '@/features/showcase/tabs/FrameworkTab';
+import { NetworkTab } from '@/features/showcase/tabs/NetworkTab';
 import { sanitizeNetworkPatternFields } from '@/lib/credentials/network-urls';
 import { runNetworkCapturePattern } from '@/lib/data-pattern/run-interactive';
 import { runPattern } from '@/lib/data-pattern/run-pattern';
