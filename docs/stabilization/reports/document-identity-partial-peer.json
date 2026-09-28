@@ -1,0 +1,43 @@
+{
+  "id": "EXT-D-0059",
+  "role": "independent source verifier, zero product authorship",
+  "reviewed_commits": ["bb78e844", "27aaaf96"],
+  "verdict_a_outcome": "PARTIAL",
+  "verdict_a_reason": "The shared hook now withholds on navigation and keys admitted results by tab, top-frame documentId, and URL. Several consumers use it. Same-URL old-document attribution is still possible in migrated event and extension-run paths, and the repair report explicitly leaves Scrape, Screenshots, Highlights, Showcase shell, App context, fixtures, integrated compile, and native Chrome proof open.",
+  "verdict_b_quality": "FAIL_IMPORTANT",
+  "findings": [
+    {
+      "priority": "important",
+      "title": "Ordinary network capture admits delayed events from the old document into a new same-tab capture",
+      "evidence": "src/hooks/use-network-capture.ts:58-67 compares the current session pageKey only to the current hook snapshot, then checks event.tab_id. src/lib/background/bootstrap.ts:554-565 stamps tab_id but no trusted sender.documentId; CapturedNetEvent has no document field (src/lib/data-pattern/network-tap.ts:16-33). After B starts on the same tab, a queued A response carries the same tab ID and passes the B filter.",
+      "required_fix": "Stamp trusted sender.documentId on the SW relay and require it to equal the session documentId before appendEvent; retain the existing tab/session guards. Prove a delayed A event delivered after B Start cannot appear in B's response list."
+    },
+    {
+      "priority": "important",
+      "title": "Data picker can save selectors returned by the old document after a new pick starts",
+      "evidence": "src/features/data/DataView.tsx:123-145 accepts DATA_PICKER_RESULT/EXIT by pickTabRef only; :165-174 installs the new picker and resets that same tab ref. src/lib/background/bootstrap.ts:521-540 rebroadcasts only tab_id. A delayed A result arriving after B's picker starts can replace B's pickedFields and be saved by :181-201.",
+      "required_fix": "Give the Data picker a document-bound session identity from its content-script result through the SW relay to DataView, and admit only the currently active session and document. Exercise A result after B picker start, then Save."
+    },
+    {
+      "priority": "important",
+      "title": "Framework read and run lose the resolved document target",
+      "evidence": "src/features/showcase/tabs/FrameworkTab.tsx:43-53 calls readFrameworkSources(tab.id) and accepts by pageKey only after the call. src/lib/data-pattern/framework-sources.ts:79-86 injects into {tabId}. The framework mode's runInExtension path reaches readFrameworkSources (framework-sources.ts:148); src/lib/data-pattern/run-pattern.ts:68,118 invokes runInExtension(tabId,config) without its documentId argument. A replacement between click and injection can read B under an A operation before identity refresh.",
+      "required_fix": "Thread required documentId through the framework extension-run interface and its source read, target the exact document in executeScript, and keep post-await admission. Exercise replacement before injection for both tree dump and extract."
+    },
+    {
+      "priority": "important",
+      "title": "Unresolved identity leaves visible controls with silent no-op behavior",
+      "evidence": "RecipesTab.tsx:52-53 returns without feedback while its button at :136-149 disables only for running or missing tab ID. DataView.tsx:165-166,219-220 similarly returns while run/picker controls at :384-388,:589-590 remain enabled for an unresolved document. PatternsTab.tsx:134-135 returns while PatternRow canRun is Boolean(tab.id) at :262 and :440-442.",
+      "required_fix": "Expose one reusable identity status/remedy near page-result controls; when identity is unresolved, show why and Retry, or make a click report the remedy. Apply to every migrated page-result action, not only Prepare/Snapshot/SEO."
+    }
+  ],
+  "source_census": {
+    "shared_hook": "use-active-tab.ts is the single side-panel resolver; top-frame events, sequence checks, URL plus document key, and unresolved status are present. Native event ordering remains unverified.",
+    "migrated_with_document_result_admission": ["Prepare", "Snapshot/useExtraction", "AI extraction", "auto extraction/Data rows", "pattern from data", "Recipes", "Patterns", "List Pattern", "Doctor", "SEO", "SaveAsPattern"],
+    "migrated_but_incomplete": ["ordinary Network event provenance", "Data picker event provenance", "Framework extension-run document targeting", "unresolved remedies across Data, Recipes, Patterns, Framework, Doctor and Network"],
+    "acknowledged_pending": ["Scrape/use-auto-scrape", "Screenshots captureNow", "Highlight live selection and picker", "Showcase shell", "sidepanel App context", "mocked fixtures and focused regressions", "integrated compile", "native installed-extension acceptance"],
+    "intentional_url_or_domain_lookup": ["saved patterns/recipes", "saved SEO history", "saved screenshots/highlights gallery", "Tasks URL matching", "Vault domain lookup"]
+  },
+  "verification_limits": "Source only. No product edits, tests, build, or browser run in this verifier lane. d59-compile-1 passed before consumer changes. d59-compile-2 was admitted and tsc exited 1; two source corrections after it have no integrated compile result. Authored runtime tests remain unrun. The journal's final 'refused' label must not be represented as a resource preflight refusal for that compile.",
+  "next_implementation_brief": "First close the four findings above as one document-provenance pass, including sender-stamped event identity and exact-document injection through extension runners. Then finish the acknowledged Scrape/Screenshots/Highlights/Showcase/App census and fixtures. Run integrated compile and focused forcing regressions when allowed, then verify actual installed-extension same-URL Chrome Reload on a public HTTPS page before changing D59 from partial."
+}
