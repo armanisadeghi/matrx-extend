@@ -101,6 +101,7 @@ afterEach(() => {
   // mutate the next case's Chrome doubles.
   for (const release of h.releases) release();
   h.releases.clear();
+  h.handlers.clear();
   cleanup();
   vi.useRealTimers();
   vi.clearAllMocks();
