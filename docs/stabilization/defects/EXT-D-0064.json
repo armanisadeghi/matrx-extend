@@ -1,0 +1,41 @@
+{
+  "id": "EXT-D-0064",
+  "feature_id": "EXT-F-2008",
+  "case_ids": [
+    "EXT-F-2008-T02"
+  ],
+  "title": "Files read failure also renders an empty-library or empty-captures claim",
+  "surface": "Files side-panel",
+  "auth_mode": "member/admin; source-derived, native unverified",
+  "reproduction": [
+    "Open Files as a signed-in user with the selected organization set and no cached rows.",
+    "Make fetchRecentFiles or fetchRecentExtensionCaptures reject.",
+    "Inspect the active Library or Screenshots tab after loading ends."
+  ],
+  "expected": "Show the read error and retry state without describing the collection as empty.",
+  "actual": "reload sets state to error and displays the error banner, but both tab panels branch only on state === loading and then use an empty-row test; the active panel additionally says \u2018No library files yet\u2019 or \u2018No captures yet\u2019.",
+  "severity": "S3: an error is accompanied by a contradictory empty-state claim",
+  "priority": "P2: user may infer files or screenshots do not exist",
+  "state": "triaged",
+  "evidence": [
+    "docs/stabilization/reports/notes-files-batch-audit.json",
+    "src/features/files/FilesView.tsx:81-109",
+    "src/features/files/FilesView.tsx:236-241",
+    "src/features/files/FilesView.tsx:273-313"
+  ],
+  "verification_status": "Source-derived reproducible sequence; native and regression verification pending.",
+  "transition_history": [
+    {
+      "at": "2026-09-28T19:51:52.878308+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Independent contained-feature source audit."
+    },
+    {
+      "at": "2026-09-28T19:51:52.878308+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Concrete source branch and self-contained reproduction identified; runtime pending."
+    }
+  ]
+}

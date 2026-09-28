@@ -1,0 +1,41 @@
+{
+  "id": "EXT-D-0061",
+  "feature_id": "EXT-F-2006",
+  "case_ids": [
+    "EXT-F-2006-T03"
+  ],
+  "title": "Note-list read failure is presented as an empty list",
+  "surface": "Notes side-panel",
+  "auth_mode": "member/admin; source-derived, native unverified",
+  "reproduction": [
+    "Open Notes while signed in with the selected device organization set.",
+    "Make the notes SELECT return a Supabase error (for example, deny the read or make the network unavailable).",
+    "Observe Notes after the query settles."
+  ],
+  "expected": "The query failure is visibly distinct from a successful empty result, with an available recovery action or clear retry guidance.",
+  "actual": "listMyNotes logs the error and returns []; NotesView receives a successful query result and renders NotesList, which says \u2018No notes yet\u2019 with no error state.",
+  "severity": "S3: notes query failure is indistinguishable from a genuinely empty collection",
+  "priority": "P1: user cannot tell whether their notes are absent or the read failed",
+  "state": "triaged",
+  "evidence": [
+    "docs/stabilization/reports/notes-files-batch-audit.json",
+    "src/lib/notes/queries.ts:28-44",
+    "src/features/notes/NotesView.tsx:25-48",
+    "src/features/notes/NotesList.tsx:142-147"
+  ],
+  "verification_status": "Source-derived reproducible sequence; native and regression verification pending.",
+  "transition_history": [
+    {
+      "at": "2026-09-28T19:51:52.878308+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Independent contained-feature source audit."
+    },
+    {
+      "at": "2026-09-28T19:51:52.878308+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Concrete source branch and self-contained reproduction identified; runtime pending."
+    }
+  ]
+}

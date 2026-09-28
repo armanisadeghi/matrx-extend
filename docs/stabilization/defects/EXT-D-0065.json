@@ -1,0 +1,40 @@
+{
+  "id": "EXT-D-0065",
+  "feature_id": "EXT-F-2009",
+  "case_ids": [
+    "EXT-F-2009-T02"
+  ],
+  "title": "Concurrent saved-capture opens can select a different item than the last click",
+  "surface": "Saved captures side-panel",
+  "auth_mode": "member/admin; source-derived, native unverified",
+  "reproduction": [
+    "From a list with two Sources, click Source A, then click Source B before A\u2019s getSavedCapture request returns.",
+    "Arrange for B\u2019s request to return first and A\u2019s request to return last.",
+    "Observe the detail selected after both requests complete."
+  ],
+  "expected": "The detail view corresponds to the most recent row selection, Source B.",
+  "actual": "openCapture has no request generation or selected-ID guard; each resolution calls setSelected, so the slower A response overwrites B.",
+  "severity": "S3: delayed detail response can navigate to a stale capture",
+  "priority": "P2: user sees the wrong saved Source after selecting another row",
+  "state": "triaged",
+  "evidence": [
+    "docs/stabilization/reports/notes-files-batch-audit.json",
+    "src/features/saved-captures/SavedCapturesView.tsx:113-125",
+    "src/features/saved-captures/SavedCapturesView.tsx:269-276"
+  ],
+  "verification_status": "Source-derived reproducible sequence; native and regression verification pending.",
+  "transition_history": [
+    {
+      "at": "2026-09-28T19:51:52.878308+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Independent contained-feature source audit."
+    },
+    {
+      "at": "2026-09-28T19:51:52.878308+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Concrete source branch and self-contained reproduction identified; runtime pending."
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "EXT-D-0063",
+  "feature_id": "EXT-F-2007",
+  "case_ids": [
+    "EXT-F-2007-T01"
+  ],
+  "title": "Debounced note edits are dropped when a save is already in flight",
+  "surface": "Notes editor",
+  "auth_mode": "member/admin; source-derived, native unverified",
+  "reproduction": [
+    "Open a note and change its body; allow the 600 ms debounce to start the update request.",
+    "Before that request resolves, make a second body change and wait for its 600 ms debounce to expire.",
+    "Let the first request succeed, then reload the note."
+  ],
+  "expected": "The latest draft is eventually persisted, and \u2018Saved\u2019 refers to that latest draft.",
+  "actual": "The second timer calls persist while inflightRef is true; persist returns immediately and discards that snapshot. Completion of the first update marks the earlier snapshot saved and does not schedule a trailing write.",
+  "severity": "S2: latest user edits can be lost while the UI reports an earlier snapshot saved",
+  "priority": "P1: silent note data loss",
+  "state": "in-fix",
+  "evidence": [
+    "docs/stabilization/reports/notes-files-batch-audit.json",
+    "src/features/notes/NoteEditor.tsx:95-114",
+    "src/features/notes/NoteEditor.tsx:118-136"
+  ],
+  "verification_status": "Source-derived reproducible sequence; native and regression verification pending.",
+  "transition_history": [
+    {
+      "at": "2026-09-28T19:51:52.878308+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Independent contained-feature source audit."
+    },
+    {
+      "at": "2026-09-28T19:51:52.878308+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Concrete source branch and self-contained reproduction identified; runtime pending."
+    },
+    {
+      "at": "2026-09-28T19:51:52.878308+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol assigned latest-draft autosave correction, source-only while build lane owns heavy lease."
+    }
+  ]
+}
