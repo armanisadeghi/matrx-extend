@@ -20,6 +20,12 @@ import { isDbFailureError } from '@/lib/supabase/db-failure';
 import { useHighlightStore } from '@/state/highlights';
 import { useEffect } from 'react';
 
+function fromRepresentedDocument(sender: chrome.runtime.MessageSender, url: string, sessionId: string): boolean {
+  const session = useHighlightStore.getState().overlaySession;
+  return !!session && sessionId === session.sessionId && sender.tab?.id === session.tabId && sender.documentId === session.documentId
+    && sender.frameId === 0 && sender.url === session.url && url === session.url;
+}
+
 function toListItem(h: {
   id: string;
   created_by: string | null;
@@ -57,15 +63,17 @@ export function useHighlightBridge(): void {
   const setMode = useHighlightStore((s) => s.setMode);
 
   useEffect(() => {
-    const offCaptured = on<CreateHighlightInput, { id: string } | { __error: string }>(
+    const offCaptured = on<CreateHighlightInput & { sessionId: string }, { id: string } | { __error: string }>(
       CHANNELS.HIGHLIGHT_CAPTURED,
-      async (draft) => {
+      async (draft, sender) => {
+        if (!fromRepresentedDocument(sender, draft.url, draft.sessionId)) return { __error: 'This highlight came from a page that is no longer being highlighted. Start highlighting that page again.' };
         // A refused insert throws; the user has already been told in a
         // sentence by the error seam. Hand the overlay the real reason so the
         // mark is removed instead of sitting there looking saved.
         let saved: Awaited<ReturnType<typeof createHighlight>>;
         try {
-          saved = await createHighlight(draft);
+          const { sessionId: _sessionId, ...input } = draft;
+          saved = await createHighlight(input);
         } catch (err) {
           return { __error: isDbFailureError(err) ? err.userMessage : String(err) };
         }
@@ -75,9 +83,10 @@ export function useHighlightBridge(): void {
       },
     );
 
-    const offClear = on<{ url: string; count?: number }, { ok: boolean; reason?: string }>(
+    const offClear = on<{ url: string; count?: number; sessionId: string }, { ok: boolean; reason?: string }>(
       CHANNELS.HIGHLIGHT_CLEAR_REQUEST,
-      async ({ url, count }) => {
+      async ({ url, count, sessionId }, sender) => {
+        if (!fromRepresentedDocument(sender, url, sessionId)) return { ok: false, reason: 'This page is no longer being highlighted. Start highlighting it again.' };
         // The overlay's trash button lands here. The confirmation is raised
         // HERE, not on the page, because the side panel is where the dialog
         // host is — and the overlay unpaints only when this answers ok.
@@ -99,6 +108,7 @@ export function useHighlightBridge(): void {
               'To remove just one, cancel and use the trash icon on that row in the Highlights tab.',
             confirmLabel: n ? `Clear ${n}` : 'Clear all',
             run: async () => {
+              if (!fromRepresentedDocument(sender, url, sessionId)) throw new Error('This page is no longer being highlighted. Start highlighting it again.');
               await clearHighlightsForUrl(url);
               broadcast(CHANNELS.HIGHLIGHTS_CHANGED, { reason: 'clear', url });
             },
@@ -117,11 +127,15 @@ export function useHighlightBridge(): void {
     );
 
     const offState = on<
-      { mounted: boolean; mode: 'text' | 'element'; count: number; url: string },
+      { mounted: boolean; mode: 'text' | 'element'; count: number; url: string; sessionId: string },
       { ok: true }
     >(CHANNELS.HIGHLIGHT_OVERLAY_STATE, (p, sender) => {
-      setOverlay({ active: p.mounted, tabId: sender.tab?.id ?? null, count: p.count });
-      if (p.mode) setMode(p.mode);
+      if (!fromRepresentedDocument(sender, p.url, p.sessionId)) return { ok: true };
+      if (!p.mounted) useHighlightStore.getState().setOverlaySession(null);
+      else if (useHighlightStore.getState().overlaySession?.status === 'active') {
+        setOverlay({ active: true, count: p.count });
+      }
+      if (p.mode && useHighlightStore.getState().overlaySession?.status === 'active') setMode(p.mode);
       return { ok: true };
     });
 
@@ -145,16 +159,14 @@ export function useHighlightBridge(): void {
   // The content-script overlay dies silently on navigation/reload — the
   // panel kept showing "Stop highlighting" for a dead overlay and the first
   // toggle click was eaten "stopping" it. Watch the overlay tab and reset.
-  const overlayTabId = useHighlightStore((s) => s.overlayTabId);
   useEffect(() => {
-    if (overlayTabId == null) return;
     const onUpdated = (tabId: number, change: chrome.tabs.TabChangeInfo) => {
-      if (tabId === overlayTabId && change.status === 'loading') {
-        setOverlay({ active: false, tabId: null, count: 0 });
+      if (tabId === useHighlightStore.getState().overlaySession?.tabId && change.status === 'loading') {
+        useHighlightStore.getState().setOverlaySession(null);
       }
     };
     const onRemoved = (tabId: number) => {
-      if (tabId === overlayTabId) setOverlay({ active: false, tabId: null, count: 0 });
+      if (tabId === useHighlightStore.getState().overlaySession?.tabId) useHighlightStore.getState().setOverlaySession(null);
     };
     chrome.tabs.onUpdated.addListener(onUpdated);
     chrome.tabs.onRemoved.addListener(onRemoved);
@@ -162,5 +174,5 @@ export function useHighlightBridge(): void {
       chrome.tabs.onUpdated.removeListener(onUpdated);
       chrome.tabs.onRemoved.removeListener(onRemoved);
     };
-  }, [overlayTabId, setOverlay]);
+  }, []);
 }
