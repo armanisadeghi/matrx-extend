@@ -78,10 +78,11 @@ export function decodeFrameworkSources(sources: FrameworkDumpSource[]): Framewor
 
 export async function readFrameworkSources(
   tabId: number,
+  documentId: string,
   requestedSource?: string,
 ): Promise<FrameworkSource[]> {
   const result = await chrome.scripting.executeScript({
-    target: { tabId },
+    target: { tabId, documentIds: [documentId] },
     func: frameworkDumpInPage,
   });
   if (!Array.isArray(result?.[0]?.result)) {
@@ -144,7 +145,8 @@ export function rowsFromFrameworkSources(
 export async function runFrameworkPattern(
   tabId: number,
   config: { source?: string | undefined; key_path: JsonKeyPath },
+  documentId: string,
 ): Promise<ExtractedRow[]> {
-  const sources = await readFrameworkSources(tabId, config.source);
+  const sources = await readFrameworkSources(tabId, documentId, config.source);
   return rowsFromFrameworkSources(sources, config);
 }

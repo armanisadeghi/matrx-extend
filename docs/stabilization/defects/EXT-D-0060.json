@@ -1,0 +1,65 @@
+{
+  "id": "EXT-D-0060",
+  "feature_id": "EXT-F-0002",
+  "case_ids": [
+    "EXT-F-0002-T01"
+  ],
+  "title": "Final resource verdict conflates admitted command failure with refusal",
+  "surface": "Stabilization resource guard reporting",
+  "auth_mode": "not-applicable",
+  "reproduction": [
+    "Run an admitted guarded command which exits nonzero, e.g. a TypeScript compile error.",
+    "Inspect RESOURCE_ADMITTED, RESOURCE_JOB_EXIT and RESOURCE_FINAL_DECISION."
+  ],
+  "expected": "Report an admitted child failure distinctly from a denied resource launch or invalid resource run.",
+  "actual": "scripts/stabilization-resource.mjs:788 uses refused for every nonzero exit, including admitted compiler errors with resourceInvalid false. D59 worker misclassified this and stopped verification.",
+  "severity": "S2: misleading diagnostics stall validation",
+  "priority": "P1: reliable test/run attribution",
+  "state": "closed",
+  "evidence": [
+    "docs/stabilization/resource-journals/d59-compile-2.jsonl",
+    "scripts/stabilization-resource.mjs:788",
+    "docs/stabilization/reports/resource-verdict-correction.json",
+    "docs/stabilization/reports/resource-verdict-peer.json",
+    "docs/stabilization/reports/resource-precedence-peer.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-09-28T16:07:07.892217+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Owner inspected admitted/child-exit/final journal and confirmed source ternary conflation."
+    },
+    {
+      "at": "2026-09-28T17:04:48.541748+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Confirmed original ADMITTED child failure was mislabeled as launch refusal."
+    },
+    {
+      "at": "2026-09-28T17:04:48.541748+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Candidate e4b2f39e separates verdicts; peer06117afe confirms original correction but raises pre-admission journal-error classification edge."
+    },
+    {
+      "at": "2026-09-28T17:10:52.225766+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "e4b2f39e/b3421dd2 distinguish admission, resource invalidity and child outcomes without changing protections."
+    },
+    {
+      "at": "2026-09-28T17:10:52.225766+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Real admitted child failure now child_failed; successful control valid; seven classifier cases pass including red-then-green pre-admission edge. Independent peer5b9e07b3 accepts scoped correction."
+    },
+    {
+      "at": "2026-09-28T17:10:52.225766+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original reporting defect and identified precedence edge corrected and reviewed. Wrapper journal-write fault injection remains an explicit test limit, not proof of full infrastructure coverage."
+    }
+  ],
+  "verification_status": "Scoped D60 closed on real child failure/success journals plus seven classifier cases and fresh independent source/result peer5b9e07b3. Thresholds/watchdog/exit codes/allowlist unchanged. No wrapper-level journal write fault injection performed; broad infrastructure inventory coverage unchanged."
+}

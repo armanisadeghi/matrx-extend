@@ -1,4 +1,4 @@
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { RECIPES, type Recipe, loadRecipes, recipesForUrl } from '@/lib/data-pattern/recipes';
 import { runMode } from '@/lib/data-pattern/run-pattern';
@@ -19,7 +19,7 @@ export function RecipesTab() {
   const [source, setSource] = useState<ExtractionSource | null>(null);
   const [resultPageKey, setResultPageKey] = useState<string | null>(null);
   const callSeq = useRef(0);
-  const pageKey = `${tab.id ?? ''}:${tab.url ?? ''}`;
+  const pageKey = tab.pageKey ?? '';
   // DB-backed catalog (updatable without a release); bundled list until the
   // fetch lands and as the offline fallback.
   const [recipes, setRecipes] = useState<Recipe[]>(RECIPES);
@@ -47,10 +47,10 @@ export function RecipesTab() {
     setSource(null);
     setResultPageKey(null);
     setRunning(null);
-  }, [tab.id, tab.url]);
+  }, [pageKey]);
 
   const handleRun = async (recipe: Recipe) => {
-    if (!tab.id) return;
+    if (!tab.id || !tab.documentId || !tab.pageKey) return;
     const seq = ++callSeq.current;
     const pageKeyAtRun = pageKey;
     setRunning(recipe.id);
@@ -60,16 +60,16 @@ export function RecipesTab() {
     setResultPageKey(null);
     const sourceAtRun = sourceFromUrl(tab.url);
     try {
-      const data = await runMode(recipe.kind, tab.id, recipe.config);
-      if (seq === callSeq.current) {
+      const data = await runMode(recipe.kind, tab.id, recipe.config, tab.documentId);
+      if (seq === callSeq.current && isCurrentPageIdentity(pageKeyAtRun)) {
         setRows(data);
         setSource(sourceAtRun);
         setResultPageKey(pageKeyAtRun);
       }
     } catch (err) {
-      if (seq === callSeq.current) setError(err instanceof Error ? err.message : String(err));
+      if (seq === callSeq.current && isCurrentPageIdentity(pageKeyAtRun)) setError(err instanceof Error ? err.message : String(err));
     } finally {
-      if (seq === callSeq.current) setRunning(null);
+      if (seq === callSeq.current && isCurrentPageIdentity(pageKeyAtRun)) setRunning(null);
     }
   };
 
@@ -137,7 +137,7 @@ export function RecipesTab() {
                     size="icon"
                     variant="ghost"
                     onClick={() => void handleRun(r)}
-                    disabled={running === r.id || !tab.id}
+                    disabled={running === r.id || !tab.pageKey}
                     className="size-7 shrink-0"
                     title="Apply recipe"
                   >

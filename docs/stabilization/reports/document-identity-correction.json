@@ -1,0 +1,38 @@
+{
+  "id": "EXT-D-0059",
+  "status": "FOUR_SOURCE_FINDINGS_PATCHED_VERIFICATION_INCOMPLETE",
+  "accepted_outcome_met": false,
+  "source_commit": "858dfd8fdfc2f1471f806eaa0a71430fb395ff65",
+  "source_corrections": [
+    "Ordinary Network events now receive tab_id and document_id solely from Chrome MessageSender in the service worker; the capture hook requires both to match the active session, rejecting queued A events after B starts.",
+    "Data field picker now receives a unique session ID at start, returns it from the isolated content script, and receives a trusted Chrome sender document ID from the service worker. DataView accepts fields only for its current tab, document, session, and shared page key; Save requires the admitted page key.",
+    "Framework tree reads and runInExtension extraction now receive a required documentId and inject into documentIds:[documentId]. Data and Patterns saved runs pass their clicked document ID, and the data-patterns tool verifies the assigned frame before and after ordinary runs. Network replay retains its separate approved reload contract.",
+    "A shared PageIdentityNotice with Retry is shown in Showcase and Data while identity is unresolved. Migrated page-result controls in Data, Recipes, Patterns, Doctor, Framework, List Pattern, AI Extract, and Network require a resolved page key before acting."
+  ],
+  "forcing_tests_authored": [
+    "tests/unit/document-relay-provenance.test.tsx: trusted sender overwrites spoofed payload identity and a delayed A event is rejected after B starts on the same tab/URL.",
+    "tests/unit/saved-run-data-view-health.test.tsx: delayed A picker fields after B starts cannot be saved; unresolved Data actions show Retry.",
+    "tests/unit/framework-document-target.test.ts: A-targeted tree and extension extraction refuse to read B, while B-targeted extraction succeeds."
+  ],
+  "verification": {
+    "compile_round_1": "RESOURCE_ADMITTED, tsc exit 1 on four test fixture type errors only; fixed before round 2.",
+    "compile_round_2": "RESOURCE_ADMITTED, tsc exit 0, final valid before the last fixture edits.",
+    "focused_tests_round_1": "RESOURCE_ADMITTED, 22 passed / 5 failed across 6 files. The new Network relay, Framework target, Data picker A-after-B Save, and unresolved Retry tests passed. Three old DataView page-switch tests kept a constant mock pageKey while changing tab ID/URL; two connected Showcase tests mocked missing document identity. Fixture corrections were made after this run and are untested.",
+    "focused_test_command": "node scripts/stabilization-resource.mjs run --run-id d59-correction-tests-1 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec vitest run --maxWorkers=1 tests/unit/document-relay-provenance.test.tsx tests/unit/framework-document-target.test.ts tests/unit/saved-run-data-view-health.test.tsx tests/unit/showcase-nuxt-data.test.ts tests/unit/showcase-json-key-path.test.tsx tests/unit/showcase-json-path-connected.test.tsx",
+    "corrected_after_test": [
+      "tests/unit/saved-run-data-view-health.test.tsx: mock pageKey changes with URL or tab ID",
+      "tests/unit/showcase-json-path-connected.test.tsx: mocked Network tab and useActiveTab include documentId/pageKey/isCurrentPageIdentity"
+    ],
+    "journals": [
+      { "path": "docs/stabilization/resource-journals/d59-correction-compile-1.jsonl", "sha256": "53697b7aed5f18ddf8c1792cd5f9e58986517d5abe40d2c32594344307a88082" },
+      { "path": "docs/stabilization/resource-journals/d59-correction-compile-2.jsonl", "sha256": "dcad1a629b8fc89e45706df2bd2b04dab815b51ccf4fd4c9cc46dcd44bed5c50" },
+      { "path": "docs/stabilization/resource-journals/d59-correction-tests-1.jsonl", "sha256": "a3f4feffada843546d4537a6748c2cab582482878b24b140f571fcc7966d54fe" }
+    ]
+  },
+  "remaining": [
+    "Fresh independent source review and rerun of focused regressions after the corrected fixtures; do not infer 27/27 from the previous 22/27 run.",
+    "Handler change requires guarded pnpm catalog:tools:md and pnpm docs:tools, then commit regenerated files. Not run after the two failed rounds cap.",
+    "Broader mocked-hook fixture census, integrated relevant tests, and native installed-extension Chrome Reload on a real HTTPS page remain open.",
+    "Previously acknowledged live consumers remain pending: Scrape/use-auto-scrape, Screenshots capture, Highlight live selection, Showcase shell state, and sidepanel App context. URL/domain lookup semantics remain intentional."
+  ]
+}

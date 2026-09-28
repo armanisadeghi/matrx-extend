@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "report_id": "prepare-empty-runtime",
+  "defect_id": "EXT-D-0057",
+  "candidate_commit": "5dea4dd3121ae0af85ef04edbf8e3f4325c7bb47",
+  "source_peer_commit": "c802f81b",
+  "verification_head_before_report": "e5fece0ff129cf474ff01d8e49339b11d859b135",
+  "verdict_a_runtime_scope": {
+    "status": "PARTIAL",
+    "finding": "The real preparePage function rejects empty, null, undefined, and malformed Chrome injection reports in the focused Vitest run. The TypeScript compile fails in the candidate test file, so this candidate is not build-ready. No direct development build or native Prepare interaction was attempted after the compile failure.",
+    "remaining": "Fix the it.each empty-array callback typing, rerun focused tests and compile, then run the direct development build and native Prepare acceptance."
+  },
+  "verdict_b_test_quality": {
+    "status": "REGRESSION_PROVEN_WITH_TYPE_DEFECT",
+    "sut": "preparePage at the chrome.scripting.executeScript result boundary; only executeScript is doubled",
+    "named_break": "The old missing-result fallback resolves to a manufactured zero report rather than rejecting.",
+    "red_proof": "The exact prior fallback from 5dea4dd3^ was planted in page-prep.ts through forcing-function-tests/plant.py. Focused Vitest failed 7 of 9 assertions, including 'refuses a missing page report instead of showing false success', with 'promise resolved ... instead of rejecting'. The plant verdict was RED for the named assertion, and the helper restored identical source bytes.",
+    "green_proof": "With candidate source restored, focused Vitest passed 9 of 9 tests in one file.",
+    "test_defect": "pnpm compile fails TS2345 at src/lib/data-pattern/page-prep.test.ts:9. In it.each, [] is interpreted as zero callback arguments, but the test callback requires one injectionResult argument.",
+    "limits": "The double supplies Chrome results, so these tests do not prove an actual page script ran or that PrepareTab rendered the error. The prior fallback mutation proves the named regression but does not separately mutate every validation rule."
+  },
+  "commands": [
+    {
+      "run_id": "d57-page-prep-red-20260928-01",
+      "command": "python3 .claude/skills/forcing-function-tests/plant.py --file src/lib/data-pattern/page-prep.ts --old-file /Volumes/Samsung2TB/code/.stabilization-scratch/d57-page-prep-current.txt --new-file /Volumes/Samsung2TB/code/.stabilization-scratch/d57-page-prep-fallback.txt --expect red --must-mention 'refuses a missing page report instead of showing false success' --timeout 900 -- node scripts/stabilization-resource.mjs run --run-id d57-page-prep-red-20260928-01 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec vitest run --maxWorkers=1 src/lib/data-pattern/page-prep.test.ts",
+      "result": "expected RED; 7 assertions failed; plant exit 0; source restored identical"
+    },
+    {
+      "run_id": "d57-page-prep-green-20260928-01",
+      "command": "node scripts/stabilization-resource.mjs run --run-id d57-page-prep-green-20260928-01 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec vitest run --maxWorkers=1 src/lib/data-pattern/page-prep.test.ts",
+      "result": "exit 0; 1 file and 9 tests passed"
+    },
+    {
+      "run_id": "d57-page-prep-compile-20260928-01",
+      "command": "node scripts/stabilization-resource.mjs run --run-id d57-page-prep-compile-20260928-01 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm compile",
+      "result": "exit 1; TS2345 in page-prep.test.ts:9"
+    }
+  ],
+  "resource_evidence": {
+    "journals": [
+      "docs/stabilization/resource-journals/d57-page-prep-red-20260928-01.jsonl",
+      "docs/stabilization/resource-journals/d57-page-prep-green-20260928-01.jsonl",
+      "docs/stabilization/resource-journals/d57-page-prep-compile-20260928-01.jsonl"
+    ],
+    "admission": "All three runs were RESOURCE_ADMITTED with pressureLevel 1, available memory at least 12.32 GiB, no refusal reasons, and resourceInvalid false. Red and compile final decisions were refused because their child commands exited 1; neither was an admission refusal. The green final decision was valid."
+  },
+  "restored_hashes": {
+    "page_prep_sha256_before_and_after": "dd3c3d53a289a4fe719e248b15598f95ddde769f0520c4798fe269a097736cd2",
+    "page_prep_test_sha256": "ef1fe84394cbe0e5dd2fd59c0e5a887bb8a8df9dc9ae08a42deb55518f193599"
+  },
+  "artifacthashReleaseTree": null,
+  "artifacthashReleaseTree_reason": "Direct development build and release were not run because compile failed; no build artifact or release tree was validated.",
+  "source": [
+    "src/lib/data-pattern/page-prep.ts",
+    "src/lib/data-pattern/page-prep.test.ts",
+    "docs/stabilization/reports/prepare-empty-report-repair.json",
+    "docs/stabilization/reports/prepare-empty-report-peer.json"
+  ]
+}

@@ -22,6 +22,7 @@ const isJsonContentType = (ct: string | undefined): boolean => !!ct && /json/.te
 
 export function NetworkTab() {
   const {
+    tab,
     capturing,
     discovering,
     discoveryProgress,
@@ -126,7 +127,7 @@ export function NetworkTab() {
             <Button
               onClick={() => void start()}
               className="flex-1 rounded-full"
-              disabled={discovering}
+              disabled={discovering || !tab.pageKey}
             >
               <Circle className="size-3.5 fill-red-500 text-red-500" />
               Start capture
@@ -140,7 +141,7 @@ export function NetworkTab() {
           <Button
             onClick={() => void capturePageLoad()}
             variant="secondary"
-            disabled={capturing || discovering}
+            disabled={capturing || discovering || !tab.pageKey}
             title="Ask to use Chrome debugger, reload this page, and capture requests from document start"
             className="min-w-0"
           >

@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { test } from 'node:test';
 import { openResourceJournal } from './stabilization-resource-journal.mjs';
+import { resourceVerdict } from './stabilization-resource-verdict.mjs';
 
 const repo = resolve(import.meta.dirname, '..');
 const journalPath = (runId) =>
@@ -45,6 +46,7 @@ test('a refused guard launch durably records its exact run and terminal decision
       schema: 1,
       at: events.at(-1).at,
       runId,
+      admitted: false,
       resourceInvalid: false,
       exitCode: 2,
       decision: 'refused',
@@ -73,6 +75,21 @@ test('a refused guard launch durably records its exact run and terminal decision
   } finally {
     await rm(path, { force: true });
   }
+});
+
+test('final verdict separates denied launch, invalid resources, failed child and success', () => {
+  // A TypeScript compile may exit 1 after admission, as d59-compile-2 did.
+  // The wrapper's exit code alone cannot distinguish it from a denied launch.
+  const cases = [
+    [{ admitted: false, resourceInvalid: false, exitCode: 2 }, 'refused'],
+    [{ admitted: false, resourceInvalid: true, exitCode: 3 }, 'refused'],
+    [{ admitted: true, resourceInvalid: true, exitCode: 3, childFinished: true }, 'invalid'],
+    [{ admitted: true, resourceInvalid: false, exitCode: 1, childFinished: true }, 'child_failed'],
+    [{ admitted: true, resourceInvalid: false, exitCode: 0, childFinished: true }, 'valid'],
+    [{ admitted: true, resourceInvalid: false, exitCode: 130, operatorStopped: true }, 'interrupted'],
+    [{ admitted: true, resourceInvalid: false, exitCode: 2 }, 'invalid'],
+  ];
+  for (const [input, expected] of cases) assert.equal(resourceVerdict(input), expected);
 });
 
 test('journal writes only guard fields and refuses overwrite', async () => {
@@ -227,6 +244,7 @@ test('guard exits invalid and leaves no completed journal when close fails', asy
       'stabilization-resource-journal.mjs',
       'stabilization-resource-lease.mjs',
       'stabilization-resource-process.mjs',
+      'stabilization-resource-verdict.mjs',
     ])
       await copyFile(resolve(repo, 'scripts', name), resolve(scripts, name));
     await copyFile(

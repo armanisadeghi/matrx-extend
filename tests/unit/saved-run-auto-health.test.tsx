@@ -3,7 +3,7 @@ import { act, cleanup, renderHook } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  page: { id: 37, url: 'https://electronic.vegas/calendar/' },
+  page: { id: 37, url: 'https://electronic.vegas/calendar/', documentId: 'document-a', pageKey: 'page-a' },
   fetchPatterns: vi.fn(),
   runPattern: vi.fn(),
   bumpRun: vi.fn(),
@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@/hooks/use-active-tab', () => ({
   useActiveTab: () => ({ ...mocks.page }),
+  isCurrentPageIdentity: (key: string) => key === mocks.page.pageKey,
 }));
 vi.mock('@/lib/supabase/queries', () => ({
   fetchPatternsForDomain: mocks.fetchPatterns,

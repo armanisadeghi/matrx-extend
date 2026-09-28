@@ -1,4 +1,5 @@
 import { useAiExtraction } from '@/hooks/use-ai-extraction';
+import { useActiveTab } from '@/hooks/use-active-tab';
 import { usePatternFromData } from '@/hooks/use-pattern-from-data';
 import { useRequestOrganizationId } from '@/hooks/use-request-organization';
 import { mandateKeyOf } from '@/lib/agents/use-agent-row';
@@ -42,6 +43,7 @@ const buildJsonSchema = (fields: SchemaField[]): object => {
 };
 
 export function AiExtractTab() {
+  const tab = useActiveTab();
   const organizationId = useRequestOrganizationId();
   // This surface's default is a DIFFERENT platform default than chat's — the
   // package carries one default row per picker instance and each host surface
@@ -98,7 +100,7 @@ export function AiExtractTab() {
   };
 
   const canRun =
-    organizationId && agentId && description.trim().length > 0 && !running && !schemaProblem;
+    tab.pageKey && organizationId && agentId && description.trim().length > 0 && !running && !schemaProblem;
   const previewDescription =
     typeof previewConfig?.description === 'string' ? previewConfig.description : '';
 
@@ -325,7 +327,7 @@ export function AiExtractTab() {
                         extractedRows: rows,
                       })
                     }
-                    disabled={patternRunning}
+                    disabled={patternRunning || !tab.pageKey}
                     className="rounded-full"
                   >
                     {patternRunning ? <Loader2 className="animate-spin" /> : <Wand2 />}

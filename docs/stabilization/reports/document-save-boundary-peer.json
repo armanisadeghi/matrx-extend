@@ -1,0 +1,17 @@
+{
+  "id": "EXT-D-0059",
+  "review_type": "independent_source_only_peer",
+  "reviewed_artifact": "docs/stabilization/reports/document-save-boundary-correction.json",
+  "verdict_a": {
+    "result": "SOURCE_PASS_NATIVE_PENDING",
+    "finding": "The reported outcome is supported by the current source. DataView captures the selected fields, name, host, route, and page key before awaiting organization resolution; it checks the current save generation and canonical page identity before persistence. A page change advances the generation and resets the new page's Save state. The same-URL test changes documentId/pageKey while retaining URL and asserts no savePattern call after resolving the organization hold.",
+    "limits": "Native same-URL reload, installed extension behavior, and database persistence remain unverified in this lane. The report correctly limits its claims."
+  },
+  "verdict_b": {
+    "result": "PASS_WITH_OPTIONAL_COVERAGE",
+    "finding": "The deferred organization and persistence promises are dependency doubles; DataView remains the real SUT and owns the capture, identity check, save sequencing, UI state, and cleanup under test. Assertions observe the contract boundary: whether persistence occurs and whether B's fields/Save state survive A completion. These guards are causally meaningful for the reported failures; mocks do not make them invalid.",
+    "optional_extra_coverage": "The overlap case resolves A successfully while B is saving. Separate stale-rejection and stale-refresh completions are not exercised, although the catch/success paths use the same generation predicate and finally checks the generation before changing Save state.",
+    "important_findings": []
+  },
+  "runtime": "Not run by this source-only peer, as required. The candidate report records guarded tests and compile as admitted evidence; this reviewer did not independently rerun them."
+}

@@ -18,6 +18,8 @@
  * tile capture throws.
  */
 
+import { assertScreenshotDocument, captureForDocument, type ScreenshotDocument } from './document';
+
 interface PageMetrics {
   scrollX: number;
   scrollY: number;
@@ -33,9 +35,9 @@ const POST_TILE_DELAY_MS = 350;
 const RETRY_DELAY_MS = 600;
 const MAX_TILES = 30;
 
-async function getPageMetrics(tabId: number): Promise<PageMetrics> {
+async function getPageMetrics(tabId: number, documentId: string): Promise<PageMetrics> {
   const [first] = await chrome.scripting.executeScript({
-    target: { tabId },
+    target: { tabId, documentIds: [documentId] },
     func: () => ({
       scrollX: window.scrollX,
       scrollY: window.scrollY,
@@ -53,9 +55,9 @@ async function getPageMetrics(tabId: number): Promise<PageMetrics> {
   return first.result as PageMetrics;
 }
 
-async function setScroll(tabId: number, x: number, y: number): Promise<void> {
+async function setScroll(tabId: number, documentId: string, x: number, y: number): Promise<void> {
   await chrome.scripting.executeScript({
-    target: { tabId },
+    target: { tabId, documentIds: [documentId] },
     func: (xv: number, yv: number) => {
       window.scrollTo({ left: xv, top: yv, behavior: 'instant' as ScrollBehavior });
     },
@@ -78,14 +80,11 @@ export interface FullPageCaptureResult {
   truncated: boolean;
 }
 
-export async function captureFullPage(tab: chrome.tabs.Tab): Promise<FullPageCaptureResult> {
-  if (tab.id == null || tab.windowId == null) {
-    throw new Error('Tab missing id/windowId');
-  }
-  const tabId = tab.id;
-  const winId = tab.windowId;
+export async function captureFullPage(document: ScreenshotDocument): Promise<FullPageCaptureResult> {
+  const { tabId, windowId: winId, documentId } = document;
 
-  const metrics = await getPageMetrics(tabId);
+  await assertScreenshotDocument(document);
+  const metrics = await getPageMetrics(tabId, documentId);
   const {
     scrollX: origX,
     scrollY: origY,
@@ -110,17 +109,18 @@ export async function captureFullPage(tab: chrome.tabs.Tab): Promise<FullPageCap
       // tail tile that overlaps the previous tile awkwardly.
       const targetY =
         i === tileCount - 1 ? Math.max(0, effectiveTotalH - innerHeight) : i * innerHeight;
-      await setScroll(tabId, origX, targetY);
-      await new Promise((r) => setTimeout(r, TILE_SETTLE_MS));
-
-      let dataUrl: string;
-      try {
-        dataUrl = await chrome.tabs.captureVisibleTab(winId, { format: 'png' });
-      } catch {
-        // Almost always the captureVisibleTab rate limit. Wait longer and retry once.
-        await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
-        dataUrl = await chrome.tabs.captureVisibleTab(winId, { format: 'png' });
-      }
+      const dataUrl = await captureForDocument(document, async () => {
+        await setScroll(tabId, documentId, origX, targetY);
+        await new Promise((r) => setTimeout(r, TILE_SETTLE_MS));
+        try {
+          return await chrome.tabs.captureVisibleTab(winId, { format: 'png' });
+        } catch {
+          // Almost always the captureVisibleTab rate limit. Wait longer and retry once.
+          await new Promise((r) => setTimeout(r, RETRY_DELAY_MS));
+          await assertScreenshotDocument(document);
+          return chrome.tabs.captureVisibleTab(winId, { format: 'png' });
+        }
+      });
       const blob = await fetch(dataUrl).then((r) => r.blob());
       const bitmap = await createImageBitmap(blob);
       if (i === 0) firstTileWidth = bitmap.width;
@@ -132,7 +132,7 @@ export async function captureFullPage(tab: chrome.tabs.Tab): Promise<FullPageCap
     }
   } finally {
     try {
-      await setScroll(tabId, origX, origY);
+      await setScroll(tabId, documentId, origX, origY);
     } catch {
       /* best-effort restore */
     }

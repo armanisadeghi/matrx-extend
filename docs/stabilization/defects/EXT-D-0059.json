@@ -1,0 +1,71 @@
+{
+  "id": "EXT-D-0059",
+  "feature_id": "EXT-F-1012",
+  "case_ids": [
+    "EXT-F-1012-T08",
+    "EXT-F-1012-T09"
+  ],
+  "title": "Same-URL reload lacks document identity for page-result invalidation",
+  "surface": "Shared active-tab document identity and live page-derived results",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Run Prepare or Snapshot on a page.",
+    "Reload the same tab at the same URL without closing the side panel.",
+    "Inspect whether the previous document report remains current, or a pending old-document completion appears after reload."
+  ],
+  "expected": "Results and pending completions are scoped to the actual document, not merely the tab ID and URL.",
+  "actual": "Source trace shows useActiveTab lacks document identity and consumers invalidate only tab ID/URL; same-URL reload is not distinguished. Native reproduction remains unverified.",
+  "severity": "S2: old-document results can appear current",
+  "priority": "P1: shared document identity correctness",
+  "state": "in-fix",
+  "evidence": [
+    "docs/stabilization/reports/prepare-source-audit.json",
+    "docs/stabilization/reports/prepare-lifecycle-repair.json",
+    "docs/stabilization/reports/document-identity-diagnosis.json",
+    "docs/stabilization/reports/document-identity-attack.json",
+    "docs/stabilization/reports/document-identity-repair.json",
+    "docs/stabilization/reports/document-identity-partial-peer.json",
+    "docs/stabilization/reports/document-identity-correction.json",
+    "docs/stabilization/reports/document-correction-escalation.json",
+    "docs/stabilization/reports/document-handoff-correction.json",
+    "docs/stabilization/reports/document-handoff-peer.json",
+    "docs/stabilization/reports/document-handoff-restored-runtime.json",
+    "docs/stabilization/reports/document-remaining-census.json",
+    "docs/stabilization/reports/document-save-boundary-correction.json",
+    "docs/stabilization/reports/document-save-boundary-peer.json",
+    "docs/stabilization/reports/scrape-document-correction.json",
+    "docs/stabilization/reports/scrape-document-peer.json",
+    "docs/stabilization/reports/scrape-correction-fresh.json",
+    "docs/stabilization/reports/scrape-correction-peer.json",
+    "docs/stabilization/reports/highlight-identity-audit.json",
+    "docs/stabilization/reports/screenshot-document-correction.json",
+    "docs/stabilization/reports/screenshot-document-peer.json"
+  ],
+  "verification_status": "Screenshot candidate521252fa guarded6tests/compile/catalog/docs pass; independent source/evidence peerd5e2446f supports observable before/after ownership checks, no confirmed changed-path regression. Chrome window capture non-atomic limitation explicit. Region/CDP/native persistence/gallery/D36 not verified. Highlight overlay source gapsb5f93015 remain next; broaderD59 stays in-fix.",
+  "transition_history": [
+    {
+      "at": "2026-09-28T15:30:38.553635+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Sibling census identified document identity gap beyond D58 run ordering."
+    },
+    {
+      "at": "2026-09-28T15:45:17.730626+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source trace confirms id/URL-only keys and identifies existing Chrome top-frame document-ID consumers; controlled/native reproduction still pending. Shared design requires race/consumer review before edits."
+    },
+    {
+      "at": "2026-09-28T15:48:53.864670+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol document_identity_repair assigned shared snapshot and live-consumer migration under independently attacked contract; guarded self-verification required, native pending."
+    }
+  ],
+  "scope_ruling": "Use one shared top-frame identity snapshot; keep URL/domain persisted lookup semantics separate. Include detection, completed/pending rows, auto-extract cache, AI/pattern derivation and capture residue. Explicit recovery for unresolved identity; no null-equals-null page key. Preserve approved network-replay document contract.",
+  "related_feature_ids": [
+    "EXT-F-1007",
+    "EXT-F-1009",
+    "EXT-F-1010"
+  ]
+}

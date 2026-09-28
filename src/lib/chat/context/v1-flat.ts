@@ -7,6 +7,8 @@
  */
 
 import { log } from '@/lib/debug/log';
+import { getActiveTabIdentitySnapshot, isCurrentPageIdentity } from '@/hooks/use-active-tab';
+import { useScrapeStore } from '@/state/scrape';
 import { pageSourceFlat, pageSourceStatus } from './page-source';
 import { probeActivePage } from './probe';
 import type { ContextBuildInputs } from './types';
@@ -112,9 +114,15 @@ export async function buildContextV1Flat(
   // ── Scrape (manual user-driven capture takes priority over auto) ──────────
   const activeUrl = (ctx.url as string | null | undefined) ?? null;
   const manualScrape =
-    inputs.scrape && activeUrl && inputs.scrape.url === activeUrl ? inputs.scrape : null;
+    inputs.scrape && activeUrl && inputs.scrape.url === activeUrl &&
+    inputs.scrape === useScrapeStore.getState().current &&
+    isCurrentPageIdentity(useScrapeStore.getState().pageKey) &&
+    getActiveTabIdentitySnapshot().id === tabId
+      ? inputs.scrape : null;
   const autoScrape =
-    inputs.autoScrape && activeUrl && inputs.autoScrape.url === activeUrl
+    inputs.autoScrape && activeUrl && inputs.autoScrape.url === activeUrl &&
+    isCurrentPageIdentity(inputs.autoScrape.pageKey ?? null) &&
+    getActiveTabIdentitySnapshot().id === tabId
       ? inputs.autoScrape
       : null;
   const scrape = manualScrape ?? autoScrape?.soup ?? null;

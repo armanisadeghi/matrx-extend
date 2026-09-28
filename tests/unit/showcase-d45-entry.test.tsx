@@ -14,7 +14,10 @@ vi.mock('@/hooks/use-active-tab', () => ({
     id: activePage.id,
     url: activePage.url,
     title: 'Vegas EDM Event Calendar',
+    documentId: 'document-a',
+    pageKey: 'document-a',
   }),
+  isCurrentPageIdentity: (key: string) => key === 'document-a',
 }));
 vi.mock('@/lib/storage/zustand-adapter', () => ({
   chromeLocalStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },
@@ -100,6 +103,7 @@ beforeEach(() => {
   useShowcaseTabStore.getState().offerListRecommendation({
     tabId: 77,
     url: activePage.url,
+    pageKey: 'document-a',
     listRoot: '#wideeventsList',
     itemSelector: 'div.wideeventwrapper',
   });

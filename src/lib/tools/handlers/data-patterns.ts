@@ -233,10 +233,29 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
       if (pattern.kind === 'network_capture' && !prepared) {
         return { ok: false, reason: 'Network replay requires the saved-run approval dispatcher.' };
       }
+      // Ordinary DOM and framework runs must start on a proven top-frame
+      // document. Network replay intentionally owns its own reload contract.
+      let documentId: string | null = null;
+      if (pattern.kind !== 'network_capture') {
+        try {
+          const frame = await chrome.webNavigation.getFrame({ tabId, frameId: 0 });
+          if (!frame?.documentId || frame.errorOccurred || frame.url !== tab.url) {
+            return { ok: false, reason: 'The assigned page identity is unavailable. Reload it and run the pattern again.', retryable: true };
+          }
+          documentId = frame.documentId;
+        } catch {
+          return { ok: false, reason: 'Could not verify the assigned page. Reload it and run the pattern again.', retryable: true };
+        }
+      }
       const pageIsCurrent = async () => {
         try {
           const current = await chrome.tabs.get(tabId);
-          return current.url === tab.url;
+          if (current.url !== tab.url) return false;
+          if (documentId) {
+            const frame = await chrome.webNavigation.getFrame({ tabId, frameId: 0 });
+            return frame?.documentId === documentId && !frame.errorOccurred;
+          }
+          return true;
         } catch {
           return false;
         }
@@ -255,6 +274,7 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
         const rows = await runSavedPattern(pattern, tabId, {
           onProgress: (note) => ctx.reportProgress?.(note),
           initiation: ctx.localInvocation ? 'user' : 'auto',
+          ...(documentId && { documentId }),
           ...(prepared && {
             captureApproved: true,
             signal: preparedSignals.get(ctx)!,

@@ -5,6 +5,8 @@ import { create } from 'zustand';
 
 interface ScrapeState {
   current: SoupResult | null;
+  /** Originating top-frame document, separate from historical URL lookup. */
+  pageKey: string | null;
   /**
    * The capture exactly as it came off the page, before any local edit. Save
    * sends THIS as the Source's original (S3); the edited `current` supplies
@@ -41,7 +43,7 @@ interface ScrapeState {
     lastResult: DiagnoseResult | null;
     draftNote: string;
   };
-  setCurrent: (s: SoupResult | null) => void;
+  setCurrent: (s: SoupResult | null, pageKey?: string | null) => void;
   setLoading: (b: boolean) => void;
   setError: (s: CaptureError | null) => void;
   setAlreadyCaptured: (s: string | null) => void;
@@ -69,6 +71,7 @@ const linkKey = (href: string, text: string) => `${href}|${text}`;
 
 export const useScrapeStore = create<ScrapeState>((set) => ({
   current: null,
+  pageKey: null,
   original: null,
   articleEdited: false,
   loading: false,
@@ -81,8 +84,8 @@ export const useScrapeStore = create<ScrapeState>((set) => ({
     lastResult: null,
     draftNote: '',
   },
-  setCurrent: (current) =>
-    set({ current, original: current, articleEdited: false, error: null, edited: false }),
+  setCurrent: (current, pageKey = null) =>
+    set({ current, pageKey: current ? pageKey : null, original: current, articleEdited: false, error: null, edited: false }),
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error, loading: false }),
   setAlreadyCaptured: (alreadyCapturedAt) => set({ alreadyCapturedAt }),

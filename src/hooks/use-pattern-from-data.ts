@@ -1,4 +1,4 @@
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { type AgentStartRequest, mandateExecutePath } from '@/lib/api/routes/ai';
 import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
 import { pageCaptureOfferedValues } from '@/lib/data-pattern/page-capture-offer';
@@ -139,6 +139,9 @@ export function usePatternFromData() {
   const runIdRef = useRef<string | null>(null);
   const accumRef = useRef('');
   const tabIdRef = useRef<number | null>(null);
+  const documentIdRef = useRef<string | null>(null);
+  const runPageKeyRef = useRef<string | null>(null);
+  const [resultPageKey, setResultPageKey] = useState<string | null>(null);
   // Stall watchdog (mirrors useAiExtraction): without it, a stream dying
   // with no terminal done/error chunk left "Generate pattern" spinning
   // forever with no recovery affordance.
@@ -160,14 +163,13 @@ export function usePatternFromData() {
   // and match NOTHING live (audit K3). Probe before declaring success.
   const validateAndCommit = useCallback(async (parsed: PatternFromDataResult) => {
     const tabId = tabIdRef.current;
-    if (!tabId) {
-      setResult(parsed); // can't validate without the tab — degrade gracefully
+    if (!tabId || !isCurrentPageIdentity(runPageKeyRef.current)) {
       setRunning(false);
       return;
     }
     try {
       const r = await chrome.scripting.executeScript({
-        target: { tabId },
+        target: { tabId, documentIds: [documentIdRef.current!] },
         func: probeFirstRowInPage,
         args: [parsed.config],
       });
@@ -186,8 +188,10 @@ export function usePatternFromData() {
         );
         return;
       }
+      if (!isCurrentPageIdentity(runPageKeyRef.current)) return;
       setLiveProbe(probe);
       setResult(parsed);
+      setResultPageKey(runPageKeyRef.current);
     } catch (e) {
       // Probe failure (restricted page, navigation) — surface, don't bless.
       setError(
@@ -200,7 +204,7 @@ export function usePatternFromData() {
 
   useEffect(() => {
     return on<StreamChunk, { ack: true }>(CHANNELS.STREAM_CHUNK, (chunk) => {
-      if (chunk.runId !== runIdRef.current) return { ack: true };
+      if (chunk.runId !== runIdRef.current || !isCurrentPageIdentity(runPageKeyRef.current)) return { ack: true };
       watchdogRef.current?.touch();
       if (chunk.type === 'text' && chunk.payload.content) {
         accumRef.current += chunk.payload.content;
@@ -236,8 +240,8 @@ export function usePatternFromData() {
 
   const convert = useCallback(
     async (input: ConvertInput): Promise<void> => {
-      if (!tab.id) {
-        setError('No active tab.');
+      if (!tab.id || !tab.documentId || !tab.pageKey) {
+        setError(tab.identityError ?? 'Page identity is unavailable. Reload the page and retry.');
         return;
       }
       if (!input.mandateKey) {
@@ -256,15 +260,18 @@ export function usePatternFromData() {
       setRawResponse('');
       accumRef.current = '';
       tabIdRef.current = tab.id;
+      documentIdRef.current = tab.documentId;
+      runPageKeyRef.current = tab.pageKey;
 
       // Capture 1-3 sample HTML cards from the page.
       let sampleHtml: string[] = [];
       try {
         const r = await chrome.scripting.executeScript({
-          target: { tabId: tab.id },
+          target: { tabId: tab.id, documentIds: [tab.documentId] },
           func: captureSampleHtmlInPage,
         });
         sampleHtml = (r?.[0]?.result as string[] | undefined) ?? [];
+        if (!isCurrentPageIdentity(runPageKeyRef.current)) return;
       } catch (e) {
         setError(`Could not capture sample HTML: ${e instanceof Error ? e.message : String(e)}`);
         setRunning(false);
@@ -323,7 +330,7 @@ export function usePatternFromData() {
         runIdRef.current = null;
       }
     },
-    [tab.id, tab.url, tab.title],
+    [tab.id, tab.url, tab.title, tab.documentId, tab.pageKey],
   );
 
   const reset = useCallback(() => {
@@ -333,7 +340,23 @@ export function usePatternFromData() {
     setRawResponse('');
   }, []);
 
-  return { result, liveProbe, running, error, rawResponse, convert, reset };
+  useEffect(() => {
+    const runId = runIdRef.current;
+    runIdRef.current = null;
+    runPageKeyRef.current = null;
+    documentIdRef.current = null;
+    watchdogRef.current?.stop();
+    if (runId) void send(CHANNELS.STREAM_CANCEL, { runId }).catch(() => {});
+    setResult(null);
+    setResultPageKey(null);
+    setLiveProbe(null);
+    setRawResponse('');
+    setRunning(false);
+    setError(null);
+  }, [tab.pageKey]);
+
+  const resultIsCurrent = Boolean(tab.pageKey) && resultPageKey === tab.pageKey;
+  return { result: resultIsCurrent ? result : null, liveProbe: resultIsCurrent ? liveProbe : null, running, error, rawResponse: resultIsCurrent ? rawResponse : '', convert, reset };
 }
 
 /**

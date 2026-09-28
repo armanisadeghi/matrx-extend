@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-document-peer",
+  "reviewed_commit": "521252fa196787de94fdf8924f5ec91cd2c48983",
+  "role": "independent source and evidence peer; no product edits or runtime execution",
+  "A_user_outcome": {
+    "verdict": "SOURCE_DIRECTION_SUPPORTED_NATIVE_OUTCOME_UNVERIFIED",
+    "supported": [
+      "The Screenshots button carries its clicked tab ID and top-frame document ID into take_screenshot; the handler rejects a different assigned tab/window before capture.",
+      "Visible, region, and full-page window captures check the active tab and original document before and after each capture; changed documents cannot reach processing or persistence when the change remains observable at either check.",
+      "Full-page scroll scripts target the initiating document ID and attempt to restore its original scroll in finally after tile failure. The save callers use the captured URL/title, while the gallery remains keyed by canonical URL and explicitly describes history."
+    ],
+    "limits": [
+      "Chrome captureVisibleTab returns window pixels without an atomic tab/document identity. A switch away and back wholly between checks can still escape detection; source cannot prove absolute image ownership.",
+      "The agent and manual tool paths read the document when the handler begins, while only the Screenshots button carries a document read at click time. This supports capture-time ownership but does not prove turn-start document ownership if navigation occurs before a queued tool call starts.",
+      "No native same-URL reload, wrong-tab, persistence-row, historical gallery, full-page failure, or D36 acceptance run is evidenced by this commit."
+    ],
+    "material_source_regression": "None confirmed in the changed paths under the observable before/after document boundary."
+  },
+  "B_engineering_quality": {
+    "verdict": "FOCUSED_SOURCE_AND_UNIT_EVIDENCE_PASS_WITH_ACCEPTANCE_GAP",
+    "evidence": [
+      "The five SHA-256 values listed in screenshot-document-correction.json match the checked-in resource journals exactly; all five journals show resource admission and terminal decisions.",
+      "The green test journal reports exit 0; the checked-in tests cover document-boundary rejection, the actual take_screenshot.run visible path, and the full-page restore call on a simulated reload.",
+      "The red journal reports exit 1, but the recorded red was a naive shared-boundary helper test, not a replay of the pre-fix take_screenshot handler. It is narrow regression evidence and should not be called a historical handler reproduction.",
+      "The compile, catalog, and docs journals each report terminal valid exit 0; their journal records alone do not contain command stdout or establish native behavior."
+    ],
+    "coverage_gaps": [
+      "No focused test calls screenshot_region or cdp_full_page_screenshot through a changing document, and no test verifies successful saved metadata or gallery behavior.",
+      "The full-page test verifies an attempted document-targeted restore call after reload; it cannot prove restoration after the original document has been destroyed.",
+      "D36 remains fixed in source with native retest outstanding; this change does not supply that acceptance evidence."
+    ]
+  },
+  "disposition": "Keep EXT-D-0059 source correction as reviewed but open for native acceptance and remaining census ranks. Preserve EXT-D-0036's separate native retest requirement."
+}

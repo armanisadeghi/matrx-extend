@@ -822,6 +822,10 @@ Every entry follows this shape:
 - **Expected:** 1) The button reads Saved and a link to the Source appears; it opens the web app's document viewer (`/knowledge/viewer/<id>`) until the Source screen ships. If you edited the article before saving, the saved Source carries your edited text; the original page data is kept unedited. 3) The card appears within seconds, with member A's name when readable (otherwise an honest generic member label); Details shows image/link counts from the original; after an edit the Article pane says it shows your edited version and the original is kept. 4) Member B sees the same Source and an explicit warning that deleting it removes it for the workspace. 5) Workspace B does not claim the page is saved there: Scrape's local button returns to Save, the A Source link disappears, the capture and its edits remain, and an A Save finishing late cannot restore the claim or remove B's retry card. Switching back to A may show A's Source again. With no workspace selected, recognition says it could not check and makes no cross-workspace claim. 6) The amber "Unsaved — retry" card appears with the page title and a sentence; Re-capture still asks before discarding edits; closing and reopening the side panel still shows the card; turning the network back on and pressing Retry save removes the card and the page appears in Saved captures.
 
 ### Scrape — Diagnose with AI (element picker)
+
+- **Document transition:** In the rebuilt unpacked extension on an ordinary HTTPS page, capture A, then reload the same URL to B. While identity is resolving, Scrape shows a page-check remedy and does not offer capture/save on an unverified document. A's retained draft is identified as an earlier page and is not shown as B's article or offered for Save. Capture B and confirm its article and Save action refer to B. Repeat with Scroll & capture and with Diagnose's picker left open across the reload; an A picker result or late A capture must not appear as B's result. Automatic capture used by chat must refresh for B even when A was captured less than 30 seconds ago. The Source lookup for that URL remains available as saved history.
+- **Diagnose copy after reload:** Capture A, reload the same URL to document B, then pick an element in B without recapturing. Copy for AI must include B's picked element and explicitly say no current markdown was captured; it must contain neither A's markdown nor A's extractor. Capture B and repeat: the copy must include B's markdown comparison and extractor. `tests/unit/diagnose-document-copy.test.tsx` exercises the real Diagnose card and bundle formatter for both states.
+- **Overlapping pre-send refresh:** Start a deep capture on A, reload to B, and start B's deep capture before A finishes. A's late failure or success must leave B marked in flight with no A error or A soup. B's completion alone clears in-flight and admits B's soup. `tests/unit/refresh-page-context-ownership.test.ts` drives both capture completions in either order.
 - **What it does:** After a Scrape capture, lets you click an on-page
   element that's missing from (or junk in) the scrape, then copies a
   pre-formatted bundle of selector chain, byte-budgeted HTML, page
@@ -993,6 +997,7 @@ Every entry follows this shape:
 - **Owned native control acceptance (EXT-F-1009):** `node tests/browser/screenshot-capture-acceptance.mjs` uses one fresh localhost fixture and one real admin Visible capture. After preview and authenticated row proof, it clicks warm Refresh and checks the exact row against a new real read (T01); clicks both the thumbnail and Open in Files icon and checks each newly opened tab against the exact canonical Files URL, then closes only those new tabs (T04); clicks Copy under the original browser permissions, temporarily grants clipboard read only to observe the exact durable URL, and restores that permission (T05); cancels Delete, refreshes and verifies the exact row remains, then confirms Delete and verifies it disappeared (T06). It requires the approved organization and provenance receipt; the native browser gate must admit the run before execution. The report contains only fixed booleans/counts, never the file ID, Files URL, clipboard text, or credentials.
 - **Full-page native acceptance (EXT-F-1009-T03):** `node tests/browser/screenshot-full-page-acceptance.mjs` uses a fresh, three-viewport Harbor Dental localhost page. It requires the approved organization and verified local dev build, proves an empty real gallery read before capture, clicks **Full page**, checks the persisted row's tall dimensions and the loaded gallery image's distinct top, middle, and bottom pixels, verifies original scroll restoration, and deletes only the owned row after a real zero-row read. A private `0600` recovery sidecar retains the exact fixture and row identity if cleanup cannot be verified; it is removed after verified cleanup. The private `0600` report marks unsupported-page, persistence-failure, and tile-cap branches **unverified** until separate guarded live scenarios exercise them. This runner must pass the native browser gate before execution; a syntax check alone does not verify the case.
 - **What it does:** Per-page screenshot history. Lists every screenshot ever taken of the active page (canonical URL match), regardless of whether the agent or the user triggered it. The two buttons at the bottom — **Visible** and **Full page** — both call the same `take_screenshot` handler the agent uses (with `mode: 'visible' | 'full_page'`), so user and agent captures share one persistence path (cld_files + `wbx_screenshot` index row).
+- **Document ownership regression:** On a regular page, begin a visible, region, or full-page capture and reload the same URL or switch the active tab while Chrome is capturing. The request must fail visibly if the document or active tab changes before the image is accepted; no screenshot row should be saved for that failed attempt. The privileged CDP screenshot also rejects a same-URL document replacement, while allowing a tab-targeted background capture. A successful capture that finishes saving after later navigation states that it belongs to the earlier page. The gallery remains URL-based history, with earlier visits clearly labeled as such. Chrome's `captureVisibleTab` is window-scoped and cannot provide an atomic tab/document snapshot; the before/after checks detect observable changes, while a switch away and back entirely inside one Chrome capture call cannot be certified by this API.
 - **Where to test:** Side panel - **Screenshots** tab (camera icon).
 - **Prereq:** apply `migrations/2026_05_08_wbx_screenshot.sql` against the Matrx Supabase project.
 - **Steps:**
@@ -1192,6 +1197,20 @@ Every entry follows this shape:
 - **Steps:** Run on a cookie-bannered site; then navigate to another page.
 - **Expected:** Report shows counts; report clears on navigation (a page-A
   report never displays on page B).
+- **Missing-result regression (EXT-D-0057):** On an owned ordinary page, make
+  the Prepare script injection return no frame result, then a malformed report
+  (for example, a missing `duration_ms`). Click Prepare for each condition.
+  The panel must show a visible error that says to reload and retry, with no
+  green “Prepared” report. Restore normal injection and run again with known
+  banner/load-more/scroll effects; the actual counts and duration must appear.
+- **Current-attempt lifecycle (EXT-D-0058):** Prepare once successfully, then
+  make a retry's script injection fail. The old green report clears as soon as
+  the retry starts; only the failure appears afterward. Start a delayed Prepare
+  on page A, navigate the active tab to page B, then let A finish successfully
+  or fail. B must show neither A's report nor A's error, and must allow a fresh
+  Prepare. Resetting or closing the Prepare tab while a run is pending must
+  leave no stale report when it returns. Also retry normally after a failure:
+  the new report must replace the error and show the current page's counts.
 
 ### Showcase — Snapshot / JSON-LD / Microdata tabs
 - **What it does:** One-shot metadata grab / typed JSON-LD blocks / Schema.org
@@ -1818,8 +1837,12 @@ Every entry follows this shape:
   5. Click the link icon on a row (or **Attach all to chat**), open **Chat** —
      an amber "N highlights attached" chip shows above the composer. Send a
      message; the agent receives a `highlights` context key.
-  6. **Data ( N )** button → switches to Data tab with element highlights
-     pre-loaded as picker fields → Save pattern works.
+  6. **Data ( N )** button → verifies the element selectors in this exact page
+     document, then switches to Data with those fields pre-loaded. **Save pattern**
+     persists the verified fields. Reload the same URL before sending again:
+     a stale or missing selector shows a remedy instead of opening an enabled
+     Save button. An older handoff arriving after navigation is rejected in Data
+     with instructions to resend it or pick fields on the current page.
   7. **Scrape ( N )** button → switches to Scrape tab, shows a highlighted-
      regions banner with combined text + copy.
   8. Tools tab → run `list_highlights` with `{"scope":"page"}` → returns the
@@ -1828,6 +1851,14 @@ Every entry follows this shape:
   scoped to the user). The pill's count tracks captures; trash clears the
   page's highlights; ✕ stops the overlay.
 - **Edge cases worth poking:**
+  - Start picking Data fields in document A, navigate to document B at the same
+    URL, then let A's injection fail after starting B's picker. B still accepts
+    its own field result; a failure of B itself shows a retry message.
+  - In Data, choose **Save pattern**, then replace document A with B at the same
+    URL while organization selection is pending. A's fields are not saved and
+    Data explains that the page changed. If A's write was already in flight,
+    B can start its own save; A's late result must not clear B's fields or
+    finish B's Save button.
   - chrome:// / Web Store pages: overlay injection fails gracefully (button
     no-ops, no crash).
   - Side panel closed while capturing: the paint stays but the row isn't saved
@@ -3351,3 +3382,11 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - **Where to test:** Installed development extension in Chrome on the real public HN Search OpenAI route; Showcase → Network and Patterns. Keep DevTools closed for the lifecycle check.
 - **Steps:** Click Capture page load and deny once; verify there is no reload or debugger attachment. Click again and allow. Find the settled OpenAI request in the captured list, select its response, inspect its rows and save with exact URL and body matching. Leave Showcase, reopen Patterns, run the saved recipe twice with per-run approval, and compare returned titles and scores with the public page. Stop during a separate capture and change tabs during approval in another attempt.
 - **Expected:** The discovery approval says it will reload and capture the page's Network responses. The initial request appears in the picker even when it finishes before an after-load tap could be installed. Each saved replay captures the same exact request identity and returns matching rows; a semantically different request body is rejected. Denial, Stop, disconnect and tab change leave no owned debugger attachment or silent recording state. A stopped or failed capture names a remedy.
+
+### Live page results follow the top-frame document (EXT-D-0059)
+
+- **What it does:** Live page results belong to the Chrome top-frame document that produced them. A same-URL reload withholds prior results during navigation, then permits fresh results on the committed document. URL and domain pattern lookups remain available.
+- **Where to test:** Installed development extension in Chrome on a real public HTTPS page, with Showcase Prepare, Snapshot, Doctor, Framework, Recipes, List Pattern, Patterns, Network, and Structured data open in turn.
+- **Steps:** Produce visible results, use Chrome Reload at the same URL, then inspect previews and Save controls before and after a fresh run. Repeat while a prior extraction is pending. Navigate within one document with the History API, change only the title, commit a subframe navigation, reload a background tab and activate it, and try a restricted page where Chrome cannot resolve a document ID.
+- **Expected:** Old previews, recommendations, capture events, and auto-extracted rows are unavailable on the new document; late success or failure from the old document does not restore them. A fresh run on the new document works. Title and subframe churn preserve current results; a same-document URL change invalidates route-specific results. When identity cannot be resolved, page-result actions explain the problem and offer Retry. URL/domain history and saved-pattern lists retain their established lookup behavior. Network page-load discovery retains its own approved replay contract.
+- **Producer identity check:** Start ordinary Network capture on document A, reload at the same URL, start B, then deliver a queued A response. Only B's response appears. Start Data field picking on A, reload, start picking on B, then deliver A's Done result; only B's selectors may be saved. A framework tree read or extraction clicked on A must target A's Chrome document ID and fail visibly if B replaced it before injection. A page whose document cannot be resolved shows the shared reason and Retry near page-result controls; the controls do not act on an unproven page.

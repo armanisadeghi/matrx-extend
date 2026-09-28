@@ -125,6 +125,7 @@ test('guard refuses a live old runner and journals bounded process identity', as
     'stabilization-resource-lease.mjs',
     'stabilization-resource-journal.mjs',
     'stabilization-resource-process.mjs',
+    'stabilization-resource-verdict.mjs',
   ])
     await copyFile(join(source, 'scripts', name), join(scripts, name));
   await copyFile(

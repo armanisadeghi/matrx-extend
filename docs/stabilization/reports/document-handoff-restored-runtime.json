@@ -1,0 +1,30 @@
+{
+  "id": "EXT-D-0059",
+  "verifier": "independent bounded post-restoration runtime peer",
+  "target_commit": "4926e1c1a391d9ebaf6003d6869f2b4caa7c7fc8",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "outcome": "The corrected Highlight-to-Data handoff carries tab, document, and page provenance after selector verification in the exact Chrome document; Data rejects a stale handoff. Data picker continuations and errors are scoped to the originating session. The focused component guard passed freshly after mutation restoration, but native installed-extension behavior and the full D59 surface remain unverified.",
+    "source_finding": "DataView.handleSavePattern checks pickedPageKey and pageKey before awaiting requireRequestOrganizationId() inside the savePattern payload. A same-URL reload or navigation while organization resolution is pending can change the current document before savePattern executes; there is no page identity recheck at that write boundary. This is an open persistence race, so D59 must remain in fix."
+  },
+  "verdict_b": {
+    "status": "PARTIAL",
+    "quality": "The focused test exercises connected HighlightView and DataView behavior, stale handoff rejection, delayed obsolete-picker rejection, and a visible current-picker retry remedy. It mocks Chrome document identity, script execution, and persistence, so its green result does not establish native document targeting or a real saved database row. Prior mutation evidence changed two behaviors together and does not prove each independently."
+  },
+  "fresh_verification": {
+    "status": "PASSED_GUARDED_COMPONENT_RUN",
+    "run_id": "d59-restored-peer-20260928-1",
+    "command": "node scripts/stabilization-resource.mjs run --run-id d59-restored-peer-20260928-1 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec vitest run --maxWorkers=1 tests/unit/saved-run-data-view-health.test.tsx",
+    "profile_volume": "/dev/disk7s1; 1.6 TiB available by df before the run",
+    "resource_result": "RESOURCE_ADMITTED; childExitCode 0; resourceInvalid false; final decision valid",
+    "test_result": "1 file passed; 15 tests passed; 0 failed",
+    "journal": "docs/stabilization/resource-journals/d59-restored-peer-20260928-1.jsonl",
+    "journal_sha256": "b6abe3198fb93b16d0231964d5879d954b17f2f446eec71b1a2b70d151179f90",
+    "source_restoration": "No working-tree diff in DataView, HighlightView, highlight store, or the focused test file before or after this run."
+  },
+  "remaining_limits": [
+    "Fix and force a regression for identity changing during awaited organization resolution before savePattern.",
+    "Native same-URL reload, real Chrome event ordering, selector mismatch and injection rejection, and database persistence are unverified here.",
+    "No build, broad D59 census, UI acceptance, release, or deployment was attempted in this bounded lane."
+  ]
+}

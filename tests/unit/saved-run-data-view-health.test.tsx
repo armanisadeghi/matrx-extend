@@ -1,4 +1,5 @@
 import type { ExtractionPattern } from '@/lib/supabase/queries';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useLayoutEffect } from 'react';
@@ -6,14 +7,21 @@ import { afterEach, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   copied: '',
-  page: { id: 37, url: 'https://electronic.vegas/calendar/', title: 'Vegas events' },
+  page: { id: 37, url: 'https://electronic.vegas/calendar/', title: 'Vegas events', documentId: 'document-a', pageKey: 'page-a' },
   fetchPatterns: vi.fn(),
   runSaved: vi.fn(),
   bumpRun: vi.fn(),
+  savePattern: vi.fn(),
+  pickerListeners: new Map<string, (payload: unknown) => unknown>(),
+  retryIdentity: vi.fn(),
+  listHighlights: vi.fn(),
+  requireOrg: vi.fn(),
 }));
 
 vi.mock('@/hooks/use-active-tab', () => ({
   useActiveTab: () => ({ ...mocks.page }),
+  isCurrentPageIdentity: (key: string) => key === mocks.page.pageKey,
+  refreshActiveTabIdentity: mocks.retryIdentity,
 }));
 vi.mock('@/hooks/use-auth', () => ({
   useAuth: () => ({ user: { id: 'user-1' }, status: 'signed-in', signIn: vi.fn() }),
@@ -21,14 +29,16 @@ vi.mock('@/hooks/use-auth', () => ({
 vi.mock('@/lib/supabase/queries', () => ({
   fetchPatternsForDomain: mocks.fetchPatterns,
   bumpPatternRun: mocks.bumpRun,
-  savePattern: vi.fn(),
+  savePattern: mocks.savePattern,
 }));
 vi.mock('@/lib/data-pattern/run-interactive', () => ({
   runSavedPattern: mocks.runSaved,
   NetworkNoMatchError: class NetworkNoMatchError extends Error {},
 }));
-vi.mock('@/lib/messaging/native', () => ({ on: () => () => {}, send: vi.fn() }));
-vi.mock('@/lib/api/routes/auth', () => ({ requireRequestOrganizationId: vi.fn() }));
+vi.mock('@/lib/messaging/native', () => ({ on: (kind: string, callback: (payload: unknown) => unknown) => { mocks.pickerListeners.set(kind, callback); return () => { mocks.pickerListeners.delete(kind); }; }, send: vi.fn() }));
+vi.mock('@/lib/api/routes/auth', () => ({ requireRequestOrganizationId: mocks.requireOrg }));
+vi.mock('@/lib/highlights/queries', () => ({ listMyHighlights: mocks.listHighlights, listHighlightsForUrl: vi.fn(), deleteHighlight: vi.fn() }));
+vi.mock('@/lib/highlights/control', () => ({ startHighlighter: vi.fn(), stopHighlighter: vi.fn(), setHighlighterMode: vi.fn() }));
 vi.mock('@/components/CopyMenu', () => ({
   CopyMenu: ({
     title,
@@ -56,10 +66,20 @@ vi.mock('lucide-react', () => ({
   Save: () => null,
   XCircle: () => null,
   Zap: () => null,
+  Database: () => null,
+  Highlighter: () => null,
+  Link2: () => null,
+  MousePointerSquareDashed: () => null,
+  ScanLine: () => null,
+  Square: () => null,
+  Trash2: () => null,
+  Type: () => null,
 }));
 
 import { DataView } from '@/features/data/DataView';
+import { HighlightView } from '@/features/highlights/HighlightView';
 import { useAutoExtractStore } from '@/state/auto-extract';
+import { useHighlightStore } from '@/state/highlights';
 
 const pattern = {
   id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
@@ -81,11 +101,18 @@ const pattern = {
 
 afterEach(() => {
   cleanup();
-  mocks.page = { id: 37, url: 'https://electronic.vegas/calendar/', title: 'Vegas events' };
+  mocks.page = { id: 37, url: 'https://electronic.vegas/calendar/', title: 'Vegas events', documentId: 'document-a', pageKey: 'page-a' };
   mocks.copied = '';
   vi.clearAllMocks();
   mocks.bumpRun.mockReset();
+  mocks.savePattern.mockReset();
+  mocks.retryIdentity.mockReset();
+  mocks.requireOrg.mockReset();
+  mocks.requireOrg.mockResolvedValue('organization-1');
+  mocks.pickerListeners.clear();
+  vi.unstubAllGlobals();
   useAutoExtractStore.setState({ records: new Map() });
+  useHighlightStore.setState({ items: [], dataHandoff: null });
 });
 
 it('shows DataView no-match guidance without writing ok health for zero rows', async () => {
@@ -147,10 +174,11 @@ it('shows the auto-extract history warning alongside its extracted rows', async 
   await act(async () => {
     useAutoExtractStore
       .getState()
-      .setRecord(`37|${pattern.id}|https://electronic.vegas/calendar/`, {
+      .setRecord(`page-a|${pattern.id}`, {
         pattern,
         url: 'https://electronic.vegas/calendar/',
         tabId: 37,
+        pageKey: 'page-a',
         rows: [{ title: 'Friday night concert' }],
         status: 'ok',
         note: 'Saved run history could not be updated: Database unavailable',
@@ -162,6 +190,158 @@ it('shows the auto-extract history warning alongside its extracted rows', async 
     await screen.findByText(/saved run history could not be updated: Database unavailable/i),
   ).toBeTruthy();
   expect(screen.getByText(/Friday night concert/)).toBeTruthy();
+});
+
+it('rejects document A picker fields after document B starts a new session on the same URL', async () => {
+  mocks.fetchPatterns.mockResolvedValue([]);
+  mocks.savePattern.mockResolvedValue(pattern);
+  const sessions: string[] = [];
+  vi.stubGlobal('chrome', {
+    scripting: { executeScript: vi.fn(async ({ args }: { args?: unknown[] }) => {
+      if (typeof args?.[0] === 'string') sessions.push(args[0]);
+      return [];
+    }) },
+  });
+  const user = userEvent.setup();
+  const view = render(<DataView />);
+  await user.click(screen.getByRole('button', { name: /pick fields on this page/i }));
+  const sessionA = sessions[0];
+  expect(sessionA).toBeTruthy();
+  await act(async () => {
+    mocks.page = { ...mocks.page, documentId: 'document-b', pageKey: 'page-b' };
+    view.rerender(<DataView />);
+  });
+  await user.click(screen.getByRole('button', { name: /pick fields on this page/i }));
+  const sessionB = sessions[1];
+  expect(sessionB).toBeTruthy();
+  expect(sessionB).not.toBe(sessionA);
+  const emit = mocks.pickerListeners.get(CHANNELS.DATA_PICKER_RESULT);
+  if (!emit) throw new Error('Data picker result listener was not installed');
+  act(() => { emit({ tab_id: 37, document_id: 'document-a', session_id: sessionA, fields: [{ name: 'old', selector: '#old' }] }); });
+  expect(screen.queryByRole('button', { name: /save pattern/i })).toBeNull();
+  act(() => { emit({ tab_id: 37, document_id: 'document-b', session_id: sessionB, fields: [{ name: 'current', selector: '#current' }] }); });
+  await user.click(screen.getByRole('button', { name: /save pattern/i }));
+  expect(mocks.savePattern).toHaveBeenCalledOnce();
+  expect(mocks.savePattern.mock.calls[0]?.[0]).toMatchObject({ fields: [{ name: 'current', selector: '#current' }] });
+});
+
+it('saves a Highlight-to-Data handoff only after its selectors are verified in the exact current document', async () => {
+  mocks.fetchPatterns.mockResolvedValue([]);
+  mocks.savePattern.mockResolvedValue(pattern);
+  mocks.listHighlights.mockResolvedValue([{
+    id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', created_by: null, conversation_id: null,
+    mode: 'element', url: mocks.page.url, domain: 'electronic.vegas', page_title: 'Vegas events',
+    color: 'yellow', text: 'Event title', anchor: { selector: '#event-title' },
+    created_at: '', updated_at: '',
+  }]);
+  const injection = vi.fn(async ({ target }: { target: { documentIds: string[] } }) => {
+    expect(target.documentIds).toEqual(['document-a']);
+    return [{ result: [true] }];
+  });
+  vi.stubGlobal('chrome', { scripting: { executeScript: injection } });
+  const highlight = render(<HighlightView />);
+  await screen.findByRole('button', { name: /Data \(1\)/ });
+  await userEvent.click(screen.getByRole('button', { name: /Data \(1\)/ }));
+  await waitFor(() => expect(useHighlightStore.getState().dataHandoff?.pageKey).toBe('page-a'));
+  highlight.unmount();
+  render(<DataView />);
+  await userEvent.click(screen.getByRole('button', { name: /save pattern/i }));
+  expect(injection).toHaveBeenCalledOnce();
+  expect(mocks.savePattern).toHaveBeenCalledOnce();
+  expect(mocks.savePattern.mock.calls[0]?.[0]).toMatchObject({ fields: [{ name: 'event_title', selector: '#event-title' }] });
+});
+
+it('shows recovery for an old Highlight handoff instead of silently saving it on the new document', async () => {
+  mocks.fetchPatterns.mockResolvedValue([]);
+  useHighlightStore.getState().setDataHandoff({ fields: [{ name: 'old', selector: '#old' }], pageKey: 'page-a', tabId: 37, documentId: 'document-a' });
+  mocks.page = { ...mocks.page, pageKey: 'page-b', documentId: 'document-b' };
+  render(<DataView />);
+  expect(await screen.findByText(/highlight fields came from another or unverified page/i)).toBeTruthy();
+  expect(screen.queryByRole('button', { name: /save pattern/i })).toBeNull();
+  expect(mocks.savePattern).not.toHaveBeenCalled();
+});
+
+it('does not persist A fields after same-URL document B replaces A during organization resolution', async () => {
+  mocks.fetchPatterns.mockResolvedValue([]);
+  let releaseOrg!: (id: string) => void;
+  mocks.requireOrg.mockReturnValue(new Promise<string>((resolve) => { releaseOrg = resolve; }));
+  useHighlightStore.getState().setDataHandoff({ fields: [{ name: 'old', selector: '#old' }], pageKey: 'page-a', tabId: 37, documentId: 'document-a' });
+  const view = render(<DataView />);
+  await userEvent.click(screen.getByRole('button', { name: /save pattern/i }));
+  expect(mocks.requireOrg).toHaveBeenCalledOnce();
+  await act(async () => { mocks.page = { ...mocks.page, pageKey: 'page-b', documentId: 'document-b' }; view.rerender(<DataView />); });
+  await act(async () => { releaseOrg('organization-1'); });
+  expect(mocks.savePattern).not.toHaveBeenCalled();
+  expect(screen.getByText(/Page changed before saving.*Select fields again/i)).toBeTruthy();
+});
+
+it('does not let an old save completion clear B fields or finish B save', async () => {
+  mocks.fetchPatterns.mockResolvedValue([]);
+  mocks.requireOrg.mockResolvedValue('organization-1');
+  let finishA!: (value: ExtractionPattern) => void;
+  let finishB!: (value: ExtractionPattern) => void;
+  mocks.savePattern
+    .mockReturnValueOnce(new Promise<ExtractionPattern>((resolve) => { finishA = resolve; }))
+    .mockReturnValueOnce(new Promise<ExtractionPattern>((resolve) => { finishB = resolve; }));
+  useHighlightStore.getState().setDataHandoff({ fields: [{ name: 'old', selector: '#old' }], pageKey: 'page-a', tabId: 37, documentId: 'document-a' });
+  const view = render(<DataView />);
+  await userEvent.click(screen.getByRole('button', { name: /save pattern/i }));
+  await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(1));
+  await act(async () => { mocks.page = { ...mocks.page, pageKey: 'page-b', documentId: 'document-b' }; view.rerender(<DataView />); });
+  act(() => { useHighlightStore.getState().setDataHandoff({ fields: [{ name: 'new', selector: '#new' }], pageKey: 'page-b', tabId: 37, documentId: 'document-b' }); });
+  await userEvent.click(screen.getByRole('button', { name: /save pattern/i }));
+  await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(2));
+  await act(async () => { finishA(pattern); });
+  expect(screen.getByRole('button', { name: /save pattern/i }).hasAttribute('disabled')).toBe(true);
+  expect(screen.getByText(/#new/)).toBeTruthy();
+  await act(async () => { finishB(pattern); });
+  expect(screen.queryByRole('button', { name: /save pattern/i })).toBeNull();
+});
+
+it('keeps B picker live when delayed A injection rejects and shows a retry remedy for a current rejection', async () => {
+  mocks.fetchPatterns.mockResolvedValue([]);
+  mocks.savePattern.mockResolvedValue(pattern);
+  let rejectA!: (error: Error) => void;
+  const heldA = new Promise<unknown[]>((_resolve, reject) => { rejectA = reject; });
+  const sessions: string[] = [];
+  vi.stubGlobal('chrome', { scripting: { executeScript: vi.fn(({ args }: { args?: unknown[] }) => {
+    if (typeof args?.[0] === 'string') {
+      sessions.push(args[0]);
+      return sessions.length === 1 ? heldA : Promise.resolve([]);
+    }
+    return Promise.resolve([]);
+  }) } });
+  const view = render(<DataView />);
+  await userEvent.click(screen.getByRole('button', { name: /pick fields on this page/i }));
+  expect(sessions).toHaveLength(1);
+  await act(async () => { mocks.page = { ...mocks.page, pageKey: 'page-b', documentId: 'document-b' }; view.rerender(<DataView />); });
+  await userEvent.click(screen.getByRole('button', { name: /pick fields on this page/i }));
+  expect(sessions).toHaveLength(2);
+  await act(async () => { rejectA(new Error('A disappeared')); await heldA.catch(() => {}); });
+  expect(screen.queryByText(/A disappeared/)).toBeNull();
+  const emit = mocks.pickerListeners.get(CHANNELS.DATA_PICKER_RESULT);
+  if (!emit) throw new Error('Data picker result listener was not installed');
+  act(() => { emit({ tab_id: 37, document_id: 'document-b', session_id: sessions[1], fields: [{ name: 'current', selector: '#current' }] }); });
+  await userEvent.click(screen.getByRole('button', { name: /save pattern/i }));
+  expect(mocks.savePattern).toHaveBeenCalledOnce();
+
+  // A separate current-session injection failure must be visible and retryable.
+  const execute = chrome.scripting.executeScript as ReturnType<typeof vi.fn>;
+  execute.mockRejectedValueOnce(new Error('Document unavailable'));
+  await userEvent.click(screen.getByRole('button', { name: /pick fields on this page/i }));
+  expect(await screen.findByText(/Could not start the field picker.*Retry picking fields/i)).toBeTruthy();
+});
+
+it('shows a Retry remedy and disables Data picker actions when document identity is unresolved', async () => {
+  mocks.page.pageKey = '';
+  mocks.page.documentId = '';
+  mocks.fetchPatterns.mockResolvedValue([]);
+  const user = userEvent.setup();
+  render(<DataView />);
+  expect((await screen.findByRole('status')).textContent).toMatch(/checking the current page/i);
+  expect(screen.getByRole('button', { name: /pick fields on this page/i }).hasAttribute('disabled')).toBe(true);
+  await user.click(screen.getByRole('button', { name: 'Retry' }));
+  expect(mocks.retryIdentity).toHaveBeenCalledOnce();
 });
 
 // The host contract is persistence and current-page presentation; extraction is the external runner.
@@ -180,6 +360,7 @@ it.each(['resolve', 'reject'] as const)(
     await screen.findAllByText('Calendar events');
     await userEvent.click(screen.getByRole('button', { name: 'Extract' }));
     mocks.page.url = 'https://electronic.vegas/search/';
+    mocks.page.pageKey = 'page-search';
     view.rerender(<DataView />);
     await act(async () => {
       if (outcome === 'resolve') resolve([{ title: 'Old calendar result' }]);
@@ -214,6 +395,7 @@ it('hides completed DataView rows on the first commit for another tab at the sam
   expect(mocks.copied).toContain('https://electronic.vegas/calendar/');
   expect(mocks.copied).toContain('Calendar events');
   mocks.page.id = 38;
+  mocks.page.pageKey = 'page-other-tab';
   view.rerender(
     <>
       <DataView />

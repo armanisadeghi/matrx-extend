@@ -1,7 +1,9 @@
 {
   "id": "EXT-D-0058",
   "feature_id": "EXT-F-1012",
-  "case_ids": ["EXT-F-1012-T08"],
+  "case_ids": [
+    "EXT-F-1012-T08"
+  ],
   "title": "Prepare retry retains stale success and late results",
   "surface": "Showcase Prepare",
   "auth_mode": "admin",
@@ -14,9 +16,14 @@
   "actual": "run clears error but retains report, and async continuations unconditionally write after page-change invalidation.",
   "severity": "S2: misleading preparation status",
   "priority": "P1: truthful current-page results",
-  "state": "triaged",
-  "evidence": ["docs/stabilization/reports/prepare-source-audit.json"],
-  "verification_status": "Source-derived deterministic finding; runtime and native reproduction not yet performed.",
+  "state": "in-fix",
+  "evidence": [
+    "docs/stabilization/reports/prepare-source-audit.json",
+    "docs/stabilization/reports/prepare-lifecycle-repair.json",
+    "docs/stabilization/reports/prepare-lifecycle-peer.json",
+    "docs/stabilization/reports/prepare-integrated-verification.json"
+  ],
+  "verification_status": "Candidate and correction78041e16 independently reviewed3d01fcf1. Reset and overlapping older-rejection assertions now pass; guarded combined D57/D58 18tests pass, prior guarded compile passes. Integrated build refused CPU_HIGH_LOAD_BUSY before launch; no new artifact. Remains in-fix pending build/native. SameURL identity tracked D59.",
   "transition_history": [
     {
       "at": "2026-09-28T15:00:57.328820+00:00",
@@ -29,6 +36,12 @@
       "from": "open",
       "to": "triaged",
       "reason": "Owner inspected source-backed reproduction; no native acceptance claim."
+    },
+    {
+      "at": "2026-09-28T15:18:37.565358+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol prepare_lifecycle_repair assigned async lifecycle repair with meaningful connected regression coverage and guarded self-verification."
     }
   ]
 }

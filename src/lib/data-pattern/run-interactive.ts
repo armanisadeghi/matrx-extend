@@ -47,6 +47,8 @@ export interface InteractiveRunOptions {
   /** Set only by the canonical prepared operation in the service worker. */
   captureApproved?: boolean;
   expectedPage?: { url: string; documentId: string };
+  /** Bound to the clicked document for ordinary DOM/framework runs. */
+  documentId?: string;
   /**
    * REQUIRED provenance attestation for any AI request this run opens — see
    * `AgentStartRequest.initiation`. No default: a saved pattern is run BOTH
@@ -568,5 +570,5 @@ export async function runSavedPattern(
     }
     return runNetworkCapturePattern(pattern.config, tabId, opts);
   }
-  return runPattern(pattern, tabId);
+  return runPattern(pattern, tabId, opts.documentId);
 }

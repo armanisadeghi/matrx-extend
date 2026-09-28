@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "report_id": "scrape-correction-fresh",
+  "defect": "EXT-D-0059",
+  "lane": "fresh Scrape correction; product, focused tests, feature-test instructions, and evidence only",
+  "status": "source-confirmed findings repaired; native installed same-URL A/B acceptance remains unverified",
+  "diagnosis": [
+    "DiagnoseCard checked the picker result pageKey but read retained scrape.current without checking scrape.pageKey; B's Copy for AI therefore included A's extractor and compared B's element with A's markdown.",
+    "Pre-send refresh used a shared unowned inFlight/error status. A's late failure wrote an error and A's finally cleared inFlight after B had already begun. The background auto-capture hook also wrote that status without run ownership."
+  ],
+  "repair": [
+    "DiagnoseCard supplies scrape markdown and extractor only when the retained capture has the same live pageKey as the picker result; the bundle formatter's existing no-current-markdown wording handles B without a capture.",
+    "The shared auto-scrape store now assigns each capture a pageKey and run token. Pre-send and background captures can update shared status only while they own that token; a background settle timer leaves an active pre-send run in charge. Late A completion cannot clear B's inFlight flag or write A's error or soup."
+  ],
+  "red_proof": {
+    "run_id": "scrape-correction-fresh-red-002",
+    "journal_sha256": "6082dbcf28ace992beabbf4db7394c7047d8705074256c3e7242b2c7a2b8bb06",
+    "verdict": "RESOURCE_ADMITTED; two intended assertion failures on old source; child exit 1; RESOURCE_FINAL_DECISION child_failed",
+    "failures": [
+      "B Diagnose copy lacked the required no-current-markdown text and carried A's readability extractor.",
+      "A finishing while B was active made shared inFlight false."
+    ]
+  },
+  "valid_runs": [
+    {
+      "run_id": "scrape-correction-fresh-green-001",
+      "journal_sha256": "b507f2fbf514ba5e90fd41053465b0a312cd076848f4cdad1cefe340639e79b5",
+      "result": "RESOURCE_ADMITTED; 2 files, 3 tests passed; child exit 0; RESOURCE_FINAL_DECISION valid"
+    },
+    {
+      "run_id": "scrape-correction-fresh-tests-002",
+      "journal_sha256": "106e30baa054de5ba98c231dc8515984b34390d9d392ee4628afba61cd28e22d",
+      "result": "RESOURCE_ADMITTED; 4 files, 6 tests passed including existing manual and automatic document identity tests; child exit 0; RESOURCE_FINAL_DECISION valid"
+    },
+    {
+      "run_id": "scrape-correction-fresh-compile-001",
+      "journal_sha256": "f101040c113b81f71c7f2342e04c2ec2846f6986a86b4f4488081ecad5c167f9",
+      "result": "RESOURCE_ADMITTED; pnpm compile passed before final small test and ownership refinement; child exit 0; RESOURCE_FINAL_DECISION valid"
+    },
+    {
+      "run_id": "scrape-correction-fresh-compile-002",
+      "journal_sha256": "a16fdba9d14a84491fff39104ac5dff3b1237ae431d7c9f7de5c1f6acabd1096",
+      "result": "RESOURCE_ADMITTED; final pnpm compile passed; child exit 0; RESOURCE_FINAL_DECISION valid"
+    }
+  ],
+  "refused_attempt": {
+    "run_id": "scrape-correction-fresh-red-001",
+    "journal_sha256": "c93ad88a3ebd51efb1deb05d12f9a2ef54cf74b5e2ef91462cd2225ce812cd54",
+    "result": "pnpm test form was not allowlisted; RESOURCE_COMMAND_NOT_ALLOWED, no child launched, RESOURCE_FINAL_DECISION refused. Replaced by allowlisted single-worker Vitest command."
+  },
+  "source_sha256": {
+    "DiagnoseCard.tsx": "1a6d8a72c21dbdb0163b4a39d69a4c3fbad864201c8c30498bb5b30dccc97501",
+    "use-auto-scrape.ts": "a4fb90bee88ffcfeb6ba6adbbcc0d36e9b7dad3579f447f21dcec8ee4a09f1c8",
+    "refresh-page-context.ts": "023bba110a36f100b9d3befd132a1a3372f0f1c6252325ea7791e60d05fbc457",
+    "auto-scrape.ts": "debec187510548bfaca0abae31f780977772e41a6f1395daecf21ad64abe34c0"
+  },
+  "limits": [
+    "No installed-extension, localhost, browser, build, UI, or real same-URL reload acceptance was performed in this lane.",
+    "The connected regressions isolate Chrome capture and clipboard boundaries; they establish the card/formatter and refresh ownership behavior, not the entire D59 flow."
+  ]
+}

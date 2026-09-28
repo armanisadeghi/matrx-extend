@@ -1,5 +1,5 @@
 import { JsonTree } from '@/components/ui/json-tree';
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { useExtraction } from '@/hooks/use-extraction';
 import { type FrameworkSource, readFrameworkSources } from '@/lib/data-pattern/framework-sources';
 import { formatJsonKeyPath } from '@/lib/data-pattern/json-key-path';
@@ -20,7 +20,7 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
   const [sources, setSources] = useState<FrameworkSource[]>([]);
   const [sourcesPageKey, setSourcesPageKey] = useState<string | null>(null);
   const dumpSeq = useRef(0);
-  const pageKey = `${tab.id ?? ''}:${tab.url ?? ''}`;
+  const pageKey = tab.pageKey ?? '';
   const [activeSource, setActiveSource] = useState<string | null>(null);
   const [keyPath, setKeyPath] = useState<string[]>([]);
   const [loadingTree, setLoadingTree] = useState(false);
@@ -38,17 +38,17 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
     setKeyPath([]);
     setLoadingTree(false);
     setDumpError(null);
-  }, [tab.id, tab.url]);
+  }, [pageKey]);
 
   const dump = useCallback(async () => {
-    if (!tab.id) return;
+    if (!tab.id || !tab.documentId || !tab.pageKey) return;
     const seq = ++dumpSeq.current;
     const pageKeyAtDump = pageKey;
     setLoadingTree(true);
     setDumpError(null);
     try {
-      const fetched = await readFrameworkSources(tab.id);
-      if (seq !== dumpSeq.current) return;
+      const fetched = await readFrameworkSources(tab.id, tab.documentId);
+      if (seq !== dumpSeq.current || !isCurrentPageIdentity(pageKeyAtDump)) return;
       setSources(fetched);
       setSourcesPageKey(pageKeyAtDump);
       const first = fetched.find((candidate) => !candidate.error) ?? fetched[0];
@@ -56,11 +56,11 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
     } catch (err) {
       // Previously try/finally with NO catch — restricted pages stopped the
       // spinner with zero feedback (audit P1-5).
-      if (seq === dumpSeq.current) setDumpError(err instanceof Error ? err.message : String(err));
+      if (seq === dumpSeq.current && isCurrentPageIdentity(pageKeyAtDump)) setDumpError(err instanceof Error ? err.message : String(err));
     } finally {
-      if (seq === dumpSeq.current) setLoadingTree(false);
+      if (seq === dumpSeq.current && isCurrentPageIdentity(pageKeyAtDump)) setLoadingTree(false);
     }
-  }, [tab.id, pageKey, activeSource]);
+  }, [tab.id, tab.documentId, pageKey, activeSource]);
 
   useEffect(() => {
     if (detection?.available) void dump();
@@ -129,7 +129,7 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
                 size="icon"
                 variant="ghost"
                 onClick={() => void dump()}
-                disabled={loadingTree}
+                disabled={loadingTree || !tab.pageKey}
                 title="Reload tree"
                 className="size-7 shrink-0"
               >
@@ -153,7 +153,7 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
 
         <Button
           onClick={() => void run({ key_path: keyPath, source: activeSource ?? undefined })}
-          disabled={running || !detection?.available}
+          disabled={running || !detection?.available || !tab.pageKey}
           className="w-full rounded-full"
         >
           {running ? <Loader2 className="animate-spin" /> : <PlayCircle />}

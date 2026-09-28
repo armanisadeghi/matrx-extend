@@ -1,4 +1,5 @@
 import { useActiveTab } from '@/hooks/use-active-tab';
+import { PageIdentityNotice } from '@/components/PageIdentityNotice';
 import { cn } from '@/lib/utils';
 import { type ShowcaseSubTab, useShowcaseTabStore } from '@/state/showcase-tab';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
@@ -53,6 +54,7 @@ export function ShowcaseView() {
         <span className="text-sm font-medium">Showcase</span>
         <span className="ml-2 truncate text-xs text-muted-foreground">{host || 'no host'}</span>
       </div>
+      <PageIdentityNotice tab={tab} />
 
       <Tabs
         value={subTab}

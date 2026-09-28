@@ -10,6 +10,98 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest screenshot checkpoint — candidate reviewed, native open
+
+- 521252fa binds screenshot UI to initiating tab/document, checks window capture before/after, targets full-page scroll/restore to original document, and covers region/CDP persistence metadata. Guarded6tests, compile, catalog and docs passed. Root verified all five reported journal hashes. Historical URL gallery preserved; D36 source untouched.
+- Fresh source/evidence peerd5e2446f supports observable checks, no confirmed changed-path regression. Limits: Chrome window capture cannot detect switch-away-and-back wholly inside one API call; manual/agent tools bind at handler start; helper-red was not original handler red; region/CDP and native persistence/gallery/full-page/D36 acceptance remain unverified. D59 stays in-fix.
+- Highlight auditb5f93015 identifies tab-only overlay state, start-vs-reload race, and sender-document/session admission gaps. Next fresh Sol should fix shared overlay lifecycle with explicit active-tab policy and exact-document messaging, preserving historical lookup and fixed Data/Scrape handoffs. Scope and reproducible source traces in reports/highlight-identity-audit.json; native not claimed. Inventory1009/1010 linked to D59 in8c66ba61.
+- All workers terminal, no owned heavy/browser jobs. Native primary disk still5.3GiB; external1.6TiB. No incoming remote changes at fetch; root no red-trunk push. No new build; historical a8670bf7 does not contain current corrections. Remaining: Highlights/Showcase census, broad integrated fixtures, directdevbuild+ChromeReload/retests, CI credential repair/release. Goal active; this turn made source/test/evidence progress.
+
+## Latest Scrape correction checkpoint — scoped peer acceptance
+
+- Fresh Sol fe389b5e corrects mixed-document Diagnose Copy for AI and shared refresh status ownership. Shared auto-scrape store uses page/run ownership in pre-send and automatic capture. Builder reports oldcode red2; final guarded6tests/4files and compile passed. Root verified all six journal hashes.
+- Independent source/evidence peer220ba074 accepts scoped A/B findings, no important new source issue; all claimed source/journal hashes match. Journals prove admission/exit/final verdict, detailed counts/assertions remain builder-reported. Native acceptance unverified. Optional tests: actual auto-vs-pre-send overlap, thrown late error, A→B→A. D59 stays in-fix for broad surface completeness.
+- Next resume remaining document census (screenshots/live highlights/Showcase) and integrated fixture/handler catalog chores; do not redo these two accepted source corrections without new evidence. Native Chrome still requires resource recovery, direct development build, explicit Reload and fresh real pages. No localhost.
+- All lanes terminal, no owned heavy/browser process. D60 remains closed. Goal turn progress: verified scoped Scrape repair; full testing matrix, integrated build/native, CI credential repair and release remain incomplete. No remote changes at fetch; root has not pushed red trunk.
+
+## Latest Scrape checkpoint — candidate rejected, guarded evidence recovered
+
+- D59 Scrape candidate a021ae82 migrates manual/auto capture, drafts, Diagnose session, minimal context cache admission and historical Highlight handoff. Builder violated guard instruction: all checks were direct/unguarded, admitted in report-only b9185b40. Exclude those results; use a fresh implementer for next correction.
+- Fresh peer a702ba6c ran actual guard:3files/3tests pass and compile pass after latest tests. One compile preflight refused while prior wrapper exited; later admitted compile passed. All completed journals committed. A outcome FAIL/B quality FAIL on source: Diagnose B Copy for AI includes retained A scrape; old A pre-send refresh can overwrite B error/inFlight status. Soup itself is guarded.
+- Next fresh Sol must correct both findings with connected Diagnose bundle A/B test and overlapping refresh ownership test, red/green under guard. Broader late-error/deep-scroll/save/picker/history coverage still pending; no native/build/fullD59 claim. EXT-F-1007 all mode cells now link D59 and retest not-run.
+- D60 closed separately on verified scoped evidence. All lanes terminal, no owned heavy job remains. Primary disk shortage still prevents native acceptance. Catalog/docs, integrated build, CI credential repair and release remain open; overall goal active.
+
+## Latest resource checkpoint — D60 closed; Scrape migration active
+
+- D60 correction b3421dd2 gives admission precedence, retaining infrastructure error/resourceInvalid evidence. Seven cases pass after the new pre-admission case failed on prior code. Fresh peer5b9e07b3 accepts source and evidence, confirms protections unchanged. Root verified all four journal hashes. Original defect closed through required states; wrapper journal-write fault injection remains an explicit coverage limit.
+- Sol scrape_document_repair owns D59 manual/auto Scrape capture, draft, Diagnose and save document provenance, plus minimal shared context cache admission. No systematic Chat/Pilot work. Heavy lease granted after D60 finished; no parallel test jobs. Await report/independent review before accepting source candidate.
+- Previous turn made concrete progress (Save correction and D60 candidate); this turn resolves D60 and advances Scrape. Remaining D59/native/catalog/build/CI/release requirements unchanged; goal active.
+
+## Latest checkpoint — Save race corrected; guard edge remains
+
+- Goal-turn progress: D59 save-boundary correction99d61661 prevents persistence after document replacement during organization lookup, and prevents old completion/finally from changing a new page's Save state. Guarded original RED2/new GREEN17 + compile pass; root verified all three journal hashes. Fresh source peer1998c62b found no important defect. Native and actual persistence unverified; D59 remains in-fix for wider census/migration.
+- D60 candidatee4b2f39e fixes admitted child failure reporting; six classifier tests pass, real failed child journal now child_failed, successful child valid. Root verified both hashes. Fresh peer06117afe confirms original fix and unchanged guard protections, but flags pre-admission journal failure: if journal recovers, final invalid/admittedfalse conflicts with invalid's stated admission-scoped meaning. Next bounded correction must explicitly classify this case and test it; D60 remains in-fix.
+- All lanes terminal, no owned heavy/browser job remains. No new development build/native acceptance. Pending: D60 edge, remaining D59 consumer migration, catalog/docs regeneration, integrated checks/build, Chrome reload/retests, CI credential repair and release. Primary disk last observed5.6GiB vs20GiB minimum; external scratch1.6TiB. Never substitute internal /tmp for the specified external test scratch.
+- Origin fetched this turn: no incoming commits; shared sync had advanced remote to most prior work (HEAD then3ahead/0behind). Root made no red-trunk push. Goal remains active and incomplete.
+
+## Latest D59 handoff checkpoint — corrected, further save race confirmed
+
+- 4926e1c1 fixes Highlight-to-Data provenance and obsolete picker injection failure. Builder15 tests/compile passed; two-behavior mutation made two expected regressions fail. Root verified four completed journal hashes. Independent Sol e0002aa8 freshly ran restored source:15/15 pass, admitted/valid, resourceInvalidfalse; journal b6abe3198fb93b16d0231964d5879d954b17f2f446eec71b1a2b70d151179f90.
+- Fresh peer3cfd8d63 and Sol independently confirm remaining Save race: handleSavePattern checks page identity before awaited organization resolution, then persists without rechecking. Next implementation must bind/check after the await, give visible stale recovery, and prove deferred-organization/same-URL-reload cannot save A as B. D59 remains in-fix.
+- Peer initial runtime refusal used WRONG internal /tmp scratch (5.57GiB), not the specified external scratch. Do not treat that as external-resource denial. Fresh Sol used /Volumes/Samsung2TB/code/.stabilization-scratch on /dev/disk7s1 (1.6TiB free) successfully. Native Chrome remains gated by primary-volume shortage.
+- Remaining consumer census110f520b/f485df4a is inventory-linked in reports/document-remaining-census.json: Scrape manual/auto, screenshot completion, highlight overlay/text handoff, remaining Showcase coverage. Native, catalog/docs regeneration, integrated build, CI credential repair and full release remain outstanding. Current historical artifact a8670bf7 lacks D58/D59. Goal active; all dispatched lanes terminal after reports.
+
+## Latest D59 correction checkpoint — two regressions remain
+
+- Independent escalation 9e5db722 confirms the original four correction findings addressed at source/guard level in 858dfd8f/140d99c7. Guarded 27 tests and compile passed; native remains unverified. A PARTIAL/B FAIL_IMPORTANT.
+- New confirmed source findings: Highlight-to-Data handoff leaves Save without document provenance, silently returning; a delayed old-picker injection rejection clears the new picker session. Both require connected regression evidence and visible recovery for current failures.
+- Sol document_identity_repair now owns this bounded correction and the sole heavy lease. No browser/build lane active. Report target reports/document-handoff-correction.json. Prior goal turn only confirmed the already-completed mailbox request; no stabilization state changed then. This turn resumes concrete D59 correction work.
+- Broad live-consumer census/migration, handler catalog/docs regeneration, integrated build and actual Chrome acceptance remain outstanding. D60 guard verdict defect remains open. No full-health or shipping claim; historical artifact a8670bf7 lacks D58/D59.
+
+## Latest D59 implementation checkpoint — partial, peer rejected
+
+- Progress: Sol committed bb78e844 and27aaaf96: shared external-store document snapshot, core live-result consumers, SaveAsPattern/SEO/Data picker guards and authored A/B tests. No full-fix acceptance. Fresh source peer180eacfa A PARTIAL/B FAIL_IMPORTANT.
+- Next correction round must address all four findings in reports/document-identity-partial-peer.json: trusted SW sender.documentId on ordinary Network events; document+session-bound Data picker messages; exact documentId through Framework extension-run/read injections; shared visible identity/retry remedy for every migrated action currently no-oping. Then complete pending Scrape/Screenshots/Highlights/Showcase shell/App live context and fixture migration. Preserve historical URL/domain lookups.
+- Corrected runtime truth: d59-compile-1 passed before migration. d59-compile-2 was ADMITTED, child tsc exited1, resourceInvalidfalse; two typing errors subsequently corrected but uncompiled. Final journal incorrectly calls any nonzero child exit refused. This was NOT resource preflight refusal; D60 now tracks misleading verdict semantics. New A/B tests remain unrun.
+- Reports document-identity-repair.json and document-identity-partial-peer.json own current census/gaps. D59 remains in-fix; D57 fixed/native pending, D58 candidate awaiting build/native. Current artifact a8670bf7 lacks D58/D59. All workers terminal, no owned heavy/browser process remains. Next compile must use normal guard, not assume the mislabeled compiler failure proves resource rejection.
+
+## Latest D59 diagnosis — shared repair scope confirmed
+
+- Progress: source diagnosis0e464b96 confirms sameURL replacement is invisible to existing id/URL/title useActiveTab. Existing canonical Chrome documentId usage was located in local-browser and document-network paths. Native remains unverified.
+- Independent contract attacke1376b12 rejects a Prepare/Snapshot-only migration: 21 hook instances can disagree and other live consumers retain saveable old-document results. Root accepts the broader single-snapshot repair scope in reports/document-identity-attack.json; URL/domain lookups remain intentionally separate.
+- Next implement D59 at shared identity boundary, with consumer census covering useExtraction detection/results, Prepare, Data/auto store, AI/pattern derivation, Showcase recipe/framework/list/pattern/Doctor state and ordinary network capture. Preserve session-specific approved replay contracts; explicit retry/remedy for unresolved identity, no silent disabled actions. No code yet; diagnosis corrected to forbid localhost native acceptance.
+- Resource observation15:42Z: load14.24 on10cores, internalvolume6.7GiB free. No new runtime launch. D58 integratedbuild remains refused; a8670bf7 remains historical. All workers terminal. Goal active; source repair is available despite runtime constraint.
+
+## Latest integrated Prepare verification — tests pass, build refused
+
+- Progress: follow-up78041e16 covers reset late rejection and both older-rejection/newer-result orderings. Implementer9tests/compile pass; fresh peer3d01fcf1 independently accepted assertions and ran combined D57/D58:18tests passed. Root verified completed journal hashes and actual exit records.
+- Guarded direct build prepare-integrated-devbuild-20260928-01 refused CPU_HIGH_LOAD_BUSY before launch (exit2); no new artifact. No blind retry. Current historical a8670bf7 still lacks D58; do not test it as the new repair.
+- D58 stays in-fix pending integrated build and native. D57 remains fixed/native pending. D59 shared sameURL identity remains open. Next safe work is source diagnosis/reproduction of D59 while runtime resources recover; resume build only after meaningful resource recovery.
+- All workers terminal, no owned heavy/browser job remains. Reports prepare-integrated-verification.json and prepare-lifecycle-repair.json are current. Full stabilization and shipping remain incomplete.
+
+## Latest D58 checkpoint — source repair and peer accepted, build/native pending
+
+- Progress: remote formatting work merged as ef052e03. D57/D58 JSON conflicts were verified formatting-only against merge base; newer local transitions retained. Internal Chrome volume observed5.8GiB free; no native launch attempted.
+- Candidate46b22e50 repairs Prepare stale retry success and old async report/error/finally across changed page/newer run/reset/unmount. Guarded red5fail/1pass, repaired and final6pass, compilepass after correcting a fixture selector. Five completed resource journals retained with hashes in22388d09.
+- Fresh peer70abfdba accepts scoped source repair; native remains unverified. It notes small missing late-rejection assertions for reset/overlap. Next verification should cover these error branches, then build integrated source and native retest when resources allow. D58 remains in-fix, not closed.
+- D59 now tracks shared same-URL reload document identity in Prepare/Snapshot. Source-supported gap only, no native reproduction; do not claim D58 fixes it or cancels injected scripts.
+- Current built artifact a8670bf7 does NOT contain D58 or merged formatting; next build required. All workers terminal; no owned heavy/browser process remains. Reports prepare-lifecycle-repair.json and prepare-lifecycle-peer.json contain acceptance limits.
+
+## Latest D57 runtime checkpoint — fixed, native pending
+
+- Progress: independent `prepare_runtime` proved the old fallback RED (7 regression assertions) and exact restored candidate GREEN (9 tests). Compile initially failed on the new test parameter typing; correction `1dfe7333` preserved assertions using named cases.
+- Fresh verifier `prepare_corrected_verify` independently reviewed that correction and passed guarded nine tests, compile and direct development build. Root verified completed journal hashes and valid/exit-0 terminals from `reports/prepare-corrected-verification.json`. D57 moves in-fix → fixed, not closed.
+- NEW artifact `.output/chrome-mv3-dev` tree `a8670bf7ba4a31a3ce73596b41f1dbfc192e94d990342e8063ed82645b703b5f`, lock82acc89c. Contains D57; Chrome has NOT explicitly reloaded it yet. Previous d1626c0d artifact is historical.
+- Next: D58 retry/late-result lifecycle repair; native D57 acceptance and remaining D54 export cases when primary Chrome resource admission recovers. Guarded external-volume tests now succeeded; that does not establish primary-profile disk recovery. All workers terminal, no owned runtime process remains.
+
+## Latest source repair checkpoint — Prepare false success
+
+- Progress: read-only resource audit `084fe593` found internal volume 8.9 GiB free, no stale linked worktrees, and only about 3 MiB in the listed temporary directories. No safe meaningful owned cleanup established; no processes killed or files deleted. Report `reports/resource-attribution-20260928.json`.
+- Source audit `6ce9a449` found concrete Prepare defects, now inventory-linked T08: D57 missing injected result falsely becomes Prepared in 0ms; D58 failed retry retains old success and late A results can appear after page B. Source-derived triggers are recorded; native reproduction unverified.
+- D57 candidate `5dea4dd3` validates the shared injected report, rejects absent/malformed data with reload/retry remedy, adds regression cases and feature-test instructions. Independent peer `c802f81b`: source quality accepted, runtime/native unverified. D57 remains in-fix, D58 triaged. Reports `prepare-empty-report-repair.json` and `prepare-empty-report-peer.json`.
+- Next: one guarded focused runtime attempt for D57 on the external scratch volume, preserving all policy thresholds; if admitted, meaningful original-code red/green, compile/build then native verification when primary Chrome profile volume recovers. D58 needs a separately reviewed lifecycle repair. No test/build/browser was run for D57 yet.
+- Current built d1626c0d does NOT include D57. All workers terminal; no owned heavy/browser process remains. Overall goal active and incomplete; release CI credential constraint remains.
+
 ## Latest native attempt — resource refusal, zero UI actions
 
 - Goal-turn classification: progress. Existing genuine manual-CSS lifecycle evidence was linked to T39 as partial in `43a2d7c7`, without claiming its draft-isolation, wrong-route or failure dimensions.

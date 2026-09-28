@@ -16,9 +16,11 @@ export default defineContentScript({
     // Read the mode from a data attribute set on documentElement by the
     // launcher (see use-scrape.ts). Falls back to 'missing' if not set.
     const raw = document.documentElement.getAttribute('data-matrx-diagnose-mode');
+    const sessionId = document.documentElement.getAttribute('data-matrx-diagnose-session');
     const mode: 'missing' | 'unwanted' = raw === 'unwanted' ? 'unwanted' : 'missing';
     document.documentElement.removeAttribute('data-matrx-diagnose-mode');
+    document.documentElement.removeAttribute('data-matrx-diagnose-session');
     const { mountDiagnosePicker } = await import('@/lib/scrape/diagnose-picker');
-    mountDiagnosePicker(mode);
+    mountDiagnosePicker(mode, sessionId ?? '');
   },
 });

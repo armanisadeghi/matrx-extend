@@ -1,0 +1,75 @@
+{
+  "id": "EXT-D-0059",
+  "scope": "Source-only diagnosis of shared active-tab document identity and page-result consumers; no product edit, test, build, or native browser run in this lane.",
+  "finding": "Confirmed source defect: a same-tab same-URL top-frame replacement leaves useActiveTab's id/url/title value unchanged, so Prepare's report and Snapshot's rows can remain visible and an old in-flight completion can be accepted. Native frequency and timing remain unverified.",
+  "anchors": [
+    "src/hooks/use-active-tab.ts:3-7 exposes no document ID; :13-25 refreshes through an unsequenced async tabs.query and value-compares only id/url/title; :32-45 listens to tab activation/update/focus, but not committed top-frame navigation.",
+    "src/hooks/use-page-prep.ts:21-30 keys visible report on [tab.id,tab.url]; :40-56 invalidates and admits completion only when that key changes; :55 calls preparePage(tab.id) without document binding.",
+    "src/lib/data-pattern/page-prep.ts:248-257 injects into tabId without documentIds, so a reload between click and injection can run on the replacement document.",
+    "src/features/showcase/tabs/SnapshotTab.tsx:7-10 uses useExtraction('og_meta'); :42-52 renders and permits saving returned rows.",
+    "src/hooks/use-extraction.ts:47-65 resets on tab.id/tab.url only; :88-119 admits run completion by generation that does not advance on same-URL reload; :141-149 shows rows when tab ID/URL key matches. Detection is also not document-scoped (:67-85, :122-126).",
+    "src/lib/data-pattern/document-network-capture.ts:422-436 compares the approved URL and Chrome execution-result documentId immediately before reload; :240-296 tracks new default execution context and committed top-frame navigation. This is a working sibling with real document identity.",
+    "src/lib/desktop/local-browser/controller.ts:255-273 reads top-frame chrome.webNavigation.getFrame({tabId,frameId:0}) and requires documentId, URL, and no errorOccurred; src/lib/tools/handlers/credential-login.ts:1170-1193 binds injection to documentIds and checks the final document again."
+  ],
+  "controlled_sequence": [
+    "Controlled automated regression: model genuine document A/B identities with deterministic metadata while holding the same tab ID and URL, and inspect completed/late results. This is regression evidence only; no local test server or fixture may substitute for native acceptance.",
+    "For the late-result case, hold the Snapshot executeScript or Prepare promise after starting on document A, commit a same-URL reload to document B, then release A's result. The current tab-ID/URL generation accepts A as current. Repeat with a new click on B and release completions out of order to separate D58 attempt ordering from D59 document replacement.",
+    "Control: change only the page title/favicon or fire a non-navigation tabs.onUpdated event; document identity must remain stable. Navigate within the same document via History API and verify URL-based invalidation still occurs. Reload an inactive tab, then activate it and verify its new document ID is observed."
+  ],
+  "hypotheses_and_discriminators": [
+    "H1, confirmed by source: id/URL-only identity permits same-URL old rows. If top-frame documentId is added to the key, a committed replacement changes the key while mere title changes do not.",
+    "H2, separate race: overlapping tabs.query/getFrame refreshes can resolve out of order. An event-generation/sequence guard plus checking the queried tab still belongs to the selected window should prevent older refresh from restoring stale identity; documentId alone cannot.",
+    "H3, separate transition: tabs.onUpdated status='loading' is a signal to recheck or temporarily mark identity unresolved, not proof of a committed replacement. Only Chrome's top-frame documentId after commit/getFrame establishes the new document; a loading-only/failed navigation must not mint a fake document key.",
+    "H4, inactive tab: a filtered onUpdated callback may ignore a background replacement. Activation must perform a fresh top-frame identity read, rather than relying on events seen while the tab was inactive."
+  ],
+  "minimal_shared_design": [
+    "Extend the canonical useActiveTab result with a top-frame documentId (and explicit unresolved state while navigation/query is pending). Read chrome.webNavigation.getFrame({tabId,frameId:0}) as the identity source, matching the local-browser primitive. Use tab ID + documentId + URL as the page-result key; URL remains necessary for same-document SPA route changes.",
+    "Refresh on activation, focus, relevant active-tab updates, and main-frame webNavigation.onCommitted; use a monotonic request token and cleanup guard so late query/frame reads cannot overwrite newer state. Scope event handling to the selected tab/window. During a pending main-frame navigation, withhold old page results until the committed identity is resolved; do not equate a loading event with a committed document or make up an ID.",
+    "When getFrame cannot prove a document, report unresolved identity and hide/disable page-result actions with a visible retry/remedy. Never treat null IDs from two different documents as an equal valid page key. Bind operations to an admitted document where possible and verify identity after async completion, since a React effect alone cannot stop an in-page script or settle before its promise.",
+    "Migrate Prepare and useExtraction/Snapshot to the shared key first. Keep Snapshot detection and SaveAsPattern provenance aligned with the same identity; explicitly decide whether each sibling consumer below requires page-document invalidation or only URL/domain identity."
+  ],
+  "consumer_census": {
+    "direct_page_results": [
+      "use-page-prep",
+      "use-extraction (Snapshot plus other Showcase extraction modes)",
+      "DataView saved-run preview",
+      "use-auto-extract and DataView auto records",
+      "use-ai-extraction",
+      "use-pattern-from-data",
+      "use-network-capture"
+    ],
+    "page_ui_or_operations_to_audit": [
+      "ScrapeView",
+      "SeoView",
+      "ScreenshotsView",
+      "HighlightView",
+      "Showcase Doctor/Framework/Recipes/ListPattern/Patterns",
+      "SaveAsPattern",
+      "VaultView",
+      "sidepanel App and TasksView"
+    ],
+    "url_or_domain_semantics_may_be_intentional": [
+      "use-page-recognition saved-by-URL lookup",
+      "Showcase host label and domain pattern fetch"
+    ],
+    "evidence": [
+      "src/hooks/use-auto-extract.ts:41-48,65-103",
+      "src/features/data/DataView.tsx:44-73,215-235,271-280",
+      "src/hooks/use-ai-extraction.ts:53-61,99-108",
+      "src/hooks/use-network-capture.ts:57-65,70-100"
+    ]
+  },
+  "required_tests": [
+    "Red-then-green connected hook regression: same tab/URL, document A -> B clears a completed Prepare report and Snapshot rows/preview/save; A's deferred success and rejection cannot repopulate B.",
+    "Shared hook event and async ordering tests: top-frame committed same-URL replacement changes documentId; title/favicon churn and subframe commits do not; overlapping refresh results cannot restore an earlier active tab/document; inactive-tab reload is picked up on activation; getFrame error or errorOccurred yields unresolved, never trusted identity.",
+    "Operation admission test: navigation between click and script injection or during execution cannot claim results for the new document; any unbound script side effects are called out separately.",
+    "Native actual Chrome development extension, explicit Reload, real public HTTPS page: compare actual top-frame document identity across same-URL reload with side panel open; verify old Prepare/Snapshot results become unavailable, current capture works, same-document route changes remain correct, and background reload/activation refreshes identity. Use actual page fields as oracle; no localhost or injected fixture acceptance. If controlled held completion cannot be produced genuinely, leave that native dimension unverified and retain automated timing proof separately."
+  ],
+  "risks": [
+    "Adding documentId to useActiveTab changes every consumer's return shape and refresh cadence; 20+ direct call sites and mocked hook fixtures need a scoped census before implementation.",
+    "A getFrame read may lag a navigation signal or fail on restricted/error pages; unresolved must be represented honestly and must not permit old results to look current.",
+    "React invalidation prevents stale UI commits but does not cancel a running injected Prepare script; document-targeted injection and final identity checks are distinct safeguards.",
+    "Network replay's CDP context uniqueId and its capture document_key are specific to that debugger session; use Chrome's top-frame documentId for the shared side-panel identity, not the replay-only key."
+  ],
+  "owner_ruling": "The original diagnosis proposed localhost native acceptance; that conflicts with the explicit user instruction. Corrected here to built-extension/real-public-page native testing. Controlled data is restricted to automated regression evidence."
+}

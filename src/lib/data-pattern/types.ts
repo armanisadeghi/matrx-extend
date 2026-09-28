@@ -30,7 +30,7 @@ export type ExtractionMode<TConfig = unknown> = {
   defaultConfig: () => TConfig;
   detectInPage: (config?: TConfig) => DetectionHint;
   runInPage: (config: TConfig) => ExtractedRow[];
-  runInExtension?: (tabId: number, config: TConfig) => Promise<ExtractedRow[]>;
+  runInExtension?: (tabId: number, config: TConfig, documentId: string) => Promise<ExtractedRow[]>;
   buildConfig?: (pattern: PatternForBuildConfig) => TConfig;
   /**
    * Rewrite the hint's `summary` in the EXTENSION realm, from the facts the

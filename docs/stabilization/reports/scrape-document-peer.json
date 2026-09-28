@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "report_id": "scrape-document-peer",
+  "defect": "EXT-D-0059",
+  "lane": "fresh independent Scrape document-identity peer; zero product authorship",
+  "candidate_commit": "a021ae821f3e0ea344638ed402b43d22fc4780d6",
+  "reviewed_checkout": "b9185b401a06ba9a6ddb3fe3955bbbba856ba17e",
+  "verdict_a_outcome": "FAIL IN SOURCE for the scoped Scrape/Diagnose contract; installed same-URL A/B acceptance remains UNVERIFIED",
+  "verdict_b_quality": "FAIL: one important cross-document output defect and incomplete regression proof",
+  "important_finding": {
+    "title": "A retained A scrape is attached to a B Diagnose result",
+    "severity": "important",
+    "reproduction": "Capture document A in Scrape, reload the tab to same-URL document B without capturing B, launch Diagnose on B and pick an element, then choose Copy for AI. The B picker session and result pass their pageKey checks, but the copied bundle includes A's article markdown and extractor as the current scrape comparison.",
+    "source_evidence": "ScrapeView.tsx:86-88 withholds retained A from the main capture and Save controls. DiagnoseCard.tsx:25-35 checks the result pageKey but reads store.current independently; lines 48-55 pass that unguarded current into formatDiagnoseBundle. diagnose-bundle.ts:227-230 labels B's page and extractor, and lines 275 onward compare B's picked text against that supplied markdown.",
+    "remedy": "Use the same pageKey admission for the scrape supplied to DiagnoseCard; when B has no capture, pass null markdown/extractor and preserve the honest no-current-scrape wording. Add an A/B same-URL Diagnose copy regression through the real card and bundle formatter."
+  },
+  "secondary_source_risk": {
+    "title": "An old pre-send refresh can change B's shared cache status",
+    "evidence": "refresh-page-context.ts:171-225 uses one unowned store.inFlight flag. An A deep capture returning after B activation sets lastError at lines 187-193 even when pageKey is stale, and its finally at line 226 clears inFlight while B's refresh can still be active. The cache record itself is pageKey guarded. This is a status/concurrency gap, not proven stale soup admission.",
+    "remedy": "Bind inFlight/error ownership to the initiating page and run before updating shared status; test overlapping A/B refreshes."
+  },
+  "positive_source_findings": [
+    "Manual and auto capture pass exact documentId to their capture path and check shared pageKey before admitting successful soup.",
+    "ScrapeView withholds a retained A draft from B's article, edit, copy, and primary Save controls and shows an earlier-page banner.",
+    "The saved Highlight handoff retains per-source URLs and labels its text historical; URL/domain Source recognition remains a historical lookup.",
+    "v1/v2 context builders reject manual and auto soup when the store's pageKey differs from the shared active document."
+  ],
+  "guarded_runtime": {
+    "focused_tests": "scrape-document-peer-tests-001: RESOURCE_ADMITTED, 3 files/3 tests passed, child exit 0, RESOURCE_FINAL_DECISION valid; journal docs/stabilization/resource-journals/scrape-document-peer-tests-001.jsonl",
+    "final_compile": "scrape-document-peer-compile-002: RESOURCE_ADMITTED, pnpm compile passed after both new test files, child exit 0, RESOURCE_FINAL_DECISION valid; journal docs/stabilization/resource-journals/scrape-document-peer-compile-002.jsonl",
+    "refused_attempt": "scrape-document-peer-compile-001 was refused before child launch with RESOURCE_LEGACY_RUNNER_BUSY while the preceding wrapper was exiting; it is not a compile result. Journal docs/stabilization/resource-journals/scrape-document-peer-compile-001.jsonl",
+    "builder_runs": "Builder's reported compile and Vitest commands were direct unguarded invocations; excluded from acceptance evidence."
+  },
+  "test_quality_limits": [
+    "The two new tests exercise only late successful manual and automatic capture at mocked identity seams. They do not cover late errors, deep scrolling, retained-draft Save controls, Diagnose picker/result/exit, pre-send concurrency, or the historical handoff.",
+    "No failing-before-fix, return-expected, or mutation proof was supplied or run here. Green tests are narrow regression evidence, not proof that the installed feature works.",
+    "No native browser, localhost, build, or real page A/B reload was run in this peer lane. This report makes no whole-D59 verdict."
+  ]
+}

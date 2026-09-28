@@ -1,0 +1,34 @@
+{
+  "defect_id": "EXT-D-0060",
+  "state": "source and focused runtime verified; peer finding corrected",
+  "cause": "The final journal mapped every nonzero wrapper exit to refused, including an admitted child command that exited 1 while resourceInvalid was false.",
+  "captured_reproduction": {
+    "journal": "docs/stabilization/resource-journals/d59-compile-2.jsonl",
+    "admitted": true,
+    "child_exit_code": 1,
+    "resource_invalid": false,
+    "old_decision": "refused",
+    "correct_decision": "child_failed"
+  },
+  "new_decisions": {
+    "refused": "No RESOURCE_ADMITTED event was written; this includes a denied launch or pre-admission infrastructure failure. resourceInvalid and the error event preserve the reason.",
+    "invalid": "The admitted resource run became unsafe or the guard failed after admission.",
+    "child_failed": "The admitted command ended unsuccessfully while the resource run remained valid.",
+    "valid": "The admitted check, command or browser session ended successfully.",
+    "interrupted": "An operator stopped an admitted command before it finished."
+  },
+  "compatibility": "No active script consumer parses the decision values beyond the focused guard test; historical reports and journals remain unchanged.",
+  "verification": {
+    "focused_test": "d60-verdict-tests-20260928-2: admitted, six Vitest cases passed, exit 0, resourceInvalid false, final decision valid",
+    "admitted_child_failure": "d60-verdict-tests-20260928-1: admitted, Vitest exited 1 because its .js test file was outside the configured .ts/.tsx include; resourceInvalid false, final decision child_failed",
+    "mutation_proof": "The admitted child failure directly exercised the formerly conflated branch. A separate source mutant run was not performed.",
+    "pre_admission_peer_correction": "The added pre-admission journal-error case failed on the prior classifier: expected refused, received invalid. After checking admission before resourceInvalid, the same guarded suite passed 7/7. This case exercises the classifier with a fault input; no journal write fault was injected into the wrapper.",
+    "journals_sha256": {
+      "d60-verdict-tests-20260928-1.jsonl": "e7c5f5996c2629af3180e036869f60118bcca462c4304a2a4501a006a74ed82c",
+      "d60-verdict-tests-20260928-2.jsonl": "81188245838bfe0be9b28acd2da218b0b27195ebab0ddebf462689c550b56eee",
+      "d60-pre-admission-red-20260928-1.jsonl": "8f22224958b8c8997dbc1009e8afcbf39f5bd36e27aa7b4833c5520080c6bed5",
+      "d60-pre-admission-green-20260928-1.jsonl": "8aad341fdf4805ab2241b82e342eed6425e66bb22b098a1ab7b0a017457ff7de"
+    },
+    "source_review": "Independent peer found pre-admission journal error classified invalid; corrected with admission-first precedence and a focused red-then-green case."
+  }
+}

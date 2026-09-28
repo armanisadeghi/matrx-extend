@@ -1,0 +1,123 @@
+{
+  "id": "EXT-D-0058",
+  "status": "source_repaired_guarded_tests_green_native_pending",
+  "cause": "usePagePrep kept its previous report when a retry began and allowed any pending completion to write report, error, or running state after a newer run, reset, navigation, or unmount.",
+  "changes": [
+    "A new Prepare attempt clears the previous report and error immediately.",
+    "Only the latest mounted attempt for the current tab ID and URL may commit visible report, error, or completion state.",
+    "Navigation, reset, and unmount invalidate pending attempt completions; a page-keyed visible state hides the old page's status before the reset effect completes.",
+    "Added connected hook and Prepare UI tests using deferred page-preparation promises and a manual feature-test procedure."
+  ],
+  "evidence": [
+    "Guarded red run prepare-d58-red-20260928-01: 5 failed, 1 passed; failures showed retained prior success, old page busy state, stale overlapping report, and reset busy state.",
+    "Guarded green run prepare-d58-green-20260928-01: 6 passed.",
+    "Guarded final run prepare-d58-final-20260928-01: 6 passed after typed fixture correction.",
+    "Guarded compile prepare-d58-compile-20260928-02: tsc --noEmit passed. The first compile caught and led to correction of a missing selector in the test fixture.",
+    "Fresh peer follow-up: guarded prepare-d58-followup-test-20260928-01 passed 9/9 cases, including reset late rejection and older overlapping rejection before and after the newer result.",
+    "Fresh peer follow-up: guarded prepare-d58-followup-compile-20260928-01 passed tsc --noEmit."
+  ],
+  "files": [
+    "src/hooks/use-page-prep.ts",
+    "tests/unit/prepare-lifecycle.test.tsx",
+    "docs/feature-tests.md"
+  ],
+  "sibling_census": "useExtraction already invalidates by tab ID and URL and guards run sequence; other Showcase hooks have different async responsibilities. This repair is scoped to Prepare's proven defect.",
+  "gaps": [
+    "No native browser or localhost exercise in this lane; independent installed verification remains open.",
+    "Same-tab same-URL reload has no document identity in useActiveTab. Both Prepare and Snapshot share that broader identity gap; tab ID and URL guards do not resolve it.",
+    "This repair suppresses stale UI results; it does not cancel the injected page script."
+  ],
+  "resource_journals": [
+    {
+      "path": "docs/stabilization/resource-journals/prepare-d58-followup-test-20260928-01.jsonl",
+      "sha256": "f743a73ca7644b6c65ea692dbbc03f095874206c91aed7f73f514bb53dc1621e",
+      "terminal": {
+        "schema": 1,
+        "at": "2026-09-28T15:34:08.155Z",
+        "runId": "prepare-d58-followup-test-20260928-01",
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/prepare-d58-followup-compile-20260928-01.jsonl",
+      "sha256": "c72ca7d05f36026030db6b716cca78cd594bf0614dbd982bf9e636fb8b49ef7a",
+      "terminal": {
+        "schema": 1,
+        "at": "2026-09-28T15:35:38.490Z",
+        "runId": "prepare-d58-followup-compile-20260928-01",
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/prepare-d58-compile-20260928-01.jsonl",
+      "sha256": "4da3725ebe137af8c9a57e02e3f0a47e553e93e9e450c0946ddab2939a93dc9c",
+      "terminal": {
+        "schema": 1,
+        "at": "2026-09-28T15:25:08.153Z",
+        "runId": "prepare-d58-compile-20260928-01",
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "refused",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/prepare-d58-compile-20260928-02.jsonl",
+      "sha256": "00492cd3529b302449a1812b071df1a3978aeae9883e0101435a4320503d755b",
+      "terminal": {
+        "schema": 1,
+        "at": "2026-09-28T15:26:44.483Z",
+        "runId": "prepare-d58-compile-20260928-02",
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/prepare-d58-final-20260928-01.jsonl",
+      "sha256": "9bf5b9d86a4c1a1b5e2ef5dd4f5f601b9c122b4b67b632465475739c3be0f5d0",
+      "terminal": {
+        "schema": 1,
+        "at": "2026-09-28T15:28:47.528Z",
+        "runId": "prepare-d58-final-20260928-01",
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/prepare-d58-green-20260928-01.jsonl",
+      "sha256": "870486ad29decab55935a852cbf0c550c615157649772d3d3cf948d8fefbb03e",
+      "terminal": {
+        "schema": 1,
+        "at": "2026-09-28T15:23:29.486Z",
+        "runId": "prepare-d58-green-20260928-01",
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "path": "docs/stabilization/resource-journals/prepare-d58-red-20260928-01.jsonl",
+      "sha256": "fd50cc618f09f309c765bed6b92a2a77ce1cf33023ca242824ce33731543d159",
+      "terminal": {
+        "schema": 1,
+        "at": "2026-09-28T15:21:30.941Z",
+        "runId": "prepare-d58-red-20260928-01",
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "refused",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  ]
+}

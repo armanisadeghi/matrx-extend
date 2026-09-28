@@ -28,6 +28,7 @@ export type ShowcaseSubTab = (typeof SHOWCASE_SUB_TABS)[number];
 export interface ListPatternRecommendation {
   tabId: number;
   url: string;
+  pageKey: string;
   listRoot: string;
   itemSelector: string;
   requestId: number;

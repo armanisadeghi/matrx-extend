@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "report_id": "prepare-empty-report-peer",
+  "defect_id": "EXT-D-0057",
+  "candidate_commit": "5dea4dd3121ae0af85ef04edbf8e3f4325c7bb47",
+  "review_mode": "independent source-only review; no product edits, tests, build, or browser",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "finding": "Source flow satisfies no false success for missing/malformed injected results: preparePage validates the frame result and throws actionable reload/retry text; usePagePrep catches and stores the error; PrepareTab renders it. Valid complete reports are returned unchanged and rendered.",
+    "evidence": [
+      "src/lib/data-pattern/page-prep.ts:219-264",
+      "src/hooks/use-page-prep.ts:24-39",
+      "src/features/showcase/tabs/PrepareTab.tsx:55-79"
+    ],
+    "cannot_verify": "No focused test, build, or native extension interaction was run, so runtime display and genuine injected execution remain unverified."
+  },
+  "verdict_b": {
+    "status": "PASS_WITH_UNVERIFIED_GUARD",
+    "finding": "Boundary validation is local to the shared preparePage primitive, removes the fabricated default, and keeps valid report values intact. The regression test calls real preparePage with only executeScript doubled; []/undefined/null and malformed payloads reject, which would fail against the old nullish fallback, while distinct valid fixtures must pass through. Expected fixtures are external literals, not values computed by the SUT.",
+    "evidence": [
+      "src/lib/data-pattern/page-prep.test.ts:1-73",
+      "src/lib/data-pattern/page-prep.ts:248-264"
+    ],
+    "limitations": "The guard is authored but unexecuted; red/green and mutation proof are absent. Hook/UI behavior is source-traced, not integration-tested. A failed same-page retry can still display a prior success beside the error because usePagePrep does not clear report at run start; this is the separately tracked EXT-D-0058 stale-report defect, not introduced by this candidate."
+  },
+  "caller_check": "Source search finds one preparePage caller in usePagePrep. This review was limited to the requested candidate and caller chain.",
+  "state_recommendation": "Keep EXT-D-0057 open until focused regression guard and native Prepare acceptance are run."
+}

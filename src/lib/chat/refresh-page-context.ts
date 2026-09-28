@@ -21,6 +21,7 @@
  */
 
 import { log } from '@/lib/debug/log';
+import { getActiveTabIdentitySnapshot, isCurrentPageIdentity } from '@/hooks/use-active-tab';
 import { classifyTabUrl } from '@/lib/scrape/capture-error';
 import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
@@ -64,10 +65,10 @@ async function waitForInFlightToClear(maxWaitMs = 3000): Promise<boolean> {
   return true;
 }
 
-async function getScrollY(tabId: number): Promise<number | null> {
+async function getScrollY(tabId: number, documentId: string): Promise<number | null> {
   try {
     const [first] = await chrome.scripting.executeScript({
-      target: { tabId },
+      target: { tabId, documentIds: [documentId] },
       func: () => window.scrollY,
     });
     const y = first?.result;
@@ -77,10 +78,10 @@ async function getScrollY(tabId: number): Promise<number | null> {
   }
 }
 
-async function setScrollY(tabId: number, y: number): Promise<void> {
+async function setScrollY(tabId: number, documentId: string, y: number): Promise<void> {
   try {
     await chrome.scripting.executeScript({
-      target: { tabId },
+      target: { tabId, documentIds: [documentId] },
       func: (top: number) => window.scrollTo({ top, behavior: 'instant' as ScrollBehavior }),
       args: [y],
     });
@@ -92,8 +93,9 @@ async function setScrollY(tabId: number, y: number): Promise<void> {
 async function captureSoup(
   tabId: number,
   url: string | null | undefined,
+  documentId: string,
 ): Promise<SoupResult | null> {
-  const r = await captureWithFallback(tabId, url);
+  const r = await captureWithFallback(tabId, url, documentId);
   if (r.ok && r.soup) return r.soup;
   // Skip silently when the page is genuinely unreachable (chrome://, file://,
   // extension pages). Warn for any other failure so genuine breakage stays
@@ -112,22 +114,23 @@ async function captureSoup(
  */
 export async function refreshPageContextBeforeSend(opts: RefreshOptions): Promise<RefreshDecision> {
   const store = useAutoScrapeStore.getState();
-
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (!tab?.id || !tab.url) {
-    return { action: 'noop', record: store.current, reason: 'no active tab' };
+  const page = getActiveTabIdentitySnapshot();
+  if (!page.id || !page.url || !page.documentId || !page.pageKey) {
+    return { action: 'noop', record: null, reason: page.identityError ?? 'page identity unavailable' };
   }
-  const tabId = tab.id;
-  const url = tab.url;
+  const tabId = page.id;
+  const url = page.url;
+  const documentId = page.documentId;
+  const pageKey = page.pageKey;
   const urlClass = classifyTabUrl(url);
   if (urlClass.blocked) {
-    return { action: 'noop', record: store.current, reason: `blocked url (${urlClass.reason})` };
+    return { action: 'noop', record: null, reason: `blocked url (${urlClass.reason})` };
   }
   // Host access is granted at install via base `<all_urls>` host_permissions.
   // Nothing to gate here; chrome://blocklist URLs are caught by classifyTabUrl
   // above.
 
-  const cur = store.current;
+  const cur = store.current?.pageKey === pageKey ? store.current : null;
   const haveFresh = cur && cur.url === url && Date.now() - cur.capturedAt < FAST_FRESH_MS;
   const haveDeep = cur && cur.url === url && cur.usedFullScroll;
   const wantsDeep = opts.autoFullScrollOnFirstSubmit && !haveDeep;
@@ -143,9 +146,9 @@ export async function refreshPageContextBeforeSend(opts: RefreshOptions): Promis
   //     proceed and do the scroll. The user asked for it; honor it.
   //   - !wantsDeep → keep the cheap short-circuit (the in-flight fast capture
   //     will land in the store on its own; no reason to double up).
-  if (store.inFlight) {
+  if (store.inFlight && cur && (!store.captureOwner || store.captureOwner.pageKey === pageKey)) {
     if (!wantsDeep) {
-      return { action: 'noop', record: store.current, reason: 'capture in flight' };
+      return { action: 'noop', record: cur, reason: 'capture in flight' };
     }
     const settled = await waitForInFlightToClear();
     if (!settled) {
@@ -165,24 +168,29 @@ export async function refreshPageContextBeforeSend(opts: RefreshOptions): Promis
     };
   }
 
-  store.setInFlight(true);
-  store.setLastError(null);
+  if (!isCurrentPageIdentity(pageKey)) {
+    return { action: 'noop', record: null, reason: 'page changed before refresh' };
+  }
+
+  const run = store.beginCapture(pageKey);
   try {
     if (wantsDeep) {
-      const startY = await getScrollY(tabId);
+      const startY = await getScrollY(tabId, documentId);
       log.info('scrape', `pre-send deep capture: scrollY=${startY ?? '?'}`);
       try {
-        await scrollToLoadLazy(tabId, { delayMs: 100, maxMs: 4000 });
+        await scrollToLoadLazy(tabId, { delayMs: 100, maxMs: 4000, documentId });
       } catch (err) {
         log.warn('scrape', 'scrollToLoadLazy failed', err);
       }
-      const soup = await captureSoup(tabId, url);
+      const soup = await captureSoup(tabId, url, documentId);
       // Always try to restore — even if capture failed.
       if (typeof startY === 'number') {
-        await setScrollY(tabId, startY);
+        await setScrollY(tabId, documentId, startY);
       }
-      if (!soup || soup.url !== url) {
-        store.setLastError('deep capture failed or URL changed mid-scroll');
+      if (!soup || soup.url !== url || !isCurrentPageIdentity(pageKey)) {
+        if (isCurrentPageIdentity(pageKey)) {
+          store.setCaptureError(pageKey, run, 'deep capture failed or URL changed mid-scroll');
+        }
         return {
           action: 'noop',
           record: cur,
@@ -191,18 +199,22 @@ export async function refreshPageContextBeforeSend(opts: RefreshOptions): Promis
       }
       const record: AutoScrapeRecord = {
         url: soup.url,
+        pageKey,
         capturedAt: Date.now(),
         usedFullScroll: true,
         initialScrollY: startY ?? null,
         soup,
       };
+      if (!store.ownsCapture(pageKey, run)) {
+        return { action: 'noop', record: cur, reason: 'newer capture owns page' };
+      }
       store.set(record);
       return { action: 'deep', record, reason: 'fresh deep capture' };
     }
 
     // Fast path: re-capture without scrolling.
-    const soup = await captureSoup(tabId, url);
-    if (!soup || soup.url !== url) {
+    const soup = await captureSoup(tabId, url, documentId);
+    if (!soup || soup.url !== url || !isCurrentPageIdentity(pageKey)) {
       return { action: 'noop', record: cur, reason: 'fast capture failed' };
     }
     const record: AutoScrapeRecord = {
@@ -210,14 +222,18 @@ export async function refreshPageContextBeforeSend(opts: RefreshOptions): Promis
       // we shouldn't downgrade. (Won't happen in practice since haveDeep blocks
       // the wantsDeep branch, but defensive against future tweaks.)
       url: soup.url,
+      pageKey,
       capturedAt: Date.now(),
       usedFullScroll: !!(cur && cur.url === url && cur.usedFullScroll),
       initialScrollY: cur && cur.url === url ? (cur.initialScrollY ?? null) : null,
       soup,
     };
+    if (!store.ownsCapture(pageKey, run)) {
+      return { action: 'noop', record: cur, reason: 'newer capture owns page' };
+    }
     store.set(record);
     return { action: 'fast', record, reason: 'fresh fast capture' };
   } finally {
-    store.setInFlight(false);
+    store.finishCapture(pageKey, run);
   }
 }

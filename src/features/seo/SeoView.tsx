@@ -2,7 +2,7 @@ import { CopyMenu } from '@/components/CopyMenu';
 import { AiRecommendations } from '@/features/seo/AiRecommendations';
 import { SeoDetails } from '@/features/seo/SeoDetails';
 import { SeoVerdict } from '@/features/seo/SeoVerdict';
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, refreshActiveTabIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { stringifyJson, wrapForAgent } from '@/lib/clipboard/copy';
 import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import type { SeoAudit } from '@/lib/seo/audit';
@@ -47,7 +47,9 @@ interface HistoryEntry {
 
 export function SeoView() {
   const tab = useActiveTab();
-  const [audit, setAudit] = useState<SeoAudit | null>(null);
+  const [storedAudit, setAudit] = useState<SeoAudit | null>(null);
+  const [auditPageKey, setAuditPageKey] = useState<string | null>(null);
+  const audit = tab.pageKey && auditPageKey === tab.pageKey ? storedAudit : null;
   const [running, setRunning] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
@@ -92,14 +94,14 @@ export function SeoView() {
   // refresh against the same URL. Errors are already caught + logged inside
   // runAudit, so a restricted page (chrome://) just no-ops gracefully.
   useEffect(() => {
-    if (!tab.id || !tab.url) return;
-    if (lastAutoRunUrlRef.current === tab.url) return;
-    lastAutoRunUrlRef.current = tab.url;
+    if (!tab.id || !tab.url || !tab.pageKey) return;
+    if (lastAutoRunUrlRef.current === tab.pageKey) return;
+    lastAutoRunUrlRef.current = tab.pageKey;
     void runAudit();
     // runAudit is defined in the component body and reads the latest tab
     // state via closure; we only want this effect to fire on URL change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab.id, tab.url]);
+  }, [tab.pageKey]);
 
   const [auditError, setAuditError] = useState<string | null>(null);
   // Live tab snapshot for the out-of-order guard above.
@@ -107,13 +109,14 @@ export function SeoView() {
   tabRef.current = tab;
 
   const runAudit = async () => {
-    if (!tab.id) return;
+    if (!tab.id || !tab.pageKey) return;
     setRunning(true);
     setSavedId(null);
     setAuditError(null);
     setViewingId(null);
     const requestedTab = tab.id;
     const requestedUrl = tab.url;
+    const requestedPageKey = tab.pageKey;
     try {
       // ONE code path: the content script's full collector (lib/seo/audit)
       // via the shared capture primitive. The previous hand-rolled inline
@@ -123,7 +126,7 @@ export function SeoView() {
       const cap = await captureWithFallback(requestedTab, requestedUrl ?? null);
       // Out-of-order / navigation guard: a slow audit of page A must not
       // overwrite page B's fresh state.
-      if (tabRef.current.id !== requestedTab || tabRef.current.url !== requestedUrl) return;
+      if (tabRef.current.id !== requestedTab || tabRef.current.url !== requestedUrl || !isCurrentPageIdentity(requestedPageKey)) return;
       if (!cap.ok || !cap.soup) {
         setAudit(null);
         setAuditError(
@@ -134,16 +137,19 @@ export function SeoView() {
         return;
       }
       setAudit(cap.soup.seo);
+      setAuditPageKey(requestedPageKey);
     } catch (err) {
-      setAudit(null);
-      setAuditError(`Audit failed: ${(err as Error).message}`);
+      if (isCurrentPageIdentity(requestedPageKey)) {
+        setAudit(null);
+        setAuditError(`Audit failed: ${(err as Error).message}`);
+      }
     } finally {
-      setRunning(false);
+      if (isCurrentPageIdentity(requestedPageKey)) setRunning(false);
     }
   };
 
   const handleSave = async () => {
-    if (!audit) return;
+    if (!audit || !isCurrentPageIdentity(auditPageKey)) return;
     setSaving(true);
     const r = await saveSeoAudit({
       url: audit.url,
@@ -303,7 +309,7 @@ export function SeoView() {
       </div>
 
       <div className="flex shrink-0 gap-2 px-3 pb-3 pt-1">
-        <Button onClick={() => void runAudit()} disabled={running} className="flex-1 rounded-full">
+        <Button onClick={() => void runAudit()} disabled={running || !tab.pageKey} className="flex-1 rounded-full">
           {running ? <Loader2 className="animate-spin" /> : <Search />}
           {audit ? 'Re-audit' : 'Audit this page'}
         </Button>
@@ -319,6 +325,7 @@ export function SeoView() {
           </Button>
         )}
       </div>
+      {!tab.pageKey && <div className="px-3 pb-2 text-[11px]">{tab.identityError ?? 'Checking this page…'} <button type="button" className="underline" onClick={() => void refreshActiveTabIdentity()}>Retry</button></div>}
       {auditError && (
         <div className="px-3 pb-2 text-[11px] text-red-600 dark:text-red-400">{auditError}</div>
       )}
