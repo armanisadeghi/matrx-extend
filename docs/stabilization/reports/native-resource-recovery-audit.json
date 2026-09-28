@@ -1,0 +1,81 @@
+{
+  "observed_at": "2026-09-28T19:50:33Z",
+  "scope": "Read-only, focused disk attribution for the blocked native Chrome admission. No deletion, moving, process termination, build, browser launch, threshold change, or alternate profile.",
+  "source_report": "docs/stabilization/reports/resource-attribution-20260928.json",
+  "internal_volume": {
+    "path": "/System/Volumes/Data",
+    "free_gib_from_df": 5.6,
+    "previous_free_gib_at_2026-09-28T14:58:44Z": 8.9,
+    "native_guard_floor_gib": 20,
+    "additional_free_gib_needed_at_observation": 14.4,
+    "apfs_container_free_bytes": 6028234752
+  },
+  "external_volume": {
+    "path": "/Volumes/Samsung2TB",
+    "free_tib_from_df": 1.6,
+    "note": "External free space does not satisfy the internal profile-volume guard."
+  },
+  "campaign_owned_rebuildable_candidates": [
+    {
+      "path": "/private/tmp/matrx-tsc-slots",
+      "allocated": "0 B",
+      "classification": "Known task scratch; insufficient."
+    },
+    {
+      "path": "/private/tmp/matrx-tsc-queue-501",
+      "allocated": "3.0 MiB",
+      "classification": "Known task scratch; insufficient."
+    },
+    {
+      "path": "/private/tmp/matrx-network-replay-escalation",
+      "allocated": "420 KiB",
+      "classification": "Known task scratch; insufficient."
+    }
+  ],
+  "disk_groom_inventory": {
+    "linked_worktrees": 0,
+    "stale_linked_worktrees": 0,
+    "next_caches": 3,
+    "note": "Primary project checkouts and Next caches are on the external volume; cleaning them does not restore internal free space."
+  },
+  "other_internal_occupancy_not_established_as_campaign_disposable": [
+    {
+      "path": "~/Library/Application Support/Claude/vm_bundles/claudevm.bundle",
+      "allocated": "10 GiB",
+      "reason_not_a_cleanup_candidate": "Claude app VM data; activity and safe rebuild semantics were not established."
+    },
+    {
+      "path": "~/Library/Containers/com.docker.docker/Data/vms/0/data/Docker.raw",
+      "allocated": "7.7 GiB",
+      "reason_not_a_cleanup_candidate": "Docker VM data; running-container and image ownership were not established."
+    },
+    {
+      "path": "~/Library/Caches/Google/Chrome",
+      "allocated": "3.2 GiB",
+      "reason_not_a_cleanup_candidate": "Shared Chrome profile caches; not campaign-owned, and insufficient alone."
+    },
+    {
+      "path": "/private/var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/X/com.google.Chrome.code_sign_clone",
+      "allocated": "2.1 GiB",
+      "reason_not_a_cleanup_candidate": "Chrome code-sign clone; current use and safe removal were not established."
+    },
+    {
+      "path": "~/.cache/codex-runtimes/codex-primary-runtime",
+      "allocated": "1.5 GiB",
+      "reason_not_a_cleanup_candidate": "Shared Codex runtime dependency; not campaign-owned."
+    },
+    {
+      "path": "~/Library/Application Support/Claude/Cache",
+      "allocated": "779 MiB",
+      "reason_not_a_cleanup_candidate": "Shared app cache; insufficient and app state not verified."
+    }
+  ],
+  "other_observations": {
+    "swap_used_mib": 3555.88,
+    "previous_swap_used_mib": 4895.44,
+    "local_snapshots": "tmutil returned no local snapshots for /",
+    "temporal_attribution": "The 3.3 GiB free-space decline since the earlier report cannot be attributed to a specific path from these one-time sizes; no earlier per-path size baseline exists."
+  },
+  "conclusion": "No campaign-owned disposable candidate remotely sufficient to close the roughly 14.4 GiB internal-space gap was established. The three known task scratch paths total about 3.4 MiB. Shared application caches and VM disks account for substantial occupancy but are not approved or proven safe campaign cleanup. Native guard remains blocked at this observation.",
+  "next_action": "Keep native admission blocked until genuine internal free space is recovered through an owner-aware cleanup of verified app data, then remeasure the same volume and rerun the unchanged guard. Do not bypass it with the external disk or another profile."
+}
