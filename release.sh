@@ -343,7 +343,7 @@ run_checks() {
     local row name secs rc
     for row in "${CHECKS[@]}"; do
         IFS='|' read -r name secs _ _ _ cmd <<< "$row"
-        ( cd "$CHECK_SNAP" && eval "bounded $secs $cmd" ) > "$JOBS/check-$name.out" 2>&1
+        ( cd "$CHECK_SNAP" && RECORDS_GUIDE_SOURCE="$(dirname "$CHECK_SNAP")/aidream" eval "bounded $secs $cmd" ) > "$JOBS/check-$name.out" 2>&1
         rc=$?
         { echo "--- check $name (exit $rc) ---"; cat "$JOBS/check-$name.out"; } >> "$RELEASE_LOG_FILE"
         if [[ "$rc" != 0 ]]; then
