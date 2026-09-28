@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "report_id": "tsv-quote-native",
+  "defect_id": "EXT-D-0054",
+  "inventory_case_id": "EXT-F-1012-T49",
+  "status": "PARTIAL_NATIVE_PASS",
+  "observed_at_utc": "2026-09-28T14:36:48Z–2026-09-28T14:42:26Z",
+  "scope": "Native execution of the fixed Showcase table TSV copy against the public AFI quotes page, followed by paste into a real hosted spreadsheet. No product edits, build, tests, or injected page data.",
+  "target": {
+    "url": "https://en.wikipedia.org/wiki/AFI%27s_100_Years...100_Movie_Quotes",
+    "title": "AFI's 100 Years...100 Movie Quotes - Wikipedia",
+    "browser": "Google Chrome primary profile",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.114",
+    "installed_source": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "artifact_tree_sha256": "a000d26b9d5d01b4ebe37f80ab830184fd74135c49fd8a5559f8e73c9b19560e",
+    "artifact_hash_method": "hashReleaseTree from scripts/sync-unpacked-release.mjs; computed after the run",
+    "reload_and_page_load": "On chrome://extensions, confirmed enabled unpacked Matrx Extend, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.114; clicked its Reload button and Chrome showed Reloaded. Then freshly navigated to the public AFI page and opened Matrx Showcase > Tables. This loaded the real page after extension reload; no separate page Reload button was clicked.",
+    "native_table_evidence": "Page accessibility tree showed the list table headers Rank, Quotation, Character, Actor/Actress, Film, Year and 100 data rows. The native Tables view detected table 1 as 101 rows × 6 columns; extracted result displayed 100 ROWS. Extracted column order was Actor/Actress, Character, Film, Quotation, Rank, Year."
+  },
+  "resource_permit": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id tsv-quote-native-20260928-01 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "run_id": "tsv-quote-native-20260928-01",
+    "admitted_at_utc": "2026-09-28T14:36:48.824Z",
+    "first_healthy_at_utc": "2026-09-28T14:37:05.200Z",
+    "watch_evidence": "Repeated RESOURCE_WATCH_HEALTHY samples were recorded through 14:42:16.917Z before UI batches. No unsafe sample occurred.",
+    "stop": "UI work stopped before SIGINT. The wrapper confirmed RESOURCE_BROWSER_STOP_CONFIRMED, exitCode 0, decision valid, and emitted RESOURCE_FINAL_DECISION at 14:42:26.724Z.",
+    "completed_journal": "docs/stabilization/resource-journals/tsv-quote-native-20260928-01.jsonl",
+    "completed_journal_sha256": "74fbe07a1b09248236655a4cee2dca1d8bc2c0baeb8b63ea99607ec879994628",
+    "resource_invalid": false,
+    "actual_exit_code": 0,
+    "decision": "valid"
+  },
+  "native_copy_and_paste": {
+    "surface": "Showcase > Tables > detected table 1 > Extract table 1 > Copy > Copy TSV",
+    "copy_feedback": "Copied",
+    "paste_target": {
+      "application": "Google Sheets hosted app in Chrome",
+      "disposable_document": "Untitled spreadsheet",
+      "document_id": "1ebP-kWXgjUPoNy20rMIRB0ZuXYuR5_1u80rhCU9xHEc",
+      "url": "https://docs.google.com/spreadsheets/d/1ebP-kWXgjUPoNy20rMIRB0ZuXYuR5_1u80rhCU9xHEc/edit?pli=1&gid=0#gid=0",
+      "ownership_and_cleanup": "Created by sheets.new in the signed-in AI Matrx account for this disposable test. No unrelated document was opened or modified. The document remains available for cleanup by its exact ID above."
+    },
+    "spreadsheet_paste": {
+      "result": "PASS",
+      "selected_range_after_paste": "A1:F101",
+      "dimensions": "101 rows including header × 6 columns",
+      "header_row": ["Actor/Actress", "Character", "Film", "Quotation", "Rank", "Year"],
+      "verified_cells": [
+        {
+          "cell": "D2",
+          "meaning": "Rank 1 Quotation",
+          "spreadsheet_formula_bar_value": "\"Frankly, my dear, I don't give a damn.\"",
+          "result": "The source's straight quotes and punctuation remained in one cell."
+        },
+        {
+          "cell": "B19",
+          "meaning": "Rank 18 Character",
+          "spreadsheet_formula_bar_value": "Arthur \"Cody\" Jarrett",
+          "result": "The embedded straight quotes remained in one cell."
+        },
+        {
+          "cell": "B28",
+          "meaning": "Rank 27 Character",
+          "spreadsheet_formula_bar_value": "\"Ratso\" Rizzo",
+          "result": "The embedded straight quotes remained in one cell."
+        }
+      ],
+      "evidence": "Immediately after native Copy TSV, pasted with the normal spreadsheet paste action. Google Sheets selected A1:F101. Selecting D2, B19, and B28 in the name box showed the exact respective values in the formula bar; no clipboard parser was used as paste proof."
+    }
+  },
+  "verdict": {
+    "passed": [
+      "Real AFI table extraction through the installed, explicitly reloaded extension produced 100 data rows with six fields.",
+      "Native TSV copy pasted into Google Sheets as A1:F101 with six columns.",
+      "A quote-bearing quotation cell and two quote-bearing character cells retained their characters and row/column positions after spreadsheet paste."
+    ],
+    "unverified": [
+      "Quote-bearing headers remain unverified natively; the AFI table headers contain no straight double quote.",
+      "The inventory target's expected Rank 1 string omitted the period before the closing quotation mark; the live page and pasted cell showed the period inside the quoted quotation. Native copy and paste preserved the live page value exactly, but this target-description discrepancy remains to reconcile.",
+      "EXT-F-2005-T03 Data/manual-rerun remains a separate open caller and was not exercised here.",
+      "No clipboard bytes/hash were read; direct spreadsheet cell inspection was used for paste acceptance."
+    ],
+    "does_not_close": "This is evidence for native quote-bearing cells and spreadsheet paste only; it does not claim full EXT-F-1012 health or close EXT-D-0054."
+  },
+  "files_touched": [
+    "docs/stabilization/reports/tsv-quote-native.json",
+    "docs/stabilization/resource-journals/tsv-quote-native-20260928-01.jsonl"
+  ],
+  "source_changes": "None"
+}
