@@ -52,6 +52,8 @@ const pattern = {
 afterEach(() => {
   cleanup();
   mocks.page.id = 37;
+  mocks.page.documentId = 'document-a';
+  mocks.page.pageKey = 'page-a';
   vi.useRealTimers();
   vi.clearAllMocks();
   mocks.bumpRun.mockReset();
@@ -74,9 +76,7 @@ it('records an auto-extract no-match locally without promoting saved health to o
     await vi.advanceTimersByTimeAsync(1_000);
   });
 
-  const record = useAutoExtractStore
-    .getState()
-    .records.get(`37|${pattern.id}|https://electronic.vegas/calendar/`);
+  const record = useAutoExtractStore.getState().records.get(`page-a|${pattern.id}`);
   expect(record?.status).toBe('no_match');
   expect(record?.note).toMatch(/no matching data/i);
   expect(mocks.bumpRun).not.toHaveBeenCalled();
@@ -111,9 +111,7 @@ it('keeps auto-extracted rows and records a visible history warning when the met
     await vi.advanceTimersByTimeAsync(1_000);
   });
 
-  const record = useAutoExtractStore
-    .getState()
-    .records.get(`37|${pattern.id}|https://electronic.vegas/calendar/`);
+  const record = useAutoExtractStore.getState().records.get(`page-a|${pattern.id}`);
   expect(record).toMatchObject({
     status: 'ok',
     rows: [{ title: 'Friday night concert' }],
@@ -133,6 +131,8 @@ it('extracts independently when two tabs share the same URL', async () => {
     await vi.advanceTimersByTimeAsync(600);
   });
   mocks.page.id = 38;
+  mocks.page.documentId = 'document-b';
+  mocks.page.pageKey = 'page-b';
   view.rerender();
   await act(async () => {
     await vi.advanceTimersByTimeAsync(600);

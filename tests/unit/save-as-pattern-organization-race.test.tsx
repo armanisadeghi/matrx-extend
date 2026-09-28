@@ -36,7 +36,16 @@ vi.mock('@/hooks/use-active-organization', () => ({
   }),
 }));
 vi.mock('@/hooks/use-active-tab', () => ({
-  useActiveTab: () => ({ id: 37, url: 'https://harbor-recovery.test/pickups' }),
+  useActiveTab: () => ({
+    id: 37,
+    url: 'https://harbor-recovery.test/pickups',
+    title: 'Pickups',
+    documentId: 'pickups-document',
+    identityStatus: 'ready',
+    identityError: null,
+    pageKey: 'pickups-page',
+  }),
+  isCurrentPageIdentity: () => true,
 }));
 vi.mock('@/lib/data-pattern/run-pattern', () => ({
   detectModeInPage: mocks.detectModeInPage,

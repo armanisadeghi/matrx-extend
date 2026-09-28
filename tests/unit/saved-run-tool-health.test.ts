@@ -59,7 +59,16 @@ const pattern = {
 } satisfies ExtractionPattern;
 
 beforeEach(() => {
-  Object.assign(chrome, { tabs: { get: vi.fn(async () => ({ ...mocks.tab })) } });
+  Object.assign(chrome, {
+    tabs: { get: vi.fn(async () => ({ ...mocks.tab })) },
+    webNavigation: {
+      getFrame: vi.fn(async () => ({
+        documentId: 'calendar-document',
+        url: mocks.tab.url,
+        errorOccurred: false,
+      })),
+    },
+  });
 });
 
 afterEach(() => {

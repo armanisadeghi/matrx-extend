@@ -24,7 +24,16 @@ const state = vi.hoisted(() => ({
 }));
 
 vi.mock('@/hooks/use-active-tab', () => ({
-  useActiveTab: () => ({ url: state.url, title: 'Guide', id: 7 }),
+  useActiveTab: () => ({
+    url: state.url,
+    title: 'Guide',
+    id: 7,
+    documentId: 'guide-document',
+    identityStatus: 'ready',
+    identityError: null,
+    pageKey: 'guide-page',
+  }),
+  isCurrentPageIdentity: () => true,
 }));
 vi.mock('@/hooks/use-page-recognition', () => ({ usePageRecognition: () => state.recognition }));
 vi.mock('@/hooks/use-scrape', () => ({
@@ -63,6 +72,7 @@ vi.mock('@/features/seo/SeoDetails', () => ({ SeoDetails: () => null }));
 
 import { ScrapeView } from '@/features/scrape/ScrapeView';
 import { useAuthStore } from '@/state/auth';
+import { useScrapeStore } from '@/state/scrape';
 
 const soup = {
   url: 'https://docs.example.com/guide',
@@ -85,6 +95,7 @@ beforeEach(() => {
   state.url = 'https://docs.example.com/guide';
   state.recognition = { capturedAt: null, capturedId: null, loading: false, checkFailed: false };
   state.current = null;
+  useScrapeStore.getState().setCurrent(null);
   state.unsavedUrls = [];
   state.captureActiveTab.mockClear();
   state.save.mockClear();
@@ -109,6 +120,7 @@ describe('Scrape panel names a page by whether it is a Source', () => {
 
   it('captured but not saved: the banner action is "Save as a Source", and it saves', () => {
     state.current = soup;
+    useScrapeStore.getState().setCurrent(soup as never, 'guide-page');
     render(<ScrapeView />);
     const inBanner = banner()?.querySelector('button') as HTMLButtonElement;
     expect(banner()?.textContent).toMatch(/Not yet a Source — Save to keep its content/);
@@ -120,6 +132,7 @@ describe('Scrape panel names a page by whether it is a Source', () => {
 
   it('a page waiting in the retry card gets no banner — the card owns the action', () => {
     state.current = soup;
+    useScrapeStore.getState().setCurrent(soup as never, 'guide-page');
     state.unsavedUrls = ['https://docs.example.com/guide#top'];
     render(<ScrapeView />);
     expect(banner()).toBeNull();

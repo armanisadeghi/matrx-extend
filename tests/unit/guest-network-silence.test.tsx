@@ -7,7 +7,16 @@ const { fetchPatternsForDomain, getActiveOrganizationId } = vi.hoisted(() => ({
 }));
 
 vi.mock('@/hooks/use-active-tab', () => ({
-  useActiveTab: () => ({ id: 42, url: 'https://example.com/page' }),
+  useActiveTab: () => ({
+    id: 42,
+    url: 'https://example.com/page',
+    title: 'Example',
+    documentId: 'example-document',
+    identityStatus: 'ready',
+    identityError: null,
+    pageKey: 'example-page',
+  }),
+  isCurrentPageIdentity: () => true,
 }));
 vi.mock('@/lib/supabase/queries', () => ({
   fetchPatternsForDomain,

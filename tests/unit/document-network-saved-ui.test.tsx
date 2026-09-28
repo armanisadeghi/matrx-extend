@@ -86,7 +86,18 @@ vi.mock('@/lib/api/routes/tool-results', () => ({
   postToolResults: (...args: unknown[]) => h.post(...args),
 }));
 vi.mock('@/lib/recording/state', () => ({ recordToolEvent: vi.fn() }));
-vi.mock('@/hooks/use-active-tab', () => ({ useActiveTab: () => ({ id: 37, url: h.url }) }));
+vi.mock('@/hooks/use-active-tab', () => ({
+  useActiveTab: () => ({
+    id: 37,
+    url: h.url,
+    title: 'Calendar',
+    documentId: h.document,
+    identityStatus: 'ready',
+    identityError: null,
+    pageKey: h.document,
+  }),
+  isCurrentPageIdentity: () => true,
+}));
 vi.mock('@/lib/destructive/confirm', () => ({ confirmDestructive: vi.fn() }));
 import { SavedReplayApprovalHost } from '@/features/showcase/SavedReplayApprovalHost';
 import { PatternsTab } from '@/features/showcase/tabs/PatternsTab';

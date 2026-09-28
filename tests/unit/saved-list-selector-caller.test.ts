@@ -89,6 +89,13 @@ it.each([
     mocks.fetchPatterns.mockResolvedValue([saved]);
     Object.assign(chrome, {
       tabs: { get: async () => ({ id: 37, url: 'https://electronic.vegas/calendar/' }) },
+      webNavigation: {
+        getFrame: async () => ({
+          documentId: 'calendar-document',
+          url: 'https://electronic.vegas/calendar/',
+          errorOccurred: false,
+        }),
+      },
       scripting: {
         executeScript: async ({
           func,

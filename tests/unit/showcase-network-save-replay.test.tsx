@@ -52,11 +52,15 @@ const mocks = vi.hoisted(() => {
 
 vi.mock('@/hooks/use-network-capture', () => ({
   useNetworkCapture: () => ({
+    tab: { id: 37, documentId: 'calendar-document', pageKey: 'calendar-page' },
     capturing: false,
+    discovering: false,
+    discoveryProgress: null,
     events: mocks.events,
     error: null,
     installed: true,
     start: vi.fn(),
+    capturePageLoad: vi.fn(),
     stop: vi.fn(),
     reload: vi.fn(),
     clear: vi.fn(),
@@ -69,7 +73,16 @@ vi.mock('@/hooks/use-network-capture', () => ({
   }),
 }));
 vi.mock('@/hooks/use-active-tab', () => ({
-  useActiveTab: () => ({ id: 37, url: 'https://electronic.vegas/vegas-edm-event-calendar/' }),
+  useActiveTab: () => ({
+    id: 37,
+    url: 'https://electronic.vegas/vegas-edm-event-calendar/',
+    documentId: 'calendar-document',
+    identityStatus: 'ready',
+    identityError: null,
+    pageKey: 'calendar-page',
+    title: 'Calendar',
+  }),
+  isCurrentPageIdentity: () => true,
 }));
 vi.mock('@/hooks/use-active-organization', () => ({
   useActiveOrganization: () => ({

@@ -32,7 +32,16 @@ vi.mock('@/lib/api/routes/auth', () => ({
 }));
 vi.mock('@/lib/supabase/queries', () => ({ saveSeoAudit: mocks.saveSeoAudit }));
 vi.mock('@/hooks/use-active-tab', () => ({
-  useActiveTab: () => ({ url: 'https://docs.example.com/guide', title: 'Guide', id: 7 }),
+  useActiveTab: () => ({
+    url: 'https://docs.example.com/guide',
+    title: 'Guide',
+    id: 7,
+    documentId: 'guide-document',
+    identityStatus: 'ready',
+    identityError: null,
+    pageKey: 'guide-page',
+  }),
+  isCurrentPageIdentity: () => true,
 }));
 vi.mock('@/hooks/use-page-recognition', () => ({
   usePageRecognition: () => ({ capturedAt: null, capturedId: null, loading: false }),
@@ -135,7 +144,7 @@ beforeEach(async () => {
   await chrome.storage.local.set({
     [STORAGE_KEYS.ACTIVE_ORGANIZATION]: { id: mocks.organizationId, name: 'Harbor Dental' },
   });
-  useScrapeStore.getState().setCurrent(soup);
+  useScrapeStore.getState().setCurrent(soup, 'guide-page');
   // The person edited the article before saving.
   useScrapeStore
     .getState()

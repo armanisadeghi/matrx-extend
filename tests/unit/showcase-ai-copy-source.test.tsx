@@ -30,7 +30,16 @@ const copied = vi.hoisted(() => ({
 }));
 
 vi.mock('@/hooks/use-auth', () => ({ useAuth: () => ({ isAdmin: true }) }));
-vi.mock('@/hooks/use-active-tab', () => ({ useActiveTab: () => ({ ...copied.page }) }));
+vi.mock('@/hooks/use-active-tab', () => ({
+  useActiveTab: () => ({
+    ...copied.page,
+    documentId: copied.page.url,
+    identityStatus: 'ready',
+    identityError: null,
+    pageKey: copied.page.url,
+  }),
+  isCurrentPageIdentity: (key: string) => key === copied.page.url,
+}));
 vi.mock('@/lib/supabase/queries', () => ({
   fetchPatternsForDomain: copied.fetchPatterns,
   bumpPatternRun: copied.bumpRun,
@@ -50,6 +59,7 @@ vi.mock('@ai-matrx/kit/format', () => ({
 }));
 vi.mock('@/hooks/use-network-capture', () => ({
   useNetworkCapture: () => ({
+    tab: { id: 37, documentId: 'calendar-document', pageKey: 'calendar-page' },
     capturing: false,
     discovering: false,
     discoveryProgress: null,

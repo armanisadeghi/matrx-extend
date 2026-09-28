@@ -10,7 +10,10 @@ const mocks = vi.hoisted(() => ({
   bumpRun: vi.fn(),
 }));
 
-vi.mock('@/hooks/use-active-tab', () => ({ useActiveTab: () => ({ ...mocks.page }) }));
+vi.mock('@/hooks/use-active-tab', () => ({
+  useActiveTab: () => ({ ...mocks.page }),
+  isCurrentPageIdentity: () => true,
+}));
 vi.mock('@/lib/supabase/queries', () => ({
   fetchPatternsForDomain: mocks.fetchPatterns,
   bumpPatternRun: mocks.bumpRun,
